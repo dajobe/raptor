@@ -52,12 +52,45 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-AC_PROG_LEX
+AM_PROG_LEX
 if test "$LEX" != flex; then
   LEX="$SHELL $missing_dir/missing flex"
   AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
   AC_SUBST(LEXLIB, '')
 fi
+
+FLEX_MIN_VERSION=2.5.19
+FLEX_REC_VERSION=2.5.31
+AC_MSG_CHECKING(flex version)
+if test "X$LEX" != "X"; then
+  FLEX_VERSION=`$LEX -V 2>&1 | awk '{print $2}'`
+  FLEX_VERSION_DEC=`echo $FLEX_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+
+  FLEX_MIN_VERSION_DEC=`echo $FLEX_MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+
+  if test $FLEX_VERSION_DEC -ge $FLEX_MIN_VERSION_DEC; then
+    AC_MSG_RESULT($FLEX_VERSION - OK)
+  else
+    AC_MSG_RESULT($FLEX_VERSION - too old to (re-)generate N3 lexer)
+    if test -r $srcdir/n3_lexer.c -a -r $srcdir/n3_lexer.h ; then
+      AC_MSG_WARN(The pre-generated N3 lexer files are present.)
+      AC_MSG_WARN(If you want to change the lexer you will need)
+      AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+      AC_MSG_WARN(available from http://lex.sourceforge.net/)
+    else
+      AC_MSG_WARN(There are no pre-generated N3 lexer files present.)
+      AC_MSG_WARN(Raptor will NOT build.  Please get)
+      AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+      AC_MSG_WARN(available from http://lex.sourceforge.net/)
+      AC_MSG_WARN(Alternatively copy the pre-generated N3 lexer files)
+      AC_MSG_WARN(n3_lexer.c and n3_lexer.h from a released version.)
+      AC_MSG_FAILURE(Flex version $FLEX_VERSION is too old)
+    fi
+  fi
+else
+  AC_MSG_RESULT(not present - using pre-generated lexer)
+fi
+
 AC_PROG_YACC
 
 # Find a tar command for 'make dist'
