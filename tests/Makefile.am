@@ -36,8 +36,6 @@ ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out ex-32.out ex-33.out \
 ex-34.out ex-35.out ex-36.out ex-37.out ex-38.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out
 
-RDF_TEST_ANSWER_FILES=ex-13.nt
-
 NT_TEST_FILES=test.nt
 
 NT_OUT_FILES=test.out
@@ -51,7 +49,6 @@ RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
-	$(RDF_TEST_ANSWER_FILES) \
 	$(RDF_BAD_TEST_FILES) \
 	$(RDF_OUT_FILES) \
 	$(NT_TEST_FILES) \
