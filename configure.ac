@@ -392,7 +392,6 @@ if test "X$PKG_CONFIG" = "X"; then
   AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
 fi
 
-need_glib2=0
 oLIBS="$LIBS"
 if test "X$PKG_CONFIG" != X; then
   LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
@@ -400,12 +399,27 @@ if test "X$PKG_CONFIG" != X; then
   LIBS="$oLIBS"
   AC_MSG_CHECKING(for NFC checking with g_utf8_normalize)
   if test "$ac_cv_func_g_utf8_normalize" = yes; then
-    need_glib2=1
     AC_DEFINE([HAVE_G_UTF8_NORMALIZE], 1, [Have glib 2.0 g_utf8_normalize])
     AC_MSG_RESULT(yes)
   else
     AC_MSG_RESULT(no)
   fi
+fi
+
+
+need_glib2=0
+AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check     turn off Unicode NFC checking (default auto).  ], nfc_check="$enableval", nfc_check="auto")	
+AC_MSG_CHECKING(using Unicode NFC checking)
+if test "X$ac_cv_func_g_utf8_normalize" = Xyes; then
+  if test "X$nfc_check" = Xauto; then
+    nfc_check=yes
+  fi
+else
+  nfc_check=no
+fi
+AC_MSG_RESULT($nfc_check);
+if test $nfc_check = yes; then
+  need_glib2=1
 fi
 
 
