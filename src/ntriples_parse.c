@@ -229,8 +229,7 @@ typedef enum {
 
 
 static int 
-raptor_ntriples_term_valid(raptor_parser* rdf_parser, 
-                           unsigned char c, int position, 
+raptor_ntriples_term_valid(unsigned char c, int position, 
                            raptor_ntriples_term_class term_class) 
 {
   int result=0;
@@ -261,10 +260,11 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
       break;
       
     case RAPTOR_TERM_CLASS_FULL:
+      result=1;
       break;
       
     default:
-      raptor_parser_fatal_error(rdf_parser, "Unknown ntriples term %d", term_class);
+      RAPTOR_FATAL2("Unknown ntriples term %d", term_class);
   }
 
   return result;
@@ -296,13 +296,13 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
  **/
 static int
 raptor_ntriples_term(raptor_parser* rdf_parser, 
-                     unsigned char **start, unsigned char *dest, 
+                     const unsigned char **start, unsigned char *dest, 
                      size_t *lenp, size_t *dest_lenp,
                      char end_char,
                      raptor_ntriples_term_class term_class,
                      int allow_utf8)
 {
-  unsigned char *p=*start;
+  const unsigned char *p=*start;
   unsigned char c='\0';
   size_t ulen=0;
   unsigned long unichar=0;
@@ -331,8 +331,11 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
           return 1;
         }
         memcpy(dest, p-1, unichar_len);
-        unichar_len--;
+        dest+= unichar_len;
 
+        unichar_len--; /* p, *lenp were moved on by 1 earlier */
+        
+        p += unichar_len;
         (*lenp) -= unichar_len;
         rdf_parser->locator.column+= unichar_len;
         rdf_parser->locator.byte+= unichar_len;
@@ -353,7 +356,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         break;
       }
 
-      if(!raptor_ntriples_term_valid(rdf_parser, c, position, term_class)) {
+      if(!raptor_ntriples_term_valid(c, position, term_class)) {
         if(end_char) {
           /* end char was expected, so finding an invalid thing is an error */
           raptor_parser_error(rdf_parser, "Missing terminating '%c' (found '%c')", end_char, c);
@@ -453,10 +456,9 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
 unsigned char*
 raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, 
-                                      unsigned char *src, int len,  
-                                      size_t *dest_lenp)
-{
-  unsigned char *start=src;
+                                      const unsigned char *src, int len,  
+                                      size_t *dest_lenp) {
+  const unsigned char *start=src;
   size_t length=len;
   unsigned char *dest=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
 
@@ -472,9 +474,8 @@ raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser,
 
 
 static int
-raptor_ntriples_parse_line (raptor_parser* rdf_parser,
-                            unsigned char *buffer, size_t len) 
-{
+raptor_ntriples_parse_line(raptor_parser* rdf_parser,
+                           unsigned char *buffer, size_t len) {
   int i;
   unsigned char *p;
   unsigned char *dest;
@@ -585,7 +586,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
         rdf_parser->locator.byte++;
 
         if(raptor_ntriples_term(rdf_parser,
-                                &p, dest, &len, &term_length, 
+                                (const unsigned char**)&p, 
+                                dest, &len, &term_length, 
                                 '>', RAPTOR_TERM_CLASS_URI, 0)) {
           rc=1;
           goto cleanup;
@@ -603,7 +605,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
         rdf_parser->locator.byte++;
 
         if(raptor_ntriples_term(rdf_parser,
-                                &p, dest, &len, &term_length,
+                                (const unsigned char**)&p,
+                                dest, &len, &term_length,
                                 '"', RAPTOR_TERM_CLASS_STRING, 0)) {
           rc=1;
           goto cleanup;
@@ -628,8 +631,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
           
 
           if(raptor_ntriples_term(rdf_parser,
-                                  &p, object_literal_language,
-                                  &len, NULL,
+                                  (const unsigned char**)&p,
+                                  object_literal_language, &len, NULL,
                                   '\0', RAPTOR_TERM_CLASS_LANGUAGE, 0)) {
             rc=1;
             goto cleanup;
@@ -657,7 +660,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
           rdf_parser->locator.byte++;
 
           if(raptor_ntriples_term(rdf_parser,
-                                  &p, object_literal_datatype, &len, NULL,
+                                  (const unsigned char**)&p,
+                                  object_literal_datatype, &len, NULL,
                                   '>', RAPTOR_TERM_CLASS_URI, 0)) {
             rc=1;
             goto cleanup;
@@ -698,7 +702,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
         rdf_parser->locator.byte++;
 
         if(raptor_ntriples_term(rdf_parser,
-                                &p, dest, &len, &term_length,
+                                (const unsigned char**)&p,
+                                dest, &len, &term_length,
                                 '\0', RAPTOR_TERM_CLASS_BNODEID, 0)) {
           rc=1;
           goto cleanup;
@@ -740,7 +745,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
         rdf_parser->locator.byte++;
 
         if(raptor_ntriples_term(rdf_parser,
-                                &p, dest, &len, &term_length, 
+                                (const unsigned char**)&p,
+                                dest, &len, &term_length, 
                                 '"', RAPTOR_TERM_CLASS_STRING, 0)) {
           rc=1;
           goto cleanup;
@@ -767,8 +773,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
           }
 
           if(raptor_ntriples_term(rdf_parser,
-                                  &p, object_literal_language,
-                                  &len, NULL,
+                                  (const unsigned char**)&p,
+                                  object_literal_language, &len, NULL,
                                   '"', RAPTOR_TERM_CLASS_STRING, 0)) {
             rc=1;
             goto cleanup;
@@ -797,7 +803,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
           rdf_parser->locator.byte++;
 
           if(raptor_ntriples_term(rdf_parser,
-                                  &p, object_literal_datatype, &len, NULL,
+                                  (const unsigned char**)&p,
+                                  object_literal_datatype, &len, NULL,
                                   '>', RAPTOR_TERM_CLASS_URI, 0)) {
             rc=1;
             goto cleanup;
