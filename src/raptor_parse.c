@@ -640,7 +640,7 @@ raptor_free_element(raptor_element *element)
     RAPTOR_FREE(cstring, element->xml_language);
 
   if(element->object_literal_datatype)
-    RAPTOR_FREE(cstring, (char*)element->object_literal_datatype);
+    raptor_free_uri(element->object_literal_datatype);
 
   raptor_free_qname(element->name);
   RAPTOR_FREE(raptor_element, element);
