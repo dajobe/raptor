@@ -1963,6 +1963,30 @@ raptor_free_memory(void *ptr)
 }
 
 
+/**
+ * raptor_alloc_memory - Allocate memory inside raptor.
+ * @size: size of memory to allocate
+ * 
+ * Some systems require memory allocated in a library to
+ * be deallocated in that library.  This function allows
+ * memory to be allocated inside the raptor shared library
+ * that can be freed inside raptor either internally or via
+ * raptor_free_memory.
+ *
+ * Examples include using this in the raptor_generate_id handler
+ * code to create new strings that will be used internally
+ * as short identifiers and freed later on by the parsers.
+ *
+ * Return value: the address of the allocated memory or NULL on failure
+ *
+ **/
+void*
+raptor_alloc_memory(size_t size)
+{
+  return RAPTOR_MALLOC(void, size);
+}
+
+
 #if defined (RAPTOR_DEBUG) && defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
 
 #undef malloc
