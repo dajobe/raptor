@@ -1988,7 +1988,7 @@ rapier_parser_warning(rapier_parser* parser, const char *message, ...)
  * Return value: non 0 on failure
  **/
 rapier_parser*
-rapier_new(rapier_uri *base_uri)
+rapier_new(void)
 {
   rapier_parser* rdf_parser;
 #ifdef NEED_EXPAT
@@ -2049,8 +2049,6 @@ rapier_new(rapier_uri *base_uri)
 
   /* xmlInitParserCtxt(&rdf_parser->xc); */
 #endif
-
-  rdf_parser->base_uri=base_uri;
 
   rapier_init_namespaces(rdf_parser);
 
@@ -2163,8 +2161,8 @@ rapier_set_statement_handler(rapier_parser* parser,
  * Return value: non 0 on failure
  **/
 int
-rapier_parse_file(rapier_parser* rdf_parser,  const char *uri,
-                  const char *base_uri) 
+rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
+                  rapier_uri *base_uri) 
 {
 #ifdef NEED_EXPAT
   XML_Parser xp;
@@ -2187,12 +2185,13 @@ rapier_parse_file(rapier_parser* rdf_parser,  const char *uri,
   rdf_parser->root_element= rdf_parser->current_element=NULL;
   rdf_parser->failed=0;
 
+  rdf_parser->base_uri=base_uri;
 
 
 #ifdef NEED_EXPAT
   xp=rdf_parser->xp;
 
-  XML_SetBase(xp, base_uri);
+  XML_SetBase(xp, RAPIER_URI_AS_STRING(base_uri));
 #endif
 
 
