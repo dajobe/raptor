@@ -105,7 +105,7 @@ typedef struct {
 } raptor_statement;
 
 
-typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *msg, va_list arguments);
+typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
 typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
 
