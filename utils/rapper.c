@@ -347,7 +347,7 @@ main(int argc, char *argv[])
     printf("    'rdfxml'                RDF/XML (default)\n    'ntriples'              N-Triples\n    'ntriples-plus'         N-Triples Plus\n    'rss-tag-soup'          RSS tag soup\n");
     printf(HELP_TEXT(o, "output FORMAT   ", "Set output format to one of:"));
     printf("    'simple'                A simple format (default)\n    'ntriples'              N-Triples\n");
-    printf(HELP_TEXT(m, "mode            ", "Set parser mode - 'lax' (default) or 'strict'"));
+    printf(HELP_TEXT(m, "mode MODE       ", "Set parser mode - 'lax' (default) or 'strict'"));
     printf("\nAdditional options:\n");
     printf(HELP_TEXT(c, "count           ", "Count triples - no output"));
     printf(HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
