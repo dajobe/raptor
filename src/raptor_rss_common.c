@@ -179,6 +179,8 @@ typedef enum {
   RAPTOR_RSS_FIELD_CATEGORY,      /* item 0.92, 2.0, channel 2.0 */
   RAPTOR_RSS_FIELD_COMMENTS,      /* comments v? */
   RAPTOR_RSS_FIELD_ITEMS,         /* rss 1.0 items */
+  RAPTOR_RSS_FIELD_IMAGE,         /* rss 1.0 property from channel->image) */
+  RAPTOR_RSS_FIELD_TEXTINPUT,     /* rss 1.0 property from channel->textinput */
 
   RAPTOR_RSS_FIELD_ATOM_CONTENT,   /* atom 0.3 content */
   RAPTOR_RSS_FIELD_ATOM_COPYRIGHT, /* atom 0.3 content */
@@ -250,6 +252,8 @@ static raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "category",       RSS0_92_NS },
   { "comments",       RSS0_92_NS },
   { "items",          RSS1_0_NS },
+  { "image",          RSS1_0_NS },
+  { "textinput",      RSS1_0_NS },
 
   { "content",        ATOM0_3_NS },
   { "copyright",      ATOM0_3_NS },
