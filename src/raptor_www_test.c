@@ -66,6 +66,7 @@ int main (int argc, char *argv[])
     uri_string="http://www.redland.opensource.ac.uk/";
 
   raptor_uri_init();
+  raptor_www_init();
 
   uri=raptor_new_uri(uri_string);
   if(!uri) {
@@ -96,6 +97,8 @@ int main (int argc, char *argv[])
   raptor_www_free(www);
 
   raptor_free_uri(uri);
+
+  raptor_www_finish();
   
   return 0;
 }
