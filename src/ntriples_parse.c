@@ -51,7 +51,7 @@
 /* Raptor includes */
 #include "raptor.h"
 #include "raptor_internal.h"
-#include "ntriples.h"
+
 
 /* Prototypes for local functions */
 static void raptor_ntriples_generate_statement(raptor_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, char *object_literal_language, char *object_literal_datatype);

@@ -44,8 +44,7 @@
 #endif
 
 /* Raptor includes */
-#include "raptor.h"
-#include "ntriples.h"
+#include <raptor.h>
 
 #ifdef RAPTOR_IN_REDLAND
 #include <librdf.h>
