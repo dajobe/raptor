@@ -58,7 +58,8 @@ raptor_www_test.c \
 fix-groff-xhtml \
 $(man_MANS) \
 raptor.pc.in \
-turtle_lexer.l turtle_parser.y
+turtle_lexer.l turtle_parser.y \
+fix-flex
 
 
 
@@ -125,11 +126,10 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor.pc
 
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.tab.c
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.tab.c $(srcdir)/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
-	mv $@ turtle_lexer.t
-	sed -e 's/\(^[ \t]*free(.*ptr.*\)$$/if(ptr) \1/' turtle_lexer.t > $@
-	rm -f turtle_lexer.t
+	$(PERL) $(srcdir)/fix-flex $@ > turtle_lexer.t
+	mv turtle_lexer.t $@
 
 turtle_parser.tab.c: $(srcdir)/turtle_parser.y
 	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
