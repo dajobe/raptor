@@ -549,7 +549,7 @@ static int raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element, 
 /* prototypes for grammar functions */
 static void raptor_start_element_grammar(raptor_parser *parser, raptor_element *element);
 static void raptor_end_element_grammar(raptor_parser *parser, raptor_element *element);
-static void raptor_cdata_grammar(raptor_parser *parser, const unsigned char *s, int len);
+static void raptor_cdata_grammar(raptor_parser *parser, const unsigned char *s, int len, int is_cdata);
 
 
 /* prototype for statement related functions */
@@ -1117,13 +1117,24 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
  * s is not 0 terminated for expat, is for libxml - grrrr.
  */
 void
+raptor_xml_characters_handler(void *user_data, const unsigned char *s, int len)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+
+  raptor_cdata_grammar(rdf_parser, s, len, 0);
+}
+
+
+/* cdata (and ignorable whitespace for libxml). 
+ * s is not 0 terminated for expat, is for libxml - grrrr.
+ */
+void
 raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
-  raptor_cdata_grammar(rdf_parser, s, len);
+  raptor_cdata_grammar(rdf_parser, s, len, 1);
 }
-
 
 #ifdef RAPTOR_XML_EXPAT
 /* This is called for a declaration of an unparsed (NDATA) entity */
@@ -1243,7 +1254,7 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
                         (XML_StartElementHandler)raptor_xml_start_element_handler,
                         (XML_EndElementHandler)raptor_xml_end_element_handler);
   XML_SetCharacterDataHandler(xp, 
-                              (XML_CharacterDataHandler)raptor_xml_cdata_handler);
+                              (XML_CharacterDataHandler)raptor_xml_characters_handler);
 
   XML_SetCommentHandler(xp,
                         (XML_CommentHandler)raptor_xml_comment_handler);
@@ -3081,16 +3092,13 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 static void
 raptor_cdata_grammar(raptor_parser *rdf_parser,
-                     const unsigned char *s, int len)
+                     const unsigned char *s, int len,
+                     int is_cdata)
 {
   raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_sax2_element* sax2_element;
   raptor_state state;
-#ifdef RAPTOR_DEBUG_CDATA
-  unsigned char *buffer;
-  int length;
-#endif
   char *ptr;
   int all_whitespace=1;
   int i;
@@ -3104,6 +3112,12 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_xml_parser->sax2->tokens_count++;
 #endif
+#endif
+
+#ifdef RAPTOR_DEBUG_CDATA
+  RAPTOR_DEBUG2(raptor_cdata_grammar, "Adding characters (is_cdata=%d): '", is_cdata);
+  fwrite(s, 1, len, stderr);
+  fprintf(stderr, "' (%d bytes)\n", len);
 #endif
 
   for(i=0; i<len; i++)
@@ -3217,11 +3231,10 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
 
 #ifdef RAPTOR_DEBUG_CDATA
-  buffer=raptor_xml_writer_as_string(rdf_xml-parser->xml_writer, &length);
-  
   RAPTOR_DEBUG3(raptor_cdata_grammar, 
                 "Content cdata now: '%s' (%d bytes)\n", 
-                buffer, length);
+                sax2_element->content_cdata,
+                sax2_element->content_cdata_length);
 #endif
   RAPTOR_DEBUG2(raptor_cdata_grammar, 
                 "Ending in state %s\n", raptor_state_as_string(state));
