@@ -88,6 +88,9 @@ endif
 if RAPTOR_PARSER_TURTLE
 libraptor_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
 endif
+if RAPTOR_PARSER_N3
+libraptor_la_SOURCES += n3_lexer.c n3_lexer.h n3_parser.c n3_parser.h n3_common.h
+endif
 if RAPTOR_PARSER_NTRIPLES
 libraptor_la_SOURCES += ntriples_parse.c
 endif
@@ -176,6 +179,20 @@ turtle_parser.c: $(srcdir)/turtle_parser.y
 	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/turtle_parser.tab.c/$@/" turtle_parser.tab.c > $@
 	mv turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
+
+# Actually it needs n3_parser.h but nevermind
+n3_lexer.c: $(srcdir)/n3_lexer.l n3_parser.c $(srcdir)/fix-flex
+	$(LEX) -o$@ $(srcdir)/n3_lexer.l
+	$(PERL) $(srcdir)/fix-flex $@ > n3_lexer.t
+	mv n3_lexer.t $@
+	$(PERL) $(srcdir)/fix-flex n3_lexer.h > n3_lexer.t
+	mv n3_lexer.t n3_lexer.h
+
+n3_parser.c: $(srcdir)/n3_parser.y
+	$(YACC) -b n3_parser -p n3_parser_ -d -v $(srcdir)/n3_parser.y
+	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/n3_parser.tab.c/$@/" n3_parser.tab.c > $@
+	mv n3_parser.tab.h n3_parser.h
+	rm -f n3_parser.tab.c
 
 endif
 

@@ -1,10 +1,10 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * n3_parser.y - Raptor N3 parser - over tokens from n3 grammar lexer
+ * n3_parser.y - Raptor Notation 3 parser - over tokens from n3 grammar lexer
  *
  * $Id$
  *
- * Copyright (C) 2003-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -52,9 +52,10 @@
 #include <raptor.h>
 #include <raptor_internal.h>
 
-#include <n3_parser.tab.h>
+#include <n3_parser.h>
 
 #define YY_DECL int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner)
+#define YY_NO_UNISTD_H 1
 #include <n3_lexer.h>
 
 #include <n3_common.h>
@@ -125,6 +126,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
   raptor_identifier *identifier;
   raptor_sequence *sequence;
   raptor_uri *uri;
+  int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
 
@@ -135,9 +137,10 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 
 /* others */
 
-%token WS A AT HAT
+%token A AT HAT
 %token DOT COMMA SEMICOLON
 %token LEFT_SQUARE RIGHT_SQUARE
+%token LEFT_ROUND RIGHT_ROUND
 
 /* literals */
 %token <string> STRING_LITERAL
@@ -146,19 +149,21 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 %token <uri> QNAME_LITERAL
 %token <string> PREFIX
 %token <string> IDENTIFIER
+%token <integer> INTEGER_LITERAL
 
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate object verb literal resource
-%type <sequence> objectList propertyList
+%type <identifier> subject predicate object verb literal resource blank collection
+%type <sequence> objectList itemList propertyList
 
 %%
 
 Document : statementList
 ;
 
-statementList: statement statementList 
+statementList: statement
+| statementList  statement
 | /* empty line */
 ;
 
@@ -171,7 +176,7 @@ statement: directive
   printf("statement 2\n subject=");
   raptor_identifier_print(stdout, $1);
   if($2) {
-    printf("\n propertyList=");
+    printf("\n propertyList (reverse order to syntax)=");
     raptor_sequence_print($2, stdout);
     printf("\n");
   } else     
@@ -207,32 +212,32 @@ statement: directive
 ;
 
 
-objectList: object COMMA objectList
+objectList: objectList COMMA object
 {
   raptor_triple *triple;
 
 #if RAPTOR_DEBUG > 1  
   printf("objectList 1\n");
-  if($1) {
+  if($3) {
     printf(" object=\n");
-    raptor_identifier_print(stdout, $1);
+    raptor_identifier_print(stdout, $3);
     printf("\n");
   } else  
     printf(" and empty object\n");
-  if($3) {
+  if($1) {
     printf(" objectList=");
-    raptor_sequence_print($3, stdout);
+    raptor_sequence_print($1, stdout);
     printf("\n");
   } else
     printf(" and empty objectList\n");
 #endif
 
-  if(!$1)
+  if(!$3)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $1);
-    $$=$3;
-    raptor_sequence_shift($$, triple);
+    triple=raptor_new_triple(NULL, NULL, $3);
+    $$=$1;
+    raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
@@ -259,10 +264,77 @@ objectList: object COMMA objectList
   else {
     triple=raptor_new_triple(NULL, NULL, $1);
 #ifdef RAPTOR_DEBUG
-    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
-                           (raptor_print_handler*)raptor_triple_print);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple,
+                           (raptor_sequence_print_handler*)raptor_triple_print);
 #else
-    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple, NULL);
+#endif
+    raptor_sequence_push($$, triple);
+#if RAPTOR_DEBUG > 1  
+    printf(" objectList is now ");
+    raptor_sequence_print($$, stdout);
+    printf("\n\n");
+#endif
+  }
+}
+;
+
+itemList: itemList object
+{
+  raptor_triple *triple;
+
+#if RAPTOR_DEBUG > 1  
+  printf("objectList 1\n");
+  if($2) {
+    printf(" object=\n");
+    raptor_identifier_print(stdout, $2);
+    printf("\n");
+  } else  
+    printf(" and empty object\n");
+  if($1) {
+    printf(" objectList=");
+    raptor_sequence_print($1, stdout);
+    printf("\n");
+  } else
+    printf(" and empty objectList\n");
+#endif
+
+  if(!$2)
+    $$=NULL;
+  else {
+    triple=raptor_new_triple(NULL, NULL, $2);
+    $$=$1;
+    raptor_sequence_push($$, triple);
+#if RAPTOR_DEBUG > 1  
+    printf(" objectList is now ");
+    raptor_sequence_print($$, stdout);
+    printf("\n\n");
+#endif
+  }
+}
+| object
+{
+  raptor_triple *triple;
+
+#if RAPTOR_DEBUG > 1  
+  printf("objectList 2\n");
+  if($1) {
+    printf(" object=\n");
+    raptor_identifier_print(stdout, $1);
+    printf("\n");
+  } else  
+    printf(" and empty object\n");
+#endif
+
+  if(!$1)
+    $$=NULL;
+  else {
+    triple=raptor_new_triple(NULL, NULL, $1);
+#ifdef RAPTOR_DEBUG
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple,
+                           (raptor_sequence_print_handler*)raptor_triple_print);
+#else
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple, NULL);
 #endif
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -298,64 +370,66 @@ verb: predicate
 ;
 
 
-propertyList: verb objectList SEMICOLON propertyList
+propertyList: propertyList SEMICOLON verb objectList
 {
   int i;
   
 #if RAPTOR_DEBUG > 1  
   printf("propertyList 1\n verb=");
-  raptor_identifier_print(stdout, $1);
+  raptor_identifier_print(stdout, $3);
   printf("\n objectList=");
-  raptor_sequence_print($2, stdout);
-  printf("\n propertyList=");
   raptor_sequence_print($4, stdout);
+  printf("\n propertyList=");
+  raptor_sequence_print($1, stdout);
   printf("\n\n");
 #endif
   
-  if($2 == NULL) {
+  if($4 == NULL) {
 #if RAPTOR_DEBUG > 1  
     printf(" empty objectList not processed\n");
 #endif
-  } else if($1 && $2) {
+  } else if($3 && $4) {
     /* non-empty property list, handle it  */
-    for(i=0; i<raptor_sequence_size($2); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+    for(i=0; i<raptor_sequence_size($4); i++) {
+      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-      raptor_copy_identifier(i2, $1);
+      raptor_copy_identifier(i2, $3);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
     }
   
 #if RAPTOR_DEBUG > 1  
     printf(" after substitution objectList=");
-    raptor_sequence_print($2, stdout);
+    raptor_sequence_print($4, stdout);
     printf("\n");
 #endif
   }
 
-  if($4 == NULL) {
+  if($1 == NULL) {
 #if RAPTOR_DEBUG > 1  
     printf(" empty propertyList not copied\n\n");
 #endif
-  } else if ($1 && $2 && $4) {
-    while(raptor_sequence_size($4) > 0) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_unshift($4);
-      raptor_sequence_push($2, t2);
+  } else if ($3 && $4 && $1) {
+    for(i=0; i<raptor_sequence_size($4); i++) {
+      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
+      raptor_sequence_push($1, t2);
     }
+    while(raptor_sequence_size($4))
+      raptor_sequence_pop($4);
 
 #if RAPTOR_DEBUG > 1  
-    printf(" after appending objectList=");
-    raptor_sequence_print($2, stdout);
+    printf(" after appending objectList (reverse order)=");
+    raptor_sequence_print($1, stdout);
     printf("\n\n");
 #endif
 
     raptor_free_sequence($4);
   }
 
-  if($1)
-    raptor_free_identifier($1);
+  if($3)
+    raptor_free_identifier($3);
 
-  $$=$2;
+  $$=$1;
 }
 | verb objectList
 {
@@ -395,9 +469,18 @@ propertyList: verb objectList SEMICOLON propertyList
 | /* empty */
 {
 #if RAPTOR_DEBUG > 1  
-  printf("propertyList 3\n empty returning NULL\n\n");
+  printf("propertyList 4\n empty returning NULL\n\n");
 #endif
   $$=NULL;
+}
+| propertyList SEMICOLON
+{
+  $$=$1;
+#if RAPTOR_DEBUG > 1  
+  printf("propertyList 5\n trailing semicolon returning existing list ");
+  raptor_sequence_print($$, stdout);
+  printf("\n\n");
+#endif
 }
 ;
 
@@ -434,41 +517,23 @@ subject: resource
 {
   $$=$1;
 }
-| BLANK_LITERAL
+| blank
 {
-#if RAPTOR_DEBUG > 1  
-  printf("subject blank=\"%s\"\n", $1);
-#endif
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, $1, NULL, NULL, NULL);
+  $$=$1;
 }
 ;
 
-predicate: URI_LITERAL
+predicate: resource
 {
-#if RAPTOR_DEBUG > 1  
-  printf("predicate URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
-
-}
-| QNAME_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("predicate qname URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
+  $$=$1;
 }
 ;
 
 object: resource
+{
+  $$=$1;
+}
+| blank
 {
   $$=$1;
 }
@@ -481,14 +546,6 @@ object: resource
 #endif
 
   $$=$1;
-}
-| BLANK_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("object blank=\"%s\"\n", $1);
-#endif
-
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, $1, NULL, NULL, NULL);
 }
 ;
 
@@ -519,7 +576,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, (const unsigned char*)$1, $5, $3);
   else
     $$=NULL;
 
@@ -580,6 +637,30 @@ URI_LITERAL
   else
     $$=NULL;
 }
+| INTEGER_LITERAL
+{
+  unsigned char *string;
+  raptor_uri *uri;
+#if RAPTOR_DEBUG > 1  
+  printf("resource integer=%d\n", $1);
+#endif
+  string=(unsigned char*)malloc(32); /* FIXME */
+  sprintf((char*)string, "%d", $1);
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+}
+
+
+blank: BLANK_LITERAL
+{
+  const unsigned char *id;
+#if RAPTOR_DEBUG > 1  
+  printf("subject blank=\"%s\"\n", $1);
+#endif
+  id=raptor_generate_id((raptor_parser*)rdf_parser, 0, $1);
+
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
+}
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
   int i;
@@ -621,8 +702,89 @@ URI_LITERAL
   }
   
 }
+| collection
+{
+  $$=$1;
+}
 ;
 
+
+collection: LEFT_ROUND itemList RIGHT_ROUND
+{
+  int i;
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_identifier* first_identifier;
+  raptor_identifier* rest_identifier;
+  raptor_identifier* object;
+
+#if RAPTOR_DEBUG > 1  
+  printf("collection\n objectList=");
+  raptor_sequence_print($2, stdout);
+  printf("\n");
+#endif
+
+  first_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  rest_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  
+  /* non-empty property list, handle it  */
+#if RAPTOR_DEBUG > 1  
+  printf("resource\n propertyList=");
+  raptor_sequence_print($2, stdout);
+  printf("\n");
+#endif
+
+  object=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+
+  for(i=raptor_sequence_size($2)-1; i>=0; i--) {
+    raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+    const unsigned char *blank_id=raptor_generate_id((raptor_parser*)rdf_parser, 0, NULL);
+    raptor_identifier* blank=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
+    raptor_identifier* temp;
+    
+    t2->subject=blank;
+    t2->predicate=first_identifier;
+    /* t2->object already set to the value we want */
+    raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
+    
+    temp=t2->object;
+    
+    t2->subject=blank;
+    t2->predicate=rest_identifier;
+    t2->object=object;
+    raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
+
+    raptor_free_identifier(object);
+      
+    t2->subject=NULL;
+    t2->predicate=NULL;
+    t2->object=temp;
+
+    object=blank;
+  }
+  
+#if RAPTOR_DEBUG > 1
+  printf(" after substitution objectList=");
+  raptor_sequence_print($2, stdout);
+  printf("\n\n");
+#endif
+
+  raptor_free_sequence($2);
+
+  raptor_free_identifier(first_identifier);
+  raptor_free_identifier(rest_identifier);
+
+  $$=object;
+}
+|  LEFT_ROUND RIGHT_ROUND 
+{
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
+
+#if RAPTOR_DEBUG > 1  
+  printf("collection\n empty\n");
+#endif
+
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+}
 
 %%
 
@@ -747,11 +909,12 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   n3_lexer_lex_init(&n3_parser->scanner);
   n3_parser->scanner_set=1;
 
-  n3_lexer_set_extra(((raptor_parser*)rdf_parser), n3_parser->scanner);
+  n3_lexer_set_extra(rdf_parser, n3_parser->scanner);
   buffer= n3_lexer__scan_string(string, n3_parser->scanner);
 
   n3_parser_parse(rdf_parser);
 
+  n3_lexer_lex_destroy(n3_parser->scanner);
   n3_parser->scanner_set=0;
 
   return 0;
@@ -777,6 +940,10 @@ raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
                          raptor_parser_simple_error, rdf_parser, 
                          0);
 
+  n3_parser->nil_uri=raptor_new_uri_for_rdf_concept("nil");
+  n3_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
+  n3_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
+
   return 0;
 }
 
@@ -793,10 +960,14 @@ static void
 raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
+  raptor_free_uri(n3_parser->nil_uri);
+  raptor_free_uri(n3_parser->first_uri);
+  raptor_free_uri(n3_parser->rest_uri);
+
   raptor_namespaces_clear(&n3_parser->namespaces);
 
   if(n3_parser->scanner_set) {
-    n3_lexer_lex_destroy(&n3_parser->scanner);
+    n3_lexer_lex_destroy(n3_parser->scanner);
     n3_parser->scanner_set=0;
   }
 
@@ -808,6 +979,7 @@ raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
 static void
 raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
 {
+  /* raptor_n3_parser *n3_parser=(raptor_n3_parser*)parser->context; */
   raptor_statement *statement=&parser->statement;
   int predicate_ordinal=0;
 
@@ -850,6 +1022,9 @@ raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
     statement->object=t->object->literal;
     statement->object_literal_language=t->object->literal_language;
     statement->object_literal_datatype=t->object->literal_datatype;
+
+    if(statement->object_literal_datatype)
+      statement->object_literal_language=NULL;
   }
 
   if(!parser->statement_handler)
@@ -871,21 +1046,15 @@ raptor_n3_parse_chunk(raptor_parser* rdf_parser,
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_n3_parse_chunk, "adding %d bytes to line buffer\n", len);
+  RAPTOR_DEBUG2("adding %d bytes to line buffer\n", (int)len);
 #endif
 
   if(len) {
-    buffer=(char*)RAPTOR_MALLOC(cstring, n3_parser->buffer_length + len + 1);
+    buffer=(char*)RAPTOR_REALLOC(cstring, n3_parser->buffer, n3_parser->buffer_length + len + 1);
     if(!buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
     }
-
-    if(n3_parser->buffer_length) {
-      strncpy(buffer, n3_parser->buffer, n3_parser->buffer_length);
-      RAPTOR_FREE(cstring, n3_parser->buffer);
-    }
-
     n3_parser->buffer=buffer;
 
     /* move pointer to end of cdata buffer */
@@ -900,8 +1069,7 @@ raptor_n3_parse_chunk(raptor_parser* rdf_parser,
     *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3(raptor_n3_parse_chunk,
-                  "buffer buffer now '%s' (%d bytes)\n", 
+    RAPTOR_DEBUG3("buffer buffer now '%s' (%d bytes)\n", 
                   n3_parser->buffer, n3_parser->buffer_length);
 #endif
   }
@@ -930,9 +1098,38 @@ raptor_n3_parse_start(raptor_parser *rdf_parser)
   locator->column= -1; /* No column info */
   locator->byte= -1; /* No bytes info */
 
+  if(n3_parser->buffer_length) {
+    RAPTOR_FREE(cdata, n3_parser->buffer);
+    n3_parser->buffer=NULL;
+    n3_parser->buffer_length=0;
+  }
+  
   n3_parser->lineno=1;
 
   return 0;
+}
+
+
+static int
+raptor_n3_parse_recognise_syntax(raptor_parser_factory* factory, 
+                                 const unsigned char *buffer, size_t len,
+                                 const unsigned char *identifier, 
+                                 const unsigned char *suffix, 
+                                 const char *mime_type)
+{
+  int score= 0;
+  
+  if(suffix) {
+    if(!strcmp((const char*)suffix, "n3"))
+      score=8;
+  }
+  
+  if(mime_type) {
+    if(strstr((const char*)mime_type, "n3"))
+      score+=6;
+  }
+  
+  return score;
 }
 
 
@@ -945,18 +1142,16 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
   factory->terminate = raptor_n3_parse_terminate;
   factory->start     = raptor_n3_parse_start;
   factory->chunk     = raptor_n3_parse_chunk;
+  factory->recognise_syntax = raptor_n3_parse_recognise_syntax;
 }
 
 
 void
 raptor_init_parser_n3 (void) {
-  raptor_parser_register_factory("ntriples-plus",  "N-Triples Plus",
+  raptor_parser_register_factory("n3",  "Notation 3",
+                                 NULL,
                                  NULL,
                                  (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/",
-                                 &raptor_n3_parser_register_factory);
-  raptor_parser_register_factory("turtle", "Turtle - Terse RDF Triple Language",
-                                 "application/x-turtle",
-                                 (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/",
                                  &raptor_n3_parser_register_factory);
 }
 
@@ -1018,13 +1213,13 @@ main(int argc, char *argv[])
   locator->line= locator->column = -1;
   locator->file= filename;
 
-  n3_parser.line= 1;
+  n3_parser.lineno= 1;
 
   rdf_parser.context=&n3_parser;
   rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");
 
   raptor_set_statement_handler(&rdf_parser, stdout, n3_parser_print_statement);
-  raptor_n3_parse_init(&rdf_parser, "ntriples-plus");
+  raptor_n3_parse_init(&rdf_parser, "n3");
   
   n3_parse(&rdf_parser, string);
 

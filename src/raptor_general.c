@@ -93,6 +93,9 @@ raptor_init(void)
 #ifdef RAPTOR_PARSER_TURTLE
   raptor_init_parser_turtle();
 #endif
+#ifdef RAPTOR_PARSER_N3
+  raptor_init_parser_n3();
+#endif
 #ifdef RAPTOR_PARSER_NTRIPLES
   raptor_init_parser_ntriples();
 #endif

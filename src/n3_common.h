@@ -1,10 +1,10 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * n3_common.h - N3 lexer/parser shared internals
+ * n3_common.h - Notation 3 lexer/parser shared internals
  *
  * $Id$
  *
- * Copyright (C) 2003-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -62,6 +62,10 @@ struct raptor_n3_parser_s {
   int scanner_set;
 
   int lineno;
+
+  raptor_uri* nil_uri;
+  raptor_uri* first_uri;
+  raptor_uri* rest_uri;
 };
 
 

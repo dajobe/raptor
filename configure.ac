@@ -608,9 +608,13 @@ dnl RDF Parsers
 rdfxml_parser=no
 ntriples_parser=no
 turtle_parser=no
+n3_parser=no
 rss_parser=no
 
 rdf_parsers_available="rdfxml ntriples turtle"
+if test "$USE_MAINTAINER_MODE" = yes; then
+  rdf_parsers_available="$rdf_parsers_available n3"
+fi
 rdf_parsers_enabled=
 
 rss_parser_ok=no
@@ -635,6 +639,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_PARSER_RDFXML, 1, [Building RDF/XML parser])
   AC_DEFINE(RAPTOR_PARSER_NTRIPLES, 1, [Building N-Triples parser])
   AC_DEFINE(RAPTOR_PARSER_TURTLE, 1, [Building Turtle parser])
+  AC_DEFINE(RAPTOR_PARSER_N3, 1, [Building Notation 3 parser])
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
 fi
 
@@ -672,6 +677,7 @@ fi
 AM_CONDITIONAL(RAPTOR_PARSER_RDFXML, test $rdfxml_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_NTRIPLES, test $ntriples_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_N3, test $n3_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
 
 

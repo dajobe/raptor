@@ -631,6 +631,7 @@ void raptor_uri_init_default_handler(raptor_uri_handler *handler);
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
+void raptor_init_parser_n3(void);
 
 /* raptor_rss.c */
 void raptor_init_parser_rss(void);
@@ -837,6 +838,9 @@ void raptor_print_xml_element(raptor_xml_element *element, FILE* stream);
 
 /* turtle_parser.y and turtle_lexer.l */
 typedef struct raptor_turtle_parser_s raptor_turtle_parser;
+
+/* n3_parser.y and n3_lexer.l */
+typedef struct raptor_n3_parser_s raptor_n3_parser;
 
 typedef struct {
   raptor_identifier *subject;

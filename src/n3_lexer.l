@@ -1,10 +1,10 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * n3_lexer.l - Raptor N-Triples Plus lexer - making tokens for ntp grammar generator
+ * n3_lexer.l - Raptor Notation 3 lexer - making tokens for grammar generator
  *
  * $Id$
  *
- * Copyright (C) 2003-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -23,15 +23,7 @@
  * the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
  * 
  * 
- * This is N-Triples + 7 things
- *   N-Triples + @prefix + qnames + "a" + [] + , and ;
- * 
- * Missing so far: UTF-8 support (with N-Triples escapes) which
- * is only significant inside strings or URI references.
- *
- * Possible future bits in order of likelyhood:
- *  () for rdf lists, @base like xml:base, @charset as first line only
- * @language like xml:lang
+ * This is an incomplete Notation 3 parser.
  *
  * To generate the C files from this source, rather than use the
  * shipped n3_lexer.c/.h needs a patched version of flex 2.5.31 such
@@ -108,15 +100,13 @@
 #include <raptor.h>
 #include <raptor_internal.h>
 
-#include <n3_parser.tab.h>
+#include <n3_parser.h>
 
 #include <n3_common.h>
 
 
-static unsigned char *copy_token(unsigned char *text, size_t len);
-unsigned char *copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
-
-char *filename=NULL;
+static unsigned char *n3_copy_token(unsigned char *text, size_t len);
+static unsigned char *n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
 
 #ifdef RAPTOR_DEBUG
 const char * n3_token_print(int token, YYSTYPE *lval);
@@ -163,30 +153,36 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 "@prefix" { BEGIN(PREF); return PREFIX; }
 "@"       { return AT; }
 "^^"      { return HAT; }
+"("       { return LEFT_ROUND; }
+")"       { return RIGHT_ROUND; }
 
-'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
+
+'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-_:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token((unsigned char*)yytext+2, yyleng-2);
+_:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*:[A-Za-z_][-A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+:[A-Za-z_][-A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:	{ n3_parser_lval->string=NULL;
+:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
+
+[0-9]+        { n3_parser_lval->integer=atoi(yytext);
+                          return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
+<PREF>(:|[A-Za-z][-A-Za-z0-9_]*:)	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>.|\r|\n	{ BEGIN(INITIAL);
@@ -205,7 +201,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token((unsigned char*)yytext+2, yyl
               }
               return URI_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                           return IDENTIFIER; }
 
 \#              { while((c=INPUT_FN(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
@@ -231,8 +227,8 @@ yywrap (yyscan_t yyscanner) {
 }
 
 
-unsigned char *
-copy_token(unsigned char *text, size_t len) {
+static unsigned char *
+n3_copy_token(unsigned char *text, size_t len) {
   unsigned char *s;
   if(!len)
     len=strlen((const char*)text);
@@ -244,8 +240,9 @@ copy_token(unsigned char *text, size_t len) {
 }
 
 
-unsigned char *
-copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim) {
+static unsigned char *
+n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text,
+                     size_t len, int delim) {
   size_t i;
   unsigned char *s, *d;
   unsigned char *string=(unsigned char *)malloc(len+1);
@@ -314,9 +311,6 @@ n3_token_print(int token, YYSTYPE *lval)
     case PREFIX:
       return "PREFIX";
 
-    case WS:
-      return "WS";
-
     case A:
       return "A";
 
@@ -357,6 +351,10 @@ n3_token_print(int token, YYSTYPE *lval)
     case QNAME_LITERAL:
       sprintf(buffer, "QNAME_LITERAL(%s)", 
               (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
+      return buffer;
+
+    case INTEGER_LITERAL:
+      sprintf(buffer, "INTEGER_LITERAL(%d)", lval->integer);
       return buffer;
 
     case IDENTIFIER:
@@ -413,6 +411,7 @@ main(int argc, char *argv[])
   FILE *fh;
   YYSTYPE lval;
   const char *uri_string;
+  char *filename=NULL;
   
   raptor_init();
   
