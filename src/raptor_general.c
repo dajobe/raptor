@@ -98,6 +98,7 @@ raptor_init(void)
 #endif
 #ifdef RAPTOR_PARSER_RDFXML
   raptor_init_parser_rdfxml();
+  raptor_init_serializer_rdfxml();
 #endif
   raptor_init_serializer_simple();
 
