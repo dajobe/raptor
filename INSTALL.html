@@ -122,7 +122,7 @@ libxml 2.4.25, 2.4.28, 2.4.30 (Debian unstable)
 
 <h3>2.4 Compiling</h3>
 
-<p>Compile the parser and the test program <tt>rdfdump</tt> with;</p>
+<p>Compile the parser and the test program <tt>rapper</tt> with;</p>
 <pre>
    make
 </pre>
@@ -135,7 +135,7 @@ on your system</p>
 files like this:</p>
 
 <pre>
-  rdfdump file:dc.rdf
+  rapper file:dc.rdf
 </pre>
 
 <p>It can also extract RDF content inside general XML when the
@@ -143,20 +143,20 @@ files like this:</p>
 inside some XHTML, it could be extracted with:</p>
 
 <pre>
-  rdfdump -s file:/path/to/test/doc.xhtml
+  rapper -s file:/path/to/test/doc.xhtml
 </pre>
 
 <p>You can also run it on <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> files like this:</p>
 
 <pre>
-  rdfdump -n file:test.nt
+  rapper -n file:test.nt
 </pre>
 
 <p>The default output is a simple statement dump format, but it can
 be changed to emit <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> by using the <code>-o</code> option, like this:</p>
 
 <pre>
-  rdfdump -o ntriples file:dc.rdf
+  rapper -o ntriples file:dc.rdf
 </pre>
 
 <p>You can build and run the built-in test suite with:</p>

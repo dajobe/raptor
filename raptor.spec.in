@@ -1,6 +1,6 @@
 %define name    @PACKAGE@
 %define version @VERSION@
-%define release 1
+%define release 2
 
 Summary:   Raptor RDF Parser Toolkit for Redland
 Name:      %{name}
@@ -78,11 +78,11 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
 %doc MPL.html
-%doc %{_mandir}/man1/rdfdump.1*
+%doc %{_mandir}/man1/rapper.1*
 %doc %{_mandir}/man3/libraptor.3*
 
 %{_libdir}/lib*.so.*
-%{prefix}/bin/rdfdump
+%{prefix}/bin/rapper
 
 
 %files devel
@@ -99,6 +99,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 
 %changelog
+* Mon Jan 13 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
+
+- rdfdump now rapper
+
 * Fri Dec 20 2002 Dave Beckett <Dave.Beckett@bristol.ac.uk>
 
 - Updated to have two RPMs for raptor and raptor-devel.  Depend on

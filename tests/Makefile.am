@@ -64,12 +64,12 @@ EXTRA_DIST = \
 	$(NT_OUT_FILES)
 
 
-$(top_builddir)/rdfdump:
-	@(cd .. ; $(MAKE) rdfdump)
+$(top_builddir)/rapper:
+	@(cd .. ; $(MAKE) rapper)
 
 check-local: check-rdf check-assume-rdf check-bad-rdf check-nt
 
-check-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
+check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@result=0; \
 	echo "Testing legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
@@ -82,7 +82,7 @@ check-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    echo FAILED returned status $$status; restult=1; \
@@ -99,14 +99,14 @@ check-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	done; \
 	exit $$result
 
-check-assume-rdf: $(top_builddir)/rdfdump $(RDF_ASSUME_TEST_FILES)
+check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 	@result=0; \
 	echo "Testing rdf/xml known by context"; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rdfdump -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rapper -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    echo ok; \
 	  else \
@@ -116,14 +116,14 @@ check-assume-rdf: $(top_builddir)/rdfdump $(RDF_ASSUME_TEST_FILES)
 	done; \
 	exit $$result
 
-check-bad-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
+check-bad-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@set +e; result=0; \
 	echo "Testing bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  status=$$?; \
 	  if test $$status != 0 ; then \
 	    echo ok; \
@@ -135,13 +135,13 @@ check-bad-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-nt: $(top_builddir)/rdfdump $(NT_TEST_FILES)
+check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
 	@result=0; \
 	echo "Testing N-Triples"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rdfdump -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rapper -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    echo ok; \
 	  else \
