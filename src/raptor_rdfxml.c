@@ -588,7 +588,8 @@ struct raptor_parser_s {
 
 
   /* FEATURE: 
-   * non 0 if scanning for <rdf:RDF> element, else assume doc is RDF */
+   * non 0 if scanning for <rdf:RDF> element, else assume doc is RDF
+   */
   int feature_scanning_for_rdf_RDF;
 
   /* FEATURE:
