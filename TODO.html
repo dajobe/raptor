@@ -13,20 +13,9 @@
 <ul>
 <li>Try to fix usage like rdf:about="http://example.org/foo " with
 a trailing space?  Warn, fix and continue?  In lax/default mode?</li>
-<li>Can't configure on system which has expat alone; 
-<tt>./configure --with-xml-parser=expat</tt> still wants libxml:
-<pre>
- checking XML parser to use... configure: error: No XML parser available 
- - please install expat or libxml
-</pre>
-It should always choose what is asked, stop if can't be satisfied
-by user's choice rather than try to substitute. (BUG)
-</li>
-<li><tt>rdf:bagID</tt> handling does not work (BUG)</li>
 <li>Scanning (<tt>rdfdump --scan</tt>) for <tt>rdf:RDF</tt> in embedded XML does not work (BUG)</li>
 <li>Add a N3 parser (FEATURE)</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a> (FEATURE)</li>
-<li>Find out why compiling with libxml 2.3.5 and nearby versions fails on FreeBSD (BUG)</li>
 <li>Provide a perl interface (FEATURE)</li>
 <li>Add namespace/prefix declaration user level callback (FEATURE)</li>
 <li>Other non-resource, literal, (daml:)collection parseType support (FEATURE)</li>
@@ -38,6 +27,10 @@ by user's choice rather than try to substitute. (BUG)
 release version where appropriate.</p>
 
 <ul>
+<li><tt>rdf:bagID</tt> handling added (0.9.7)</li>
+<li>Can now configure on system which has expat alone using
+<tt>./configure --with-xml-parser=expat</tt> (0.9.7)</li>
+<li>Fix compiling libxml 2.3.5 and nearby versions failing on FreeBSD (which is 20 months old) caused by a change to the xmlSAXHandler structure (0.9.7)</li>
 <li><tt>file:</tt> URIs were not correctly handled (0.9.6)</li>
 <li>Resilience to XML parser errors, RDF/XML grammar errors (0.9.6)</li>
 <li>Manual pages (0.9.6)</li>
