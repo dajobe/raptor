@@ -1179,15 +1179,15 @@ main(int argc, char *argv[])
   failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
 
   /* Need to test this with a real dir (preferably not /)
-   * so go with assuming /bin exists on all unixen.  This is just a
+   * so go with assuming /etc exists on all unixen.  This is just a
    * test so pretty likely to work on all development systems that
    * are not WIN32
    */
-  if(chdir("/bin"))
-    fprintf(stderr, "WARNING: %s: chdir(\"/bin\"/) failed - not testing relative files\n",
+  if(chdir("/etc"))
+    fprintf(stderr, "WARNING: %s: chdir(\"/etc\"/) failed - not testing relative files\n",
             argv[0]);
   else
-    failures += assert_filename_to_uri ("foo", "file:///bin/foo");
+    failures += assert_filename_to_uri ("foo", "file:///etc/foo");
  
 #endif
 
