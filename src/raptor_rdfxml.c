@@ -3340,6 +3340,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     raptor_ns_name* attr=attributes_element->attributes[i];
     const char *name=attr->local_name;
     const char *value = attr->value;
+    int handled=0;
     
     /* Generate the property statement using one of these properties:
      * 1) rdf:li -> rdf:_n
@@ -3364,9 +3365,12 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         if(ordinal < 1) {
           raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attr->local_name, name);
         }
+      } else {
+        raptor_parser_warning(rdf_parser, "Found unknown RDF M&S attribute %s\n.", 
+                              name);
       }
 
-      if(ordinal >= 1)
+      if(ordinal >= 1) {
         /* Generate an ordinal property when there are no problems */
         raptor_generate_statement(rdf_parser, 
                                   resource_element->subject.uri,
@@ -3385,8 +3389,16 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                   RAPTOR_URI_SOURCE_NOT_URI,
                                   
                                   NULL);
-    } else
-      /* else not rdf: namespace - generate statement */
+        handled=1;
+      }
+      
+    } /* end is RDF M&S property */
+
+
+    if(!handled)
+      /* else not rdf: namespace or unknown in rdf: namespace so
+       * generate a statement with a literal object
+       */
       raptor_generate_statement(rdf_parser, 
                                 resource_element->subject.uri,
                                 resource_element->subject.id,
