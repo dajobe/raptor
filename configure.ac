@@ -396,13 +396,19 @@ fi
 
 oLIBS="$LIBS"
 if test "X$PKG_CONFIG" != X; then
-  LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
-  AC_CHECK_FUNC(g_utf8_normalize)
-  LIBS="$oLIBS"
-  AC_MSG_CHECKING(for NFC checking with g_utf8_normalize)
-  if test "$ac_cv_func_g_utf8_normalize" = yes; then
-    AC_DEFINE([HAVE_G_UTF8_NORMALIZE], 1, [Have glib 2.0 g_utf8_normalize])
+  AC_MSG_CHECKING(for gnome glib 2.0 library)
+  if `$PKG_CONFIG glib-2.0 --exists`; then
     AC_MSG_RESULT(yes)
+    LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
+    AC_CHECK_FUNC(g_utf8_normalize)
+    LIBS="$oLIBS"
+    AC_MSG_CHECKING(for NFC checking with g_utf8_normalize)
+    if test "$ac_cv_func_g_utf8_normalize" = yes; then
+      AC_DEFINE([HAVE_G_UTF8_NORMALIZE], 1, [Have glib 2.0 g_utf8_normalize])
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no)
+    fi
   else
     AC_MSG_RESULT(no)
   fi
