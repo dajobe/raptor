@@ -1,3 +1,22 @@
+2004-07-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac:
+	Removed configuration for gnome glib, pkgconfig and glib-config
+	to get g_utf8_normalize for Unicode NFC checking.
+
+	* raptor_utf8.c (raptor_utf8_is_nfc):
+	Removed use of g_utf8_normalize for Unicode NFC
+	checking, it seems to give false negatives, is also rather slow since
+	it does normalization rather than just checking for NFC.
+
+	* libraptor.3: Updates for 1.3.2
+
+2004-07-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am, tests/ex-54.out, tests/ex-54.rdf,
+	tests/warn-03.out, tests/warn-03.rdf: Renamed warn-03 to ex-54 -
+	it is not an error or a warning, the data is good
+
 2004-07-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* tests/Makefile.am, tests/bad-22.rdf:
