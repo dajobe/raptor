@@ -930,6 +930,8 @@ raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
                 "name %s\n", name);
 #endif  
 
+  raptor_update_document_locator(rdf_parser);
+
   ns_name=(raptor_ns_name*)LIBRDF_CALLOC(raptor_ns_name, sizeof(raptor_ns_name), 1);
   if(!ns_name) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -1016,7 +1018,6 @@ raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
 
     if(!ns) {
       /* failed to find namespace - now what? */
-      raptor_update_document_locator(rdf_parser);
       raptor_parser_error(rdf_parser, "The namespace prefix in \"%s\" was not declared", name);
     } else {
 #if RAPTOR_DEBUG > 1
@@ -1293,10 +1294,6 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_ns_name** named_attrs=NULL;
   int i;
   raptor_element* element=NULL;
-#ifdef RAPTOR_XML_EXPAT
-  /* for storing error info */
-  raptor_locator *locator;
-#endif
   int non_nspaced_count=0;
   char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
@@ -1304,7 +1301,6 @@ raptor_xml_start_element_handler(void *user_data,
   
   rdf_parser=(raptor_parser*)user_data;
 #ifdef RAPTOR_XML_EXPAT
-  locator=&rdf_parser->locator; 
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
 #endif
@@ -1314,11 +1310,7 @@ raptor_xml_start_element_handler(void *user_data,
   fputc('\n', stderr);
 #endif
 
-#ifdef RAPTOR_XML_EXPAT
-  locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
-  locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
-  locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
-#endif
+  raptor_update_document_locator(rdf_parser);
 
   rdf_parser->depth++;
 
@@ -1478,7 +1470,6 @@ raptor_xml_start_element_handler(void *user_data,
             if(!strcmp(attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
-              raptor_update_document_locator(rdf_parser);
               raptor_parser_warning(rdf_parser, "Unqualified use of rdf:%s has been deprecated.", attr_name);
               /* Delete it if it was stored elsewhere */
               /* make sure value isn't deleted from ns_name structure */
@@ -1529,7 +1520,6 @@ raptor_xml_start_element_handler(void *user_data,
     if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
-      raptor_update_document_locator(rdf_parser);
       raptor_parser_warning(rdf_parser, "element %s found inside property element with rdf:resource, skipping.", 
                             element->name->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
@@ -1547,7 +1537,6 @@ raptor_xml_start_element_handler(void *user_data,
         if(element->parent->content_element_seen == 1 &&
            element->parent->content_cdata_seen == 1) {
           /* Uh oh - mixed content, the parent element has cdata too */
-          raptor_update_document_locator(rdf_parser);
           raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                                 element->parent->name->local_name);
         }
@@ -1588,7 +1577,6 @@ raptor_xml_start_element_handler(void *user_data,
    */
   if (rdf_content_type_info[element->content_type].rdf_processing &&
       non_nspaced_count) {
-    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, "element %s has non-namespaced parts, skipping.", 
                           element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
@@ -1598,7 +1586,6 @@ raptor_xml_start_element_handler(void *user_data,
 
   if (element->rdf_attr[RDF_ATTR_aboutEach] || 
       element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
-    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, "element %s has aboutEach / aboutEachPrefix, skipping.", 
                           element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
@@ -1617,19 +1604,14 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
   raptor_element* element;
   raptor_ns_name *element_name;
-#ifdef RAPTOR_XML_EXPAT
-  /* for storing error info */
-  raptor_locator *locator=&rdf_parser->locator;
-#endif
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
 #endif
-  locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
-  locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
-  locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
 #endif
+
+  raptor_update_document_locator(rdf_parser);
 
   /* recode element name */
 
@@ -1644,7 +1626,6 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   element=rdf_parser->current_element;
   if(!raptor_ns_names_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
-    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, 
                           "Element %s ended, expected end of element %s",
                           name, element->name->local_name);
@@ -1720,6 +1701,8 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   fputc('\n', stderr);
 #endif
 
+  raptor_update_document_locator(rdf_parser);
+
   /* cdata never changes the parser state 
    * and the containing element state always determines what to do.
    * Use the child_state first if there is one, since that applies
@@ -1749,7 +1732,6 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
     /* This probably will never happen since that would make the
      * XML not be well-formed
      */
-    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, "Found cdata before RDF element.");
   }
 
@@ -1772,7 +1754,6 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
     if(++element->content_cdata_seen == 1 &&
        element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
-      raptor_update_document_locator(rdf_parser);
       raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                             element->name->local_name);
     }
