@@ -1,3 +1,9 @@
+2004-09-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.spec.in: Update for LGPL/Apache 2
+
+	* raptor_rfc2396.c: Header
+
 2004-09-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rfc2396.c (raptor_new_uri_detail):
