@@ -36,11 +36,11 @@ libtool
 ltmain.sh
 missing
 mkinstalldirs
-n3_lexer.c
-n3_lexer.h
-n3_parser.output
-n3_parser.tab.c
-n3_parser.tab.h
+turtle_lexer.c
+turtle_lexer.h
+turtle_parser.output
+turtle_parser.tab.c
+turtle_parser.tab.h
 not-used
 old
 rapper
