@@ -2,15 +2,14 @@
 
 @prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rs:     <http://jena.hpl.hp.com/2003/03/result-set#> .
-@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
 
 <>  rdf:type rs:ResultSet ;
-    rs:size "4"^^xsd:integer ;
+    rs:size 4 ;
     rs:resultVariable "x" ; rs:resultVariable "y" ;
     rs:solution
         [ rdf:type rs:ResultSolution ;
-          rs:binding [ rs:variable "x" ; rs:value "123"^^xsd:integer ] ;
+          rs:binding [ rs:variable "x" ; rs:value 123 ] ;
           rs:binding [ rs:variable "y" ; rs:value <http://example.com/resource1> ]
         ] ;
 
