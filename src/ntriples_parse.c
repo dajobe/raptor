@@ -413,7 +413,8 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
 
     switch(c) {
       case '"':
-        *dest++='"';
+      case '\\':
+        *dest++=c;
         break;
       case 'n':
         *dest++='\n';
@@ -430,10 +431,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
         
         if(*lenp < ulen)
           raptor_ntriples_parser_fatal_error(parser, "\%c over end of line", c);
-        if(c == 'u')
-          sscanf(p, "%04x", &unichar);
-        else
-          sscanf(p, "%08x", &unichar);
+        sscanf(p, ((ulen == 4) ? "%04x" : "%08x"), &unichar);
 
         p+=ulen;
         (*lenp)-=ulen;
@@ -442,9 +440,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
         
         dest+=raptor_ntriples_unicode_char_to_utf8(unichar, dest);
         break;
-      case '\\':
-        *dest++='\\';
-        break;
+
       default:
         raptor_ntriples_parser_fatal_error(parser, "Illegal string escape \\%c in \"%s\"", c, start);
         break;
