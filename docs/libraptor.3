@@ -374,8 +374,10 @@ raptor WWW handlers.
 .SH API CHANGES
 .IP 0.9.11
 Added \fBraptor_get_name\fR, \fBraptor_get_label\fR.
-Added \fBraptor_set_parser_strict\fR, \fBraptor_www_no_www_library_init_finish\fR.
+\fBraptor_xml_escape_string\fR now takes error message handler, data
+pointer, loses parser argument.
 .IP 0.9.10
+Added \fBraptor_set_parser_strict\fR, \fBraptor_www_no_www_library_init_finish\fR.
 \fBraptor_xml_escape_string\fR now takes an output string length pointer.
 .br
 Added \fBraptor_statement_part_as_counted_string\fR, \fBraptor_statement_part_as_string, \fBraptor_parse_abort\fR.
