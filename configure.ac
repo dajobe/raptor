@@ -1,4 +1,4 @@
-dnl -*- Mode: sh -*-
+dnl -*- Mode: autoconf -*-
 dnl
 dnl configure.in - autoconf file for Raptor
 dnl (Process this file with autoconf to produce a configure script.)
