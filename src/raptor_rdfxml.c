@@ -602,9 +602,6 @@ static int raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name);
 static void raptor_xml_parse_terminate(raptor_parser *rdf_parser);
 static int raptor_xml_parse_start(raptor_parser* rdf_parser, raptor_uri *uri);
 static int raptor_xml_parse_chunk(raptor_parser* rdf_parser, const char *buffer, size_t len, int is_end);
-static void raptor_xml_parse_clean(raptor_parser* rdf_parser);
-
-int raptor_xml_parse_init_file(raptor_parser* rdf_parser, const char *name, const char *filename, raptor_uri *base_uri);
 
 
 
@@ -1478,7 +1475,7 @@ raptor_xml_parse_start(raptor_parser* rdf_parser, raptor_uri *uri)
 
 
 static void
-raptor_xml_parse_clean(raptor_parser* rdf_parser) 
+raptor_xml_parse_terminate(raptor_parser *rdf_parser) 
 {
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_element* element;
@@ -1504,13 +1501,7 @@ raptor_xml_parse_clean(raptor_parser* rdf_parser)
   while((element=raptor_element_pop(rdf_xml_parser))) {
     raptor_free_element(element);
   }
-}
 
-
-static void
-raptor_xml_parse_terminate(raptor_parser *rdf_parser) 
-{
-  raptor_xml_parse_clean(rdf_parser);
   
 #ifdef RAPTOR_IN_REDLAND
   if(rdf_parser->raptor_daml_oil_uri)
