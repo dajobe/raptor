@@ -1,4 +1,21 @@
+2004-09-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_namespace.c (raptor_new_namespace):
+	Debug message only when level >1
+
 2004-09-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am:
+	Just link raptor_uri_test, raptor_uri_win32_test with raptor_rfc2396.lo
+
+	* raptor_uri.c: (main) Don't use raptor_basename
+
+	* raptor_uri.c:
+	Revert wrapping so that -DWIN32 raptor_uri_win32_test can be
+	compiled.  OSX 'make check' will have to live with the moans.
+
+	* raptor_uri.c: Wrap functions with #ifndef STANDALONE ... #endif to
+	prevent multiple link warnings on OSX with tests.
 
 	* raptor_uri.c (main): Use program and raptor_basename in messages
 
