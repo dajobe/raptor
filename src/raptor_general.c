@@ -525,7 +525,10 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     return 1;
   }
 
-  raptor_www_fetch(www, uri);
+  if(raptor_www_fetch(www, uri)) {
+    raptor_www_free(www);
+    return 1;
+  }
 
   raptor_parse_chunk(rdf_parser, NULL, 0, 1);
 
