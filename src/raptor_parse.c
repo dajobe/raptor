@@ -1071,7 +1071,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
+  rdf_xml_parser->sax2->tokens_count++;
 #endif
 #endif
 
@@ -1379,7 +1379,7 @@ raptor_xml_parse_handle_errors(raptor_parser* rdf_parser) {
 
 #ifdef EXPAT_UTF8_BOM_CRASH
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
-  if(sax2->tokens_count) {
+  if(rdf_xml_parser->sax2->tokens_count) {
 #endif
     /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
      * which dies here if the error is before <?xml?...
@@ -3106,7 +3106,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
+  rdf_xml_parser->sax2->tokens_count++;
 #endif
 #endif
 
