@@ -28,7 +28,7 @@ AC_REVISION($Revision$)
 libxml_min_version=2.4.0
 
 AM_INIT_AUTOMAKE(1.6)
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(raptor_config.h)
 AM_MAINTAINER_MODE
 
 release_version=no

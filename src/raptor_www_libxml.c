@@ -21,7 +21,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include <raptor_config.h>
 #endif
 
 #ifdef WIN32
@@ -36,6 +36,7 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
+#ifdef RAPTOR_WWW_LIBXML
 
 static void
 raptor_www_libxml_http_error (void *ctx, const char *msg, ...) 
@@ -113,3 +114,4 @@ raptor_www_libxml_fetch(raptor_www *www)
   return www->failed;
 }
 
+#endif /* #ifdef RAPTOR_WWW_LIBXML*/
