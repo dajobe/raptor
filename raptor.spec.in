@@ -1,6 +1,7 @@
+# -*- RPM-SPEC -*-
 %define name    @PACKAGE@
 %define version @VERSION@
-%define release 1
+%define release SNAP
 
 Summary:   Raptor RDF Parser Toolkit for Redland
 Name:      %{name}
