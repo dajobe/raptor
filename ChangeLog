@@ -1,3 +1,61 @@
+2004-11-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_parser_processNode):
+	Add cast for name when returned from
+	xmlTextReaderConstLocalName.
+
+	* raptor_rss.c (raptor_rss_parser_processNode):
+	Always declare name as xmlChar*
+
+2004-11-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c: Tidy help messages about features, other words.
+
+	* raptor_parse.c (raptor_feature_from_uri): Moved to raptor_feature.c
+
+	* raptor.h: Moved raptor_feature_from_uri to separate section, not
+	just parsers
+
+	* raptor_internal.h: Deleted raptor_feature_from_uri_common
+
+	* raptor_feature.c (raptor_feature_from_uri): Defined here, no need for
+	raptor_feature_from_uri_common
+
+	* rdfdump.c: In feature help code, list parser and serializer features
+	separately, using new raptor_features_enumerate.
+
+	* raptor_serialize.c (raptor_serializer_features_enumerate):
+	Added, a wrapper around	raptor_features_enumerate_common.
+	(raptor_serializer_set_feature): Added.
+	(raptor_serializer_get_feature): Added.
+
+	* raptor_parse.c: Moved raptor_features_list to raptor_feature.c
+	(raptor_features_enumerate): Changed to be a wrapper around
+	raptor_features_enumerate_common now containing the body of the code.
+	(raptor_feature_from_uri): Changed to be a wraper around
+	raptor_feature_from_uri_common now containing the body of the code.
+
+	* raptor_internal.h: Added feature_relative_uris for raptor_serializer.
+	Added prototypes for raptor_features_enumerate_common and
+	raptor_feature_from_uri_common
+
+	* raptor.h: Added RAPTOR_FEATURE_RELATIVE_URIS for serializing.
+	Added prototypes for raptor_serializer_features_enumerate,
+	raptor_serializer_set_feature and raptor_serializer_get_feature
+
+	* Makefile.am: Added raptor_feature.c
+
+	* raptor_feature.c:
+	Moved common raptor_feature code from raptor_parse.c
+
+	* raptor_rss.c:
+	Added <none> entry to raptor_rss_fields_info so that when indexed
+	with RAPTOR_RSS_FIELDS_NONE, does not access invalid data.
+	Fixes for xmlReader API for older libxml2s:
+	Added node type defines for <2.5.9
+	Use xmlTextReaderLocalName, xmlTextReaderNamespaceUri instead of the
+	Const versions with additional corresponding xmlFree()s for <2.6.0
+
 2004-11-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* Snapshotted raptor_1_4_2 for 1.4.2 release
