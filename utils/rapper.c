@@ -195,6 +195,7 @@ main(int argc, char *argv[])
   raptor_uri *base_uri;
   raptor_uri *uri;
   char *p;
+  char *filename=NULL;
 #ifdef RAPTOR_IN_REDLAND
   librdf_world *world;
 #endif
@@ -375,17 +376,29 @@ main(int argc, char *argv[])
   }
 
   /* If uri_string is "path-to-file", turn it into a file: URI */
-  if(!access(uri_string, R_OK)) {
+  if(!strcmp(uri_string, "-")) {
+    if(!base_uri_string) {
+      fprintf(stderr, "%s: A Base URI is required when reading from standard input.\n",
+              program);
+      return(1);
+    }
+    uri_string=NULL;
+  } else if(!access(uri_string, R_OK)) {
+    filename=uri_string;
     uri_string=raptor_uri_filename_to_uri_string(uri_string);
     free_uri_string=1;
   }
-  
-  uri=raptor_new_uri(uri_string);
-  if(!uri) {
-    fprintf(stderr, "%s: Failed to create URI for %s\n",
-            program, uri_string);
-    return(1);
-  }
+
+  if(uri_string) {
+    uri=raptor_new_uri(uri_string);
+    if(!uri) {
+      fprintf(stderr, "%s: Failed to create URI for %s\n",
+              program, uri_string);
+      return(1);
+    }
+  } else
+    uri=NULL; /* stdin */
+
 
   if(!base_uri_string) {
     base_uri=raptor_uri_copy(uri);
@@ -418,23 +431,39 @@ main(int argc, char *argv[])
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
 
   if(!quiet) {
-    if(base_uri_string)
-      fprintf(stdout, "%s: Parsing URI %s with base URI %s\n", program,
-              uri_string, base_uri_string);
-    else
-      fprintf(stdout, "%s: Parsing URI %s\n", program, uri_string);
+    if (filename) {
+      if(base_uri_string)
+        fprintf(stdout, "%s: Parsing file %s with base URI %s\n", program,
+                filename, base_uri_string);
+      else
+        fprintf(stdout, "%s: Parsing file %s\n", program, filename);
+    } else {
+      if(base_uri_string)
+        fprintf(stdout, "%s: Parsing URI %s with base URI %s\n", program,
+                uri_string, base_uri_string);
+      else
+        fprintf(stdout, "%s: Parsing URI %s\n", program, uri_string);
+    }
   }
   
   raptor_set_statement_handler(rdf_parser, NULL, print_statements);
 
 
   /* PARSE the URI as RDF/XML */
-  if(raptor_parse_uri(rdf_parser, uri, base_uri)) {
-    fprintf(stderr, "%s: Failed to parse %s content into model\n", program, 
-            parser_name);
-    rc=1;
-  } else
-    rc=0;
+  rc=0;
+  if(!uri || filename) {
+    if(raptor_parse_file(rdf_parser, uri, base_uri)) {
+      fprintf(stderr, "%s: Failed to parse file %s %s content\n", program, 
+              filename, parser_name);
+      rc=1;
+    }
+  } else {
+    if(raptor_parse_uri(rdf_parser, uri, base_uri)) {
+      fprintf(stderr, "%s: Failed to parse URI %s %s content\n", program, 
+              uri_string, parser_name);
+      rc=1;
+    }
+  }
 
 #ifdef RAPTOR_DEBUG
   raptor_stats_print(rdf_parser, stderr);
