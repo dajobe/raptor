@@ -264,7 +264,8 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
   raptor_namespaces_init(&rdf_parser->namespaces,
-                         uri_handler, uri_context);
+                         uri_handler, uri_context,
+                         raptor_parser_error, rdf_parser);
 
   return rdf_parser->factory->start(rdf_parser, uri);
 }
