@@ -1,4 +1,32 @@
+2005-02-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am: Add n3_lexer.l n3_parser.y to EXTRA_DIST otherwise
+	building with --enable-maintainer-mode from tarball will fail.
+
+	* raptor_rss.c: Add RSS enclosures serializing into RSS 1.0
+	raptor_rss10_serializer_context gains enclosures sequence
+	(raptor_rss10_serialize_init, raptor_rss10_serialize_terminate):
+	Init, free enclosures sequence.
+	(raptor_rss10_store_statement): If subject isn't an RSS item, see if
+	it is an enclosure and if so, set the type.
+	(raptor_rss10_serialize_statement): If type is enclosure, walk the
+	list of enclosures and add a new one if not seen already.
+	(raptor_rss10_emit_item): Add indent arg as this is called recursively.
+	Use it to print spaces from teh raptor_rss10_spaces constant.
+	Only serialize an rdf:about if the item has a URI.
+	If field is enc:enclosure, find the enclosure item and write it
+	indented further recursively calling raptor_rss10_emit_item.
+
+	* raptor_rss.c: re-comment back item enclosure thing
+
+2005-02-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_parser_processNode): Do not assign
+	'alternate' attribute values when there's no field to use.
+
 2005-02-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.6
 
 	* Snapshotted raptor_1_4_5 for 1.4.5 release
 
