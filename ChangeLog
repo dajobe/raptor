@@ -1,3 +1,13 @@
+2004-10-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement): Handle
+	URI subject, object right.
+
+	* raptor_serialize.c (raptor_serialize_start_to_filename,
+	raptor_serialize_start_to_string,
+	raptor_serialize_start_to_file_handle): Don't enforce base URI is
+	required.
+
 2004-10-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor.h:
