@@ -677,7 +677,7 @@ blank: BLANK_LITERAL
     printf("\n");
 #endif
 
-    for(i=raptor_sequence_size($2)-1; i>=0; i--) {
+    for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $$);
