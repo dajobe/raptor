@@ -1731,6 +1731,9 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
   raptor_rss_parser_context* rss_parser=&rss_serializer->parser;
   int i;
 
+  if(!rss_serializer->seq_uri)
+    return;
+  
   for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++) {
     raptor_statement* s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
     if(!s)
