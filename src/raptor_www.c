@@ -95,11 +95,6 @@ raptor_www_free(raptor_www *www)
     www->proxy=NULL;
   }
 
-  if(www->locator.uri) {
-    raptor_free_uri(www->locator.uri);
-    www->locator.uri=NULL;
-  }
-
 #ifdef RAPTOR_WWW_LIBCURL
   raptor_www_curl_free(www);
 #endif
@@ -110,23 +105,39 @@ raptor_www_free(raptor_www *www)
   raptor_www_ghttp_free(www);
 #endif
 
+  if(www->uri)
+    raptor_free_uri(www->uri);
 }
 
 
-
-void
-raptor_www_set_userdata(raptor_www *www, void *userdata)  
-{
-  www->userdata=userdata;
-}
 
 void
 raptor_www_set_error_handler(raptor_www *www, 
                              raptor_message_handler error_handler, 
-                             void *error_data)  
+                             void *error_data)
 {
   www->error_handler=error_handler;
   www->error_data=error_data;
+}
+
+
+void
+raptor_www_set_write_bytes_handler(raptor_www *www, 
+                                   raptor_www_write_bytes_handler handler, 
+                                   void *user_data)
+{
+  www->write_bytes=handler;
+  www->write_bytes_userdata=user_data;
+}
+
+
+void
+raptor_www_set_content_type_handler(raptor_www *www, 
+                                    raptor_www_content_type_handler handler, 
+                                    void *user_data)
+{
+  www->content_type=handler;
+  www->content_type_userdata=user_data;
 }
 
 
@@ -210,7 +221,7 @@ raptor_www_file_fetch(raptor_www *www, const char *url)
     www->total_bytes += len;
 
     if(www->write_bytes)
-      www->write_bytes(www->userdata, buffer, len, 1);
+      www->write_bytes(www, www->userdata, buffer, len, 1);
 
     if(len < BUFFER_SIZE)
       break;
@@ -230,32 +241,34 @@ raptor_www_file_fetch(raptor_www *www, const char *url)
 
 
 int
-raptor_www_fetch(raptor_www *www, const char *url) 
+raptor_www_fetch(raptor_www *www, raptor_uri *uri) 
 {
-  www->locator.uri=raptor_new_uri(url);
+  www->uri=raptor_uri_copy(uri);
+  
+  www->locator.uri=uri;
   www->locator.line= -1;
   www->locator.column= -1;
 
 #ifdef RAPTOR_WWW_NONE
-  return raptor_www_file_fetch(www, url);
+  return raptor_www_file_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBCURL
-  return raptor_www_curl_fetch(www, url);
+  return raptor_www_curl_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBXML
   if(raptor_uri_is_file_uri(url))
-    return raptor_www_file_fetch(www, url);
+    return raptor_www_file_fetch(www);
 
-  return raptor_www_libxml_fetch(www, url);
+  return raptor_www_libxml_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBGHTTP
   if(raptor_uri_is_file_uri(url))
-    return raptor_www_file_fetch(www, url);
+    return raptor_www_file_fetch(www);
 
-  return raptor_www_ghttp_fetch(www, url);
+  return raptor_www_ghttp_fetch(www);
 #endif
 
 }
