@@ -390,6 +390,8 @@ my(%negative_totals)=();
 run_tests(\%tests, 0, \%results, \%negative_totals, @negative_test_urls);
 summarize_results("Negative Parser Tests", \%results, \%negative_totals, scalar(@negative_test_urls));
 
+print "\n\n";
+
 my(%unapproved_positive_totals)=();
 run_tests(\%tests, 0, \%results, \%unapproved_positive_totals, @unapproved_positive_test_urls);
 summarize_results("Not APPROVED Positive Parser Tests", \%results, \%unapproved_positive_totals, scalar(@unapproved_positive_test_urls),1);
