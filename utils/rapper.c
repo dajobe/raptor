@@ -158,8 +158,7 @@ rdfdump_warning_handler(void *data, raptor_locator *locator,
 int
 main(int argc, char *argv[]) 
 {
-  raptor_parser* rdfxml_parser=NULL;
-  raptor_ntriples_parser* rdfnt_parser=NULL;
+  raptor_parser* rdf_parser=NULL;
   char *uri_string;
   char *base_uri_string;
   int rc;
@@ -167,6 +166,7 @@ main(int argc, char *argv[])
   int assume=0;
   int rdfxml=1;
   int usage=0;
+  const char *parser_name="rdfxml";
 #ifdef RAPTOR_IN_REDLAND
   librdf_world *world;
   librdf_uri *base_uri;
@@ -299,42 +299,28 @@ main(int argc, char *argv[])
   base_uri=base_uri_string;
 #endif
 
-  if(rdfxml) {
+  parser_name=rdfxml ? "rdfxml" : "ntriples";
+
 #ifdef RAPTOR_IN_REDLAND
-    rdfxml_parser=raptor_new(world);
+  rdf_parser=raptor_new_parser(world, parser_name);
 #else
-    rdfxml_parser=raptor_new();
+  rdf_parser=raptor_new_parser(parser_name);
 #endif
-    if(!rdfxml_parser) {
-      fprintf(stderr, "%s: Failed to create raptor parser\n", program);
-      return(1);
-    }
-
-    raptor_set_error_handler(rdfxml_parser, NULL, rdfdump_error_handler);
-    raptor_set_warning_handler(rdfxml_parser, NULL, rdfdump_warning_handler);
-
-    if(scanning)
-      raptor_set_feature(rdfxml_parser, RAPTOR_FEATURE_SCANNING, 1);
-    if(assume)
-      raptor_set_feature(rdfxml_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
-  
-  
-  } else {
-#ifdef RAPTOR_IN_REDLAND
-    rdfnt_parser=raptor_ntriples_new(world);
-#else
-    rdfnt_parser=raptor_ntriples_new();
-#endif
-    if(!rdfnt_parser) {
-      fprintf(stderr, "%s: Failed to create raptor parser\n", program);
-      return(1);
-    }
-
-    raptor_ntriples_set_error_handler(rdfnt_parser, NULL, rdfdump_error_handler);
-
+  if(!rdf_parser) {
+    fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
+            parser_name);
+    return(1);
   }
-
-
+  
+  raptor_set_error_handler(rdf_parser, NULL, rdfdump_error_handler);
+  raptor_set_warning_handler(rdf_parser, NULL, rdfdump_warning_handler);
+  
+  if(scanning)
+    raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
+  if(assume)
+    raptor_set_feature(rdf_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
+  
+  
   if(!quiet) {
     if(base_uri_string)
       fprintf(stdout, "%s: Parsing URI %s with base URI %s\n", program,
@@ -344,29 +330,17 @@ main(int argc, char *argv[])
   }
   
 
-  if(rdfxml)
-    raptor_set_statement_handler(rdfxml_parser, NULL, print_statements);
-  else
-    raptor_ntriples_set_statement_handler(rdfnt_parser, NULL, print_statements);
+  raptor_set_statement_handler(rdf_parser, NULL, print_statements);
 
 
-  if(rdfxml) {
-    /* PARSE the URI as RDF/XML */
-    if(raptor_parse_file(rdfxml_parser, uri, base_uri)) {
-      fprintf(stderr, "%s: Failed to parse RDF/XML into model\n", program);
-      rc=1;
-    } else
-      rc=0;
-    raptor_free(rdfxml_parser);
-  } else {
-    /* PARSE the URI as NTriples */
-    if(raptor_ntriples_parse_file(rdfnt_parser, uri, base_uri)) {
-      fprintf(stderr, "%s: Failed to parse RDF into model\n", program);
-      rc=1;
-    } else
-      rc=0;
-    raptor_ntriples_free(rdfnt_parser);
-  }
+  /* PARSE the URI as RDF/XML */
+  if(raptor_parse_file(rdf_parser, uri, base_uri)) {
+    fprintf(stderr, "%s: Failed to parse %s content into model\n", program, 
+            parser_name);
+    rc=1;
+  } else
+    rc=0;
+  raptor_free_parser(rdf_parser);
 
   if(!quiet)
     fprintf(stdout, "%s: Parsing returned %d statements\n", program,
