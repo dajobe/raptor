@@ -336,6 +336,7 @@ RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const unsigned char *s
 RAPTOR_API unsigned char* raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, unsigned char *src, int len, size_t *dest_lenp);
 RAPTOR_API const char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
 RAPTOR_API int raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data);
+RAPTOR_API int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, raptor_simple_message_handler error_handler, void *error_data);
 
 RAPTOR_API char* raptor_vsnprintf(const char *message, va_list arguments);
 
@@ -413,6 +414,7 @@ RAPTOR_API int raptor_namespace_copy(raptor_namespace_stack *nstack, raptor_name
 RAPTOR_API raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 RAPTOR_API const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 RAPTOR_API unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
+RAPTOR_API int raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr);
 
 typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 
