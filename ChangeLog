@@ -1,4 +1,23 @@
+2004-12-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xml_writer.c, raptor_xml.c, raptor_utf8.c, raptor_sax2.c,
+	raptor_rss.c, raptor_general.c: Casts for c++.  Rename variables
+	namespace to nspace.
+
+2004-12-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_www_test.c (main): Cast for size_t
+
 2004-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss10_serialize_statement): Fix item URI
+	check to use correct URI.  In debugging unknown typed node, print
+	type URI.
+
+	* raptor_rss.c (raptor_rss10_serialize_statement): Do not look in
+	items with no URI.
+	(raptor_rss10_build_xml_names): Do not make qnames for types with
+	no namespace.
 
 	* raptor_rss.c (raptor_rss10_build_items): Do nothing if there is
 	no seq_uri
