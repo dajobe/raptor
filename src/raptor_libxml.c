@@ -60,11 +60,42 @@ static const char* xml_validation_error_prefix="XML parser validation error - ";
 static const char* xml_validation_warning_prefix="XML parser validation warning - ";
 
 
+#ifdef HAVE_LIBXML_SAX2_H
+/* SAX2 - 2.6.0 or later */
+#define libxml2_internalSubset xmlSAX2InternalSubset
+#define libxml2_externalSubset xmlSAX2ExternalSubset
+#define libxml2_isStandalone xmlSAX2IsStandalone
+#define libxml2_hasInternalSubset xmlSAX2HasInternalSubset
+#define libxml2_hasExternalSubset xmlSAX2HasExternalSubset
+#define libxml2_resolveEntity xmlSAX2ResolveEntity
+#define libxml2_getEntity xmlSAX2GetEntity
+#define libxml2_getParameterEntity xmlSAX2GetParameterEntity
+#define libxml2_entityDecl xmlSAX2EntityDecl
+#define libxml2_unparsedEntityDecl xmlSAX2UnparsedEntityDecl
+#define libxml2_startDocument xmlSAX2StartDocument
+#define libxml2_endDocument xmlSAX2EndDocument
+#else
+/* SAX1 - before libxml2 2.6.0 */
+#define libxml2_internalSubset internalSubset
+#define libxml2_externalSubset externalSubset
+#define libxml2_isStandalone isStandalone
+#define libxml2_hasInternalSubset hasInternalSubset
+#define libxml2_hasExternalSubset hasExternalSubset
+#define libxml2_resolveEntity resolveEntity
+#define libxml2_getEntity getEntity
+#define libxml2_getParameterEntity getParameterEntity
+#define libxml2_entityDecl entityDecl
+#define libxml2_unparsedEntityDecl unparsedEntityDecl
+#define libxml2_startDocument startDocument
+#define libxml2_endDocument endDocument
+#endif
+
+
 static void
 raptor_libxml_internalSubset(void *ctx, const xmlChar *name,
                              const xmlChar *ExternalID, const xmlChar *SystemID) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  internalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
+  libxml2_internalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
 }
 
 
@@ -74,7 +105,7 @@ raptor_libxml_externalSubset(void *ctx, const xmlChar *name,
                              const xmlChar *ExternalID, const xmlChar *SystemID)
 {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  externalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
+  libxml2_externalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
 }
 #endif
 
@@ -83,7 +114,7 @@ static int
 raptor_libxml_isStandalone (void *ctx) 
 {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return isStandalone(raptor_get_libxml_context(rdf_parser));
+  return libxml2_isStandalone(raptor_get_libxml_context(rdf_parser));
 }
 
 
@@ -91,7 +122,7 @@ static int
 raptor_libxml_hasInternalSubset (void *ctx) 
 {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return hasInternalSubset(raptor_get_libxml_context(rdf_parser));
+  return libxml2_hasInternalSubset(raptor_get_libxml_context(rdf_parser));
 }
 
 
@@ -99,7 +130,7 @@ static int
 raptor_libxml_hasExternalSubset (void *ctx) 
 {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return hasExternalSubset(raptor_get_libxml_context(rdf_parser));
+  return libxml2_hasExternalSubset(raptor_get_libxml_context(rdf_parser));
 }
 
 
@@ -107,21 +138,21 @@ static xmlParserInputPtr
 raptor_libxml_resolveEntity(void *ctx, 
                             const xmlChar *publicId, const xmlChar *systemId) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return resolveEntity(raptor_get_libxml_context(rdf_parser), publicId, systemId);
+  return libxml2_resolveEntity(raptor_get_libxml_context(rdf_parser), publicId, systemId);
 }
 
 
 static xmlEntityPtr
 raptor_libxml_getEntity(void *ctx, const xmlChar *name) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return getEntity(raptor_get_libxml_context(rdf_parser), name);
+  return libxml2_getEntity(raptor_get_libxml_context(rdf_parser), name);
 }
 
 
 static xmlEntityPtr
 raptor_libxml_getParameterEntity(void *ctx, const xmlChar *name) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return getParameterEntity(raptor_get_libxml_context(rdf_parser), name);
+  return libxml2_getParameterEntity(raptor_get_libxml_context(rdf_parser), name);
 }
 
 
@@ -130,7 +161,7 @@ raptor_libxml_entityDecl(void *ctx, const xmlChar *name, int type,
                          const xmlChar *publicId, const xmlChar *systemId, 
                          xmlChar *content) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  entityDecl(raptor_get_libxml_context(rdf_parser), name, type, publicId, systemId, content);
+  libxml2_entityDecl(raptor_get_libxml_context(rdf_parser), name, type, publicId, systemId, content);
 }
 
 
@@ -139,14 +170,14 @@ raptor_libxml_unparsedEntityDecl(void *ctx, const xmlChar *name,
                                  const xmlChar *publicId, const xmlChar *systemId,
                                  const xmlChar *notationName) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  unparsedEntityDecl(raptor_get_libxml_context(rdf_parser), name, publicId, systemId, notationName);
+  libxml2_unparsedEntityDecl(raptor_get_libxml_context(rdf_parser), name, publicId, systemId, notationName);
 }
 
 
 static void
 raptor_libxml_startDocument(void *ctx) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  startDocument(raptor_get_libxml_context(rdf_parser));
+  libxml2_startDocument(raptor_get_libxml_context(rdf_parser));
 }
 
 
@@ -155,7 +186,7 @@ raptor_libxml_endDocument(void *ctx) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
   xmlParserCtxtPtr xc=raptor_get_libxml_context(rdf_parser);
 
-  endDocument(raptor_get_libxml_context(rdf_parser));
+  libxml2_endDocument(raptor_get_libxml_context(rdf_parser));
 
   if(xc->myDoc) {
     xmlFreeDoc(xc->myDoc);
