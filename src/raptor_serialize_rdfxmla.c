@@ -215,7 +215,7 @@ raptor_unique_id(unsigned char *base)
   unique_id= (unsigned char *)RAPTOR_MALLOC(cstring, len);
   strncpy((char*)unique_id, prefix, prefix_len);
   strncpy((char*)unique_id+prefix_len, (char *)base, base_len);
-  unique_id[len]='\0';
+  unique_id[len-1]='\0';
     
   return unique_id;
 }
