@@ -299,8 +299,7 @@ raptor_namespace_copy(raptor_namespace_stack *nstack,
 {
   raptor_namespace *new_ns;
 
-  raptor_uri* uri=(*nstack->uri_handler->uri_copy)(nstack->uri_context, ns->uri);
-  char *uri_string=(*nstack->uri_handler->uri_as_string)(nstack->uri_context, uri);
+  char *uri_string=(*nstack->uri_handler->uri_as_string)(nstack->uri_context, ns->uri);
 
   new_ns=raptor_namespace_new(nstack, ns->prefix, uri_string, new_depth);
   if(!new_ns)
@@ -422,15 +421,15 @@ main(int argc, char *argv[])
 
   raptor_namespaces_init(&namespaces, handler, context, NULL, NULL);
   
-  raptor_namespaces_start_namespace(&namespaces,
-                                    (const unsigned char*)"ex1",
-                                    (const unsigned char*)"http://example.org/ns1",
-                                    0, NULL, NULL);
+  raptor_namespaces_start_namespace_full(&namespaces,
+                                         (const unsigned char*)"ex1",
+                                         (const unsigned char*)"http://example.org/ns1",
+                                         0);
 
-  raptor_namespaces_start_namespace(&namespaces,
-                                    (const unsigned char*)"ex2",
-                                    (const unsigned char*)"http://example.org/ns2",
-                                    1, NULL, NULL);
+  raptor_namespaces_start_namespace_full(&namespaces,
+                                         (const unsigned char*)"ex2",
+                                         (const unsigned char*)"http://example.org/ns2",
+                                         1);
 
   raptor_namespaces_end_for_depth(&namespaces, 1);
 
