@@ -1,5 +1,11 @@
 2004-10-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_namespace.c: Make most namespace debug messages appear
+	only if #ifdef RAPTOR_DEBUG_VERBOSE
+
+	* raptor_rdfxml.c: Make most rdf/xml parsing debug messages appear
+	only if #ifdef RAPTOR_DEBUG_VERBOSE
+
 	* raptor_serialize.c:
 	(raptor_serialize_start, raptor_serialize_start_to_filename,
 	raptor_serialize_start_to_string,
