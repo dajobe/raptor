@@ -139,6 +139,26 @@ new XML Writer class functionality.  The added methods are:
 </p>
 
 
+<h3>Namespace Class Changes</h3>
+
+<p>Added <code>raptor_namespace_copy</code> copy
+constructor and <code>raptor_new_namespace_from_uri</code>
+constructor to build a namespace from a raptor_uri object.</p>
+
+<p>Added utility function
+<code>raptor_new_namespace_parts_from_string</code> to decode syntax
+of the form
+<code>xmlns:</code><em>prefix</em><code>="</code><em>uri</em><code>"</code>
+into <em>prefix</em> and <em>uri</em> string pairs.
+</p>
+
+<p>Added <code>raptor_namespaces_find_namespace_by_uri</code> method
+for namespace stack to find a declared namespace by URI.  This
+complements <code>raptor_namespaces_find_namespace</code> which
+already provides searching by prefix.</p>
+
+
+
 <h3>Unicode and UTF-8 Changes</h3>
 
 <p>Added several methods for checking characters forming
@@ -159,21 +179,8 @@ a string is a legal XML name (1.0 or 1.1) as well as legal UTF-8.</p>
 
 <h3>Other Changes</h3>
 
-<p>Added <code>raptor_feature_value_type</code> to determine value of
-a feature - integer (most) or string.</p>
-
-<p>Namespace class: Added <code>raptor_namespace_copy</code> copy
-constructor and <code>raptor_new_namespace_from_uri</code>.  Added
-<code>raptor_new_namespace_parts_from_string</code> to decode syntax
-of the form
-<code>xmlns:</code><em>prefix</em><code>="</code><em>uri</em><code>"</code>
-into <em>prefix</em> and <em>uri</em> string pairs.
-Added <code>raptor_namespaces_find_namespace_by_uri</code> to look up
-a namespace by URI.</p>
-
-<p>Statement class: Added <code>raptor_statement_copy</code> copy
-constructor and <code>raptor_free_statement</code> destructor.
-Previously these were internal to raptor.</p>
+<p>Feature support: Added <code>raptor_feature_value_type</code> to
+determine value of a feature - either integer (most) or string.</p>
 
 <p>XML QName class: Added <code>raptor_qname_copy</code> copy
 constructor.</p>
@@ -181,9 +188,16 @@ constructor.</p>
 <p>Sequence class: Added <code>raptor_sequence_join</code>
 to join two sequences of items, leaving one empty.</p>
 
+<p>Statement class: Added <code>raptor_statement_copy</code> copy
+constructor and <code>raptor_free_statement</code> destructor.
+Previously these were internal to raptor.</p>
+
 <p>The <code>rapper</code> utility was modified to add a feature form:
 <code>-f xmlns:</code><em>PREFIX</em><code>="</code><em>URI</em><code>"</code>
 allowing the setting of output serializer namespaces.</p>
+
+<p>The namespace URI string constants exported by raptor are now of
+type unsigned char*.</p>
 
 
 <h2 id="rel1_4_2"><a name="rel1_4_2">Raptor 1.4.2 Changes</a></h2>
