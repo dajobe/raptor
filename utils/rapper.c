@@ -197,7 +197,8 @@ main(int argc, char *argv[])
 #ifdef LIBRDF_INTERNAL
   base_uri=librdf_new_uri(uri);
   if(!base_uri) {
-    fprintf(stderr, "%s: Failed to create librdf_uri for %s\n", uri);
+    fprintf(stderr, "%s: Failed to create librdf_uri for %s\n",
+            program, uri);
     return(1);
   }
 #else
