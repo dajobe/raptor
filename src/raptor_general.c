@@ -2492,7 +2492,7 @@ rapier_make_uri_from_id(rapier_uri *base_uri, const char *id)
 #ifdef LIBRDF_INTERNAL
   /* "#id\0" */
   len=1+strlen(id)+1;
-  qname=LIBRDF_MALLOC(cstring, len);
+  qname=(char*)LIBRDF_MALLOC(cstring, len);
   if(!qname)
     return NULL;
   *qname='#';
