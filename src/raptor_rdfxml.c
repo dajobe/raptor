@@ -2540,8 +2540,12 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
                 element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
                 element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
-            } else
+            } else {
+              if(rdf_parser->feature_warn_other_parseTypes) {
+                raptor_parser_warning(rdf_parser, "Unknown rdf:parseType value '%s' taken as 'Literal'", parse_type);
+              }
               is_parseType_Literal=1;
+            }
             
           }
           
