@@ -66,7 +66,7 @@ extern "C" {
  */
 
 /* Release version as a decimal */
-#define RAPTOR_VERSION_DECIMAL 10302
+#define RAPTOR_VERSION_DECIMAL 10303
 
 /* Major version number */
 #define RAPTOR_VERSION_MAJOR 1
