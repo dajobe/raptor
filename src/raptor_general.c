@@ -1401,8 +1401,8 @@ raptor_xml_start_element_handler(void *user_data,
 
       
       /* leave literal XML alone */
-      if (rdf_parser->current_element &&
-          rdf_parser->current_element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL) {
+      if (!(rdf_parser->current_element &&
+            rdf_parser->current_element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL)) {
 
         /* Save pointers to some RDF M&S attributes */
 
@@ -3062,14 +3062,20 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         
       case RAPTOR_STATE_UNKNOWN:
         /* found <rdf:RDF> ? */
-        if(element_in_rdf_ns && 
-          IS_RDF_MS_CONCEPT(el_name, element->name->uri, RDF)) {
-          element->child_state=RAPTOR_STATE_OBJ;
-          /* Yes - need more content before can continue,
-           * so wait for another element
-           */
-          finished=1;
-          break;
+        if(element_in_rdf_ns) {
+          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, RDF)) {
+            element->child_state=RAPTOR_STATE_OBJ;
+            /* Yes - need more content before can continue,
+             * so wait for another element
+             */
+            finished=1;
+            break;
+          }
+          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description)) {
+            state=RAPTOR_STATE_OBJ;
+            /* Yes - found something so move immediately to obj */
+            break;
+          }
         }
 
         /* If scanning for element, can continue */
