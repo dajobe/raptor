@@ -30,7 +30,7 @@ rdfdump_LDADD = libraptor.la
 rdfdump_LDFLAGS = -static
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
-raptor_cc.c
+raptor_cc.c raptor_uri.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 
@@ -48,7 +48,7 @@ SUBDIRS= \
 	tests \
 	win32
 
-TESTS=raptor_cc_test
+TESTS=raptor_cc_test raptor_uri_test
 
 # Why is this not in the default makefile?
 CC=@CC@
@@ -95,5 +95,8 @@ test: check
 
 raptor_cc_test: raptor_cc.c libraptor.la
 	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
+
+raptor_uri_test: raptor_uri.c libraptor.la
+	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 @SET_MAKE@
