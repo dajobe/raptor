@@ -113,13 +113,9 @@ int n3_lexer_lex_destroy(void);
   int c;
 
 
-[\ \r\n\t\v]+   { 
-                    for(c=0; c < yyleng; c++) {
-                      if(yytext[c] == '\r' || yytext[c] == '\n')
-                        lineno++;
-                    }
-//                    return WS;
-			}
+\r\n|\r|\n   { lineno++; }
+ 
+[\ \t\v]+   { /* empty */ }
 
 
 "a" { return A; }
@@ -160,15 +156,17 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext, yyleng);
 [A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval.string=copy_token(yytext, yyleng);
                           return IDENTIFIER; }
 
-\#              { while((c=input()) != '\n'  && c != '\r' && c)
+\#              { while((c=input()) != EOF && c != '\n'  && c != '\r' && c)
                     ;
                   lineno++;
+                  if(c == EOF)
+                    return EOF;
                 }
 
 .         	{ if (*yytext == EOF)
-                    return END;
-                  printf("%s:%d: Syntax error at '%s'\n", filename,
-                         lineno, yytext);
+                    return EOF;
+                  printf("%s:%d: Syntax error at '%c'\n", filename, 
+                         lineno, *yytext);
                   return ERROR;
 		}
 
@@ -278,9 +276,6 @@ n3_token_print(int token)
               (n3_parser_lval.string ? (char*)n3_parser_lval.string : ""));
       return buffer;
 
-    case END:
-      return "END";
-
     case ERROR:
       return "ERROR";
 
@@ -298,7 +293,7 @@ n3_token_print(int token)
 int
 main(int argc, char *argv[]) 
 {
-  int token=END;
+  int token=EOF;
 
   if(argc > 1) {
     filename=argv[1];
@@ -317,7 +312,7 @@ main(int argc, char *argv[])
 #else
     printf("token %d\n", token);
 #endif
-    if(!token || token == END || token == ERROR)
+    if(!token || token == EOF || token == ERROR)
       break;
   }
 
