@@ -82,7 +82,12 @@ typedef const char* (*rapier_container_test_handler)(const char *element_uri);
 /* Public functions */
 
 /* Create */
+#ifdef LIBRDF_INTERNAL
+rapier_parser* rapier_new(librdf_world *world);
+#else
 rapier_parser* rapier_new(void);
+#endif
+
 /* Destroy */
 void rapier_free(rapier_parser *rdf_parser);
 
