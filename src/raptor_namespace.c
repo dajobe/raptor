@@ -290,7 +290,7 @@ raptor_namespace_local_name_to_uri(const raptor_namespace *ns,
 void
 raptor_namespace_print(FILE *stream, raptor_namespace* ns) 
 {
-  const char *uri_string=RAPTOR_URI_AS_STRING(ns->uri);
+  const char *uri_string=raptor_uri_as_string(ns->uri);
   if(ns->prefix)
     fprintf(stream, "%s:%s", ns->prefix, uri_string);
   else

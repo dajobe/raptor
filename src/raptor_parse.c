@@ -1441,7 +1441,7 @@ raptor_xml_parse_start(raptor_parser* rdf_parser, raptor_uri *uri)
 #ifdef RAPTOR_XML_EXPAT
   xp=rdf_xml_parser->xp;
 
-  XML_SetBase(xp, RAPTOR_URI_AS_STRING(uri));
+  XML_SetBase(xp, raptor_uri_as_string(uri));
 #endif
 
 #ifdef RAPTOR_XML_LIBXML

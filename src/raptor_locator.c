@@ -63,7 +63,7 @@ raptor_print_locator(FILE *stream, raptor_locator* locator)
     return;
 
   if(locator->uri)
-    fprintf(stream, "URI %s", RAPTOR_URI_AS_STRING(locator->uri));
+    fprintf(stream, "URI %s", raptor_uri_as_string(locator->uri));
   else if (locator->file)
     fprintf(stream, "file %s", locator->file);
   else
@@ -99,7 +99,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
     return -1;
 
   if(locator->uri)
-    bufsize= 4 + strlen(RAPTOR_URI_AS_STRING(locator->uri)); /* "URI " */
+    bufsize= 4 + strlen(raptor_uri_as_string(locator->uri)); /* "URI " */
   else if (locator->file)
     bufsize= 5 + strlen(locator->file); /* "file " */
   else
@@ -116,7 +116,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
   
 
   if(locator->uri)
-    count=sprintf(buffer, "URI %s", RAPTOR_URI_AS_STRING(locator->uri));
+    count=sprintf(buffer, "URI %s", raptor_uri_as_string(locator->uri));
   else if (locator->file)
     count=sprintf(buffer, "file %s", locator->file);
   else

@@ -343,7 +343,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   /* Read buffer */
   char buffer[RAPTOR_READ_BUFFER_SIZE];
   int rc=0;
-  const char *filename=raptor_uri_uri_string_to_filename(RAPTOR_URI_AS_STRING(uri));
+  const char *filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
 
   if(!filename)
     return 1;
@@ -641,7 +641,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
       LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL subject URI\n");
 #endif
     fprintf(stream, "[%s, ",
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
+            raptor_uri_as_string((raptor_uri*)statement->subject));
   }
 
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
@@ -651,7 +651,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
     if(!statement->predicate)
       LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL predicate URI\n");
 #endif
-    fputs(RAPTOR_URI_AS_STRING((raptor_uri*)statement->predicate), stream);
+    fputs(raptor_uri_as_string((raptor_uri*)statement->predicate), stream);
   }
 
   fputs(", ", stream);
@@ -659,7 +659,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
      statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     if(statement->object_literal_datatype) {
       fputc('<', stream);
-      fputs(RAPTOR_URI_AS_STRING((raptor_uri*)statement->object_literal_datatype), stream);
+      fputs(raptor_uri_as_string((raptor_uri*)statement->object_literal_datatype), stream);
       fputc('<', stream);
     }
     fputc('"', stream);
@@ -675,7 +675,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
       LIBRDF_FATAL1(raptor_generate_statement, "Statement has NULL object URI\n");
 #endif
     fprintf(stream, "%s", 
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->object));
+            raptor_uri_as_string((raptor_uri*)statement->object));
   }
   fputc(']', stream);
 }
@@ -696,7 +696,7 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
     fprintf(stream, "_:%s", (const char*)statement->subject);
   else
     fprintf(stream, "<%s>",
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
+            raptor_uri_as_string((raptor_uri*)statement->subject));
   fputc(' ', stream);
 
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
@@ -704,7 +704,7 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
             *((int*)statement->predicate));
   else /* must be URI */
     fprintf(stream, "<%s>",
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->predicate));
+            raptor_uri_as_string((raptor_uri*)statement->predicate));
   fputc(' ', stream);
 
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
@@ -726,7 +726,7 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
             *((int*)statement->object));
   else /* must be URI */
     fprintf(stream, "<%s>", 
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->object));
+            raptor_uri_as_string((raptor_uri*)statement->object));
 
   fputs(" .", stream);
 }
