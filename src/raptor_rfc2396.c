@@ -253,9 +253,9 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
  * 
  **/
 void
-raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
-                                  const unsigned char *reference_uri,
-                                  unsigned char *buffer, size_t length)
+raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
+                                 const unsigned char *reference_uri,
+                                 unsigned char *buffer, size_t length)
 {
   raptor_uri_detail *ref=NULL;
   raptor_uri_detail *base=NULL;
@@ -263,7 +263,14 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
   unsigned char *path_buffer=NULL;
   unsigned char *p, *cur, *prev, *s;
   unsigned char last_char;
-    
+
+#if RAPTOR_DEBUG > 2
+  RAPTOR_DEBUG4("base uri='%s', reference_uri='%s, buffer size %d\n",
+                (base_uri ? (const char*)base_uri : "NULL"),
+                (reference_uri ? (const char*)reference_uri : "NULL"),
+                (int)length);
+#endif
+
   *buffer = '\0';
   memset(&result, 0, sizeof(result));
 
@@ -340,7 +347,10 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
   if(base->path)
     result.path_len += base->path_len;
   else {
+    /* Add a missing path - makes the base URI 1 character longer */
     base->path=(unsigned char*)"/"; /* static, but copied and not free()d  */
+    base->path_len=1;
+    base->uri_len++;
     result.path_len++;
   }
 
@@ -714,6 +724,9 @@ main(int argc, char *argv[])
 
   /* RDF xml:base check that an absolute URI replaces */
   failures += check_resolve("http://example.org/dir/file", "http://another.example.org/dir2/file2", "http://another.example.org/dir2/file2");
+
+  /* base URI and relative URI with no absolute path works */
+  failures += check_resolve("foo:", "not_scheme:blah", "foo:/not_scheme:blah");
 
 
   return failures;
