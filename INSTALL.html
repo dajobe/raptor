@@ -10,11 +10,63 @@
 <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a><br /><a href="http://www.bristol.ac.uk/">University of Bristol</a></h2>
   
 
-<h2>OVERVIEW</h2>
+<h2>SOURCES</h2>
+
+<p>The sources are available from
+<a href="http://www.redland.opensource.ac.uk/dist/source/">http://www.redland.opensource.ac.uk/dist/source/</a> (master site) and also from the
+<a href="http://sourceforge.net/projects/librdf/">SourceForge site</a>.</p>
+
+
+<h2>CONFIGURING and BUILDING</h2>
+
+<p>The configuring is done via the GNU configure program as generated
+by the autoconf system.  See the generic GNU installation instructions in 
+<a href="INSTALL">INSTALL</a> for information about general options
+such as <tt>--prefix</tt> etc.</p>
+
+<p>Rapier also supports the following extra configure options:</p>
+
+<dl>
+<dt><tt>--with-xml-parser=NAME</tt><br /></dt>
+<dd>Pick an XML parser to use - either <tt>expat</tt> (default)
+or <tt>libxml</tt>.  At present these must be installed system libraries.
+</dd>
+
+</dl>
+
+<p>If everything is in the default place, do:</p>
+<pre>
+   ./configure
+</pre>
+
+<p>More commonly you will be doing something like this:</p>
+<pre>
+   ./configure --with-xml-parser=expat
+</pre>
+
+<p>Compile the parser and the test program <tt>rdfdump</tt> with;</p>
+<pre>
+   make
+</pre>
+
+<p>This test program can then be used with local RDF/XML content
+files like this:</p>
+
+<pre>
+  rdfdump file:/path/to/test/file.rdf
+</pre>
+
+<p>It can also extract RDF content inside general XML when the
+<tt>--scan</tt> option is set.  e.g. if some RDF/XML is embedded
+inside some XHTML, it could be extracted with:</p>
+
+<pre>
+  rdfdump --scan file:/path/to/test/doc.xhtml
+</pre>
 
 <hr />
 
-<p>Copyright 2000 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 <p><a href="http://www.mirror.ac.uk/services/validator/check/referer">Validate me</a></p>
 

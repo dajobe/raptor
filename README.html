@@ -12,9 +12,54 @@
 
 <h2>OVERVIEW</h2>
 
+<p>Rapier is the RDF parser for
+<a href="http://www.redland.opensource.ac.uk/">Redland</a>
+(<b>R</b>DF <b>P</b>arser for <b>R</b>edland - R<em>a</em>P<em>ie</em>R)
+and is designed to integrate with it closely, using its concepts (mostly
+for URI management at present).
+Rapier can also be used separate from Redland, in which case it will
+use simple internal routines to perform the functions.
+</p>
+
+<p>Features</p>
+<ul>
+<li>RDF/XML Parser integrating well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
+<li>Can be called from C and via Redland - Perl and Python</li>
+<li>Can extract RDF content embedded in XML</li>
+<li>Handles rdf:resource / resource attributes</li>
+<li>Optionally can interpret container elements as typedNode</li>
+<li>Parsing tracks the grammar productions closely - this can be followed
+when debugging.</li>
+<li>Uses expat and/or libxml XML parsers as available / required</li>
+<li>Fast</li>
+<li>No memory leaks</li>
+</ul>
+
+<p><B>DANGER</B> This is an alpha release and needs lots of testing</p>
+
+
+<h2>DOCUMENTATION</h2>
+
+<p>There is no user documentation yet; just read the
+<a href="rdfdump.c">rdfdump.c</a> source to see how to call the parser.</p>
+
+<p>To install see the <a href="INSTALL.html">Installation document</a></p>
+
+
+<h2>TODO / BUGS</h2>
+
+<ul>
+<li>URI resolving is ad-hoc</li>
+<li>Reification of statements when BagID etc. seen is not done yet</li>
+<li>parseType=literal not properly supported</li>
+<li>General parseType support not completed</li>
+<li>General container support not completed</li>
+<li>rdf:li used as a propertyElt does not work</li>
+</ul>
+
 <hr />
 
-<p>Copyright 2000 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 <p><a href="http://www.mirror.ac.uk/services/validator/check/referer">Validate me</a></p>
 
