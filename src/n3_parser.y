@@ -155,14 +155,14 @@ statement: directive
   int i;
 
 #if RAPTOR_DEBUG > 1  
-    printf("statement 2\n subject=");
-    raptor_identifier_print(stdout, $1);
-    if($2) {
-      printf("\n propertyList=");
-      raptor_sequence_print($2, stdout);
-      printf("\n");
-    } else     
-      printf("\n and empty propertyList\n");
+  printf("statement 2\n subject=");
+  raptor_identifier_print(stdout, $1);
+  if($2) {
+    printf("\n propertyList=");
+    raptor_sequence_print($2, stdout);
+    printf("\n");
+  } else     
+    printf("\n and empty propertyList\n");
 #endif
 
   if($2) {
@@ -186,6 +186,9 @@ statement: directive
 
     raptor_free_sequence($2);
   }
+
+  if($1)
+    raptor_free_identifier($1);
 }
 | error DOT
 ;
@@ -327,6 +330,9 @@ propertyList: verb objectList SEMICOLON propertyList
     raptor_free_sequence($4);
   }
 
+  if($1)
+    raptor_free_identifier($1);
+
   $$=$2;
 }
 | verb objectList
@@ -358,6 +364,9 @@ propertyList: verb objectList SEMICOLON propertyList
     printf("\n\n");
 #endif
   }
+
+  if($1)
+    raptor_free_identifier($1);
 
   $$=$2;
 }
