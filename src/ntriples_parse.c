@@ -302,6 +302,141 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
 }
 
 
+/*
+ * Based on librdf_unicode_char_to_utf8
+ * with no need to calculate length since the encoded character is
+ * always copied into a buffer with sufficient size.
+ * 
+ * Return value: bytes encoded to output buffer or <0 on failure
+ **/
+static int
+raptor_ntriples_unicode_char_to_utf8(long c, char *output)
+{
+  int size=0;
+  
+  if      (c < 0x00000080)
+    size=1;
+  else if (c < 0x00000800)
+    size=2;
+  else if (c < 0x00010000)
+    size=3;
+  else if (c < 0x00200000)
+    size=4;
+  else if (c < 0x04000000)
+    size=5;
+  else if (c < 0x80000000)
+    size=6;
+  else
+    return -1;
+
+  switch(size) {
+    case 6:
+      output[5]=0x80 | (c & 0x3F);
+      c= c >> 6;
+       /* set bit 2 (bits 7,6,5,4,3,2 less 7,6,5,4,3 set below) on last byte */
+      c |= 0x4000000; /* 0x10000 = 0x04 << 24 */
+      /* FALLTHROUGH */
+    case 5:
+      output[4]=0x80 | (c & 0x3F);
+      c= c >> 6;
+       /* set bit 3 (bits 7,6,5,4,3 less 7,6,5,4 set below) on last byte */
+      c |= 0x200000; /* 0x10000 = 0x08 << 18 */
+      /* FALLTHROUGH */
+    case 4:
+      output[3]=0x80 | (c & 0x3F);
+      c= c >> 6;
+       /* set bit 4 (bits 7,6,5,4 less 7,6,5 set below) on last byte */
+      c |= 0x10000; /* 0x10000 = 0x10 << 12 */
+      /* FALLTHROUGH */
+    case 3:
+      output[2]=0x80 | (c & 0x3F);
+      c= c >> 6;
+      /* set bit 5 (bits 7,6,5 less 7,6 set below) on last byte */
+      c |= 0x800; /* 0x800 = 0x20 << 6 */
+      /* FALLTHROUGH */
+    case 2:
+      output[1]=0x80 | (c & 0x3F);
+      c= c >> 6;
+      /* set bits 7,6 on last byte */
+      c |= 0xc0; 
+      /* FALLTHROUGH */
+    case 1:
+      output[0]=c;
+  }
+
+  return size;
+}
+
+
+static void
+raptor_ntriples_string(raptor_ntriples_parser* parser, 
+                       char *start, char *dest, 
+                       int *lenp, int *dest_lenp,
+                       char end_char, int is_uri)
+{
+  char *p=start;
+  char c='\0';
+  int backslash=0;
+  
+  /* find end of string, fixing backslashed characters on the way */
+  while(*lenp > 0) {
+    c = *p;
+
+    p++;
+    (*lenp)--;
+    parser->locator.column++;
+    parser->locator.byte++;
+
+    if(c == '\\') {
+      if(backslash) {
+        *dest++='\\';
+        backslash=0;
+      } else
+        backslash=1;
+      continue;
+    }
+
+    if(backslash) {
+      switch(c) {
+        case '"':
+          *dest++='"';
+          break;
+        case 'n':
+          *dest++='\n';
+          break;
+        case 'r':
+          *dest++='\r';
+          break;
+        case 't':
+          *dest++='\t';
+          break;
+        default:
+          raptor_ntriples_parser_fatal_error(parser, "Illegal string escape \\%c in \"%s\"", c, start);
+          break;
+      }
+      backslash=0;
+      continue;
+    }
+    
+    /* finish at non-backslashed end_char */
+    if(c == end_char) {
+      /* terminate dest, can be shorter than source */
+      *dest='\0';
+      break;
+    }
+
+    /* otherwise store and move on */
+    *dest++=c;
+  } /* end while */
+
+  if(c != end_char)
+    raptor_ntriples_parser_fatal_error(parser, "Missing terminating '%c'", 
+                                       end_char);
+
+  *dest_lenp=p-start;
+}
+
+
 static int
 raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, 
                             int len) 
@@ -310,11 +445,9 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
   char *p;
   char *start=NULL; /* keeps gcc -Wall happy */
   char *dest;
-  char c = '\0';
   char *terms[3];
   int term_lengths[3];
   raptor_ntriples_term_type term_types[3];
-  int backslash=0;
   int term_length= 0;
 
   /* ASSERTION:
@@ -392,32 +525,6 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
       case '<':
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_URI_REF;
         
-        p++;
-        len--;
-        parser->locator.column++;
-        parser->locator.byte++;
-
-        start=p;
-        while(len > 0 && *p != '>') {
-          p++;
-          len--;
-          parser->locator.column++;
-          parser->locator.byte++;
-        }
-
-        if(!len) {
-          raptor_ntriples_parser_fatal_error(parser, "Missing end > for URI");
-          return 1;
-        }
-
-        term_length=p-start;
-
-        break;
-
-      case '"':
-        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
-        
-        start=p;
         dest=p;
 
         p++;
@@ -425,63 +532,27 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         parser->locator.column++;
         parser->locator.byte++;
 
-        /* find end of string, fixing backslashed characters on the way */
-        while(len > 0) {
-          c = *p;
+        start=p;
+        raptor_ntriples_string(parser,
+                               start, dest, &len, &term_length, '>', 1);
+        p += term_length;
+        break;
 
-          p++;
-          len--;
-          parser->locator.column++;
-          parser->locator.byte++;
-
-          if(c == '\\') {
-            if(backslash) {
-              *dest++='\\';
-              backslash=0;
-            } else
-              backslash=1;
-            continue;
-          }
-          if(backslash) {
-            switch(c) {
-              case '"':
-                *dest++='"';
-                break;
-              case 'n':
-                *dest++='\n';
-                break;
-              case 'r':
-                *dest++='\r';
-                break;
-              case 't':
-                *dest++='\t';
-                break;
-              default:
-                raptor_ntriples_parser_fatal_error(parser, "Illegal string escape \\%c in \"%s\"", c, start);
-                break;
-            }
-            backslash=0;
-            continue;
-          }
-
-          /* finish at non-backslashed " */
-          if(c == '"') {
-            /* terminate dest string, can be shorter than source */
-            *dest='\0';
-            break;
-          }
-
-          /* otherwise store and move on */
-          *dest++=c;
-        } /* end while */
-
-        if(c != '"') {
-          raptor_ntriples_parser_fatal_error(parser, "Missing end \" for literal");
-          return 1;
-        }
-
-        term_length=dest-start;
+      case '"':
+        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
         
+        dest=p;
+
+        p++;
+        len--;
+        parser->locator.column++;
+        parser->locator.byte++;
+
+        start=p;
+
+        raptor_ntriples_string(parser,
+                               start, dest, &len, &term_length, '"', 0);
+        p += term_length;
         break;
 
 
@@ -506,6 +577,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
         /* start after _: */
         start=p;
+        dest=start;
 
         while(len>0 && isalnum(*p)) {
           p++;
@@ -525,7 +597,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
 
     /* Store term */
-    terms[i]=start; term_lengths[i]=term_length;
+    terms[i]=dest; term_lengths[i]=term_length;
 
 
     /* Replace
