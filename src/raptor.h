@@ -169,6 +169,7 @@ void raptor_init_identifier(raptor_identifier *identifier, raptor_identifier_typ
 int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 void raptor_free_identifier(raptor_identifier *identifier);
 
+void raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
 
 #ifndef LIBRDF_INTERNAL
 
