@@ -1715,6 +1715,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   const unsigned char *language=NULL;
   static const char empty_literal[1]="";
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  char *reified_id=NULL;
 
   if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
      object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
@@ -1762,7 +1763,6 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   /* the bagID mess */
   if(bag_element && (bag_element->bag.uri || bag_element->bag.id)) {
     raptor_identifier* bag=&bag_element->bag;
-    char *reified_id=NULL;
     
     statement->subject=bag->uri ? (void*)bag->uri : (void*)bag->id;
     statement->subject_type=bag->type;
@@ -1772,22 +1772,17 @@ raptor_generate_statement(raptor_parser *rdf_parser,
     statement->predicate=(void*)&bag_element->last_bag_ordinal;
     statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
 
-    if(!reified) {
-      statement->object=reified_id=(char*)raptor_generate_id(rdf_parser, 0);
-      statement->object_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-    } else {
+    if(reified->uri || reified->id) {
       statement->object=reified->uri ? (void*)reified->uri : (void*)reified->id;
       statement->object_type=reified->type;
+    } else {
+      statement->object=reified_id=(char*)raptor_generate_id(rdf_parser, 0);
+      statement->object_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
     }
     
     (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
     
-    if(reified_id)
-      RAPTOR_FREE(cstring, reified_id);
-  }
-  
-
-  if(!reified || (!reified->uri && !reified->id))
+  } else if(!reified || (!reified->uri && !reified->id))
     return;
 
   /* generate reified statements */
@@ -1797,8 +1792,14 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
   statement->object_literal_language=NULL;
 
-  statement->subject=reified->uri ? (void*)reified->uri : (void*)reified->id;
-  statement->subject_type=reified->type;
+  if(reified_id) {
+    statement->subject=reified_id;
+    statement->subject_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+  } else {
+    statement->subject=reified->uri ? (void*)reified->uri : (void*)reified->id;
+    statement->subject_type=reified->type;
+  }
+  
 
   statement->predicate=RAPTOR_RDF_type_URI(rdf_xml_parser);
   statement->object=RAPTOR_RDF_Statement_URI(rdf_xml_parser);
@@ -1820,6 +1821,9 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   statement->object_literal_language=language;
 
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+
+  if(reified_id)
+    RAPTOR_FREE(cstring, reified_id);
 }
 
 
