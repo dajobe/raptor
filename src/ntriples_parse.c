@@ -376,6 +376,8 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
 {
   char *p=start;
   char c='\0';
+  int ulen=0;
+  long unichar=0;
   
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
@@ -421,6 +423,24 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
         break;
       case 't':
         *dest++='\t';
+        break;
+      case 'u':
+      case 'U':
+        ulen=(c == 'u') ? 4 : 8;
+        
+        if(*lenp < ulen)
+          raptor_ntriples_parser_fatal_error(parser, "\%c over end of line", c);
+        if(c == 'u')
+          sscanf(p, "%04x", &unichar);
+        else
+          sscanf(p, "%08x", &unichar);
+
+        p+=ulen;
+        (*lenp)-=ulen;
+        parser->locator.column+=ulen;
+        parser->locator.byte+=ulen;
+        
+        dest+=raptor_ntriples_unicode_char_to_utf8(unichar, dest);
         break;
       case '\\':
         *dest++='\\';
