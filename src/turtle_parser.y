@@ -147,7 +147,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token ERROR
 
 %type <identifier> subject predicate object verb literal resource blank collection
-%type <sequence> objectList propertyList
+%type <sequence> objectList itemList propertyList
 
 %%
 
@@ -236,7 +236,41 @@ objectList: object COMMA objectList
 #endif
   }
 }
-| object objectList
+| object
+{
+  raptor_triple *triple;
+
+#if RAPTOR_DEBUG > 1  
+  printf("objectList 2\n");
+  if($1) {
+    printf(" object=\n");
+    raptor_identifier_print(stdout, $1);
+    printf("\n");
+  } else  
+    printf(" and empty object\n");
+#endif
+
+  if(!$1)
+    $$=NULL;
+  else {
+    triple=raptor_new_triple(NULL, NULL, $1);
+#ifdef RAPTOR_DEBUG
+    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
+                           (raptor_print_handler*)raptor_triple_print);
+#else
+    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
+#endif
+    raptor_sequence_push($$, triple);
+#if RAPTOR_DEBUG > 1  
+    printf(" objectList is now ");
+    raptor_sequence_print($$, stdout);
+    printf("\n\n");
+#endif
+  }
+}
+;
+
+itemList: object itemList
 {
   raptor_triple *triple;
 
@@ -640,7 +674,7 @@ blank: BLANK_LITERAL
 ;
 
 
-collection: LEFT_ROUND objectList RIGHT_ROUND
+collection: LEFT_ROUND itemList RIGHT_ROUND
 {
   int i;
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
