@@ -30,11 +30,33 @@ noinst_HEADERS = raptor_internal.h win32_config.h
 
 man_MANS = rapper.1 libraptor.3 raptor-config.1
 
-rapper_SOURCES = rdfdump.c
-if GETOPT
-rapper_SOURCES += getopt.c raptor_getopt.h
-endif
-rapper_LDADD=libraptor.la
+SUBDIRS= tests win32 examples
+
+TESTS=raptor_general_test raptor_uri_test raptor_namespace_test	\
+strcasecmp_test raptor_www_test raptor_set_test raptor_xml_test	\
+raptor_sequence_test raptor_stringbuffer_test
+
+CLEANFILES=$(TESTS) turtle_lexer_test turtle_parser_test
+
+MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
+turtle_parser.tab.c turtle_parser.tab.h turtle_parser.output
+
+# Memory debugging alternatives
+MEM=@MEM@
+MEM_LIBS=@MEM_LIBS@
+
+# 1) None (use standard functions directly)
+#MEM=
+#MEM_LIBS=
+
+# 2) Use dmalloc library
+#MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
+#MEM_LIBS=-ldmalloc
+
+AM_CFLAGS=@CFLAGS@ $(MEM)
+STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
+LIBS=@LIBS@ $(MEM_LIBS)
+
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c raptor_expat.c raptor_libxml.c raptor_win32.c raptor_locator.c \
@@ -48,6 +70,18 @@ libraptor_la_SOURCES += strcasecmp.c
 endif
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
+
+
+rapper_SOURCES = rdfdump.c
+if GETOPT
+rapper_SOURCES += getopt.c raptor_getopt.h
+endif
+rapper_LDADD=libraptor.la
+
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = raptor.pc
+
 
 EXTRA_DIST=ChangeLog ChangeLog.1 \
 README      NEWS      LICENSE.txt \
@@ -66,44 +100,8 @@ turtle_lexer.l turtle_parser.y \
 fix-flex
 
 
-
-SUBDIRS= tests win32 examples
-
-TESTS=raptor_general_test raptor_uri_test raptor_namespace_test	\
-strcasecmp_test raptor_www_test raptor_set_test raptor_xml_test	\
-raptor_sequence_test raptor_stringbuffer_test
-
-CLEANFILES=$(TESTS) turtle_lexer_test turtle_parser_test
-
-MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
-turtle_parser.tab.c turtle_parser.tab.h turtle_parser.output
-
-# Use tar, whatever it is called (better be GNU tar though)
-TAR=@TAR@
-
-# Why is this not in the default makefile?
-CC=@CC@
-
-# Memory debugging alternatives
-MEM=@MEM@
-MEM_LIBS=@MEM_LIBS@
-
-# 1) None (use standard functions directly)
-#MEM=
-#MEM_LIBS=
-
-# 2) Use dmalloc library
-#MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
-#MEM_LIBS=-ldmalloc
-
 LEX=@LEX@
 YACC=@YACC@
-
-AM_CFLAGS=@CFLAGS@ $(MEM)
-STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
-LIBS=@LIBS@ $(MEM_LIBS)
-
-LOCAL_LIB_DIR=lib
 
 # Create some text files from HTML sources
 LYNX=lynx
@@ -120,14 +118,14 @@ README: README.html
 NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
-@MAINT@libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/fix-groff-xhtml $@
-@MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
-@MAINT@rapper.html: $(srcdir)/rapper.1 $(srcdir)/fix-groff-xhtml $@
-@MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
+if MAINTAINER_MODE
+libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/fix-groff-xhtml $@
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = raptor.pc
+rapper.html: $(srcdir)/rapper.1 $(srcdir)/fix-groff-xhtml $@
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
+
 
 # Actually it needs turtle_parser.h but nevermind
 turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.tab.c $(srcdir)/fix-flex
@@ -140,7 +138,7 @@ turtle_parser.tab.c: $(srcdir)/turtle_parser.y
 	mv $@ turtle_parser.t
 	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' turtle_parser.t > $@
 	rm -f turtle_parser.t
-
+endif
 
 # Actually it needs turtle_parser.h but nevermind
 turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
@@ -195,5 +193,3 @@ dist-hook: README NEWS
 	    cp -p $(srcdir)/$$file $(distdir)/$$file; \
 	  fi; \
 	done
-
-@SET_MAKE@
