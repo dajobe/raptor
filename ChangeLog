@@ -1,5 +1,7 @@
 2005-01-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.4
+
 	* Snapshotted raptor_1_4_3 for 1.4.3 release
 
 	* raptor_rdfxml.c (raptor_xml_start_element_handler): Updates for
