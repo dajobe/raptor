@@ -947,19 +947,11 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
                                             (const unsigned char *)string, len);
     if(!pos) {
       /* start of xml:ID name */
-      if(!raptor_unicode_is_letter(unichar) &&
-         (unichar != '_'))
-	return 0;
-
+      if(!raptor_unicode_is_namestartchar(unichar))
+        return 0;
     } else {
       /* rest of xml:ID name */
-      if(!raptor_unicode_is_letter(unichar) &&
-         !raptor_unicode_is_digit(unichar) &&
-         (unichar != '.') &&
-         (unichar != '-') && 
-         (unichar != '_') &&
-         !raptor_unicode_is_combining(unichar) &&
-         !raptor_unicode_is_extender(unichar))
+      if(!raptor_unicode_is_namechar(unichar))
         return 0;
     }
 
