@@ -111,7 +111,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "nsahrqi:o:wcm:"
+#define GETOPT_STRING "nsahrqi:o:wcm:e"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
@@ -125,6 +125,7 @@ static struct option long_options[] =
   {"quiet", 0, 0, 'q'},
   {"output", 1, 0, 'o'},
   {"ignore-warnings", 0, 0, 'w'},
+  {"ignore-errors", 0, 0, 'e'},
   {"count", 0, 0, 'c'},
   {"mode", 1, 0, 'm'},
   {"input", 1, 0, 'i'},
@@ -137,15 +138,20 @@ static int error_count=0;
 static int warning_count=0;
 
 static int ignore_warnings=0;
+static int ignore_errors=0;
 
 
 static void
 rdfdump_error_handler(void *data, raptor_locator *locator,
                       const char *message)
 {
-  fprintf(stderr, "%s: Error - ", program);
-  raptor_print_locator(stderr, locator);
-  fprintf(stderr, " - %s\n", message);
+  if(!ignore_errors) {
+    fprintf(stderr, "%s: Error - ", program);
+    raptor_print_locator(stderr, locator);
+    fprintf(stderr, " - %s\n", message);
+    
+    raptor_parse_abort(data);
+  }
 
   error_count++;
 }
@@ -305,6 +311,11 @@ main(int argc, char *argv[])
 
       case 'w':
         ignore_warnings=1;
+        break;
+        
+      case 'e':
+        ignore_errors=1;
+        break;
     }
     
   }
@@ -325,6 +336,7 @@ main(int argc, char *argv[])
     fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
     fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
     fprintf(stderr, HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
+    fprintf(stderr, HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
     fprintf(stderr, HELP_TEXT(c, "count           ", "Count triples - no output"));
     fprintf(stderr, HELP_TEXT(m, "mode            ", "Set parser mode - lax (default) or strict"));
     return(usage>1);
@@ -365,8 +377,8 @@ main(int argc, char *argv[])
     return(1);
   }
   
-  raptor_set_error_handler(rdf_parser, NULL, rdfdump_error_handler);
-  raptor_set_warning_handler(rdf_parser, NULL, rdfdump_warning_handler);
+  raptor_set_error_handler(rdf_parser, rdf_parser, rdfdump_error_handler);
+  raptor_set_warning_handler(rdf_parser, rdf_parser, rdfdump_warning_handler);
   
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
@@ -411,7 +423,7 @@ main(int argc, char *argv[])
 
   raptor_finish();
 
-  if(error_count)
+  if(error_count && !ignore_errors)
     return 1;
 
   if(warning_count && !ignore_warnings)
