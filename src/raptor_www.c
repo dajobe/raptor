@@ -85,7 +85,7 @@ raptor_www_finish(void)
 raptor_www *
 raptor_www_new_with_connection(void *connection)
 {
-  raptor_www *www=calloc(sizeof(raptor_www), 1);
+  raptor_www *www=RAPTOR_CALLOC(www, sizeof(raptor_www), 1);
   if(!www)
     return NULL;
   
@@ -124,17 +124,17 @@ raptor_www_free(raptor_www *www)
   /* free context */
   if(www->type) {
     if(www->free_type)
-      free(www->type);
+      RAPTOR_FREE(cstring, www->type);
     www->type=NULL;
   }
   
   if(www->user_agent) {
-    free(www->user_agent);
+    RAPTOR_FREE(cstring, www->user_agent);
     www->user_agent=NULL;
   }
 
   if(www->proxy) {
-    free(www->proxy);
+    RAPTOR_FREE(cstring, www->proxy);
     www->proxy=NULL;
   }
 
@@ -150,6 +150,8 @@ raptor_www_free(raptor_www *www)
 
   if(www->uri)
     raptor_free_uri(www->uri);
+
+  RAPTOR_FREE(www, www);
 }
 
 
@@ -187,7 +189,7 @@ raptor_www_set_content_type_handler(raptor_www *www,
 void
 raptor_www_set_user_agent(raptor_www *www, const char *user_agent)
 {
-  char *ua_copy=malloc(strlen(user_agent)+1);
+  char *ua_copy=RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
   if(!ua_copy)
     return;
   strcpy(ua_copy, user_agent);
@@ -199,7 +201,7 @@ raptor_www_set_user_agent(raptor_www *www, const char *user_agent)
 void
 raptor_www_set_proxy(raptor_www *www, const char *proxy)
 {
-  char *proxy_copy=malloc(strlen(proxy)+1);
+  char *proxy_copy=RAPTOR_MALLOC(cstring, strlen(proxy)+1);
   if(!proxy_copy)
     return;
   strcpy(proxy_copy, proxy);
@@ -285,7 +287,7 @@ raptor_www_file_fetch(raptor_www *www)
   if(!fh) {
     raptor_www_error(www, "file '%s' open failed - %s",
                      filename, strerror(errno));
-    free(filename);
+    RAPTOR_FREE(cstring, filename);
     www->status_code=404;
     return 1;
   }
@@ -302,7 +304,7 @@ raptor_www_file_fetch(raptor_www *www)
   }
   fclose(fh);
 
-  free(filename);
+  RAPTOR_FREE(cstring, filename);
   
   if(!status)
     www->status_code=200;
