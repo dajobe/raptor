@@ -290,6 +290,23 @@ raptor_uri_as_string(raptor_uri *uri)
 }
 
 
+static char*
+raptor_default_uri_as_counted_string(void *context, raptor_uri *uri,
+                                     size_t* len_p)
+{
+  if(len_p)
+    *len_p=strlen((char*)uri);
+  return (char*)uri;
+}
+
+
+char*
+raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p) 
+{
+  return (*raptor_uri_current_uri_handler->uri_as_counted_string)(raptor_uri_current_uri_context, uri, len_p);
+}
+
+
 
 /*
  * raptor_uri_parse() and raptor_uri_resolve_uri_reference()
@@ -1005,6 +1022,7 @@ raptor_uri_init_default_handler(raptor_uri_handler *handler)
   handler->uri_equals=raptor_default_uri_equals;
   handler->uri_copy=raptor_default_uri_copy;
   handler->uri_as_string=raptor_default_uri_as_string;
+  handler->uri_as_counted_string=raptor_default_uri_as_counted_string;
   
   handler->initialised=1;
 }
@@ -1018,6 +1036,7 @@ static raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_uri_equals,
   raptor_default_uri_copy,
   raptor_default_uri_as_string,
+  raptor_default_uri_as_counted_string,
   1
 };
 
