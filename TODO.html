@@ -11,8 +11,6 @@
 <h2>Bugs and Features</h2>
 
 <ul>
-<li>XML Namespaces declared with no namespace name (URI) are accepted - 
-this is illegal (BUG)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Try to fix usage like rdf:about="http://example.org/foo " with
 a trailing space?  Warn, fix and continue?  In lax/default mode?</li>
@@ -30,6 +28,8 @@ a trailing space?  Warn, fix and continue?  In lax/default mode?</li>
 release version where appropriate.</p>
 
 <ul>
+<li>XML Namespaces declared with a prefix and no namespace name (URI)
+were accepted - this is illegal (0.9.8)</li>
 <li>Empty files made rdf/xml parser crash with libxml2 and expat; now both
 return failure since an empty doc is not allowed (0.9.8)</li>
 <li><tt>rdf:bagID</tt> handling added (0.9.7)</li>
