@@ -81,7 +81,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
+#endif
 
 #ifdef LIBRDF_INTERNAL
 #include <librdf.h>
