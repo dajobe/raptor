@@ -481,13 +481,19 @@ ECHO_C=$ac_c
 AC_SUBST(ECHO_N)
 AC_SUBST(ECHO_C)
 
+abs_top_srcdir=`cd $srcdir; pwd`
+AC_SUBST(abs_top_srcdir)
+abs_top_builddir=`pwd`
+AC_SUBST(abs_top_builddir)
+
 AC_OUTPUT(Makefile
 raptor.spec
 raptor-config
+raptor-src-config
 tests/Makefile
 win32/Makefile
 debian/Makefile,
-[chmod +x raptor-config])
+[chmod +x raptor-config raptor-src-config])
 
 
 AC_MSG_RESULT([
