@@ -1,5 +1,6 @@
 EXTRA_DIST=README.txt \
 raptor.dsp raptor.dsw \
+rapper.dsp \
 raptortest.cpp raptortest.dsp
 
 # Make some empty dirs that may be needed
