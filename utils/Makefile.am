@@ -32,7 +32,7 @@ man_MANS = rapper.1 libraptor.3 raptor-config.1
 
 SUBDIRS= tests win32 examples
 
-TESTS=raptor_general_test raptor_uri_test raptor_namespace_test	\
+TESTS=raptor_parse_test raptor_uri_test raptor_namespace_test	\
 strcasecmp_test raptor_www_test raptor_set_test raptor_xml_test	\
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test
@@ -59,14 +59,14 @@ STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
-libraptor_la_SOURCES = \
+libraptor_la_SOURCES = raptor_parse.c \
 raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c \
 raptor_identifier.c \
 raptor_sequence.c raptor_stringbuffer.c
 if RAPTOR_PARSER_RDFXML
-libraptor_la_SOURCES += raptor_parse.c raptor_xml.c raptor_xml_writer.c \
+libraptor_la_SOURCES += raptor_rdfxml.c raptor_xml.c raptor_xml_writer.c \
 raptor_sax2.c raptor_set.c
 if RAPTOR_XML_LIBXML
 libraptor_la_SOURCES += raptor_libxml.c
@@ -181,8 +181,8 @@ check-local: rapper
 # Some people need a little help ;-)
 test: check
 
-raptor_general_test: $(srcdir)/raptor_general.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_general.c libraptor.la $(LIBS)
+raptor_parse_test: $(srcdir)/raptor_general.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_parse.c libraptor.la $(LIBS)
 
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
