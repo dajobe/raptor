@@ -8,7 +8,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.org/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2003-04-17"
+.TH libraptor 3 "2003-06-14"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -66,7 +66,8 @@ any raptor_parser or raptor_uri is created or used.
 .SH PARSER CONSTRUCTORS
 .IP "\fBraptor_parser* raptor_new_parser(name)\fR"
 Create a new raptor parser object for the parser with name
-\fIname\fR currently either "rdfxml" or "ntriples"
+\fIname\fR currently either "rdfxml", "ntriples" or
+"rss-tag-soup" for the RSS Tag Soup parser.
 .SH PARSER DESTRUCTORS
 .IP "\fBvoid raptor_free_parser(raptor_parser *\fIparser\fB)\fR"
 Destroy a Raptor parser object.
@@ -99,8 +100,8 @@ Statements warnings, errors and fatal errors are delivered
 via the registered statement, error etc. handler functions.
 .LP
 In both of these methods, the base URI is required for the RDF/XML
-parsers (name "rdfxml").  The N-Triples parser (name "ntriples") does
-not use this.
+parsers (name "rdfxml").  The N-Triples parser (name "ntriples") or
+RSS Tag Soup parser (name "rss-tag-soup") do not use this.
 .IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  raptor_uri *\fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the given filename (a URI like file:filename)
 according to the base URI \fIbase_uri\fR, or NULL if not needed.
@@ -120,7 +121,8 @@ via the registered statement, error etc. handler functions.
 Start a parse of chunked content with the base URI \fIuri\fR
 or NULL if not needed.
 The base URI is required for the RDF/XML parsers (name "rdfxml").
-The N-Triples parser (name "ntriples") does not use this.
+The N-Triples parser (name "ntriples") or RSS Tag Soup parser
+(name "rss-tag-soup") do not use this.
 .IP "\fBint raptor_parse_chunk(raptor_parser* \fIparser\fB,  const unsigned char *buffer, size_t \fIlen\fB, int \fIis_end\fB)\fR"
 Parse the memory at \fIbuffer\fR of size \fIlen\fR returning
 statements via the statement handler callback.
@@ -162,6 +164,10 @@ to be present and will pass them on to the user.  Unimplemented at present.
 Return the current raptor_locator object for the parser.
 This is a public structure defined in raptor.h that can be
 used directly, or formatted via raptor_print_locator.
+.IP "\fBvoid raptor_get_name(raptor_parser *\fIparser\fB\fB)\fR"
+Return the string short name for the parser.
+.IP "\fBvoid raptor_get_label(raptor_parser *\fIparser\fB\fB)\fR"
+Return a string label for the parser.
 .SH "STATEMENT UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging only.
@@ -214,14 +220,15 @@ according to N-Triples escaping rules, expecting to be delimited
 by the character \fIdelim\fR which is usually either " or <
 .IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term)\fR"
 .SH "XML UTILITY FUNCTIONS"
-.IP "\fBsize_t raptor_xml_escape_string(raptor_parser *rdf_parser, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote)\fR"
+.IP "\fBsize_t raptor_xml_escape_string(const unsigned char *\fIstring\fB, size_t \fIlen\fB, unsigned char *\fIbuffer\fB, size_t \fIlength\fB, char \fIquote\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Apply the XML escaping rules to the string given in (string, len)
-into the buffer of size length. If buffer is NULL, returns the size
-of the buffer required, otherwise returns 0 on failure.  If quote
+into the buffer of size length.  If quote
 is given, the escaped content is for an XML attribute and the
 appropriate quote character \" or \' is used, otherwise it is
-XML element content (CDATA).  The return value is the number of bytes
-used or 0 on failure.
+XML element content (CDATA).   The \fIerror_handler\fR method along
+with \fIerror_data\fR allow error reporting to be given.
+If buffer is NULL, returns the size of the buffer required to escape.
+Otherwise the return value is the number of bytes used or 0 on failure.
 .SH "URI CLASS"
 Raptor has a raptor_uri class must be used for manipulating and
 passing URI references.  The default internal implementation
@@ -366,6 +373,7 @@ Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
 .SH API CHANGES
 .IP 0.9.11
+Added \fBraptor_get_name\fR, \fBraptor_get_label\fR.
 Added \fBraptor_set_parser_strict\fR, \fBraptor_www_no_www_library_init_finish\fR.
 .IP 0.9.10
 \fBraptor_xml_escape_string\fR now takes an output string length pointer.
