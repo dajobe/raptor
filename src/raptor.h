@@ -29,6 +29,17 @@
 extern "C" {
 #endif
 
+#ifdef WIN32
+  #ifdef RAPTOR_INTERNAL
+    #define RAPTOR_API _declspec(dllexport)
+  #else
+    #define RAPTOR_API _declspec(dllimport)
+  #endif
+#else
+  #define RAPTOR_API
+#endif
+
+
 /* Public structure */
 typedef struct raptor_parser_s raptor_parser;
 
@@ -98,43 +109,44 @@ typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
 
 /* Create */
 #ifdef LIBRDF_INTERNAL
-raptor_parser* raptor_new(librdf_world *world);
+RAPTOR_API raptor_parser* raptor_new(librdf_world *world);
 #else
-raptor_parser* raptor_new(void);
+RAPTOR_API raptor_parser* raptor_new(void);
 #endif
 
 /* Destroy */
-void raptor_free(raptor_parser *rdf_parser);
+RAPTOR_API void raptor_free(raptor_parser *rdf_parser);
 
 /* Handlers */
-void raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
-void raptor_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
-void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
-void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
+RAPTOR_API void raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+RAPTOR_API void raptor_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+RAPTOR_API void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 
-void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
+RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
 
 /* Parsing functions */
 #ifdef LIBRDF_INTERNAL
-int raptor_parse_file(raptor_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
+RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
 #else
-int raptor_parse_file(raptor_parser* rdf_parser,  const char *filename, const char *base_uri);
+RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  const char *filename, const char *base_uri);
 #endif
 
 /* Utility functions */
-void raptor_print_locator(FILE *stream, raptor_locator* locator);
+RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
 
-void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 
 /* URI functions */
-raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_string);
-raptor_uri* raptor_copy_uri(raptor_uri *uri);
+RAPTOR_API raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_string);
+RAPTOR_API raptor_uri* raptor_copy_uri(raptor_uri *uri);
 
 
 #ifndef LIBRDF_INTERNAL
 
 #define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
+#define RAPTOR_DAML_OIL_URI "http://www.daml.org/2001/03/daml+oil#"
 
 #endif
 
