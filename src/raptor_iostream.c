@@ -191,13 +191,15 @@ static raptor_iostream_handler raptor_iostream_file_handler={
   NULL, /* finish */
   raptor_filename_iostream_write_byte,
   raptor_filename_iostream_write_bytes,
-  raptor_filename_iostream_write_end
+  NULL, /* write_end */
 };
 
 
 /**
  * raptor_new_iostream_to_file_handle - Create a new iostream to a FILE*
  * 
+ * NOTE: This does not fclose the handle when it is finished.
+ *
  * Return value: new &raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
@@ -263,6 +265,7 @@ raptor_string_iostream_finish(void *context)
   }
   
   raptor_free_stringbuffer(con->sb);
+  RAPTOR_FREE(raptor_string_iostream_context, con);
   return;
 }
 
@@ -396,6 +399,22 @@ raptor_iostream_write_bytes(raptor_iostream *iostr,
     return 0;
   return iostr->handler->write_bytes(iostr->context, ptr, size, nmemb);
 }
+
+
+/**
+ * raptor_iostream_write_string - Write a NUL-terminated string to the iostream
+ * @iostr: raptor iostream
+ * @str: string
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_iostream_write_string(raptor_iostream *iostr, const void *string)
+{
+  size_t len=strlen((const char*)string);
+  return (raptor_iostream_write_bytes(iostr, string, 1, len) != len);
+}
+
 
 /**
  * raptor_iostream_write_end - End writing to the iostream
