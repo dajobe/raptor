@@ -419,6 +419,7 @@ RAPTOR_API int raptor_namespaces_start_namespace_full(raptor_namespace_stack *ns
 RAPTOR_API void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 RAPTOR_API raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
 RAPTOR_API raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
+RAPTOR_API raptor_namespace* raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, raptor_uri *ns_uri);
 RAPTOR_API int raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace);
 
 /* raptor_namespace - XML namespace */
