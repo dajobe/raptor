@@ -273,11 +273,9 @@ main(int argc, char *argv[])
 
       case 'i':
         if(optarg) {
-          rdf_parser=raptor_new_parser(optarg);
-          if(rdf_parser) {
-            raptor_free_parser(rdf_parser);
+          if(raptor_syntax_name_check(optarg))
             syntax_name=optarg;
-          } else {
+          else {
             int i;
             
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
