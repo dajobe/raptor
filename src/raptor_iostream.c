@@ -228,6 +228,7 @@ raptor_new_iostream_to_file_handle(FILE *fh)
 
 struct raptor_string_iostream_context {
   raptor_stringbuffer *sb;
+  void *(*malloc_handler)(size_t size);
   void **string_p;
   size_t *length_p;
 };
@@ -253,9 +254,9 @@ raptor_string_iostream_finish(void *context)
     *con->length_p=len;
   
   if(len) {
-    str=(void*)RAPTOR_MALLOC(memory, len+1);
+    str=(void*)con->malloc_handler(len+1);
     if(str) {
-      memcpy(str, raptor_stringbuffer_as_string(con->sb), len+1);
+      raptor_stringbuffer_copy_to_string(con->sb, (unsigned char*)str, len+1);
       *con->string_p=str;
     }
   }
@@ -300,11 +301,16 @@ static raptor_iostream_handler raptor_iostream_string_handler={
  * raptor_new_iostream_to_string - Create a new iostream to a string
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
+ * @malloc_handler: pointer to malloc to use to make string (or NULL)
+ *
+ * If malloc_handler is null, raptor will allocate it using it's
+ * own memory allocator.
  * 
  * Return value: new &raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_to_string(void **string_p, size_t *length_p)
+raptor_new_iostream_to_string(void **string_p, size_t *length_p,
+                              void *(*malloc_handler)(size_t size))
 {
   raptor_iostream* iostr;
   struct raptor_string_iostream_context* con;
@@ -328,6 +334,11 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p)
   con->string_p=string_p;
   con->length_p=length_p;  
 
+  if(malloc_handler)
+    con->malloc_handler=malloc_handler;
+  else
+    con->malloc_handler=raptor_alloc_memory;
+  
   iostr->handler=&raptor_iostream_string_handler;
   iostr->context=(void*)con;
 
@@ -598,7 +609,7 @@ main(int argc, char *argv[])
 #ifdef RAPTOR_DEBUG
         fprintf(stderr, "%s: Creating iostream to a string\n", program);
 #endif
-        iostr=raptor_new_iostream_to_string(&string, &string_len);
+        iostr=raptor_new_iostream_to_string(&string, &string_len, NULL);
         if(!iostr) {
           fprintf(stderr, "%s: Failed to create iostream to string\n", program);
           exit(1);
