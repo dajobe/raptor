@@ -29,6 +29,8 @@ CLEANFILES=$(EXAMPLES) $(GUI_EXAMPLES)
 
 examples: $(EXAMPLES)
 
+AM_CFLAGS=@CFLAGS@ $(MEM)
+LIBS=@LIBS@ $(MEM_LIBS)
 AM_CPPFLAGS=-I$(top_srcdir)
 
 raptor_abort_SOURCES = raptor_abort.c
