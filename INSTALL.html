@@ -117,6 +117,12 @@ seen in the RDF/XML.  If the GNOME glib library is not available,
 a configure time warning may be given printed unless this option
 is used.</p></dd>
 
+<dt><tt>--with-expat-source=DIR</tt><br /></dt>
+<dd><p>Build against a statically compiled expat source tree in
+directory <em>DIR</em>.  This handles the older and newer style 
+expat source directory structures.
+</p></dd>
+
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
 minimum version 2.4.0 or <tt>expat</tt>.  If this option is not given,
@@ -128,6 +134,7 @@ including
 expat 1.95.1 (on RedHat 7.2),
 expat 1.95.2-2 (on RedHat 7.3),
 expat 1.95.2-6 (on Debian 3.0),
+expat 1.95.7 (on Redhat Fedora Core 2),
 libxml 2.4.10 (on RedHat 7.2),
 libxml 2.4.13 (on OSX 10.1.5),
 libxml 2.4.17 (on FreeBSD 4.5-RELEASE-p2),
@@ -138,7 +145,9 @@ libxml 2.4.25, 2.4.28, 2.4.30 (Debian unstable),
 libxml 2.5.3-2.5.4 (Redhat 9, Debian unstable),
 libxml 2.5.7 (Redhat 9, Debian unstable),
 libxml 2.5.8-2.5.9 (Debian unstable),
-libxml 2.6.0-2.6.8 (Debian unstable)
+libxml 2.6.0-2.6.10 (Debian unstable),
+libxml 2.6.8 (Redhat Fedora Core 2),
+libxml 2.6.9 (FreeBSD 4.10-STABLE)
 </p>
 <p>libxml1 is not supported.</p>
 </dd>
