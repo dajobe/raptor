@@ -15,6 +15,6 @@ bad tests are of the form
 which must fail.
 
 The tests should be performed with an assumed base URI
-of http://www.redland.opensource.ac.uk/raptor/tests/turtle/
+of http://librdf.org/raptor/tests/turtle/
 
 Dave

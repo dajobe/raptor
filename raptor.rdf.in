@@ -13,11 +13,11 @@
     <doap:summary xml:lang="en">RDF Parser Toolkit Library.</doap:summary>
     <doap:description xml:lang="en">Library for parsing RDF syntaxes
     such as RDF/XML, N-Triples and Turtle into RDF triples.</doap:description>
-    <doap:homepage rdf:resource="http://www.redland.opensource.ac.uk/raptor/"/>
+    <doap:homepage rdf:resource="http://librdf.org/raptor/"/>
 
     <doap:maintainer rdf:nodeID="dave"/>
 
-    <doap:download rdf:resource="http://www.redland.opensource.ac.uk/dist/sources/"/>
+    <doap:download rdf:resource="http://librdf.org/dist/sources/"/>
 
     <doap:license rdf:resource="http://www.gnu.org/licenses/gpl.html"/>
     <doap:license rdf:resource="http://www.gnu.org/licenses/lgpl.html"/>
@@ -34,7 +34,7 @@
     <doap:repository>
       <doap:CVSRepository>
 	<doap:anonCVS>:pserver:anonymous@cvs.ilrg.org:/cvs/redland raptor</doap:anonCVS>
-	<doap:repositoryWebView rdf:resource="http://cvs.ilrt.org/cvsweb/redland/raptor/"/>
+	<doap:repositoryWebView rdf:resource="http://cvs.librdf.org/cvsweb/redland/raptor/"/>
       </doap:CVSRepository>
     </doap:repository>
   </doap:Project>

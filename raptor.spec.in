@@ -10,8 +10,8 @@ Release:   %{release}
 Prefix:    %{_prefix}
 Copyright: LGPL/Apache 2
 Group:     Development/Libraries
-Source:    http://www.redland.opensource.ac.uk/dist/source/%{name}-%{version}.tar.gz
-URL:       http://www.redland.opensource.ac.uk/raptor/
+Source:    http://librdf.org/dist/source/%{name}-%{version}.tar.gz
+URL:       http://librdf.org/raptor/
 BuildRoot: /tmp/%{name}-%{version}
 BuildRequires: libxml2 libxml2-devel curl curl-devel
 Packager:  Dave Beckett <Dave.Beckett@bristol.ac.uk>
