@@ -350,6 +350,7 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
 {
   raptor_uri *uri=NULL;
   const unsigned char *p;
+  const unsigned char *original_name=name;
   const unsigned char *local_name=NULL;
   int local_name_length=0;
   raptor_namespace* ns;
@@ -393,7 +394,7 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
   
   if(!ns) {
     if(error_handler)
-      error_handler((raptor_parser*)error_data, "The namespace prefix in \"%s\" was not declared.", name);
+      error_handler((raptor_parser*)error_data, "The namespace prefix in \"%s\" was not declared.", original_name);
   }
 
 
