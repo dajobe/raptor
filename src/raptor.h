@@ -267,6 +267,7 @@ RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_stric
 /* memory functions */
 RAPTOR_API void raptor_free_memory(void *ptr);
 RAPTOR_API void* raptor_alloc_memory(size_t size);
+RAPTOR_API void* raptor_calloc_memory(size_t nmemb, size_t size);
 
 /* URI functions */
 RAPTOR_API raptor_uri* raptor_new_uri(const unsigned char *uri_string);
