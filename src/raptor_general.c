@@ -304,7 +304,7 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
   raptor_uri_get_handler(&uri_handler, &uri_context);
   raptor_namespaces_init(&rdf_parser->namespaces,
                          uri_handler, uri_context,
-                         raptor_parser_error, rdf_parser);
+                         raptor_parser_simple_error, rdf_parser);
 
   return rdf_parser->factory->start(rdf_parser);
 }
@@ -567,6 +567,25 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
   va_start(arguments, message);
 
   raptor_parser_error_varargs(parser, message, arguments);
+  
+  va_end(arguments);
+}
+
+
+/*
+ * raptor_parser_simple_error - Error from a parser - Internal
+ *
+ * Matches the raptor_simple_message_handler API but same as
+ * raptor_parser_error 
+ **/
+void
+raptor_parser_simple_error(void* parser, const char *message, ...)
+{
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  raptor_parser_error((raptor_parser*)parser, message);
   
   va_end(arguments);
 }
