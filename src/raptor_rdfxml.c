@@ -3472,11 +3472,11 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if (element->rdf_attr[RDF_ATTR_parseType]) {
           const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
 
-          if(!strcasecmp(parse_type, "literal")) {
+          if(!raptor_strcasecmp(parse_type, "literal")) {
             element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-          } else if (!strcasecmp(parse_type, "resource")) {
+          } else if (!raptor_strcasecmp(parse_type, "resource")) {
             state=RAPTOR_STATE_PARSETYPE_RESOURCE;
             element->child_state=RAPTOR_STATE_PROPERTYELT;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
@@ -3487,7 +3487,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           } else {
             if(rdf_parser->feature_allow_other_parseTypes) {
-              if(!strcasecmp(parse_type, "daml:collection")) {
+              if(!raptor_strcasecmp(parse_type, "daml:collection")) {
                 /* A DAML collection appears as a single node */
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
                 element->child_state=RAPTOR_STATE_PARSETYPE_DAML_COLLECTION;
