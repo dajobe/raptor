@@ -101,10 +101,10 @@ void print_statements(void *user_data, const raptor_statement *statement)
 
 
 #ifdef HAVE_GETOPT_LONG
-#define HELP_TEXT(short, long, description) "  -" #short ", --" long "  " description "\n"
+#define HELP_TEXT(short, long, description) "  -" #short ", --" long "  " description
 #define HELP_ARG(short, long) "--" #long
 #else
-#define HELP_TEXT(short, long, description) "  -" #short "  " description "\n"
+#define HELP_TEXT(short, long, description) "  -" #short "  " description
 #define HELP_ARG(short, long) "-" #short
 #endif
 
@@ -315,7 +315,6 @@ main(int argc, char *argv[])
 
       case 'v':
         fputs(raptor_version_string, stdout);
-        fputc('\n', stdout);
         exit(0);
     }
     
@@ -329,7 +328,7 @@ main(int argc, char *argv[])
   if(usage) {
     if(usage>1) {
       fprintf(stderr, title_format_string, raptor_version_string);
-      fprintf(stderr, "%s\n", raptor_short_copyright_string);
+      fputs(raptor_short_copyright_string, stderr);
     }
     fprintf(stderr, "Try `%s " HELP_ARG(h, help) "' for more information.\n",
                     program);
@@ -339,25 +338,25 @@ main(int argc, char *argv[])
   if(help) {
     printf("Usage: %s [OPTIONS] <source URI> [base URI]\n", program);
     printf(title_format_string, raptor_version_string);
-    printf("%s\n", raptor_short_copyright_string);
-    printf("Parse RDF content at the source URI into RDF triples.\n");
-    printf("\nMain options:\n");
-    printf(HELP_TEXT(h, "help            ", "Print this help, then exit"));
-    printf(HELP_TEXT(i, "input FORMAT    ", "Set input format to one of:"));
-    printf("    'rdfxml'                RDF/XML (default)\n    'ntriples'              N-Triples\n    'ntriples-plus'         N-Triples Plus\n    'rss-tag-soup'          RSS tag soup\n");
-    printf(HELP_TEXT(o, "output FORMAT   ", "Set output format to one of:"));
-    printf("    'simple'                A simple format (default)\n    'ntriples'              N-Triples\n");
-    printf(HELP_TEXT(m, "mode MODE       ", "Set parser mode - 'lax' (default) or 'strict'"));
-    printf("\nAdditional options:\n");
-    printf(HELP_TEXT(c, "count           ", "Count triples - no output"));
-    printf(HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
-    printf(HELP_TEXT(q, "quiet           ", "No extra information messages"));
-    printf(HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
-    printf(HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
-    printf(HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
-    printf(HELP_TEXT(v, "version         ", "Print the Raptor version"));
-    printf("\nReport bugs to <redland-dev@lists.librdf.org>.\n");
-    printf("Raptor home page: http://www.redland.opensource.ac.uk/raptor/\n");
+    puts(raptor_short_copyright_string);
+    puts("Parse RDF content at the source URI into RDF triples.");
+    puts("\nMain options:");
+    puts(HELP_TEXT(h, "help            ", "Print this help, then exit"));
+    puts(HELP_TEXT(i, "input FORMAT    ", "Set input format to one of:"));
+    puts("    'rdfxml'                RDF/XML (default)\n    'ntriples'              N-Triples\n    'ntriples-plus'         N-Triples Plus\n    'rss-tag-soup'          RSS tag soup");
+    puts(HELP_TEXT(o, "output FORMAT   ", "Set output format to one of:"));
+    puts("    'simple'                A simple format (default)\n    'ntriples'              N-Triples");
+    puts(HELP_TEXT(m, "mode MODE       ", "Set parser mode - 'lax' (default) or 'strict'"));
+    puts("\nAdditional options:");
+    puts(HELP_TEXT(c, "count           ", "Count triples - no output"));
+    puts(HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
+    puts(HELP_TEXT(q, "quiet           ", "No extra information messages"));
+    puts(HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
+    puts(HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
+    puts(HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
+    puts(HELP_TEXT(v, "version         ", "Print the Raptor version"));
+    puts("\nReport bugs to <redland-dev@lists.librdf.org>.");
+    puts("Raptor home page: http://www.redland.opensource.ac.uk/raptor/");
     exit(0);
   }
 
