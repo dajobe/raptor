@@ -316,6 +316,8 @@ main(int argc, char *argv[])
       return(1);
     }
 
+    raptor_ntriples_set_error_handler(rdfnt_parser, NULL, rdfdump_error_handler);
+
   }
 
 
