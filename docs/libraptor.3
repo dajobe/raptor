@@ -335,20 +335,27 @@ with \fIerror_data\fR allow error reporting to be given.
 If buffer is NULL, returns the size of the buffer required to escape.
 Otherwise the return value is the number of bytes used or 0 on failure.
 .SH "MEMORY UTILITY FUNCTIONS"
-.IP "\fBvoid raptor_free_memory(void *ptr)\fR"
+.IP "\fBvoid raptor_free_memory(void *\fIptr\fP)\fR"
 Free memory allocated inside raptor.  Some systems require
 memory allocated in a library to be deallocated inside that library.
 This function can be used in that situation to free memory
 allocated by raptor, such as the result of the \fI_to_\fP methods
 that return allocated memory such as \fBraptor_uri_to_filename\fP or
 \fBraptor_uri_to_string\fP.
-.IP "\fBvoid* raptor_alloc_memory(size_t size)\fR"
+.IP "\fBvoid* raptor_alloc_memory(size_t \fIsize\fP)\fR"
 Allocate memory inside the raptor library.  Some systems require
 memory allocated in a library to be deallocated inside that library.
 This function can be used in that situation to allocate memory
 for raptor to free later, such as inside the handler function
 declared with \fBraptor_set_generate_id_handler\fP which returns
 new memory.
+.IP "\fBvoid* raptor_calloc_memory(size_t \fInmemb\fP, size_t \fIsize\fP)\fR"
+Allocate zeroed array of items inside raptor.  Some systems require
+memory allocated in a library to be deallocated inside that library.
+This function can be used in that situation to clear an
+array of allocated memory for raptor to use, for freeing later, such
+as inside the handler function declared with
+\fBraptor_set_generate_id_handler\fP which returns new memory.
 .SH "UNICODE UTILITY FUNCTIONS"
 .IP "\fBint raptor_unicode_char_to_utf8(unsigned long \fIc\fP, unsigned char *\fIoutput\fP)\fR"
 Turn a Unicode character into UTF8 bytes in \fIoutput\fP of
@@ -716,6 +723,8 @@ should be copied if needed.
 Return the length of the stringbuffer.
 .SH API CHANGES
 .SS 1.3.3
+Added \fBraptor_calloc_memory\fR to provide a calloc inside raptor.
+.br
 Added feature check_rdf_id (see raptor_set_feature documentation).
 .SS 1.3.2
 Added \fBraptor_alloc_memory\fR to allocate memory inside raptor.
