@@ -259,7 +259,21 @@ fi
 
 LIBS="$oLIBS"
 
-AC_CHECK_PROGS(XML_CONFIG, xml2-config xml-config)
+AC_ARG_WITH(xml2-config, [  --with-xml2-config=PATH Location of libxml xml2-config []], xml2_config="$withval", xml2_config="")
+
+if test "X$xml2_config" != "X" ; then
+  AC_MSG_CHECKING(for $xml2_config)
+
+  if test -f $xml2_config ; then
+    XML_CONFIG=$xml2_config
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no - searching PATH)
+  fi
+fi
+if test "X$XML_CONFIG" = "X"; then
+  AC_CHECK_PROGS(XML_CONFIG, xml2-config xml-config)
+fi
 
 
 have_libxml=0
