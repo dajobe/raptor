@@ -81,6 +81,7 @@ typedef enum {
 } raptor_rss_type;
 
 
+/* Namespaces used in RSS */
 #define RSS1_0_NAMESPACE_URI  "http://purl.org/rss/1.0/"
 #define RSS0_91_NAMESPACE_URI "http://purl.org/rss/1.0/modules/rss091#"
 #define RSS2_0_ENC_NAMESPACE_URI "http://purl.oclc.org/net/rss_2.0/enc#"
@@ -98,37 +99,31 @@ typedef enum {
   DC_NS          = 6,
   RSS2_0_ENC_NS  = 7,
 
-  RSS_NAMESPACES_SIZE = RSS2_0_ENC_NS+1
+  RAPTOR_RSS_NAMESPACES_SIZE = RSS2_0_ENC_NS+1
 } rss_info_namespace;
 
 
-static const char* const rss_namespace_uri_strings[RSS_NAMESPACES_SIZE]={
-  NULL,
-  NULL,
-  RSS0_91_NAMESPACE_URI,
-  NULL,
-  RSS1_0_NAMESPACE_URI,
-  ATOM0_3_NAMESPACE_URI,
-  DC_NAMESPACE_URI,
-  RSS2_0_ENC_NAMESPACE_URI
+typedef struct {
+  const char *const uri_string;
+  const char *prefix;
+  raptor_uri* uri;
+  raptor_namespace* nspace;
+} raptor_rss_namespace_info;
+
+
+static raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE]={
+  { NULL,                     NULL,   NULL },
+  { NULL,                     NULL,   NULL },
+  { RSS0_91_NAMESPACE_URI,    NULL,   NULL },
+  { NULL,                     NULL,   NULL },
+  { RSS1_0_NAMESPACE_URI,     "rss",  NULL },
+  { ATOM0_3_NAMESPACE_URI,    "atom", NULL },
+  { DC_NAMESPACE_URI,         "dc",   NULL },
+  { RSS2_0_ENC_NAMESPACE_URI, NULL,   NULL }
 };
 
 
-static const char* const rss_namespace_prefix_strings[RSS_NAMESPACES_SIZE]={
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  "rss",
-  "atom",
-  "dc",
-  NULL
-};
-
-
-static raptor_uri* rss_namespace_uris[RSS_NAMESPACES_SIZE];
-
-
+/* Typed nodes used in RSS */
 typedef struct {
   const char* name;
   rss_info_namespace nspace;
@@ -136,7 +131,7 @@ typedef struct {
   raptor_qname* qname;
 } raptor_rss_info;
 
-raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
+static raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
   { "channel",    RSS1_0_NS },
   { "image",      RSS1_0_NS },
   { "textinput",  RSS1_0_NS },
@@ -149,7 +144,7 @@ raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
 };
 
 
-/* Fields of channel, image, textinput, skipHours, skipDays, item */
+/* Fields of typed nodes used in RSS */
 typedef enum {
   RAPTOR_RSS_FIELD_TITLE,
   RAPTOR_RSS_FIELD_LINK,
@@ -221,7 +216,7 @@ typedef enum {
 } raptor_rss_fields_type;
 
 
-raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
+static raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "title",          RSS1_0_NS },
   { "link",           RSS1_0_NS },
   { "description",    RSS1_0_NS },
@@ -288,12 +283,13 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
 };
 
 
+/* Crude and unofficial mappings from atom fields to RSS */
 typedef struct {
   raptor_rss_fields_type from;
   raptor_rss_fields_type to;
 } raptor_field_pair;
 
-raptor_field_pair raptor_atom_to_rss[]={
+static raptor_field_pair raptor_atom_to_rss[]={
   { RAPTOR_RSS_FIELD_ATOM_CONTENT,  RAPTOR_RSS_FIELD_DESCRIPTION },
   { RAPTOR_RSS_FIELD_ATOM_TITLE,    RAPTOR_RSS_FIELD_TITLE },
 #if 0
@@ -309,7 +305,7 @@ raptor_field_pair raptor_atom_to_rss[]={
 };
   
 
-
+/* RSS enclosure support */
 struct raptor_rss_enclosure_s
 {
   raptor_identifier identifier;
@@ -320,6 +316,8 @@ struct raptor_rss_enclosure_s
 };
 typedef struct raptor_rss_enclosure_s raptor_rss_enclosure;
 
+
+/* RSS items (typed nodes) containing fields */
 struct raptor_rss_item_s
 {
   raptor_uri *uri;
@@ -388,21 +386,21 @@ raptor_rss_common_init(void) {
   if(raptor_rss_common_initialised++)
     return;
   
-  for(i=0; i<RSS_NAMESPACES_SIZE;i++) {
-    const char *uri_string=rss_namespace_uri_strings[i];
+  for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
+    const char *uri_string=raptor_rss_namespaces_info[i].uri_string;
     if(uri_string)
-      rss_namespace_uris[i]=raptor_new_uri((const unsigned char*)uri_string);
+      raptor_rss_namespaces_info[i].uri=raptor_new_uri((const unsigned char*)uri_string);
   }
 
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-    raptor_uri *namespace_uri=rss_namespace_uris[raptor_rss_types_info[i].nspace];
+    raptor_uri *namespace_uri=raptor_rss_namespaces_info[raptor_rss_types_info[i].nspace].uri;
     if(namespace_uri)
       raptor_rss_types_info[i].uri=raptor_new_uri_from_uri_local_name(namespace_uri,
                                                                       (const unsigned char*)raptor_rss_types_info[i].name);
   }
 
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
-    raptor_uri *namespace_uri=rss_namespace_uris[raptor_rss_fields_info[i].nspace];
+    raptor_uri *namespace_uri=raptor_rss_namespaces_info[raptor_rss_fields_info[i].nspace].uri;
     if(namespace_uri)
       raptor_rss_fields_info[i].uri=raptor_new_uri_from_uri_local_name(namespace_uri,
                                                                        (const unsigned char*)raptor_rss_fields_info[i].name);
@@ -427,9 +425,9 @@ raptor_rss_common_terminate(void) {
       raptor_free_uri(raptor_rss_fields_info[i].uri);
   }
 
-  for(i=0; i<RSS_NAMESPACES_SIZE;i++) {
-    if(rss_namespace_uris[i])
-      raptor_free_uri(rss_namespace_uris[i]);
+  for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
+    if(raptor_rss_namespaces_info[i].uri)
+      raptor_free_uri(raptor_rss_namespaces_info[i].uri);
   }
 
 }
@@ -718,7 +716,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
             xmlChar *nspace_URI=xmlTextReaderNamespaceUri(reader);
 #endif
             if(nspace_URI && raptor_rss_fields_info[i].nspace != RSS_NO_NS) {
-              const char *field_nspace_URI=rss_namespace_uri_strings[raptor_rss_fields_info[i].nspace];
+              const unsigned char *field_nspace_URI=raptor_rss_namespaces_info[raptor_rss_fields_info[i].nspace].uri_string;
             
               if(!strcmp((const char*)nspace_URI, field_nspace_URI)) {
                 rss_parser->current_field=(raptor_rss_fields_type)i;
@@ -1751,14 +1749,12 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
                               0);
   raptor_iostream_write_namespace(iostr, nspace);
   
-  for(i=0; i<RSS_NAMESPACES_SIZE;i++) {
-    const char *uri_string=rss_namespace_uri_strings[i];
-    const char *prefix=rss_namespace_prefix_strings[i];
-    if(uri_string && prefix) {
-      nspace=raptor_new_namespace(rss_serializer->nstack,
-                                  (const unsigned char*)prefix,
-                                  (const unsigned char*)uri_string,
-                                  0);
+  for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
+    raptor_uri* uri=raptor_rss_namespaces_info[i].uri;
+    const unsigned char *prefix=raptor_rss_namespaces_info[i].prefix;
+    if(uri && prefix) {
+      nspace=raptor_new_namespace_from_uri(rss_serializer->nstack,
+                                           prefix, uri, 0);
       raptor_iostream_write_namespace(iostr, nspace);
       raptor_iostream_write_byte(iostr, ' ');
     }
