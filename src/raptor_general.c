@@ -55,9 +55,9 @@ static raptor_parser_factory* raptor_get_parser_factory(const char *name);
 /* list of parser factories */
 static raptor_parser_factory* parsers=NULL;
 
-const char * const raptor_short_copyright_string = "Copyright (C) 2000-2003 David Beckett, ILRT, University of Bristol";
+const char * const raptor_short_copyright_string = "Copyright (C) 2000-2004 David Beckett, ILRT, University of Bristol";
 
-const char * const raptor_copyright_string = "Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/ - Institute for Learning and Research Technology, University of Bristol.";
+const char * const raptor_copyright_string = "Copyright (C) 2000-2004 David Beckett - http://purl.org/net/dajobe/\nInstitute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/,\nUniversity of Bristol - http://www.bristol.ac.uk/";
 
 const char * const raptor_version_string = VERSION;
 
