@@ -62,6 +62,8 @@ static void print_statements(void *user_data, const raptor_statement *statement)
 int main(int argc, char *argv[]);
 
 
+static char *program=NULL;
+
 /* replace newlines in literal string output with spaces */
 static int replace_newlines=0;
 
@@ -83,7 +85,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
     return;
   
   if(output_format == OUTPUT_FORMAT_SIMPLE)
-    fputs("rdfdump: Statement: ", stdout);
+    fprintf(stdout, "%s: Statement: ", program);
 
   /* replace newlines with spaces if object is a literal string */
   if(replace_newlines && 
@@ -130,7 +132,6 @@ static struct option long_options[] =
 #endif
 
 
-static char *program=NULL;
 static int error_count=0;
 static int warning_count=0;
 
