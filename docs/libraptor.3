@@ -225,7 +225,10 @@ default is used.  If base is less than 1, it is initialised to 1.
 .IP "\fBvoid raptor_set_generate_id_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_generate_id_handler \fIhandler\fB)\fR"
 Allow full customisation of the generated IDs by setting a callback
 \fIhandler\fR and associated \fIuser_data\fR that is called whenever
-a blank node or bag identifier is required.
+a blank node or bag identifier is required.  The memory returned
+is deallocated inside raptor.  Some systems require this to be
+allocated inside the same library, in which case the 
+\fBraptor_alloc_memory\fP function may be useful.
 .SH "PARSER UTILITY FUNCTIONS"
 .IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **name, const char **\fIlabel\fB)\fR"
 Return the parser name/label for a parser with a given integer
@@ -301,7 +304,7 @@ the given stdio \fIstream\fR.
 .IP "\fBvoid raptor_print_ntriples_string(FILE* \fIstream\fB, const char* \fIstring\fB, const char \fIdelim\fB)\fR"
 This is a standalone function that prints the given string
 according to N-Triples escaping rules, expecting to be delimited
-by the character \fIdelim\fR which is usually either " or <
+by the character \fIdelim\fR which is usually either \(dq or <
 .IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term)\fR"
 .SH "XML UTILITY FUNCTIONS"
 .IP "\fBsize_t raptor_xml_escape_string(const unsigned char *\fIstring\fB, size_t \fIlen\fB, unsigned char *\fIbuffer\fB, size_t \fIlength\fB, char \fIquote\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
@@ -315,7 +318,19 @@ If buffer is NULL, returns the size of the buffer required to escape.
 Otherwise the return value is the number of bytes used or 0 on failure.
 .SH "MEMORY UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_free_memory(void *ptr)\fR"
-Free memory allocated inside raptor.
+Free memory allocated inside raptor.  Some systems require
+memory allocated in a library to be deallocated inside that library.
+This function can be used in that situation to free memory
+allocated by raptor, such as the result of the \fI_to_\fP methods
+that return allocated memory such as \fBraptor_uri_to_filename\fP or
+\fBraptor_uri_to_string\fP.
+.IP "\fBvoid* raptor_alloc_memory(size_t size)\fR"
+Allocate memory inside the raptor library.  Some systems require
+memory allocated in a library to be deallocated inside that library.
+This function can be used in that situation to allocate memory
+for raptor to free later, such as inside the handler function
+declared with \fBraptor_set_generate_id_handler\fP which returns
+new memory.
 .SH "UNICODE UTILITY FUNCTIONS"
 .IP "\fBint raptor_unicode_char_to_utf8(unsigned long \fIc\fP, unsigned char *\fIoutput\fP)\fR"
 Turn a Unicode character into UTF8 bytes in \fIoutput\fP of
@@ -403,14 +418,21 @@ This is a standalone function that resolves the relative URI
 according to the URI resolution rules in RFC2396.
 The resulting URI is stored in \fIbuffer\fR which is of \fIlength\fR
 bytes.  If this is too small, no work will be done.
-.IP "\fBchar *raptor_uri_filename_to_uri_string(const unsigned char* \fIfilename\fB)\fR
+.IP "\fBchar *raptor_uri_filename_to_uri_string(const unsigned char* \fIfilename\fB)\fR"
 This is a standalone function that turns a local filename (Windows
 or Unix style as appropriate for platform) into a URI string (file).
- The returned string must be freed by the caller.
-.IP "\fBchar *raptor_uri_uri_string_to_filename(const unsigned char* \fIuri_string\fB)\fR
-This is a standalone function that turns a URI string that
-represents a local filename (file:) into a filename.  The returned string
-must be freed by the caller.
+ The returned string must be freed by the caller. Some systems
+require memory allocated in a library to be deallocated inside that
+library in which case \fBraptor_free_memory\fP may be used.
+.IP "\fBchar *raptor_uri_uri_string_to_filename(const unsigned char* \fIuri_string\fB)\fR"
+.IP "\fBchar *raptor_uri_uri_string_to_filename(const unsigned char* \fIuri_string\fB, unsigned char **\fIfragment_p\fP)\fR"
+These are standalone functions that turn a URI string that
+represents a local filename (file:) into a filename, with optional
+URI fragment.  If \fIfragment_p\fP is not NULL it points to the
+location to store a newly allocated string containing the fragment.
+The returned strings must be freed by the caller.  Some systems
+require memory allocated in a library to be deallocated inside that
+library in which case \fBraptor_free_memory\fP may be used.
 .IP "\fBint raptor_uri_is_file_uri(const unsigned char* \fIuri_string\fB)\fR
 Returns non-zero if the given URI string represents a filename,
 is a file: URI.
@@ -675,6 +697,8 @@ should be copied if needed.
 .IP "\fBsize_t raptor_stringbuffer_length(raptor_stringbuffer* \fIstringbuffer\fP)\fR"
 Return the length of the stringbuffer.
 .SH API CHANGES
+.SS 1.3.2
+Added raptor_alloc_memory to allocate memory inside the library.
 .SS 1.3.1
 Correct raptor_print_statement declaration argument statement to have
 one less 'const', to match the code.
