@@ -60,6 +60,8 @@ typedef void* raptor_uri;
 /* Public structure */
 typedef struct raptor_parser_s raptor_parser;
 
+typedef struct raptor_www_s raptor_www;
+
 /* OLD structure - can't deprecate a typedef */
 typedef raptor_parser raptor_ntriples_parser;
 
@@ -121,7 +123,8 @@ typedef struct {
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
 typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
-
+typedef void (*raptor_www_write_bytes_handler)(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
+typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata, const char *content_type);
 
 
 /* Public functions */
@@ -153,6 +156,7 @@ RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
 /* Parsing functions */
 int raptor_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri, raptor_uri *base_uri);
+RAPTOR_API int raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri);
 
 /* Utility functions */
 RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
@@ -226,15 +230,15 @@ RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **cont
 
 
 /* raptor_www */
-typedef struct raptor_www_s raptor_www;
-
 RAPTOR_API raptor_www *raptor_www_new(void);
 RAPTOR_API void raptor_www_free(raptor_www *www);
-RAPTOR_API void raptor_www_set_userdata(raptor_www *www, void *userdata);
 RAPTOR_API void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API void raptor_www_set_proxy(raptor_www *www, const char *proxy);
+void
+RAPTOR_API raptor_www_set_write_bytes_handler(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data);
+RAPTOR_API void raptor_www_set_content_type_handler(raptor_www *www, raptor_www_content_type_handler handler, void *user_data);
 RAPTOR_API void raptor_www_set_error_handler(raptor_www *www, raptor_message_handler error_handler, void *error_data);
-RAPTOR_API int raptor_www_fetch(raptor_www *www, const char *url);
+RAPTOR_API int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 
 
 
