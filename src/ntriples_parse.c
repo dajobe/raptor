@@ -540,7 +540,8 @@ raptor_ntriples_string(raptor_parser* rdf_parser,
   if(c != end_char)
     raptor_parser_error(rdf_parser, "Missing terminating '%c'", end_char);
 
-  *dest_lenp=p-*start;
+  if(dest_lenp)
+    *dest_lenp=p-*start;
 
   *start=p;
 
@@ -560,7 +561,6 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
   int term_length= 0;
   int object_literal_is_XML=0;
   char *object_literal_language=NULL;
-  int object_literal_language_length=0;
   char *object_literal_datatype=NULL;
 
 
@@ -694,8 +694,35 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
           if(raptor_ntriples_string(rdf_parser,
                                     &p, object_literal_language, &len,
-                                    &object_literal_language_length, ' ', 0))
+                                    NULL, ' ', 0))
             return 1;
+        }
+
+        if(len >1 && *p == '^' && p[1] == '^') {
+
+          object_literal_datatype=p;
+
+          /* Skip ^^ */
+          p+= 2;
+          len-= 2;
+          rdf_parser->locator.column+= 2;
+          rdf_parser->locator.byte+= 2;
+
+          if(!len || (len && *p != '<')) {
+            raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
+            return 0;
+          }
+
+          p++;
+          len--;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
+
+          if(raptor_ntriples_string(rdf_parser,
+                                    &p, object_literal_datatype, &len,
+                                    NULL, '>', 1))
+            return 1;
+          
         }
 
 
@@ -781,7 +808,34 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
           if(raptor_ntriples_string(rdf_parser,
                                     &p, object_literal_language, &len,
-                                    &object_literal_language_length, ' ', 0))
+                                    NULL, ' ', 0))
+            return 1;
+          
+        }
+
+        if(len >1 && *p == '^' && p[1] == '^') {
+
+          object_literal_datatype=p;
+
+          /* Skip ^^ */
+          p+= 2;
+          len-= 2;
+          rdf_parser->locator.column+= 2;
+          rdf_parser->locator.byte+= 2;
+
+          if(!len || (len && *p != '<')) {
+            raptor_parser_error(rdf_parser, "Missing datatype URI-ref in xml\"string\"^^<URI-ref> after ^^");
+            return 0;
+          }
+
+          p++;
+          len--;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
+
+          if(raptor_ntriples_string(rdf_parser,
+                                    &p, object_literal_datatype, &len,
+                                    NULL, '>', 1))
             return 1;
           
         }
