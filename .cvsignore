@@ -29,3 +29,4 @@ stamp-h*
 test*
 rdfdump
 *.txt
+raptor_cc.c
