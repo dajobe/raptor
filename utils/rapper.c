@@ -288,14 +288,16 @@ main(int argc, char *argv[])
 
       case 'i':
         if(optarg) {
-          if(!strcmp(optarg, "rdfxml") || !strcmp(optarg, "ntriples")
-             || !strcmp(optarg, "n3") || !strcmp(optarg, "rss-tag-soup")
+          if(!strcmp(optarg, "rdfxml")
+             || !strcmp(optarg, "ntriples")
+             || !strcmp(optarg, "ntriples-plus")
+             || !strcmp(optarg, "rss-tag-soup")
             ) {
             syntax_name=optarg;
           } else {
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
                     program, optarg);
-            fprintf(stderr, "Valid arguments are:\n  `rdfxml'        for RDF/XML content \n  `ntriples'      for N-Triples\n  `rss-tag-soup'  for RSS Tag Soup\n");
+            fprintf(stderr, "Valid arguments are:\n  `rdfxml'        for RDF/XML content \n  `ntriples'      for N-Triples \n  `ntriples-plus'     for N-Triples Plus\n  `rss-tag-soup'  for RSS Tag Soup\n");
             usage=1;
             break;
             
@@ -342,7 +344,7 @@ main(int argc, char *argv[])
     printf("\nMain options:\n");
     printf(HELP_TEXT(h, "help            ", "Print this help, then exit"));
     printf(HELP_TEXT(i, "input FORMAT    ", "Set input format to one of:"));
-    printf("    'rdfxml'                RDF/XML (default)\n    'ntriples'              N-Triples\n    'rss-tag-soup'          RSS tag soup\n");
+    printf("    'rdfxml'                RDF/XML (default)\n    'ntriples'              N-Triples\n    'ntriples-plus'         N-Triples Plus\n    'rss-tag-soup'          RSS tag soup\n");
     printf(HELP_TEXT(o, "output FORMAT   ", "Set output format to one of:"));
     printf("    'simple'                A simple format (default)\n    'ntriples'              N-Triples\n");
     printf(HELP_TEXT(m, "mode            ", "Set parser mode - 'lax' (default) or 'strict'"));
