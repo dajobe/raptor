@@ -3060,10 +3060,11 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 static const char *
 raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 {
+  static int myid=0;
   char *buffer;
   /* "genid" + min length 1 + \0 */
   int length=7;
-  int id=++rdf_parser->genid;
+  int id=++myid;
   int tmpid=id;
 
   while(tmpid/=10)
