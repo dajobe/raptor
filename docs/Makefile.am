@@ -116,7 +116,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor.pc
 
 
-EXTRA_DIST=ChangeLog ChangeLog.1 \
+EXTRA_DIST=ChangeLog ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 libraptor.html rapper.html RELEASE.html \
