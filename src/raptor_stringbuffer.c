@@ -127,7 +127,7 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
 
 
 /**
- * raptor_stringbuffer_append_string_common: - Add a string to the stringbuffer
+ * raptor_stringbuffer_append_string_common - Add a string to the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
@@ -185,7 +185,7 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_append_counted_string: - Add a string to the stringbuffer
+ * raptor_stringbuffer_append_counted_string - Add a string to the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
@@ -207,7 +207,7 @@ raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer,
   
 
 /**
- * raptor_stringbuffer_append_string: - Add a string to the stringbuffer
+ * raptor_stringbuffer_append_string - Add a string to the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @do_copy: non-0 to copy the string
@@ -227,7 +227,7 @@ raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_append_decimal: - Add an integer in decimal to the stringbuffer
+ * raptor_stringbuffer_append_decimal - Add an integer in decimal to the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @integer: integer to format as decimal and add
  * 
@@ -267,7 +267,7 @@ raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_append_stringbuffer: - Add a stringbuffer to the stringbuffer
+ * raptor_stringbuffer_append_stringbuffer - Add a stringbuffer to the stringbuffer
  * @stringbuffer: &raptor_stringbuffer
  * @append: &raptor_stringbuffer to append
  *
@@ -315,7 +315,7 @@ raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_prepend_string_common: - Add a string to the start of a stringbuffer
+ * raptor_stringbuffer_prepend_string_common - Add a string to the start of a stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
@@ -372,7 +372,7 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_prepend_counted_string: - Add a string to the start of the stringbuffer
+ * raptor_stringbuffer_prepend_counted_string - Add a string to the start of the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
@@ -394,7 +394,7 @@ raptor_stringbuffer_prepend_counted_string(raptor_stringbuffer* stringbuffer,
   
 
 /**
- * raptor_stringbuffer_prepend_string: - Add a string to the start of the stringbuffer
+ * raptor_stringbuffer_prepend_string - Add a string to the start of the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @do_copy: non-0 to copy the string
@@ -414,7 +414,7 @@ raptor_stringbuffer_prepend_string(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_length: - Return the stringbuffer length
+ * raptor_stringbuffer_length - Return the stringbuffer length
  * @stringbuffer: raptor stringbuffer
  * 
  * Return value: size of stringbuffer
@@ -428,7 +428,7 @@ raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer)
 
 
 /**
- * raptor_stringbuffer_as_string: - Return the stringbuffer as a C string
+ * raptor_stringbuffer_as_string - Return the stringbuffer as a C string
  * @stringbuffer: raptor stringbuffer
  * 
  * Note: the return value is a to a shared string that the stringbuffer
@@ -463,6 +463,45 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
   return stringbuffer->string;
 }
 
+
+/**
+ * raptor_stringbuffer_copy_to_string - Copy the stringbuffer into a string
+ * @stringbuffer: raptor stringbuffer
+ * @string: output string
+ * @length: size of output string
+ * 
+ * Copies the underlying string to a pre-allocated buffer.  The
+ * output string is always '\0' terminated.
+ *
+ * Return value: non-0 on failure such as stringbuffer is empty, buffer is too small
+ **/
+int
+raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer,
+                                   unsigned char *string, size_t length)
+{
+  raptor_stringbuffer_node *node;
+  unsigned char *p;
+  
+  if(!string || length < 1)
+    return 1;
+
+  if(!stringbuffer->length)
+    return 0;
+
+  p=string;
+  for(node=stringbuffer->head; node; node=node->next) {
+    if(node->length > length) {
+      p[-1]='\0';
+      return 1;
+    }
+    strncpy((char*)p, (const char*)node->string, node->length);
+    p+= node->length;
+    length-= node->length;
+  }
+  *p='\0';
+  return 0;
+}
+
 #endif
 
 
@@ -493,6 +532,8 @@ main(int argc, char *argv[])
 #define TEST_APPEND_COUNT 2
   const char *test_append_results[TEST_APPEND_COUNT]={ "thebrownjumpsthedog", "quickfoxoverlazy" };
   const char *test_append_results_total="thebrownjumpsthedogquickfoxoverlazy";
+#define COPY_STRING_BUFFER_SIZE 100
+  unsigned char *copy_string;
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Creating string buffer\n", program);
@@ -678,6 +719,24 @@ main(int argc, char *argv[])
     exit(1);
   }
 
+
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "%s: Copying string buffer to string\n", program);
+#endif
+
+  copy_string=(unsigned char*)malloc(COPY_STRING_BUFFER_SIZE);
+  if(raptor_stringbuffer_copy_to_string(sb1, copy_string, COPY_STRING_BUFFER_SIZE)) {
+    fprintf(stderr, "%s: copying string buffer to string failed\n",
+            program);
+    exit(1);
+  }
+  if(strcmp((const char*)copy_string, test_append_results_total)) {
+    fprintf(stderr, "%s: copied string buffer contains '%s', expected '%s'\n",
+            program, copy_string, test_append_results_total);
+    exit(1);
+  }
+  free(copy_string);
+  
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Freeing string buffers\n", program);
