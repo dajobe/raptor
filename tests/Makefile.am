@@ -213,7 +213,7 @@ check-bad-nfc-rdf: $(top_builddir)/rapper $(RDF_BAD_NFC_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/rapper -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "ok"; \
