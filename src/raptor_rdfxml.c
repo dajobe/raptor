@@ -742,6 +742,27 @@ static void raptor_print_statement_detailed(const raptor_statement *statement, i
  *   http://www.w3.org/XML/1998/namespace
  * --------------------------------------------------------------------
  *
+ * Errata NE05
+ * http://www.w3.org/XML/xml-names-19990114-errata#NE05
+ * changes that to read:
+ *
+ * --------------------------------------------------------------------
+ * The prefix xml is by definition bound to the namespace name
+ * http://www.w3.org/XML/1998/namespace. It may, but need not, be
+ * declared, and must not be bound to any other namespace name. No
+ * other prefix may be bound to this namespace name.
+ *
+ * The prefix xmlns is used only to declare namespace bindings and is
+ * by definition bound to the namespace name
+ * http://www.w3.org/2000/xmlns/. It must not be declared. No other
+ * prefix may be bound to this namespace name.
+ *
+ * All other prefixes beginning with the three-letter sequence x, m, l,
+ * in any case combination, are reserved. This means that
+ *  * users should not use them except as defined by later specifications
+ *  * processors must not treat them as fatal errors.
+ * --------------------------------------------------------------------
+ *
  * Thus should define it in the table of namespaces before we start.
  *
  * We *can* also define others, but let's not.
@@ -2608,6 +2629,20 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
   sprintf(buffer, "genid%d", id);
 
   return buffer;
+}
+
+
+raptor_uri*
+raptor_new_uri(raptor_parser *rdf_parser, const char *uri_string) 
+{
+#ifdef RAPTOR_IN_REDLAND
+  return librdf_new_uri(rdf_parser->world, uri_string);
+#else
+  int new_uri_len=strlen(uri_string)+1;
+  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len+1);
+  
+  return new_uri;
+#endif
 }
 
 
