@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * rdfdump.c - Rapier example code using parse to print all RDF callbacks
+ * rdfdump.c - Rapier RDF Parser example code 
  *
  * $Id$
  *
