@@ -142,6 +142,9 @@ raptor_www_new_with_connection(void *connection)
 #ifdef RAPTOR_WWW_LIBWWW
   raptor_www_libwww_init(www);
 #endif
+#ifdef RAPTOR_WWW_LIBFETCH
+  raptor_www_libfetch_init(www);
+#endif
 
   return www;
 }
@@ -181,6 +184,9 @@ raptor_www_free(raptor_www *www)
 #endif
 #ifdef RAPTOR_WWW_LIBWWW
   raptor_www_libwww_free(www);
+#endif
+#ifdef RAPTOR_WWW_LIBFETCH
+  raptor_www_libfetch_free(www);
 #endif
 
   if(www->uri)
@@ -267,6 +273,10 @@ raptor_www_get_connection(raptor_www *www)
 #endif
 
 #ifdef RAPTOR_WWW_LIBWWW
+  return NULL;
+#endif
+
+#ifdef RAPTOR_WWW_LIBFETCH
   return NULL;
 #endif
 }
@@ -379,6 +389,10 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 
 #ifdef RAPTOR_WWW_LIBWWW
   return raptor_www_libwww_fetch(www);
+#endif
+
+#ifdef RAPTOR_WWW_LIBFETCH
+  return raptor_www_libfetch_fetch(www);
 #endif
 
 #endif

@@ -117,7 +117,15 @@ fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h expat.h xmlparse.h sys/stat.h curl/curl.h libxml/nanohttp.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h expat.h xmlparse.h sys/stat.h curl/curl.h libxml/nanohttp.h sys/param.h)
+dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
+AC_CHECK_HEADERS(fetch.h,,,
+  [#include <stdio.h>
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+])
+
 
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -621,9 +629,11 @@ AC_MSG_RESULT($xml_names)
 
 have_libcurl=0
 have_libwww=0
+have_libfetch=0
 need_libcurl=0
 need_libxml_www=0
 need_libwww=0
+need_libfetch=0
 
 oCPPFLAGS="$CPPFLAGS"
 if test "X$CURL_CONFIG" != X; then
@@ -657,10 +667,16 @@ if test "X$LIBWWW_CONFIG" != X; then
   fi
 fi
 
+if test $ac_cv_header_fetch_h = yes; then
+  oLIBS="$LIBS"
+  AC_CHECK_LIB(fetch, fetchXGetURL, have_libfetch=1)
+  LIBS="$oLIBS"
+fi
 
-AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, libwww, none], www="$withval", www="curl") 
 
-for www_name in $www curl xml libwww none; do
+AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, libwww, libfetch, none], www="$withval", www="curl") 
+
+for www_name in $www curl xml libwww libfetch none; do
   case $www_name in
     curl)
       if test $have_libcurl = 1; then
@@ -683,6 +699,14 @@ for www_name in $www curl xml libwww none; do
       if test $have_libwww = 1; then
         need_libwww=1
 	AC_DEFINE([RAPTOR_WWW_LIBWWW], 1, [Have W3C libwww WWW library])
+        break
+      fi
+      ;;
+
+    libfetch)
+      if test $have_libfetch = 1; then
+        need_libfetch=1
+	AC_DEFINE([RAPTOR_WWW_LIBFETCH], 1, [Have libfetch WWW library])
         break
       fi
       ;;
@@ -716,6 +740,9 @@ fi
 if test $have_libwww = 1; then
   www_libraries_available="$www_libraries_available libwww $LIBWWW_VERSION"
 fi
+if test $have_libfetch = 1; then
+  www_libraries_available="$www_libraries_available libfetch"
+fi
 AC_MSG_RESULT($www_libraries_available)
 
 
@@ -731,13 +758,15 @@ elif test $need_libxml_www = 1; then
   fi
 elif test $need_libwww = 1; then
   www_library="libwww $LIBWWW_VERSION"
+elif test $need_libfetch = 1; then
+  www_library="libfetch"
 else
   www_library=none
 fi
 AC_MSG_RESULT($www_library)
 if test "X$www_library" = Xnone; then
   AC_MSG_WARN([No WWW library in use - only file: URLs will work])
-  AC_MSG_WARN([Install libcurl, libxml2, W3C libwww to provide WWW access])
+  AC_MSG_WARN([Install libcurl, libxml2, W3C libwww or libfetch for WWW access])
 fi
 
 
@@ -751,6 +780,11 @@ if test $need_libwww = 1; then
   CPPFLAGS="$CPPFLAGS `$LIBWWW_CONFIG --cflags`"
   LIBS="$LIBS `$LIBWWW_CONFIG --libs`"
   AC_LIBOBJ(raptor_www_libwww)
+fi
+
+if test $need_libfetch = 1; then
+  LIBS="$LIBS -lfetch"
+  AC_LIBOBJ(raptor_www_libfetch)
 fi
 
 

@@ -488,6 +488,10 @@ struct  raptor_www_s {
   int is_end;
 #endif
 
+#ifdef RAPTOR_WWW_LIBFETCH
+  char buffer[RAPTOR_WWW_BUFFER_SIZE];
+#endif
+
   char *user_agent;
 
   /* proxy URL string or NULL for none */
@@ -522,6 +526,10 @@ int raptor_www_curl_fetch(raptor_www *www);
 void raptor_www_libwww_init(raptor_www *www);
 void raptor_www_libwww_free(raptor_www *www);
 int raptor_www_libwww_fetch(raptor_www *www);
+
+void raptor_www_libfetch_init(raptor_www *www);
+void raptor_www_libfetch_free(raptor_www *www);
+int raptor_www_libfetch_fetch(raptor_www *www);
 
   /* raptor_set.c */
 raptor_set* raptor_new_set(void);
