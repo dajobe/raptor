@@ -120,7 +120,7 @@ void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                 raptor_sax2_element *element)
 {
-  int fmt_length;
+  size_t fmt_length;
   char *fmt_buffer=raptor_format_sax2_element(element, 
                                               &xml_writer->content_cdata_namespaces,
                                               &fmt_length, 0, 
@@ -176,7 +176,7 @@ void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                               raptor_sax2_element* element)
 {
-  int fmt_length;
+  size_t fmt_length;
   char *fmt_buffer;
 
   fmt_buffer=raptor_format_sax2_element(element, 
