@@ -1455,7 +1455,7 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 
 unsigned char *
 raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag,
-                   const unsigned char *user_bnodeid)
+                   unsigned char *user_bnodeid)
 {
   raptor_genid_type type=id_for_bag ? RAPTOR_GENID_TYPE_BNODEID :
                                       RAPTOR_GENID_TYPE_BAGID;
