@@ -469,14 +469,16 @@ struct raptor_element_s {
   /* state that this production matches */
   raptor_state state;
 
+  /* how to handle the content inside this XML element */
+  raptor_element_content_type content_type;
+
+
   /* starting state for children of this element */
   raptor_state child_state;
 
-  /* XML elements in RDF can contain EITHER cdata OR just sub-elements
-   * Mixed content is not allowed 
-   */
+  /* starting content type for children of this element */
+  raptor_element_content_type child_content_type;
 
-  raptor_element_content_type content_type;
 
   /* CDATA content of element and checks for mixed content */
   char *content_cdata;
