@@ -58,18 +58,15 @@ typedef enum { RAPTOR_URI_SOURCE_UNKNOWN, RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_
 #ifdef LIBRDF_INTERNAL
 /* if inside Redland */
 typedef librdf_uri raptor_uri;
-#else
-typedef const char raptor_uri;
-#endif
 
-
-#ifdef LIBRDF_INTERNAL
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
 #define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
 #define RAPTOR_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
 #undef RAPTOR_URI_TO_FILENAME
 #define RAPTOR_FREE_URI(uri) librdf_free_uri(uri)
 #else
+typedef const char raptor_uri;
+
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
 #define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
 #undef RAPTOR_URI_AS_FILENAME
@@ -168,6 +165,9 @@ int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 void raptor_free_identifier(raptor_identifier *identifier);
 
 void raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
+
+/* raptor_uri.c */
+void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
 
 #ifndef LIBRDF_INTERNAL
 
