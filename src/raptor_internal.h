@@ -438,7 +438,7 @@ void raptor_uri_init_default_handler(raptor_uri_handler *handler);
 /* raptor_parse.c */
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
-void raptor_init_parser_n3(void);
+void raptor_init_parser_turtle(void);
 void raptor_init_parser_rss(void);
 
 
@@ -623,8 +623,8 @@ void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned cha
 unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, unsigned int *length_p);
 
 
-/* n3_parser.y and n3_lexer.l */
-typedef struct raptor_n3_parser_s raptor_n3_parser;
+/* turtle_parser.y and turtle_lexer.l */
+typedef struct raptor_turtle_parser_s raptor_turtle_parser;
 
 typedef struct {
   raptor_identifier *subject;

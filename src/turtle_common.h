@@ -1,11 +1,11 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * n3_common.h - N3 lexer/parser shared internals
+ * turtle_common.h - Turtle lexer/parser shared internals
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -19,23 +19,23 @@
  * 
  */
 
-#ifndef N3_COMMON_H
-#define N3_COMMON_H
+#ifndef TURTLE_COMMON_H
+#define TURTLE_COMMON_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-/* n3_parser.y */
-int n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...);
-raptor_uri* n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
+/* turtle_parser.y */
+int turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...);
+raptor_uri* turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
 
 
 /*
- * N3 parser object
+ * Turtle parser object
  */
-struct raptor_n3_parser_s {
+struct raptor_turtle_parser_s {
   /* buffer */
   char *buffer;
 

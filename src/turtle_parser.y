@@ -1,11 +1,11 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * n3_parser.y - Raptor N3 parser - over tokens from n3 grammar lexer
+ * turtle_parser.y - Raptor Turtle parser - over tokens from turtle grammar lexer
  *
  * $Id$
  *
  * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -17,9 +17,10 @@
  * See LICENSE.html or LICENSE.txt at the top of this package for the
  * full license terms.
  * 
- * 
+ * Turtle is defined in http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
+ *
  * Made from a subset of the terms in
- *   http://www.w3.org/DesignIssues/Notation3.html
+ *   http://www.w3.org/DesignIssues/Notatioturtle.html
  *
  */
 
@@ -46,12 +47,12 @@
 #include <raptor.h>
 #include <raptor_internal.h>
 
-#include <n3_parser.tab.h>
+#include <turtle_parser.tab.h>
 
-#define YY_DECL int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner)
-#include <n3_lexer.h>
+#define YY_DECL int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner)
+#include <turtle_lexer.h>
 
-#include <n3_common.h>
+#include <turtle_common.h>
 
 
 /* Make verbose error messages for syntax errors */
@@ -65,31 +66,31 @@
 #endif
 
 /* the lexer does not seem to track this */
-#undef RAPTOR_N3_USE_ERROR_COLUMNS
+#undef RAPTOR_TURTLE_USE_ERROR_COLUMNS
 
 /* Prototypes */ 
-int n3_parser_error(void* rdf_parser, const char *msg);
+int turtle_parser_error(void* rdf_parser, const char *msg);
 
-/* Missing n3_lexer.c/h prototypes */
-int n3_lexer_get_column(yyscan_t yyscanner);
+/* Missing turtle_lexer.c/h prototypes */
+int turtle_lexer_get_column(yyscan_t yyscanner);
 /* Not used here */
-/* void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);*/
+/* void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);*/
 
 
 /* What the lexer wants */
-extern int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t scanner);
-#define YYLEX_PARAM ((raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context))->scanner
+extern int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t scanner);
+#define YYLEX_PARAM ((raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context))->scanner
 
 /* Pure parser argument (a void*) */
 #define YYPARSE_PARAM rdf_parser
 
 /* Make the yyerror below use the rdf_parser */
 #undef yyerror
-#define yyerror(message) n3_parser_error(rdf_parser, message)
+#define yyerror(message) turtle_parser_error(rdf_parser, message)
 
 /* Make lex/yacc interface as small as possible */
 #undef yylex
-#define yylex n3_lexer_lex
+#define yylex turtle_lexer_lex
 
 
 static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object);
@@ -101,7 +102,7 @@ static void raptor_triple_print(raptor_triple *data, FILE *fh);
 
 
 /* Prototypes for local functions */
-static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *triple);
+static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *triple);
 
 %}
 
@@ -188,7 +189,7 @@ statement: directive
 #endif
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
+      raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 
     raptor_free_sequence($2);
@@ -398,7 +399,7 @@ propertyList: verb objectList SEMICOLON propertyList
 directive : PREFIX IDENTIFIER URI_LITERAL DOT
 {
   unsigned char *prefix=$2;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
 
 #if RAPTOR_DEBUG > 1  
   printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string($3));
@@ -415,7 +416,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
     }
   }
 
-  raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
+  raptor_namespaces_start_namespace_full(&turtle_parser->namespaces,
                                          prefix, 
                                          (const unsigned char*)raptor_uri_as_string($3), 0);
   if($2)
@@ -601,7 +602,7 @@ URI_LITERAL
       raptor_copy_identifier(i2, $$);
       t2->subject=i2;
       t2->subject->is_malloced=1;
-      raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
+      raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 
 #if RAPTOR_DEBUG > 1
@@ -623,7 +624,7 @@ URI_LITERAL
 
 /* Support functions */
 
-/* This is declared in n3_lexer.h but never used, so we always get
+/* This is declared in turtle_lexer.h but never used, so we always get
  * a warning unless this dummy code is here.  Used once below as a return.
  */
 static int yy_init_globals (yyscan_t yyscanner ) { return 0; };
@@ -677,14 +678,14 @@ raptor_triple_print(raptor_triple *t, FILE *fh)
 extern char *filename;
  
 int
-n3_parser_error(void* ctx, const char *msg)
+turtle_parser_error(void* ctx, const char *msg)
 {
   raptor_parser* rdf_parser=(raptor_parser *)ctx;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   
-  rdf_parser->locator.line=n3_parser->lineno;
-#ifdef RAPTOR_N3_USE_ERROR_COLUMNS
-  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+  rdf_parser->locator.line=turtle_parser->lineno;
+#ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=turtle_lexer_get_column(yyscanner);
 #endif
 
   raptor_parser_simple_error(rdf_parser, msg);
@@ -693,14 +694,14 @@ n3_parser_error(void* ctx, const char *msg)
 
 
 int
-n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
+turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   va_list arguments;
 
-  rdf_parser->locator.line=n3_parser->lineno;
-#ifdef RAPTOR_N3_USE_ERROR_COLUMNS
-  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+  rdf_parser->locator.line=turtle_parser->lineno;
+#ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=turtle_lexer_get_column(yyscanner);
 #endif
 
   va_start(arguments, message);
@@ -714,16 +715,16 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 
 
 raptor_uri*
-n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
+turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
 {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
 
-  rdf_parser->locator.line=n3_parser->lineno;
-#ifdef RAPTOR_N3_USE_ERROR_COLUMNS
-  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+  rdf_parser->locator.line=turtle_parser->lineno;
+#ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=turtle_lexer_get_column(yyscanner);
 #endif
 
-  return raptor_qname_string_to_uri(&n3_parser->namespaces,
+  return raptor_qname_string_to_uri(&turtle_parser->namespaces,
                                     name, name_len,
                                     raptor_parser_simple_error, rdf_parser);
 }
@@ -731,42 +732,42 @@ n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len)
 
 
 static int
-n3_parse(raptor_parser *rdf_parser, const char *string) {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+turtle_parse(raptor_parser *rdf_parser, const char *string) {
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   void *buffer;
   
   if(!string || !*string)
     return 0;
   
-  n3_lexer_lex_init(&n3_parser->scanner);
-  n3_parser->scanner_set=1;
+  turtle_lexer_lex_init(&turtle_parser->scanner);
+  turtle_parser->scanner_set=1;
 
-  n3_lexer_set_extra(((raptor_parser*)rdf_parser), n3_parser->scanner);
-  buffer= n3_lexer__scan_string(string, n3_parser->scanner);
+  turtle_lexer_set_extra(((raptor_parser*)rdf_parser), turtle_parser->scanner);
+  buffer= turtle_lexer__scan_string(string, turtle_parser->scanner);
 
-  n3_parser_parse(rdf_parser);
+  turtle_parser_parse(rdf_parser);
 
-  n3_parser->scanner_set=0;
+  turtle_parser->scanner_set=0;
 
   return 0;
 }
 
 
 /**
- * raptor_n3_parse_init - Initialise the Raptor N3 parser
+ * raptor_turtle_parse_init - Initialise the Raptor Turtle parser
  *
  * Return value: non 0 on failure
  **/
 
 static int
-raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   raptor_uri_handler *uri_handler;
   void *uri_context;
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
-  raptor_namespaces_init(&n3_parser->namespaces,
+  raptor_namespaces_init(&turtle_parser->namespaces,
                          uri_handler, uri_context,
                          raptor_parser_simple_error, rdf_parser, 
                          0);
@@ -779,28 +780,28 @@ raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
 
 
 /*
- * raptor_n3_parse_terminate - Free the Raptor N3 parser
+ * raptor_turtle_parse_terminate - Free the Raptor Turtle parser
  * @rdf_parser: parser object
  * 
  **/
 static void
-raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
-  raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
+raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
+  raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
 
-  raptor_namespaces_clear(&n3_parser->namespaces);
+  raptor_namespaces_clear(&turtle_parser->namespaces);
 
-  if(n3_parser->scanner_set) {
-    n3_lexer_lex_destroy(&n3_parser->scanner);
-    n3_parser->scanner_set=0;
+  if(turtle_parser->scanner_set) {
+    turtle_lexer_lex_destroy(&turtle_parser->scanner);
+    turtle_parser->scanner_set=0;
   }
 
-  if(n3_parser->buffer_length)
-    RAPTOR_FREE(cdata, n3_parser->buffer);
+  if(turtle_parser->buffer_length)
+    RAPTOR_FREE(cdata, turtle_parser->buffer);
 }
 
 
 static void
-raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
+raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
 {
   raptor_statement *statement=&parser->statement;
   int predicate_ordinal=0;
@@ -856,37 +857,37 @@ raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
 
 
 static int
-raptor_n3_parse_chunk(raptor_parser* rdf_parser, 
+raptor_turtle_parse_chunk(raptor_parser* rdf_parser, 
                       const unsigned char *s, size_t len,
                       int is_end)
 {
   char *buffer;
   char *ptr;
-  raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_n3_parse_chunk, "adding %d bytes to line buffer\n", len);
+  RAPTOR_DEBUG2(raptor_turtle_parse_chunk, "adding %d bytes to line buffer\n", len);
 #endif
 
   if(len) {
-    buffer=(char*)RAPTOR_MALLOC(cstring, n3_parser->buffer_length + len + 1);
+    buffer=(char*)RAPTOR_MALLOC(cstring, turtle_parser->buffer_length + len + 1);
     if(!buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
     }
 
-    if(n3_parser->buffer_length) {
-      strncpy(buffer, n3_parser->buffer, n3_parser->buffer_length);
-      RAPTOR_FREE(cstring, n3_parser->buffer);
+    if(turtle_parser->buffer_length) {
+      strncpy(buffer, turtle_parser->buffer, turtle_parser->buffer_length);
+      RAPTOR_FREE(cstring, turtle_parser->buffer);
     }
 
-    n3_parser->buffer=buffer;
+    turtle_parser->buffer=buffer;
 
     /* move pointer to end of cdata buffer */
-    ptr=buffer+n3_parser->buffer_length;
+    ptr=buffer+turtle_parser->buffer_length;
 
     /* adjust stored length */
-    n3_parser->buffer_length += len;
+    turtle_parser->buffer_length += len;
 
     /* now write new stuff at end of cdata buffer */
     strncpy(ptr, (char*)s, len);
@@ -894,9 +895,9 @@ raptor_n3_parse_chunk(raptor_parser* rdf_parser,
     *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3(raptor_n3_parse_chunk,
+    RAPTOR_DEBUG3(raptor_turtle_parse_chunk,
                   "buffer buffer now '%s' (%d bytes)\n", 
-                  n3_parser->buffer, n3_parser->buffer_length);
+                  turtle_parser->buffer, turtle_parser->buffer_length);
 #endif
   }
   
@@ -905,53 +906,53 @@ raptor_n3_parse_chunk(raptor_parser* rdf_parser,
     return 0;
 
   /* Nothing to do */
-  if(!n3_parser->buffer_length)
+  if(!turtle_parser->buffer_length)
     return 0;
   
-  n3_parse(rdf_parser, n3_parser->buffer);
+  turtle_parse(rdf_parser, turtle_parser->buffer);
   
   return 0;
 }
 
 
 static int
-raptor_n3_parse_start(raptor_parser *rdf_parser) 
+raptor_turtle_parse_start(raptor_parser *rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
-  raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
 
   locator->line=1;
   locator->column= -1; /* No column info */
   locator->byte= -1; /* No bytes info */
 
-  n3_parser->lineno=1;
+  turtle_parser->lineno=1;
 
   return 0;
 }
 
 
 static void
-raptor_n3_parser_register_factory(raptor_parser_factory *factory) 
+raptor_turtle_parser_register_factory(raptor_parser_factory *factory) 
 {
-  factory->context_length     = sizeof(raptor_n3_parser);
+  factory->context_length     = sizeof(raptor_turtle_parser);
   
-  factory->init      = raptor_n3_parse_init;
-  factory->terminate = raptor_n3_parse_terminate;
-  factory->start     = raptor_n3_parse_start;
-  factory->chunk     = raptor_n3_parse_chunk;
+  factory->init      = raptor_turtle_parse_init;
+  factory->terminate = raptor_turtle_parse_terminate;
+  factory->start     = raptor_turtle_parse_start;
+  factory->chunk     = raptor_turtle_parse_chunk;
 }
 
 
 void
-raptor_init_parser_n3 (void) {
+raptor_init_parser_turtle (void) {
   raptor_parser_register_factory("ntriples-plus",  "N-Triples Plus",
                                  NULL,
                                  (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/",
-                                 &raptor_n3_parser_register_factory);
+                                 &raptor_turtle_parser_register_factory);
   raptor_parser_register_factory("turtle", "Turtle - Terse RDF Triple Language",
                                  "application/x-turtle",
                                  (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/",
-                                 &raptor_n3_parser_register_factory);
+                                 &raptor_turtle_parser_register_factory);
 }
 
 
@@ -960,10 +961,10 @@ raptor_init_parser_n3 (void) {
 #include <stdio.h>
 #include <locale.h>
 
-#define N3_FILE_BUF_SIZE 2048
+#define TURTLE_FILE_BUF_SIZE 2048
 
 static
-void n3_parser_print_statement(void *user, const raptor_statement *statement) 
+void turtle_parser_print_statement(void *user, const raptor_statement *statement) 
 {
   FILE* stream=(FILE*)user;
   raptor_print_statement(statement, stream);
@@ -975,14 +976,14 @@ void n3_parser_print_statement(void *user, const raptor_statement *statement)
 int
 main(int argc, char *argv[]) 
 {
-  char string[N3_FILE_BUF_SIZE];
+  char string[TURTLE_FILE_BUF_SIZE];
   raptor_parser rdf_parser; /* static */
-  raptor_n3_parser n3_parser; /* static */
+  raptor_turtle_parser turtle_parser; /* static */
   raptor_locator *locator=&rdf_parser.locator;
   FILE *fh;
 
 #if RAPTOR_DEBUG > 2
-  n3_parser_debug=1;
+  turtle_parser_debug=1;
 #endif
 
   if(argc > 1) {
@@ -998,8 +999,8 @@ main(int argc, char *argv[])
     fh = stdin;
   }
 
-  memset(string, 0, N3_FILE_BUF_SIZE);
-  fread(string, N3_FILE_BUF_SIZE, 1, fh);
+  memset(string, 0, TURTLE_FILE_BUF_SIZE);
+  fread(string, TURTLE_FILE_BUF_SIZE, 1, fh);
   
   if(argc>1)
     fclose(fh);
@@ -1007,20 +1008,20 @@ main(int argc, char *argv[])
   raptor_uri_init();
 
   memset(&rdf_parser, 0, sizeof(raptor_parser));
-  memset(&n3_parser, 0, sizeof(raptor_n3_parser));
+  memset(&turtle_parser, 0, sizeof(raptor_turtle_parser));
 
   locator->line= locator->column = -1;
   locator->file= filename;
 
-  n3_parser.line= 1;
+  turtle_parser.line= 1;
 
-  rdf_parser.context=&n3_parser;
+  rdf_parser.context=&turtle_parser;
   rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");
 
-  raptor_set_statement_handler(&rdf_parser, stdout, n3_parser_print_statement);
-  raptor_n3_parse_init(&rdf_parser, "ntriples-plus");
+  raptor_set_statement_handler(&rdf_parser, stdout, turtle_parser_print_statement);
+  raptor_turtle_parse_init(&rdf_parser, "turtle");
   
-  n3_parse(&rdf_parser, string);
+  turtle_parse(&rdf_parser, string);
 
   raptor_free_uri(rdf_parser.base_uri);
 

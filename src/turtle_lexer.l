@@ -1,11 +1,11 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * n3_lexer.l - Raptor N-Triples Plus lexer - making tokens for ntp grammar generator
+ * turtle_lexer.l - Raptor Turtle lexer - making tokens for turtle grammar generator
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -17,18 +17,10 @@
  * See LICENSE.html or LICENSE.txt at the top of this package for the
  * full license terms.
  * 
- * This is N-Triples + 7 things
- *   N-Triples + @prefix + qnames + "a" + [] + , and ;
- * 
- * Missing so far: UTF-8 support (with N-Triples escapes) which
- * is only significant inside strings or URI references.
- *
- * Possible future bits in order of likelyhood:
- *  () for rdf lists, @base like xml:base, @charset as first line only
- * @language like xml:lang
+ * Turtle is defined in http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
  *
  * To generate the C files from this source, rather than use the
- * shipped n3_lexer.c/.h needs a patched version of flex 2.5.31 such
+ * shipped turtle_lexer.c/.h needs a patched version of flex 2.5.31 such
  * as the one available in Debian GNU/Linux.   Details below
  * near the %option descriptions.
  *
@@ -40,16 +32,16 @@
 %option warn nodefault
 
 /* all symbols prefixed by this */
-%option prefix="n3_lexer_"
+%option prefix="turtle_lexer_"
 
-/* This is not needed, flex is invoked -on3_lexer.c */
-/* %option outfile="n3_lexer.c" */
+/* This is not needed, flex is invoked -oturtle_lexer.c */
+/* %option outfile="turtle_lexer.c" */
 
 /* Emit a C header file for prototypes
  * Only available in flex 2.5.13 or newer.
  * It was renamed to header-file in flex 2.5.19
  */
-%option header-file="n3_lexer.h"
+%option header-file="turtle_lexer.h"
 
 /* Do not emit #include <unistd.h>
  * Only available in flex 2.5.7 or newer.
@@ -96,9 +88,9 @@
 #include <raptor.h>
 #include <raptor_internal.h>
 
-#include <n3_parser.tab.h>
+#include <turtle_parser.tab.h>
 
-#include <n3_common.h>
+#include <turtle_common.h>
 
 
 static unsigned char *copy_token(unsigned char *text, size_t len);
@@ -107,11 +99,11 @@ unsigned char *copy_string_token(raptor_parser* rdf_parser, unsigned char *text,
 char *filename=NULL;
 
 #ifdef RAPTOR_DEBUG
-const char * n3_token_print(int token, YYSTYPE *lval);
+const char * turtle_token_print(int token, YYSTYPE *lval);
 #endif
 
-int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner);
-#define YY_DECL int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner)
+int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner);
+#define YY_DECL int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner)
 
 #ifdef __cplusplus
 #define INPUT_FN yyinput
@@ -120,9 +112,9 @@ int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner);
 #endif
 
 
-/* Missing n3_lexer.c/h prototypes */
-int n3_lexer_get_column(yyscan_t yyscanner);
-void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
+/* Missing turtle_lexer.c/h prototypes */
+int turtle_lexer_get_column(yyscan_t yyscanner);
+void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 %}
 
@@ -134,9 +126,9 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
   int c;
   raptor_parser *rdf_parser=(raptor_parser*)yyextra;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
 
-\r\n|\r|\n   { n3_parser->lineno++; }
+\r\n|\r|\n   { turtle_parser->lineno++; }
  
 [\ \t\v]+   { /* empty */ }
 
@@ -152,53 +144,53 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 "@"       { return AT; }
 "^^"      { return HAT; }
 
-'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
+'([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-_:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token((unsigned char*)yytext+2, yyleng-2);
+_:[A-Za-z0-9]+	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+:[A-Za-z][A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:	{ n3_parser_lval->string=NULL;
+:	{ turtle_parser_lval->string=NULL;
                           return QNAME_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
+<PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>.		{ BEGIN(INITIAL);
 		  if (*yytext == EOF)
                     return EOF;
 
-                  n3_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
+                  turtle_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
                   return ERROR;  }
 
 
 \<[^>]*\>   { if(yyleng == 2) 
-                n3_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
+                turtle_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
               else {
                 yytext[yyleng-1]='\0';
-                n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
+                turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
               }
               return URI_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
                           return IDENTIFIER; }
 
 \#              { while((c=INPUT_FN(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
                     ;
-                  n3_parser->lineno++;
+                  turtle_parser->lineno++;
                   if(c == EOF)
                     return EOF;
                 }
@@ -206,7 +198,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token((unsigned char*)yytext+2, yyl
 .         	{ if (*yytext == EOF)
                     return EOF;
 
-                  n3_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
+                  turtle_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
                   return ERROR;
 		}
 
@@ -258,7 +250,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
         
         s++; i++;
         if(i+ulen > len) {
-          n3_syntax_error(rdf_parser, "\\%c over end of line", c);
+          turtle_syntax_error(rdf_parser, "\\%c over end of line", c);
           free(string);
           return NULL;
         }
@@ -268,7 +260,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
         i+= ulen-1;
         
         if(unichar < 0 || unichar > 0x10ffff) {
-          n3_syntax_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
+          turtle_syntax_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
           free(string);
           return NULL;
         }
@@ -277,7 +269,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
 
       } else {
         /* don't handle \x where x isn't one of: \n \r \\ (delim) */
-        n3_syntax_error(rdf_parser, "Illegal string escape \\%c in \"%s\"", c, text);
+        turtle_syntax_error(rdf_parser, "Illegal string escape \\%c in \"%s\"", c, text);
       }
     } else
       *d++=c;
@@ -291,7 +283,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
 #ifdef RAPTOR_DEBUG
 
 const char *
-n3_token_print(int token, YYSTYPE *lval)
+turtle_token_print(int token, YYSTYPE *lval)
 {
   static char buffer[2048];
 
@@ -356,7 +348,7 @@ n3_token_print(int token, YYSTYPE *lval)
       return "ERROR";
 
    default:
-     fprintf(stderr, "n3_token_print: UNKNOWN token %d - add a new case\n", token);
+     fprintf(stderr, "turtle_token_print: UNKNOWN token %d - add a new case\n", token);
      abort();
   }
 }
@@ -367,7 +359,7 @@ n3_token_print(int token, YYSTYPE *lval)
 #ifdef STANDALONE
 
 static void
-n3_token_free(int token, YYSTYPE *lval)
+turtle_token_free(int token, YYSTYPE *lval)
 {
   if(!token)
     return;
@@ -395,7 +387,7 @@ int
 main(int argc, char *argv[]) 
 {
   raptor_parser rdf_parser;
-  raptor_n3_parser n3_parser;
+  raptor_turtle_parser turtle_parser;
   yyscan_t scanner;
   int token=EOF;
   FILE *fh;
@@ -426,17 +418,17 @@ main(int argc, char *argv[])
   }
 
   memset(&rdf_parser, 0, sizeof(raptor_parser));
-  memset(&n3_parser, 0, sizeof(raptor_n3_parser));
+  memset(&turtle_parser, 0, sizeof(raptor_turtle_parser));
 
-  yylex_init(&n3_parser.scanner);
-  scanner=n3_parser.scanner;
-  n3_lexer_set_in(fh, scanner);
-  n3_lexer_set_extra(&rdf_parser, scanner);
+  yylex_init(&turtle_parser.scanner);
+  scanner=turtle_parser.scanner;
+  turtle_lexer_set_in(fh, scanner);
+  turtle_lexer_set_extra(&rdf_parser, scanner);
 
   /* Initialise enough of the parser and locator to get error messages */
-  rdf_parser.context=&n3_parser;
-  n3_parser.scanner=&scanner;
-  n3_parser.lineno=1;
+  rdf_parser.context=&turtle_parser;
+  turtle_parser.scanner=&scanner;
+  turtle_parser.lineno=1;
   rdf_parser.locator.file=filename;
   rdf_parser.locator.column= -1;
 
@@ -449,15 +441,15 @@ main(int argc, char *argv[])
   
   while(1) {
     memset(&lval, 0, sizeof(YYSTYPE));
-    if(n3_lexer_get_text(scanner) != NULL)
-      printf("yyinput '%s'\n", n3_lexer_get_text(scanner));
+    if(turtle_lexer_get_text(scanner) != NULL)
+      printf("yyinput '%s'\n", turtle_lexer_get_text(scanner));
     token=yylex(&lval, scanner);
 #ifdef RAPTOR_DEBUG
-    printf("token %s\n", n3_token_print(token, &lval));
+    printf("token %s\n", turtle_token_print(token, &lval));
 #else
     printf("token %d\n", token);
 #endif
-    n3_token_free(token, &lval);
+    turtle_token_free(token, &lval);
     if(!token || token == EOF || token == ERROR)
       break;
   }

@@ -1,6 +1,6 @@
 # -*- Mode: Makefile -*-
 #
-# Makefile.am - automake file for Raptor N-Triples Plus tests
+# Makefile.am - automake file for Raptor Turtle tests
 #
 # $Id$
 #
@@ -18,10 +18,10 @@
 # full license terms.
 # 
 
-TEST_FILES=test-00.ntp test-01.ntp test-02.ntp test-03.ntp \
-test-04.ntp test-05.ntp test-06.ntp
+TEST_FILES=test-00.ttl test-01.ttl test-02.ttl test-03.ttl \
+test-04.ttl test-05.ttl test-06.ttl
 
-TEST_BAD_FILES=bad-00.ntp bad-01.ntp bad-02.ntp bad-03.ntp
+TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl
 
 TEST_WARN_FILES=
 
@@ -49,12 +49,12 @@ check-local: check-rdf check-bad-rdf
 
 check-rdf: $(top_builddir)/rapper $(TEST_FILES)
 	@result=0; \
-	$(ECHO) "Testing legal N-Triples Plus"; \
+	$(ECHO) "Testing legal Turtle"; \
 	for test in $(TEST_FILES); do \
-	  name=`basename $$test .ntp` ; \
+	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -i ntriples-plus -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/rapper -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(ECHO) FAILED returned status $$status; result=1; \
@@ -74,12 +74,12 @@ check-rdf: $(top_builddir)/rapper $(TEST_FILES)
 
 check-bad-rdf: $(top_builddir)/rapper $(TEST_BAD_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing bad N-Triples Plus fails"; \
+	$(ECHO) "Testing bad Turtle fails"; \
 	for test in $(TEST_BAD_FILES); do \
-	  name=`basename $$test .ntp` ; \
+	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -i ntriples-plus -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "ok"; \
@@ -99,12 +99,12 @@ check-bad-rdf: $(top_builddir)/rapper $(TEST_BAD_FILES)
 
 check-warn-rdf: $(top_builddir)/rapper $(TEST_WARN_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing N-Triples Plus with warnings"; \
+	$(ECHO) "Testing Turtle with warnings"; \
 	for test in $(TEST_WARN_FILES); do \
-	  name=`basename $$test .ntp` ; \
+	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -i ntriples-plus -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "FAILED - parsing failed when should have warned"; \

@@ -85,7 +85,7 @@ raptor_init(void)
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
 #endif
-  raptor_init_parser_n3();
+  raptor_init_parser_turtle();
   raptor_init_parser_ntriples();
   raptor_init_parser_rdfxml();
 

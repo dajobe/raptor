@@ -40,7 +40,7 @@ raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
 raptor_identifier.c raptor_xml_writer.c \
-n3_lexer.c n3_lexer.h n3_parser.tab.c n3_parser.tab.h n3_common.h \
+turtle_lexer.c turtle_lexer.h turtle_parser.tab.c turtle_parser.tab.h turtle_common.h \
 raptor_sequence.c raptor_stringbuffer.c
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
@@ -57,7 +57,7 @@ raptor_www_test.c \
 fix-groff-xhtml \
 $(man_MANS) \
 raptor.pc.in \
-n3_lexer.l n3_parser.y
+turtle_lexer.l turtle_parser.y
 
 
 
@@ -67,10 +67,10 @@ TESTS=raptor_uri_test raptor_namespace_test strcasecmp_test \
 raptor_www_test raptor_set_test raptor_xml_test \
 raptor_sequence_test raptor_stringbuffer_test
 
-CLEANFILES=$(TESTS) n3_lexer_test n3_parser_test
+CLEANFILES=$(TESTS) turtle_lexer_test turtle_parser_test
 
-MAINTAINERCLEANFILES=n3_lexer.c n3_lexer.h \
-n3_parser.tab.c n3_parser.tab.h n3_parser.output
+MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
+turtle_parser.tab.c turtle_parser.tab.h turtle_parser.output
 
 # Use tar, whatever it is called (better be GNU tar though)
 TAR=@TAR@
@@ -120,26 +120,26 @@ NEWS: NEWS.html
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor.pc
 
-# Actually it needs n3_parser.h but nevermind
-n3_lexer.c: $(srcdir)/n3_lexer.l n3_parser.tab.c
-	$(LEX) -o$@ $(srcdir)/n3_lexer.l
-	mv $@ n3_lexer.t
-	sed -e 's/\(^[ \t]*free(.*ptr.*\)$$/if(ptr) \1/' n3_lexer.t > $@
-	rm -f n3_lexer.t
+# Actually it needs turtle_parser.h but nevermind
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.tab.c
+	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
+	mv $@ turtle_lexer.t
+	sed -e 's/\(^[ \t]*free(.*ptr.*\)$$/if(ptr) \1/' turtle_lexer.t > $@
+	rm -f turtle_lexer.t
 
-n3_parser.tab.c: $(srcdir)/n3_parser.y
-	$(YACC) -b n3_parser -p n3_parser_ -d -v $(srcdir)/n3_parser.y
-	mv $@ n3_parser.t
-	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' n3_parser.t > $@
-	rm -f n3_parser.t
+turtle_parser.tab.c: $(srcdir)/turtle_parser.y
+	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
+	mv $@ turtle_parser.t
+	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' turtle_parser.t > $@
+	rm -f turtle_parser.t
 
 
-# Actually it needs n3_parser.h but nevermind
-n3_lexer_test: $(srcdir)/n3_lexer.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c libraptor.la $(LIBS)
+# Actually it needs turtle_parser.h but nevermind
+turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_lexer.c libraptor.la $(LIBS)
 
-n3_parser_test: $(srcdir)/n3_parser.tab.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_parser.tab.c libraptor.la $(LIBS)
+turtle_parser_test: $(srcdir)/turtle_parser.tab.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.tab.c libraptor.la $(LIBS)
 
 
 # Some people need a little help ;-)
