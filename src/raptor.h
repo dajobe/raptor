@@ -43,9 +43,17 @@ extern "C" {
 /* Public structure */
 typedef struct raptor_parser_s raptor_parser;
 
-typedef enum { RAPTOR_SUBJECT_TYPE_RESOURCE, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH_PREFIX, RAPTOR_SUBJECT_TYPE_ANONYMOUS } raptor_subject_type;
-typedef enum { RAPTOR_PREDICATE_TYPE_PREDICATE, RAPTOR_PREDICATE_TYPE_ORDINAL, RAPTOR_PREDICATE_TYPE_XML_NAME } raptor_predicate_type;
-typedef enum { RAPTOR_OBJECT_TYPE_RESOURCE, RAPTOR_OBJECT_TYPE_LITERAL, RAPTOR_OBJECT_TYPE_XML_LITERAL, RAPTOR_OBJECT_TYPE_XML_NAME, RAPTOR_OBJECT_TYPE_ANONYMOUS } raptor_object_type;
+typedef enum {
+  RAPTOR_IDENTIFIER_TYPE_NONE,
+  RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+  RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH,
+  RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH_PREFIX,
+  RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+  RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+  RAPTOR_IDENTIFIER_TYPE_ORDINAL,
+  RAPTOR_IDENTIFIER_TYPE_LITERAL,
+  RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
+} raptor_identifier_type;
 
 typedef enum { RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED } raptor_uri_source;
   
@@ -55,6 +63,7 @@ typedef librdf_uri raptor_uri;
 #else
 typedef const char raptor_uri;
 #endif
+
 
 #ifdef LIBRDF_INTERNAL
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
@@ -83,19 +92,33 @@ typedef struct {
 typedef enum {
   RAPTOR_FEATURE_SCANNING,
   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
-  RAPTOR_FEATURE_INTERPRET_CONTAINERS_AS_TYPEDNODE,
   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES
 } raptor_feature;
+
+
+typedef struct {
+  raptor_identifier_type type;
+  raptor_uri *uri;
+  raptor_uri_source uri_source;
+  const char *id;
+  int ordinal;
+  int is_malloced;
+} raptor_identifier;
 
 
 /* Returned by statement_handler */
 typedef struct {
   const void *subject;
-  raptor_subject_type subject_type;
+  raptor_identifier_type subject_type;
   const void *predicate;
-  raptor_predicate_type predicate_type;
+  raptor_identifier_type predicate_type;
   const void *object;
-  raptor_object_type object_type;
+  raptor_identifier_type object_type;
+/*
+  raptor_identifier *subject;
+  raptor_identifier *predicate;
+  raptor_identifier *object;
+*/
 } raptor_statement;
 
 
@@ -142,6 +165,12 @@ RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature
 /* URI functions */
 RAPTOR_API raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_string);
 RAPTOR_API raptor_uri* raptor_copy_uri(raptor_uri *uri);
+
+/* Identifier functions */
+raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
+void raptor_init_identifier(raptor_identifier *identifier, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
+int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
+void raptor_free_identifier(raptor_identifier *identifier);
 
 
 #ifndef LIBRDF_INTERNAL
