@@ -193,6 +193,7 @@ RAPTOR_API void raptor_finish(void);
 /* Get parser names */
 RAPTOR_API int raptor_parsers_enumerate(const unsigned int counter, const char **name, const char **label);
 RAPTOR_API int raptor_syntaxes_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+RAPTOR_API int raptor_syntax_name_check(const char *name);
 
 
 /* Create */
