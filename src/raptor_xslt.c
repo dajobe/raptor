@@ -83,9 +83,6 @@
 #include <libxslt/xsltutils.h>
 
 
-static void raptor_xslt_init(void);
-static void raptor_xslt_finish(void);
-
 /*
  * libxslt API notes
  *
@@ -101,29 +98,72 @@ static void raptor_xslt_finish(void);
 
 
 
-static void
-raptor_xslt_init() 
+/*
+ * XSLT parser object
+ */
+struct raptor_xslt_parser_context_s {
+  xmlSAXHandler sax;
+
+  /* XML document ctxt */
+  xmlParserCtxtPtr ctxt;
+
+  /* Create xpath evaluation context */
+  xmlXPathContextPtr xpathCtx; 
+
+  /* Evaluate xpath expression */
+  xmlXPathObjectPtr xpathObj;
+
+  /* static statement for use in passing to user code */
+  raptor_statement statement;
+
+};
+
+
+typedef struct raptor_xslt_parser_context_s raptor_xslt_parser_context;
+
+
+static int
+raptor_xslt_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  xmlSubstituteEntitiesDefault(1);
-  xmlLoadExtDtdDefaultValue = 1;
+  return 0;
 }
 
 
 static void
-raptor_xslt_finish() 
+raptor_xslt_parse_terminate(raptor_parser *rdf_parser)
 {
-  xsltCleanupGlobals();
-  xmlCleanupParser();
+  raptor_xslt_parser_context *xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
+  if(xslt_parser->ctxt) {
+    if(xslt_parser->ctxt->myDoc) {
+      xmlFreeDoc(xslt_parser->ctxt->myDoc);
+      xslt_parser->ctxt->myDoc=NULL;
+    }
+    xmlFreeParserCtxt(xslt_parser->ctxt);
+  }
+
+  if(xslt_parser->xpathCtx)
+    xmlXPathFreeContext(xslt_parser->xpathCtx);
+
+  if(xslt_parser->xpathObj)
+    xmlXPathFreeObject(xslt_parser->xpathObj);
 }
 
 
+static int
+raptor_xslt_parse_start(raptor_parser *rdf_parser) 
+{
+  raptor_locator *locator=&rdf_parser->locator;
+  /* raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context; */
+  
+  locator->line=1;
+  locator->column=0;
+  locator->byte=0;
+
+  return 0;
+}
 
 
-#ifdef STANDALONE
-
-
-/* one more prototype */
-int main(int argc, char* argv[]);
+static const xmlChar* xpathExpr=(const xmlChar*)"//html:html/html:head[@profile=\"http://www.w3.org/2003/g/data-view\"]/html:link[@rel=\"transformation\"]/@href";
 
 
 static void
@@ -136,17 +176,226 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
   int rc=0;
   
   if(!*ctxt_ptr) {
-    *ctxt_ptr = xmlCreatePushParserCtxt(NULL, NULL,
-                                        ptr, len, 
-                                        raptor_uri_as_string(www->uri));
-    if(!*ctxt_ptr)
+    xmlParserCtxtPtr xc;
+    
+    xc = xmlCreatePushParserCtxt(NULL, NULL,
+                                 ptr, len, 
+                                 raptor_uri_as_string(www->uri));
+    if(!xc)
       rc=1;
+    else {
+      xc->replaceEntities = 1;
+      xc->loadsubset = 1;
+    }
+    *ctxt_ptr=xc;
   } else
     rc=xmlParseChunk(*ctxt_ptr, ptr, len, 0);
 
   if(rc)
     raptor_www_abort(www, "Parsing failed");
 }
+
+
+static int
+raptor_xslt_parse_chunk(raptor_parser* rdf_parser, 
+                       const unsigned char *s, size_t len,
+                       int is_end)
+{
+  raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
+  int i;
+  int ret;
+  const unsigned char* uri_string;
+  raptor_uri* uri;
+  /* XML document DOM */
+  xmlDocPtr doc;
+    
+
+  if(!xslt_parser->ctxt) {
+    uri_string=raptor_uri_as_string(rdf_parser->base_uri);
+
+    /* first time, so init context with first read bytes */
+    xslt_parser->ctxt = xmlCreatePushParserCtxt(NULL, NULL,
+                                                s, len, uri_string);
+    if(!xslt_parser->ctxt) {
+      raptor_parser_error(rdf_parser, "Failed to create XML parser");
+      return 1;
+    }
+    
+    raptor_libxml_init_sax_error_handlers(&xslt_parser->sax);
+    
+    xslt_parser->ctxt->replaceEntities = 1;
+    xslt_parser->ctxt->loadsubset = 1;
+  } else if(s && len)
+    xmlParseChunk(xslt_parser->ctxt, (const char*)s, len, is_end);
+
+  if(!is_end)
+    return 0;
+
+
+  doc=xslt_parser->ctxt->myDoc;
+
+  /* Create xpath evaluation context */
+  xslt_parser->xpathCtx=NULL; 
+
+  xslt_parser->xpathCtx = xmlXPathNewContext(doc);
+  if(!xslt_parser->xpathCtx) {
+    raptor_parser_error(rdf_parser, "Failed to create new XPath context");
+    return 1;
+  }
+  
+  xmlXPathRegisterNs(xslt_parser->xpathCtx,
+                     "html", "http://www.w3.org/1999/xhtml");
+  
+
+  /* Evaluate xpath expression */
+  xslt_parser->xpathObj = xmlXPathEvalExpression(xpathExpr, 
+                                                 xslt_parser->xpathCtx);
+  if(!xslt_parser->xpathObj) {
+    raptor_parser_error(rdf_parser, "Unable to evaluate XPath expression \"%s\"",
+                        xpathExpr);
+    return 1;
+   }
+  
+  xmlNodeSetPtr nodes=xslt_parser->xpathObj->nodesetval;
+  if(!nodes || xmlXPathNodeSetIsEmpty(nodes)) {
+    raptor_parser_error(rdf_parser,
+                        "No GRDDL found in document (no nodes returned from XPath expression \"%s\")", 
+                        xpathExpr);
+    return 1;
+  }
+  
+
+  for(i=0; i < xmlXPathNodeSetGetLength(nodes); i++) {
+    xmlNodePtr node=nodes->nodeTab[i];
+    
+    if(node->type != XML_ATTRIBUTE_NODE) {
+      raptor_parser_error(rdf_parser, "Got unexpected node type %d", 
+                          node->type);
+      continue;
+    }
+
+
+    uri_string=(const unsigned char*)node->children->content;
+    uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
+    
+    fprintf(stderr, "Running GRDDL transform with URI '%s'\n",
+            raptor_uri_as_string(uri));
+    
+    
+    /* make an xsltStylesheetPtr */
+    xsltStylesheetPtr sheet=NULL;
+    xmlDocPtr sheet_doc=NULL;
+    xmlDocPtr res=NULL;
+    
+    xmlParserCtxtPtr xslt_ctxt=NULL;
+    
+    raptor_www *www;
+    www=raptor_www_new();
+    raptor_www_set_write_bytes_handler(www,
+                                       raptor_xslt_uri_parse_bytes, 
+                                       &xslt_ctxt);
+    
+    if(raptor_www_fetch(www, uri)) {
+      raptor_www_free(www);
+      return 1;
+    }
+
+    raptor_www_free(www);
+    
+    xmlParseChunk(xslt_ctxt, NULL, 0, 1);
+    
+    sheet_doc = xslt_ctxt->myDoc;
+    sheet = xsltParseStylesheetDoc(sheet_doc);
+    
+    res = xsltApplyStylesheet(sheet, doc, NULL); /* no params */
+    
+    /* write the resulting XML to a string */
+    xmlChar *doc_txt_ptr=NULL;
+    int doc_txt_len;
+    xsltSaveResultToString(&doc_txt_ptr, &doc_txt_len, 
+                           res, sheet);
+ 
+    fprintf(stderr, "XSLT gave %d bytes XML result\n", doc_txt_len);
+    
+    if(doc_txt_ptr)    
+      xmlFree(doc_txt_ptr);
+
+    xmlFreeDoc(res);
+
+    xsltFreeStylesheet(sheet);
+
+    xmlFreeParserCtxt(xslt_ctxt); 
+
+    raptor_free_uri(uri);
+  }
+  
+
+  if(rdf_parser->failed)
+    return 1;
+
+  /* generate the triples */
+
+  return (ret != 0);
+}
+
+
+static int
+raptor_xslt_parse_recognise_syntax(raptor_parser_factory* factory, 
+                                   const unsigned char *buffer, size_t len,
+                                   const unsigned char *identifier, 
+                                   const unsigned char *suffix, 
+                                   const char *mime_type)
+{
+  int score= 0;
+  
+  if(suffix) {
+    if(!strcmp((const char*)suffix, "xhtml"))
+      score=7;
+    if(!strcmp((const char*)suffix, "html"))
+      score=2;
+  }
+  
+  if(identifier) {
+    if(strstr((const char*)identifier, "xhtml"))
+      score+=5;
+  }
+  
+  return score;
+}
+
+
+static void
+raptor_xslt_parser_register_factory(raptor_parser_factory *factory) 
+{
+  factory->context_length     = sizeof(raptor_xslt_parser_context);
+  
+  factory->init      = raptor_xslt_parse_init;
+  factory->terminate = raptor_xslt_parse_terminate;
+  factory->start     = raptor_xslt_parse_start;
+  factory->chunk     = raptor_xslt_parse_chunk;
+  factory->recognise_syntax = raptor_xslt_parse_recognise_syntax;
+}
+
+
+void
+raptor_init_parser_xslt (void)
+{
+  raptor_parser_register_factory("grddl",  "GRDDL over XHTML using XSLT",
+                                 NULL, NULL,
+                                 NULL,
+                                 &raptor_xslt_parser_register_factory);
+}
+
+
+
+
+
+
+#ifdef STANDALONE
+
+
+/* one more prototype */
+int main(int argc, char* argv[]);
 
 
 /* USAGE
@@ -173,8 +422,6 @@ main(int argc, char* argv[])
   
   raptor_init();
 
-  raptor_xslt_init();
-  
   if (argc <= 1) {
     fprintf(stderr, "%s: [--param key value...] doc-file [stylesheet-file]\n", 
             program);
@@ -246,13 +493,17 @@ main(int argc, char* argv[])
     if(!ctxt) {
       /* first time, so init context with first read bytes */
       ctxt = xmlCreatePushParserCtxt(NULL, NULL,
-                                     xml_buffer, len, xml_filename);
+                                     xml_buffer, len, 
+                                     raptor_uri_as_string(base_uri));
       if(!ctxt) {
         fprintf(stderr, "%s: Failed to create XML parser\n",
                 program);
         rc=1;
         goto cleanup;
       }
+
+      ctxt->replaceEntities = 1;
+      ctxt->loadsubset = 1;
       continue;
     }
 
@@ -266,8 +517,6 @@ main(int argc, char* argv[])
 
   xmlDocPtr doc=ctxt->myDoc;
 
-  const xmlChar* xpathExpr=(const xmlChar*)"//html:html/html:head[@profile=\"http://www.w3.org/2003/g/data-view\"]/html:link[@rel=\"transformation\"]/@href";
-  
   /* Create xpath evaluation context */
   xmlXPathContextPtr xpathCtx=NULL; 
 
@@ -397,8 +646,6 @@ main(int argc, char* argv[])
   if(base_uri)
     raptor_free_uri(base_uri);
 
-  raptor_xslt_finish();
-  
   raptor_finish();
 
   return rc;
