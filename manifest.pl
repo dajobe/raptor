@@ -274,8 +274,9 @@ while(length $content) {
         push(@{$tests{$url}->{$1}->{$2}}, $3);
       } elsif ($test_content =~ s%^<(test:\w+)>([^<]+)</test:\w+>%%) {
         $tests{$url}->{$1}=$2;
+      } elsif ($test_content =~ s%^<test:\w+>\s*<test:[-\w]+\s*/>\s*</test:\w+>\s*%%) {
       } else {
-	die "I'm stumped at test content >>$test_content<<\n";
+	die "I'm stumped 1 at test content >>$test_content<<\n";
       }
 
     }
@@ -311,10 +312,44 @@ while(length $content) {
     }
 
   } elsif($content =~ s%^<test:(Positive|Negative)EntailmentTest rdf:about="([^"]+)">(.+?)</test:(Positive|Negative)EntailmentTest>%%) { # "
+    my($type,$url,$test_content)=($1,$2,$3);
+    while(length $test_content) {
+      $test_content =~ s/^\s+//;
+      last if !length $test_content;
+      if($test_content =~ s%^<(\S+) rdf:resource="([^"]+)"\s*/>%%) { #"
+        $tests{$url}->{$1}=$2;
+      } elsif ($test_content =~ s%^<(test:\w+)>\s*<(test:[-\w]+) rdf:about="([^"]+)"\s*/>\s*</(test:\w+)>%%) { #"
+        push(@{$tests{$url}->{$1}->{$2}}, $3);
+      } elsif ($test_content =~ s%^<(test:\w+)>([^<]+)</test:\w+>%%) {
+        $tests{$url}->{$1}=$2;
+      } elsif ($test_content =~ s%^<test:\w+>\s*<test:[-\w]+\s*/>\s*</test:\w+>\s*%%) {
+      } else {
+  	die "I'm stumped 2 at test content >>$test_content<<\n";
+      }
+    }
+
+    my $test_status=$tests{$url}->{'test:status'} || 'not APPROVED';
+    warn "$progname: Ignoring $type Entailment Test URL $url ($test_status)\n";
   } elsif($content =~ s%^<test:MiscellaneousTest rdf:about="([^"]+)">(.+?)</test:MiscellaneousTest>%%) { # "
-     warn "$progname: Ignoring Miscellaneous Test URL $1\n";
+    my($url,$test_content)=($1,$2);
+    while(length $test_content) {
+      $test_content =~ s/^\s+//;
+      last if !length $test_content;
+      if($test_content =~ s%^<(\S+) rdf:resource="([^"]+)"\s*/>%%) { #"
+        $tests{$url}->{$1}=$2;
+      } elsif ($test_content =~ s%^<(test:\w+)>\s*<(test:[-\w]+) rdf:about="([^"]+)"\s*/>\s*</(test:\w+)>%%) { #"
+        push(@{$tests{$url}->{$1}->{$2}}, $3);
+      } elsif ($test_content =~ s%^<(test:\w+)>([^<]+)</test:\w+>%%) {
+        $tests{$url}->{$1}=$2;
+      } elsif ($test_content =~ s%^<test:\w+>\s*<test:[-\w]+\s*/>\s*</test:\w+>\s*%%) {
+      } else {
+  	die "I'm stumped 3 at test content >>$test_content<<\n";
+      }
+    }
+    my $test_status=$tests{$url}->{'test:status'} || 'not APPROVED';
+    warn "$progname: Ignoring Miscellaneous Test URL $url ($test_status)\n";
   } else {
-    die "I'm stumped at content >>$content<<\n";
+    die "I'm stumped 4 at content >>$content<<\n";
   }
 }
 
