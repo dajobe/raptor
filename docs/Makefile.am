@@ -25,9 +25,12 @@
 # 
 
 
-bin_PROGRAMS = rapper rdfdiff
+bin_PROGRAMS = rapper
+EXTRA_PROGRAMS = rdfdiff
+
 bin_SCRIPTS = raptor-config
 noinst_SCRIPTS = raptor-src-config
+
 lib_LTLIBRARIES = libraptor.la
 
 include_HEADERS = raptor.h
