@@ -279,6 +279,54 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
 }
 
 
+/**
+ * raptor_qname_copy - Copy an new XML qname
+ * @qname: existing qname
+ * 
+ *
+ * Return value: a new &raptor_qname object or NULL on failure
+ **/
+raptor_qname*
+raptor_qname_copy(raptor_qname *qname) {
+  raptor_qname* new_qname;
+  unsigned char* new_name;
+
+  new_qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
+  if(!new_qname)
+    return NULL;
+
+  if(qname->value) {
+    int value_length=qname->value_length;
+    unsigned char* new_value=(unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+
+    if(!new_value) {
+      RAPTOR_FREE(raptor_qname, qname);
+      return NULL;
+    } 
+    strcpy((char*)new_value, (char*)qname->value);
+    new_qname->value=new_value;
+    new_qname->value_length=value_length;
+  }
+
+  new_name=(unsigned char*)RAPTOR_MALLOC(cstring, qname->local_name_length+1);
+  if(!new_name) {
+    raptor_free_qname(new_qname);
+    return NULL;
+  }
+  strcpy((char*)new_name, (char*)qname->local_name);
+  new_qname->local_name=new_name;
+  new_qname->local_name_length=qname->local_name_length;
+
+  new_qname->nspace=qname->nspace;
+
+  new_qname->uri=raptor_namespace_get_uri(new_qname->nspace);
+  if(new_qname->uri)
+    new_qname->uri=raptor_new_uri_from_uri_local_name(new_qname->uri, new_name);
+  
+  return new_qname;
+}
+
+
 #ifdef RAPTOR_DEBUG
 void
 raptor_qname_print(FILE *stream, raptor_qname* name) 
