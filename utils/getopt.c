@@ -42,10 +42,10 @@
 
 #include <getopt.h>
 
-int opterr;		/* error => print message */
-int optind;		/* next argv[] index */
-int optopt;		/* Set for unknown arguments */
-char *optarg;		/* option parameter if any */
+int raptor_opterr;		/* error => print message */
+int raptor_optind;		/* next argv[] index */
+int raptor_optopt;		/* Set for unknown arguments */
+char *raptor_optarg;		/* option parameter if any */
 
 /*
  * Err:
@@ -56,8 +56,8 @@ char *optarg;		/* option parameter if any */
 static int
 Err (char *name, char *mess, int c)		/* returns '?' */
 {
-  optopt = c;
-  if (opterr)
+  raptor_optopt = c;
+  if (raptor_opterr)
     {
       (void) fprintf (stderr, "%s: %s -- %c\n", name, mess, c);
     }
@@ -73,45 +73,45 @@ raptor_getopt (int argc, char * const argv[], const char *optstring)
   int osp;		/* saved `sp' for param test */
 
 #ifndef STRICT
-  int oind;		/* saved `optind' for param test */
+  int oind;		/* saved `raptor_optind' for param test */
 #endif
   int c;		/* option letter */
   char *cp;		/* -> option in `optstring' */
 
-  optarg = NULL;
+  raptor_optarg = NULL;
 
   /* initialise getopt vars */
-  if (optind == 0)
+  if (raptor_optind == 0)
     {
-      optind = 1;
-      opterr = 1;
-      optopt = 1;
-      optarg = NULL;
+      raptor_optind = 1;
+      raptor_opterr = 1;
+      raptor_optopt = 1;
+      raptor_optarg = NULL;
     }
 
   if (sp == 1)
     {				/* fresh argument */
-      if (optind >= argc	/* no more arguments */
-	  || argv[optind][0] != '-'	/* no more options */
-	  || argv[optind][1] == '\0'	/* not option; stdin */
+      if (raptor_optind >= argc	/* no more arguments */
+	  || argv[raptor_optind][0] != '-'	/* no more options */
+	  || argv[raptor_optind][1] == '\0'	/* not option; stdin */
 	)
 	return EOF;
-      else if (strcmp (argv[optind], "--") == 0)
+      else if (strcmp (argv[raptor_optind], "--") == 0)
 	{
-	  ++optind;		/* skip over "--" */
+	  ++raptor_optind;		/* skip over "--" */
 	  return EOF;		/* "--" marks end of options */
 	}
     }
 
-  c = argv[optind][sp];		/* option letter */
+  c = argv[raptor_optind][sp];		/* option letter */
   osp = sp++;			/* get ready for next letter */
 
 #ifndef STRICT
-  oind = optind;		/* save optind for param test */
+  oind = raptor_optind;		/* save raptor_optind for param test */
 #endif
-  if (argv[optind][sp] == '\0')
+  if (argv[raptor_optind][sp] == '\0')
     {				/* end of argument */
-      ++optind;			/* get ready for next try */
+      ++raptor_optind;			/* get ready for next try */
       sp = 1;			/* beginning of next argument */
     }
 
@@ -136,23 +136,23 @@ raptor_getopt (int argc, char * const argv[], const char *optstring)
 	  return Err (argv[0], "option must be followed by white space", c);
 	}
 #else
-      if (oind == optind)
+      if (oind == raptor_optind)
 	{			/* argument w/o whitespace */
-	  optarg = &argv[optind][sp];
+	  raptor_optarg = &argv[raptor_optind][sp];
 	  sp = 1;		/* beginning of next argument */
 	}
 
       else
 #endif
-      if (optind >= argc)
+      if (raptor_optind >= argc)
 	{
 	  return Err (argv[0], "option requires an argument", c);
 	}
 
       else			/* argument w/ whitespace */
-	optarg = argv[optind];
+	raptor_optarg = argv[raptor_optind];
 
-      ++optind;			/* skip over parameter */
+      ++raptor_optind;			/* skip over parameter */
     }
 
   return c;
