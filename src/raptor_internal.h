@@ -322,6 +322,9 @@ struct raptor_parser_factory_s {
   /* parse a chunk of memory */
   int (*chunk)(raptor_parser* parser, const unsigned char *buffer, size_t len, int is_end);
 
+  /* finish the parser factory */
+  int (*finish_factory)(raptor_parser_factory* factory);
+
 };
 
 
@@ -437,8 +440,6 @@ void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 void raptor_init_parser_n3(void);
 void raptor_init_parser_rss(void);
-
-void raptor_terminate_parser_rdfxml (void);
 
 
 /* raptor_utf8.c */
