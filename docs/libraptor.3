@@ -149,6 +149,7 @@ The current defined features are:
   \fBRAPTOR_FEATURE_ALLOW_BAGID\fR              Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fR  Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fR       Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_NON_NFC_FATAL\fR            Boolean (non 0 true)
 If the \fIscanning\fR
 feature is true (default false), then the RDF/XML parser will look for embedded
 rdf:RDF elements inside the XML content, and not require that the
@@ -184,6 +185,10 @@ revising of RDF/XML after collections were initially added.
 If the \fInormalize_language\fR
 feature is true (default true) then XML language values
 such as from xml:lang will be normalized to lowercase.
+.P
+If the \fInon_nfc_fatal\fR
+feature is true (default false) then illegal Unicode Normal Form C
+in literals will give a fatal error, otherwise it gives a warning.
 .IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
 Return the current raptor_locator object for the parser.
 This is a public structure defined in raptor.h that can be
@@ -422,6 +427,8 @@ Retrieve the given URL, returning non zero on failure.
 Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
 .SH API CHANGES
+.IP 1.1.0
+Added feature non_nfc_fatal (see raptor_set_feature documentation).
 .IP 1.0.0
 Removed the following deprecated methods and functions (see 0.9.6
 changes for the new names):
