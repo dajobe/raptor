@@ -175,7 +175,7 @@ RAPTOR_API raptor_uri* raptor_new_uri_from_id(raptor_uri *base_uri, const char *
 RAPTOR_API raptor_uri* raptor_new_uri_for_rdf_concept(const char *name);
 RAPTOR_API void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
-RAPTOR_API raptor_uri* raptor_copy_uri(raptor_uri *uri);
+RAPTOR_API raptor_uri* raptor_uri_copy(raptor_uri *uri);
 
 
 /* Identifier functions */
@@ -194,6 +194,29 @@ RAPTOR_API int raptor_uri_is_file_uri(const char* uri_string);
 
 /* FIXME temporary redland stuff */
 void raptor_set_world(raptor_parser *rdf_parser, void *world);
+
+typedef raptor_uri* (*new_uri_func) (void *context, const char *uri_string);
+typedef raptor_uri* (*new_uri_from_uri_local_name_func) (void *context, raptor_uri *uri, const char *local_name);
+typedef raptor_uri* (*new_uri_relative_to_base_func) (void *context, raptor_uri *base_uri, const char *uri_string);
+typedef raptor_uri* (*new_uri_for_rdf_concept_func) (void *context, const char *name);
+typedef void (*free_uri_func) (void *context, raptor_uri *uri);
+typedef int (*uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
+typedef raptor_uri* (*uri_copy_func) (void *context, raptor_uri *uri);
+
+typedef struct {
+  /* constructors */
+  new_uri_func                     new_uri;
+  new_uri_from_uri_local_name_func new_uri_from_uri_local_name;
+  new_uri_relative_to_base_func    new_uri_relative_to_base;
+  new_uri_for_rdf_concept_func     new_uri_for_rdf_concept;
+  /* destructor */
+  free_uri_func                    free_uri;
+  /* methods */
+  uri_equals_func                  uri_equals;
+  uri_copy_func                    uri_copy; /* well, copy constructor */
+  int initialised;
+} raptor_uri_handler;
+
 
 #ifndef RAPTOR_IN_REDLAND
 
