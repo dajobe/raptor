@@ -1,5 +1,7 @@
 2004-10-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* rdfdump.c: default serializer simple
+
 	* raptor_serialize.c (raptor_rdfxml_serialize_statement): Handle
 	URI subject, object right.
 
