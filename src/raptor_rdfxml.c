@@ -528,6 +528,14 @@ struct raptor_parser_s {
   raptor_uri *base_uri;
 
 
+#ifdef RAPTOR_XML_LIBXML
+  /* flag for some libxml eversions*/
+  int first_read;
+#endif
+  
+  /* Reading from this file */
+  FILE *fh;
+
   /* static statement for use in passing to user code */
   raptor_statement statement;
 
@@ -672,6 +680,15 @@ static void raptor_end_element_grammar(raptor_parser *parser, raptor_element *el
 /* prototype for statement related functions */
 static void raptor_generate_statement(raptor_parser *rdf_parser, raptor_uri *subject_uri, const char *subject_id, const raptor_identifier_type subject_type, const raptor_uri_source subject_uri_source, raptor_uri *predicate_uri, const char *predicate_id, const raptor_identifier_type predicate_type, const raptor_uri_source predicate_uri_source, raptor_uri *object_uri, const char *object_id, const raptor_identifier_type object_type, const raptor_uri_source object_uri_source, raptor_uri *bag);
 static void raptor_print_statement_detailed(const raptor_statement *statement, int detailed, FILE *stream);
+
+
+
+/* Prototypes for parsing data functions */
+void raptor_xml_parse_init(raptor_parser* rdf_parser,  raptor_uri *uri, raptor_uri *base_uri);
+int raptor_xml_parse_init_file(raptor_parser* rdf_parser, const char *filename, raptor_uri *base_uri);
+void raptor_xml_parse_clean(raptor_parser* rdf_parser);
+int raptor_xml_parse_chunk(raptor_parser* rdf_parser, const char *buffer, size_t len, int is_end);
+
 
 
 
@@ -1601,9 +1618,6 @@ raptor_new(
 )
 {
   raptor_parser* rdf_parser;
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp;
-#endif
 
   rdf_parser=(raptor_parser*)LIBRDF_CALLOC(raptor_parser, 1, sizeof(raptor_parser));
 
@@ -1614,37 +1628,6 @@ raptor_new(
   rdf_parser->feature_scanning_for_rdf_RDF=0;
   rdf_parser->feature_allow_non_ns_attributes=1;
   rdf_parser->feature_allow_other_parseTypes=1;
-
-#ifdef RAPTOR_XML_EXPAT
-  xp=XML_ParserCreate(NULL);
-
-  /* create a new parser in the specified encoding */
-  XML_SetUserData(xp, rdf_parser);
-
-  /* XML_SetEncoding(xp, "..."); */
-
-  XML_SetElementHandler(xp, raptor_xml_start_element_handler,
-                        raptor_xml_end_element_handler);
-  XML_SetCharacterDataHandler(xp, raptor_xml_cdata_handler);
-
-  XML_SetUnparsedEntityDeclHandler(xp,
-                                   raptor_xml_unparsed_entity_decl_handler);
-
-  XML_SetExternalEntityRefHandler(xp,
-                                  raptor_xml_external_entity_ref_handler);
-
-
-#ifdef HAVE_XML_SetNamespaceDeclHandler
-  XML_SetNamespaceDeclHandler(xp,
-                              raptor_start_namespace_decl_handler,
-                              raptor_end_namespace_decl_handler);
-#endif
-  rdf_parser->xp=xp;
-#endif
-
-#ifdef RAPTOR_XML_LIBXML
-  raptor_libxml_init(&rdf_parser->sax);
-#endif
 
 #ifdef RAPTOR_IN_REDLAND
   rdf_parser->world=world;
@@ -1661,7 +1644,7 @@ raptor_new(
 #endif
 
 
-return rdf_parser;
+  return rdf_parser;
 }
 
 
@@ -1675,14 +1658,10 @@ return rdf_parser;
 void
 raptor_free(raptor_parser *rdf_parser) 
 {
-  raptor_element* element;
-
+  raptor_xml_parse_clean(rdf_parser);
+  
   raptor_namespaces_free(&rdf_parser->namespaces);
   
-  while((element=raptor_element_pop(rdf_parser))) {
-    raptor_free_element(element);
-  }
-
 #ifdef RAPTOR_IN_REDLAND
   if(rdf_parser->raptor_daml_oil_uri)
     librdf_free_uri(rdf_parser->raptor_daml_oil_uri);
@@ -1762,15 +1741,258 @@ raptor_set_warning_handler(raptor_parser* parser, void *user_data,
 
 void
 raptor_set_statement_handler(raptor_parser* parser,
-                          void *user_data, 
-                          raptor_statement_handler handler)
+                             void *user_data,
+                             raptor_statement_handler handler)
 {
   parser->user_data=user_data;
   parser->statement_handler=handler;
 }
 
 
+void
+raptor_xml_parse_init(raptor_parser* rdf_parser, raptor_uri *uri,
+                      raptor_uri *base_uri) 
+{
+#ifdef RAPTOR_XML_EXPAT
+  XML_Parser xp;
+#endif
+  /* for storing error info */
+  raptor_locator *locator=&rdf_parser->locator;
 
+
+  /* initialise fields */
+  rdf_parser->depth=0;
+  rdf_parser->root_element= rdf_parser->current_element=NULL;
+  rdf_parser->failed=0;
+
+  rdf_parser->base_uri=base_uri;
+
+#ifdef RAPTOR_XML_EXPAT
+  xp=XML_ParserCreate(NULL);
+
+  /* create a new parser in the specified encoding */
+  XML_SetUserData(xp, rdf_parser);
+
+  /* XML_SetEncoding(xp, "..."); */
+
+  XML_SetElementHandler(xp, raptor_xml_start_element_handler,
+                        raptor_xml_end_element_handler);
+  XML_SetCharacterDataHandler(xp, raptor_xml_cdata_handler);
+
+  XML_SetUnparsedEntityDeclHandler(xp,
+                                   raptor_xml_unparsed_entity_decl_handler);
+
+  XML_SetExternalEntityRefHandler(xp,
+                                  raptor_xml_external_entity_ref_handler);
+
+
+#ifdef HAVE_XML_SetNamespaceDeclHandler
+  XML_SetNamespaceDeclHandler(xp,
+                              raptor_start_namespace_decl_handler,
+                              raptor_end_namespace_decl_handler);
+#endif
+  rdf_parser->xp=xp;
+
+  XML_SetBase(xp, RAPTOR_URI_AS_STRING(base_uri));
+#endif
+
+
+#ifdef RAPTOR_XML_LIBXML
+  raptor_libxml_init(&rdf_parser->sax);
+
+  rdf_parser->first_read=1;
+#endif
+
+  locator->uri=base_uri;
+  
+  return;
+}
+
+
+int
+raptor_xml_parse_init_file(raptor_parser* rdf_parser,  const char *filename,
+                           raptor_uri *base_uri)
+{
+  /* for storing error info */
+  raptor_locator *locator=&rdf_parser->locator;
+
+  raptor_xml_parse_init(rdf_parser, NULL, base_uri);
+
+  locator->file=filename;
+
+  if(!strcmp(filename, "-")) {
+    rdf_parser->fh=stdin;
+    return 0;
+  }
+  
+  rdf_parser->fh=fopen(filename, "r");
+  if(!rdf_parser->fh) {
+    raptor_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
+    LIBRDF_FREE(cstring, (void*)filename);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+void
+raptor_xml_parse_clean(raptor_parser* rdf_parser) 
+{
+  raptor_element* element;
+
+#ifdef RAPTOR_XML_EXPAT
+  if(rdf_parser->xp) {
+    XML_ParserFree(rdf_parser->xp);
+    rdf_parser->xp=NULL;
+  }
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+  if(rdf_parser->xc) {
+    xmlFreeParserCtxt(rdf_parser->xc);
+    rdf_parser->xc=NULL;
+  }
+#endif
+
+  if(rdf_parser->fh) {
+    fclose(rdf_parser->fh);
+    rdf_parser->fh=NULL;
+  }
+  while((element=raptor_element_pop(rdf_parser))) {
+    raptor_free_element(element);
+  }
+}
+
+
+/* Internal - handle XML parser errors and pass them on to app */
+static void
+raptor_xml_parse_handle_errors(raptor_parser* rdf_parser) {
+#ifdef RAPTOR_XML_EXPAT
+  XML_Parser xp=rdf_parser->xp;
+  int xe=XML_GetErrorCode(xp);
+  raptor_locator *locator=&rdf_parser->locator;
+
+#ifdef EXPAT_UTF8_BOM_CRASH
+  if(rdf_parser->tokens_count) {
+#endif
+    /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
+     * which dies here if the error is before <?xml?...
+     * The expat 1.95.1 source release version works fine.
+     */
+    locator->line=XML_GetCurrentLineNumber(xp);
+    locator->column=XML_GetCurrentColumnNumber(xp);
+    locator->byte=XML_GetCurrentByteIndex(xp);
+#ifdef EXPAT_UTF8_BOM_CRASH
+  }
+#endif
+      
+  raptor_update_document_locator(rdf_parser);
+  raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
+                      XML_ErrorString(xe));
+#endif /* EXPAT */
+
+#ifdef RAPTOR_XML_LIBXML
+  raptor_update_document_locator(rdf_parser);
+  raptor_parser_error(rdf_parser, "XML Parsing failed");
+#endif
+}
+
+
+/* Internal - no XML parser error handing */
+static int
+raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
+                        size_t len, int is_end) 
+{
+#ifdef RAPTOR_XML_EXPAT
+  XML_Parser xp=rdf_parser->xp;
+#endif
+#ifdef RAPTOR_XML_LIBXML
+  /* parser context */
+  xmlParserCtxtPtr xc=rdf_parser->xc;
+#endif
+  int rc;
+  
+#ifdef RAPTOR_XML_LIBXML
+  if(!xc) {
+    xc = xmlCreatePushParserCtxt(&rdf_parser->sax, rdf_parser,
+                                 buffer, len, rdf_parser->filename);
+    if(!xc)
+      return 1;
+
+    xc->userData = rdf_parser;
+    xc->vctxt.userData = rdf_parser;
+    xc->vctxt.error=raptor_libxml_validation_error;
+    xc->vctxt.warning=raptor_libxml_validation_warning;
+    xc->replaceEntities = 1;
+    
+    rdf_parser->xc = xc;
+    return;
+  }
+#endif
+
+  if(len <= 0) {
+#ifdef RAPTOR_XML_EXPAT
+    XML_Parse(xp, buffer, 0, 1);
+#endif
+#ifdef RAPTOR_XML_LIBXML
+    xmlParseChunk(xc, buffer, 0, 1);
+#endif
+    return 0;
+  }
+
+
+#ifdef RAPTOR_XML_EXPAT
+  rc=XML_Parse(xp, buffer, len, is_end);
+  if(is_end)
+    return 0;
+  if(!rc) /* expat: 0 is failure */
+    return 1;
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+  /* Work around some libxml versions that fail to work
+   * if the buffer size is larger than the entire file
+   * and thus the entire parsing is done in one operation.
+   */
+  if(rdf_parser->first_read && is_end) {
+    /* parse all but the last character */
+    rc=xmlParseChunk(xc, buffer, len-1, 0);
+    if(rc)
+      return 1;
+    /* last character */
+    rc=xmlParseChunk(xc, buffer + (len-1), 1, 0);
+    if(rc)
+      return 1;
+    /* end */
+    len= -1; /* pretend to be EOF */
+    xmlParseChunk(xc, buffer, 0, 1);
+    return 0;
+  }
+
+  rdf_parser->first_read=0;
+    
+  rc=xmlParseChunk(xc, buffer, len, is_end);
+  if(is_end)
+    return 0;
+  if(rc) /* libxml: non 0 is failure */
+    return 1;
+#endif
+
+  return 0;
+}
+
+
+
+int
+raptor_xml_parse_chunk(raptor_parser* rdf_parser, const char *buffer,
+                       size_t len, int is_end) 
+{
+  int rc=raptor_xml_parse_chunk_(rdf_parser, buffer, len, is_end);
+  if(rc)    
+    raptor_xml_parse_handle_errors(rdf_parser);
+  return rc;
+}
 
 
 /**
@@ -1782,175 +2004,36 @@ raptor_set_statement_handler(raptor_parser* parser,
  * Return value: non 0 on failure
  **/
 int
-raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
+raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
                   raptor_uri *base_uri) 
 {
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp;
-#endif
-#ifdef RAPTOR_XML_LIBXML
-  int first_read=1;
-  /* parser context */
-  xmlParserCtxtPtr xc=NULL;
-#endif
-  FILE *fh;
+  /* Read buffer */
   char buffer[RAPTOR_XML_READ_BUFFER_SIZE];
-  int rc=1;
-  int len;
-  const char *filename;
-  /* for storing error info */
-  raptor_locator *locator=&rdf_parser->locator;
+  int rc=0;
+  const char *filename=RAPTOR_URI_TO_FILENAME(uri);
 
-  /* initialise fields */
-  rdf_parser->depth=0;
-  rdf_parser->root_element= rdf_parser->current_element=NULL;
-  rdf_parser->failed=0;
-
-  rdf_parser->base_uri=base_uri;
-
-
-#ifdef RAPTOR_XML_EXPAT
-  xp=rdf_parser->xp;
-
-  XML_SetBase(xp, RAPTOR_URI_AS_STRING(base_uri));
-#endif
-
-
-  filename=RAPTOR_URI_TO_FILENAME(uri);
   if(!filename)
     return 1;
 
-  locator->file=filename;
-  locator->uri=base_uri;
-
-  fh=fopen(filename, "r");
-  if(!fh) {
-    raptor_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
-#ifdef RAPTOR_XML_EXPAT
-    XML_ParserFree(xp);
-#endif /* EXPAT */
-    LIBRDF_FREE(cstring, (void*)filename);
+  if(raptor_xml_parse_init_file(rdf_parser, filename, base_uri))
     return 1;
+  
+  while(rdf_parser->fh && !feof(rdf_parser->fh)) {
+    int len=fread(buffer, 1, RAPTOR_XML_READ_BUFFER_SIZE, rdf_parser->fh);
+    rc=raptor_xml_parse_chunk_(rdf_parser, buffer,
+                               len, (len < RAPTOR_XML_READ_BUFFER_SIZE));
+    if(rc)
+      break;
   }
 
-#ifdef RAPTOR_XML_LIBXML
-  /* libxml needs at least 4 bytes from the XML content to allow
-   * content encoding detection to work */
-  len=fread(buffer, 1, 4, fh);
-  if(len>0) {
-    xc = xmlCreatePushParserCtxt(&rdf_parser->sax, rdf_parser,
-                                 buffer, len, filename);
-    if(!xc) {
-      fclose(fh);
-#ifdef RAPTOR_URI_TO_FILENAME
-      LIBRDF_FREE(cstring, (void*)filename);
-#endif
-      return 1;
-    }
-    xc->userData = rdf_parser;
-    xc->vctxt.userData = rdf_parser;
-    xc->vctxt.error=raptor_libxml_validation_error;
-    xc->vctxt.warning=raptor_libxml_validation_warning;
-    xc->replaceEntities = 1;
-    
-    rdf_parser->xc = xc;
-    
-  } else {
-    fclose(fh);
-    fh=NULL;
-  }
-
-#endif
-
-  while(fh && !feof(fh)) {
-    len=fread(buffer, 1, RAPTOR_XML_READ_BUFFER_SIZE, fh);
-    if(len <= 0) {
-#ifdef RAPTOR_XML_EXPAT
-      XML_Parse(xp, buffer, 0, 1);
-#endif
-#ifdef RAPTOR_XML_LIBXML
-      xmlParseChunk(xc, buffer, 0, 1);
-#endif
-      break;
-    }
-#ifdef RAPTOR_XML_EXPAT
-    rc=XML_Parse(xp, buffer, len, (len < RAPTOR_XML_READ_BUFFER_SIZE));
-    if(len < RAPTOR_XML_READ_BUFFER_SIZE)
-      break;
-    if(!rc) /* expat: 0 is failure */
-      break;
-#endif
-#ifdef RAPTOR_XML_LIBXML
-    /* Work around some libxml versions that fail to work
-     * if the buffer size is larger than the entire file
-     * and thus the entire parsing is done in one operation.
-     */
-    if(first_read && len < RAPTOR_XML_READ_BUFFER_SIZE) {
-      /* parse all but the last character */
-      rc=xmlParseChunk(xc, buffer, len-1, 0);
-      if(rc)
-        break;
-      /* last character */
-      rc=xmlParseChunk(xc, buffer+len-1, 1, 0);
-      if(rc)
-        break;
-      /* end */
-      len= -1; /* pretend to be EOF */
-      xmlParseChunk(xc, buffer, 0, 1);
-      break;
-    }
-    first_read=0;
-    
-    rc=xmlParseChunk(xc, buffer, len, (len < RAPTOR_XML_READ_BUFFER_SIZE));
-    if(len < RAPTOR_XML_READ_BUFFER_SIZE)
-      break;
-    if(rc) /* libxml: non 0 is failure */
-      break;
-#endif
-  }
-  fclose(fh);
-
-
-#ifdef RAPTOR_XML_EXPAT
-  if(!rc) {
-    int xe=XML_GetErrorCode(xp);
-
-#ifdef EXPAT_UTF8_BOM_CRASH
-    if(rdf_parser->tokens_count) {
-#endif
-      /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
-       * which dies here if the error is before <?xml?...
-       * The expat 1.95.1 source release version works fine.
-       */
-      locator->line=XML_GetCurrentLineNumber(xp);
-      locator->column=XML_GetCurrentColumnNumber(xp);
-      locator->byte=XML_GetCurrentByteIndex(xp);
-#ifdef EXPAT_UTF8_BOM_CRASH
-    }
-#endif
-      
-    raptor_update_document_locator(rdf_parser);
-    raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
-                        XML_ErrorString(xe));
-    rc=1;
-  } else
-    rc=0;
-
-  XML_ParserFree(xp);
-#endif /* EXPAT */
-#ifdef RAPTOR_XML_LIBXML
-  if(rc) {
-    raptor_update_document_locator(rdf_parser);
-    raptor_parser_error(rdf_parser, "XML Parsing failed");
-  }
-
-  xmlFreeParserCtxt(xc);
-
-#endif
+  if(rc)    
+    raptor_xml_parse_handle_errors(rdf_parser);
 
 #ifdef RAPTOR_URI_TO_FILENAME
   LIBRDF_FREE(cstring, (void*)filename);
 #endif
+
+  raptor_xml_parse_clean(rdf_parser);
 
   return (rc != 0);
 }
