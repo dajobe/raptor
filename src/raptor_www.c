@@ -55,9 +55,6 @@ raptor_www_init(void)
   static int initialized=0;
   if(initialized)
     return;
-#ifdef RAPTOR_WWW_LIBCURL
-  curl_global_init(CURL_GLOBAL_ALL);
-#endif
 #ifdef RAPTOR_WWW_LIBWWW
   if(!HTLib_isInitialized()) {
     raptor_libwww_initialised=1;
@@ -71,9 +68,6 @@ raptor_www_init(void)
 void
 raptor_www_finish(void)
 {
-#ifdef RAPTOR_WWW_LIBCURL
-  curl_global_cleanup();
-#endif
 #ifdef RAPTOR_WWW_LIBWWW
   if(raptor_libwww_initialised)
     HTLibTerminate();
