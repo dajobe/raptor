@@ -192,14 +192,6 @@ fi
 
 am_opt=
 
-# Ensure that these are created by the versions on this system
-# (indirectly via automake)
-rm -f ltconfig ltmain.sh libtool
-# Made by automake
-rm -f missing depcomp
-# automake junk
-rm -rf autom4te*.cache
-
 config_dir=
 if test -d $CONFIG_DIR; then
   config_dir=`cd $CONFIG_DIR; pwd`
@@ -213,6 +205,14 @@ do
   else
     echo $program: Processing directory $dir
     ( cd $dir
+
+      # Ensure that these are created by the versions on this system
+      # (indirectly via automake)
+      rm -f ltconfig ltmain.sh libtool
+      # Made by automake
+      rm -f missing depcomp
+      # automake junk
+      rm -rf autom4te*.cache
 
       if test "X$config_dir" != X; then
         echo "$program: Updating config.guess and config.sub"
