@@ -50,6 +50,10 @@ extern "C" {
 
 #define HAVE_C99_VSNPRINTF 1
 
+/* for access() which is POSIX but doesn't seem to have the defines in VC */
+#ifndef R_OK
+#define R_OK 4
+#endif
 
 #include <windows.h>
 
