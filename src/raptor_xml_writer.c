@@ -167,7 +167,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
   xml_writer->depth++;
 
   xml_writer->current_element=element;
-  if(element->parent)
+  if(element && element->parent)
     element->parent->content_element_seen=1;
 }
 
@@ -211,7 +211,8 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                 xml_writer->content_cdata, xml_writer->content_cdata_length);
 #endif
 
-  xml_writer->current_element = xml_writer->current_element->parent;
+  if(xml_writer->current_element)
+    xml_writer->current_element = xml_writer->current_element->parent;
 }
 
 
