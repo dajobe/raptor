@@ -1,4 +1,18 @@
+2005-02-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_libxml.c:
+	Use RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET test for a function rather
+	than HAVE_LIBXML_SAX2_H test for a header to work on OSX 10.3.x which
+	has inconsistent system libxml shared library/headers.
+
+	* configure.ac:
+	Test for xmlSAX2InternalSubset so that it checks for the broken OSX
+	10.3.x libxml features in the shared library rather than the ones
+	declared in the inconsistent header.
+
 2005-02-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.rdf.in: Updates for schema
 
 	* tests/Makefile.am (check-rdfxmla): rdfdiff should read
 	$name-rdfxmla.rdf from builddir
