@@ -498,16 +498,6 @@ struct raptor_element_s {
 typedef struct raptor_element_s raptor_element;
 
 
-struct raptor_id_list_s 
-{
-  struct raptor_id_list_s *next;
-  raptor_uri *base_uri;
-  unsigned char *id;
-};
-typedef struct raptor_id_list_s raptor_id_list;
-
-
-
 #define RAPTOR_N_CONCEPTS 21
 
 /*
@@ -549,8 +539,8 @@ struct raptor_xml_parser_s {
 
   raptor_uri* concepts[RAPTOR_N_CONCEPTS];
 
-  /* list of seen rdf:ID / rdf:bagID values (with in-scope base URI) */
-  raptor_id_list* id_list;
+  /* set of seen rdf:ID / rdf:bagID values (with in-scope base URI) */
+  raptor_set* id_set;
 };
 
 typedef struct raptor_xml_parser_s raptor_xml_parser;
@@ -598,7 +588,6 @@ static void raptor_print_element(raptor_element *element, FILE* stream);
 #endif
 
 static int raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element, const unsigned char *id);
-static void raptor_free_ID_list(raptor_xml_parser *rdf_xml_parser);
 
 /* prototypes for grammar functions */
 static void raptor_start_element_grammar(raptor_parser *parser, raptor_element *element);
@@ -1480,6 +1469,8 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
   rdf_xml_parser->xp=xp;
 #endif
 
+  rdf_xml_parser->id_set=raptor_new_set();
+
   return 0;
 }
 
@@ -1557,7 +1548,7 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 #endif
 #endif
 
-  raptor_free_ID_list(rdf_xml_parser);
+  raptor_free_set(rdf_xml_parser->id_set);
 }
 
 
@@ -3303,50 +3294,34 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
 {
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_uri* base_uri=raptor_inscope_base_uri(rdf_parser);
-  raptor_id_list* il;
-
-  for(il=rdf_xml_parser->id_list; il; il=il->next) {
-    if(!strcmp((const char*)il->id, (const char*)id) && raptor_uri_equals(il->base_uri, base_uri)) {
-      /* Found */
-      return 1;
-    }
-  }
-
-  /* Not found or found and OK */  
-  il=(raptor_id_list*)RAPTOR_MALLOC(raptor_id_list, sizeof(raptor_id_list));
-  if(!il)
-    return 1;
+  char *item;
+  char *base_uri_string;
+  size_t base_uri_string_len;
+  size_t id_len;;
+  size_t len;
+  int rc;
   
-  il->base_uri=raptor_uri_copy(base_uri);
-  if(!il->base_uri) {
-    RAPTOR_FREE(raptor_id_list, il);
-    return 1;
-  }
+  base_uri_string=raptor_uri_as_counted_string(base_uri, &base_uri_string_len);
+  id_len=strlen(id);
   
-  il->id=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)id)+1);
-  if(!il->id) {
-    raptor_free_uri(il->base_uri);
-    RAPTOR_FREE(raptor_id_list, il);
+  /* Storing ID + ' ' + base-uri-string + '\0' */
+  len=id_len+1+strlen(base_uri_string)+1;
+
+  item=(char*)RAPTOR_MALLOC(cstring, len);
+  if(!item)
+    return 1;
+
+  strcpy(item, id);
+  item[id_len]=' ';
+  strcpy(item+id_len+1, base_uri_string); /* strcpy for end '\0' */
+  
+  rc=raptor_set_add(rdf_xml_parser->id_set, item, len);
+  if(rc) {
+    RAPTOR_FREE(cstring, item);
     return 1;
   }
-  strcpy((char*)il->id, (const char*)id);
 
-  il->next=rdf_xml_parser->id_list;
-  rdf_xml_parser->id_list=il;
   return 0;
-}
-
-
-static void
-raptor_free_ID_list(raptor_xml_parser *rdf_xml_parser) {
-  raptor_id_list *il, *next;
-
-  for(il=rdf_xml_parser->id_list; il; il=next) {
-    next=il->next;
-    raptor_free_uri(il->base_uri);
-    RAPTOR_FREE(cstring, il->id);
-    RAPTOR_FREE(raptor_id_list, il);
-  }
 }
 
 
