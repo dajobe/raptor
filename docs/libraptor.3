@@ -1,4 +1,3 @@
-.\"                                      Hey, EMACS: -*- nroff -*-
 .\"
 .\" libraptor.3 - Raptor library manual page
 .\"
@@ -447,7 +446,7 @@ name to be resolved against the given \fInstack\fR namespace stack.
 An optional \fIvalue\fR can be given, and if there is an error,
 the \fIerror_handler\fB and \fIerror_data\fR will be used to invoke
 the callback.
-.IP "\fBraptor_qname* raptor_new_qname_from_namespace_local_name(raptor_namespace *\fIns\fB, const unsigned char *\fIlocal_name\fB, const unsigned char *\fIvalue\fB)"
+.IP "\fBraptor_qname* raptor_new_qname_from_namespace_local_name (raptor_namespace *\fIns\fB, const unsigned char *\fIlocal_name\fB, const unsigned char *\fIvalue\fB)"
 Create a raptor QName using the namespace name of the
 raptor_namespace \fIns\fR and the local name \fIlocal_name\fR, along
 with optional value \fIvalue\fR.  Errors are reported using
@@ -532,23 +531,23 @@ Create a new raptor_namespace and start it on the stack.
 See \fBraptor_new_namespace\fR for the meaning of the argumens.
 .IP "\fBvoid raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)\fR"
 End (and free) all namespaces on the stack at the given \fIdepth\fR.
-.IP "\fBraptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)\fR"
+.IP "\fBraptor_namespace* raptor_namespaces_get_default_namespace (raptor_namespace_stack *nstack)\fR"
 Return the current default raptor_namespace of the namespace stack
 or NULL if there is none.
-.IP "\fBraptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length)\fR"
+.IP "\fBraptor_namespace *raptor_namespaces_find_namespace (raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length)\fR"
 Find the first namespace on the stack with the given namespace \fIprefix\fR
 or NULL if there is none.
 .IP "\fBint raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace)\fR"
 Return non-zero if the raptor_namespace \fInspace\fR is declared
 on the stack; i.e. in scope if this is a stack of XML namespaces.
 .SH API CHANGES
-.IP 1.1.0
+.SS 1.1.0
 Added N-Triples Plus parser (name ntriples-plus)
 .br
 Made URI class constructors, methods and factory methods as
 well as some other utility functions using or returning URIs or
 literals take unsigned char* rather than char*.  The affected calls are:
-.IP
+.br
   \fBraptor_new_uri_func\fR
   \fBraptor_new_uri_from_local_name_func\fR
   \fBraptor_new_uri_relative_to_base_func\fR
@@ -582,7 +581,7 @@ Made the raptor_namespace, raptor_namespace_stack and raptor_qname
 class and APIs public.
 .br
 Added feature non_nfc_fatal (see raptor_set_feature documentation).
-.IP 1.0.0
+.SS 1.0.0
 Removed the following deprecated methods and functions (see 0.9.6
 changes for the new names):
 .br
@@ -591,49 +590,62 @@ changes for the new names):
 \fBraptor_ntriples_set_error_handler\fR,
 \fBraptor_ntriples_set_fatal_error_handler\fR,
 \fBraptor_ntriples_set_statement_handler\fR and \fBraptor_parser_abort\fR.
-.IP
+.br
 Added \fBraptor_parse_file_stream\fR
 for reading FILE* streams without necessarily having a file.
-.IP 0.9.12
+.SS 0.9.12
 Added \fBraptor_new_uri_for_retrieval\fR
 to turn URI references into URIs suitable for retrieval (no fragments).
-.IP 0.9.11
-Added \fBraptor_get_name\fR, \fBraptor_get_label\fR.
+.SS 0.9.11
+Added \fBraptor_get_name\fR and \fBraptor_get_label\fR.
+.br
 \fBraptor_xml_escape_string\fR now takes error message handler, data
 pointer, loses parser argument.
 .br
 Added \fBraptor_set_default_generate_id_parameters\fR and
 \fBraptor_set_generate_id_handler\fR to control the default
 generation of IDs, allow full customisation.
-.IP 0.9.10
-Added \fBraptor_set_parser_strict\fR, \fBraptor_www_no_www_library_init_finish\fR.
+.SS 0.9.10
+Added \fBraptor_set_parser_strict\fR
+and \fBraptor_www_no_www_library_init_finish\fR.
+.br
 \fBraptor_xml_escape_string\fR now takes an output string length pointer.
 .br
-Added \fBraptor_statement_part_as_counted_string\fR, \fBraptor_statement_part_as_string, \fBraptor_parse_abort\fR.
+Added \fBraptor_statement_part_as_counted_string\fR,
+\fBraptor_statement_part_as_string and \fBraptor_parse_abort\fR.
 .br
 Deprecated \fBraptor_parser_abort\fR.
-.IP 0.9.9
+.SS 0.9.9
 Added raptor_www class and all its constructors, destructor, methods, calls.
 .br
 Added \fBraptor_parse_uri\fR, \fBraptor_parser_abort\fR, \fBraptor_ntriples_term_as_string\fR and \fBraptor_xml_escape_string\fR.
-.IP 0.9.7
+.SS 0.9.7
 \fBraptor_parse_chunk, \fBraptor_new_uri_from_id\fR, arguments are now unsigned char.
 .br
 Added \fBraptor_new_uri_for_xmlbase\fR.
-.IP 0.9.6
+.SS 0.9.6
 In this version, the raptor/ntriples parser calling APIs were
 modified.  The following table lists the changes:
-.IP
-  \fIOLD API                   NEW API (0.9.6+)\fR
-  \fBraptor_new()\fR              \fBraptor_new_parser("rdfxml")\fR
-  \fBntriples_new()\fR            \fBraptor_new_parser("ntriples")\fR
-  \fBraptor_free\fR               \fBraptor_free_parser\fR
-  \fBntriples_free\fR             \fBraptor_ntriples_parser\fR
-  \fBraptor_ntriples_parse_file\fR              \fBraptor_parse_file\fR
-  \fBraptor_ntriples_set_error_handler\fR       \fBraptor_set_error_handler\fR
-  \fBraptor_ntriples_set_fatal_error_handler\fR \fBraptor_set_fatal_error_handler\fR
-  \fBraptor_ntriples_set_statement_handler\fR   \fBraptor_set_statement_handler\fR
-
+.ta \w'raptor_ntriples_set_fatal_error_handler  'u+\n(Spu
+.LP
+\fIOLD API	NEW API (0.9.6+)\fR
+.br
+\fBraptor_new()\fR	\fBraptor_new_parser("rdfxml")\fR
+.br
+\fBntriples_new()\fR	\fBraptor_new_parser("ntriples")\fR
+.br
+\fBraptor_free\fR	\fBraptor_free_parser\fR
+.br
+\fBntriples_free\fR	\fBraptor_ntriples_parser\fR
+.br
+\fBraptor_ntriples_parse_file\fR	\fBraptor_parse_file\fR
+.br
+\fBraptor_ntriples_set_error_handler\fR	\fBraptor_set_error_handler\fR
+.br
+\fBraptor_ntriples_set_fatal_error_handler\fR	\fBraptor_set_fatal_error_handler\fR
+.br
+\fBraptor_ntriples_set_statement_handler\fR	\fBraptor_set_statement_handler\fR
+.br
 .SH "CONFORMING TO"
 \fIRDF/XML Syntax (Revised)\fR, Dave Beckett (ed.)
 W3C Proposed Recommendation,
