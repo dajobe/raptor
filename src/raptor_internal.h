@@ -367,6 +367,11 @@ extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *s
 char* raptor_vsnprintf(const char *message, va_list arguments);
 void raptor_print_statement_part_as_ntriples(FILE* stream, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);
 int raptor_check_ordinal(const char *name);
+
+/* raptor_identifier.c */
+#ifdef RAPTOR_DEBUG
+void raptor_identifier_print(FILE *stream, raptor_identifier* identifier);
+#endif
   
 /* raptor_locator.c */
 extern void raptor_update_document_locator (raptor_parser *rdf_parser);
