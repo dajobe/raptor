@@ -1,0 +1,168 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\"
+.\" libraptor.3 - Raptor library manual page
+.\"
+.\" $Id$
+.\"
+.\" Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
+.\" Institute for Learning and Research Technology - http://www.ilrt.org/
+.\" University of Bristol - http://www.bristol.ac.uk/
+.\"
+.TH libraptor 3 "2002-06-14"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+libraptor \- Raptor RDF parser toolkit library
+.SH SYNOPSIS
+.nf
+.B #include <raptor.h>
+.br
+.BI "raptor_parser *" p =raptor_new();
+.br
+.BI raptor_set_statement_handler( p , NULL , print_statements );
+.br
+.BI raptor_parse_file( p , file_uri , base_uri );
+.br
+.BI raptor_free( p );
+.br
+
+.B #include <ntriples.h>
+.br
+.BI "ntriples_parser *" p =raptor_ntriples_new();
+.br
+.BI raptor_ntriples_set_statement_handler( p , NULL , print_statements );
+.br
+.BI raptor_ntriples_parse_file( p , file_uri , base_uri );
+.br
+.BI raptor_ntriples_free( p );
+.br
+
+.B cc file.c -lraptor
+.br
+.fi
+.SH DESCRIPTION
+The
+.I libraptor
+library provides a high-level interface to a set of RDF parsers -
+which turn a syntax into a sequence of RDF statements (or triples).
+It uses an underlying XML parser, either
+.I expat
+or
+.I libxml
+.
+The library functions are arranged in an object-oriented style with
+constructors, destructors and method calls.  The statements are
+delivered via callback functions that can be registered.
+
+.SH CONSTRUCTORS
+.IP "\fBraptor_parser* raptor_new()\fR"
+Create a new Raptor RDF/XML parser object.
+.IP "\fBntriples_parser* raptor_ntriples_new()\fR"
+Create a new N-Triples parser object.
+.SH DESTRUCTORS
+.IP "\fBvoid raptor_free(raptor_parser *\fIparser\fB)\fR"
+Destroy a Raptor RDF/XML parser object.
+.IP "\fBvoid raptor_ntriples_free(ntriples_parser *\fIparser\fB)\fR"
+Destroy an N-Triples parser object.
+.SH "MESSAGE CALLBACKS"
+Several methods can be registered for both parsers that return
+a variable-argument message in the style of printf(3).  These
+also return a
+.I raptor_locator
+that can contain URI, file, line, column and byte counts of where
+the message is about.  See raptor.h for the definition of the
+signature for a
+.I raptor_message_handler
+and the fields in the
+.I raptor_locator
+structure.
+.SH "MESSAGE CALLBACK METHODS"
+.IP "\fBvoid raptor_set_fatal_error_handler(raptor_parser* \fIparser, void *\fIuser_data, raptor_message_handler handler)\fR"
+Set fatal error handler callback (RDF/XML parser)
+.IP "\fBvoid raptor_set_error_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
+.IP "\fBvoid ntriples_set_error_handler(ntriples_parser* parser, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
+Set non-fatal error handler callback
+.IP "\fBvoid raptor_set_warning_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
+Set warning message handler callback (RDF/XML parser)
+.IP "\fBvoid raptor_print_locator(FILE *\fIstream\fB, raptor_locator* \fIlocator\fB)\fR"
+This method takes a
+.I raptor_locator
+object as passed to an error, warning or other handler
+and formats it for printing to the given stream.
+.sH "STATEMENT CALLBACKS"
+The parsers allwo the registration of callback functions to return
+the statements to the application.  These take a method of the
+signature
+.I raptor_statement_handler
+and return a pointer to a
+.I raptor_statement
+object.  These structures are defined in the raptor.h header file.
+.SH "STATEMENT CALLBACK METHODS"
+.IP "\fBvoid raptor_set_statement_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_statement_handler \fIhandler\fB)\fR"
+.IP "\fBvoid raptor_ntriples_set_statement_handler(raptor_ntriples_parser* parser, void *\fIuser_data\fB, raptor_statement_handler \fIhandler\fB)\fR"
+Set the statement callback function for the parser.
+
+.SH "PARSING METHODS"
+For each parser there are several parsing methods that can be called
+to initiate the parsing.  These run to completion, or fatal error
+and return statements via the registered statement handler callback.
+.IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  const char *\fIfilename\fB, const char *\fIbase_uri\fB)\fR"
+.IP "\fBint raptor_ntriples_parse_file(raptor_ntriples_parser* \fIparser\fB, const char *\fIfilename\fB, const char *\fIbase_uri\fB)\fR"
+Parse the given file (file:filename) according to the base URI
+.I base_uri
+(or NULL if not needed)
+.SH "PARSER UTILITY METHODS"
+.IP "\fBvoid raptor_set_feature(raptor_parser *\fIparser\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
+Set a parser feature
+.I feature
+to a particular
+.I value.
+The current defined features are:
+  \fIFeature                                 Values\fR
+  \fBRAPTOR_FEATURE_SCANNING\fR                 Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES\fR  Boolean (non 0 true)
+
+.SH "STATEMENT METHODS"
+.IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
+Print a raptor statement object in a simple format for debugging.
+.IP "\fBvoid raptor_print_statement_as_ntriples(const raptor_statement* \fIstatement\fB, FILE *\fIstream\fB)\fR"
+Print a raptor statement object in N-Triples format, using all the escapes.
+
+.SH "N-TRIPLES UTILITY FUNCTIONS"
+.IP "\fBvoid raptor_print_ntriples_string(FILE* \fIstream\fB, const char* \fIstring\fB, const char \fIdelim\fB)\fR"
+This is a standalone function that prints the given string
+according to N-Triples escaping rules, expecting to be delimited
+by the character
+.I delin
+which is usually either " or <
+
+.SH "URI UTILITY FUNCTIONS"
+.IP "\fBvoid raptor_uri_resolve_uri_reference (const char* \fIbase_uri\fB, const char* \fIreference_uri\fB, char* \fIbuffer\fB, size_t \fIlength\fB)\fR"
+This is a standalone function that resolves the relative URI
+.I reference_uri
+agains the base URI
+.I base_uri
+according to the URI resolution rules in RFC2396.
+The resulting URI is stored in
+.I buffer
+which is of
+.I length
+bytes.  If this is too small, no work will be done.
+.SH "CONFORMING TO"
+\fIRDF/XML Syntax (Revised)\fR, 
+W3C Working Draft (work in progress),
+.UR http://www.w3.org/TR/rdf-syntax-grammar/
+http://www.w3.org/TR/rdf-syntax-grammar/
+.UE
+
+\fIN-Triples\fR, 
+W3C Working Draft (work in progress),
+.UR http://www.w3.org/TR/rdf-testcases/#ntriples
+http://www.w3.org/TR/rdf-testcases/#ntriples
+.UE
+.SH SEE ALSO
+.BR rdfdump (1)
+.SH AUTHOR
+Dave Beckett - 
+.UR http://purl.org/net/dajobe/
+http://purl.org/net/dajobe/
+.UE
