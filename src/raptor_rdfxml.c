@@ -702,7 +702,8 @@ raptor_print_element(raptor_element *element, FILE* stream)
 
 
 static char *
-raptor_format_element(raptor_element *element, int *length_p, int is_end)
+raptor_format_element(raptor_parser *rdf_parser,
+                      raptor_element *element, int *length_p, int is_end)
 {
   int length;
   char *buffer;
@@ -720,6 +721,8 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
 
   if (!is_end && element->attributes) {
     for(i=0; i < element->attribute_count; i++) {
+      size_t escaped_attr_val_len;
+      
       length++; /* ' ' between attributes and after element name */
 
       /* qname */
@@ -729,8 +732,12 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
          /* prefix: */
         length += element->attributes[i]->nspace->prefix_length + 1;
 
-      /* ="value" */
-      length += element->attributes[i]->value_length + 3;
+      /* XML escaped value */
+      escaped_attr_val_len=raptor_xml_escape_string(rdf_parser,
+                                                    element->attributes[i]->value, element->attributes[i]->value_length,
+                                                  NULL, 0, '"');
+      /* ="XML-escaped-value" */
+      length += 3+escaped_attr_val_len;
     }
   }
   
@@ -760,6 +767,8 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
 
   if(!is_end && element->attributes) {
     for(i=0; i < element->attribute_count; i++) {
+      size_t escaped_attr_val_len;
+
       *ptr++ =' ';
       
       if(element->attributes[i]->nspace && 
@@ -776,8 +785,23 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
       *ptr++ ='=';
       *ptr++ ='"';
       
-      strcpy(ptr, (char*)element->attributes[i]->value);
-      ptr += element->attributes[i]->value_length;
+      escaped_attr_val_len=raptor_xml_escape_string(rdf_parser,
+                                                    element->attributes[i]->value, element->attributes[i]->value_length,
+                                                    NULL, 0, '"');
+      if(escaped_attr_val_len == element->attributes[i]->value_length) {
+        /* save a malloc/free when there is no escaping */
+        strcpy(ptr, element->attributes[i]->value);
+        ptr += element->attributes[i]->value_length;
+      } else {
+        unsigned char *escaped_attr_val=(char*)RAPTOR_MALLOC(cstring,escaped_attr_val_len+1);
+        raptor_xml_escape_string(rdf_parser,
+                                 element->attributes[i]->value, element->attributes[i]->value_length,
+                                 escaped_attr_val, escaped_attr_val_len, '"');
+        
+        strcpy(ptr, escaped_attr_val);
+        RAPTOR_FREE(cstring,escaped_attr_val);
+        ptr += escaped_attr_val_len;
+      }
       *ptr++ ='"';
     }
   }
@@ -1220,7 +1244,7 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   raptor_state state;
   char *buffer;
   char *ptr;
-  char *escaped_buffer;
+  char *escaped_buffer=NULL;
   int all_whitespace=1;
   int i;
 
@@ -1319,15 +1343,18 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
     size_t escaped_buffer_len=raptor_xml_escape_string(rdf_parser,
                                                 s, len,
                                                 NULL, 0, '\0');
-    escaped_buffer=(char*)RAPTOR_MALLOC(cstring, escaped_buffer_len+1);
-    if(!escaped_buffer) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      return;
+    /* save a malloc/free when there is no escaping */
+    if(escaped_buffer_len != len) {
+      escaped_buffer=(char*)RAPTOR_MALLOC(cstring, escaped_buffer_len+1);
+      if(!escaped_buffer) {
+        raptor_parser_fatal_error(rdf_parser, "Out of memory");
+        return;
+      }
+      raptor_xml_escape_string(rdf_parser,
+                               s, len,
+                               escaped_buffer, escaped_buffer_len, '\0');
+      len=escaped_buffer_len;
     }
-    raptor_xml_escape_string(rdf_parser,
-                             s, len,
-                             escaped_buffer, escaped_buffer_len, '\0');
-    len=escaped_buffer_len;
   }
 
   buffer=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + len + 1);
@@ -1352,7 +1379,8 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   element->content_cdata_length += len;
 
   /* now write new stuff at end of cdata buffer */
-  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL) {
+  if((element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
+     && escaped_buffer) {
     strncpy(ptr, escaped_buffer, len);
     RAPTOR_FREE(cstring, escaped_buffer);
   } else
@@ -2495,7 +2523,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         {
           char *fmt_buffer;
           int fmt_length;
-          fmt_buffer=raptor_format_element(element, &fmt_length, 0);
+          fmt_buffer=raptor_format_element(rdf_parser, element, &fmt_length, 0);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
             if(element->content_cdata) {
@@ -2889,7 +2917,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         {
           char *fmt_buffer;
           int fmt_length;
-          fmt_buffer=raptor_format_element(element, &fmt_length,1);
+          fmt_buffer=raptor_format_element(rdf_parser, element, &fmt_length,1);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
             char *new_cdata=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
