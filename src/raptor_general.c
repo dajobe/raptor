@@ -1309,7 +1309,7 @@ static void
 raptor_xml_start_element_handler(void *user_data,
                                  const XML_Char *name, const XML_Char **atts)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_parser* rdf_parser;
   int all_atts_count=0;
   int ns_attributes_count=0;
   raptor_ns_name** named_attrs=NULL;
@@ -1318,10 +1318,15 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_element* element=NULL;
 #ifdef NEED_EXPAT
   /* for storing error info */
-  raptor_locator *locator=&rdf_parser->locator; 
+  raptor_locator *locator;
 #endif
   int non_nspaced_count=0;
   
+  rdf_parser=(raptor_parser*)user_data;
+#ifdef NEED_EXPAT
+  locator=&rdf_parser->locator; 
+#endif
+
 #ifdef RAPTOR_DEBUG
   fputc('\n', stderr);
 #endif
