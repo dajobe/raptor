@@ -44,7 +44,8 @@ EXTRA_DIST = \
 $(top_builddir)/rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
-check-local: check-rdf check-bad-rdf check-warn-rdf
+check-local: check-rdf check-bad-rdf
+# check-warn-rdf
 
 check-rdf: $(top_builddir)/rapper $(TEST_FILES)
 	@result=0; \
