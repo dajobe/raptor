@@ -1421,12 +1421,13 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   
   if(raptor_uri_equals((raptor_uri*)statement->predicate, 
                        RAPTOR_RDF_type_URI(rss_parser))) {
+
     if(raptor_uri_equals((raptor_uri*)statement->object, 
                          RAPTOR_RDF_Seq_URI(rss_parser))) {
+
       /* triple (?resource rdf:type rdf:Seq) */
-      raptor_iostream_write_string(iostr, "Saw rdf:Seq with URI <");
-      raptor_iostream_write_string(iostr, raptor_uri_as_string((raptor_uri*)statement->subject));
-      raptor_iostream_write_string(iostr, ">\n");
+      RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s<\n",
+                    raptor_uri_as_string((raptor_uri*)statement->subject));
       handled=1;
     } else {
       int i;
