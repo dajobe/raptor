@@ -2408,6 +2408,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if (element->rdf_attr[RDF_ATTR_parseType]) {
           const unsigned char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
           int i;
+          int is_parseType_Literal=0;
 
           if(raptor_element_has_property_attributes(element)) {
             raptor_parser_error(rdf_parser, "Property attributes cannot be used with rdf:parseType='%s'", parse_type);
@@ -2428,22 +2429,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             }
 
 
-          if(!strcmp((char*)parse_type, "Literal")) {
-            /* ensure this matches: "reset to rdf:parseType="Literal"
-             * code below
-             */
-            raptor_uri_handler *uri_handler;
-            void *uri_context;
-
-            raptor_uri_get_handler(&uri_handler, &uri_context);
-            rdf_xml_parser->xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
-                                                             raptor_parser_simple_error, rdf_parser,
-                                                             1);
-
-            element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
-            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-            element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-          } else if (!strcmp((char*)parse_type, "Resource")) {
+          if(!strcmp((char*)parse_type, "Literal"))
+            is_parseType_Literal=1;
+          else if (!strcmp((char*)parse_type, "Resource")) {
             state=RAPTOR_STATE_PARSETYPE_RESOURCE;
             element->child_state=RAPTOR_STATE_PROPERTYELT;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
@@ -2464,20 +2452,26 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
                 element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
                 element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
-            } else {
-              /* reset to rdf:parseType="Literal" */
-              raptor_uri_handler *uri_handler;
-              void *uri_context;
-
-              raptor_uri_get_handler(&uri_handler, &uri_context);
-              rdf_xml_parser->xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
-                                                               raptor_parser_simple_error, rdf_parser,
-                                                               1);
-
-              element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
-              element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-              element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-            }
+            } else
+              is_parseType_Literal=1;
+            
+          }
+          
+          if(is_parseType_Literal) {
+            /* rdf:parseType="Literal" - explicitly or default
+             * if the parseType value is not recognised
+             */
+            raptor_uri_handler *uri_handler;
+            void *uri_context;
+            
+            raptor_uri_get_handler(&uri_handler, &uri_context);
+            rdf_xml_parser->xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
+                                                             raptor_parser_simple_error, rdf_parser,
+                                                             1);
+            
+            element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
+            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
+            element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
           }
         } else {
 
