@@ -190,7 +190,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
   }
 
 #ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG3(raptor_xml_writer_end_xml_writer,
+  RAPTOR_DEBUG3(raptor_xml_writer_end_element,
                 "content cdata now: '%s' (%d bytes)\n", 
                 xml_writer->content_cdata, xml_writer->content_cdata_length);
 #endif
@@ -260,8 +260,3 @@ raptor_xml_writer_as_string(raptor_xml_writer* xml_writer,
 
   return xml_writer->content_cdata;
 }
-
-
-
-
-
