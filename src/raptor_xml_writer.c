@@ -130,25 +130,6 @@ raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 }
 
 
-raptor_namespace*
-raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer,
-                                       const unsigned char *prefix, 
-                                       const unsigned char *ns_uri_string,
-                                       int depth) 
-{
-  raptor_namespace_stack *nstack=xml_writer->nstack;
-  raptor_namespace *ns;
-
-  ns=raptor_new_namespace(nstack, prefix, ns_uri_string, depth);
-  if(!ns)
-    return NULL;
-  
-  raptor_namespaces_start_namespace(nstack, ns);
-  return ns;
-}
-
-
-
 void
 raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
                                 raptor_xml_element *element)
@@ -301,6 +282,7 @@ main(int argc, char *argv[])
   void *uri_context;
   raptor_iostream *iostr;
   raptor_namespace_stack *nstack;
+  raptor_namespace* foo_ns;
   raptor_xml_writer* xml_writer;
   raptor_uri* base_uri;
   raptor_qname* el_name;
@@ -338,16 +320,15 @@ main(int argc, char *argv[])
 
   base_uri=raptor_new_uri(base_uri_string);
 
-  raptor_namespaces_start_namespace_full(nstack,
-                                         (const unsigned char*)"foo",
-                                         (const unsigned char*)"http://example.org/foo-ns#",
-                                         0);
+  foo_ns=raptor_new_namespace(nstack,
+                              (const unsigned char*)"foo",
+                              (const unsigned char*)"http://example.org/foo-ns#",
+                              0);
 
 
-  el_name=raptor_new_qname(nstack, 
-                           (const unsigned char*)"foo:bar", 
-                           NULL, /* no attribute value - element */
-                           NULL, NULL); /* errors */
+  el_name=raptor_new_qname_from_namespace_local_name(foo_ns,
+                                                     (const unsigned char*)"bar", 
+                                                     NULL);
   element=raptor_new_xml_element(el_name,
                                   NULL, /* language */
                                   raptor_uri_copy(base_uri));
@@ -384,6 +365,9 @@ main(int argc, char *argv[])
   raptor_free_xml_writer(xml_writer);
 
   raptor_free_xml_element(element);
+
+  raptor_free_namespace(foo_ns);
+
   raptor_free_namespaces(nstack);
 
   raptor_free_uri(base_uri);
