@@ -4,7 +4,7 @@
 #
 # $Id$
 #
-# Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+# Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
 # Institute for Learning and Research Technology - http://www.ilrt.org/
 # University of Bristol - http://www.bristol.ac.uk/
 # 
@@ -37,8 +37,8 @@ EXTRA_rapper_SOURCES = getopt.c
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
-raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c
-
+raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
+raptor_www.c
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
@@ -52,12 +52,14 @@ raptor.spec.in \
 dc.rdf \
 raptor_cc.gperf \
 raptor_cc.c \
+raptor_www_test.c\
 $(man_MANS)
 
 
 SUBDIRS= debian tests win32
 
-TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test
+TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test \
+raptor_www_test
 
 CLEANFILES=$(TESTS)
 
@@ -119,6 +121,10 @@ raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
 
 strcasecmp_test: $(srcdir)/strcasecmp.c
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/strcasecmp.c
+
+raptor_www_test: $(srcdir)/raptor_www_test.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_www_test.c libraptor.la $(LIBS) @REDLAND_LIBS@
+
 
 deb: distcheck
 	rm -rf $(distdir)

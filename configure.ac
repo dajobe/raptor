@@ -5,7 +5,7 @@ dnl (Process this file with autoconf to produce a configure script.)
 dnl
 dnl $Id$
 dnl
-dnl Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+dnl Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
 dnl Institute for Learning and Research Technology - http://www.ilrt.org/
 dnl University of Bristol - http://www.bristol.ac.uk/
 dnl 
@@ -74,7 +74,7 @@ fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h expat.h xmlparse.h sys/stat.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h expat.h xmlparse.h sys/stat.h curl/curl.h libxml/nanohttp.h)
 
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -294,6 +294,39 @@ if test "X$XML_CONFIG" = "X"; then
   AC_CHECK_PROGS(XML_CONFIG, xml2-config xml-config)
 fi
 
+AC_ARG_WITH(curl-config, [  --with-curl-config=PATH Location of libcurl curl-config []], curl_config="$withval", curl_config="")
+
+if test "X$curl_config" != "X" ; then
+  AC_MSG_CHECKING(for $curl_config)
+
+  if test -f $curl_config ; then
+    CURL_CONFIG=$curl_config
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no - searching PATH)
+  fi
+fi
+if test "X$CURL_CONFIG" = "X"; then
+  AC_CHECK_PROGS(CURL_CONFIG, curl-config)
+fi
+
+
+AC_ARG_WITH(pkg-config, [  --with-pkg-config=PATH Location of GNOME pkg-config []], pkg_config="$withval", pkg_config="")
+
+if test "X$pkg_config" != "X" ; then
+  AC_MSG_CHECKING(for $pkg_config)
+
+  if test -f $pkg_config ; then
+    PKG_CONFIG=$pkg_config
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no - searching PATH)
+  fi
+fi
+if test "X$PKG_CONFIG" = "X"; then
+  AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
+fi
+
 
 have_libxml=0
 have_libxml_lib=0
@@ -392,7 +425,7 @@ CPPFLAGS="$oCPPFLAGS"
 LIBS="$oLIBS"
 
 
-AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="libxml") 
+AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - libxml (default), expat], xml_parser="$withval", xml_parser="libxml") 
 
 for xml_parser_name in $xml_parser libxml expat; do
   case $xml_parser_name in
@@ -449,7 +482,133 @@ fi
 AC_MSG_RESULT($result)
 
 
+have_libcurl=0
+have_libghttp=0
+need_libcurl=0
+need_libghttp=0
+need_libxml_www=0
+
+oCPPFLAGS="$CPPFLAGS"
+if test "X$CURL_CONFIG" != X; then
+  oLIBS="$LIBS"
+  LIBS="$LIBS `$CURL_CONFIG --libs`"
+  AC_CHECK_FUNC(curl_easy_init, have_curl_easy_init=yes, have_curl_easy_init=no)
+  LIBS="$oLIBS"
+  AC_MSG_CHECKING(for libcurl library)
+  if test $have_curl_easy_init = yes; then
+    have_libcurl=1
+    LIBCURL_VERSION=`$CURL_CONFIG --version`
+    AC_MSG_RESULT(yes - version $LIBCURL_VERSION)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+
+if test "X$PKG_CONFIG" != X; then
+  oLIBS="$LIBS"
+  LIBS="$LIBS `$PKG_CONFIG ghttp --libs`"
+  AC_CHECK_FUNC(ghttp_request_new, have_ghttp_request_new=yes, have_ghttp_request_new=no)
+  LIBS="$oLIBS"
+  AC_MSG_CHECKING(for libghttp library)
+  if test $have_ghttp_request_new = yes; then
+    have_libghttp=1
+    LIBGHTTP_VERSION=`$PKG_CONFIG ghttp --version`
+    AC_MSG_RESULT(yes - version $LIBGHTTP_VERSION)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+
+
+AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, ghttp], www="$withval", www="curl") 
+
+for www_name in $www curl xml ghttp; do
+  case $www_name in
+    curl)
+      if test $have_libcurl = 1; then
+        need_libcurl=1
+        AC_DEFINE([RAPTOR_WWW_LIBCURL], 1, [Have libcurl WWW library])
+        break
+      fi
+      ;;
+
+    xml)
+      if test $have_libxml = 1; then
+        need_libxml=1
+        need_libxml_www=1
+	AC_DEFINE([RAPTOR_WWW_LIBXML], 1, [Have libxml available as a WWW library])
+        break
+      fi
+      ;;
+
+    ghttp)
+      if test $have_libghttp = 1; then
+        need_libghttp=1
+	AC_DEFINE([RAPTOR_WWW_LIBGHTTP], 1, [Have libghttp WWW library])
+        break
+      fi
+      ;;
+
+    *)
+      AC_MSG_ERROR(No such WWW library $www_name)
+      ;;
+esac
+done
+
+AC_MSG_CHECKING(WWW libraries available)
+www_libraries_available=
+if test $have_libcurl = 1; then
+  www_libraries_available="$www_libraries_available $LIBCURL_VERSION"
+fi
+if test $have_libxml = 1; then
+  if test $need_libxml_source = 1; then
+    www_libraries_available="$www_libraries_available libxml(source)"
+  else
+    www_libraries_available="$www_libraries_available libxml(system $LIBXML_VERSION)"
+  fi
+fi
+if test $have_libghttp = 1; then
+  www_libraries_available="$www_libraries_available libghttp $LIBGHTTP_VERSION"
+fi
+AC_MSG_RESULT($www_libraries_available)
+
+
+AC_MSG_CHECKING(WWW library to use)
+www_library=
+if test $need_libcurl = 1; then
+  www_library="libcurl $LIBCURL_VERSION"
+elif test $need_libxml_www = 1; then
+  if test $need_libxml_source = 1; then
+    www_library="libxml(source)"
+  else
+    www_library="libxml(system $LIBXML_VERSION)"
+  fi
+elif test $need_libghttp = 1; then
+  www_library="libghttp $LIBGHTTP_VERSION"
+else
+  AC_MSG_ERROR(No WWW library available - please install libcurl, libxml2 or libghttp)
+fi
+AC_MSG_RESULT($www_library)
+
+
+if test $need_libcurl = 1; then
+  CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
+  LIBS="$LIBS `$CURL_CONFIG --libs`"
+  AC_LIBOBJ(raptor_www_curl)
+fi
+
+if test $need_libghttp = 1; then
+  CPPFLAGS="$CPPFLAGS `$PKG_CONFIG ghttp --cflags`"
+  LIBS="$LIBS `$PKG_CONFIG ghttp --libs`"
+  AC_LIBOBJ(raptor_www_ghttp)
+fi
+
+
 if test $need_libxml = 1; then
+
+  if test $need_libxml_www = 1; then
+    AC_LIBOBJ(raptor_www_libxml)
+  fi
   if test $need_libxml_source = 1; then
     SD="$SD libxml"
     (cd libxml && ./configure --cache=../config.cache --enable-shared=no)
@@ -537,5 +696,6 @@ debian/Makefile,
 
 AC_MSG_RESULT([
 Raptor build summary:
-  XML parser: $xml_parsers_available
+  XML parser :$xml_parsers_available
+  WWW library: $www_library
 ])
