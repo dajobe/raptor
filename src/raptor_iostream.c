@@ -448,7 +448,7 @@ raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
 /**
  * raptor_iostream_write_decimal - Write an integer in decimal to the iostream
  * @iostr: raptor iostream
- * @integer: integer to format as decimal and add
+ * @integer: integer to format as decimal
  * 
  * Return value: non-0 on failure
  **/
@@ -481,6 +481,46 @@ raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
     *p= '-';
   
   return raptor_iostream_write_bytes(iostr, buf, 1, length);
+}
+
+
+/**
+ * raptor_iostream_format_hexadecimal - Write an integer in hexadecimal to the iostream
+ * @iostr: raptor iostream
+ * @integer: unsigned integer to format as hexadecimal
+ * @width: field width
+ *
+ * Always 0-fills the entire field and writes in uppercase A-F
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_iostream_format_hexadecimal(raptor_iostream* iostr, 
+                                   unsigned int integer, int width)
+{
+  unsigned char *buf;
+  unsigned char *p;
+  int rc;
+
+  if(width <1)
+    return 1;
+  
+  buf=RAPTOR_MALLOC(cstring, width);
+  if(!buf)
+    return 1;
+  
+  p=buf+width-1;
+  do {
+    unsigned int digit=(integer & 15);
+    *p-- =(digit < 10) ? '0'+digit : 'A'+(digit-10);
+    integer>>=4;
+  } while(integer);
+  while(p >= buf)
+    *p-- = '0';
+  
+  rc=raptor_iostream_write_bytes(iostr, buf, 1, width);
+  RAPTOR_FREE(cstring, buf);
+  return rc;
 }
 
 #endif
