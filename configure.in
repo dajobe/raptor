@@ -303,6 +303,7 @@ fi
 AC_SUBST(XML_OBJS)
 
 # Make final changes to cflags
+CPPFLAGS="-DRAPIER_INTERNAL=1 $CPPFLAGS"
 MEM=
 MEM_LIBS=
 if test "$USE_MAINTAINER_MODE" = yes; then
