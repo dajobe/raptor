@@ -200,7 +200,7 @@ raptor_libxml_warning(void *ctx, const char *msg, ...)
   raptor_libxml_update_document_locator(rdf_parser);
   
   length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
+  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
     raptor_parser_warning_varargs(rdf_parser, msg, args);
@@ -210,7 +210,7 @@ raptor_libxml_warning(void *ctx, const char *msg, ...)
     if(nmsg[length-2]=='\n')
       nmsg[length-2]='\0';
     raptor_parser_warning_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
+    RAPTOR_FREE(cstring,nmsg);
   }
   va_end(args);
 }
@@ -230,7 +230,7 @@ raptor_libxml_error(void *ctx, const char *msg, ...)
   raptor_libxml_update_document_locator(rdf_parser);
 
   length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
+  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
     raptor_parser_error_varargs(rdf_parser, nmsg, args);
@@ -240,7 +240,7 @@ raptor_libxml_error(void *ctx, const char *msg, ...)
     if(nmsg[length-2]=='\n')
       nmsg[length-2]='\0';
     raptor_parser_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
+    RAPTOR_FREE(cstring,nmsg);
   }
   va_end(args);
 }
@@ -260,7 +260,7 @@ raptor_libxml_fatal_error(void *ctx, const char *msg, ...)
   raptor_libxml_update_document_locator(rdf_parser);
 
   length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
+  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
     raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
@@ -270,7 +270,7 @@ raptor_libxml_fatal_error(void *ctx, const char *msg, ...)
     if(nmsg[length-2]=='\n')
       nmsg[length-2]='\0';
     raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
+    RAPTOR_FREE(cstring,nmsg);
   }
   va_end(args);
 }
@@ -290,7 +290,7 @@ raptor_libxml_validation_error(void *ctx, const char *msg, ...)
   raptor_libxml_update_document_locator(rdf_parser);
 
   length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
+  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
     raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
@@ -300,7 +300,7 @@ raptor_libxml_validation_error(void *ctx, const char *msg, ...)
     if(nmsg[length-2]=='\n')
       nmsg[length-2]='\0';
     raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
+    RAPTOR_FREE(cstring,nmsg);
   }
   va_end(args);
 }
@@ -320,7 +320,7 @@ raptor_libxml_validation_warning(void *ctx, const char *msg, ...)
   raptor_libxml_update_document_locator(rdf_parser);
 
   length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
+  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
     raptor_parser_warning_varargs(rdf_parser, nmsg, args);
@@ -330,7 +330,7 @@ raptor_libxml_validation_warning(void *ctx, const char *msg, ...)
     if(nmsg[length-2]=='\n')
       nmsg[length-2]='\0';
     raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
+    RAPTOR_FREE(cstring,nmsg);
   }
   va_end(args);
 }
@@ -346,15 +346,15 @@ raptor_libxml_free_entity(raptor_libxml_entity *ent) {
     return;
   
   if (ent->entity.name)
-    LIBRDF_FREE(cstring,  (char*)ent->entity.name);
+    RAPTOR_FREE(cstring,  (char*)ent->entity.name);
   if (ent->entity.ExternalID)
-    LIBRDF_FREE(cstring,  (char*)ent->entity.ExternalID);
+    RAPTOR_FREE(cstring,  (char*)ent->entity.ExternalID);
   if (ent->entity.SystemID)
-    LIBRDF_FREE(cstring,  (char*)ent->entity.SystemID);
+    RAPTOR_FREE(cstring,  (char*)ent->entity.SystemID);
   if (ent->entity.content)
-    LIBRDF_FREE(cstring,  ent->entity.content);
+    RAPTOR_FREE(cstring,  ent->entity.content);
 
-  LIBRDF_FREE(raptor_libxml_entity, ent);
+  RAPTOR_FREE(raptor_libxml_entity, ent);
 }
 
 
@@ -366,7 +366,7 @@ raptor_libxml_new_entity(raptor_parser* rdf_parser,
 {
   raptor_libxml_entity *ent;
   
-  ent=(raptor_libxml_entity*)LIBRDF_CALLOC(raptor_libxml_entity, 
+  ent=(raptor_libxml_entity*)RAPTOR_CALLOC(raptor_libxml_entity, 
                                         sizeof(raptor_libxml_entity), 1);
   if(!ent) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -374,7 +374,7 @@ raptor_libxml_new_entity(raptor_parser* rdf_parser,
   }
   
   RAPTOR_ENTITY_NAME_LENGTH(ent)=strlen(name);
-  ent->entity.name = LIBRDF_MALLOC(cstring, RAPTOR_ENTITY_NAME_LENGTH(ent)+1);
+  ent->entity.name = RAPTOR_MALLOC(cstring, RAPTOR_ENTITY_NAME_LENGTH(ent)+1);
   if(!ent->entity.name) {
     raptor_libxml_free_entity(ent);
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -391,7 +391,7 @@ raptor_libxml_new_entity(raptor_parser* rdf_parser,
 #endif
   
   if (ExternalID) {
-    ent->entity.ExternalID = LIBRDF_MALLOC(cstring, strlen(ExternalID)+1);
+    ent->entity.ExternalID = RAPTOR_MALLOC(cstring, strlen(ExternalID)+1);
     if(!ent->entity.ExternalID) {
       raptor_libxml_free_entity(ent);
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -402,7 +402,7 @@ raptor_libxml_new_entity(raptor_parser* rdf_parser,
     ent->entity.ExternalID = NULL;
   
   if (SystemID) {
-    ent->entity.SystemID = LIBRDF_MALLOC(cstring, strlen(SystemID)+1);
+    ent->entity.SystemID = RAPTOR_MALLOC(cstring, strlen(SystemID)+1);
     if(!ent->entity.SystemID) {
       raptor_libxml_free_entity(ent);
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -414,7 +414,7 @@ raptor_libxml_new_entity(raptor_parser* rdf_parser,
   
   if (content) {
     ent->entity.length = strlen(content);
-    ent->entity.content = LIBRDF_MALLOC(cstring, ent->entity.length+1);
+    ent->entity.content = RAPTOR_MALLOC(cstring, ent->entity.length+1);
     if(!ent->entity.content) {
       raptor_libxml_free_entity(ent);
       raptor_parser_fatal_error(rdf_parser, "Out of memory");

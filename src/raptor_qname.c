@@ -112,20 +112,20 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
   int local_name_length=0;
 
 #if RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(raptor_new_qname, "name %s\n", name);
+  RAPTOR_DEBUG2(raptor_new_qname, "name %s\n", name);
 #endif  
 
-  qname=(raptor_qname*)LIBRDF_CALLOC(raptor_qname, sizeof(raptor_qname), 1);
+  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, sizeof(raptor_qname), 1);
   if(!qname)
     return NULL;
 
 
   if(value) {
     int value_length=strlen(value);
-    char* new_value=(char*)LIBRDF_MALLOC(cstring, value_length+1);
+    char* new_value=(char*)RAPTOR_MALLOC(cstring, value_length+1);
 
     if(!new_value) {
-      LIBRDF_FREE(raptor_qname, qname);
+      RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
     strcpy(new_value, value);
@@ -143,7 +143,7 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
     local_name_length=p-name;
 
     /* No : in the name */
-    new_name=(char*)LIBRDF_MALLOC(cstring, local_name_length+1);
+    new_name=(char*)RAPTOR_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
@@ -159,12 +159,12 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
       if(ns) {
         qname->nspace=ns;
 #if RAPTOR_DEBUG > 1
-        LIBRDF_DEBUG2(raptor_new_qname,
+        RAPTOR_DEBUG2(raptor_new_qname,
                       "Found default namespace %s\n", ns->uri);
 #endif
       } else {
 #if RAPTOR_DEBUG > 1
-        LIBRDF_DEBUG1(raptor_new_qname,
+        RAPTOR_DEBUG1(raptor_new_qname,
                       "No default namespace defined\n");
 #endif
       }
@@ -178,7 +178,7 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
 
     /* p now is at start of local_name */
     local_name_length=strlen(p);
-    new_name=(char*)LIBRDF_MALLOC(cstring, local_name_length+1);
+    new_name=(char*)RAPTOR_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
@@ -196,7 +196,7 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
         error_handler(error_data, "The namespace prefix in \"%s\" was not declared", name);
     } else {
 #if RAPTOR_DEBUG > 1
-      LIBRDF_DEBUG3(raptor_new_qname,
+      RAPTOR_DEBUG3(raptor_new_qname,
                     "Found namespace prefix %s URI %s\n", ns->prefix, ns->uri);
 #endif
       qname->nspace=ns;
@@ -243,14 +243,14 @@ void
 raptor_free_qname(raptor_qname* name) 
 {
   if(name->local_name)
-    LIBRDF_FREE(cstring, (void*)name->local_name);
+    RAPTOR_FREE(cstring, (void*)name->local_name);
 
   if(name->uri)
     raptor_free_uri(name->uri);
 
   if(name->value)
-    LIBRDF_FREE(cstring, (void*)name->value);
-  LIBRDF_FREE(raptor_qname, name);
+    RAPTOR_FREE(cstring, (void*)name->value);
+  RAPTOR_FREE(raptor_qname, name);
 }
 
 

@@ -87,7 +87,7 @@ static raptor_uri*
 raptor_default_new_uri(void *context, const char *uri_string) 
 {
   int len=strlen(uri_string);
-  char *p=(char*)LIBRDF_MALLOC(raptor_uri, len+1);
+  char *p=(char*)RAPTOR_MALLOC(raptor_uri, len+1);
   if(!p)
     return NULL;
   strcpy((char*)p, uri_string);
@@ -108,7 +108,7 @@ raptor_default_new_uri_from_uri_local_name(void *context,
                                            const char *local_name)
 {
   int uri_length=strlen((char*)uri);
-  char *p=(char*)LIBRDF_MALLOC(cstring, 
+  char *p=(char*)RAPTOR_MALLOC(cstring, 
                                uri_length + strlen(local_name) + 1);
   if(!p)
     return NULL;
@@ -135,7 +135,7 @@ raptor_default_new_uri_relative_to_base(void *context,
   raptor_uri* new_uri;
   int new_uri_len=strlen((char*)base_uri)+strlen(uri_string)+1;
 
-  new_uri=LIBRDF_MALLOC(cstring, new_uri_len+1);
+  new_uri=RAPTOR_MALLOC(cstring, new_uri_len+1);
   if(!new_uri)
     return NULL;
   
@@ -166,18 +166,18 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const char *id)
   int len;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(raptor_new_uri_from_id, "Using ID %s\n", id);
+  RAPTOR_DEBUG2(raptor_new_uri_from_id, "Using ID %s\n", id);
 #endif
 
   /* "#id\0" */
   len=1+strlen(id)+1;
-  local_name=(char*)LIBRDF_MALLOC(cstring, len);
+  local_name=(char*)RAPTOR_MALLOC(cstring, len);
   if(!local_name)
     return NULL;
   *local_name='#';
   strcpy(local_name+1, id);
   new_uri=raptor_new_uri_relative_to_base(base_uri, local_name);
-  LIBRDF_FREE(cstring, local_name);
+  RAPTOR_FREE(cstring, local_name);
   return new_uri;
 }
 
@@ -192,7 +192,7 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
 
   base_uri_len=strlen(base_uri);
   new_uri_len=base_uri_len+strlen(name)+1;
-  new_uri=LIBRDF_MALLOC(cstring, new_uri_len);
+  new_uri=RAPTOR_MALLOC(cstring, new_uri_len);
   if(!new_uri)
     return NULL;
   strcpy((char*)new_uri, base_uri);
@@ -211,7 +211,7 @@ raptor_new_uri_for_rdf_concept(const char *name)
 static void
 raptor_default_free_uri(void *context, raptor_uri *uri) 
 {
-  LIBRDF_FREE(raptor_uri, uri);
+  RAPTOR_FREE(raptor_uri, uri);
 }
 
 
@@ -263,7 +263,7 @@ raptor_uri_is_absolute (const char *uri)
 static raptor_uri*
 raptor_default_uri_copy(void *context, raptor_uri *uri)
 {
-  raptor_uri* new_uri=LIBRDF_MALLOC(cstring, strlen((char*)uri)+1);
+  raptor_uri* new_uri=RAPTOR_MALLOC(cstring, strlen((char*)uri)+1);
   if(!new_uri)
     return NULL;
   strcpy((char*)new_uri, (char*)uri);
@@ -438,7 +438,7 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
   *buffer = '\0';
 
   reference_buffer_len=strlen(reference_uri)+1;
-  reference_buffer=(char*)LIBRDF_MALLOC(cstring, reference_buffer_len);
+  reference_buffer=(char*)RAPTOR_MALLOC(cstring, reference_buffer_len);
   if(!reference_buffer)
     goto resolve_tidy;
   
@@ -467,7 +467,7 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
 
   /* now the reference URI must be schemeless, i.e. relative */
   base_uri_len=strlen(base_uri);
-  base_buffer=(char*)LIBRDF_MALLOC(cstring, base_uri_len+1);
+  base_buffer=(char*)RAPTOR_MALLOC(cstring, base_uri_len+1);
   if(!base_buffer)
     goto resolve_tidy;
 
@@ -509,7 +509,7 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
     if(reference_path)
       path_buffer_len +=strlen(reference_path);
 
-    path_buffer=(char*)LIBRDF_MALLOC(cstring, path_buffer_len);
+    path_buffer=(char*)RAPTOR_MALLOC(cstring, path_buffer_len);
     if(!path_buffer)
       goto resolve_tidy;
     result_path = path_buffer;
@@ -679,11 +679,11 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
 
   resolve_tidy:
   if(path_buffer)
-    LIBRDF_FREE(cstring, path_buffer);
+    RAPTOR_FREE(cstring, path_buffer);
   if(base_buffer)
-    LIBRDF_FREE(cstring, base_buffer);
+    RAPTOR_FREE(cstring, base_buffer);
   if(reference_buffer)
-    LIBRDF_FREE(cstring, reference_buffer);
+    RAPTOR_FREE(cstring, reference_buffer);
 }
 
 
@@ -748,7 +748,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
   }
 #endif
 
-  buffer=(char*)LIBRDF_MALLOC(cstring, len);
+  buffer=(char*)RAPTOR_MALLOC(cstring, len);
   if(!buffer)
     return NULL;
 
@@ -803,7 +803,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   int is_relative_path=0;
 #endif
 
-  buffer=(char*)LIBRDF_MALLOC(cstring, uri_string_len+1);
+  buffer=(char*)RAPTOR_MALLOC(cstring, uri_string_len+1);
   if(!buffer)
     return NULL;
   
@@ -811,7 +811,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
                     &scheme, &authority, &path, &query, &fragment);
 
   if(!scheme || strcasecmp(scheme, "file")) {
-    LIBRDF_FREE(cstring, buffer);
+    RAPTOR_FREE(cstring, buffer);
     return NULL;
   }
 
@@ -847,9 +847,9 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   len+=strlen(path);
 
 
-  filename=(char*)LIBRDF_MALLOC(cstring, len+1);
+  filename=(char*)RAPTOR_MALLOC(cstring, len+1);
   if(!filename) {
-    LIBRDF_FREE(cstring, buffer);
+    RAPTOR_FREE(cstring, buffer);
     return NULL;
   }
 
@@ -887,7 +887,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
 #endif
 
 
-  LIBRDF_FREE(cstring, buffer);
+  RAPTOR_FREE(cstring, buffer);
 
   return filename;
 }
@@ -985,11 +985,11 @@ assert_filename_to_uri (const char *filename, const char *reference_uri)
       fprintf(stderr, "FAIL raptor_uri_filename_to_uri_string filename %s gave URI %s != %s\n",
               filename, uri, reference_uri);
       if(uri)
-        LIBRDF_FREE(cstring, uri);
+        RAPTOR_FREE(cstring, uri);
       return 1;
     }
 
-  LIBRDF_FREE(cstring, uri);
+  RAPTOR_FREE(cstring, uri);
   return 0;
 }
 
@@ -1006,11 +1006,11 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
       fprintf(stderr, "FAIL raptor_uri_uri_string_to_filename URI %s gave filename %s != %s\n",
               uri, filename, reference_filename);
       if(filename)
-        LIBRDF_FREE(cstring, filename);
+        RAPTOR_FREE(cstring, filename);
       return 1;
     }
 
-  LIBRDF_FREE(cstring, filename);
+  RAPTOR_FREE(cstring, filename);
   return 0;
 }
 

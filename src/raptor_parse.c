@@ -608,15 +608,15 @@ raptor_free_element(raptor_element *element)
       raptor_free_qname(element->attributes[i]);
 
   if(element->attributes)
-    LIBRDF_FREE(raptor_qname_array, element->attributes);
+    RAPTOR_FREE(raptor_qname_array, element->attributes);
 
   /* Free special RDF M&S attributes */
   for(i=0; i<= RDF_ATTR_LAST; i++) 
     if(element->rdf_attr[i])
-      LIBRDF_FREE(cstring, (void*)element->rdf_attr[i]);
+      RAPTOR_FREE(cstring, (void*)element->rdf_attr[i]);
 
   if(element->content_cdata_length)
-    LIBRDF_FREE(raptor_qname_array, element->content_cdata);
+    RAPTOR_FREE(raptor_qname_array, element->content_cdata);
 
   raptor_free_identifier(&element->subject);
   raptor_free_identifier(&element->predicate);
@@ -625,16 +625,16 @@ raptor_free_element(raptor_element *element)
   raptor_free_identifier(&element->reified);
 
   if(element->tail_id)
-    LIBRDF_FREE(cstring, (char*)element->tail_id);
+    RAPTOR_FREE(cstring, (char*)element->tail_id);
 
   if(element->base_uri)
     raptor_free_uri(element->base_uri);
 
   if(element->object_literal_datatype)
-    LIBRDF_FREE(cstring, (char*)element->object_literal_datatype);
+    RAPTOR_FREE(cstring, (char*)element->object_literal_datatype);
 
   raptor_free_qname(element->name);
-  LIBRDF_FREE(raptor_element, element);
+  RAPTOR_FREE(raptor_element, element);
 }
 
 
@@ -701,7 +701,7 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
     *length_p=length;
 
   /* +1 here is for \0 at end */
-  buffer=(char*)LIBRDF_MALLOC(cstring, length + 1);
+  buffer=(char*)RAPTOR_MALLOC(cstring, length + 1);
   if(!buffer)
     return NULL;
 
@@ -806,7 +806,7 @@ raptor_xml_start_element_handler(void *user_data,
       }
 
       if(!strcmp(atts[i], "xml:lang")) {
-        xml_language=(char*)LIBRDF_MALLOC(cstring, strlen(atts[i+1])+1);
+        xml_language=(char*)RAPTOR_MALLOC(cstring, strlen(atts[i+1])+1);
         if(!xml_language) {
           raptor_parser_fatal_error(rdf_parser, "Out of memory");
           return;
@@ -834,7 +834,7 @@ raptor_xml_start_element_handler(void *user_data,
 
 
   /* Create new element structure */
-  element=(raptor_element*)LIBRDF_CALLOC(raptor_element, 
+  element=(raptor_element*)RAPTOR_CALLOC(raptor_element, 
                                          sizeof(raptor_element), 1);
   if(!element) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -856,7 +856,7 @@ raptor_xml_start_element_handler(void *user_data,
                                  raptor_parser_error, rdf_parser);
   if(!element->name) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    LIBRDF_FREE(raptor_element, element);
+    RAPTOR_FREE(raptor_element, element);
     return;
   } 
 
@@ -870,10 +870,10 @@ raptor_xml_start_element_handler(void *user_data,
     /* Round 2 - turn string attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
-    named_attrs=(raptor_qname**)LIBRDF_CALLOC(raptor_qname-array, sizeof(raptor_qname*), ns_attributes_count);
+    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname-array, sizeof(raptor_qname*), ns_attributes_count);
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      LIBRDF_FREE(raptor_element, element);
+      RAPTOR_FREE(raptor_element, element);
       raptor_free_qname(element->name);
       return;
     }
@@ -893,10 +893,10 @@ raptor_xml_start_element_handler(void *user_data,
         int j;
 
         for (j=0; j < i; j++)
-          LIBRDF_FREE(raptor_qname, named_attrs[j]);
-        LIBRDF_FREE(raptor_qname_array, named_attrs);
+          RAPTOR_FREE(raptor_qname, named_attrs[j]);
+        RAPTOR_FREE(raptor_qname_array, named_attrs);
         raptor_free_qname(element->name);
-        LIBRDF_FREE(raptor_element, element);
+        RAPTOR_FREE(raptor_element, element);
         return;
       }
 
@@ -927,7 +927,7 @@ raptor_xml_start_element_handler(void *user_data,
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
 #if RAPTOR_DEBUG
-              LIBRDF_DEBUG3(raptor_xml_start_element_handler,
+              RAPTOR_DEBUG3(raptor_xml_start_element_handler,
                             "Found RDF M&S attribute %s URI %s\n",
                             attr_name, attr->value);
 #endif
@@ -978,7 +978,7 @@ raptor_xml_start_element_handler(void *user_data,
     if(!offset && named_attrs) {
       /* all attributes were RDF M&S or other specials and deleted
        * so delete array and don't store pointer */
-      LIBRDF_FREE(raptor_qname_array, named_attrs);
+      RAPTOR_FREE(raptor_qname_array, named_attrs);
       named_attrs=NULL;
     }
 
@@ -1033,7 +1033,7 @@ raptor_xml_start_element_handler(void *user_data,
           
           element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
           
-          LIBRDF_FREE(raptor_qname_array, element->parent->content_cdata);
+          RAPTOR_FREE(raptor_qname_array, element->parent->content_cdata);
           element->parent->content_cdata=NULL;
           element->parent->content_cdata_length=0;
         }
@@ -1046,7 +1046,7 @@ raptor_xml_start_element_handler(void *user_data,
 
 
 #ifdef RAPTOR_DEBUG
-  LIBRDF_DEBUG2(raptor_xml_start_element_handler, "Using content type %s\n",
+  RAPTOR_DEBUG2(raptor_xml_start_element_handler, "Using content type %s\n",
                 rdf_content_type_info[element->content_type].name);
 
   fprintf(stderr, "raptor_xml_start_element_handler: Start ns-element: ");
@@ -1204,11 +1204,11 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
    * Use the child_state first if there is one, since that applies
    */
   state=element->child_state;
-  LIBRDF_DEBUG3(raptor_xml_cdata_handler, "Working in state %d - %s\n", state,
+  RAPTOR_DEBUG3(raptor_xml_cdata_handler, "Working in state %d - %s\n", state,
                 raptor_state_as_string(state));
 
 
-  LIBRDF_DEBUG3(raptor_xml_cdata_handler,
+  RAPTOR_DEBUG3(raptor_xml_cdata_handler,
                 "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
   
 
@@ -1243,7 +1243,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
-      LIBRDF_DEBUG2(raptor_xml_cdata_handler, "Ignoring whitespace cdata inside element %s\n", element->name->local_name);
+      RAPTOR_DEBUG2(raptor_xml_cdata_handler, "Ignoring whitespace cdata inside element %s\n", element->name->local_name);
       return;
     }
 
@@ -1258,11 +1258,11 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 
   if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
-    LIBRDF_DEBUG3(raptor_xml_cdata_handler,
+    RAPTOR_DEBUG3(raptor_xml_cdata_handler,
                   "Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
   }
 
-  buffer=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + len + 1);
+  buffer=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + len + 1);
   if(!buffer) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return;
@@ -1270,7 +1270,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 
   if(element->content_cdata_length) {
     strncpy(buffer, element->content_cdata, element->content_cdata_length);
-    LIBRDF_FREE(cstring, element->content_cdata);
+    RAPTOR_FREE(cstring, element->content_cdata);
     element->content_cdata_all_whitespace &= all_whitespace;
   } else
     element->content_cdata_all_whitespace = all_whitespace;
@@ -1288,11 +1288,11 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   ptr += len;
   *ptr = '\0';
 
-  LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
+  RAPTOR_DEBUG3(raptor_xml_cdata_handler, 
                 "Content cdata now: '%s' (%d bytes)\n", 
                 buffer, element->content_cdata_length);
 
-  LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
+  RAPTOR_DEBUG3(raptor_xml_cdata_handler, 
                 "Ending in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
@@ -1304,7 +1304,7 @@ static void
 raptor_start_namespace_decl_handler(void *user_data,
                                     const XML_Char *prefix, const XML_Char *uri)
 {
-  LIBRDF_DEBUG3(raptor_start_namespace_decl_handler,
+  RAPTOR_DEBUG3(raptor_start_namespace_decl_handler,
                 "saw namespace %s URI %s\n", prefix, uri);
 }
 
@@ -1312,7 +1312,7 @@ raptor_start_namespace_decl_handler(void *user_data,
 static void
 raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
 {
-  LIBRDF_DEBUG2(raptor_start_namespace_decl_handler,
+  RAPTOR_DEBUG2(raptor_start_namespace_decl_handler,
                 "saw end namespace prefix %s\n", prefix);
 }
 #endif
@@ -1700,13 +1700,13 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   fputc('\n', stderr);
 
   if(!(subject_uri||subject_id))
-    LIBRDF_FATAL1(raptor_generate_statement, "Statement has no subject\n");
+    RAPTOR_FATAL1(raptor_generate_statement, "Statement has no subject\n");
   
   if(!(predicate_uri||predicate_id))
-    LIBRDF_FATAL1(raptor_generate_statement, "Statement has no predicate\n");
+    RAPTOR_FATAL1(raptor_generate_statement, "Statement has no predicate\n");
   
   if(!(object_uri||object_id))
-    LIBRDF_FATAL1(raptor_generate_statement, "Statement has no object\n");
+    RAPTOR_FATAL1(raptor_generate_statement, "Statement has no object\n");
   
 #endif
 
@@ -1958,7 +1958,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
-  LIBRDF_DEBUG3(raptor_start_element_grammar, "Starting in state %d - %s\n",
+  RAPTOR_DEBUG3(raptor_start_element_grammar, "Starting in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
   finished= 0;
@@ -2189,10 +2189,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               }
 
               len=strlen(idList);
-              new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
+              new_id=(char*)RAPTOR_MALLOC(cstring, len+1);
               if(!len) {
                 if(new_id)
-                  LIBRDF_FREE(cstring, new_id);
+                  RAPTOR_FREE(cstring, new_id);
                 return;
               }
               strncpy(new_id, idList, len+1);
@@ -2225,7 +2225,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
             /* update new tail */
             if(element->parent->tail_id)
-              LIBRDF_FREE(cstring, (char*)element->parent->tail_id);
+              RAPTOR_FREE(cstring, (char*)element->parent->tail_id);
 
             element->parent->tail_id=idList;
             
@@ -2297,17 +2297,17 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             /* Append cdata content content */
             if(element->content_cdata) {
               /* Append */
-              char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
+              char *new_cdata=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
               if(new_cdata) {
                 strncpy(new_cdata, element->content_cdata,
                         element->content_cdata_length);
                 strcpy(new_cdata+element->content_cdata_length, fmt_buffer);
-                LIBRDF_FREE(cstring, element->content_cdata);
+                RAPTOR_FREE(cstring, element->content_cdata);
                 element->content_cdata=new_cdata;
               }
-              LIBRDF_FREE(cstring, fmt_buffer);
+              RAPTOR_FREE(cstring, fmt_buffer);
 
-              LIBRDF_DEBUG3(raptor_start_element_grammar,
+              RAPTOR_DEBUG3(raptor_start_element_grammar,
                             "content cdata appended, now: '%s' (%d bytes)\n", 
                             element->content_cdata,
                             element->content_cdata_length);
@@ -2317,7 +2317,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               element->content_cdata       =fmt_buffer;
               element->content_cdata_length=fmt_length;
 
-              LIBRDF_DEBUG3(raptor_start_element_grammar,
+              RAPTOR_DEBUG3(raptor_start_element_grammar,
                             "content cdata copied, now: '%s' (%d bytes)\n", 
                             element->content_cdata,
                             element->content_cdata_length);
@@ -2455,14 +2455,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
-      LIBRDF_DEBUG3(raptor_start_element_grammar, 
+      RAPTOR_DEBUG3(raptor_start_element_grammar, 
                     "Moved to state %d - %s\n",
                     state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
-  LIBRDF_DEBUG3(raptor_start_element_grammar, 
+  RAPTOR_DEBUG3(raptor_start_element_grammar, 
                 "Ending in state %d - %s\n",
                 state, raptor_state_as_string(state));
 }
@@ -2481,7 +2481,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
-  LIBRDF_DEBUG3(raptor_end_element_grammar, "Starting in state %d - %s\n",
+  RAPTOR_DEBUG3(raptor_end_element_grammar, "Starting in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
   finished= 0;
@@ -2623,40 +2623,40 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           fmt_buffer=raptor_format_element(element, &fmt_length,1);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
-            char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
+            char *new_cdata=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
             if(new_cdata) {
               strncpy(new_cdata, element->content_cdata,
                       element->content_cdata_length);
               strcpy(new_cdata+element->content_cdata_length, fmt_buffer);
-              LIBRDF_FREE(cstring, element->content_cdata);
+              RAPTOR_FREE(cstring, element->content_cdata);
               element->content_cdata=new_cdata;
               element->content_cdata_length += fmt_length;
             }
-            LIBRDF_FREE(cstring, fmt_buffer);
+            RAPTOR_FREE(cstring, fmt_buffer);
           }
         }
         
-        LIBRDF_DEBUG3(raptor_end_element_grammar,
+        RAPTOR_DEBUG3(raptor_end_element_grammar,
                       "content cdata now: '%s' (%d bytes)\n", 
                        element->content_cdata, element->content_cdata_length);
          
         /* Append this cdata content to parent element cdata content */
         if(element->parent->content_cdata) {
           /* Append */
-          char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->parent->content_cdata_length + element->content_cdata_length + 1);
+          char *new_cdata=(char*)RAPTOR_MALLOC(cstring, element->parent->content_cdata_length + element->content_cdata_length + 1);
           if(new_cdata) {
             strncpy(new_cdata, element->parent->content_cdata,
                     element->parent->content_cdata_length);
             strncpy(new_cdata+element->parent->content_cdata_length, 
                     element->content_cdata, element->content_cdata_length+1);
-            LIBRDF_FREE(cstring, element->parent->content_cdata);
+            RAPTOR_FREE(cstring, element->parent->content_cdata);
             element->parent->content_cdata=new_cdata;
             element->parent->content_cdata_length += element->content_cdata_length;
             /* Done with our cdata - free it before pointer is zapped */
-            LIBRDF_FREE(cstring, element->content_cdata);
+            RAPTOR_FREE(cstring, element->content_cdata);
           }
 
-          LIBRDF_DEBUG3(raptor_end_element_grammar,
+          RAPTOR_DEBUG3(raptor_end_element_grammar,
                         "content cdata appended to parent, now: '%s' (%d bytes)\n", 
                         element->parent->content_cdata,
                         element->parent->content_cdata_length);
@@ -2665,7 +2665,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           /* Copy - parent is empty */
           element->parent->content_cdata       =element->content_cdata;
           element->parent->content_cdata_length=element->content_cdata_length+1;
-          LIBRDF_DEBUG3(raptor_end_element_grammar,
+          RAPTOR_DEBUG3(raptor_end_element_grammar,
                         "content cdata copied to parent, now: '%s' (%d bytes)\n",
                         element->parent->content_cdata,
                         element->parent->content_cdata_length);
@@ -2742,7 +2742,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         } /* end rdf:parseType="Collection" termination */
         
 
-        LIBRDF_DEBUG3(raptor_end_element_grammar,
+        RAPTOR_DEBUG3(raptor_end_element_grammar,
                       "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
 
         switch(element->content_type) {
@@ -2778,7 +2778,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
              * whitespace so that FALLTHROUGH code below finds the object.
              */
             if(element->content_cdata) {
-              LIBRDF_FREE(raptor_qname_array, element->content_cdata);
+              RAPTOR_FREE(raptor_qname_array, element->content_cdata);
               element->content_cdata=NULL;
               element->content_cdata_length=0;
             }
@@ -2927,13 +2927,13 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
-      LIBRDF_DEBUG3(raptor_end_element_grammar, "Moved to state %d - %s\n",
+      RAPTOR_DEBUG3(raptor_end_element_grammar, "Moved to state %d - %s\n",
                     state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
-  LIBRDF_DEBUG3(raptor_end_element_grammar, 
+  RAPTOR_DEBUG3(raptor_end_element_grammar, 
                 "Ending in state %d - %s\n",
                 state, raptor_state_as_string(state));
 

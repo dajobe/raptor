@@ -30,44 +30,37 @@ extern "C" {
 
 #ifdef RAPTOR_INTERNAL
 
-#ifdef RAPTOR_IN_REDLAND
-#define LIBRDF_INTERNAL
-#endif
-  
-#ifdef LIBRDF_INTERNAL
 #ifdef LIBRDF_DEBUG
 #define RAPTOR_DEBUG 1
 #endif
-#endif
 
-
-#define LIBRDF_MALLOC(type, size) malloc(size)
-#define LIBRDF_CALLOC(type, size, count) calloc(size, count)
-#define LIBRDF_FREE(type, ptr)   free((void*)ptr)
+#define RAPTOR_MALLOC(type, size) malloc(size)
+#define RAPTOR_CALLOC(type, size, count) calloc(size, count)
+#define RAPTOR_FREE(type, ptr)   free((void*)ptr)
 
 #ifdef RAPTOR_DEBUG
 /* Debugging messages */
-#define LIBRDF_DEBUG1(function, msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function); } while(0)
-#define LIBRDF_DEBUG2(function, msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1);} while(0)
-#define LIBRDF_DEBUG3(function, msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2);} while(0)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
+#define RAPTOR_DEBUG1(function, msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function); } while(0)
+#define RAPTOR_DEBUG2(function, msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1);} while(0)
+#define RAPTOR_DEBUG3(function, msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2);} while(0)
+#define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
+#define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
 
 #else
 /* DEBUGGING TURNED OFF */
 
 /* No debugging messages */
-#define LIBRDF_DEBUG1(function, msg)
-#define LIBRDF_DEBUG2(function, msg, arg1)
-#define LIBRDF_DEBUG3(function, msg, arg1, arg2)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3)
+#define RAPTOR_DEBUG1(function, msg)
+#define RAPTOR_DEBUG2(function, msg, arg1)
+#define RAPTOR_DEBUG3(function, msg, arg1, arg2)
+#define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3)
 
 #endif
 
 
 /* Fatal errors - always happen */
-#define LIBRDF_FATAL1(function, msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function); abort();} while(0)
-#define LIBRDF_FATAL2(function, msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function, arg); abort();} while(0)
+#define RAPTOR_FATAL1(function, msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function); abort();} while(0)
+#define RAPTOR_FATAL2(function, msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function, arg); abort();} while(0)
 
 
 

@@ -108,8 +108,8 @@ raptor_delete_parser_factories(void)
   
   for(factory=parsers; factory; factory=next) {
     next=factory->next;
-    LIBRDF_FREE(raptor_parser_factory, factory->name);
-    LIBRDF_FREE(raptor_parser_factory, factory);
+    RAPTOR_FREE(raptor_parser_factory, factory->name);
+    RAPTOR_FREE(raptor_parser_factory, factory);
   }
   parsers=NULL;
 }
@@ -131,26 +131,26 @@ raptor_parser_register_factory(const char *name,
   char *name_copy;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(raptor_parser_register_factory,
+  RAPTOR_DEBUG2(raptor_parser_register_factory,
                 "Received registration for parser %s\n", name);
 #endif
   
-  parser=(raptor_parser_factory*)LIBRDF_CALLOC(raptor_parser_factory, 1,
+  parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
                                                sizeof(raptor_parser_factory));
   if(!parser)
-    LIBRDF_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
 
-  name_copy=(char*)LIBRDF_CALLOC(cstring, strlen(name)+1, 1);
+  name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy) {
-    LIBRDF_FREE(raptor_parser, parser);
-    LIBRDF_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    RAPTOR_FREE(raptor_parser, parser);
+    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
   }
   strcpy(name_copy, name);
   parser->name=name_copy;
         
   for(h = parsers; h; h = h->next ) {
     if(!strcmp(h->name, name_copy)) {
-      LIBRDF_FATAL2(raptor_parser_register_factory,
+      RAPTOR_FATAL2(raptor_parser_register_factory,
                     "parser %s already registered\n", h->name);
     }
   }
@@ -159,7 +159,7 @@ raptor_parser_register_factory(const char *name,
   (*factory)(parser);
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG3(raptor_parser_register_factory, "%s has context size %d\n",
+  RAPTOR_DEBUG3(raptor_parser_register_factory, "%s has context size %d\n",
                 name, parser->context_length);
 #endif
   
@@ -183,7 +183,7 @@ raptor_get_parser_factory (const char *name)
   if(!name) {
     factory=parsers;
     if(!factory) {
-      LIBRDF_DEBUG1(raptor_get_parser_factory, 
+      RAPTOR_DEBUG1(raptor_get_parser_factory, 
                     "No (default) parsers registered\n");
       return NULL;
     }
@@ -195,7 +195,7 @@ raptor_get_parser_factory (const char *name)
     }
     /* else FACTORY name not found */
     if(!factory) {
-      LIBRDF_DEBUG2(raptor_get_parser_factory,
+      RAPTOR_DEBUG2(raptor_get_parser_factory,
                     "No parser with name %s found\n",
                     name);
       return NULL;
@@ -222,12 +222,12 @@ raptor_new_parser(const char *name) {
   if(!factory)
     return NULL;
 
-  rdf_parser=(raptor_parser*)LIBRDF_CALLOC(raptor_parser, 1,
+  rdf_parser=(raptor_parser*)RAPTOR_CALLOC(raptor_parser, 1,
                                            sizeof(raptor_parser));
   if(!rdf_parser)
     return NULL;
   
-  rdf_parser->context=(char*)LIBRDF_CALLOC(raptor_parser_context, 1,
+  rdf_parser->context=(char*)RAPTOR_CALLOC(raptor_parser_context, 1,
                                            factory->context_length);
   if(!rdf_parser->context) {
     raptor_free_parser(rdf_parser);
@@ -286,7 +286,7 @@ raptor_start_parse_file(raptor_parser *rdf_parser,
   rdf_parser->fh=fopen(filename, "r");
   if(!rdf_parser->fh) {
     raptor_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
-    LIBRDF_FREE(cstring, (void*)filename);
+    RAPTOR_FREE(cstring, (void*)filename);
     return 1;
   }
 
@@ -314,11 +314,11 @@ raptor_free_parser(raptor_parser* rdf_parser)
     rdf_parser->factory->terminate(rdf_parser);
 
   if(rdf_parser->context)
-    LIBRDF_FREE(raptor_parser_context, rdf_parser->context);
+    RAPTOR_FREE(raptor_parser_context, rdf_parser->context);
 
   raptor_namespaces_free(&rdf_parser->namespaces);
 
-  LIBRDF_FREE(raptor_parser, rdf_parser);
+  RAPTOR_FREE(raptor_parser, rdf_parser);
 }
 
 
@@ -357,7 +357,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   }
 
 #ifdef RAPTOR_URI_TO_FILENAME
-  LIBRDF_FREE(cstring, (void*)filename);
+  RAPTOR_FREE(cstring, (void*)filename);
 #endif
 
   return (rc != 0);
@@ -392,7 +392,7 @@ raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
   if(parser->fatal_error_handler) {
     char empty_buffer[1];
     int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    char *buffer=(char*)RAPTOR_MALLOC(cstring, len);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_fatal_error_varargs: Out of memory\n");
       return;
@@ -400,7 +400,7 @@ raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
     vsnprintf(buffer, len, message, arguments);
     parser->fatal_error_handler(parser->fatal_error_user_data, 
                                 &parser->locator, buffer); 
-    LIBRDF_FREE(cstring, buffer);
+    RAPTOR_FREE(cstring, buffer);
     abort();
   }
 
@@ -439,7 +439,7 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
   if(parser->error_handler) {
     char empty_buffer[1];
     int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    char *buffer=(char*)RAPTOR_MALLOC(cstring, len);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_error_varargs: Out of memory\n");
       return;
@@ -447,7 +447,7 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
     vsnprintf(buffer, len, message, arguments);
     parser->error_handler(parser->error_user_data, 
                           &parser->locator, buffer);
-    LIBRDF_FREE(cstring, buffer);
+    RAPTOR_FREE(cstring, buffer);
     return;
   }
 
@@ -485,7 +485,7 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
   if(parser->warning_handler) {
     char empty_buffer[1];
     int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    char *buffer=(char*)RAPTOR_MALLOC(cstring, len);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_warning_varargs: Out of memory\n");
       return;
@@ -493,7 +493,7 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
     vsnprintf(buffer, len, message, arguments);
     parser->warning_handler(parser->warning_user_data,
                             &parser->locator, buffer);
-    LIBRDF_FREE(cstring, buffer);
+    RAPTOR_FREE(cstring, buffer);
     return;
   }
 
@@ -635,7 +635,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->subject)
-      LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL subject URI\n");
+      RAPTOR_FATAL1(raptor_print_statement_detailed, "Statement has NULL subject URI\n");
 #endif
     fprintf(stream, "[%s, ",
             raptor_uri_as_string((raptor_uri*)statement->subject));
@@ -646,7 +646,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->predicate)
-      LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL predicate URI\n");
+      RAPTOR_FATAL1(raptor_print_statement_detailed, "Statement has NULL predicate URI\n");
 #endif
     fputs(raptor_uri_as_string((raptor_uri*)statement->predicate), stream);
   }
@@ -669,7 +669,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->object)
-      LIBRDF_FATAL1(raptor_generate_statement, "Statement has NULL object URI\n");
+      RAPTOR_FATAL1(raptor_generate_statement, "Statement has NULL object URI\n");
 #endif
     fprintf(stream, "%s", 
             raptor_uri_as_string((raptor_uri*)statement->object));
@@ -743,7 +743,7 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 
   while(tmpid/=10)
     length++;
-  buffer=(char*)LIBRDF_MALLOC(cstring, length);
+  buffer=(char*)RAPTOR_MALLOC(cstring, length);
   if(!buffer)
     return NULL;
   sprintf(buffer, "genid%d", id);
@@ -773,7 +773,7 @@ raptor_new_identifier(raptor_identifier_type type,
   raptor_uri *new_uri=NULL;
   char *new_id=NULL;
 
-  identifier=(raptor_identifier*)LIBRDF_CALLOC(raptor_identifier, 1,
+  identifier=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1,
                                                 sizeof(raptor_identifier));
   if(!identifier)
     return NULL;
@@ -781,7 +781,7 @@ raptor_new_identifier(raptor_identifier_type type,
   if(uri) {
     new_uri=raptor_uri_copy(uri);
     if(!new_uri) {
-      LIBRDF_FREE(raptor_identifier, identifier);
+      RAPTOR_FREE(raptor_identifier, identifier);
       return NULL;
     }
   }
@@ -789,11 +789,11 @@ raptor_new_identifier(raptor_identifier_type type,
   if(id) {
     int len=strlen(id);
     
-    new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
+    new_id=(char*)RAPTOR_MALLOC(cstring, len+1);
     if(!len) {
       if(new_uri)
-        LIBRDF_FREE(cstring, new_uri);
-      LIBRDF_FREE(raptor_identifier, identifier);
+        RAPTOR_FREE(cstring, new_uri);
+      RAPTOR_FREE(raptor_identifier, identifier);
       return NULL;
     }
     strncpy(new_id, id, len+1);
@@ -857,10 +857,10 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
   if(src->id) {
     int len=strlen(src->id);
     
-    new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
+    new_id=(char*)RAPTOR_MALLOC(cstring, len+1);
     if(!len) {
       if(new_uri)
-        LIBRDF_FREE(cstring, new_uri);
+        RAPTOR_FREE(cstring, new_uri);
       return 0;
     }
     strncpy(new_id, src->id, len+1);
@@ -889,10 +889,10 @@ raptor_free_identifier(raptor_identifier *identifier)
     raptor_free_uri(identifier->uri);
 
   if(identifier->id)
-    LIBRDF_FREE(cstring, (void*)identifier->id);
+    RAPTOR_FREE(cstring, (void*)identifier->id);
 
   if(identifier->is_malloced)
-    LIBRDF_FREE(identifier, (void*)identifier);
+    RAPTOR_FREE(identifier, (void*)identifier);
 }
 
 

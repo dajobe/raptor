@@ -155,7 +155,7 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
     raptor_namespace* ns=nstack->top;
     raptor_namespace* next=ns->next;
 
-    LIBRDF_DEBUG3(raptor_namespaces_end_for_depth,
+    RAPTOR_DEBUG3(raptor_namespaces_end_for_depth,
                   "namespace prefix %s depth %d\n",
                   ns->prefix ? ns->prefix : "(default)", depth);
 
@@ -206,7 +206,7 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
   if(ns_uri_string && !*ns_uri_string)
     ns_uri_string=NULL;
 
-  LIBRDF_DEBUG4(raptor_namespaces_start_namespace,
+  RAPTOR_DEBUG4(raptor_namespaces_start_namespace,
                 "namespace prefix %s uri %s depth %d\n",
                 prefix ? prefix : "(default)", 
                 ns_uri_string ? ns_uri_string : "(none)",
@@ -219,7 +219,7 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
   }
 
   /* Just one malloc for structure + namespace (maybe) + prefix (maybe)*/
-  ns=(raptor_namespace*)LIBRDF_CALLOC(raptor_namespace, len, 1);
+  ns=(raptor_namespace*)RAPTOR_CALLOC(raptor_namespace, len, 1);
   if(!ns)
     return NULL;
 
@@ -227,7 +227,7 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
   if(ns_uri_string) {
     ns->uri=(*nstack->uri_handler->new_uri)(nstack->uri_context, ns_uri_string);
     if(!ns->uri) {
-      LIBRDF_FREE(raptor_namespace, ns);
+      RAPTOR_FREE(raptor_namespace, ns);
       return NULL;
     }
   }
@@ -260,7 +260,7 @@ raptor_namespace_free(raptor_namespace *ns)
   if(ns->uri)
     ns->nstack->uri_handler->free_uri(ns->nstack->uri_context, ns->uri);
 
-  LIBRDF_FREE(raptor_namespace, ns);
+  RAPTOR_FREE(raptor_namespace, ns);
 }
 
 
