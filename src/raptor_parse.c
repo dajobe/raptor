@@ -2111,7 +2111,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->subject.id=(char*)element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject.uri=raptor_make_uri_from_id(rdf_parser, raptor_inscope_base_uri(rdf_parser), element->subject.id);
+          element->subject.uri=raptor_make_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->subject.id);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
@@ -2144,7 +2144,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           element->bag.id=(char*)element->rdf_attr[RDF_ATTR_bagID];
           element->rdf_attr[RDF_ATTR_bagID]=NULL;
-          element->bag.uri=raptor_make_uri_from_id(rdf_parser,  raptor_inscope_base_uri(rdf_parser), element->bag.id);
+          element->bag.uri=raptor_make_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
           element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
@@ -2395,7 +2395,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->reified.id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->reified.uri=raptor_make_uri_from_id(rdf_parser, raptor_inscope_base_uri(rdf_parser), element->reified.id);
+          element->reified.uri=raptor_make_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->reified.id);
           element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
@@ -2453,7 +2453,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * using this id
            */
           if(element->reified.id) {
-            element->reified.uri=raptor_make_uri_from_id(rdf_parser, raptor_inscope_base_uri(rdf_parser), element->reified.id);
+            element->reified.uri=raptor_make_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->reified.id);
             element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
