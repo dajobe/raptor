@@ -1617,10 +1617,13 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
         RAPTOR_DEBUG3("Stored statement under typed node %i - %s\n",
                       type, raptor_rss_types_info[type].name);
         item->fields_count++;
+        handled=1;
         break;
       }
     }
-  } else {
+  }
+  
+  if(!handled) {
     raptor_sequence_push(rss_serializer->triples, s);
 #ifdef RAPTOR_DEBUG
     fprintf(stderr,"Stored statement: ");
@@ -1984,9 +1987,15 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   raptor_rss10_build_items(rss_serializer);
 
 #ifdef RAPTOR_DEBUG
-  for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++)
-    if(raptor_sequence_get_at(rss_serializer->triples, i))
+  for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++) {
+    raptor_statement* t=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
+    if(t) {
+      fprintf(stderr, " %d: ", i);
+      raptor_print_statement(t, stderr);
+      fputc('\n', stderr);
       triple_count++;
+    }
+  }
   RAPTOR_DEBUG2("Starting with %d stored triples\n", triple_count);
 #endif
 
