@@ -463,13 +463,14 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 int
 raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
 {
-  size_t uri_length;
-  const unsigned char *uri_string;
+  size_t uri_length=0L;
+  const unsigned char *uri_string=NULL;
   
   if(!ns || !iostr)
     return 1;
   
-  uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
+  if(ns->uri)
+    uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
   
   raptor_iostream_write_counted_string(iostr, "xmlns", 5);
   if(ns->prefix) {
