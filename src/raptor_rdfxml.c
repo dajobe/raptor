@@ -721,16 +721,18 @@ raptor_xml_start_element_handler(void *user_data,
         const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
         const unsigned char *namespace_name=atts[i+1];
         size_t namespace_name_len=strlen((const char*)namespace_name);
-        const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
-        size_t raptor_rdf_ms_uri_len=strlen(raptor_rdf_ms_uri);
 
-        if(namespace_name_len == raptor_rdf_ms_uri_len-1 && 
-           !strncmp((const char*)namespace_name, raptor_rdf_ms_uri, namespace_name_len)) {
+        if(namespace_name_len == raptor_rdf_namespace_uri_len-1 && 
+           !strncmp((const char*)namespace_name, 
+                    (const char*)raptor_rdf_namespace_uri, 
+                    namespace_name_len)) {
           raptor_parser_warning(rdf_parser, "Declaring a namespace with prefix %s to URI %s - one letter short of the RDF namespace URI and probably a mistake.", prefix, namespace_name);
         } 
 
-        if(namespace_name_len > raptor_rdf_ms_uri_len && 
-           !strncmp((const char*)namespace_name, raptor_rdf_ms_uri, raptor_rdf_ms_uri_len)) {
+        if(namespace_name_len > raptor_rdf_namespace_uri_len && 
+           !strncmp((const char*)namespace_name,
+                    (const char*)raptor_rdf_namespace_uri,
+                    raptor_rdf_namespace_uri_len)) {
           raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
         } else {
           raptor_namespaces_start_namespace_full(&rdf_xml_parser->namespaces,
