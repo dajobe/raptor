@@ -1927,7 +1927,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
 void
 raptor_free_memory(void *ptr)
 {
-  return RAPTOR_FREE(void, ptr);
+  RAPTOR_FREE(void, ptr);
 }
 
 
@@ -1944,8 +1944,7 @@ raptor_system_malloc(size_t size)
 void
 raptor_system_free(void *ptr)
 {
-  return free(ptr);
-  
+  free(ptr);
 }
 
 #endif
