@@ -48,6 +48,7 @@
 #include "raptor_internal.h"
 
 
+#ifndef STANDALONE
 /* prototypes for helper functions */
 static void raptor_delete_parser_factories(void);
 static raptor_parser_factory* raptor_get_parser_factory(const char *name);
@@ -2013,6 +2014,8 @@ raptor_system_free(void *ptr)
 
 #endif
 
+/* end not STANDALONE */
+#endif
 
 
 #ifdef STANDALONE
