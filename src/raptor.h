@@ -349,9 +349,6 @@ RAPTOR_API char* raptor_vsnprintf(const char *message, va_list arguments);
 
 RAPTOR_API int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_version);
 
-/* raptor_xml_writer.c */
-/* NOT PUBLIC YET - SEE raptor_internal.h */
-
 /* raptor_rfc2396.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const unsigned char *base_uri, const unsigned char *reference_uri, char unsigned *buffer, size_t length);
 
