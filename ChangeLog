@@ -1,5 +1,38 @@
 2005-01-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rdfxml.c (raptor_xml_start_element_handler): Updates for
+	unsigned char* string namespace URI strings.
+
+	* raptor_namespace.c:
+	Turn namespace URI string constants into unsigned char* strings.
+
+	* raptor_identifier.c (raptor_identifier_print): Casts for
+	printing rdf:XMLLiteral URI string constant.
+
+	* raptor_general.c: Turn rdf:XMLLiteral URI string constant into a
+	unsigned char* string.
+	(raptor_print_statement, raptor_print_statement_part_as_ntriples):
+	Casts for printing above constants.
+
+	* raptor_uri.c (raptor_default_new_uri_for_rdf_concept): Use RDF
+	namespace URI string constants.
+
+	* Makefile.am: Link libraptor.la for URI tests, to get the
+	namespace URI string constants.
+
+	* raptor.h: Turn namespace URI string constants into unsigned
+	char* strings.  Change namespace URI defines into uses of the
+	constants.
+
+	* rdfdump.c (main): Init parser_feature and serializer_feature to
+	-1 to avoid compiler warnings.
+
+	* raptor_rss.c (raptor_rss10_serialize_statement): Init item to
+	NULL to avoid a compiler warning.
+
+	* rdfdump.c, raptor_uri.c, raptor_serialize.c, raptor_rss.c,
+	raptor_parse.c: Casts for c++
+
 	* raptor.h: remove old comment re xml writer
 
 2005-01-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
