@@ -285,7 +285,8 @@ raptor_start_parse_file(raptor_parser *rdf_parser,
 
   rdf_parser->fh=fopen(filename, "r");
   if(!rdf_parser->fh) {
-    raptor_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
+    raptor_parser_error(rdf_parser, "file '%s' open failed - %s",
+                        filename, strerror(errno));
     RAPTOR_FREE(cstring, (void*)filename);
     return 1;
   }
