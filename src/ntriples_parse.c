@@ -260,9 +260,14 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
   raptor_uri *object_uri=NULL;
 
   /* Two choices for subject from N-Triples */
-  subject_uri=raptor_make_uri(parser->base_uri, subject);
-  statement->subject=subject_uri;
-  statement->subject_type=(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE) ? RAPTOR_SUBJECT_TYPE_ANONYMOUS : RAPTOR_SUBJECT_TYPE_RESOURCE;
+  if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE) {
+    statement->subject=subject;
+    statement->subject_type=RAPTOR_SUBJECT_TYPE_ANONYMOUS;
+  } else {
+    subject_uri=raptor_make_uri(parser->base_uri, subject);
+    statement->subject=subject_uri;
+    statement->subject_type=RAPTOR_SUBJECT_TYPE_RESOURCE;
+  }
 
 
   /* One choice for predicate from N-Triples */
