@@ -4,7 +4,7 @@
   <rdf:Description rdf:about="http://example.com/somewhere/">
     <a:foo xmlns:a="http://example.com/properties/">
       <rdf:Seq>
-	<rdf:li rdf:parseType="literal">some literal text</rdf:li>
+	<rdf:li rdf:parseType="Literal">some literal text</rdf:li>
       </rdf:Seq>
     </a:foo>
   </rdf:Description>
