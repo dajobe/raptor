@@ -289,20 +289,26 @@ raptor_statement_copy(const raptor_statement *statement) {
 
 void
 raptor_free_statement(raptor_statement *statement) {
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
-    raptor_free_uri((raptor_uri*)statement->subject);
-  else
-    RAPTOR_FREE(cstring, statement->subject);
+  if(statement->subject) {
+    if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+      raptor_free_uri((raptor_uri*)statement->subject);
+    else
+      RAPTOR_FREE(cstring, statement->subject);
+  }
 
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE)
-    raptor_free_uri((raptor_uri*)statement->predicate);
-  else
-    RAPTOR_FREE(cstring, statement->predicate);
+  if(statement->predicate) {
+    if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE)
+      raptor_free_uri((raptor_uri*)statement->predicate);
+    else
+      RAPTOR_FREE(cstring, statement->predicate);
+  }
 
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    raptor_free_uri((raptor_uri*)statement->object);
+    if(statement->object)
+      raptor_free_uri((raptor_uri*)statement->object);
   } else {
-    RAPTOR_FREE(cstring, statement->object);
+    if(statement->object)
+      RAPTOR_FREE(cstring, statement->object);
 
     if(statement->object_literal_language)
       RAPTOR_FREE(cstring, statement->object_literal_language);
