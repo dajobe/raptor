@@ -948,6 +948,10 @@ raptor_init_parser_n3 (void) {
                                  NULL,
                                  (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/",
                                  &raptor_n3_parser_register_factory);
+  raptor_parser_register_factory("turtle", "Turtle - Terse RDF Triple Language",
+                                 "application/x-turtle",
+                                 (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/",
+                                 &raptor_n3_parser_register_factory);
 }
 
 
