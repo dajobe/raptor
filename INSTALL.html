@@ -77,16 +77,20 @@ by an autoconf macro and IMHO is an autoconf bug.)</p>
 
 <dl>
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
-<dd><p>Pick an XML parser to use - either <tt>expat</tt> (default)
-or <tt>libxml</tt> otherwise either will be used, with expat preferred
-at present.   These can either be installed system libraries or source
+<dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
+or <tt>expat</tt>. If this option is not given,
+either will be used, with libxml preferred if both are present.
+These can either be installed system libraries or source
 trees in subdirectories of these sources named libxml, expat.</p>
 <p>Raptor has been tested with various combinations of these libraries
 including 
 expat 1.95.1  (on RedHat 7.2),
+expat 1.95.2-6 (on Debian 3.0),
 libxml 2.4.10 (on RedHat 7.2),
+libxml 2.4.13 (on OSX 10.1.5),
 libxml 2.4.17 (on FreeBSD 4.5-RELEASE-p2),
-libxml 2.4.19 (on RedHat 7.2)
+libxml 2.4.19 (on RedHat 7.2),
+libxml 2.4.23 (on Debian 3.0)
 </p>
 </dd>
 
