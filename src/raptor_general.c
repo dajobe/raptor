@@ -343,7 +343,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   /* Read buffer */
   char buffer[RAPTOR_READ_BUFFER_SIZE];
   int rc=0;
-  const char *filename=RAPTOR_URI_TO_FILENAME(uri);
+  const char *filename=raptor_uri_uri_string_to_filename(uri);
 
   if(!filename)
     return 1;
@@ -889,7 +889,7 @@ void
 raptor_free_identifier(raptor_identifier *identifier) 
 {
   if(identifier->uri)
-    RAPTOR_FREE_URI(identifier->uri);
+    raptor_free_uri(identifier->uri);
 
   if(identifier->id)
     LIBRDF_FREE(cstring, (void*)identifier->id);
