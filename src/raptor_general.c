@@ -287,7 +287,12 @@ typedef enum {
   RDF_ATTR_Property        = 19, /* " rdf:Property -- a class in RDF model */
   RDF_ATTR_List            = 20, /* " rdf:List -- a class in RDF model */
 
+#ifdef RAPTOR_RDF_DATATYPES_TEST
+  RDF_ATTR_dtype           = 21,
+  RDF_ATTR_LAST            = RDF_ATTR_dtype
+#else
   RDF_ATTR_LAST            = RDF_ATTR_List
+#endif
 } rdf_attr;
 
 
@@ -327,6 +332,10 @@ static const struct {
   { "Statement",       RAPTOR_IDENTIFIER_TYPE_LITERAL  },
   { "Property",        RAPTOR_IDENTIFIER_TYPE_LITERAL  },
   { "List",            RAPTOR_IDENTIFIER_TYPE_LITERAL  }
+#ifdef RAPTOR_RDF_DATATYPES_TEST
+  ,
+  { "dtype",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN  }
+#endif
 };
 
 /* In above 'Useless' indicates it generates parts of a reified statement
