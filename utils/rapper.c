@@ -660,8 +660,6 @@ main(int argc, char *argv[])
       namespace_declarations=NULL;
     }
     
-    raptor_serialize_start_to_file_handle(serializer, base_uri, stdout);
-
     if(serializer_feature_value >= 0)
       raptor_serializer_set_feature(serializer, 
                                     serializer_feature, serializer_feature_value);
@@ -669,6 +667,8 @@ main(int argc, char *argv[])
       raptor_serializer_set_feature_string(serializer, 
                                            serializer_feature,
                                            serializer_feature_string_value);
+
+    raptor_serialize_start_to_file_handle(serializer, base_uri, stdout);
 
   }
   
