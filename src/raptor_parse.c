@@ -2132,61 +2132,6 @@ raptor_xml_validation_warning(void *ctx, const char *msg, ...)
 
 
 
-static raptor_xml_entity*
-raptor_xml_new_entity(raptor_parser* rdf_parser,
-                     const xmlChar *name, int type,
-                     const xmlChar *ExternalID,
-                     const xmlChar *SystemID, const xmlChar *content)
-{
-  raptor_xml_entity *ent;
-  
-  ent=(raptor_xml_entity*)LIBRDF_CALLOC(raptor_xml_entity, 
-                                        sizeof(raptor_xml_entity), 1);
-  if(!ent) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return NULL;
-  }
-  
-  RAPTOR_ENTITY_NAME_LENGTH(ent)=strlen(name);
-  ent->entity.name = LIBRDF_MALLOC(cstring, RAPTOR_ENTITY_NAME_LENGTH(ent)+1);
-  if(!ent->entity.name) {
-    LIBRDF_FREE(raptor_xml_entity, ent);
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return NULL;
-  }
-  
-  strncpy((char*)ent->entity.name, name, RAPTOR_ENTITY_NAME_LENGTH(ent) +1); /* +1 for \0 */
-  
-#ifdef RAPTOR_LIBXML_ENTITY_ETYPE
-  ent->entity.type = XML_ENTITY_DECL;
-  ent->entity.etype = type;
-#else
-  ent->entity.type = type;
-#endif
-  
-  if (ExternalID)
-    ent->entity.ExternalID = xmlStrdup(ExternalID);
-  else
-    ent->entity.ExternalID = NULL;
-  
-  if (SystemID)
-    ent->entity.SystemID = xmlStrdup(SystemID);
-  else
-    ent->entity.SystemID = NULL;
-  
-  if (content) {
-    ent->entity.length = xmlStrlen(content);
-    ent->entity.content = xmlStrndup(content, ent->entity.length);
-  } else {
-    ent->entity.length = 0;
-    ent->entity.content = NULL;
-  }
-  
-  return ent;
-}
-
-
-
 /*
  * raptor_free_xml_entity : free an entity record.
  */
@@ -2206,6 +2151,79 @@ raptor_xml_free_entity(raptor_xml_entity *ent) {
 
   LIBRDF_FREE(raptor_xml_entity, ent);
 }
+
+
+static raptor_xml_entity*
+raptor_xml_new_entity(raptor_parser* rdf_parser,
+                     const xmlChar *name, int type,
+                     const xmlChar *ExternalID,
+                     const xmlChar *SystemID, const xmlChar *content)
+{
+  raptor_xml_entity *ent;
+  
+  ent=(raptor_xml_entity*)LIBRDF_CALLOC(raptor_xml_entity, 
+                                        sizeof(raptor_xml_entity), 1);
+  if(!ent) {
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    return NULL;
+  }
+  
+  RAPTOR_ENTITY_NAME_LENGTH(ent)=strlen(name);
+  ent->entity.name = LIBRDF_MALLOC(cstring, RAPTOR_ENTITY_NAME_LENGTH(ent)+1);
+  if(!ent->entity.name) {
+    raptor_xml_free_entity(ent);
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    return NULL;
+  }
+  
+  strncpy((char*)ent->entity.name, name, RAPTOR_ENTITY_NAME_LENGTH(ent) +1); /* +1 for \0 */
+  
+#ifdef RAPTOR_LIBXML_ENTITY_ETYPE
+  ent->entity.type = XML_ENTITY_DECL;
+  ent->entity.etype = type;
+#else
+  ent->entity.type = type;
+#endif
+  
+  if (ExternalID) {
+    ent->entity.ExternalID = LIBRDF_MALLOC(cstring, strlen(ExternalID)+1);
+    if(!ent->entity.ExternalID) {
+      raptor_xml_free_entity(ent);
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      return NULL;
+    }
+    strcpy((char*)ent->entity.ExternalID, ExternalID);
+  } else
+    ent->entity.ExternalID = NULL;
+  
+  if (SystemID) {
+    ent->entity.SystemID = LIBRDF_MALLOC(cstring, strlen(SystemID)+1);
+    if(!ent->entity.SystemID) {
+      raptor_xml_free_entity(ent);
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      return NULL;
+    }
+    strcpy((char*)ent->entity.SystemID, SystemID);
+  } else
+    ent->entity.SystemID = NULL;
+  
+  if (content) {
+    ent->entity.length = strlen(content);
+    ent->entity.content = LIBRDF_MALLOC(cstring, ent->entity.length+1);
+    if(!ent->entity.content) {
+      raptor_xml_free_entity(ent);
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      return NULL;
+    }
+    strncpy(ent->entity.content, content, ent->entity.length);
+  } else {
+    ent->entity.length = 0;
+    ent->entity.content = NULL;
+  }
+  
+  return ent;
+}
+
 
 
 static void
