@@ -150,9 +150,9 @@ if test -d $srcdir/../librdf -a -r $srcdir/../librdf/rdf_node.c ; then
   AC_MSG_RESULT(yes)
   AC_DEFINE(RAPTOR_IN_REDLAND, 1, [is this being built inside redland?])
   REDLAND_LIBS="../librdf/librdf.la"
-  REDLAND_CPPFLAGS=" -I\$(srcdir)/../librdf"
+  REDLAND_CFLAGS=" -I\$(srcdir)/../librdf"
   AC_SUBST(REDLAND_LIBS)
-  AC_SUBST(REDLAND_CPPFLAGS)
+  AC_SUBST(REDLAND_CFLAGS)
 else
   AC_MSG_RESULT(no)
 fi
