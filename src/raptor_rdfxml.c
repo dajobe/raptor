@@ -4018,7 +4018,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                       element->subject.type,
                                       element->subject.uri_source,
                                       
-                                      NULL);
+                                      element->reified.uri);
           } else {
             raptor_generate_statement(rdf_parser, 
                                       element->parent->subject.uri,
@@ -4036,7 +4036,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                       element->subject.type,
                                       element->subject.uri_source,
                                       
-                                      NULL);
+                                      element->reified.uri);
           }
         }
         finished=1;
