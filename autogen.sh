@@ -58,6 +58,8 @@ automake=automake
 automake_vers=0
 aclocal=aclocal
 aclocal_vers=0
+autoheader=autoheader
+autoheader_vers=0
 libtoolize=libtoolize
 libtoolize_vers=0
 
@@ -123,6 +125,19 @@ while [ $# -ne 0 ] ; do
       fi
     done
   fi
+  progs=`ls autoheader* 2>/dev/null`
+  if [ "X$progs" != "X" ]; then
+    for prog in $progs; do
+      vers=`$prog --version | sed -ne '1s/^.* //p'`
+      if [ "X$vers" = "X" ]; then
+        continue
+      fi
+      if expr $vers '>' $autoheader_vers >/dev/null; then
+        autoheader=$prog
+        autoheader_vers=$vers
+      fi
+    done
+  fi
 done
 cd $here
 
@@ -133,6 +148,7 @@ set - $save_args
 echo "$program: Found autoconf $autoconf version $autoconf_vers" 1>&2
 echo "$program: Found automake $automake version $automake_vers" 1>&2
 echo "$program: Found aclocal $aclocal version $aclocal_vers" 1>&2
+echo "$program: Found autoheader $autoheader version $autoheader_vers" 1>&2
 echo "$program: Found libtoolize $libtoolize version $libtoolize_vers" 1>&2
 
 
@@ -248,8 +264,8 @@ do
       echo "$program: Running $aclocal $aclocal_args"
       $DRYRUN $aclocal $aclocal_args
       if grep "^AM_CONFIG_HEADER" configure.ac >/dev/null; then
-	echo "$program: Running autoheader"
-	$DRYRUN autoheader
+	echo "$program: Running $autoheader"
+	$DRYRUN $autoheader
       fi
       echo "$program: Running $automake $am_opt"
       $DRYRUN $automake $automake_args $am_opt
