@@ -7,10 +7,10 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-12-14"
+.TH libraptor 3 "2004-12-30"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
-libraptor \- Raptor RDF parser toolkit library
+libraptor \- Raptor RDF parser and serializer library
 .SH SYNOPSIS
 .nf
 .B #include <raptor.h>
@@ -47,7 +47,7 @@ by parsing syntaxes or serialize the triples into syntaxes.
 .LP
 The supported parsing syntaxes are RDF/XML,
 N-Triples, Turtle, RSS tag soup including Atom 0.3 and the
-serializing syntaxes are RDF/XML and N-Triples.
+serializing syntaxes are RDF/XML, N-Triples and RSS 1.0.
 The RDF/XML parser can use either \fIexpat\fR or \fIlibxml\fR
 XML parsers for providing the SAX event stream.
 The library functions are arranged in an object-oriented style with
@@ -331,9 +331,20 @@ the returned pointer is to a shared string that must be copied if needed.
 .SH "N-TRIPLES UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_ntriples_string(FILE* \fIstream\fB, const char* \fIstring\fB, const char \fIdelim\fB)\fR"
 This is a standalone function that prints the given string
-according to N-Triples escaping rules, expecting to be delimited
-by the character \fIdelim\fR which is usually either \(dq or <
-.IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term)\fR"
+according to N-Triples escaping rules, expecting to be terminated
+by delimiter \fIdelim\fR which is usually either ', \(dq or <.  If
+a null delimiter \\0 is given, no extra escaping is performed.
+.IP "\fBint raptor_iostream_write_string_ntriples(raptor_iostream *\fIiostr\fP, const unsigned char *\fIstring\fP, size_t \fIlen\fP, const char \fIdelim\fP)\fR"
+Write an N-Triples encoded version of the given string to iostream
+\fIiostr\fP.  If \fIdelim\fP is given, that is the ending delimeter of the
+encoded string and it will be escaped in the output as appropriate.
+Useful delim values are ', \(dq and >.  If
+a null delimiter \\0 is given, no extra escaping is performed.
+.IP "\fBvoid raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement)\fR"
+Write an N-Triples encoded version of the raptor_statement
+\fIstatement\fP to iostream \fIiostr\fP.
+.IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type \fIterm\fP)\fR"
+Deprecated, for internal use.
 .SH "XML UTILITY FUNCTIONS"
 .IP "\fBint raptor_xml_escape_string(const unsigned char *\fIstring\fB, size_t \fIlen\fB, unsigned char *\fIbuffer\fB, size_t \fIlength\fB, char \fIquote\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Apply the XML escaping rules to the string given in (string, len)
@@ -351,6 +362,11 @@ is for an XML attribute and the appropriate quote character \" or \'
 is used, otherwise it is XML element content (CDATA).  The
 \fIerror_handler\fR method along with \fIerror_data\fR allow error
 reporting to be given.
+.IP "\fBint raptor_xml_name_check(const unsigned char *\fIstring\fP, size_t \fIlength\fP, int xml_version)\fR"
+Check that the given \fIstring\fP of \fIlength\fP bytes
+is a legal XML name according to XML 1.0 or XML 1.1.
+\fIxml_version\fP is set to 10 or 11 respectively.
+Returns non-zero if the name is legal.
 .SH "MEMORY UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_free_memory(void *\fIptr\fP)\fR"
 Free memory allocated inside raptor.  Some systems require
@@ -384,6 +400,18 @@ number of bytes encoded or <0 on failure.
 Decode a sequence UTF8 bytes in \fIinput\fP of size \fIlength\fP
 into a Unicode character in \fIoutput\fR returning the number of
 bytes used or <0 on failure.
+.IP "\fBint raptor_utf8_check(const unsigned char *\fIstring\fP, size_t \fIlen\fPgth)\fR"
+Check that a given \fIstring\fP is legal UTF-8 encoding and includes
+only legal Unicode characters U+0 to U+0x10ffff inclusive. Returns
+non-0 if the string is good.
+.IP "\fBint raptor_unicode_is_xml11_namestartchar(long \fIc\fP)\fR"
+.IP "\fBint raptor_unicode_is_xml10_namestartchar(long \fIc\fP)\fR"
+.IP "\fBint raptor_unicode_is_xml11_namechar(long \fIc\fP)\fR"
+.IP "\fBint raptor_unicode_is_xml10_namechar(long \fIc\fP)\fR"
+Check that given Unicode characters are allowed as
+XML 1.0 or XML 1.0 names - either as the starting character
+(\fB*_namestartchar\fP) or continuing character (\fB*_namechar\fP).
+Returns non-0 if the character is allowed.
 .SH "MISCELLANEOUS UTILITY FUNCTIONS"
 .IP "\fBchar* raptor_vsnprintf(const char *message, va_list arguments)\fR"
 Compatibility wrapper around vsnprintf.
@@ -532,6 +560,8 @@ a base URI \fIbase_uri\fR.  The returned string must be freed
 with \fBraptor_free_memory\fP.
 If \fBraptor_uri_to_relative_counted_string\fP is used, the length of
 the returned string is stored in *\fIlen_p\fP if not NULL.
+.IP "\fBvoid raptor_uri_print(const raptor_uri* \fIuri\fP, FILE *\fIstream\fP)\fR"
+Print URI \fIuri\fP to the file handle \fIstream\fP.
 .SH "URI UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_uri_resolve_uri_reference (const unsigned char* \fIbase_uri\fB, const unsigned char* \fIreference_uri\fB, char unsigned* \fIbuffer\fB, size_t \fIlength\fB)\fR"
 This is a standalone function that resolves the relative URI
@@ -617,7 +647,7 @@ Set the handler to receive bytes written by the raptor_www implementation.
 .IP "\fBvoid raptor_www_set_content_type_handler(raptor_www *\fIwww\fB, raptor_www_content_type_handler \fIhandler\fB, void *\fIuser_data\fB)\fR"
 Set the handler to receive the HTTP Content-Type value, when/if
 discovered during retrieval by the raptor_www implementation.
-.IP "\fBvoid raptor_www_set_http_accept(raptor_www *\fIwww\fP, const char *\fIvalue\fP);
+.IP "\fBvoid raptor_www_set_http_accept(raptor_www *\fIwww\fP, const char *\fIvalue\fP)\fR"
 Set the WWW HTTP Accept: header to \fIvalue\fP.  If \fIvalue\fP is
 NULL, an empty header is sent.
 .IP "\fBvoid raptor_www_set_error_handler(raptor_www *www\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
@@ -646,20 +676,22 @@ stack of raptor_namespace that build on raptor_qname.
 .SH "QNAME CONSTRUCTORS"
 There are two constructors for raptor_qname to build qnames
 with optional values on a stack of names.
-.IP "\fBraptor_qname* raptor_new_qname(raptor_namespace_stack *\fInstack\fB, const unsigned char *\fIname\fB, const unsigned char *\fIvalue\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)"
+.IP "\fBraptor_qname* raptor_new_qname(raptor_namespace_stack *\fInstack\fB, const unsigned char *\fIname\fB, const unsigned char *\fIvalue\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Create a raptor QName \fIname\fR (a possibly :-separated name) with
 name to be resolved against the given \fInstack\fR namespace stack.
 An optional \fIvalue\fR can be given, and if there is an error,
 the \fIerror_handler\fB and \fIerror_data\fR will be used to invoke
 the callback.
-.IP "\fBraptor_qname* raptor_new_qname_from_namespace_local_name (raptor_namespace *\fIns\fB, const unsigned char *\fIlocal_name\fB, const unsigned char *\fIvalue\fB)"
+.IP "\fBraptor_qname* raptor_new_qname_from_namespace_local_name (raptor_namespace *\fIns\fB, const unsigned char *\fIlocal_name\fB, const unsigned char *\fIvalue\fB)\fR"
 Create a raptor QName using the namespace name of the
 raptor_namespace \fIns\fR and the local name \fIlocal_name\fR, along
 with optional value \fIvalue\fR.  Errors are reported using
 the error handling and data of the namespace.
+.IP "\fBraptor_qname* raptor_qname_copy(raptor_qname *\fIqname\fP)\fR"
+Create a raptor QName from an existing one, returning NULL on failure.
 .SH "QNAME DESTRUCTOR"
 .IP "\fBvoid raptor_free_qname(raptor_qname* \fIname\fB)\fR"
-Destroy a raptor qname object
+Destroy a raptor qname object.
 .SH "QNAME METHODS"
 .IP "\fBint raptor_qname_equal(raptor_qname* \fIname1\fP, raptor_qname *\fIname2\fP)\fR"
 Return non-zero if the given QNames are equal.
@@ -844,7 +876,7 @@ Return the stringbuffer as a single string.  The string is shared and
 should be copied if needed.
 .IP "\fBsize_t raptor_stringbuffer_length(raptor_stringbuffer* \fIstringbuffer\fP)\fR"
 Return the length of the stringbuffer.
-.IP "\fBint raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer, unsigned char *string, size_t length)\fR"
+.IP "\fBint raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer, unsigned char *\fIstring\fP, size_t \fIlen\fPgth)\fR"
 Copy the stringbuffer into a single string buffer \fIstring\fP of
 size \fIlength\fP.  Returns non-0 on failure.
 .SH "IOSTREAM CLASS"
@@ -918,6 +950,27 @@ stringbuffer to an iostream.
 .P
 Added \fBraptor_iostream_write_xml_escaped_string\fP to write
 an XML-escaped string to an iostream.
+.P
+Added N-Triples
+\fBraptor_iostream_write_string_ntriples\fP and
+\fBraptor_iostream_write_statement_ntriples\fP
+utility functions for writing to raptor_iostreams.
+.P
+Added \fBraptor_xml_name_check\fP
+to check if a name is a legal XML 1.0 or 1.0 name.
+.P
+Added \fBraptor_uri_print\fP method to print a URI.
+.P
+Added copy constructor \fBraptor_qname_copy\fP
+.P
+Added unicode name checking utility functions for XML 1.0 and XML 1.1
+name starting character and continued name character.
+\fBraptor_unicode_is_xml10_namestartchar\fP
+\fBraptor_unicode_is_xml10_namechar\fP,
+\fBraptor_unicode_is_xml11_namechar\fP and
+\fBraptor_unicode_is_xml11_namestartchar\fP.
+.P
+Added UTF8-checking utility function \fBraptor_utf8_check\fP.
 .SS 1.4.2
 No changes.
 .SS 1.4.1
