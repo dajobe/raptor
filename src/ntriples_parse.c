@@ -106,22 +106,9 @@ raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
  **/
 
 raptor_parser*
-raptor_ntriples_new(
-#ifdef LIBRDF_INTERNAL
-  librdf_world *world
-#else
-  void
-#endif
-)
+raptor_ntriples_new(void)
 {
-  raptor_parser *rdf_parser=raptor_new_parser("ntriples");
-  
-#ifdef RAPTOR_IN_REDLAND
-  /* FIXME temporary redland stuff */
-  if(rdf_parser)
-    raptor_set_world(rdf_parser, world);
-#endif
-  return rdf_parser;
+  return raptor_new_parser("ntriples");
 }
 
 
