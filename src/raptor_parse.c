@@ -332,15 +332,16 @@ typedef struct {
  */
 typedef enum {
   RDF_ATTR_about           = 0, /* value of rdf:about attribute */
-  RDF_ATTR_aboutEach       = 1, /* " rdf:aboutEach       */
+  RDF_ATTR_aboutEach       = 1, /* " rdf:aboutEach */
   RDF_ATTR_aboutEachPrefix = 2, /* " rdf:aboutEachPrefix */
   RDF_ATTR_ID              = 3, /* " rdf:ID */
   RDF_ATTR_bagID           = 4, /* " rdf:bagID */
   RDF_ATTR_resource        = 5, /* " rdf:resource */
-  RDF_ATTR_type            = 6, /* " rdf:type -- IS a property in RDF Model */
+  RDF_ATTR_type            = 6, /* " rdf:type -- a property in RDF Model */
   RDF_ATTR_parseType       = 7, /* " rdf:parseType */
+  RDF_ATTR_value           = 8, /* " rdf:value -- a property in RDF model */
 
-  RDF_ATTR_LAST            = RDF_ATTR_parseType
+  RDF_ATTR_LAST            = RDF_ATTR_value
 } rdf_attr;
 
 static const char * const rdf_attr_names[]={
@@ -352,6 +353,7 @@ static const char * const rdf_attr_names[]={
   "resource",
   "type",
   "parseType",
+  "value"
 };
 
 
