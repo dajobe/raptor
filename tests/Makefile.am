@@ -53,24 +53,31 @@ $(top_builddir)/rdfdump:
 	@(cd .. ; $(MAKE) rdfdump)
 
 check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
-	@for test in $(RDF_TEST_FILES); do \
+	@result=0; for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
 	    baseuri=$(RDF_NS_URI); \
 	  else \
 	    baseuri=$(BASE_URI)$$test; \
 	  fi; \
-	  echo Checking $$test; \
+	  echo -n "Checking $$test "; \
 	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
-	  if [ ! -f $(srcdir)/$$name.out ] ; then cp $$name.res $(srcdir)/$$name.out ; \
-	  else diff $(srcdir)/$$name.out $$name.res ; fi; \
+	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    echo ok; \
+	  else \
+	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	  fi; \
 	  rm -f $$name.res ; \
 	done; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
-	  echo Checking $$test; \
+	  echo -n "Checking $$test "; \
 	  $(top_builddir)/rdfdump -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
-	  if [ ! -f $(srcdir)/$$name.out ] ; then cp $$name.res $(srcdir)/$$name.out ; \
-	  else diff $(srcdir)/$$name.out $$name.res ; fi; \
+	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    echo ok; \
+	  else \
+	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	  fi; \
 	  rm -f $$name.res ; \
-	done
+	done; \
+	exit $$result
