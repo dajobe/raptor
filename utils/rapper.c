@@ -254,7 +254,7 @@ main(int argc, char *argv[])
               if(!raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label))
                 printf("  %-20s  %s\n", feature_name, feature_label);
             }
-            fputs("Features are set with `" HELP_ARG(f, feature) " NAME=VALUE or `-f NAME'\nValues are decimal integers 0 or larger, defaulting to 1 if omitted.\n", stderr);
+            fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE=VALUE or `-f FEATURE'\nwhere VALUE is a decimal integer 0 or larger, defaulting to 1 if omitted.\n", stderr);
             exit(0);
           } else {
             int i;
@@ -414,7 +414,7 @@ main(int argc, char *argv[])
     puts("Parse RDF content at the source URI into RDF triples.");
     puts("\nMain options:");
     puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
-    puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set input format to one of:"));
+    puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
       const char *help_label;
@@ -426,7 +426,7 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
-    puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set output format to one of:"));
+    puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
       const char *help_label;
@@ -440,10 +440,10 @@ main(int argc, char *argv[])
     }
     puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
     puts("\nAdditional options:");
-    puts(HELP_TEXT("c", "count           ", "Count triples - no output"));
+    puts(HELP_TEXT("c", "count           ", "Count triples only - do not print them."));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
-    puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser feature - use `help' for a list"));
-    puts(HELP_TEXT("g", "guess           ", "Guess input syntax"));
+    puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser or serializer features" HELP_PAD "Use `-f help' for a list of valid features"));
+    puts(HELP_TEXT("g", "guess           ", "Guess the input syntax"));
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
