@@ -372,12 +372,14 @@ struct rapier_ns_map_s {
 typedef struct {
   /* Name - always present */
   const char *qname;
+  int qname_length;
   /* Namespace or NULL if not in a namespace */
-  const rapier_ns_map *namespace;
+  const rapier_ns_map *nspace;
   /* URI of namespace+qname or NULL if not defined */
   rapier_uri *uri;
   /* optional value - used when name is an attribute */
   const char *value;
+  int value_length;
 } rapier_ns_name;
 
 
@@ -449,11 +451,11 @@ struct rapier_element_s {
   struct rapier_element_s *parent;
   rapier_ns_name *name;
   rapier_ns_name **attributes;
-  unsigned int attribute_count;
+  int attribute_count;
   /* attributes declared in M&S */
   const char * rdf_attr[RDF_ATTR_LAST+1];
   /* how many of above seen */
-  unsigned int rdf_attr_count;
+  int rdf_attr_count;
 
   /* state that this production matches */
   rapier_state state;
@@ -660,9 +662,9 @@ static void rapier_parser_warning(rapier_parser* parser, const char *message, ..
 
 /* prototypes for namespace and name/qname functions */
 static void rapier_init_namespaces(rapier_parser *rdf_parser);
-static void rapier_start_namespace(rapier_parser *rdf_parser, const char *prefix, const char *namespace, int depth);
-static void rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map* namespace);
-static void rapier_end_namespace(rapier_parser *rdf_parser, const char *prefix, const char *namespace);
+static void rapier_start_namespace(rapier_parser *rdf_parser, const char *prefix, const char *nspace, int depth);
+static void rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map *nspace);
+static void rapier_end_namespace(rapier_parser *rdf_parser, const char *prefix, const char *nspace);
 static void rapier_end_namespaces_for_depth(rapier_parser *rdf_parser);
 static rapier_ns_name* rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name, const char *value, int is_element);
 #ifdef RAPIER_DEBUG
@@ -728,7 +730,7 @@ rapier_init_namespaces(rapier_parser *rdf_parser) {
 
 static void
 rapier_start_namespace(rapier_parser *rdf_parser, 
-                       const char *prefix, const char *namespace, int depth)
+                       const char *prefix, const char *nspace, int depth)
 {
   int prefix_length=0;
 #ifdef LIBRDF_INTERNAL
@@ -737,21 +739,21 @@ rapier_start_namespace(rapier_parser *rdf_parser,
 #endif
   int len;
   rapier_ns_map *map;
-  void *p;
+  char *p;
 
   LIBRDF_DEBUG4(rapier_start_namespace,
                 "namespace prefix %s uri %s depth %d\n",
-                prefix ? prefix : "(default)", namespace, depth);
+                prefix ? prefix : "(default)", nspace, depth);
 
   /* Convert an empty namespace string "" to a NULL pointer */
-  if(!*namespace)
-    namespace=NULL;
+  if(!*nspace)
+    nspace=NULL;
 
   len=sizeof(rapier_ns_map);
 #ifdef LIBRDF_INTERNAL
 #else
-  if(namespace) {
-    uri_length=strlen(namespace);
+  if(nspace) {
+    uri_length=strlen(nspace);
     len+=uri_length+1;
   }
 #endif
@@ -767,7 +769,7 @@ rapier_start_namespace(rapier_parser *rdf_parser,
     return;
   }
 
-  p=(void*)map+sizeof(rapier_ns_map);
+  p=(char*)map+sizeof(rapier_ns_map);
 #ifdef LIBRDF_INTERNAL
   map->uri=librdf_new_uri(namespace);
   if(!map->uri) {
@@ -776,8 +778,8 @@ rapier_start_namespace(rapier_parser *rdf_parser,
     return;
   }
 #else
-  if(namespace) {
-    map->uri=strcpy((char*)p, namespace);
+  if(nspace) {
+    map->uri=strcpy((char*)p, nspace);
     map->uri_length=uri_length;
     p+= uri_length+1;
   }
@@ -792,16 +794,16 @@ rapier_start_namespace(rapier_parser *rdf_parser,
   map->depth=depth;
 
   /* set convienience flags when there is a defined namespace URI */
-  if(namespace) {
+  if(nspace) {
 #ifdef LIBRDF_INTERNAL
     if(librdf_uri_equals(map->uri, librdf_concept_ms_namespace_uri))
       map->is_rdf_ms=1;
     else if(librdf_uri_equals(map->uri, librdf_concept_schema_namespace_uri))
       map->is_rdf_schema=1;
 #else
-    if(!strcmp(namespace, rapier_rdf_ms_uri))
+    if(!strcmp(nspace, rapier_rdf_ms_uri))
       map->is_rdf_ms=1;
-    else if(!strcmp(namespace, rapier_rdf_schema_uri))
+    else if(!strcmp(nspace, rapier_rdf_schema_uri))
       map->is_rdf_schema=1;
 #endif
   }
@@ -813,22 +815,22 @@ rapier_start_namespace(rapier_parser *rdf_parser,
 
 
 static void 
-rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map* namespace)
+rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map* nspace)
 {
 #ifdef LIBRDF_INTERNAL
   if(namespace->uri)
     librdf_free_uri(namespace->uri);
 #endif
-  LIBRDF_FREE(rapier_ns_map, namespace);
+  LIBRDF_FREE(rapier_ns_map, nspace);
 }
 
 
 static void 
 rapier_end_namespace(rapier_parser *rdf_parser, 
-                     const char *prefix, const char *namespace) 
+                     const char *prefix, const char *nspace)
 {
   LIBRDF_DEBUG3(rapier_end_namespace, "prefix %s uri \"%s\"\n", 
-                prefix ? prefix : "(default)", namespace);
+                prefix ? prefix : "(default)", nspace);
 }
 
 
@@ -894,7 +896,6 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
 {
   rapier_ns_name* ns_name;
   const char *p;
-  char *new_value=NULL;
   rapier_ns_map* ns;
   char* new_name;
   int prefix_length;
@@ -912,7 +913,9 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
   }
 
   if(value) {
-    new_value=(char*)LIBRDF_MALLOC(cstring, strlen(value)+1);
+    int value_length=strlen(value);
+    char* new_value=(char*)LIBRDF_MALLOC(cstring, value_length+1);
+
     if(!new_value) {
       rapier_parser_fatal_error(rdf_parser, "Out of memory");
       LIBRDF_FREE(rapier_ns_name, ns_name);
@@ -920,6 +923,7 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     } 
     strcpy(new_value, value);
     ns_name->value=new_value;
+    ns_name->value_length=value_length;
   }
 
   /* Find : */
@@ -938,13 +942,14 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     }
     strcpy(new_name, name);
     ns_name->qname=new_name;
-
+    ns_name->qname_length=qname_length;
+    
     /* Find a default namespace */
     for(ns=rdf_parser->namespaces; ns && ns->prefix; ns=ns->next)
       ;
 
     if(ns) {
-      ns_name->namespace=ns;
+      ns_name->nspace=ns;
 #if RAPIER_DEBUG > 1
     LIBRDF_DEBUG2(rapier_make_namespaced_name,
                   "Found default namespace %s\n", ns->uri);
@@ -953,8 +958,8 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
       /* failed to find namespace - now what? FIXME */
       /* rapier_parser_warning(rdf_parser, "No default namespace defined - cannot expand %s", name); */
 #if RAPIER_DEBUG > 1
-    LIBRDF_DEBUG1(rapier_make_namespaced_name,
-                  "No default namespace defined\n");
+      LIBRDF_DEBUG1(rapier_make_namespaced_name,
+                    "No default namespace defined\n");
 #endif
     }
 
@@ -974,6 +979,7 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     }
     strcpy(new_name, p);
     ns_name->qname=new_name;
+    ns_name->qname_length=qname_length;
 
     /* Find the namespace */
     for(ns=rdf_parser->namespaces; ns ; ns=ns->next)
@@ -992,7 +998,7 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     LIBRDF_DEBUG3(rapier_make_namespaced_name,
                   "Found namespace prefix %s URI %s\n", ns->prefix, ns->uri);
 #endif
-    ns_name->namespace=ns;
+    ns_name->nspace=ns;
   }
 
 
@@ -1000,9 +1006,9 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
   /* If namespace has a URI and a qname is defined, create the URI
    * for this element 
    */
-  if(ns_name->namespace && ns_name->namespace->uri && qname_length) {
+  if(ns_name->nspace && ns_name->nspace->uri && qname_length) {
 #ifdef LIBRDF_INTERNAL
-    librdf_uri* uri=librdf_new_uri_from_uri_qname(ns_name->namespace->uri,
+    librdf_uri* uri=librdf_new_uri_from_uri_qname(ns_name->nspace->uri,
                                                   new_name);
     if(!uri) {
       rapier_free_ns_name(ns_name);
@@ -1011,14 +1017,14 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     ns_name->uri=uri;
 #else
     char *uri_string=(char*)LIBRDF_MALLOC(cstring, 
-                                          ns_name->namespace->uri_length + 
+                                          ns_name->nspace->uri_length + 
                                           qname_length + 1);
     if(!uri_string) {
       rapier_free_ns_name(ns_name);
       return NULL;
     }
-    strcpy(uri_string, ns_name->namespace->uri);
-    strcpy(uri_string+ns_name->namespace->uri_length, new_name);
+    strcpy(uri_string, ns_name->nspace->uri);
+    strcpy(uri_string + ns_name->nspace->uri_length, new_name);
     ns_name->uri=uri_string;
 #endif
   }
@@ -1032,9 +1038,9 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
 static void
 rapier_print_ns_name(FILE *stream, rapier_ns_name* name) 
 {
-  if(name->namespace) {
-    if(name->namespace->prefix)
-      fprintf(stream, "%s:%s", name->namespace->prefix, name->qname);
+  if(name->nspace) {
+    if(name->nspace->prefix)
+      fprintf(stream, "%s:%s", name->nspace->prefix, name->qname);
     else
       fprintf(stream, "(default):%s", name->qname);
   } else
@@ -1064,9 +1070,11 @@ rapier_ns_names_equal(rapier_ns_name *name1, rapier_ns_name *name2)
   if(name1->uri && name2->uri)
     return librdf_uri_equals(name1->uri, name2->uri);
 #else
-  if(name1->namespace != name2->namespace)
+  if(name1->nspace != name2->nspace)
     return 0;
 #endif
+  if(name1->qname_length != name2->qname_length)
+    return 0;
   if(strcmp(name1->qname, name2->qname))
     return 0;
   return 1;
@@ -1141,12 +1149,12 @@ rapier_free_element(rapier_element *element)
 static void
 rapier_print_element(rapier_element *element, FILE* stream)
 {
-  int i;
-
   rapier_print_ns_name(stream, element->name);
   fputc('\n', stream);
 
   if(element->attribute_count) {
+    int i;
+
     fputs(" attributes: ", stream);
     for (i = 0; i < element->attribute_count; i++) {
       if(i)
@@ -1164,15 +1172,14 @@ static char *
 rapier_format_element(rapier_element *element, int *length_p, int is_end)
 {
   int length;
-  int l;
   char *buffer;
   char *ptr;
   int i;
 
   /* get length of element name (and namespace-prefix: if there is one) */
-  length=strlen(element->name->qname);
-  if(element->name->namespace)
-    length += element->name->namespace->prefix_length + 1;
+  length=element->name->qname_length;
+  if(element->name->nspace)
+    length += element->name->nspace->prefix_length + 1;
 
   if(is_end)
     length++; /* / */
@@ -1183,13 +1190,13 @@ rapier_format_element(rapier_element *element, int *length_p, int is_end)
     
     for(i=0; element->attributes[i];) {
       if(!i)
-        (length)++; /* ' ' between attributes */
-      length += strlen(element->attributes[i]->qname) + 2; /* =" */
-      if(element->attributes[i]->namespace)
-        length += element->attributes[i]->namespace->prefix_length + 1;
+        length++; /* ' ' between attributes */
+      length += element->attributes[i]->qname_length + 2; /* =" */
+      if(element->attributes[i]->nspace)
+        length += element->attributes[i]->nspace->prefix_length + 1;
 
       i++;
-      length += strlen(element->attributes[i]->value) + 1; /* " */
+      length += element->attributes[i]->value_length + 1; /* " */
       i++;
     }
   }
@@ -1209,14 +1216,14 @@ rapier_format_element(rapier_element *element, int *length_p, int is_end)
   *ptr++ = '<';
   if(is_end)
     *ptr++ = '/';
-  if(element->name->namespace) {
-    strncpy(ptr, element->name->namespace->prefix,
-            element->name->namespace->prefix_length);
-    ptr+= element->name->namespace->prefix_length;
+  if(element->name->nspace) {
+    strncpy(ptr, element->name->nspace->prefix,
+            element->name->nspace->prefix_length);
+    ptr+= element->name->nspace->prefix_length;
     *ptr++=':';
   }
   strcpy(ptr, element->name->qname);
-  ptr += strlen(element->name->qname);
+  ptr += element->name->qname_length;
 
   if(!is_end && element->attributes) {
     *ptr++ = ' ';
@@ -1224,25 +1231,24 @@ rapier_format_element(rapier_element *element, int *length_p, int is_end)
       if(!i)
         *ptr++ =' ';
       
-      if(element->attributes[i]->namespace) {
-        length += element->attributes[i]->namespace->prefix_length + 1;
-        strncpy(ptr, element->attributes[i]->namespace->prefix,
-                element->attributes[i]->namespace->prefix_length);
-        ptr+= element->attributes[i]->namespace->prefix_length;
+      if(element->attributes[i]->nspace) {
+        length += element->attributes[i]->nspace->prefix_length + 1;
+        strncpy(ptr, element->attributes[i]->nspace->prefix,
+                element->attributes[i]->nspace->prefix_length);
+        ptr+= element->attributes[i]->nspace->prefix_length;
         *ptr++=':';
       }
     
       strcpy(ptr, element->attributes[i]->qname);
-      ptr += strlen(element->attributes[i]->qname);
+      ptr += element->attributes[i]->qname_length;
       
       *ptr++ ='=';
       *ptr++ ='"';
       
       i++;
       
-      l=strlen(element->attributes[i]->value);
       strcpy(ptr, element->attributes[i]->value);
-      ptr += l;
+      ptr += element->attributes[i]->value_length;
       *ptr++ ='"';
       
       i++;
@@ -1295,7 +1301,7 @@ rapier_xml_start_element_handler(void *user_data,
         /* there is more i.e. xmlns:foo */
         const char *prefix=atts[i][5] ? &atts[i][6] : NULL;
 
-        rapier_start_namespace(user_data, prefix, atts[i+1],
+        rapier_start_namespace(rdf_parser, prefix, atts[i+1],
                                rdf_parser->depth);
         /* Is it ok to zap XML parser array things? */
         atts[i]=NULL; 
@@ -1374,7 +1380,7 @@ rapier_xml_start_element_handler(void *user_data,
       /* Save pointers to some RDF M&S attributes */
 
       /* If RDF M&S namespace-prefixed attributes */
-      if(attribute->namespace && attribute->namespace->is_rdf_ms) {
+      if(attribute->nspace && attribute->nspace->is_rdf_ms) {
         const char *attr_name=attribute->qname;
         int j;
 
@@ -1876,7 +1882,7 @@ rapier_file_uri_to_filename(const char *uri)
 
   /* FIXME: unix version of URI -> filename conversion */
   length=strlen(uri) -5 +1;
-  filename=LIBRDF_MALLOC(cstring, length);
+  filename=(char*)LIBRDF_MALLOC(cstring, length);
   if(!filename)
     return NULL;
 
@@ -1980,7 +1986,7 @@ rapier_new(rapier_uri *base_uri)
   XML_Parser xp;
 #endif
 
-  rdf_parser=LIBRDF_CALLOC(rapier_parser, 1, sizeof(rapier_parser));
+  rdf_parser=(rapier_parser*)LIBRDF_CALLOC(rapier_parser, 1, sizeof(rapier_parser));
 
   if(!rdf_parser)
     return NULL;
@@ -2513,7 +2519,7 @@ rapier_make_uri_from_id(rapier_uri *base_uri, const char *id)
   return new_uri;
 #else
   len=strlen(base_uri)+1+strlen(id)+1;
-  new_uri=LIBRDF_MALLOC(cstring, len);
+  new_uri=(char*)LIBRDF_MALLOC(cstring, len);
   if(!new_uri)
     return NULL;
   sprintf(new_uri, "%s#%s", base_uri, id);
@@ -2543,7 +2549,7 @@ rapier_make_uri(rapier_uri *base_uri, const char *uri_string)
 #else
   /* If URI string is empty, just copy base URI */
   if(!*uri_string) {
-    new_uri=LIBRDF_MALLOC(cstring, base_uri_len+1);
+    new_uri=(char*)LIBRDF_MALLOC(cstring, base_uri_len+1);
     if(!new_uri)
       return NULL;
     strcpy(new_uri, base_uri);
@@ -2552,7 +2558,7 @@ rapier_make_uri(rapier_uri *base_uri, const char *uri_string)
 
   /* If URI string is a fragment #foo, append to base URI */
   if(*uri_string == '#') {
-    new_uri=LIBRDF_MALLOC(cstring, base_uri_len+1+strlen(uri_string)+1);
+    new_uri=(char*)LIBRDF_MALLOC(cstring, base_uri_len+1+strlen(uri_string)+1);
     if(!new_uri)
       return NULL;
     strncpy(new_uri, base_uri, base_uri_len);
@@ -2568,7 +2574,7 @@ rapier_make_uri(rapier_uri *base_uri, const char *uri_string)
    * Need to check URI spec - FIXME
    */
   if(*p && *p == ':') {
-    new_uri=LIBRDF_MALLOC(cstring, strlen(uri_string)+1);
+    new_uri=(char*)LIBRDF_MALLOC(cstring, strlen(uri_string)+1);
     if(!new_uri)
       return NULL;
     strcpy(new_uri, uri_string);
@@ -2583,7 +2589,7 @@ rapier_make_uri(rapier_uri *base_uri, const char *uri_string)
   for(p=base_uri+base_uri_len-1; p > base_uri && *p != '/' && *p != ':'; p--)
     ;
 
-  new_uri=LIBRDF_MALLOC(cstring, (p-base_uri)+1+strlen(uri_string)+1);
+  new_uri=(char*)LIBRDF_MALLOC(cstring, (p-base_uri)+1+strlen(uri_string)+1);
   if(!new_uri)
     return NULL;
   strncpy(new_uri, base_uri, p-base_uri+1);
@@ -2627,7 +2633,7 @@ rapier_process_property_attributes(rapier_parser *rdf_parser,
      * (attribute has a URI) or non-namespaced predicate (attribute
      * is just the XML name)
      */
-    if(attribute->namespace && attribute->namespace->is_rdf_ms && 
+    if(attribute->nspace && attribute->nspace->is_rdf_ms && 
        IS_RDF_MS_CONCEPT(attribute->qname, attribute->uri, li)) {
       /* recognise rdf:li attribute */
       element->last_ordinal++;
@@ -2660,8 +2666,8 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
   rapier_state state;
   int i;
   const char *el_name=element->name->qname;
-  int element_in_rdf_ns=(element->name->namespace && 
-                         element->name->namespace->is_rdf_ms);
+  int element_in_rdf_ns=(element->name->nspace && 
+                         element->name->nspace->is_rdf_ms);
 
 
   if(element->parent) {
@@ -2988,7 +2994,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           int ordinal = 0;
           int attribute_problems=0;
 
-          if(!attribute->namespace || !attribute->namespace->is_rdf_ms) {
+          if(!attribute->nspace || !attribute->nspace->is_rdf_ms) {
             /* No namespace or not rdf: namespace */
             attribute_problems++;
           } else if (*name != '_') {
@@ -3009,7 +3015,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
             }
           }
 
-          if(attribute->namespace && attribute->namespace->is_rdf_ms &&
+          if(attribute->nspace && attribute->nspace->is_rdf_ms &&
              attribute_problems == 1)
             /* Warn if unexpected or bad rdf: attributes seen and not
              * already warned
@@ -3110,7 +3116,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
             /* Append cdata content content */
             if(element->content_cdata) {
               /* Append */
-              char *new_cdata=LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
+              char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
               if(new_cdata) {
                 strncpy(new_cdata, element->content_cdata,
                         element->content_cdata_length);
@@ -3244,8 +3250,8 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
   rapier_state state;
   int finished;
   const char *el_name=element->name->qname;
-  int element_in_rdf_ns=(element->name->namespace && 
-                         element->name->namespace->is_rdf_ms);
+  int element_in_rdf_ns=(element->name->nspace && 
+                         element->name->nspace->is_rdf_ms);
 
 
   state=element->state;
@@ -3365,7 +3371,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
           fmt_buffer=rapier_format_element(element, &fmt_length,1);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
-            char *new_cdata=LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
+            char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
             if(new_cdata) {
               strncpy(new_cdata, element->content_cdata,
                       element->content_cdata_length);
@@ -3379,7 +3385,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         /* Append this cdata content to parent element cdata content */
         if(element->parent->content_cdata) {
           /* Append */
-          char *new_cdata=LIBRDF_MALLOC(cstring, element->parent->content_cdata_length + element->content_cdata_length + 1);
+          char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->parent->content_cdata_length + element->content_cdata_length + 1);
           if(new_cdata) {
             strncpy(new_cdata, element->parent->content_cdata,
                     element->parent->content_cdata_length);
