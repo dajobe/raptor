@@ -302,23 +302,32 @@ propertyList: verb objectList SEMICOLON propertyList
   printf("\n\n");
 #endif
   
-  for(i=0; i<raptor_sequence_size($2); i++) {
-    raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-    raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-    raptor_copy_identifier(i2, $1);
-    t2->predicate=i2;
-    t2->predicate->is_malloced=1;
+  if($2 == NULL) {
+#if RAPTOR_DEBUG > 1  
+    printf(" empty objectList not processed\n");
+#endif
+  } else if($1 && $2) {
+    /* non-empty property list, handle it  */
+    for(i=0; i<raptor_sequence_size($2); i++) {
+      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+      raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      raptor_copy_identifier(i2, $1);
+      t2->predicate=i2;
+      t2->predicate->is_malloced=1;
+    }
+  
+#if RAPTOR_DEBUG > 1  
+    printf(" after substitution objectList=");
+    raptor_sequence_print($2, stdout);
+    printf("\n");
+#endif
   }
 
-#if RAPTOR_DEBUG > 1  
-  printf(" after substitution objectList=");
-  raptor_sequence_print($2, stdout);
-  printf("\n");
-#endif
-
   if($4 == NULL) {
+#if RAPTOR_DEBUG > 1  
     printf(" empty propertyList not copied\n\n");
-  } else {
+#endif
+  } else if ($1 && $2 && $4) {
     while(raptor_sequence_size($4) > 0) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_unshift($4);
       raptor_sequence_push($2, t2);
@@ -352,7 +361,7 @@ propertyList: verb objectList SEMICOLON propertyList
     printf("\n and empty objectList\n");
 #endif
 
-  if($2) {
+  if($1 && $2) {
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
@@ -899,8 +908,8 @@ raptor_n3_parse_start(raptor_parser *rdf_parser)
   raptor_locator *locator=&rdf_parser->locator;
 
   locator->line=1;
-  locator->column=0;
-  locator->byte=0;
+  locator->column= -1; /* No column info */
+  locator->byte= -1; /* No bytes info */
 
   return 0;
 }
