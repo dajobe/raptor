@@ -67,7 +67,8 @@ NT_TEST_FILES=test.nt
 
 NT_OUT_FILES=test.out
 
-NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt bad-04.nt bad-05.nt
+NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt bad-04.nt \
+bad-05.nt bad-06.nt
 
 
 # Used to make N-triples output consistent
