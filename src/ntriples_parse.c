@@ -703,14 +703,14 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
           raptor_parser_error(rdf_parser, "Bad or missing bNodeID after _:");
           goto cleanup;
         } else {
-          char *blank=(char*)RAPTOR_MALLOC(cstring, term_length+1);
+          unsigned char *blank=(unsigned char*)RAPTOR_MALLOC(cstring, term_length+1);
           if(!blank) {
             raptor_parser_fatal_error(rdf_parser, "Out of memory");
             rc=1;
             goto cleanup;
           }
-          strcpy(blank, dest);
-          dest=(char*)raptor_generate_id(rdf_parser, 0, blank);
+          strcpy((char*)blank, (const char*)dest);
+          dest=raptor_generate_id(rdf_parser, 0, blank);
           terms_allocated[i]=1;
         }
 
