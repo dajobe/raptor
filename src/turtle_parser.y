@@ -718,12 +718,19 @@ n3_parser_error(const char *msg)
 
 
 int
-n3_syntax_error(const char c)
+n3_syntax_error(const char *message, ...)
 {
   raptor_parser* rdf_parser=N3_Parser;
-  
+  va_list arguments;
+
   rdf_parser->locator.line=lineno;
-  raptor_parser_error(N3_Parser, "Syntax error at '%c'", c);
+
+  va_start(arguments, message);
+  
+  raptor_parser_error_varargs(N3_Parser, message, arguments);
+
+  va_end(arguments);
+
   return (0);
 }
 
