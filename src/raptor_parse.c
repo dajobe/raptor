@@ -507,6 +507,9 @@ struct raptor_element_s {
   /* how many contained elements seen */
   unsigned int content_element_seen;
 
+  /* STATIC Reified statement identifier */
+  raptor_identifier reified;
+
   /* STATIC Bag identifier */
   raptor_identifier bag;
 
@@ -1231,6 +1234,7 @@ raptor_free_element(raptor_element *element)
   raptor_free_identifier(&element->predicate);
   raptor_free_identifier(&element->object);
   raptor_free_identifier(&element->bag);
+  raptor_free_identifier(&element->reified);
 
   if(element->tail_id)
     LIBRDF_FREE(cstring, (char*)element->tail_id);
@@ -2812,7 +2816,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
                           const char *object_id,
                           const raptor_identifier_type object_type,
                           const raptor_uri_source object_uri_source,
-                          raptor_uri *bag)
+                          raptor_uri *reified)
 {
   raptor_statement *statement=&rdf_parser->statement;
   const char *language=NULL;
@@ -2859,7 +2863,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   /* Generate the statement; or is it fact? */
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  if(!bag)
+  if(!reified)
     return;
 
   /* generate reified statements */
@@ -2868,7 +2872,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
   statement->object_literal_language=NULL;
 
-  statement->subject=bag;
+  statement->subject=reified;
   statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
   statement->predicate=RAPTOR_RDF_type_URI;
@@ -3374,7 +3378,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                 RAPTOR_IDENTIFIER_TYPE_LITERAL,
                                 RAPTOR_URI_SOURCE_NOT_URI,
 
-                                resource_element->bag.uri);
+                                resource_element->reified.uri);
 
   } /* end for ... attributes */
 
@@ -3418,7 +3422,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                               object_type,
                               RAPTOR_URI_SOURCE_NOT_URI,
                               
-                              resource_element->bag.uri);
+                              resource_element->reified.uri);
     if(!object_is_literal)
       RAPTOR_FREE_URI(object_uri);
 #ifdef RAPTOR_IN_REDLAND
@@ -3715,7 +3719,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                     RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                     element->object.uri_source,
 
-                                    element->bag.uri);
+                                    element->reified.uri);
 
         raptor_process_property_attributes(rdf_parser, element, element, 0);
 
@@ -3810,8 +3814,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * FIXME 2 - pick one of these interpretations
          */
 
-        element->bag.id=element->rdf_attr[RDF_ATTR_ID];
-        element->rdf_attr[RDF_ATTR_ID]=NULL;
+        if(element->rdf_attr[RDF_ATTR_ID]) {
+          element->reified.id=element->rdf_attr[RDF_ATTR_ID];
+          element->rdf_attr[RDF_ATTR_ID]=NULL;
+          element->reified.uri=raptor_make_uri_from_id(rdf_parser,  element->reified.id);
+          element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+          element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+        }
+        
 
         element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
 
@@ -3855,25 +3865,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
           /* rdf:resource attribute checked at element close time */
 
-          /* FIXME - what should be done here */
-#if 0
-          if(element->rdf_attr[RDF_ATTR_bagID]) {
-            element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
-            element->rdf_attr[RDF_ATTR_bagID]=NULL;
-            element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
-            element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-            element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
-          }
-#endif
-          
           /*
-           * Assign bag URI here so we don't reify property attributes using 
-           * this bagID 
+           * Assign reified URI here so we don't reify property attributes
+           * using this id
            */
-          if(element->bag.id) {
-            element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
-            element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-            element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+          if(element->reified.id) {
+            element->reified.uri=raptor_make_uri_from_id(rdf_parser,  element->reified.id);
+            element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+            element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
 
           if(element->rdf_attr[RDF_ATTR_resource]) {
@@ -4228,7 +4227,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         object_type,
                                         element->object.uri_source,
 
-                                        element->bag.uri);
+                                        element->reified.uri);
             } else {
               int object_is_literal=(element->content_cdata != NULL); /* FIXME */
               raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
@@ -4250,7 +4249,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         object_type,
                                         element->object.uri_source,
 
-                                        element->bag.uri);
+                                        element->reified.uri);
             }
           
             break;
@@ -4275,7 +4274,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
                                         RAPTOR_URI_SOURCE_NOT_URI,
 
-                                        element->bag.uri);
+                                        element->reified.uri);
             } else {
               raptor_generate_statement(rdf_parser, 
                                         element->parent->subject.uri,
@@ -4293,7 +4292,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
                                         RAPTOR_URI_SOURCE_NOT_URI,
 
-                                        element->bag.uri);
+                                        element->reified.uri);
             }
 
           break;
