@@ -71,24 +71,24 @@ if test "X$LEX" != "X"; then
   if test $FLEX_VERSION_DEC -ge $FLEX_MIN_VERSION_DEC; then
     AC_MSG_RESULT($FLEX_VERSION - OK)
   else
-    AC_MSG_RESULT($FLEX_VERSION - too old to (re-)generate N3 lexer)
+    AC_MSG_RESULT($FLEX_VERSION - too old to (re-)generate N-Triples Plus lexer)
     if test -r $srcdir/n3_lexer.c -a -r $srcdir/n3_lexer.h ; then
-      AC_MSG_WARN(The pre-generated N3 lexer files are present.)
-      AC_MSG_WARN(If you want to change the lexer you will need)
-      AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
-      AC_MSG_WARN(available from http://lex.sourceforge.net/)
+	AC_MSG_WARN(The generated N-Triples Plus lexer files are present.)
+	AC_MSG_WARN(If you want to change the lexer you will need)
+	AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+	AC_MSG_WARN(available from http://lex.sourceforge.net/)
     else
-      AC_MSG_WARN(There are no pre-generated N3 lexer files present.)
-      AC_MSG_WARN(Raptor will NOT build.  Please get)
-      AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
-      AC_MSG_WARN(available from http://lex.sourceforge.net/)
-      AC_MSG_WARN(Alternatively copy the pre-generated N3 lexer files)
-      AC_MSG_WARN(n3_lexer.c and n3_lexer.h from a released version.)
-      AC_MSG_FAILURE(Flex version $FLEX_VERSION is too old)
+	AC_MSG_WARN(There are no generated N-Triples Plus lexer files present.)
+	AC_MSG_WARN(Raptor cannot NOT build these.  Please get)
+	AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+	AC_MSG_WARN(available from http://lex.sourceforge.net/)
+	AC_MSG_WARN(Alternatively copy the generated N-Triples Plus lexer)
+	AC_MSG_WARN(files n3_lexer.c and n3_lexer.h from a released version.)
+	AC_MSG_FAILURE(Flex version $FLEX_VERSION is too old)
     fi
   fi
 else
-  AC_MSG_RESULT(not present - using pre-generated lexer)
+  AC_MSG_RESULT(not present - using pre-generated N-Triples Plus lexer)
 fi
 
 AC_PROG_YACC
