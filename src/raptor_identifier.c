@@ -212,7 +212,7 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
       fputs("<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
     } else if(identifier->literal_datatype) {
       fputc('<', stream);
-      fputs(raptor_uri_as_string(identifier->literal_datatype), stream);
+      fputs((const char*)raptor_uri_as_string(identifier->literal_datatype), stream);
       fputc('>', stream);
     }
   } else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
