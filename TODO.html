@@ -12,8 +12,6 @@
 
 <ul>
 <li>URI retrieval - make sure it chops off the fragment before fetching</li>
-<li>Make 'make check' not die when NFC tests are guaranteed to fail,
-no GNOME glib present.</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Scanning (<tt>rapper --scan</tt>) for <tt>rdf:RDF</tt> in embedded XML does not work (BUG)</li>
 <li>Add a N3 parser (FEATURE)</li>
@@ -32,6 +30,8 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Make 'make check' not die if NFC tests fail, possible if
+no GNOME glib2 is present. (0.9.12)</li>
 <li>Unicode character normalization NFC checks not implemented (0.9.11)</li>
 <li>XML (Exclusive) Canonicalization for XML Literals not implemented (0.9.11)</li>
 <li>libxml2 currently does not do XML attribute normalization i.e.
