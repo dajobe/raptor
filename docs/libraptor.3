@@ -212,6 +212,12 @@ Return the parser name/label for a parser with a given integer
 counter, returning non-zero if no such parser at that offset
 exists.  The counter should start from 0 and be incremented by 1
 until the function returns non-zero.
+.IP "\fBint raptor_syntaxes_enumerate(const unsigned int \fIcounter\fB, const char **name, const char **\fIlabel\fB, const char **\fImime_type\fB, const unsigned char **\fIuri-string\fB)\fR"
+Return the name, label, mime type or URI string (all optional)
+for a parser syntax with a given integer counter, returning non-zero
+if no such syntax parser at that offset exists.
+The counter should start from 0 and be incremented by 1
+until the function returns non-zero.
 .SH "STATEMENT UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging only.
@@ -541,6 +547,9 @@ or NULL if there is none.
 Return non-zero if the raptor_namespace \fInspace\fR is declared
 on the stack; i.e. in scope if this is a stack of XML namespaces.
 .SH API CHANGES
+.SS 1.2.0
+Added \fBraptor_syntaxes_enumerate\fR to get full information
+on syntax mime type and URIs as well as name and label.
 .SS 1.1.0
 Added N-Triples Plus parser (name ntriples-plus)
 .br
