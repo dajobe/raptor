@@ -200,14 +200,9 @@ rm -f missing depcomp
 # automake junk
 rm -rf autom4te*.cache
 
+config_dir
 if test -d $CONFIG_DIR; then
-  for file in config.guess config.sub; do
-    cfile=$CONFIG_DIR/$file
-    if test -f $cfile; then
-      rm -f $file
-      cp -p $cfile $file
-    fi
-  done
+  config_dir=`cd ../$CONFIG_DIR; pwd`
 fi
 
 for coin in `find $SRCDIR -name configure.ac -print`
@@ -218,6 +213,18 @@ do
   else
     echo $program: Processing directory $dir
     ( cd $dir
+
+      if test "X$config_dir" != X; then
+        echo "$program: Updating config.guess and config.sub"
+	for file in config.guess config.sub; do
+	  cfile=$config_dir/$file
+	  if test -f $cfile; then
+	    $DRYRUN rm -f $file
+	    $DRYRUN cp -p $cfile $file
+	  fi
+	done
+      fi
+
       echo "$program: Running libtoolize --copy --automake"
       $DRYRUN rm -f ltmain.sh libtool
       $DRYRUN libtoolize --copy --automake
