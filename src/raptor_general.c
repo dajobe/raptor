@@ -207,7 +207,6 @@ raptor_get_parser_factory (const char *name)
 }
 
 
-
 /*
  * raptor_new_parser - Constructor - create a new raptor_parser object
  * @name: the parser name
@@ -239,11 +238,8 @@ raptor_new_parser(const char *name) {
 
   rdf_parser->failed=0;
 
-  /* Initialise default feature values */
-  rdf_parser->feature_scanning_for_rdf_RDF=0;
-  rdf_parser->feature_assume_is_rdf=0;
-  rdf_parser->feature_allow_non_ns_attributes=1;
-  rdf_parser->feature_allow_other_parseTypes=1;
+  /* Initialise default (lax) feature values */
+  raptor_set_parser_strict(rdf_parser, 0);
 
   if(factory->init(rdf_parser, name)) {
     raptor_free_parser(rdf_parser);
@@ -706,6 +702,13 @@ raptor_set_warning_handler(raptor_parser* parser, void *user_data,
 }
 
 
+/**
+ * raptor_set_statement_handler - Set the statement handler function for the parser
+ * @parser: &raptor_parser parser object
+ * @user_data: user data pointer for callback
+ * @handler: new statement callback function
+ * 
+ **/
 void
 raptor_set_statement_handler(raptor_parser* parser,
                              void *user_data,
@@ -716,8 +719,22 @@ raptor_set_statement_handler(raptor_parser* parser,
 }
 
 
+/**
+ * raptor_set_feature - Set various parser features
+ * @parser: &raptor_parser parser object
+ * @feature: feature to set from enumerated &raptor_feature values
+ * @value: integer feature value
+ * 
+ * feature can be one of:
+ *   RAPTOR_FEATURE_SCANNING                - scan for rdf:RDF in the XML
+ *   RAPTOR_FEATURE_ASSUME_IS_RDF           - assume this is rdf, don't require rdf:RDF
+ *   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES - allow bare 'ID' rather than 'rdf:ID'
+ *   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  - allow user defined rdf:parseType values
+ *   RAPTOR_FEATURE_ALLOW_BAGID             - allow deprecated rdf:bagID
+ **/
 void
-raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
+raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
+{
   switch(feature) {
     case RAPTOR_FEATURE_SCANNING:
       parser->feature_scanning_for_rdf_RDF=value;
@@ -735,19 +752,59 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
       parser->feature_allow_other_parseTypes=value;
       break;
 
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+      parser->feature_allow_bagID=value;
+      break;
+
     default:
       break;
   }
 }
 
 
+/**
+ * raptor_set_parser_strict - Set parser to strict / lax mode
+ * @rdf_parser: &raptor_parse object
+ * @is_strict: Non 0 for strict parsing
+ * 
+ **/
 void
-raptor_parse_abort(raptor_parser *parser) {
+raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
+{
+  is_strict=(is_strict) ? 1 : 0;
+
+  /* Initialise default parser mode */
+  rdf_parser->feature_scanning_for_rdf_RDF=is_strict;
+  rdf_parser->feature_assume_is_rdf=is_strict;
+
+  rdf_parser->feature_allow_non_ns_attributes=!is_strict;
+  rdf_parser->feature_allow_other_parseTypes=!is_strict;
+  rdf_parser->feature_allow_bagID=!is_strict;
+
+}
+
+
+/**
+ * raptor_parse_abort - Abort an ongoing parse
+ * @parser: &raptor_parser parser object
+ * 
+ * Causes any ongoing generation of statements by a parser to be
+ * terminated and the parser to return controlto the application
+ * as soon as draining any existing buffers.
+ *
+ * Most useful inside raptor_parse_file or raptor_parse_uri when
+ * the Raptor library is directing the parsing and when one of the
+ * callback handlers such as as set by raptor_set_statement_handler
+ * requires to return to the main application code.
+ **/
+void
+raptor_parse_abort(raptor_parser *parser)
+{
   parser->failed=1;
 }
 
 
-/* 0.9.9 added */
+/* 0.9.9 added, deprecated */
 void
 raptor_parser_abort(raptor_parser *parser, char *reason) {
   parser->failed=1;
@@ -808,6 +865,12 @@ raptor_print_statement_detailed(const raptor_statement * statement,
 }
 
 
+/**
+ * raptor_print_statement - Print a raptor_statement to a stream
+ * @statement: &raptor_statement object to print
+ * @stream: &FILE* stream
+ *
+ **/
 void
 raptor_print_statement(const raptor_statement * const statement, FILE *stream) 
 {
@@ -883,6 +946,27 @@ raptor_print_ntriples_string(FILE *stream,
 
 
 
+/**
+ * raptor_statement_part_as_counted_string - Turns part of raptor statement into a N-Triples format counted string
+ * @term: &raptor_statement part (subject, predicate, object)
+ * @type: &raptor_statement part type
+ * @literal_datatype: &raptor_statement part datatype
+ * @literal_language: &raptor_statement part language
+ * @len_p: Pointer to location to store length of new string (if not NULL)
+ * 
+ * Turns the given @term into an N-Triples escaped string using all the
+ * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
+ *
+ * The part (subject, predicate, object) of the raptor_statement is
+ * typically passed in as @term, the part type (subject_type,
+ * predicate_type, object_type) is passed in as @type.  When the part
+ * is a literal, the @literal_datatype and @literal_language fields
+ * are set, otherwise NULL (usually object_datatype,
+ * object_literal_language).
+ *
+ * Return value: the new string or NULL on failure.  The length of
+ * the new string is returned in *&len_p if len_p is not NULL.
+ **/
 char*
 raptor_statement_part_as_counted_string(const void *term, 
                                         raptor_identifier_type type,
@@ -988,6 +1072,25 @@ raptor_statement_part_as_counted_string(const void *term,
 }
 
 
+/**
+ * raptor_statement_part_as_string - Turns part of raptor statement into a N-Triples format string
+ * @term: &raptor_statement part (subject, predicate, object)
+ * @type: &raptor_statement part type
+ * @literal_datatype: &raptor_statement part datatype
+ * @literal_language: &raptor_statement part language
+ * 
+ * Turns the given @term into an N-Triples escaped string using all the
+ * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
+ *
+ * The part (subject, predicate, object) of the raptor_statement is
+ * typically passed in as @term, the part type (subject_type,
+ * predicate_type, object_type) is passed in as @type.  When the part
+ * is a literal, the @literal_datatype and @literal_language fields
+ * are set, otherwise NULL (usually object_datatype,
+ * object_literal_language).
+ *
+ * Return value: the new string or NULL on failure.
+ **/
 char*
 raptor_statement_part_as_string(const void *term, 
                                 raptor_identifier_type type,
@@ -1044,6 +1147,12 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
 }
 
 
+/**
+ * raptor_print_statement_as_ntriples - Print a raptor_statement in N-Triples form
+ * @statement: &raptor_statement to print
+ * @stream: &FILE* stream
+ * 
+ **/
 void
 raptor_print_statement_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
