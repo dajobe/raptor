@@ -510,7 +510,7 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
 /**
  * raptor_new - Initialise the Raptor RDF parser
  *
- * OLD API - use raptor_new_parser
+ * OLD API - use raptor_new_parser("rdfxml")
  *
  * Return value: non 0 on failure
  **/
