@@ -48,6 +48,7 @@
 /* prototypes for helper functions */
 static void raptor_delete_parser_factories(void);
 static raptor_parser_factory* raptor_get_parser_factory(const char *name);
+static void raptor_print_statement_part_as_ntriples(FILE* stream, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);
 
 
 /* statics */
@@ -1335,6 +1336,14 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
   }
 
   fputc(']', stream);
+}
+
+
+void
+raptor_print_statement_detailed(const raptor_statement * statement, 
+                                int detailed, FILE *stream) 
+{
+  raptor_print_statement(statement, stream);
 }
 
 
