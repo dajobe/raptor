@@ -967,13 +967,19 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
       authority=NULL;
   }
 
+  /* Cannot do much if there is no path */
+  if(!path || (path && !*path)) {
+    RAPTOR_FREE(cstring, buffer);
+    return NULL;
+  }
+
   /* See raptor_uri_filename_to_uri_string for details of the mapping */
 #ifdef WIN32
   if(authority)
     len+=strlen((const char*)authority)+3;
 
   p=path+1;
-  if(p[1] == '|' || p[1] == ':') {
+  if(*p && (p[1] == '|' || p[1] == ':')) {
     /* Either 
      *   "a:" like in file://a|/... or file://a:/... 
      * or
@@ -999,6 +1005,13 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
       from+= 2;
   }
 
+
+  /* Something is wrong */
+  if(!len) {
+    RAPTOR_FREE(cstring, buffer);
+    return NULL;
+  }
+    
   filename=(char*)RAPTOR_MALLOC(cstring, len+1);
   if(!filename) {
     RAPTOR_FREE(cstring, buffer);
@@ -1299,7 +1312,15 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 
   filename=raptor_uri_uri_string_to_filename((const unsigned char*)uri);
 
-  if (!filename || strcmp(filename, reference_filename))
+  if(filename && !reference_filename) {
+    {
+      fprintf(stderr, "FAIL raptor_uri_uri_string_to_filename URI %s gave filename %s != NULL\n", uri, filename);
+      if(filename)
+        RAPTOR_FREE(cstring, filename);
+      return 1;
+    }
+    }
+  else if (filename && strcmp(filename, reference_filename))
     {
       fprintf(stderr, "FAIL raptor_uri_uri_string_to_filename URI %s gave filename %s != %s\n",
               uri, filename, reference_filename);
@@ -1404,6 +1425,13 @@ main(int argc, char *argv[])
   failures += assert_uri_to_filename ("file:///a:./foo", "a:foo");
   failures += assert_uri_to_filename ("file:///C:/Documents%20and%20Settings/myapp/foo.bat", "C:\\Documents and Settings\\myapp\\foo.bat");
   failures += assert_uri_to_filename ("file:///C:/My%20Documents/%25age.txt", "C:\\My Documents\\%age.txt");
+
+
+  failures += assert_uri_to_filename ("file:c:\\thing",     ":\\thing");
+  failures += assert_uri_to_filename ("file:/c:\\thing",    "c:\\thing");
+  failures += assert_uri_to_filename ("file://c:\\thing",   NULL);
+  failures += assert_uri_to_filename ("file:///c:\\thing",  "c:\\thing");
+  failures += assert_uri_to_filename ("file://localhost/",  NULL);
 
 #else
 
