@@ -56,7 +56,7 @@
 #include "ntriples.h"
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, int object_literal_is_XML, char *object_literal_language, char *object_literal_datatype);
+static void raptor_ntriples_generate_statement(raptor_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, char *object_literal_language, char *object_literal_datatype);
 
 static int raptor_ntriples_unicode_char_to_utf8(unsigned long c, char *output);
 static int raptor_ntriples_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
@@ -216,7 +216,6 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
                                    const raptor_ntriples_term_type predicate_type,
                                    const void *object,
                                    const raptor_ntriples_term_type object_type,
-                                   int object_literal_is_XML,
                                    char *object_literal_language,
                                    char *object_literal_datatype)
 {
@@ -253,9 +252,7 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
     statement->object=object;
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else { 
-    statement->object_type=object_literal_is_XML ?
-                           RAPTOR_IDENTIFIER_TYPE_XML_LITERAL :
-                           RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    statement->object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
     statement->object=object;
     statement->object_literal_language=object_literal_language;
     statement->object_literal_datatype=datatype_uri;
@@ -549,6 +546,9 @@ raptor_ntriples_string(raptor_parser* rdf_parser,
 }
 
 
+static const char *xml_literal_datatype_uri_string="http://www.w3.org/2000/01/rdf-schema#XMLLiteral";
+
+
 static int
 raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len) 
 {
@@ -559,7 +559,6 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
   int term_lengths[3];
   raptor_ntriples_term_type term_types[3];
   int term_length= 0;
-  int object_literal_is_XML=0;
   char *object_literal_language=NULL;
   char *object_literal_datatype=NULL;
 
@@ -768,6 +767,9 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
         break;
 
       case 'x':
+
+        raptor_parser_error(rdf_parser, "Old N-Triples XML using xml\"string\"-lang rather than \"string\"@lang^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral>.");
+
         /* already know we have 'xml"' coming up */
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
         
@@ -787,7 +789,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
           return 1;
 
         /* got XML literal string */
-        object_literal_is_XML=1;
+        object_literal_datatype=(char*)xml_literal_datatype_uri_string;
 
         if(len && (*p == '-' || *p == '@')) {
           if(*p == '-')
@@ -904,7 +906,6 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
                                      terms[0], term_types[0],
                                      terms[1], term_types[1],
                                      terms[2], term_types[2],
-                                     object_literal_is_XML,
                                      object_literal_language,
                                      object_literal_datatype);
 
