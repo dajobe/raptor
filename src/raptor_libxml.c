@@ -199,11 +199,20 @@ raptor_libxml_update_document_locator (raptor_parser *rdf_parser) {
 static void
 raptor_libxml_warning(void *ctx, const char *msg, ...) 
 {
+  raptor_parser* rdf_parser;
   va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   int prefix_length=strlen(xml_warning_prefix);
   int length;
   char *nmsg;
+
+  /* Work around libxml2 bug - sometimes the sax2->error
+   * returns a ctx, sometimes the userdata
+   */
+  if(((raptor_parser*)ctx)->magic == RAPTOR_LIBXML_MAGIC)
+    rdf_parser=(raptor_parser*)ctx;
+  else
+    /* ctx is not userData */
+    rdf_parser=(raptor_parser*)((xmlParserCtxtPtr)ctx)->userData;
 
   va_start(args, msg);
 
@@ -229,11 +238,20 @@ raptor_libxml_warning(void *ctx, const char *msg, ...)
 static void
 raptor_libxml_error(void *ctx, const char *msg, ...) 
 {
+  raptor_parser* rdf_parser;
   va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   int prefix_length=strlen(xml_error_prefix);
   int length;
   char *nmsg;
+
+  /* Work around libxml2 bug - sometimes the sax2->error
+   * returns a ctx, sometimes the userdata
+   */
+  if(((raptor_parser*)ctx)->magic == RAPTOR_LIBXML_MAGIC)
+    rdf_parser=(raptor_parser*)ctx;
+  else
+    /* ctx is not userData */
+    rdf_parser=(raptor_parser*)((xmlParserCtxtPtr)ctx)->userData;
 
   va_start(args, msg);
 
