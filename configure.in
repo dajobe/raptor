@@ -260,7 +260,7 @@ if test $need_libxml = 1; then
   if test $need_libxml_source = 1; then
     SD="$SD libxml"
     (cd libxml && ./configure --cache=../config.cache --enable-shared=no)
-    CPPFLAG="-I$srcdir/libxml $CPPFLAGS"
+    CPPFLAGS="-I$srcdir/libxml $CPPFLAGS"
     LIBS="$LIBS -Llibxml -llibxml"
   else
     LIBS="$LIBS `$XML_CONFIG --libs`"
