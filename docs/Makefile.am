@@ -56,6 +56,8 @@ SUBDIRS= debian tests win32
 
 TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test
 
+CLEANFILES=$(TESTS)
+
 # Use tar, whatever it is called (better be GNU tar though)
 TAR=@TAR@
 
