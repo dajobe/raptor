@@ -81,7 +81,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 %doc %{_mandir}/man1/rapper.1*
 %doc %{_mandir}/man3/libraptor.3*
 
-%{_libdir}/lib*.so.*
+%{_libdir}/libraptor*.so.*
 %{prefix}/bin/rapper
 
 
@@ -93,11 +93,13 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 %doc INSTALL.html
 %doc %{_mandir}/man1/raptor-config.1*
 
-%{_libdir}/lib*.so
-%{_libdir}/*a
-%{_libdir}/pkgconfig/raptor.pc
-%{prefix}/include/*
 %{prefix}/bin/raptor-config
+%{_libdir}/libraptor*.so
+%{_libdir}/libraptor*.a
+%{_libdir}/libraptor*.la
+%{_libdir}/pkgconfig/raptor.pc
+
+%{prefix}/include/*
 
 
 %changelog
