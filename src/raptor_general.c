@@ -1560,7 +1560,7 @@ raptor_xml_start_element_handler(void *user_data,
   element->state=RAPTOR_STATE_UNKNOWN;
   element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
 
-  if(element->parent) {
+  if(!rdf_parser->feature_scanning_for_rdf_RDF && element->parent) {
     if(!element->parent->child_state)
       raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set\n");      
 
@@ -1613,7 +1613,16 @@ raptor_xml_start_element_handler(void *user_data,
   if (rdf_content_type_info[element->content_type].rdf_processing &&
       non_nspaced_count) {
     raptor_parser_warning(rdf_parser, "element %s has non-namspaced parts, skipping.", 
-                          element->parent->name->local_name);
+                          element->name->local_name);
+    element->state=RAPTOR_STATE_SKIPPING;
+    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
+  }
+  
+
+  if (element->rdf_attr[RDF_ATTR_aboutEach] || 
+      element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
+    raptor_parser_warning(rdf_parser, "element %s has aboutEach / aboutEachPrefix, skipping.", 
+                          element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
