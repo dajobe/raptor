@@ -307,6 +307,105 @@ raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer,
 
 
 /**
+ * raptor_stringbuffer_prepend_string_common: - Add a string to the start of a stringbuffer
+ * @stringbuffer: raptor stringbuffer
+ * @string: string
+ * @length: length of string
+ * @do_copy: non-0 to copy the string
+ *
+ * INTERNAL
+ *
+ * If do_copy is non-0, the passed-in string is copied into new memory
+ * otherwise the stringbuffer becomes the owner of the string pointer
+ * and will free it when the stringbuffer is destroyed.
+ *
+ * Return value: non-0 on failure
+ **/
+static int
+raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer, 
+                                          const unsigned char *string, size_t length,
+                                          int do_copy)
+{
+  raptor_stringbuffer_node *node;
+
+  node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
+  if(!node)
+    return 1;
+
+  if(do_copy) {
+    /* Note this copy does not include the \0 character - not needed  */
+    node->string=(unsigned char*)RAPTOR_MALLOC(bytes, length);
+    if(!node->string) {
+      RAPTOR_FREE(raptor_stringbuffer_node, node);
+      return 1;
+    }
+    strncpy((char*)node->string, (const char*)string, length);
+  } else
+    node->string=(unsigned char*)string;
+  node->length=length;
+
+
+  node->next=stringbuffer->head;
+  if(stringbuffer->head)
+    stringbuffer->head=node;
+  else
+    stringbuffer->head=stringbuffer->tail=node;
+
+  if(stringbuffer->string) {
+    RAPTOR_FREE(cstring, stringbuffer->string);
+    stringbuffer->string=NULL;
+  }
+  stringbuffer->length += length;
+
+  return 0;
+}
+
+
+
+
+/**
+ * raptor_stringbuffer_prepend_counted_string: - Add a string to the start of the stringbuffer
+ * @stringbuffer: raptor stringbuffer
+ * @string: string
+ * @length: length of string
+ * @do_copy: non-0 to copy the string
+
+ * If do_copy is non-0, the passed-in string is copied into new memory
+ * otherwise the stringbuffer becomes the owner of the string pointer
+ * and will free it when the stringbuffer is destroyed.
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_stringbuffer_prepend_counted_string(raptor_stringbuffer* stringbuffer, 
+                                           const unsigned char *string, size_t length,
+                                           int do_copy)
+{
+  return raptor_stringbuffer_prepend_string_common(stringbuffer, string, length, do_copy);
+}
+  
+
+/**
+ * raptor_stringbuffer_prepend_string: - Add a string to the start of the stringbuffer
+ * @stringbuffer: raptor stringbuffer
+ * @string: string
+ * @do_copy: non-0 to copy the string
+ * 
+ * If do_copy is non-0, the passed-in string is copied into new memory
+ * otherwise the stringbuffer becomes the owner of the string pointer
+ * and will free it when the stringbuffer is destroyed.
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_stringbuffer_prepend_string(raptor_stringbuffer* stringbuffer, 
+                                   const unsigned char *string, int do_copy)
+{
+  return raptor_stringbuffer_prepend_string_common(stringbuffer, string, strlen((const char*)string), do_copy);
+}
+
+
+/**
  * raptor_stringbuffer_length: - Return the stringbuffer length
  * @stringbuffer: raptor stringbuffer
  * 
@@ -368,7 +467,8 @@ int
 main(int argc, char *argv[]) 
 {
   const char *program=argv[0];
-  const char *items[10] = { "the", "quick" ,"brown", "fox", "jumps", "over", "the", "lazy", "dog", NULL };
+#define TEST_ITEMS_COUNT 9
+  const char *items[TEST_ITEMS_COUNT] = { "the", "quick" ,"brown", "fox", "jumps", "over", "the", "lazy", "dog" };
   const char *items_string = "thequickbrownfoxjumpsoverthelazydog";  
   const size_t items_len=35;
   const char *test_integer_string = "abcd";
@@ -388,13 +488,15 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Creating string buffer\n", program);
 #endif
 
+  /* test appending */
+
   sb=raptor_new_stringbuffer();
   if(!sb) {
     fprintf(stderr, "%s: Failed to create string buffer\n", program);
     exit(1);
   }
 
-  for(i=0; items[i]; i++) {
+  for(i=0; i<TEST_ITEMS_COUNT; i++) {
     int rc;
     len=strlen(items[i]);
 
@@ -423,6 +525,54 @@ main(int argc, char *argv[])
             program, str, items_string);
     exit(1);
   }
+
+  raptor_free_stringbuffer(sb);
+
+  
+  /* test prepending */
+
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "%s: Creating string buffer\n", program);
+#endif
+
+  sb=raptor_new_stringbuffer();
+  if(!sb) {
+    fprintf(stderr, "%s: Failed to create string buffer\n", program);
+    exit(1);
+  }
+
+  for(i=TEST_ITEMS_COUNT-1; i>=0 ; i--) {
+    int rc;
+    len=strlen(items[i]);
+
+#ifdef RAPTOR_DEBUG
+    fprintf(stderr, "%s: Prepending string buffer item '%s'\n", program, items[i]);
+#endif
+  
+    rc=raptor_stringbuffer_prepend_counted_string(sb, (unsigned char*)items[i], len, 1);
+    if(rc) {
+      fprintf(stderr, "%s: Prepending string buffer item %d '%s' failed, returning error %d\n",
+              program, i, items[i], rc);
+      exit(1);
+    }
+  }
+
+  len=raptor_stringbuffer_length(sb);
+  if(len != items_len) {
+    fprintf(stderr, "%s: string buffer len is %d, expected %d\n", program,
+            (int)len, (int)items_len);
+    exit(1);
+  }
+
+  str=raptor_stringbuffer_as_string(sb);
+  if(strcmp((const char*)str, items_string)) {
+    fprintf(stderr, "%s: string buffer contains '%s', expected '%s'\n",
+            program, str, items_string);
+    exit(1);
+  }
+
+
+  /* test adding integers */
 
   for(i=0; i<TEST_INTEGERS_COUNT; i++) {
     raptor_stringbuffer *isb=raptor_new_stringbuffer();
@@ -468,7 +618,7 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  for(i=0; items[i]; i++) {
+  for(i=0; i<TEST_ITEMS_COUNT; i++) {
     raptor_stringbuffer *sbx;
     int rc;
     len=strlen(items[i]);
