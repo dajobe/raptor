@@ -50,6 +50,9 @@ SUBDIRS= \
 
 #TESTS=raptor_cc_test raptor_uri_test
 
+# Use tar, whatever it is called (better be GNU tar though)
+TAR=@TAR@
+
 # Why is this not in the default makefile?
 CC=@CC@
 
