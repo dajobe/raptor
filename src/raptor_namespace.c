@@ -116,6 +116,25 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
 }
 
 
+raptor_namespace_stack *
+raptor_namespaces_new(raptor_uri_handler *uri_handler,
+                      void *uri_context,
+                      raptor_simple_message_handler error_handler,
+                      void *error_data,
+                      int defaults) 
+{
+  raptor_namespace_stack *nstack=(raptor_namespace_stack *)RAPTOR_MALLOC(raptor_namespace_stack, sizeof(raptor_namespace_stack));
+  if(!nstack)
+    return NULL;
+                      
+  raptor_namespaces_init(nstack, 
+                         uri_handler, uri_context,
+                         error_handler, error_data,
+                         defaults);
+  return nstack;
+}
+ 
+
 void
 raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
                                   raptor_namespace *nspace)
@@ -145,7 +164,7 @@ raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack,
 
 
 void
-raptor_namespaces_free(raptor_namespace_stack *nstack) {
+raptor_namespaces_clear(raptor_namespace_stack *nstack) {
   raptor_namespace *ns=nstack->top;
   while(ns) {
     raptor_namespace* next_ns=ns->next;
@@ -162,6 +181,13 @@ raptor_namespaces_free(raptor_namespace_stack *nstack) {
 
   nstack->uri_handler=(raptor_uri_handler*)NULL;
   nstack->uri_context=NULL;
+}
+
+
+void
+raptor_namespaces_free(raptor_namespace_stack *nstack) {
+  raptor_namespaces_clear(nstack);
+  RAPTOR_FREE(raptor_namespace_stack, nstack);
 }
 
 
@@ -429,7 +455,7 @@ main(int argc, char *argv[])
 
   raptor_namespaces_end_for_depth(&namespaces, 0);
 
-  raptor_namespaces_free(&namespaces);
+  raptor_namespaces_clear(&namespaces);
 
 #ifdef RAPTOR_IN_REDLAND
   librdf_free_world(world);
