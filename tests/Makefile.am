@@ -47,9 +47,11 @@ ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf ex-32.rdf ex-33.rdf \
 ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
 ex-41.rdf ex-46.rdf ex-47.rdf ex-48.rdf ex-49.rdf ex-51.rdf \
-ex-53.rdf ex-54.rdf ex-55.rdf \
+ex-53.rdf ex-54.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
 owl-schema.rdf daml-oil.rdf wine.rdf
+
+RDF_MAYFAIL_XML_TEST_FILES=ex-55.rdf
 
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
@@ -76,6 +78,8 @@ ex-41.out ex-42.out ex-43.out ex-44.out ex-45.out ex-46.out ex-47.out \
 ex-48.out ex-49.out ex-51.out ex-53.out ex-54.out ex-55.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out daml-oil.out wine.out
+
+RDF_MAYFAIL_XML_OUT_FILES=ex-55.rdf
 
 RDF_WARN_OUT_FILES=warn-00.out warn-02.out warn-04.out \
 warn-05.out warn-06.out warn-07.out
@@ -107,12 +111,14 @@ OWL_WINE_URI="http://www.w3.org/TR/owl-guide/wine.rdf"
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
+	$(RDF_MAYFAIL_XML_TEST_FILES) \
 	$(RDF_ASSUME_TEST_FILES) \
 	$(RDF_SCAN_TEST_FILES) \
 	$(RDF_BAD_TEST_FILES) \
 	$(RDF_BAD_NFC_TEST_FILES) \
 	$(RDF_WARN_TEST_FILES) \
 	$(RDF_OUT_FILES) \
+	$(RDF_MAYFAIL_XML_OUT_FILES) \
 	$(RDF_ASSUME_OUT_FILES) \
 	$(RDF_SCAN_OUT_FILES) \
 	$(RDF_WARN_OUT_FILES) \
@@ -127,7 +133,7 @@ build-rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
 check-local: build-rapper \
-check-rdf check-assume-rdf check-scan-rdf \
+check-rdf check-mayfail-xml-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
 check-nt check-bad-nt check-turtle
 
@@ -203,6 +209,31 @@ check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
 	  rm -f $$name.res ; \
 	done; \
 	set -e; exit $$result
+
+check-mayfail-xml-rdf: build-rapper $(RDF_MAYFAIL_XML_TEST_FILES)
+	@set +e; \
+	$(ECHO) "Testing rdf/xml (may fail due to XML parser bugs)"; \
+	for test in $(RDF_MAYFAIL_XML_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  baseuri=$(BASE_URI)$$name.rdf; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status != 0 -a $$status != 2 ; then \
+	    $(ECHO) FAILED returned status $$status; \
+	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    if test $$status = 2 ; then \
+	      $(ECHO) "ok with warnings"; grep Warning $$name.err; \
+	    else \
+	      $(ECHO) "ok"; \
+	    fi; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.out $$name.res; \
+	  fi; \
+	  rm -f $$name.res $$name.err; \
+	done; \
+	set -e; exit 0
 
 check-bad-rdf: build-rapper $(RDF_BAD_TEST_FILES)
 	@set +e; result=0; \
