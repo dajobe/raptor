@@ -416,7 +416,7 @@ for writing. The base URI is calculated from the file name.
 .IP "\fBint raptor_serialize_start_to_string(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, void **\fIstring_p\fP, size_t *\fIlength_p\fP)\fR"
 Start to serialize content to a string.  \fIstring_p\fP must point
 to a void* pointer that will be used at the end of serializing to store
-the newly allocated string.  \fIlength_p\fP if not NULL, will
+the newly allocated string.  \fIlength_p\fP if not NULL, it will
 be used to store the length of the new string.
 The serializing is done with optional base URI \fIuri\fR however
 some syntaxes may refuse to serialize without a base URI, such as RDF/XML.
@@ -599,6 +599,11 @@ for libcurl this is the curl_handle.
 .SH "WWW ACTION METHODS"
 .IP "\fBint raptor_www_fetch(raptor_www *www, raptor_uri *uri)\fR"
 Retrieve the given URL, returning non zero on failure.
+.IP "\fBint raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))\fR"
+Retrieve the given URL to a string.  \fIstring_p\fP must point
+to a void* pointer that will be used to store
+the newly allocated string.  \fIlength_p\fP if not NULL, it will
+be used to store the length of the new string.
 .IP "\fBvoid raptor_www_abort(raptor_www *www, const char *reason)\fR"
 Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
@@ -844,6 +849,9 @@ Added new \fBraptor_iostram\fR class
 .br
 Added \fBraptor_stringbuffer_copy_to_string\fR to allow efficient
 copy-out of a constructed string.
+.br
+Added \fBraptor_www_fetch_to_string\fR to allow retrieving of
+web content as a single string.
 .SS 1.3.3
 Added \fBraptor_calloc_memory\fR to provide a calloc inside raptor.
 .br
