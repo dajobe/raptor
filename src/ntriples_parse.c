@@ -511,7 +511,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
   
   p=buffer;
 
-  while(len>0 && isspace(*p)) {
+  while(len>0 && isspace((int)*p)) {
     p++;
     rdf_parser->locator.column++;
     rdf_parser->locator.byte++;
@@ -527,7 +527,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
     return 0;
   
   /* Remove trailing spaces */
-  while(len>0 && isspace(p[len-1])) {
+  while(len>0 && isspace((int)p[len-1])) {
     p[len-1]='\0';
     len--;
   }
@@ -802,13 +802,13 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
     terms[i]=dest; term_lengths[i]=term_length;
 
     /* Whitespace must separate the terms */
-    if(i<2 && !isspace(*p)) {
+    if(i<2 && !isspace((int)*p)) {
       raptor_parser_error(rdf_parser, "Missing whitespace after term '%s'", terms[i]);
       return 1;
     }
 
     /* Skip whitespace after terms */
-    while(len>0 && isspace(*p)) {
+    while(len>0 && isspace((int)*p)) {
       p++;
       len--;
       rdf_parser->locator.column++;
