@@ -791,13 +791,13 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           if(!strcmp((const char*)name, "guid")) {
             /* <guid isPermaLink="..."> */
             if(update_item) {
-              if(!strcmp(attrValue, "true")) {
+              if(!strcmp((const char*)attrValue, "true")) {
                 raptor_uri* guid_uri=raptor_new_uri((const unsigned char*)attrValue);
                 RAPTOR_DEBUG2("    setting guid to URI '%s'\n", attrValue);
                 update_item->uri_fields[RAPTOR_RSS_FIELD_GUID]=guid_uri;
               } else {
                 RAPTOR_DEBUG2("    setting guid to string '%s'\n", attrValue);
-                update_item->fields[RAPTOR_RSS_FIELD_GUID]=attrValue;
+                update_item->fields[RAPTOR_RSS_FIELD_GUID]=(char*)attrValue;
               }
             }
           }

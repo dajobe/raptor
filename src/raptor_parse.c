@@ -1010,7 +1010,7 @@ raptor_parser_set_feature_string(raptor_parser *parser,
 {
   int value_is_string=(raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
-    return raptor_set_feature(parser, feature, atoi(value));
+    return raptor_set_feature(parser, feature, atoi((const char*)value));
 
   return -1;
 }

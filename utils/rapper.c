@@ -321,9 +321,9 @@ main(int argc, char *argv[])
                     parser_feature_value=1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    parser_feature_string_value=&optarg[len+1];
+                    parser_feature_string_value=(unsigned char*)&optarg[len+1];
                   else if(len == arg_len)
-                    parser_feature_string_value="";
+                    parser_feature_string_value=(unsigned char*)"";
                 }
                 break;
               }
@@ -345,9 +345,9 @@ main(int argc, char *argv[])
                     serializer_feature_value=1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    serializer_feature_string_value=&optarg[len+1];
+                    serializer_feature_string_value=(unsigned char*)&optarg[len+1];
                   else if(len == arg_len)
-                    serializer_feature_string_value="";
+                    serializer_feature_string_value=(unsigned char*)"";
                 }
                 break;
               }

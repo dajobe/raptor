@@ -1076,7 +1076,7 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
   if(!string)
     return NULL;
   
-  new_string=RAPTOR_MALLOC(cstring, len+1);
+  new_string=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
   if(!new_string)
     return NULL;
   
