@@ -281,9 +281,22 @@ main(int argc, char *argv[])
             ) {
             syntax_name=optarg;
           } else {
+            int i;
+            
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
                     program, optarg);
-            fprintf(stderr, "Valid arguments are:\n  `rdfxml'        for RDF/XML (default)\n  `ntriples'      for N-Triples \n  `turtle' for Turtle\n  `rss-tag-soup'  for RSS Tag Soup\n");
+            fprintf(stderr, "Valid arguments are:\n");
+            for(i=0; 1; i++) {
+              const char *help_name;
+              const char *help_label;
+              if(raptor_syntaxes_enumerate(i, &help_name, &help_label, NULL, NULL))
+                break;
+              printf("  %-12s for %s", help_name, help_label);
+              if(!i)
+                puts(" (default)");
+              else
+                putchar('\n');
+            }
             usage=1;
             break;
             
