@@ -51,6 +51,9 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>>Errors which happened when fetching WWW content were always
+printed to stderr.  They are now passed to the main error routines
+which allows applications to retrieve them. (1.3.2)</li>
 <li>In lax mode, warns when unknown rdf:parseType values are seen to prevent
 things like 'owl:collection' and 'collection' passing through (1.3.1)</li>
 <li>Turtle parser: a bare ':' and qnames such as 'rdf:_1' now work (1.3.1)</li>
