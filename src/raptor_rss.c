@@ -1807,7 +1807,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
   element=raptor_new_xml_element(qname, NULL, raptor_uri_copy(base_uri));
   rss_serializer->rdf_RDF_element=element;
 
-  raptor_sax2_declare_namespace(element, rss_serializer->rdf_nspace);
+  raptor_xml_declare_namespace(element, rss_serializer->rdf_nspace);
 
   
   /* Now we have a namespace stack, declare the namespaces */
