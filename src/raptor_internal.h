@@ -636,7 +636,7 @@ typedef struct {
 } raptor_triple;
 
 /* n3_parser.y */
-int n3_syntax_error(const char c);
+int n3_syntax_error(const char *message, ...);
 
 
 /* Sequence class */
