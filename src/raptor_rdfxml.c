@@ -3383,6 +3383,13 @@ raptor_expat_update_document_locator (raptor_parser *rdf_parser) {
 
 
 static void
+raptor_xml_parse_finish_factory (raptor_parser_factory* factory) {
+#ifdef RAPTOR_XML_LIBXML
+  xmlCleanupParser();
+#endif
+}
+
+static void
 raptor_xml_parser_register_factory(raptor_parser_factory *factory) 
 {
   factory->context_length     = sizeof(raptor_xml_parser);
@@ -3391,6 +3398,7 @@ raptor_xml_parser_register_factory(raptor_parser_factory *factory)
   factory->terminate = raptor_xml_parse_terminate;
   factory->start     = raptor_xml_parse_start;
   factory->chunk     = raptor_xml_parse_chunk;
+  factory->finish_factory = raptor_xml_parse_finish_factory;
 }
 
 
@@ -3403,13 +3411,6 @@ raptor_init_parser_rdfxml (void) {
                                  "application/rdf+xml",
                                  (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
                                  &raptor_xml_parser_register_factory);
-}
-
-void
-raptor_terminate_parser_rdfxml (void) {
-#ifdef RAPTOR_XML_LIBXML
-  xmlCleanupParser();
-#endif
 }
 
 #ifdef RAPTOR_DEBUG
