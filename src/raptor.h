@@ -346,6 +346,34 @@ RAPTOR_API unsigned char *raptor_namespaces_format(const raptor_namespace *ns, s
 
 typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 
+/* Sequence class */
+typedef struct raptor_sequence_s raptor_sequence;
+typedef void* (raptor_sequence_free_handler(void*));
+typedef void (raptor_sequence_print_handler(void *object, FILE *fh));
+
+/* Create */
+RAPTOR_API raptor_sequence* raptor_new_sequence(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler);
+/* Destroy */
+RAPTOR_API void raptor_free_sequence(raptor_sequence* seq);
+/* Methods */
+RAPTOR_API int raptor_sequence_size(raptor_sequence* seq);
+RAPTOR_API int raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data);
+RAPTOR_API int raptor_sequence_push(raptor_sequence* seq, void *data);
+RAPTOR_API int raptor_sequence_shift(raptor_sequence* seq, void *data);
+RAPTOR_API void* raptor_sequence_get_at(raptor_sequence* seq, int idx);
+RAPTOR_API void* raptor_sequence_pop(raptor_sequence* seq);
+RAPTOR_API void* raptor_sequence_unshift(raptor_sequence* seq);
+
+RAPTOR_API int raptor_compare_strings(const void *a, const void *b);
+
+RAPTOR_API void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, const void *));
+
+/* helper for printing sequences of strings */ 
+RAPTOR_API void raptor_sequence_print_string(char *data, FILE *fh);
+RAPTOR_API void raptor_sequence_print_uri(char *data, FILE *fh);
+RAPTOR_API void raptor_sequence_set_print_handler(raptor_sequence *seq, raptor_sequence_print_handler *print_handler);
+RAPTOR_API void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
+
 #ifdef __cplusplus
 }
 #endif
