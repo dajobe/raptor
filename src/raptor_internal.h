@@ -496,6 +496,7 @@ void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www);
 
+void raptor_www_error_varargs(raptor_www *www, const char *message, va_list arguments);
 void raptor_www_error(raptor_www *www, const char *message, ...);
 
 void raptor_www_curl_init(raptor_www *www);
