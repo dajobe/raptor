@@ -44,14 +44,6 @@
 #include "raptor_internal.h"
 
 
-/*
- * The only methods needed here are:
- *  Create Set
- *  Destroy Set
- *  Check an ID present add it if not, return if added/not
- *
- */
-
 struct raptor_stringbuffer_node_s
 {
   struct raptor_stringbuffer_node_s* next;
@@ -267,6 +259,54 @@ raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer,
 
 
 /**
+ * raptor_stringbuffer_append_stringbuffer: - Add a stringbuffer to the stringbuffer
+ * @stringbuffer: &raptor_stringbuffer
+ * @append: &raptor_stringbuffer to append
+ *
+ * This function removes the content from the appending stringbuffer,
+ * making it empty and appends it to the supplied stringbuffer.
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer, 
+                                        raptor_stringbuffer* append)
+{
+  raptor_stringbuffer_node *node=append->head;
+
+  if(!node)
+    return 0;
+
+  /* move all append nodes to stringbuffer */
+  if(stringbuffer->tail) {
+    stringbuffer->tail->next=node;
+  } else
+    stringbuffer->head=node;
+
+  stringbuffer->tail=append->tail;
+
+  /* adjust our length */
+  stringbuffer->length += append->length;
+  if(stringbuffer->string) {
+    RAPTOR_FREE(cstring, stringbuffer->string);
+    stringbuffer->string=NULL;
+  }
+
+  /* zap append content */
+  append->head=append->tail=NULL;
+  append->length=0;
+  if(append->string) {
+    RAPTOR_FREE(cstring, append->string);
+    append->string=NULL;
+  }
+  
+  return 0;
+}
+
+
+
+
+/**
  * raptor_stringbuffer_length: - Return the stringbuffer length
  * @stringbuffer: raptor stringbuffer
  * 
@@ -339,6 +379,10 @@ main(int argc, char *argv[])
   unsigned char *str;
   size_t len;
   int i=0;
+  raptor_stringbuffer *sb1, *sb2;
+#define TEST_APPEND_COUNT 2
+  const char *test_append_results[TEST_APPEND_COUNT]={ "thebrownjumpsthedog", "quickfoxoverlazy" };
+  const char *test_append_results_total="thebrownjumpsthedogquickfoxoverlazy";
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Creating string buffer\n", program);
@@ -408,9 +452,78 @@ main(int argc, char *argv[])
     raptor_free_stringbuffer(isb);
   }
 
+
 #ifdef RAPTOR_DEBUG
-  fprintf(stderr, "%s: Freeing string buffer\n", program);
+    fprintf(stderr, "%s: Creating two stringbuffers to join\n", program);
 #endif
+
+  sb1=raptor_new_stringbuffer();
+  if(!sb1) {
+    fprintf(stderr, "%s: Failed to create string buffer\n", program);
+    exit(1);
+  }
+  sb2=raptor_new_stringbuffer();
+  if(!sb2) {
+    fprintf(stderr, "%s: Failed to create string buffer\n", program);
+    exit(1);
+  }
+
+  for(i=0; items[i]; i++) {
+    raptor_stringbuffer *sbx;
+    int rc;
+    len=strlen(items[i]);
+
+    sbx=(i % 2) ? sb2 : sb1;
+    rc=raptor_stringbuffer_append_counted_string(sbx, (unsigned char*)items[i], len, 1);
+    if(rc) {
+      fprintf(stderr, "%s: Adding string buffer item %d '%s' failed, returning error %d\n",
+              program, i, items[i], rc);
+      exit(1);
+    }
+  }
+
+  str=raptor_stringbuffer_as_string(sb1);
+  if(strcmp((const char*)str, test_append_results[0])) {
+    fprintf(stderr, "%s: string buffer sb1 contains '%s', expected '%s'\n",
+            program, str, test_append_results[0]);
+    exit(1);
+  }
+  str=raptor_stringbuffer_as_string(sb2);
+  if(strcmp((const char*)str, test_append_results[1])) {
+    fprintf(stderr, "%s: string buffer sb2 contains '%s', expected '%s'\n",
+            program, str, test_append_results[1]);
+    exit(1);
+  }
+
+#ifdef RAPTOR_DEBUG
+    fprintf(stderr, "%s: Appended two stringbuffers\n", program);
+#endif
+
+  if(raptor_stringbuffer_append_stringbuffer(sb1, sb2)) {
+    fprintf(stderr, "%s: Failed to append string buffer\n", program);
+    exit(1);
+  }
+
+  str=raptor_stringbuffer_as_string(sb1);
+  if(strcmp((const char*)str, test_append_results_total)) {
+    fprintf(stderr, "%s: appended string buffer contains '%s', expected '%s'\n",
+            program, str, test_append_results_total);
+    exit(1);
+  }
+  
+  len=raptor_stringbuffer_length(sb2);
+  if(len) {
+    fprintf(stderr, "%s: appended string buffer is length %d, not empty'\n",
+            program, len);
+    exit(1);
+  }
+
+  
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "%s: Freeing string buffers\n", program);
+#endif
+  raptor_free_stringbuffer(sb1);
+  raptor_free_stringbuffer(sb2);
   raptor_free_stringbuffer(sb);
 
   /* keep gcc -Wall happy */
