@@ -327,19 +327,24 @@ main(int argc, char *argv[])
 
   if(usage) {
     fprintf(stderr, "Usage: %s [OPTIONS] <source URI> [base URI]\n", program);
-    fprintf(stderr, "Parse the given file as RDF/XML or NTriples using Raptor\n");
-    fprintf(stderr, HELP_TEXT(h, "help            ", "This message"));
-    fprintf(stderr, HELP_TEXT(n, "ntriples        ", "Parse NTriples format rather than RDF/XML"));
-    fprintf(stderr, HELP_TEXT(i, "input           ", "Set input format to 'rdfxml' (default), 'ntriples' or 'rss-tag-soup'"));
-    fprintf(stderr, HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
+    fprintf(stderr, "Parse RDF content at the source URI into RDF triples using the\n");
+    fprintf(stderr, "Raptor RDF parser toolkit %s\n", raptor_version_string);
+    fprintf(stderr, "\nMain options:\n");
+    fprintf(stderr, HELP_TEXT(h, "help            ", "Print this help, then exit"));
+    fprintf(stderr, HELP_TEXT(i, "input FORMAT    ", "Set input format to one of:"));
+    fprintf(stderr, "    'rdfxml' (default)  RDF/XML\n    'ntriples'          N-Triples\n    'rss-tag-soup'      RSS tag soup\n");
+    fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output format to one of:"));
+    fprintf(stderr, "    'simple' (default)  a simple format\n    'ntriples'          N-Triples\n");
+    fprintf(stderr, HELP_TEXT(m, "mode            ", "Set parser mode - 'lax' (default) or 'strict'"));
+    fprintf(stderr, "\nAdditional options:\n");
     fprintf(stderr, HELP_TEXT(a, "assume          ", "Assume document is rdf/xml (rdf:RDF optional)"));
-    fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
-    fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
-    fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
-    fprintf(stderr, HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
-    fprintf(stderr, HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
     fprintf(stderr, HELP_TEXT(c, "count           ", "Count triples - no output"));
-    fprintf(stderr, HELP_TEXT(m, "mode            ", "Set parser mode - lax (default) or strict"));
+    fprintf(stderr, HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
+    fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
+    fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
+    fprintf(stderr, HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
+    fprintf(stderr, HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
+    fprintf(stderr, "\nReport bugs to <redland-dev@lists.librdf.org>.\n");
     return(usage>1);
   }
 
