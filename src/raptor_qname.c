@@ -163,8 +163,6 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
                       "Found default namespace %s\n", ns->uri);
 #endif
       } else {
-        if(error_handler)
-          error_handler(error_data, "No default namespace defined - cannot expand \"%s\"", name);
 #if RAPTOR_DEBUG > 1
         LIBRDF_DEBUG1(raptor_new_qname,
                       "No default namespace defined\n");
