@@ -100,7 +100,7 @@ NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
 raptor_cc.c : $(srcdir)/raptor_cc.gperf
-	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $? > $@
+	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $< > $@
 
 
 # Some people need a little help ;-)
