@@ -46,10 +46,6 @@
 #include "ntriples.h"
 
 
-#ifndef WIN32
-extern int errno;
-#endif
-
 #ifdef LIBRDF_INTERNAL
 /* if inside Redland */
 
