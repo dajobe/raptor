@@ -103,8 +103,32 @@ to a particular
 The current defined features are:
   \fIFeature                                 Values\fR
   \fBRAPTOR_FEATURE_SCANNING\fR                 Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ASSUME_IS_RDF\fR            Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES\fR  Boolean (non 0 true)
-
+  \fBRAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES\fR   Boolean (non 0 true)
+If the
+.I scanning
+feature is true, then the rdf/xml parser will look for embedded
+rdf:RDF elements inside the XML content, and not require that the
+XML start with an rdf:RDF root element.
+.P
+If the
+.I assume_is_rdf
+feature is true, then the rdf/xml parser will assume the content is
+rdf/xml, not require that rdf:RDF root element, and immediately
+interpret the content as rdf/xml.
+.P
+If the
+.I allow_non_ns_attributes
+feature is true, then the rdf/xml parser will allow
+non-XML namespaced attributes to be accepted
+as well as rdf: namespaced ones.  For example, 'about' and 'ID' will
+be interpreted as if they were rdf:about and rdf:ID respectively.
+.P
+If the
+.I allow_other_parsetypes
+feature is true then the rdf/xml parser will allow unknown parsetypes
+to be present and will pass them on to the user.  Unimplemented at present.
 .SH "STATEMENT METHODS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging.
