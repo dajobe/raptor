@@ -113,7 +113,7 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
 void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
-  raptor_namespaces_free(&xml_writer->content_cdata_namespaces);
+  raptor_namespaces_clear(&xml_writer->content_cdata_namespaces);
   if(xml_writer->content_cdata)
     RAPTOR_FREE(cstring, xml_writer->content_cdata);
 
