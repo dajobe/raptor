@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2002 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -366,10 +366,9 @@ raptor_parse_uri_write_bytes(raptor_www* www,
 {
   raptor_parser* rdf_parser=(raptor_parser*)userdata;
   int len=size*nmemb;
-  
-  int is_end=(len < RAPTOR_READ_BUFFER_SIZE);
-  if(raptor_parse_chunk(rdf_parser, ptr, len, is_end))
-    www->status=1;
+
+  if(raptor_parse_chunk(rdf_parser, ptr, len, 0))
+    raptor_www_abort(www, "Parsing failed");
 }
 
 
@@ -398,9 +397,11 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
 
   raptor_www_fetch(www, uri);
 
+  raptor_parse_chunk(rdf_parser, NULL, 0, 1);
+
   raptor_www_free(www);
 
-  return www->status;
+  return 0;
 }
 
 
@@ -697,6 +698,13 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
 
 
 void
+raptor_parser_abort(raptor_parser *parser, const char *reason) {
+  parser->failed=1;
+}
+
+
+
+void
 raptor_print_statement_detailed(const raptor_statement * statement,
                                 int detailed, FILE *stream) 
 {
@@ -741,7 +749,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->object)
-      RAPTOR_FATAL1(raptor_generate_statement, "Statement has NULL object URI\n");
+      RAPTOR_FATAL1(raptor_print_statement_detailed, "Statement has NULL object URI\n");
 #endif
     fprintf(stream, "%s", 
             raptor_uri_as_string((raptor_uri*)statement->object));
