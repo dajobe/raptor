@@ -240,15 +240,21 @@ main(int argc, char *argv[])
           if(!strcmp(optarg, "help")) {
             int i;
             
-            fprintf(stderr, "%s: Valid features for `" HELP_ARG(f, feature) "' are:\n", program);
-            for(i=0; 1; i++) {
+            fprintf(stderr, "%s: Valid parser features are:\n", program);
+            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
               const char *feature_name;
               const char *feature_label;
-              if(raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label))
-                break;
-              printf("  %-20s  %s\n", feature_name, feature_label);
+              if(!raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label))
+                printf("  %-20s  %s\n", feature_name, feature_label);
             }
-            fputs("\nFeature values are decimal integers 0 or larger, defaulting to 1 if omitted.\n", stderr);
+            fprintf(stderr, "%s: Valid serializer features are:\n", program);
+            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+              const char *feature_name;
+              const char *feature_label;
+              if(!raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label))
+                printf("  %-20s  %s\n", feature_name, feature_label);
+            }
+            fputs("Features are set with `" HELP_ARG(f, feature) " NAME=VALUE or `-f NAME'\nValues are decimal integers 0 or larger, defaulting to 1 if omitted.\n", stderr);
             exit(0);
           } else {
             int i;
