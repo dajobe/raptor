@@ -77,15 +77,7 @@ extern "C" {
 
 #ifdef RAPTOR_XML_LIBXML
 
-#ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
-#else
-#ifdef HAVE_GNOME_XML_PARSER_H
-#include <gnome-xml/parser.h>
-#else
-DIE
-#endif
-#endif
 
 
 /*
