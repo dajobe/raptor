@@ -588,7 +588,7 @@ done
 AC_MSG_CHECKING(WWW libraries available)
 www_libraries_available=
 if test $have_libcurl = 1; then
-  www_libraries_available="$www_libraries_available $LIBCURL_VERSION"
+  www_libraries_available="$www_libraries_available libcurl $LIBCURL_VERSION"
 fi
 if test $have_libxml = 1; then
   if test $need_libxml_source = 1; then
