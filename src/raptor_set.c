@@ -385,7 +385,7 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
 #ifdef RAPTOR_DEBUG
 void
 raptor_set_stats_print(raptor_set* set, FILE *stream) {
-  fprintf(stream, "hits: %d misses: %d\n", set->hits, set->misses);
+  fprintf(stream, "set hits: %d misses: %d\n", set->hits, set->misses);
 }
 #endif
 
