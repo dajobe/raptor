@@ -20,7 +20,7 @@
 
 RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-03.rdf ex-04.rdf ex-05.rdf \
 ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf ex-11.rdf ex-12.rdf \
-ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf ex-19.rdf \
+ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf \
 ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf ex-32.rdf ex-33.rdf \
 ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
@@ -28,13 +28,17 @@ ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
 
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf
 
+RDF_ASSUME_TEST_FILES=ex-19.rdf
+
 RDF_OUT_FILES=ex-00.out ex-01.out ex-02.out ex-03.out ex-04.out ex-05.out \
 ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
-ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out ex-19.out \
+ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out \
 ex-20.out ex-21.out ex-22.out ex-23.out ex-24.out ex-25.out ex-26.out \
 ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out ex-32.out ex-33.out \
 ex-34.out ex-35.out ex-36.out ex-37.out ex-38.out ex-39.out ex-40.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out
+
+RDF_ASSUME_OUT_FILES=ex-19.out
 
 NT_TEST_FILES=test.nt
 
@@ -49,8 +53,10 @@ RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
+	$(RDF_ASSUME_TEST_FILES) \
 	$(RDF_BAD_TEST_FILES) \
 	$(RDF_OUT_FILES) \
+	$(RDF_ASSUME_OUT_FILES) \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES)
 
@@ -58,8 +64,12 @@ EXTRA_DIST = \
 $(top_builddir)/rdfdump:
 	@(cd .. ; $(MAKE) rdfdump)
 
-check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
-	@-result=0; for test in $(RDF_TEST_FILES); do \
+check-local: check-rdf check-assume-rdf check-bad-rdf check-nt
+
+check-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
+	@-result=0; \
+	echo "Testing legal rdf/xml"; \
+	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
 	    baseuri=$(RDF_NS_URI); \
@@ -77,6 +87,28 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
+	exit $$result
+
+check-assume-rdf: $(top_builddir)/rdfdump $(RDF_ASSUME_TEST_FILES)
+	@-result=0; \
+	echo "Testing rdf/xml known by context"; \
+	for test in $(RDF_ASSUME_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  baseuri=$(BASE_URI)$$test; \
+	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rdfdump -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    echo ok; \
+	  else \
+	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res ; \
+	done; \
+	exit $$result
+
+check-bad-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
+	@-result=0; \
+	echo "Testing bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$test; \
@@ -91,6 +123,11 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
+	exit $$result
+
+check-nt: $(top_builddir)/rdfdump $(NT_TEST_FILES)
+	@-result=0; \
+	echo "Testing N-Triples"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
