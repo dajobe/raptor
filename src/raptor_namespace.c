@@ -201,6 +201,19 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 }
 
 
+int
+raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, 
+                                     const raptor_namespace *nspace)
+{
+  raptor_namespace* ns;
+  
+  for(ns=nstack->top; ns ; ns=ns->next)
+    if(ns == nspace)
+      return 1;
+  return 0;
+}
+
+
 raptor_namespace*
 raptor_namespace_new(raptor_namespace_stack *nstack,
                      const unsigned char *prefix, 
@@ -302,6 +315,37 @@ raptor_namespace_local_name_to_uri(const raptor_namespace *ns,
                                    const unsigned char *local_name)
 {
   return ns->nstack->uri_handler->new_uri_from_uri_local_name(ns->nstack->uri_context, ns->uri, (const char*)local_name);
+}
+
+
+unsigned char *
+raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
+{
+  size_t uri_length;
+  const char *uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
+  size_t length=8+uri_length+ns->prefix_length; /* 8=length of [[xmlns=""] */
+  unsigned char *buffer;
+
+  if(length_p)
+    *length_p=length;
+
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, length+1);
+  if(!buffer)
+    return NULL;
+  
+  if(!uri_length) {
+    if(ns->prefix)
+      sprintf(buffer, "xmlns:%s=\"\"", ns->prefix);
+    else
+      strcpy(buffer, "xmlns=\"\"");
+  } else {
+    if(ns->prefix)
+      sprintf(buffer, "xmlns:%s=\"%s\"", ns->prefix, uri_string);
+    else
+      sprintf(buffer, "xmlns=\"%s\"", uri_string);
+  }
+
+  return buffer;
 }
 
 
