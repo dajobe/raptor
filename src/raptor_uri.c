@@ -89,13 +89,7 @@ raptor_default_new_uri(void *context, const char *uri_string)
 raptor_uri*
 raptor_new_uri(const char *uri_string) 
 {
-  void *context=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  context=world;
-  return librdf_new_uri(context, uri_string);
-#else
-  return raptor_default_new_uri(context, uri_string);
-#endif
+  return (*raptor_current_uri_handler->new_uri)(raptor_current_uri_context, uri_string);
 }
 
 
@@ -120,12 +114,7 @@ raptor_default_new_uri_from_uri_local_name(void *context,
 raptor_uri*
 raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name)
 {
-  void *context=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri_from_uri_local_name(context, uri, local_name);
-#else
-  return raptor_default_new_uri_from_uri_local_name(context, uri, local_name);
-#endif
+  return (*raptor_current_uri_handler->new_uri_from_uri_local_name)(raptor_current_uri_context, uri, local_name);
 }
 
 
@@ -156,13 +145,7 @@ raptor_default_new_uri_relative_to_base(void *context,
 raptor_uri*
 raptor_new_uri_relative_to_base(raptor_uri *base_uri, const char *uri_string) 
 {
-  void *context=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri_relative_to_base(context, base_uri, uri_string);
-#else
-  return raptor_default_new_uri_relative_to_base(context,
-                                                 base_uri, uri_string);
-#endif
+  return (*raptor_current_uri_handler->new_uri_relative_to_base)(raptor_current_uri_context, base_uri, uri_string);
 }
 
 
@@ -212,14 +195,7 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
 raptor_uri*
 raptor_new_uri_for_rdf_concept(const char *name) 
 {
-  void *context=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  librdf_uri *uri;
-  librdf_get_concept_by_name(context, rdf_parser->world, 1, name, &uri, NULL);
-  return librdf_new_uri_from_uri(uri);
-#else
-  return raptor_default_new_uri_for_rdf_concept(context, name);
-#endif
+  return (*raptor_current_uri_handler->new_uri_for_rdf_concept)(raptor_current_uri_context, name);
 }
 
 
@@ -233,12 +209,7 @@ raptor_default_free_uri(void *context, raptor_uri *uri)
 void
 raptor_free_uri(raptor_uri *uri)
 {
-  void *context=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_free_uri(context, uri);
-#else
-  return raptor_default_free_uri(context, uri);
-#endif
+  return (*raptor_current_uri_handler->free_uri)(raptor_current_uri_context, uri);
 }
 
 
@@ -252,13 +223,7 @@ raptor_default_uri_equals(void *context, raptor_uri* uri1, raptor_uri* uri2)
 int
 raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 {
-  void *context=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  context=world;
-  return librdf_uri_equals(context, uri1, uri2);
-#else
-  return raptor_default_uri_equals(context, uri1, uri2);
-#endif
+  return (*raptor_current_uri_handler->uri_equals)(raptor_current_uri_context, uri1, uri2);
 }
 
 
@@ -300,12 +265,7 @@ raptor_default_uri_copy(void *context, raptor_uri *uri)
 raptor_uri*
 raptor_uri_copy(raptor_uri *uri) 
 {
-  void *context=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri_from_uri(context, uri);
-#else
-  return raptor_default_uri_copy(context, uri);
-#endif
+  return (*raptor_current_uri_handler->uri_copy)(raptor_current_uri_context, uri);
 }
 
 
