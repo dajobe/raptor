@@ -1,3 +1,18 @@
+2005-02-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize_rdfxmla.c
+	 (raptor_rdfxmla_emit_subject_list_items,
+	 raptor_rdfxmla_emit_subject_properties,
+	 raptor_rdfxmla_emit_subject, raptor_rdfxmla_serialize_start):
+	 Copy base URIs only when they are not NULL.
+	(raptor_rdfxmla_serialize_statement): Handle predicate type
+	RAPTOR_IDENTIFIER_TYPE_RESOURCE as an alternative.
+
+2005-02-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xml.c (raptor_valid_xml_ID): Just return an error status,
+	don't error out here.
+
 2005-02-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* Makefile.am: Add n3_lexer.l n3_parser.y to EXTRA_DIST otherwise
