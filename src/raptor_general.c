@@ -467,7 +467,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
 
   raptor_www_free(www);
 
-  return 0;
+  return rdf_parser->failed;
 }
 
 
