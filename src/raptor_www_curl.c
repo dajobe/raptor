@@ -68,10 +68,10 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
   if(www->failed)
     return 0;
   
-  if(!strncmp(ptr, "Content-Type: ", 14)) {
+  if(!strncmp((char*)ptr, "Content-Type: ", 14)) {
     int len=bytes-16;
     char *type_buffer=(char*)malloc(len+1);
-    strncpy(type_buffer, ptr+14, len);
+    strncpy(type_buffer, (char*)ptr+14, len);
     type_buffer[len]='\0';
     www->type=type_buffer;
     if(www->content_type)
