@@ -496,6 +496,7 @@ RAPTOR_API int raptor_iostream_write_counted_string(raptor_iostream *iostr, cons
 RAPTOR_API size_t raptor_iostream_get_bytes_written_count(raptor_iostream *iostr);
 RAPTOR_API int raptor_iostream_write_decimal(raptor_iostream* iostr, int integer);
 RAPTOR_API int raptor_iostream_format_hexadecimal(raptor_iostream* iostr, unsigned int integer, int width);
+RAPTOR_API int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor_stringbuffer *sb);
 
 /* Parser and Serializer features */
 RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
