@@ -1040,7 +1040,7 @@ raptor_xml_start_element_handler(void *user_data,
   if (element->rdf_attr[RDF_ATTR_aboutEach] || 
       element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
     raptor_parser_warning(rdf_parser, "element '%s' has aboutEach / aboutEachPrefix, skipping.", 
-                          raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+                          raptor_sax2_element_get_element(sax2_element)->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
@@ -1854,7 +1854,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(!raptor_sax2_element_get_element(sax2_element)->uri) {
           /* We cannot handle this */
           raptor_parser_warning(rdf_parser, "Using node element '%s' without a namespace is forbidden.", 
-                                raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+                                raptor_sax2_element_get_element(sax2_element)->local_name);
           raptor_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
