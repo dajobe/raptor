@@ -338,7 +338,7 @@ RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 
 /* Utility functions */
 RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const unsigned char *string, const char delim);
-RAPTOR_API RAPTOR_DEPRECATED unsigned char* raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, unsigned char *src, int len, size_t *dest_lenp);
+RAPTOR_API RAPTOR_DEPRECATED unsigned char* raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, const unsigned char *src, int len, size_t *dest_lenp);
 RAPTOR_API RAPTOR_DEPRECATED const char* raptor_ntriples_term_as_string(raptor_ntriples_term_type term);
 RAPTOR_API int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
 RAPTOR_API void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
