@@ -31,6 +31,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 
 /* Raptor includes */
 #include "raptor.h"
@@ -175,23 +178,28 @@ raptor_www_error(raptor_www *www, const char *message, ...)
 }
 
   
-#if defined(RAPTOR_WWW_LIBXML) || defined(RAPTOR_WWW_LIBGHTTP)
+#if defined(RAPTOR_WWW_LIBXML) || defined(RAPTOR_WWW_LIBGHTTP) || defined(RAPTOR_WWW_NONE)
 
 static int 
 raptor_www_file_fetch(raptor_www *www, const char *url) 
 {
-  char *filename=raptor_uri_uri_string_to_filename(url);
+  char *filename;
   FILE *fh;
 /* FIXME */
 #define BUFFER_SIZE 256
   unsigned char buffer[BUFFER_SIZE];
   int status=0;
-  
-  if(!filename)
+ 
+  filename=raptor_uri_uri_string_to_filename(url);
+  if(!filename) {
+    raptor_www_error(www, "Not a file: URI");
     return 1;
+  }
 
   fh=fopen(filename, "rb");
   if(!fh) {
+    raptor_www_error(www, "file '%s' open failed - %s",
+                     filename, strerror(errno));
     free(filename);
     www->status_code=404;
     return 1;
@@ -199,16 +207,14 @@ raptor_www_file_fetch(raptor_www *www, const char *url)
 
   while(!feof(fh)) {
     int len=fread(buffer, 1, BUFFER_SIZE, fh);
-    if(len<1) {
-      if(len<0)
-        status=1;
-      break;
-    }
-
     www->total_bytes += len;
 
     if(www->write_bytes)
       www->write_bytes(www->userdata, buffer, len, 1);
+
+    if(len < BUFFER_SIZE)
+      break;
+
   }
   fclose(fh);
 
@@ -229,6 +235,10 @@ raptor_www_fetch(raptor_www *www, const char *url)
   www->locator.uri=raptor_new_uri(url);
   www->locator.line= -1;
   www->locator.column= -1;
+
+#ifdef RAPTOR_WWW_NONE
+  return raptor_www_file_fetch(www, url);
+#endif
 
 #ifdef RAPTOR_WWW_LIBCURL
   return raptor_www_curl_fetch(www, url);
