@@ -16,7 +16,7 @@ use File::Basename;
 my $progname=basename $0;
 
 my $raptor_title="Raptor RDF Parser Toolkit";
-my $redland_title="Redland RDF Library";
+my $redland_title="Redland RDF Application Framework";
 
 die "USAGE: $progname OUTPUT-FILE\n" if @ARGV < 1;
 
