@@ -41,7 +41,7 @@ SUBDIRS= tests win32 examples
 TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
-raptor_uri_win32_test raptor_iostream_test
+raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
@@ -229,6 +229,9 @@ raptor_nfc_test: $(srcdir)/raptor_nfc_test.c libraptor.la
 
 raptor_iostream_test: $(srcdir)/raptor_iostream.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_iostream.c libraptor.la $(LIBS)
+
+raptor_xml_writer_test: $(srcdir)/raptor_xml_writer.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml_writer.c libraptor.la $(LIBS)
 
 
 
