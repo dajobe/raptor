@@ -27,14 +27,14 @@
 TEST_FILES=test-00.ttl test-01.ttl test-02.ttl test-03.ttl \
 test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl \
 test-09.ttl test-10.ttl test-11.ttl test-12.ttl test-13.ttl \
-test-14.ttl test-15.ttl test-16.ttl \
+test-14.ttl test-15.ttl test-16.ttl test-17.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
 rdfq-results.ttl
 
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl \
 bad-04.ttl bad-05.ttl bad-06.ttl bad-07.ttl bad-08.ttl bad-09.ttl \
-bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl
+bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl
 
 TEST_WARN_FILES=
 
