@@ -175,7 +175,7 @@ raptor_nfc_get_code_flag (unsigned long c)
 #ifdef RAPTOR_DEBUG_NFC_CHECK
 #define RAPTOR_NFC_CHECK_FAIL(char, reason) do { fprintf(stderr, "%s:%d:%s: NFC check failed on U+%04lX: " reason "\n", __FILE__, __LINE__, __func__, char); return 0; } while(0)
 #else
-#define RAPTOR_NFC_CHECK_FAIL(char, reason)
+#define RAPTOR_NFC_CHECK_FAIL(char, reason) return 0
 #endif
 
 
@@ -218,6 +218,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
       if(error)
         *error=offset;
       RAPTOR_NFC_CHECK_FAIL(unichar, "UTF-8 decoding error");
+      break;
     }
     string += unichar_len; 
     offset += unichar_len;
@@ -267,6 +268,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo and prev class > current");
+          break;
         }
         
         /* check 2 - previous class same as current - always OK */
@@ -280,6 +282,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo and combiners check failed");
+          break;
         }
         
         prev_class = combining_class;
@@ -294,6 +297,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "NoRe at start");
+          break;
         }
 
         combining_class=raptor_nfc_get_class(unichar);
@@ -301,6 +305,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "NoRe and prev class > current");
+          break;
         }
 
         prev_class=combining_class;
@@ -314,6 +319,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "COMB at start");
+          break;
         }
         
         /* Only perform combining check when both are in range */
@@ -322,6 +328,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "COMB and combiners check failed");
+          break;
         }
         
         /* class 0 can be a prev_char */
@@ -340,6 +347,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "hAng at start");
+          break;
         }
         break;
 
@@ -352,6 +360,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "haNG at start");
+          break;
         }
         break;
 
