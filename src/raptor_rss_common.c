@@ -879,6 +879,9 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
   
   ret = xmlTextReaderRead(rss_parser->reader);
   while (ret == 1) {
+    if(rdf_parser->failed)
+      break;
+    
     raptor_rss_parser_processNode(rdf_parser);
     ret = xmlTextReaderRead(rss_parser->reader);
   }
@@ -888,6 +891,9 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
   
   xmlFreeParserInputBuffer(rss_parser->input);
   rss_parser->input=NULL;
+
+  if(rdf_parser->failed)
+    return 1;
 
   /* turn strings into URIs, move things around if needed */
   raptor_rss_insert_identifiers(rdf_parser);
