@@ -68,37 +68,18 @@
 int
 raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 {
-  unsigned char c;
   int len=strlen((const char*)string);
-  int unichar_len;
-  unsigned long unichar;
-  int pos;
-  
-  for(pos=0; (c=*string); string++, len--, pos++) {
+#ifdef RAPTOR_XML_1_1
+  #define XML_ID_XML_VERSION 11
+#else
+  #define XML_ID_XML_VERSION 10
+#endif
 
-    /* It is unicode */
-    
-    unichar_len=raptor_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
-    if(unichar_len < 0 || unichar_len > len) {
-      raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
-      return 0;
-    }
-  
-    unichar_len=raptor_utf8_to_unicode_char(&unichar,
-                                            (const unsigned char *)string, len);
-    if(!pos) {
-      /* start of xml:ID name */
-      if(!raptor_unicode_is_namestartchar(unichar))
-        return 0;
-    } else {
-      /* rest of xml:ID name */
-      if(!raptor_unicode_is_namechar(unichar))
-        return 0;
-    }
-
-    unichar_len--; /* since loop does len-- */
-    string += unichar_len; len -= unichar_len;
+  if(!raptor_xml_name_check(string, len, XML_ID_XML_VERSION)) {
+    raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
+    return 0;
   }
+
   return 1;
 }
 
@@ -327,6 +308,63 @@ raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
   }
 
   return 0;
+}
+
+
+/**
+ * raptor_xml_name_check - Check a string is a legal XML name (and legal UTF8)
+ * @string: UTF-8 name string
+ * @length: length of string
+ * @xml_version: XML version
+ * 
+ * xml_version is either 10 (for XML 1.0) or 11 for (XML 1.1). Any
+ * other version fails.
+ *
+ * Return value: Non 0 if the string is a legal XML name
+ **/
+int
+raptor_xml_name_check(const unsigned char *string, size_t length,
+                      int xml_version)
+{
+  int pos;
+
+  if(xml_version != 10 && xml_version != 11)
+    return 0;
+
+  for(pos=0; length > 0; pos++) {
+    unsigned long unichar=0;
+
+    int unichar_len=raptor_utf8_to_unicode_char(&unichar, string, length);
+    if(unichar_len < 0 || unichar_len > length)
+      return 0;
+
+    if(unichar < 0 || unichar > 0x10ffff)
+      return 0;
+  
+    if(!pos) {
+      /* start of name */
+      if(xml_version == 10) {
+        if(!raptor_unicode_is_xml10_namestartchar(unichar))
+          return 0;
+      } else {
+        if(!raptor_unicode_is_xml11_namestartchar(unichar))
+          return 0;
+      }
+    } else {
+      /* rest of name */
+      if(xml_version == 10) {
+        if(!raptor_unicode_is_xml10_namechar(unichar))
+          return 0;
+      } else {
+        if(!raptor_unicode_is_xml11_namechar(unichar))
+          return 0;
+      }
+    }
+
+    string += unichar_len;
+    length -= unichar_len;
+  }
+  return 1;
 }
 
 
