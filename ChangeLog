@@ -1,3 +1,8 @@
+2005-01-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Recognise old RSS 0.9 namespace and handle it as
+	rss 1.0.
+
 2005-01-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_serialize.c:
