@@ -759,7 +759,7 @@ raptor_xml_start_element_handler(void *user_data,
       }
       
       if(!strcmp((char*)atts[i], "xml:base")) {
-        raptor_uri* xuri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)atts[i+1]);
+        raptor_uri* xuri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), atts[i+1]);
 
         xml_base=raptor_new_uri_for_xmlbase(xuri);
         raptor_free_uri(xuri);
@@ -1231,12 +1231,12 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
   RAPTOR_RDF_rest_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("rest");
   RAPTOR_RDF_nil_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("nil");
 
-  RAPTOR_DAML_NS_URI(rdf_xml_parser)=raptor_new_uri("http://www.daml.org/2001/03/daml+oil#");
+  RAPTOR_DAML_NS_URI(rdf_xml_parser)=raptor_new_uri((const unsigned char*)"http://www.daml.org/2001/03/daml+oil#");
 
-  RAPTOR_DAML_List_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), "List");
-  RAPTOR_DAML_first_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser) ,"first");
-  RAPTOR_DAML_rest_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), "rest");
-  RAPTOR_DAML_nil_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), "nil");
+  RAPTOR_DAML_List_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), (const unsigned char *)"List");
+  RAPTOR_DAML_first_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser) ,(const unsigned char *)"first");
+  RAPTOR_DAML_rest_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), (const unsigned char *)"rest");
+  RAPTOR_DAML_nil_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), (const unsigned char *)"nil");
 
   RAPTOR_RDF_RDF_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("RDF");
   RAPTOR_RDF_Description_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("Description");
@@ -1722,7 +1722,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                    raptor_element *resource_element,
                                    raptor_identifier *property_node_identifier)
 {
-  int i;
+  unsigned int i;
   raptor_identifier *resource_identifier;
 
   resource_identifier=property_node_identifier ? property_node_identifier : &resource_element->subject;
@@ -1870,7 +1870,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
 
     property_uri=raptor_new_uri_for_rdf_concept(rdf_attr_info[i].name);
     
-    object_uri=object_is_literal ? (raptor_uri*)value : raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)value);
+    object_uri=object_is_literal ? (raptor_uri*)value : raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), value);
     object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     
     raptor_generate_statement(rdf_parser, 
@@ -2072,7 +2072,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             break;
           }
         } else if (element->rdf_attr[RDF_ATTR_about]) {
-          element->subject.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)element->rdf_attr[RDF_ATTR_about]);
+          element->subject.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (const unsigned char*)element->rdf_attr[RDF_ATTR_about]);
           RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_about]);
           element->rdf_attr[RDF_ATTR_about]=NULL;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -2405,7 +2405,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          *   http://www.w3.org/TR/rdf-syntax-grammar/#literalPropertyElt 
          */
         if (element->rdf_attr[RDF_ATTR_datatype]) {
-          element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)element->rdf_attr[RDF_ATTR_datatype]);
+          element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (const unsigned char*)element->rdf_attr[RDF_ATTR_datatype]);
           RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_datatype]); 
           element->rdf_attr[RDF_ATTR_datatype]=NULL; 
         }
@@ -2809,7 +2809,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             if(element->object.type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
               if(element->rdf_attr[RDF_ATTR_resource]) {
                 element->object.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser),
-                                                    (char*)element->rdf_attr[RDF_ATTR_resource]);
+                                                    (const unsigned char*)element->rdf_attr[RDF_ATTR_resource]);
                 RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_resource]);
                 element->rdf_attr[RDF_ATTR_resource]=NULL;
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -2990,7 +2990,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         case RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL:
             {
               unsigned char *buffer;
-              int length;
+              unsigned int length;
               
               if(rdf_xml_parser->xml_writer)
                 buffer=raptor_xml_writer_as_string(rdf_xml_parser->xml_writer, &length);
@@ -3307,7 +3307,7 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_uri* base_uri=raptor_inscope_base_uri(rdf_parser);
   char *item;
-  char *base_uri_string;
+  unsigned char *base_uri_string;
   size_t base_uri_string_len;
   size_t id_len;
   size_t len;
@@ -3317,7 +3317,7 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   id_len=strlen((const char*)id);
   
   /* Storing ID + ' ' + base-uri-string + '\0' */
-  len=id_len+1+strlen(base_uri_string)+1;
+  len=id_len+1+strlen((const char*)base_uri_string)+1;
 
   item=(char*)RAPTOR_MALLOC(cstring, len);
   if(!item)
@@ -3325,7 +3325,7 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
 
   strcpy(item, (const char*)id);
   item[id_len]=' ';
-  strcpy(item+id_len+1, base_uri_string); /* strcpy for end '\0' */
+  strcpy(item+id_len+1, (const char*)base_uri_string); /* strcpy for end '\0' */
   
   rc=raptor_set_add(rdf_xml_parser->id_set, item, len);
   RAPTOR_FREE(cstring, item);

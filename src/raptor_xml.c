@@ -260,9 +260,9 @@ main(int argc, char *argv[])
 {
   char *program=argv[0];
   struct tv {
-    const unsigned char *string;
+    const char *string;
     const char quote;
-    const unsigned char *result;
+    const char *result;
   };
   struct tv *t;
   struct tv test_values[]={
@@ -309,15 +309,15 @@ main(int argc, char *argv[])
   int failures=0;
 
   for(i=0; (t=&test_values[i]) && t->string; i++) {
-    const unsigned char *utf8_string=t->string;
+    const unsigned char *utf8_string=(const unsigned char*)t->string;
     int quote=t->quote;
-    size_t utf8_string_len=strlen(utf8_string);
+    size_t utf8_string_len=strlen((const char*)utf8_string);
     unsigned char *xml_string;
     int xml_string_len=0;
 
     xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
                                             NULL, 0, quote, NULL, NULL);
-    xml_string=(char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
+    xml_string=(unsigned char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
     
     xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
                                             xml_string, xml_string_len, quote,
@@ -330,7 +330,7 @@ main(int argc, char *argv[])
       failures++;
       continue;
     }
-    if(strcmp(xml_string, t->result)) {
+    if(strcmp((const char*)xml_string, t->result)) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
               program);
       raptor_bad_string_print(utf8_string, stderr);

@@ -82,9 +82,9 @@
  *
  */
 
-static const char * const raptor_xml_uri="http://www.w3.org/XML/1998/namespace";
-static const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
-static const char * const raptor_rdf_schema_uri=RAPTOR_RDF_SCHEMA_URI;
+static const unsigned char * const raptor_xml_uri=(const unsigned char *)"http://www.w3.org/XML/1998/namespace";
+static const unsigned char * const raptor_rdf_ms_uri=(const unsigned char *)RAPTOR_RDF_MS_URI;
+static const unsigned char * const raptor_rdf_schema_uri=(const unsigned char *)RAPTOR_RDF_SCHEMA_URI;
 
 
 /*
@@ -199,10 +199,11 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
     raptor_namespace* ns=nstack->top;
     raptor_namespace* next=ns->next;
 
+#ifndef STANDALONE
     RAPTOR_DEBUG3(raptor_namespaces_end_for_depth,
                   "namespace prefix %s depth %d\n",
                   ns->prefix ? (char*)ns->prefix : "(default)", depth);
-
+#endif
     raptor_free_namespace(ns);
 
     nstack->top=next;
@@ -263,11 +264,13 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
   if(ns_uri_string && !*ns_uri_string)
     ns_uri_string=NULL;
 
+#ifndef STANDALONE
   RAPTOR_DEBUG4(raptor_namespaces_start_namespace,
                 "namespace prefix %s uri %s depth %d\n",
                 prefix ? (char*)prefix : "(default)", 
                 ns_uri_string ? (char*)ns_uri_string : "(none)",
                 depth);
+#endif
 
   if(prefix && !ns_uri_string) {
     /* failed to find namespace - now what? */
@@ -290,7 +293,7 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
 
   p=(unsigned char*)ns+sizeof(raptor_namespace);
   if(ns_uri_string) {
-    ns->uri=(*nstack->uri_handler->new_uri)(nstack->uri_context, (const char*)ns_uri_string);
+    ns->uri=(*nstack->uri_handler->new_uri)(nstack->uri_context, ns_uri_string);
     if(!ns->uri) {
       RAPTOR_FREE(raptor_namespace, ns);
       return NULL;
@@ -327,7 +330,7 @@ raptor_namespace_copy(raptor_namespace_stack *nstack,
 {
   raptor_namespace *new_ns;
 
-  char *uri_string=(*nstack->uri_handler->uri_as_string)(nstack->uri_context, ns->uri);
+  unsigned char *uri_string=(*nstack->uri_handler->uri_as_string)(nstack->uri_context, ns->uri);
 
   new_ns=raptor_new_namespace(nstack, ns->prefix, uri_string, new_depth);
   if(!new_ns)
@@ -366,7 +369,7 @@ unsigned char *
 raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 {
   size_t uri_length;
-  const char *uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
+  const unsigned char *uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
   size_t length=8+uri_length+ns->prefix_length; /* 8=length of [[xmlns=""] */
   unsigned char *buffer;
 
@@ -382,14 +385,14 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
   
   if(!uri_length) {
     if(ns->prefix)
-      sprintf(buffer, "xmlns:%s=\"\"", ns->prefix);
+      sprintf((char*)buffer, "xmlns:%s=\"\"", ns->prefix);
     else
-      strcpy(buffer, "xmlns=\"\"");
+      strcpy((char*)buffer, "xmlns=\"\"");
   } else {
     if(ns->prefix)
-      sprintf(buffer, "xmlns:%s=\"%s\"", ns->prefix, uri_string);
+      sprintf((char*)buffer, "xmlns:%s=\"%s\"", ns->prefix, uri_string);
     else
-      sprintf(buffer, "xmlns=\"%s\"", uri_string);
+      sprintf((char*)buffer, "xmlns=\"%s\"", uri_string);
   }
 
   return buffer;
@@ -400,7 +403,7 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 void
 raptor_namespace_print(FILE *stream, raptor_namespace* ns) 
 {
-  const char *uri_string=raptor_uri_as_string(ns->uri);
+  const unsigned char *uri_string=raptor_uri_as_string(ns->uri);
   if(ns->prefix)
     fprintf(stream, "%s:%s", ns->prefix, uri_string);
   else

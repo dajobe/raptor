@@ -51,9 +51,9 @@
 
 
 /* Prototypes for local functions */
-static int raptor_uri_is_absolute (const char *uri);
+static int raptor_uri_is_absolute (const unsigned char *uri);
 
-static void raptor_uri_parse (const char *uri, char *buffer, size_t len, char **scheme, char **authority, char **path, char **query, char **fragment);
+static void raptor_uri_parse (const unsigned char *uri, unsigned char *buffer, size_t len, unsigned char **scheme, unsigned char **authority, unsigned char **path, unsigned char **query, unsigned char **fragment);
 
 
 static raptor_uri_handler *raptor_uri_current_uri_handler;
@@ -77,14 +77,14 @@ raptor_uri_get_handler(raptor_uri_handler **handler, void **context)
 
 
 static raptor_uri*
-raptor_default_new_uri(void *context, const char *uri_string) 
+raptor_default_new_uri(void *context, const unsigned char *uri_string) 
 {
-  char *p;
+  unsigned char *p;
   size_t len;
   
   /* If uri_string is "file:path-to-file", turn it into a correct file:URI */
   if(raptor_uri_is_file_uri(uri_string)) {
-    char *fragment;
+    unsigned char *fragment;
     char *filename;
     raptor_uri* uri=NULL;
 
@@ -93,12 +93,12 @@ raptor_default_new_uri(void *context, const char *uri_string)
       uri=(raptor_uri*)raptor_uri_filename_to_uri_string(filename);
       /* If there was a fragment, reattach it to the new URI */
       if(fragment) {
-        char *new_fragment;
+        unsigned char *new_fragment;
         raptor_uri* new_uri;
 
-        new_fragment=RAPTOR_MALLOC(cstring, strlen(fragment)+2);
+        new_fragment=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)fragment)+2);
         *new_fragment='#';
-        strcpy(new_fragment+1, fragment);
+        strcpy((char*)new_fragment+1, (const char*)fragment);
         new_uri=raptor_new_uri_relative_to_base(uri, new_fragment);
         RAPTOR_FREE(cstring, new_fragment);
         raptor_free_uri(uri);
@@ -112,17 +112,17 @@ raptor_default_new_uri(void *context, const char *uri_string)
       return uri;
   }
 
-  len=strlen(uri_string);
-  p=(char*)RAPTOR_MALLOC(raptor_uri, len+1);
+  len=strlen((const char*)uri_string);
+  p=(unsigned char*)RAPTOR_MALLOC(raptor_uri, len+1);
   if(!p)
     return NULL;
-  strcpy((char*)p, uri_string);
+  strcpy((char*)p, (const char*)uri_string);
   return (raptor_uri*)p;
 }
 
 
 raptor_uri*
-raptor_new_uri(const char *uri_string) 
+raptor_new_uri(const unsigned char *uri_string) 
 {
   return (*raptor_uri_current_uri_handler->new_uri)(raptor_uri_current_uri_context, uri_string);
 }
@@ -131,23 +131,23 @@ raptor_new_uri(const char *uri_string)
 static raptor_uri*
 raptor_default_new_uri_from_uri_local_name(void *context,
                                            raptor_uri *uri,
-                                           const char *local_name)
+                                           const unsigned char *local_name)
 {
   int uri_length=strlen((char*)uri);
-  char *p=(char*)RAPTOR_MALLOC(cstring, 
-                               uri_length + strlen(local_name) + 1);
+  unsigned char *p=(unsigned char*)RAPTOR_MALLOC(cstring, 
+                                                 uri_length + strlen((const char*)local_name) + 1);
   if(!p)
     return NULL;
   
-  strcpy(p, (char*)uri);
-  strcpy(p + uri_length, local_name);
+  strcpy((char*)p, (const char*)uri);
+  strcpy((char*)p + uri_length, (const char*)local_name);
   
   return (raptor_uri*)p;
 }
 
 
 raptor_uri*
-raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name)
+raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_name)
 {
   return (*raptor_uri_current_uri_handler->new_uri_from_uri_local_name)(raptor_uri_current_uri_context, uri, local_name);
 }
@@ -156,10 +156,10 @@ raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name)
 static raptor_uri*
 raptor_default_new_uri_relative_to_base(void *context,
                                         raptor_uri *base_uri,
-                                        const char *uri_string) 
+                                        const unsigned char *uri_string) 
 {
   raptor_uri* new_uri;
-  int new_uri_len=strlen((char*)base_uri)+strlen(uri_string)+1;
+  size_t new_uri_len=strlen((const char*)base_uri)+strlen((const char*)uri_string)+1;
 
   new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len+1);
   if(!new_uri)
@@ -171,14 +171,15 @@ raptor_default_new_uri_relative_to_base(void *context,
     return new_uri;
   }
 
-  raptor_uri_resolve_uri_reference((char*)base_uri, uri_string,
-                                   (char*)new_uri, new_uri_len);
+  raptor_uri_resolve_uri_reference((const unsigned char*)base_uri, uri_string,
+                                   (unsigned char*)new_uri, new_uri_len);
   return new_uri;
 }
 
 
 raptor_uri*
-raptor_new_uri_relative_to_base(raptor_uri *base_uri, const char *uri_string) 
+raptor_new_uri_relative_to_base(raptor_uri *base_uri, 
+                                const unsigned char *uri_string) 
 {
   return (*raptor_uri_current_uri_handler->new_uri_relative_to_base)(raptor_uri_current_uri_context, base_uri, uri_string);
 }
@@ -188,7 +189,7 @@ raptor_uri*
 raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id) 
 {
   raptor_uri *new_uri;
-  char *local_name;
+  unsigned char *local_name;
   int len;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -197,11 +198,11 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id)
 
   /* "#id\0" */
   len=1+strlen((char*)id)+1;
-  local_name=(char*)RAPTOR_MALLOC(cstring, len);
+  local_name=(unsigned char*)RAPTOR_MALLOC(cstring, len);
   if(!local_name)
     return NULL;
   *local_name='#';
-  strcpy(local_name+1, (char*)id);
+  strcpy((char*)local_name+1, (char*)id);
   new_uri=raptor_new_uri_relative_to_base(base_uri, local_name);
   RAPTOR_FREE(cstring, local_name);
   return new_uri;
@@ -262,7 +263,7 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 
 
 static int
-raptor_uri_is_absolute (const char *uri)
+raptor_uri_is_absolute (const unsigned char *uri)
 {
   int result = 0;
 
@@ -303,31 +304,31 @@ raptor_uri_copy(raptor_uri *uri)
 }
 
 
-static char*
+static unsigned char*
 raptor_default_uri_as_string(void *context, raptor_uri *uri)
 {
-  return (char*)uri;
+  return (unsigned char*)uri;
 }
 
 
-char*
+unsigned char*
 raptor_uri_as_string(raptor_uri *uri) 
 {
   return (*raptor_uri_current_uri_handler->uri_as_string)(raptor_uri_current_uri_context, uri);
 }
 
 
-static char*
+static unsigned char*
 raptor_default_uri_as_counted_string(void *context, raptor_uri *uri,
                                      size_t* len_p)
 {
   if(len_p)
     *len_p=strlen((char*)uri);
-  return (char*)uri;
+  return (unsigned char*)uri;
 }
 
 
-char*
+unsigned char*
 raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p) 
 {
   return (*raptor_uri_current_uri_handler->uri_as_counted_string)(raptor_uri_current_uri_context, uri, len_p);
@@ -359,12 +360,13 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
  * 
  **/
 static void
-raptor_uri_parse (const char *uri, char *buffer, size_t len,
-                  char **scheme, char **authority, 
-                  char **path, char **query, char **fragment)
+raptor_uri_parse (const unsigned char *uri, unsigned char *buffer, size_t len,
+                  unsigned char **scheme, unsigned char **authority, 
+                  unsigned char **path, unsigned char **query, 
+                  unsigned char **fragment)
 {
-  const char *s = NULL;
-  char *d = NULL;
+  const unsigned char *s = NULL;
+  unsigned char *d = NULL;
 
   *scheme = NULL;
   *authority = NULL;
@@ -442,44 +444,48 @@ raptor_uri_parse (const char *uri, char *buffer, size_t len,
 }
 
 
-static char*
-raptor_uri_construct(const char *scheme, const char *authority, const char *path, const char *query, const char *fragment)
+static unsigned char*
+raptor_uri_construct(const unsigned char *scheme, 
+                     const unsigned char *authority, 
+                     const unsigned char *path, 
+                     const unsigned char *query, 
+                     const unsigned char *fragment)
 {
-  int len=0;
-  char *p;
+  size_t len=0;
+  unsigned char *p;
   
   if(scheme)
-    len+= strlen(scheme)+1; /* : */
+    len+= strlen((const char*)scheme)+1; /* : */
   if(authority)
-    len+= 2 + strlen(authority); /* // */
+    len+= 2 + strlen((const char*)authority); /* // */
   if(path)
-    len+= strlen(path);
+    len+= strlen((const char*)path);
   if(fragment)
-    len+= 1 + strlen(fragment); /* # */
+    len+= 1 + strlen((const char*)fragment); /* # */
   if(query)
-    len+= 1 + strlen(query); /* ? */
-  p=(char*)RAPTOR_MALLOC(cstring, len+1);
+    len+= 1 + strlen((const char*)query); /* ? */
+  p=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
   if(!p)
     return NULL;
   *p='\0';
   
   if(scheme) {
-    strcpy(p, scheme);
-    strcat(p,":");
+    strcpy((char*)p, (const char*)scheme);
+    strcat((char*)p,":");
   }
   if(authority) {
-    strcat(p, "//");
-    strcat(p, authority);
+    strcat((char*)p, "//");
+    strcat((char*)p, (const char*)authority);
   }
   if(path)
-    strcat(p, path);
+    strcat((char*)p, (const char*)path);
   if(fragment) {
-    strcat(p, "#");
-    strcat(p, fragment);
+    strcat((char*)p, "#");
+    strcat((char*)p, (const char*)fragment);
   }
   if(query) {
-    strcat(p, "?");
-    strcat(p, query);
+    strcat((char*)p, "?");
+    strcat((char*)p, (const char*)query);
   }
 
   return p;
@@ -495,36 +501,36 @@ raptor_uri_construct(const char *scheme, const char *authority, const char *path
  * 
  **/
 void
-raptor_uri_resolve_uri_reference (const char *base_uri,
-                                  const char *reference_uri,
-                                  char *buffer, size_t length)
+raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
+                                  const unsigned char *reference_uri,
+                                  unsigned char *buffer, size_t length)
 {
-  char *base_buffer=NULL;
-  char *reference_buffer=NULL;
-  char *path_buffer=NULL;
+  unsigned char *base_buffer=NULL;
+  unsigned char *reference_buffer=NULL;
+  unsigned char *path_buffer=NULL;
   int reference_buffer_len;
   int base_uri_len;
   
-  char *base_scheme;
-  char *base_authority;
-  char *base_path;
-  char *base_query;
-  char *base_fragment;
+  unsigned char *base_scheme;
+  unsigned char *base_authority;
+  unsigned char *base_path;
+  unsigned char *base_query;
+  unsigned char *base_fragment;
 
-  char *reference_scheme;
-  char *reference_authority;
-  char *reference_path;
-  char *reference_query;
-  char *reference_fragment;
+  unsigned char *reference_scheme;
+  unsigned char *reference_authority;
+  unsigned char *reference_path;
+  unsigned char *reference_query;
+  unsigned char *reference_fragment;
 
-  char *result_scheme = NULL;
-  char *result_authority = NULL;
-  char *result_path = NULL;
+  unsigned char *result_scheme = NULL;
+  unsigned char *result_authority = NULL;
+  unsigned char *result_path = NULL;
 
   *buffer = '\0';
 
-  reference_buffer_len=strlen(reference_uri)+1;
-  reference_buffer=(char*)RAPTOR_MALLOC(cstring, reference_buffer_len);
+  reference_buffer_len=strlen((const char*)reference_uri)+1;
+  reference_buffer=(unsigned char*)RAPTOR_MALLOC(cstring, reference_buffer_len);
   if(!reference_buffer)
     goto resolve_tidy;
   
@@ -535,8 +541,8 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
   /* is reference URI "" or "#frag"? */
   if (!reference_scheme && !reference_authority
       && !reference_path && !reference_query) {
-    char *p;
-    char c;
+    unsigned char *p;
+    unsigned char c;
 
     /* Copy up to '\0' or '#' */
     for(p=buffer; (c= *base_uri) && c != '#'; p++, base_uri++)
@@ -545,21 +551,21 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
     
     if (reference_fragment) {
       *p++='#';
-      strcpy(p, reference_fragment);
+      strcpy((char*)p, (const char*)reference_fragment);
     }
     goto resolve_tidy;
   }
   
   /* reference has a scheme - is an absolute URI */
   if (reference_scheme) {
-    strcpy (buffer, reference_uri);
+    strcpy ((char*)buffer, (const char*)reference_uri);
     goto resolve_tidy;
   }
   
 
   /* now the reference URI must be schemeless, i.e. relative */
-  base_uri_len=strlen(base_uri);
-  base_buffer=(char*)RAPTOR_MALLOC(cstring, base_uri_len+1);
+  base_uri_len=strlen((const char*)base_uri);
+  base_buffer=(unsigned char*)RAPTOR_MALLOC(cstring, base_uri_len+1);
   if(!base_buffer)
     goto resolve_tidy;
 
@@ -587,32 +593,32 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
     result_path = reference_path;
   } else {
     /* need to resolve relative path */
-    char *p = NULL;
+    unsigned char *p = NULL;
 
     /* Make result path be path buffer; initialise it to empty */
     int path_buffer_len=1;
 
     if(base_path)
-      path_buffer_len +=strlen(base_path);
+      path_buffer_len +=strlen((const char*)base_path);
     else {
-      base_path="/"; /* static, but copied and not free()d  */
+      base_path=(unsigned char*)"/"; /* static, but copied and not free()d  */
       path_buffer_len++;
     }
 
     if(reference_path)
-      path_buffer_len +=strlen(reference_path);
+      path_buffer_len +=strlen((const char*)reference_path);
 
-    path_buffer=(char*)RAPTOR_MALLOC(cstring, path_buffer_len);
+    path_buffer=(unsigned char*)RAPTOR_MALLOC(cstring, path_buffer_len);
     if(!path_buffer)
       goto resolve_tidy;
     result_path = path_buffer;
     path_buffer[0] = '\0';
     
-    p = strrchr (base_path, '/');
+    p = (unsigned char*)strrchr((const char*)base_path, '/');
     if (p) {
       /* Found a /, copy everything before that to path_buffer */
-      char *s = base_path;
-      char *d = path_buffer;
+      unsigned char *s = base_path;
+      unsigned char *d = path_buffer;
       
       while (s <= p)
         *d++ = *s++;
@@ -621,21 +627,21 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
     }
 
     if (reference_path)
-      strcat (path_buffer, reference_path);
+      strcat ((char*)path_buffer, (const char*)reference_path);
 
 
     /* NEW BLOCK - only ANSI C allows this */
     {
       /* remove all occurrences of "./" */
       
-      char *p2 = path_buffer;
-      char *s = path_buffer;
+      unsigned char *p2 = path_buffer;
+      unsigned char *s = path_buffer;
       
       while (*s) {
         if (*s == '/') {
 
           if (p2 == (s - 1) && *p2 == '.') {
-            char *d = p2;
+            unsigned char *d = p2;
             
             ++s;
             
@@ -666,12 +672,12 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
     {
       /* remove all occurrences of "<segment>/../" */
       
-      char *s = path_buffer;
+      unsigned char *s = path_buffer;
       /* These form a small stack of path components */
-      char *p3 = NULL; /* current component */
-      char *p2 = NULL; /* previous component */
-      char *p0 = NULL; /* before p2 */
-      char last_char='\0';
+      unsigned char *p3 = NULL; /* current component */
+      unsigned char *p2 = NULL; /* previous component */
+      unsigned char *p0 = NULL; /* before p2 */
+      unsigned char last_char='\0';
       
       for (;*s; last_char=*s++) {
 
@@ -704,7 +710,7 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
             
           /* If the current one isn't '..' */
           if (*p3 != '.' && *(p3 + 1) != '.') {
-            char *d = p3;
+            unsigned char *d = p3;
             
             ++s;
             
@@ -753,26 +759,26 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
   resolve_end:
   
   if (result_scheme) {
-    strcpy (buffer, result_scheme);
-    strcat (buffer, ":");
+    strcpy ((char*)buffer, (const char*)result_scheme);
+    strcat ((char*)buffer, ":");
   }
   
   if (result_authority) {
-    strcat (buffer, "//");
-    strcat (buffer, result_authority);
+    strcat ((char*)buffer, "//");
+    strcat ((char*)buffer, (const char*)result_authority);
   }
   
   if (result_path)
-    strcat (buffer, result_path);
+    strcat ((char*)buffer, (const char*)result_path);
   
   if (reference_query) {
-    strcat (buffer, "?");
-    strcat (buffer, reference_query);
+    strcat ((char*)buffer, "?");
+    strcat ((char*)buffer, (const char*)reference_query);
   }
   
   if (reference_fragment) {
-    strcat (buffer, "#");
-    strcat (buffer, reference_fragment);
+    strcat ((char*)buffer, "#");
+    strcat ((char*)buffer, (const char*)reference_fragment);
   }
 
   resolve_tidy:
@@ -795,10 +801,10 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
  *
  * Return value: A newly allocated string with the URI or NULL on failure
  **/
-char *
+unsigned char *
 raptor_uri_filename_to_uri_string(const char *filename) 
 {
-  char *buffer;
+  unsigned char *buffer;
 #ifdef WIN32
   const char *from;
   char *to;
@@ -826,7 +832,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * that turn into file:///server/share/blah
  * using the above algorithm.
  */
-  len+=strlen(filename)+2; /* filename + // */
+  len+=strlen((const char*)filename)+2; /* filename + // */
   if(*filename != '\\')
     len+=2; /* relative filename - add ./ */
 
@@ -844,10 +850,10 @@ raptor_uri_filename_to_uri_string(const char *filename)
     strcat(path, filename);
     filename=(const char*)path;
   }
-  len+=strlen(filename);
+  len+=strlen((const char*)filename);
 #endif
 
-  buffer=(char*)RAPTOR_MALLOC(cstring, len);
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len);
   if(!buffer)
     return NULL;
 
@@ -872,8 +878,8 @@ raptor_uri_filename_to_uri_string(const char *filename)
   }
   *to='\0';
 #else
-  strcpy(buffer, "file://");
-  strcpy(buffer+7, filename);
+  strcpy((char*)buffer, "file://");
+  strcpy((char*)buffer+7, (const char*)filename);
 #endif
   
   return buffer;
@@ -894,39 +900,39 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
-raptor_uri_uri_string_to_filename_fragment(const char *uri_string,
-                                           char **fragment_p) 
+raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
+                                           unsigned char **fragment_p) 
 {
-  char *buffer;
+  unsigned char *buffer;
   char *filename;
-  int uri_string_len=strlen(uri_string);
+  int uri_string_len=strlen((const char*)uri_string);
   size_t len=0;
-  char *scheme, *authority, *path, *query, *fragment;
+  unsigned char *scheme, *authority, *path, *query, *fragment;
 #ifdef WIN32
-  char *p, *from, *to;
+  unsigned char *p, *from, *to;
   int is_relative_path=0;
 #endif
 
-  buffer=(char*)RAPTOR_MALLOC(cstring, uri_string_len+1);
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, uri_string_len+1);
   if(!buffer)
     return NULL;
   
   raptor_uri_parse (uri_string, buffer, uri_string_len,
                     &scheme, &authority, &path, &query, &fragment);
 
-  if(!scheme || raptor_strcasecmp(scheme, "file")) {
+  if(!scheme || raptor_strcasecmp((const char*)scheme, "file")) {
     RAPTOR_FREE(cstring, buffer);
     return NULL;
   }
 
-  if(authority && !raptor_strcasecmp(authority, "localhost")) {
+  if(authority && !raptor_strcasecmp((const char*)authority, "localhost")) {
     authority=NULL;
   }
 
   /* See raptor_uri_filename_to_uri_string for details of the mapping */
 #ifdef WIN32
   if(authority) {
-    len+=strlen(authority);
+    len+=strlen((const char*)authority);
     p=strchr(authority, '|');
     if(!p)
       p=strchr(authority, ':');
@@ -951,7 +957,7 @@ raptor_uri_uri_string_to_filename_fragment(const char *uri_string,
     len++;/* for \ between authority and path */
   len--; /* for removing leading / off path */
 #endif
-  len+=strlen(path);
+  len+=strlen((const char*)path);
 
 
   filename=(char*)RAPTOR_MALLOC(cstring, len+1);
@@ -990,14 +996,14 @@ raptor_uri_uri_string_to_filename_fragment(const char *uri_string,
   }
   *to='\0';
 #else
-  strcpy(filename, path);
+  strcpy((char*)filename, (const char*)path);
 #endif
 
   if(fragment_p) {
     if(fragment) {
-      len=strlen(fragment);
-      *fragment_p=(char*)RAPTOR_MALLOC(cstring, len+1);
-      strcpy(*fragment_p, fragment);
+      len=strlen((const char*)fragment);
+      *fragment_p=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      strcpy((char*)*fragment_p, (const char*)fragment);
     } else
       *fragment_p=NULL;
   }
@@ -1018,7 +1024,7 @@ raptor_uri_uri_string_to_filename_fragment(const char *uri_string,
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
-raptor_uri_uri_string_to_filename(const char *uri_string) 
+raptor_uri_uri_string_to_filename(const unsigned char *uri_string) 
 {
   return raptor_uri_uri_string_to_filename_fragment(uri_string, NULL);
 }
@@ -1031,8 +1037,8 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
  * Return value: Non zero if URI string is a file: URI
  **/
 int
-raptor_uri_is_file_uri(const char* uri_string) {
-  return raptor_strncasecmp(uri_string, "file:", 5)==0;
+raptor_uri_is_file_uri(const unsigned char* uri_string) {
+  return raptor_strncasecmp((const char*)uri_string, "file:", 5)==0;
 }
 
 
@@ -1048,18 +1054,18 @@ raptor_uri_is_file_uri(const char* uri_string) {
 raptor_uri*
 raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 {
-  char *uri_string=raptor_uri_as_string(old_uri);
-  char *buffer;
-  int buffer_len=strlen(uri_string)+1;
-  char *scheme;
-  char *authority;
-  char *path;
-  char *query;
-  char *fragment;
-  char *new_uri_string;
+  unsigned char *uri_string=raptor_uri_as_string(old_uri);
+  unsigned char *buffer;
+  size_t buffer_len=strlen((const char*)uri_string)+1;
+  unsigned char *scheme;
+  unsigned char *authority;
+  unsigned char *path;
+  unsigned char *query;
+  unsigned char *fragment;
+  unsigned char *new_uri_string;
   raptor_uri* new_uri;
 
-  buffer=(char*)RAPTOR_MALLOC(cstring, buffer_len);
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, buffer_len);
   if(!buffer)
     return NULL;
   
@@ -1067,7 +1073,7 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
                     &scheme, &authority, &path, &query, &fragment);
 
   if(!path)
-    path="/";
+    path=(unsigned char*)"/";
   
   new_uri_string=raptor_uri_construct(scheme, authority, path, NULL, NULL);
   RAPTOR_FREE(cstring, buffer);
@@ -1093,18 +1099,18 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 raptor_uri*
 raptor_new_uri_for_retrieval(raptor_uri* old_uri)
 {
-  char *uri_string=raptor_uri_as_string(old_uri);
-  char *buffer;
-  int buffer_len=strlen(uri_string)+1;
-  char *scheme;
-  char *authority;
-  char *path;
-  char *query;
-  char *fragment;
-  char *new_uri_string;
+  unsigned char *uri_string=raptor_uri_as_string(old_uri);
+  unsigned char *buffer;
+  size_t buffer_len=strlen((const char*)uri_string)+1;
+  unsigned char *scheme;
+  unsigned char *authority;
+  unsigned char *path;
+  unsigned char *query;
+  unsigned char *fragment;
+  unsigned char *new_uri_string;
   raptor_uri* new_uri;
 
-  buffer=(char*)RAPTOR_MALLOC(cstring, buffer_len);
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, buffer_len);
   if(!buffer)
     return NULL;
   
@@ -1112,7 +1118,7 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
                     &scheme, &authority, &path, &query, &fragment);
 
   if(!path)
-    path="/";
+    path=(unsigned char*)"/";
   
   new_uri_string=raptor_uri_construct(scheme, authority, path, query, NULL);
   RAPTOR_FREE(cstring, buffer);
@@ -1181,15 +1187,16 @@ int main(int argc, char *argv[]);
 
 
 static int
-assert_resolve_uri (const char *base_uri,
-		    const char *reference_uri, const char *absolute_uri)
+assert_resolve_uri (const char *base_uri, const char *reference_uri, 
+                    const char *absolute_uri)
 {
-  char buffer[256];
+  unsigned char buffer[256];
 
-  raptor_uri_resolve_uri_reference (base_uri, reference_uri,
+  raptor_uri_resolve_uri_reference ((const unsigned char*)base_uri,
+                                    (const unsigned char*)reference_uri,
                                     buffer, sizeof (buffer));
 
-  if (strcmp (buffer, absolute_uri))
+  if (strcmp((const char*)buffer, absolute_uri))
     {
       fprintf(stderr, "FAIL relative %s gave %s != %s\n",
               reference_uri, buffer, absolute_uri);
@@ -1202,11 +1209,11 @@ assert_resolve_uri (const char *base_uri,
 static int
 assert_filename_to_uri (const char *filename, const char *reference_uri)
 {
-  char *uri;
+  unsigned char *uri;
 
   uri=raptor_uri_filename_to_uri_string(filename);
 
-  if (!uri || strcmp (uri, reference_uri))
+  if (!uri || strcmp((const char*)uri, (const char*)reference_uri))
     {
       fprintf(stderr, "FAIL raptor_uri_filename_to_uri_string filename %s gave URI %s != %s\n",
               filename, uri, reference_uri);
@@ -1225,9 +1232,9 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 {
   char *filename;
 
-  filename=raptor_uri_uri_string_to_filename(uri);
+  filename=raptor_uri_uri_string_to_filename((const unsigned char*)uri);
 
-  if (!filename || strcmp (filename, reference_filename))
+  if (!filename || strcmp(filename, reference_filename))
     {
       fprintf(stderr, "FAIL raptor_uri_uri_string_to_filename URI %s gave filename %s != %s\n",
               uri, filename, reference_filename);
@@ -1248,10 +1255,10 @@ main(int argc, char *argv[])
   const char *base_uri_xmlbase = "http://example.org/bpath/cpath/d;p";
   const char *base_uri_retrievable = "http://example.org/bpath/cpath/d;p?querystr";
   const char* dirs[6] = { "/etc", "/bin", "/tmp", "/lib", "/var", NULL };
-  char uri_buffer[16]; /* strlen("file:///DIR/foo")+1 */  
+  unsigned char uri_buffer[16]; /* strlen("file:///DIR/foo")+1 */  
   int i;
   const char *dir;
-  char *str;
+  unsigned char *str;
   raptor_uri *uri1, *uri2, *uri3;
 
   int failures=0;
@@ -1346,10 +1353,10 @@ main(int argc, char *argv[])
     fprintf(stderr, "WARNING: %s: Found no convenient directory - not testing relative files\n",
             argv[0]);
   else {
-    sprintf(uri_buffer, "file://%s/foo", dir);
+    sprintf((char*)uri_buffer, "file://%s/foo", dir);
     fprintf(stderr, "%s: Checking relative file name 'foo' in dir %s expecting URI %s\n",
             argv[0], dir, uri_buffer);
-    failures += assert_filename_to_uri ("foo", uri_buffer);
+    failures += assert_filename_to_uri ("foo", (const char*)uri_buffer);
   }
 #endif
  
@@ -1357,10 +1364,10 @@ main(int argc, char *argv[])
 
   raptor_uri_init();
   
-  uri1=raptor_new_uri(base_uri);
+  uri1=raptor_new_uri((const unsigned char*)base_uri);
 
   str=raptor_uri_as_string(uri1);
-  if(strcmp(str, base_uri)) {
+  if(strcmp((const char*)str, base_uri)) {
     fprintf(stderr, "FAIL raptor_uri_as_string URI %s gave %s != %s\n",
             base_uri, str, base_uri);
     failures++;
@@ -1368,7 +1375,7 @@ main(int argc, char *argv[])
   
   uri2=raptor_new_uri_for_xmlbase(uri1);
   str=raptor_uri_as_string(uri2);
-  if(strcmp(str, base_uri_xmlbase)) {
+  if(strcmp((const char*)str, base_uri_xmlbase)) {
     fprintf(stderr, "FAIL raptor_new_uri_for_xmlbase URI %s gave %s != %s\n",
             base_uri, str, base_uri_xmlbase);
     failures++;
@@ -1377,7 +1384,7 @@ main(int argc, char *argv[])
   uri3=raptor_new_uri_for_retrieval(uri1);
 
   str=raptor_uri_as_string(uri3);
-  if(strcmp(str, base_uri_retrievable)) {
+  if(strcmp((const char*)str, base_uri_retrievable)) {
     fprintf(stderr, "FAIL raptor_new_uri_for_retrievable URI %s gave %s != %s\n",
             base_uri, str, base_uri_retrievable);
     failures++;

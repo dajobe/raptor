@@ -76,7 +76,7 @@ raptor_www_libxml_fetch(raptor_www *www)
   if(www->proxy)
     xmlNanoHTTPScanProxy(www->proxy);
 
-  www->ctxt=xmlNanoHTTPOpen(raptor_uri_as_string(www->uri), &www->type);
+  www->ctxt=xmlNanoHTTPOpen((const char*)raptor_uri_as_string(www->uri), &www->type);
   if(!www->ctxt)
     return 1;
   

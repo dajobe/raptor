@@ -817,7 +817,7 @@ raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
   }
 
   /* Predicates are URIs, in Raptor some are turned into ordinals */
-  if(!strncmp(raptor_uri_as_string(t->predicate->uri),
+  if(!strncmp((const char*)raptor_uri_as_string(t->predicate->uri),
               "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
     predicate_ordinal=raptor_check_ordinal(raptor_uri_as_string(t->predicate->uri)+44);
     if(predicate_ordinal > 0) {

@@ -315,7 +315,7 @@ raptor_www_file_fetch(raptor_www *www)
   char *filename;
   FILE *fh;
   unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE];
-  char *uri_string=raptor_uri_as_string(www->uri);
+  unsigned char *uri_string=raptor_uri_as_string(www->uri);
   
   filename=raptor_uri_uri_string_to_filename(uri_string);
   if(!filename) {

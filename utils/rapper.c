@@ -171,17 +171,13 @@ rdfdump_warning_handler(void *data, raptor_locator *locator,
 }
 
 
-#ifdef RAPTOR_DEBUG
-void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
-#endif
-
 int
 main(int argc, char *argv[]) 
 {
   raptor_parser* rdf_parser=NULL;
-  char *uri_string=NULL;
+  unsigned char *uri_string=NULL;
   int free_uri_string=0;
-  char *base_uri_string=NULL;
+  unsigned char *base_uri_string=NULL;
   int rc;
   int scanning=0;
   const char *syntax_name="rdfxml";
@@ -364,23 +360,23 @@ main(int argc, char *argv[])
 
 
   if(optind == argc-1)
-    uri_string=argv[optind];
+    uri_string=(unsigned char*)argv[optind];
   else {
-    uri_string=argv[optind++];
-    base_uri_string=argv[optind];
+    uri_string=(unsigned char*)argv[optind++];
+    base_uri_string=(unsigned char*)argv[optind];
   }
 
   /* If uri_string is "path-to-file", turn it into a file: URI */
-  if(!strcmp(uri_string, "-")) {
+  if(!strcmp((const char*)uri_string, "-")) {
     if(!base_uri_string) {
       fprintf(stderr, "%s: A Base URI is required when reading from standard input.\n",
               program);
       return(1);
     }
     uri_string=NULL;
-  } else if(!access(uri_string, R_OK)) {
-    filename=uri_string;
-    uri_string=raptor_uri_filename_to_uri_string(uri_string);
+  } else if(!access((const char*)uri_string, R_OK)) {
+    filename=(char*)uri_string;
+    uri_string=raptor_uri_filename_to_uri_string(filename);
     free_uri_string=1;
   }
 
@@ -456,9 +452,6 @@ main(int argc, char *argv[])
     }
   }
 
-#ifdef RAPTOR_DEBUG
-  raptor_stats_print(rdf_parser, stderr);
-#endif
   raptor_free_parser(rdf_parser);
 
   if(!quiet)

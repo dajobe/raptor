@@ -189,7 +189,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token((unsigned char*)yytext+2, yyl
                 n3_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
               else {
                 yytext[yyleng-1]='\0';
-                n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const char*)yytext+1);
+                n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
               }
               return URI_LITERAL; }
 
@@ -273,7 +273,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
           return NULL;
         }
           
-        d+=raptor_unicode_char_to_utf8(unichar, (char*)d);
+        d+=raptor_unicode_char_to_utf8(unichar, d);
 
       } else {
         /* don't handle \x where x isn't one of: \n \r \\ (delim) */
@@ -335,7 +335,7 @@ n3_token_print(int token, YYSTYPE *lval)
 
     case URI_LITERAL:
       sprintf(buffer, "URI_LITERAL(%s)", 
-        (lval->uri ? raptor_uri_as_string(lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case BLANK_LITERAL:
@@ -344,7 +344,7 @@ n3_token_print(int token, YYSTYPE *lval)
 
     case QNAME_LITERAL:
       sprintf(buffer, "QNAME_LITERAL(%s)", 
-              (lval->uri ? raptor_uri_as_string(lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case IDENTIFIER:

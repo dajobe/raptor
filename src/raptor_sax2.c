@@ -100,7 +100,7 @@ raptor_new_sax2_element(raptor_qname *name,
 void
 raptor_free_sax2_element(raptor_sax2_element *element)
 {
-  int i;
+  unsigned int i;
 
   for (i=0; i < element->attribute_count; i++)
     if(element->attributes[i])
@@ -131,7 +131,7 @@ raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream)
   fputc('\n', stream);
 
   if(element->attribute_count) {
-    int i;
+    unsigned int i;
 
     fputs(" attributes: ", stream);
     for (i = 0; i < element->attribute_count; i++) {
@@ -159,11 +159,11 @@ raptor_nsd_compare(const void *a, const void *b)
 {
   struct nsd* nsd_a=(struct nsd*)a;
   struct nsd* nsd_b=(struct nsd*)b;
-  return strcmp(nsd_a->declaration, nsd_b->declaration);
+  return strcmp((const char*)nsd_a->declaration, (const char*)nsd_b->declaration);
 }
 
 
-char *
+unsigned char *
 raptor_format_sax2_element(raptor_sax2_element *element,
                            raptor_namespace_stack *nstack,
                            size_t *length_p, int is_end,
@@ -172,11 +172,11 @@ raptor_format_sax2_element(raptor_sax2_element *element,
                            int depth)
 {
   size_t length;
-  char *buffer;
-  char *ptr;
+  unsigned char *buffer;
+  unsigned char *ptr;
   struct nsd *nspace_declarations;
   size_t nspace_declarations_count=0;  
-  int i;
+  unsigned int i;
 
   /* max is 1 per element and 1 for each attribute */
   if(nstack)
@@ -217,7 +217,7 @@ raptor_format_sax2_element(raptor_sax2_element *element,
         if(nstack && 
            !raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
           /* not in scope and not same as element (so already going to be declared)*/
-          int j;
+          unsigned int j;
           int declare_me=1;
           
           /* check it wasn't an earlier declaration too */
@@ -255,7 +255,7 @@ raptor_format_sax2_element(raptor_sax2_element *element,
     *length_p=length;
 
   /* +1 here is for \0 at end */
-  buffer=(char*)RAPTOR_MALLOC(cstring, length + 1);
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, length + 1);
   if(!buffer)
     return NULL;
 
@@ -265,12 +265,12 @@ raptor_format_sax2_element(raptor_sax2_element *element,
   if(is_end)
     *ptr++ = '/';
   if(element->name->nspace && element->name->nspace->prefix_length > 0) {
-    strncpy(ptr, (char*)element->name->nspace->prefix,
+    strncpy((char*)ptr, (const char*)element->name->nspace->prefix,
             element->name->nspace->prefix_length);
     ptr+= element->name->nspace->prefix_length;
     *ptr++=':';
   }
-  strcpy(ptr, (char*)element->name->local_name);
+  strcpy((char*)ptr, (const char*)element->name->local_name);
   ptr += element->name->local_name_length;
 
   /* declare namespaces */
@@ -282,7 +282,7 @@ raptor_format_sax2_element(raptor_sax2_element *element,
     /* add them */
     for (i=0; i < nspace_declarations_count; i++) {
       *ptr++=' ';
-      strncpy(ptr, nspace_declarations[i].declaration,
+      strncpy((char*)ptr, (const char*)nspace_declarations[i].declaration,
               nspace_declarations[i].length);
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration=NULL;
@@ -303,13 +303,13 @@ raptor_format_sax2_element(raptor_sax2_element *element,
       
       if(element->attributes[i]->nspace && 
          element->attributes[i]->nspace->prefix_length > 0) {
-        strncpy(ptr, (char*)element->attributes[i]->nspace->prefix,
+        strncpy((char*)ptr, (char*)element->attributes[i]->nspace->prefix,
                 element->attributes[i]->nspace->prefix_length);
         ptr+= element->attributes[i]->nspace->prefix_length;
         *ptr++=':';
       }
     
-      strcpy(ptr, (char*)element->attributes[i]->local_name);
+      strcpy((char*)ptr, (const char*)element->attributes[i]->local_name);
       ptr += element->attributes[i]->local_name_length;
       
       *ptr++ ='=';
@@ -320,15 +320,15 @@ raptor_format_sax2_element(raptor_sax2_element *element,
                                                     error_handler, error_data);
       if(escaped_attr_val_len == element->attributes[i]->value_length) {
         /* save a malloc/free when there is no escaping */
-        strcpy(ptr, element->attributes[i]->value);
+        strcpy((char*)ptr, (const char*)element->attributes[i]->value);
         ptr += element->attributes[i]->value_length;
       } else {
-        unsigned char *escaped_attr_val=(char*)RAPTOR_MALLOC(cstring,escaped_attr_val_len+1);
+        unsigned char *escaped_attr_val=(unsigned char*)RAPTOR_MALLOC(cstring,escaped_attr_val_len+1);
         raptor_xml_escape_string(element->attributes[i]->value, element->attributes[i]->value_length,
                                  escaped_attr_val, escaped_attr_val_len, '"',
                                  error_handler, error_data);
         
-        strcpy(ptr, escaped_attr_val);
+        strcpy((char*)ptr, (const char*)escaped_attr_val);
         RAPTOR_FREE(cstring,escaped_attr_val);
         ptr += escaped_attr_val_len;
       }
