@@ -296,6 +296,9 @@ RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **cont
 #define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
 
+#define RAPTOR_XMLSCHEMA_DATATYPES_URI "http://www.w3.org/2001/XMLSchema#"
+#define RAPTOR_OWL_URI "http://www.w3.org/2002/07/owl#"
+
 
 /* raptor_www */
 RAPTOR_API void raptor_www_init(void);
