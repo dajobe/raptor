@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -67,6 +67,8 @@ static int replace_newlines=0;
 
 /* extra noise? */
 static int quiet=0;
+/* just count, no printing */
+static int count=0;
 
 static int statement_count=0;
 
@@ -76,6 +78,10 @@ static enum { OUTPUT_FORMAT_SIMPLE, OUTPUT_FORMAT_NTRIPLES } output_format = OUT
 static
 void print_statements(void *user_data, const raptor_statement *statement) 
 {
+  statement_count++;
+  if(count)
+    return;
+  
   if(output_format == OUTPUT_FORMAT_SIMPLE)
     fputs("rdfdump: Statement: ", stdout);
 
@@ -93,8 +99,6 @@ void print_statements(void *user_data, const raptor_statement *statement)
   else
     raptor_print_statement_as_ntriples(statement, stdout);
   fputc('\n', stdout);
-
-  statement_count++;
 }
 
 
@@ -119,6 +123,7 @@ static struct option long_options[] =
   {"quiet", 0, 0, 'q'},
   {"output", 1, 0, 'o'},
   {"ignore-warnings", 0, 0, 'w'},
+  {"count", 0, 0, 'c'},
   {NULL, 0, 0, 0}
 };
 #endif
@@ -213,6 +218,10 @@ main(int argc, char *argv[])
         assume=1;
         break;
 
+      case 'c':
+        count=1;
+        break;
+
       case 'h':
         usage=1;
         break;
@@ -263,6 +272,7 @@ main(int argc, char *argv[])
     fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
     fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
     fprintf(stderr, HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
+    fprintf(stderr, HELP_TEXT(c, "count           ", "Count triples - no output"));
     return(usage>1);
   }
 
@@ -318,7 +328,6 @@ main(int argc, char *argv[])
       fprintf(stdout, "%s: Parsing URI %s\n", program, uri_string);
   }
   
-
   raptor_set_statement_handler(rdf_parser, NULL, print_statements);
 
 
