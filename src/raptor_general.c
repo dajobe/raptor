@@ -158,7 +158,12 @@ typedef const char rapier_uri;
 
 /* XML parser includes */
 #ifdef NEED_EXPAT
+#ifdef HAVE_EXPAT_H
+#include <expat.h>
+#endif
+#ifdef HAVE_XMLPARSE_H
 #include <xmlparse.h>
+#endif
 #endif
 
 #ifdef NEED_LIBXML
