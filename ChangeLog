@@ -1,5 +1,18 @@
 2004-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_serialize.c (raptor_iostream_write_string_ntriples):
+	Renamed from raptor_serialize_ntriples_print_string and made public.
+	Handle delimiters that aren't ' or " such as >, and if found
+	\uHHHH escape it.
+	(raptor_iostream_write_statement_part_ntriples): Renamed from
+	raptor_serialize_ntriples_print_statement_part and made public.
+	(raptor_iostream_write_statement_ntriples): Added and made public.
+	(raptor_ntriples_serialize_statement): Moved most code to
+	raptor_iostream_write_statement_ntriples
+
+	* raptor.h: Add and export raptor_iostream_write_ntriples_string
+	and raptor_iostream_write_statement_ntriples
+
 	* tests/turtle/test-13.ttl, tests/turtle/test-13.out: Use a
 	namespace URI that gives a predicate which could be serialized to
 	rdf/xml.
