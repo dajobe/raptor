@@ -833,6 +833,7 @@ raptor_set_generate_id_handler(raptor_parser* parser,
  *   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  - allow user defined rdf:parseType values
  *   RAPTOR_FEATURE_ALLOW_BAGID             - allow deprecated rdf:bagID
  *   RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST - generate the rdf:type rdf:List triple for rdf:parseType="Collection"
+ *   RAPTOR_FEATURE_NORMALIZE_LANGUAGE      - normalize xml:lang values to lowercase
  **/
 void
 raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
@@ -862,6 +863,10 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
       parser->feature_allow_rdf_type_rdf_List=value;
       break;
 
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+      parser->feature_normalize_language=value;
+      break;
+      
     default:
       break;
   }
@@ -887,6 +892,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->feature_allow_other_parseTypes=!is_strict;
   rdf_parser->feature_allow_bagID=!is_strict;
   rdf_parser->feature_allow_rdf_type_rdf_List=0;
+  rdf_parser->feature_normalize_language=1;
 }
 
 
