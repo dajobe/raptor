@@ -29,7 +29,8 @@ rdfdump_SOURCES = rdfdump.c
 rdfdump_LDADD = libraptor.la
 rdfdump_LDFLAGS = -static
 
-libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c
+libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
+raptor_cc.c raptor_uri.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 
@@ -40,15 +41,15 @@ README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
 autogen.sh \
 raptor.spec.in \
-dc.rdf
-# raptor_cc.gperf \
-# raptor_cc.c raptor_uri.c
+dc.rdf \
+raptor_cc.gperf
+
 
 SUBDIRS= \
 	tests \
 	win32
 
-#TESTS=raptor_cc_test raptor_uri_test
+TESTS=raptor_cc_test raptor_uri_test
 
 # Use tar, whatever it is called (better be GNU tar though)
 TAR=@TAR@
@@ -89,17 +90,17 @@ README: README.html
 NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
-#raptor_cc.c : raptor_cc.gperf
-#	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $? > $@
-#
+raptor_cc.c : raptor_cc.gperf
+	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $? > $@
+
 
 # Some people need a little help ;-)
-#test: check
-#
-#raptor_cc_test: raptor_cc.c libraptor.la
-#	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
-#
-#raptor_uri_test: raptor_uri.c libraptor.la
-#	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+test: check
+
+raptor_cc_test: raptor_cc.c libraptor.la
+	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
+
+raptor_uri_test: raptor_uri.c libraptor.la
+	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 @SET_MAKE@
