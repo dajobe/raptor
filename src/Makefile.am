@@ -129,8 +129,8 @@ pkgconfig_DATA = raptor.pc
 
 
 # Actually it needs n3_parser.h but nevermind
-n3_lexer_test: $(srcdir)/n3_lexer.c $(srcdir)/n3_parser.tab.c
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c $(LIBS) @REDLAND_LIBS@
+n3_lexer_test: $(srcdir)/n3_lexer.c $(srcdir)/n3_parser.tab.c raptor_utf8.lo
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c $(LIBS) @REDLAND_LIBS@ raptor_utf8.lo
 
 n3_parser_test: $(srcdir)/n3_parser.tab.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_parser.tab.c libraptor.la $(LIBS) @REDLAND_LIBS@
