@@ -1,4 +1,36 @@
+2004-10-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h:
+	Add locator, error_user_data and error_handler to raptor_serializer.
+	Add raptor_init_serializer_rdfxml, raptor_serializer_error,
+	raptor_serializer_simple_error and raptor_serializer_error_varargs.
+
+	* raptor_namespace.c:
+	Export raptor_xml_namespace_uri, raptor_rdf_namespace_ms_uri,
+	raptor_rdf_namespace_schema_uri,
+	raptor_xmlschema_datatypes_namespace_uri, raptor_owl_namespace_uri,
+	raptor_rdf_namespace_ms_uri_len
+
+	* raptor_general.c (raptor_init): Call raptor_init_serializer_rdfxml
+
+	* raptor.h:
+	Export raptor_xml_namespace_uri, raptor_rdf_namespace_ms_uri,
+	raptor_rdf_namespace_schema_uri,
+	raptor_xmlschema_datatypes_namespace_uri, raptor_owl_namespace_uri,
+	raptor_rdf_namespace_ms_uri_len
+	Add raptor_serializer_set_error_handler,
+	raptor_serializer_get_locator
+
+	* raptor_serialize.c: Added RDF/XML serializer.
+	Added locator to serializer.
+	(raptor_serializer_error, raptor_serializer_simple_error,
+	raptor_serializer_error_varargs): Added internal support for errors.
+	(raptor_serializer_set_error_handler, raptor_serializer_get_locator):
+	Added public methods
+
 2004-10-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_iostream.c: (main) casts for fprintf
 
 	* rdfdump.c: Remove ad-hoc serializing code and use raptor_serializer.
 	Update help and usage messages to use raptor_serializers_enumerate
@@ -34,12 +66,10 @@
 	Added as a wrapper.
 
 	* raptor_iostream.c (raptor_iostream_format_hexadecimal):
-	Added for writing
-	field-formatted hex.
+	Added for writing field-formatted hex.
 
 	* raptor_iostream.c (raptor_iostream_get_bytes_written_count):
-	Renamed from
-	raptor_get_bytes_written_count
+	Renamed from raptor_get_bytes_written_count
 	(raptor_iostream_write_decimal): Added to print a decimal to the
 	iostream.
 
