@@ -3216,42 +3216,11 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * Everything goes to typedNode (6.13) now
          */
 
-        if(element_in_rdf_ns) {
-          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description)) {
-            state=RAPTOR_STATE_DESCRIPTION;
-            break;
-          } 
-
-          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Seq)) {
-            state=RAPTOR_STATE_TYPED_NODE;
-            break;
-          }
-
-          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Bag)) {
-            state=RAPTOR_STATE_TYPED_NODE;
-            break;
-          }
-
-          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Alt)) {
-            state=RAPTOR_STATE_TYPED_NODE;
-            break;
-          }
-
-          if(rdf_parser->container_test_handler) {
-            raptor_uri *container_type=rdf_parser->container_test_handler(element->name->uri);
-            if(container_type) {
-              state=RAPTOR_STATE_TYPED_NODE;
-              break;
-            }
-          }
-
-          /* Other rdf: elements at this layer are taken as matching
-           * the typedNode production - just fallthrough
-           */
-        }
-
-        /* Default to typedNode */
-        state=RAPTOR_STATE_TYPED_NODE;
+        if(element_in_rdf_ns &&
+           IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description))
+          state=RAPTOR_STATE_DESCRIPTION;
+        else
+          state=RAPTOR_STATE_TYPED_NODE;
 
         element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
 
