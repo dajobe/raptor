@@ -62,6 +62,8 @@ int main (int argc, char *argv[])
   else
     url="http://www.redland.opensource.ac.uk/";
 
+  raptor_uri_init();
+
   www=raptor_www_new();
 
   if(1) {
