@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "blah">
+<html>
+<head>
+  <title>Rapier RDF Parser - To Do List</title>
+</head>
+<body bgcolor="#ffffff" text="#000085">
+
+<h1 align="center">Rapier RDF Parser - To Do List</h1>
+
+<ul>
+<li>perform xml:lang processing and pass to application (FEATURE)</li>
+<li>add namespace/prefix decl user level callback (FEATURE)</li>
+<li>regression tests (FEATURE)</li>
+
+<li>fix this crash (BUG):
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:play="http://somewhere.example.com/"
+         xmlns:enc="http://somewhere.example.com/"&gt;
+&lt;rdf:Description rdf:about="http://www.w3.org/"&gt;
+   &lt;play:xml-cannonicalized parseType="Resource"&gt;
+      &lt;enc:hash-sha-1 parseType="Resource"&gt;
+         &lt;enc:base64&gt;jd8734djr08347jyd4&lt;/enc:base64&gt;
+      &lt;/enc:hash-sha-1&gt;
+   &lt;/play:xml-cannonicalized&gt;
+&lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;
+</pre>
+</li>
+
+<li>URI resolving is ad-hoc (BUG)</li>
+<li>Reification of statements (bagID etc.) implemented but not tested (FEATURE)</li>
+<li>parseType literal implemented, full parseType support not done (FEATURE)</li>
+<li>Full flexible container support not done (FEATURE)</li>
+<li>rdf:li used as a propertyElt does not work (BUG)</li>
+<li>aboutEach or aboutEachPrefix support not complete (FEATURE)</li>
+<li>need to make tracking of user IDs/generated IDs to user code (FEATURE)</li>
+
+</ul>
+
+<hr />
+
+<p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+
+<p><a href="http://www.mirror.ac.uk/services/validator/check/referer">Validate me</a></p>
+
+</body>
+</html>
