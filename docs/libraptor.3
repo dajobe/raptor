@@ -395,6 +395,9 @@ Retrieve the given URL, returning non zero on failure.
 Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
 .SH API CHANGES
+.IP 0.9.12
+Added \fBraptor_new_uri_for_retrieval\fR
+to turn URI references into URIs suitable for retrieval (no fragments).
 .IP 0.9.11
 Added \fBraptor_get_name\fR, \fBraptor_get_label\fR.
 \fBraptor_xml_escape_string\fR now takes error message handler, data
