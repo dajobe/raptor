@@ -3203,6 +3203,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
           element->subject.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
         } else if (element->parent && 
+                   element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION &&
                    (element->parent->object.uri || element->parent->object.id)) {
           /* copy from parent (property element), it has a URI for us */
           raptor_copy_identifier(&element->subject, &element->parent->object);
