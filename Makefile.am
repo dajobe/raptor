@@ -95,18 +95,25 @@ README: README.html
 NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
-raptor_cc.c : raptor_cc.gperf
+raptor_cc.c : $(srcdir)/raptor_cc.gperf
 	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $? > $@
 
 
 # Some people need a little help ;-)
 test: check
 
-raptor_cc_test: raptor_cc.c libraptor.la
-	$(LINK) $(DEFS) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
+raptor_cc_test: $(srcdir)/raptor_cc.c libraptor.la
+	$(LINK) $(DEFS) -DSTANDALONE -static $? $(LIBS)
 
-raptor_uri_test: raptor_uri.c libraptor.la
-	$(LINK) $(DEFS) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
+	$(LINK) $(DEFS) -DSTANDALONE -static $? $(LIBS)
+
+finish: libraptor.la
+	rm -rf $(top_builddir)/lib
+	mkdir $(top_builddir)/lib
+	lib=`cd $(top_builddir)/lib; pwd`; \
+	$(LIBTOOL) --mode=install install libraptor.la $$lib; \
+	$(LIBTOOL) --mode=finish $$lib
 
 deb: distcheck
 	rm -rf $(distdir)
