@@ -37,15 +37,15 @@
 #include <ctype.h>
 
 /* This section of code is inserted directly into the output. */
-const int raptor_country_code_is_valid(const char *code);
-const char* raptor_get_country_name_by_code(const char *country_code);
+const int raptor_country_code_is_valid(const char * const code);
+const char * const raptor_get_country_name_by_code(const char * const country_code);
 
 static const struct country_code *
 in_word_set (register const char *str, register unsigned int len);
 
 /* the definition of struct country_code below is read by gperf */
 %}
-struct country_code { const char *name; const char *country_name; };
+struct country_code { const char * const name; const char * const country_name; };
 %%
 "AF";"AFGHANISTAN"
 "AL";"ALBANIA"
@@ -288,6 +288,15 @@ struct country_code { const char *name; const char *country_name; };
 "ZW";"ZIMBABWE"
 %%
 
+/**
+ * raptor_country_code_is_valid - Validate a country code
+ * @code: country code
+ *
+ * Validates the 2-letter country codes from ISO 3166-1
+ * (case independent).
+ *
+ * Return value: non zero if the code is valid
+ **/
 const int
 raptor_country_code_is_valid(const char *code) 
 {
@@ -308,7 +317,16 @@ raptor_country_code_is_valid(const char *code)
 }
 
 
-const char *
+/**
+ * raptor_get_country_name_by_code - Get a country name by country code
+ * @code: country code
+ * 
+ * Gets the (English) country name from ISO 3166-1 for the
+ * 2-letter country codes (which are case independent).
+ * 
+ * Return value: Pointer to country name or NULL if code is invalid.
+ **/
+const char * const
 raptor_get_country_name_by_code(const char *code) 
 {
   int len;
@@ -363,7 +381,7 @@ main(int argc, char *argv[])
   struct tv *t;
   int i;
 
-  fprintf(stderr, "%s: Testing raptor_country_code* successes\n", program);
+  fprintf(stderr, "%s: Testing raptor country_code functions for successes\n", program);
   
   for(i=0; (t=&test_good_values[i]) && t->code; i++) {
     const char *code=t->code;
@@ -389,7 +407,7 @@ main(int argc, char *argv[])
   }
   
 
-  fprintf(stderr, "%s: Testing raptor_country_code* failures\n", program);
+  fprintf(stderr, "%s: Testing raptor country_code functions for failures\n", program);
   
   for(i=0; (t=&test_bad_values[i]) && t->code; i++) {
     const char *code=t->code;
