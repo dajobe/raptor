@@ -285,8 +285,9 @@ main(int argc, char *argv[])
     raptor_ntriples_free(rdfnt_parser);
   }
 
-  fprintf(stdout, "%s: Parsing returned %d statements\n", program,
-          statement_count);
+  if(!quiet)
+    fprintf(stdout, "%s: Parsing returned %d statements\n", program,
+            statement_count);
 
 #ifdef LIBRDF_INTERNAL
   librdf_free_uri(base_uri);
