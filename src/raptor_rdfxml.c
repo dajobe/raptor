@@ -1976,7 +1976,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
 
     if(object_is_literal && !raptor_utf8_is_nfc(value, strlen(value))) {
       raptor_update_document_locator(rdf_parser);
-      raptor_parser_error(rdf_parser, "Property %s has a string not in Unicode Normal Form C: %s", rdf_attr_info[i].name, value);
+      raptor_parser_error(rdf_parser, "Property attribute %s has a string not in Unicode Normal Form C: %s", rdf_attr_info[i].name, value);
       continue;
     }
 
@@ -3114,7 +3114,6 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                  !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
                 raptor_update_document_locator(rdf_parser);
                 raptor_parser_error(rdf_parser, "Property element %s has a string not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
-                continue;
               }
 
               element->parent->last_ordinal++;
@@ -3147,7 +3146,6 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                  !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
                 raptor_update_document_locator(rdf_parser);
                 raptor_parser_error(rdf_parser, "Property element %s has a string not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
-                continue;
               }
 
               raptor_generate_statement(rdf_parser, 
@@ -3175,6 +3173,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
         case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
         case RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL:
+            if(!raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
+              raptor_update_document_locator(rdf_parser);
+              raptor_parser_error(rdf_parser, "Property element %s has XML literal content not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
+            }
+
             if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
               element->parent->last_ordinal++;
               raptor_generate_statement(rdf_parser, 
