@@ -11,8 +11,6 @@
 <h2>Bugs and Features</h2>
 
 <ul>
-<li>In lax mode, warn when unknown rdf:parseType values are seen to prevent
-things like 'owl:collection' and 'collection' passing through (FEATURE)</li>
 <li>Update the rdf/rdfs schema documents. Convert the turtle labels
 from unicode character form into UTF-8 (DATA, DOCS)</li>
 <li>LSID URN support (FEATURE)</li>
@@ -52,6 +50,8 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>In lax mode, warns when unknown rdf:parseType values are seen to prevent
+things like 'owl:collection' and 'collection' passing through (1.3.1)</li>
 <li>Turtle parser: a bare ':' and qnames such as 'rdf:_1' now work (1.3.1)</li>
 <li>Describe in libraptor.3 the use of UTF-8 for strings and URIs. (1.3.1)</li>
 <li>Send an HTTP Accept: header with WWW requests corresponding to the
