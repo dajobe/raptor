@@ -62,8 +62,8 @@ struct raptor_xml_writer_s {
 
   int depth;
   
-  /* namespaces stack when canonicalizing */
-  raptor_namespace_stack nstack;
+  int my_nstack;
+  raptor_namespace_stack *nstack;
   int nstack_depth;
 
   raptor_uri_handler *uri_handler;
@@ -80,7 +80,8 @@ struct raptor_xml_writer_s {
 
 
 raptor_xml_writer*
-raptor_new_xml_writer(raptor_uri_handler *uri_handler,
+raptor_new_xml_writer(raptor_namespace_stack *nstack,
+                      raptor_uri_handler *uri_handler,
                       void *uri_context,
                       raptor_iostream* iostr,
                       raptor_simple_message_handler error_handler,
@@ -92,7 +93,6 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
   if(!xml_writer)
     return NULL;
 
-  /* Initialise to the empty string */
   xml_writer->nstack_depth=0;
 
   xml_writer->uri_handler=uri_handler;
@@ -101,10 +101,13 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
   xml_writer->error_handler=error_handler;
   xml_writer->error_data=error_data;
 
-  raptor_namespaces_init(&xml_writer->nstack,
-                         uri_handler, uri_context,
-                         error_handler, error_data,
-                         0);
+  xml_writer->nstack=nstack;
+  if(!xml_writer->nstack) {
+    xml_writer->nstack=nstack=raptor_new_namespaces(uri_handler, uri_context,
+                                                    error_handler, error_data,
+                                                    1);
+    xml_writer->my_nstack=1;
+  }
 
   xml_writer->iostr=iostr;
   
@@ -120,7 +123,8 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
 void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
-  raptor_namespaces_clear(&xml_writer->nstack);
+  if(xml_writer->nstack && xml_writer->my_nstack)
+    raptor_free_namespaces(xml_writer->nstack);
 
   RAPTOR_FREE(raptor_xml_writer, xml_writer);
 }
@@ -132,7 +136,7 @@ raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer,
                                        const unsigned char *ns_uri_string,
                                        int depth) 
 {
-  raptor_namespace_stack *nstack=&xml_writer->nstack;
+  raptor_namespace_stack *nstack=xml_writer->nstack;
   raptor_namespace *ns;
 
   ns=raptor_new_namespace(nstack, prefix, ns_uri_string, depth);
@@ -151,7 +155,7 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
 {
   raptor_iostream_write_xml_element(xml_writer->iostr,
                                      element, 
-                                     &xml_writer->nstack,
+                                     xml_writer->nstack,
                                      1,
                                      0,
                                      xml_writer->error_handler,
@@ -166,7 +170,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
 {
   raptor_iostream_write_xml_element(xml_writer->iostr,
                                      element, 
-                                     &xml_writer->nstack,
+                                     xml_writer->nstack,
                                      0,
                                      0,
                                      xml_writer->error_handler,
@@ -187,7 +191,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
 {
   raptor_iostream_write_xml_element(xml_writer->iostr, 
                                      element, 
-                                     &xml_writer->nstack,
+                                     xml_writer->nstack,
                                      0,
                                      1,
                                      xml_writer->error_handler,
@@ -196,7 +200,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
   
   xml_writer->depth--;
 
-  raptor_namespaces_end_for_depth(&xml_writer->nstack, xml_writer->depth);
+  raptor_namespaces_end_for_depth(xml_writer->nstack, xml_writer->depth);
 
   if(xml_writer->current_element)
     xml_writer->current_element = xml_writer->current_element->parent;
@@ -318,7 +322,12 @@ main(int argc, char *argv[])
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
-  xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
+  nstack=raptor_new_namespaces(uri_handler, uri_context,
+                               NULL, NULL, /* errors */
+                               1);
+
+  xml_writer=raptor_new_xml_writer(nstack,
+                                   uri_handler, uri_context,
                                    iostr,
                                    NULL, NULL, /* errors */
                                    1);
@@ -326,10 +335,6 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: Failed to create xml_writer to iostream\n", program);
     exit(1);
   }
-
-  nstack=raptor_new_namespaces(uri_handler, uri_context,
-                               NULL, NULL, /* errors */
-                               1);
 
   base_uri=raptor_new_uri(base_uri_string);
 
