@@ -124,7 +124,7 @@ raptor_nfc_get_class(unsigned long key)
 }
 
 
-static inline raptor_nfc_code_flag
+static RAPTOR_INLINE raptor_nfc_code_flag
 raptor_nfc_get_code_flag (unsigned long c)
 {
   if(c < 0x10900)  {
