@@ -642,10 +642,10 @@ struct raptor_parser_s {
 #define RAPTOR_RDF_Bag_URI LIBRDF_MS_Bag_URI
 #define RAPTOR_RDF_Alt_URI LIBRDF_MS_Alt_URI
 
-#define RAPTOR_RDF_List_URI LIBRDF_MS_List_URI
-#define RAPTOR_RDF_first_URI LIBRDF_MS_First_URI
-#define RAPTOR_RDF_rest_URI LIBRDF_MS_Rest_URI
-#define RAPTOR_RDF_nil_URI LIBRDF_MS_nil_URI
+#define RAPTOR_RDF_List_URI LIBRDF_RS_List_URI
+#define RAPTOR_RDF_first_URI LIBRDF_RS_first_URI
+#define RAPTOR_RDF_rest_URI LIBRDF_RS_rest_URI
+#define RAPTOR_RDF_nil_URI LIBRDF_RS_nil_URI
 
 #define RAPTOR_DAML_LIST_URI(rdf_parser) rdf_parser->raptor_daml_List_uri
 #define RAPTOR_DAML_FIRST_URI(rdf_parser) rdf_parser->raptor_daml_first_uri
