@@ -458,6 +458,22 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
 
 
 /**
+ * raptor_serialize_set_namespace: Set a namespace URI/prefix mapping
+ * @rdf_serializer: the &raptor_serializer
+ * @uri: &raptor_uri of namespace
+ * @prefix: prefix to use
+ * 
+ * Return value: non-0 on failure.
+ **/
+int
+raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
+                               raptor_uri *uri, const char *prefix) 
+{
+  return 1;
+}
+
+
+/**
  * raptor_start_serialize: Serialize a statement
  * @rdf_serializer: the &raptor_serializer
  * @statement: &raptor_statement to serialize to a syntax
