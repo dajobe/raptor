@@ -1332,7 +1332,7 @@ raptor_parse_abort(raptor_parser *parser)
 }
 
 
-const char *raptor_xml_literal_datatype_uri_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
+const char * const raptor_xml_literal_datatype_uri_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 const unsigned int raptor_xml_literal_datatype_uri_string_len=53;
 
 
