@@ -770,6 +770,8 @@ struct raptor_sax2_element_s {
   unsigned int content_cdata_seen;
   /* how many contained elements seen */
   unsigned int content_element_seen;
+
+  raptor_sequence *declared_nspaces;
 };
 
 
@@ -828,6 +830,7 @@ raptor_sax2_element* raptor_new_sax2_element(raptor_qname* name, const unsigned 
 void raptor_free_sax2_element(raptor_sax2_element *element);
 raptor_qname* raptor_sax2_element_get_element(raptor_sax2_element *sax2_element);
 void raptor_sax2_element_set_attributes(raptor_sax2_element* sax2_element, raptor_qname **attributes, int count);
+void raptor_sax2_declare_namespace(raptor_sax2_element* sax2_element, raptor_namespace *nspace);
 #ifdef RAPTOR_DEBUG
 void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
 #endif
@@ -837,11 +840,17 @@ int raptor_iostream_write_sax2_element(raptor_iostream *iostr, raptor_sax2_eleme
 /* FIXME: NOT PUBLIC YET - should be in raptor.h with RAPTOR_API added */
 raptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
 void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
+raptor_namespace* raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
+raptor_namespace* raptor_xml_writer_element_declare_namespace_full(raptor_xml_writer* xml_writer, raptor_sax2_element *element, const unsigned char *prefix, const unsigned char *ns_uri_string);
 void raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
 void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
 void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
-void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
-void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str);
+void raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+void raptor_xml_writer_raw(raptor_xml_writer* xml_writer, const unsigned char *str);
+void raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str);
+void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
 
 /* turtle_parser.y and turtle_lexer.l */
 typedef struct raptor_turtle_parser_s raptor_turtle_parser;
