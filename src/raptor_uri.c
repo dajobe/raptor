@@ -79,9 +79,6 @@ extern int errno;
 
 
 
-void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
-
-
 /* Prototypes for local functions */
 static int raptor_uri_is_absolute (const char *uri);
 
