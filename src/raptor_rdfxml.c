@@ -135,15 +135,18 @@ extern int errno;
 
 #ifdef NEED_LIBXML
 
-#ifdef HAVE_PARSER_H
-#include <parser.h>
+#ifdef HAVE_LIBXML_PARSER_H
+#include <libxml/parser.h>
 #else
 #ifdef HAVE_GNOME_XML_PARSER_H
 #include <gnome-xml/parser.h>
 #else
 DIE
 #endif
+#endif
 
+#ifdef HAVE_LIBXML_HASH_H
+#include <libxml/hash.h>
 #endif
 
 /* translate names from expat to libxml */
@@ -602,6 +605,9 @@ struct raptor_parser_s {
   xmlParserCtxtPtr xc;
   /* pointer to SAX document locator */
   xmlSAXLocatorPtr loc;
+
+  /* for xml entity resolution */
+  xmlEntitiesTablePtr entities;
 #endif  
 
   /* element depth */
@@ -2091,6 +2097,108 @@ raptor_xml_validation_warning(void *ctx, const char *msg, ...)
 }
 
 
+/*
+ * raptor_xml_free_entity : clean-up an entity record.
+ * a copy of xmlFreeEntity which is libxml-private.  Grrr.
+ */
+static void
+raptor_xml_free_entity(xmlEntityPtr entity) {
+  if (entity == NULL) return;
+  
+  if ((entity->children) &&
+      (entity == (xmlEntityPtr) entity->children->parent))
+    xmlFreeNodeList(entity->children);
+  if (entity->name != NULL)
+    xmlFree((char *) entity->name);
+  if (entity->ExternalID != NULL)
+    xmlFree((char *) entity->ExternalID);
+  if (entity->SystemID != NULL)
+    xmlFree((char *) entity->SystemID);
+  if (entity->URI != NULL)
+    xmlFree((char *) entity->URI);
+  if (entity->content != NULL)
+    xmlFree((char *) entity->content);
+  if (entity->orig != NULL)
+    xmlFree((char *) entity->orig);
+  xmlFree(entity);
+}
+
+
+/*
+ * raptor_xml_add_entity : register a new entity for an entities table.
+ * derived from xmlAddEntity which is libxml-private.  Grrr.
+ */
+
+static void
+raptor_xml_add_entity(xmlEntitiesTablePtr table, 
+                      const xmlChar *name, int type,
+                      const xmlChar *publicId, const xmlChar *systemId,
+                      const xmlChar *content)
+{
+  xmlEntityPtr ret;
+
+  ret = (xmlEntityPtr) xmlMalloc(sizeof(xmlEntity));
+  if (ret == NULL) {
+    xmlGenericError(xmlGenericErrorContext,
+                    "xmlAddEntity: out of memory\n");
+  }
+  memset(ret, 0, sizeof(xmlEntity));
+  ret->type = XML_ENTITY_DECL;
+
+  /*
+   * fill the structure.
+   */
+  ret->name = xmlStrdup(name);
+  ret->etype = (xmlEntityType) type;
+  if (publicId != NULL)
+    ret->ExternalID = xmlStrdup(publicId);
+  if (systemId != NULL)
+    ret->SystemID = xmlStrdup(systemId);
+  if (content != NULL) {
+    ret->length = xmlStrlen(content);
+    ret->content = xmlStrndup(content, ret->length);
+  } else {
+    ret->length = 0;
+    ret->content = NULL;
+  }
+  ret->URI = NULL; /* to be computed by the layer knowing
+                      the defining entity */
+  ret->orig = NULL;
+  
+  if (xmlHashAddEntry(table, name, ret)) {
+    /*
+     * entity was already defined at another level.
+     */
+    raptor_xml_free_entity(ret);
+  }
+}
+
+
+static void
+raptor_xml_entity_decl(void *ctx, 
+                       const xmlChar *name, int type,
+                       const xmlChar *publicId, const xmlChar *systemId, 
+                       xmlChar *content)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
+
+  raptor_xml_add_entity(rdf_parser->entities , name, type,
+                        publicId, systemId, content);
+}
+
+
+static xmlEntityPtr
+raptor_xml_get_entity(void *ctx, const xmlChar *name) {
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
+
+  xmlEntityPtr p=((xmlEntityPtr) xmlHashLookup(rdf_parser->entities, name));
+  if(p)
+    return p;
+
+  return xmlGetPredefinedEntity(name);
+}
+ 
+
 #endif
 
 
@@ -2271,7 +2379,6 @@ raptor_new(
 #endif
 
 #ifdef NEED_LIBXML
-  xmlDefaultSAXHandlerInit();
   rdf_parser->sax.startElement=raptor_xml_start_element_handler;
   rdf_parser->sax.endElement=raptor_xml_end_element_handler;
 
@@ -2284,7 +2391,11 @@ raptor_new(
 
   rdf_parser->sax.setDocumentLocator=raptor_xml_set_document_locator;
 
-  /* xmlInitParserCtxt(&rdf_parser->xc); */
+  rdf_parser->sax.getEntity=raptor_xml_get_entity;
+  rdf_parser->sax.entityDecl=raptor_xml_entity_decl;
+
+  rdf_parser->entities = xmlCreateEntitiesTable();
+
 #endif
 
 #ifdef LIBRDF_INTERNAL
@@ -2497,6 +2608,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
     xc->vctxt.userData = rdf_parser;
     xc->vctxt.error=raptor_xml_validation_error;
     xc->vctxt.warning=raptor_xml_validation_warning;
+    xc->replaceEntities = 1;
     
     rdf_parser->xc = xc;
     
@@ -2557,6 +2669,8 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
     raptor_parser_error(rdf_parser, "XML Parsing failed");
 
   xmlFreeParserCtxt(xc);
+
+  xmlFreeEntitiesTable(rdf_parser->entities);
 
 #endif
 
