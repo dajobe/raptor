@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -139,4 +139,77 @@ raptor_update_document_locator (raptor_parser *rdf_parser) {
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_update_document_locator (rdf_parser);
 #endif
+}
+
+/**
+ * raptor_locator_line: get line number from locator
+ * @locator: locator
+ *
+ * Return value: integer line number, or -1 if there is no line number available
+ **/
+int
+raptor_locator_line(raptor_locator *locator)
+{
+  if (!locator)
+    return -1;
+  return locator->line;
+}
+
+/**
+ * raptor_locator_column: get column number from locator
+ * @locator: locator
+ *
+ * Return value: integer column number, or -1 if there is no column number available
+ **/
+int
+raptor_locator_column(raptor_locator *locator)
+{
+  if (!locator)
+    return -1;
+  return locator->column;
+}
+
+/**
+ * raptor_locator_byte: get the locator byte offset from locator
+ * @locator: locator
+ *
+ * Return value: integer byte number, or -1 if there is no byte offset available
+ **/
+int
+raptor_locator_byte(raptor_locator *locator)
+{
+  if (!locator)
+    return -1;
+  return locator->byte;
+}
+
+/**
+ * raptor_locator_file: get file name from locator
+ * @locator: locator
+ *
+ * Return value: string file name, or NULL if there is no filename available
+ **/
+const char *
+raptor_locator_file(raptor_locator *locator)
+{
+  if (!locator)
+    return NULL;
+  return locator->file;
+}
+
+/**
+ * raptor_locator_uri: get URI from locator
+ * @locator: locator
+ *
+ * Returns a pointer to a shared string version of the URI in
+ * the locator.  This must be copied if it is needed.
+ *
+ * Return value: string URI, or NULL if there is no URI available
+ **/
+const char *
+raptor_locator_uri(raptor_locator *locator)
+{
+  if (!locator)
+    return NULL;
+  return raptor_uri_as_string(locator->uri);
 }
