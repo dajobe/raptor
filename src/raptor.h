@@ -57,6 +57,7 @@ typedef void* raptor_uri;
 
 
 /* Public statics */
+extern const char * const raptor_short_copyright_string;
 extern const char * const raptor_copyright_string;
 extern const char * const raptor_version_string;
 extern const unsigned int raptor_version_major;
