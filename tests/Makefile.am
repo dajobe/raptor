@@ -21,12 +21,12 @@
 RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-03.rdf ex-04.rdf ex-05.rdf \
 ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf ex-11.rdf ex-12.rdf \
 ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf ex-19.rdf \
-ex-20.rdf
+ex-20.rdf 22-rdf-syntax-ns.rdf
 
 RDF_OUT_FILES=ex-00.out ex-01.out ex-02.out ex-03.out ex-04.out ex-05.out \
 ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
 ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out ex-19.out \
-ex-20.out
+ex-20.out 22-rdf-syntax-ns.out
 
 RDF_TEST_ANSWER_FILES=ex-13.nt
 
@@ -36,6 +36,8 @@ NT_OUT_FILES=test.out
 
 # Used to make N-triples output consistent
 BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/
+# for 22-rdf-syntax-ns.rdf
+RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
@@ -51,8 +53,13 @@ $(top_builddir)/rdfdump:
 check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	@for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
+	  if test $$name = 22-rdf-syntax-ns; then \
+	    baseuri=$(RDF_NS_URI); \
+	  else \
+	    baseuri=$(BASE_URI)$$test; \
+	  fi; \
 	  echo Checking $$test; \
-	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if [ ! -f $(srcdir)/$$name.out ] ; then cp $$name.res $(srcdir)/$$name.out ; \
 	  else diff $(srcdir)/$$name.out $$name.res ; fi; \
 	  rm -f $$name.res ; \
