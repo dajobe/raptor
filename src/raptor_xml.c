@@ -54,7 +54,7 @@
 #ifndef STANDALONE
 
 /**
- * raptor_validate_xml_ID - check the string matches the xml:ID value constraints
+ * raptor_valid_xml_ID - check the string matches the xml:ID value constraints
  * @rdf_parser: RDF parser
  * @string: The string to check.
  *
