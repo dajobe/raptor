@@ -236,6 +236,39 @@ objectList: object COMMA objectList
 #endif
   }
 }
+| object objectList
+{
+  raptor_triple *triple;
+
+#if RAPTOR_DEBUG > 1  
+  printf("objectList 1\n");
+  if($1) {
+    printf(" object=\n");
+    raptor_identifier_print(stdout, $1);
+    printf("\n");
+  } else  
+    printf(" and empty object\n");
+  if($2) {
+    printf(" objectList=");
+    raptor_sequence_print($2, stdout);
+    printf("\n");
+  } else
+    printf(" and empty objectList\n");
+#endif
+
+  if(!$1)
+    $$=NULL;
+  else {
+    triple=raptor_new_triple(NULL, NULL, $1);
+    $$=$2;
+    raptor_sequence_shift($$, triple);
+#if RAPTOR_DEBUG > 1  
+    printf(" objectList is now ");
+    raptor_sequence_print($$, stdout);
+    printf("\n\n");
+#endif
+  }
+}
 | object
 {
   raptor_triple *triple;
