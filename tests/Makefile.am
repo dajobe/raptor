@@ -35,7 +35,7 @@ owl-schema.rdf daml-oil.rdf wine.rdf
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
 bad-10.rdf bad-11.rdf bad-12.rdf bad-13.rdf bad-14.rdf bad-18.rdf \
-bad-19.rdf
+bad-19.rdf bad-20.rdf
 
 RDF_BAD_NFC_TEST_FILES=bad-15.rdf bad-16.rdf bad-17.rdf
 
