@@ -242,6 +242,94 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
   return new_len;
 }
 
+
+/**
+ * raptor_iostream_write_xml_escaped_string - write an XML-escaped version of a string to an iostream
+ * @string: string to XML escape (UTF-8)
+ * @len: length of string
+ * @quote: optional quote character to escape for attribute content, or 0
+ * @iostr: the &raptor_iostream to write to
+ * @error_handler: error handler function
+ * @error_data: error handler data
+ * 
+ * Follows Canonical XML rules on Text Nodes and Attribute Nodes
+ *   http://www.w3.org/TR/xml-c14n#ProcessingModel
+ *
+ * Both:
+ *   Replaces & and < with &amp; and &lt; respectively, preserving other
+ *   characters.
+ * 
+ * Text Nodes:
+ *   > is turned into &gt; #xD is turned into &#xD;
+ *
+ * Attribute Nodes:
+ *   > is generated not &gt.  #x9, #xA and #xD are turned into
+ *   &#x9; &#xA; and &#xD; entities.
+ *
+ * If quote is given it can be either of '\'' or '\"'
+ * which will be turned into &apos; or &quot; respectively.
+ * ASCII NUL ('\0') or any other character will not be escaped.
+ * 
+ * Return value: non 0 on failure
+ **/
+int
+raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
+                                         const unsigned char *string,
+                                         size_t len,
+                                         char quote,
+                                         raptor_simple_message_handler error_handler,
+                                         void *error_data)
+{
+  int l;
+  const unsigned char *p;
+
+  if(quote != '\"' && quote != '\'')
+    quote='\0';
+
+  for(l=len, p=string; l; p++, l--) {
+    int unichar_len=1;
+    unsigned long unichar=*p;
+
+    if(*p > 0x7f) {
+      unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+      if(unichar_len < 0 || unichar_len > l) {
+        if(error_handler)
+          error_handler(error_data, "Bad UTF-8 encoding.");
+        return 1;
+      }
+    }
+
+    if(unichar == '&')
+      raptor_iostream_write_counted_string(iostr, "&amp;", 5);
+    else if (unichar == '<')
+      raptor_iostream_write_counted_string(iostr, "&lt;", 4);
+    else if (!quote && unichar == '>')
+      raptor_iostream_write_counted_string(iostr, "&gt;", 4);
+    else if (quote && unichar == (unsigned long)quote) {
+      if(quote == '\'')  
+        raptor_iostream_write_counted_string(iostr, "&apos;", 6);
+      else
+        raptor_iostream_write_counted_string(iostr, "&quot;", 6);
+    } else if (unichar == 0x0d ||
+               (quote && (unichar == 0x09 || unichar == 0x0a))) {
+      /* &#xX; */
+      raptor_iostream_write_counted_string(iostr, "&#x", 3);
+      if(unichar == 0x09)
+        raptor_iostream_write_byte(iostr, '9');
+      else
+        raptor_iostream_write_byte(iostr, 'A'+ ((char)unichar-0x0a));
+      raptor_iostream_write_byte(iostr,  ';');
+    } else
+      raptor_iostream_write_counted_string(iostr, (const char*)p, unichar_len);
+
+    unichar_len--; /* since loop does len-- */
+    p += unichar_len; l -= unichar_len;
+  }
+
+  return 0;
+}
+
+
 #endif
 
 
