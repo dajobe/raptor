@@ -48,8 +48,10 @@ sub run_test($$$$$) {
     return undef;
   }
 
+  my $plabel=($is_positive) ? 'Positive' : 'Negative';
+
   if($is_verbose) {
-    warn "$progname: Test $test_url\n";
+    warn "$progname: $plabel Test $test_url\n";
     warn "  Input RDF/XML $rdfxml_url - $rdfxml_file \n";
     warn "  Output N-Triples $ntriples_url - $ntriples_file\n"
       if $ntriples_url;
@@ -117,6 +119,11 @@ sub run_tests($$$$@) {
 
   for my $test (@test_urls) {
 
+    if(!$tests->{$test}) {
+      warn "$progname: No such test $test, skipping\n";
+      next;
+    }
+       
     my $is_positive=$tests->{$test}->{positive};
     my $plabel=($is_positive) ? 'Positive' : 'Negative';
     my $inputs=$tests->{$test}->{'test:inputDocument'};
@@ -287,17 +294,17 @@ my(%totals);
 
 
 if(@ARGV) {
-  warn "$progname: Running user tests:\n";
+  warn "$progname: Running user parser tests:\n";
   run_tests(\%tests, 1, \%results, \%totals, @ARGV);
 
-  summarize_results("User Positive Parser Tests", \%results, \%totals, scalar(@ARGV));
+  summarize_results("User Parser Tests", \%results, \%totals, scalar(@ARGV));
   exit 0;
 }
 
 run_tests(\%tests, 0, \%results, \%totals, @positive_test_urls);
 summarize_results("Positive Parser Tests", \%results, \%totals, scalar(@positive_test_urls));
 
-#print "\n\n";
-#
-#run_tests(\%tests, 0, \%results, \%totals, @negative_test_urls);
-#summarize_results("Negative Parser Tests", \%results, \%totals, scalar(@negative_test_urls));
+print "\n\n";
+
+run_tests(\%tests, 0, \%results, \%totals, @negative_test_urls);
+summarize_results("Negative Parser Tests", \%results, \%totals, scalar(@negative_test_urls));
