@@ -5,7 +5,7 @@
  * $Id$
  *
  * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -167,6 +167,9 @@ _:[A-Za-z0-9]+	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext+2,
 
 :	{ turtle_parser_lval->string=NULL;
                           return QNAME_LITERAL; }
+
+[0-9]+        { turtle_parser_lval->integer=atoi(yytext);
+                          return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
 <PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
