@@ -324,11 +324,6 @@ struct raptor_parser_factory_s {
 void raptor_parser_register_factory(const char *name, void (*factory) (raptor_parser_factory*));
 
 const char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
-raptor_uri* raptor_make_uri_from_id(raptor_parser *rdf_parser, raptor_uri *base_uri, const char *id);
-#ifndef RAPTOR_IN_REDLAND
-raptor_uri* raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name);
-#endif
-
 const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
 raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 
