@@ -253,6 +253,12 @@ struct raptor_parser_s {
   /* parser callbacks */
   raptor_statement_handler statement_handler;
 
+  void *generate_id_handler_user_data;
+  raptor_generate_id_handler generate_id_handler;
+
+  int default_generate_id_handler_base;
+  char *default_generate_id_handler_prefix;
+  size_t default_generate_id_handler_prefix_length;
 
   /* parser specific stuff */
   void *context;
