@@ -33,8 +33,8 @@ librapier_a_DEPENDENCIES = @XML_OBJS@
 
 EXTRA_librapier_a_SOURCES = rdfdump.c
 
-RDF_TEST_FILES=ex-0.rdf ex-1.rdf ex-2.rdf ex-3.rdf ex-4.rdf ex-5.rdf \
-ex-6.rdf ex-7.rdf ex-8.rdf
+RDF_TEST_FILES=ex-00.rdf ex-1.0rdf ex-02.rdf ex-03.rdf ex-40.rdf ex-05.rdf \
+ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf
 
 EXTRA_DIST=ChangeLog \
 README      NEWS      LICENSE.txt \
