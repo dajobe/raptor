@@ -52,8 +52,8 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-AM_PROG_LEX
-if test "$LEX" != flex; then
+AC_PROG_LEX
+if test "$LEX" != flex -a "$LEX" != ":"; then
   LEX="$SHELL $missing_dir/missing flex"
   AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
   AC_SUBST(LEXLIB, '')
@@ -62,7 +62,7 @@ fi
 FLEX_MIN_VERSION=2.5.19
 FLEX_REC_VERSION=2.5.31
 AC_MSG_CHECKING(flex version)
-if test "X$LEX" != "X"; then
+if test "X$LEX" != "X:"; then
   FLEX_VERSION=`$LEX -V 2>&1 | awk '{print $NF}'`
   FLEX_VERSION_DEC=`echo $FLEX_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 
