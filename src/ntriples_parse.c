@@ -157,10 +157,7 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
       statement->predicate=(void*)&predicate_ordinal;
       statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
     } else {
-      /* FIXME - could have a warning here */
-      /*
-      raptor_parser_error(parser, "Illegal rdf:_<n> property in %s.", predicate);
-      */
+      raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate);
       predicate_ordinal=0;
     }
   }
