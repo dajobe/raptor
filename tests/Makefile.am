@@ -72,7 +72,7 @@ check-local: check-rdf check-assume-rdf check-bad-rdf check-nt
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@result=0; \
-	echo "Testing legal rdf/xml"; \
+	$(ECHO) "Testing legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
@@ -82,19 +82,19 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	  else \
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
-	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
-	    echo FAILED returned status $$status; result=1; \
+	    $(ECHO) FAILED returned status $$status; result=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      echo ok with warnings; grep Warning $$name.err; \
+	      $(ECHO) ok with warnings; grep Warning $$name.err; \
 	    else \
-	      echo ok; \
+	      $(ECHO) ok; \
 	    fi; \
 	  else \
-	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    $(ECHO) FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
@@ -102,16 +102,16 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 
 check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 	@result=0; \
-	echo "Testing rdf/xml known by context"; \
+	$(ECHO) "Testing rdf/xml known by context"; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    echo ok; \
+	    $(ECHO) ok; \
 	  else \
-	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    $(ECHO) FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
@@ -119,20 +119,20 @@ check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 
 check-bad-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@set +e; result=0; \
-	echo "Testing bad rdf/xml fails"; \
+	$(ECHO) "Testing bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    echo ok; \
+	    $(ECHO) ok; \
 	  elif test $$status -eq 2 ; then \
-	    echo FAILED - parsing succeeded with a warning; \
+	    $(ECHO) FAILED - parsing succeeded with a warning; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
 	  else \
-	    echo FAILED - parsing failed with unknown status $$status; \
+	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
@@ -141,15 +141,15 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 
 check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
 	@result=0; \
-	echo "Testing N-Triples"; \
+	$(ECHO) "Testing N-Triples"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
-	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    echo ok; \
+	    $(ECHO) ok; \
 	  else \
-	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    $(ECHO) FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
