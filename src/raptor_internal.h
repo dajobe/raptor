@@ -286,6 +286,9 @@ void raptor_parser_register_factory(const char *name, void (*factory) (raptor_pa
 const unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
 const unsigned char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
 raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
+#ifdef RAPTOR_DEBUG
+void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
+#endif
 
 
 /* raptor_parse.c */
@@ -302,12 +305,18 @@ extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *mes
 
 /* raptor_parse.c */
 
+typedef struct raptor_xml_parser_s raptor_xml_parser;
+
 /* Prototypes for common expat/libxml parsing event-handling functions */
 extern void raptor_xml_start_element_handler(void *user_data, const unsigned char *name, const unsigned char **atts);
 extern void raptor_xml_end_element_handler(void *user_data, const unsigned char *name);
 /* s is not 0 terminated. */
 extern void raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len);
 void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
+
+#ifdef RAPTOR_DEBUG
+void raptor_xml_parser_stats_print(raptor_xml_parser* rdf_xml_parser, FILE *stream);
+#endif
 
 /* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
@@ -387,6 +396,7 @@ void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 
 void raptor_terminate_parser_rdfxml (void);
+
 
 /* raptor_utf8.c */
 int raptor_unicode_char_to_utf8(unsigned long c, char *output);
@@ -470,6 +480,10 @@ int raptor_www_libwww_fetch(raptor_www *www);
 raptor_set* raptor_new_set(void);
 int raptor_free_set(raptor_set* set);
 int raptor_set_add(raptor_set* set, char *item, size_t item_len);
+#ifdef RAPTOR_DEBUG
+void raptor_set_stats_print(raptor_set* set, FILE *stream);
+#endif
+
 
 /* end of RAPTOR_INTERNAL */
 #endif
