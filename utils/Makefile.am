@@ -120,7 +120,12 @@ deb: distcheck
 	tar xfz $(distdir).tar.gz
 	cd $distdir && dpkg-buildpackage -rfakeroot
 
-@SET_MAKE@
+dist-hook: README NEWS
+	@for file in README NEWS; do \
+          if test -r $(srcdir)/$$file; then \
+	    rm -f $(distdir)/$$file; \
+	    cp -p $(srcdir)/$$file $(distdir)/$$file; \
+	  fi; \
+	done
 
-../librdf/librdf.la:
-	cd ../librdf && $(MAKE) librdf.la
+@SET_MAKE@
