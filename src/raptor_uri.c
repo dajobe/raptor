@@ -63,6 +63,17 @@ static int raptor_uri_is_absolute (const char *uri);
 static void raptor_uri_parse (const char *uri, char *buffer, size_t len, char **scheme, char **authority, char **path, char **query, char **fragment);
 
 
+static raptor_uri_handler *raptor_current_uri_handler;
+static void *raptor_current_uri_context;
+
+void
+raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
+{
+  raptor_current_uri_handler=handler;
+  raptor_current_uri_context=context;
+}
+
+
 static raptor_uri*
 raptor_default_new_uri(void *context, const char *uri_string) 
 {
@@ -912,7 +923,7 @@ raptor_uri_is_file_uri(const char* uri_string) {
 
 
 void
-raptor_init_uri_default_handler(raptor_uri_handler *handler, void *context) 
+raptor_uri_init_default_handler(raptor_uri_handler *handler) 
 {
   if(handler->initialised)
     return;
@@ -941,9 +952,10 @@ static raptor_uri_handler raptor_uri_default_handler = {
 
 
 void
-raptor_init_uri_class(void)
+raptor_uri_init(void)
 {
-  raptor_init_uri_default_handler(&raptor_uri_default_handler, NULL);
+  raptor_uri_init_default_handler(&raptor_uri_default_handler);
+  raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
 }
 
 
