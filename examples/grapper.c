@@ -68,7 +68,7 @@ typedef struct {
 static const grapper_syntax_item grapper_syntax_info[GRAPPER_SYNTAX_SIZE]={
   {"rdfxml",   "RDF/XML"      },
   {"ntriples", "N-Triples"    },
-  {"rss-tag-soup", "RSS tag soup" }
+  {"rss-tag-soup", "RSS Tag Soup" }
 };
 
 
