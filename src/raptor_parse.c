@@ -831,6 +831,7 @@ raptor_xml_start_element_handler(void *user_data,
   int non_nspaced_count=0;
   unsigned char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
+  int count_bumped=0;
   
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
@@ -1120,6 +1121,7 @@ raptor_xml_start_element_handler(void *user_data,
 
       element->state=element->parent->child_state;
       element->parent->content_element_seen++;
+      count_bumped++;
     
       /* leave literal XML alone */
       if (!rdf_content_type_info[element->content_type].cdata_allowed) {
@@ -1169,6 +1171,9 @@ raptor_xml_start_element_handler(void *user_data,
     raptor_parser_warning(rdf_parser, "element %s has non-namespaced parts, skipping.", 
                           element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
+    /* Remove count above so that parent thinks this is empty */
+    if(count_bumped)
+      element->parent->content_element_seen--;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
   
@@ -1178,6 +1183,9 @@ raptor_xml_start_element_handler(void *user_data,
     raptor_parser_warning(rdf_parser, "element %s has aboutEach / aboutEachPrefix, skipping.", 
                           element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
+    /* Remove count above so that parent thinks this is empty */
+    if(count_bumped)
+      element->parent->content_element_seen--;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
   

@@ -4,7 +4,7 @@
 #
 # $Id$
 #
-# Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+# Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
 # Institute for Learning and Research Technology - http://www.ilrt.org/
 # University of Bristol - http://www.bristol.ac.uk/
 # 
@@ -33,6 +33,8 @@ RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
 bad-10.rdf bad-11.rdf
 
+RDF_WARN_TEST_FILES=warn-00.rdf
+
 RDF_ASSUME_TEST_FILES=ex-19.rdf
 
 RDF_OUT_FILES=ex-00.out ex-01.out ex-02.out ex-03.out ex-04.out ex-05.out \
@@ -45,6 +47,8 @@ ex-41.out ex-42.out ex-43.out ex-44.out ex-45.out ex-46.out ex-47.out \
 ex-48.out ex-49.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out
+
+RDF_WARN_OUT_FILES=warn-00.out
 
 RDF_ASSUME_OUT_FILES=ex-19.out
 
@@ -65,8 +69,10 @@ EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
 	$(RDF_ASSUME_TEST_FILES) \
 	$(RDF_BAD_TEST_FILES) \
+	$(RDF_WARN_TEST_FILES) \
 	$(RDF_OUT_FILES) \
 	$(RDF_ASSUME_OUT_FILES) \
+	$(RDF_WARN_OUT_FILES) \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES)
 
@@ -74,7 +80,7 @@ EXTRA_DIST = \
 $(top_builddir)/rapper:
 	@(cd .. ; $(MAKE) rapper)
 
-check-local: check-rdf check-assume-rdf check-bad-rdf check-nt
+check-local: check-rdf check-assume-rdf check-bad-rdf check-warn-rdf check-nt
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@result=0; \
@@ -125,7 +131,7 @@ check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 	done; \
 	exit $$result
 
-check-bad-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
+check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
@@ -139,6 +145,28 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	  elif test $$status -eq 2 ; then \
 	    $(ECHO) FAILED - parsing succeeded with a warning; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
+	  else \
+	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
+	    cat $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res $$name.err ; \
+	done; \
+	set -e; exit $$result
+
+check-warn-rdf: $(top_builddir)/rapper $(RDF_WARN_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing rdf/xml with warnings"; \
+	for test in $(RDF_WARN_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  baseuri=$(BASE_URI)$$name.rdf; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status -eq 1 ; then \
+	    $(ECHO) FAILED - parsing failed when should have warned; \
+	    cat $$name.res; grep Error $$name.err; result=1; \
+	  elif test $$status -eq 2 ; then \
+	    $(ECHO) ok; \
 	  else \
 	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
 	    cat $$name.res; result=1; \
