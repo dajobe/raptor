@@ -83,7 +83,7 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 void
 raptor_init(void) 
 {
-  if(raptor_initialised)
+  if(raptor_initialised++)
     return;
 
 #ifdef RAPTOR_PARSER_RSS
@@ -105,8 +105,6 @@ raptor_init(void)
 
   raptor_uri_init();
   raptor_www_init();
-
-  raptor_initialised=1;
 }
 
 
@@ -118,14 +116,12 @@ raptor_init(void)
 void
 raptor_finish(void) 
 {
-  if(!raptor_initialised)
+  if(--raptor_initialised)
     return;
 
   raptor_www_finish();
   raptor_delete_parser_factories();
   raptor_delete_serializer_factories();
-
-  raptor_initialised=0;
 }
 
 
