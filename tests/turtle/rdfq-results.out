@@ -1,5 +1,5 @@
 _:genid1 <http://jena.hpl.hp.com/2003/03/result-set#variable> "x" .
-_:genid1 <http://jena.hpl.hp.com/2003/03/result-set#value> "123"^^<http://www.w3.org/2000/10/XMLSchema#integer> .
+_:genid1 <http://jena.hpl.hp.com/2003/03/result-set#value> "123"^^<http://www.w3.org/2001/XMLSchema#integer> .
 _:genid2 <http://jena.hpl.hp.com/2003/03/result-set#variable> "y" .
 _:genid2 <http://jena.hpl.hp.com/2003/03/result-set#value> <http://example.com/resource1> .
 _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://jena.hpl.hp.com/2003/03/result-set#ResultSolution> .
@@ -27,7 +27,7 @@ _:genid12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://jena.hpl.hp.
 _:genid12 <http://jena.hpl.hp.com/2003/03/result-set#binding> _:genid10 .
 _:genid12 <http://jena.hpl.hp.com/2003/03/result-set#binding> _:genid11 .
 <http://www.redland.opensource.ac.uk/raptor/tests/turtle/rdfq-results.ttl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://jena.hpl.hp.com/2003/03/result-set#ResultSet> .
-<http://www.redland.opensource.ac.uk/raptor/tests/turtle/rdfq-results.ttl> <http://jena.hpl.hp.com/2003/03/result-set#size> "4"^^<http://www.w3.org/2000/10/XMLSchema#integer> .
+<http://www.redland.opensource.ac.uk/raptor/tests/turtle/rdfq-results.ttl> <http://jena.hpl.hp.com/2003/03/result-set#size> "4"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.redland.opensource.ac.uk/raptor/tests/turtle/rdfq-results.ttl> <http://jena.hpl.hp.com/2003/03/result-set#resultVariable> "x" .
 <http://www.redland.opensource.ac.uk/raptor/tests/turtle/rdfq-results.ttl> <http://jena.hpl.hp.com/2003/03/result-set#resultVariable> "y" .
 <http://www.redland.opensource.ac.uk/raptor/tests/turtle/rdfq-results.ttl> <http://jena.hpl.hp.com/2003/03/result-set#solution> _:genid3 .
