@@ -421,6 +421,37 @@ typedef enum {
 } raptor_element_content_type;
 
 
+static const struct {
+  const char * const name;
+  const int whitespace_significant;
+  /* non-blank cdata */
+  const int cdata_allowed;
+  /* XML element content */
+  const int element_allowed;
+  /* Do RDF-specific processing? (property attributes, rdf: attributes, ...) */
+  const int rdf_processing;
+} rdf_content_type_info[]={
+  {"Unknown",         1, 1, 1, 0 },
+  {"Literal",         1, 1, 0, 0 },
+  {"XML Literal",     1, 1, 1, 0 },
+  {"Nodes",           0, 0, 1, 1 },
+  {"Properties",      0, 1, 1, 1 },
+  {"Resource",        0, 0, 0, 0 },
+  {"Preserved",       1, 1, 1, 0 },
+  {"DAML Collection", 1, 1, 1, 1 },
+};
+
+
+
+static const char * raptor_element_content_type_as_string(raptor_element_content_type type) 
+{
+  if(type<0 || type > RAPTOR_ELEMENT_CONTENT_TYPE_LAST)
+    return "INVALID";
+  return rdf_content_type_info[type].name;
+}
+
+
+
 /*
  * Raptor Element/attributes on stack 
  */
