@@ -188,7 +188,7 @@ main(int argc, char *argv[])
   int rc;
   int scanning=0;
   const char *syntax_name="rdfxml";
-  const char *serializer_syntax_name="simple";
+  const char *serializer_syntax_name="ntriples";
   int strict_mode=0;
   int usage=0;
   int help=0;
