@@ -47,7 +47,7 @@
 #include "raptor_nfc.h"
 
 
-#define RAPTOR_DEBUG_NFC_CHECK
+#undef RAPTOR_DEBUG_NFC_CHECK
 
 
 /*
