@@ -120,7 +120,7 @@ raptor_www_finish(void)
 raptor_www *
 raptor_www_new_with_connection(void *connection)
 {
-  raptor_www *www=RAPTOR_CALLOC(www, sizeof(raptor_www), 1);
+  raptor_www *www=(raptor_www *)RAPTOR_CALLOC(www, sizeof(raptor_www), 1);
   if(!www)
     return NULL;
   
@@ -224,7 +224,7 @@ raptor_www_set_content_type_handler(raptor_www *www,
 void
 raptor_www_set_user_agent(raptor_www *www, const char *user_agent)
 {
-  char *ua_copy=RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
+  char *ua_copy=(char*)RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
   if(!ua_copy)
     return;
   strcpy(ua_copy, user_agent);
@@ -236,7 +236,7 @@ raptor_www_set_user_agent(raptor_www *www, const char *user_agent)
 void
 raptor_www_set_proxy(raptor_www *www, const char *proxy)
 {
-  char *proxy_copy=RAPTOR_MALLOC(cstring, strlen(proxy)+1);
+  char *proxy_copy=(char*)RAPTOR_MALLOC(cstring, strlen(proxy)+1);
   if(!proxy_copy)
     return;
   strcpy(proxy_copy, proxy);
