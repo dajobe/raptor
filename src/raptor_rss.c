@@ -1216,6 +1216,10 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
   for(f=0; f< RAPTOR_RSS_FIELDS_SIZE; f++) {
     if(!item->fields[f] && !item->uri_fields[f])
       continue;
+
+    /* This is only made by a connection */
+    if(f == RAPTOR_RSS_FIELD_ITEMS)
+      continue;
     
     rss_parser->statement.predicate=raptor_rss_fields_info[f].uri;
     if(!rss_parser->statement.predicate)
