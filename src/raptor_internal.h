@@ -229,6 +229,12 @@ struct raptor_parser_s {
   int feature_allow_other_parseTypes;
 
 
+  /* FEATURE: 
+   * non 0 if rdf:bagID is allowed.
+   * RDF/XML Syntax (Revised) 2003 forbids this.
+   */
+  int feature_allow_bagID;
+
   /* stuff for our user */
   void *user_data;
 
