@@ -101,7 +101,7 @@ raptor_features_enumerate_common(const raptor_feature feature,
       if(uri) {
         raptor_uri *base_uri=raptor_new_uri((const unsigned char*)raptor_feature_uri_prefix);
         if(!base_uri)
-          return -11;
+          return -1;
         
         *uri=raptor_new_uri_from_uri_local_name(base_uri,
                                                 (const unsigned char*)raptor_features_list[i].name);
