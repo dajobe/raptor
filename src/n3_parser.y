@@ -74,7 +74,7 @@ static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_ident
 static void raptor_free_triple(raptor_triple *triple);
 
 #ifdef RAPTOR_DEBUG
-static void raptor_print_triple(raptor_triple *data, FILE *fh);
+static void raptor_triple_print(raptor_triple *data, FILE *fh);
 #endif
 
 
@@ -212,7 +212,7 @@ objectList: object COMMA objectList
   triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
 #ifdef RAPTOR_DEBUG
   $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
-                         (raptor_print_handler*)raptor_print_triple);
+                         (raptor_print_handler*)raptor_triple_print);
 #else
   $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
 #endif
@@ -548,7 +548,7 @@ void raptor_free_triple(raptor_triple *t) {
  
 #ifdef RAPTOR_DEBUG
 static
-void raptor_print_triple(raptor_triple *t, FILE *fh) 
+void raptor_triple_print(raptor_triple *t, FILE *fh) 
 {
   fputs("triple(", fh);
   raptor_identifier_print(fh, t->subject);
