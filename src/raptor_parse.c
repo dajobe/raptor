@@ -3307,7 +3307,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           /* In a rdf:parseType daml:collection the resources are appended
            * to the list at element->parent->tail_uri 
            */
-          if (state == RAPTOR_STATE_PARSETYPE_DAML_COLLECTION) {
+          if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
             const char * idList = raptor_generate_id(rdf_parser, 0);
             raptor_uri* uriList = raptor_make_uri_from_id(rdf_parser->base_uri, idList);
             LIBRDF_FREE(cstring, (char*)idList);
