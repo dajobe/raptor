@@ -498,7 +498,7 @@ struct raptor_xml_parser_s {
   raptor_uri* concepts[RAPTOR_N_CONCEPTS];
 
   /* set of seen rdf:ID / rdf:bagID values (with in-scope base URI) */
-  raptor_set* id_set;
+  raptor_id_set* id_set;
 
   /* writer for building parseType="Literal" content */
   raptor_xml_writer* xml_writer;
@@ -1243,7 +1243,7 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
   RAPTOR_RDF_Description_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("Description");
   RAPTOR_RDF_li_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("li");
 
-  rdf_xml_parser->id_set=raptor_new_set();
+  rdf_xml_parser->id_set=raptor_new_id_set();
 
   return 0;
 }
@@ -1349,7 +1349,7 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 #endif
 #endif
 
-  raptor_free_set(rdf_xml_parser->id_set);
+  raptor_free_id_set(rdf_xml_parser->id_set);
 
   raptor_namespaces_clear(&rdf_xml_parser->namespaces);
 
@@ -3342,32 +3342,12 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
 {
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_uri* base_uri=raptor_inscope_base_uri(rdf_parser);
-  char *item;
-  unsigned char *base_uri_string;
-  size_t base_uri_string_len;
-  size_t id_len;
-  size_t len;
-  int rc;
-  
+  size_t id_len=strlen((const char*)id);
+
   if(!rdf_parser->feature_check_rdf_id)
     return 0;
 
-  base_uri_string=raptor_uri_as_counted_string(base_uri, &base_uri_string_len);
-  id_len=strlen((const char*)id);
-  
-  /* Storing ID + ' ' + base-uri-string + '\0' */
-  len=id_len+1+strlen((const char*)base_uri_string)+1;
-
-  item=(char*)RAPTOR_MALLOC(cstring, len);
-  if(!item)
-    return 1;
-
-  strcpy(item, (const char*)id);
-  item[id_len]=' ';
-  strcpy(item+id_len+1, (const char*)base_uri_string); /* strcpy for end '\0' */
-  
-  rc=raptor_set_add(rdf_xml_parser->id_set, item, len);
-  RAPTOR_FREE(cstring, item);
+  int rc=raptor_id_set_add(rdf_xml_parser->id_set, base_uri, id, id_len);
 
   return (rc != 0);
 }
@@ -3458,6 +3438,6 @@ raptor_init_parser_rdfxml (void) {
 void
 raptor_xml_parser_stats_print(raptor_xml_parser* rdf_xml_parser, FILE *stream) {
   fputs("rdf:ID set ", stream);
-  raptor_set_stats_print(rdf_xml_parser->id_set, stream);
+  raptor_id_set_stats_print(rdf_xml_parser->id_set, stream);
 }
 #endif
