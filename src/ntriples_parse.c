@@ -208,7 +208,8 @@ typedef enum {
   RAPTOR_TERM_CLASS_URI,      /* ends on > */
   RAPTOR_TERM_CLASS_BNODEID,  /* ends on first non [A-Za-z][A-Za-z0-9]* */
   RAPTOR_TERM_CLASS_STRING,   /* ends on non-escaped " */
-  RAPTOR_TERM_CLASS_LANGUAGE  /* ends on first non [a-z0-9]+ ('-' [a-z0-9]+ )? */
+  RAPTOR_TERM_CLASS_LANGUAGE, /* ends on first non [a-z0-9]+ ('-' [a-z0-9]+ )? */
+  RAPTOR_TERM_CLASS_FULL      /* the entire string is used */
 } raptor_ntriples_term_class;
 
 
@@ -244,6 +245,9 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
         result = (result || c=='-');
       break;
       
+    case RAPTOR_TERM_CLASS_FULL:
+      break;
+      
     default:
       raptor_parser_fatal_error(rdf_parser, "Unknown ntriples term %d", class);
   }
@@ -261,19 +265,27 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
  * @dest_lenp: pointer to length of destination string (out)
  * @end_char: string ending character
  * @class: string class
+ * @allow_utf8: Non-0 if UTF-8 chars are allowed in the term
  * 
  * N-Triples strings/URIs are written in ASCII at present; characters
  * outside the printable ASCII range are discarded with a warning.
  * See the grammar for full details of the allowed ranges.
+ *
+ * If the class is RAPTOR_TERM_CLASS_FULL, the end_char is ignored.
+ *
+ * UTF-8 is only allowed if allow_utf8 is non-0, otherwise the
+ * string is US-ASCII and only the \u and \U esapes are allowed.
+ * If enabled, both are allowed.
  *
  * Return value: Non 0 on failure
  **/
 static int
 raptor_ntriples_term(raptor_parser* rdf_parser, 
                      char **start, char *dest, 
-                     int *lenp, int *dest_lenp,
+                     size_t *lenp, size_t *dest_lenp,
                      char end_char,
-                     raptor_ntriples_term_class class)
+                     raptor_ntriples_term_class class,
+                     int allow_utf8)
 {
   char *p=*start;
   unsigned char c='\0';
@@ -281,6 +293,9 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
   unsigned long unichar=0;
   unsigned int position=0;
   int end_char_seen=0;
+
+  if(class == RAPTOR_TERM_CLASS_FULL)
+    end_char='\0';
   
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
@@ -291,10 +306,27 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     rdf_parser->locator.column++;
     rdf_parser->locator.byte++;
 
-    /* This is an ASCII check, not a printable character check 
-     * so isprint() is not appropriate, since that is a locale check.
-     */
-    if(!IS_ASCII_PRINT(c)) {
+    if(allow_utf8) {
+      if(c > 0x7f) {
+        /* just copy the UTF-8 bytes through */
+        int unichar_len=raptor_utf8_to_unicode_char(NULL, p-1, 1+*lenp);
+        if(unichar_len < 0 || unichar_len > *lenp) {
+          raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
+          /* UTF-8 encoding had an error or ended in the middle of a string */
+          return 1;
+        }
+        memcpy(dest, p-1, unichar_len);
+        unichar_len--;
+
+        (*lenp) -= unichar_len;
+        rdf_parser->locator.column+= unichar_len;
+        rdf_parser->locator.byte+= unichar_len;
+        continue;
+      }
+    } else if(!IS_ASCII_PRINT(c)) {
+      /* This is an ASCII check, not a printable character check 
+       * so isprint() is not appropriate, since that is a locale check.
+       */
       raptor_parser_error(rdf_parser, "Non-printable ASCII character %d (0x%02X) found.", c, c);
       continue;
     }
@@ -328,7 +360,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     }
 
     if(!*lenp) {
-      raptor_parser_error(rdf_parser, "\\ at end of line");
+      if(class != RAPTOR_TERM_CLASS_FULL)
+        raptor_parser_error(rdf_parser, "\\ at end of line");
       return 0;
     }
 
@@ -403,19 +436,38 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 }
 
 
+char*
+raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, 
+                                      char *src, int len,  size_t *dest_lenp)
+{
+  char *start=src;
+  size_t length=len;
+  char *dest=(char*)RAPTOR_MALLOC(cstring, len+1);
+
+  int rc=raptor_ntriples_term(rdf_parser, &start, dest, &length, dest_lenp,
+                              '\0', RAPTOR_TERM_CLASS_FULL, 1);
+  if(rc) {
+    RAPTOR_FREE(cstring, dest);
+    dest=NULL;
+  }
+  return dest;
+}
+
+
+
 static const char *xml_literal_datatype_uri_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 
 
 static int
-raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len) 
+raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, size_t len) 
 {
   int i;
   char *p;
   char *dest;
   char *terms[3];
-  int term_lengths[3];
+  size_t term_lengths[3];
   raptor_ntriples_term_type term_types[3];
-  int term_length= 0;
+  size_t term_length= 0;
   char *object_literal_language=NULL;
   char *object_literal_datatype=NULL;
 
@@ -513,7 +565,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length, 
-                                '>', RAPTOR_TERM_CLASS_URI))
+                                '>', RAPTOR_TERM_CLASS_URI, 0))
           return 1;
         break;
 
@@ -529,7 +581,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length,
-                                '"', RAPTOR_TERM_CLASS_STRING))
+                                '"', RAPTOR_TERM_CLASS_STRING, 0))
           return 1;
         
         if(len && (*p == '-' || *p == '@')) {
@@ -552,7 +604,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_language, &len, NULL,
-                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE))
+                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE, 0))
             return 1;
         }
 
@@ -578,7 +630,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_datatype, &len, NULL,
-                                  '>', RAPTOR_TERM_CLASS_URI))
+                                  '>', RAPTOR_TERM_CLASS_URI, 0))
             return 1;
           
         }
@@ -617,7 +669,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length,
-                                '\0', RAPTOR_TERM_CLASS_BNODEID))
+                                '\0', RAPTOR_TERM_CLASS_BNODEID, 0))
           return 1;
 
         if(!term_length) {
@@ -646,7 +698,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length, 
-                                '"', RAPTOR_TERM_CLASS_STRING))
+                                '"', RAPTOR_TERM_CLASS_STRING, 0))
           return 1;
 
         /* got XML literal string */
@@ -671,7 +723,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_language, &len, NULL,
-                                  '"', RAPTOR_TERM_CLASS_STRING))
+                                  '"', RAPTOR_TERM_CLASS_STRING, 0))
             return 1;
           
         }
@@ -698,7 +750,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_datatype, &len, NULL,
-                                  '>', RAPTOR_TERM_CLASS_URI))
+                                  '>', RAPTOR_TERM_CLASS_URI, 0))
             return 1;
           
         }
