@@ -117,7 +117,7 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
 
 
 raptor_namespace_stack *
-raptor_namespaces_new(raptor_uri_handler *uri_handler,
+raptor_new_namespaces(raptor_uri_handler *uri_handler,
                       void *uri_context,
                       raptor_simple_message_handler error_handler,
                       void *error_data,
@@ -185,7 +185,7 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack) {
 
 
 void
-raptor_namespaces_free(raptor_namespace_stack *nstack) {
+raptor_free_namespaces(raptor_namespace_stack *nstack) {
   raptor_namespaces_clear(nstack);
   RAPTOR_FREE(raptor_namespace_stack, nstack);
 }
