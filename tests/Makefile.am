@@ -86,7 +86,7 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
-	    echo FAILED returned status $$status; restult=1; \
+	    echo FAILED returned status $$status; result=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
 	      echo ok with warnings; \
