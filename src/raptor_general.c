@@ -113,6 +113,7 @@ raptor_delete_parser_factories(void)
   for(factory=parsers; factory; factory=next) {
     next=factory->next;
     RAPTOR_FREE(raptor_parser_factory, factory->name);
+    RAPTOR_FREE(raptor_parser_factory, factory->label);
     RAPTOR_FREE(raptor_parser_factory, factory);
   }
   parsers=NULL;
@@ -128,15 +129,15 @@ raptor_delete_parser_factories(void)
  * 
  **/
 void
-raptor_parser_register_factory(const char *name,
+raptor_parser_register_factory(const char *name, const char *label,
                                void (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser, *h;
-  char *name_copy;
+  char *name_copy, *label_copy;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_parser_register_factory,
-                "Received registration for parser %s\n", name);
+  RAPTOR_DEBUG3(raptor_parser_register_factory,
+                "Received registration for parser %s '%s'\n", name. label);
 #endif
   
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
@@ -151,6 +152,14 @@ raptor_parser_register_factory(const char *name,
   }
   strcpy(name_copy, name);
   parser->name=name_copy;
+        
+  label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
+  if(!label_copy) {
+    RAPTOR_FREE(raptor_parser, parser);
+    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+  }
+  strcpy(label_copy, label);
+  parser->label=label_copy;
         
   for(h = parsers; h; h = h->next ) {
     if(!strcmp(h->name, name_copy)) {
@@ -784,6 +793,28 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->feature_allow_other_parseTypes=!is_strict;
   rdf_parser->feature_allow_bagID=!is_strict;
 
+}
+
+
+/**
+ * raptor_get_name: Return the short name for the parser
+ * @parser: &raptor_parser parser object
+ **/
+const char*
+raptor_get_name(raptor_parser *rdf_parser) 
+{
+  return rdf_parser->factory->name;
+}
+
+
+/**
+ * raptor_get_label: Return a readable label for the parser
+ * @parser: &raptor_parser parser object
+ **/
+const char*
+raptor_get_label(raptor_parser *rdf_parser) 
+{
+  return rdf_parser->factory->label;
 }
 
 
