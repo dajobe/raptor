@@ -1666,16 +1666,19 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
   raptor_parser *rdf_parser=(raptor_parser *)user_data;
   int id;
   unsigned char *buffer;
-  int length=2; /* min length 1 + \0 */
-  int tmpid=id;
+  int length;
+  int tmpid;
 
   if(user_bnodeid)
     return user_bnodeid;
 
   id=++rdf_parser->default_generate_id_handler_base;
 
+  tmp=id;
+  length=2; /* min length 1 + \0 */
   while(tmpid/=10)
     length++;
+
   if(rdf_parser->default_generate_id_handler_prefix)
     length += rdf_parser->default_generate_id_handler_prefix_length;
   else
