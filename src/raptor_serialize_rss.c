@@ -1681,7 +1681,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
       }
 
       if(type != RAPTOR_RSS_NONE) {
-        raptor_rss_item *item;
+        raptor_rss_item *item=NULL;
 
         if(type == RAPTOR_RSS_ITEM) {
           for(i=0; i < raptor_sequence_size(rss_serializer->items); i++) {
