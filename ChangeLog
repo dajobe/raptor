@@ -1,3 +1,12 @@
+2005-01-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* win32_raptor_config.h, win32/Makefile.am, win32/rapper.dsp,
+	win32/raptor.dsp, win32/raptor.dsw, win32/raptortest.dsp: win32
+	build update (patch from Dave Viner)
+
+	* win32_raptor_config.h:
+	RAPTOR_INTERNAL should be defined in the build configuration
+
 2005-01-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rss.c: Recognise old RSS 0.9 namespace and handle it as
