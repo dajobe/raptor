@@ -351,7 +351,7 @@ raptor_www_file_fetch(raptor_www *www)
 int
 raptor_www_fetch(raptor_www *www, raptor_uri *uri) 
 {
-  www->uri=raptor_uri_copy(uri);
+  www->uri=raptor_new_uri_for_retrieval(uri);
   
   www->locator.uri=uri;
   www->locator.line= -1;
