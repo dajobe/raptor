@@ -263,12 +263,20 @@ if test $need_expat = 1; then
     SD="$SD expat"
     CPPFLAGS="-I\$(top_srcdir)/expat/xmlparse $CPPFLAGS"
     XML_OBJS="\$(top_builddir)/expat/xmlparse/xmlparse.o \$(top_builddir)/expat/xmlparse/hashtable.o \$(top_builddir)/expat/xmltok/xmlrole.o \$(top_builddir)/expat/xmltok/xmltok.o"
+    # We know local expat sources has XML_SetNamespaceDeclHandler already
+    found=yes
   else
     LIBS="$LIBS $expat_libs"
+    found=no
   fi
 
   AC_MSG_CHECKING(for XML_SetNamespaceDeclHandler in expat)
-  AC_TRY_RUN([main() {XML_SetNamespaceDeclHandler(); return(0);}], worked=yes, worked=no, worked=no)
+  if test $found = yes; then
+    worked=yes
+  else
+    AC_TRY_RUN([main() {XML_SetNamespaceDeclHandler(); return(0);}], worked=yes, worked=no, worked=no)
+  fi
+
   if test $worked = yes; then
     AC_DEFINE(HAVE_XML_SetNamespaceDeclHandler)
     AC_MSG_RESULT(yes)
@@ -292,7 +300,7 @@ if test $need_expat = 1; then
   if test $need_expat_source = 1; then
     xml_parsers_available="$xml_parsers_available expat(source)"
   else
-    if $libexpat = 1; then
+    if test $libexpat = 1; then
       xml_parsers_available="$xml_parsers_available expat(system libexpat)"
     else
       xml_parsers_available="$xml_parsers_available expat(system libxmlparse,libxmltok)"
