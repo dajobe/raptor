@@ -5,74 +5,19 @@ dnl (Process this file with autoconf to produce a configure script.)
 dnl
 dnl $Id$
 dnl
-dnl Copyright (C) 2000 David Beckett - http://purl.org/net/dajobe/
-dnl Institute for Learning and Research Technology, University of Bristol.
-dnl
-dnl    This package is Free Software available under either of two licenses
-dnl    (see FAQS.html to see why):
+dnl Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+dnl Institute for Learning and Research Technology - http://www.ilrt.org/
+dnl University of Bristol - http://www.bristol.ac.uk/
 dnl 
-dnl 1. The GNU Lesser General Public License (LGPL)
+dnl This package is Free Software or Open Source available under the
+dnl following licenses (these are alternatives):
+dnl   1. GNU Lesser General Public License (LGPL)
+dnl   2. GNU General Public License (GPL)
+dnl   3. Mozilla Public License (MPL)
 dnl 
-dnl    See http://www.gnu.org/copyleft/lesser.html or COPYING.LIB for the
-dnl    full license text.
-dnl      _________________________________________________________________
+dnl See LICENSE.html or LICENSE.txt at the top of this package for the
+dnl full license terms.
 dnl 
-dnl      Copyright (C) 2000 David Beckett, Institute for Learning and
-dnl      Research Technology, University of Bristol. All Rights Reserved.
-dnl 
-dnl      This library is free software; you can redistribute it and/or
-dnl      modify it under the terms of the GNU Lesser General Public License
-dnl      as published by the Free Software Foundation; either version 2 of
-dnl      the License, or (at your option) any later version.
-dnl 
-dnl      This library is distributed in the hope that it will be useful, but
-dnl      WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-dnl      Lesser General Public License for more details.
-dnl 
-dnl      You should have received a copy of the GNU Lesser General Public
-dnl      License along with this library; if not, write to the Free Software
-dnl      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-dnl      USA
-dnl      _________________________________________________________________
-dnl 
-dnl    NOTE - under Term 3 of the LGPL, you may choose to license the entire
-dnl    library under the GPL. See COPYING for the full license text.
-dnl 
-dnl 2. The Mozilla Public License
-dnl 
-dnl    See http://www.mozilla.org/MPL/MPL-1.1.html or MPL.html for the full
-dnl    license text.
-dnl 
-dnl    Under MPL section 13. I declare that all of the Covered Code is
-dnl    Multiple Licensed:
-dnl      _________________________________________________________________
-dnl 
-dnl      The contents of this file are subject to the Mozilla Public License
-dnl      version 1.1 (the "License"); you may not use this file except in
-dnl      compliance with the License. You may obtain a copy of the License
-dnl      at http://www.mozilla.org/MPL/
-dnl 
-dnl      Software distributed under the License is distributed on an "AS IS"
-dnl      basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
-dnl      the License for the specific language governing rights and
-dnl      limitations under the License.
-dnl 
-dnl      The Initial Developer of the Original Code is David Beckett.
-dnl      Portions created by David Beckett are Copyright (C) 2000 David
-dnl      Beckett, Institute for Learning and Research Technology, University
-dnl      of Bristol. All Rights Reserved.
-dnl 
-dnl      Alternatively, the contents of this file may be used under the
-dnl      terms of the GNU Lesser General Public License, in which case the
-dnl      provisions of the LGPL License are applicable instead of those
-dnl      above. If you wish to allow use of your version of this file only
-dnl      under the terms of the LGPL License and not to allow others to use
-dnl      your version of this file under the MPL, indicate your decision by
-dnl      deleting the provisions above and replace them with the notice and
-dnl      other provisions required by the LGPL License. If you do not delete
-dnl      the provisions above, a recipient may use your version of this file
-dnl      under either the MPL or the LGPL License.
 
 
 AC_REVISION($Revision$)dnl
