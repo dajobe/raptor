@@ -1292,9 +1292,7 @@ rapier_xml_start_element_handler(void *user_data,
 
         rapier_start_namespace(user_data, prefix, atts[i+1],
                                rdf_parser->depth);
-        /* Is it ok to zap XML parser array things?
-         * FIXME
-         */
+        /* Is it ok to zap XML parser array things? */
         atts[i]=NULL; 
         continue;
       }
@@ -2562,7 +2560,7 @@ rapier_make_uri(rapier_uri *base_uri, const char *uri_string)
     if(!isalnum(*p))
        break;
   /* If first non-alphanumeric char is a ':' then probably a absolute URI
-   * FIXME what a crock
+   * Need to check URI spec - FIXME
    */
   if(*p && *p == ':') {
     new_uri=LIBRDF_MALLOC(cstring, strlen(uri_string)+1);
@@ -2841,7 +2839,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          *   Attributes: (ID|about|aboutEach|aboutEachPrefix)? bagID? propAttr*
          *
          * CHOICE (description): Create a bag here (always? even if
-         * no bagId given?) FIXME - not implemented yet.
+         * no bagId given?) FIXME - not decided / implemented yet.
          */
 
 
