@@ -102,7 +102,7 @@ raptor_qname*
 raptor_new_qname(raptor_namespace_stack *nstack, 
                  const unsigned char *name,
                  const unsigned char *value,
-                 raptor_internal_message_handler error_handler,
+                 raptor_simple_message_handler error_handler,
                  void *error_data)
 {
   raptor_qname* qname;
