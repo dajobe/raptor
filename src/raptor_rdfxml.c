@@ -1211,7 +1211,7 @@ raptor_xml_comment_handler(void *user_data, const unsigned char *s)
 
   if(element) {
     if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
-      raptor_xml_writer_comment(rdf_xml_parser->xml_writer, s, strlen((const char*)s));
+      raptor_xml_writer_comment(rdf_xml_parser->xml_writer, s);
   }
   
 
@@ -3093,7 +3093,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
   }
 
   if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
-    raptor_xml_writer_cdata(rdf_xml_parser->xml_writer, s, len);
+    raptor_xml_writer_cdata_counted(rdf_xml_parser->xml_writer, s, len);
   else {
     unsigned char *buffer=(unsigned char*)RAPTOR_MALLOC(cstring, sax2_element->content_cdata_length + len + 1);
     if(!buffer) {
