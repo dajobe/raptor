@@ -82,7 +82,7 @@ EXTRA_DIST = \
 
 
 $(top_builddir)/rapper:
-	@(cd .. ; $(MAKE) rapper)
+	@(cd $(top_builddir) ; $(MAKE) rapper)
 
 check-local: check-rdf check-assume-rdf check-bad-rdf check-warn-rdf check-nt
 
