@@ -671,6 +671,8 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     }
   }
   
+  raptor_www_set_error_handler(www, rdf_parser->error_handler, 
+                               rdf_parser->error_user_data);
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
                                      rdf_parser);
 
