@@ -160,7 +160,7 @@ typedef enum {
 
   /* met production 6.30 (inlineItem) - container item 
    * with rdf:parseType value "daml:collection" */
-  RAPTOR_STATE_PARSETYPE_DAML_COLLECTION = 6430,
+  RAPTOR_STATE_PARSETYPE_COLLECTION = 6430,
 
 } raptor_state;
 
@@ -184,7 +184,7 @@ static const char * const raptor_state_names[]={
   "parseTypeLiteral (6.30 part 2)",
   "parseTypeResource (6.30 part 3)",
   "parseTypeOther (not M&S)", /* 6.43 */
-  "parseTypeDamlCollection (not M&S)", /* 6.44 */
+  "parseTypeCollection (revised syntax)", /* 6.44 */
 };
 
 
@@ -389,11 +389,12 @@ typedef enum {
    */
   RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED,
 
-  /* parseType daml:collection - all content preserved
-   * Parsing of this determined by DAML collection rules
-   * <propElement rdf:parseType="daml:collection">...</propElement>
+  /* parseType Collection - all content preserved
+   * Parsing of this determined by RDF/XML (Revised) closed collection rules
+   * <propElement rdf:parseType="Collection">...</propElement>
+   * Also handles "daml:collection"
    */
-  RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION,
+  RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION,
 
   /* dummy for use in strings below */
   RAPTOR_ELEMENT_CONTENT_TYPE_LAST,
@@ -418,7 +419,7 @@ static const struct {
   {"Property Content",1, 1, 1, 1 },
   {"Resource",        0, 0, 0, 0 },
   {"Preserved",       1, 1, 1, 0 },
-  {"DAML Collection", 1, 1, 1, 1 },
+  {"Collection",      1, 1, 1, 1 },
 };
 
 
@@ -512,7 +513,7 @@ struct raptor_element_s {
   /* last ordinal used, so initialising to 0 works, emitting rdf:_1 first */
   int last_ordinal;
 
-  /* If this element's parseType is a daml:collection 
+  /* If this element's parseType is a Collection 
    * this identifies the anon node of current tail of the collection(list). 
    */
   const char *tail_id;
@@ -1541,7 +1542,7 @@ raptor_xml_start_element_handler(void *user_data,
     element->content_type=element->parent->child_content_type;
       
     if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
-       element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
+       element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
       raptor_parser_warning(rdf_parser, "element %s found inside property element with rdf:resource, skipping.", 
                             element->name->local_name);
@@ -3145,7 +3146,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_DESCRIPTION:
       case RAPTOR_STATE_TYPED_NODE:
       case RAPTOR_STATE_PARSETYPE_RESOURCE:
-      case RAPTOR_STATE_PARSETYPE_DAML_COLLECTION:
+      case RAPTOR_STATE_PARSETYPE_COLLECTION:
         /* Handling 6.3 (description), 6.13 (typedNode), contents
          * of a property (propertyElt or member) with parseType="Resource"
          * and rdf:Seq, rdf:Bag, rdf:Alt which are just typedNodes now
@@ -3156,7 +3157,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * Only create a bag if bagID given
          */
 
-        if(element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION && 
+        if(element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION && 
            element->parent && 
            (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
             element->parent->state == RAPTOR_STATE_MEMBER) &&
@@ -3171,7 +3172,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         if(state == RAPTOR_STATE_TYPED_NODE || 
            state == RAPTOR_STATE_DESCRIPTION || 
-           state == RAPTOR_STATE_PARSETYPE_DAML_COLLECTION) {
+           state == RAPTOR_STATE_PARSETYPE_COLLECTION) {
           if(element_in_rdf_ns &&
              IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description))
             state=RAPTOR_STATE_DESCRIPTION;
@@ -3203,7 +3204,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
           element->subject.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
         } else if (element->parent && 
-                   element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION &&
+                   element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
                    (element->parent->object.uri || element->parent->object.id)) {
           /* copy from parent (property element), it has a URI for us */
           raptor_copy_identifier(&element->subject, &element->parent->object);
@@ -3225,13 +3226,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         if(element->parent) {
 
-          /* In a rdf:parseType daml:collection the resources are appended
+          /* In a rdf:parseType="Collection" the resources are appended
            * to the list at the genid element->parent->tail_id
            */
-          if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
+          if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION) {
             const char * idList = raptor_generate_id(rdf_parser, 0);
             
-            /* <idList> rdf:type daml:List */
+            /* <idList> rdf:type rdf:List */
             raptor_generate_statement(rdf_parser, 
                                       NULL,
                                       idList,
@@ -3249,7 +3250,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       RAPTOR_URI_SOURCE_URI,
                                       NULL);
 
-            /* <idList> daml:first <element->uri> */
+            /* <idList> rdf:first <element->uri> */
             raptor_generate_statement(rdf_parser, 
                                       NULL,
                                       idList,
@@ -3267,7 +3268,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       element->subject.uri_source,
                                       NULL);
             
-            /* If there is no daml:collection */
+            /* If there is no rdf:parseType="Collection" */
             if (!element->parent->tail_id) {
               int len;
               char *new_id;
@@ -3293,7 +3294,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               element->parent->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
               element->parent->object.uri_source=RAPTOR_URI_SOURCE_ID;
             } else {
-              /* _:tail_id daml:rest _:listRest */
+              /* _:tail_id rdf:rest _:listRest */
               raptor_generate_statement(rdf_parser, 
                                         NULL,
                                         element->parent->tail_id,
@@ -3386,7 +3387,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             /* Append cdata content content */
             if(element->content_cdata) {
               /* Append */
-              char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1); /* DAML merge used 10 - why? */
+              char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
               if(new_cdata) {
                 strncpy(new_cdata, element->content_cdata,
                         element->content_cdata_length);
@@ -3485,8 +3486,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               if(!raptor_strcasecmp(parse_type, "daml:collection")) {
                 /* A DAML collection appears as a single node */
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
-                element->child_state=RAPTOR_STATE_PARSETYPE_DAML_COLLECTION;
-                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
+                element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
+                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION;
               } else {
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
                 element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
@@ -3683,7 +3684,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         finished=1;
         break;
 
-      case RAPTOR_STATE_PARSETYPE_DAML_COLLECTION:
+      case RAPTOR_STATE_PARSETYPE_COLLECTION:
 
         finished=1;
         break;
@@ -3706,7 +3707,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
             if(new_cdata) {
               strncpy(new_cdata, element->content_cdata,
-                      element->content_cdata_length); /* DAML merge had +1 - why? */
+                      element->content_cdata_length);
               strcpy(new_cdata+element->content_cdata_length, fmt_buffer);
               LIBRDF_FREE(cstring, element->content_cdata);
               element->content_cdata=new_cdata;
@@ -3786,10 +3787,10 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         }
 
 
-        /* Handle terminating a daml:collection list */
-        if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
+        /* Handle terminating a rdf:parseType="Collection" list */
+        if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION) {
           if (!element->tail_id) {
-            /* If No List: set object of statement to daml:nil */
+            /* If No List: set object of statement to rdf:nil */
             element->object.uri= raptor_copy_uri(RAPTOR_DAML_NIL_URI(rdf_parser));
             element->object.id= NULL;
             element->object.type= RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -3815,7 +3816,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                       NULL);
           }
 
-        } /* end daml:collection list termination stuff */
+        } /* end rdf:parseType="Collection" termination */
         
 
         LIBRDF_DEBUG3(raptor_end_element_grammar,
@@ -3972,7 +3973,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
           break;
 
-          case RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION:
+          case RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION:
             abort();
             
             break;
