@@ -1,3 +1,9 @@
+2004-07-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am, tests/bad-22.rdf:
+	bad-22.rdf testing rdf:li forbidden as a
+	property attribute (Graham Klyne)
+
 2004-07-09  Edd Dumbill <edd@usefulinc.com>
 
 	* raptor_locator.c: add accessors for parts of the raptor_locator
