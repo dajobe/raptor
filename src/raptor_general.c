@@ -1257,7 +1257,7 @@ raptor_free_element(raptor_element *element)
   raptor_free_identifier(&element->bag);
 
   if(element->tail_id)
-    LIBRDF_FREE(cstring, element->tail_id);
+    LIBRDF_FREE(cstring, (char*)element->tail_id);
 
   if(element->base_uri)
     RAPTOR_FREE_URI(element->base_uri);
@@ -1910,22 +1910,16 @@ static void
 raptor_start_namespace_decl_handler(void *user_data,
                                     const XML_Char *prefix, const XML_Char *uri)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
-
-#ifdef RAPTOR_DEBUG
-  fprintf(stderr, "saw namespace %s URI %s\n", prefix, uri);
-#endif
+  LIBRDF_DEBUG3(raptor_start_namespace_decl_handler,
+                "saw namespace %s URI %s\n", prefix, uri);
 }
 
 
 static void
 raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
-
-#ifdef RAPTOR_DEBUG
-  fprintf(stderr, "saw end namespace prefix %s\n", prefix);
-#endif
+  LIBRDF_DEBUG2(raptor_start_namespace_decl_handler,
+                "saw end namespace prefix %s\n", prefix);
 }
 #endif
 
@@ -2141,11 +2135,11 @@ raptor_xml_free_entity(raptor_xml_entity *ent) {
     return;
   
   if (ent->entity.name)
-    LIBRDF_FREE(cstring,  ent->entity.name);
+    LIBRDF_FREE(cstring,  (char*)ent->entity.name);
   if (ent->entity.ExternalID)
-    LIBRDF_FREE(cstring,  ent->entity.ExternalID);
+    LIBRDF_FREE(cstring,  (char*)ent->entity.ExternalID);
   if (ent->entity.SystemID)
-    LIBRDF_FREE(cstring,  ent->entity.SystemID);
+    LIBRDF_FREE(cstring,  (char*)ent->entity.SystemID);
   if (ent->entity.content)
     LIBRDF_FREE(cstring,  ent->entity.content);
 
@@ -3666,7 +3660,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
             /* update new tail */
             if(element->parent->tail_id)
-              LIBRDF_FREE(cstring, element->parent->tail_id);
+              LIBRDF_FREE(cstring, (char*)element->parent->tail_id);
 
             element->parent->tail_id=idList;
             
