@@ -212,6 +212,12 @@ main(int argc, char *argv[])
     uri_string=argv[optind++];
     base_uri_string=argv[optind];
   }
+
+  if(strncmp(uri_string, "file:", 5)) {
+    fprintf(stderr, "%s: URI %s must be file:FILE at present\n", 
+            program, uri_string);
+    return(1);
+  }
   
 
 #ifdef LIBRDF_INTERNAL
