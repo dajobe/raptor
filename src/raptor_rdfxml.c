@@ -227,8 +227,11 @@ typedef enum {
   RDF_ATTR_Statement       = 19, /* " rdf:Statement -- a class in RDF model */
   RDF_ATTR_Property        = 20, /* " rdf:Property -- a class in RDF model */
   RDF_ATTR_List            = 21, /* " rdf:List -- a class in RDF model */
+  RDF_ATTR_XMLLiteral      = 22, /* " rdf:XMLLiteral - a cless in RDF graph */
+  /* rdfs:Resource-s */
+  RDF_ATTR_nil             = 23, /* " rdf:nil -- a resource in RDF graph */
 
-  RDF_ATTR_LAST            = RDF_ATTR_List
+  RDF_ATTR_LAST            = RDF_ATTR_nil
 } rdf_attr;
 
 
@@ -245,7 +248,7 @@ static const struct {
   const char * const name;            /* attribute name */
   const raptor_identifier_type type;  /* statement value */
   int allowed_unprefixed_on_attribute;
-} rdf_attr_info[]={
+} rdf_attr_info[RDF_ATTR_LAST+1]={
   { "about",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 1 },
   { "aboutEach",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 0 },
   { "aboutEachPrefix", RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 0 },
@@ -269,7 +272,10 @@ static const struct {
   { "Alt",             RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
   { "Statement",       RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
   { "Property",        RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
-  { "List",            RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 }
+  { "List",            RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "XMLLiteral",      RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  /* rdfs:Resource-s */
+  { "nil",             RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 }
 };
 
 /* In above 'Useless' indicates it generates parts of a reified statement

@@ -653,7 +653,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
      statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-      fputs("<http://www.w3.org/2000/01/rdf-schema#XMLLiteral>", stream);
+      fputs("<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
     } else if(statement->object_literal_datatype) {
       fputc('<', stream);
       fputs(raptor_uri_as_string((raptor_uri*)statement->object_literal_datatype), stream);
@@ -719,7 +719,7 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
     fputc('"', stream);
     if(statement->object_literal_language)
       fprintf(stream, "@%s",  (const char*)statement->object_literal_language);
-    fputs("^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral>", stream);
+    fputs("^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fprintf(stream, "_:%s", (const char*)statement->object);
   else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)

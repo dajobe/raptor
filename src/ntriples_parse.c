@@ -546,7 +546,7 @@ raptor_ntriples_string(raptor_parser* rdf_parser,
 }
 
 
-static const char *xml_literal_datatype_uri_string="http://www.w3.org/2000/01/rdf-schema#XMLLiteral";
+static const char *xml_literal_datatype_uri_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 
 
 static int
@@ -768,7 +768,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
       case 'x':
 
-        raptor_parser_error(rdf_parser, "Old N-Triples XML using xml\"string\"-lang rather than \"string\"@lang^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral>.");
+        raptor_parser_error(rdf_parser, "Old N-Triples XML using xml\"string\"-lang rather than \"string\"@lang^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>.");
 
         /* already know we have 'xml"' coming up */
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
