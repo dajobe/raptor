@@ -284,7 +284,11 @@ raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer)
  * raptor_stringbuffer_as_string: - Return the stringbuffer as a C string
  * @stringbuffer: raptor stringbuffer
  * 
- * Return value: NULL on failure or stringbuffer is mpety
+ * Note: the return value is a to a shared string that the stringbuffer
+ * allocates and manages.
+ *
+ * Return value: NULL on failure or stringbuffer is empty, otherwise
+ *   a pointer to a shared copy of the string.
  **/
 unsigned char *
 raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
@@ -375,7 +379,6 @@ main(int argc, char *argv[])
             program, str, items_string);
     exit(1);
   }
-  RAPTOR_FREE(cstring, str);
 
   for(i=0; i<TEST_INTEGERS_COUNT; i++) {
     raptor_stringbuffer *isb=raptor_new_stringbuffer();
@@ -399,7 +402,6 @@ main(int argc, char *argv[])
               program, str, test_integer_results[i]);
       exit(1);
     }
-    RAPTOR_FREE(cstring, str);
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, "%s: Freeing string buffer\n", program);
 #endif
