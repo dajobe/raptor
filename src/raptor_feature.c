@@ -117,8 +117,8 @@ raptor_features_enumerate_common(const raptor_feature feature,
 
 
 
-/*
- * raptor_feature_from_uri_common - Turn a feature URI into an enum INTERNAL
+/**
+ * raptor_feature_from_uri - Turn a feature URI into an feature enum
  * @uri: feature URI
  * @flags: flags to match
  * 
@@ -127,7 +127,7 @@ raptor_features_enumerate_common(const raptor_feature feature,
  * Return value: < 0 if the feature is unknown
  **/
 raptor_feature
-raptor_feature_from_uri_common(raptor_uri *uri, int flags)
+raptor_feature_from_uri(raptor_uri *uri)
 {
   unsigned char *uri_string;
   int i;
