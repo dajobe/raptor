@@ -102,35 +102,42 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
   nstack->uri_handler=uri_handler;
   nstack->uri_context=uri_context;
 
+  nstack->error_handler=error_handler;
+  nstack->error_data=error_data;
+
   nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, raptor_rdf_ms_uri);
   nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, raptor_rdf_schema_uri);
 
   /* defined at level -1 since always 'present' when inside the XML world */
-  raptor_namespaces_start_namespace(nstack, (const unsigned char*)"xml",
-                                    (unsigned char*)raptor_xml_uri, -1,
-                                    error_handler, error_data);
+  raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
+                                         (unsigned char*)raptor_xml_uri, -1);
+}
+
+
+void
+raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
+                                  raptor_namespace *nspace)
+{
+  if(nstack->top)
+    nspace->next=nstack->top;
+  nstack->top=nspace;
 }
 
 
 int
-raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
-                                  const unsigned char *prefix, 
-                                  const unsigned char *ns_uri_string, int depth,
-                                  raptor_simple_message_handler error_handler,
-                                  void *error_data)
+raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, 
+                                       const unsigned char *prefix, 
+                                       const unsigned char *ns_uri_string,
+                                       int depth)
 
 {
   raptor_namespace *ns;
 
-  ns=raptor_namespace_new(nstack, prefix, ns_uri_string, depth,
-                          error_handler, error_data);
+  ns=raptor_namespace_new(nstack, prefix, ns_uri_string, depth);
   if(!ns)
     return 1;
   
-  if(nstack->top)
-    ns->next=nstack->top;
-  nstack->top=ns;
-
+  raptor_namespaces_start_namespace(nstack, ns);
   return 0;
 }
 
@@ -208,7 +215,7 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
   raptor_namespace* ns;
   
   for(ns=nstack->top; ns ; ns=ns->next)
-    if(ns == nspace)
+    if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nspace->uri))
       return 1;
   return 0;
 }
@@ -217,9 +224,7 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
 raptor_namespace*
 raptor_namespace_new(raptor_namespace_stack *nstack,
                      const unsigned char *prefix, 
-                     const unsigned char *ns_uri_string, int depth,
-                     raptor_simple_message_handler error_handler,
-                     void *error_data)
+                     const unsigned char *ns_uri_string, int depth)
 {
   int prefix_length=0;
   int len;
@@ -238,8 +243,8 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
 
   if(prefix && !ns_uri_string) {
     /* failed to find namespace - now what? */
-    if(error_handler)
-      error_handler((raptor_parser*)error_data, "The namespace URI for prefix \"%s\" is empty.", prefix);
+    if(nstack->error_handler)
+      nstack->error_handler((raptor_parser*)nstack->error_data, "The namespace URI for prefix \"%s\" is empty.", prefix);
     return NULL;
   }
   
@@ -281,8 +286,28 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
   }
 
   ns->nstack=nstack;
-  
+
   return ns;
+}
+
+/* copy to a new stack with a new depth */
+int
+raptor_namespace_copy(raptor_namespace_stack *nstack,
+                      raptor_namespace *ns,
+                      int new_depth)
+     
+{
+  raptor_namespace *new_ns;
+
+  raptor_uri* uri=(*nstack->uri_handler->uri_copy)(nstack->uri_context, ns->uri);
+  char *uri_string=(*nstack->uri_handler->uri_as_string)(nstack->uri_context, uri);
+
+  new_ns=raptor_namespace_new(nstack, ns->prefix, uri_string, new_depth);
+  if(!new_ns)
+    return 1;
+  
+  raptor_namespaces_start_namespace(nstack, new_ns);
+  return 0;
 }
 
 
