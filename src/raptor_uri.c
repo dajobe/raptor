@@ -50,6 +50,10 @@
 #include "raptor_internal.h"
 
 
+#ifdef WIN32_URI_TEST
+#define WIN32
+#endif
+
 /* Prototypes for local functions */
 static int raptor_uri_is_absolute (const unsigned char *uri);
 
@@ -797,7 +801,8 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
  * @filename: The filename to convert
  * 
  * Handles the OS-specific escaping on turning filenames into URIs
- * and returns a new buffer that the caller must free().
+ * and returns a new buffer that the caller must free().  Turns
+ * a space in the filname into %20 and '%' into %25.
  *
  * Return value: A newly allocated string with the URI or NULL on failure
  **/
@@ -805,28 +810,36 @@ unsigned char *
 raptor_uri_filename_to_uri_string(const char *filename) 
 {
   unsigned char *buffer;
-#ifdef WIN32
+  int i;
   const char *from;
   char *to;
-#else
+#ifndef WIN32
   char path[PATH_MAX];
 #endif
   /*     "file:" ... \0 */
   int len=5+1;
   
+  for(i=0; i< len-8; i++) {
+    const char c=filename[i];
+    if(c == ' ' || c == '%')
+      len+=2; /* strlen(%xx)-1 */
+  }
+
 #ifdef WIN32
 /*
  * On WIN32, filenames turn into
  *   "file://" + translated filename
- * where the translation is \\ turns into /
+ * where the translation is \\ turns into / and ' ' into %20, '%' into %25
  * and if the filename does not start with '\', it is relative
  * in which case, a . is appended to the authority
  *
  * e.g
  *  FILENAME              URI
- *  c:\windows\system     file://c|/windows/system
+ *  c:\windows\system     file:///c:/windows/system
  *  \\server\dir\file.doc file://server/dir/file.doc
- *  a:foo                 file://a:./foo
+ *  a:foo                 file:///a:./foo
+ *  C:\Documents and Settings\myapp\foo.bat
+ *                        file:///C:/Documents%20and%20Settings/myapp/foo.bat
  *
  * There are also UNC names \\server\share\blah
  * that turn into file:///server/share/blah
@@ -837,7 +850,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
     len+=2; /* relative filename - add ./ */
 
 #else
-/* others - unix ... ? */
+/* others - unix: turn spaces into %20, '%' into %25 */
 
 /*
  * "file://" + filename
@@ -857,30 +870,35 @@ raptor_uri_filename_to_uri_string(const char *filename)
   if(!buffer)
     return NULL;
 
-#ifdef WIN32
   strcpy(buffer, "file://");
   from=filename;
   to=buffer+7;
+#ifdef WIN32
   if(*from == '\\' && from[1] == '\\')
     from+=2;
+#endif
   while(*from) {
     char c=*from++;
+#ifdef WIN32
     if (c == '\\')
       *to++='/';
     else if(c == ':') {
-      *to++='|';
+      *to++=c;
       if(*from != '\\') {
         *to++='.';
         *to++='/';
       }
     } else
+#endif
+    if(c == ' ' || c == '%') {
+      /* FIXME - need to consider other chars to escape */
+      *to++='%';
+      *to++='2';
+      *to++=(c == ' ') ? '0' : '5';
+    } else
       *to++=c;
   }
   *to='\0';
-#else
-  strcpy((char*)buffer, "file://");
-  strcpy((char*)buffer+7, (const char*)filename);
-#endif
   
   return buffer;
 }
@@ -908,8 +926,9 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   int uri_string_len=strlen((const char*)uri_string);
   size_t len=0;
   unsigned char *scheme, *authority, *path, *query, *fragment;
+  unsigned char *from, *to;
 #ifdef WIN32
-  unsigned char *p, *from, *to;
+  unsigned char *p;
   int is_relative_path=0;
 #endif
 
@@ -987,17 +1006,34 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   
   /* copy path after leading \ */
   from=path+1;
+#else
+  from=path;
+  to=filename;
+#endif
+
   while(*from) {
     char c=*from++;
+#ifdef WIN32
     if(c == '/')
       *to++ ='\\';
     else
+#endif
+    if(c == '%') {
+      if(*from && from[1]) {
+        unsigned char hexbuf[3];
+        unsigned char *endptr=NULL;
+        hexbuf[0]=*from;
+        hexbuf[1]=from[1];
+        hexbuf[2]='\0';
+        c=(char)strtol((const char*)hexbuf, (char**)&endptr, 16);
+        if(endptr == &hexbuf[2])
+          *to++ = c;
+      }
+      from+=2;
+    } else
       *to++ =c;
   }
   *to='\0';
-#else
-  strcpy((char*)filename, (const char*)path);
-#endif
 
   if(fragment_p) {
     if(fragment) {
@@ -1254,10 +1290,14 @@ main(int argc, char *argv[])
   const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr#frag";
   const char *base_uri_xmlbase = "http://example.org/bpath/cpath/d;p";
   const char *base_uri_retrievable = "http://example.org/bpath/cpath/d;p?querystr";
+#ifndef WIN32
+#if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   const char* dirs[6] = { "/etc", "/bin", "/tmp", "/lib", "/var", NULL };
   unsigned char uri_buffer[16]; /* strlen("file:///DIR/foo")+1 */  
   int i;
   const char *dir;
+#endif
+#endif
   unsigned char *str;
   raptor_uri *uri1, *uri2, *uri3;
 
@@ -1322,19 +1362,26 @@ main(int argc, char *argv[])
 
 
 #ifdef WIN32
-  failures += assert_filename_to_uri ("c:\\windows\\system", "file://c|/windows/system");
+  failures += assert_filename_to_uri ("c:\\windows\\system", "file://c:/windows/system");
   failures += assert_filename_to_uri ("\\\\server\\share\\file.doc", "file://server/share/file.doc");
-  failures += assert_filename_to_uri ("a:foo", "file://a|./foo");
+  failures += assert_filename_to_uri ("a:foo", "file://a:./foo");
 
+  failures += assert_filename_to_uri ("C:\\Documents and Settings\\myapp\\foo.bat", "file:///C:/Documents%20and%20Settings/myapp/foo.bat");
+  failures += assert_filename_to_uri ("C:\\My Documents\\%25age.txt", "file:///C:/My%20Documents/%age.txt");
 
   failures += assert_uri_to_filename ("file://c|/windows/system", "c:\\windows\\system");
   failures += assert_uri_to_filename ("file://c:/windows/system", "c:\\windows\\system");
   failures += assert_uri_to_filename ("file://server/share/file.doc", "\\\\server\\share\\file.doc");
-  failures += assert_uri_to_filename ("file://a|./foo", "a:foo");
+  failures += assert_uri_to_filename ("file://a:./foo", "a:foo");
+  failures += assert_uri_to_filename ("file:///C:/Documents%20and%20Settings/myapp/foo.bat", "C:\\Documents and Settings\\myapp\\foo.bat");
+  failures += assert_uri_to_filename ("file:///C:/My%20Documents/%age.txt", "C:\\My Documents\\%25age.txt");
+
 #else
 
   failures += assert_filename_to_uri ("/path/to/file", "file:///path/to/file");
+  failures += assert_filename_to_uri ("/path/to/file with spaces", "file:///path/to/file%20with%20spaces");
   failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
+  failures += assert_uri_to_filename ("file:///path/to/file%20with%20spaces", "/path/to/file with spaces");
 
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   /* Need to test this with a real dir (preferably not /)
