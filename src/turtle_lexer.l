@@ -351,6 +351,10 @@ turtle_token_print(int token, YYSTYPE *lval)
               (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
+    case INTEGER_LITERAL:
+      sprintf(buffer, "INTEGER_LITERAL(%d)", lval->integer);
+      return buffer;
+
     case IDENTIFIER:
       sprintf(buffer, "IDENTIFIER(%s)", 
               (lval->string ? (char*)lval->string : ""));
