@@ -60,6 +60,17 @@ static raptor_parser_factory* raptor_get_parser_factory(const char *name);
 /* list of parser factories */
 static raptor_parser_factory* parsers=NULL;
 
+const char * const raptor_copyright_string = "Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/ - Institute for Learning and Research Technology, University of Bristol.";
+
+const char * const raptor_version_string = VERSION;
+
+const unsigned int raptor_version_major = RAPTOR_VERSION_MAJOR;
+const unsigned int raptor_version_minor = RAPTOR_VERSION_MINOR;
+const unsigned int raptor_version_release = RAPTOR_VERSION_RELEASE;
+
+const unsigned int raptor_version_decimal = (RAPTOR_VERSION_MAJOR * 10000)+(RAPTOR_VERSION_MINOR * 100) + RAPTOR_VERSION_RELEASE;
+
+
 
 /*
  * raptor_init - Initialise the raptor library
