@@ -11,6 +11,15 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>Can't configure on system which has expat alone; 
+<tt>./configure --with-xml-parser=expat</tt> still wants libxml:
+<pre>
+ checking XML parser to use... configure: error: No XML parser available 
+ - please install expat or libxml
+</pre>
+It should always choose what is asked, stop if can't be satisfied
+by user's choice rather than try to substitute. (BUG)
+</li>
 <li><tt>rdf:bagID</tt> handling does not work (BUG)</li>
 <li>Scanning (<tt>rdfdump --scan</tt>) for <tt>rdf:RDF</tt> in embedded XML does not work (BUG)</li>
 <li>Add a N3 parser (FEATURE)</li>
