@@ -92,6 +92,11 @@ raptor_www_free(raptor_www *www)
     www->proxy=NULL;
   }
 
+  if(www->locator.uri) {
+    raptor_free_uri(www->locator.uri);
+    www->locator.uri=NULL;
+  }
+
 #ifdef RAPTOR_WWW_LIBCURL
   raptor_www_curl_free(www);
 #endif
@@ -114,7 +119,7 @@ raptor_www_set_userdata(raptor_www *www, void *userdata)
 
 void
 raptor_www_set_error_handler(raptor_www *www, 
-                             raptor_www_message_handler error_handler, 
+                             raptor_message_handler error_handler, 
                              void *error_data)  
 {
   www->error_handler=error_handler;
@@ -157,10 +162,11 @@ raptor_www_error(raptor_www *www, const char *message, ...)
       fprintf(stderr, "raptor_www_error: Out of memory\n");
       return;
     }
-    www->error_handler(www->error_data, buffer);
+    www->error_handler(www->error_data, &www->locator, buffer);
     free(buffer);
   } else {
-    fprintf(stderr, "raptor www error - ");
+    raptor_print_locator(stderr, &www->locator);
+    fprintf(stderr, " raptor www error - ");
     vfprintf(stderr, message, arguments);
     fputc('\n', stderr);
   }
@@ -220,6 +226,10 @@ raptor_www_file_fetch(raptor_www *www, const char *url)
 int
 raptor_www_fetch(raptor_www *www, const char *url) 
 {
+  www->locator.uri=raptor_new_uri(url);
+  www->locator.line= -1;
+  www->locator.column= -1;
+
 #ifdef RAPTOR_WWW_LIBCURL
   return raptor_www_curl_fetch(www, url);
 #endif
