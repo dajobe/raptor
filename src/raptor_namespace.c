@@ -138,8 +138,12 @@ raptor_namespaces_free(raptor_namespace_stack *nstack) {
   }
   nstack->top=NULL;
 
-  nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_ms_uri);
-  nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_schema_uri);
+  if(nstack->uri_handler && nstack->uri_context) {
+    nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_ms_uri);
+    nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_schema_uri);
+  }
+
+  nstack->uri_handler=nstack->uri_context=NULL;
 }
 
 
