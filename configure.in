@@ -161,12 +161,22 @@ AC_CHECK_LIB(xmlparse, XML_SetNamespaceDeclHandler)
 if test "X$ac_cv_lib_xmlparse_XML_SetNamespaceDeclHandler" = "Xyes"; then
   AC_DEFINE(HAVE_XML_SetNamespaceDeclHandler)
 fi
+AC_CHECK_LIB(expat, XML_SetNamespaceDeclHandler, libexpat=1, libexpat=0)
 
 LIBS="$oLIBS"
 AC_MSG_CHECKING(for system expat library)
-if test $xmlp = 1 -a $xmlt = 1 -a \( $ac_cv_header_expat_h = yes -o $ac_cv_header_xmlparse_h = yes \); then
+if test $xmlp = 1 -a $xmlt = 1 -a  $ac_cv_header_xmlparse_h = yes; then
+  # Old expat
   have_expat_lib=1
   have_expat=1
+  expat_libs="-lxmlparse -lxmltok"
+
+  AC_MSG_RESULT(yes)
+elif test $libexpat = 1 -a $ac_cv_header_expat_h = yes ; then
+  # New expat - expat-1.95.0 or later
+  have_expat_lib=1
+  have_expat=1
+  expat_libs="-lexpat"
 
   AC_MSG_RESULT(yes)
 else
@@ -235,7 +245,7 @@ case $xml_parser in
 esac
 
 
-AC_MSG_CHECKING(XML parsers required)
+AC_MSG_CHECKING(XML parser to use)
 result=
 if test $need_libxml = 1; then
   if test $need_libxml_source = 1; then
@@ -279,7 +289,7 @@ if test $need_expat = 1; then
     CPPFLAGS="-I\$(top_srcdir)/expat/xmlparse $CPPFLAGS"
     XML_OBJS="\$(top_builddir)/expat/xmlparse/xmlparse.o \$(top_builddir)/expat/xmlparse/hashtable.o \$(top_builddir)/expat/xmltok/xmlrole.o \$(top_builddir)/expat/xmltok/xmltok.o"
   else
-    LIBS="$LIBS -lxmlparse -lxmltok"
+    LIBS="$LIBS $expat_libs"
   fi
 fi
 AC_SUBST(XML_OBJS)
