@@ -407,8 +407,12 @@ directive : PREFIX QNAME_LITERAL URI_LITERAL DOT
       prefix[len-1]='\0';
   }
 
-  uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
-  free($3);
+  if($3) {
+    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
+    free($3);
+  } else
+    uri=raptor_new_uri(N3_Parser->base_uri);
+  
   raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
                                          prefix, raptor_uri_as_string(uri), 0);
   if($2)
@@ -436,8 +440,12 @@ predicate: URI_LITERAL
   printf("predicate URI=\"%s\"\n", $1);
 #endif
 
-  uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
-  free($1);
+  if($1) {
+    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
+    free($1);
+  } else
+    uri=raptor_new_uri(N3_Parser->base_uri);
+
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
 | QNAME_LITERAL
@@ -499,8 +507,11 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, $5);
 #endif
 
-  uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $5);
-  free($5);
+  if($5) {
+    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $5);
+    free($5);
+  } else
+    uri=raptor_new_uri(N3_Parser->base_uri);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
 }
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
@@ -528,8 +539,11 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, $3);
 #endif
 
-  uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
-  free($3);
+  if($3) {
+    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
+    free($3);
+  } else
+    uri=raptor_new_uri(N3_Parser->base_uri);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
 }
 | STRING_LITERAL HAT QNAME_LITERAL
@@ -568,8 +582,12 @@ URI_LITERAL
   printf("resource URI=\"%s\"\n", $1);
 #endif
 
-  uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
-  free($1);
+  if($1) {
+    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
+    free($1);
+  } else
+    uri=raptor_new_uri(N3_Parser->base_uri);
+
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
 | QNAME_LITERAL
