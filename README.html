@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "blah">
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <title>Raptor RDF Parser Toolkit</title>
@@ -31,16 +32,13 @@ detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 <ul>
 <li>An RDF/XML Parser written in C designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
 <li>Can extract RDF content embedded in XML (such as XHTML)</li>
+<li>Handles RDF Core WG syntax updates for XML Base and xml:lang</li>
+<li>Generates N-Triples supporting XML literals and language tagging</li>
 <li>Handles rdf:resource / resource attributes</li>
-<li>Optionally can interpret container elements (only) as typedNode after
-the <a href="http://www-uk.hpl.hp.com/people/bwm/rdf/issues/containersyntax/
-">proposed interpretation</a> by Brian McBride and <a href="http://purl.org/net/dajobe/">myself</a>.</li>
-<li>Parsing tracks the formal grammar productions closely - this can
-be followed when debugging.</li>
+<li>Parsing tracks the formal grammar productions closely.</li>
 <li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or (GNOME) <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
-<li>Has hooks for new <em>parseType</em>-s and container types</li>
 <li>Provides features to select options at run time.</li>
-<li>(Perl and Python interfaces when used via Redland)</li>
+<li>(Perl, Python, Java, Tcl interfaces when used via Redland)</li>
 <li>No memory leaks</li>
 <li>Fast</li>
 </ul>
@@ -52,7 +50,7 @@ feature complete but needs more testing for conformance.</p>
 <h2>RAPTOR NTRIPLES PARSER</h2>
 
 <p>A parser for the
-<a href="http://www.w3.org/2001/sw/RDFCore/ntriples/">N-Triples</a>
+<a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
 format which emits RDF statements and is used by the RDF Core
 working group for test cases.
 </p>
@@ -62,7 +60,11 @@ working group for test cases.
 
 <p>There is no documentation at present, only the
 <a href="rdfdump.c">rdfdump.c</a>
-example program source to see how to call the parser.</p>
+example program source to see how to call the parser.
+When raptor is used inside 
+<a href="http://www.redland.opensource.ac.uk/">Redland</a>,
+the Redland documentation explains
+how to call the parser and contains several example programs.</p>
 
 <p>To install see the <a href="INSTALL.html">Installation document</a></p>
 
@@ -73,9 +75,7 @@ example program source to see how to call the parser.</p>
 
 <hr />
 
-<p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
-
-<p><a href="http://www.mirror.ac.uk/services/validator/check/referer">Validate me</a></p>
+<p>Copyright 2001-2002 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
