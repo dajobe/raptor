@@ -493,7 +493,6 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $5);
   free($5);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
-  raptor_free_uri(uri);
 }
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
 {
@@ -506,7 +505,6 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri=n3_qname_to_uri(N3_Parser, $5);
   if(uri) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
-    raptor_free_uri(uri);
   } else
     $$=NULL;
 
@@ -524,7 +522,6 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
   free($3);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
-  raptor_free_uri(uri);
 }
 | STRING_LITERAL HAT QNAME_LITERAL
 {
@@ -537,7 +534,6 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri=n3_qname_to_uri(N3_Parser, $3);
   if(uri) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
-    raptor_free_uri(uri);
   } else
     $$=NULL;
 
