@@ -48,6 +48,7 @@ raptor_ntriples_parser* raptor_ntriples_new(void);
 void raptor_ntriples_free(raptor_ntriples_parser *parser);
 
 /* Handlers */
+void raptor_ntriples_set_error_handler(raptor_ntriples_parser* parser, void *user_data, raptor_message_handler handler);
 void raptor_ntriples_set_fatal_error_handler(raptor_ntriples_parser* parser, void *user_data, raptor_message_handler handler);
 void raptor_ntriples_set_statement_handler(raptor_ntriples_parser* parser, void *user_data, raptor_statement_handler handler);
 
