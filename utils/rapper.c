@@ -177,6 +177,23 @@ rdfdump_warning_handler(void *data, raptor_locator *locator,
   warning_count++;
 }
 
+struct namespace_decl
+{
+  unsigned char *prefix;
+  unsigned char *uri_string;
+};
+
+
+static void
+rdfdump_free_namespace_decl(void* data) {
+  struct namespace_decl* nsd=(struct namespace_decl*)data;
+  if(nsd->prefix)
+    raptor_free_memory(nsd->prefix);
+  if(nsd->uri_string)
+    raptor_free_memory(nsd->uri_string);
+  raptor_free_memory(nsd);
+}
+
 
 int
 main(int argc, char *argv[]) 
@@ -201,6 +218,7 @@ main(int argc, char *argv[])
   int feature_value= -1;
   raptor_feature serializer_feature;
   int serializer_feature_value= -1;
+  raptor_sequence *namespace_declarations=NULL;
 
   program=argv[0];
   if((p=strrchr(program, '/')))
@@ -210,7 +228,7 @@ main(int argc, char *argv[])
   argv[0]=program;
 
   raptor_init();
-  
+
   while (!usage && !help)
   {
     int c;
@@ -258,6 +276,22 @@ main(int argc, char *argv[])
             }
             fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE=VALUE or `-f FEATURE'\nwhere VALUE is a decimal integer 0 or larger, defaulting to 1 if omitted.\n", stderr);
             exit(0);
+          } else if(!strncmp(optarg, "xmlns", 5)) {
+            struct namespace_decl *nd;
+            nd=(struct namespace_decl *)raptor_alloc_memory(sizeof(struct namespace_decl));
+            if(raptor_new_namespace_parts_from_string(optarg,
+                                                      &nd->prefix,
+                                                      &nd->uri_string)) {
+              fprintf(stderr, "%s: Bad xmlns syntax in '%s'\n", program, 
+                      optarg);
+              rdfdump_free_namespace_decl(nd);
+              exit(0);
+            }
+
+            if(!namespace_declarations)
+              namespace_declarations=raptor_new_sequence(rdfdump_free_namespace_decl, NULL);
+
+            raptor_sequence_push(namespace_declarations, nd);
           } else {
             int i;
             size_t arg_len=strlen(optarg);
@@ -576,6 +610,23 @@ main(int argc, char *argv[])
               serializer_syntax_name);
       return(1);
     }
+
+    if(namespace_declarations) {
+      int i;
+      for(i=0; i< raptor_sequence_size(namespace_declarations); i++) {
+        struct namespace_decl *nd=(struct namespace_decl *)raptor_sequence_get_at(namespace_declarations, i);
+        raptor_uri *ns_uri=NULL;
+        if(nd->uri_string)
+          ns_uri=raptor_new_uri(nd->uri_string);
+        
+        raptor_serialize_set_namespace(serializer, ns_uri, nd->prefix);
+        if(ns_uri)
+          raptor_free_uri(ns_uri);
+      }
+      raptor_free_sequence(namespace_declarations);
+      namespace_declarations=NULL;
+    }
+    
     raptor_serialize_start_to_file_handle(serializer, base_uri, stdout);
 
     if(serializer_feature_value >= 0)
@@ -618,6 +669,9 @@ main(int argc, char *argv[])
     raptor_free_uri(uri);
   if(free_uri_string)
     raptor_free_memory(uri_string);
+
+  if(namespace_declarations)
+    raptor_free_sequence(namespace_declarations);
 
   raptor_finish();
 
