@@ -65,7 +65,8 @@ raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
 raptor_identifier.c raptor_xml_writer.c \
 turtle_lexer.c turtle_lexer.h turtle_parser.tab.c turtle_parser.tab.h turtle_common.h \
-raptor_sequence.c raptor_stringbuffer.c
+raptor_sequence.c raptor_stringbuffer.c \
+raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
 if STRCASECMP
 libraptor_la_SOURCES += strcasecmp.c
 endif
@@ -182,6 +183,9 @@ raptor_sequence_test: $(srcdir)/raptor_sequence.c
 
 raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c $(LIBS)
+
+raptor_nfc_test: $(srcdir)/raptor_nfc_test.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_nfc_test.c libraptor.la $(LIBS)
 
 
 
