@@ -3720,7 +3720,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         /* FALLTHROUGH */
 
       case RAPTOR_STATE_PARSETYPE_LITERAL:
-        element->parent->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
+        element->parent->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
 
         /* Append closing element */
         {
@@ -3972,6 +3972,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               break;
 
           case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
+          case RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL:
               if(state == RAPTOR_STATE_MEMBER) {
                 element->parent->last_ordinal++;
                 raptor_generate_statement(rdf_parser, 
