@@ -113,6 +113,12 @@ const char * n3_token_print(int token, YYSTYPE *lval);
 int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner);
 #define YY_DECL int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner)
 
+#ifdef __cplusplus
+#define INPUT_FN yyinput
+#else
+#define INPUT_FN input
+#endif
+
 
 /* Missing n3_lexer.c/h prototypes */
 int n3_lexer_get_column(yyscan_t yyscanner);
@@ -146,29 +152,29 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 "@"       { return AT; }
 "^^"      { return HAT; }
 
-'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=copy_string_token(rdf_parser, yytext+1, yyleng-2, '\"'); /* ' */
+'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=copy_string_token(rdf_parser, yytext+1, yyleng-2, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-_:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token(yytext+2, yyleng-2);
+_:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, yytext, yyleng);
+:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
 :	{ n3_parser_lval->string=NULL;
                           return QNAME_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token(yytext, yyleng);
+<PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>.		{ BEGIN(INITIAL);
@@ -183,14 +189,14 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token(yytext+2, yyleng-2);
                 n3_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
               else {
                 yytext[yyleng-1]='\0';
-                n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, yytext+1);
+                n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const char*)yytext+1);
               }
               return URI_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token(yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
                           return IDENTIFIER; }
 
-\#              { while((c=input(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
+\#              { while((c=INPUT_FN(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
                     ;
                   n3_parser->lineno++;
                   if(c == EOF)
@@ -217,10 +223,10 @@ unsigned char *
 copy_token(unsigned char *text, size_t len) {
   unsigned char *s;
   if(!len)
-    len=strlen(text);
+    len=strlen((const char*)text);
   s=(unsigned char *)malloc(len+1);
 
-  strncpy(s, text, len);
+  strncpy((char*)s, (const char*)text, len);
   s[len] = '\0';
   return s;
 }
@@ -228,7 +234,7 @@ copy_token(unsigned char *text, size_t len) {
 
 unsigned char *
 copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim) {
-  int i;
+  size_t i;
   unsigned char *s, *d;
   unsigned char *string=(unsigned char *)malloc(len+1);
 
@@ -247,7 +253,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
       else if(c == '\\' || c == delim)
         *d++=c;
       else if (c == 'u' || c == 'U') {
-        int ulen=(c == 'u') ? 4 : 8;
+        size_t ulen=(c == 'u') ? 4 : 8;
         unsigned long unichar=0;
         
         s++; i++;
@@ -257,7 +263,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
           return NULL;
         }
         
-        sscanf(s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+        sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
         s+= ulen-1;
         i+= ulen-1;
         
@@ -267,7 +273,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
           return NULL;
         }
           
-        d+=raptor_unicode_char_to_utf8(unichar, d);
+        d+=raptor_unicode_char_to_utf8(unichar, (char*)d);
 
       } else {
         /* don't handle \x where x isn't one of: \n \r \\ (delim) */
