@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2000-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -201,6 +201,7 @@ RAPTOR_API int raptor_syntax_name_check(const char *name);
 
 /* Create */
 RAPTOR_API raptor_parser* raptor_new_parser(const char *name);
+RAPTOR_API raptor_parser* raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
 RAPTOR_API int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);
 
