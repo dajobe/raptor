@@ -45,11 +45,11 @@
 /**
  * raptor_new_identifier - Constructor - create a raptor_identifier
  * @type: raptor_identifier_type of identifier
- * @uri: &raptor_uri of identifier (if relevant)
- * @uri_source: raptor_uri_source of URI (if relevnant)
+ * @uri: &raptor_uri of identifier (if relevant) (SHARED)
+ * @uri_source: raptor_uri_source of URI (if relevant)
  * @id: string for ID or genid (if relevant) (SHARED)
  * @literal: string for literal (SHARED)
- * @literal_datatype: &raptor_uri of identifier
+ * @literal_datatype: &raptor_uri of identifier (SHARED)
  * @literal_language: literal language (SHARED)
  * 
  * Constructs a new identifier copying the URI, ID fields.
@@ -76,28 +76,11 @@ raptor_new_identifier(raptor_identifier_type type,
   identifier->type=type;
   identifier->is_malloced=1;
 
-  if(uri) {
-    identifier->uri=raptor_uri_copy(uri);
-    if(!identifier->uri) {
-      RAPTOR_FREE(raptor_identifier, identifier);
-      return NULL;
-    }
-  }
-
   /* SHARED */
+  identifier->uri=uri;
   identifier->id=id;
-  /* SHARED */
   identifier->literal=literal;
-
-  if(literal_datatype) {
-    identifier->literal_datatype=raptor_uri_copy(literal_datatype);
-    if(!identifier->literal_datatype) {
-      raptor_free_identifier(identifier);
-      return NULL;
-    }
-  }
-
-  /* SHARED */
+  identifier->literal_datatype=literal_datatype;
   identifier->literal_language=literal_language;
   
   return identifier;
