@@ -18,13 +18,16 @@
 # full license terms.
 # 
 
-RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-03.rdf ex-04.rdf ex-05.rdf \
+# These are errors in strict mode, warnings in lax - for now
+RDF_BAGID_TEST_FILES=ex-03.rdf ex-42.rdf ex-43.rdf ex-44.rdf ex-45.rdf
+
+RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-04.rdf ex-05.rdf \
 ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf ex-11.rdf ex-12.rdf \
 ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf \
 ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf ex-32.rdf ex-33.rdf \
 ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
-ex-41.rdf ex-42.rdf ex-43.rdf ex-44.rdf ex-45.rdf ex-46.rdf ex-47.rdf \
+ex-41.rdf ex-46.rdf ex-47.rdf \
 ex-48.rdf ex-49.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
 owl-schema.rdf
@@ -33,7 +36,8 @@ RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
 bad-10.rdf bad-11.rdf
 
-RDF_WARN_TEST_FILES=warn-00.rdf warn-01.rdf
+RDF_WARN_TEST_FILES=warn-00.rdf warn-01.rdf \
+$(RDF_BAGID_TEST_FILES)
 
 RDF_ASSUME_TEST_FILES=ex-19.rdf
 
