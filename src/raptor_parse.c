@@ -2586,6 +2586,26 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         if (element->rdf_attr[RDF_ATTR_parseType]) {
           const unsigned char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
+          int i;
+
+          if(raptor_element_has_property_attributes(element)) {
+            raptor_parser_error(rdf_parser, "Property attributes cannot be used with rdf:parseType='%s'", parse_type);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
+
+          /* Check for bad combinations of things with parseType */
+          for(i=0; i<= RDF_ATTR_LAST; i++)
+            if(element->rdf_attr[i] && i != RDF_ATTR_parseType) {
+              raptor_parser_error(rdf_parser, "Attribute '%s' cannot be used with rdf:parseType='%s'", rdf_attr_info[i].name, parse_type);
+              state=RAPTOR_STATE_SKIPPING;
+              element->child_state=RAPTOR_STATE_SKIPPING;
+              finished=1;
+              break;
+            }
+
 
           if(!strcmp((char*)parse_type, "Literal")) {
             element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
