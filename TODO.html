@@ -11,6 +11,10 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>Send an Accept: header with WWW requests, corresponding
+to the mime types accepted.  Plus others at lower q then guess? (FEATURE)</li>
+<li>Guess mime type/parser from a content fragment and/or
+content name (could be a filename or URI) (FEATURE)</li>
 <li>RSS tag soup parser junks/overwrites element content if it is
 delivered in chunks rather than as one big CDATA, such as when
 libxml2 sees entities, it emits the content in bits (BUG)</li>
