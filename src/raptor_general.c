@@ -3530,6 +3530,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             state=RAPTOR_STATE_PARSETYPE_RESOURCE;
             element->child_state=RAPTOR_STATE_PROPERTYELT;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
+
+            /* create a node for the subject of the contained properties */
             element->subject.id=raptor_generate_id(rdf_parser, 0);
             element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
             element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
@@ -3553,13 +3555,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         } else {
 
           /* Can only be last case */
-          if(element->rdf_attr[RDF_ATTR_resource]) {
-            element->subject.uri=raptor_make_uri(rdf_parser->base_uri,
-                                                 element->rdf_attr[RDF_ATTR_resource]);
-            element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
-            element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          }
-          
+
+          /* rdf:resource attribute checked at element close time */
 
           /* FIXME - what should be done here */
 #if 0
@@ -3572,8 +3569,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           }
 #endif
           
-          /* Assign the properties on this element to the resource
-           * URI held in our parent element
+          /* Assign the properties on this (property) element to the
+           * resource URI held in our parent element 
            */
           raptor_process_property_attributes(rdf_parser, element, 
                                              element->parent);
