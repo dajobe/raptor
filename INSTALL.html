@@ -4,7 +4,7 @@
 <head>
   <title>Raptor RDF Parser Toolkit - Installation</title>
 </head>
-<body bgcolor="#ffffff" text="#000085">
+<body>
 
 <h1 align="center">Raptor RDF Parser Toolkit - Installation</h1>
 <h2 align="center"><a href="http://purl.org/net/dajobe/">Dave Beckett</a><br /><a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a><br /><a href="http://www.bristol.ac.uk/">University of Bristol</a></h2>
@@ -52,10 +52,10 @@ by using the <tt>autogen.sh</tt> script.</p>
 <h2>2. Configuring and building</h2>
 
 <p>Raptor uses the GNU automake and autoconf to handle system
-dependency checking.  It is developed and built on x86 Linux (Redhat
-7.2 and Debian unstable) but is also used extensively locally on
-various versions of sparc Sun Solaris 2.x and tested as part of
-Redland on many other systems via the 
+dependency checking.  It is developed and built on x86 GNU/Linux
+(Redhat 9, Debian unstable) but is also regularly tested on
+sparc Sun Solaris 2.x, x86 FreeBSD 4.8, ppc Apple OSX 10.2 
+and as part of Redland on several other systems via the 
 <a href="http://sourceforge.net/">SourceForge</a> compile farm.</p>
 
 <h3>2.1. Create <tt>configure</tt> program</h3>
@@ -68,14 +68,13 @@ tools.  Alternatively you can run them by hand with:</p>
 <pre>
   aclocal; autoheader; automake --add-missing; autoconf
 </pre>
-<p>(Ignore any warnings from autoconf about AC_TRY_RUN, it is caused
-by an autoconf macro and IMHO is an autoconf bug.)</p>
 
 <p>The automake and autoconf tools have many different versions and
-at present they are being developed with automake 1.4-p5, autoconf
-2.13 and libtool 1.4.2a (with debian patches for OSX support).  It is
-expected that development will move to automake 1.6+, autoconf 2.53
-and libtool 1.4.3 or newer.</p>
+at present Raptor is being developed with automake 1.6.3 (minimum
+version 1.6), autoconf 2.57 (minimum version 2.52) and libtool 1.4.2a
+(minimum version 1.4).  These are only needed when compiling from CVS
+sources.  It is expected that development will move to require
+automake 1.7, autoconf 2.57 and libtool 1.4.3.</p>
 
 
 <h3>2.2 Options for <tt>configure</tt></h3>
@@ -85,7 +84,7 @@ and libtool 1.4.3 or newer.</p>
 <dl>
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
-or <tt>expat</tt>. If this option is not given,
+minimum version 2.4.0 or <tt>expat</tt>.  If this option is not given,
 either will be used, with libxml preferred if both are present.
 These can either be installed system libraries or source
 trees in subdirectories of these sources named libxml, expat.</p>
@@ -94,7 +93,6 @@ including
 expat 1.95.1 (on RedHat 7.2),
 expat 1.95.2-2 (on RedHat 7.3),
 expat 1.95.2-6 (on Debian 3.0),
-libxml 2.3.5 (on Debian unstable),
 libxml 2.4.10 (on RedHat 7.2),
 libxml 2.4.13 (on OSX 10.1.5),
 libxml 2.4.17 (on FreeBSD 4.5-RELEASE-p2),
@@ -102,10 +100,27 @@ libxml 2.4.19 (on RedHat 7.2),
 libxml 2.4.23 (on Debian 3.0),
 libxml 2.4.24 (on FreeBSD 4.7-STABLE),
 libxml 2.4.25, 2.4.28, 2.4.30 (Debian unstable)
+libxml 2.5.3, 2.5.4 (Redhat 9, Debian unstable)
 </p>
-<p>(Some libxml1 versions may work however this is not guaranteed or
-tested and libxml1 support may be removed from future releases.)</p>
+<p>libxml1 is not supported.</p>
 </dd>
+
+<dt><tt>--with-www-config=NAME</tt><br /></dt>
+<dd><p>Pick a WWW library to use - either <tt>curl</tt>, 
+<tt>xml</tt> (for libxml), <tt>libwww</tt> for W3C libwww or
+<tt>none</tt> to disable it.</p></dd>
+
+<dt><tt>--with-xml2-config=NAME</tt><br /></dt>
+<dd><p>Set the path to the libxml xml2-config program</p></dd>
+
+<dt><tt>--with-curl-config=NAME</tt><br /></dt>
+<dd><p>Set the path to the CURL curl-config program</p></dd>
+
+<dt><tt>--with-pkg-config=NAME</tt><br /></dt>
+<dd><p>Set the path to the GNOME pkg-config program</p></dd>
+
+<dt><tt>--with-libwww-config=NAME</tt><br /></dt>
+<dd><p>Set the path to the W3C WWW library libwww-config program</p></dd>
 
 </dl>
 
@@ -171,9 +186,33 @@ conclude with something like:<br />
   <tt>All </tt><em>n</em><tt> tests passed</tt><br />
 if everything works correctly.</p>
 
+
+<h2>3. Using the library</h2>
+
+<p>Once the library has been configured and built, there are 
+some C example programs that can be built apart from the rapper utility.
+They are in the <code>examples</code> sub-directory and can be built with:</p>
+<pre>
+   cd examples
+
+   # Raptor parser abort test program
+   make raptor_abort
+
+   # Raptor GUI - only if you have the GTK libraries
+   make grapper
+
+   # If you have all requirements
+   make examples
+</pre>
+
+<p>The public Raptor API is described in the
+<a href="libraptor.html">libraptor.3</a> UNIX manual/web page
+</p>
+
+
 <hr />
 
-<p>Copyright 2001-2002 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001-2003 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
