@@ -1,3 +1,12 @@
+2005-02-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* win32_raptor_config.h: Define RASQAL_INLINE to __inline
+
+	* raptor_nfc.c: Change inline to RAPTOR_INLINE
+
+	* raptor_internal.h: Define RAPTOR_INLINE to inline if not alerady
+	defined to something else
+
 2005-02-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_serialize_rdfxmla.c
