@@ -140,7 +140,7 @@ AC_MSG_CHECKING(for working expat in libxmlparse and libxmltok)
 if test $xmlp = 1 -a $xmlt = 1 -a  $ac_cv_header_xmlparse_h = yes; then
   LIBS="$LIBS -lxmlparse -lxmltok"
   AC_TRY_RUN([#include <stdio.h>
-	     main() {XML_ParserCreate(); return(0);}],
+	     main() {XML_ParserCreate(NULL); return(0);}],
              worked=yes, worked=no, worked=no)
   if test $worked = yes; then
     # Old expat
