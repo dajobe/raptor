@@ -144,6 +144,9 @@ typedef struct {
   raptor_namespace* top;
   raptor_uri_handler *uri_handler;
   void *uri_context;
+  raptor_simple_message_handler error_handler;
+  void *error_data;
+
   raptor_uri *rdf_ms_uri;
   raptor_uri *rdf_schema_uri;
 } raptor_namespace_stack;
@@ -363,15 +366,17 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 /* raptor_nspace.c */
 void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data);
 void raptor_namespaces_free(raptor_namespace_stack *nstack);
-int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth, raptor_simple_message_handler error_handler, void *error_data);
+void raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *nspace);
+int raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth);
 void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
 void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
 raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
 int raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace);
 
-raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth, raptor_simple_message_handler error_handler, void *error_data);
+raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
 void raptor_namespace_free(raptor_namespace *ns);
+int raptor_namespace_copy(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth);
 raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 raptor_uri* raptor_namespace_local_name_to_uri(const raptor_namespace *ns, const unsigned char *local_name);
@@ -533,6 +538,10 @@ struct raptor_sax2_element_s {
   /* CDATA content of element and checks for mixed content */
   char *content_cdata;
   unsigned int content_cdata_length;
+  /* how many cdata blocks seen */
+  unsigned int content_cdata_seen;
+  /* how many contained elements seen */
+  unsigned int content_element_seen;
 };
 
 
@@ -577,7 +586,7 @@ void raptor_free_sax2_element(raptor_sax2_element *element);
 #ifdef RAPTOR_DEBUG
 void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
 #endif
-char *raptor_format_sax2_element(raptor_sax2_element *element, raptor_namespace_stack* nstack, size_t *length_p, int is_end, raptor_simple_message_handler error_handler, void *error_data);
+char *raptor_format_sax2_element(raptor_sax2_element *element, raptor_namespace_stack* nstack, size_t *length_p, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
 
 /* raptor_xml_writer.c */
 /* FIXME: NOT PUBLIC YET - should be in raptor.h with RAPTOR_API added */
