@@ -109,7 +109,7 @@ static int raptor_set_expand_size(raptor_set* set);
  * perldelta 5.8.0 says under *Performance Enhancements*
  *
  *   Hashes now use Bob Jenkins "One-at-a-Time" hashing key algorithm
- *   http://burtleburtle.net/bob/set/doobs.html  This algorithm is
+ *   http://burtleburtle.net/bob/hash/doobs.html  This algorithm is
  *   reasonably fast while producing a much better spread of values
  *   than the old hashing algorithm ...
  *
