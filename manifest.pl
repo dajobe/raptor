@@ -1,4 +1,28 @@
 #!/usr/bin/perl -w
+#
+# manifest.pl - Run Raptor against RDF Core tests Manifest.rdf
+#
+# $Id$
+#
+# Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
+# Institute for Learning and Research Technology - http://www.ilrt.org/
+# University of Bristol - http://www.bristol.ac.uk/
+# 
+# This package is Free Software or Open Source available under the
+# following licenses (these are alternatives):
+#   1. GNU Lesser General Public License (LGPL)
+#   2. GNU General Public License (GPL)
+#   3. Mozilla Public License (MPL)
+# 
+# See LICENSE.html or LICENSE.txt at the top of this package for the
+# full license terms.
+#
+# USAGE: ./manifest.pl
+#  to run all known tests from $manifest_URL
+#
+#   ./manifest.pl TEST-URL ...
+# to run particular tests (slightly more verbose).
+#
 
 use strict;
 
@@ -7,12 +31,14 @@ use LWP::Simple;
 
 my $progname = basename $0;
 
-my $offline=1;
+my $offline=0;
 
 my $manifest_URL='http://www.w3.org/2000/10/rdf-tests/rdfcore/Manifest.rdf';
 my $local_tests_url='http://www.w3.org/2000/10/rdf-tests/rdfcore/';
-my $local_tests_area=$ENV{HOME}.'/rdf/rdfcore/testcases/tests/';
-my $local_manifest_file=$ENV{HOME}.'/rdf/rdfcore/testcases/tests/Manifest.rdf';
+
+# CHANGE THIS for your system
+my $local_tests_area="./rdfcore";
+my $local_manifest_file="./rdfcore/Manifest.rdf";
 
 my $format="%-6s %5d %7.2f%%\n";
 
