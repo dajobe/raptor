@@ -1051,6 +1051,9 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_sax2_element* sax2_element;
+#ifdef RAPTOR_DEBUG
+  raptor_qname *element_name;
+#endif
 
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
@@ -1065,8 +1068,8 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
     raptor_update_document_locator(rdf_parser);
 
 #ifdef RAPTOR_DEBUG
-    raptor_qname *element_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
-                                                raptor_parser_simple_error, rdf_parser);
+    element_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
+                                  raptor_parser_simple_error, rdf_parser);
     if(!element_name) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return;
