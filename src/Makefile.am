@@ -59,7 +59,7 @@ $(man_MANS)
 SUBDIRS= debian tests win32
 
 TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test \
-raptor_www_test raptor_set_test
+raptor_www_test raptor_set_test raptor_general_test
 
 CLEANFILES=$(TESTS)
 
@@ -127,6 +127,9 @@ raptor_www_test: $(srcdir)/raptor_www_test.c libraptor.la
 
 raptor_set_test: $(srcdir)/raptor_set.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_set.c libraptor.la $(LIBS) @REDLAND_LIBS@
+
+raptor_general_test: $(srcdir)/raptor_general.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_general.c libraptor.la $(LIBS) @REDLAND_LIBS@
 
 
 deb: distcheck
