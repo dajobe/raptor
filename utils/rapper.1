@@ -5,10 +5,10 @@
 .\" $Id$
 .\"
 .\" Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
-.\" Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
+.\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2004-03-26"
+.TH rapper 1 "2004-04-10"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 rapper \- Raptor RDF parser utility
@@ -71,6 +71,10 @@ to a value, or to 1 if
 is omitted,
 Use \-f help to get a list of valid parser features.
 .TP
+.B \-g, \-\-guess
+Guess the parser to use from the source-URI rather than use
+the \-i FORMAT.
+.TP
 .B \-q, \-\-quiet
 No extra information messages.
 .TP
@@ -106,7 +110,9 @@ http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
 .BR libraptor(3), raptor-config(1)
 .SH CHANGES
 .SS 1.3.0
-Added \-f for features
+Added \-f for features.
+.br
+Added \-g for guessing the parser to use.
 .SS 1.1.0
 Removed \-a, \-\-assume since rdf:RDF is now always optional.
 .br
