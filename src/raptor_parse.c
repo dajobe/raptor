@@ -64,7 +64,7 @@ extern int errno;
 #ifdef LIBRDF_INTERNAL
 /* if inside Redland */
 
-#ifdef LIBDF_DEBUG
+#ifdef LIBRDF_DEBUG
 #define RAPTOR_DEBUG 1
 #endif
 
