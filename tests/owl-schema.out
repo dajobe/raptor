@@ -1,0 +1,161 @@
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2002/07/owl#versionInfo> "$Id: owl.txt,v 1.3 2002/11/15 00:12:24 massimo Exp $" .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/2000/01/rdf-schema> .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/title> "OWL Web Ontology Language" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/creator> "W3C Web Ontology (WebOnt) Working Group" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/subject> "OWL; Web Ontology Language; Semantic Web" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/description> "Classes and Properties comprising the OWL Web Ontology Language" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/publisher> "W3C" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/date> "2002-07-17" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/format> "text/xml" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/language> "en" .
+<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/identifier> "http://www.w3.org/2002/07/owl" .
+<http://www.w3.org/2002/07/owl#Class> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#Class> <http://www.w3.org/2000/01/rdf-schema#label> "Class" .
+<http://www.w3.org/2002/07/owl#Class> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    The class of all \"object\" classes\n  " .
+<http://www.w3.org/2002/07/owl#Class> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#Datatype> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#Datatype> <http://www.w3.org/2000/01/rdf-schema#label> "Datatype" .
+<http://www.w3.org/2002/07/owl#Datatype> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    The class of all datatype classes\n  " .
+<http://www.w3.org/2002/07/owl#Datatype> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#Thing> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#Thing> <http://www.w3.org/2000/01/rdf-schema#label> "Thing" .
+<http://www.w3.org/2002/07/owl#Thing> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    The most general (object) class in OWL.\n    This is equal to the union of any class and its complement.\n  " .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#List> .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://www.w3.org/2002/07/owl#Nothing> .
+<http://www.w3.org/2002/07/owl#Nothing> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#List> .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:genid2 .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:genid3 .
+_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+_:genid2 <http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/2002/07/owl#Nothing> .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://www.w3.org/2002/07/owl#Thing> <http://www.w3.org/2002/07/owl#unionOf> _:genid1 .
+<http://www.w3.org/2002/07/owl#Nothing> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#Nothing> <http://www.w3.org/2000/01/rdf-schema#label> "Nothing" .
+<http://www.w3.org/2002/07/owl#Nothing> <http://www.w3.org/2000/01/rdf-schema#comment> "the class with no things in it." .
+<http://www.w3.org/2002/07/owl#Nothing> <http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Property> .
+<http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/2000/01/rdf-schema#label> "sameAs" .
+<http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/2002/07/owl#comment> "\n    for sameAs(X, Y), read X is an equivalent term to Y.\n  " .
+<http://www.w3.org/2002/07/owl#sameClassAs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Property> .
+<http://www.w3.org/2002/07/owl#sameClassAs> <http://www.w3.org/2000/01/rdf-schema#label> "sameClassAs" .
+<http://www.w3.org/2002/07/owl#sameClassAs> <http://www.w3.org/2002/07/owl#comment> "\n    for sameClassAs(X, Y), read X is an equivalent class to Y.\n  " .
+<http://www.w3.org/2002/07/owl#sameClassAs> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2000/01/rdf-schema#subClassOf> .
+<http://www.w3.org/2002/07/owl#sameClassAs> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#sameClassAs> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#samePropertyAs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Property> .
+<http://www.w3.org/2002/07/owl#samePropertyAs> <http://www.w3.org/2000/01/rdf-schema#label> "samePropertyAs" .
+<http://www.w3.org/2002/07/owl#samePropertyAs> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for samePropertyAs(P, R), read P is an equivalent property to R.\n  " .
+<http://www.w3.org/2002/07/owl#samePropertyAs> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> .
+<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Property> .
+<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#label> "sameIndividualAs" .
+<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for sameIndividualAs(a, b), read a is the same individual as b.\n  " .
+<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.w3.org/2002/07/owl#disjointWith> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#disjointWith> <http://www.w3.org/2000/01/rdf-schema#label> "disjointWith" .
+<http://www.w3.org/2002/07/owl#disjointWith> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for disjointWith(X, Y) read: X and Y have no members in common.\n  " .
+<http://www.w3.org/2002/07/owl#disjointWith> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#disjointWith> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Property> .
+<http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/2000/01/rdf-schema#label> "differentFrom" .
+<http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for differentFrom(a, b), read a is not the same object as b.\n  " .
+<http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.w3.org/2002/07/owl#unionOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#unionOf> <http://www.w3.org/2000/01/rdf-schema#label> "unionOf" .
+<http://www.w3.org/2002/07/owl#unionOf> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for unionOf(X, Y) read: X is the union of the classes in the list Y;\n    i.e. if something is in any of the classes in Y, it's in X, and vice versa.\n  " .
+<http://www.w3.org/2002/07/owl#unionOf> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#unionOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#List> .
+<http://www.w3.org/2002/07/owl#intersectionOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#intersectionOf> <http://www.w3.org/2000/01/rdf-schema#label> "intersectionOf" .
+<http://www.w3.org/2002/07/owl#intersectionOf> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for intersectionOf(X, Y) read: X is the intersection of the classes in the list Y;\n    i.e. if something is in all the classes in Y, then it's in X, and vice versa.\n  " .
+<http://www.w3.org/2002/07/owl#intersectionOf> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#intersectionOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#List> .
+<http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/2000/01/rdf-schema#label> "complementOf" .
+<http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for complementOf(X, Y) read: X is the complement of Y; if something is in Y,\n    then it's not in X, and vice versa.\n  " .
+<http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#label> "oneOf" .
+<http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#comment> "\n     for oneOf(C, L) read everything in C is one of the\n     things in L;\n     This lets us define classes by enumerating the members.\n  " .
+<http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#List> .
+<http://www.w3.org/2002/07/owl#Restriction> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#Restriction> <http://www.w3.org/2000/01/rdf-schema#label> "Restriction" .
+<http://www.w3.org/2002/07/owl#Restriction> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    something is in the class R if it satisfies the attached restrictions, \n    and vice versa.\n  " .
+<http://www.w3.org/2002/07/owl#Restriction> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#onProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#onProperty> <http://www.w3.org/2000/01/rdf-schema#label> "onProperty" .
+<http://www.w3.org/2002/07/owl#onProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for onProperty(R, P), read:\n    R is a restricted with respect to property P.\n  " .
+<http://www.w3.org/2002/07/owl#onProperty> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://www.w3.org/2002/07/owl#onProperty> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#allValuesFrom> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#allValuesFrom> <http://www.w3.org/2000/01/rdf-schema#label> "allValuesFrom" .
+<http://www.w3.org/2002/07/owl#allValuesFrom> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for onProperty(R, P) and allValuesFrom(R, X), read:\n    i is in class R if and only if for all j, P(i, j) implies type(j, X).\n  " .
+<http://www.w3.org/2002/07/owl#allValuesFrom> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://www.w3.org/2002/07/owl#allValuesFrom> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#hasValue> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#hasValue> <http://www.w3.org/2000/01/rdf-schema#label> "hasValue" .
+<http://www.w3.org/2002/07/owl#hasValue> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for onProperty(R, P) and hasValue(R, V), read:\n    i is in class R if and only if P(i, V).\n  " .
+<http://www.w3.org/2002/07/owl#hasValue> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://www.w3.org/2002/07/owl#someValuesFrom> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#someValuesFrom> <http://www.w3.org/2000/01/rdf-schema#label> "someValuesFrom" .
+<http://www.w3.org/2002/07/owl#someValuesFrom> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for onProperty(R, P) and someValuesFrom(R, X), read:\n    i is in class R if and only if for some j, P(i, j) and type(j, X).\n  " .
+<http://www.w3.org/2002/07/owl#someValuesFrom> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://www.w3.org/2002/07/owl#someValuesFrom> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#minCardinality> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#minCardinality> <http://www.w3.org/2000/01/rdf-schema#label> "minCardinality" .
+<http://www.w3.org/2002/07/owl#minCardinality> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for onProperty(R, P) and minCardinality(R, n), read:\n    i is in class R if and only if there are at least n distinct j with P(i, j).\n  " .
+<http://www.w3.org/2002/07/owl#minCardinality> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://www.w3.org/2002/07/owl#minCardinality> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/10/XMLSchema#nonNegativeInteger> .
+<http://www.w3.org/2002/07/owl#maxCardinality> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#maxCardinality> <http://www.w3.org/2000/01/rdf-schema#label> "maxCardinality" .
+<http://www.w3.org/2002/07/owl#maxCardinality> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for onProperty(R, P) and maxCardinality(R, n), read:\n    i is in class R if and only if there are at most n distinct j with P(i, j).\n  " .
+<http://www.w3.org/2002/07/owl#maxCardinality> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://www.w3.org/2002/07/owl#maxCardinality> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/10/XMLSchema#nonNegativeInteger> .
+<http://www.w3.org/2002/07/owl#cardinality> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#cardinality> <http://www.w3.org/2000/01/rdf-schema#label> "cardinality" .
+<http://www.w3.org/2002/07/owl#cardinality> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for onProperty(R, P) and cardinality(R, n), read:\n    i is in class R if and only if there are exactly n distinct j with P(i, j).\n  " .
+<http://www.w3.org/2002/07/owl#cardinality> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://www.w3.org/2002/07/owl#cardinality> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/10/XMLSchema#nonNegativeInteger> .
+<http://www.w3.org/2002/07/owl#ObjectProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#ObjectProperty> <http://www.w3.org/2000/01/rdf-schema#label> "ObjectProperty" .
+<http://www.w3.org/2002/07/owl#ObjectProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    if P is an ObjectProperty, and P(x, y), then y is an object.\n  " .
+<http://www.w3.org/2002/07/owl#ObjectProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#DatatypeProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#DatatypeProperty> <http://www.w3.org/2000/01/rdf-schema#label> "DatatypeProperty" .
+<http://www.w3.org/2002/07/owl#DatatypeProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    if P is a DatatypeProperty, and P(x, y), then y is a data value.\n  " .
+<http://www.w3.org/2002/07/owl#DatatypeProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#inverseOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#inverseOf> <http://www.w3.org/2000/01/rdf-schema#label> "inverseOf" .
+<http://www.w3.org/2002/07/owl#inverseOf> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for inverseOf(R, S) read: R is the inverse of S; i.e.\n    if R(x, y) then S(y, x) and vice versa.\n  " .
+<http://www.w3.org/2002/07/owl#inverseOf> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://www.w3.org/2002/07/owl#inverseOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://www.w3.org/2002/07/owl#TransitiveProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#TransitiveProperty> <http://www.w3.org/2000/01/rdf-schema#label> "TransitiveProperty" .
+<http://www.w3.org/2002/07/owl#TransitiveProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    if P is a TransitiveProperty, then if P(x, y) and P(y, z) then P(x, z).\n  " .
+<http://www.w3.org/2002/07/owl#TransitiveProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://www.w3.org/2002/07/owl#SymmetricProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#SymmetricProperty> <http://www.w3.org/2000/01/rdf-schema#label> "SymmetricProperty" .
+<http://www.w3.org/2002/07/owl#SymmetricProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    if P is a SymmetricProperty, then if P(x, y) then P(y, x).\n  " .
+<http://www.w3.org/2002/07/owl#SymmetricProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://www.w3.org/2002/07/owl#FunctionalProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#FunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#label> "FunctionalProperty" .
+<http://www.w3.org/2002/07/owl#FunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    compare with maxCardinality=1; e.g. integer successor:\n    if P is a FunctionalProperty, then if P(x, y) and P(x, z) then y=z.\n  " .
+<http://www.w3.org/2002/07/owl#FunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#label> "InverseFunctionalProperty" .
+<http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    if P is an InverseFunctionalProperty, then if P(x, y) and P(z, y) then x=z.\n    aka injective. e.g. if firstBorne(m, Susan)\n    and firstBorne(n, Susan) then m and n are the same.\n  " .
+<http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#Ontology> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#Ontology> <http://www.w3.org/2000/01/rdf-schema#label> "Ontology" .
+<http://www.w3.org/2002/07/owl#Ontology> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    An Ontology is a document that describes\n    a vocabulary of terms for communication between\n    (human and) automated agents.\n  " .
+<http://www.w3.org/2002/07/owl#versionInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#versionInfo> <http://www.w3.org/2000/01/rdf-schema#label> "versionInfo" .
+<http://www.w3.org/2002/07/owl#versionInfo> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    generally, a string giving information about this\n    version; e.g. RCS/CVS keywords\n  " .
+<http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/2000/01/rdf-schema#label> "imports" .
+<http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/2000/01/rdf-schema#comment> "\n    for imports(X, Y) read: X imports Y;\n    i.e. X asserts the* contents of Y by reference;\n    i.e. if imports(X, Y) and you believe X and Y says something,\n    then you should believe it.\n  " .
