@@ -489,7 +489,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, (const unsigned char*)$1, $5, $3);
   else
     $$=NULL;
 
@@ -1018,12 +1018,9 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 
 void
 raptor_init_parser_turtle (void) {
-  raptor_parser_register_factory("ntriples-plus",  "N-Triples Plus",
-                                 NULL,
-                                 (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/",
-                                 &raptor_turtle_parser_register_factory);
-  raptor_parser_register_factory("turtle", "Turtle - Terse RDF Triple Language",
+  raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
                                  "application/x-turtle",
+                                 "ntriples-plus",
                                  (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/",
                                  &raptor_turtle_parser_register_factory);
 }
