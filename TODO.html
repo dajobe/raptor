@@ -11,10 +11,11 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>Add a guessing parser that sends an Accept: HTTP header for all
+supported mime types and uses the returned headers to select a
+parser. (FEATURE)</li>
 <li>Describe in libraptor.3 raptor's use of UTF-8 for strings,
 URIs.  Maybe also describe some relevant raptor.h structures (DOCS)</li>
-<li>Send an Accept: header with WWW requests, corresponding
-to the mime types accepted.  Plus others at lower q then guess? (FEATURE)</li>
 <li>RSS tag soup parser junks/overwrites element content if it is
 delivered in chunks rather than as one big CDATA, such as when
 libxml2 sees entities, it emits the content in bits (BUG)</li>
@@ -37,6 +38,8 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Send an HTTP Accept: header with WWW requests corresponding to the
+mime type of the parser selected, accepting all others at lower q (1.3.0)</li>
 <li>Guess parser from a mime type, content fragment and/or
 content name such as a filename or URI (1.3.0)</li>
 <li>Turtle parser: use <code>raptor_generate_id</code> for blank node identifiers (1.3.0)</li>
