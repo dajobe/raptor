@@ -417,6 +417,21 @@ raptor_iostream_write_string(raptor_iostream *iostr, const void *string)
 
 
 /**
+ * raptor_iostream_write_counted_string - Write a counted string to the iostream
+ * @iostr: raptor iostream
+ * @string: string
+ * @length: string length
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *string, size_t length) 
+{
+  return (raptor_iostream_write_bytes(iostr, string, 1, length) != length);
+}
+
+
+/**
  * raptor_iostream_write_end - End writing to the iostream
  *
  * @iostr: raptor iostream
