@@ -159,6 +159,7 @@ RAPTOR_API raptor_uri* raptor_new_uri_for_rdf_concept(const char *name);
 RAPTOR_API void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API raptor_uri* raptor_uri_copy(raptor_uri *uri);
+RAPTOR_API char* raptor_uri_as_string(raptor_uri *uri);
 
 
 /* Identifier functions */
@@ -185,6 +186,7 @@ typedef raptor_uri* (*new_uri_for_rdf_concept_func) (void *context, const char *
 typedef void (*free_uri_func) (void *context, raptor_uri *uri);
 typedef int (*uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
 typedef raptor_uri* (*uri_copy_func) (void *context, raptor_uri *uri);
+typedef char* (*uri_as_string_func)(void *context, raptor_uri *uri);
 
 typedef struct {
   /* constructors */
@@ -197,6 +199,7 @@ typedef struct {
   /* methods */
   uri_equals_func                  uri_equals;
   uri_copy_func                    uri_copy; /* well, copy constructor */
+  uri_as_string_func               uri_as_string;
   int initialised;
 } raptor_uri_handler;
 
