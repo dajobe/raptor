@@ -18,6 +18,17 @@
 # full license terms.
 # 
 
+TESTS=raptor_empty_test
+
+AM_CPPFLAGS=-I$(top_srcdir)
+AM_CFLAGS=@CFLAGS@ $(MEM)
+AM_LDFLAGS=@LIBS@ $(top_builddir)/libraptor.la $(MEM_LIBS)
+
+EXTRA_PROGRAMS=$(TESTS)
+
+raptor_empty_test_SOURCES=empty.c
+
+
 # These are errors in strict mode, warnings in lax - for now
 RDF_BAGID_TEST_FILES=ex-03.rdf ex-42.rdf ex-43.rdf ex-44.rdf ex-45.rdf
 
@@ -350,3 +361,7 @@ check-turtle: $(top_builddir)/rapper $(NT_TEST_FILES)
 	  rm -f $$name.res ; \
 	done; \
 	set -e; exit $$result
+
+
+$(top_builddir)/raptor/libraptor.la:
+	cd $(top_builddir)/raptor && $(MAKE) $(AM_MAKEFLAGS) libraptor.la
