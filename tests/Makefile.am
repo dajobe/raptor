@@ -22,7 +22,7 @@ TESTS=raptor_empty_test
 
 AM_CPPFLAGS=-I$(top_srcdir)
 AM_CFLAGS=@CFLAGS@ $(MEM)
-AM_LDFLAGS=@LIBS@ $(top_builddir)/libraptor.la $(MEM_LIBS)
+AM_LDFLAGS=$(top_builddir)/libraptor.la $(MEM_LIBS)
 
 EXTRA_PROGRAMS=$(TESTS)
 
