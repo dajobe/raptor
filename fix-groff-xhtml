@@ -34,8 +34,8 @@ while(<IN>) {
   s%<title>rapper</title>%<title>$raptor_title - Raptor RDF parser utility</title>%;
   s%<h1 align="center">rapper</h1>%<h1>$raptor_title - Raptor RDF parser utility</h1>%;
 
-  s%<title>rdfproc</title>%<title>$redland_title - Redland RDF parser utility</title>%;
-  s%<h1 align="center">rdfproc</h1>%<h1>$redland_title - Redland RDF parser utility</h1>%;
+  s%<title>rdfproc</title>%<title>$redland_title - Redland RDF processor utility</title>%;
+  s%<h1 align="center">rdfproc</h1>%<h1>$redland_title - Redland RDF processor utility</h1>%;
 
   next if /^<link|meta/i;
 
