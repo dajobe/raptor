@@ -239,6 +239,7 @@ RAPTOR_API int raptor_format_locator(char *buffer, size_t length, raptor_locator
  
 RAPTOR_API const char* raptor_get_name(raptor_parser *rdf_parser);
 RAPTOR_API const char* raptor_get_label(raptor_parser *rdf_parser);
+RAPTOR_API const char* raptor_get_mime_type(raptor_parser *rdf_parser);
 
 RAPTOR_API int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API int raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
