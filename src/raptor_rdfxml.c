@@ -3343,11 +3343,12 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_uri* base_uri=raptor_inscope_base_uri(rdf_parser);
   size_t id_len=strlen((const char*)id);
+  int rc;
 
   if(!rdf_parser->feature_check_rdf_id)
     return 0;
 
-  int rc=raptor_id_set_add(rdf_xml_parser->id_set, base_uri, id, id_len);
+  rc=raptor_id_set_add(rdf_xml_parser->id_set, base_uri, id, id_len);
 
   return (rc != 0);
 }
