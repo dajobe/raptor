@@ -1674,7 +1674,7 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 
   id=++rdf_parser->default_generate_id_handler_base;
 
-  tmp=id;
+  tmpid=id;
   length=2; /* min length 1 + \0 */
   while(tmpid/=10)
     length++;
