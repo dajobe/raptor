@@ -690,17 +690,21 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 {
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fprintf(stream, "_:%s", (const char*)statement->subject);
-  else
-    fprintf(stream, "<%s>",
-            raptor_uri_as_string((raptor_uri*)statement->subject));
+  else { /* must be URI */
+    fputc('<', stream);
+    raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)statement->subject), '\0');
+    fputc('>', stream);
+  }
   fputc(' ', stream);
 
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
     fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
             *((int*)statement->predicate));
-  else /* must be URI */
-    fprintf(stream, "<%s>",
-            raptor_uri_as_string((raptor_uri*)statement->predicate));
+  else { /* must be URI */
+    fputc('<', stream);
+    raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)statement->predicate), '\0');
+    fputc('>', stream);
+  }
   fputc(' ', stream);
 
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
@@ -724,9 +728,11 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
   else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
     fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
             *((int*)statement->object));
-  else /* must be URI */
-    fprintf(stream, "<%s>", 
-            raptor_uri_as_string((raptor_uri*)statement->object));
+  else { /* must be URI */
+    fputc('<', stream);
+    raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)statement->object), '\0');
+    fputc('>', stream);
+  }
 
   fputs(" .", stream);
 }
@@ -903,4 +909,62 @@ raptor_locator*
 raptor_get_locator(raptor_parser *rdf_parser) 
 {
   return &rdf_parser->locator;
+}
+
+
+/**
+ * raptor_validate_xml_ID - check the string matches the xml:ID value constraints
+ * @rdf_parser: RDF parser
+ * @string: The string to check.
+ *
+ * This checks the syntax part of the xml:ID validity constraint,
+ * that it matches [ VC: Name Token ] as amended by XML Namespaces:
+ *
+ *   http://www.w3.org/TR/REC-xml-names/#NT-NCName
+ * 
+ * Returns non-zero if the ID string is valid
+ **/
+int
+raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
+{
+  unsigned char c;
+  int len=strlen(string);
+  int unichar_len;
+  long unichar;
+  int pos;
+  
+  for(pos=0; (c=*string); string++, len--, pos++) {
+
+    /* It is unicode */
+    
+    unichar_len=raptor_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
+    if(unichar_len < 0 || unichar_len > len) {
+      raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
+      return 0;
+    }
+  
+    unichar_len=raptor_utf8_to_unicode_char(&unichar,
+                                            (const unsigned char *)string, len);
+    if(!pos) {
+      /* start of xml:ID name */
+      if(!raptor_unicode_is_letter(unichar) &&
+         (unichar != '_'))
+	return 0;
+
+    } else {
+      /* rest of xml:ID name */
+      if(!raptor_unicode_is_letter(unichar) &&
+         !raptor_unicode_is_digit(unichar) &&
+         (unichar != '.') &&
+         (unichar != '-') && 
+         (unichar != '_') &&
+         !raptor_unicode_is_combining(unichar) &&
+         !raptor_unicode_is_extender(unichar))
+        return 0;
+    }
+
+    unichar_len--; /* since loop does len-- */
+    string += unichar_len; len -= unichar_len;
+  }
+  return 1;
 }
