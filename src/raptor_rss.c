@@ -1934,10 +1934,13 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
      item->uri_fields[RAPTOR_RSS_FIELD_ITEMS]) {
     raptor_xml_element* rss_items_predicate;
     int i;
-    raptor_qname *rdf_Seq_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->rdf_nspace, (const unsigned char*)"Seq",  NULL);
+    raptor_qname *rdf_Seq_qname;
+    raptor_xml_element *rdf_Seq_element;
+    
+    rdf_Seq_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->rdf_nspace, (const unsigned char*)"Seq",  NULL);
     if(base_uri)
       base_uri=raptor_uri_copy(base_uri);
-    raptor_xml_element *rdf_Seq_element=raptor_new_xml_element(rdf_Seq_qname, NULL, base_uri);
+    rdf_Seq_element=raptor_new_xml_element(rdf_Seq_qname, NULL, base_uri);
 
     /* make the <rss:items><rdf:Seq><rdf:li /> .... </rdf:Seq></rss:items> */
 
