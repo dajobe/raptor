@@ -169,7 +169,7 @@ raptor_libxml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc) {
   raptor_set_libxml_document_locator(rdf_parser, loc);
 }
 
-static void
+void
 raptor_libxml_update_document_locator (raptor_parser *rdf_parser) {
   /* for storing error info */
   raptor_locator *locator=raptor_get_locator(rdf_parser);
@@ -180,7 +180,9 @@ raptor_libxml_update_document_locator (raptor_parser *rdf_parser) {
     return;
   
   locator->line=loc->getLineNumber(xc);
-  locator->column=loc->getColumnNumber(xc);
+  /* Seems to be broken */
+  locator->column= -1;
+  /* locator->column=loc->getColumnNumber(xc); */
 }
   
 
