@@ -1767,8 +1767,12 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   if(element->parent) {
     /* Do not change this; PROPERTYELT will turn into MEMBER if necessary
      * See the switch case for MEMBER / PROPERTYELT where the test is done.
+     *
+     * PARSETYPE_RESOURCE should never be propogated up since it
+     * will turn the next child (node) element into a property
      */
-    if(element->state != RAPTOR_STATE_MEMBER)
+    if(element->state != RAPTOR_STATE_MEMBER &&
+       element->state != RAPTOR_STATE_PARSETYPE_RESOURCE)
       element->parent->child_state=element->state;
   }
   
@@ -3582,7 +3586,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->parent && 
                    (element->parent->object.uri || element->parent->object.id)) {
-          /* copy from parent, it has a URI for us */
+          /* copy from parent (property element), it has a URI for us */
           raptor_copy_identifier(&element->subject, &element->parent->object);
         } else {
           element->subject.id=raptor_generate_id(rdf_parser, 0);
