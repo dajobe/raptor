@@ -68,8 +68,7 @@ static raptor_parser_factory* parsers=NULL;
  * 
  * Initialises the library.
  *
- * Should be called before using any of the parsers otherwise
- * will be called automatically.
+ * MUST be called before using any of the raptor APIs.
  **/
 void
 raptor_init(void) 
@@ -218,8 +217,6 @@ raptor_parser*
 raptor_new_parser(const char *name) {
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
-
-  raptor_init();
 
   factory=raptor_get_parser_factory(name);
   if(!factory)
