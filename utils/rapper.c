@@ -162,6 +162,9 @@ rdfdump_warning_handler(void *data, raptor_locator *locator,
 }
 
 
+#ifdef RAPTOR_DEBUG
+void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
+#endif
 
 int
 main(int argc, char *argv[]) 
