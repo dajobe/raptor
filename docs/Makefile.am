@@ -53,7 +53,7 @@ $(man_MANS)
 
 SUBDIRS= debian tests win32
 
-TESTS=raptor_cc_test raptor_uri_test
+TESTS=raptor_cc_test raptor_uri_test strcasecmp_test
 
 # Use tar, whatever it is called (better be GNU tar though)
 TAR=@TAR@
@@ -107,6 +107,9 @@ raptor_cc_test: $(srcdir)/raptor_cc.c libraptor.la
 
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+
+strcasecmp_test: $(srcdir)/strcasecmp.c
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/strcasecmp.c
 
 deb: distcheck
 	rm -rf $(distdir)
