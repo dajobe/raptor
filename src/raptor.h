@@ -332,6 +332,8 @@ RAPTOR_API const unsigned char* raptor_namespace_get_prefix(const raptor_namespa
 RAPTOR_API unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
 
 
+typedef struct raptor_stringbuffer_s raptor_stringbuffer;
+
 #ifdef __cplusplus
 }
 #endif
