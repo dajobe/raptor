@@ -929,9 +929,11 @@ raptor_uri_uri_string_to_filename_fragment(const char *uri_string,
   if(authority) {
     len+=strlen(authority);
     p=strchr(authority, '|');
+    if(!p)
+      p=strchr(authority, ':');
     if(p) {
       /* Either 
-       *   "a:" like in file://a:/... 
+       *   "a:" like in file://a|/... or file://a:/... 
        * or
        *   "a:." like in file://a:./foo
        * giving device-relative path a:foo
@@ -1320,6 +1322,7 @@ main(int argc, char *argv[])
 
 
   failures += assert_uri_to_filename ("file://c|/windows/system", "c:\\windows\\system");
+  failures += assert_uri_to_filename ("file://c:/windows/system", "c:\\windows\\system");
   failures += assert_uri_to_filename ("file://server/share/file.doc", "\\\\server\\share\\file.doc");
   failures += assert_uri_to_filename ("file://a|./foo", "a:foo");
 #else
