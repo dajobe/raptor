@@ -205,13 +205,15 @@ raptor_namespace_new(const char *prefix,
   raptor_namespace *ns;
   char *p;
 
+  /* Convert an empty namespace string "" to a NULL pointer */
+  if(ns_uri_string && !*ns_uri_string)
+    ns_uri_string=NULL;
+
   LIBRDF_DEBUG4(raptor_namespaces_start_namespace,
                 "namespace prefix %s uri %s depth %d\n",
-                prefix ? prefix : "(default)", ns_uri_string, depth);
-
-  /* Convert an empty namespace string "" to a NULL pointer */
-  if(!*ns_uri_string)
-    ns_uri_string=NULL;
+                prefix ? prefix : "(default)", 
+                ns_uri_string ? ns_uri_string : "(none)",
+                depth);
 
   len=sizeof(raptor_namespace);
 #ifdef RAPTOR_IN_REDLAND
