@@ -72,13 +72,21 @@ typedef void* raptor_uri;
 
 
 /* Public statics */
-extern const char * const raptor_short_copyright_string;
-extern const char * const raptor_copyright_string;
-extern const char * const raptor_version_string;
-extern const unsigned int raptor_version_major;
-extern const unsigned int raptor_version_minor;
-extern const unsigned int raptor_version_release;
-extern const unsigned int raptor_version_decimal;
+RAPTOR_API extern const char * const raptor_short_copyright_string;
+RAPTOR_API extern const char * const raptor_copyright_string;
+RAPTOR_API extern const char * const raptor_version_string;
+RAPTOR_API extern const unsigned int raptor_version_major;
+RAPTOR_API extern const unsigned int raptor_version_minor;
+RAPTOR_API extern const unsigned int raptor_version_release;
+RAPTOR_API extern const unsigned int raptor_version_decimal;
+
+RAPTOR_API extern const char * const raptor_xml_namespace_uri;
+RAPTOR_API extern const char * const raptor_rdf_namespace_ms_uri;
+RAPTOR_API extern const char * const raptor_rdf_namespace_schema_uri;
+RAPTOR_API extern const char * const raptor_xmlschema_datatypes_namespace_uri;
+RAPTOR_API extern const char * const raptor_owl_namespace_uri;
+
+RAPTOR_API extern const unsigned int raptor_rdf_namespace_ms_uri_len;
 
 RAPTOR_API extern const char * const raptor_xml_literal_datatype_uri_string;
 RAPTOR_API extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
@@ -288,7 +296,8 @@ RAPTOR_API int raptor_serialize_start_to_file_handle(raptor_serializer *rdf_seri
 RAPTOR_API int raptor_serialize_statement(raptor_serializer* rdf_serializer, const raptor_statement *statement);
 RAPTOR_API int raptor_serialize_end(raptor_serializer *rdf_serializer);
 RAPTOR_API raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
-  
+RAPTOR_API void raptor_serializer_set_error_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
+RAPTOR_API raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 
 /* memory functions */
 RAPTOR_API void raptor_free_memory(void *ptr);
