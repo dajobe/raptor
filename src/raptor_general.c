@@ -620,12 +620,16 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                  raptor_uri *base_uri, void *connection)
 {
   raptor_www *www=raptor_www_new_with_connection(connection);
-
+  const char* mime_type;
+  
   if(!www)
     return 1;
 
   if(!base_uri)
     base_uri=uri;
+
+  if((mime_type=raptor_get_mime_type(rdf_parser)))
+    raptor_www_set_http_accept(www, mime_type);
   
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
                                      rdf_parser);
@@ -1271,6 +1275,19 @@ const char*
 raptor_get_label(raptor_parser *rdf_parser) 
 {
   return rdf_parser->factory->label;
+}
+
+
+/**
+ * raptor_get_mime_type: Return MIME type for the parser
+ * @parser: &raptor_parser parser object
+ *
+ * Return value: MIME type or NULL if none available
+ **/
+const char*
+raptor_get_mime_type(raptor_parser *rdf_parser) 
+{
+  return rdf_parser->factory->mime_type;
 }
 
 
