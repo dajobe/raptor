@@ -1,5 +1,7 @@
 2004-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Snapshotted raptor_1_3_3 for 1.3.3 release
+
 	* Switched to LGPL / Apache 2.0 license in the sources
 	  CVS tags before: raptor_license_lgpl_mpl,
 	  and after: raptor_license_lgpl_apache2
