@@ -398,6 +398,50 @@ raptor_uri_parse (const char *uri, char *buffer, size_t len,
 }
 
 
+static char*
+raptor_uri_construct(const char *scheme, const char *authority, const char *path, const char *query, const char *fragment)
+{
+  int len=0;
+  char *p;
+  
+  if(scheme)
+    len+= strlen(scheme)+1; /* : */
+  if(authority)
+    len+= 2 + strlen(authority); /* // */
+  if(path)
+    len+= strlen(path);
+  if(fragment)
+    len+= 1 + strlen(fragment); /* # */
+  if(query)
+    len+= 1 + strlen(query); /* ? */
+  p=(char*)RAPTOR_MALLOC(cstring, len+1);
+  if(!p)
+    return NULL;
+  *p='\0';
+  
+  if(scheme) {
+    strcpy(p, scheme);
+    strcat(p,":");
+  }
+  if(authority) {
+    strcat(p, "//");
+    strcat(p, authority);
+  }
+  if(path)
+    strcat(p, path);
+  if(fragment) {
+    strcat(p, "#");
+    strcat(p, fragment);
+  }
+  if(query) {
+    strcat(p, "?");
+    strcat(p, query);
+  }
+
+  return p;
+}
+
+
 /**
  * raptor_uri_resolve_uri_reference - Resolve a URI to a base URI
  * @base_uri: Base URI string
@@ -480,6 +524,7 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
    */
   if (reference_authority) {
     result_authority = reference_authority;
+    result_path = reference_path;
     goto resolve_end;
   }
 
@@ -576,16 +621,21 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
       char *p3 = NULL; /* current component */
       char *p2 = NULL; /* previous component */
       char *p0 = NULL; /* before p2 */
+      char last_char='\0';
       
-      for (;*s; ++s) {
+      for (;*s; last_char=*s++) {
 
+        /* find the path components */
         if (*s != '/') {
-          if (!p3) {
-            /* Empty stack; initialise */
-            p3 = s;
-          } else if (!p2) {
-            /* Add 2nd component */
-            p2 = s;
+          /* Must be at the start or  follow a / */
+          if(!last_char || last_char == '/') {
+            if (!p3) {
+              /* Empty stack; initialise */
+              p3 = s;
+            } else if (!p2) {
+              /* Add 2nd component */
+              p2 = s;
+            }
           }
           continue;
         }
@@ -904,6 +954,42 @@ raptor_uri_is_file_uri(const char* uri_string) {
 }
 
 
+raptor_uri*
+raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
+{
+  char *uri_string=raptor_uri_as_string(old_uri);
+  char *buffer;
+  int buffer_len=strlen(uri_string)+1;
+  char *scheme;
+  char *authority;
+  char *path;
+  char *query;
+  char *fragment;
+  char *new_uri_string;
+  raptor_uri* new_uri;
+
+  buffer=(char*)RAPTOR_MALLOC(cstring, buffer_len);
+  if(!buffer)
+    return NULL;
+  
+  raptor_uri_parse (uri_string, buffer, buffer_len,
+                    &scheme, &authority, &path, &query, &fragment);
+
+  if(!path)
+    path="/";
+  
+  new_uri_string=raptor_uri_construct(scheme, authority, path, NULL, NULL);
+  RAPTOR_FREE(cstring, buffer);
+  if(!new_uri_string)
+    return NULL;
+  
+  new_uri=raptor_new_uri(new_uri_string);
+  RAPTOR_FREE(cstring, new_uri_string);
+
+  return new_uri;
+}
+
+
 void
 raptor_uri_init_default_handler(raptor_uri_handler *handler) 
 {
@@ -1017,62 +1103,65 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 int
 main(int argc, char *argv[]) 
 {
-  const char *base_uri = "http://a/b/c/d;p?q";
+  const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr";
   int failures=0;
   
   fprintf(stderr, "raptor_uri_resolve_uri_reference: Testing with base URI %s\n", base_uri);
   
 
   failures += assert_resolve_uri (base_uri, "g:h", "g:h");
-  failures += assert_resolve_uri (base_uri, "g", "http://a/b/c/g");
-  failures += assert_resolve_uri (base_uri, "./g", "http://a/b/c/g");
-  failures += assert_resolve_uri (base_uri, "g/", "http://a/b/c/g/");
-  failures += assert_resolve_uri (base_uri, "/g", "http://a/g");
-  failures += assert_resolve_uri (base_uri, "//g", "http://g");
-  failures += assert_resolve_uri (base_uri, "?y", "http://a/b/c/?y");
-  failures += assert_resolve_uri (base_uri, "g?y", "http://a/b/c/g?y");
-  failures += assert_resolve_uri (base_uri, "#s", "http://a/b/c/d;p?q#s");
-  failures += assert_resolve_uri (base_uri, "g#s", "http://a/b/c/g#s");
-  failures += assert_resolve_uri (base_uri, "g?y#s", "http://a/b/c/g?y#s");
-  failures += assert_resolve_uri (base_uri, ";x", "http://a/b/c/;x");
-  failures += assert_resolve_uri (base_uri, "g;x", "http://a/b/c/g;x");
-  failures += assert_resolve_uri (base_uri, "g;x?y#s", "http://a/b/c/g;x?y#s");
-  failures += assert_resolve_uri (base_uri, ".", "http://a/b/c/");
-  failures += assert_resolve_uri (base_uri, "./", "http://a/b/c/");
-  failures += assert_resolve_uri (base_uri, "..", "http://a/b/");
-  failures += assert_resolve_uri (base_uri, "../", "http://a/b/");
-  failures += assert_resolve_uri (base_uri, "../g", "http://a/b/g");
-  failures += assert_resolve_uri (base_uri, "../..", "http://a/");
-  failures += assert_resolve_uri (base_uri, "../../", "http://a/");
-  failures += assert_resolve_uri (base_uri, "../../g", "http://a/g");
+  failures += assert_resolve_uri (base_uri, "gpath", "http://example.org/bpath/cpath/gpath");
+  failures += assert_resolve_uri (base_uri, "./gpath", "http://example.org/bpath/cpath/gpath");
+  failures += assert_resolve_uri (base_uri, "gpath/", "http://example.org/bpath/cpath/gpath/");
+  failures += assert_resolve_uri (base_uri, "/gpath", "http://example.org/gpath");
+  failures += assert_resolve_uri (base_uri, "//gpath", "http://gpath");
+  failures += assert_resolve_uri (base_uri, "?y", "http://example.org/bpath/cpath/?y");
+  failures += assert_resolve_uri (base_uri, "gpath?y", "http://example.org/bpath/cpath/gpath?y");
+  failures += assert_resolve_uri (base_uri, "#s", "http://example.org/bpath/cpath/d;p?querystr#s");
+  failures += assert_resolve_uri (base_uri, "gpath#s", "http://example.org/bpath/cpath/gpath#s");
+  failures += assert_resolve_uri (base_uri, "gpath?y#s", "http://example.org/bpath/cpath/gpath?y#s");
+  failures += assert_resolve_uri (base_uri, ";x", "http://example.org/bpath/cpath/;x");
+  failures += assert_resolve_uri (base_uri, "gpath;x", "http://example.org/bpath/cpath/gpath;x");
+  failures += assert_resolve_uri (base_uri, "gpath;x?y#s", "http://example.org/bpath/cpath/gpath;x?y#s");
+  failures += assert_resolve_uri (base_uri, ".", "http://example.org/bpath/cpath/");
+  failures += assert_resolve_uri (base_uri, "./", "http://example.org/bpath/cpath/");
+  failures += assert_resolve_uri (base_uri, "..", "http://example.org/bpath/");
+  failures += assert_resolve_uri (base_uri, "../", "http://example.org/bpath/");
+  failures += assert_resolve_uri (base_uri, "../gpath", "http://example.org/bpath/gpath");
+  failures += assert_resolve_uri (base_uri, "../..", "http://example.org/");
+  failures += assert_resolve_uri (base_uri, "../../", "http://example.org/");
+  failures += assert_resolve_uri (base_uri, "../../gpath", "http://example.org/gpath");
 
-  failures += assert_resolve_uri (base_uri, "", "http://a/b/c/d;p?q");
+  failures += assert_resolve_uri (base_uri, "", "http://example.org/bpath/cpath/d;p?querystr");
 
-  failures += assert_resolve_uri (base_uri, "../../../g", "http://a/../g");
-  failures += assert_resolve_uri (base_uri, "../../../../g", "http://a/../../g");
+  failures += assert_resolve_uri (base_uri, "../../../gpath", "http://example.org/../gpath");
+  failures += assert_resolve_uri (base_uri, "../../../../gpath", "http://example.org/../../gpath");
 
-  failures += assert_resolve_uri (base_uri, "/./g", "http://a/./g");
-  failures += assert_resolve_uri (base_uri, "/../g", "http://a/../g");
-  failures += assert_resolve_uri (base_uri, "g.", "http://a/b/c/g.");
-  failures += assert_resolve_uri (base_uri, ".g", "http://a/b/c/.g");
-  failures += assert_resolve_uri (base_uri, "g..", "http://a/b/c/g..");
-  failures += assert_resolve_uri (base_uri, "..g", "http://a/b/c/..g");
+  failures += assert_resolve_uri (base_uri, "/./gpath", "http://example.org/./gpath");
+  failures += assert_resolve_uri (base_uri, "/../gpath", "http://example.org/../gpath");
+  failures += assert_resolve_uri (base_uri, "gpath.", "http://example.org/bpath/cpath/gpath.");
+  failures += assert_resolve_uri (base_uri, ".gpath", "http://example.org/bpath/cpath/.gpath");
+  failures += assert_resolve_uri (base_uri, "gpath..", "http://example.org/bpath/cpath/gpath..");
+  failures += assert_resolve_uri (base_uri, "..gpath", "http://example.org/bpath/cpath/..gpath");
 
-  failures += assert_resolve_uri (base_uri, "./../g", "http://a/b/g");
-  failures += assert_resolve_uri (base_uri, "./g/.", "http://a/b/c/g/");
-  failures += assert_resolve_uri (base_uri, "g/./h", "http://a/b/c/g/h");
-  failures += assert_resolve_uri (base_uri, "g/../h", "http://a/b/c/h");
-  failures += assert_resolve_uri (base_uri, "g;x=1/./y", "http://a/b/c/g;x=1/y");
-  failures += assert_resolve_uri (base_uri, "g;x=1/../y", "http://a/b/c/y");
+  failures += assert_resolve_uri (base_uri, "./../gpath", "http://example.org/bpath/gpath");
+  failures += assert_resolve_uri (base_uri, "./gpath/.", "http://example.org/bpath/cpath/gpath/");
+  failures += assert_resolve_uri (base_uri, "gpath/./hpath", "http://example.org/bpath/cpath/gpath/hpath");
+  failures += assert_resolve_uri (base_uri, "gpath/../hpath", "http://example.org/bpath/cpath/hpath");
+  failures += assert_resolve_uri (base_uri, "gpath;x=1/./y", "http://example.org/bpath/cpath/gpath;x=1/y");
+  failures += assert_resolve_uri (base_uri, "gpath;x=1/../y", "http://example.org/bpath/cpath/y");
 
-  failures += assert_resolve_uri (base_uri, "g?y/./x", "http://a/b/c/g?y/./x");
-  failures += assert_resolve_uri (base_uri, "g?y/../x", "http://a/b/c/g?y/../x");
-  failures += assert_resolve_uri (base_uri, "g#s/./x", "http://a/b/c/g#s/./x");
-  failures += assert_resolve_uri (base_uri, "g#s/../x", "http://a/b/c/g#s/../x");
+  failures += assert_resolve_uri (base_uri, "gpath?y/./x", "http://example.org/bpath/cpath/gpath?y/./x");
+  failures += assert_resolve_uri (base_uri, "gpath?y/../x", "http://example.org/bpath/cpath/gpath?y/../x");
+  failures += assert_resolve_uri (base_uri, "gpath#s/./x", "http://example.org/bpath/cpath/gpath#s/./x");
+  failures += assert_resolve_uri (base_uri, "gpath#s/../x", "http://example.org/bpath/cpath/gpath#s/../x");
 
-  failures += assert_resolve_uri (base_uri, "http:g", "http:g");
+  failures += assert_resolve_uri (base_uri, "http:gauthority", "http:gauthority");
 
-  failures += assert_resolve_uri (base_uri, "g/../../../h", "http://a/h");
+  failures += assert_resolve_uri (base_uri, "gpath/../../../hpath", "http://example.org/hpath");
+
+  failures += assert_resolve_uri ("http://example.org/dir/file", "../../../absfile", "http://example.org/../../absfile");
+  failures += assert_resolve_uri ("http://example.org/dir/file", "http://another.example.org/dir/file", "http://another.example.org/dir/file");
 
 
 #ifdef WIN32
