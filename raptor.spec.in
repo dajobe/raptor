@@ -20,9 +20,9 @@ Docdir: %{_docdir}
 %description
 
 Raptor is the RDF Parser Toolkit for Redland that provides a set of
-Resource Description Framework (RDF) parsers, generating RDF triples
-from RDF/XML, N-Triples, Turtle, several XML RSS tag soup formats and
-Atom 0.3
+Resource Description Framework (RDF) parsers and serializers, generating
+RDF triples from RDF/XML, N-Triples, Turtle, several XML RSS tag soup
+formats and Atom 0.3 along with serializers to RDF/XML and N-Triples.
 
 %package devel
 Summary: Libraries, includes etc to develop with Raptor RDF parser library
@@ -31,9 +31,8 @@ Requires: raptor = %{version}
 Requires: libxml2-devel
 
 %description devel
-Libraries, includes etc to develop with Raptor RDF parser library.
-It provides a set of standalone RDF parsers, generating triples from
-RDF/XML or N-Triples.
+Libraries, includes etc to develop with Raptor RDF parser and
+serializer library.
 
 %prep
 %setup -q

@@ -3,7 +3,7 @@
          xmlns:foaf="http://xmlns.com/foaf/0.1/"
          xmlns:doap="http://usefulinc.com/ns/doap#">
 
-  <foaf:Person rdf:nodeID="dave">
+  <foaf:Person rdf:nodeID="p1">
     <foaf:name>Dave Beckett</foaf:name>
     <foaf:homepage rdf:resource="http://purl.org/net/dajobe/"/>
   </foaf:Person>
@@ -11,17 +11,22 @@
   <doap:Project>
     <doap:name>Raptor</doap:name>
     <doap:summary xml:lang="en">RDF Parser Toolkit Library.</doap:summary>
-    <doap:description xml:lang="en">Library for parsing RDF syntaxes
-    such as RDF/XML, N-Triples and Turtle into RDF triples.</doap:description>
+
+    <doap:description xml:lang="en">Raptor is the RDF Parser Toolkit for
+    Redland that provides a set of Resource Description Framework (RDF)
+    parsers and serializers, generating RDF triples from RDF/XML,
+    N-Triples, Turtle, several XML RSS tag soup formats and Atom 0.3
+    along with serializers to RDF/XML and N-Triples.</doap:description>
+
     <doap:homepage rdf:resource="http://librdf.org/raptor/"/>
 
-    <doap:maintainer rdf:nodeID="dave"/>
+    <doap:maintainer rdf:nodeID="p1"/>
 
     <doap:download rdf:resource="http://librdf.org/dist/sources/"/>
 
-    <doap:license rdf:resource="http://www.gnu.org/licenses/gpl.html"/>
-    <doap:license rdf:resource="http://www.gnu.org/licenses/lgpl.html"/>
-    <doap:license rdf:resource="http://www.mozilla.org/MPL/MPL-1.1.html"/>
+    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
+    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/lgpl"/>
+    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/asl20"/>
 
     <doap:mailingList rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-dev"/>
 
@@ -33,7 +38,7 @@
 
     <doap:repository>
       <doap:CVSRepository>
-	<doap:anonCVS>:pserver:anonymous@cvs.ilrg.org:/cvs/redland raptor</doap:anonCVS>
+	<doap:anonCVS>:pserver:anonymous@cvs.librdf.org:/cvs/redland raptor</doap:anonCVS>
 	<doap:repositoryWebView rdf:resource="http://cvs.librdf.org/cvsweb/redland/raptor/"/>
       </doap:CVSRepository>
     </doap:repository>
