@@ -151,7 +151,7 @@ rdfdump_error_handler(void *data, raptor_locator *locator,
     raptor_print_locator(stderr, locator);
     fprintf(stderr, " - %s\n", message);
     
-    raptor_parse_abort(data);
+    raptor_parse_abort((raptor_parser*)data);
   }
 
   error_count++;
