@@ -1,5 +1,13 @@
 2004-08-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* turtle_lexer.l, n3_lexer.l: grammar
+
+	* turtle_lexer.l, n3_lexer.l, fix-flex:
+	fix-flex now inserts the raptor and win32 config includes block
+	at the top of the lexer C.
+
+	* n3_parser.y, n3_lexer.l: win32
+
 	* Several fixes for building on win32 from Chris Pointon
 
 	* win32/raptor.dsw, win32/raptor.dsp: win32 updates from Chris Pointon
