@@ -91,7 +91,7 @@ raptor_free_sequence(raptor_sequence* seq) {
 
 static int
 raptor_sequence_ensure(raptor_sequence *seq, int capacity) {
-  void *new_sequence;
+  void **new_sequence;
   if(seq->capacity > capacity)
     return 0;
 
@@ -99,7 +99,7 @@ raptor_sequence_ensure(raptor_sequence *seq, int capacity) {
   if(capacity < 8)
     capacity=8;
 
-  new_sequence=calloc(capacity, sizeof(void*));
+  new_sequence=(void**)calloc(capacity, sizeof(void*));
   if(!new_sequence)
     return 1;
 
@@ -289,11 +289,11 @@ main(int argc, char *argv[])
   program=argv[0];
   
 
-  raptor_sequence_set_at(seq, 0, "first");
+  raptor_sequence_set_at(seq, 0, (void*)"first");
 
-  raptor_sequence_push(seq, "third");
+  raptor_sequence_push(seq, (void*)"third");
 
-  raptor_sequence_shift(seq, "second");
+  raptor_sequence_shift(seq, (void*)"second");
 
   s=(char*)raptor_sequence_get_at(seq, 0);
   assert_match(raptor_sequence_get_at, s, "second");
