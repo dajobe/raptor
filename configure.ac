@@ -423,9 +423,6 @@ else
   nfc_check=no
 fi
 AC_MSG_RESULT($nfc_check);
-if test $nfc_check = yes; then
-  AC_DEFINE([RAPTOR_NFC_CHECK], 1, [Provide a Unicode NFC check])
-fi
 
 
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
@@ -589,6 +586,9 @@ for xml_parser_name in $xml_parser libxml expat; do
 esac
 done
 
+AM_CONDITIONAL(RAPTOR_XML_EXPAT, test $need_expat = 1)
+AM_CONDITIONAL(RAPTOR_XML_LIBXML, test $need_libxml = 1)
+
 
 AC_MSG_CHECKING(XML parser to use)
 result=
@@ -610,18 +610,82 @@ fi
 AC_MSG_RESULT($result)
 
 
-AC_DEFINE(RAPTOR_PARSER_TURTLE, 1, [Building Turtle parser])
-AC_DEFINE(RAPTOR_PARSER_NTRIPLES, 1, [Building N-Triples parser])
-AC_DEFINE(RAPTOR_PARSER_RDFXML, 1, [Building RDF/XML parser])
+dnl RDF Parsers
+rdfxml_parser=no
+ntriples_parser=no
+turtle_parser=no
+rss_parser=no
 
+rdf_parsers_available="rdfxml ntriples turtle"
+rdf_parsers_enabled=
+
+rss_parser_ok=no
 AC_MSG_CHECKING(RSS Tag Soup parser requirements)
 if test $need_libxml = 1 -a "$ac_cv_header_libxml_xmlreader_h" = yes -a "$have_libxml2_xmlParserSeverities" = yes ; then
   AC_MSG_RESULT(met)
-  AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
-  AC_LIBOBJ(raptor_rss)
+  rss_parser_ok=yes
+  rdf_parsers_available="$rdf_parsers_available rss-tag-soup"
 else
   AC_MSG_RESULT(not met - no libxml2 with XMLReader)
 fi
+
+# This is needed because autoheader can't work out which computed
+# symbols must be pulled from acconfig.h into config.h.in
+if test "x" = "y"; then
+  AC_DEFINE(RAPTOR_PARSER_RDFXML, 1, [Building RDF/XML parser])
+  AC_DEFINE(RAPTOR_PARSER_NTRIPLES, 1, [Building N-Triples parser])
+  AC_DEFINE(RAPTOR_PARSER_TURTLE, 1, [Building Turtle parser])
+  AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
+fi
+
+AC_MSG_CHECKING(RDF parsers required)
+AC_ARG_ENABLE(parsers, [  --enable-parsers=LIST   Use RDF parsers (default=all)], parsers="$enableval") 
+if test "X$parsers" = Xall -o "X$parsers" = X; then
+  parsers="$rdf_parsers_available"
+  AC_MSG_RESULT(all)
+else
+  AC_MSG_RESULT($parsers)
+fi
+
+for parser in $parsers; do
+  if test $p = rss-tag-soup; then
+    if test $rss_parser_ok != yes; then
+      AC_MSG_WARN(RSS tag soup parser is not available)
+      continue
+    fi
+    p=rss
+  else
+    p=$parser;
+  fi
+
+  eval $p'_parser=yes'
+  NAME=`echo $p | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+  n=RAPTOR_PARSER_${NAME}
+  AC_DEFINE_UNQUOTED($n)
+  rdf_parsers_enabled="$rdf_parsers_enabled $parser"
+done
+
+if test $rdfxml_parser = yes; then
+  nfc_needed=yes;
+fi
+
+AM_CONDITIONAL(RAPTOR_PARSER_RDFXML, test $rdfxml_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_NTRIPLES, test $ntriples_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
+
+
+dnl Enable NFC code only if needed and the check is enabled
+if test $nfc_needed = yes; then
+  if test $nfc_check != yes; then
+    nfc_needed=no
+  else
+    AC_DEFINE([RAPTOR_NFC_CHECK], 1, [Provide a Unicode NFC check])
+  fi
+fi
+AM_CONDITIONAL(RAPTOR_NFC_CHECK, test $nfc_needed = yes)
+
+
 
 AC_MSG_CHECKING(XML names version)
 AC_ARG_WITH(xml-names, [  --with-xml-names=1.1|1.0  Select XML version name checking (default=1.0)], xml_names="$withval", xml_names="1.0")
@@ -910,6 +974,8 @@ AC_OUTPUT
 
 AC_MSG_RESULT([
 Raptor build summary:
-  XML parser :$xml_parsers_available
-  WWW library: $www_library
+  RDF parsers available : $rdf_parsers_available
+  RDF parsers enabled   :$rdf_parsers_enabled
+  XML parser            :$xml_parsers_available
+  WWW library           : $www_library
 ])

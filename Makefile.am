@@ -59,17 +59,38 @@ STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
-libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
-raptor_uri.c raptor_expat.c raptor_libxml.c raptor_win32.c raptor_locator.c \
+libraptor_la_SOURCES = \
+raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
-raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
-raptor_identifier.c raptor_xml_writer.c \
-turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h \
-raptor_sequence.c raptor_stringbuffer.c \
+raptor_www.c \
+raptor_identifier.c \
+raptor_sequence.c raptor_stringbuffer.c
+if RAPTOR_PARSER_RDFXML
+libraptor_la_SOURCES += raptor_parse.c raptor_xml.c raptor_xml_writer.c \
+raptor_sax2.c raptor_set.c
+if RAPTOR_XML_LIBXML
+libraptor_la_SOURCES += raptor_libxml.c
+endif
+if RAPTOR_XML_EXPAT
+libraptor_la_SOURCES += raptor_expat.c
+endif
+endif
+if RAPTOR_PARSER_TURTLE
+libraptor_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+endif
+if RAPTOR_PARSER_NTRIPLES
+libraptor_la_SOURCES += ntriples_parse.c
+endif
+if RAPTOR_PARSER_RSS
+libraptor_la_SOURCES += raptor_rss.c
+endif
+if RAPTOR_NFC_CHECK
 raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
+endif
 if STRCASECMP
 libraptor_la_SOURCES += strcasecmp.c
 endif
+
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
@@ -96,6 +117,7 @@ raptor.spec.in \
 dc.rdf \
 raptor_www_test.c \
 raptor_nfc_test.c \
+raptor_win32.c \
 fix-groff-xhtml \
 $(man_MANS) \
 raptor.pc.in \
