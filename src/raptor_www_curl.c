@@ -40,12 +40,12 @@
 static size_t
 raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userdata) 
 {
-  raptor_www* cx=(raptor_www*)userdata;
+  raptor_www* www=(raptor_www*)userdata;
   int bytes=size*nmemb;
   
-  if(cx->write_bytes)
-    cx->write_bytes(cx->userdata, ptr, size, nmemb);
-  cx->total_bytes += bytes;
+  if(www->write_bytes)
+    www->write_bytes(www, www->write_bytes_userdata, ptr, size, nmemb);
+  www->total_bytes += bytes;
   return bytes;
 }
 
@@ -53,7 +53,7 @@ raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userd
 static size_t 
 raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *userdata) 
 {
-  raptor_www* cx=(raptor_www*)userdata;
+  raptor_www* www=(raptor_www*)userdata;
   int bytes=size*nmemb;
 
   if(!strncmp(ptr, "Content-Type: ", 14)) {
@@ -61,9 +61,9 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
     char *type_buffer=(char*)malloc(len+1);
     strncpy(type_buffer, ptr+14, len);
     type_buffer[len]='\0';
-    cx->type=type_buffer;
-    if(cx->content_type)
-      cx->content_type(cx->userdata, cx->type);
+    www->type=type_buffer;
+    if(www->content_type)
+      www->content_type(www, www->content_type_userdata, www->type);
   }
   
   return bytes;
@@ -112,13 +112,14 @@ raptor_www_curl_free(raptor_www *www)
 
 
 int
-raptor_www_curl_fetch(raptor_www *www, const char *url) 
+raptor_www_curl_fetch(raptor_www *www) 
 {
   if(www->user_agent)
     curl_easy_setopt(www->curl_handle, CURLOPT_USERAGENT, www->user_agent);
 
   /* specify URL to get */
-  curl_easy_setopt(www->curl_handle, CURLOPT_URL, url);
+  curl_easy_setopt(www->curl_handle, CURLOPT_URL, 
+                   raptor_uri_as_string(www->uri));
 
   www->status=curl_easy_perform(www->curl_handle);
   curl_easy_getinfo(www->curl_handle, CURLINFO_HTTP_CODE, &www->status_code);

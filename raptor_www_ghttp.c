@@ -63,7 +63,7 @@ raptor_www_ghttp_free(raptor_www *www)
 
 
 int
-raptor_www_ghttp_fetch(raptor_www *www, const char *url) 
+raptor_www_ghttp_fetch(raptor_www *www)
 {
   
   while(1) { 
@@ -74,7 +74,7 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
       ghttp_set_header(www->request, http_hdr_User_Agent, www->user_agent);
 
     /* Set the URI for the request object */
-    if(ghttp_set_uri(www->request, (char*)url) <0) {
+    if(ghttp_set_uri(www->request, (char*)raptor_uri_as_string(www->uri)) <0) {
       raptor_www_error(www, "ghttp setup failed");
       return 1;
     }
@@ -105,8 +105,10 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
     
     if(www->status_code == 301 || www->status_code == 302 ||
        www->status_code == 303 || www->status_code == 307) {
-      url=ghttp_get_header(www->request, http_hdr_Location); 
+      char *url=ghttp_get_header(www->request, http_hdr_Location);
       if(url) {
+        raptor_free_uri(www->uri);
+        www->uri=raptor_new_uri(url); 
         ghttp_clean(www->request);
         continue;
       }
@@ -120,7 +122,7 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
   www->type=(char*)ghttp_get_header(www->request, http_hdr_Content_Type);
   if(www->type) {
     if(www->content_type)
-      www->content_type(www->userdata, www->type);
+      www->content_type(www, www->userdata, www->type);
     www->free_type=0;
   }
   www->total_bytes=ghttp_get_body_len(www->request);
@@ -130,8 +132,9 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
    * we have to be careful of the length.
    */
   if(www->write_bytes)
-    www->write_bytes(www->userdata, 
-                   ghttp_get_body(www->request), ghttp_get_body_len(www->request), 1);
+    www->write_bytes(www,
+                     www->userdata, 
+                     ghttp_get_body(www->request), ghttp_get_body_len(www->request), 1);
 
   return 0;
 }

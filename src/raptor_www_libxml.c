@@ -84,7 +84,7 @@ raptor_www_libxml_fetch(raptor_www *www, const char *url)
   
   if(www->type) {
     if(www->content_type)
-      www->content_type(www->userdata, www->type);
+      www->content_type(www, www->userdata, www->type);
   }
 
   www->status_code=xmlNanoHTTPReturnCode(www->ctxt);
@@ -99,7 +99,7 @@ raptor_www_libxml_fetch(raptor_www *www, const char *url)
     www->total_bytes += len;
 
     if(www->write_bytes)
-      www->write_bytes(www->userdata, www->buffer, len, 1);
+      www->write_bytes(www, www->userdata, www->buffer, len, 1);
     
     if(len < BUFFER_SIZE)
       break;
