@@ -85,5 +85,5 @@ NEWS: NEWS.html
 check-local: rdfdump
 	@for test in $(RDF_TEST_FILES); do \
 	  echo Checking $(srcdir)/$$test; \
-	  rdfdump file:$(srcdir)/$$test; \
+	  ./rdfdump file:$(srcdir)/$$test; \
 	done
