@@ -65,7 +65,7 @@ const unsigned int raptor_version_major = RAPTOR_VERSION_MAJOR;
 const unsigned int raptor_version_minor = RAPTOR_VERSION_MINOR;
 const unsigned int raptor_version_release = RAPTOR_VERSION_RELEASE;
 
-const unsigned int raptor_version_decimal = (RAPTOR_VERSION_MAJOR * 10000)+(RAPTOR_VERSION_MINOR * 100) + RAPTOR_VERSION_RELEASE;
+const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 
 
 
