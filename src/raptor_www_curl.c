@@ -47,7 +47,7 @@ raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userd
    * libcurl will abort the transfer
    */
   if(www->failed)
-    return -1;
+    return 0;
   
   if(www->write_bytes)
     www->write_bytes(www, www->write_bytes_userdata, ptr, size, nmemb);
@@ -66,7 +66,7 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
    * libcurl will abort the transfer
    */
   if(www->failed)
-    return -1;
+    return 0;
   
   if(!strncmp(ptr, "Content-Type: ", 14)) {
     int len=bytes-16;
