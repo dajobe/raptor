@@ -263,11 +263,9 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
 
   raptor_namespaces_free(&rdf_parser->namespaces);
 
-#ifdef RAPTOR_IN_REDLAND
-  raptor_namespaces_init(&rdf_parser->namespaces, (librdf_world*)rdf_parser->world);
-#else
-  raptor_namespaces_init(&rdf_parser->namespaces);
-#endif
+  raptor_namespaces_init(&rdf_parser->namespaces, 
+                         raptor_uri_handler,
+                         raptor_uri_context);
 
   return rdf_parser->factory->start(rdf_parser, uri);
 }
@@ -517,22 +515,9 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
  * Return value: non 0 on failure
  **/
 raptor_parser*
-raptor_new(
-#ifdef RAPTOR_IN_REDLAND
-  librdf_world *world
-#else
-  void
-#endif
-)
+raptor_new(void)
 {
-  raptor_parser *rdf_parser=raptor_new_parser("rdfxml");
-  
-#ifdef RAPTOR_IN_REDLAND
-  /* FIXME temporary redland stuff */
-  if(rdf_parser)
-    raptor_set_world(rdf_parser, world);
-#endif
-  return rdf_parser;
+  return raptor_new_parser("rdfxml");
 }
 
 
@@ -638,13 +623,6 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
     default:
       break;
   }
-}
-
-
-/* FIXME temporary redland stuff */
-void
-raptor_set_world(raptor_parser *rdf_parser, void *world) {
-  rdf_parser->world=world;
 }
 
 
