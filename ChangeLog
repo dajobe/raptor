@@ -1,4 +1,21 @@
+2004-12-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: Added SAX2 XML Element and XML Writer classes.
+
+	* raptor_internal.h, raptor.h:
+	Moved raptor_sax2_element and raptor_xml_writer to public API.
+
+	* libraptor.3: Added rss-1.0 to raptor_new_serializer description.
+
+	* libraptor.3: More updates for 1.4.3
+
 2004-12-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_parser_processNode):
+	Turn <guid isPermaLink="true">val</guid>
+	into <guid rdf:resource="val"/>
+	(raptor_rss10_emit_item): Always serialize rss:items at the end of
+	an rss channel.
 
 	* raptor_xml_writer.c, raptor_xml.c, raptor_utf8.c, raptor_sax2.c,
 	raptor_rss.c, raptor_general.c: Casts for c++.  Rename variables
