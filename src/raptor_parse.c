@@ -601,7 +601,7 @@ static void raptor_generate_statement(raptor_parser *rdf_parser, raptor_uri *sub
 /* Prototypes for parsing data functions */
 static int raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name);
 static void raptor_xml_parse_terminate(raptor_parser *rdf_parser);
-static int raptor_xml_parse_start(raptor_parser* rdf_parser, raptor_uri *uri);
+static int raptor_xml_parse_start(raptor_parser* rdf_parser);
 static int raptor_xml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 
 
@@ -1484,12 +1484,17 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 
 
 static int
-raptor_xml_parse_start(raptor_parser* rdf_parser, raptor_uri *uri)
+raptor_xml_parse_start(raptor_parser* rdf_parser)
 {
+  raptor_uri *uri=rdf_parser->base_uri;
 #ifdef RAPTOR_XML_EXPAT
   XML_Parser xp;
 #endif
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+
+  /* base URI required for RDF/XML */
+  if(!uri)
+    return 1;
 
   /* initialise fields */
   rdf_xml_parser->depth=0;
