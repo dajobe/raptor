@@ -91,6 +91,7 @@ AC_TRY_LINK([#ifdef HAVE_GETOPT_H
             AC_DEFINE(NEED_OPTIND_DECLARATION)
             AC_MSG_RESULT(yes))
 
+
 dnl Checks for XML parsers
 have_expat=0
 have_expat_lib=0
@@ -109,32 +110,52 @@ fi
 oLIBS="$LIBS"
 AC_CHECK_LIB(xmltok, main, xmlt=1, xmlt=0)
 
+# Rapier needs XML_ParserCreate expat function (not namespace one)
 AC_CHECK_LIB(xmlparse, XML_ParserCreate, xmlp=1, xmlp=0, -lxmltok)
-AC_CHECK_LIB(xmlparse, XML_SetNamespaceDeclHandler)
-if test "X$ac_cv_lib_xmlparse_XML_SetNamespaceDeclHandler" = "Xyes"; then
-  AC_DEFINE(HAVE_XML_SetNamespaceDeclHandler)
-fi
-AC_CHECK_LIB(expat, XML_SetNamespaceDeclHandler, libexpat=1, libexpat=0)
 
 LIBS="$oLIBS"
-AC_MSG_CHECKING(for system expat library)
+AC_CHECK_LIB(expat, XML_ParserCreate, libexpat=1, libexpat=0)
+
+LIBS="$oLIBS"
+AC_MSG_CHECKING(for working expat in libxmlparse and libxmltok)
 if test $xmlp = 1 -a $xmlt = 1 -a  $ac_cv_header_xmlparse_h = yes; then
-  # Old expat
-  have_expat_lib=1
-  have_expat=1
-  expat_libs="-lxmlparse -lxmltok"
+  LIBS="$LIBS -lxmlparse -lxmltok"
+  AC_TRY_RUN([main() {XML_ParserCreate(); return(0);}], worked=yes, worked=no, worked=no)
+  if test $worked = yes; then
+    # Old expat
+    have_expat_lib=1
+    have_expat=1
+    expat_libs="-lxmlparse -lxmltok"
 
-  AC_MSG_RESULT(yes)
-elif test $libexpat = 1 -a $ac_cv_header_expat_h = yes ; then
-  # New expat - expat-1.95.0 or later
-  have_expat_lib=1
-  have_expat=1
-  expat_libs="-lexpat"
-
-  AC_MSG_RESULT(yes)
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+  fi
 else
   AC_MSG_RESULT(no)
 fi
+
+LIBS="$oLIBS"
+
+AC_MSG_CHECKING(for working expat in libexpat)
+if test $libexpat = 1 -a $ac_cv_header_expat_h = yes ; then
+  LIBS="$LIBS -lexpat"
+  AC_TRY_RUN([main() {XML_ParserCreate(); return(0);}], worked=yes, worked=no, worked=no)
+  if test $worked = yes; then
+    # New expat - expat-1.95.0 or later
+    have_expat_lib=1
+    have_expat=1
+    expat_libs="-lexpat"
+
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+  fi
+else
+  AC_MSG_RESULT(no)
+fi
+
+LIBS="$oLIBS"
 
 AC_CHECK_PROG(XML_CONFIG, xml-config, xml-config)
 
@@ -166,6 +187,9 @@ if test "X$XML_CONFIG" != X; then
     AC_MSG_RESULT(no)
   fi
 fi
+
+AC_CHECK_HEADERS(parser.h gnome-xml/parser.h)
+
 
 AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="expat") 
 
@@ -232,8 +256,6 @@ if test $need_libxml = 1; then
   fi
 fi
 
-AC_CHECK_HEADERS(parser.h gnome-xml/parser.h)
-
 
 if test $need_expat = 1; then
   # Only build local copy if it is needed
@@ -244,8 +266,40 @@ if test $need_expat = 1; then
   else
     LIBS="$LIBS $expat_libs"
   fi
+
+  AC_MSG_CHECKING(for XML_SetNamespaceDeclHandler in expat)
+  AC_TRY_RUN([main() {XML_SetNamespaceDeclHandler();}], worked=yes, worked=no, worked=no)
+  if test $worked = yes; then
+    AC_DEFINE(HAVE_XML_SetNamespaceDeclHandler)
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+  fi
+
 fi
 AC_SUBST(XML_OBJS)
+
+
+xml_parsers_available=
+if test $need_libxml = 1; then
+  if test $need_libxml_source = 1; then
+    xml_parsers_available="$xml_parsers_available libxml(source)"
+  else
+    xml_parsers_available="$xml_parsers_available libxml(system)"
+  fi
+fi
+if test $need_expat = 1; then
+  if test $need_expat_source = 1; then
+    xml_parsers_available="$xml_parsers_available expat(source)"
+  else
+    if $libexpat = 1; then
+      xml_parsers_available="$xml_parsers_available expat(system libexpat)"
+    else
+      xml_parsers_available="$xml_parsers_available expat(system libxmlparse,libxmltok)"
+    fi
+  fi
+fi
+
 
 # Make final changes to cflags
 CPPFLAGS="-DRAPIER_INTERNAL=1 $CPPFLAGS"
@@ -266,3 +320,10 @@ AC_SUBST(STANDARD_CFLAGS)
 
 
 AC_OUTPUT(Makefile rapier.spec)
+
+
+AC_MSG_RESULT([
+Rapier build summary:
+  XML parser: $xml_parsers_available
+
+])
