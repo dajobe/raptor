@@ -290,10 +290,9 @@ warn "$progname:   Negative: ",scalar(@approved_negative_test_urls),"\n";
 
 
 my(%results);
-my(%totals);
-
 
 if(@ARGV) {
+  my(%totals);
   warn "$progname: Running user parser tests:\n";
   run_tests(\%tests, 1, \%results, \%totals, @ARGV);
 
@@ -301,10 +300,12 @@ if(@ARGV) {
   exit 0;
 }
 
-run_tests(\%tests, 0, \%results, \%totals, @positive_test_urls);
-summarize_results("Positive Parser Tests", \%results, \%totals, scalar(@positive_test_urls));
+my(%positive_totals)=();
+run_tests(\%tests, 0, \%results, \%positive_totals, @positive_test_urls);
+summarize_results("Positive Parser Tests", \%results, \%positive_totals, scalar(@positive_test_urls));
 
 print "\n\n";
 
-run_tests(\%tests, 0, \%results, \%totals, @negative_test_urls);
-summarize_results("Negative Parser Tests", \%results, \%totals, scalar(@negative_test_urls));
+my(%negative_totals)=();
+run_tests(\%tests, 0, \%results, \%negative_totals, @negative_test_urls);
+summarize_results("Negative Parser Tests", \%results, \%negative_totals, scalar(@negative_test_urls));
