@@ -410,9 +410,6 @@ struct rapier_element_s {
   /* starting state for children of this element */
   rapier_state child_state;
 
-  /* child element has a pre-assigned URI (probably from rdf:resource) */
-  rapier_uri *child_uri;
-
   /* XML elements in RDF can contain EITHER cdata OR just sub-elements
    * Mixed content is not allowed 
    */
@@ -431,18 +428,26 @@ struct rapier_element_s {
 
   /* Identifies for the resource described by this element ID and/or URI */
   const char *id;
-  int id_is_generated;
-  rapier_uri *uri;
-  /* Type of uri */
-  rapier_subject_type subject_type;
 
   /* ID of Bag */
   const char *bag_id;
-  int bagid_is_generated;
   rapier_uri *bag_uri;
+  rapier_uri_source bag_uri_source;
 
-  /* URI of a contained object */
+  /* Subject URI, type, source */
+  rapier_uri *subject_uri;
+  rapier_subject_type subject_type;
+  rapier_uri_source subject_uri_source;
+  
+  /* Predicate URI, type is either
+   * RAPIER_URI_SOURCE_ELEMENT or RAPIER_URI_SOURCE_ATTRIBUTE and
+   * known from context
+   */
+  rapier_uri *predicate_uri;
+
+  /* Object URI, source */
   rapier_uri *object_uri;
+  rapier_uri_source object_uri_source;
 
   /* URI of type of container */
   rapier_uri *container_type;
@@ -496,6 +501,10 @@ struct rapier_parser_s {
 
   /* base URI of RDF/XML */
   rapier_uri *base_uri;
+
+
+  /* static statement for use in passing to user code */
+  rapier_statement statement;
 
 
   /* FEATURE: 
@@ -644,7 +653,7 @@ static void rapier_end_element_grammar(rapier_parser *parser, rapier_element *el
 
 
 /* prototype for statement related functions */
-static void rapier_generate_statement(rapier_parser *rdf_parser, const void *subject, const rapier_subject_type subject_type, const void *predicate, const rapier_predicate_type predicate_type, const void *object, const rapier_object_type object_type, rapier_uri *bag);
+static void rapier_generate_statement(rapier_parser *rdf_parser, const void *subject, const rapier_subject_type subject_type, const rapier_uri_source subject_uri_source, const void *predicate, const rapier_predicate_type predicate_type, const rapier_uri_source predicate_uri_source, const void *object, const rapier_object_type object_type, const rapier_uri_source object_uri_source, rapier_uri *bag);
 static void rapier_print_statement_detailed(const rapier_statement *statement, int detailed, FILE *stream);
 
 
@@ -1086,17 +1095,20 @@ rapier_free_element(rapier_element *element)
   if(element->content_cdata_length)
     LIBRDF_FREE(rapier_ns_name_array, element->content_cdata);
 
-  if(element->id_is_generated)
+  if(element->subject_uri_source == RAPIER_URI_SOURCE_GENERATED)
     LIBRDF_FREE(cstring, (char*)element->id);
 
-  if(element->uri)
-    RAPIER_FREE_URI(element->uri);
-
-  if(element->child_uri)
-    RAPIER_FREE_URI(element->child_uri);
+  if(element->bag_uri_source == RAPIER_URI_SOURCE_GENERATED)
+    LIBRDF_FREE(cstring, (char*)element->bag_id);
 
   if(element->bag_uri)
     RAPIER_FREE_URI(element->bag_uri);
+
+  if(element->subject_uri)
+    RAPIER_FREE_URI(element->subject_uri);
+
+  if(element->predicate_uri)
+    RAPIER_FREE_URI(element->predicate_uri);
 
   if(element->object_uri)
     RAPIER_FREE_URI(element->object_uri);
@@ -2322,24 +2334,27 @@ static void
 rapier_generate_statement(rapier_parser *rdf_parser, 
                           const void *subject,
                           const rapier_subject_type subject_type,
+                          const rapier_uri_source subject_uri_source,
                           const void *predicate,
                           const rapier_predicate_type predicate_type,
+                          const rapier_uri_source predicate_uri_source,
                           const void *object,
                           const rapier_object_type object_type,
+                          const rapier_uri_source object_uri_source,
                           rapier_uri *bag)
 {
-  rapier_statement statement;
+  rapier_statement *statement=&rdf_parser->statement;
 
-  statement.subject=subject;
-  statement.subject_type=subject_type;
-  statement.predicate=predicate;
-  statement.predicate_type=predicate_type;
-  statement.object=object;
-  statement.object_type=object_type;
+  statement->subject=subject;
+  statement->subject_type=subject_type;
+  statement->predicate=predicate;
+  statement->predicate_type=predicate_type;
+  statement->object=object;
+  statement->object_type=object_type;
 
 #ifdef RAPIER_DEBUG
   fprintf(stderr, "rapier_generate_statement: Generating statement: ");
-  rapier_print_statement_detailed(&statement, 1, stderr);
+  rapier_print_statement_detailed(statement, 1, stderr);
   fputc('\n', stderr);
 
   if(!subject)
@@ -2357,34 +2372,34 @@ rapier_generate_statement(rapier_parser *rdf_parser,
     return;
 
   /* Generate the statement; or is it fact? */
-  (*rdf_parser->statement_handler)(rdf_parser->user_data, &statement);
+  (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
   if(!bag)
     return;
 
   /* generate reified statements */
-  statement.subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
-  statement.predicate_type=RAPIER_PREDICATE_TYPE_PREDICATE;
+  statement->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
+  statement->predicate_type=RAPIER_PREDICATE_TYPE_PREDICATE;
 
-  statement.subject=bag;
-  statement.object_type=RAPIER_OBJECT_TYPE_RESOURCE;
+  statement->subject=bag;
+  statement->object_type=RAPIER_OBJECT_TYPE_RESOURCE;
 
-  statement.predicate=RAPIER_RDF_type_URI;
-  statement.object=RAPIER_RDF_Statement_URI;
-  (*rdf_parser->statement_handler)(rdf_parser->user_data, &statement);
+  statement->predicate=RAPIER_RDF_type_URI;
+  statement->object=RAPIER_RDF_Statement_URI;
+  (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement.predicate=RAPIER_RDF_subject_URI;
-  statement.object=subject;
-  (*rdf_parser->statement_handler)(rdf_parser->user_data, &statement);
+  statement->predicate=RAPIER_RDF_subject_URI;
+  statement->object=subject;
+  (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement.predicate=RAPIER_RDF_predicate_URI;
-  statement.object=predicate;
-  (*rdf_parser->statement_handler)(rdf_parser->user_data, &statement);
+  statement->predicate=RAPIER_RDF_predicate_URI;
+  statement->object=predicate;
+  (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement.predicate=RAPIER_RDF_object_URI;
-  statement.object=object;
-  statement.object_type=object_type;
-  (*rdf_parser->statement_handler)(rdf_parser->user_data, &statement);
+  statement->predicate=RAPIER_RDF_object_URI;
+  statement->object=object;
+  statement->object_type=object_type;
+  (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 }
 
 
@@ -2392,28 +2407,37 @@ static void
 rapier_generate_named_statement(rapier_parser *rdf_parser, 
                                 const void *subject,
                                 const rapier_subject_type subject_type,
+                                const rapier_uri_source subject_uri_source,
                                 rapier_ns_name *predicate,
+                                const rapier_uri_source predicate_uri_source,
                                 const void *object,
                                 const rapier_object_type object_type,
+                                const rapier_uri_source object_uri_source,
                                 rapier_uri *bag)
 {
     if(predicate->uri)
       rapier_generate_statement(rdf_parser, 
                                 subject,
                                 subject_type,
+                                subject_uri_source,
                                 predicate->uri,
                                 RAPIER_PREDICATE_TYPE_PREDICATE,
+                                predicate_uri_source,
                                 object,
                                 object_type,
+                                object_uri_source,
                                 bag);
     else
       rapier_generate_statement(rdf_parser, 
                                 subject,
                                 subject_type,
+                                subject_uri_source,
                                 predicate->qname,
                                 RAPIER_PREDICATE_TYPE_XML_NAME,
+                                predicate_uri_source,
                                 object,
                                 object_type,
+                                object_uri_source,
                                 bag);
 }
 
@@ -2621,20 +2645,26 @@ rapier_process_property_attributes(rapier_parser *rdf_parser,
       /* recognise rdf:li attribute */
       element->last_ordinal++;
       rapier_generate_statement(rdf_parser,
-                                element->uri,
+                                element->subject_uri,
                                 RAPIER_SUBJECT_TYPE_RESOURCE,
+                                element->subject_uri_source,
                                 (void*)&element->last_ordinal,
                                 RAPIER_PREDICATE_TYPE_ORDINAL,
+                                RAPIER_URI_SOURCE_ATTRIBUTE,
                                 (void*)value,
                                 RAPIER_OBJECT_TYPE_LITERAL,
+                                RAPIER_URI_SOURCE_NOT_URI,
                                 element->bag_uri);
     } else
       rapier_generate_named_statement(rdf_parser, 
-                                      element->uri,
+                                      element->subject_uri,
                                       RAPIER_SUBJECT_TYPE_RESOURCE,
+                                      element->subject_uri_source,
                                       attribute,
+                                      RAPIER_URI_SOURCE_ATTRIBUTE,
                                       (void*)value,
                                       RAPIER_OBJECT_TYPE_LITERAL,
+                                      RAPIER_URI_SOURCE_NOT_URI,
                                       element->bag_uri);
 
   } /* end for ... attributes */
@@ -2654,12 +2684,6 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
 
   if(element->parent) {
-    if(element->parent->child_uri) {
-       element->uri=element->parent->child_uri;
-       /* delete parent reference to prevent multiple frees */
-       element->parent->child_uri=NULL;
-    }
-       
     state=element->parent->child_state;
     if(!state) {
       state=element->parent->state;
@@ -2853,42 +2877,55 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->id=element->rdf_attr[RDF_ATTR_ID];
-          element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
           element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
+          element->subject_uri_source=RAPIER_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
-          element->uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
+          element->subject_uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
           element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
+          element->subject_uri_source=RAPIER_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_aboutEach]) {
-          element->uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
+          element->subject_uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
           element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE_EACH;
+          element->subject_uri_source=RAPIER_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
-          element->uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
+          element->subject_uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
           element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE_EACH_PREFIX;
+          element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+        } else if (element->parent && element->parent->object_uri) {
+          /* copy from parent, it has a URI for us */
+          element->subject_uri=rapier_copy_uri(element->parent->object_uri);
+          if(element->parent->object_uri_source == RAPIER_URI_SOURCE_GENERATED)
+            element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+          else
+            element->subject_uri_source=element->parent->object_uri_source;
         } else {
           element->id=rapier_generate_id(rdf_parser, 0);
-          element->id_is_generated=1;
-          element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
         }
 
 
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           element->bag_id=element->rdf_attr[RDF_ATTR_bagID];
           element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+          element->bag_uri_source=RAPIER_URI_SOURCE_GENERATED;
         }
 
         /* If there is a parent element (property) containing this
-         * element (node)
+         * element (node) and it has no object, set it from this subject
          */
-        if(element->parent) {
+        if(element->parent && !element->parent->object_uri &&
+           element->parent->state != RAPIER_STATE_UNKNOWN) {
           
-          /* Free any existing object URI still around */
-          if(element->parent->object_uri)
-            RAPIER_FREE_URI(element->parent->object_uri);
-
           /* Store our URI in our parent as the object URI */
-          element->parent->object_uri=rapier_copy_uri(element->uri);
+          element->parent->object_uri=rapier_copy_uri(element->subject_uri);
 
           element->parent->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+          if(element->subject_uri_source == RAPIER_URI_SOURCE_GENERATED)
+            element->parent->object_uri_source=RAPIER_URI_SOURCE_URI;
+          else
+            element->parent->object_uri_source=element->subject_uri_source;
         }
 
 
@@ -2900,12 +2937,15 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           void *object=(element->name->uri) ? (void*)element->name->uri : (void*)element->name->qname;
 
           rapier_generate_statement(rdf_parser, 
-                                    element->uri,
+                                    element->subject_uri,
                                     RAPIER_SUBJECT_TYPE_RESOURCE,
+                                    element->subject_uri_source,
                                     RAPIER_RDF_type_URI,
                                     RAPIER_PREDICATE_TYPE_PREDICATE,
+                                    RAPIER_URI_SOURCE_URI,
                                     object,
                                     object_type,
+                                    element->object_uri_source,
                                     element->bag_uri);
 
         }
@@ -2942,34 +2982,49 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          */
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->id=element->rdf_attr[RDF_ATTR_ID];
+          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri_source=RAPIER_URI_SOURCE_ID;
+        } else if (element->parent && element->parent->object_uri) {
+          /* copy from parent, it has a URI for us */
+          element->subject_uri=rapier_copy_uri(element->parent->object_uri);
+          if(element->parent->object_uri_source == RAPIER_URI_SOURCE_GENERATED)
+            element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+          else
+            element->subject_uri_source=element->parent->object_uri_source;
         } else {
           element->id=rapier_generate_id(rdf_parser, 0);
-          element->id_is_generated=1;
+          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
         }
 
-        element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+        element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
 
         /* Store URI of new thing in our parent */
-        if(element->parent) {
-          /* Free any existing object URI still around */
-          if(element->parent->object_uri)
-            RAPIER_FREE_URI(element->parent->object_uri);
+        if(element->parent && !element->parent->object_uri &&
+           element->parent->state != RAPIER_STATE_UNKNOWN) {
 
           /* Store our URI in our parent as the object URI */
-          element->parent->object_uri=rapier_copy_uri(element->uri);
+          element->parent->object_uri=rapier_copy_uri(element->subject_uri);
 
           element->parent->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+          if(element->subject_uri_source == RAPIER_URI_SOURCE_GENERATED)
+            element->parent->object_uri_source=RAPIER_URI_SOURCE_URI;
+          else
+            element->parent->object_uri_source=element->subject_uri_source;
         }
 
 
         /* Generate the rdf:type statement for the container node */
         rapier_generate_statement(rdf_parser, 
-                                  element->uri,
+                                  element->subject_uri,
                                   RAPIER_SUBJECT_TYPE_RESOURCE,
+                                  element->subject_uri_source,
                                   RAPIER_RDF_type_URI,
                                   RAPIER_PREDICATE_TYPE_PREDICATE,
+                                  RAPIER_URI_SOURCE_URI,
                                   element->container_type,
                                   RAPIER_OBJECT_TYPE_RESOURCE,
+                                  element->object_uri_source,
                                   NULL);
 
 
@@ -3018,21 +3073,27 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
            */
           if(!attribute_problems)
             rapier_generate_statement(rdf_parser, 
-                                      element->uri,
+                                      element->subject_uri,
                                       RAPIER_SUBJECT_TYPE_RESOURCE,
+                                      element->subject_uri_source,
                                       (void*)&ordinal,
                                       RAPIER_PREDICATE_TYPE_ORDINAL,
+                                      RAPIER_URI_SOURCE_NOT_URI,
                                       (void*)value,
                                       RAPIER_OBJECT_TYPE_LITERAL,
+                                      RAPIER_URI_SOURCE_NOT_URI,
                                       NULL);
 
           else
             rapier_generate_named_statement(rdf_parser, 
-                                            element->uri,
+                                            element->subject_uri,
                                             RAPIER_SUBJECT_TYPE_RESOURCE,
+                                            element->subject_uri_source,
                                             attribute,
+                                            RAPIER_URI_SOURCE_ATTRIBUTE,
                                             (void*)value,
                                             RAPIER_OBJECT_TYPE_LITERAL,
+                                            RAPIER_URI_SOURCE_NOT_URI,
                                             NULL);
 
 
@@ -3064,8 +3125,9 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          */
       case RAPIER_STATE_MEMBER:
         if(element->rdf_attr[RDF_ATTR_resource]) {
-          element->uri=rapier_make_uri(rdf_parser->base_uri,
-                                       element->rdf_attr[RDF_ATTR_resource]);
+          element->subject_uri=rapier_make_uri(rdf_parser->base_uri,
+                                               element->rdf_attr[RDF_ATTR_resource]);
+          element->subject_uri_source=RAPIER_URI_SOURCE_URI,
           state=RAPIER_STATE_REFERENCEDITEM;
         } else if (element->rdf_attr[RDF_ATTR_parseType]) {
           const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
@@ -3073,7 +3135,11 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           if(!strcasecmp(parse_type, "literal")) {
             element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
           } else if (!strcasecmp(parse_type, "resource")) {
-            element->child_state=RAPIER_STATE_PARSETYPE_RESOURCE;
+            state=RAPIER_STATE_PARSETYPE_RESOURCE;
+            element->child_state=RAPIER_STATE_PROPERTYELT;
+            element->id=rapier_generate_id(rdf_parser, 0);
+            element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+            element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
           } else {
             if(rdf_parser->feature_allow_other_parseTypes)
               element->child_state=RAPIER_STATE_PARSETYPE_OTHER;
@@ -3158,7 +3224,11 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           if(!strcasecmp(parse_type, "literal")) {
             element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
           } else if (!strcasecmp(parse_type, "resource")) {
-            element->child_state=RAPIER_STATE_PARSETYPE_RESOURCE;
+            state=RAPIER_STATE_PARSETYPE_RESOURCE;
+            element->child_state=RAPIER_STATE_PROPERTYELT;
+            element->id=rapier_generate_id(rdf_parser, 0);
+            element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+            element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
           } else {
             if(rdf_parser->feature_allow_other_parseTypes)
               element->child_state=RAPIER_STATE_PARSETYPE_OTHER;
@@ -3169,25 +3239,29 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
           /* Can only be last case */
           if(element->rdf_attr[RDF_ATTR_resource]) {
-            element->child_uri=rapier_make_uri(rdf_parser->base_uri,
-                                               element->rdf_attr[RDF_ATTR_resource]);
+            element->object_uri=rapier_make_uri(rdf_parser->base_uri,
+                                                element->rdf_attr[RDF_ATTR_resource]);
+            element->object_uri_source=RAPIER_URI_SOURCE_URI;
+          } else {
+#if 0
+/* if 0 - why do this for propertyelt, any properties of node won't need it 
+ * but will be generated at close element time
+ */
 
             /* Store URI of child node in our parent */
-            if(element->parent) {
-              /* Free any existing object URI still around */
-              if(element->parent->object_uri)
-                RAPIER_FREE_URI(element->parent->object_uri);
+            if(element->parent && !element->parent->object_uri &&
+               element->parent->state != RAPIER_STATE_UNKNOWN) {
               
               /* Store our URI in our parent as the object URI */
               element->parent->object_uri=rapier_copy_uri(element->child_uri);
               
               element->parent->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+              if(element->subject_uri_source == RAPIER_URI_SOURCE_GENERATED)
+                element->parent->object_uri_source=RAPIER_URI_SOURCE_URI;
+              else
+                element->parent->object_uri_source=element->subject_uri_source;
             }
-          } else {
-            /* need to generate a node for this object */
-            element->id=rapier_generate_id(rdf_parser, 0);
-            element->id_is_generated=1;
-            element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+#endif
           }
           
 
@@ -3196,6 +3270,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           if(element->rdf_attr[RDF_ATTR_bagID]) {
             element->bag_id=element->rdf_attr[RDF_ATTR_bagID];
             element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+            element->bag_uri_source=RAPIER_URI_SOURCE_GENERATED;
           }
 #endif
           
@@ -3205,18 +3280,12 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
            * Assign bag URI here so we don't reify property attributes using 
            * this bagID 
            */
-          if(element->bag_id)
+          if(element->bag_id) {
             element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+            element->bag_uri_source=RAPIER_URI_SOURCE_GENERATED;
+          }
 
           if(element->rdf_attr[RDF_ATTR_resource]) {
-            rapier_generate_named_statement(rdf_parser, 
-                                            element->parent->uri,
-                                            RAPIER_SUBJECT_TYPE_RESOURCE,
-                                            element->name,
-                                            (void*)element->child_uri, 
-                                            RAPIER_OBJECT_TYPE_RESOURCE,
-                                            element->bag_uri);
-
             /* Done - wait for end of this element to end in order to 
              * check the element was empty as expected */
             element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_EMPTY;
@@ -3312,15 +3381,17 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
          */
         if(state != RAPIER_STATE_DESCRIPTION && 
            element->parent && 
-           element->parent->uri &&
-           element->parent->state != RAPIER_STATE_DESCRIPTION) {
+           element->parent->subject_uri) {
 
           rapier_generate_named_statement(rdf_parser, 
-                                          element->parent->uri,
+                                          element->parent->subject_uri,
                                           RAPIER_SUBJECT_TYPE_RESOURCE,
-                                          element->parent->name,
-                                          element->uri,
+                                          element->parent->subject_uri_source,
+                                          element->name,
+                                          RAPIER_URI_SOURCE_ELEMENT,
+                                          element->subject_uri,
                                           RAPIER_OBJECT_TYPE_RESOURCE,
+                                          element->subject_uri_source,
                                           NULL);
         }
 
@@ -3341,12 +3412,15 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
 
         element->parent->last_ordinal++;
         rapier_generate_statement(rdf_parser, 
-                                  element->parent->uri,
+                                  element->parent->subject_uri,
                                   RAPIER_SUBJECT_TYPE_RESOURCE,
+                                  element->parent->subject_uri_source,
                                   (void*)&element->parent->last_ordinal,
                                   RAPIER_PREDICATE_TYPE_ORDINAL,
-                                  (void*)element->uri,
+                                  RAPIER_URI_SOURCE_NOT_URI,
+                                  (void*)element->subject_uri,
                                   RAPIER_OBJECT_TYPE_RESOURCE,
+                                  element->subject_uri_source,
                                   NULL);
 
         finished=1;
@@ -3355,12 +3429,15 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
       case RAPIER_STATE_INLINEITEM:
         element->parent->last_ordinal++;
         rapier_generate_statement(rdf_parser, 
-                                  element->parent->uri,
+                                  element->parent->subject_uri,
                                   RAPIER_SUBJECT_TYPE_RESOURCE,
+                                  element->parent->subject_uri_source,
                                   (void*)&element->parent->last_ordinal,
                                   RAPIER_PREDICATE_TYPE_ORDINAL,
+                                  RAPIER_URI_SOURCE_NOT_URI,
                                   (void*)element->content_cdata,
                                   RAPIER_OBJECT_TYPE_LITERAL,
+                                  RAPIER_URI_SOURCE_NOT_URI,
                                   NULL);
         finished=1;
         break;
@@ -3443,12 +3520,20 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         }
 
         if(element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_EMPTY) {
-          char *object_id=(char*)rapier_generate_id(rdf_parser, 0);
-          if(object_id) {
-            element->object_uri=rapier_make_uri_from_id(rdf_parser->base_uri, 
-                                                        (const char*)object_id);
-            LIBRDF_FREE(cstring, object_id);
+          if(element->rdf_attr[RDF_ATTR_resource]) {
+            element->object_uri=rapier_make_uri(rdf_parser->base_uri,
+                                                element->rdf_attr[RDF_ATTR_resource]);
+            element->object_uri_source=RAPIER_URI_SOURCE_URI;
+            element->rdf_attr[RDF_ATTR_resource]=NULL;
             element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+          } else {
+            char *object_id=(char*)rapier_generate_id(rdf_parser, 0);
+            if(object_id) {
+              element->object_uri=rapier_make_uri_from_id(rdf_parser->base_uri, 
+                                                          (const char*)object_id);
+              element->object_uri_source=RAPIER_URI_SOURCE_GENERATED;
+              element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+            }
           }
         }
 
@@ -3467,20 +3552,26 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
           if(state == RAPIER_STATE_MEMBER) {
             element->parent->last_ordinal++;
             rapier_generate_statement(rdf_parser, 
-                                      element->parent->uri,
+                                      element->parent->subject_uri,
                                       RAPIER_SUBJECT_TYPE_RESOURCE,
+                                      RAPIER_URI_SOURCE_ELEMENT,
                                       (void*)&element->parent->last_ordinal,
                                       RAPIER_PREDICATE_TYPE_ORDINAL,
+                                      RAPIER_URI_SOURCE_NOT_URI,
                                       object,
                                       object_type,
+                                      element->subject_uri_source,
                                       element->bag_uri);
           } else
             rapier_generate_named_statement(rdf_parser, 
-                                            element->parent->uri,
+                                            element->parent->subject_uri,
                                             RAPIER_SUBJECT_TYPE_RESOURCE,
+                                            RAPIER_URI_SOURCE_ELEMENT,
                                             element->name,
+                                            RAPIER_URI_SOURCE_ELEMENT,
                                             object,
                                             object_type,
+                                            element->subject_uri_source,
                                             element->bag_uri);
           
         } else {
@@ -3495,20 +3586,26 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
               if(state == RAPIER_STATE_MEMBER) {
                 element->parent->last_ordinal++;
                 rapier_generate_statement(rdf_parser, 
-                                          element->parent->uri,
+                                          element->parent->subject_uri,
                                           RAPIER_SUBJECT_TYPE_RESOURCE,
+                                          RAPIER_URI_SOURCE_ELEMENT,
                                           (void*)&element->parent->last_ordinal,
                                           RAPIER_PREDICATE_TYPE_ORDINAL,
+                                          RAPIER_URI_SOURCE_NOT_URI,
                                           object,
                                           object_type,
+                                          element->object_uri_source,
                                           element->bag_uri);
               } else
                 rapier_generate_named_statement(rdf_parser, 
-                                                element->parent->uri,
+                                                element->parent->subject_uri,
                                                 RAPIER_SUBJECT_TYPE_RESOURCE,
+                                                RAPIER_URI_SOURCE_ELEMENT,
                                                 element->name,
+                                                RAPIER_URI_SOURCE_NOT_URI,
                                                 object, 
                                                 object_type,
+                                                element->object_uri_source,
                                                 element->bag_uri);
               
               break;
@@ -3520,20 +3617,26 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
               if(state == RAPIER_STATE_MEMBER) {
                 element->parent->last_ordinal++;
                 rapier_generate_statement(rdf_parser, 
-                                          element->parent->uri,
+                                          element->parent->subject_uri,
                                           RAPIER_SUBJECT_TYPE_RESOURCE,
+                                          RAPIER_URI_SOURCE_ELEMENT,
                                           (void*)&element->parent->last_ordinal,
                                           RAPIER_PREDICATE_TYPE_ORDINAL,
-                                          (void*)element->uri,
+                                          RAPIER_URI_SOURCE_NOT_URI,
+                                          (void*)element->subject_uri,
                                           RAPIER_OBJECT_TYPE_RESOURCE,
+                                          element->subject_uri_source,
                                           element->bag_uri);
               } else
                 rapier_generate_named_statement(rdf_parser, 
-                                                element->parent->uri,
+                                                element->parent->subject_uri,
                                                 RAPIER_SUBJECT_TYPE_RESOURCE,
+                                                RAPIER_URI_SOURCE_ELEMENT,
                                                 element->name,
-                                                (void*)element->uri,
+                                                RAPIER_URI_SOURCE_ELEMENT,
+                                                (void*)element->subject_uri,
                                                 RAPIER_OBJECT_TYPE_RESOURCE,
+                                                element->subject_uri_source,
                                                 element->bag_uri);
               break;
 
@@ -3541,20 +3644,26 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
               if(state == RAPIER_STATE_MEMBER) {
                 element->parent->last_ordinal++;
                 rapier_generate_statement(rdf_parser, 
-                                          element->parent->uri,
+                                          element->parent->subject_uri,
                                           RAPIER_SUBJECT_TYPE_RESOURCE,
+                                          element->parent->subject_uri_source,
                                           (void*)&element->parent->last_ordinal,
                                           RAPIER_PREDICATE_TYPE_ORDINAL,
+                                          RAPIER_URI_SOURCE_NOT_URI,
                                           element->content_cdata,
                                           RAPIER_OBJECT_TYPE_XML_LITERAL,
+                                          RAPIER_URI_SOURCE_NOT_URI,
                                           element->bag_uri);
               } else
                 rapier_generate_named_statement(rdf_parser, 
-                                                element->parent->uri,
+                                                element->parent->subject_uri,
                                                 RAPIER_SUBJECT_TYPE_RESOURCE,
+                                                element->parent->subject_uri_source,
                                                 element->name,
+                                                RAPIER_URI_SOURCE_ELEMENT,
                                                 element->content_cdata, 
                                                 RAPIER_OBJECT_TYPE_XML_LITERAL,
+                                                RAPIER_URI_SOURCE_NOT_URI,
                                                 element->bag_uri);
               
             break;
