@@ -1465,9 +1465,9 @@ raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 
 
 int
-raptor_check_ordinal(const char *name) {
+raptor_check_ordinal(const unsigned char *name) {
   int ordinal= -1;
-  char c;
+  unsigned char c;
 
   while((c=*name++)) {
     if(c < '0' || c > '9')
