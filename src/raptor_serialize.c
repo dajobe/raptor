@@ -959,6 +959,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   raptor_iostream* iostr=serializer->iostream;
   unsigned char* uri_string; /* predicate URI */
   unsigned char* name=NULL;  /* where to split predicate name */
+  unsigned char* output_uri_string;
   int name_is_rdf_ns=0;
   char* nsprefix="ns0";
   int rc;
@@ -1015,10 +1016,17 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+      if(serializer->feature_relative_uris)
+        output_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                            (raptor_uri*)statement->subject);
+      else
+        output_uri_string=raptor_uri_as_string((raptor_uri*)statement->subject);
       rc=raptor_rdfxml_serialize_write_xml_attribute(serializer,
                                                      (unsigned char*)"rdf:about", 
-                                                     (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->subject),
+                                                     output_uri_string,
                                                      iostr);
+      if(serializer->feature_relative_uris)
+        RAPTOR_FREE(cstring, output_uri_string);
       break;
       
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
@@ -1170,11 +1178,21 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       /* must be URI */
+      if(serializer->feature_relative_uris)
+        output_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                            (raptor_uri*)statement->object);
+      else
+        output_uri_string=raptor_uri_as_string((raptor_uri*)statement->object);
       if(raptor_rdfxml_serialize_write_xml_attribute(serializer,
                                                      (unsigned char*)"rdf:resource",
-                                                     (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->object),
-                                                     iostr))
+                                                     output_uri_string,
+                                                     iostr)) {
+        if(serializer->feature_relative_uris)
+          RAPTOR_FREE(cstring, output_uri_string);
         return 1;
+      }
+      if(serializer->feature_relative_uris)
+        RAPTOR_FREE(cstring, output_uri_string);
       raptor_iostream_write_string(iostr, "/>");
       break;
 
