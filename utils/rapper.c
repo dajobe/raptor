@@ -186,7 +186,8 @@ main(int argc, char *argv[])
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
-  int feature= -1;
+  raptor_feature feature;
+  int feature_value= -1;
 
   program=argv[0];
   if((p=strrchr(program, '/')))
@@ -239,21 +240,30 @@ main(int argc, char *argv[])
             exit(0);
           } else {
             int i;
+            size_t arg_len=strlen(optarg);
             
             for(i=0; 1; i++) {
               const char *feature_name;
+              size_t len;
+              
               if(raptor_features_enumerate(i, &feature_name, NULL, NULL))
                 break;
-              if(!strcmp(optarg, feature_name)) {
+              len=strlen(feature_name);
+              if(!strncmp(optarg, feature_name, len)) {
                 feature=i;
+                if(len < arg_len && optarg[len] == '=')
+                  feature_value=atoi(&optarg[len+1]);
+                else if(len == arg_len)
+                  feature_value=1;
                 break;
               }
             }
             
-            if(feature <0 )
+            if(feature_value < 0 ) {
               fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s " HELP_ARG(f, feature) " help' for a list of valid features\n",
                       program, optarg, program);
-            usage=1;
+              usage=1;
+            }
           }
         }
         break;
@@ -391,7 +401,7 @@ main(int argc, char *argv[])
     puts("\nAdditional options:");
     puts(HELP_TEXT(c, "count           ", "Count triples - no output"));
     puts(HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
-    puts(HELP_TEXT(f, "feature FEATURE ", "Set parser feature - use `help' for a list"));
+    puts(HELP_TEXT(f, "feature FEATURE(=VALUE)", "Set parser feature - use `help' for a list"));
     puts(HELP_TEXT(q, "quiet           ", "No extra information messages"));
     puts(HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
@@ -461,8 +471,8 @@ main(int argc, char *argv[])
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
 
-  if(feature >0)
-    raptor_set_feature(rdf_parser, feature, 1);
+  if(feature_value >= 0)
+    raptor_set_feature(rdf_parser, feature, feature_value);
 
   if(!quiet) {
     if (filename) {
