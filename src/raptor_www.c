@@ -456,3 +456,74 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 
   return 1; /* Default to failed */
 }
+
+
+static void
+raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
+                                       const void *ptr, size_t size,
+                                       size_t nmemb)
+{
+  raptor_stringbuffer* sb=(raptor_stringbuffer*)userdata;
+  int len=size*nmemb;
+
+  raptor_stringbuffer_append_counted_string(sb, (unsigned char*)ptr, len, 1);
+}
+
+
+/**
+ * raptor_www_fetch_to_string - Fetch WWW content to a new string
+ * @www: raptor_www object
+ * @uri: raptor_uri to retrieve
+ * @string_p: pointer to location to hold string
+ * @length_p: pointer to location to hold length of string (or NULL)
+ * @malloc_handler: pointer to malloc to use to make string (or NULL)
+ *
+ * If malloc_handler is null, raptor will allocate it using it's
+ * own memory allocator.  *string_p is set to NULL on failure (and
+ * *length_p to 0 if length_p is not NULL).
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
+                           void **string_p, size_t *length_p,
+                           void *(*malloc_handler)(size_t size))
+{
+  raptor_stringbuffer *sb=NULL;
+  void *str=NULL;
+  raptor_www_write_bytes_handler saved_write_bytes;
+  void *saved_write_bytes_userdata;
+  
+  sb=raptor_new_stringbuffer();
+  if(!sb)
+    return 1;
+
+  if(length_p)
+    *length_p=0;
+
+  saved_write_bytes=www->write_bytes;
+  saved_write_bytes_userdata=www->write_bytes_userdata;
+  raptor_www_set_write_bytes_handler(www, raptor_www_fetch_to_string_write_bytes, sb);
+
+  if(raptor_www_fetch(www, uri))
+    str=NULL;
+  else {
+    size_t len=raptor_stringbuffer_length(sb);
+    if(len) {
+      str=(void*)malloc_handler(len+1);
+      if(str) {
+        raptor_stringbuffer_copy_to_string(sb, (unsigned char*)str, len+1);
+        *string_p=str;
+        if(length_p)
+          *length_p=len;
+      }
+    }
+  }
+
+  if(sb)
+    raptor_free_stringbuffer(sb);
+
+  raptor_www_set_write_bytes_handler(www, saved_write_bytes, saved_write_bytes_userdata);
+
+  return (str == NULL);
+}
