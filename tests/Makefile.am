@@ -27,7 +27,7 @@ ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
 ex-41.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf
 
-RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf
+RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf bad-04.rdf
 
 RDF_ASSUME_TEST_FILES=ex-19.rdf
 
