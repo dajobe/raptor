@@ -71,7 +71,7 @@ if test "X$LEX" != "X"; then
   if test $FLEX_VERSION_DEC -ge $FLEX_MIN_VERSION_DEC; then
     AC_MSG_RESULT($FLEX_VERSION - OK)
   else
-    AC_MSG_RESULT($FLEX_VERSION - too old to (re-)generate N-Triples Plus lexer)
+    AC_MSG_RESULT($FLEX_VERSION - too old to generate N-Triples Plus lexer)
     if test -r $srcdir/n3_lexer.c -a -r $srcdir/n3_lexer.h ; then
 	AC_MSG_WARN(The generated N-Triples Plus lexer files are present.)
 	AC_MSG_WARN(If you want to change the lexer you will need)
