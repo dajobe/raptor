@@ -213,7 +213,7 @@ raptor_get_parser_factory (const char *name)
  * Return value: a new &raptor_parser object or NULL on failure
  */
 raptor_parser*
-raptor_new_parser(char *name) {
+raptor_new_parser(const char *name) {
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
 

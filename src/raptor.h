@@ -125,7 +125,7 @@ RAPTOR_API raptor_parser* raptor_new(librdf_world *world);
 RAPTOR_API raptor_parser* raptor_new(void);
 #endif
 /* NEW API */
-RAPTOR_API raptor_parser* raptor_new_parser(char *name);
+RAPTOR_API raptor_parser* raptor_new_parser(const char *name);
 
 RAPTOR_API int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);
 RAPTOR_API int raptor_start_parse_file(raptor_parser *rdf_parser, const char *filename, raptor_uri *uri);
