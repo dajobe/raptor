@@ -31,6 +31,9 @@ extern "C" {
 
 #include <stdio.h>
 
+/* Required for va_list in raptor_vsnprintf */
+#include <stdarg.h>
+
 #ifdef WIN32
 #  ifdef RAPTOR_INTERNAL
 #    define RAPTOR_API _declspec(dllexport)
