@@ -368,12 +368,14 @@ void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
 void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
 raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
+int raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace);
 
 raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth, raptor_simple_message_handler error_handler, void *error_data);
 void raptor_namespace_free(raptor_namespace *ns);
 raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 raptor_uri* raptor_namespace_local_name_to_uri(const raptor_namespace *ns, const unsigned char *local_name);
+unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
 
 #ifdef RAPTOR_DEBUG
 void raptor_namespace_print(FILE *stream, raptor_namespace* ns);
@@ -575,7 +577,7 @@ void raptor_free_sax2_element(raptor_sax2_element *element);
 #ifdef RAPTOR_DEBUG
 void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
 #endif
-char *raptor_format_sax2_element(raptor_sax2_element *element, int *length_p, int is_end, raptor_simple_message_handler error_handler, void *error_data);
+char *raptor_format_sax2_element(raptor_sax2_element *element, raptor_namespace_stack* nstack, size_t *length_p, int is_end, raptor_simple_message_handler error_handler, void *error_data);
 
 /* raptor_xml_writer.c */
 /* FIXME: NOT PUBLIC YET - should be in raptor.h with RAPTOR_API added */
