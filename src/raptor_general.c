@@ -400,7 +400,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   FILE *fh;
 
   if(uri) {
-    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri), NULL);
+    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
     if(!filename)
       return 1;
 
