@@ -215,7 +215,7 @@ void*
 raptor_sequence_get_at(raptor_sequence* seq, int idx) {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
 
-  if(idx > seq->size)
+  if(idx > seq->size-1)
     return NULL;
   return seq->sequence[idx];
 }
