@@ -1823,7 +1823,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
   struct syntax_score scores[10]; /* FIXME - up to 10 parsers :) */
 
   if(identifier) {
-    unsigned char *p=(unsigned char*)strchr((const char*)identifier, '.');
+    unsigned char *p=(unsigned char*)strrchr((const char*)identifier, '.');
     if(p) {
       unsigned char *from, *to;
       p++;
