@@ -13,8 +13,10 @@
 <h2>Overview</h2>
 
 <p><a href="http://www.redland.opensource.ac.uk/raptor/">Raptor</a>
-is a free software/Open Source C library that parses RDF syntaxes
-such as RDF/XML and N-Triples into RDF triples.</p>
+is a free software / Open Source C library that provides
+a set of Resource Description Framework (RDF) parsers
+generating RDF triples from RDF/XML, N-Triples,
+Turtle, several XML RSS tag soup formats and Atom 0.3.</p>
 
 <p>Raptor
 was designed to work closely with the
@@ -45,19 +47,19 @@ as revised by the
 <ul>
 <li>Designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
 <li>Fully handles the <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax updates</a> for <a href="http://www.w3.org/TR/xmlbase/">XML Base</a>, <code>xml:lang</code>, RDF datatyping and Collections.</li>
-<li>Handles all RDF vocabularies such as <a href="http://www.foaf-project.org/">FOAF</a>, <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>, <a href="http://dublincore.org/">Dublin Core</a>, <a href="http://www.w3.org/TR/owl-features/">OWL</a></li>
+<li>Handles all RDF vocabularies such as <a href="http://www.foaf-project.org/">FOAF</a>, <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>, <a href="http://dublincore.org/">Dublin Core</a>, <a href="http://www.w3.org/TR/owl-features/">OWL</a>, <a href="http://usefulinc.com/doap">DOAP</a></li>
 <li>Parses and generates <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> supporting XML literals, language tagging and datatypes</li>
 <li>Parses content on the web if <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://xmlsoft.org/">libxml2</a> or BSD libfetch is available.</li>
 <li>Handles <code>rdf:resource</code> / <code>resource</code> attributes</li>
 <li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or (GNOME) <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
 <li>Optional features can be selected at run time.</li>
-<li>(Perl, Python, Java, Tcl, Ruby, PHP interfaces when used via Redland)</li>
+<li>C#, Java, Perl, PHP, Python, Ruby, Tcl interfaces when used via Redland</li>
 <li>No memory leaks</li>
 <li>Fast</li>
-<li><a href="rapper.html">rapper</a> RDF parser utility program</li>
+<li>Standalone <a href="rapper.html">rapper</a> RDF parser utility program</li>
 </ul>
 
-<p>The remaining issues are recorded in the
+<p>Known bugs and issues are recorded in the
 <a href="TODO.html">to do list</a>.</p>
 
 
@@ -82,12 +84,12 @@ syntax, designed as a useful subset of
 
 <h3>RSS "tag soup" parser</h3>
 
-<p>An experimental parser for the multiple XML RSS formats that use
-the elements such as channel, item, title, description in different
-ways.  Attempts to turn the input into
+<p>A parser for the multiple XML RSS formats that use the elements
+such as channel, item, title, description in different ways.
+Attempts to turn the input into
 <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>
-RDF triples.  <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>
-as a full RDF vocabulary, is parsed by the RDF/XML parser.</p>
+RDF triples.  True <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>,
+as a full RDF vocabulary, is best parsed by the RDF/XML parser.</p>
 
 <p>This parser also handles the Atom 0.3 syndication format
 currently being standardised by the
