@@ -220,15 +220,15 @@ static raptor_uri*
 raptor_default_new_uri_for_rdf_concept(void *context, const char *name) 
 {
   raptor_uri *new_uri;
-  char *base_uri=RAPTOR_RDF_MS_URI;
-  int base_uri_len=strlen(base_uri);
-  int new_uri_len;
+  const unsigned char *base_uri=raptor_rdf_namespace_uri;
+  unsigned int base_uri_len=raptor_rdf_namespace_uri_len;
+  unsigned int new_uri_len;
 
   new_uri_len=base_uri_len+strlen(name)+1;
   new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len);
   if(!new_uri)
     return NULL;
-  strcpy((char*)new_uri, base_uri);
+  strcpy((char*)new_uri, (const char*)base_uri);
   strcpy((char*)new_uri+base_uri_len, name);
   return new_uri;
 }
