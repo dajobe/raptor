@@ -185,11 +185,15 @@ raptor_libxml_update_document_locator (raptor_parser *rdf_parser) {
 
   if(xc->inSubset)
     return;
-  
-  locator->line=loc->getLineNumber(xc);
-  /* Seems to be broken */
+
+  locator->line= -1;
   locator->column= -1;
-  /* locator->column=loc->getColumnNumber(xc); */
+  if(loc) {
+    locator->line=loc->getLineNumber(xc);
+    /* Seems to be broken */
+    /* locator->column=loc->getColumnNumber(xc); */
+  }
+
 }
   
 
