@@ -242,13 +242,14 @@ if test $need_libxml = 1; then
   else
     result="$result libxml(system)"
   fi
-fi
-if test $need_expat = 1; then
+elif test $need_expat = 1; then
   if test $need_expat_source = 1; then
     result="$result expat(source)"
   else
     result="$result expat(system)"
   fi
+else
+  AC_MSG_ERROR(No XML parser available - please install expat or libxml)
 fi
 AC_MSG_RESULT($result)
 
@@ -299,4 +300,4 @@ AC_SUBST(MEM_LIBS)
 AC_SUBST(STANDARD_CFLAGS)
 
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile rapier.spec)
