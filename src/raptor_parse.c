@@ -2648,7 +2648,7 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 
 
 static raptor_uri*
-raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id) 
+raptor_make_uri_from_id(raptor_uri *base_uri, const char *id) 
 {
 #ifdef LIBRDF_INTERNAL
   librdf_uri *new_uri;
@@ -2657,6 +2657,7 @@ raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id)
 #else
   char *new_uri;
   int len;
+  int base_uri_len=strlen(base_uri);
 #endif
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -2671,15 +2672,17 @@ raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id)
     return NULL;
   *local_name='#';
   strcpy(local_name+1, id);
-  new_uri=librdf_new_uri(rdf_parser->world, local_name);
+  new_uri=librdf_new_uri_relative_to_base(base_uri, local_name);
   LIBRDF_FREE(cstring, local_name);
   return new_uri;
 #else
-  len=strlen(id)+1;
+  len=base_uri_len+1+strlen(id)+1;
   new_uri=(char*)LIBRDF_MALLOC(cstring, len);
   if(!new_uri)
     return NULL;
-  strncpy(new_uri, id, len);
+  strncpy(new_uri, base_uri, base_uri_len);
+  new_uri[base_uri_len]='#';
+  strcpy(new_uri+base_uri_len+1, id);
   return new_uri;
 #endif
 }
@@ -3216,7 +3219,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->subject.id=(char*)element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject.uri=raptor_make_uri_from_id(rdf_parser, element->subject.id);
+          element->subject.uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->subject.id);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
@@ -3245,7 +3248,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           element->bag.id=(char*)element->rdf_attr[RDF_ATTR_bagID];
           element->rdf_attr[RDF_ATTR_bagID]=NULL;
-          element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
+          element->bag.uri=raptor_make_uri_from_id(rdf_parser->base_uri,  element->bag.id);
           element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
@@ -3258,7 +3261,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            */
           if (state == RAPTOR_STATE_PARSETYPE_DAML_COLLECTION) {
             const char * idList = raptor_generate_id(rdf_parser, 0);
-            raptor_uri* uriList = raptor_make_uri_from_id(rdf_parser, idList);
+            raptor_uri* uriList = raptor_make_uri_from_id(rdf_parser->base_uri, idList);
             LIBRDF_FREE(cstring, (char*)idList);
             
             /* <uriList> rdf:type daml:List */
@@ -3547,7 +3550,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           if(element->rdf_attr[RDF_ATTR_bagID]) {
             element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
             element->rdf_attr[RDF_ATTR_bagID]=NULL;
-            element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
+            element->bag.uri=raptor_make_uri_from_id(rdf_parser->base_uri,  element->bag.id);
             element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
@@ -3564,7 +3567,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * this bagID 
            */
           if(element->bag.id) {
-            element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
+            element->bag.uri=raptor_make_uri_from_id(rdf_parser->base_uri,  element->bag.id);
             element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
