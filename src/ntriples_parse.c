@@ -887,7 +887,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 
 
 static int
-raptor_ntriples_parse_start(raptor_parser *rdf_parser, raptor_uri *uri) 
+raptor_ntriples_parse_start(raptor_parser *rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
 
