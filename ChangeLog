@@ -1,5 +1,7 @@
 2005-01-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Snapshotted raptor_1_4_3 for 1.4.3 release
+
 	* raptor_rdfxml.c (raptor_xml_start_element_handler): Updates for
 	unsigned char* string namespace URI strings.
 
