@@ -437,6 +437,11 @@ struct raptor_serializer_s {
   /* can be filled with error location information */
   raptor_locator locator;
 
+  /* FEATURE:
+   * non 0 to write relative URIs wherever possible
+   */
+  int feature_relative_uris;
+
   void *error_user_data;
   void *warning_user_data;
 
@@ -547,6 +552,10 @@ void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
 #ifdef RAPTOR_DEBUG
 void raptor_xml_parser_stats_print(raptor_xml_parser* rdf_xml_parser, FILE *stream);
 #endif
+
+/* raptor_feature.c */
+int raptor_features_enumerate_common(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, int flags);
+raptor_feature raptor_feature_from_uri_common(raptor_uri *uri, int flags);
 
 /* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
