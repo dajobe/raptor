@@ -567,9 +567,9 @@ struct raptor_element_s {
   int last_ordinal;
 
   /* If this element's parseType is a daml:collection 
-   * this identifies the current tail of the collection(list). 
+   * this identifies the anon node of current tail of the collection(list). 
    */
-  raptor_uri *tail_uri;
+  char *tail_id;
 };
 
 typedef struct raptor_element_s raptor_element;
@@ -1228,8 +1228,8 @@ raptor_free_element(raptor_element *element)
   raptor_free_identifier(&element->object);
   raptor_free_identifier(&element->bag);
 
-  if(element->tail_uri)
-    RAPTOR_FREE_URI(element->tail_uri);
+  if(element->tail_id)
+    LIBRDF_FREE(cstring, element->tail_id);
 
   if(element->base_uri)
     RAPTOR_FREE_URI(element->base_uri);
@@ -3322,7 +3322,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          */
 
         if(state == RAPTOR_STATE_TYPED_NODE || 
-           state == RAPTOR_STATE_DESCRIPTION) {
+           state == RAPTOR_STATE_DESCRIPTION || 
+           state == RAPTOR_STATE_PARSETYPE_DAML_COLLECTION) {
           if(element_in_rdf_ns &&
              IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description))
             state=RAPTOR_STATE_DESCRIPTION;
@@ -3369,19 +3370,17 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->parent) {
 
           /* In a rdf:parseType daml:collection the resources are appended
-           * to the list at element->parent->tail_uri 
+           * to the list at the genid element->parent->tail_id
            */
           if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
             const char * idList = raptor_generate_id(rdf_parser, 0);
-            raptor_uri* uriList = raptor_make_uri_from_id(rdf_parser, idList);
-            LIBRDF_FREE(cstring, (char*)idList);
             
-            /* <uriList> rdf:type daml:List */
+            /* <idList> rdf:type daml:List */
             raptor_generate_statement(rdf_parser, 
-                                      uriList,
                                       NULL,
-                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                      RAPTOR_URI_SOURCE_URI,
+                                      idList,
+                                      RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+                                      RAPTOR_URI_SOURCE_ID,
 
                                       RAPTOR_RDF_type_URI,
                                       NULL,
@@ -3394,12 +3393,12 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       RAPTOR_URI_SOURCE_URI,
                                       NULL);
 
-            /* <uriList> daml:first <element->uri> */
+            /* <idList> daml:first <element->uri> */
             raptor_generate_statement(rdf_parser, 
-                                      uriList,
                                       NULL,
-                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                      RAPTOR_URI_SOURCE_URI,
+                                      idList,
+                                      RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+                                      RAPTOR_URI_SOURCE_ID,
 
                                       RAPTOR_DAML_FIRST_URI(rdf_parser),
                                       NULL,
@@ -3409,11 +3408,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       element->subject.uri,
                                       element->subject.id,
                                       element->subject.type,
-                                      RAPTOR_URI_SOURCE_URI,
+                                      element->subject.uri_source,
                                       NULL);
             
             /* If there is no daml:collection */
-            if (!element->parent->tail_uri) {
+            if (!element->parent->tail_id) {
+              int len;
+              char *new_id;
+              
               /* Free any existing object URI still around
                * I suspect this can never happen.
                */
@@ -3421,36 +3423,45 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                 abort();
                 RAPTOR_FREE_URI(element->parent->object.uri);
               }
-              
-              element->parent->object.uri=raptor_copy_uri(uriList);
-              element->parent->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-              element->parent->object.uri_source=RAPTOR_URI_SOURCE_URI;
+
+              len=strlen(idList);
+              new_id=LIBRDF_MALLOC(cstring, len+1);
+              if(!len) {
+                if(new_id)
+                  LIBRDF_FREE(cstring, new_id);
+                return;
+              }
+              strncpy(new_id, idList, len+1);
+
+              element->parent->object.id=new_id;
+              element->parent->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+              element->parent->object.uri_source=RAPTOR_URI_SOURCE_ID;
             } else {
-              /* <tail_uri> daml:rest <uriListRest> */
+              /* _:tail_id daml:rest _:listRest */
               raptor_generate_statement(rdf_parser, 
-                                        element->parent->tail_uri,
                                         NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                        RAPTOR_URI_SOURCE_URI,
+                                        element->parent->tail_id,
+                                        RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+                                        RAPTOR_URI_SOURCE_ID,
 
                                         RAPTOR_DAML_REST_URI(rdf_parser),
                                         NULL,
                                         RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                         RAPTOR_URI_SOURCE_URI,
 
-                                        uriList,
                                         NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                        RAPTOR_URI_SOURCE_URI,
+                                        idList,
+                                        RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+                                        RAPTOR_URI_SOURCE_ID,
 
                                         NULL);
             }
 
             /* update new tail */
-            if(element->parent->tail_uri)
-              RAPTOR_FREE_URI(element->parent->tail_uri);
+            if(element->parent->tail_id)
+              RAPTOR_FREE_URI(element->parent->tail_id);
 
-            element->parent->tail_uri=uriList;
+            element->parent->tail_id=idList;
             
           } else if(!element->parent->object.uri &&
                     (element->parent->state != RAPTOR_STATE_UNKNOWN &&
@@ -3481,7 +3492,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                     RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                     RAPTOR_URI_SOURCE_URI,
 
-                                    element->name->uri,  /* FIXME: element->container_type, ??? */
+                                    element->name->uri,
                                     NULL,
                                     RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                     element->object.uri_source,
@@ -4023,50 +4034,43 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           break;
 
           case RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION:
-            if (!element->tail_uri) {
-              /* If No List: set parents object to daml:nil */
+            abort();
+            
+            break;
+
+          default:
+            raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+        } /* end switch */
+
+
+        /* Handle terminating a daml:collection list */
+        if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
+          if (!element->tail_id) {
+            /* If No List: set object to daml:nil */
+            raptor_generate_statement(rdf_parser, 
+                                      element->subject.uri,
+                                      element->subject.id,
+                                      element->subject.type,
+                                      element->subject.uri_source,
+                                      
+                                      element->subject.uri,
+                                      element->subject.id,
+                                      RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                      RAPTOR_URI_SOURCE_URI,
+                                      
+                                      RAPTOR_DAML_NIL_URI(rdf_parser),
+                                      NULL,
+                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                      RAPTOR_URI_SOURCE_URI,
+                                      
+                                      NULL);
+          } else {
+              /* terminate the list */
               raptor_generate_statement(rdf_parser, 
-                                        element->parent->subject.uri,
-                                        element->parent->subject.id,
-                                        element->parent->subject.type,
-                                        RAPTOR_URI_SOURCE_ELEMENT,
-
-                                        element->subject.uri,
-                                        element->subject.id,
-                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                        RAPTOR_URI_SOURCE_URI,
-
-                                        RAPTOR_DAML_NIL_URI(rdf_parser),
                                         NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                        RAPTOR_URI_SOURCE_URI,
-
-                                        NULL);
-            } else {
-              /* If List: set parents object to the list */
-              raptor_generate_statement(rdf_parser, 
-                                        element->parent->subject.uri,
-                                        element->parent->subject.id,
-                                        element->parent->subject.type,
-                                        RAPTOR_URI_SOURCE_ELEMENT,
-
-                                        element->name->uri,
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                        RAPTOR_URI_SOURCE_ELEMENT,
-
-                                        element->object.uri,
-                                        element->object.id,
-                                        element->object.type,
-                                        RAPTOR_URI_SOURCE_URI,
-
-                                        NULL);
-              /* and terminate the list */
-              raptor_generate_statement(rdf_parser, 
-                                        element->tail_uri,
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                        RAPTOR_URI_SOURCE_URI,
+                                        element->tail_id,
+                                        RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+                                        RAPTOR_URI_SOURCE_ID,
 
                                         RAPTOR_DAML_REST_URI(rdf_parser),
                                         NULL,
@@ -4079,13 +4083,10 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         RAPTOR_URI_SOURCE_URI,
 
                                         NULL);
-            }
-            break;
+          }
 
-          default:
-            raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
-        } /* end switch */
-
+        } /* end daml:collection list termination stuff */
+        
       finished=1;
       break;
 
