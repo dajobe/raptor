@@ -243,15 +243,14 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
 
   uri_string = raptor_uri_as_counted_string(node->value.resource.uri, &uri_len);
 
-  p= uri_string + uri_len - name_len;
-  while(p >= uri_string) {
-    if(raptor_xml_name_check(p, name_len, 10))
+  p= uri_string;
+  name_len=uri_len;
+  while(name_len >0) {
+    if(raptor_xml_name_check(p, name_len, 10)) {
       name=p;
-    else if(name && p>uri_string &&
-            !raptor_xml_name_check(p-1, name_len+1, 10))
-      /* if next char would make name invalid, stop */
       break;
-    p--; name_len++;
+    }
+    p++; name_len--;
   }
       
   if(!name) {
