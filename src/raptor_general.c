@@ -76,7 +76,11 @@
 
 
 #ifdef HAVE_CONFIG_H
+#ifdef LIBRDF_INTERNAL
+#include <rdf_config.h>
+#else
 #include <config.h>
+#endif
 #endif
 
 #include <stdio.h>
@@ -87,8 +91,6 @@
 #endif
 
 extern int errno;
-
-#define RAPIER_INTERNAL
 
 #ifdef LIBRDF_INTERNAL
 /* if inside Redland */
@@ -771,7 +773,7 @@ rapier_start_namespace(rapier_parser *rdf_parser,
 
   p=(char*)map+sizeof(rapier_ns_map);
 #ifdef LIBRDF_INTERNAL
-  map->uri=librdf_new_uri(namespace);
+  map->uri=librdf_new_uri(nspace);
   if(!map->uri) {
     rapier_parser_fatal_error(rdf_parser, "Out of memory");
     LIBRDF_FREE(rapier_ns_map, map);
@@ -818,8 +820,8 @@ static void
 rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map* nspace)
 {
 #ifdef LIBRDF_INTERNAL
-  if(namespace->uri)
-    librdf_free_uri(namespace->uri);
+  if(nspace->uri)
+    librdf_free_uri(nspace->uri);
 #endif
   LIBRDF_FREE(rapier_ns_map, nspace);
 }
