@@ -179,7 +179,7 @@ main(int argc, char *argv[])
   int scanning=0;
   int assume=0;
   int rdfxml=1;
-  int rss=0;
+  int rss_tag_soup=0;
   int strict_mode=0;
   int usage=0;
   const char *parser_name="rdfxml";
@@ -235,7 +235,7 @@ main(int argc, char *argv[])
         break;
 
       case 'n':
-        rdfxml=0; rss=0;
+        rdfxml=0; rss_tag_soup=0;
         break;
 
       case 's':
@@ -287,15 +287,15 @@ main(int argc, char *argv[])
       case 'i':
         if(optarg) {
           if(!strcmp(optarg, "rdfxml")) {
-            rdfxml=1; rss=0;
+            rdfxml=1; rss_tag_soup=0;
           } else if (!strcmp(optarg, "ntriples")) {
-            rdfxml=0; rss=0;
-          } else if (!strcmp(optarg, "rss")) {
-            rdfxml=0; rss=1;
+            rdfxml=0; rss_tag_soup=0;
+          } else if (!strcmp(optarg, "rss-tag-soup")) {
+            rdfxml=0; rss_tag_soup=1;
           } else {
             fprintf(stderr, "%s: invalid argument `%s' for `--input'",
                     program, optarg);
-            fprintf(stderr, "Valid arguments are:\n  - `rdfxml'\n  - `ntriples'\n\n  - `rss'\n");
+            fprintf(stderr, "Valid arguments are:\n  - `rdfxml'\n  - `ntriples'\n\n  - `rss-tag-soup'\n");
             fprintf(stderr, "Try `%s --help' for more information.\n",
                     program);
             exit(1);
@@ -318,7 +318,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "Parse the given file as RDF/XML or NTriples using Raptor\n");
     fprintf(stderr, HELP_TEXT(h, "help            ", "This message"));
     fprintf(stderr, HELP_TEXT(n, "ntriples        ", "Parse NTriples format rather than RDF/XML"));
-    fprintf(stderr, HELP_TEXT(i, "input           ", "Set input format to 'rdfxml' (default), 'ntriples' or 'rss'"));
+    fprintf(stderr, HELP_TEXT(i, "input           ", "Set input format to 'rdfxml' (default), 'ntriples' or 'rss-tag-soup'"));
     fprintf(stderr, HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
     fprintf(stderr, HELP_TEXT(a, "assume          ", "Assume document is rdf/xml (rdf:RDF optional)"));
     fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
@@ -356,7 +356,7 @@ main(int argc, char *argv[])
     }
   }
 
-  parser_name=rdfxml ? "rdfxml" : (rss ? "rss" : "ntriples");
+  parser_name=rdfxml ? "rdfxml" : (rss_tag_soup ? "rss-tag-soup" : "ntriples");
 
   rdf_parser=raptor_new_parser(parser_name);
   if(!rdf_parser) {
