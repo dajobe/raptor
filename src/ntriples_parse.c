@@ -27,85 +27,33 @@
 #include <config.h>
 #endif
 
+#ifdef WIN32
+#include <win32_config.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+/* for the memory allocation functions */
+#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
+#include <dmalloc.h>
+#endif
+
 
 /* Raptor includes */
 #include "raptor.h"
 #include "raptor_internal.h"
 #include "ntriples.h"
-
-
-#ifdef LIBRDF_INTERNAL
-/* if inside Redland */
-
-#ifdef RAPTOR_DEBUG
-#define LIBRDF_DEBUG 1
-#endif
-
-#include <librdf.h>
-
-#include <rdf_parser.h>
-#include <rdf_node.h>
-#include <rdf_stream.h>
-#include <rdf_statement.h>
-#include <rdf_uri.h>
-
-#else
-/* else standalone */
-
-#define LIBRDF_MALLOC(type, size) malloc(size)
-#define LIBRDF_CALLOC(type, size, count) calloc(size, count)
-#define LIBRDF_FREE(type, ptr)   free((void*)ptr)
-
-#ifdef RAPTOR_DEBUG
-/* Debugging messages */
-#define LIBRDF_DEBUG1(function, msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function); } while(0)
-#define LIBRDF_DEBUG2(function, msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1);} while(0)
-#define LIBRDF_DEBUG3(function, msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2);} while(0)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
-
-#else
-/* DEBUGGING TURNED OFF */
-
-/* No debugging messages */
-#define LIBRDF_DEBUG1(function, msg)
-#define LIBRDF_DEBUG2(function, msg, arg1)
-#define LIBRDF_DEBUG3(function, msg, arg1, arg2)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3)
-
-#endif
-
-/* Fatal errors - always happen */
-#define LIBRDF_FATAL1(function, msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function); abort();} while(0)
-#define LIBRDF_FATAL2(function, msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function, arg); abort();} while(0)
-
-
-#endif
-
-
-/* for the memory allocation functions */
-#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-#include <dmalloc.h>
-#undef HAVE_STDLIB_H
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#undef HAVE_STDLIB_H
-#endif
-
 
 /* Prototypes for local functions */
 static void raptor_ntriples_generate_statement(raptor_ntriples_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, int object_literal_is_XML, char *object_literal_language);

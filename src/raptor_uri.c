@@ -30,59 +30,31 @@
 #include <config.h>
 #endif
 
+#ifdef WIN32
+#include <win32_config.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
-
-
-/* Raptor includes */
-#include "raptor.h"
-#include "raptor_internal.h"
-
-
-#ifdef LIBRDF_INTERNAL
-/* if inside Redland */
-
-#ifdef RAPTOR_DEBUG
-#define LIBRDF_DEBUG 1
-#endif
-
-#include <librdf.h>
-
-#else
-/* else standalone */
-
-#define LIBRDF_MALLOC(type, size) malloc(size)
-#define LIBRDF_CALLOC(type, size, count) calloc(size, count)
-#define LIBRDF_FREE(type, ptr)   free((void*)ptr)
-
-#endif
-
-
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#undef HAVE_STDLIB_H
 #endif
 
 /* for the memory allocation functions */
 #if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
 #include <dmalloc.h>
-#undef HAVE_STDLIB_H
 #endif
 
-
 /* Raptor includes */
-#include <raptor.h>
-
+#include "raptor.h"
+#include "raptor_internal.h"
 
 
 /* Prototypes for local functions */

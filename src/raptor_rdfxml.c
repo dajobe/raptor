@@ -25,24 +25,7 @@
 #endif
 
 #ifdef WIN32
-#define WIN32_LEAD_AND_MEAN 1
-#define HAVE_STDLIB_H 1
-#define HAVE_STDARG_H 1
-
-/* use expat on win32 */
-#define RAPTOR_XML_EXPAT 1
-#define HAVE_XMLPARSE_H 1
-
-#include <windows.h>
-
-#define strcasecmp(X,Y) strcmpi(X,Y)
-
-/* dll entry point */
-BOOL APIENTRY
-DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
-{
-  return TRUE;
-}
+#include <win32_config.h>
 #endif
 
 
@@ -57,13 +40,11 @@ DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 #endif
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#undef HAVE_STDLIB_H
 #endif
 
 /* for the memory allocation functions */
 #if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
 #include <dmalloc.h>
-#undef HAVE_STDLIB_H
 #endif
 
 /* Raptor includes */
