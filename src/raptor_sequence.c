@@ -158,6 +158,9 @@ int
 raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data) {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
+  if(idx < 0)
+    return 1;
+  
   if(idx+1 > seq->capacity) {
     if(raptor_sequence_ensure(seq, idx+1))
       return 1;
@@ -215,7 +218,7 @@ void*
 raptor_sequence_get_at(raptor_sequence* seq, int idx) {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
 
-  if(idx > seq->size-1)
+  if(idx < 0 || idx > seq->size-1)
     return NULL;
   return seq->sequence[idx];
 }
