@@ -13,6 +13,7 @@ NEWS
 README
 TODO
 aclocal.m4
+autom4te.cache
 config.cache
 config.guess
 config.h
@@ -29,9 +30,10 @@ missing
 mkinstalldirs
 not-used
 old
+rapper
 raptor-config
+raptor-src-config
 raptor.spec
 raptor_cc.c
-rdfdump
 stamp-h*
 test*
