@@ -86,6 +86,7 @@ RAPTOR_API extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
 
 /* Public structure */
 typedef struct raptor_parser_s raptor_parser;
+typedef struct raptor_serializer_s raptor_serializer;
 
 typedef struct raptor_www_s raptor_www;
 typedef struct raptor_iostream_s raptor_iostream;
@@ -272,6 +273,23 @@ RAPTOR_API int raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
 RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
+/* Get serializer names */
+RAPTOR_API int raptor_serializers_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+RAPTOR_API int raptor_serializer_syntax_name_check(const char *name);
+
+/* Serializing */
+RAPTOR_API raptor_serializer* raptor_new_serializer(const char *name);
+RAPTOR_API void raptor_free_serializer(raptor_serializer* rdf_serializer);
+
+RAPTOR_API int raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream);
+RAPTOR_API int raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer, const char *filename);
+RAPTOR_API int raptor_serialize_start_to_string(raptor_serializer *rdf_serializer, raptor_uri *uri, void **string_p, size_t *length_p);
+RAPTOR_API int raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer, raptor_uri *uri, FILE *fh);
+RAPTOR_API int raptor_serialize_statement(raptor_serializer* rdf_serializer, const raptor_statement *statement);
+RAPTOR_API int raptor_serialize_end(raptor_serializer *rdf_serializer);
+RAPTOR_API raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
+  
+
 /* memory functions */
 RAPTOR_API void raptor_free_memory(void *ptr);
 RAPTOR_API void* raptor_alloc_memory(size_t size);
@@ -427,26 +445,37 @@ RAPTOR_API size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
 
 typedef int (*raptor_iostream_init_func) (void *context);
 typedef void (*raptor_iostream_finish_func) (void *context);
-typedef int (*raptor_iostream_write_bytes_func) (void *context, const void *ptr, size_t size, size_t nmemb);
 typedef int (*raptor_iostream_write_byte_func) (void *context, const int byte);
+typedef int (*raptor_iostream_write_bytes_func) (void *context, const void *ptr, size_t size, size_t nmemb);
+typedef void (*raptor_iostream_write_end_func) (void *context);
 
 typedef struct {
+  /* optional, called at most once */
   raptor_iostream_init_func         init;
+  /* optional, called at most once */
   raptor_iostream_finish_func       finish;
   /* methods */
-  raptor_iostream_write_bytes_func  write_bytes;
   raptor_iostream_write_byte_func   write_byte;
+  raptor_iostream_write_bytes_func  write_bytes;
+   /* optional, called at most once */
+  raptor_iostream_write_end_func    write_end;
 } raptor_iostream_handler;
 
 
 RAPTOR_API raptor_iostream* raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler);
+RAPTOR_API raptor_iostream* raptor_new_iostream_to_sink(void);
 RAPTOR_API raptor_iostream* raptor_new_iostream_to_filename(const char *filename);
 RAPTOR_API raptor_iostream* raptor_new_iostream_to_file_handle(FILE *fh);
 RAPTOR_API raptor_iostream* raptor_new_iostream_to_string(void **string, size_t *length_p);
 RAPTOR_API void raptor_free_iostream(raptor_iostream *iostr);
 RAPTOR_API int raptor_iostream_write_bytes(raptor_iostream *iostr, const void *ptr, size_t size, size_t nmemb);
 RAPTOR_API int raptor_iostream_write_byte(raptor_iostream *iostr, const int byte);
-RAPTOR_API size_t raptor_get_bytes_written_count(raptor_iostream *iostr);
+RAPTOR_API void raptor_iostream_write_end(raptor_iostream *iostr);
+RAPTOR_API int raptor_iostream_write_string(raptor_iostream *iostr, const void *string);
+RAPTOR_API int raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *string, size_t len);
+RAPTOR_API size_t raptor_iostream_get_bytes_written_count(raptor_iostream *iostr);
+RAPTOR_API int raptor_iostream_write_decimal(raptor_iostream* iostr, int integer);
+RAPTOR_API int raptor_iostream_format_hexadecimal(raptor_iostream* iostr, unsigned int integer, int width);
 
 #ifdef __cplusplus
 }
