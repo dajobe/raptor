@@ -406,7 +406,24 @@ int
 raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
                  raptor_uri *base_uri)
 {
-  raptor_www *www=raptor_www_new();
+  return raptor_parse_uri_with_connection(rdf_parser, uri, base_uri, NULL);
+}
+
+
+/**
+ * raptor_parse_uri_with_connection - Retrieve the RDF/XML content at URI using existing WWW connection
+ * @rdf_parser: parser
+ * @uri: URI of RDF content
+ * @base_uri: the base URI to use (or NULL if the same)
+ * @connection: connection object pointer
+ * 
+ * Return value: non 0 on failure
+ **/
+int
+raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
+                                 raptor_uri *base_uri, void *connection)
+{
+  raptor_www *www=raptor_www_new_with_connection(connection);
 
   if(!www)
     return 1;
@@ -725,10 +742,16 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
 
 
 void
-raptor_parser_abort(raptor_parser *parser, const char *reason) {
+raptor_parse_abort(raptor_parser *parser) {
   parser->failed=1;
 }
 
+
+/* 0.9.9 added */
+void
+raptor_parser_abort(raptor_parser *parser, char *reason) {
+  parser->failed=1;
+}
 
 
 void
