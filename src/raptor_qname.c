@@ -416,9 +416,17 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
 }
 
 
-/*
- * Local Variables:
- * mode:c
- * c-basic-offset: 2
- * End:
- */
+int
+raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname)
+{
+  if(qname->nspace && qname->nspace->prefix_length > 0) {
+    raptor_iostream_write_counted_string(iostr, qname->nspace->prefix,
+                                         qname->nspace->prefix_length);
+    raptor_iostream_write_byte(iostr, ':');
+  }
+  
+  raptor_iostream_write_counted_string(iostr, qname->local_name,
+                                       qname->local_name_length);
+  return 0;
+}
+
