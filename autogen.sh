@@ -72,7 +72,7 @@ while [ $# -ne 0 ] ; do
   progs=`ls autoconf* 2>/dev/null`
   if [ "X$progs" != "X" ]; then
     for prog in $progs; do
-      vers=`echo $prog | sed -e 's/^auto[-a-z]*//'`
+      vers=`$prog --version | sed -ne '1s/^.* //p'`
       if [ "X$vers" = "X" ]; then
         continue
       fi
@@ -85,7 +85,7 @@ while [ $# -ne 0 ] ; do
   progs=`ls automake* 2>/dev/null`
   if [ "X$progs" != "X" ]; then
     for prog in $progs; do
-      vers=`echo $prog | sed -e 's/^auto[-a-z]*//'`
+      vers=`$prog --version | sed -ne '1s/^.* //p'`
       if [ "X$vers" = "X" ]; then
         continue
       fi
@@ -98,7 +98,7 @@ while [ $# -ne 0 ] ; do
   progs=`ls aclocal* 2>/dev/null`
   if [ "X$progs" != "X" ]; then
     for prog in $progs; do
-      vers=`echo $prog | sed -e 's/^auto[-a-z]*//'`
+      vers=`$prog --version | sed -ne '1s/^.* //p'`
       if [ "X$vers" = "X" ]; then
         continue
       fi
