@@ -20,7 +20,12 @@ allows the same by delegating all triple generation to callbacks. (FEATURE)</li>
 <li>Add a guessing parser that sends an Accept: HTTP header for all
 supported mime types and uses the returned headers to select a
 parser. (FEATURE)</li>
-<li>Describe in libraptor.3 relevant raptor.h structures (DOCS)</li>
+<li>Describe in libraptor.3 relevant raptor.h structures -
+describe important ones such as raptor_statement, raptor_locator and
+raptor_feature as well as reference internal ones such as raptor_identifier,
+raptor_identifier_type, raptor_uri_source, raptor_ntriples_term_type,
+raptor_genid_type and raptor_uri_handler for the raptor_uri class.
+(DOCS)</li>
 <li>RSS tag soup parser junks/overwrites element content if it is
 delivered in chunks rather than as one big CDATA, such as when
 libxml2 sees entities, it emits the content in bits (BUG)</li>
