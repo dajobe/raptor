@@ -39,19 +39,16 @@
 #ifdef RAPTOR_WWW_LIBXML
 
 static void
-raptor_www_libxml_http_error (void *ctx, const char *msg, ...) 
+raptor_www_libxml_http_error(void *ctx, const char *msg, ...) 
 {
   raptor_www* www=(raptor_www*)ctx;
   va_list args;
   
   www->failed=1;
-  
+
   va_start(args, msg);
-  fprintf(stderr, "libxml nanoHTTP error - ");
-  vfprintf(stderr, msg, args);
+  raptor_www_error_varargs(www, msg, args);
   va_end(args);
-  fprintf(stderr, "\n");
-  exit(1);
 }
 
 void
