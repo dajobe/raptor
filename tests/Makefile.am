@@ -29,7 +29,7 @@ ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf ex-32.rdf ex-33.rdf \
 ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
 ex-41.rdf ex-46.rdf ex-47.rdf ex-48.rdf ex-49.rdf ex-50.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
-owl-schema.rdf
+owl-schema.rdf daml-oil.rdf
 
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
@@ -51,7 +51,7 @@ ex-34.out ex-35.out ex-36.out ex-37.out ex-38.out ex-39.out ex-40.out \
 ex-41.out ex-42.out ex-43.out ex-44.out ex-45.out ex-46.out ex-47.out \
 ex-48.out ex-49.out ex-50.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
-owl-schema.out
+owl-schema.out daml-oil.out
 
 RDF_WARN_OUT_FILES=warn-00.out warn-01.out warn-02.out
 
@@ -72,6 +72,8 @@ RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
 RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
 OWL_DOC_URI="http://www.w3.org/2002/07/owl"
+
+DAML_DOC_URI="http://www.daml.org/2001/03/daml+oil"
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
@@ -104,6 +106,8 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	    baseuri=$(RDFS_NS_URI); \
 	  elif test $$name = owl-schema; then \
 	    baseuri=$(OWL_DOC_URI); \
+	  elif test $$name = daml-oil; then \
+	    baseuri=$(DAML_OIL_DOC_URI); \
 	  else \
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
