@@ -36,12 +36,9 @@
 #include <stdlib.h>
 #endif
 
+/* Raptor includes */
 #include "raptor.h"
 #include "ntriples.h"
-
-#ifdef LIBRDF_INTERNAL
-#include <librdf.h>
-#endif
 
 
 #ifdef NEED_OPTIND_DECLARATION
@@ -163,7 +160,8 @@ main(int argc, char *argv[])
   int scanning=0;
   int rdfxml=1;
   int usage=0;
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
+  librdf_world *world;
   librdf_uri *base_uri;
   librdf_uri *uri;
 #else
@@ -173,8 +171,9 @@ main(int argc, char *argv[])
 
   program=argv[0];
 
-#ifdef LIBRDF_INTERNAL
-  librdf_init_world(NULL, NULL);
+#ifdef RAPTOR_IN_REDLAND
+  world=librdf_new_world();
+  librdf_world_open(world);
 #endif
 
 
@@ -270,17 +269,17 @@ main(int argc, char *argv[])
   }
   
 
-#ifdef LIBRDF_INTERNAL
-  base_uri=librdf_new_uri(base_uri_string);
+#ifdef RAPTOR_IN_REDLAND
+  base_uri=librdf_new_uri(world, base_uri_string);
   if(!base_uri) {
     fprintf(stderr, "%s: Failed to create librdf_uri for %s\n",
-            program, uri);
+            program, base_uri_string);
     return(1);
   }
-  uri=librdf_new_uri(uri_string);
+  uri=librdf_new_uri(world, uri_string);
   if(!uri) {
     fprintf(stderr, "%s: Failed to create librdf_uri for %s\n",
-            program, uri);
+            program, uri_string);
     return(1);
   }
 #else
@@ -289,7 +288,11 @@ main(int argc, char *argv[])
 #endif
 
   if(rdfxml) {
+#ifdef RAPTOR_IN_REDLAND
+    rdfxml_parser=raptor_new(world);
+#else
     rdfxml_parser=raptor_new();
+#endif
     if(!rdfxml_parser) {
       fprintf(stderr, "%s: Failed to create raptor parser\n", program);
       return(1);
@@ -303,7 +306,11 @@ main(int argc, char *argv[])
   
   
   } else {
+#ifdef RAPTOR_IN_REDLAND
+    rdfnt_parser=raptor_ntriples_new(world);
+#else
     rdfnt_parser=raptor_ntriples_new();
+#endif
     if(!rdfnt_parser) {
       fprintf(stderr, "%s: Failed to create raptor parser\n", program);
       return(1);
@@ -349,10 +356,10 @@ main(int argc, char *argv[])
     fprintf(stdout, "%s: Parsing returned %d statements\n", program,
             statement_count);
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   librdf_free_uri(base_uri);
 
-  librdf_destroy_world();
+  librdf_free_world(world);
 #endif
 
   if(error_count)
