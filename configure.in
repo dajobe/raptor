@@ -76,7 +76,7 @@ fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(stdlib.h unistd.h string.h stdarg.h dmalloc.h getopt.h expat.h xmlparse.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h stdarg.h dmalloc.h getopt.h expat.h xmlparse.h)
 
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -433,8 +433,10 @@ CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
 MEM=
 MEM_LIBS=
 if test "$USE_MAINTAINER_MODE" = yes; then
-  MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
-  MEM_LIBS=-ldmalloc
+  if test "$ac_cv_header_dmalloc_h" = yes; then
+    MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
+    MEM_LIBS=-ldmalloc
+  fi
   CPPFLAGS="-DRAPTOR_DEBUG=1 $CPPFLAGS"
   CFLAGS="-g $CFLAGS"
 fi
