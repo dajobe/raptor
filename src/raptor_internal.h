@@ -257,6 +257,12 @@ struct raptor_parser_s {
    */
   int feature_normalize_language;
 
+  /* FEATURE
+   * non 0 if non-NFC literals cause a fatal error rather than
+   * a warning.
+   */
+  int feature_non_nfc_fatal;
+
   /* stuff for our user */
   void *user_data;
 
