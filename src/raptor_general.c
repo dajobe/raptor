@@ -88,6 +88,7 @@ raptor_init(void)
 
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
+  raptor_init_serializer_rss10();
 #endif
 #ifdef RAPTOR_PARSER_TURTLE
   raptor_init_parser_turtle();
