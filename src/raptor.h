@@ -74,7 +74,7 @@ extern const unsigned int raptor_version_minor;
 extern const unsigned int raptor_version_release;
 extern const unsigned int raptor_version_decimal;
 
-extern const char * const raptor_xml_literal_datatype_uri_string;
+RAPTOR_API extern const char * const raptor_xml_literal_datatype_uri_string;
 
 
 /* Public structure */
