@@ -1,0 +1,287 @@
+dnl -*- Mode: sh -*-
+dnl
+dnl configure.in - autoconf file for Rapier
+dnl (Process this file with autoconf to produce a configure script.)
+dnl
+dnl $Id$
+dnl
+dnl Copyright (C) 2000 David Beckett - http://purl.org/net/dajobe/
+dnl Institute for Learning and Research Technology, University of Bristol.
+dnl
+dnl    This package is Free Software available under either of two licenses
+dnl    (see FAQS.html to see why):
+dnl 
+dnl 1. The GNU Lesser General Public License (LGPL)
+dnl 
+dnl    See http://www.gnu.org/copyleft/lesser.html or COPYING.LIB for the
+dnl    full license text.
+dnl      _________________________________________________________________
+dnl 
+dnl      Copyright (C) 2000 David Beckett, Institute for Learning and
+dnl      Research Technology, University of Bristol. All Rights Reserved.
+dnl 
+dnl      This library is free software; you can redistribute it and/or
+dnl      modify it under the terms of the GNU Lesser General Public License
+dnl      as published by the Free Software Foundation; either version 2 of
+dnl      the License, or (at your option) any later version.
+dnl 
+dnl      This library is distributed in the hope that it will be useful, but
+dnl      WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+dnl      Lesser General Public License for more details.
+dnl 
+dnl      You should have received a copy of the GNU Lesser General Public
+dnl      License along with this library; if not, write to the Free Software
+dnl      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+dnl      USA
+dnl      _________________________________________________________________
+dnl 
+dnl    NOTE - under Term 3 of the LGPL, you may choose to license the entire
+dnl    library under the GPL. See COPYING for the full license text.
+dnl 
+dnl 2. The Mozilla Public License
+dnl 
+dnl    See http://www.mozilla.org/MPL/MPL-1.1.html or MPL.html for the full
+dnl    license text.
+dnl 
+dnl    Under MPL section 13. I declare that all of the Covered Code is
+dnl    Multiple Licensed:
+dnl      _________________________________________________________________
+dnl 
+dnl      The contents of this file are subject to the Mozilla Public License
+dnl      version 1.1 (the "License"); you may not use this file except in
+dnl      compliance with the License. You may obtain a copy of the License
+dnl      at http://www.mozilla.org/MPL/
+dnl 
+dnl      Software distributed under the License is distributed on an "AS IS"
+dnl      basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+dnl      the License for the specific language governing rights and
+dnl      limitations under the License.
+dnl 
+dnl      The Initial Developer of the Original Code is David Beckett.
+dnl      Portions created by David Beckett are Copyright (C) 2000 David
+dnl      Beckett, Institute for Learning and Research Technology, University
+dnl      of Bristol. All Rights Reserved.
+dnl 
+dnl      Alternatively, the contents of this file may be used under the
+dnl      terms of the GNU Lesser General Public License, in which case the
+dnl      provisions of the LGPL License are applicable instead of those
+dnl      above. If you wish to allow use of your version of this file only
+dnl      under the terms of the LGPL License and not to allow others to use
+dnl      your version of this file under the MPL, indicate your decision by
+dnl      deleting the provisions above and replace them with the notice and
+dnl      other provisions required by the LGPL License. If you do not delete
+dnl      the provisions above, a recipient may use your version of this file
+dnl      under either the MPL or the LGPL License.
+
+
+AC_REVISION($Revision$)dnl
+
+AC_PREREQ(2.13)
+AC_INIT(rapier_parse.c)
+AM_CONFIG_HEADER(config.h)
+
+AM_INIT_AUTOMAKE(rapier, 0.0.1)
+
+AM_MAINTAINER_MODE
+
+dnl Checks for programs.
+AC_CANONICAL_HOST
+AC_ARG_PROGRAM
+AM_SANITY_CHECK
+AM_PROG_CC_STDC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+AM_MISSING_PROG(ACLOCAL, aclocal, $missing_dir)
+AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
+AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
+AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
+
+
+
+dnl compiler checks
+# if using gcc...
+if test "$ac_cv_prog_gcc" = yes; then
+  STANDARD_CFLAGS=
+  MAINTAINER_CFLAGS="-Wall -Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls"
+else
+  STANDARD_CFLAGS=
+  MAINTAINER_CFLAGS=
+fi
+
+
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(stdlib.h unistd.h string.h stdarg.h dmalloc.h)
+
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_BIGENDIAN
+
+dnl need to change quotes to allow square brackets
+changequote(<<, >>)dnl
+version_major=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`
+version_minor=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\2/'`
+version_release=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\3/'`
+changequote([, ])dnl
+
+AC_DEFINE_UNQUOTED(RAPIER_VERSION_MAJOR, $version_major)
+AC_DEFINE_UNQUOTED(RAPIER_VERSION_MINOR, $version_minor)
+AC_DEFINE_UNQUOTED(RAPIER_VERSION_RELEASE, $version_release)
+
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(getopt_long)
+
+dnl Checks for XML parsers
+have_expat=0
+have_expat_lib=0
+have_expat_source=0
+need_expat=0
+need_expat_source=0
+AC_MSG_CHECKING(for expat sources)
+if test -d $srcdir/expat; then
+  have_expat_source=1
+  have_expat=1
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
+oLIBS="$LIBS"
+AC_CHECK_LIB(xmltok, main, xmlt=1, xmlt=0)
+
+AC_CHECK_LIB(xmlparse, XML_ParserCreate, xmlp=1, xmlp=0, -lxmltok)
+AC_CHECK_LIB(xmlparse, XML_SetNamespaceDeclHandler)
+if test "X$ac_cv_lib_xmlparse_XML_SetNamespaceDeclHandler" = "Xyes"; then
+  AC_DEFINE(HAVE_XML_SetNamespaceDeclHandler)
+fi
+
+LIBS="$oLIBS"
+AC_MSG_CHECKING(for system expat library)
+if test $xmlp = 1 -a $xmlt = 1; then
+  have_expat_lib=1
+  have_expat=1
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
+AC_CHECK_PROG(XML_CONFIG, xml-config, xml-config)
+
+
+have_libxml=0
+have_libxml_lib=0
+have_libxml_source=0
+need_libxml=0
+need_libxml_source=0
+AC_MSG_CHECKING(for libxml sources)
+if test -d $srcdir/libxml -a -r $srcdir/libxml/libxml.spec ; then
+  have_libxml_source=1
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
+if test "X$XML_CONFIG" != X; then
+  oLIBS="$LIBS"
+  LIBS="$LIBS `$XML_CONFIG --libs`"
+  AC_CHECK_LIB(xml, xmlParseFile)
+  LIBS="$oLIBS"
+  AC_MSG_CHECKING(for system (GNOME) libxml library)
+  if test $ac_cv_lib_xml_xmlParseFile = yes; then
+    have_libxml_lib=1
+    have_libxml=1
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+AC_CHECK_HEADERS(gnome-xml/parser.h)
+
+
+if test $have_expat_lib = 1; then
+  need_expat=1
+  AC_DEFINE(NEED_EXPAT)
+elif test $have_expat_source = 1; then
+  need_expat=1
+  need_expat_source=1
+  AC_DEFINE(NEED_EXPAT)
+elif test $have_libxml_lib = 1; then
+  need_libxml=1
+  AC_DEFINE(NEED_LIBXML)
+elif test $have_libxml_source = 1; then
+  need_libxml=1
+  need_libxml_source=1
+  AC_DEFINE(NEED_LIBXML)
+fi
+
+
+AC_MSG_CHECKING(XML parsers required)
+result=
+if test $need_libxml = 1; then
+  if test $need_libxml_source = 1; then
+    result="$result libxml(source)"
+  else
+    result="$result libxml(system)"
+  fi
+fi
+if test $need_expat = 1; then
+  if test $need_expat_source = 1; then
+    result="$result expat(source)"
+  else
+    result="$result expat(system)"
+  fi
+fi
+AC_MSG_RESULT($result)
+
+
+XML_OBJS=
+
+if test $have_libxml = 1 -a $need_libxml = 1; then
+  if test $need_libxml_source = 1; then
+    SD="$SD libxml"
+    (cd libxml && ./configure --cache=../config.cache --enable-shared=no)
+    CFLAGS="$CFLAGS -I$srcdir/libxml"
+    XML_OBS="libxml/libxml.a"
+  else
+    LIBS="$LIBS `$XML_CONFIG --libs`"
+    CFLAGS="$CFLAGS `$XML_CONFIG --cflags`"
+  fi
+fi
+
+if test $need_expat = 1; then
+  # Only build local copy if it is needed
+  if test $need_expat_source = 1; then
+    SD="$SD expat"
+    CFLAGS="-I\$(top_srcdir)/expat/xmlparse $CFLAGS"
+    XML_OBJS="\$(top_builddir)/expat/xmlparse/xmlparse.o \$(top_builddir)/expat/xmlparse/hashtable.o \$(top_builddir)/expat/xmltok/xmlrole.o \$(top_builddir)/expat/xmltok/xmltok.o"
+  else
+    LIBS="$LIBS -lxmlparse -lxmltok"
+  fi
+fi
+AC_SUBST(XML_OBJS)
+
+# Make final changes to cflags
+MEM=
+MEM_LIBS=
+if test "$USE_MAINTAINER_MODE" = yes; then
+  MEM=-DRAPIER_MEMORY_DEBUG_DMALLOC=1
+  MEM_LIBS=-ldmalloc
+  CFLAGS="-DRAPIER_DEBUG=1 $CFLAGS"
+fi
+STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
+if test "$USE_MAINTAINER_MODE" = yes; then
+  CFLAGS="$MAINTAINER_CFLAGS $CFLAGS"
+fi
+AC_SUBST(MEM)
+AC_SUBST(MEM_LIBS)
+AC_SUBST(STANDARD_CFLAGS)
+
+
+AC_OUTPUT(Makefile)
