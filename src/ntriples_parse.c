@@ -118,7 +118,7 @@ static void raptor_ntriples_generate_statement(raptor_ntriples_parser *parser, c
 static void raptor_ntriples_parser_fatal_error(raptor_ntriples_parser* parser, const char *message, ...);
 static int raptor_ntriples_parse(raptor_ntriples_parser* parser, char *buffer, int length, int is_end);
 
-static int raptor_ntriples_unicode_char_to_utf8(long c, char *output);
+static int raptor_ntriples_unicode_char_to_utf8(unsigned long c, char *output);
 static int raptor_ntriples_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
 
 
@@ -286,7 +286,7 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
 
   /* Three choices for object from N-Triples */
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
-    object_uri=raptor_make_uri(parser->base_uri, object);
+    object_uri=raptor_make_uri(parser->base_uri, (const char*)object);
     statement->object=object_uri;
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE) {
@@ -323,7 +323,7 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
  * Return value: bytes encoded to output buffer or <0 on failure
  **/
 static int
-raptor_ntriples_unicode_char_to_utf8(long c, char *output)
+raptor_ntriples_unicode_char_to_utf8(unsigned long c, char *output)
 {
   int size=0;
   
@@ -470,7 +470,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
   char *p=*start;
   char c='\0';
   int ulen=0;
-  long unichar=0;
+  unsigned long unichar=0;
   
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
@@ -523,7 +523,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
         ulen=(c == 'u') ? 4 : 8;
         
         if(*lenp < ulen)
-          raptor_ntriples_parser_fatal_error(parser, "\%c over end of line", c);
+          raptor_ntriples_parser_fatal_error(parser, "%c over end of line", c);
         sscanf(p, ((ulen == 4) ? "%04x" : "%08x"), &unichar);
 
         p+=ulen;
@@ -1135,7 +1135,7 @@ raptor_print_ntriples_string(FILE *stream,
     
     /* It is unicode */
     
-    unichar_len=raptor_ntriples_utf8_to_unicode_char(NULL, string, len);
+    unichar_len=raptor_ntriples_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
     if(unichar_len > len) {
       /* UTF-8 encoding ended in the middle of a string
        * but no way to report an error
@@ -1144,7 +1144,7 @@ raptor_print_ntriples_string(FILE *stream,
     }
 
     unichar_len=raptor_ntriples_utf8_to_unicode_char(&unichar,
-                                                     string, len);
+                                                     (const unsigned char *)string, len);
     
     if(unichar < 0x10000)
       fprintf(stream, "\\u%04lX", unichar);
