@@ -1806,6 +1806,7 @@ main(int argc, char *argv[])
       fprintf(stderr, "raptor_feature_from_uri returned %d expected %d\n", fn, i);
       return 1;
     }
+    raptor_free_uri(feature_uri);
   }
 
   raptor_finish();
