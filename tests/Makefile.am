@@ -59,7 +59,7 @@ $(top_builddir)/rdfdump:
 	@(cd .. ; $(MAKE) rdfdump)
 
 check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
-	@result=0; for test in $(RDF_TEST_FILES); do \
+	@-result=0; for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
 	    baseuri=$(RDF_NS_URI); \
@@ -69,7 +69,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	    baseuri=$(BASE_URI)$$test; \
 	  fi; \
 	  echo -n "Checking $$test "; \
-	  $(top_builddir)/rdfdump -q -w -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    echo ok; \
 	  else \
@@ -81,7 +81,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  echo -n "Checking $$test "; \
-	  $(top_builddir)/rdfdump -q -w -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  status=$$?; \
 	  if test $$status != 0 ; then \
 	    echo ok; \
@@ -94,7 +94,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  echo -n "Checking $$test "; \
-	  $(top_builddir)/rdfdump -q -w -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rdfdump -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    echo ok; \
 	  else \
