@@ -154,7 +154,8 @@ raptor_format_sax2_element(raptor_sax2_element *element,
                            raptor_namespace_stack *nstack,
                            size_t *length_p, int is_end,
                            raptor_simple_message_handler error_handler,
-                           void *error_data)
+                           void *error_data,
+                           int depth)
 {
   size_t length;
   char *buffer;
@@ -164,7 +165,8 @@ raptor_format_sax2_element(raptor_sax2_element *element,
   int i;
 
   /* max is 1 per element and 1 for each attribute */
-  nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, element->attribute_count+1, sizeof(struct nsd));
+  if(nstack)
+    nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, element->attribute_count+1, sizeof(struct nsd));
 
   /* get length of element name (and namespace-prefix: if there is one) */
   length=element->name->local_name_length + 1; /* < */
@@ -172,7 +174,7 @@ raptor_format_sax2_element(raptor_sax2_element *element,
     if(element->name->nspace->prefix_length > 0)
       length += element->name->nspace->prefix_length + 1; /* : */
 
-    if(!is_end && 
+    if(!is_end && nstack &&
        !raptor_namespaces_namespace_in_scope(nstack, element->name->nspace)) {
       nspace_declarations[0].declaration=
         raptor_namespaces_format(element->name->nspace,
@@ -198,7 +200,8 @@ raptor_format_sax2_element(raptor_sax2_element *element,
         if(element->attributes[i]->nspace->prefix_length > 0)
           length += element->attributes[i]->nspace->prefix_length + 1; /* prefix: */
 
-        if(!raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
+        if(nstack && 
+           !raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
           /* not in scope and not same as element (so already going to be declared)*/
           int j;
           int declare_me=1;
@@ -270,6 +273,10 @@ raptor_format_sax2_element(raptor_sax2_element *element,
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration=NULL;
       ptr+=nspace_declarations[i].length;
+
+      raptor_namespace_copy(nstack,
+                            (raptor_namespace*)nspace_declarations[i].nspace,
+                            depth);
     }
   }
 
@@ -317,8 +324,9 @@ raptor_format_sax2_element(raptor_sax2_element *element,
   
   *ptr++ = '>';
   *ptr='\0';
-  
-  RAPTOR_FREE(stringarray, nspace_declarations);
+
+  if(nstack)
+    RAPTOR_FREE(stringarray, nspace_declarations);
 
   return buffer;
 }
