@@ -271,9 +271,7 @@ raptor_www_file_fetch(raptor_www *www)
 {
   char *filename;
   FILE *fh;
-/* FIXME */
-#define BUFFER_SIZE 1024
-  unsigned char buffer[BUFFER_SIZE];
+  unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE];
   int status=0;
   char *uri_string=raptor_uri_as_string(www->uri);
   
@@ -293,7 +291,7 @@ raptor_www_file_fetch(raptor_www *www)
   }
 
   while(!feof(fh)) {
-    int len=fread(buffer, 1, BUFFER_SIZE, fh);
+    int len=fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
     www->total_bytes += len;
 
     if(len > 0 && www->write_bytes)

@@ -95,7 +95,7 @@ raptor_www_libxml_fetch(raptor_www *www)
   www->status_code=xmlNanoHTTPReturnCode(www->ctxt);
   
   while(1) {
-    int len=xmlNanoHTTPRead(www->ctxt, www->buffer, BUFFER_SIZE);
+    int len=xmlNanoHTTPRead(www->ctxt, www->buffer, RAPTOR_WWW_BUFFER_SIZE);
     if(len<0)
       break;
     
@@ -104,7 +104,7 @@ raptor_www_libxml_fetch(raptor_www *www)
     if(www->write_bytes)
       www->write_bytes(www, www->write_bytes_userdata, www->buffer, len, 1);
     
-    if(len < BUFFER_SIZE || www->failed)
+    if(len < RAPTOR_WWW_BUFFER_SIZE || www->failed)
       break;
   }
   
