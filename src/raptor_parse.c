@@ -543,7 +543,6 @@ struct raptor_xml_parser_s {
   raptor_set* id_set;
 };
 
-typedef struct raptor_xml_parser_s raptor_xml_parser;
 
 
 
@@ -3405,3 +3404,11 @@ raptor_terminate_parser_rdfxml (void) {
   xmlCleanupParser();
 #endif
 }
+
+#ifdef RAPTOR_DEBUG
+void
+raptor_xml_parser_stats_print(raptor_xml_parser* rdf_xml_parser, FILE *stream) {
+  fputs("rdf:ID set ", stream);
+  raptor_set_stats_print(rdf_xml_parser->id_set, stream);
+}
+#endif
