@@ -400,6 +400,81 @@ int raptor_utf8_to_unicode_char(long *output, const unsigned char *input, int le
 int raptor_unicode_is_namestartchar(long c);
 int raptor_unicode_is_namechar(long c);
 
+/* raptor_www*.c */
+#ifdef RAPTOR_WWW_LIBXML
+#include <libxml/parser.h>
+#include <libxml/xmlerror.h>
+#include <libxml/nanohttp.h>
+#endif
+
+#ifdef RAPTOR_WWW_LIBGHTTP
+#include <ghttp.h>
+#endif
+
+#ifdef RAPTOR_WWW_LIBCURL
+#include <curl/curl.h>
+#include <curl/types.h>
+#include <curl/easy.h>
+#endif
+
+
+/* WWW library state */
+struct  raptor_www_s {
+  char *type;
+  int free_type;
+  int total_bytes;
+  int failed;
+  int status_code;
+  
+#ifdef RAPTOR_WWW_LIBCURL
+  CURL *curl_handle;
+  CURLcode status;
+  char error_buffer[CURL_ERROR_SIZE];
+#endif
+
+#ifdef RAPTOR_WWW_LIBGHTTP
+  ghttp_request *request;
+  ghttp_status status;
+#endif
+
+#ifdef RAPTOR_WWW_LIBXML
+  void *ctxt;
+  xmlGenericErrorFunc old_handler;
+/* FIXME */
+#define BUFFER_SIZE 256
+  char buffer[BUFFER_SIZE];
+  int is_end;
+#endif
+
+  char *user_agent;
+
+  /* proxy URL string or NULL for none */
+  char *proxy;
+  
+  void *userdata;
+  size_t (*write_bytes)(void *userdata, const void *ptr, size_t size, size_t nmemb);
+  void (*content_type)(void *userdata, const char *content_type);
+
+  void *error_user_data;
+  raptor_message_handler error_handler;
+};
+
+
+
+/* internal */
+void raptor_www_libxml_init(raptor_www *www);
+void raptor_www_libxml_free(raptor_www *www);
+int raptor_www_libxml_fetch(raptor_www *www, const char *url);
+
+void raptor_www_ghttp_init(raptor_www *www);
+void raptor_www_ghttp_free(raptor_www *www);
+int raptor_www_ghttp_fetch(raptor_www *www, const char *url);
+
+void raptor_www_curl_init(raptor_www *www);
+void raptor_www_curl_free(raptor_www *www);
+int raptor_www_curl_fetch(raptor_www *www, const char *url);
+
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
