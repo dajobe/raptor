@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2003 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -972,6 +972,15 @@ raptor_uri_is_file_uri(const char* uri_string) {
 }
 
 
+/**
+ * raptor_new_uri_for_xmlbase - Turn a URI into one suitable for XML base
+ * @old_uri: URI to transform
+ * 
+ * Takes an existing URI and ensures it has a path (default /) and has
+ * no fragment or query arguments - XML base does not use these.
+ * 
+ * Return value: new URI object or NULL on failure.
+ **/
 raptor_uri*
 raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 {
