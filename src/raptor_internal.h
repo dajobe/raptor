@@ -341,6 +341,11 @@ struct raptor_parser_factory_s {
   /* finish the parser factory */
   void (*finish_factory)(raptor_parser_factory* factory);
 
+  /* score recognition of the syntax by a block of characters, the
+   *  content identifier or it's suffix or a mime type
+   *  (different from the factory-registered one)
+   */
+  int (*recognise_syntax)(raptor_parser_factory* factory, const unsigned char *buffer, size_t len, const unsigned char *identifier, const unsigned char *suffix, const char *mime_type);
 };
 
 
