@@ -101,10 +101,10 @@ raptor_cc.c : $(srcdir)/raptor_cc.gperf
 test: check
 
 raptor_cc_test: $(srcdir)/raptor_cc.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -DSTANDALONE -static $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
 
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 deb: distcheck
 	rm -rf $(distdir)
