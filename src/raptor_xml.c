@@ -339,14 +339,18 @@ main(int argc, char *argv[])
       failures++;
       continue;
     }
-    
+
+#if RAPTOR_DEBUG > 1    
     fprintf(stderr, "%s: raptor_xml_escape_string escaped string to '%s' ok\n",
             program, xml_string);
+#endif
     RAPTOR_FREE(cstring, xml_string);
   }
 
+#if RAPTOR_DEBUG > 1    
   if(!failures)
     fprintf(stderr, "%s: raptor_xml_escape_string all tests OK\n", program);
+#endif
 
   return failures;
 }
