@@ -81,6 +81,9 @@ enum {
 };
 
 
+/* Local prototypes */
+static void grapper_model_parse(grapper_state *state);
+
 
 static void
 grapper_view_url_changed(grapper_state *state) 
@@ -98,6 +101,12 @@ grapper_view_qnames_changed(grapper_state *state)
 
 static void
 grapper_view_scanning_changed(grapper_state *state) 
+{
+
+}
+
+static void
+grapper_view_ntriples_changed(grapper_state *state) 
 {
 
 }
@@ -209,6 +218,22 @@ grapper_model_set_scanning (grapper_state *state, int scanning) {
 }
 
 static void
+grapper_model_set_ntriples (grapper_state *state, int ntriples) {
+  if(state->ntriples == ntriples)
+    return;
+  
+  state->ntriples=ntriples;
+  if (state->ntriples) {
+    g_print ("Parsing N-Triples\n");
+  } else {
+    g_print ("Parsing RDF/XML\n");
+  }
+  
+  grapper_view_ntriples_changed(state);
+  grapper_model_parse(state);
+}
+
+static void
 grapper_model_reset_counts(grapper_state *state) 
 {
   state->triples_count=0;
@@ -276,23 +301,25 @@ void grapper_model_statements_handler(void *data,
 }
 
 
-
 static void
-grapper_model_load_url(grapper_state *state, const gchar *url) 
+grapper_model_parse(grapper_state *state) 
 {
   raptor_uri* uri;
   raptor_parser* rdf_parser;
   
+  if(!state->url)
+    return;
 
   grapper_model_empty_triples(state);
-  grapper_model_set_url(state, url);
 
   grapper_model_reset_counts(state);
-
   grapper_model_reset_error(state);
 
   uri=raptor_new_uri(state->url);
-  rdf_parser=raptor_new_parser("rdfxml");
+  if(state->ntriples)
+    rdf_parser=raptor_new_parser("ntriples");
+  else
+    rdf_parser=raptor_new_parser("rdfxml");
   if(state->scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
   if(state->assume)
@@ -316,7 +343,8 @@ url_entry_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state=(grapper_state*)data;
   GtkWidget *url_entry=state->url_entry;
-  grapper_model_load_url(state, gtk_entry_get_text(GTK_ENTRY(url_entry)));
+  grapper_model_set_url(state, gtk_entry_get_text(GTK_ENTRY(url_entry)));
+  grapper_model_parse(state);
 }
 
 /* file selection OK button clicked callback */
@@ -336,7 +364,8 @@ fs_ok_button_callback(GtkWidget *widget, gpointer data)
   gtk_widget_destroy(files);
   state->file_selection=NULL;
 
-  grapper_model_load_url(state, url);
+  grapper_model_set_url(state, url);
+  grapper_model_parse(state);
   g_free(url);
 }
 
@@ -391,6 +420,17 @@ scanning_button_callback(GtkWidget *widget, gpointer data)
 }
 
 
+/* ntriples button clicked callback */
+static void
+ntriples_button_callback(GtkWidget *widget, gpointer data)
+{
+  grapper_state* state=(grapper_state*)data;
+  int active=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) != 0);
+  
+  grapper_model_set_ntriples(state, active);
+}
+
+
 /* delete (window) event callback */
 static gboolean
 delete_event_callback(GtkWidget *widget, GdkEvent  *event, gpointer data)
@@ -441,14 +481,14 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *menu_bar;
   GtkWidget *v_box;
   GtkWidget *box;
-  GtkWidget *go_button, *qnames_button, *scanning_button;
+  GtkWidget *go_button, *qnames_button, *scanning_button, *ntriples_button;
   GtkWidget *url_entry;
   GtkWidget *triples_frame, *prefs_frame;
   GtkWidget *triples_scrolled_window;
   GtkWidget *triples_treeview;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
-  GtkTooltips *qnames_tooltips, *scanning_tooltips;
+  GtkTooltips *qnames_tooltips, *scanning_tooltips, *ntriples_tooltips;
   GtkWidget *prefs_box;
   GtkListStore *store;
   
@@ -628,6 +668,24 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_box_pack_start (GTK_BOX(prefs_box), scanning_button, TRUE, TRUE, 0);
 
   gtk_widget_show (scanning_button);
+
+
+  /* ntriples button in horizontal box */
+  ntriples_button = gtk_check_button_new_with_label("Ntriples");
+
+  ntriples_tooltips = gtk_tooltips_new ();
+  gtk_tooltips_set_tip (ntriples_tooltips, ntriples_button, "Parse N-Triples", NULL);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ntriples_button), (state->ntriples));
+  
+
+  /* connect button clicked event to callback */
+  g_signal_connect (G_OBJECT (ntriples_button), "clicked",
+                    G_CALLBACK (ntriples_button_callback), state);
+
+  /* pack into the invisible box */
+  gtk_box_pack_start (GTK_BOX(prefs_box), ntriples_button, TRUE, TRUE, 0);
+
+  gtk_widget_show (ntriples_button);
 
 
   /* add prefs frame to vbox */
