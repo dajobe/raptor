@@ -102,10 +102,6 @@ $(RDF_TEST_FILES)
 # Why is this not in the default makefile?
 CC=@CC@
 
-CFLAGS=@CFLAGS@ $(MEM)
-STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
-LIBS=@LIBS@ $(MEM_LIBS)
-
 # Memory debugging alternatives
 MEM=@MEM@
 MEM_LIBS=@MEM_LIBS@
@@ -117,6 +113,12 @@ MEM_LIBS=@MEM_LIBS@
 # 2) Use dmalloc library
 #MEM=-DRAPIER_MEMORY_DEBUG_DMALLOC=1
 #MEM_LIBS=-ldmalloc
+
+
+CPPFLAGS=@CPPFLAGS@ $(MEM)
+STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
+LIBS=@LIBS@ $(MEM_LIBS)
+
 
 # Create some text files from HTML sources
 LYNX=lynx
