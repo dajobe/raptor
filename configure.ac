@@ -229,20 +229,6 @@ int main(int argc, char* argv) {
 fi
 
 
-AC_MSG_CHECKING(for redland sources in parent directory)
-if test -d $srcdir/../librdf -a -r $srcdir/../librdf/rdf_node.c ; then
-  have_redland=1
-  AC_MSG_RESULT(yes)
-  AC_DEFINE(RAPTOR_IN_REDLAND, 1, [is this being built inside redland?])
-  REDLAND_LIBS="\$(top_builddir)/../librdf/librdf.la"
-  REDLAND_CFLAGS=" -I\$(srcdir)/../librdf"
-  AC_SUBST(REDLAND_LIBS)
-  AC_SUBST(REDLAND_CFLAGS)
-else
-  AC_MSG_RESULT(no)
-fi
-
-
 dnl Checks for XML parsers
 have_expat=0
 have_expat_lib=0
