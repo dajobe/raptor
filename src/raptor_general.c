@@ -356,9 +356,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
       break;
   }
 
-#ifdef RAPTOR_URI_TO_FILENAME
   RAPTOR_FREE(cstring, (void*)filename);
-#endif
 
   return (rc != 0);
 }
