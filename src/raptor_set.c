@@ -449,7 +449,9 @@ if(rc) {
     }
   }
 
+#ifdef RAPTOR_DEBUG
   raptor_set_stats_print(set, stderr);
+#endif
 
   fprintf(stderr, "%s: Freeing set\n", program);
   raptor_free_set(set);
