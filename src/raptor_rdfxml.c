@@ -2713,12 +2713,11 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
     if(statement->object_literal_language)
       fprintf(stream, "-%s",  (const char*)statement->object_literal_language);
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    fputs("xml(\"", stream);
+    fputs("xml\"", stream);
     raptor_print_ntriples_string(stream, statement->object, '"');
     fputc('"', stream);
     if(statement->object_literal_language)
-      fprintf(stream, ",\"%s\"",  (const char*)statement->object_literal_language);
-    fputc(')', stream);
+      fprintf(stream, "-%s",  (const char*)statement->object_literal_language);
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fprintf(stream, "_:%s", (const char*)statement->object);
   else /* must be URI */
