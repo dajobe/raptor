@@ -458,6 +458,9 @@ typedef struct rapier_element_s rapier_element;
  * Rapier parser object
  */
 struct rapier_parser_s {
+#ifdef LIBRDF_INTERNAL
+  librdf_world *world;
+#endif
   /* XML parser specific stuff */
 #ifdef NEED_EXPAT
   XML_Parser xp;
@@ -727,7 +730,7 @@ rapier_start_namespace(rapier_parser *rdf_parser,
 
   p=(char*)map+sizeof(rapier_ns_map);
 #ifdef LIBRDF_INTERNAL
-  map->uri=librdf_new_uri(nspace);
+  map->uri=librdf_new_uri(rdf_parser->world, nspace);
   if(!map->uri) {
     rapier_parser_fatal_error(rdf_parser, "Out of memory");
     LIBRDF_FREE(rapier_ns_map, map);
@@ -1136,9 +1139,9 @@ rapier_format_element(rapier_element *element, int *length_p, int is_end)
   int i;
 
   /* get length of element name (and namespace-prefix: if there is one) */
-  length=element->name->qname_length;
+  length=element->name->qname_length + 1; /* < */
   if(element->name->nspace)
-    length += element->name->nspace->prefix_length + 1;
+    length += element->name->nspace->prefix_length + 1; /* : */
 
   if(is_end)
     length++; /* / */
@@ -1191,7 +1194,6 @@ rapier_format_element(rapier_element *element, int *length_p, int is_end)
         *ptr++ =' ';
       
       if(element->attributes[i]->nspace) {
-        length += element->attributes[i]->nspace->prefix_length + 1;
         strncpy(ptr, element->attributes[i]->nspace->prefix,
                 element->attributes[i]->nspace->prefix_length);
         ptr+= element->attributes[i]->nspace->prefix_length;
@@ -1941,7 +1943,13 @@ rapier_parser_warning(rapier_parser* parser, const char *message, ...)
  * Return value: non 0 on failure
  **/
 rapier_parser*
-rapier_new(void)
+rapier_new(
+#ifdef LIBRDF_INTERNAL
+  librdf_world *world
+#else
+  void
+#endif
+)
 {
   rapier_parser* rdf_parser;
 #ifdef NEED_EXPAT
@@ -2001,6 +2009,10 @@ rapier_new(void)
   rdf_parser->sax.setDocumentLocator=rapier_xml_set_document_locator;
 
   /* xmlInitParserCtxt(&rdf_parser->xc); */
+#endif
+
+#ifdef LIBRDF_INTERNAL
+  rdf_parser->world=world;
 #endif
 
   rapier_init_namespaces(rdf_parser);
