@@ -20,7 +20,7 @@ dnl full license terms.
 dnl 
 
 
-AC_INIT(Raptor RDF Parser, 1.0.0, redland-dev@lists.librdf.org, raptor)
+AC_INIT(Raptor RDF Parser, 1.1.0, redland-dev@lists.librdf.org, raptor)
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(raptor_parse.c)
 AC_REVISION($Revision$)
