@@ -349,8 +349,8 @@ main(int argc, char *argv[])
   }
 
   for(i=0; items[i]; i++) {
-    len=strlen(items[i]);
     int rc;
+    len=strlen(items[i]);
 
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, "%s: Adding string buffer item '%s'\n", program, items[i]);
