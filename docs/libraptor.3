@@ -422,7 +422,15 @@ Retrieve the given URL, returning non zero on failure.
 Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
 .SH API CHANGES
-.IP 0.9.13
+.IP 1.0.0
+Removed the following deprecated methods and functions (see 0.9.6
+changes for the new names):
+.br
+raptor_free, raptor_new, raptor_ntriples_free,
+raptor_ntriples_new, raptor_ntriples_parse_file,
+raptor_ntriples_set_error_handler, raptor_ntriples_set_fatal_error_handler,
+raptor_ntriples_set_statement_handler and raptor_parser_abort.
+.IP
 Added \fBraptor_parse_file_stream\fR
 for reading FILE* streams without necessarily having a file.
 .IP 0.9.12
@@ -452,9 +460,9 @@ Added \fBraptor_parse_uri\fR, \fBraptor_parser_abort\fR, \fBraptor_ntriples_term
 .br
 Added \fBraptor_new_uri_for_xmlbase\fR.
 .IP 0.9.6
-.LP
 In this version, the raptor/ntriples parser calling APIs were
 modified.  The following table lists the changes:
+.IP
   \fIOLD API                   NEW API (0.9.6+)\fR
   \fBraptor_new()\fR              \fBraptor_new_parser("rdfxml")\fR
   \fBntriples_new()\fR            \fBraptor_new_parser("ntriples")\fR
