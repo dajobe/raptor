@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -223,6 +223,18 @@ RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **cont
 
 #define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
+
+
+/* raptor_www */
+typedef struct raptor_www_s raptor_www;
+
+RAPTOR_API raptor_www *raptor_www_new(void);
+RAPTOR_API void raptor_www_free(raptor_www *www);
+RAPTOR_API void raptor_www_set_userdata(raptor_www *www, void *userdata);
+RAPTOR_API void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
+RAPTOR_API void raptor_www_set_proxy(raptor_www *www, const char *proxy);
+RAPTOR_API int raptor_www_fetch(raptor_www *www, const char *url);
+
 
 
 /* OLD RDF/XML Parser Public functions */
