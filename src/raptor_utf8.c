@@ -52,7 +52,7 @@
  * Return value: bytes encoded to output buffer or <0 on failure
  **/
 int
-raptor_unicode_char_to_utf8(unsigned long c, char *output)
+raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output)
 {
   int size=0;
   
@@ -677,7 +677,7 @@ raptor_unicode_is_extender(long c)
 int
 raptor_utf8_is_nfc(const unsigned char *input, size_t length) 
 {
-  int i;
+  unsigned int i;
   int plain=1;
 #ifdef HAVE_G_UTF8_NORMALIZE
   unsigned char *norm;
@@ -693,7 +693,7 @@ raptor_utf8_is_nfc(const unsigned char *input, size_t length)
     return 1;
   
 #ifdef HAVE_G_UTF8_NORMALIZE
-  norm=(unsigned char*)g_utf8_normalize(input, length, G_NORMALIZE_NFKC);
+  norm=(unsigned char*)g_utf8_normalize((const gchar*)input, length, G_NORMALIZE_NFKC);
   for(i=0; i<length; i++)
     if(input[i] != norm[i]) {
       free(norm);
