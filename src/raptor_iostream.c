@@ -628,7 +628,7 @@ main(int argc, char *argv[])
     count=raptor_iostream_get_bytes_written_count(iostr);
     if(count != OUT_BYTES_COUNT) {
       fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
-              count, (int)OUT_BYTES_COUNT);
+              (int)count, (int)OUT_BYTES_COUNT);
       return 1;
     }
     
