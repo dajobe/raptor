@@ -163,7 +163,7 @@ check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 
 check-scan-rdf: $(top_builddir)/rapper $(RDF_SCAN_TEST_FILES)
 	@result=0; \
-	$(ECHO) "Testing rdf/xml insider other XML"; \
+	$(ECHO) "Testing rdf/xml inside other XML"; \
 	for test in $(RDF_SCAN_TEST_FILES); do \
 	  name=`echo $$test | sed -e 's/\..*//'` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
