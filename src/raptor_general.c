@@ -3621,8 +3621,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                 element->child_state=RAPTOR_STATE_PARSETYPE_DAML_COLLECTION;
                 element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
               } else {
+                element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
                 element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
-                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
+                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
               }
             } else {
               element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
