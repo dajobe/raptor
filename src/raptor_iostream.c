@@ -304,7 +304,8 @@ static raptor_iostream_handler raptor_iostream_string_handler={
  * @malloc_handler: pointer to malloc to use to make string (or NULL)
  *
  * If malloc_handler is null, raptor will allocate it using it's
- * own memory allocator.
+ * own memory allocator.  *string_p is set to NULL on failure (and
+ * *length_p to 0 if length_p is not NULL).
  * 
  * Return value: new &raptor_iostream object or NULL on failure
  **/
@@ -331,8 +332,13 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
     RAPTOR_FREE(raptor_string_iostream_context, con);
     return NULL;
   }
+
   con->string_p=string_p;
+  *string_p=NULL;
+
   con->length_p=length_p;  
+  if(length_p)
+    *length_p=0;
 
   if(malloc_handler)
     con->malloc_handler=malloc_handler;
