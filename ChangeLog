@@ -1,3 +1,45 @@
+2004-09-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_sequence.c: docs
+
+	* turtle_parser.y (blank): Revert mis-edited triple sequence change.
+
+	* turtle_parser.y (propertyList):
+	Switch to left-recursion to prevent stack problems with bison.
+	(raptor_turtle_parse_terminate): Call turtle_lexer_lex_destroy
+	properly.
+
+	* tests/turtle/test-14.ttl, tests/turtle/test-14.out:
+	Use exactly 10000 all different triples.
+
+	* tests/turtle/test-15.ttl, tests/turtle/test-15.out:
+	Use different objects and no collections so there are exactly 10000
+	triples, all different.
+
+	* tests/turtle/test-16.ttl, tests/turtle/test-16.out:
+	Use different objects so all 10000 triples are different
+
+	* turtle_lexer.l (turtle_token_print):
+	Add INTEGER_LITERAL for debugging.
+
+	* Makefile.am: Make turtle_parser.c appear as C source name
+
+	* turtle_parser.y (statementList, objectList):
+	Switch to using left recursion to
+	prevent stack overflow in bison with 10000 statements (possible) or
+	objects (rarer).
+
+	* tests/turtle/Makefile.am, tests/turtle/test-16.ttl,
+	tests/turtle/test-15.out, tests/turtle/test-15.ttl,
+	tests/turtle/test-16.out, tests/turtle/test-14.out,
+	tests/turtle/test-14.ttl: Added large turtle tests test-14,15,16
+
+	* turtle_parser.y (raptor_turtle_parse_chunk):
+	Use RAPTOR_REALLOC for massive speed
+	improvements on some systems.
+
+	* raptor_internal.h: Added RAPTOR_REALLOC
+
 2004-09-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_set.c (raptor_free_id_set):
