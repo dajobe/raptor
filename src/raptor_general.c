@@ -392,6 +392,96 @@ raptor_new_parser(const char *name) {
 }
 
 
+struct syntax_score
+{
+  int score;
+  raptor_parser_factory* factory;
+};
+
+
+static int
+compare_syntax_score(const void *a, const void *b) {
+  return ((struct syntax_score*)b)->score - ((struct syntax_score*)a)->score;
+}
+  
+
+/**
+ * raptor_new_parser_for_content - Constructor - create a new raptor_parser
+ * @uri: URI identifying the syntax (or NULL)
+ * @mime_type: mime type identifying the content (or NULL)
+ * @buffer: buffer of content to guess (or NULL)
+ * @len: length of buffer
+ * @identifier: identifier of content (or NULL)
+ * 
+ * Fina a parser by scoring recognition of the syntax by a block of
+ * characters, the content identifier or a mime type.  The content
+ * identifier is typically a filename or URI or some other identifier.
+ * 
+ * Return value: 
+ **/
+raptor_parser*
+raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
+                              const unsigned char *buffer, size_t len,
+                              const unsigned char *identifier)
+{
+  unsigned int i;
+  raptor_parser_factory *factory=parsers;
+  unsigned char *suffix=NULL;
+  struct syntax_score scores[10]; /* FIXME - up to 10 parsers :) */
+
+  if(identifier) {
+    unsigned char *p=(unsigned char*)strchr((const char*)identifier, '.');
+    if(p) {
+      unsigned char *from, *to;
+      p++;
+      suffix=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)p)+1);
+      if(!suffix)
+        return NULL;
+      for(from=p, to=suffix; *from; ) {
+        unsigned char c=*from++;
+        *to++=isupper((const char)c) ? (unsigned char)tolower((const char)c): c;
+      }
+      *to='\0';
+    }
+  }
+
+  for(i=0; factory; i++, factory=factory->next) {
+    int score= -1;
+    
+    if(mime_type && factory->mime_type &&
+       !strcmp(mime_type, factory->mime_type))
+      break;
+    
+    if(uri && factory->uri_string &&
+       !strcmp((const char*)raptor_uri_as_string(uri), 
+               (const char*)factory->uri_string))
+      break;
+
+    if(factory->recognise_syntax)
+      score=factory->recognise_syntax(factory, buffer, len, 
+                                      identifier, suffix, 
+                                      mime_type);
+
+    scores[i].score=score < 10 ? score : 10; scores[i].factory=factory;
+    RAPTOR_DEBUG3("Score %15s : %d\n", factory->name, score);
+  }
+  
+  if(!factory) {
+    /* sort the scores and pick a factory */
+    qsort(scores, i, sizeof(struct syntax_score), compare_syntax_score);
+    if(scores[0].score >= 0)
+      factory=scores[0].factory;
+    else
+      factory=parsers; /* if all else fails, use the default parser */
+  }
+
+  if(suffix)
+    RAPTOR_FREE(cstring, suffix);
+
+  return raptor_new_parser(factory->name);
+}
+
+
 
 /**
  * raptor_start_parse: Start a parse of content with base URI
