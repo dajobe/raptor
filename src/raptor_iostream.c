@@ -262,10 +262,9 @@ raptor_string_iostream_finish(void *context)
       *con->string_p=str;
     }
   }
-  if(!str) {
-    if(con->length_p)
-      *con->length_p=0;
-  }
+
+  if(!str && con->length_p)
+    *con->length_p=0;
   
   raptor_free_stringbuffer(con->sb);
   RAPTOR_FREE(raptor_string_iostream_context, con);
