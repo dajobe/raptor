@@ -142,6 +142,7 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
                                      xml_writer->error_handler,
                                      xml_writer->error_data,
                                      xml_writer->depth);
+  raptor_namespaces_end_for_depth(xml_writer->nstack, xml_writer->depth);
 }
 
 
