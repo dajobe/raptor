@@ -85,6 +85,10 @@ struct raptor_set_s
    * or in the code: size * 1000 < load_factor * capacity
    */
   int load_factor;
+#ifdef RAPTOR_DEBUG
+  int hits;
+  int misses;
+#endif
 };
 
 
@@ -335,8 +339,16 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
   node=raptor_set_find_node(set, item, item_len, hash);
 
   /* if already there, error */
-  if(node)
+  if(node) {
+#ifdef RAPTOR_DEBUG
+    set->misses++;
+#endif
     return 1;
+  }
+
+#ifdef RAPTOR_DEBUG
+  set->hits++;
+#endif
   
   /* always a new node */
 
@@ -375,10 +387,15 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
 }
 
 
+#ifdef RAPTOR_DEBUG
+void
+raptor_set_stats_print(raptor_set* set, FILE *stream) {
+  fprintf(stream, "hits: %d misses: %d\n", set->hits, set->misses);
+}
+#endif
 
 
 #ifdef STANDALONE
-
 
 /* one more prototype */
 int main(int argc, char *argv[]);
@@ -431,6 +448,8 @@ if(rc) {
       exit(1);
     }
   }
+
+  raptor_set_stats_print(set, stderr);
 
   fprintf(stderr, "%s: Freeing set\n", program);
   raptor_free_set(set);
