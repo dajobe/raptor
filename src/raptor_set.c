@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -49,24 +49,31 @@
  * The only methods needed here are:
  *  Create Set
  *  Destroy Set
- *  Check an ID present add it if not, return if added/not
+ *  Check a (base, ID) pair present add it if not, return if added/not
  *
  */
 
-struct raptor_set_node_s
+struct raptor_id_set_node_s
 {
-  struct raptor_set_node_s* next;
+  struct raptor_id_set_node_s* next;
   char *item;
   size_t item_len;
   unsigned long hash;
 };
-typedef struct raptor_set_node_s raptor_set_node;
+typedef struct raptor_id_set_node_s raptor_id_set_node;
 
 
-struct raptor_set_s
+struct raptor_base_id_set_s
 {
+  /* The base URI of this set of IDs */
+  raptor_uri *uri;
+  
+  /* neighbour ID sets */
+  struct raptor_base_id_set_s* prev;
+  struct raptor_base_id_set_s* next;
+
   /* An array pointing to a list of nodes (buckets) */
-  raptor_set_node** nodes;
+  raptor_id_set_node** nodes;
 
   /* this many buckets used (out of capacity) */
   int size;
@@ -80,6 +87,15 @@ struct raptor_set_s
    * or in the code: size * 1000 < load_factor * capacity
    */
   int load_factor;
+};
+typedef struct raptor_base_id_set_s raptor_base_id_set;
+
+
+struct raptor_id_set_s
+{
+  /* start of sets, 1 per base URI */
+  struct raptor_base_id_set_s* first;
+
 #ifdef RAPTOR_DEBUG
   int hits;
   int misses;
@@ -88,16 +104,16 @@ struct raptor_set_s
 
 
 /* default load_factor out of 1000 */
-static const int raptor_set_default_load_factor=750;
+static const int raptor_id_set_default_load_factor=750;
 
 /* starting capacity - MUST BE POWER OF 2 */
-static const int raptor_set_initial_capacity=8;
+static const int raptor_id_set_initial_capacity=8;
 
 
 /* prototypes for local functions */
-static raptor_set_node* raptor_set_find_node(raptor_set* set, char *item, size_t item_len, unsigned long hash);
-static void raptor_free_set_node(raptor_set_node* node);
-static int raptor_set_expand_size(raptor_set* set);
+static raptor_id_set_node* raptor_base_id_set_find_node(raptor_base_id_set* set, char *item, size_t item_len, unsigned long hash);
+static void raptor_free_id_set_node(raptor_id_set_node* node);
+static int raptor_base_id_set_expand_size(raptor_base_id_set* set);
 
 
 /*
@@ -133,24 +149,24 @@ static int raptor_set_expand_size(raptor_set* set);
 
 
 /**
- * raptor_set_find_node - Find the node for the given item with optional hash
+ * raptor_id_set_find_node - Find the node for the given item with optional hash
  * @set: the memory set context
  * @item: item string
  * @item_len: item string length
  * @hash: hash value or 0 if it should be computed here
  * 
- * Return value: &raptor_set_node of content or NULL on failure
+ * Return value: &raptor_id_set_node of content or NULL on failure
  **/
-static raptor_set_node*
-raptor_set_find_node(raptor_set* set, 
-                     char *item, size_t item_len,
-                     unsigned long hash) 
+static raptor_id_set_node*
+raptor_base_id_set_find_node(raptor_base_id_set* base, 
+                             char *item, size_t item_len,
+                             unsigned long hash) 
 {
-  raptor_set_node* node;
+  raptor_id_set_node* node;
   int bucket;
 
   /* empty set */
-  if(!set->capacity)
+  if(!base->capacity)
     return NULL;
 
   if(!hash)
@@ -158,10 +174,10 @@ raptor_set_find_node(raptor_set* set,
   
 
   /* find slot in table */
-  bucket=hash & (set->capacity - 1);
+  bucket=hash & (base->capacity - 1);
 
   /* check if there is a list present */ 
-  node=set->nodes[bucket];
+  node=base->nodes[bucket];
   if(!node)
     /* no list there */
     return NULL;
@@ -178,52 +194,52 @@ raptor_set_find_node(raptor_set* set,
 
 
 static void
-raptor_free_set_node(raptor_set_node* node) 
+raptor_free_id_set_node(raptor_id_set_node* node) 
 {
   if(node->item)
     RAPTOR_FREE(cstring, node->item);
-  RAPTOR_FREE(raptor_set_node, node);
+  RAPTOR_FREE(raptor_id_set_node, node);
 }
 
 
 static int
-raptor_set_expand_size(raptor_set* set) {
+raptor_base_id_set_expand_size(raptor_base_id_set* base) {
   int required_capacity=0;
-  raptor_set_node **new_nodes;
+  raptor_id_set_node **new_nodes;
   int i;
 
-  if (set->capacity) {
+  if (base->capacity) {
     /* big enough */
-    if((1000 * set->items) < (set->load_factor * set->capacity))
+    if((1000 * base->items) < (base->load_factor * base->capacity))
       return 0;
     /* grow set (keeping it a power of two) */
-    required_capacity=set->capacity << 1;
+    required_capacity=base->capacity << 1;
   } else {
-    required_capacity=raptor_set_initial_capacity;
+    required_capacity=raptor_id_set_initial_capacity;
   }
 
   /* allocate new table */
-  new_nodes=(raptor_set_node**)RAPTOR_CALLOC(raptor_set_nodes, 
-                                             required_capacity,
-                                             sizeof(raptor_set_node*));
+  new_nodes=(raptor_id_set_node**)RAPTOR_CALLOC(raptor_id_set_nodes, 
+                                                required_capacity,
+                                                sizeof(raptor_id_set_node*));
   if(!new_nodes)
     return 1;
 
 
   /* it is a new set empty set - we are done */
-  if(!set->size) {
-    set->capacity=required_capacity;
-    set->nodes=new_nodes;
+  if(!base->size) {
+    base->capacity=required_capacity;
+    base->nodes=new_nodes;
     return 0;
   }
   
 
-  for(i=0; i<set->capacity; i++) {
-    raptor_set_node *node=set->nodes[i];
+  for(i=0; i<base->capacity; i++) {
+    raptor_id_set_node *node=base->nodes[i];
       
     /* walk all attached nodes */
     while(node) {
-      raptor_set_node *next;
+      raptor_id_set_node *next;
       int bucket;
 
       next=node->next;
@@ -237,101 +253,184 @@ raptor_set_expand_size(raptor_set* set) {
   }
 
   /* now free old table */
-  RAPTOR_FREE(raptor_set_nodes, set->nodes);
+  RAPTOR_FREE(raptor_id_set_nodes, base->nodes);
 
   /* attach new one */
-  set->capacity=required_capacity;
-  set->nodes=new_nodes;
+  base->capacity=required_capacity;
+  base->nodes=new_nodes;
 
   return 0;
 }
 
 
 
-/* functions implementing the set api */
+/* functions implementing the ID set api */
 
 /**
- * raptor_new_set - Create a new set
- * @set: &raptor set
- * @context: memory set contxt
+ * raptor_new_id_set - Create a new ID set
  * 
  * Return value: non 0 on failure
  **/
-raptor_set*
-raptor_new_set(void) 
+raptor_id_set*
+raptor_new_id_set(void) 
 {
-  raptor_set* set=(raptor_set*)RAPTOR_CALLOC(raptor_set, 1, sizeof(raptor_set));
+  raptor_id_set* set=(raptor_id_set*)RAPTOR_CALLOC(raptor_id_set, 1, 
+                                                   sizeof(raptor_id_set));
   if(!set)
     return NULL;
-
-  set->load_factor=raptor_set_default_load_factor;
-  if(raptor_set_expand_size(set)) {
-    RAPTOR_FREE(raptor_set, set);
-    set=NULL;
-  }
+  
   return set;
 }
 
 
 /**
- * raptor_free_set - Destroy a set
- * @context: memory set context
- * 
- * Return value: non 0 on failure
+ * raptor_free_base_id_set - Destroy raptor_base_id_set
+ * @set: &raptor_id_set
  **/
-int
-raptor_free_set(raptor_set *set) 
+static void
+raptor_free_base_id_set(raptor_base_id_set *base) 
 {
-  if(set->nodes) {
+  if(base->nodes) {
     int i;
   
-    for(i=0; i<set->capacity; i++) {
-      raptor_set_node *node=set->nodes[i];
+    for(i=0; i<base->capacity; i++) {
+      raptor_id_set_node *node=base->nodes[i];
       
       /* this entry is used */
       if(node) {
-	raptor_set_node *next;
+	raptor_id_set_node *next;
 	/* free all attached nodes */
 	while(node) {
 	  next=node->next;
-	  raptor_free_set_node(node);
+	  raptor_free_id_set_node(node);
 	  node=next;
 	}
       }
     }
-    RAPTOR_FREE(raptor_set_nodes, set->nodes);
+    RAPTOR_FREE(raptor_id_set_nodes, base->nodes);
   }
 
-  RAPTOR_FREE(raptor_set, set);
+  if(base->uri)
+    raptor_free_uri(base->uri);
 
-  return 0;
+  RAPTOR_FREE(raptor_base_id_set, base);
+
+  return;
 }
 
 
 
 /**
- * raptor_set_add: - Add an item to the set
- * @context: memory set context
- * @item: pointer to item to store
+ * raptor_free_id_set - Destroy a set
+ * @set: &raptor_id_set
+ *
+ **/
+void
+raptor_free_id_set(raptor_id_set *set) 
+{
+  raptor_base_id_set *base=set->first;
+  while(base) {
+    raptor_base_id_set *next=base->next;
+    raptor_free_base_id_set(base);
+    base=next;
+  }
+}
+
+
+
+/**
+ * raptor_id_set_add: - Add an item to the set
+ * @set: &raptor_id_set
+ * @base_uri: base &raptor_uri of identifier
+ * @id: identifier name
+ * @id_len: length of identifier
  * 
  * Return value: <0 on failure, 0 on success, 1 if already present
  **/
 int
-raptor_set_add(raptor_set* set, char *item, size_t item_len)
+raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
+                  const unsigned char *id, size_t id_len)
 {
-  raptor_set_node *node;
+  raptor_base_id_set *base;
+  unsigned char *base_uri_string;
+  size_t base_uri_string_len;
+  size_t item_len;
+  unsigned char *item;
+
+  raptor_id_set_node *node;
   unsigned long hash;
   char *new_item=NULL;
   int bucket= (-1);
 
-  /* ensure there is enough space in the set */
-  if (raptor_set_expand_size(set))
+  if(!base_uri || !id || !id_len)
     return -1;
+
+  base=set->first;
+  while(base) {
+    if(raptor_uri_equals(base->uri, base_uri))
+      break;
+    base=base->next;
+  }
+
+  if(!base) {
+    /* a set for this base_uri not found */
+    base=(raptor_base_id_set*)RAPTOR_CALLOC(raptor_base_id_set, 1, 
+                                            sizeof(raptor_base_id_set));
+    if(!base)
+      return -1;
+
+    base->load_factor=raptor_id_set_default_load_factor;
+    if(raptor_base_id_set_expand_size(base)) {
+      RAPTOR_FREE(raptor_base_id_set, base);
+      return -1;
+    }
+
+    base->uri=raptor_uri_copy(base_uri);
+
+    /* Add to the start of the list */
+    if(set->first)
+      set->first->prev=base;
+    /* base->prev=NULL; */
+    base->next=set->first;
+
+    set->first=base;
+  } else {
+    /* If not at the start of the list, move there */
+    if(base != set->first) {
+      /* remove from the list */
+      base->prev->next=base->next;
+      if(base->next)
+        base->next->prev=base->prev;
+      /* add at the start of the list */
+      set->first->prev=base;
+      base->prev=NULL;
+      base->next=set->first;
+    }
+  }
+  
+  
+  
+  /* ensure there is enough space in the set */
+  if (raptor_base_id_set_expand_size(base))
+    return -1;
+
+  /* Storing ID + ' ' + base-uri-string + '\0' */
+  base_uri_string=raptor_uri_as_counted_string(base_uri, &base_uri_string_len);
+  item_len=id_len+1+strlen((const char*)base_uri_string)+1;
+
+  item=(unsigned char*)RAPTOR_MALLOC(cstring, item_len);
+  if(!item)
+    return 1;
+
+  strcpy(item, (const char*)id);
+  item[id_len]=' ';
+  strcpy(item+id_len+1, (const char*)base_uri_string); /* strcpy for end '\0' */
+  
 
   ONE_AT_A_TIME_SET(hash, (unsigned char*)item, item_len);
   
   /* find node for item */
-  node=raptor_set_find_node(set, item, item_len, hash);
+  node=raptor_base_id_set_find_node(base, item, item_len, hash);
 
   /* if already there, error */
   if(node) {
@@ -347,11 +446,11 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
   
   /* always a new node */
 
-  bucket=hash & (set->capacity - 1);
+  bucket=hash & (base->capacity - 1);
   
   /* allocate new node */
-  node=(raptor_set_node*)RAPTOR_CALLOC(raptor_set_node, 1,
-                                       sizeof(raptor_set_node));
+  node=(raptor_id_set_node*)RAPTOR_CALLOC(raptor_id_set_node, 1,
+                                          sizeof(raptor_id_set_node));
   if(!node)
     return 1;
   
@@ -360,7 +459,7 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
   /* allocate item for new node */
   new_item=(char*)RAPTOR_MALLOC(cstring, item_len);
   if(!new_item) {
-    RAPTOR_FREE(raptor_set_node, node);
+    RAPTOR_FREE(raptor_id_set_node, node);
     return -1;
   }
   
@@ -369,14 +468,16 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
   node->item=new_item;
   node->item_len=item_len;
 
-  node->next=set->nodes[bucket];
-  set->nodes[bucket]=node;
+  node->next=base->nodes[bucket];
+  base->nodes[bucket]=node;
   
-  set->items++;
+  base->items++;
 
   /* Only increase bucket count use when previous value was NULL */
   if(!node->next)
-    set->size++;
+    base->size++;
+
+  RAPTOR_FREE(cstring, item);
 
   return 0;
 }
@@ -384,7 +485,7 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
 
 #ifdef RAPTOR_DEBUG
 void
-raptor_set_stats_print(raptor_set* set, FILE *stream) {
+raptor_id_set_stats_print(raptor_id_set* set, FILE *stream) {
   fprintf(stream, "set hits: %d misses: %d\n", set->hits, set->misses);
 }
 #endif
@@ -401,12 +502,17 @@ main(int argc, char *argv[])
 {
   const char *program=argv[0];
   char *items[8] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", NULL };
-  raptor_set *set;
+  raptor_id_set *set;
+  raptor_uri *base_uri;
   int i=0;
   
+  raptor_init();
+  
+  base_uri=raptor_new_uri("http://example.org/base#");
+
   fprintf(stderr, "%s: Creating set\n", program);
 
-  set=raptor_new_set();
+  set=raptor_new_id_set();
   if(!set) {
     fprintf(stderr, "%s: Failed to create set\n", program);
     exit(1);
@@ -418,7 +524,7 @@ main(int argc, char *argv[])
 
     fprintf(stderr, "%s: Adding set item '%s'\n", program, items[i]);
   
-    rc=raptor_set_add(set, items[i], len);
+    rc=raptor_id_set_add(set, base_uri, items[i], len);
 if(rc) {
       fprintf(stderr, "%s: Adding set item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
@@ -432,7 +538,7 @@ if(rc) {
 
     fprintf(stderr, "%s: Adding duplicate set item '%s'\n", program, items[i]);
 
-    rc=raptor_set_add(set, items[i], len);
+    rc=raptor_id_set_add(set, base_uri, items[i], len);
     if(rc <= 0) {
       fprintf(stderr, "%s: Adding duplicate set item %d '%s' succeeded, should have failed, returning error %d\n",
               program, i, items[i], rc);
@@ -441,12 +547,16 @@ if(rc) {
   }
 
 #ifdef RAPTOR_DEBUG
-  raptor_set_stats_print(set, stderr);
+  raptor_id_set_stats_print(set, stderr);
 #endif
 
   fprintf(stderr, "%s: Freeing set\n", program);
-  raptor_free_set(set);
+  raptor_free_id_set(set);
 
+  raptor_free_uri(base_uri);
+  
+  raptor_finish();
+  
   /* keep gcc -Wall happy */
   return(0);
 }
