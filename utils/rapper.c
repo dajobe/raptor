@@ -331,7 +331,7 @@ main(int argc, char *argv[])
     puts("\nMain options:");
     puts(HELP_TEXT(h, "help            ", "Print this help, then exit"));
     puts(HELP_TEXT(i, "input FORMAT    ", "Set input format to one of:"));
-    puts("    'rdfxml'                RDF/XML (default)\n    'ntriples'              N-Triples\n    'turtle'         Turtle\n    'rss-tag-soup'          RSS tag soup");
+    puts("    'rdfxml'                RDF/XML (default)\n    'ntriples'              N-Triples\n    'turtle'                Turtle\n    'rss-tag-soup'          RSS tag soup");
     puts(HELP_TEXT(o, "output FORMAT   ", "Set output format to one of:"));
     puts("    'simple'                A simple format (default)\n    'ntriples'              N-Triples");
     puts(HELP_TEXT(m, "mode MODE       ", "Set parser mode - 'lax' (default) or 'strict'"));
