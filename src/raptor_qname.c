@@ -91,7 +91,7 @@
  * to look up the name and find the namespace and generate the
  * URI of the qname.
  * 
- * Return value: 
+ * Return value: a new &raptor_qname object or NULL on failure
  **/
 raptor_qname*
 raptor_new_qname(raptor_namespace_stack *nstack, 
@@ -216,6 +216,71 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     qname->uri=uri;
   }
 
+
+  return qname;
+}
+
+
+/**
+ * raptor_new_qname_from_namespace_local_name - Create a new XML qname
+ * @ns: namespace of qname
+ * @local_name: element or attribute name
+ * @value: attribute value (else is an element)
+ * 
+ * Create a new qname from the namespace and local element/attribute name,
+ * with optional (attribute) value.
+ * 
+ * Return value: a new &raptor_qname object or NULL on failure
+ **/
+raptor_qname*
+raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, 
+                                           const unsigned char *local_name,
+                                           const unsigned char *value)
+{
+  raptor_qname* qname;
+  const unsigned char *p;
+  unsigned char* new_name;
+  int local_name_length=strlen((char*)local_name);
+
+  if(!ns || !local_name)
+    return NULL;
+
+  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, sizeof(raptor_qname), 1);
+  if(!qname)
+    return NULL;
+
+  if(value) {
+    int value_length=strlen((char*)value);
+    unsigned char* new_value=(unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+
+    if(!new_value) {
+      RAPTOR_FREE(raptor_qname, qname);
+      return NULL;
+    } 
+    strcpy((char*)new_value, (char*)value);
+    qname->value=new_value;
+    qname->value_length=value_length;
+  }
+
+  new_name=(unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+  if(!new_name) {
+    raptor_free_qname(qname);
+    return NULL;
+  }
+  strcpy((char*)new_name, (char*)local_name);
+  qname->local_name=new_name;
+  qname->local_name_length=local_name_length;
+
+  qname->nspace=ns;
+
+  qname->uri=raptor_namespace_get_uri(qname->nspace);
+  if(qname->uri)
+    qname->uri=raptor_new_uri_from_uri_local_name(qname->uri, new_name);
+  
+  if(!qname->uri) {
+    raptor_free_qname(qname);
+    return NULL;
+  }
 
   return qname;
 }
