@@ -25,6 +25,8 @@ ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf \
 22-rdf-syntax-ns.rdf
 
+RDF_BAD_TEST_FILES=bad-00.rdf
+
 RDF_OUT_FILES=ex-00.out ex-01.out ex-02.out ex-03.out ex-04.out ex-05.out \
 ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
 ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out ex-19.out \
@@ -46,6 +48,7 @@ RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
 	$(RDF_TEST_ANSWER_FILES) \
+	$(RDF_BAD_TEST_FILES) \
 	$(RDF_OUT_FILES) \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES)
@@ -68,6 +71,20 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	    echo ok; \
 	  else \
 	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res ; \
+	done; \
+	for test in $(RDF_BAD_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  baseuri=$(BASE_URI)$$test; \
+	  echo -n "Checking $$test "; \
+	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  status=$$?; \
+	  if test $$status ; then \
+	    echo FAILED - parsing should have failed but returned; \
+	    cat $$name.res; result=1; \
+	  else \
+	    echo ok; \
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
