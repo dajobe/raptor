@@ -1282,6 +1282,8 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
   if(suffix) {
     if(!strcmp((const char*)suffix, "rss"))
       score=7;
+    if(!strcmp((const char*)suffix, "atom"))
+      score=5;
     if(!strcmp((const char*)suffix, "xml"))
       score=4;
   }
@@ -1291,7 +1293,11 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
       score+=5;
     else if(!suffix && strstr((const char*)identifier, "rss"))
       score+=4;
+    else if(!suffix && strstr((const char*)identifier, "atom"))
+      score+=4;
     else if(strstr((const char*)identifier, "rss.xml"))
+      score+=4;
+    else if(strstr((const char*)identifier, "atom.xml"))
       score+=4;
   }
   
