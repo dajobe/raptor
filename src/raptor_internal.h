@@ -46,6 +46,7 @@ extern "C" {
 
 #define RAPTOR_MALLOC(type, size) malloc(size)
 #define RAPTOR_CALLOC(type, nmemb, size) calloc(nmemb, size)
+#define RAPTOR_REALLOC(type, ptr, size) realloc(ptr, size)
 #define RAPTOR_FREE(type, ptr)   free((void*)ptr)
 
 #ifdef RAPTOR_DEBUG
