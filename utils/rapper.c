@@ -407,13 +407,13 @@ main(int argc, char *argv[])
   raptor_set_error_handler(rdf_parser, rdf_parser, rdfdump_error_handler);
   raptor_set_warning_handler(rdf_parser, rdf_parser, rdfdump_warning_handler);
   
+  raptor_set_parser_strict(rdf_parser, strict_mode);
+  
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
   if(assume)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
 
-  raptor_set_parser_strict(rdf_parser, strict_mode);
-  
   if(!quiet) {
     if(base_uri_string)
       fprintf(stdout, "%s: Parsing URI %s with base URI %s\n", program,
