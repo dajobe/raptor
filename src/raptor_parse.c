@@ -389,13 +389,13 @@ static const struct {
   const char * const name;            /* attribute name */
   const raptor_identifier_type type;  /* statement value */
 } rdf_attr_info[]={
-  { "about",           RAPTOR_IDENTIFIER_TYPE_NONE     },
-  { "aboutEach",       RAPTOR_IDENTIFIER_TYPE_NONE     },
-  { "aboutEachPrefix", RAPTOR_IDENTIFIER_TYPE_NONE     },
-  { "ID",              RAPTOR_IDENTIFIER_TYPE_NONE     },
-  { "bagID",           RAPTOR_IDENTIFIER_TYPE_NONE     },
-  { "resource",        RAPTOR_IDENTIFIER_TYPE_NONE     },
-  { "parseType",       RAPTOR_IDENTIFIER_TYPE_NONE     },
+  { "about",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "aboutEach",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "aboutEachPrefix", RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "ID",              RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "bagID",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "resource",        RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "parseType",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
   { "type",            RAPTOR_IDENTIFIER_TYPE_RESOURCE },
   { "value",           RAPTOR_IDENTIFIER_TYPE_LITERAL  }
 };
@@ -2527,23 +2527,38 @@ raptor_print_statement_detailed(const raptor_statement * statement,
 {
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fprintf(stream, "[%s, ", (const char*)statement->subject);
-  else
+  else {
+#ifdef RAPTOR_DEBUG
+    if(!statement->subject)
+      LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL subject URI\n");
+#endif
     fprintf(stream, "[%s, ",
             RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
+  }
 
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
     fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate));
-  else
+  else {
+#ifdef RAPTOR_DEBUG
+    if(!statement->predicate)
+      LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL predicate URI\n");
+#endif
     fputs(RAPTOR_URI_AS_STRING((raptor_uri*)statement->predicate), stream);
+  }
 
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
      statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
     fprintf(stream, ", \"%s\"]",  (const char*)statement->object);
   else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fprintf(stream, ", %s]", (const char*)statement->object);
-  else
+  else {
+#ifdef RAPTOR_DEBUG
+    if(!statement->object)
+      LIBRDF_FATAL1(raptor_generate_statement, "Statement has NULL object URI\n");
+#endif
     fprintf(stream, ", %s]", 
             RAPTOR_URI_AS_STRING((raptor_uri*)statement->object));
+  }
 }
 
 
@@ -2852,6 +2867,10 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
   dest->uri=new_uri;
   dest->id=new_id;
 
+  dest->type=src->type;
+  dest->uri_source=src->uri_source;
+  dest->ordinal=src->ordinal;
+
   return 0;
 }
 
@@ -2975,7 +2994,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     raptor_uri *property_uri, *object_uri;
     raptor_identifier_type object_type;
     
-    if(!value || rdf_attr_info[i].type == RAPTOR_IDENTIFIER_TYPE_NONE)
+    if(!value || rdf_attr_info[i].type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
       continue;
 
 #ifdef LIBRDF_INTERNAL
@@ -3171,15 +3190,15 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
-          element->subject.uri=(void*)raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
+          element->subject.uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_aboutEach]) {
-          element->subject.uri=(void*)raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
+          element->subject.uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
-          element->subject.uri=(void*)raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
+          element->subject.uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH_PREFIX;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->parent && 
@@ -3258,7 +3277,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                 RAPTOR_FREE_URI(element->parent->object.uri);
               }
               
-              element->parent->object.uri=(void*)raptor_copy_uri(uriList);
+              element->parent->object.uri=raptor_copy_uri(uriList);
+              element->parent->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+              element->parent->object.uri_source=RAPTOR_URI_SOURCE_URI;
             } else {
               /* <tail_uri> daml:rest <uriListRest> */
               raptor_generate_statement(rdf_parser, 
