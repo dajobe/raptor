@@ -362,8 +362,8 @@ typedef struct {
 
 
 /* These are used in the RDF/XML syntax as attributes, not
- * elements and are mostly not concepts in the RDF model (except for
- * the type and value attributes which are properties too).
+ * elements and are mostly not concepts in the RDF model 
+ * except where indicated - either rdf:Property or rdfs:Class
  */
 typedef enum {
   RDF_ATTR_about           = 0, /* value of rdf:about attribute */
@@ -373,10 +373,20 @@ typedef enum {
   RDF_ATTR_bagID           = 4, /* " rdf:bagID */
   RDF_ATTR_resource        = 5, /* " rdf:resource */
   RDF_ATTR_parseType       = 6, /* " rdf:parseType */
+  /* rdf:Property-s */
   RDF_ATTR_type            = 7, /* " rdf:type -- a property in RDF Model */
   RDF_ATTR_value           = 8, /* " rdf:value -- a property in RDF model */
+  RDF_ATTR_subject         = 9, /* " rdf:subject -- a property in RDF model */
+  RDF_ATTR_predicate       = 10, /* " rdf:predicate -- a property in RDF model */
+  RDF_ATTR_object          = 11, /* " rdf:object -- a property in RDF model */
+  /* rdfs:Class-s */
+  RDF_ATTR_Seq             = 12, /* " rdf:Seq -- a class in RDF Model */
+  RDF_ATTR_Bag             = 13, /* " rdf:Bag -- a class in RDF model */
+  RDF_ATTR_Alt             = 14, /* " rdf:Alt -- a class in RDF model */
+  RDF_ATTR_Statement       = 15, /* " rdf:Statement -- a class in RDF model */
+  RDF_ATTR_Property        = 16, /* " rdf:Property -- a class in RDF model */
 
-  RDF_ATTR_LAST            = RDF_ATTR_value
+  RDF_ATTR_LAST            = RDF_ATTR_Property
 } rdf_attr;
 
 
@@ -400,9 +410,24 @@ static const struct {
   { "bagID",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
   { "resource",        RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
   { "parseType",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  /* rdf:Property-s */
   { "type",            RAPTOR_IDENTIFIER_TYPE_RESOURCE },
-  { "value",           RAPTOR_IDENTIFIER_TYPE_LITERAL  }
+  { "value",           RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "subject",         RAPTOR_IDENTIFIER_TYPE_LITERAL  }, /* Useless */
+  { "predicate",       RAPTOR_IDENTIFIER_TYPE_LITERAL  }, /* Useless */
+  { "object",          RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  /* rdfs:Class-s */
+  { "Seq",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "Bag",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "Alt",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "Statement",       RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "Property",        RAPTOR_IDENTIFIER_TYPE_LITERAL  }
 };
+
+/* In above 'Useless' indicates it generates parts of a reified statement
+ * in which in the current RDF model, those parts are not allowed - i.e.
+ * literals in the subject and predicate positions
+ */
 
 
 typedef enum {
