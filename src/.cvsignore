@@ -2,10 +2,13 @@
 *.la
 *.lo
 *.log
+*.nt
+*.rss
 *.rdfs
 *test
 .deps
 .libs
+COPYING.LIB
 ChangeLog*
 Makefile
 Makefile.in
@@ -16,8 +19,6 @@ aclocal.m4
 autom4te.cache
 config.cache
 config.guess
-raptor_config.h
-raptor_config.h.in
 config.log
 config.status
 config.sub
@@ -27,6 +28,7 @@ example?
 install-sh
 libraptor.html
 libtool
+ltmain.sh
 missing
 mkinstalldirs
 not-used
@@ -37,5 +39,7 @@ raptor-src-config
 raptor.pc
 raptor.spec
 raptor_cc.c
+raptor_config.h
+raptor_config.h.in
 stamp-h*
 test*
