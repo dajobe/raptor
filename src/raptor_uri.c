@@ -876,12 +876,12 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   raptor_uri_parse (uri_string, buffer, uri_string_len,
                     &scheme, &authority, &path, &query, &fragment);
 
-  if(!scheme || strcasecmp(scheme, "file")) {
+  if(!scheme || raptor_strcasecmp(scheme, "file")) {
     RAPTOR_FREE(cstring, buffer);
     return NULL;
   }
 
-  if(authority && !strcasecmp(authority, "localhost")) {
+  if(authority && !raptor_strcasecmp(authority, "localhost")) {
     authority=NULL;
   }
 
@@ -968,7 +968,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
  **/
 int
 raptor_uri_is_file_uri(const char* uri_string) {
-  return strncasecmp(uri_string, "file:", 5)==0;
+  return raptor_strncasecmp(uri_string, "file:", 5)==0;
 }
 
 
