@@ -628,7 +628,6 @@ unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, int *l
 /* n3_parser.y and n3_lexer.l */
 typedef struct raptor_n3_parser_s raptor_n3_parser;
 
-int n3_parser_lex(void);
 typedef struct {
   raptor_identifier *subject;
   raptor_identifier *predicate;
@@ -636,7 +635,7 @@ typedef struct {
 } raptor_triple;
 
 /* n3_parser.y */
-int n3_syntax_error(const char *message, ...);
+int n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...);
 
 
 /* Sequence class */
