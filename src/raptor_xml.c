@@ -100,7 +100,6 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 }
 
 
-
 /**
  * raptor_xml_escape_string - return an XML-escaped version a string
  * @string: string to XML escape (UTF-8)
@@ -133,10 +132,11 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * Return value: the number of bytes required / used or 0 on failure.
  **/
 size_t
-raptor_xml_escape_string(raptor_parser *rdf_parser, 
-                         const unsigned char *string, size_t len,
+raptor_xml_escape_string(const unsigned char *string, size_t len,
                          unsigned char *buffer, size_t length,
-                         char quote)
+                         char quote,
+                         raptor_message_handler error_handler,
+                         void *error_data)
 {
   int l;
   int new_len=0;
@@ -152,7 +152,8 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
     if(*p > 0x7f) {
       unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
-        raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
+        if(error_handler)
+          error_handler(error_data, NULL, "Bad UTF-8 encoding.");
         return 0;
       }
     } else {
@@ -319,12 +320,13 @@ main(int argc, char *argv[])
     unsigned char *xml_string;
     int xml_string_len=0;
 
-    xml_string_len=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
-                                            NULL, 0, quote);
+    xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
+                                            NULL, 0, quote, NULL, NULL);
     xml_string=(char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
     
-    xml_string_len=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
-                                            xml_string, xml_string_len, quote);
+    xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
+                                            xml_string, xml_string_len, quote,
+                                            NULL, NULL);
     if(!xml_string) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
               program);
