@@ -37,6 +37,7 @@
 /* Raptor includes */
 #include "raptor.h"
 #include "raptor_internal.h"
+#include "raptor_nfc.h"
 
 
 /*
@@ -688,5 +689,5 @@ raptor_utf8_is_nfc(const unsigned char *input, size_t length)
   if(plain)
     return 1;
   
-  return 1;
+  return raptor_nfc_check(input, length, NULL);
 }
