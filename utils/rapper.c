@@ -106,23 +106,24 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "nsahrqo:wecm:i:v"
+#define GETOPT_STRING "nsaf:hrqo:wecm:i:v"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
 {
   /* name, has_arg, flag, val */
-  {"ntriples", 0, 0, 'n'},
-  {"scan", 0, 0, 's'},
-  {"help", 0, 0, 'h'},
-  {"replace-newlines", 0, 0, 'r'},
-  {"quiet", 0, 0, 'q'},
-  {"output", 1, 0, 'o'},
-  {"ignore-warnings", 0, 0, 'w'},
-  {"ignore-errors", 0, 0, 'e'},
   {"count", 0, 0, 'c'},
-  {"mode", 1, 0, 'm'},
+  {"ignore-errors", 0, 0, 'e'},
+  {"feature", 0, 0, 'f'},
+  {"help", 0, 0, 'h'},
   {"input", 1, 0, 'i'},
+  {"mode", 1, 0, 'm'},
+  {"ntriples", 0, 0, 'n'},
+  {"output", 1, 0, 'o'},
+  {"quiet", 0, 0, 'q'},
+  {"replace-newlines", 0, 0, 'r'},
+  {"scan", 0, 0, 's'},
+  {"ignore-warnings", 0, 0, 'w'},
   {"version", 0, 0, 'v'},
   {NULL, 0, 0, 0}
 };
@@ -185,6 +186,7 @@ main(int argc, char *argv[])
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
+  int feature= -1;
 
   program=argv[0];
   if((p=strrchr(program, '/')))
@@ -219,6 +221,41 @@ main(int argc, char *argv[])
 
       case 'c':
         count=1;
+        break;
+
+      case 'f':
+        if(optarg) {
+          if(!strcmp(optarg, "help")) {
+            int i;
+            
+            fprintf(stderr, "%s: Valid features for `" HELP_ARG(f, feature) "' are:\n", program);
+            for(i=0; 1; i++) {
+              const char *feature_name;
+              const char *feature_label;
+              if(raptor_features_enumerate(i, &feature_name, NULL, &feature_label))
+                break;
+              printf("  %-20s  %s\n", feature_name, feature_label);
+            }
+            exit(0);
+          } else {
+            int i;
+            
+            for(i=0; 1; i++) {
+              const char *feature_name;
+              if(raptor_features_enumerate(i, &feature_name, NULL, NULL))
+                break;
+              if(!strcmp(optarg, feature_name)) {
+                feature=i;
+                break;
+              }
+            }
+            
+            if(feature <0 )
+              fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s -f help' for a list of valid features\n",
+                      program, optarg, program);
+            usage=1;
+          }
+        }
         break;
 
       case 'h':
@@ -354,6 +391,7 @@ main(int argc, char *argv[])
     puts("\nAdditional options:");
     puts(HELP_TEXT(c, "count           ", "Count triples - no output"));
     puts(HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
+    puts(HELP_TEXT(f, "feature FEATURE ", "Set parser feature - use `help' for a list"));
     puts(HELP_TEXT(q, "quiet           ", "No extra information messages"));
     puts(HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
@@ -422,6 +460,9 @@ main(int argc, char *argv[])
   
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
+
+  if(feature >0)
+    raptor_set_feature(rdf_parser, feature, 1);
 
   if(!quiet) {
     if (filename) {
