@@ -113,7 +113,7 @@ EXTRA_DIST=ChangeLog ChangeLog.1 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 libraptor.html rapper.html RELEASE.html \
-LICENSE-2.0.txt \
+LICENSE-2.0.txt NOTICE \
 raptor.rdf.in \
 raptor-config.in raptor-src-config.in \
 autogen.sh \
