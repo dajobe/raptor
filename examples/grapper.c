@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2003-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -53,6 +53,9 @@
 /* Gtk 2.0 */
 #include <gtk/gtk.h>
 
+/* Gconf */
+#include <gconf/gconf.h>
+#include <gconf/gconf-client.h>
 
 /* Qnames button does nothing */
 #undef GRAPPER_QNAMES
@@ -60,7 +63,28 @@
 
 static const char *application_name="Grapper";
 static const char *application_title="Grapper GUI RDF Parser Utility";
-static const char *application_description="GUI RDF parser utility based on the Redland Raptor library";
+static const char *application_description="GUI RDF parser utility based on the Raptor RDF parsing library";
+
+
+/* Top level window */
+static GtkWidget *grapper_window;
+
+
+/* GConf */
+static GConfClient *gconf_client=NULL;
+
+#define GCONF_GRAPPER_NAMESPACE "/apps/grapper"
+
+/* configuration dir listened to */
+static const gchar* gconf_namespace= GCONF_GRAPPER_NAMESPACE;
+
+/* window width key */
+static const gchar* width_gconf_key=(const gchar*) GCONF_GRAPPER_NAMESPACE "/width";
+/* window height key */
+static const gchar* height_gconf_key=(const gchar*) GCONF_GRAPPER_NAMESPACE "/height";
+
+#define MIN_WINDOW_WIDTH 400
+#define MIN_WINDOW_HEIGHT 300
 
 
 typedef struct
@@ -97,6 +121,7 @@ typedef struct
   GtkWidget *triples_frame;
   GtkWidget *errors_frame;
   GtkListStore *errors_store;
+
 } grapper_state;
 
 
@@ -1033,13 +1058,83 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
 
+static void
+grapper_gconfclient_notify(GConfClient* client, guint cnxn_id,
+                           GConfEntry *entry, gpointer user_data)
+{
+  /* grapper_state* state=(grapper_state*)user_data; */
+  GError* err=NULL;
+  int width, height;
+
+  gtk_window_get_size(GTK_WINDOW(grapper_window), &width, &height);
+
+
+  width=gconf_client_get_int(gconf_client, width_gconf_key, &err);
+  if(err) {
+    g_error_free(err);
+    err=NULL;
+    width= -1;
+  } else
+    fprintf(stderr, "gconf width changed to %d\n", width);
+  
+  height=gconf_client_get_int(gconf_client, height_gconf_key, &err);
+  if(err) {
+    g_error_free(err);
+    err=NULL;
+    height= -1;
+  } else
+    fprintf(stderr, "gconf height changed to %d\n", width);
+
+  /* let's not make it too small */
+  if(width < MIN_WINDOW_WIDTH)
+    width = MIN_WINDOW_WIDTH;
+  if(height < MIN_WINDOW_HEIGHT)
+    height = MIN_WINDOW_HEIGHT;
+
+  gtk_window_resize(GTK_WINDOW(grapper_window), width, height);
+}
+
+
+static void
+grapper_gconflient_free(gpointer user_data)
+{
+
+}
+
+
+static gint
+configure_callback(GtkWidget *widget, GdkEventConfigure *event)
+{
+  gint width, height;
+  GError* err=NULL;
+
+  gtk_window_get_size(GTK_WINDOW(grapper_window), &width, &height);
+
+  if(!gconf_client_set_int(gconf_client, width_gconf_key, width, &err)) {
+    fprintf(stderr, "gconf error writing width: %s\n", err->message);
+    g_error_free(err);
+    err=NULL;
+  }
+
+  if(!gconf_client_set_int(gconf_client, height_gconf_key, height, &err)) {
+    fprintf(stderr, "gconf error writing width: %s\n", err->message);
+    g_error_free(err);
+    err=NULL;
+  }
+
+  return FALSE;
+}
+ 
+
 
 int
 main(int argc, char *argv[])
 {
-  GtkWidget *window;
   grapper_state state;
-
+  GError* err=NULL;
+  guint cnxn;
+  int width, height;
+  
   gtk_init (&argc, &argv);
 
   g_set_application_name(application_name);
@@ -1048,17 +1143,52 @@ main(int argc, char *argv[])
   
   memset(&state, 0, sizeof(grapper_state));
   
-  /* create a new window */
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gconf_client=gconf_client_get_default();
 
-  gtk_window_set_title (GTK_WINDOW (window), application_title);
+  cnxn=gconf_client_notify_add(gconf_client, gconf_namespace,
+                               grapper_gconfclient_notify,
+                               (gpointer)&state, /* user data */
+                               grapper_gconflient_free,
+                               &err);
 
-  init_grapper_window(window, &state);
+  /* create the main window */
+  grapper_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-  gtk_widget_set_size_request(window, 400, 300);
+  gtk_window_set_title (GTK_WINDOW(grapper_window), application_title);
+
+  init_grapper_window(grapper_window, &state);
+
+  width=gconf_client_get_int(gconf_client, width_gconf_key, &err);
+  if(err) {
+    fprintf(stderr, "gconf error reading width: %s\n", err->message);
+    g_error_free(err);
+    err=NULL;
+    width= -1;
+  }
+
+  height=gconf_client_get_int(gconf_client, height_gconf_key, &err);
+  if(err) {
+    fprintf(stderr, "gconf error reading height: %s\n", err->message);
+    g_error_free(err);
+    err=NULL;
+    height= -1;
+  }
+
+  /* let's not make it too small */
+  if(width < MIN_WINDOW_WIDTH)
+    width = MIN_WINDOW_WIDTH;
+  if(height < MIN_WINDOW_HEIGHT)
+    height = MIN_WINDOW_HEIGHT;
+  
+  gtk_window_set_default_size(GTK_WINDOW(grapper_window), width, height);
+
+  /* Connect the window resize event to configure_callback */
+  gtk_signal_connect (GTK_OBJECT(grapper_window),
+                      "configure_event",
+                      (GtkSignalFunc)configure_callback, &state);
 
   /* finally make it all visible */
-  gtk_widget_show (window);
+  gtk_widget_show (grapper_window);
 
   if(argc>1) {
     if(!access(argv[1], R_OK)) {
@@ -1077,6 +1207,8 @@ main(int argc, char *argv[])
 
   raptor_finish();
 
+  gconf_client_notify_remove(gconf_client, cnxn);
+  
   return 0;
 }
 
