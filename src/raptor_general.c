@@ -872,7 +872,6 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
       break;
 
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
-      parser->feature_assume_is_rdf=value;
       break;
 
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
@@ -914,7 +913,6 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
 
   /* Initialise default parser mode */
   rdf_parser->feature_scanning_for_rdf_RDF=0;
-  rdf_parser->feature_assume_is_rdf=0;
 
   rdf_parser->feature_allow_non_ns_attributes=!is_strict;
   rdf_parser->feature_allow_other_parseTypes=!is_strict;

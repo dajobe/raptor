@@ -1953,15 +1953,6 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           break;
         }
 
-        /* If cannot assume document is rdf/xml, must have rdf:RDF at root */
-        if(!rdf_parser->feature_assume_is_rdf) {
-          raptor_parser_error(rdf_parser, "Document element rdf:RDF missing.");
-          state=RAPTOR_STATE_SKIPPING;
-          element->child_state=RAPTOR_STATE_SKIPPING;
-          finished=1;
-          break;
-        }
-        
         /* Otherwise the choice of the next state can be made
          * from the current element by the OBJ state
          */
