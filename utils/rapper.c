@@ -338,6 +338,10 @@ main(int argc, char *argv[])
     rc=1;
   } else
     rc=0;
+
+#ifdef RAPTOR_DEBUG
+  raptor_stats_print(rdf_parser, stderr);
+#endif
   raptor_free_parser(rdf_parser);
 
   if(!quiet)
