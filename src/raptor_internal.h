@@ -653,6 +653,9 @@ void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *
 void raptor_serializer_warning(raptor_serializer* serializer, const char *message, ...);
 void raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, va_list arguments);
 
+/* raptor_serialize_rdfxml.c */  
+void raptor_init_serializer_rdfxmla(void);
+  
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(long c);
 int raptor_unicode_is_namechar(long c);

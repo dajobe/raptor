@@ -104,6 +104,8 @@ raptor_init(void)
 #endif
 
   raptor_init_serializer_rdfxml();
+  raptor_init_serializer_rdfxmla();
+  
   raptor_init_serializer_ntriples();
   /* raptor_init_serializer_simple(); */
 

@@ -146,7 +146,10 @@ typedef enum {
   RAPTOR_FEATURE_CHECK_RDF_ID,
   RAPTOR_FEATURE_RELATIVE_URIS,
   RAPTOR_FEATURE_START_URI,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_START_URI
+  RAPTOR_FEATURE_WRITER_AUTO_INDENT,
+  RAPTOR_FEATURE_WRITER_AUTO_EMPTY,
+  RAPTOR_FEATURE_WRITER_INDENT_WIDTH,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITER_INDENT_WIDTH
 } raptor_feature;
 
 
@@ -543,7 +546,11 @@ RAPTOR_API void raptor_xml_writer_raw(raptor_xml_writer* xml_writer, const unsig
 RAPTOR_API void raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
 RAPTOR_API void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str);
 RAPTOR_API void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
-
+RAPTOR_API int raptor_xml_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+RAPTOR_API int raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer, raptor_feature feature, int value);
+RAPTOR_API int raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char *value);
+RAPTOR_API int raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature feature);
+RAPTOR_API const unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature);
 
 #ifdef __cplusplus
 }

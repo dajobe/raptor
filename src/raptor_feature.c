@@ -52,6 +52,7 @@ static struct
    *  1=parserfeature
    *  2=serializer feature
    *  4=string value (else int)
+   *  8=xml writer feature
    */
   int flags;
   const char *name;
@@ -68,7 +69,10 @@ static struct
   { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   , 1, "warnOtherParseTypes", "Warn about unknown rdf:parseType values" },
   { RAPTOR_FEATURE_CHECK_RDF_ID            , 1, "checkRdfID", "Check rdf:ID values for duplicates" },
   { RAPTOR_FEATURE_RELATIVE_URIS           , 2, "relativeURIs", "Write relative URIs wherever possible in serializing." },
-  { RAPTOR_FEATURE_START_URI               , 6, "startURI", "Start URI for serializing to use." }
+  { RAPTOR_FEATURE_START_URI               , 6, "startURI", "Start URI for serializing to use." },
+  { RAPTOR_FEATURE_WRITER_AUTO_INDENT      , 8, "autoIndent", "Automatically indent elements." },
+  { RAPTOR_FEATURE_WRITER_AUTO_EMPTY       , 8, "autoEmpty", "Automatically detect and abbreviate empty elements." },
+  { RAPTOR_FEATURE_WRITER_INDENT_WIDTH     , 8, "indentWidth", "Number of spaces to indent." }
 };
 
 

@@ -1,3 +1,29 @@
+2005-02-01  Steve Shepard <steveshep@gmail.com>
+
+	* Makefile.am: Added dependencies for rdfdiff.c and
+	raptor_serializer_rdfxmla.c
+
+	* raptor.h: Added RAPTOR_FEATURE enums and api for new xml_writer
+	features that support auto-indentation and auto-empty element
+	detection.
+
+	* raptor_feature.c: Added support for new xml_writer
+	auto-indentation and auto-empty features.
+
+	* raptor_general.c: Initialization of rdfxml-abbrev serializer.
+
+	* raptor_internal.h: Prototype for void
+	raptor_init_serializer_rdfxmla(void);
+
+	* raptor_serialie_rdfxmla.c: New rdfxml raptor_serializer that
+	handles some of the abbreviations specified by "RDF/XML Syntax
+	Specification (Revised)."
+
+	* rdfdiff.c: New tool to diff rdf files.
+
+	* tests/Makefile.am: Added tests for rdfdiff and the rdfxml-abbrev
+	serialization format.
+	
 2005-01-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 	* rapper.1: mention what RSS tag soup can do
 

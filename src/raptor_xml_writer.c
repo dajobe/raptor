@@ -52,6 +52,20 @@
 
 #ifndef STANDALONE
 
+#define XML_WRITER_AUTO_INDENT  0x01
+#define XML_WRITER_AUTO_EMPTY   0x02
+
+#define AUTO_INDENT(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_INDENT) != 0)
+#define AUTO_EMPTY(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_EMPTY) != 0)
+
+#define FLUSH_CLOSE_BRACKET(xml_writer)                         \
+  if ((xml_writer->flags & XML_WRITER_AUTO_EMPTY) &&            \
+      xml_writer->current_element &&                            \
+      !(xml_writer->current_element->content_cdata_seen ||      \
+        xml_writer->current_element->content_element_seen)) {   \
+    raptor_iostream_write_byte(xml_writer->iostr, '>');         \
+  }
+
 
 /* Define this for far too much output */
 #undef RAPTOR_DEBUG_CDATA
@@ -76,8 +90,253 @@ struct raptor_xml_writer_s {
 
   /* outputting to this iostream */
   raptor_iostream *iostr;
+
+  /* Formatting flags */
+  int flags;
+
+  /* indentation per level if formatting */
+  int indent;
+  
 };
 
+#define NUM_SPACES 16
+
+/* helper functions */
+static int
+raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
+{
+  static unsigned char spaces[NUM_SPACES];
+  static int spaces_inited = 0;
+
+  if (!spaces_inited) {
+    int i;
+    for (i = 0; i < NUM_SPACES; i++)
+      spaces[i] = ' ';
+    
+    spaces_inited = 1;
+  }
+  
+  int num_spaces = xml_writer->depth * xml_writer->indent;
+
+  raptor_iostream_write_byte(xml_writer->iostr, '\n');
+  
+  while (num_spaces > 0) {
+
+    int count = (num_spaces > NUM_SPACES) ? NUM_SPACES : num_spaces;
+
+    raptor_iostream_write_counted_string(xml_writer->iostr, spaces, count);    
+
+    num_spaces -= count;
+  }
+
+  if(xml_writer->current_element)
+    xml_writer->current_element->content_cdata_seen=1;
+
+  return 0;
+  
+}
+
+struct nsd
+{
+  const raptor_namespace *nspace;
+  unsigned char *declaration;
+  size_t length;
+};
+
+
+static int
+raptor_nsd_compare(const void *a, const void *b) 
+{
+  struct nsd* nsd_a=(struct nsd*)a;
+  struct nsd* nsd_b=(struct nsd*)b;
+  return strcmp((const char*)nsd_a->declaration, (const char*)nsd_b->declaration);
+}
+
+static int
+raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
+                                        raptor_xml_element *element,
+                                        raptor_namespace_stack *nstack,
+                                        raptor_simple_message_handler error_handler,
+                                        void *error_data,
+                                        int auto_empty,
+                                        int depth)
+{
+  struct nsd *nspace_declarations=NULL;
+  size_t nspace_declarations_count=0;  
+  unsigned int i;
+
+  /* max is 1 per element and 1 for each attribute + size of declared */
+  if(nstack) {
+    int nspace_max_count=element->attribute_count+1;
+    if(element->declared_nspaces)
+      nspace_max_count += raptor_sequence_size(element->declared_nspaces);
+    
+    nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count, sizeof(struct nsd));
+  }
+
+  if(element->name->nspace) {
+    if(nstack && !raptor_namespaces_namespace_in_scope(nstack, element->name->nspace)) {
+      nspace_declarations[0].declaration=
+        raptor_namespaces_format(element->name->nspace,
+                                 &nspace_declarations[0].length);
+      nspace_declarations[0].nspace=element->name->nspace;
+      nspace_declarations_count++;
+    }
+  }
+
+  if (element->attributes) {
+    for(i=0; i < element->attribute_count; i++) {
+      /* qname */
+      if(element->attributes[i]->nspace) {
+        if(nstack && 
+           !raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
+          /* not in scope and not same as element (so already going to be declared)*/
+          unsigned int j;
+          int declare_me=1;
+          
+          /* check it wasn't an earlier declaration too */
+          for (j=0; j < nspace_declarations_count; j++)
+            if(nspace_declarations[j].nspace == element->attributes[j]->nspace) {
+              declare_me=0;
+              break;
+            }
+            
+          if(declare_me) {
+            nspace_declarations[nspace_declarations_count].declaration=
+              raptor_namespaces_format(element->attributes[i]->nspace,
+                                       &nspace_declarations[nspace_declarations_count].length);
+            nspace_declarations[nspace_declarations_count].nspace=element->attributes[i]->nspace;
+            nspace_declarations_count++;
+          }
+        }
+      }
+    }
+  }
+
+  if(nstack && element->declared_nspaces &&
+     raptor_sequence_size(element->declared_nspaces) > 0) {
+    for(i=0; i< (unsigned int)raptor_sequence_size(element->declared_nspaces); i++) {
+      raptor_namespace* nspace=(raptor_namespace*)raptor_sequence_get_at(element->declared_nspaces, i);
+      unsigned int j;
+      int declare_me=1;
+      
+      /* check it wasn't an earlier declaration too */
+      for (j=0; j < nspace_declarations_count; j++)
+        if(nspace_declarations[j].nspace == nspace) {
+          declare_me=0;
+          break;
+        }
+      
+      if(declare_me) {
+        nspace_declarations[nspace_declarations_count].declaration=
+          raptor_namespaces_format(nspace,
+                                   &nspace_declarations[nspace_declarations_count].length);
+        nspace_declarations[nspace_declarations_count].nspace=nspace;
+        nspace_declarations_count++;
+      }
+
+    }
+  }
+
+  raptor_iostream_write_byte(iostr, '<');
+
+  if(element->name->nspace && element->name->nspace->prefix_length > 0) {
+    raptor_iostream_write_counted_string(iostr, 
+                                         (const char*)element->name->nspace->prefix, 
+                                         element->name->nspace->prefix_length);
+    raptor_iostream_write_byte(iostr, ':');
+  }
+  raptor_iostream_write_counted_string(iostr, 
+                                       (const char*)element->name->local_name,
+                                       element->name->local_name_length);
+
+  /* declare namespaces */
+  if(nspace_declarations_count) {
+    /* sort them into the canonical order */
+    qsort((void*)nspace_declarations, 
+          nspace_declarations_count, sizeof(struct nsd),
+          raptor_nsd_compare);
+    /* add them */
+    for (i=0; i < nspace_declarations_count; i++) {
+      raptor_iostream_write_byte(iostr, ' ');
+      raptor_iostream_write_counted_string(iostr, 
+                                           (const char*)nspace_declarations[i].declaration,
+                                           nspace_declarations[i].length);
+      RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
+      nspace_declarations[i].declaration=NULL;
+
+      raptor_namespace_copy(nstack,
+                            (raptor_namespace*)nspace_declarations[i].nspace,
+                            depth);
+    }
+  }
+
+
+  if(element->attributes) {
+    for(i=0; i < element->attribute_count; i++) {
+      raptor_iostream_write_byte(iostr, ' ');
+      
+      if(element->attributes[i]->nspace && 
+         element->attributes[i]->nspace->prefix_length > 0) {
+        raptor_iostream_write_counted_string(iostr,
+                                             (char*)element->attributes[i]->nspace->prefix,
+                                             element->attributes[i]->nspace->prefix_length);
+        raptor_iostream_write_byte(iostr, ':');
+      }
+
+      raptor_iostream_write_counted_string(iostr, 
+                                           (const char*)element->attributes[i]->local_name,
+                                           element->attributes[i]->local_name_length);
+      
+      raptor_iostream_write_counted_string(iostr, "=\"", 2);
+      
+      raptor_iostream_write_xml_escaped_string(iostr,
+                                               element->attributes[i]->value, 
+                                               element->attributes[i]->value_length,
+                                               '"',
+                                               error_handler, error_data);
+      raptor_iostream_write_byte(iostr, '"');
+    }
+  }
+
+  if (!auto_empty)
+    raptor_iostream_write_byte(iostr, '>');
+
+  if(nstack)
+    RAPTOR_FREE(stringarray, nspace_declarations);
+
+  return 0;
+}
+
+static int
+raptor_iostream_write_xml_element_end(raptor_iostream* iostr,
+                                      raptor_xml_element *element,
+                                      int is_empty)
+{
+  if (is_empty) {
+    raptor_iostream_write_byte(iostr, '/');
+  } else {
+    
+    raptor_iostream_write_byte(iostr, '<');
+
+    raptor_iostream_write_byte(iostr, '/');
+
+    if(element->name->nspace && element->name->nspace->prefix_length > 0) {
+      raptor_iostream_write_counted_string(iostr, 
+                                           (const char*)element->name->nspace->prefix, 
+                                           element->name->nspace->prefix_length);
+      raptor_iostream_write_byte(iostr, ':');
+    }
+    raptor_iostream_write_counted_string(iostr, 
+                                         (const char*)element->name->local_name,
+                                         element->name->local_name_length);
+  }
+  
+  raptor_iostream_write_byte(iostr, '>');
+
+  return 0;
+  
+}
 
 raptor_xml_writer*
 raptor_new_xml_writer(raptor_namespace_stack *nstack,
@@ -110,10 +369,12 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
   }
 
   xml_writer->iostr=iostr;
+
+  xml_writer->flags = 0;
+  xml_writer->indent = 2;
   
   return xml_writer;
 }
-
 
 /**
  * raptor_free_xml_writer: Free XML writer content
@@ -134,14 +395,18 @@ void
 raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
                                 raptor_xml_element *element)
 {
-  raptor_iostream_write_xml_element(xml_writer->iostr,
-                                     element, 
-                                     xml_writer->nstack,
-                                     1,
-                                     0,
-                                     xml_writer->error_handler,
-                                     xml_writer->error_data,
-                                     xml_writer->depth);
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
+  raptor_iostream_write_xml_element_start(xml_writer->iostr,
+                                          element, 
+                                          xml_writer->nstack,
+                                          xml_writer->error_handler,
+                                          xml_writer->error_data,
+                                          1,
+                                          xml_writer->depth);
+
+  raptor_iostream_write_xml_element_end(xml_writer->iostr, element, 1);
+  
   raptor_namespaces_end_for_depth(xml_writer->nstack, xml_writer->depth);
 }
 
@@ -150,38 +415,49 @@ void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                 raptor_xml_element *element)
 {
-  raptor_iostream_write_xml_element(xml_writer->iostr,
-                                     element, 
-                                     xml_writer->nstack,
-                                     0,
-                                     0,
-                                     xml_writer->error_handler,
-                                     xml_writer->error_data,
-                                     xml_writer->depth);
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
+  if (AUTO_INDENT(xml_writer))
+    raptor_xml_writer_indent(xml_writer);
+  
+  raptor_iostream_write_xml_element_start(xml_writer->iostr,
+                                          element, 
+                                          xml_writer->nstack,
+                                          xml_writer->error_handler,
+                                          xml_writer->error_data,
+                                          AUTO_EMPTY(xml_writer),
+                                          xml_writer->depth);
 
   xml_writer->depth++;
+
+  /* SJS Note: This "if" clause is necessary because raptor_rdfxml.c
+   * uses xml_writer for parseType="literal" and passes in elements
+   * whose parent field is already set. The first time this function
+   * is called, it sets element->parent to 0, causing the warn-07.rdf
+   * test to fail. Subsequent calls to this function set
+   * element->parent to its existing value. */
+  if (xml_writer->current_element)
+    element->parent = xml_writer->current_element;
   
   xml_writer->current_element=element;
   if(element && element->parent)
     element->parent->content_element_seen=1;
 }
 
-
 void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                               raptor_xml_element* element)
 {
-  raptor_iostream_write_xml_element(xml_writer->iostr, 
-                                     element, 
-                                     xml_writer->nstack,
-                                     0,
-                                     1,
-                                     xml_writer->error_handler,
-                                     xml_writer->error_data,
-                                     xml_writer->depth);
-  
   xml_writer->depth--;
+  
+  if (AUTO_INDENT(xml_writer) && element->content_element_seen)
+    raptor_xml_writer_indent(xml_writer);
 
+  int is_empty = AUTO_EMPTY(xml_writer) ?
+    !(element->content_cdata_seen || element->content_element_seen) : 0;
+  
+  raptor_iostream_write_xml_element_end(xml_writer->iostr, element, is_empty);
+  
   raptor_namespaces_end_for_depth(xml_writer->nstack, xml_writer->depth);
 
   if(xml_writer->current_element)
@@ -193,6 +469,8 @@ void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                         const unsigned char *s)
 {
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
   raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
                                            s, strlen((const char*)s),
                                            '\0',
@@ -208,6 +486,8 @@ void
 raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
                                 const unsigned char *s, unsigned int len)
 {
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
   raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
                                            s, len,
                                            '\0',
@@ -223,6 +503,8 @@ void
 raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
                       const unsigned char *s)
 {
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
   raptor_iostream_write_string(xml_writer->iostr, s);
 
   if(xml_writer->current_element)
@@ -234,6 +516,8 @@ void
 raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
                               const unsigned char *s, unsigned int len)
 {
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
   raptor_iostream_write_counted_string(xml_writer->iostr, s, len);
 
   if(xml_writer->current_element)
@@ -245,6 +529,8 @@ void
 raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
                           const unsigned char *s)
 {
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<!-- ", 5);
   raptor_xml_writer_cdata(xml_writer, s);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)" -->", 4);
@@ -255,11 +541,158 @@ void
 raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
                                   const unsigned char *s, unsigned int len)
 {
+  FLUSH_CLOSE_BRACKET(xml_writer);
+  
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<!-- ", 5);
   raptor_xml_writer_cdata_counted(xml_writer, s, len);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)" -->", 4);
 }
 
+
+/**
+ * raptor_xml_writer_features_enumerate - Get list of xml_writer features
+ * @counter: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ * 
+ * If uri is not NULL, a pointer toa new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
+ **/
+int
+raptor_xml_writer_features_enumerate(const raptor_feature feature,
+                                     const char **name, 
+                                     raptor_uri **uri, const char **label)
+{
+  return raptor_features_enumerate_common(feature, name, uri, label, 8);
+}
+
+
+/**
+ * raptor_set_xml_writer_feature - Set xml_writer features with integer values
+ * @xml_writer: &raptor_xml_writer xml_writer object
+ * @feature: feature to set from enumerated &raptor_feature values
+ * @value: integer feature value (0 or larger)
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Return value: non 0 on failure or if the feature is unknown
+ **/
+int
+raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer, 
+                              raptor_feature feature, int value)
+{
+  if(value < 0)
+    return -1;
+  
+  switch(feature) {
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+      if (value)
+        xml_writer->flags |= XML_WRITER_AUTO_INDENT;
+      else
+        xml_writer->flags &= ~XML_WRITER_AUTO_INDENT;        
+      break;
+
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+      if (value)
+        xml_writer->flags |= XML_WRITER_AUTO_EMPTY;
+      else
+        xml_writer->flags &= ~XML_WRITER_AUTO_EMPTY;        
+      break;
+
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+      xml_writer->indent = value;
+      break;
+        
+    default:
+      return -1;
+      break;
+  }
+
+  return 0;
+}
+
+
+/**
+ * raptor_xml_writer_set_feature_string - Set xml_writer features with string values
+ * @xml_writer: &raptor_xml_writer xml_writer object
+ * @feature: feature to set from enumerated &raptor_feature values
+ * @value: feature value
+ * 
+ * The allowed features are available via raptor_xml_writer_features_enumerate().
+ * If the feature type is integer, the value is interpreted as an integer.
+ *
+ * Return value: non 0 on failure or if the feature is unknown
+ **/
+int
+raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer, 
+                                     raptor_feature feature, 
+                                     const unsigned char *value)
+{
+  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  if(!value_is_string)
+    return raptor_xml_writer_set_feature(xml_writer, feature, 
+                                         atoi((const char*)value));
+  else
+    return -1;
+}
+
+
+/**
+ * raptor_xml_writer_get_feature - Get various xml_writer features
+ * @xml_writer: &raptor_xml_writer serializer object
+ * @feature: feature to get value
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Note: no feature value is negative
+ *
+ * Return value: feature value or < 0 for an illegal feature
+ **/
+int
+raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, 
+                              raptor_feature feature)
+{
+  int result= -1;
+  
+  switch(feature) {
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+      result=AUTO_INDENT(xml_writer);
+      break;
+
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+      result=AUTO_EMPTY(xml_writer);
+      break;
+
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+      result=xml_writer->indent;
+      break;
+
+    default:
+      break;
+  }
+  
+  return result;
+}
+
+
+/**
+ * raptor_xml_writer_get_feature_string - Get xml_writer features with string values
+ * @xml_writer: &raptor_xml_writer serializer object
+ * @feature: feature to get value
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Return value: feature value or NULL for an illegal feature or no value
+ **/
+const unsigned char *
+raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, 
+                                     raptor_feature feature)
+{
+  return NULL;
+}
 
 #endif
 

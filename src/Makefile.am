@@ -25,7 +25,7 @@
 # 
 
 
-bin_PROGRAMS = rapper
+bin_PROGRAMS = rapper rdfdiff
 bin_SCRIPTS = raptor-config
 noinst_SCRIPTS = raptor-src-config
 lib_LTLIBRARIES = libraptor.la
@@ -68,7 +68,7 @@ STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
-libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c \
+libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c raptor_serialize_rdfxmla.c\
 raptor_rfc2396.c raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c \
 raptor_feature.c raptor_general.c raptor_utf8.c \
@@ -114,12 +114,18 @@ rapper_SOURCES += getopt.c raptor_getopt.h
 endif
 rapper_LDADD=libraptor.la
 
+rdfdiff_SOURCES = rdfdiff.c
+if GETOPT
+rdfdiff_SOURCES += getopt.c raptor_getopt.h
+endif
+rdfdiff_LDADD=libraptor.la
+
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor.pc
 
 
-EXTRA_DIST=ChangeLog ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 \
+EXTRA_DIST=ChangeLog ChangeLog.1 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 libraptor.html rapper.html RELEASE.html \
@@ -203,7 +209,7 @@ turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
 turtle_parser_test: $(srcdir)/turtle_parser.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor.la $(LIBS)
 
-check-local: rapper
+check-local: rapper rdfdiff
 
 # Some people need a little help ;-)
 test: check

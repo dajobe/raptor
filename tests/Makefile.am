@@ -132,10 +132,13 @@ SUBDIRS = turtle
 build-rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
+build-rdfdiff:
+	@(cd $(top_builddir) ; $(MAKE) rdfdiff)
+
 check-local: build-rapper \
 check-rdf check-mayfail-xml-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
-check-nt check-bad-nt check-turtle
+check-nt check-bad-nt check-turtle check-rdfdiff check-rdfxmla
 
 check-rdf: build-rapper $(RDF_TEST_FILES)
 	@set +e; result=0; \
@@ -371,6 +374,40 @@ check-turtle: build-rapper $(NT_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
+check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing rdfdiff with legal rdf/xml"; \
+	for test in $(RDF_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rdfdiff $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status == 0; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	  fi; \
+	  rm -f $$name.res $$name.err; \
+	done; \
+	set -e; exit $$result
+
+check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing rdfxml-abbrev serialization with legal rdf/xml"; \
+	for test in $(RDF_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $(srcdir)/$$test > $$name-rdfxmla.rdf 2> $$name.err; \
+	  $(top_builddir)/rdfdiff $(srcdir)/$$test $(srcdir)/$$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status == 0; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	  fi; \
+	  rm -f $$name-rdfxmla.rdf $$name.res $$name.err; \
+	done; \
+	set -e; exit $$result
 
 $(top_builddir)/raptor/libraptor.la:
 	cd $(top_builddir)/raptor && $(MAKE) $(AM_MAKEFLAGS) libraptor.la
