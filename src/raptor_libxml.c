@@ -73,6 +73,7 @@ raptor_libxml_internalSubset(void *ctx, const xmlChar *name,
 }
 
 
+#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
 static void
 raptor_libxml_externalSubset(void *ctx, const xmlChar *name,
                              const xmlChar *ExternalID, const xmlChar *SystemID)
@@ -80,6 +81,7 @@ raptor_libxml_externalSubset(void *ctx, const xmlChar *name,
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
   externalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
 }
+#endif
 
 
 static int
@@ -487,7 +489,6 @@ raptor_libxml_get_entity(void *ctx, const xmlChar *name) {
 void
 raptor_libxml_init(xmlSAXHandler *sax) {
   sax->internalSubset = raptor_libxml_internalSubset;
-  sax->externalSubset = raptor_libxml_externalSubset;
   sax->isStandalone = raptor_libxml_isStandalone;
   sax->hasInternalSubset = raptor_libxml_hasInternalSubset;
   sax->hasExternalSubset = raptor_libxml_hasExternalSubset;
@@ -513,6 +514,10 @@ raptor_libxml_init(xmlSAXHandler *sax) {
   sax->warning=raptor_libxml_warning;
   sax->error=raptor_libxml_error;
   sax->fatalError=raptor_libxml_fatal_error;
+
+#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
+  sax->externalSubset = raptor_libxml_externalSubset;
+#endif
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
   sax->initialized = 1;
