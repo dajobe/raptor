@@ -413,15 +413,8 @@ fi
 
 oLIBS="$LIBS"
 
-AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check     turn off Unicode NFC checking (default=auto).  ], nfc_check="$enableval", nfc_check="auto")	
+AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check     turn off Unicode NFC checking (default enabled).  ], nfc_check="no", nfc_check="yes")	
 AC_MSG_CHECKING(using Unicode NFC checking)
-if test "X$ac_cv_func_g_utf8_normalize" = Xyes; then
-  if test "X$nfc_check" = Xauto; then
-    nfc_check=yes
-  fi
-else
-  nfc_check=no
-fi
 AC_MSG_RESULT($nfc_check);
 
 
