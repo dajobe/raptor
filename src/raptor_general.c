@@ -946,7 +946,7 @@ raptor_set_generate_id_handler(raptor_parser* parser,
 
 static struct
 {
-  int feature;
+  raptor_feature feature;
   const char *name;
   const char *label;
 } raptor_features_list [RAPTOR_FEATURE_LAST+1]= {
@@ -974,7 +974,7 @@ static struct
  * Return value: non 0 on failure or the feature is unknown
  **/
 int
-raptor_features_enumerate(const unsigned int feature,
+raptor_features_enumerate(const raptor_feature feature,
                           const char **name, 
                           raptor_uri **uri, const char **label)
 {
