@@ -4,46 +4,23 @@
 <head>
   <title>Raptor RDF Parser Toolkit - News</title>
 </head>
-<body bgcolor="#ffffff" text="#000085">
+<body>
 
 <h1 style="text-align:center">Raptor RDF Parser Toolkit - News</h1>
 
-<h2>2004-??-?? Version 1.3.0 Released</h2>
+<h2>2004-05-11 Version 1.3.0 Released</h2>
 <p>
-<a href="http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/">Turtle</a> parser updated to correct the collections syntax and add integer literals.<br />
-Added <code>raptor_new_parser_for_content</code> to guess the parser to use
-from hints in URIs or content, using a new function
-<code>raptor_guess_parser_name</code><br />
-Added <code>raptor_syntax_name_check</code> to check for valid syntax names.<br />
-Completed feature support by adding <code>raptor_get_feature</code>,
-<code>raptor_feature_from_uri</code>, and
-<code>raptor_features_enumerate</code> to get values and enable
-discovery of supported features at run time.
-<code>raptor_set_feature</code> was changed to give return a success
-value<br />
-rapper gained options -f for setting features and -g for guessing syntax<br />
-Added <code>raptor_get_mime_type</code> to get the MIME type of the syntax for
-a parser<br />
-Added <code>raptor_free_memory</code> to free memory returned by raptor
-functions<br />
-Turtle parser uses <code>raptor_generate_id</code> when a blank identifier name
-is needed<br />
-Added more checks for RDF-namespaced names in element and attributes
-and if they are forbidden giving an error otherwise if unknown,
-giving a warning.<br />
-Added support to set the HTTP Accept: header for curl and libxml2 when
-retrieving HTTP content.  Added <code>raptor_www_set_http_accept</code> to set
-this value. <code>raptor_parse_uri_with_connection</code> set will set it to
-the MIME type of the parser in requests.<br />
-Export utility <code>raptor_sequence</code> and
-<code>raptor_stringbuffer</code> classes<br />
-Export Unicode utility functions <code>raptor_unicode_char_to_utf8</code> and
-<code>raptor_utf8_to_unicode_char</code><br />
-Export URI <code>raptor_xml_literal_datatype_uri_string</code><br />
-Deprecated <code>raptor_print_statement_detailed</code> always intended to be
-internal.<br />
-FIXME
+Updated <a href="http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/">Turtle</a> parser to fix the collections syntax, add integer literals and allow - in names.<br />
+Added support for guessing a parser from content or identifiers<br />
+Completed parser feature support<br />
+Added sending HTTP Accept: headers for WWW retrieval when possible<br />
+Added new utility sequence and stringbuffer classes<br />
+Several other functions added and improvements made.
 </p>
+
+<p>See the <a href="RELEASE.html#rel1_3_0">1.3.0 Release Notes</a>
+for the full details of the changes.</p>
+
 
 <h2>2004-01-24 Version 1.2.0 Released</h2>
 <p>Added a
@@ -232,7 +209,7 @@ Added better XML parser auto-detection for various expats and libxml
 
 <hr />
 
-<p>Copyright 2001-2003 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001-2004 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
