@@ -428,27 +428,9 @@ if test $need_expat = 1; then
     SD="$SD expat"
     CPPFLAGS="-I$expat_source_dir/xmlparse $CPPFLAGS"
     LIBS="$LIBS $expat_obj_dir/xmlparse/xmlparse.o $expat_obj_dir/xmlparse/hashtable.o $expat_obj_dir/xmltok/xmlrole.o $expat_obj_dir/xmltok/xmltok.o"
-    # We know local expat sources has XML_SetNamespaceDeclHandler already
-    found=yes
   else
     LIBS="$LIBS $expat_libs"
-    found=no
   fi
-
-  AC_MSG_CHECKING(for XML_SetNamespaceDeclHandler in expat)
-  if test $found = yes; then
-    worked=yes
-  else
-    AC_TRY_RUN([main() {XML_SetNamespaceDeclHandler(); return(0);}], worked=yes, worked=no, worked=no)
-  fi
-
-  if test $worked = yes; then
-    AC_DEFINE(HAVE_XML_SetNamespaceDeclHandler)
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no)
-  fi
-
 fi
 
 

@@ -12,9 +12,6 @@
 #undef RAPTOR_XML_EXPAT
 #undef RAPTOR_XML_LIBXML
 
-/* expat compiled with namespaces? */
-#undef HAVE_XML_SetNamespaceDeclHandler
-
 /* need 'extern int optind' declaration? */
 #undef NEED_OPTIND_DECLARATION
 
