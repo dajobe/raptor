@@ -88,7 +88,7 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
   
   /* If uri_string is "file:path-to-file", turn it into a correct file:URI */
   if(raptor_uri_is_file_uri(uri_string)) {
-    unsigned char *fragment;
+    unsigned char *fragment=NULL;
     char *filename;
     raptor_uri* uri=NULL;
 
@@ -911,8 +911,8 @@ raptor_uri_filename_to_uri_string(const char *filename)
         RAPTOR_FATAL3("uri length %d is LONGER than malloced %d\n", 
                       (int)actual_len, (int)len);
       else
-        RAPTOR_DEBUG3("uri length %d is shorter than malloced %d\n", 
-                      (int)actual_len, (int)len);
+        RAPTOR_DEBUG4("uri '%s' length %d is shorter than malloced %d\n", 
+                      buffer, (int)actual_len, (int)len);
     }
   }
 #endif
@@ -1432,6 +1432,7 @@ main(int argc, char *argv[])
   failures += assert_uri_to_filename ("file://c:\\thing",   NULL);
   failures += assert_uri_to_filename ("file:///c:\\thing",  "c:\\thing");
   failures += assert_uri_to_filename ("file://localhost/",  NULL);
+  failures += assert_uri_to_filename ("file://c:\\foo\\bar\\x.rdf",  NULL);
 
 #else
 
