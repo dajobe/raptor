@@ -628,7 +628,7 @@ main(int argc, char *argv[])
     count=raptor_iostream_get_bytes_written_count(iostr);
     if(count != OUT_BYTES_COUNT) {
       fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
-              count, OUT_BYTES_COUNT);
+              count, (int)OUT_BYTES_COUNT);
       return 1;
     }
     
@@ -653,7 +653,7 @@ main(int argc, char *argv[])
           return 1;
         }
         if(string_len != count) {
-          fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, string_len, count);
+          fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
           return 1;
         }
         raptor_free_memory(string);
