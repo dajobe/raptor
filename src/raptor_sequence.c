@@ -65,6 +65,7 @@ raptor_new_sequence(raptor_sequence_free_handler *free_handler,
     return NULL;
   seq->size=0;
   seq->capacity=0;
+  seq->sequence=NULL;
   seq->free_handler=free_handler;
   seq->print_handler=print_handler;
   
