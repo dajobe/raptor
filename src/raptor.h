@@ -144,7 +144,8 @@ typedef enum {
   RAPTOR_FEATURE_NON_NFC_FATAL,
   RAPTOR_FEATURE_WARN_OTHER_PARSETYPES,
   RAPTOR_FEATURE_CHECK_RDF_ID,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_CHECK_RDF_ID
+  RAPTOR_FEATURE_RELATIVE_URIS,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_RELATIVE_URIS
 } raptor_feature;
 
 
@@ -299,6 +300,9 @@ RAPTOR_API raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *se
 RAPTOR_API void raptor_serializer_set_error_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_serializer_set_warning_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
 RAPTOR_API raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
+RAPTOR_API int raptor_serializer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+RAPTOR_API int raptor_serializer_set_feature(raptor_serializer *serializer, raptor_feature feature, int value);
+RAPTOR_API int raptor_serializer_get_feature(raptor_serializer *serializer, raptor_feature feature);
 
 /* memory functions */
 RAPTOR_API void raptor_free_memory(void *ptr);
