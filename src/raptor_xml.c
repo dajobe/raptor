@@ -258,7 +258,7 @@ raptor_bad_string_print(const unsigned char *input, FILE *stream)
 int
 main(int argc, char *argv[]) 
 {
-  char *program=argv[0];
+  const char *program=raptor_basename(argv[0]);
   struct tv {
     const char *string;
     const char quote;

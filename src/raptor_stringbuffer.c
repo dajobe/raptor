@@ -466,7 +466,7 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[]) 
 {
-  const char *program=argv[0];
+  const char *program=raptor_basename(argv[0]);
 #define TEST_ITEMS_COUNT 9
   const char *items[TEST_ITEMS_COUNT] = { "the", "quick" ,"brown", "fox", "jumps", "over", "the", "lazy", "dog" };
   const char *items_string = "thequickbrownfoxjumpsoverthelazydog";  

@@ -1442,14 +1442,11 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
 int main(int argc, char *argv[]);
 
 
-char *program;
-
 int
 main(int argc, char *argv[])
 {
+  const char *program=raptor_basename(argv[0]);
   int i;
-
-  program=argv[0];
 
   raptor_init();
   

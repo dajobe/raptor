@@ -323,16 +323,12 @@ int main(int argc, char *argv[]);
 
 #define assert_match(function, result, string) do { if(strcmp(result, string)) { fprintf(stderr, #function " failed - returned %s, expected %s\n", result, string); exit(1); } } while(0)
 
-char *program;
-
 int
 main(int argc, char *argv[]) 
 {
+  const char *program=raptor_basename(argv[0]);
   raptor_sequence* seq=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
   char *s;
-
-  program=argv[0];
-  
 
   raptor_sequence_set_at(seq, 0, (void*)"first");
 

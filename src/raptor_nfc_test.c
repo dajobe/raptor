@@ -121,7 +121,7 @@ utf8_print(const unsigned char *input, int length, FILE *stream)
 int
 main (int argc, char *argv[]) 
 {
-  char *program;
+  const char *program=raptor_basename(argv[0]);
   static const char *filename="NormalizationTest.txt";
   FILE *fh;
   int rc=0;
@@ -130,17 +130,6 @@ main (int argc, char *argv[])
   size_t max_c4_len=0;
   int passes=0;
   int fails=0;
-  
-  program=argv[0];
-  if(1) {
-    char *p;
-    if((p=strrchr(program, '/')))
-      program=p+1;
-    else if((p=strrchr(program, '\\')))
-      program=p+1;
-    argv[0]=program;
-  }
-
 
   fh=fopen(filename, "r");
   if(!fh) {
