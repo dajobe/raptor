@@ -141,6 +141,8 @@ The current defined features are:
   \fBRAPTOR_FEATURE_ASSUME_IS_RDF\fR            Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES\fR  Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES\fR   Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ALLOW_BAGID\fR              Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fR  Boolean (non 0 true)
 If the \fIscanning\fR
 feature is true, then the RDF/XML parser will look for embedded
 rdf:RDF elements inside the XML content, and not require that the
@@ -160,6 +162,17 @@ be interpreted as if they were rdf:about and rdf:ID respectively.
 If the \fIallow_other_parsetypes\fR
 feature is true then the RDF/XML parser will allow unknown parsetypes
 to be present and will pass them on to the user.  Unimplemented at present.
+.P
+If the \fIallow_bagid\fR
+feature is true then the RDF/XML parser will support the rdf:bagID
+attribute that was removed from the RDF/XML language when it was
+revised.  This support may be removed in future.
+.P
+If the \fIallow_rdf_type_rdf_list\fR
+feature is true then the RDF/XML parser will generate the
+idList rdf:type rdf:List triple in the handling of
+rdf:parseType="Collection".  This triple was removed during the
+revising of RDF/XML after collections were initially added.
 .IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
 Return the current raptor_locator object for the parser.
 This is a public structure defined in raptor.h that can be
