@@ -494,6 +494,15 @@ struct raptor_element_s {
 typedef struct raptor_element_s raptor_element;
 
 
+struct raptor_id_list_s 
+{
+  struct raptor_id_list_s *next;
+  raptor_uri *base_uri;
+  unsigned char *id;
+};
+typedef struct raptor_id_list_s raptor_id_list;
+
+
 
 #define RAPTOR_N_CONCEPTS 21
 
@@ -535,6 +544,9 @@ struct raptor_xml_parser_s {
 #endif
 
   raptor_uri* concepts[RAPTOR_N_CONCEPTS];
+
+  /* list of seen rdf:ID / rdf:bagID values (with in-scope base URI) */
+  raptor_id_list* id_list;
 };
 
 typedef struct raptor_xml_parser_s raptor_xml_parser;
@@ -581,6 +593,8 @@ static void raptor_free_element(raptor_element *element);
 static void raptor_print_element(raptor_element *element, FILE* stream);
 #endif
 
+static int raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element, const unsigned char *id);
+static void raptor_free_ID_list(raptor_xml_parser *rdf_xml_parser);
 
 /* prototypes for grammar functions */
 static void raptor_start_element_grammar(raptor_parser *parser, raptor_element *element);
@@ -861,7 +875,10 @@ raptor_xml_start_element_handler(void *user_data,
       }
       
       if(!strcmp((char*)atts[i], "xml:base")) {
-        xml_base=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)atts[i+1]);
+        raptor_uri* xuri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)atts[i+1]);
+
+        xml_base=raptor_new_uri_for_xmlbase(xuri);
+        raptor_free_uri(xuri);
         atts[i]=NULL; 
         continue;
       }
@@ -1517,6 +1534,8 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
   raptor_xml_libxml_free_entities(rdf_parser);
 #endif
 #endif
+
+  raptor_free_ID_list(rdf_xml_parser);
 }
 
 
@@ -2123,6 +2142,20 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->subject.id);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
+          if(!raptor_valid_xml_ID(rdf_parser, element->subject.id)) {
+            raptor_parser_error(rdf_parser, "Illegal rdf:ID value '%s'", element->subject.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
+          if(raptor_record_ID(rdf_parser, element, element->subject.id)) {
+            raptor_parser_error(rdf_parser, "Duplicated rdf:ID value '%s'", element->subject.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
         } else if (element->rdf_attr[RDF_ATTR_about]) {
           element->subject.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)element->rdf_attr[RDF_ATTR_about]);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -2132,6 +2165,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->rdf_attr[RDF_ATTR_nodeID]=NULL;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
           element->subject.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
+          if(!raptor_valid_xml_ID(rdf_parser, element->subject.id)) {
+            raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", element->subject.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
         } else if (element->parent && 
                    element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
                    element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION &&
@@ -2151,6 +2191,21 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
           element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+
+          if(!raptor_valid_xml_ID(rdf_parser, element->bag.id)) {
+            raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", element->bag.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
+          if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
+            raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
         }
 
 
@@ -2400,6 +2455,21 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->reified.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->reified.id);
           element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+
+          if(!raptor_valid_xml_ID(rdf_parser, element->reified.id)) {
+            raptor_parser_error(rdf_parser, "Illegal rdf:ID value '%s'", element->reified.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
+          if(raptor_record_ID(rdf_parser, element, element->reified.id)) {
+            raptor_parser_error(rdf_parser, "Duplicated rdf:ID value '%s'", element->reified.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
         }
         
         /* rdf:datatype on a property element.  
@@ -2411,16 +2481,39 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->rdf_attr[RDF_ATTR_datatype]=NULL; 
         }
 
+        if(element->rdf_attr[RDF_ATTR_bagID]) {
+          element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
+          element->rdf_attr[RDF_ATTR_bagID]=NULL;
+          element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
+          element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+          element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+
+          if(!raptor_valid_xml_ID(rdf_parser, element->bag.id)) {
+            raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", element->bag.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
+          if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
+            raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
+          }
+        }
+
         element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
 
         if (element->rdf_attr[RDF_ATTR_parseType]) {
           const unsigned char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
 
-          if(!raptor_strcasecmp((char*)parse_type, "literal")) {
+          if(!strcmp((char*)parse_type, "Literal")) {
             element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-          } else if (!raptor_strcasecmp((char*)parse_type, "resource")) {
+          } else if (!strcmp((char*)parse_type, "Resource")) {
             state=RAPTOR_STATE_PARSETYPE_RESOURCE;
             element->child_state=RAPTOR_STATE_PROPERTYELT;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
@@ -2798,6 +2891,13 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
                 element->object.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
                 element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+                if(!raptor_valid_xml_ID(rdf_parser, element->object.id)) {
+                  raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", element->object.id);
+                  state=RAPTOR_STATE_SKIPPING;
+                  element->child_state=RAPTOR_STATE_SKIPPING;
+                  finished=1;
+                  break;
+                }
               } else {
                 element->object.id=raptor_generate_id(rdf_parser, 0);
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
@@ -2827,6 +2927,15 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               /* If there is empty literal content with properties
                * generate a node to hang properties off 
                */
+              if(raptor_element_has_property_attributes(element) &&
+                 element->content_cdata_length > 0) {
+                raptor_parser_error(rdf_parser, "Literal property element %s has property attributes", el_name);
+                state=RAPTOR_STATE_SKIPPING;
+                element->child_state=RAPTOR_STATE_SKIPPING;
+                finished=1;
+                break;
+              }
+
               if(element->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL &&
                  raptor_element_has_property_attributes(element) &&
                  !element->object.uri) {
@@ -3015,6 +3124,72 @@ raptor_inscope_base_uri(raptor_parser *rdf_parser)
     
   return rdf_parser->base_uri;
 }
+
+
+/**
+ * raptor_record_ID - Record an rdf:ID / rdf:bagID value (with xml base) and check it hasn't been seen already
+ * @rdf_parser: Raptor parser object
+ * @element: Current element
+ * @id: ID string
+ * 
+ * Record and check the ID values, if they have been seen already.
+ * per in-scope-base URI.
+ * 
+ * Return value: non-zero if already seen, or failure
+ **/
+static int
+raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
+                 const unsigned char *id)
+{
+  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_uri* base_uri=raptor_inscope_base_uri(rdf_parser);
+  raptor_id_list* il;
+
+  for(il=rdf_xml_parser->id_list; il; il=il->next) {
+    if(!strcmp(il->id, id) && raptor_uri_equals(il->base_uri, base_uri)) {
+      /* Found */
+      return 1;
+    }
+  }
+
+  /* Not found or found and OK */  
+  il=(raptor_id_list*)RAPTOR_MALLOC(raptor_id_list, sizeof(raptor_id_list));
+  if(!il)
+    return 1;
+  
+  il->base_uri=raptor_uri_copy(base_uri);
+  if(!il->base_uri) {
+    RAPTOR_FREE(raptor_id_list, il);
+    return 1;
+  }
+  
+  il->id=(char*)RAPTOR_MALLOC(cstring, strlen(id)+1);
+  if(!il->id) {
+    raptor_free_uri(il->base_uri);
+    RAPTOR_FREE(raptor_id_list, il);
+    return 1;
+  }
+  strcpy((char*)il->id, id);
+
+  il->next=rdf_xml_parser->id_list;
+  rdf_xml_parser->id_list=il;
+  return 0;
+}
+
+
+static void
+raptor_free_ID_list(raptor_xml_parser *rdf_xml_parser) {
+  raptor_id_list *il, *next;
+
+  for(il=rdf_xml_parser->id_list; il; il=next) {
+    next=il->next;
+    raptor_free_uri(il->base_uri);
+    RAPTOR_FREE(cstring, il->id);
+    RAPTOR_FREE(raptor_id_list, il);
+  }
+}
+
+
 
 
 #ifdef RAPTOR_XML_LIBXML
