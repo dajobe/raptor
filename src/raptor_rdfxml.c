@@ -658,7 +658,9 @@ static void rapier_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc);
 
 
 /* Prototypes for local functions */
+#ifndef LIBRDF_INTERNAL
 static char * rapier_file_uri_to_filename(const char *uri);
+#endif
 static void rapier_parser_fatal_error(rapier_parser* parser, const char *message, ...);
 static void rapier_parser_error(rapier_parser* parser, const char *message, ...);
 static void rapier_parser_warning(rapier_parser* parser, const char *message, ...);
@@ -701,10 +703,12 @@ static void rapier_print_statement_detailed(const rapier_statement *statement, i
 #ifdef LIBRDF_INTERNAL
 #define IS_RDF_MS_CONCEPT(name, uri, qname) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##qname])
 #define RAPIER_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
+#define RAPIER_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
 #define RAPIER_FREE_URI(uri) librdf_free_uri(uri)
 #else
 #define IS_RDF_MS_CONCEPT(name, uri, qname) !strcmp(name, #qname)
 #define RAPIER_URI_AS_STRING(uri) ((const char*)uri)
+#define RAPIER_URI_AS_FILENAME(uri) (rapier_file_uri_to_filename(uri))
 #define RAPIER_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
 #endif
 
@@ -1874,6 +1878,7 @@ rapier_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc)
 
 
 
+#ifndef LIBRDF_INTERNAL
 /**
  * rapier_file_uri_to_filename - Convert a URI representing a file (starting file:) to a filename
  * @uri: URI of string
@@ -1898,6 +1903,7 @@ rapier_file_uri_to_filename(const char *uri)
   strcpy(filename, uri+5);
   return filename;
 }
+#endif
 
 
 /*
@@ -2195,7 +2201,7 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 #endif
 
 
-  filename=rapier_file_uri_to_filename(uri);
+  filename=RAPIER_URI_AS_FILENAME(uri);
   if(!filename)
     return 1;
 
@@ -2304,7 +2310,7 @@ rapier_print_locator(FILE *stream, rapier_locator* locator)
     return;
 
   if(locator->uri)
-    fprintf(stream, "URI %s", locator->uri);
+    fprintf(stream, "URI %s", RAPIER_URI_AS_STRING(locator->uri));
   else if (locator->file)
     fprintf(stream, "file %s", locator->file);
   else
