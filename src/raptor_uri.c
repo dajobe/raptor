@@ -46,6 +46,12 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 /* for the memory allocation functions */
 #if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
@@ -490,6 +496,8 @@ raptor_uri_filename_to_uri_string(const char *filename)
 #ifdef WIN32
   const char *from;
   char *to;
+#else
+  char path[PATH_MAX];
 #endif
   /*     file: (filename) \0 */
   int len=5+strlen(filename)+1;
@@ -520,10 +528,16 @@ raptor_uri_filename_to_uri_string(const char *filename)
 /* others - unix ... ? */
 
 /*
- * "file://" + filename or "file:" filename
+ * "file://" + filename
  */
-  if(*filename == '/')
-    len+=2;
+  len+=2;
+  if(*filename != '/') {
+    if(!getcwd(path, PATH_MAX))
+      return NULL;
+    strcat(path, "/");
+    strcat(path, filename);
+    filename=(const char*)path;
+  }
 #endif
 
   buffer=(char*)LIBRDF_MALLOC(cstring, len);
@@ -551,10 +565,8 @@ raptor_uri_filename_to_uri_string(const char *filename)
   }
   *to='\0';
 #else
-  strcpy(buffer, "file:");
-  if(*filename == '/')
-    strcpy(buffer+5, "//");
-  strcat(buffer, filename);
+  strcpy(buffer, "file://");
+  strcpy(buffer+7, filename);
 #endif
   
   return buffer;
@@ -833,9 +845,17 @@ main(int argc, char *argv[])
   failures += assert_filename_to_uri ("/path/to/file", "file:///path/to/file");
   failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
 
-  failures += assert_filename_to_uri ("file", "file:file");
-  failures += assert_uri_to_filename ("file:file", "file");
-
+  /* Need to test this with a real dir (preferably not /)
+   * so go with assuming /tmp exists on all unixen.  This is just a
+   * test so pretty likely to work on all development systems that
+   * are not WIN32
+   */
+  if(chdir("/tmp"))
+    fprintf(stderr, "WARNING: %s: chdir(\"/tmp\"/) failed - not testing relative files\n",
+            argv[0]);
+  else
+    failures += assert_filename_to_uri ("foo", "file:///tmp/foo");
+ 
 #endif
 
   return failures ;
