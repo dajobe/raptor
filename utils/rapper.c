@@ -109,7 +109,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "nsahrqo:w"
+#define GETOPT_STRING "nsahrqo:wcm:"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
@@ -124,6 +124,7 @@ static struct option long_options[] =
   {"output", 1, 0, 'o'},
   {"ignore-warnings", 0, 0, 'w'},
   {"count", 0, 0, 'c'},
+  {"mode", 1, 0, 'm'},
   {NULL, 0, 0, 0}
 };
 #endif
@@ -176,6 +177,7 @@ main(int argc, char *argv[])
   int scanning=0;
   int assume=0;
   int rdfxml=1;
+  int strict_mode=0;
   int usage=0;
   const char *parser_name="rdfxml";
   raptor_uri *base_uri;
@@ -245,12 +247,37 @@ main(int argc, char *argv[])
         replace_newlines=1;
         break;
 
+      case 'm':
+        if(optarg) {
+          if(!strcmp(optarg, "strict"))
+            strict_mode=1;
+          else if (!strcmp(optarg, "lax"))
+            strict_mode=0;
+          else {
+            fprintf(stderr, "%s: invalid argument `%s' for `--mode'", program,
+                    optarg);
+            fprintf(stderr, "Valid arguments are:\n  - `lax'\n  - `strict'\n");
+            fprintf(stderr, "Try `%s --help' for more information.\n",
+                    program);
+            exit(1);
+          }
+        }
+        break;
+
       case 'o':
         if(optarg) {
           if(!strcmp(optarg, "simple"))
             output_format=OUTPUT_FORMAT_SIMPLE;
           else if (!strcmp(optarg, "ntriples"))
             output_format=OUTPUT_FORMAT_NTRIPLES;
+          else {
+            fprintf(stderr, "%s: invalid argument `%s' for `--output'",
+                    program, optarg);
+            fprintf(stderr, "Valid arguments are:\n  - `simple'\n  - `ntriples'\n");
+            fprintf(stderr, "Try `%s --help' for more information.\n",
+                    program);
+            exit(1);
+          }
         }
         break;
 
@@ -276,6 +303,7 @@ main(int argc, char *argv[])
     fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
     fprintf(stderr, HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
     fprintf(stderr, HELP_TEXT(c, "count           ", "Count triples - no output"));
+    fprintf(stderr, HELP_TEXT(m, "mode            ", "Set parser mode - lax (default) or strict"));
     return(usage>1);
   }
 
@@ -359,10 +387,6 @@ main(int argc, char *argv[])
 #endif
 
   raptor_finish();
-
-#ifdef RAPTOR_WWW_LIBCURL
-  curl_global_cleanup();
-#endif
 
   if(error_count)
     return 1;
