@@ -16,6 +16,11 @@
 #
 
 PACKAGE=raptor
+
+# Where the GNU config.sub, config.guess might be found
+CONFIG_DIR=../config
+
+
 DIE=
 
 if test "X$DRYRUN" != X; then
@@ -43,9 +48,6 @@ else
     DIE="yes"
 fi
 
-# Ensure that these are created by the versions on this system
-# (indirectly via automake)
-rm -f libtool ltmain.sh
 if (automake --version) < /dev/null > /dev/null 2>&1 ; then
   if (automake --version | awk 'NR==1 { if( $4 >= '$automake_vers') \
 			     exit 1; exit 0; }');
@@ -87,6 +89,20 @@ if test -z "$*"; then
 fi
 
 am_opt=
+
+# Ensure that these are created by the versions on this system
+# (indirectly via automake)
+rm -f libtool ltmain.sh
+
+if test -d $CONFIG_DIR; then
+  for file in config.guess config.sub; do
+    cfile=$CONFIG_DIR/$file
+    if test -f $cfile; then
+      rm -f $file
+      cp -p $cfile $file
+    fi
+  done
+fi
 
 for coin in `find $srcdir -name configure.in -print`
 do 
