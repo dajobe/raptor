@@ -100,7 +100,9 @@ typedef struct {
   raptor_identifier_type predicate_type;
   const void *object;
   raptor_identifier_type object_type;
-  int object_literal_is_XML;
+#ifdef RAPTOR_RDF_DATATYPES_TEST
+  raptor_uri *object_literal_datatype;
+#endif
   const char *object_literal_language;
 } raptor_statement;
 
