@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * n3_lexer.l - Raptor N3 lexer - making tokens for n3 grammar generator
+ * n3_lexer.l - Raptor N-Triples Plus lexer - making tokens for ntp grammar generator
  *
  * $Id$
  *
@@ -17,10 +17,15 @@
  * See LICENSE.html or LICENSE.txt at the top of this package for the
  * full license terms.
  * 
- * This is N-Triples + 6 things
+ * This is N-Triples + 7 things
  *   N-Triples + @prefix + qnames + "a" + [] + , and ;
  * 
- * Missing: UTF-8 support (and N-Triples escapes)
+ * Missing so far: UTF-8 support (with N-Triples escapes) which
+ * is only significant inside strings or URI references.
+ *
+ * Possible future bits in order of likelyhood:
+ *  () for rdf lists, @base like xml:base, @charset as first line only
+ * @language like xml:lang
  *
  * To generate the C files from this source, rather than use the
  * shipped n3_lexer.c/.h needs a patched version of flex 2.5.31 such
@@ -169,6 +174,11 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token(yytext+2, yyleng-2);
 <PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token(yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
+<PREF>.		{ if (*yytext == EOF)
+                    return EOF;
+
+                  n3_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
+                  return ERROR;  }
 
 
 \<[^>]*\>   { if(yyleng == 2) 
