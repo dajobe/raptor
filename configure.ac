@@ -496,9 +496,13 @@ fi
 AC_MSG_RESULT($result)
 
 
-if test $need_libxml = 1 -a $ac_cv_header_libxml_reader_h = yes; then
+AC_MSG_CHECKING(RSS parser requirements)
+if test $need_libxml = 1 -a "$ac_cv_header_libxml_xmlreader_h" = yes; then
+  AC_MSG_RESULT(yes - libxml2 with XMLReader API available)
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS parser])
   AC_LIBOBJ(raptor_rss)
+else
+  AC_MSG_RESULT(no - libxml2 with XMLReader API not available)
 fi
 
 
