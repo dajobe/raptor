@@ -304,8 +304,6 @@ raptor_forbidden_propertyElement_name(const char *name)
   return 0;
 }
 
-#if 0
-/* This is probably not needed; covered by rdf_attr_info */
 static int
 raptor_forbidden_propertyAttribute_name(const char *name) 
 {
@@ -315,7 +313,6 @@ raptor_forbidden_propertyAttribute_name(const char *name)
       return rdf_syntax_terms_info[i].forbidden_as_propertyAttribute;
   return 0;
 }
-#endif
 
 
 typedef enum {
@@ -888,7 +885,7 @@ raptor_xml_start_element_handler(void *user_data,
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               if(!rdf_attr_info[i].allowed_unprefixed_on_attribute)
-                raptor_parser_warning(rdf_parser, "Unqualified use of rdf:%s has been deprecated.", attr_name);
+                raptor_parser_warning(rdf_parser, "Using rdf attribute %s without the RDF namespace has been deprecated.", attr_name);
               /* Delete it if it was stored elsewhere */
               /* make sure value isn't deleted from qname structure */
               attr->value=NULL;
@@ -1863,7 +1860,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     
     if(!attr->nspace) {
       raptor_update_document_locator(rdf_parser);
-      raptor_parser_warning(rdf_parser, "Unqualified use of attribute %s is deprecated.", name);
+      raptor_parser_error(rdf_parser, "Using a property attribute %s without a namespace is forbidden.", name);
       continue;
     }
 
@@ -1892,12 +1889,17 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         
         if(ordinal < 1) {
           raptor_update_document_locator(rdf_parser);
-          raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attr->local_name, name);
+          raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in property attribute %s seen on containing element %s.", ordinal, attr->local_name, name);
         }
       } else {
         raptor_update_document_locator(rdf_parser);
-        raptor_parser_warning(rdf_parser, "Unknown RDF namespace attribute %s.", 
-                              name);
+        if(raptor_forbidden_propertyAttribute_name(name)) {
+          raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
+          continue;
+        } else {
+          raptor_parser_warning(rdf_parser, "Unknown RDF namespace property attribute %s.", 
+                                name);
+        }
       }
 
       if(ordinal >= 1) {
@@ -1963,8 +1965,17 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     raptor_uri *property_uri, *object_uri;
     raptor_identifier_type object_type;
     
-    if(!value || rdf_attr_info[i].type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
+    if(!value)
       continue;
+
+    if(rdf_attr_info[i].type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
+      const unsigned char *name=rdf_attr_info[i].name;
+      if(raptor_forbidden_propertyAttribute_name(name)) {
+        raptor_update_document_locator(rdf_parser);
+          raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
+          continue;
+      }
+    }
 
     property_uri=raptor_new_uri_for_rdf_concept(rdf_attr_info[i].name);
     
@@ -2169,6 +2180,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           }
         } else if (element->rdf_attr[RDF_ATTR_about]) {
           element->subject.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)element->rdf_attr[RDF_ATTR_about]);
+          element->rdf_attr[RDF_ATTR_about]=NULL;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_nodeID]) {
@@ -2965,6 +2977,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               if(element->rdf_attr[RDF_ATTR_resource]) {
                 element->object.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser),
                                                     (char*)element->rdf_attr[RDF_ATTR_resource]);
+                element->rdf_attr[RDF_ATTR_resource]=NULL;
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
                 element->object.uri_source=RAPTOR_URI_SOURCE_URI;
                 element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
