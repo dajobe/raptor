@@ -759,6 +759,8 @@ raptor_uri_init(void)
 /* one more prototype */
 int main(int argc, char *argv[]);
 
+static const char *program;
+
 
 static int
 assert_filename_to_uri (const char *filename, const char *reference_uri)
@@ -767,14 +769,14 @@ assert_filename_to_uri (const char *filename, const char *reference_uri)
 
   uri=raptor_uri_filename_to_uri_string(filename);
 
-  if (!uri || strcmp((const char*)uri, (const char*)reference_uri))
-    {
-      fprintf(stderr, "FAIL raptor_uri_filename_to_uri_string filename %s gave URI %s != %s\n",
-              filename, uri, reference_uri);
-      if(uri)
-        RAPTOR_FREE(cstring, uri);
-      return 1;
-    }
+  if (!uri || strcmp((const char*)uri, (const char*)reference_uri)) {
+    fprintf(stderr, 
+            "%s: raptor_uri_filename_to_uri_string(%s) FAILED gaving URI %s != %s\n",
+            program, filename, uri, reference_uri);
+    if(uri)
+      RAPTOR_FREE(cstring, uri);
+    return 1;
+  }
 
   RAPTOR_FREE(cstring, uri);
   return 0;
@@ -789,21 +791,20 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
   filename=raptor_uri_uri_string_to_filename((const unsigned char*)uri);
 
   if(filename && !reference_filename) {
-    {
-      fprintf(stderr, "FAIL raptor_uri_uri_string_to_filename URI %s gave filename %s != NULL\n", uri, filename);
-      if(filename)
-        RAPTOR_FREE(cstring, filename);
-      return 1;
-    }
-    }
-  else if (filename && strcmp(filename, reference_filename))
-    {
-      fprintf(stderr, "FAIL raptor_uri_uri_string_to_filename URI %s gave filename %s != %s\n",
-              uri, filename, reference_filename);
-      if(filename)
-        RAPTOR_FREE(cstring, filename);
-      return 1;
-    }
+    fprintf(stderr, 
+            "%s: raptor_uri_uri_string_to_filename(%s) FAILED giving filename %s != NULL\n", 
+            program, uri, filename);
+    if(filename)
+      RAPTOR_FREE(cstring, filename);
+    return 1;
+  } else if (filename && strcmp(filename, reference_filename)) {
+    fprintf(stderr,
+            "%s: raptor_uri_uri_string_to_filename(%s) FAILED gaving filename %s != %s\n",
+            program, uri, filename, reference_filename);
+    if(filename)
+      RAPTOR_FREE(cstring, filename);
+    return 1;
+  }
 
   RAPTOR_FREE(cstring, filename);
   return 0;
@@ -829,6 +830,8 @@ main(int argc, char *argv[])
 
   int failures=0;
 
+  program=raptor_basename(argv[0]);
+  
 #ifdef WIN32
   failures += assert_filename_to_uri ("c:\\windows\\system", "file:///c:/windows/system");
   failures += assert_filename_to_uri ("\\\\server\\share\\file.doc", "file://server/share/file.doc");
@@ -873,12 +876,14 @@ main(int argc, char *argv[])
     }
   }
   if(!dir)
-    fprintf(stderr, "WARNING: %s: Found no convenient directory - not testing relative files\n",
-            argv[0]);
+    fprintf(stderr,
+            "s: WARNING: Found no convenient directory - not testing relative files\n",
+            program);
   else {
     sprintf((char*)uri_buffer, "file://%s/foo", dir);
-    fprintf(stderr, "%s: Checking relative file name 'foo' in dir %s expecting URI %s\n",
-            argv[0], dir, uri_buffer);
+    fprintf(stderr,
+            "%s: Checking relative file name 'foo' in dir %s expecting URI %s\n",
+            program, dir, uri_buffer);
     failures += assert_filename_to_uri ("foo", (const char*)uri_buffer);
   }
 #endif
@@ -891,16 +896,18 @@ main(int argc, char *argv[])
 
   str=raptor_uri_as_string(uri1);
   if(strcmp((const char*)str, base_uri)) {
-    fprintf(stderr, "FAIL raptor_uri_as_string URI %s gave %s != %s\n",
-            base_uri, str, base_uri);
+    fprintf(stderr,
+            "%s: raptor_uri_as_string(%s) FAILED gaving %s != %s\n",
+            program, base_uri, str, base_uri);
     failures++;
   }
   
   uri2=raptor_new_uri_for_xmlbase(uri1);
   str=raptor_uri_as_string(uri2);
   if(strcmp((const char*)str, base_uri_xmlbase)) {
-    fprintf(stderr, "FAIL raptor_new_uri_for_xmlbase URI %s gave %s != %s\n",
-            base_uri, str, base_uri_xmlbase);
+    fprintf(stderr, 
+            "%s: raptor_new_uri_for_xmlbase(URI %s) FAILED giving %s != %s\n",
+            program, base_uri, str, base_uri_xmlbase);
     failures++;
   }
   
@@ -908,8 +915,9 @@ main(int argc, char *argv[])
 
   str=raptor_uri_as_string(uri3);
   if(strcmp((const char*)str, base_uri_retrievable)) {
-    fprintf(stderr, "FAIL raptor_new_uri_for_retrievable URI %s gave %s != %s\n",
-            base_uri, str, base_uri_retrievable);
+    fprintf(stderr,
+            "%s: raptor_new_uri_for_retrievable(%s) FAILED gaving %s != %s\n",
+            program, base_uri, str, base_uri_retrievable);
     failures++;
   }
   
