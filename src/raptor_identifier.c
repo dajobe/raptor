@@ -120,8 +120,8 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
     strncpy((char*)dest->id, (char*)src->id, len+1);
   }
 
-  if(src->literal) {
-    int len=strlen((char*)src->literal);
+  if(src->literal_language) {
+    int len=strlen((char*)src->literal_language);
     
     dest->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
     if(!dest->literal_language) {
