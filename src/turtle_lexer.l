@@ -153,19 +153,19 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 \"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-_:[A-Za-z][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext+2, yyleng-2);
+_:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*:[A-Za-z][-A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*:[A-Za-z_][-A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:[A-Za-z][-A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+:[A-Za-z_][-A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
 [A-Za-z][-A-Za-z0-9_]*:	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:	{ turtle_parser_lval->string=NULL;
+:	{ turtle_parser_lval->string=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
 [0-9]+        { turtle_parser_lval->integer=atoi(yytext);
