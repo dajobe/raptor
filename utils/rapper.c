@@ -469,7 +469,8 @@ main(int argc, char *argv[])
             statement_count);
 
   raptor_free_uri(base_uri);
-  raptor_free_uri(uri);
+  if(uri)
+    raptor_free_uri(uri);
   if(free_uri_string)
     free(uri_string);
 
