@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <title>Raptor RDF Parser Toolkit - Release Notes</title>
+  <style type="text/css">
+<!--
+pre
+{
+	margin: 1em 4em 1em 4em;
+	background-color: #eee;
+	padding: 0.5em;
+	border-color: #006;
+	border-width: 1px;
+	border-style: dotted;
+}
+-->
+  </style>
+</head>
+<body>
+
+  <h1>Redland RDF Application Framework - Release Notes</h1>
+
+<h2 id="rel1_3_0"><a name="rel1_3_0">Raptor 1.3.0 Changes</a></h2>
+
+<p>A release primarily to provide support for
+the new <a href="http://www.redland.opensource.ac.uk/rasqal/">Rasqal</a>
+RDF query library but with some new features and fixes.</p>
+
+
+<h3>Parser Changes</h3>
+
+<p>Added a new constructor
+ <code>raptor_new_parser_for_content</code> to guess the parser to use
+from hints in URIs or content, using a new utility function
+<code>raptor_guess_parser_name</code>.</p>
+
+<p>Additional checks were added to the RDF/XML parser for
+RDF-namespaced names in element and attributes and if they are
+forbidden giving an error otherwise if unknown, giving a warning.</p>
+
+<p>The
+<a href="http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/">Turtle</a>
+parser was updated to correct the collections syntax, allow '-' in
+names and QNames and to add integer literals.  This parser now correctly
+uses <code>raptor_generate_id</code> when a blank identifier name is
+needed.</p>
+
+<p>Completed parser feature support by adding <code>raptor_get_feature</code>,
+<code>raptor_feature_from_uri</code>, and
+<code>raptor_features_enumerate</code> to get values and enable
+discovery of supported features at run time.
+<code>raptor_set_feature</code> was changed to give return a success
+value</p>
+
+<p>Added a new method <code>raptor_get_mime_type</code> to get the
+MIME type of the syntax for a parser</p>
+
+<p><code>raptor_parse_uri_with_connection</code> (which is called by
+<code>raptor_parse_uri</code>) now sets the HTTP <code>Accept:</code>
+header to the MIME type of the parser in WWW requests using the new
+<code>raptor_www_set_http_accept</code>.
+</p>
+
+
+<h3><code>rapper</code> changes</h3>
+
+<p>Added options <code>-f</code>/<code>--feature</code> for setting
+features and <code>-g</code>/<code>--guess</code> for guessing syntax
+from some content or identifiers.  See <a href="rapper.html">rapper(1)</a>
+for all rapper options.</p>
+
+
+<h3>Utility function changes</h3>
+
+<p>Added <code>raptor_syntax_name_check</code> to check for valid
+syntax language names.<br />
+</p>
+
+<p>Added <code>raptor_free_memory</code> to free memory returned by
+raptor functions.</p>
+
+<p>Added Unicode utility functions <code>raptor_unicode_char_to_utf8</code> and
+<code>raptor_utf8_to_unicode_char</code>.</p>
+
+<p>Exported URI string <code>raptor_xml_literal_datatype_uri_string</code>.</p>
+
+<p>Deprecated <code>raptor_print_statement_detailed</code> always
+intended to be internal.</p>
+
+
+<h3>WWW Class changes</h3>
+
+<p>Added support to set the HTTP <code>Accept:</code> header for curl
+and libxml2 when retrieving HTTP content by the new
+<code>raptor_www_set_http_accept</code> method.
+</p>
+
+
+<h3>New classes - Sequence and Stringbuffer</h3>
+
+<p>Added a utility class <code>raptor_sequence</code> providing
+simple sequences that can handle stacks and queues</p>
+
+<p>Added a utility class <code>raptor_stringbuffer</code> 
+for constructing strings from substrings appended or prepended.</p>
+
+
+
+<h2 id="rel_older"><a name="rel_older">Raptor 0.9.0 - Raptor 1.2.0 Changes</a></h2>
+
+<p>Release notes for 1.2.0 and earlier are in the
+<a href="NEWS.html">NEWS page</a> or
+<a href="ChangeLog">ChangeLog</a>
+</p>
+
+
+
+<hr />
+
+<p>Copyright 2003-2004 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bris.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+
+</body>
+</html>
