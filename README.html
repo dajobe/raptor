@@ -14,11 +14,15 @@
 <p><a href="http://www.redland.opensource.ac.uk/rapier/">Rapier</a> is the RDF parser for
 <a href="http://www.redland.opensource.ac.uk/">Redland</a>
 (<b>R</b>DF <b>P</b>arser for <b>R</b>edland - R<em>a</em>P<em>ie</em>R)
-and is designed to integrate with it closely, using its concepts (mostly
-for URI management at present).
-Rapier can also be used separate from Redland, in which case it will
+and is designed to integrate with it closely.
+Rapier can also be used standalone, in which case it will
 use simple internal routines to perform the functions.
 </p>
+
+<p>This library is <b>Alpha</b> quality.  See the
+<a href="TODO.html">todo list</a> for more information.  Changes
+can be found in the <a href="NEWS.html">NEWS</a> file or more
+detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 
 <p>Features</p>
 <ul>
@@ -30,7 +34,7 @@ the <a href="http://www-uk.hpl.hp.com/people/bwm/rdf/issues/containersyntax/
 ">proposed interpretation</a> by Brian McBride and <a href="http://purl.org/net/dajobe/">myself</a>.</li>
 <li>Parsing tracks the formal grammar productions closely - this can
 be followed when debugging.</li>
-<li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
+<li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or (GNOME) <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
 <li>Has hooks for new <em>parseType</em>-s and container types</li>
 <li>Provides features to select options at run time.</li>
 <li>(Perl and Python interfaces when used via Redland)</li>
@@ -54,7 +58,7 @@ example program source to see how to call the parser.</p>
 
 <h2>TODO / BUGS</h2>
 
-<p>See <a href="TODO.html">TODO</a> page.</p>
+<p>See the <a href="TODO.html">TODO</a> page for the current status.</p>
 
 <hr />
 
