@@ -58,7 +58,7 @@ $(man_MANS)
 
 
 
-SUBDIRS= debian tests win32 examples
+SUBDIRS= tests win32 examples
 
 TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test \
 raptor_www_test raptor_set_test raptor_xml_test

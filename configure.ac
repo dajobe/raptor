@@ -710,16 +710,15 @@ AC_SUBST(abs_top_srcdir)
 abs_top_builddir=`pwd`
 AC_SUBST(abs_top_builddir)
 
-AC_OUTPUT(Makefile
+AC_CONFIG_FILES([Makefile
 raptor.spec
-raptor-config
-raptor-src-config
 examples/Makefile
 tests/Makefile
-win32/Makefile
-debian/Makefile,
-[chmod +x raptor-config raptor-src-config])
+win32/Makefile])
+AC_CONFIG_FILES([raptor-config], [chmod +x raptor-config])
+AC_CONFIG_FILES([raptor-src-config], [chmod +x raptor-src-config])
 
+AC_OUTPUT
 
 AC_MSG_RESULT([
 Raptor build summary:
