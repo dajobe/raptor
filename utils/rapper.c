@@ -251,7 +251,7 @@ main(int argc, char *argv[])
             }
             
             if(feature <0 )
-              fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s -f help' for a list of valid features\n",
+              fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s " HELP_ARG(f, feature) " help' for a list of valid features\n",
                       program, optarg, program);
             usage=1;
           }
