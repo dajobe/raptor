@@ -206,7 +206,9 @@ int main(int argc, char **argv) {
 ],
             AC_MSG_RESULT(yes),
             AC_DEFINE(EXPAT_UTF8_BOM_CRASH)
-            AC_MSG_RESULT(no - expat will fail to parse XML with a UTF-8 BOM))
+            AC_MSG_RESULT(no)
+            AC_MSG_WARN(The available expat crashes on XML UTF-8 BOM in documents)
+            AC_MSG_WARN(Fix either by using libxml or expat 1.95.2+))
 
   else
     AC_MSG_RESULT(no)
