@@ -292,26 +292,22 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
 
 
 raptor_namespace*
-raptor_new_namespace(raptor_namespace_stack *nstack,
-                     const unsigned char *prefix, 
-                     const unsigned char *ns_uri_string, int depth)
+raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
+                              const unsigned char *prefix, 
+                              raptor_uri* ns_uri, int depth)
 {
   int prefix_length=0;
   int len;
   raptor_namespace *ns;
   unsigned char *p;
 
-  /* Convert an empty namespace string "" to a NULL pointer */
-  if(ns_uri_string && !*ns_uri_string)
-    ns_uri_string=NULL;
-
 #ifndef STANDALONE
 #if RAPTOR_DEBUG >1
-  RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n", prefix ? (char*)prefix : "(default)", ns_uri_string ? (char*)ns_uri_string : "(none)", depth);
+  RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n", prefix ? (char*)prefix : "(default)", ns_uri ? (char*)raptor_uri_as_string(ns_uri) : "(none)", depth);
 #endif
 #endif
 
-  if(prefix && !ns_uri_string) {
+  if(prefix && !ns_uri) {
     /* failed to find namespace - now what? */
     if(nstack->error_handler)
       nstack->error_handler((raptor_parser*)nstack->error_data, "The namespace URI for prefix \"%s\" is empty.", prefix);
@@ -331,8 +327,8 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
     return NULL;
 
   p=(unsigned char*)ns+sizeof(raptor_namespace);
-  if(ns_uri_string) {
-    ns->uri=(*nstack->uri_handler->new_uri)(nstack->uri_context, ns_uri_string);
+  if(ns_uri) {
+    ns->uri=(*nstack->uri_handler->uri_copy)(nstack->uri_context, ns_uri);
     if(!ns->uri) {
       RAPTOR_FREE(raptor_namespace, ns);
       return NULL;
@@ -348,7 +344,7 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
   ns->depth=depth;
 
   /* set convienience flags when there is a defined namespace URI */
-  if(ns_uri_string) {
+  if(ns->uri) {
     if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nstack->rdf_ms_uri))
       ns->is_rdf_ms=1;
     else if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nstack->rdf_schema_uri))
@@ -360,6 +356,30 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
   return ns;
 }
 
+
+raptor_namespace*
+raptor_new_namespace(raptor_namespace_stack *nstack,
+                     const unsigned char *prefix, 
+                     const unsigned char *ns_uri_string, int depth)
+{
+  raptor_uri* ns_uri=NULL;
+  raptor_namespace* ns;
+
+  /* Convert an empty namespace string "" to a NULL pointer */
+  if(ns_uri_string && !*ns_uri_string)
+    ns_uri_string=NULL;
+
+  if(ns_uri_string)
+    ns_uri=raptor_new_uri(ns_uri_string);
+  ns=raptor_new_namespace_from_uri(nstack, prefix, ns_uri, depth);
+  if(ns_uri)
+    raptor_free_uri(ns_uri);
+
+  return ns;
+}
+
+
+
 /* copy to a new stack with a new depth */
 int
 raptor_namespace_copy(raptor_namespace_stack *nstack,
@@ -369,9 +389,7 @@ raptor_namespace_copy(raptor_namespace_stack *nstack,
 {
   raptor_namespace *new_ns;
 
-  unsigned char *uri_string=(*nstack->uri_handler->uri_as_string)(nstack->uri_context, ns->uri);
-
-  new_ns=raptor_new_namespace(nstack, ns->prefix, uri_string, new_depth);
+  new_ns=raptor_new_namespace_from_uri(nstack, ns->prefix, ns->uri, new_depth);
   if(!new_ns)
     return 1;
   
