@@ -281,15 +281,17 @@ rdfdiff_free_blank(rdfdiff_blank *blank)
   
 }
 
+
 static int
 rdfdiff_ordinal_equals_resource(int ordinal, raptor_uri *resource) 
 {
   unsigned char ordinal_string[ORDINAL_STRING_LEN + 1];
+  raptor_uri *ordinal_uri;
   int equal;
-  
-  snprintf((char *)ordinal_string, ORDINAL_STRING_LEN, "%s_%d", raptor_rdf_namespace_uri, ordinal);
 
-  raptor_uri *ordinal_uri = raptor_new_uri(ordinal_string);
+  snprintf((char *)ordinal_string, ORDINAL_STRING_LEN, "%s_%d", raptor_rdf_namespace_uri, ordinal);
+  
+  ordinal_uri = raptor_new_uri(ordinal_string);
 
   equal = raptor_uri_equals(ordinal_uri, resource);
     
@@ -297,6 +299,7 @@ rdfdiff_ordinal_equals_resource(int ordinal, raptor_uri *resource)
 
   return equal;
 }
+
 
 static int
 rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
@@ -392,8 +395,10 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
   return 1;
 }
 
-static int rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
-                                rdfdiff_file*b1_file, rdfdiff_file*b2_file) 
+
+static int
+rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
+                     rdfdiff_file*b1_file, rdfdiff_file*b2_file) 
 {
   /* first compare "owners". Owners are subject/predicate or arcs
    * in. */
@@ -464,6 +469,7 @@ static int rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2
   return equal;
 }
 
+
 static void
 rdfdiff_error_handler(void *data, raptor_locator *locator,
                       const char *message)
@@ -499,6 +505,7 @@ rdfdiff_warning_handler(void *data, raptor_locator *locator,
   
 }
 
+
 static rdfdiff_blank *
 rdfdiff_find_blank(rdfdiff_blank *first, char *blank_id) 
 {
@@ -519,6 +526,7 @@ rdfdiff_find_blank(rdfdiff_blank *first, char *blank_id)
   return rv_blank;
   
 }
+
 
 static rdfdiff_blank *
 rdfdiff_lookup_blank(rdfdiff_file*file, char *blank_id) 
@@ -542,6 +550,7 @@ rdfdiff_lookup_blank(rdfdiff_file*file, char *blank_id)
   return rv_blank;
   
 }
+
 
 static int
 rdfdiff_add_blank_statement(rdfdiff_file*file, const raptor_statement *statement)
@@ -589,6 +598,7 @@ rdfdiff_add_blank_statement(rdfdiff_file*file, const raptor_statement *statement
 
 }
 
+
 static int
 rdfdiff_add_blank_statement_owner(rdfdiff_file*file, const raptor_statement *statement)
 {
@@ -609,6 +619,7 @@ rdfdiff_add_blank_statement_owner(rdfdiff_file*file, const raptor_statement *sta
   return rv;
   
 }
+
 
 static int
 rdfdiff_add_statement(rdfdiff_file*file, const raptor_statement *statement) 
@@ -649,6 +660,7 @@ rdfdiff_add_statement(rdfdiff_file*file, const raptor_statement *statement)
 
 }
 
+
 /*
  * rdfdiff_collect_statements - Called when parsing "from" file to build a
  * list of statements for comparison with those in the "to" file.
@@ -685,6 +697,7 @@ rdfdiff_collect_statements(void *user_data, const raptor_statement *statement)
   }
   
 }
+
 
 /*
  * rdfdiff_compare_statements - Called when parsing "to" file to compare the
