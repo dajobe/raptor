@@ -677,7 +677,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
         identifier->uri_source=RAPTOR_URI_SOURCE_URI;
       } else {
         /* need to make bnode */
-        identifier->id=raptor_generate_id(rdf_parser, 0);
+        identifier->id=raptor_generate_id(rdf_parser, 0, NULL);
         identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
         identifier->uri_source=RAPTOR_URI_SOURCE_GENERATED;
       }
@@ -700,7 +700,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
         identifier->uri_source=RAPTOR_URI_SOURCE_URI;
       } else {
         /* need to make bnode */
-        identifier->id=raptor_generate_id(rdf_parser, 0);
+        identifier->id=raptor_generate_id(rdf_parser, 0, NULL);
         identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
         identifier->uri_source=RAPTOR_URI_SOURCE_GENERATED;
       }
@@ -825,7 +825,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     /* make a new genid for the <rdf:Seq> node */
     raptor_init_identifier(&items, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
                            NULL, RAPTOR_URI_SOURCE_GENERATED,
-                           (char*)raptor_generate_id(rdf_parser, 0));
+                           (char*)raptor_generate_id(rdf_parser, 0, NULL));
   
     /* _:genid1 rdf:type rdf:Seq . */
     raptor_rss_emit_type_triple(rdf_parser, &items, RAPTOR_RDF_Seq_URI(rss_parser));
