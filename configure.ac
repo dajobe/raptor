@@ -107,7 +107,8 @@ if test $ac_cv_func_stricmp = no -a $ac_cv_func_stricmp = no; then
 fi
 
 if test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long = no; then
-  AC_LIBOBJ([getopt])
+  RAPPER_EXTRA_OBJS=getopt.$(OBJEXT)
+  AC_SUBST([RAPPER_EXTRA_OBJS])
 fi
 
 
