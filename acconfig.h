@@ -1,9 +1,3 @@
-/* package name */
-#define PACKAGE
-
-/* package version */
-#define VERSION
-
 #undef RAPTOR_VERSION_MAJOR
 #undef RAPTOR_VERSION_MINOR
 #undef RAPTOR_VERSION_RELEASE
