@@ -11,6 +11,9 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>RSS tag soup parser junks/overwrites element content if it is
+delivered in chunks rather than as one big CDATA, such as when
+libxml2 sees entities, it emits the content in bits (BUG)</li>
 <li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work (FEATURE)</li>
 <li>N-Triples Plus parser: the lexer <code>lval-&gt;string</code> values get overwritten on errors (BUG)</li>
 <li>N-Triples Plus parser: use <code>raptor_generate_id</code> for blank node identifiers (BUG)</li>
