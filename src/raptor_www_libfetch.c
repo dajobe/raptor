@@ -28,12 +28,16 @@
 #include <win32_raptor_config.h>
 #endif
 
+#ifdef RAPTOR_WWW_LIBFETCH
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
 
+#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
+#endif
 #include <fetch.h>
 
 /* Raptor includes */
@@ -90,3 +94,5 @@ raptor_www_libfetch_fetch(raptor_www *www)
   
   return www->failed;
 }
+
+#endif /* RAPTOR_WWW_LIBFETCH */
