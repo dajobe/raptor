@@ -13,17 +13,10 @@
 <ul>
 <li>Add a N3 parser</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a></li>
-<li>Compiling on OSX fails at present since it requires libtool 1.4.2
-or CVS version which requires automake 2.50 and a newer version of
-autoconf.  This needs significant changes to the autoconfigure
-system.  See
-<a href="http://fink.sourceforge.net/doc/porting/libtool.php">Fink porting libtool to OSX.</a>
-</li>
 <li>daml:collection is generating some wrong triples (BUG)</li>
 <li>rdf:bagID handling is incomplete (BUG)</li>
 <li>Scanning for rdf:RDF is broken - never finds any statements (BUG)</li>
-<li>Find out why compiling with libxml 2.3.5 and nearby versions fails on FreeBSD, OSX (BUG)</li>
-<li>Check compiling with latest expat, libxml sources works</li>
+<li>Find out why compiling with libxml 2.3.5 and nearby versions fails on FreeBSD (BUG)</li>
 <li>Provide a perl interface (FEATURE)</li>
 <li>Add namespace/prefix declaration user level callback (FEATURE)</li>
 <li>Reification of statements (bagID etc.) implemented but not tested (FEATURE)</li>
@@ -36,6 +29,15 @@ system.  See
 release version where appropriate.</p>
 
 <ul>
+<li>Compiling on OSX fails on most systems since it requires libtool 1.4.2
+or CVS version which requires automake 2.50 and a newer version of
+autoconf.  This needs significant changes to the autoconfigure
+system.  See
+<a href="http://fink.sourceforge.net/doc/porting/libtool.php">Fink porting libtool to OSX.</a>
+The fix for now - <strong>for the packaged sources only, not CVS</strong>
+- is to use a patched libtool 1.4.2 (from Debian) that can generate a libtool
+that knows OSX.
+</li>
 <li>URI resolving to a base URI now working (0.9.5)</li>
 <li>Handle &lt;prop:Elt rdf:ID="id" rdf:resource="http://example.org/obj"/&gt; (RDF Core WG syntax change) (0.9.5)</li>
 <li>Add xml:base support - RDF Core WG syntax change (0.9.4)</li>
