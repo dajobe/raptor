@@ -108,8 +108,9 @@ if test $ac_cv_func_stricmp = no -a $ac_cv_func_stricmp = no; then
   AC_LIBOBJ([strcasecmp])
 fi
 
+RAPPER_EXTRA_OBJS=
 if test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long = no; then
-  RAPPER_EXTRA_OBJS=getopt.$(OBJEXT)
+  RAPPER_EXTRA_OBJS='getopt.$(OBJEXT)'
   AC_SUBST([RAPPER_EXTRA_OBJS])
 fi
 
@@ -493,6 +494,13 @@ else
   AC_MSG_ERROR(No XML parser available - please install expat or libxml)
 fi
 AC_MSG_RESULT($result)
+
+
+if test $need_libxml = 1; then
+  AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS parser])
+  AC_LIBOBJ(raptor_rss)
+fi
+
 
 
 have_libcurl=0
