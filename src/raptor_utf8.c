@@ -118,12 +118,12 @@ raptor_unicode_char_to_utf8(unsigned long c, char *output)
  */
 
 int
-raptor_utf8_to_unicode_char(long *output,
+raptor_utf8_to_unicode_char(unsigned long *output,
                             const unsigned char *input, int length)
 {
   unsigned char in;
   int size;
-  long c=0;
+  unsigned long c=0;
   
   if(length < 1)
     return -1;
