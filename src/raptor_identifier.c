@@ -216,7 +216,7 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
       fprintf(stream, "@%s", identifier->literal_language);
     fputc('<', stream);
     if(identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
-      fputs(raptor_xml_literal_datatype_uri_string, stream);
+      fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
     else if(identifier->literal_datatype)
       fputs((const char*)raptor_uri_as_string(identifier->literal_datatype), stream);
     fputc('>', stream);
