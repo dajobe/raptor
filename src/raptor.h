@@ -349,6 +349,8 @@ RAPTOR_API unsigned char *raptor_uri_filename_to_uri_string(const char *filename
 RAPTOR_API char *raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
 RAPTOR_API int raptor_uri_is_file_uri(const unsigned char* uri_string);
+RAPTOR_API unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
+RAPTOR_API unsigned char* raptor_uri_to_relative_uri_string(raptor_uri *base_uri,  raptor_uri *reference_uri);
 RAPTOR_API void raptor_uri_init(void);
 
 RAPTOR_API void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
