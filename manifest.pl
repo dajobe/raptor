@@ -291,7 +291,7 @@ while(length $content) {
     $test_statuses{$url}=$test_status;
 
     if ($test_status =~ /^OBSOLETE/) {
-      print "$progname: Ignoring Obsolete Test URL $url\n";
+      #print "$progname: Ignoring Obsolete Test URL $url\n";
       next;
     }
  
@@ -337,7 +337,7 @@ while(length $content) {
     }
 
     my $test_status=$tests{$url}->{'test:status'} || 'not APPROVED';
-    print "$progname: Ignoring $type Entailment Test URL $url ($test_status)\n";
+    #print "$progname: Ignoring $type Entailment Test URL $url ($test_status)\n";
   } elsif($content =~ s%^<test:MiscellaneousTest rdf:about="([^"]+)">(.+?)</test:MiscellaneousTest>%%) { # "
     my($url,$test_content)=($1,$2);
     while(length $test_content) {
@@ -355,7 +355,7 @@ while(length $content) {
       }
     }
     my $test_status=$tests{$url}->{'test:status'} || 'not APPROVED';
-    print "$progname: Ignoring Miscellaneous Test URL $url ($test_status)\n";
+    #print "$progname: Ignoring Miscellaneous Test URL $url ($test_status)\n";
   } else {
     die "I'm stumped 4 at content >>$content<<\n";
   }
