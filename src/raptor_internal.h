@@ -396,13 +396,8 @@ void raptor_terminate_parser_rdfxml (void);
 /* raptor_utf8.c */
 int raptor_unicode_char_to_utf8(unsigned long c, char *output);
 int raptor_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
-int raptor_unicode_is_basechar(long c);
-int raptor_unicode_is_ideographic(long c);
-int raptor_unicode_is_letter(long c);
-int raptor_unicode_is_digit(long c);
-int raptor_unicode_is_combining(long c);
-int raptor_unicode_is_extender(long c);
-
+int raptor_unicode_is_namestartchar(long c);
+int raptor_unicode_is_namechar(long c);
 
 /* end of RAPTOR_INTERNAL */
 #endif
