@@ -149,6 +149,9 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
 	  elif test $$status -eq 2 ; then \
 	    $(ECHO) FAILED - parsing succeeded with a warning; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
+	  elif test $$status -eq 0 ; then \
+	    $(ECHO) FAILED - parsing succeeded but should have failed; \
+	    cat $$name.res; result=1; \
 	  else \
 	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
 	    cat $$name.res; result=1; \
