@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2003 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -314,6 +314,7 @@ extern void raptor_xml_start_element_handler(void *user_data, const unsigned cha
 extern void raptor_xml_end_element_handler(void *user_data, const unsigned char *name);
 /* s is not 0 terminated. */
 extern void raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len);
+void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
 
 /* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
