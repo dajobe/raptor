@@ -354,7 +354,7 @@ main(int argc, char *argv[])
     return error_count;
 
   if(warning_count && !ignore_warnings)
-    return 128+warning_count;
+    return 2;
 
   return(rc);
 }
