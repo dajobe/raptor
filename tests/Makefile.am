@@ -32,7 +32,7 @@ ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
 ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out ex-19.out \
 ex-20.out ex-21.out ex-22.out ex-23.out ex-24.out ex-25.out ex-26.out \
 ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out \
-22-rdf-syntax-ns.out rdf-namespace.out rdf-schema.out
+22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out
 
 RDF_TEST_ANSWER_FILES=ex-13.nt
 
