@@ -94,13 +94,14 @@ raptor_init(void)
 #endif
 #ifdef RAPTOR_PARSER_NTRIPLES
   raptor_init_parser_ntriples();
-  raptor_init_serializer_ntriples();
 #endif
 #ifdef RAPTOR_PARSER_RDFXML
   raptor_init_parser_rdfxml();
-  raptor_init_serializer_rdfxml();
 #endif
-  raptor_init_serializer_simple();
+
+  raptor_init_serializer_rdfxml();
+  raptor_init_serializer_ntriples();
+  /* raptor_init_serializer_simple(); */
 
   raptor_uri_init();
   raptor_www_init();
