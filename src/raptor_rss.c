@@ -820,21 +820,22 @@ raptor_rss_emit(raptor_parser* rdf_parser)
   }
 
   if(rss_parser->items_count) {
-    raptor_identifier items; /* static */
+    raptor_identifier *items;
 
     /* make a new genid for the <rdf:Seq> node */
-    raptor_init_identifier(&items, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
-                           NULL, RAPTOR_URI_SOURCE_GENERATED,
-                           (char*)raptor_generate_id(rdf_parser, 0, NULL));
+    items=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+                                NULL, RAPTOR_URI_SOURCE_GENERATED,
+                                (char*)raptor_generate_id(rdf_parser, 0, NULL),
+                                NULL, NULL, NULL);
   
     /* _:genid1 rdf:type rdf:Seq . */
-    raptor_rss_emit_type_triple(rdf_parser, &items, RAPTOR_RDF_Seq_URI(rss_parser));
+    raptor_rss_emit_type_triple(rdf_parser, items, RAPTOR_RDF_Seq_URI(rss_parser));
 
     /* <channelURI> rss:items _:genid1 . */
     raptor_rss_emit_connection(rdf_parser,
                                &rss_parser->common[RAPTOR_RSS_CHANNEL].identifier,
                                raptor_rss_fields_info[RAPTOR_RSS_FIELD_ITEMS].uri, 0,
-                               &items);
+                               items);
     
     
     /* sequence of rss:item */
@@ -842,12 +843,12 @@ raptor_rss_emit(raptor_parser* rdf_parser)
       
       raptor_rss_emit_item(rdf_parser, item);
       raptor_rss_emit_connection(rdf_parser,
-                                 &items,
+                                 items,
                                  NULL, i,
                                  &item->identifier);
     }
 
-    raptor_free_identifier(&items);
+    raptor_free_identifier(items);
   }
   
 }
