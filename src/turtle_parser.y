@@ -635,10 +635,15 @@ URI_LITERAL
 
 blank: BLANK_LITERAL
 {
+  const unsigned char *id;
 #if RAPTOR_DEBUG > 1  
   printf("subject blank=\"%s\"\n", $1);
 #endif
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, $1, NULL, NULL, NULL);
+  id=raptor_generate_id((raptor_parser*)rdf_parser, 0, $1);
+  if(id != $1)
+    RAPTOR_FREE(cstring, $1);
+
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
 }
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
