@@ -532,9 +532,8 @@ RAPTOR_API void raptor_sax2_declare_namespace(raptor_xml_element* xml_element, r
 RAPTOR_API int raptor_iostream_write_xml_element(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
 
 /* XML Writer Class (raptor_xml_writer) */
-RAPTOR_API raptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
+RAPTOR_API raptor_xml_writer* raptor_new_xml_writer(raptor_namespace_stack *nstack, raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
 RAPTOR_API void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
-RAPTOR_API raptor_namespace* raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
 RAPTOR_API void raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
 RAPTOR_API void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
 RAPTOR_API void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
