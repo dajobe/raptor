@@ -331,6 +331,23 @@ if test "X$PKG_CONFIG" = "X"; then
 fi
 
 
+oLIBS="$LIBS"
+if test "X$PKG_CONFIG" != X; then
+  LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
+  AC_CHECK_FUNC(g_utf8_normalize)
+  LIBS="$oLIBS"
+  AC_MSG_CHECKING(for NFC checking with g_utf8_normalize)
+  if test "$ac_cv_func_g_utf8_normalize" = yes; then
+    CPPFLAGS="$CPPFLAGS `$PKG_CONFIG glib-2.0 --cflags`"
+    LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
+    AC_DEFINE([HAVE_G_UTF8_NORMALIZE], 1, [Have glib 2.0 g_utf8_normalize])
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+
+
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
 
 if test "X$libwww_config" != "X" ; then
