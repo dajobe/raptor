@@ -536,6 +536,87 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
 
 
 
+/**
+ * raptor_serializer_features_enumerate - Get list of serializer features
+ * @counter: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ * 
+ * If uri is not NULL, a pointer toa new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
+ **/
+int
+raptor_serializer_features_enumerate(const raptor_feature feature,
+                                     const char **name, 
+                                     raptor_uri **uri, const char **label)
+{
+  return raptor_features_enumerate_common(feature, name, uri, label, 2);
+}
+
+
+/**
+ * raptor_set_serializer_feature - Set various serializer features
+ * @serializer: &raptor_serializer serializer object
+ * @feature: feature to set from enumerated &raptor_feature values
+ * @value: integer feature value (0 or larger)
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Return value: non 0 on failure or if the feature is unknown
+ **/
+int
+raptor_serializer_set_feature(raptor_serializer *serializer, 
+                              raptor_feature feature, int value)
+{
+  if(value < 0)
+    return -1;
+  
+  switch(feature) {
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+      serializer->feature_relative_uris=value;
+      break;
+
+    default:
+      return -1;
+      break;
+  }
+
+  return 0;
+}
+
+
+/**
+ * raptor_serializer_get_feature - Get various serializer features
+ * @serializer: &raptor_serializer serializer object
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Note: no feature value is negative
+ *
+ * Return value: feature value or < 0 for an illegal feature
+ **/
+int
+raptor_serializer_get_feature(raptor_serializer *serializer, 
+                              raptor_feature feature)
+{
+  int result= -1;
+  
+  switch(feature) {
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+      result=(serializer->feature_relative_uris != 0);
+      break;
+
+    default:
+      break;
+  }
+  
+  return result;
+}
+
+
 /*
  * raptor_serializer_error - Error from a serializer - Internal
  */
