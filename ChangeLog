@@ -1,6 +1,19 @@
+2005-01-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss10_emit_item): Copy original base_uri
+	each time, a raptor_new_xml_element is made and don't lose the
+	original reference.
+
+	* raptor_xml_writer.c (main): Copy original base_uri each time,
+	don't lose the original reference.
+
 2005-01-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
-	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.4
+	* raptor_general.c (raptor_statement_part_as_counted_string):
+	Initialise language_len, uri_string used in some cases to prevent
+	gcc warnings.
+
+	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.5
 
 	* Snapshotted raptor_1_4_4 for 1.4.4 release
 
