@@ -43,6 +43,8 @@ const char * const raptor_get_country_name_by_code(const char * const country_co
 static const struct country_code *
 in_word_set (register const char *str, register unsigned int len);
 
+#define index key_index
+
 /* the definition of struct country_code below is read by gperf */
 %}
 struct country_code { const char * const name; const char * const country_name; };
