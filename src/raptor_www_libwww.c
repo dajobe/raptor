@@ -65,9 +65,11 @@ raptor_www_libwww_fetch(raptor_www *www)
   BOOL status = NO;
   char *uri_string=raptor_uri_as_string(www->uri);
   
+  /* FIXME */
+  RAPTOR_FATAL1(raptor_www_libwww_fetch, "Not working - pleas use another www library for now\n");
+
   if(www->user_agent)
     HTLib_setAppName(www->user_agent);
-
 
   HTEventInit();
 
