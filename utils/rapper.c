@@ -39,6 +39,7 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#include <unistd.h>
 
 /* for the memory allocation functions */
 #if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
@@ -325,7 +326,7 @@ main(int argc, char *argv[])
   
 
   if(usage) {
-    fprintf(stderr, "Usage: %s [OPTIONS] <source file: URI> [base URI]\n", program);
+    fprintf(stderr, "Usage: %s [OPTIONS] <source URI> [base URI]\n", program);
     fprintf(stderr, "Parse the given file as RDF/XML or NTriples using Raptor\n");
     fprintf(stderr, HELP_TEXT(h, "help            ", "This message"));
     fprintf(stderr, HELP_TEXT(n, "ntriples        ", "Parse NTriples format rather than RDF/XML"));
@@ -349,6 +350,10 @@ main(int argc, char *argv[])
     uri_string=argv[optind++];
     base_uri_string=argv[optind];
   }
+
+  /* If uri_string is "path-to-file", turn it into a file: URI */
+  if(!access(uri_string, R_OK))
+    uri_string=raptor_uri_filename_to_uri_string(uri_string);
 
   uri=raptor_new_uri(uri_string);
   if(!uri) {
