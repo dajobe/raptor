@@ -56,8 +56,6 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
   raptor_www* cx=(raptor_www*)userdata;
   int bytes=size*nmemb;
 
-  /* fprintf(stderr, "header_callback: %s (%d bytes)\n", (char*)ptr, bytes); */
-
   if(!strncmp(ptr, "Content-Type: ", 14)) {
     int len=bytes-16;
     char *type_buffer=(char*)malloc(len+1);
@@ -123,9 +121,10 @@ raptor_www_curl_fetch(raptor_www *www, const char *url)
   curl_easy_setopt(www->curl_handle, CURLOPT_URL, url);
 
   www->status=curl_easy_perform(www->curl_handle);
+  curl_easy_getinfo(www->curl_handle, CURLINFO_HTTP_CODE, &www->status_code);
 
   if(www->status) {
-    fprintf(stderr, "curl_easy_perform error - %s\n", www->error_buffer);
+    raptor_www_error(www, www->error_buffer);
     return 1;
   }
   return 0;
