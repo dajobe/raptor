@@ -360,6 +360,10 @@ main(int argc, char *argv[])
 
   raptor_finish();
 
+#ifdef RAPTOR_WWW_LIBCURL
+  curl_global_cleanup();
+#endif
+
   if(error_count)
     return 1;
 
