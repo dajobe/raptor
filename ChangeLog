@@ -1,4 +1,34 @@
+2004-12-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Added rss_namespace_prefix_strings to list
+	namespaces to declare.  raptor_rss10_serializer_context gains
+	raptor_namespace_stack nstack field.
+	(raptor_rss10_serialize_init): Init the namespace stack.
+	(raptor_rss10_serialize_terminate): Clean namespace stack and any
+	defined qnames.
+	(raptor_rss10_emit_item): Padding.
+	(raptor_rss10_serialize_end): Write namespace decls using stack.
+
+	* raptor_rss.c: Rename some destructors more normally:
+	(raptor_free_rss_item): Renamed from raptor_item_free.
+	(raptor_free_rss_items): Renamed from raptor_rss_items_free.
+	(raptor_rss10_move_statements, raptor_rss10_store_statement): Record
+	field counts per item.
+	(raptor_rss10_build_items): Find the rdf:_<n> items and put them
+	into a raptor sequence.
+	(raptor_rss10_emit_item): Skeleton rss item writer.
+	(raptor_rss10_serialize_end): Make the final structures and do the
+	serializing in skeleton form.
+
 2004-12-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Added seq_uri to raptor_rss10_serializer_context
+	(raptor_rss10_serialize_terminate): Tidy seq_uri
+	(raptor_rss10_move_statements, raptor_rss10_store_statement): Ignore
+	checking fields with no URI.
+	(raptor_rss10_serialize_statement): For rdf:Seq node, store the URI
+	or blank node - as fake URI.
+	Make fake object node correctly for general statements.
 
 	* raptor_rss.c (raptor_rss_common_init): Prevent 2x initialising.
 	(raptor_item_free): Free type URI
