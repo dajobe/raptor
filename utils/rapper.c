@@ -98,10 +98,10 @@ void print_statements(void *user_data, const raptor_statement *statement)
 
 
 #ifdef HAVE_GETOPT_LONG
-#define HELP_TEXT(short, long, description) "  -" #short ", --" long "  " description
+#define HELP_TEXT(short, long, description) "  -" short ", --" long "  " description
 #define HELP_ARG(short, long) "--" #long
 #else
-#define HELP_TEXT(short, long, description) "  -" #short "  " description
+#define HELP_TEXT(short, long, description) "  -" short "  " description
 #define HELP_ARG(short, long) "-" #short
 #endif
 
@@ -382,8 +382,8 @@ main(int argc, char *argv[])
     puts(raptor_short_copyright_string);
     puts("Parse RDF content at the source URI into RDF triples.");
     puts("\nMain options:");
-    puts(HELP_TEXT(h, "help            ", "Print this help, then exit"));
-    puts(HELP_TEXT(i, "input FORMAT    ", "Set input format to one of:"));
+    puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
+    puts(HELP_TEXT("i FORMAT", "input FORMAT    ", "Set input format to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
       const char *help_label;
@@ -395,18 +395,18 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
-    puts(HELP_TEXT(o, "output FORMAT   ", "Set output format to one of:"));
+    puts(HELP_TEXT("o FORMAT", "output FORMAT   ", "Set output format to one of:"));
     puts("    'simple'                A simple format (default)\n    'ntriples'              N-Triples");
-    puts(HELP_TEXT(m, "mode MODE       ", "Set parser mode - 'lax' (default) or 'strict'"));
+    puts(HELP_TEXT("m", "mode MODE       ", "Set parser mode - 'lax' (default) or 'strict'"));
     puts("\nAdditional options:");
-    puts(HELP_TEXT(c, "count           ", "Count triples - no output"));
-    puts(HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
-    puts(HELP_TEXT(f, "feature FEATURE(=VALUE)", "Set parser feature - use `help' for a list"));
-    puts(HELP_TEXT(q, "quiet           ", "No extra information messages"));
-    puts(HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
-    puts(HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
-    puts(HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
-    puts(HELP_TEXT(v, "version         ", "Print the Raptor version"));
+    puts(HELP_TEXT("c", "count           ", "Count triples - no output"));
+    puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
+    puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", "Set parser feature - use `help' for a list"));
+    puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
+    puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
+    puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
+    puts(HELP_TEXT("w", "ignore-warnings ", "Ignore warning messages"));
+    puts(HELP_TEXT("v", "version         ", "Print the Raptor version"));
     puts("\nReport bugs to <redland-dev@lists.librdf.org>.");
     puts("Raptor home page: http://www.redland.opensource.ac.uk/raptor/");
     exit(0);
