@@ -213,7 +213,7 @@ raptor_basename(const char *name)
 }
 
 
-const char * const raptor_xml_literal_datatype_uri_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
+const unsigned char * const raptor_xml_literal_datatype_uri_string=(const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 const unsigned int raptor_xml_literal_datatype_uri_string_len=53;
 
 
@@ -359,7 +359,7 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
      statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
       fputc('<', stream);
-      fputs(raptor_xml_literal_datatype_uri_string, stream);
+      fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
       fputc('>', stream);
     } else if(statement->object_literal_datatype) {
       fputc('<', stream);
@@ -526,7 +526,7 @@ raptor_statement_part_as_counted_string(const void *term,
         *s++ ='^';
         *s++ ='^';
         *s++ ='<';
-        strcpy((char*)s, raptor_xml_literal_datatype_uri_string);
+        strcpy((char*)s, (const char*)raptor_xml_literal_datatype_uri_string);
         s+= raptor_xml_literal_datatype_uri_string_len;
         *s++ ='>';
       } else if(literal_datatype) {
@@ -640,7 +640,7 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
       }
       if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
         fputs("^^<", stream);
-        fputs(raptor_xml_literal_datatype_uri_string, stream);
+        fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
         fputc('>', stream);
       } else if(literal_datatype) {
         fputs("^^<", stream);
