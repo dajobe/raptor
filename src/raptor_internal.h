@@ -82,7 +82,6 @@ extern "C" {
 #endif
 
 
-
 /* XML parser includes */
 #ifdef RAPTOR_XML_EXPAT
 #ifdef HAVE_EXPAT_H
@@ -145,10 +144,11 @@ extern void raptor_libxml_validation_error(void *context, const char *msg, ...);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...);
 
 /* raptor_parse.c - exported to libxml part */
+extern void raptor_libxml_update_document_locator (raptor_parser *rdf_parser);
+
 extern xmlParserCtxtPtr raptor_get_libxml_context(raptor_parser *rdf_parser);
 extern void raptor_set_libxml_document_locator(raptor_parser *rdf_parser, xmlSAXLocatorPtr loc);
 extern xmlSAXLocatorPtr raptor_get_libxml_document_locator(raptor_parser *rdf_parser);
-extern void raptor_libxml_update_document_locator (raptor_parser *rdf_parser);
 
 #ifdef RAPTOR_LIBXML_MY_ENTITIES
 extern raptor_xml_entity* raptor_get_libxml_entities(raptor_parser *rdf_parser);
@@ -157,6 +157,20 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 /* end of libxml-only */
 #endif
 
+
+/* raptor_general.c */
+
+const char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
+raptor_uri* raptor_make_uri_from_id(raptor_parser *rdf_parser, raptor_uri *base_uri, const char *id);
+#ifndef RAPTOR_IN_REDLAND
+raptor_uri* raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name);
+#endif
+
+const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
+raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
+
+
+/* raptor_parse.c */
 
 typedef void (*raptor_internal_message_handler)(raptor_parser* parser, const char *message, ...);
 
@@ -170,12 +184,20 @@ extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *mes
 
 /* raptor_parse.c */
 
+#ifdef RAPTOR_IN_REDLAND
+raptor_parser* raptor_xml_new(raptor_parser *rdf_parser, librdf_world *world);
+#else
+raptor_parser* raptor_xml_new(raptor_parser *rdf_parser);
+#endif
+void raptor_xml_free(raptor_parser *rdf_parser);
+
 /* Prototypes for common expat/libxml parsing event-handling functions */
 extern void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
 extern void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
 /* s is not 0 terminated. */
 extern void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
 
+/* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
 
 
@@ -292,6 +314,94 @@ void raptor_qname_print(FILE *stream, raptor_qname* name);
 void raptor_free_qname(raptor_qname* name);
 int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
 
+
+
+typedef struct raptor_xml_parser_s raptor_xml_parser;
+
+/*
+ * Raptor parser object
+ */
+struct raptor_parser_s {
+
+#ifdef RAPTOR_IN_REDLAND
+  librdf_world *world;
+
+  /* DAML collection URIs */
+  librdf_uri *raptor_daml_oil_uri;
+  librdf_uri *raptor_daml_List_uri;
+  librdf_uri *raptor_daml_first_uri;
+  librdf_uri *raptor_daml_rest_uri;
+  librdf_uri *raptor_daml_nil_uri;
+#endif
+
+  /* stack of namespaces, most recently added at top */
+  raptor_namespace_stack namespaces;
+
+  /* can be filled with error location information */
+  raptor_locator locator;
+
+  /* non 0 if parser had fatal error and cannot continue */
+  int failed;
+
+  /* generated ID counter */
+  int genid;
+
+  /* base URI of RDF/XML */
+  raptor_uri *base_uri;
+
+  /* Reading from this file */
+  FILE *fh;
+
+  /* static statement for use in passing to user code */
+  raptor_statement statement;
+
+  /* FEATURE: 
+   * non 0 if scanning for <rdf:RDF> element inside the XML,
+   * else require rdf:RDF as first element. See also feature_assume_is_rdf
+   */
+  int feature_scanning_for_rdf_RDF;
+
+  /* FEATURE: 
+   * non 0 if assume document is rdf/xml, thus rdf:RDF is optional
+   * but still allowed.  See also feature_scanning_for_rdf:RDF.
+   */
+  int feature_assume_is_rdf;
+
+  /* FEATURE:
+   * non 0 to allow non-namespaced resource, ID etc attributes
+   * on RDF namespaced-elements
+   */
+  int feature_allow_non_ns_attributes;
+
+
+  /* FEATURE:
+   * non 0 to handle other rdf:parseType values that are not
+   * literal or resource
+   */
+  int feature_allow_other_parseTypes;
+
+
+  /* stuff for our user */
+  void *user_data;
+
+  void *fatal_error_user_data;
+  void *error_user_data;
+  void *warning_user_data;
+
+  raptor_message_handler fatal_error_handler;
+  raptor_message_handler error_handler;
+  raptor_message_handler warning_handler;
+
+  raptor_container_test_handler container_test_handler;
+
+  /* parser callbacks */
+  raptor_statement_handler statement_handler;
+
+
+  /* XML parser specific stuff */
+  raptor_xml_parser *xml_parser;
+  
+};
 
 
 /* end of RAPTOR_INTERNAL */

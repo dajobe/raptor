@@ -462,20 +462,7 @@ typedef struct raptor_element_s raptor_element;
 /*
  * Raptor parser object
  */
-struct raptor_parser_s {
-
-#ifdef RAPTOR_IN_REDLAND
-  librdf_world *world;
-
-  /* DAML collection URIs */
-  librdf_uri *raptor_daml_oil_uri;
-  librdf_uri *raptor_daml_List_uri;
-  librdf_uri *raptor_daml_first_uri;
-  librdf_uri *raptor_daml_rest_uri;
-  librdf_uri *raptor_daml_nil_uri;
-#endif
-
-  /* XML parser specific stuff */
+struct raptor_xml_parser_s {
 #ifdef RAPTOR_XML_EXPAT
   XML_Parser xp;
 #ifdef EXPAT_UTF8_BOM_CRASH
@@ -500,79 +487,15 @@ struct raptor_parser_s {
   /* element depth */
   int depth;
 
-  /* stack of namespaces, most recently added at top */
-  raptor_namespace_stack namespaces;
-
-  /* can be filled with error location information */
-  raptor_locator locator;
-
   /* stack of elements - elements add after current_element */
   raptor_element *root_element;
   raptor_element *current_element;
-
-  /* non 0 if parser had fatal error and cannot continue */
-  int failed;
-
-  /* generated ID counter */
-  int genid;
-
-  /* base URI of RDF/XML */
-  raptor_uri *base_uri;
-
 
 #ifdef RAPTOR_XML_LIBXML
   /* flag for some libxml eversions*/
   int first_read;
 #endif
   
-  /* Reading from this file */
-  FILE *fh;
-
-  /* static statement for use in passing to user code */
-  raptor_statement statement;
-
-
-  /* FEATURE: 
-   * non 0 if scanning for <rdf:RDF> element inside the XML,
-   * else require rdf:RDF as first element. See also feature_assume_is_rdf
-   */
-  int feature_scanning_for_rdf_RDF;
-
-  /* FEATURE: 
-   * non 0 if assume document is rdf/xml, thus rdf:RDF is optional
-   * but still allowed.  See also feature_scanning_for_rdf:RDF.
-   */
-  int feature_assume_is_rdf;
-
-  /* FEATURE:
-   * non 0 to allow non-namespaced resource, ID etc attributes
-   * on RDF namespaced-elements
-   */
-  int feature_allow_non_ns_attributes;
-
-
-  /* FEATURE:
-   * non 0 to handle other rdf:parseType values that are not
-   * literal or resource
-   */
-  int feature_allow_other_parseTypes;
-
-
-  /* stuff for our user */
-  void *user_data;
-
-  void *fatal_error_user_data;
-  void *error_user_data;
-  void *warning_user_data;
-
-  raptor_message_handler fatal_error_handler;
-  raptor_message_handler error_handler;
-  raptor_message_handler warning_handler;
-
-  raptor_container_test_handler container_test_handler;
-
-  /* parser callbacks */
-  raptor_statement_handler statement_handler;
 };
 
 
@@ -657,14 +580,9 @@ static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *p
 
 
 
-/* prototypes for in-scope XML language and XML Base */
-static const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
-static raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
-
-
 /* prototypes for element functions */
-static raptor_element* raptor_element_pop(raptor_parser *rdf_parser);
-static void raptor_element_push(raptor_parser *rdf_parser, raptor_element* element);
+static raptor_element* raptor_element_pop(raptor_xml_parser *rdf_parser);
+static void raptor_element_push(raptor_xml_parser *rdf_parser, raptor_element* element);
 static void raptor_free_element(raptor_element *element);
 #ifdef RAPTOR_DEBUG
 static void raptor_print_element(raptor_element *element, FILE* stream);
@@ -678,7 +596,6 @@ static void raptor_end_element_grammar(raptor_parser *parser, raptor_element *el
 
 /* prototype for statement related functions */
 static void raptor_generate_statement(raptor_parser *rdf_parser, raptor_uri *subject_uri, const char *subject_id, const raptor_identifier_type subject_type, const raptor_uri_source subject_uri_source, raptor_uri *predicate_uri, const char *predicate_id, const raptor_identifier_type predicate_type, const raptor_uri_source predicate_uri_source, raptor_uri *object_uri, const char *object_id, const raptor_identifier_type object_type, const raptor_uri_source object_uri_source, raptor_uri *literal_datatype, raptor_uri *bag);
-static void raptor_print_statement_detailed(const raptor_statement *statement, int detailed, FILE *stream);
 
 
 
@@ -693,7 +610,7 @@ int raptor_xml_parse_chunk(raptor_parser* rdf_parser, const char *buffer, size_t
 
 
 static raptor_element*
-raptor_element_pop(raptor_parser *rdf_parser) 
+raptor_element_pop(raptor_xml_parser *rdf_parser) 
 {
   raptor_element *element=rdf_parser->current_element;
 
@@ -709,7 +626,7 @@ raptor_element_pop(raptor_parser *rdf_parser)
 
 
 static void
-raptor_element_push(raptor_parser *rdf_parser, raptor_element* element) 
+raptor_element_push(raptor_xml_parser *rdf_parser, raptor_element* element) 
 {
   element->parent=rdf_parser->current_element;
   rdf_parser->current_element=element;
@@ -876,6 +793,7 @@ raptor_xml_start_element_handler(void *user_data,
                                  const XML_Char *name, const XML_Char **atts)
 {
   raptor_parser* rdf_parser;
+  raptor_xml_parser* rdf_xml_parser;
   int all_atts_count=0;
   int ns_attributes_count=0;
   raptor_qname** named_attrs=NULL;
@@ -885,8 +803,9 @@ raptor_xml_start_element_handler(void *user_data,
   char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
   
-  
   rdf_parser=(raptor_parser*)user_data;
+  rdf_xml_parser=rdf_parser->xml_parser;
+
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
@@ -899,7 +818,7 @@ raptor_xml_start_element_handler(void *user_data,
 
   raptor_update_document_locator(rdf_parser);
 
-  rdf_parser->depth++;
+  rdf_xml_parser->depth++;
 
   if (atts) {
     /* Round 1 - process XML attributes */
@@ -913,7 +832,7 @@ raptor_xml_start_element_handler(void *user_data,
 
         if(raptor_namespaces_start_namespace(&rdf_parser->namespaces,
                                              prefix, atts[i+1],
-                                             rdf_parser->depth)) {
+                                             rdf_xml_parser->depth)) {
           raptor_parser_fatal_error(rdf_parser, "Out of memory");
           return;
         }
@@ -1028,9 +947,9 @@ raptor_xml_start_element_handler(void *user_data,
        *    FIXME  - is this correct!
        * then handle the RDF attributes
        */
-      if ((rdf_parser->current_element &&
-           rdf_content_type_info[rdf_parser->current_element->child_content_type].rdf_processing) ||
-          !rdf_parser->current_element) {
+      if ((rdf_xml_parser->current_element &&
+           rdf_content_type_info[rdf_xml_parser->current_element->child_content_type].rdf_processing) ||
+          !rdf_xml_parser->current_element) {
 
         /* Save pointers to some RDF M&S attributes */
 
@@ -1106,14 +1025,14 @@ raptor_xml_start_element_handler(void *user_data,
   element->attribute_count=ns_attributes_count;
 
 
-  raptor_element_push(rdf_parser, element);
+  raptor_element_push(rdf_xml_parser, element);
 
 
   /* start from unknown; if we have a parent, it may set this */
   element->state=RAPTOR_STATE_UNKNOWN;
   element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
 
-  if(element->parent) {
+  if(!rdf_parser->feature_scanning_for_rdf_RDF && element->parent) {
     element->content_type=element->parent->child_content_type;
       
     if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
@@ -1201,9 +1120,13 @@ raptor_xml_start_element_handler(void *user_data,
 void
 raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_parser* rdf_parser;
+  raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_qname *element_name;
+
+  rdf_parser=(raptor_parser*)user_data;
+  rdf_xml_parser=rdf_parser->xml_parser;
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
@@ -1229,7 +1152,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   fputc('\n', stderr);
 #endif
 
-  element=rdf_parser->current_element;
+  element=rdf_xml_parser->current_element;
   if(!raptor_qname_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
     raptor_parser_warning(rdf_parser, 
@@ -1240,11 +1163,11 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 
   raptor_end_element_grammar(rdf_parser, element);
 
-  element=raptor_element_pop(rdf_parser);
+  element=raptor_element_pop(rdf_xml_parser);
 
   raptor_free_qname(element_name);
 
-  raptor_namespaces_end_for_depth(&rdf_parser->namespaces, rdf_parser->depth);
+  raptor_namespaces_end_for_depth(&rdf_parser->namespaces, rdf_xml_parser->depth);
 
   if(element->parent) {
     /* Do not change this; PROPERTYELT will turn into MEMBER if necessary
@@ -1261,7 +1184,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 
   raptor_free_element(element);
 
-  rdf_parser->depth--;
+  rdf_xml_parser->depth--;
 
 #ifdef RAPTOR_DEBUG
   fputc('\n', stderr);
@@ -1277,13 +1200,17 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 void
 raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_parser* rdf_parser;
+  raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_state state;
   char *buffer;
   char *ptr;
   int all_whitespace=1;
   int i;
+
+  rdf_parser=(raptor_parser*)user_data;
+  rdf_xml_parser=rdf_parser->xml_parser;
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
@@ -1297,7 +1224,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
       break;
     }
 
-  element=rdf_parser->current_element;
+  element=rdf_xml_parser->current_element;
 
   /* this file is very broke - probably not XML, whatever */
   if(!element)
@@ -1454,7 +1381,7 @@ raptor_xml_external_entity_ref_handler(void *user_data,
                                        const XML_Char *systemId,
                                        const XML_Char *publicId)
 {
-/*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
+/*  raptor_xml_parser* rdf_parser=(raptor_xml_parser*)user_data; */
   fprintf(stderr,
           "raptor_xml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
           (base ? base : "(None)"), 
@@ -1468,166 +1395,22 @@ raptor_xml_external_entity_ref_handler(void *user_data,
 #endif
 
 
-/*
- * raptor_parser_fatal_error - Error from a parser - Internal
- **/
-void
-raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
-{
-  va_list arguments;
-
-  va_start(arguments, message);
-
-  raptor_parser_fatal_error_varargs(parser, message, arguments);
-  
-  va_end(arguments);
-}
-
-
-void
-raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
-                                  va_list arguments)
-{
-  parser->failed=1;
-
-  if(parser->fatal_error_handler) {
-    char empty_buffer[1];
-    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
-    if(!buffer) {
-      fprintf(stderr, "raptor_parser_fatal_error_varargs: Out of memory\n");
-      return;
-    }
-    vsnprintf(buffer, len, message, arguments);
-    parser->fatal_error_handler(parser->fatal_error_user_data, 
-                                &parser->locator, buffer); 
-    LIBRDF_FREE(cstring, buffer);
-    abort();
-  }
-
-  raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " raptor fatal error - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
-
-  abort();
-}
-
-
-/*
- * raptor_parser_error - Error from a parser - Internal
- **/
-void
-raptor_parser_error(raptor_parser* parser, const char *message, ...)
-{
-  va_list arguments;
-
-  va_start(arguments, message);
-
-  raptor_parser_error_varargs(parser, message, arguments);
-  
-  va_end(arguments);
-}
-
-
-/*
- * raptor_parser_error_varargs - Error from a parser - Internal
- **/
-void
-raptor_parser_error_varargs(raptor_parser* parser, const char *message, 
-                            va_list arguments)
-{
-  if(parser->error_handler) {
-    char empty_buffer[1];
-    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
-    if(!buffer) {
-      fprintf(stderr, "raptor_parser_error_varargs: Out of memory\n");
-      return;
-    }
-    vsnprintf(buffer, len, message, arguments);
-    parser->error_handler(parser->error_user_data, 
-                          &parser->locator, buffer);
-    LIBRDF_FREE(cstring, buffer);
-    return;
-  }
-
-  raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " raptor error - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
-}
-
-
-/*
- * raptor_parser_warning - Warning from a parser - Internal
- **/
-void
-raptor_parser_warning(raptor_parser* parser, const char *message, ...)
-{
-  va_list arguments;
-
-  va_start(arguments, message);
-
-  raptor_parser_warning_varargs(parser, message, arguments);
-
-  va_end(arguments);
-}
-
-
-/*
- * raptor_parser_warning - Warning from a parser - Internal
- **/
-void
-raptor_parser_warning_varargs(raptor_parser* parser, const char *message, 
-                              va_list arguments)
-{
-
-  if(parser->warning_handler) {
-    char empty_buffer[1];
-    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
-    if(!buffer) {
-      fprintf(stderr, "raptor_parser_warning_varargs: Out of memory\n");
-      return;
-    }
-    vsnprintf(buffer, len, message, arguments);
-    parser->warning_handler(parser->warning_user_data,
-                            &parser->locator, buffer);
-    LIBRDF_FREE(cstring, buffer);
-    return;
-  }
-
-  raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " raptor warning - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
-}
-
-
-
-/* PUBLIC FUNCTIONS */
-
-/**
- * raptor_new - Initialise the Raptor RDF parser
- *
- * Return value: non 0 on failure
- **/
 raptor_parser*
-raptor_new(
+raptor_xml_new(
+  raptor_parser* rdf_parser
 #ifdef RAPTOR_IN_REDLAND
-  librdf_world *world
-#else
-  void
+  ,librdf_world *world
 #endif
 )
 {
-  raptor_parser* rdf_parser;
+  raptor_xml_parser* rdf_xml_parser;
 
-  rdf_parser=(raptor_parser*)LIBRDF_CALLOC(raptor_parser, 1, sizeof(raptor_parser));
+  rdf_xml_parser=(raptor_xml_parser*)LIBRDF_CALLOC(raptor_xml_parser, 1, sizeof(raptor_xml_parser));
 
-  if(!rdf_parser)
+  if(!rdf_xml_parser)
     return NULL;
+  rdf_parser->xml_parser=rdf_xml_parser;
+
 
   /* Initialise default feature values */
   rdf_parser->feature_scanning_for_rdf_RDF=0;
@@ -1649,20 +1432,14 @@ raptor_new(
   raptor_namespaces_init(&rdf_parser->namespaces);
 #endif
 
-
   return rdf_parser;
 }
 
 
 
 
-/**
- * raptor_free - Free the Raptor RDF parser
- * @rdf_parser: parser object
- * 
- **/
 void
-raptor_free(raptor_parser *rdf_parser) 
+raptor_xml_free(raptor_parser *rdf_parser) 
 {
   raptor_xml_parse_clean(rdf_parser);
   
@@ -1687,71 +1464,7 @@ raptor_free(raptor_parser *rdf_parser)
 #endif
 #endif
 
-  LIBRDF_FREE(raptor_parser, rdf_parser);
-}
-
-
-/**
- * raptor_set_fatal_error_handler - Set the parser error handling function
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- * 
- * The function will receive callbacks when the parser fails.
- * 
- **/
-void
-raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data,
-                               raptor_message_handler handler)
-{
-  parser->fatal_error_user_data=user_data;
-  parser->fatal_error_handler=handler;
-}
-
-
-/**
- * raptor_set_error_handler - Set the parser error handling function
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- * 
- * The function will receive callbacks when the parser fails.
- * 
- **/
-void
-raptor_set_error_handler(raptor_parser* parser, void *user_data,
-                         raptor_message_handler handler)
-{
-  parser->error_user_data=user_data;
-  parser->error_handler=handler;
-}
-
-
-/**
- * raptor_set_warning_handler - Set the parser warning handling function
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- * 
- * The function will receive callbacks when the parser gives a warning.
- * 
- **/
-void
-raptor_set_warning_handler(raptor_parser* parser, void *user_data,
-                           raptor_message_handler handler)
-{
-  parser->warning_user_data=user_data;
-  parser->warning_handler=handler;
-}
-
-
-void
-raptor_set_statement_handler(raptor_parser* parser,
-                             void *user_data,
-                             raptor_statement_handler handler)
-{
-  parser->user_data=user_data;
-  parser->statement_handler=handler;
+  LIBRDF_FREE(raptor_xml_parser, rdf_parser->xml_parser);
 }
 
 
@@ -1764,11 +1477,13 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, raptor_uri *uri,
 #endif
   /* for storing error info */
   raptor_locator *locator=&rdf_parser->locator;
+  raptor_xml_parser* rdf_xml_parser=rdf_parser->xml_parser;
 
 
   /* initialise fields */
-  rdf_parser->depth=0;
-  rdf_parser->root_element= rdf_parser->current_element=NULL;
+  rdf_xml_parser->depth=0;
+  rdf_xml_parser->root_element= rdf_xml_parser->current_element=NULL;
+
   rdf_parser->failed=0;
 
   rdf_parser->base_uri=base_uri;
@@ -1797,16 +1512,16 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, raptor_uri *uri,
                               raptor_start_namespace_decl_handler,
                               raptor_end_namespace_decl_handler);
 #endif
-  rdf_parser->xp=xp;
+  rdf_xml_parser->xp=xp;
 
   XML_SetBase(xp, RAPTOR_URI_AS_STRING(base_uri));
 #endif
 
 
 #ifdef RAPTOR_XML_LIBXML
-  raptor_libxml_init(&rdf_parser->sax);
+  raptor_libxml_init(&rdf_xml_parser->sax);
 
-  rdf_parser->first_read=1;
+  rdf_xml_parser->first_read=1;
 #endif
 
   locator->uri=base_uri;
@@ -1845,19 +1560,20 @@ raptor_xml_parse_init_file(raptor_parser* rdf_parser,  const char *filename,
 void
 raptor_xml_parse_clean(raptor_parser* rdf_parser) 
 {
+  raptor_xml_parser* rdf_xml_parser=rdf_parser->xml_parser;
   raptor_element* element;
 
 #ifdef RAPTOR_XML_EXPAT
-  if(rdf_parser->xp) {
-    XML_ParserFree(rdf_parser->xp);
-    rdf_parser->xp=NULL;
+  if(rdf_xml_parser->xp) {
+    XML_ParserFree(rdf_xml_parser->xp);
+    rdf_xml_parser->xp=NULL;
   }
 #endif
 
 #ifdef RAPTOR_XML_LIBXML
-  if(rdf_parser->xc) {
-    xmlFreeParserCtxt(rdf_parser->xc);
-    rdf_parser->xc=NULL;
+  if(rdf_xml_parser->xc) {
+    xmlFreeParserCtxt(rdf_xml_parser->xc);
+    rdf_xml_parser->xc=NULL;
   }
 #endif
 
@@ -1865,7 +1581,7 @@ raptor_xml_parse_clean(raptor_parser* rdf_parser)
     fclose(rdf_parser->fh);
     rdf_parser->fh=NULL;
   }
-  while((element=raptor_element_pop(rdf_parser))) {
+  while((element=raptor_element_pop(rdf_xml_parser))) {
     raptor_free_element(element);
   }
 }
@@ -1875,7 +1591,7 @@ raptor_xml_parse_clean(raptor_parser* rdf_parser)
 static void
 raptor_xml_parse_handle_errors(raptor_parser* rdf_parser) {
 #ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp=rdf_parser->xp;
+  XML_Parser xp=rdf_parser->xml_parser->xp;
   int xe=XML_GetErrorCode(xp);
   raptor_locator *locator=&rdf_parser->locator;
 
@@ -1910,18 +1626,19 @@ static int
 raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
                         size_t len, int is_end) 
 {
+  raptor_xml_parser* rdf_xml_parser=rdf_parser->xml_parser;
 #ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp=rdf_parser->xp;
+  XML_Parser xp=rdf_xml_parser->xp;
 #endif
 #ifdef RAPTOR_XML_LIBXML
   /* parser context */
-  xmlParserCtxtPtr xc=rdf_parser->xc;
+  xmlParserCtxtPtr xc=rdf_xml_parser->xc;
 #endif
   int rc;
   
 #ifdef RAPTOR_XML_LIBXML
   if(!xc) {
-    xc = xmlCreatePushParserCtxt(&rdf_parser->sax, rdf_parser,
+    xc = xmlCreatePushParserCtxt(&rdf_xml_parser->sax, rdf_parser,
                                  buffer, len, 
                                  NULL);
     if(!xc)
@@ -1933,7 +1650,7 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
     xc->vctxt.warning=raptor_libxml_validation_warning;
     xc->replaceEntities = 1;
     
-    rdf_parser->xc = xc;
+    rdf_xml_parser->xc = xc;
 
     if(is_end)
       len= -1;
@@ -1968,7 +1685,7 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
    * if the buffer size is larger than the entire file
    * and thus the entire parsing is done in one operation.
    */
-  if(rdf_parser->first_read && is_end) {
+  if(rdf_xml_parser->first_read && is_end) {
     /* parse all but the last character */
     rc=xmlParseChunk(xc, buffer, len-1, 0);
     if(rc)
@@ -1983,7 +1700,7 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
     return 0;
   }
 
-  rdf_parser->first_read=0;
+  rdf_xml_parser->first_read=0;
     
   rc=xmlParseChunk(xc, buffer, len, is_end);
   if(rc) /* libxml: non 0 is failure */
@@ -2062,31 +1779,6 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   raptor_xml_parse_clean(rdf_parser);
 
   return (rc != 0);
-}
-
-
-void
-raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
-  switch(feature) {
-    case RAPTOR_FEATURE_SCANNING:
-      parser->feature_scanning_for_rdf_RDF=value;
-      break;
-
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
-      parser->feature_assume_is_rdf=value;
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-      parser->feature_allow_non_ns_attributes=value;
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-      parser->feature_allow_other_parseTypes=value;
-      break;
-
-    default:
-      break;
-  }
 }
 
 
@@ -2187,373 +1879,6 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 }
 
-
-
-static void
-raptor_print_statement_detailed(const raptor_statement * statement,
-                                int detailed, FILE *stream) 
-{
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    fprintf(stream, "[%s, ", (const char*)statement->subject);
-  else {
-#ifdef RAPTOR_DEBUG
-    if(!statement->subject)
-      LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL subject URI\n");
-#endif
-    fprintf(stream, "[%s, ",
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
-  }
-
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate));
-  else {
-#ifdef RAPTOR_DEBUG
-    if(!statement->predicate)
-      LIBRDF_FATAL1(raptor_print_statement_detailed, "Statement has NULL predicate URI\n");
-#endif
-    fputs(RAPTOR_URI_AS_STRING((raptor_uri*)statement->predicate), stream);
-  }
-
-  fputs(", ", stream);
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    if(statement->object_literal_datatype) {
-      fputc('<', stream);
-      fputs(RAPTOR_URI_AS_STRING((raptor_uri*)statement->object_literal_datatype), stream);
-      fputc('<', stream);
-    }
-    fputc('"', stream);
-    fputs((const char*)statement->object, stream);
-    fputc('"', stream);
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    fputs((const char*)statement->object, stream);
-  else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "[rdf:_%d]", *((int*)statement->object));
-  else {
-#ifdef RAPTOR_DEBUG
-    if(!statement->object)
-      LIBRDF_FATAL1(raptor_generate_statement, "Statement has NULL object URI\n");
-#endif
-    fprintf(stream, "%s", 
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->object));
-  }
-  fputc(']', stream);
-}
-
-
-void
-raptor_print_statement(const raptor_statement * const statement, FILE *stream) 
-{
-  raptor_print_statement_detailed(statement, 0, stream);
-}
-
-
-void
-raptor_print_statement_as_ntriples(const raptor_statement * statement,
-                                   FILE *stream) 
-{
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    fprintf(stream, "_:%s", (const char*)statement->subject);
-  else
-    fprintf(stream, "<%s>",
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
-  fputc(' ', stream);
-
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
-            *((int*)statement->predicate));
-  else /* must be URI */
-    fprintf(stream, "<%s>",
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->predicate));
-  fputc(' ', stream);
-
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
-    fputc('"', stream);
-    raptor_print_ntriples_string(stream, (const char*)statement->object, '"');
-    fputc('"', stream);
-    if(statement->object_literal_language)
-      fprintf(stream, "-%s",  (const char*)statement->object_literal_language);
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    fputs("xml\"", stream);
-    raptor_print_ntriples_string(stream, (const char*)statement->object, '"');
-    fputc('"', stream);
-    if(statement->object_literal_language)
-      fprintf(stream, "-%s",  (const char*)statement->object_literal_language);
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    fprintf(stream, "_:%s", (const char*)statement->object);
-  else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
-            *((int*)statement->object));
-  else /* must be URI */
-    fprintf(stream, "<%s>", 
-            RAPTOR_URI_AS_STRING((raptor_uri*)statement->object));
-
-  fputs(" .", stream);
-}
-
-
-
-
-static const char *
-raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
-{
-  static int myid=0;
-  char *buffer;
-  /* "genid" + min length 1 + \0 */
-  int length=7;
-  int id=++myid;
-  int tmpid=id;
-
-  while(tmpid/=10)
-    length++;
-  buffer=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!buffer)
-    return NULL;
-  sprintf(buffer, "genid%d", id);
-
-  return buffer;
-}
-
-
-raptor_uri*
-raptor_make_uri(raptor_uri *base_uri, const char *reference_uri_string) 
-{
-#ifdef RAPTOR_IN_REDLAND
-#else
-  char *new_uri;
-  int new_uri_len;
-#endif
-
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG3(raptor_make_uri, 
-                "Using base URI %s and URI '%s'\n", 
-                base_uri, reference_uri);
-#endif
-
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri_relative_to_base(base_uri, reference_uri_string);
-#else
-  new_uri_len=strlen(base_uri)+strlen(reference_uri_string)+1;
-  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len+1);
-  if(!new_uri)
-    return NULL;
-  
-  /* If URI string is empty, just copy base URI */
-  if(!*reference_uri_string) {
-    strcpy(new_uri, base_uri);
-    return new_uri;
-  }
-
-  raptor_uri_resolve_uri_reference(base_uri, reference_uri_string,
-                                   new_uri, new_uri_len);
-  return new_uri;
-#endif
-}
-
-
-static raptor_uri*
-raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id) 
-{
-  raptor_uri *base_uri = raptor_inscope_base_uri(rdf_parser);
-  raptor_uri *new_uri;
-  char *local_name;
-  int len;
-
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(raptor_make_uri_from_id, "Using ID %s\n", id);
-#endif
-
-  /* "#id\0" */
-  len=1+strlen(id)+1;
-  local_name=(char*)LIBRDF_MALLOC(cstring, len);
-  if(!local_name)
-    return NULL;
-  *local_name='#';
-  strcpy(local_name+1, id);
-  new_uri=raptor_make_uri(base_uri, local_name);
-  LIBRDF_FREE(cstring, local_name);
-  return new_uri;
-}
-
-
-#ifndef RAPTOR_IN_REDLAND
-static raptor_uri*
-raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name) 
-{
-  raptor_uri *new_uri;
-  int base_uri_len=strlen(base_uri);
-  int new_uri_len;
-
-  base_uri_len=strlen(base_uri);
-  new_uri_len=base_uri_len+strlen(name)+1;
-  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len);
-  if(!new_uri)
-    return NULL;
-  strcpy((char*)new_uri, base_uri);
-  strcpy((char*)new_uri+base_uri_len, name);
-  return new_uri;
-}
-#endif
-
-
-raptor_uri*
-raptor_copy_uri(raptor_uri *uri) 
-{
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri_from_uri(uri);
-#else
-  char *new_uri;
-  new_uri=(char*)LIBRDF_MALLOC(cstring, strlen(uri)+1);
-  if(!new_uri)
-    return NULL;
-  strcpy(new_uri, uri);
-  return new_uri;
-#endif
-}
-
-
-/**
- * raptor_new_identifier - Constructor - create a raptor_identifier
- * @type: raptor_identifier_type of identifier
- * @uri: URI of identifier (if relevant)
- * @uri_source: raptor_uri_source of URI (if relevnant)
- * @id: string for ID or genid (if relevant)
- * 
- * Constructs a new identifier copying the URI, ID fields.
- * 
- * Return value: a new raptor_identifier object or NULL on failure
- **/
-raptor_identifier*
-raptor_new_identifier(raptor_identifier_type type,
-                      raptor_uri *uri,
-                      raptor_uri_source uri_source,
-                      char *id)
-{
-  raptor_identifier *identifier;
-  raptor_uri *new_uri=NULL;
-  char *new_id=NULL;
-
-  identifier=(raptor_identifier*)LIBRDF_CALLOC(raptor_identifier, 1,
-                                                sizeof(raptor_identifier));
-  if(!identifier)
-    return NULL;
-
-  if(uri) {
-    new_uri=raptor_copy_uri(uri);
-    if(!new_uri) {
-      LIBRDF_FREE(raptor_identifier, identifier);
-      return NULL;
-    }
-  }
-
-  if(id) {
-    int len=strlen(id);
-    
-    new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
-    if(!len) {
-      if(new_uri)
-        LIBRDF_FREE(cstring, new_uri);
-      LIBRDF_FREE(raptor_identifier, identifier);
-      return NULL;
-    }
-    strncpy(new_id, id, len+1);
-  }
-  
-
-  identifier->is_malloced=1;
-  raptor_init_identifier(identifier, type, new_uri, uri_source, new_id);
-  return identifier;
-}
-
-
-/**
- * raptor_init_identifier - Initialise a pre-allocated raptor_identifier object
- * @identifier: Existing object
- * @type: raptor_identifier_type of identifier
- * @uri: URI of identifier (if relevant)
- * @uri_source: raptor_uri_source of URI (if relevnant)
- * @id: string for ID or genid (if relevant)
- * 
- * Fills in the fields of an existing allocated raptor_identifier object.
- * DOES NOT copy any of the option arguments.
- **/
-void
-raptor_init_identifier(raptor_identifier *identifier,
-                       raptor_identifier_type type,
-                       raptor_uri *uri,
-                       raptor_uri_source uri_source,
-                       char *id) 
-{
-  identifier->is_malloced=0;
-  identifier->type=type;
-  identifier->uri=uri;
-  identifier->uri_source=uri_source;
-  identifier->id=id;
-}
-
-
-/**
- * raptor_copy_identifier - Copy raptor_identifiers
- * @dest: destination &raptor_identifier (previously created)
- * @src:  source &raptor_identifier
- * 
- * Return value: Non 0 on failure
- **/
-int
-raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
-{
-  raptor_uri *new_uri=NULL;
-  char *new_id=NULL;
-  
-  raptor_free_identifier(dest);
-  raptor_init_identifier(dest, src->type, new_uri, src->uri_source, new_id);
-
-  if(src->uri) {
-    new_uri=raptor_copy_uri(src->uri);
-    if(!new_uri)
-      return 0;
-  }
-
-  if(src->id) {
-    int len=strlen(src->id);
-    
-    new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
-    if(!len) {
-      if(new_uri)
-        LIBRDF_FREE(cstring, new_uri);
-      return 0;
-    }
-    strncpy(new_id, src->id, len+1);
-  }
-  dest->uri=new_uri;
-  dest->id=new_id;
-
-  dest->type=src->type;
-  dest->uri_source=src->uri_source;
-  dest->ordinal=src->ordinal;
-
-  return 0;
-}
-
-
-/**
- * raptor_free_identifier - Destructor - destroy a raptor_identifier object
- * @identifier: &raptor_identifier object
- * 
- * Does not free an object initialised by raptor_init_identifier()
- **/
-void
-raptor_free_identifier(raptor_identifier *identifier) 
-{
-  if(identifier->uri)
-    RAPTOR_FREE_URI(identifier->uri);
-
-  if(identifier->id)
-    LIBRDF_FREE(cstring, (void*)identifier->id);
-
-  if(identifier->is_malloced)
-    LIBRDF_FREE(identifier, (void*)identifier);
-}
 
 
 /**
@@ -2766,8 +2091,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
   const char *el_name=element->name->local_name;
   int element_in_rdf_ns=(element->name->nspace && 
                          element->name->nspace->is_rdf_ms);
-  int at_grammar_start=(!element->parent ||
-                        (element->parent->state == RAPTOR_STATE_UNKNOWN));
+
 
   state=element->state;
   LIBRDF_DEBUG3(raptor_start_element_grammar, "Starting in state %d - %s\n",
@@ -2804,13 +2128,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
 
         /* If scanning for element, can continue */
-        if(at_grammar_start && rdf_parser->feature_scanning_for_rdf_RDF) {
+        if(rdf_parser->feature_scanning_for_rdf_RDF) {
           finished=1;
           break;
         }
 
         /* If cannot assume document is rdf/xml, must have rdf:RDF at root */
-        if(at_grammar_start && !rdf_parser->feature_assume_is_rdf) {
+        if(!rdf_parser->feature_assume_is_rdf) {
           raptor_parser_error(rdf_parser, "Document element rdf:RDF missing.");
           state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2894,7 +2218,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->subject.id=(char*)element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject.uri=raptor_make_uri_from_id(rdf_parser, element->subject.id);
+          element->subject.uri=raptor_make_uri_from_id(rdf_parser, raptor_inscope_base_uri(rdf_parser), element->subject.id);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
@@ -2927,7 +2251,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           element->bag.id=(char*)element->rdf_attr[RDF_ATTR_bagID];
           element->rdf_attr[RDF_ATTR_bagID]=NULL;
-          element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
+          element->bag.uri=raptor_make_uri_from_id(rdf_parser,  raptor_inscope_base_uri(rdf_parser), element->bag.id);
           element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
@@ -3178,7 +2502,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->reified.id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->reified.uri=raptor_make_uri_from_id(rdf_parser,  element->reified.id);
+          element->reified.uri=raptor_make_uri_from_id(rdf_parser, raptor_inscope_base_uri(rdf_parser), element->reified.id);
           element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
@@ -3236,7 +2560,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * using this id
            */
           if(element->reified.id) {
-            element->reified.uri=raptor_make_uri_from_id(rdf_parser,  element->reified.id);
+            element->reified.uri=raptor_make_uri_from_id(rdf_parser, raptor_inscope_base_uri(rdf_parser), element->reified.id);
             element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
@@ -3758,12 +3082,13 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
  * 
  * Return value: The xml:lang value or NULL if none is in scope. 
  **/
-static const char*
+const char*
 raptor_inscope_xml_language(raptor_parser *rdf_parser)
 {
+  raptor_xml_parser *rdf_xml_parser=rdf_parser->xml_parser;
   raptor_element *element;
   
-  for(element=rdf_parser->current_element; element; element=element->parent)
+  for(element=rdf_xml_parser->current_element; element; element=element->parent)
     if(element->xml_language)
       return element->xml_language;
     
@@ -3779,12 +3104,13 @@ raptor_inscope_xml_language(raptor_parser *rdf_parser)
  * 
  * Return value: The URI string value or NULL on failure.
  **/
-static raptor_uri*
+raptor_uri*
 raptor_inscope_base_uri(raptor_parser *rdf_parser)
 {
+  raptor_xml_parser *rdf_xml_parser=rdf_parser->xml_parser;
   raptor_element *element;
   
-  for(element=rdf_parser->current_element; element; element=element->parent)
+  for(element=rdf_xml_parser->current_element; element; element=element->parent)
     if(element->base_uri)
       return element->base_uri;
     
@@ -3795,30 +3121,30 @@ raptor_inscope_base_uri(raptor_parser *rdf_parser)
 #ifdef RAPTOR_XML_LIBXML
 xmlParserCtxtPtr
 raptor_get_libxml_context(raptor_parser *rdf_parser) {
-  return rdf_parser->xc;
+  return rdf_parser->xml_parser->xc;
 }
 
 void
 raptor_set_libxml_document_locator(raptor_parser *rdf_parser,
                                    xmlSAXLocatorPtr loc) {
-  rdf_parser->loc=loc;
+  rdf_parser->xml_parser->loc=loc;
 }
 
 xmlSAXLocatorPtr
 raptor_get_libxml_document_locator(raptor_parser *rdf_parser) {
-  return rdf_parser->loc;
+  return rdf_parser->xml_parser->loc;
 }
 
 #ifdef RAPTOR_LIBXML_MY_ENTITIES
 raptor_xml_entity*
 raptor_get_libxml_entities(raptor_parser *rdf_parser) {
-  return rdf_parser->entities;
+  return rdf_parser->xml_parser->entities;
 }
 
 void
 raptor_set_libxml_entities(raptor_parser *rdf_parser, 
                            raptor_xml_entity* entities) {
-  rdf_parser->entities=entities;
+  rdf_parser->xml_parser->entities=entities;
 }
 #endif
 
@@ -3829,16 +3155,10 @@ raptor_set_libxml_entities(raptor_parser *rdf_parser,
 void
 raptor_expat_update_document_locator (raptor_parser *rdf_parser) {
   raptor_locator *locator=&rdf_parser->locator;
+  raptor_xml_parser *rdf_xml_parser=rdf_parser->xml_parser;
 
-  locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
-  locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
-  locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
+  locator->line=XML_GetCurrentLineNumber(rdf_xml_parser->xp);
+  locator->column=XML_GetCurrentColumnNumber(rdf_xml_parser->xp);
+  locator->byte=XML_GetCurrentByteIndex(rdf_xml_parser->xp);
 }
-#endif  
-
-
-raptor_locator*
-raptor_get_locator(raptor_parser *rdf_parser) 
-{
-  return &rdf_parser->locator;
-}
+#endif
