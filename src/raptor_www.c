@@ -277,7 +277,7 @@ raptor_www_set_http_accept(raptor_www *www, const char *value)
   www->http_accept=value_copy;
 
   strcpy(value_copy, "Accept:");
-  value_copy+=8;
+  value_copy+=7;
   if(value) {
     *value_copy++=' ';
     strcpy(value_copy, value);
