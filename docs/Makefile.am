@@ -190,11 +190,11 @@ raptor_parse_test: $(srcdir)/raptor_general.c libraptor.la
 raptor_rfc2396_test: $(srcdir)/raptor_rfc2396.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_rfc2396.c libraptor.la $(LIBS)
 
-raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+raptor_uri_test: $(srcdir)/raptor_uri.c raptor_rfc2396.lo
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c raptor_rfc2396.lo
 
-raptor_uri_win32_test: $(srcdir)/raptor_uri.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -DWIN32_URI_TEST $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+raptor_uri_win32_test: $(srcdir)/raptor_uri.c raptor_rfc2396.lo
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -DWIN32_URI_TEST $(srcdir)/raptor_uri.c raptor_rfc2396.lo
 
 raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor.la $(LIBS)
