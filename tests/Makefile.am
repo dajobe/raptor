@@ -68,7 +68,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	  else \
 	    baseuri=$(BASE_URI)$$test; \
 	  fi; \
-	  echo -n "Checking $$test "; \
+	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    echo ok; \
@@ -80,7 +80,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$test; \
-	  echo -n "Checking $$test "; \
+	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  status=$$?; \
 	  if test $$status != 0 ; then \
@@ -93,7 +93,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	done; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
-	  echo -n "Checking $$test "; \
+	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdump -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    echo ok; \
