@@ -85,7 +85,7 @@ if RAPTOR_PARSER_RSS
 libraptor_la_SOURCES += raptor_rss.c
 endif
 if RAPTOR_NFC_CHECK
-raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
+libraptor_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
 endif
 if STRCASECMP
 libraptor_la_SOURCES += strcasecmp.c
