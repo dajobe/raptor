@@ -191,11 +191,17 @@ struct raptor_namespace_s {
   int is_rdf_schema;
 };
 
+#ifdef RAPTOR_XML_LIBXML
+#define RAPTOR_LIBXML_MAGIC 0x8AF108
+#endif
 
 /*
  * Raptor parser object
  */
 struct raptor_parser_s {
+#ifdef RAPTOR_XML_LIBXML
+  int magic;
+#endif
 
   /* stack of namespaces, most recently added at top */
   raptor_namespace_stack namespaces;
