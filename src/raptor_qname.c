@@ -193,7 +193,7 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
     if(!ns) {
       /* failed to find namespace - now what? */
       if(error_handler)
-        error_handler(error_data, "The namespace prefix in \"%s\" was not declared", name);
+        error_handler(error_data, "The namespace prefix in \"%s\" was not declared.", name);
     } else {
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG3(raptor_new_qname,
