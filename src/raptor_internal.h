@@ -418,7 +418,9 @@ struct  raptor_www_s {
   int total_bytes;
   int failed;
   int status_code;
-  
+
+  raptor_uri *uri;
+
 #ifdef RAPTOR_WWW_LIBCURL
   CURL *curl_handle;
   CURLcode status;
@@ -444,9 +446,10 @@ struct  raptor_www_s {
   /* proxy URL string or NULL for none */
   char *proxy;
   
-  void *userdata;
-  size_t (*write_bytes)(void *userdata, const void *ptr, size_t size, size_t nmemb);
-  void (*content_type)(void *userdata, const char *content_type);
+  void *write_bytes_userdata;
+  raptor_www_write_bytes_handler write_bytes;
+  void *content_type_userdata;
+  raptor_www_content_type_handler content_type;
 
   void *error_data;
   raptor_message_handler error_handler;
@@ -460,17 +463,17 @@ struct  raptor_www_s {
 /* internal */
 void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
-int raptor_www_libxml_fetch(raptor_www *www, const char *url);
+int raptor_www_libxml_fetch(raptor_www *www);
 
 void raptor_www_error(raptor_www *www, const char *message, ...);
 
 void raptor_www_ghttp_init(raptor_www *www);
 void raptor_www_ghttp_free(raptor_www *www);
-int raptor_www_ghttp_fetch(raptor_www *www, const char *url);
+int raptor_www_ghttp_fetch(raptor_www *www);
 
 void raptor_www_curl_init(raptor_www *www);
 void raptor_www_curl_free(raptor_www *www);
-int raptor_www_curl_fetch(raptor_www *www, const char *url);
+int raptor_www_curl_fetch(raptor_www *www);
 
 
 /* end of RAPTOR_INTERNAL */
