@@ -38,7 +38,7 @@ EXTRA_rapper_SOURCES = getopt.c
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
-raptor_www.c raptor_set.c
+raptor_www.c raptor_set.c raptor_xml.c
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
@@ -59,7 +59,7 @@ $(man_MANS)
 SUBDIRS= debian tests win32 examples
 
 TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test \
-raptor_www_test raptor_set_test raptor_general_test
+raptor_www_test raptor_set_test raptor_xml_test
 
 CLEANFILES=$(TESTS)
 
@@ -128,8 +128,8 @@ raptor_www_test: $(srcdir)/raptor_www_test.c libraptor.la
 raptor_set_test: $(srcdir)/raptor_set.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_set.c libraptor.la $(LIBS) @REDLAND_LIBS@
 
-raptor_general_test: $(srcdir)/raptor_general.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_general.c libraptor.la $(LIBS) @REDLAND_LIBS@
+raptor_xml_test: $(srcdir)/raptor_xml.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_xml.c libraptor.la $(LIBS) @REDLAND_LIBS@
 
 
 deb: distcheck
