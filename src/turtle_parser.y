@@ -835,8 +835,7 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
 
   n3_parser_parse(rdf_parser);
 
-  n3_lexer__delete_buffer(buffer, n3_parser->scanner);
-  n3_lexer_pop_buffer_state(n3_parser->scanner);
+  n3_parser->scanner_set=0;
 
   return 0;
 }
