@@ -20,7 +20,7 @@ dnl full license terms.
 dnl 
 
 
-AC_INIT(Raptor RDF Parser, 0.9.13, redland-dev@lists.librdf.org, raptor)
+AC_INIT(Raptor RDF Parser, 1.0.0, redland-dev@lists.librdf.org, raptor)
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(raptor_parse.c)
 AC_REVISION($Revision$)
@@ -101,8 +101,42 @@ AC_DEFINE_UNQUOTED(RAPTOR_VERSION_DECIMAL, $version_decimal, [Release version as
 RAPTOR_VERSION_DECIMAL=$version_decimal
 AC_SUBST(RAPTOR_VERSION_DECIMAL)
 
+# Libtool versioning
+#
+# CURRENT
+#      The most recent interface number that this library implements.
+# 
+# REVISION
+#      The implementation number of the CURRENT interface.
+# 
+# AGE
+#      The difference between the newest and oldest interfaces that this
+#      library implements.  In other words, the library implements all the
+#      interface numbers in the range from number `CURRENT - AGE' to
+#      `CURRENT'.
+#
+# Rules:
+#  1. Start with version information of `0:0:0' for each libtool library.
+#
+#  2. Update the version information only immediately before a public
+#     release of your software.  More frequent updates are unnecessary,
+#     and only guarantee that the current interface number gets larger
+#     faster.
+#
+#  3. If the library source code has changed at all since the last
+#     update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
+#
+#  4. If any interfaces have been added, removed, or changed since the
+#     last update, increment CURRENT, and set REVISION to 0.
+#
+#  5. If any interfaces have been added since the last public release,
+#     then increment AGE.
+#
+#  6. If any interfaces have been removed since the last public release,
+#     then set AGE to 0.
+#
 # syntax: CURRENT[:REVISION[:AGE]]
-RAPTOR_LIBTOOL_VERSION=0:0:0
+RAPTOR_LIBTOOL_VERSION=1:0:0
 AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 
 
