@@ -67,4 +67,4 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 
 # Datatype Literals
 <http://example.org/resource32> <http://example.org/property> "abc"^^<http://example.org/datatype1> .
-<http://example.org/resource32> <http://example.org/property> "abc"@en^^<http://example.org/datatype2> .
+<http://example.org/resource33> <http://example.org/property> "abc"@en^^<http://example.org/datatype2> .
