@@ -467,11 +467,11 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
  **/
 int
 raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
-                               raptor_uri *uri, const char *prefix) 
+                               raptor_uri *uri, const unsigned char *prefix) 
 {
   if(rdf_serializer->factory->declare_namespace)
     return rdf_serializer->factory->declare_namespace(rdf_serializer, 
-                                                      prefix, uri);
+                                                      uri, prefix);
 
   return 1;
 }
@@ -860,8 +860,8 @@ raptor_rdfxml_serialize_terminate(raptor_serializer* serializer)
 /* add a namespace */
 static int
 raptor_rdfxml_serialize_declare_namespace(raptor_serializer* serializer, 
-                                          const unsigned char *prefix, 
-                                          raptor_uri *uri)
+                                          raptor_uri *uri,
+                                          const unsigned char *prefix)
 {
   raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context;
   unsigned char *prefix_copy=NULL;
@@ -870,7 +870,7 @@ raptor_rdfxml_serialize_declare_namespace(raptor_serializer* serializer,
   if(uri)
     uri=raptor_uri_copy(uri);
   if(prefix) {
-    size_t prefix_len=strlen(prefix);
+    size_t prefix_len=strlen((const char*)prefix);
     prefix_copy=(unsigned char*)RAPTOR_MALLOC(cstring, prefix_len+1);
     strncpy((char*)prefix_copy, (const char*)prefix, prefix_len+1);
   }
@@ -1335,8 +1335,8 @@ raptor_ntriples_serialize_terminate(raptor_serializer* serializer)
 /* add a namespace */
 static int
 raptor_ntriples_serialize_declare_namespace(raptor_serializer* serializer, 
-                                            const unsigned char *prefix, 
-                                            raptor_uri *uri)
+                                            raptor_uri *uri,
+                                            const unsigned char *prefix)
 {
   /* NOP */
   return 0;

@@ -2871,7 +2871,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 raptor_free_iostream(rdf_xml_parser->iostream);
                 rdf_xml_parser->iostream=NULL;
                 
-                buffer=rdf_xml_parser->xml_content;
+                buffer=(unsigned char*)rdf_xml_parser->xml_content;
                 length=rdf_xml_parser->xml_content_length;
               } else {
                 buffer=sax2_element->content_cdata;

@@ -489,11 +489,11 @@ int
 raptor_iostream_write_stringbuffer(raptor_iostream* iostr,
                                    raptor_stringbuffer *sb)
 {
-  size_t length;
+  int length;
   if(!sb)
     return 1;
   
-  length=raptor_stringbuffer_length(sb);
+  length=(int)raptor_stringbuffer_length(sb);
   if(length)
     return (raptor_iostream_write_bytes(iostr, 
                                         raptor_stringbuffer_as_string(sb), 1, length)

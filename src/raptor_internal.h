@@ -491,7 +491,7 @@ struct raptor_serializer_factory_s {
   void (*terminate)(raptor_serializer* serializer);
   
   /* add a namespace */
-  int (*declare_namespace)(raptor_serializer* serializer, const unsigned char *prefix, raptor_uri *uri);
+  int (*declare_namespace)(raptor_serializer* serializer, raptor_uri *uri, const unsigned char *prefix);
   
   /* start a serialization */
   int (*serialize_start)(raptor_serializer* serializer);

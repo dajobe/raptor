@@ -293,7 +293,7 @@ RAPTOR_API int raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_
 RAPTOR_API int raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer, const char *filename);
 RAPTOR_API int raptor_serialize_start_to_string(raptor_serializer *rdf_serializer, raptor_uri *uri, void **string_p, size_t *length_p);
 RAPTOR_API int raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer, raptor_uri *uri, FILE *fh);
-RAPTOR_API int raptor_serialize_set_namespace(raptor_serializer* rdf_serializer, raptor_uri *uri, const char *prefix);
+RAPTOR_API int raptor_serialize_set_namespace(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char *prefix);
 RAPTOR_API int raptor_serialize_statement(raptor_serializer* rdf_serializer, const raptor_statement *statement);
 RAPTOR_API int raptor_serialize_end(raptor_serializer *rdf_serializer);
 RAPTOR_API raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
@@ -417,7 +417,7 @@ RAPTOR_API raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 RAPTOR_API const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 RAPTOR_API unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API int raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns);
-RAPTOR_API int raptor_new_namespace_parts_from_string(unsigned char *string, unsigned char **prefix, unsigned char **uri_string);
+RAPTOR_API int raptor_new_namespace_parts_from_string(const unsigned char *string, unsigned char **prefix, unsigned char **uri_string);
 
 typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 

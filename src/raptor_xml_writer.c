@@ -215,9 +215,9 @@ void
 raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
                           const unsigned char *s, unsigned int len)
 {
-  raptor_xml_writer_raw(xml_writer, "<!-- ", 5);
+  raptor_xml_writer_raw(xml_writer, (const unsigned char*)"<!-- ", 5);
   raptor_xml_writer_cdata(xml_writer, s, len);
-  raptor_xml_writer_raw(xml_writer, " -->", 4);
+  raptor_xml_writer_raw(xml_writer, (const unsigned char*)" -->", 4);
 }
 
 
@@ -231,7 +231,7 @@ raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
 int main(int argc, char *argv[]);
 
 
-const char *base_uri_string="http://example.org/base#";
+const unsigned char *base_uri_string=(const unsigned char*)"http://example.org/base#";
 
 #define OUT_BYTES_COUNT 96
 
@@ -280,12 +280,13 @@ main(int argc, char *argv[])
   base_uri=raptor_new_uri(base_uri_string);
 
   raptor_namespaces_start_namespace_full(nstack,
-                                         "foo",
-                                         "http://example.org/foo-ns#",
+                                         (const unsigned char*)"foo",
+                                         (const unsigned char*)"http://example.org/foo-ns#",
                                          0);
 
 
-  el_name=raptor_new_qname(nstack, "foo:bar", 
+  el_name=raptor_new_qname(nstack, 
+                           (const unsigned char*)"foo:bar", 
                            NULL, /* no attribute value - element */
                            NULL, NULL); /* errors */
   element=raptor_new_sax2_element(el_name,
@@ -293,16 +294,17 @@ main(int argc, char *argv[])
                                   raptor_uri_copy(base_uri));
 
   raptor_xml_writer_start_element(xml_writer, element);
-  raptor_xml_writer_cdata(xml_writer, "hello\n", 6);
-  raptor_xml_writer_comment(xml_writer, "comment", 7);
-  raptor_xml_writer_cdata(xml_writer, "\n", 1);
+  raptor_xml_writer_cdata(xml_writer, (const unsigned char*)"hello\n", 6);
+  raptor_xml_writer_comment(xml_writer, (const unsigned char*)"comment", 7);
+  raptor_xml_writer_cdata(xml_writer, (const unsigned char*)"\n", 1);
   raptor_xml_writer_end_element(xml_writer, element);
 
   raptor_free_sax2_element(element);
 
-  raptor_xml_writer_cdata(xml_writer, "\n", 1);
+  raptor_xml_writer_cdata(xml_writer, (const unsigned char*)"\n", 1);
 
-  el_name=raptor_new_qname(nstack, "blah", 
+  el_name=raptor_new_qname(nstack, 
+                           (const unsigned char*)"blah", 
                            NULL, /* no attribute value - element */
                            NULL, NULL); /* errors */
   element=raptor_new_sax2_element(el_name,
@@ -310,14 +312,15 @@ main(int argc, char *argv[])
                                   raptor_uri_copy(base_uri));
 
   attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-  attrs[0]=raptor_new_qname(nstack, "a",
-                            "b", /* attribute value */
+  attrs[0]=raptor_new_qname(nstack, 
+                            (const unsigned char*)"a",
+                            (const unsigned char*)"b", /* attribute value */
                             NULL, NULL); /* errors */
   raptor_sax2_element_set_attributes(element, attrs, 1);
 
   raptor_xml_writer_empty_element(xml_writer, element);
 
-  raptor_xml_writer_cdata(xml_writer, "\n", 1);
+  raptor_xml_writer_cdata(xml_writer, (const unsigned char*)"\n", 1);
 
   raptor_free_xml_writer(xml_writer);
 

@@ -487,11 +487,11 @@ raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
 
 
 int
-raptor_new_namespace_parts_from_string(unsigned char *string,
+raptor_new_namespace_parts_from_string(const unsigned char *string,
                                        unsigned char **prefix,
                                        unsigned char **uri_string)
 {
-  unsigned char *t;
+  const unsigned char *t;
   unsigned char quote;
   
   if((!prefix || !uri_string))
