@@ -732,7 +732,24 @@ raptor_xml_start_element_handler(void *user_data,
           raptor_parser_fatal_error(rdf_parser, "Out of memory");
           return;
         }
-        strcpy((char*)xml_language, (char*)atts[i+1]);
+
+        if(rdf_parser->feature_normalize_language) {
+          char *from=(char*)atts[i+1];
+          char *to=xml_language;
+          
+          /* Normalize language to lowercase
+           * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+           */
+          while(*from) {
+            if(isupper(*from))
+              *to++ =tolower(*from++);
+            else
+              *to++ =*from++;
+          }
+          *to='\0';
+        } else
+          strcpy((char*)xml_language, (char*)atts[i+1]);
+
         atts[i]=NULL; 
         continue;
       }
