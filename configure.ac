@@ -26,6 +26,8 @@ AC_CONFIG_SRCDIR(raptor_parse.c)
 AC_REVISION($Revision$)
 
 libxml_min_version=2.4.0
+# Need XML Reader and node type enums for RSS Tag Soup parser
+libxml_rss_min_version=2.5.10
 
 AM_INIT_AUTOMAKE([1.7 check-news std-options -Wall])
 AM_CONFIG_HEADER(raptor_config.h)
@@ -440,7 +442,6 @@ have_libxml_lib=0
 have_libxml_source=0
 need_libxml=0
 need_libxml_source=0
-have_libxml2_xmlParserSeverities=no
 AC_MSG_CHECKING(for libxml sources)
 if test -d $srcdir/libxml -a -r $srcdir/libxml/libxml.spec ; then
   have_libxml_source=1
@@ -527,14 +528,6 @@ if test "X$XML_CONFIG" != X; then
     AC_CHECK_FUNC(xmlUseNewParser, AC_DEFINE(RAPTOR_LIBXML_XMLUSENEWPARSER, 1, [does libxml have xmlUseNewParser]))
   fi
 
-  if test "$ac_cv_header_libxml_xmlreader_h" = yes; then
-    AC_MSG_CHECKING(libxml xmlReader API has xmlParserSeverities)
-    AC_TRY_COMPILE([#include <libxml/xmlreader.h>], [xmlParserSeverities foo;],
-	have_libxml2_xmlParserSeverities=yes
-	AC_MSG_RESULT(yes),
-	AC_MSG_RESULT(no))
-  fi
-
 fi
 CPPFLAGS="$oCPPFLAGS"
 LIBS="$oLIBS"
@@ -614,13 +607,19 @@ rdf_parsers_enabled=
 
 rss_parser_ok=no
 AC_MSG_CHECKING(RSS Tag Soup parser requirements)
-if test $need_libxml = 1 -a "$ac_cv_header_libxml_xmlreader_h" = yes -a "$have_libxml2_xmlParserSeverities" = yes ; then
-  AC_MSG_RESULT(met)
-  rss_parser_ok=yes
-  rdf_parsers_available="$rdf_parsers_available rss-tag-soup"
+if test $need_libxml = 1; then
+  libxml_rss_min_version_dec=`echo $libxml_rss_min_version | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+  if test $libxml_version_dec -ge $libxml_rss_min_version_dec; then
+    AC_MSG_RESULT(yes - libxml2 $LIBXML_VERSION ok)
+    rss_parser_ok=yes
+    rdf_parsers_available="$rdf_parsers_available rss-tag-soup"
+  else
+    AC_MSG_RESULT(no - libxml2 $LIBXML_VERSION too old)
+  fi
 else
-  AC_MSG_RESULT(not met - no libxml2 with XMLReader)
+  AC_MSG_RESULT(no - libxml2 not available)
 fi
+
 
 # This is needed because autoheader can't work out which computed
 # symbols must be pulled from acconfig.h into config.h.in
