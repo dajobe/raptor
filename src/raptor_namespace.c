@@ -286,7 +286,7 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
     ns_uri_string=NULL;
 
 #ifndef STANDALONE
-#if def RAPTOR_DEBUG >1
+#if RAPTOR_DEBUG >1
   RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n", prefix ? (char*)prefix : "(default)", ns_uri_string ? (char*)ns_uri_string : "(none)", depth);
 #endif
 #endif
