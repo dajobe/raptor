@@ -3305,14 +3305,22 @@ raptor_free_identifier(raptor_identifier *identifier)
  * @attributes_element: element with the property attributes 
  * @resource_element: element that defines the resource URI 
  *                    subject_uri, subject_uri_source etc.
+ * @property_node_identifier: Use this identifier for the resource URI
+ *   and count any ordinals for it locally
  * 
  **/
 static void 
 raptor_process_property_attributes(raptor_parser *rdf_parser, 
                                    raptor_element *attributes_element,
-                                   raptor_element *resource_element)
+                                   raptor_element *resource_element,
+                                   raptor_identifier *property_node_identifier)
 {
   int i;
+  int local_last_ordinal=0;
+  raptor_identifier *resource_identifier;
+
+  resource_identifier=property_node_identifier ? property_node_identifier : &resource_element->subject;
+  
 
   /* Process attributes as propAttr* = * (propName="string")*
    */
@@ -3333,7 +3341,10 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         
       if(IS_RDF_MS_CONCEPT(attr->local_name, attr->uri, li)) {
         /* recognise rdf:li attribute */
-        ordinal=++resource_element->last_ordinal;
+        if(property_node_identifier)
+          ordinal= ++local_last_ordinal;
+        else
+          ordinal= ++resource_element->last_ordinal;
       } else if(*name == '_') {
         /* recognise rdf:_ */
         name++;
@@ -3353,10 +3364,10 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
       if(ordinal >= 1) {
         /* Generate an ordinal property when there are no problems */
         raptor_generate_statement(rdf_parser, 
-                                  resource_element->subject.uri,
-                                  resource_element->subject.id,
-                                  resource_element->subject.type,
-                                  resource_element->subject.uri_source,
+                                  resource_identifier->uri,
+                                  resource_identifier->id,
+                                  resource_identifier->type,
+                                  resource_identifier->uri_source,
                                   
                                   (raptor_uri*)&ordinal,
                                   NULL,
@@ -3380,10 +3391,10 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
        * generate a statement with a literal object
        */
       raptor_generate_statement(rdf_parser, 
-                                resource_element->subject.uri,
-                                resource_element->subject.id,
-                                resource_element->subject.type,
-                                resource_element->subject.uri_source,
+                                resource_identifier->uri,
+                                resource_identifier->id,
+                                resource_identifier->type,
+                                resource_identifier->uri_source,
 
                                 attr->uri,
                                 NULL,
@@ -3424,10 +3435,10 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     
     raptor_generate_statement(rdf_parser, 
-                              resource_element->subject.uri,
-                              resource_element->subject.id,
-                              resource_element->subject.type,
-                              resource_element->subject.uri_source,
+                              resource_identifier->uri,
+                              resource_identifier->id,
+                              resource_identifier->type,
+                              resource_identifier->uri_source,
                               
                               property_uri,
                               NULL,
@@ -3738,7 +3749,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
                                     element->bag.uri);
 
-        raptor_process_property_attributes(rdf_parser, element, element);
+        raptor_process_property_attributes(rdf_parser, element, element, 0);
 
         /* for both productions now need some more content or
          * property elements before can do any more work.
@@ -3890,9 +3901,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           /* Assign the properties on this (property) element to the
            * resource URI held in our parent element 
            */
-          raptor_process_property_attributes(rdf_parser, element, 
-                                             element->parent);
+          if(!element->rdf_attr[RDF_ATTR_resource])
+            raptor_process_property_attributes(rdf_parser, element, 
+                                               element->parent, NULL);
 
+          /* when rdf:resource is given, do this when the empty element
+           * is closed, and we have worked out the resource node URI
+           */
+          
           /*
            * Assign bag URI here so we don't reify property attributes using 
            * this bagID 
@@ -4185,6 +4201,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
                 element->object.uri_source=RAPTOR_URI_SOURCE_URI;
                 element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+
+                raptor_process_property_attributes(rdf_parser, element, 
+                                                   element->parent, 
+                                                   &element->object);
+
               } else {
                 element->object.id=raptor_generate_id(rdf_parser, 0);
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
