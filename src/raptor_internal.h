@@ -57,6 +57,8 @@ extern "C" {
 #define RAPTOR_DEBUG5(function, msg, arg1, arg2, arg3, arg4) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4);} while(0)
 #define RAPTOR_DEBUG6(function, msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4, arg5);} while(0)
 
+const char * n3_token_print(int token);
+
 #else
 /* DEBUGGING TURNED OFF */
 
@@ -202,9 +204,6 @@ struct raptor_parser_s {
 #ifdef RAPTOR_XML_LIBXML
   int magic;
 #endif
-
-  /* stack of namespaces, most recently added at top */
-  raptor_namespace_stack namespaces;
 
   /* can be filled with error location information */
   raptor_locator locator;
@@ -385,7 +384,7 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 
 
 /* raptor_nspace.c */
-void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data);
+void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
 void raptor_namespaces_free(raptor_namespace_stack *nstack);
 void raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *nspace);
 int raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth);
@@ -444,6 +443,7 @@ void raptor_uri_init_default_handler(raptor_uri_handler *handler);
 /* raptor_parse.c */
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
+void raptor_init_parser_n3(void);
 void raptor_init_parser_rss(void);
 
 void raptor_terminate_parser_rdfxml (void);
@@ -618,6 +618,46 @@ void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_el
 void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str, int length);
 void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str, int length);
 unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, int *length_p);
+
+
+/* n3_parser.y and n3_lexer.l */
+typedef struct raptor_n3_parser_s raptor_n3_parser;
+
+int n3_parser_lex(void);
+typedef struct {
+  raptor_identifier *subject;
+  raptor_identifier *predicate;
+  raptor_identifier *object;
+  raptor_uri *object_literal_datatype;
+  const unsigned char *object_literal_language;
+} raptor_triple;
+
+
+/* Sequence class */
+typedef struct raptor_sequence_s raptor_sequence;
+typedef void* (raptor_free_handler(void*));
+typedef void (raptor_print_handler(void *object, FILE *fh));
+
+/* Create */
+RAPTOR_API raptor_sequence* raptor_new_sequence(raptor_free_handler* free_handler, raptor_print_handler* print_handler);
+/* Destroy */
+RAPTOR_API void raptor_free_sequence(raptor_sequence* seq);
+/* Methods */
+RAPTOR_API int raptor_sequence_size(raptor_sequence* seq);
+RAPTOR_API int raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data);
+RAPTOR_API int raptor_sequence_push(raptor_sequence* seq, void *data);
+RAPTOR_API int raptor_sequence_shift(raptor_sequence* seq, void *data);
+RAPTOR_API void* raptor_sequence_get_at(raptor_sequence* seq, int idx);
+RAPTOR_API void* raptor_sequence_pop(raptor_sequence* seq);
+RAPTOR_API void* raptor_sequence_unshift(raptor_sequence* seq);
+
+RAPTOR_API int raptor_compare_strings(const void *a, const void *b);
+
+RAPTOR_API void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, const void *));
+
+/* helper for printing sequences of strings */ 
+RAPTOR_API void raptor_sequence_print_string(char *data, FILE *fh);
+RAPTOR_API void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 
 /* end of RAPTOR_INTERNAL */
 #endif
