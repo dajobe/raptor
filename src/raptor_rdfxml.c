@@ -1393,7 +1393,8 @@ raptor_xml_start_element_handler(void *user_data,
 
       
       /* leave literal XML alone */
-      if (rdf_parser->current_element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL) {
+      if (rdf_parser->current_element &&
+          rdf_parser->current_element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL) {
 
         /* Save pointers to some RDF M&S attributes */
 
@@ -3382,6 +3383,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               element->content_cdata_length=fmt_length;
             }
           }
+
+          element->child_state = RAPTOR_STATE_PARSETYPE_LITERAL;
         }
         
         finished=1;
