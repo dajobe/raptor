@@ -3811,277 +3811,193 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         LIBRDF_DEBUG3(raptor_end_element_grammar,
                       "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
 
-        if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE) {
-          if(element->rdf_attr[RDF_ATTR_resource]) {
-            element->object.uri=raptor_make_uri(rdf_parser->base_uri,
-                                                 element->rdf_attr[RDF_ATTR_resource]);
-            element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-            element->object.uri_source=RAPTOR_URI_SOURCE_URI;
-            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
-          } else {
-            element->object.id=raptor_generate_id(rdf_parser, 0);
-            element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-            element->object.uri_source=RAPTOR_URI_SOURCE_GENERATED;
-            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
-          }
-        }
+        switch(element->content_type) {
+          case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
 
-
-        /* If there is a parent resource node (Description,
-         * typedNode or parseTypeResource)
-         */
-        if(element->parent->state == RAPTOR_STATE_DESCRIPTION ||
-           element->parent->state == RAPTOR_STATE_TYPED_NODE ||
-           element->parent->state == RAPTOR_STATE_PARSETYPE_RESOURCE) {
-          int object_is_literal=(element->content_cdata != NULL); /* FIXME */
-          raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
-          raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
-
-          /* then generate the statement:
-           *   subject  : parent
-           *   predicate: ordinal / this property
-           *   object   : child object (node)
-           */
-          if(state == RAPTOR_STATE_MEMBER) {
-            element->parent->last_ordinal++;
-            raptor_generate_statement(rdf_parser, 
-                                      element->parent->subject.uri,
-                                      element->parent->subject.id,
-                                      element->parent->subject.type,
-                                      RAPTOR_URI_SOURCE_ELEMENT,
-
-                                      (raptor_uri*)&element->parent->last_ordinal,
-                                      NULL,
-                                      RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                      RAPTOR_URI_SOURCE_NOT_URI,
-                                      
-                                      object_uri,
-                                      element->object.id,
-                                      object_type,
-                                      element->object.uri_source,
-
-                                      element->bag.uri);
-          } else
-            raptor_generate_statement(rdf_parser, 
-                                      element->parent->subject.uri,
-                                      element->parent->subject.id,
-                                      element->parent->subject.type,
-                                      RAPTOR_URI_SOURCE_ELEMENT,
-
-                                      element->name->uri,
-                                      NULL,
-                                      RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                      RAPTOR_URI_SOURCE_ELEMENT,
-
-                                      object_uri,
-                                      element->object.id,
-                                      object_type,
-                                      element->object.uri_source,
-
-                                      element->bag.uri);
-          
-        } else {
-          int object_is_literal=(element->content_cdata != NULL); /* FIXME */
-          raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
-          raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
-
-          /* Not child of Description, so process as child of propertyElt */
-          switch(element->content_type) {
-            case RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL:
-              if(state == RAPTOR_STATE_MEMBER) {
-                element->parent->last_ordinal++;
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
-
-                                          (raptor_uri*)&element->parent->last_ordinal,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                          RAPTOR_URI_SOURCE_NOT_URI,
-                                          
-                                          object_uri,
-                                          element->object.id,
-                                          object_type,
-                                          element->object.uri_source,
-
-                                          element->bag.uri);
-              } else
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
-
-                                          element->name->uri,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                          RAPTOR_URI_SOURCE_NOT_URI,
-
-                                          object_uri,
-                                          element->object.id,
-                                          object_type,
-                                          element->object.uri_source,
-
-                                          element->bag.uri);
-              
-              break;
-              
-            case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
-              /* empty property of form
-               * <property rdf:resource="object-URI"/> 
-               */
-              if(state == RAPTOR_STATE_MEMBER) {
-                element->parent->last_ordinal++;
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
-
-                                          (raptor_uri*)&element->parent->last_ordinal,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                          RAPTOR_URI_SOURCE_NOT_URI,
-
-                                          element->subject.uri,
-                                          element->subject.id,
-                                          element->subject.type,
-                                          element->subject.uri_source,
-
-                                          element->bag.uri);
-              } else
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
-
-                                          element->name->uri,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
-
-                                          element->subject.uri,
-                                          element->subject.id,
-                                          element->subject.type,
-                                          element->subject.uri_source,
-
-                                          element->bag.uri);
-              break;
-
-          case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
-          case RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL:
-              if(state == RAPTOR_STATE_MEMBER) {
-                element->parent->last_ordinal++;
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          element->parent->subject.uri_source,
-
-                                          (raptor_uri*)&element->parent->last_ordinal,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                          RAPTOR_URI_SOURCE_NOT_URI,
-                                          
-                                          (raptor_uri*)element->content_cdata,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
-                                          RAPTOR_URI_SOURCE_NOT_URI,
-
-                                          element->bag.uri);
+            if(element->object.type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
+              if(element->rdf_attr[RDF_ATTR_resource]) {
+                element->object.uri=raptor_make_uri(rdf_parser->base_uri,
+                                                    element->rdf_attr[RDF_ATTR_resource]);
+                element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+                element->object.uri_source=RAPTOR_URI_SOURCE_URI;
+                element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
               } else {
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          element->parent->subject.uri_source,
-                                          
-                                          element->name->uri,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
-
-                                          (raptor_uri*)element->content_cdata,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
-                                          RAPTOR_URI_SOURCE_NOT_URI,
-
-                                          element->bag.uri);
+                element->object.id=raptor_generate_id(rdf_parser, 0);
+                element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+                element->object.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+                element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
               }
+            }
 
+            /* We know object is a resource, so delete any unsignficant
+             * whitespace so that FALLTHROUGH code below finds the object.
+             */
+            if(element->content_cdata) {
+              LIBRDF_FREE(raptor_ns_name_array, element->content_cdata);
+              element->content_cdata=NULL;
+            }
+
+            /* FALLTHROUGH */
+          case RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL:
+
+            if(state == RAPTOR_STATE_MEMBER) {
+              int object_is_literal=(element->content_cdata != NULL); /* FIXME */
+              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
+              raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
+              
+              element->parent->last_ordinal++;
+              raptor_generate_statement(rdf_parser, 
+                                        element->parent->subject.uri,
+                                        element->parent->subject.id,
+                                        element->parent->subject.type,
+                                        RAPTOR_URI_SOURCE_ELEMENT,
+
+                                        (raptor_uri*)&element->parent->last_ordinal,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_ORDINAL,
+                                        RAPTOR_URI_SOURCE_NOT_URI,
+
+                                        object_uri,
+                                        element->object.id,
+                                        object_type,
+                                        element->object.uri_source,
+
+                                        element->bag.uri);
+            } else {
+              int object_is_literal=(element->content_cdata != NULL); /* FIXME */
+              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
+              raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
+              
+              raptor_generate_statement(rdf_parser, 
+                                        element->parent->subject.uri,
+                                        element->parent->subject.id,
+                                        element->parent->subject.type,
+                                        RAPTOR_URI_SOURCE_ELEMENT,
+
+                                        element->name->uri,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                        RAPTOR_URI_SOURCE_NOT_URI,
+
+                                        object_uri,
+                                        element->object.id,
+                                        object_type,
+                                        element->object.uri_source,
+
+                                        element->bag.uri);
+            }
+          
             break;
-            
-            case RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION:
-              if (!element->tail_uri) {
-                /* If No List: set parents object to daml:nil */
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
 
-                                          element->subject.uri,
-                                          element->subject.id,
-                                          RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                          RAPTOR_URI_SOURCE_URI,
+        case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
+        case RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL:
+            if(state == RAPTOR_STATE_MEMBER) {
+              element->parent->last_ordinal++;
+              raptor_generate_statement(rdf_parser, 
+                                        element->parent->subject.uri,
+                                        element->parent->subject.id,
+                                        element->parent->subject.type,
+                                        element->parent->subject.uri_source,
 
-                                          RAPTOR_DAML_NIL_URI(rdf_parser),
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                          RAPTOR_URI_SOURCE_URI,
+                                        (raptor_uri*)&element->parent->last_ordinal,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_ORDINAL,
+                                        RAPTOR_URI_SOURCE_NOT_URI,
 
-                                          NULL);
-              } else {
-                /* If List: set parents object to the list */
-                raptor_generate_statement(rdf_parser, 
-                                          element->parent->subject.uri,
-                                          element->parent->subject.id,
-                                          element->parent->subject.type,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
+                                        (raptor_uri*)element->content_cdata,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
+                                        RAPTOR_URI_SOURCE_NOT_URI,
 
-                                          element->name->uri,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                          RAPTOR_URI_SOURCE_ELEMENT,
+                                        element->bag.uri);
+            } else {
+              raptor_generate_statement(rdf_parser, 
+                                        element->parent->subject.uri,
+                                        element->parent->subject.id,
+                                        element->parent->subject.type,
+                                        element->parent->subject.uri_source,
 
-                                          element->object.uri,
-                                          element->object.id,
-                                          element->object.type,
-                                          RAPTOR_URI_SOURCE_URI,
+                                        element->name->uri,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                        RAPTOR_URI_SOURCE_ELEMENT,
 
-                                          NULL);
-                /* and terminate the list */
-                raptor_generate_statement(rdf_parser, 
-                                          element->tail_uri,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                          RAPTOR_URI_SOURCE_URI,
+                                        (raptor_uri*)element->content_cdata,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
+                                        RAPTOR_URI_SOURCE_NOT_URI,
 
-                                          RAPTOR_DAML_REST_URI(rdf_parser),
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                          RAPTOR_URI_SOURCE_URI,
+                                        element->bag.uri);
+            }
 
-                                          RAPTOR_DAML_NIL_URI(rdf_parser),
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                          RAPTOR_URI_SOURCE_URI,
+          break;
 
-                                          NULL);
-              }
-              break;
-              
-            default:
-              raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %d\n", element->content_type);
-          } /* end switch */
-          
-        }
+          case RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION:
+            if (!element->tail_uri) {
+              /* If No List: set parents object to daml:nil */
+              raptor_generate_statement(rdf_parser, 
+                                        element->parent->subject.uri,
+                                        element->parent->subject.id,
+                                        element->parent->subject.type,
+                                        RAPTOR_URI_SOURCE_ELEMENT,
 
-        finished=1;
-        break;
+                                        element->subject.uri,
+                                        element->subject.id,
+                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                        RAPTOR_URI_SOURCE_URI,
+
+                                        RAPTOR_DAML_NIL_URI(rdf_parser),
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                        RAPTOR_URI_SOURCE_URI,
+
+                                        NULL);
+            } else {
+              /* If List: set parents object to the list */
+              raptor_generate_statement(rdf_parser, 
+                                        element->parent->subject.uri,
+                                        element->parent->subject.id,
+                                        element->parent->subject.type,
+                                        RAPTOR_URI_SOURCE_ELEMENT,
+
+                                        element->name->uri,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                        RAPTOR_URI_SOURCE_ELEMENT,
+
+                                        element->object.uri,
+                                        element->object.id,
+                                        element->object.type,
+                                        RAPTOR_URI_SOURCE_URI,
+
+                                        NULL);
+              /* and terminate the list */
+              raptor_generate_statement(rdf_parser, 
+                                        element->tail_uri,
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                        RAPTOR_URI_SOURCE_URI,
+
+                                        RAPTOR_DAML_REST_URI(rdf_parser),
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                        RAPTOR_URI_SOURCE_URI,
+
+                                        RAPTOR_DAML_NIL_URI(rdf_parser),
+                                        NULL,
+                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                        RAPTOR_URI_SOURCE_URI,
+
+                                        NULL);
+            }
+            break;
+
+          default:
+            raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+        } /* end switch */
+
+      finished=1;
+      break;
 
 
       default:
