@@ -257,10 +257,10 @@ objectList: object COMMA objectList
   else {
     triple=raptor_new_triple(NULL, NULL, $1);
 #ifdef RAPTOR_DEBUG
-    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
-                           (raptor_print_handler*)raptor_triple_print);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple,
+                           (raptor_sequence_print_handler*)raptor_triple_print);
 #else
-    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple, NULL);
 #endif
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -324,10 +324,10 @@ itemList: object itemList
   else {
     triple=raptor_new_triple(NULL, NULL, $1);
 #ifdef RAPTOR_DEBUG
-    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
-                           (raptor_print_handler*)raptor_triple_print);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple,
+                           (raptor_sequence_print_handler*)raptor_triple_print);
 #else
-    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple, NULL);
 #endif
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
