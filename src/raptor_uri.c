@@ -699,6 +699,18 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
 }
 
 
+/**
+ * raptor_uri_is_file_uri - Check if a URI string is a a file: URI
+ * @uri_string: The URI string to check
+ * 
+ * Return value: Non zero if URI string is a file: URI
+ **/
+int
+raptor_uri_is_file_uri(const char* uri_string) {
+  return strncasecmp(uri_string, "file:", 5)==0;
+}
+
+
 
 
 #ifdef STANDALONE
