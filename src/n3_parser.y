@@ -682,6 +682,9 @@ static int
 n3_parse(raptor_parser *rdf_parser, const char *string) {
   void *buffer;
 
+  if(!string || !*string)
+    return 0;
+  
   /* FIXME LOCKING or re-entrant parser/lexer */
 
   N3_Parser=rdf_parser;
@@ -850,6 +853,10 @@ raptor_n3_parse_chunk(raptor_parser* rdf_parser,
   if(!is_end)
     return 0;
 
+  /* Nothing to do */
+  if(!n3_parser->buffer_length)
+    return 0;
+  
   n3_parse(rdf_parser, n3_parser->buffer);
   
   return 0;
