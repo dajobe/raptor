@@ -29,6 +29,8 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+
 #ifdef WIN32
 #  ifdef RAPTOR_INTERNAL
 #    define RAPTOR_API _declspec(dllexport)
