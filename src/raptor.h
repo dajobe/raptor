@@ -40,6 +40,9 @@ extern "C" {
 #endif
 
 #ifdef RAPTOR_IN_REDLAND
+#include <librdf.h>
+#include <rdf_uri.h>
+
 typedef librdf_uri raptor_uri;
 #else
 typedef const char raptor_uri;
@@ -111,7 +114,7 @@ typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
 /* Public functions */
 
 /* Create */
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 RAPTOR_API raptor_parser* raptor_new(librdf_world *world);
 #else
 RAPTOR_API raptor_parser* raptor_new(void);
@@ -131,7 +134,7 @@ RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * stat
 
 
 /* Parsing functions */
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
 #else
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  const char *filename, const char *base_uri);
@@ -157,7 +160,7 @@ RAPTOR_API void raptor_print_ntriples_string(FILE *stream, const char *string, c
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
 
-#ifndef LIBRDF_INTERNAL
+#ifndef RAPTOR_IN_REDLAND
 
 #define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
