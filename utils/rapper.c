@@ -100,9 +100,11 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #ifdef HAVE_GETOPT_LONG
 #define HELP_TEXT(short, long, description) "  -" short ", --" long "  " description
 #define HELP_ARG(short, long) "--" #long
+#define HELP_PAD "\n                          "
 #else
 #define HELP_TEXT(short, long, description) "  -" short "  " description
 #define HELP_ARG(short, long) "-" #short
+#define HELP_PAD "\n      "
 #endif
 
 
@@ -402,7 +404,7 @@ main(int argc, char *argv[])
     puts("\nAdditional options:");
     puts(HELP_TEXT("c", "count           ", "Count triples - no output"));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
-    puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", "Set parser feature - use `help' for a list"));
+    puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser feature - use `help' for a list"));
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
