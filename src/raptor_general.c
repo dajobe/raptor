@@ -1422,7 +1422,7 @@ raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 int
 raptor_check_ordinal(const char *name) {
   int ordinal= -1;
-  const char c;
+  char c;
 
   while(c=*name++) {
     if(c < '0' || c > '9')
