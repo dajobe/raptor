@@ -906,29 +906,6 @@ raptor_set_generate_id_handler(raptor_parser* parser,
 }
 
 
-static struct
-{
-  raptor_feature feature;
-  const char *name;
-  const char *label;
-} raptor_features_list [RAPTOR_FEATURE_LAST+1]= {
-  { RAPTOR_FEATURE_SCANNING                ,"scanForRDF", "Scan for rdf:RDF in XML content" },
-  { RAPTOR_FEATURE_ASSUME_IS_RDF           ,"assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
-  { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES ,"allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
-  { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  ,"allowOtherParsetypes", "Allow user-defined rdf:parseType values" },
-  { RAPTOR_FEATURE_ALLOW_BAGID             ,"allowBagID", "Allow rdf:bagID" },
-  { RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST ,"allowRDFtypeRDFlist", "Generate the collection rdf:type rdf:List triple" },
-  { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      ,"normalizeLanguage", "Normalize xml:lang values to lowercase" },
-  { RAPTOR_FEATURE_NON_NFC_FATAL           ,"nonNFCfatal", "Make non-NFC literals cause a fatal error" },
-  { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   ,"warnOtherParseTypes", "Warn about unknown rdf:parseType values" },
-  { RAPTOR_FEATURE_CHECK_RDF_ID            ,"checkRdfID", "Check rdf:ID values for duplicates" }
-};
-
-
-static const char *raptor_feature_uri_prefix="http://feature.librdf.org/raptor-";
-/* NOTE: this is strlen(raptor_feature_uri_prefix) */
-#define RAPTOR_FEATURE_URI_PREFIX_LEN 33
-
 /**
  * raptor_features_enumerate - Get list of syntax features
  * @counter: feature enumeration (0+)
@@ -939,37 +916,15 @@ static const char *raptor_feature_uri_prefix="http://feature.librdf.org/raptor-"
  * If uri is not NULL, a pointer toa new raptor_uri is returned
  * that must be freed by the caller with raptor_free_uri().
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
 raptor_features_enumerate(const raptor_feature feature,
                           const char **name, 
                           raptor_uri **uri, const char **label)
 {
-  int i;
-
-  for(i=0; i <= RAPTOR_FEATURE_LAST; i++)
-    if(raptor_features_list[i].feature == feature) {
-      if(name)
-        *name=raptor_features_list[i].name;
-      
-      if(uri) {
-        raptor_uri *base_uri=raptor_new_uri((const unsigned char*)raptor_feature_uri_prefix);
-        if(!base_uri)
-          return 1;
-        
-        *uri=raptor_new_uri_from_uri_local_name(base_uri,
-                                                (const unsigned char*)raptor_features_list[i].name);
-        raptor_free_uri(base_uri);
-      }
-      if(label)
-        *label=raptor_features_list[i].label;
-      return 0;
-    }
-
-  return 1;
+  return raptor_features_enumerate_common(feature, name, uri, label, 1);
 }
-
 
 
 /**
@@ -1103,7 +1058,6 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 
 /**
  * raptor_feature_from_uri - Turn a parser feature URI into an enum
- * @parser: &raptor_parser parser object
  * @uri: feature URI
  * 
  * The allowed feature URIs are available via raptor_features_enumerate().
@@ -1113,29 +1067,8 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 raptor_feature
 raptor_feature_from_uri(raptor_uri *uri)
 {
-  unsigned char *uri_string;
-  int i;
-  raptor_feature feature= (raptor_feature)-1;
-  
-  if(!uri)
-    return feature;
-  
-  uri_string=raptor_uri_as_string(uri);
-  if(strncmp((const char*)uri_string, raptor_feature_uri_prefix,
-             RAPTOR_FEATURE_URI_PREFIX_LEN))
-    return feature;
-
-  uri_string += RAPTOR_FEATURE_URI_PREFIX_LEN;
-
-  for(i=0; i <= RAPTOR_FEATURE_LAST; i++)
-    if(!strcmp(raptor_features_list[i].name, (const char*)uri_string)) {
-      feature=(raptor_feature)i;
-      break;
-    }
-
-  return feature;
+  return raptor_feature_from_uri_common(uri, 1);
 }
-
 
 /**
  * raptor_set_parser_strict - Set parser to strict / lax mode
