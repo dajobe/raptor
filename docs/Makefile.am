@@ -51,8 +51,6 @@ raptor-config.in raptor-src-config.in \
 autogen.sh \
 raptor.spec.in \
 dc.rdf \
-raptor_cc.gperf \
-raptor_cc.c \
 raptor_www_test.c \
 fix-groff-xhtml \
 $(man_MANS) \
@@ -62,7 +60,7 @@ raptor.pc.in
 
 SUBDIRS= tests win32 examples
 
-TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test \
+TESTS=raptor_uri_test raptor_namespace_test strcasecmp_test \
 raptor_www_test raptor_set_test raptor_xml_test
 
 CLEANFILES=$(TESTS)
@@ -110,18 +108,12 @@ NEWS: NEWS.html
 @MAINT@libraptor.html: $(srcdir)/libraptor.3
 @MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
-raptor_cc.c : $(srcdir)/raptor_cc.gperf
-	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $< > $@
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor.pc
 
 
 # Some people need a little help ;-)
 test: check
-
-raptor_cc_test: $(srcdir)/raptor_cc.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
 
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
