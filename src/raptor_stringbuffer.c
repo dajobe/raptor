@@ -514,7 +514,7 @@ main(int argc, char *argv[])
   len=raptor_stringbuffer_length(sb2);
   if(len) {
     fprintf(stderr, "%s: appended string buffer is length %d, not empty'\n",
-            program, len);
+            program, (int)len);
     exit(1);
   }
 
