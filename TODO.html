@@ -13,14 +13,13 @@
 <ul>
 <li>Add a N3 parser</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a></li>
-<li>daml:collection is generating some wrong triples (BUG)</li>
 <li>rdf:bagID handling is incomplete (BUG)</li>
 <li>Scanning for rdf:RDF is broken - never finds any statements (BUG)</li>
 <li>Find out why compiling with libxml 2.3.5 and nearby versions fails on FreeBSD (BUG)</li>
 <li>Provide a perl interface (FEATURE)</li>
 <li>Add namespace/prefix declaration user level callback (FEATURE)</li>
 <li>Reification of statements (bagID etc.) implemented but not tested (FEATURE)</li>
-<li>Other (non resource, literal, daml:collection) parseType support (FEATURE)</li>
+<li>Other non-resource, literal, (daml:)collection parseType support (FEATURE)</li>
 </ul>
 
 <h2>Done</h2>
@@ -29,6 +28,7 @@
 release version where appropriate.</p>
 
 <ul>
+<li>daml:collection is generating some wrong triples (BUG)</li>
 <li>Compiling on OSX fails on most systems since it requires libtool 1.4.2
 or CVS version which requires automake 2.50 and a newer version of
 autoconf.  This needs significant changes to the autoconfigure
