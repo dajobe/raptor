@@ -84,6 +84,43 @@ raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler
 
 
 
+/* Local handlers for writing to a throw-away sink */
+
+static int
+raptor_sink_iostream_write_byte(void *context, const int byte)
+{
+  return 0;
+}
+
+static int
+raptor_sink_iostream_write_bytes(void *context,
+                                 const void *ptr, size_t size, size_t nmemb)
+{
+  return 0;
+}
+
+
+static raptor_iostream_handler raptor_iostream_sink_handler={
+  NULL, /* init */
+  NULL, /* finish */
+  raptor_sink_iostream_write_byte,
+  raptor_sink_iostream_write_bytes,
+  NULL, /* write_end */
+};
+
+
+/**
+ * raptor_new_iostream_to_sink - Create a new iostream to a sink
+ * 
+ * Return value: new &raptor_iostream object or NULL on failure
+ **/
+raptor_iostream*
+raptor_new_iostream_to_sink(void)
+{
+  return raptor_new_iostream_from_handler(NULL, &raptor_iostream_sink_handler);
+}
+
+
 /* Local handlers for writing to a filename */
 
 static int
@@ -306,6 +343,9 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p)
 void
 raptor_free_iostream(raptor_iostream *iostr)
 {
+  if(!iostr->ended)
+    raptor_iostream_write_end(iostr);
+
   if(iostr->handler->finish)
     iostr->handler->finish(iostr->context);
 
@@ -359,6 +399,7 @@ raptor_iostream_write_bytes(raptor_iostream *iostr,
 
 /**
  * raptor_iostream_write_end - End writing to the iostream
+ *
  * @iostr: raptor iostream
  **/
 void
@@ -404,7 +445,7 @@ main(int argc, char *argv[])
 #define TEST_ITEMS_COUNT 9
   int i;
 
-  for(i=0; i<3; i++) {
+  for(i=0; i<4; i++) {
     raptor_iostream *iostr;
     size_t count;
 
@@ -450,6 +491,17 @@ main(int argc, char *argv[])
         }
         break;
 
+      case 3:
+#ifdef RAPTOR_DEBUG
+        fprintf(stderr, "%s: Creating iostream to sink\n", program);
+#endif
+        iostr=raptor_new_iostream_to_sink();
+        if(!iostr) {
+          fprintf(stderr, "%s: Failed to create iostream to sink\n", program);
+          exit(1);
+        }
+        break;
+
       default:
         fprintf(stderr, "%s: Unknown test case %d init\n", program, i);
         exit(1);
@@ -491,6 +543,9 @@ main(int argc, char *argv[])
           return 1;
         }
         raptor_free_memory(string);
+        break;
+
+      case 3:
         break;
 
       default:
