@@ -204,10 +204,11 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   /* If namespace has a URI and a local_name is defined, create the URI
    * for this element 
    */
-  if(qname->nspace && raptor_namespace_get_uri(qname->nspace) &&
-     local_name_length) {
-    raptor_uri* uri=raptor_namespace_local_name_to_uri(qname->nspace,
-                                                       new_name);
+  if(qname->nspace && local_name_length) {
+    raptor_uri *uri=raptor_namespace_get_uri(qname->nspace);
+    if(uri)
+      uri=raptor_new_uri_from_uri_local_name(uri, new_name);
+
     if(!uri) {
       raptor_free_qname(qname);
       return NULL;
@@ -262,6 +263,98 @@ raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
   return 1;
 }
 
+
+
+/**
+ * raptor_qname_string_to_uri - get the URI for a qname
+ * @nstack: &raptor_namespace_stack to decode the namespace
+ * @name: QName string or NULL
+ * @name_len: QName string length
+ * @error_handler: function to call on an error
+ * @error_data: user data for error function
+ * 
+ * Utility function to turn a string representing a QName in the
+ * N3 style, into a new URI representing it.  A NULL name or name ":"
+ * returns the default namespace URI.  A name "p:" returns
+ * namespace name (URI) for the namespace with prefix "p".
+ * 
+ * Partially equivalent to 
+ *   qname=raptor_new_qname(nstack, name, NULL, error_handler, error_data);
+ *   uri=raptor_uri_copy(qname->uri);
+ *   raptor_free_qname(qname)
+ * but without making the qname, and it also handles the NULL and
+ * ":" name cases as well as error checking.
+ *
+ * Return value: new &raptor_uri object or NULL on failure
+ **/
+raptor_uri*
+raptor_qname_string_to_uri(raptor_namespace_stack *nstack, 
+                           const unsigned char *name, size_t name_len,
+                           raptor_simple_message_handler error_handler,
+                           void *error_data)
+{
+  raptor_uri *uri=NULL;
+  const unsigned char *p;
+  const unsigned char *local_name=NULL;
+  int local_name_length=0;
+  raptor_namespace* ns;
+
+  /* Empty string is default namespace URI */
+  if(!name) {
+    ns=raptor_namespaces_get_default_namespace(nstack);
+  } else {
+    /* If starts with :, it is relative to default namespace, so skip it */
+    if(*name == ':') {
+      name++;
+      name_len--;
+    }
+    
+    for(p=name; *p && *p != ':'; p++)
+      ;
+    
+    /* If ends with :, it is the URI of a namespace */
+    if(p-name == name_len-1) {
+      ns=raptor_namespaces_find_namespace(nstack, name, name_len-1);
+    } else {
+      if(!*p) {
+        local_name=name;
+        local_name_length=p-name;
+        
+        /* pick up the default namespace if there is one */
+        ns=raptor_namespaces_get_default_namespace(nstack);
+      } else {
+        /* There is a namespace prefix */
+        int prefix_length=p-name;
+        p++;
+
+        local_name=p;
+        local_name_length=strlen((char*)p);
+        
+        /* Find the namespace */
+        ns=raptor_namespaces_find_namespace(nstack, name, prefix_length);
+      }
+    }
+  }
+  
+  if(!ns) {
+    if(error_handler)
+      error_handler((raptor_parser*)error_data, "The namespace prefix in \"%s\" was not declared.", name);
+  }
+
+
+
+  /* If namespace has a URI and a local_name is defined, return the URI
+   * for this name
+   */
+  if(ns && (uri=raptor_namespace_get_uri(ns))) {
+    if(local_name_length)
+      uri=raptor_new_uri_from_uri_local_name(uri, local_name);
+    else
+      uri=raptor_uri_copy(uri);
+  }
+
+  return uri;
+}
 
 
 /*
