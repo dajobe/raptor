@@ -377,6 +377,7 @@ main(int argc, char *argv[])
             program, str, items_string);
     exit(1);
   }
+  RAPTOR_FREE(cstring, str);
 
   for(i=0; i<TEST_INTEGERS_COUNT; i++) {
     raptor_stringbuffer *isb=raptor_new_stringbuffer();
@@ -399,6 +400,7 @@ main(int argc, char *argv[])
               program, str, test_integer_results[i]);
       exit(1);
     }
+    RAPTOR_FREE(cstring, str);
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, "%s: Freeing string buffer\n", program);
 #endif
