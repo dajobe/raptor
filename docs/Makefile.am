@@ -114,10 +114,10 @@ README: README.html
 NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
-@MAINT@libraptor.html: $(srcdir)/libraptor.3
+@MAINT@libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/fix-groff-xhtml $@
 @MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
-@MAINT@rapper.html: $(srcdir)/rapper.1
+@MAINT@rapper.html: $(srcdir)/rapper.1 $(srcdir)/fix-groff-xhtml $@
 @MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
 pkgconfigdir = $(libdir)/pkgconfig
