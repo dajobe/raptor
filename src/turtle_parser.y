@@ -100,8 +100,8 @@ extern int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t scanner);
 #define yylex turtle_lexer_lex
 
 
-static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object);
-static void raptor_free_triple(raptor_triple *triple);
+static raptor_triple* raptor_turtle_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object);
+static void raptor_turtle_free_triple(raptor_triple *triple);
 
 #ifdef RAPTOR_DEBUG
 static void raptor_triple_print(raptor_triple *data, FILE *fh);
@@ -236,7 +236,7 @@ objectList: objectList COMMA object
   if(!$3)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $3);
+    triple=raptor_turtle_new_triple(NULL, NULL, $3);
     $$=$1;
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -263,12 +263,12 @@ objectList: objectList COMMA object
   if(!$1)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $1);
+    triple=raptor_turtle_new_triple(NULL, NULL, $1);
 #ifdef RAPTOR_DEBUG
-    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple,
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_turtle_free_triple,
                            (raptor_sequence_print_handler*)raptor_triple_print);
 #else
-    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple, NULL);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_turtle_free_triple, NULL);
 #endif
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -303,7 +303,7 @@ itemList: itemList object
   if(!$2)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $2);
+    triple=raptor_turtle_new_triple(NULL, NULL, $2);
     $$=$1;
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -330,12 +330,12 @@ itemList: itemList object
   if(!$1)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $1);
+    triple=raptor_turtle_new_triple(NULL, NULL, $1);
 #ifdef RAPTOR_DEBUG
-    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple,
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_turtle_free_triple,
                            (raptor_sequence_print_handler*)raptor_triple_print);
 #else
-    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_triple, NULL);
+    $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_turtle_free_triple, NULL);
 #endif
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -800,9 +800,9 @@ static int yy_init_globals (yyscan_t yyscanner ) { return 0; };
 
 /* helper - everything passed in is now owned by triple */
 static raptor_triple*
-raptor_new_triple(raptor_identifier *subject,
-                  raptor_identifier *predicate,
-                  raptor_identifier *object) 
+raptor_turtle_new_triple(raptor_identifier *subject,
+                         raptor_identifier *predicate,
+                         raptor_identifier *object) 
 {
   raptor_triple* t;
   
@@ -818,7 +818,7 @@ raptor_new_triple(raptor_identifier *subject,
 }
 
 static void
-raptor_free_triple(raptor_triple *t) {
+raptor_turtle_free_triple(raptor_triple *t) {
   if(t->subject)
     raptor_free_identifier(t->subject);
   if(t->predicate)
