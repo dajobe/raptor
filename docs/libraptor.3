@@ -3,11 +3,11 @@
 .\"
 .\" $Id$
 .\"
-.\" Copyright (C) 2002-2003 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
 .\" Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2003-12-29"
+.TH libraptor 3 "2004-01-24"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -55,8 +55,8 @@ inside RDF.  This functionality is modular and can be transparently replaced
 with another existing and compatible URI implementation.
 .LP
 It also provides a URI-retrieval class (raptor_www) for
-wrapping existing library such as libcurl or libxml2 that provides
-full or partial retrieval of data from URIs.
+wrapping existing library such as libcurl, libxml2 or BSD libfetch
+that provides full or partial retrieval of data from URIs.
 .SH LIBRARY INITIALISATION AND CLEANUP
 .IP "\fBraptor_init()\fR"
 .IP "\fBraptor_finish()\fR"
@@ -65,7 +65,7 @@ any raptor_parser or raptor_uri is created or used.
 .SH PARSER CONSTRUCTORS
 .IP "\fBraptor_parser* raptor_new_parser(name)\fR"
 Create a new raptor parser object for the parser with name
-\fIname\fR currently either "rdfxml", "ntriples" or
+\fIname\fR currently either "rdfxml", "turtle" or
 "rss-tag-soup" for the RSS Tag Soup parser.
 .SH PARSER DESTRUCTORS
 .IP "\fBvoid raptor_free_parser(raptor_parser *\fIparser\fB)\fR"
@@ -99,7 +99,8 @@ Statements warnings, errors and fatal errors are delivered
 via the registered statement, error etc. handler functions.
 .LP
 In both of these methods, the base URI is required for the RDF/XML
-parsers (name "rdfxml").  The N-Triples parser (name "ntriples") or
+parser (name "rdfxml") and Turtle parser (name "turtle").
+The N-Triples parser (name "ntriples") or
 RSS Tag Soup parser (name "rss-tag-soup") do not use this.
 .IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  raptor_uri *\fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the given filename (a URI like file:filename)
@@ -115,7 +116,7 @@ not needed.  If no base URI is given, the \fIuri\fR is used.
 This method depends on the raptor_www subsystem (see \fBWWW Class\fR
 section below)
 and an existing underlying URI retrieval implementation such as
-libcurl or libxml to retrieve the content.
+libcurl, libxml or BSD libfetch to retrieve the content.
 .SH "PARSER CHUNKED PARSING METHODS"
 These methods perform the parsing in parts
 by working on multiple chunks of memory passed by the application.
@@ -124,7 +125,8 @@ via the registered statement, error etc. handler functions.
 .IP "\fBint raptor_start_parse(raptor_parser* \fIparser\fB, const char *\fIuri\fB)\fR"
 Start a parse of chunked content with the base URI \fIuri\fR
 or NULL if not needed.
-The base URI is required for the RDF/XML parsers (name "rdfxml").
+The base URI is required for the RDF/XML parser (name "rdfxml")
+and Turtle parser (name "turtle").
 The N-Triples parser (name "ntriples") or RSS Tag Soup parser
 (name "rss-tag-soup") do not use this.
 .IP "\fBint raptor_parse_chunk(raptor_parser* \fIparser\fB,  const unsigned char *buffer, size_t \fIlen\fB, int \fIis_end\fB)\fR"
@@ -550,6 +552,8 @@ on the stack; i.e. in scope if this is a stack of XML namespaces.
 .SS 1.2.0
 Added \fBraptor_syntaxes_enumerate\fR to get full information
 on syntax mime type and URIs as well as name and label.
+.br
+N-Triples Plus parser renamed to Turtle (name turtle)
 .SS 1.1.0
 Added N-Triples Plus parser (name ntriples-plus)
 .br
@@ -668,9 +672,9 @@ W3C Proposed Recommendation,
 http://www.w3.org/TR/rdf-testcases/#ntriples
 .UE
 
-\fIN-Triples Plus\fR, Dave Beckett,
-.UR http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/
-http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/
+\fITurtle - Terse RDF Triple Language\fR, Dave Beckett,
+.UR http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
+http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
 .UE
 .SH SEE ALSO
 .BR rapper (1), raptor-config (1)
