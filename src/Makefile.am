@@ -145,6 +145,7 @@ fix-groff-xhtml \
 $(man_MANS) \
 raptor.pc.in \
 turtle_lexer.l turtle_parser.y \
+n3_lexer.l n3_parser.y \
 fix-flex
 
 
