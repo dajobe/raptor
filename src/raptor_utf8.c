@@ -224,10 +224,10 @@ raptor_unicode_is_namestartchar(long c)
           ((c >= 0x0061) && (c <= 0x007A)) || /* [a-z] */
           ((c >= 0x00C0) && (c <= 0x02FF)) ||
           ((c >= 0x0370) && (c <= 0x037D)) ||
-          ((c >= 0x037F) && (c <= 0x1FFF)) |
+          ((c >= 0x037F) && (c <= 0x1FFF)) ||
           ((c >= 0x200C) && (c <= 0x200D)) ||
           ((c >= 0x2070) && (c <= 0x218F)) ||
-          ((c >= 0x2C00) && (c <= 0x2FEF)) |
+          ((c >= 0x2C00) && (c <= 0x2FEF)) ||
           ((c >= 0x3001) && (c <= 0xD7FF)) ||
           ((c >= 0xF900) && (c <= 0xEFFFF)));
 #else
