@@ -40,7 +40,7 @@ raptor_uri_win32_test
 CLEANFILES=$(TESTS) turtle_lexer_test turtle_parser_test
 
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
-turtle_parser.tab.c turtle_parser.tab.h turtle_parser.output
+turtle_parser.c turtle_parser.h turtle_parser.output
 
 # Memory debugging alternatives
 MEM=@MEM@
@@ -64,7 +64,7 @@ raptor_uri.c raptor_expat.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
 raptor_identifier.c raptor_xml_writer.c \
-turtle_lexer.c turtle_lexer.h turtle_parser.tab.c turtle_parser.tab.h turtle_common.h \
+turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h \
 raptor_sequence.c raptor_stringbuffer.c \
 raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
 if STRCASECMP
@@ -131,24 +131,27 @@ rapper.html: $(srcdir)/rapper.1 $(srcdir)/fix-groff-xhtml
 
 
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.tab.c $(srcdir)/fix-flex
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
 	$(PERL) $(srcdir)/fix-flex $@ > turtle_lexer.t
 	mv turtle_lexer.t $@
+	$(PERL) $(srcdir)/fix-flex turtle_lexer.h > turtle_lexer.t
+	mv turtle_lexer.t turtle_lexer.h
 
-turtle_parser.tab.c: $(srcdir)/turtle_parser.y
+turtle_parser.c: $(srcdir)/turtle_parser.y
 	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
-	mv $@ turtle_parser.t
-	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' turtle_parser.t > $@
-	rm -f turtle_parser.t
+	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' turtle_parser.tab.c > $@
+	mv turtle_parser.tab.h turtle_parser.h
+	rm -f turtle_parser.tab.c
+
 endif
 
 # Actually it needs turtle_parser.h but nevermind
 turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_lexer.c libraptor.la $(LIBS)
 
-turtle_parser_test: $(srcdir)/turtle_parser.tab.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.tab.c libraptor.la $(LIBS)
+turtle_parser_test: $(srcdir)/turtle_parser.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor.la $(LIBS)
 
 check-local: rapper
 
@@ -202,9 +205,3 @@ dist-hook: README NEWS
 	    cp -p $(srcdir)/$$file $(distdir)/$$file; \
 	  fi; \
 	done
-
-# The default target insanely deletes *.tab.c - i.e.
-# turtle_parser.tab.c which was NOT built by configure
-# and should not be deleted when cleaning the distribution.
-distclean-compile:
-	exit 0
