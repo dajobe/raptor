@@ -192,8 +192,10 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                              buffer, buffer_len, '\0',
                              xml_writer->error_handler,
                              xml_writer->error_data);
-  else
-    strncpy((char*)buffer, (const char*)s, buffer_len+1);
+  else {
+    strncpy((char*)buffer, (const char*)s, buffer_len);
+    buffer[buffer_len]='\0';
+  }
 
   raptor_stringbuffer_append_counted_string(xml_writer->sb, buffer, buffer_len, 0);
 
