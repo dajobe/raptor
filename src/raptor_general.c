@@ -1559,3 +1559,24 @@ raptor_check_ordinal(const unsigned char *name) {
   }
   return ordinal;
 }
+
+
+#if defined (RAPTOR_DEBUG) && defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
+
+#undef malloc
+void*
+raptor_system_malloc(size_t size)
+{
+  return malloc(size);
+}
+
+#undef free
+void
+raptor_system_free(void *ptr)
+{
+  return free(ptr);
+  
+}
+
+#endif
+
