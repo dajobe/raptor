@@ -2087,6 +2087,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
           element->subject.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), element->rdf_attr[RDF_ATTR_about]);
+          RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_about]);
           element->rdf_attr[RDF_ATTR_about]=NULL;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
