@@ -396,16 +396,8 @@ main(int argc, char *argv[])
   FILE *fh;
   YYSTYPE lval;
   const char *uri_string;
-#ifdef RAPTOR_IN_REDLAND
-  librdf_world *world;
-#endif
   
-#ifdef RAPTOR_IN_REDLAND
-  world=librdf_new_world();
-  librdf_world_open(world);
-#else
   raptor_init();
-#endif
   
   if(argc > 1) {
     filename=argv[1];
@@ -461,11 +453,7 @@ main(int argc, char *argv[])
 
   raptor_free_uri(rdf_parser.base_uri);
 
-#ifdef RAPTOR_IN_REDLAND
-  librdf_free_world(world);
-#else
   raptor_finish();
-#endif
 
 
   if(token==ERROR)
