@@ -97,5 +97,5 @@ check-local: rdfdump
 	done; \
 	for test in $(NT_TEST_FILES); do \
 	  echo Checking $(srcdir)/$$test; \
-	  ./rdfdump --ntriples file:$(srcdir)/$$test; \
+	  ./rdfdump -n file:$(srcdir)/$$test; \
 	done
