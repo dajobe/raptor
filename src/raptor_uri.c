@@ -817,7 +817,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
   char path[PATH_MAX];
 #endif
   /*     "file://" ... \0 */
-  int len=7+1;
+  size_t len=7+1;
   
 #ifdef WIN32
 /*
@@ -869,9 +869,9 @@ raptor_uri_filename_to_uri_string(const char *filename)
   if(!buffer)
     return NULL;
 
-  strcpy(buffer, "file://");
+  strcpy((char*)buffer, "file://");
   from=filename;
-  to=buffer+7;
+  to=(char*)(buffer+7);
 #ifdef WIN32
   if(*from == '\\' && from[1] == '\\')
     from+=2;
@@ -902,7 +902,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
   
 #ifdef RAPTOR_DEBUG
   if(1) {
-    size_t actual_len=strlen(buffer)+1;
+    size_t actual_len=strlen((const char*)buffer)+1;
     if(actual_len != len) {
       if(actual_len > len)
         RAPTOR_FATAL3("uri length %d is LONGER than malloced %d\n", 
@@ -940,7 +940,8 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   int uri_string_len=strlen((const char*)uri_string);
   size_t len=0;
   unsigned char *scheme, *authority, *path, *query, *fragment;
-  unsigned char *from, *to;
+  unsigned char *from;
+  char *to;
 #ifdef WIN32
   unsigned char *p;
 #endif
