@@ -215,7 +215,7 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 
 #ifdef RAPTOR_XML_EXPAT
 /* raptor_expat.c exports */
-extern XML_Parser raptor_expat_init(raptor_parser *rdf_parser);
+extern XML_Parser raptor_expat_init(void *rdf_parser);
 
 /* raptor_parse.c */
 void raptor_xml_unparsed_entity_decl_handler(void *user_data, const XML_Char *entityName, const XML_Char *base, const XML_Char *systemId, const XML_Char *publicId, const XML_Char *notationName);
@@ -770,6 +770,8 @@ struct raptor_sax2_element_s {
 
 
 struct raptor_sax2_s {
+  void* user_data;
+  
 #ifdef RAPTOR_XML_EXPAT
   XML_Parser xp;
 #ifdef EXPAT_UTF8_BOM_CRASH
@@ -804,25 +806,36 @@ struct raptor_sax2_s {
   raptor_sax2_element *current_element;
 };
 
+raptor_sax2* raptor_new_sax2(void *user_data);
+void raptor_free_sax2(raptor_sax2 *sax2);
+void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
+int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
+void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
+
 raptor_sax2_element* raptor_sax2_element_pop(raptor_sax2 *sax2);
 void raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element);
+int raptor_sax2_get_depth(raptor_sax2 *sax2);
+void raptor_sax2_inc_depth(raptor_sax2 *sax2);
+void raptor_sax2_dec_depth(raptor_sax2 *sax2);
+const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2 *sax2);
+raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2 *sax2);
+
 raptor_sax2_element* raptor_new_sax2_element(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base);
 void raptor_free_sax2_element(raptor_sax2_element *element);
+raptor_qname* raptor_sax2_element_get_element(raptor_sax2_element *sax2_element);
 #ifdef RAPTOR_DEBUG
 void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
 #endif
-unsigned char *raptor_format_sax2_element(raptor_sax2_element *element, raptor_namespace_stack* nstack, size_t *length_p, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
+int raptor_iostream_write_sax2_element(raptor_iostream *iostr, raptor_sax2_element *element, raptor_namespace_stack *nstack, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
 
 /* raptor_xml_writer.c */
 /* FIXME: NOT PUBLIC YET - should be in raptor.h with RAPTOR_API added */
-raptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
+raptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
 void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
 void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
 void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
 void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
 void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
-unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, unsigned int *length_p);
-int raptor_xml_writer_write_to_iostream(raptor_xml_writer* xml_writer, raptor_iostream *iostr);
 
 /* turtle_parser.y and turtle_lexer.l */
 typedef struct raptor_turtle_parser_s raptor_turtle_parser;
