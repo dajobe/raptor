@@ -132,22 +132,56 @@ raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream)
 #endif
 
 
+struct nsd
+{
+  const raptor_namespace *nspace;
+  unsigned char *declaration;
+  int length;
+};
+
+
+static int
+raptor_nsd_compare(const void *a, const void *b) 
+{
+  struct nsd* nsd_a=(struct nsd*)a;
+  struct nsd* nsd_b=(struct nsd*)b;
+  return strcmp(nsd_a->declaration, nsd_b->declaration);
+}
+
+
 char *
 raptor_format_sax2_element(raptor_sax2_element *element,
-                           int *length_p, int is_end,
+                           raptor_namespace_stack *nstack,
+                           size_t *length_p, int is_end,
                            raptor_simple_message_handler error_handler,
                            void *error_data)
 {
-  int length;
+  size_t length;
   char *buffer;
   char *ptr;
+  struct nsd *nspace_declarations;
+  size_t nspace_declarations_count=0;  
   int i;
+
+  /* max is 1 per element and 1 for each attribute */
+  nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, element->attribute_count+1, sizeof(struct nsd));
 
   /* get length of element name (and namespace-prefix: if there is one) */
   length=element->name->local_name_length + 1; /* < */
-  if(element->name->nspace &&
-     element->name->nspace->prefix_length > 0)
-    length += element->name->nspace->prefix_length + 1; /* : */
+  if(element->name->nspace) {
+    if(element->name->nspace->prefix_length > 0)
+      length += element->name->nspace->prefix_length + 1; /* : */
+
+    if(!is_end && 
+       !raptor_namespaces_namespace_in_scope(nstack, element->name->nspace)) {
+      nspace_declarations[0].declaration=
+        raptor_namespaces_format(element->name->nspace,
+                                 &nspace_declarations[0].length);
+      nspace_declarations[0].nspace=element->name->nspace;
+      nspace_declarations_count++;
+      length += nspace_declarations[0].length+1; /* plus space */
+    }
+  }
 
   if(is_end)
     length++; /* / */
@@ -160,10 +194,34 @@ raptor_format_sax2_element(raptor_sax2_element *element,
 
       /* qname */
       length += element->attributes[i]->local_name_length;
-      if(element->attributes[i]->nspace &&
-         element->attributes[i]->nspace->prefix_length > 0)
-         /* prefix: */
-        length += element->attributes[i]->nspace->prefix_length + 1;
+      if(element->attributes[i]->nspace) {
+        if(element->attributes[i]->nspace->prefix_length > 0)
+          length += element->attributes[i]->nspace->prefix_length + 1; /* prefix: */
+
+        if(!raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
+          /* not in scope and not same as element (so already going to be declared)*/
+          int j;
+          int declare_me=1;
+          
+          /* check it wasn't an earlier declaration too */
+          for (j=0; j < nspace_declarations_count; j++)
+            if(nspace_declarations[j].nspace == element->attributes[j]->nspace) {
+              declare_me=0;
+              break;
+            }
+            
+          if(declare_me) {
+            nspace_declarations[nspace_declarations_count].declaration=
+              raptor_namespaces_format(element->attributes[i]->nspace,
+                                       &nspace_declarations[nspace_declarations_count].length);
+            nspace_declarations[nspace_declarations_count].nspace=element->attributes[i]->nspace;
+            length += nspace_declarations[nspace_declarations_count].length+1; /* plus space */
+            nspace_declarations_count++;
+          }
+        }
+
+      }
+      
 
       /* XML escaped value */
       escaped_attr_val_len=raptor_xml_escape_string(element->attributes[i]->value, element->attributes[i]->value_length,
@@ -197,6 +255,24 @@ raptor_format_sax2_element(raptor_sax2_element *element,
   }
   strcpy(ptr, (char*)element->name->local_name);
   ptr += element->name->local_name_length;
+
+  /* declare namespaces */
+  if(nspace_declarations_count) {
+    /* sort them into the canonical order */
+    qsort((void*)nspace_declarations, 
+          nspace_declarations_count, sizeof(struct nsd),
+          raptor_nsd_compare);
+    /* add them */
+    for (i=0; i < nspace_declarations_count; i++) {
+      *ptr++=' ';
+      strncpy(ptr, nspace_declarations[i].declaration,
+              nspace_declarations[i].length);
+      RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
+      nspace_declarations[i].declaration=NULL;
+      ptr+=nspace_declarations[i].length;
+    }
+  }
+
 
   if(!is_end && element->attributes) {
     for(i=0; i < element->attribute_count; i++) {
@@ -241,9 +317,8 @@ raptor_format_sax2_element(raptor_sax2_element *element,
   
   *ptr++ = '>';
   *ptr='\0';
+  
+  RAPTOR_FREE(stringarray, nspace_declarations);
 
   return buffer;
 }
-
-
-
