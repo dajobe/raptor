@@ -17,6 +17,8 @@
 
 PACKAGE=raptor
 
+SRCDIR=.
+
 # Where the GNU config.sub, config.guess might be found
 CONFIG_DIR=../config
 
@@ -123,7 +125,7 @@ if test -d $CONFIG_DIR; then
   done
 fi
 
-for coin in `find $srcdir -name configure.in -print`
+for coin in `find $SRCDIR -name configure.in -print`
 do 
   dir=`dirname $coin`
   if test -f $dir/NO-AUTO-GEN; then
