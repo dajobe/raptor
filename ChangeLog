@@ -1,5 +1,7 @@
 2004-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rss.c (raptor_init_serializer_rss10): Give rss 1.0 a URI
+
 	* raptor_serialize.c (raptor_iostream_write_string_ntriples):
 	Renamed from raptor_serialize_ntriples_print_string and made public.
 	Handle delimiters that aren't ' or " such as >, and if found
