@@ -638,6 +638,11 @@ else
 fi
 AC_MSG_RESULT($result)
 
+
+AC_DEFINE(RAPTOR_PARSER_TURTLE, 1, [Building Turtle parser])
+AC_DEFINE(RAPTOR_PARSER_NTRIPLES, 1, [Building N-Triples parser])
+AC_DEFINE(RAPTOR_PARSER_RDFXML, 1, [Building RDF/XML parser])
+
 AC_MSG_CHECKING(RSS Tag Soup parser requirements)
 if test $need_libxml = 1 -a "$ac_cv_header_libxml_xmlreader_h" = yes -a "$have_libxml2_xmlParserSeverities" = yes ; then
   AC_MSG_RESULT(met)
