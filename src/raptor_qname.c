@@ -257,13 +257,8 @@ raptor_free_qname(raptor_qname* name)
 int
 raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
 {
-#ifdef RAPTOR_IN_REDLAND
-  if(name1->uri && name2->uri)
-    return librdf_uri_equals(name1->uri, name2->uri);
-#else
   if(name1->nspace != name2->nspace)
     return 0;
-#endif
   if(name1->local_name_length != name2->local_name_length)
     return 0;
   if(strcmp(name1->local_name, name2->local_name))
