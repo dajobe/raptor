@@ -38,7 +38,9 @@
 
 
 
+#if defined(RAPTOR_WWW_LIBXML) || defined(RAPTOR_WWW_LIBGHTTP)
 static int raptor_www_file_fetch(raptor_www *www, const char *url);
+#endif
 
 
 raptor_www *
@@ -112,7 +114,7 @@ raptor_www_set_userdata(raptor_www *www, void *userdata)
 
 void
 raptor_www_set_error_handler(raptor_www *www, 
-                             raptor_internal_message_handler error_handler, 
+                             raptor_www_message_handler error_handler, 
                              void *error_data)  
 {
   www->error_handler=error_handler;
@@ -167,6 +169,7 @@ raptor_www_error(raptor_www *www, const char *message, ...)
 }
 
   
+#if defined(RAPTOR_WWW_LIBXML) || defined(RAPTOR_WWW_LIBGHTTP)
 
 static int 
 raptor_www_file_fetch(raptor_www *www, const char *url) 
@@ -210,6 +213,8 @@ raptor_www_file_fetch(raptor_www *www, const char *url)
   
   return status;
 }
+
+#endif
 
 
 int
