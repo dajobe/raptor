@@ -807,6 +807,7 @@ typedef struct {
   int depth;
   raptor_namespace_stack *nstack;
   raptor_namespace *rdf_ns;
+  raptor_sequence *namespaces;
 } raptor_rdfxml_serializer_context;
 
 
@@ -831,6 +832,9 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
                                        (const unsigned char*)"rdf",
                                        (const unsigned char*)raptor_rdf_namespace_uri,
                                        context->depth);
+
+  context->namespaces=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_namespace, NULL);
+
   return 0;
 }
   
@@ -844,6 +848,8 @@ raptor_rdfxml_serialize_terminate(raptor_serializer* serializer)
   /* Frees all namespaces on the stack, including context->rdf_ns */  
   if(context->nstack)
     raptor_free_namespaces(context->nstack);
+  if(context->namespaces)
+    raptor_free_sequence(context->namespaces);
 }
   
 
@@ -853,7 +859,14 @@ raptor_rdfxml_serialize_declare_namespace(raptor_serializer* serializer,
                                           const unsigned char *prefix, 
                                           raptor_uri *uri)
 {
-  /* raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context; */
+  raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context;
+  raptor_namespace *ns;
+
+  ns=raptor_new_namespace_from_uri(context->nstack, prefix, uri, 0);
+  if(!ns)
+    return 1;
+  
+  raptor_sequence_push(context->namespaces, ns);
   return 0;
 }
 
@@ -864,19 +877,24 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
 {
   raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context;
   raptor_iostream *iostr=serializer->iostream;
-  unsigned char *buffer;
+  int i;
   
   raptor_iostream_write_string(iostr,
                                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   context->depth++;
   raptor_namespaces_start_namespace(context->nstack, context->rdf_ns);
-
+  for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
+    raptor_namespace* ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
+    raptor_namespaces_start_namespace(context->nstack, ns);
+  }
+  
   raptor_iostream_write_counted_string(iostr, "<rdf:RDF ", 9);
-
-  buffer=raptor_namespaces_format(context->rdf_ns, NULL);
-  raptor_iostream_write_string(iostr, (const char*)buffer);
-  raptor_free_memory(buffer);
-
+  raptor_iostream_write_namespace(iostr, context->rdf_ns);
+  for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
+    raptor_namespace* ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
+    raptor_iostream_write_byte(iostr, ' ');
+    raptor_iostream_write_namespace(iostr, ns);
+  }
   raptor_iostream_write_counted_string(iostr, ">\n", 2);
 
   return 0;
