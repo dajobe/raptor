@@ -15,10 +15,6 @@
 <li>Add --with-xml11-names configure option</li>
 <li>Update the raptor_utf8.c XML1.1 name checking for ranges in latest document</li>
 <li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work</li>
-<li>BUG: Update neeed for libxml 2.6.0 SAX2 API.  Running gives warnings like
-<em>Use of deprecated SAXv1 function internalSubset</em>
-The new methods have names starting with xmlSAX2 replacing the old names.
-</li>
 <li>Report that the WIN32 uri code is not correct for file://C|/foo</li>
 <li>RFE: add a way to disable the gnome glib NFC linking/checking</li>
 <li>N-Triples+ parser - the lexer lval-&gt;string values get overwritten on errors</li>
@@ -39,6 +35,8 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Updated to handle libxml 2.6.0 SAX2 API which just replaces the
+names of the SAX1 calls.</li>
 <li><a href="http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/">N-Triples Plus</a> parser (1.1.0)</li>
 <li>Correct line counting for N-Triples with \r\n line (DOS) files and
 when the line crosses a chunk. (1.1.0)</li>
