@@ -1311,6 +1311,20 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
 
 #endif
 
+#ifdef RAPTOR_XML_EXPAT
+  if(rdf_xml_parser->sax2->xp) {
+    XML_ParserFree(rdf_xml_parser->sax2->xp);
+    rdf_xml_parser->sax2->xp=NULL;
+  }
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+  if(rdf_xml_parser->sax2->xc) {
+    xmlFreeParserCtxt(rdf_xml_parser->sax2->xc);
+    rdf_xml_parser->sax2->xc=NULL;
+  }
+#endif
+
   raptor_namespaces_clear(&rdf_xml_parser->namespaces);
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
