@@ -28,7 +28,7 @@ include_HEADERS = raptor.h ntriples.h
 
 noinst_HEADERS = raptor_internal.h win32_config.h
 
-man_MANS = rapper.1 libraptor.3
+man_MANS = rapper.1 libraptor.3 raptor-config.1
 
 rapper_SOURCES = rdfdump.c
 rapper_LDADD = libraptor.la @REDLAND_LIBS@
