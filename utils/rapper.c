@@ -81,16 +81,22 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <getopt.h>
+
+#ifdef LIBRDF_INTERNAL
+#include <librdf.h>
+#endif
 
 #include <rapier.h>
 
 
-/* one prototype needed */
+static void print_triples(void *user_data, const char *subject, rapier_subject_type subject_type, const char *predicate, rapier_predicate_type predicate_type, const char *object, rapier_object_type object_type);
 int main(int argc, char *argv[]);
 
 
+
 static
-void print_triples(void *userData, 
+void print_triples(void *user_data,
                    const char *subject, rapier_subject_type subject_type,
                    const char *predicate, rapier_predicate_type predicate_type,
                    const char *object, rapier_object_type object_type) 
@@ -100,7 +106,25 @@ void print_triples(void *userData,
 }
 
 
-#include <getopt.h>
+#ifdef HAVE_GETOPT_LONG
+#define HELP_TEXT(short, long, description) "  -" #short ", --" #long "  " description "\n"
+#else
+#define HELP_TEXT(short, long, description) "  -" #short "  " description "\n"
+#endif
+
+
+#define GETOPT_STRING "sh"
+
+#ifdef HAVE_GETOPT_LONG
+static struct option long_options[] =
+{
+  /* name, has_arg, flag, val */
+  {"scan", 0, 0, 's'},
+  {"help", 0, 0, 'h'},
+  {NULL, 0, 0, 0}
+};
+#endif
+
 
 
 int
@@ -113,16 +137,8 @@ main(int argc, char *argv[])
   int scanning=0;
   int usage=0;
 
-#define GETOPT_STRING "sh"
-
-#ifdef HAVE_GETOPT_LONG
-    static struct option long_options[] =
-    {
-      /* name, has_arg, flag, val */
-      {"scan", 0, 0, 's'},
-      {"help", 0, 0, 'h'},
-      {NULL, 0, 0, 0}
-    };
+#ifdef LIBRDF_INTERNAL
+  librdf_init_world(NULL, NULL);
 #endif
 
   
@@ -139,8 +155,7 @@ main(int argc, char *argv[])
     if (c == -1)
       break;
 
-    switch (c)
-    {
+    switch (c) {
       case 0:
       case '?': /* getopt() - unknown option */
 #ifdef HAVE_GETOPT_LONG
@@ -148,7 +163,7 @@ main(int argc, char *argv[])
 #else
         fprintf(stderr, "Unknown option %s\n", argv[optind]);
 #endif
-        usage=1;
+        usage=2; /* usage and error */
         break;
         
       case 'h':
@@ -169,8 +184,8 @@ main(int argc, char *argv[])
   if(usage) {
     fprintf(stderr, "Usage: %s [OPTIONS] <RDF source file: URI>\n", program);
     fprintf(stderr, "Parse the given file as RDF using Rapier\n");
-    fprintf(stderr, "  -h, --help : This message\n");
-    fprintf(stderr, "  -s, --scan : Scan for <rdf:RDF> element in source\n");
+    fprintf(stderr, HELP_TEXT(h, help, "This message"));
+    fprintf(stderr, HELP_TEXT(s, scan, "Scan for <rdf:RDF> element in source"));
     return(usage>1);
   }
 
@@ -198,6 +213,10 @@ main(int argc, char *argv[])
   } else
     rc=0;
   rapier_free(parser);
+
+#ifdef LIBRDF_INTERNAL
+  librdf_destroy_world();
+#endif
 
   return(rc);
 }
