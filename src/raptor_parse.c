@@ -1705,6 +1705,10 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 
   element=rdf_parser->current_element;
 
+  /* this file is very broke - probably not XML, whatever */
+  if(!element)
+    return;
+  
 #ifdef RAPTOR_DEBUG
   fputc('\n', stderr);
 #endif
