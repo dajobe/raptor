@@ -214,10 +214,10 @@ main(int argc, char *argv[])
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
-  raptor_feature parser_feature;
+  raptor_feature parser_feature=(raptor_feature)-1;
   int parser_feature_value= -1;
   unsigned char* parser_feature_string_value=NULL;
-  raptor_feature serializer_feature;
+  raptor_feature serializer_feature=(raptor_feature)-1;
   int serializer_feature_value= -1;
   unsigned char* serializer_feature_string_value=NULL;
   raptor_sequence *namespace_declarations=NULL;
