@@ -1596,39 +1596,50 @@ raptor_xml_start_element_handler(void *user_data,
   element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
 
   if(!rdf_parser->feature_scanning_for_rdf_RDF && element->parent) {
-    if(!element->parent->child_state)
-      raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set\n");      
-
-    element->state=element->parent->child_state;
     element->content_type=element->parent->child_content_type;
+      
+    if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
+       element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
+      /* If parent has an rdf:resource, this element should not be here */
+      raptor_parser_warning(rdf_parser, "element %s found inside property element with rdf:resource, skipping.", 
+                            element->name->local_name);
+      element->state=RAPTOR_STATE_SKIPPING;
+      element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
 
-    element->parent->content_element_seen++;
-    
-    /* leave literal XML alone */
-    if (!rdf_content_type_info[element->content_type].cdata_allowed) {
-      if(element->parent->content_element_seen == 1 &&
-         element->parent->content_cdata_seen == 1) {
-        /* Uh oh - mixed content, the parent element has cdata too */
-        raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
-                              element->parent->name->local_name);
-      }
-    
-      /* If there is some existing all-whitespace content cdata
-       * before this node element, delete it
-       */
-      if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES &&
-         element->parent->content_element_seen &&
-         element->parent->content_cdata_all_whitespace &&
-         element->parent->content_cdata) {
+    } else {
+      if(!element->parent->child_state)
+        raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set\n");      
 
-        element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+      element->state=element->parent->child_state;
+      element->parent->content_element_seen++;
+    
+      /* leave literal XML alone */
+      if (!rdf_content_type_info[element->content_type].cdata_allowed) {
+        if(element->parent->content_element_seen == 1 &&
+           element->parent->content_cdata_seen == 1) {
+          /* Uh oh - mixed content, the parent element has cdata too */
+          raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
+                                element->parent->name->local_name);
+        }
         
-        LIBRDF_FREE(raptor_ns_name_array, element->parent->content_cdata);
-        element->parent->content_cdata=NULL;
-        element->parent->content_cdata_length=0;
-      }
-
-    } /* end if leave literal XML alone */
+        /* If there is some existing all-whitespace content cdata
+         * before this node element, delete it
+         */
+        if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES &&
+           element->parent->content_element_seen &&
+           element->parent->content_cdata_all_whitespace &&
+           element->parent->content_cdata) {
+          
+          element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+          
+          LIBRDF_FREE(raptor_ns_name_array, element->parent->content_cdata);
+          element->parent->content_cdata=NULL;
+          element->parent->content_cdata_length=0;
+        }
+        
+      } /* end if leave literal XML alone */
+      
+    } /* end if parent has no rdf:resource */
 
   } /* end if element->parent */
 
