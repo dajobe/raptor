@@ -57,8 +57,6 @@ extern "C" {
 #define RAPTOR_DEBUG5(function, msg, arg1, arg2, arg3, arg4) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4);} while(0)
 #define RAPTOR_DEBUG6(function, msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4, arg5);} while(0)
 
-const char * n3_token_print(int token);
-
 #else
 /* DEBUGGING TURNED OFF */
 
