@@ -290,6 +290,7 @@ main(int argc, char *argv[])
   raptor_xml_element *element;
   size_t count;
   raptor_qname **attrs;
+  raptor_uri* base_uri_copy=NULL;
 
   /* for raptor_new_iostream_to_string */
   char *string=NULL;
@@ -330,9 +331,10 @@ main(int argc, char *argv[])
   el_name=raptor_new_qname_from_namespace_local_name(foo_ns,
                                                      (const unsigned char*)"bar", 
                                                      NULL);
+  base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
   element=raptor_new_xml_element(el_name,
                                   NULL, /* language */
-                                  raptor_uri_copy(base_uri));
+                                  base_uri_copy);
 
   raptor_xml_writer_start_element(xml_writer, element);
   raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"hello\n", 6);
@@ -348,9 +350,10 @@ main(int argc, char *argv[])
                            (const unsigned char*)"blah", 
                            NULL, /* no attribute value - element */
                            NULL, NULL); /* errors */
+  base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
   element=raptor_new_xml_element(el_name,
                                   NULL, /* language */
-                                  raptor_uri_copy(base_uri));
+                                  base_uri_copy);
 
   attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
   attrs[0]=raptor_new_qname(nstack, 
