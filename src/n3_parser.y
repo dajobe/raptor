@@ -427,7 +427,9 @@ subject: resource
 }
 | BLANK_LITERAL
 {
+#if RAPTOR_DEBUG > 1  
   printf("subject blank=\"%s\"\n", $1);
+#endif
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, $1, NULL, NULL, NULL);
 }
 ;
