@@ -326,6 +326,9 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
   size_t length=8+uri_length+ns->prefix_length; /* 8=length of [[xmlns=""] */
   unsigned char *buffer;
 
+  if(ns->prefix)
+    length++; /* for : */
+  
   if(length_p)
     *length_p=length;
 
