@@ -433,16 +433,56 @@ raptor_iostream_write_end(raptor_iostream *iostr)
 
 
 /**
- * raptor_get_bytes_written_count - Get the number of bytes written to the iostream
+ * raptor_iostream_get_bytes_written_count - Get the number of bytes written to the iostream
  * @iostr: raptor iostream
  *
  * Return value: number of bytes written or 0 if non written so far
  **/
 size_t
-raptor_get_bytes_written_count(raptor_iostream *iostr)
+raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
 {
   return iostr->bytes;
 }
+
+
+/**
+ * raptor_iostream_write_decimal - Write an integer in decimal to the iostream
+ * @iostr: raptor iostream
+ * @integer: integer to format as decimal and add
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
+{
+  /* enough for 64 bit signed integer
+   * INT64_MAX is  9223372036854775807 (19 digits) + 1 for sign 
+   */
+  unsigned char buf[20];
+  unsigned char *p;
+  int i=integer;
+  size_t length=1;
+  if(integer<0) {
+    length++;
+    i= -integer;
+  }
+  while(i/=10)
+    length++;
+
+  p=buf+length-1;
+  i=integer;
+  if(i<0)
+    i= -i;
+  do {
+    *p-- ='0'+(i %10);
+    i /= 10;
+  } while(i);
+  if(integer<0)
+    *p= '-';
+  
+  return raptor_iostream_write_bytes(iostr, buf, 1, length);
+}
+
 #endif
 
 
@@ -530,7 +570,7 @@ main(int argc, char *argv[])
     raptor_iostream_write_bytes(iostr, (const void*)"Hello, world!", 1, 13);
     raptor_iostream_write_byte(iostr, '\n');
 
-    count=raptor_get_bytes_written_count(iostr);
+    count=raptor_iostream_get_bytes_written_count(iostr);
     if(count != OUT_BYTES_COUNT) {
       fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
               count, OUT_BYTES_COUNT);
