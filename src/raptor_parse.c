@@ -1594,7 +1594,7 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const unsigned char *buffer,
    */
 
 #if LIBXML_VERSION < 20425
-  if(rdf_xml_parser->first_read && is_end) {
+  if(rdf_xml_parser->sax2->first_read && is_end) {
     /* parse all but the last character */
     rc=xmlParseChunk(xc, (char*)buffer, len-1, 0);
     if(rc)
