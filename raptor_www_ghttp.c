@@ -75,8 +75,7 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
 
     /* Set the URI for the request object */
     if(ghttp_set_uri(www->request, (char*)url) <0) {
-      fprintf(stderr, "ghttp_set_uri error - Illegal URI %s - %s\n", url,
-              ghttp_get_error(www->request));
+      raptor_www_error(www, "ghttp setup failed");
       return 1;
     }
 
@@ -86,9 +85,7 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
 
    /* Prepare the connection - hostname lookup and some other things */
     if(ghttp_prepare(www->request)) {
-      fprintf(stderr, "ghttp_prepare error - %s\n",
-              ghttp_get_error(www->request));
-      
+      raptor_www_error(www, "ghttp prepare failed");
       return 1;
     }
 
@@ -97,10 +94,9 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
     
     www->status_code=ghttp_status_code(www->request);
 
-    /* fprintf(stderr, "status code %d\n", www->status_code); */
-
     if(www->status != ghttp_done) {
-      fprintf(stderr, "ghttp_process error - %s\n", ghttp_get_error(www->request));
+      raptor_www_error(www, "ghttp fetch failed - %s",
+                       ghttp_get_error(www->request));
       return 1;
     }
 
@@ -111,7 +107,6 @@ raptor_www_ghttp_fetch(raptor_www *www, const char *url)
        www->status_code == 303 || www->status_code == 307) {
       url=ghttp_get_header(www->request, http_hdr_Location); 
       if(url) {
-        /* fprintf(stderr, "redirecting to URI %s\n", url); */
         ghttp_clean(www->request);
         continue;
       }
