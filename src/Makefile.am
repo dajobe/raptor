@@ -185,6 +185,3 @@ dist-hook: README NEWS
 	done
 
 @SET_MAKE@
-
-../librdf/librdf.la:
-	cd ../librdf && $(MAKE) librdf.la
