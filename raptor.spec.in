@@ -4,7 +4,7 @@
 %define release 1
 %define prefix  /usr
 
-Summary:   Rapier RDF Parser
+Summary:   Redland Parser Toolkit for RDF (Raptor)
 Name:      %{name}
 Version:   %{version}
 Release:   %{release}
@@ -12,14 +12,14 @@ Prefix:    %{prefix}
 Copyright: LGPL/MPL
 Group:     System Environment/Libraries
 Source:    http://www.redland.opensource.ac.uk/dist/source/%{name}-%{version}.tar.gz
-URL:       http://www.redland.opensource.ac.uk/rapier/
+URL:       http://www.redland.opensource.ac.uk/raptor/
 BuildRoot: /tmp/%{name}-%{version}
 Packager:  Dave Beckett <Dave.Beckett@bristol.ac.uk>
 Docdir: %{prefix}/doc
 
 %description
 
-Rapier is the Redland RDF Parser that reads RDF encoded in XML.
+Raptor contains the Redland RDF Parser that reads RDF encoded in XML.
 
 %prep
 %setup
@@ -49,10 +49,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} sysconfdir=$RPM_BUILD_ROOT/etc install
 %files
 %defattr(0555, bin, bin)
 %{prefix}/bin/rdfdump
-%{prefix}/lib/librapier.a
+%{prefix}/lib/libraptor.a
 
 %defattr (0444, bin, bin, 0555)
-%{prefix}/include/rapier.h
+%{prefix}/include/raptor.h
 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
 %doc *.html

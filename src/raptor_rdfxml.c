@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * rapier_parse.c - Redland Parser for RDF (RAPIER)
+ * raptor_parse.c - Redland Parser for RDF (RAPTOR)
  *
  * $Id$
  *
@@ -40,7 +40,7 @@ extern int errno;
 #ifdef LIBRDF_INTERNAL
 /* if inside Redland */
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
 #define LIBRDF_DEBUG 1
 #endif
 
@@ -52,7 +52,7 @@ extern int errno;
 #include <rdf_statement.h>
 #include <rdf_uri.h>
 
-typedef librdf_uri rapier_uri;
+typedef librdf_uri raptor_uri;
 
 #else
 /* else standalone */
@@ -61,7 +61,7 @@ typedef librdf_uri rapier_uri;
 #define LIBRDF_CALLOC(type, size, count) calloc(size, count)
 #define LIBRDF_FREE(type, ptr)   free((void*)ptr)
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
 /* Debugging messages */
 #define LIBRDF_DEBUG1(function, msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function); } while(0)
 #define LIBRDF_DEBUG2(function, msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1);} while(0)
@@ -86,13 +86,13 @@ typedef librdf_uri rapier_uri;
 
 
 
-typedef const char rapier_uri;
+typedef const char raptor_uri;
 
 #endif
 
 
 /* for the memory allocation functions */
-#if defined(HAVE_DMALLOC_H) && defined(RAPIER_MEMORY_DEBUG_DMALLOC)
+#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
 #include <dmalloc.h>
 #undef HAVE_STDLIB_H
 #endif
@@ -131,15 +131,15 @@ DIE
 #endif
 
 
-/* Rapier includes */
-#include <rapier.h>
+/* Raptor includes */
+#include <raptor.h>
 
-/* Rapier structures */
+/* Raptor structures */
 /* namespace stack node */
-typedef struct rapier_ns_map_s rapier_ns_map;
+typedef struct raptor_ns_map_s raptor_ns_map;
 
 typedef enum {
-  RAPIER_STATE_INVALID = 0,
+  RAPTOR_STATE_INVALID = 0,
 
   /* Not in RDF grammar yet - searching for a start element.
    * This can be <rdf:RDF> (goto 6.1) but since it is optional,
@@ -150,7 +150,7 @@ typedef enum {
    * CHOICE: Search for <rdf:RDF> node before starting match
    * OR assume RDF content, hence go straight to production
    */
-  RAPIER_STATE_UNKNOWN = 1000,
+  RAPTOR_STATE_UNKNOWN = 1000,
 
   /* No need for 6.1 - go straight to 6.2 */
 
@@ -158,12 +158,12 @@ typedef enum {
    *   description (6.3) | container (6.4)
    * = description (6.3) | sequence (6.25) | bag (6.26) | alternative (6.27)
    */
-  RAPIER_STATE_OBJ   = 6020,
+  RAPTOR_STATE_OBJ   = 6020,
 
   /* Met production 6.3 (description) <rdf:Description> element
    * OR 6.13 (typedNode)
    */
-  RAPIER_STATE_DESCRIPTION = 6030,
+  RAPTOR_STATE_DESCRIPTION = 6030,
 
   /* production 6.4 (container) - not used (pick one of sequence, bag,
    * alternative immediately in state 6.2
@@ -173,11 +173,11 @@ typedef enum {
 
   /* met production 6.12 (propertyElt)
    */
-  RAPIER_STATE_PROPERTYELT = 6120,
+  RAPTOR_STATE_PROPERTYELT = 6120,
 
   /* met production 6.13 (typedNode)
    */
-  RAPIER_STATE_TYPED_NODE = 6130,
+  RAPTOR_STATE_TYPED_NODE = 6130,
 
 
   /* productions 6.14-6.16 are for attributes - not used */
@@ -188,27 +188,27 @@ typedef enum {
 
 
   /* Met production 6.25 (sequence) <rdf:Seq> element seen. Goto 6.28  */
-  RAPIER_STATE_SEQ = 6250,
+  RAPTOR_STATE_SEQ = 6250,
 
   /* Met production 6.26 (bag) <rdf:Bag> element seen. Goto 6.28  */
-  RAPIER_STATE_BAG = 6260,
+  RAPTOR_STATE_BAG = 6260,
 
   /* Met production 6.27 (alternative) <rdf:Alt> element seen. Goto 6.28 */
-  RAPIER_STATE_ALT = 6270,
+  RAPTOR_STATE_ALT = 6270,
 
   /* Met production 6.28 (member) 
    * Now expect <rdf:li> element and if it empty, with resource attribute
    * goto 6.29 otherwise goto 6.30
    * CHOICE: Match rdf:resource/resource
    */
-  RAPIER_STATE_MEMBER = 6280,
+  RAPTOR_STATE_MEMBER = 6280,
 
   /* met production 6.29 (referencedItem) after 
    * Found a container item with reference - <rdf:li (rdf:)resource=".."/> */
-  RAPIER_STATE_REFERENCEDITEM = 6290,
+  RAPTOR_STATE_REFERENCEDITEM = 6290,
 
   /* met production 6.30 (inlineItem) part 1 - plain container item */
-  RAPIER_STATE_INLINEITEM = 6300,
+  RAPTOR_STATE_INLINEITEM = 6300,
 
 
   /* productions 6.31-6.33 are for attributes - not used */
@@ -216,11 +216,11 @@ typedef enum {
 
   /* met production 6.30 (inlineItem) part 2 - container item with
    * rdf:parseType="literal" */
-  RAPIER_STATE_PARSETYPE_LITERAL = 6400,
+  RAPTOR_STATE_PARSETYPE_LITERAL = 6400,
 
   /* met production 6.30 (inlineItem) part 3 - container item with 
    * rdf:parseType="literal" */
-  RAPIER_STATE_PARSETYPE_RESOURCE = 6410,
+  RAPTOR_STATE_PARSETYPE_RESOURCE = 6410,
 
 
 
@@ -229,17 +229,17 @@ typedef enum {
   /* Additional non-M&S states */
 
   /* Another kind of container, not Seq, Bag or Alt */
-  RAPIER_STATE_CONTAINER = 6420,
+  RAPTOR_STATE_CONTAINER = 6420,
 
   /* met production 6.30 (inlineItem) - container item 
    * with other rdf:parseType value */
-  RAPIER_STATE_PARSETYPE_OTHER = 6430,
+  RAPTOR_STATE_PARSETYPE_OTHER = 6430,
 
 
-} rapier_state;
+} raptor_state;
 
 
-static const char * const rapier_state_names[]={
+static const char * const raptor_state_names[]={
   NULL, /* No 6.0 */
   NULL, /* 6.1 not used */
   "object (6.2)",
@@ -262,16 +262,16 @@ static const char * const rapier_state_names[]={
 };
 
 
-static const char * rapier_state_as_string(rapier_state state) 
+static const char * raptor_state_as_string(raptor_state state) 
 {
   int offset=(state - 6000)/10;
-  if(state == RAPIER_STATE_UNKNOWN)
+  if(state == RAPTOR_STATE_UNKNOWN)
     return "UNKNOWN";
   if(offset<0 || offset > 43)
     return "INVALID";
-  if(!rapier_state_names[offset])
+  if(!raptor_state_names[offset])
     return "NOT-USED";
-  return rapier_state_names[offset];
+  return raptor_state_names[offset];
 }
 
 
@@ -280,15 +280,15 @@ static const char * rapier_state_as_string(rapier_state state)
  * 2) prefix=NULL, uri=NULL      - no default namespace
  * 3) prefix=<prefix>, uri=<URI> - regular pair defined <prefix>:<URI>
  */
-struct rapier_ns_map_s {
+struct raptor_ns_map_s {
   /* next down the stack, NULL at bottom */
-  struct rapier_ns_map_s* next;
+  struct raptor_ns_map_s* next;
   /* NULL means is the default namespace */
   const char *prefix;
   /* needed to safely compare prefixed-names */
   int prefix_length;
   /* URI of namespace or NULL for default */
-  rapier_uri *uri;
+  raptor_uri *uri;
 #ifdef LIBRDF_INTERNAL
 #else
   /* When implementing URIs as char*, need this for efficiency */
@@ -308,7 +308,7 @@ struct rapier_ns_map_s {
 
 
 /* 
- * Rapier XML-namespaced name, for elements or attributes 
+ * Raptor XML-namespaced name, for elements or attributes 
  */
 
 /* There are three forms
@@ -321,13 +321,13 @@ typedef struct {
   const char *local_name;
   int local_name_length;
   /* Namespace or NULL if not in a namespace */
-  const rapier_ns_map *nspace;
+  const raptor_ns_map *nspace;
   /* URI of namespace+local_name or NULL if not defined */
-  rapier_uri *uri;
+  raptor_uri *uri;
   /* optional value - used when name is an attribute */
   const char *value;
   int value_length;
-} rapier_ns_name;
+} raptor_ns_name;
 
 
 /* These are used in the RDF/XML syntax as attributes, not
@@ -364,40 +364,40 @@ static const char * const rdf_attr_names[]={
  * or (invented) container for other container types.
  */
 typedef enum {
-  RAPIER_TYPED_NODE_BLOCK_TYPE_TYPED_NODE, /* default */
-  RAPIER_TYPED_NODE_BLOCK_TYPE_SEQ,
-  RAPIER_TYPED_NODE_BLOCK_TYPE_BAG,
-  RAPIER_TYPED_NODE_BLOCK_TYPE_ALT,
-  RAPIER_TYPED_NODE_BLOCK_TYPE_CONTAINER
-} rapier_typed_node_block_type;
+  RAPTOR_TYPED_NODE_BLOCK_TYPE_TYPED_NODE, /* default */
+  RAPTOR_TYPED_NODE_BLOCK_TYPE_SEQ,
+  RAPTOR_TYPED_NODE_BLOCK_TYPE_BAG,
+  RAPTOR_TYPED_NODE_BLOCK_TYPE_ALT,
+  RAPTOR_TYPED_NODE_BLOCK_TYPE_CONTAINER
+} raptor_typed_node_block_type;
 
 
 typedef enum {
   /* undetermined yet - whitespace is stored */
-  RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN,
+  RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN,
   /* empty - no elements or cdata - whitespace is ignored */
-  RAPIER_ELEMENT_CONTENT_TYPE_EMPTY,
+  RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY,
   /* literal content (cdata) - whitespace is significant */
-  RAPIER_ELEMENT_CONTENT_TYPE_LITERAL,
+  RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL,
   /* properties (0+ elements) - whitespace is ignored,
    * any non-whitespace is error */
-  RAPIER_ELEMENT_CONTENT_TYPE_PROPERTIES,
+  RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES,
   /* resource (0 or 1 element) - whitespace is ignored,
    * any non-whitespace is error */
-  RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE,
+  RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE,
   /* all content is preserved */
-  RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED
-} rapier_element_content_type;
+  RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED
+} raptor_element_content_type;
 
 
 /*
- * Rapier Element/attributes on stack 
+ * Raptor Element/attributes on stack 
  */
-struct rapier_element_s {
+struct raptor_element_s {
   /* NULL at bottom of stack */
-  struct rapier_element_s *parent;
-  rapier_ns_name *name;
-  rapier_ns_name **attributes;
+  struct raptor_element_s *parent;
+  raptor_ns_name *name;
+  raptor_ns_name **attributes;
   int attribute_count;
   /* attributes declared in M&S */
   const char * rdf_attr[RDF_ATTR_LAST+1];
@@ -405,16 +405,16 @@ struct rapier_element_s {
   int rdf_attr_count;
 
   /* state that this production matches */
-  rapier_state state;
+  raptor_state state;
 
   /* starting state for children of this element */
-  rapier_state child_state;
+  raptor_state child_state;
 
   /* XML elements in RDF can contain EITHER cdata OR just sub-elements
    * Mixed content is not allowed 
    */
 
-  rapier_element_content_type content_type;
+  raptor_element_content_type content_type;
 
   /* CDATA content of element and checks for mixed content */
   char *content_cdata;
@@ -431,38 +431,38 @@ struct rapier_element_s {
 
   /* ID of Bag */
   const char *bag_id;
-  rapier_uri *bag_uri;
-  rapier_uri_source bag_uri_source;
+  raptor_uri *bag_uri;
+  raptor_uri_source bag_uri_source;
 
   /* Subject URI, type, source */
-  rapier_uri *subject_uri;
-  rapier_subject_type subject_type;
-  rapier_uri_source subject_uri_source;
+  raptor_uri *subject_uri;
+  raptor_subject_type subject_type;
+  raptor_uri_source subject_uri_source;
   
   /* Predicate URI, type is either
-   * RAPIER_URI_SOURCE_ELEMENT or RAPIER_URI_SOURCE_ATTRIBUTE and
+   * RAPTOR_URI_SOURCE_ELEMENT or RAPTOR_URI_SOURCE_ATTRIBUTE and
    * known from context
    */
-  rapier_uri *predicate_uri;
+  raptor_uri *predicate_uri;
 
   /* Object URI, source */
-  rapier_uri *object_uri;
-  rapier_uri_source object_uri_source;
+  raptor_uri *object_uri;
+  raptor_uri_source object_uri_source;
 
   /* URI of type of container */
-  rapier_uri *container_type;
+  raptor_uri *container_type;
 
   /* last ordinal used, so initialising to 0 works, emitting rdF:_1 first */
   int last_ordinal;
 };
 
-typedef struct rapier_element_s rapier_element;
+typedef struct raptor_element_s raptor_element;
 
 
 /*
- * Rapier parser object
+ * Raptor parser object
  */
-struct rapier_parser_s {
+struct raptor_parser_s {
 #ifdef LIBRDF_INTERNAL
   librdf_world *world;
 #endif
@@ -481,30 +481,30 @@ struct rapier_parser_s {
   int depth;
 
   /* stack of namespaces, most recently added at top */
-  rapier_ns_map *namespaces;
+  raptor_ns_map *namespaces;
 
   /* can be filled with error location information */
-  rapier_locator locator;
+  raptor_locator locator;
 
   /* stack of elements - elements add after current_element */
-  rapier_element *root_element;
-  rapier_element *current_element;
+  raptor_element *root_element;
+  raptor_element *current_element;
 
   /* non 0 if parser had fatal error and cannot continue */
   int failed;
 
   /* typedNode block type */
-  rapier_typed_node_block_type typed_node_block_type;
+  raptor_typed_node_block_type typed_node_block_type;
 
   /* generated ID counter */
   int genid;
 
   /* base URI of RDF/XML */
-  rapier_uri *base_uri;
+  raptor_uri *base_uri;
 
 
   /* static statement for use in passing to user code */
-  rapier_statement statement;
+  raptor_statement statement;
 
 
   /* FEATURE: 
@@ -537,14 +537,14 @@ struct rapier_parser_s {
   void *error_user_data;
   void *warning_user_data;
 
-  rapier_message_handler fatal_error_handler;
-  rapier_message_handler error_handler;
-  rapier_message_handler warning_handler;
+  raptor_message_handler fatal_error_handler;
+  raptor_message_handler error_handler;
+  raptor_message_handler warning_handler;
 
-  rapier_container_test_handler container_test_handler;
+  raptor_container_test_handler container_test_handler;
 
   /* parser callbacks */
-  rapier_statement_handler statement_handler;
+  raptor_statement_handler statement_handler;
 };
 
 
@@ -553,122 +553,122 @@ struct rapier_parser_s {
 /* static variables */
 
 #ifdef LIBRDF_INTERNAL
-#define RAPIER_RDF_type_URI LIBRDF_MS_type_URI
-#define RAPIER_RDF_subject_URI LIBRDF_MS_subject_URI
-#define RAPIER_RDF_predicate_URI LIBRDF_MS_predicate_URI
-#define RAPIER_RDF_object_URI LIBRDF_MS_object_URI
-#define RAPIER_RDF_Statement_URI LIBRDF_MS_Statement_URI
+#define RAPTOR_RDF_type_URI LIBRDF_MS_type_URI
+#define RAPTOR_RDF_subject_URI LIBRDF_MS_subject_URI
+#define RAPTOR_RDF_predicate_URI LIBRDF_MS_predicate_URI
+#define RAPTOR_RDF_object_URI LIBRDF_MS_object_URI
+#define RAPTOR_RDF_Statement_URI LIBRDF_MS_Statement_URI
 
-#define RAPIER_RDF_Seq_URI LIBRDF_MS_Seq_URI
-#define RAPIER_RDF_Bag_URI LIBRDF_MS_Bag_URI
-#define RAPIER_RDF_Alt_URI LIBRDF_MS_Alt_URI
+#define RAPTOR_RDF_Seq_URI LIBRDF_MS_Seq_URI
+#define RAPTOR_RDF_Bag_URI LIBRDF_MS_Bag_URI
+#define RAPTOR_RDF_Alt_URI LIBRDF_MS_Alt_URI
 
 #else
 
-static const char * const rapier_rdf_ms_uri=RAPIER_RDF_MS_URI;
-static const char * const rapier_rdf_schema_uri=RAPIER_RDF_SCHEMA_URI;
-static const char * const rapier_rdf_type_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-static const char * const rapier_rdf_subject_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject";
-static const char * const rapier_rdf_predicate_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate";
-static const char * const rapier_rdf_object_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#object";
-static const char * const rapier_rdf_Statement_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement";
+static const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
+static const char * const raptor_rdf_schema_uri=RAPTOR_RDF_SCHEMA_URI;
+static const char * const raptor_rdf_type_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+static const char * const raptor_rdf_subject_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject";
+static const char * const raptor_rdf_predicate_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate";
+static const char * const raptor_rdf_object_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#object";
+static const char * const raptor_rdf_Statement_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement";
 
-static const char * const rapier_rdf_Seq_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq";
-static const char * const rapier_rdf_Bag_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag";
-static const char * const rapier_rdf_Alt_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt";
-#define RAPIER_RDF_type_URI rapier_rdf_type_uri
-#define RAPIER_RDF_subject_URI rapier_rdf_subject_uri
-#define RAPIER_RDF_predicate_URI rapier_rdf_predicate_uri
-#define RAPIER_RDF_object_URI rapier_rdf_object_uri
-#define RAPIER_RDF_Statement_URI rapier_rdf_Statement_uri
+static const char * const raptor_rdf_Seq_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq";
+static const char * const raptor_rdf_Bag_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag";
+static const char * const raptor_rdf_Alt_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt";
+#define RAPTOR_RDF_type_URI raptor_rdf_type_uri
+#define RAPTOR_RDF_subject_URI raptor_rdf_subject_uri
+#define RAPTOR_RDF_predicate_URI raptor_rdf_predicate_uri
+#define RAPTOR_RDF_object_URI raptor_rdf_object_uri
+#define RAPTOR_RDF_Statement_URI raptor_rdf_Statement_uri
 
-#define RAPIER_RDF_Seq_URI rapier_rdf_Seq_uri
-#define RAPIER_RDF_Bag_URI rapier_rdf_Bag_uri
-#define RAPIER_RDF_Alt_URI rapier_rdf_Alt_uri
+#define RAPTOR_RDF_Seq_URI raptor_rdf_Seq_uri
+#define RAPTOR_RDF_Bag_URI raptor_rdf_Bag_uri
+#define RAPTOR_RDF_Alt_URI raptor_rdf_Alt_uri
 #endif
 
 
-static const char * const rapier_xml_uri="http://www.w3.org/XML/1998/namespace";
+static const char * const raptor_xml_uri="http://www.w3.org/XML/1998/namespace";
 
 
 /* Prototypes for common expat/libxml parsing event-handling functions */
-static void rapier_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
-static void rapier_xml_end_element_handler(void *user_data, const XML_Char *name);
+static void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
+static void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
 /* s is not 0 terminated. */
-static void rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
+static void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
 
 #ifdef HAVE_XML_SetNamespaceDeclHandler
-static void rapier_start_namespace_decl_handler(void *user_data, const XML_Char *prefix, const XML_Char *uri);
-static void rapier_end_namespace_decl_handler(void *user_data, const XML_Char *prefix);
+static void raptor_start_namespace_decl_handler(void *user_data, const XML_Char *prefix, const XML_Char *uri);
+static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix);
 #endif
 
 
 /* libxml-only prototypes */
 #ifdef NEED_LIBXML
-static void rapier_xml_warning(void *context, const char *msg, ...);
-static void rapier_xml_error(void *context, const char *msg, ...);
-static void rapier_xml_fatal_error(void *context, const char *msg, ...);
-static void rapier_xml_validation_error(void *context, const char *msg, ...);
-static void rapier_xml_validation_warning(void *context, const char *msg, ...);
-static void rapier_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc);
+static void raptor_xml_warning(void *context, const char *msg, ...);
+static void raptor_xml_error(void *context, const char *msg, ...);
+static void raptor_xml_fatal_error(void *context, const char *msg, ...);
+static void raptor_xml_validation_error(void *context, const char *msg, ...);
+static void raptor_xml_validation_warning(void *context, const char *msg, ...);
+static void raptor_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc);
 #endif
 
 
 /* Prototypes for local functions */
 #ifndef LIBRDF_INTERNAL
-static char * rapier_file_uri_to_filename(const char *uri);
+static char * raptor_file_uri_to_filename(const char *uri);
 #endif
-static void rapier_parser_fatal_error(rapier_parser* parser, const char *message, ...);
-static void rapier_parser_error(rapier_parser* parser, const char *message, ...);
-static void rapier_parser_warning(rapier_parser* parser, const char *message, ...);
+static void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
+static void raptor_parser_error(raptor_parser* parser, const char *message, ...);
+static void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
 
 
 
 /* prototypes for namespace and name/local_name functions */
-static void rapier_init_namespaces(rapier_parser *rdf_parser);
-static void rapier_start_namespace(rapier_parser *rdf_parser, const char *prefix, const char *nspace, int depth);
-static void rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map *nspace);
-static void rapier_end_namespace(rapier_parser *rdf_parser, const char *prefix, const char *nspace);
-static void rapier_end_namespaces_for_depth(rapier_parser *rdf_parser);
-static rapier_ns_name* rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name, const char *value, int is_element);
-#ifdef RAPIER_DEBUG
-static void rapier_print_ns_name(FILE *stream, rapier_ns_name* name);
+static void raptor_init_namespaces(raptor_parser *rdf_parser);
+static void raptor_start_namespace(raptor_parser *rdf_parser, const char *prefix, const char *nspace, int depth);
+static void raptor_free_namespace(raptor_parser *rdf_parser,  raptor_ns_map *nspace);
+static void raptor_end_namespace(raptor_parser *rdf_parser, const char *prefix, const char *nspace);
+static void raptor_end_namespaces_for_depth(raptor_parser *rdf_parser);
+static raptor_ns_name* raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name, const char *value, int is_element);
+#ifdef RAPTOR_DEBUG
+static void raptor_print_ns_name(FILE *stream, raptor_ns_name* name);
 #endif
-static void rapier_free_ns_name(rapier_ns_name* name);
-static int rapier_ns_names_equal(rapier_ns_name *name1, rapier_ns_name *name2);
+static void raptor_free_ns_name(raptor_ns_name* name);
+static int raptor_ns_names_equal(raptor_ns_name *name1, raptor_ns_name *name2);
 
 
 /* prototypes for element functions */
-static rapier_element* rapier_element_pop(rapier_parser *rdf_parser);
-static void rapier_element_push(rapier_parser *rdf_parser, rapier_element* element);
-static void rapier_free_element(rapier_element *element);
-#ifdef RAPIER_DEBUG
-static void rapier_print_element(rapier_element *element, FILE* stream);
+static raptor_element* raptor_element_pop(raptor_parser *rdf_parser);
+static void raptor_element_push(raptor_parser *rdf_parser, raptor_element* element);
+static void raptor_free_element(raptor_element *element);
+#ifdef RAPTOR_DEBUG
+static void raptor_print_element(raptor_element *element, FILE* stream);
 #endif
 
 
 /* prototypes for grammar functions */
-static void rapier_start_element_grammar(rapier_parser *parser, rapier_element *element);
-static void rapier_end_element_grammar(rapier_parser *parser, rapier_element *element);
+static void raptor_start_element_grammar(raptor_parser *parser, raptor_element *element);
+static void raptor_end_element_grammar(raptor_parser *parser, raptor_element *element);
 
 
 /* prototype for statement related functions */
-static void rapier_generate_statement(rapier_parser *rdf_parser, const void *subject, const rapier_subject_type subject_type, const rapier_uri_source subject_uri_source, const void *predicate, const rapier_predicate_type predicate_type, const rapier_uri_source predicate_uri_source, const void *object, const rapier_object_type object_type, const rapier_uri_source object_uri_source, rapier_uri *bag);
-static void rapier_print_statement_detailed(const rapier_statement *statement, int detailed, FILE *stream);
+static void raptor_generate_statement(raptor_parser *rdf_parser, const void *subject, const raptor_subject_type subject_type, const raptor_uri_source subject_uri_source, const void *predicate, const raptor_predicate_type predicate_type, const raptor_uri_source predicate_uri_source, const void *object, const raptor_object_type object_type, const raptor_uri_source object_uri_source, raptor_uri *bag);
+static void raptor_print_statement_detailed(const raptor_statement *statement, int detailed, FILE *stream);
 
 
 #ifdef LIBRDF_INTERNAL
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
-#define RAPIER_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
-#define RAPIER_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
-#undef RAPIER_URI_TO_FILENAME
-#define RAPIER_FREE_URI(uri) librdf_free_uri(uri)
+#define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
+#define RAPTOR_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
+#undef RAPTOR_URI_TO_FILENAME
+#define RAPTOR_FREE_URI(uri) librdf_free_uri(uri)
 #else
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
-#define RAPIER_URI_AS_STRING(uri) ((const char*)uri)
-#undef RAPIER_URI_AS_FILENAME
-#define RAPIER_URI_TO_FILENAME(uri) (rapier_file_uri_to_filename(uri))
-#define RAPIER_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
+#define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
+#undef RAPTOR_URI_AS_FILENAME
+#define RAPTOR_URI_TO_FILENAME(uri) (raptor_file_uri_to_filename(uri))
+#define RAPTOR_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
 #endif
 
 
@@ -690,14 +690,14 @@ static void rapier_print_statement_detailed(const rapier_statement *statement, i
  *
  */
 static void
-rapier_init_namespaces(rapier_parser *rdf_parser) {
+raptor_init_namespaces(raptor_parser *rdf_parser) {
   /* defined at level -1 since always 'present' when inside the XML world */
-  rapier_start_namespace(rdf_parser, "xml", rapier_xml_uri, -1);
+  raptor_start_namespace(rdf_parser, "xml", raptor_xml_uri, -1);
 }
 
 
 static void
-rapier_start_namespace(rapier_parser *rdf_parser, 
+raptor_start_namespace(raptor_parser *rdf_parser, 
                        const char *prefix, const char *nspace, int depth)
 {
   int prefix_length=0;
@@ -706,10 +706,10 @@ rapier_start_namespace(rapier_parser *rdf_parser,
   int uri_length=0;
 #endif
   int len;
-  rapier_ns_map *map;
+  raptor_ns_map *map;
   char *p;
 
-  LIBRDF_DEBUG4(rapier_start_namespace,
+  LIBRDF_DEBUG4(raptor_start_namespace,
                 "namespace prefix %s uri %s depth %d\n",
                 prefix ? prefix : "(default)", nspace, depth);
 
@@ -717,7 +717,7 @@ rapier_start_namespace(rapier_parser *rdf_parser,
   if(!*nspace)
     nspace=NULL;
 
-  len=sizeof(rapier_ns_map);
+  len=sizeof(raptor_ns_map);
 #ifdef LIBRDF_INTERNAL
 #else
   if(nspace) {
@@ -731,18 +731,18 @@ rapier_start_namespace(rapier_parser *rdf_parser,
   }
 
   /* Just one malloc for map structure + namespace (maybe) + prefix (maybe)*/
-  map=(rapier_ns_map*)LIBRDF_CALLOC(rapier_ns_map, len, 1);
+  map=(raptor_ns_map*)LIBRDF_CALLOC(raptor_ns_map, len, 1);
   if(!map) {
-    rapier_parser_fatal_error(rdf_parser, "Out of memory");
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return;
   }
 
-  p=(char*)map+sizeof(rapier_ns_map);
+  p=(char*)map+sizeof(raptor_ns_map);
 #ifdef LIBRDF_INTERNAL
   map->uri=librdf_new_uri(rdf_parser->world, nspace);
   if(!map->uri) {
-    rapier_parser_fatal_error(rdf_parser, "Out of memory");
-    LIBRDF_FREE(rapier_ns_map, map);
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    LIBRDF_FREE(raptor_ns_map, map);
     return;
   }
 #else
@@ -769,9 +769,9 @@ rapier_start_namespace(rapier_parser *rdf_parser,
     else if(librdf_uri_equals(map->uri, librdf_concept_schema_namespace_uri))
       map->is_rdf_schema=1;
 #else
-    if(!strcmp(nspace, rapier_rdf_ms_uri))
+    if(!strcmp(nspace, raptor_rdf_ms_uri))
       map->is_rdf_ms=1;
-    else if(!strcmp(nspace, rapier_rdf_schema_uri))
+    else if(!strcmp(nspace, raptor_rdf_schema_uri))
       map->is_rdf_schema=1;
 #endif
   }
@@ -783,40 +783,40 @@ rapier_start_namespace(rapier_parser *rdf_parser,
 
 
 static void 
-rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map* nspace)
+raptor_free_namespace(raptor_parser *rdf_parser,  raptor_ns_map* nspace)
 {
 #ifdef LIBRDF_INTERNAL
   if(nspace->uri)
     librdf_free_uri(nspace->uri);
 #endif
-  LIBRDF_FREE(rapier_ns_map, nspace);
+  LIBRDF_FREE(raptor_ns_map, nspace);
 }
 
 
 static void 
-rapier_end_namespace(rapier_parser *rdf_parser, 
+raptor_end_namespace(raptor_parser *rdf_parser, 
                      const char *prefix, const char *nspace)
 {
-  LIBRDF_DEBUG3(rapier_end_namespace, "prefix %s uri \"%s\"\n", 
+  LIBRDF_DEBUG3(raptor_end_namespace, "prefix %s uri \"%s\"\n", 
                 prefix ? prefix : "(default)", nspace);
 }
 
 
 static void 
-rapier_end_namespaces_for_depth(rapier_parser *rdf_parser) 
+raptor_end_namespaces_for_depth(raptor_parser *rdf_parser) 
 {
   while(rdf_parser->namespaces &&
         rdf_parser->namespaces->depth == rdf_parser->depth) {
-    rapier_ns_map* ns=rdf_parser->namespaces;
-    rapier_ns_map* next=ns->next;
+    raptor_ns_map* ns=rdf_parser->namespaces;
+    raptor_ns_map* next=ns->next;
 
 #ifdef LIBRDF_INTERNAL
-    rapier_end_namespace(rdf_parser, ns->prefix, 
+    raptor_end_namespace(rdf_parser, ns->prefix, 
                          librdf_uri_as_string(ns->uri));
 #else  
-    rapier_end_namespace(rdf_parser, ns->prefix, ns->uri);
+    raptor_end_namespace(rdf_parser, ns->prefix, ns->uri);
 #endif
-    rapier_free_namespace(rdf_parser, ns);
+    raptor_free_namespace(rdf_parser, ns);
 
     rdf_parser->namespaces=next;
   }
@@ -858,25 +858,25 @@ rapier_end_namespaces_for_depth(rapier_parser *rdf_parser)
  * --------------------------------------------------------------------
  */
 
-static rapier_ns_name*
-rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
+static raptor_ns_name*
+raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
                             const char *value, int is_element) 
 {
-  rapier_ns_name* ns_name;
+  raptor_ns_name* ns_name;
   const char *p;
-  rapier_ns_map* ns;
+  raptor_ns_map* ns;
   char* new_name;
   int prefix_length;
   int local_name_length=0;
 
-#if RAPIER_DEBUG > 1
-  LIBRDF_DEBUG2(rapier_make_namespaced_name,
+#if RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG2(raptor_make_namespaced_name,
                 "name %s\n", name);
 #endif  
 
-  ns_name=(rapier_ns_name*)LIBRDF_CALLOC(rapier_ns_name, sizeof(rapier_ns_name), 1);
+  ns_name=(raptor_ns_name*)LIBRDF_CALLOC(raptor_ns_name, sizeof(raptor_ns_name), 1);
   if(!ns_name) {
-    rapier_parser_fatal_error(rdf_parser, "Out of memory");
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return NULL;
   }
 
@@ -885,8 +885,8 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     char* new_value=(char*)LIBRDF_MALLOC(cstring, value_length+1);
 
     if(!new_value) {
-      rapier_parser_fatal_error(rdf_parser, "Out of memory");
-      LIBRDF_FREE(rapier_ns_name, ns_name);
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      LIBRDF_FREE(raptor_ns_name, ns_name);
       return NULL;
     } 
     strcpy(new_value, value);
@@ -904,8 +904,8 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     /* No : - pick up default namespace, if there is one */
     new_name=(char*)LIBRDF_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
-      rapier_parser_fatal_error(rdf_parser, "Out of memory");
-      rapier_free_ns_name(ns_name);
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      raptor_free_ns_name(ns_name);
       return NULL;
     }
     strcpy(new_name, name);
@@ -918,15 +918,15 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
 
     if(ns) {
       ns_name->nspace=ns;
-#if RAPIER_DEBUG > 1
-    LIBRDF_DEBUG2(rapier_make_namespaced_name,
+#if RAPTOR_DEBUG > 1
+    LIBRDF_DEBUG2(raptor_make_namespaced_name,
                   "Found default namespace %s\n", ns->uri);
 #endif
     } else {
       /* failed to find namespace - now what? FIXME */
-      /* rapier_parser_warning(rdf_parser, "No default namespace defined - cannot expand %s", name); */
-#if RAPIER_DEBUG > 1
-      LIBRDF_DEBUG1(rapier_make_namespaced_name,
+      /* raptor_parser_warning(rdf_parser, "No default namespace defined - cannot expand %s", name); */
+#if RAPTOR_DEBUG > 1
+      LIBRDF_DEBUG1(raptor_make_namespaced_name,
                     "No default namespace defined\n");
 #endif
     }
@@ -941,8 +941,8 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     local_name_length=strlen(p);
     new_name=(char*)LIBRDF_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
-      rapier_parser_fatal_error(rdf_parser, "Out of memory");
-      rapier_free_ns_name(ns_name);
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      raptor_free_ns_name(ns_name);
       return NULL;
     }
     strcpy(new_name, p);
@@ -957,13 +957,13 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
 
     if(!ns) {
       /* failed to find namespace - now what? */
-      rapier_parser_error(rdf_parser, "Failed to find namespace in %s", name);
-      rapier_free_ns_name(ns_name);
+      raptor_parser_error(rdf_parser, "Failed to find namespace in %s", name);
+      raptor_free_ns_name(ns_name);
       return NULL;
     }
 
-#if RAPIER_DEBUG > 1
-    LIBRDF_DEBUG3(rapier_make_namespaced_name,
+#if RAPTOR_DEBUG > 1
+    LIBRDF_DEBUG3(raptor_make_namespaced_name,
                   "Found namespace prefix %s URI %s\n", ns->prefix, ns->uri);
 #endif
     ns_name->nspace=ns;
@@ -979,7 +979,7 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     librdf_uri* uri=librdf_new_uri_from_uri_local_name(ns_name->nspace->uri,
                                                        new_name);
     if(!uri) {
-      rapier_free_ns_name(ns_name);
+      raptor_free_ns_name(ns_name);
       return NULL;
     }
     ns_name->uri=uri;
@@ -988,7 +988,7 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
                                           ns_name->nspace->uri_length + 
                                           local_name_length + 1);
     if(!uri_string) {
-      rapier_free_ns_name(ns_name);
+      raptor_free_ns_name(ns_name);
       return NULL;
     }
     strcpy(uri_string, ns_name->nspace->uri);
@@ -1002,9 +1002,9 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
 }
 
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
 static void
-rapier_print_ns_name(FILE *stream, rapier_ns_name* name) 
+raptor_print_ns_name(FILE *stream, raptor_ns_name* name) 
 {
   if(name->nspace) {
     if(name->nspace->prefix)
@@ -1017,22 +1017,22 @@ rapier_print_ns_name(FILE *stream, rapier_ns_name* name)
 #endif
 
 static void
-rapier_free_ns_name(rapier_ns_name* name) 
+raptor_free_ns_name(raptor_ns_name* name) 
 {
   if(name->local_name)
     LIBRDF_FREE(cstring, (void*)name->local_name);
 
   if(name->uri)
-    RAPIER_FREE_URI(name->uri);
+    RAPTOR_FREE_URI(name->uri);
 
   if(name->value)
     LIBRDF_FREE(cstring, (void*)name->value);
-  LIBRDF_FREE(rapier_ns_name, name);
+  LIBRDF_FREE(raptor_ns_name, name);
 }
 
 
 static int
-rapier_ns_names_equal(rapier_ns_name *name1, rapier_ns_name *name2)
+raptor_ns_names_equal(raptor_ns_name *name1, raptor_ns_name *name2)
 {
 #ifdef LIBRDF_INTERNAL
   if(name1->uri && name2->uri)
@@ -1049,10 +1049,10 @@ rapier_ns_names_equal(rapier_ns_name *name1, rapier_ns_name *name2)
 }
 
 
-static rapier_element*
-rapier_element_pop(rapier_parser *rdf_parser) 
+static raptor_element*
+raptor_element_pop(raptor_parser *rdf_parser) 
 {
-  rapier_element *element=rdf_parser->current_element;
+  raptor_element *element=rdf_parser->current_element;
 
   if(!element)
     return NULL;
@@ -1066,7 +1066,7 @@ rapier_element_pop(rapier_parser *rdf_parser)
 
 
 static void
-rapier_element_push(rapier_parser *rdf_parser, rapier_element* element) 
+raptor_element_push(raptor_parser *rdf_parser, raptor_element* element) 
 {
   element->parent=rdf_parser->current_element;
   rdf_parser->current_element=element;
@@ -1076,16 +1076,16 @@ rapier_element_push(rapier_parser *rdf_parser, rapier_element* element)
 
 
 static void
-rapier_free_element(rapier_element *element)
+raptor_free_element(raptor_element *element)
 {
   int i;
 
   for (i=0; i < element->attribute_count; i++)
     if(element->attributes[i])
-      rapier_free_ns_name(element->attributes[i]);
+      raptor_free_ns_name(element->attributes[i]);
 
   if(element->attributes)
-    LIBRDF_FREE(rapier_ns_name_array, element->attributes);
+    LIBRDF_FREE(raptor_ns_name_array, element->attributes);
 
   /* Free special RDF M&S attributes */
   for(i=0; i<= RDF_ATTR_LAST; i++) 
@@ -1093,7 +1093,7 @@ rapier_free_element(rapier_element *element)
       LIBRDF_FREE(cstring, (void*)element->rdf_attr[i]);
 
   if(element->content_cdata_length)
-    LIBRDF_FREE(rapier_ns_name_array, element->content_cdata);
+    LIBRDF_FREE(raptor_ns_name_array, element->content_cdata);
 
   if(element->id)
     LIBRDF_FREE(cstring, (char*)element->id);
@@ -1101,29 +1101,29 @@ rapier_free_element(rapier_element *element)
   if(element->bag_id)
     LIBRDF_FREE(cstring, (char*)element->bag_id);
   
-  if(element->bag_uri_source == RAPIER_URI_SOURCE_GENERATED)
-    RAPIER_FREE_URI(element->bag_uri);
+  if(element->bag_uri_source == RAPTOR_URI_SOURCE_GENERATED)
+    RAPTOR_FREE_URI(element->bag_uri);
 
   if(element->subject_uri)
-    RAPIER_FREE_URI(element->subject_uri);
+    RAPTOR_FREE_URI(element->subject_uri);
 
   if(element->predicate_uri)
-    RAPIER_FREE_URI(element->predicate_uri);
+    RAPTOR_FREE_URI(element->predicate_uri);
 
   if(element->object_uri)
-    RAPIER_FREE_URI(element->object_uri);
+    RAPTOR_FREE_URI(element->object_uri);
 
-  rapier_free_ns_name(element->name);
-  LIBRDF_FREE(rapier_element, element);
+  raptor_free_ns_name(element->name);
+  LIBRDF_FREE(raptor_element, element);
 }
 
 
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
 static void
-rapier_print_element(rapier_element *element, FILE* stream)
+raptor_print_element(raptor_element *element, FILE* stream)
 {
-  rapier_print_ns_name(stream, element->name);
+  raptor_print_ns_name(stream, element->name);
   fputc('\n', stream);
 
   if(element->attribute_count) {
@@ -1133,7 +1133,7 @@ rapier_print_element(rapier_element *element, FILE* stream)
     for (i = 0; i < element->attribute_count; i++) {
       if(i)
         fputc(' ', stream);
-      rapier_print_ns_name(stream, element->attributes[i]);
+      raptor_print_ns_name(stream, element->attributes[i]);
       fprintf(stream, "='%s'", element->attributes[i]->value);
     }
     fputc('\n', stream);
@@ -1143,7 +1143,7 @@ rapier_print_element(rapier_element *element, FILE* stream)
 
 
 static char *
-rapier_format_element(rapier_element *element, int *length_p, int is_end)
+raptor_format_element(raptor_element *element, int *length_p, int is_end)
 {
   int length;
   char *buffer;
@@ -1237,22 +1237,22 @@ rapier_format_element(rapier_element *element, int *length_p, int is_end)
 
 
 static void
-rapier_xml_start_element_handler(void *user_data,
+raptor_xml_start_element_handler(void *user_data,
                                  const XML_Char *name, const XML_Char **atts)
 {
-  rapier_parser* rdf_parser=(rapier_parser*)user_data;
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
   int all_atts_count=0;
   int ns_attributes_count=0;
-  rapier_ns_name** named_attrs=NULL;
+  raptor_ns_name** named_attrs=NULL;
   int i;
-  rapier_ns_name* element_name;
-  rapier_element* element=NULL;
+  raptor_ns_name* element_name;
+  raptor_element* element=NULL;
 #ifdef NEED_EXPAT
   /* for storing error info */
-  rapier_locator *locator=&rdf_parser->locator; 
+  raptor_locator *locator=&rdf_parser->locator; 
 #endif
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
   fputc('\n', stderr);
 #endif
 
@@ -1274,7 +1274,7 @@ rapier_xml_start_element_handler(void *user_data,
         /* there is more i.e. xmlns:foo */
         const char *prefix=atts[i][5] ? &atts[i][6] : NULL;
 
-        rapier_start_namespace(rdf_parser, prefix, atts[i+1],
+        raptor_start_namespace(rdf_parser, prefix, atts[i+1],
                                rdf_parser->depth);
         /* Is it ok to zap XML parser array things? */
         atts[i]=NULL; 
@@ -1288,19 +1288,19 @@ rapier_xml_start_element_handler(void *user_data,
 
   /* Now can recode element name with a namespace */
 
-  element_name=rapier_make_namespaced_name(rdf_parser, name, NULL, 1);
+  element_name=raptor_make_namespaced_name(rdf_parser, name, NULL, 1);
   if(!element_name) {
-    rapier_parser_fatal_error(rdf_parser, "Out of memory");
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return;
   }
 
 
   /* Create new element structure */
-  element=(rapier_element*)LIBRDF_CALLOC(rapier_element, 
-                                         sizeof(rapier_element), 1);
+  element=(raptor_element*)LIBRDF_CALLOC(raptor_element, 
+                                         sizeof(raptor_element), 1);
   if(!element) {
-    rapier_parser_fatal_error(rdf_parser, "Out of memory");
-    rapier_free_ns_name(element_name);
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    raptor_free_ns_name(element_name);
     return;
   } 
 
@@ -1321,32 +1321,32 @@ rapier_xml_start_element_handler(void *user_data,
     /* Round 2 - turn attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
-    named_attrs=(rapier_ns_name**)LIBRDF_CALLOC(rapier_ns_name-array, sizeof(rapier_ns_name*), ns_attributes_count);
+    named_attrs=(raptor_ns_name**)LIBRDF_CALLOC(raptor_ns_name-array, sizeof(raptor_ns_name*), ns_attributes_count);
     if(!named_attrs) {
-      rapier_parser_fatal_error(rdf_parser, "Out of memory");
-      LIBRDF_FREE(rapier_element, element);
-      rapier_free_ns_name(element_name);
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      LIBRDF_FREE(raptor_element, element);
+      raptor_free_ns_name(element_name);
       return;
     }
 
     for (i = 0; i < all_atts_count; i++) {
-      rapier_ns_name* attribute;
+      raptor_ns_name* attribute;
 
       /* Skip previously processed attributes */
       if(!atts[i<<1])
         continue;
 
       /* namespace-name[i] stored in named_attrs[i] */
-      attribute=rapier_make_namespaced_name(rdf_parser, atts[i<<1],
+      attribute=raptor_make_namespaced_name(rdf_parser, atts[i<<1],
                                             atts[(i<<1)+1], 0);
       if(!attribute) { /* failed - tidy up and return */
         int j;
 
         for (j=0; j < i; j++)
-          LIBRDF_FREE(rapier_ns_name, named_attrs[j]);
-        LIBRDF_FREE(rapier_ns_name_array, named_attrs);
-        LIBRDF_FREE(rapier_element, element);
-        rapier_free_ns_name(element_name);
+          LIBRDF_FREE(raptor_ns_name, named_attrs[j]);
+        LIBRDF_FREE(raptor_ns_name_array, named_attrs);
+        LIBRDF_FREE(raptor_element, element);
+        raptor_free_ns_name(element_name);
         return;
       }
 
@@ -1362,14 +1362,14 @@ rapier_xml_start_element_handler(void *user_data,
             element->rdf_attr[j]=attribute->value;
             element->rdf_attr_count++;
             /* Delete it if it was stored elsewhere */
-#if RAPIER_DEBUG
-            LIBRDF_DEBUG3(rapier_xml_start_element_handler,
+#if RAPTOR_DEBUG
+            LIBRDF_DEBUG3(raptor_xml_start_element_handler,
                           "Found RDF M&S attribute %s URI %s\n",
                           attr_name, attribute->value);
 #endif
             /* make sure value isn't deleted from ns_name structure */
             attribute->value=NULL;
-            rapier_free_ns_name(attribute);
+            raptor_free_ns_name(attribute);
             attribute=NULL;
           }
       } /* end if RDF M&S namespaced-prefixed attributes */
@@ -1385,14 +1385,14 @@ rapier_xml_start_element_handler(void *user_data,
             element->rdf_attr[j]=attribute->value;
             element->rdf_attr_count++;
             /* Delete it if it was stored elsewhere */
-#if RAPIER_DEBUG
-            LIBRDF_DEBUG3(rapier_xml_start_element_handler,
+#if RAPTOR_DEBUG
+            LIBRDF_DEBUG3(raptor_xml_start_element_handler,
                           "Found non-namespaced RDF M&S attribute %s URI %s\n",
                           attr_name, attribute->value);
 #endif
             /* make sure value isn't deleted from ns_name structure */
             attribute->value=NULL;
-            rapier_free_ns_name(attribute);
+            raptor_free_ns_name(attribute);
             attribute=NULL;
         }
       } /* end if non-namespace prefixed RDF M&S attributes */
@@ -1407,7 +1407,7 @@ rapier_xml_start_element_handler(void *user_data,
     if(!offset && named_attrs) {
       /* all attributes were RDF M&S or other specials and deleted
        * so delete array and don't store pointer */
-      LIBRDF_FREE(rapier_ns_name_array, named_attrs);
+      LIBRDF_FREE(raptor_ns_name_array, named_attrs);
       named_attrs=NULL;
     }
 
@@ -1417,7 +1417,7 @@ rapier_xml_start_element_handler(void *user_data,
   element->attribute_count=ns_attributes_count;
 
 
-  rapier_element_push(rdf_parser, element);
+  raptor_element_push(rdf_parser, element);
 
 
   if(element->parent) {
@@ -1428,7 +1428,7 @@ rapier_xml_start_element_handler(void *user_data,
     if(element->parent->content_element_seen == 1 &&
        element->parent->content_cdata_seen == 1) {
       /* Uh oh - mixed content, the parent element has cdata too */
-      rapier_parser_warning(rdf_parser, "element %s has mixed content.", 
+      raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                             element->parent->name->local_name);
     }
     
@@ -1438,7 +1438,7 @@ rapier_xml_start_element_handler(void *user_data,
     if(element->parent->content_element_seen &&
        element->parent->content_cdata_all_whitespace &&
        element->parent->content_cdata) {
-      LIBRDF_FREE(rapier_ns_name_array, element->parent->content_cdata);
+      LIBRDF_FREE(raptor_ns_name_array, element->parent->content_cdata);
       element->parent->content_cdata=NULL;
       element->parent->content_cdata_length=0;
     }
@@ -1446,27 +1446,27 @@ rapier_xml_start_element_handler(void *user_data,
   } /* end if element->parent */
 
 
-#ifdef RAPIER_DEBUG
-  fprintf(stderr, "rapier_xml_start_element_handler: Start ns-element: ");
-  rapier_print_element(element, stderr);
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "raptor_xml_start_element_handler: Start ns-element: ");
+  raptor_print_element(element, stderr);
 #endif
 
 
   /* Right, now ready to enter the grammar */
-  rapier_start_element_grammar(rdf_parser, element);
+  raptor_start_element_grammar(rdf_parser, element);
 
 }
 
 
 static void
-rapier_xml_end_element_handler(void *user_data, const XML_Char *name)
+raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 {
-  rapier_parser* rdf_parser=(rapier_parser*)user_data;
-  rapier_element* element;
-  rapier_ns_name *element_name;
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_element* element;
+  raptor_ns_name *element_name;
 #ifdef NEED_EXPAT
   /* for storing error info */
-  rapier_locator *locator=&rdf_parser->locator;
+  raptor_locator *locator=&rdf_parser->locator;
 #endif
 
 #ifdef NEED_EXPAT
@@ -1477,39 +1477,39 @@ rapier_xml_end_element_handler(void *user_data, const XML_Char *name)
 
   /* recode element name */
 
-  element_name=rapier_make_namespaced_name(rdf_parser, name, NULL, 1);
+  element_name=raptor_make_namespaced_name(rdf_parser, name, NULL, 1);
   if(!element_name) {
-    rapier_parser_fatal_error(rdf_parser, "Out of memory");
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return;
   }
 
 
-#ifdef RAPIER_DEBUG
-  fprintf(stderr, "\nrapier_xml_end_element_handler: End ns-element: ");
-  rapier_print_ns_name(stderr, element_name);
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "\nraptor_xml_end_element_handler: End ns-element: ");
+  raptor_print_ns_name(stderr, element_name);
   fputc('\n', stderr);
 #endif
 
-  element=rapier_element_pop(rdf_parser);
-  if(!rapier_ns_names_equal(element->name, element_name)) {
+  element=raptor_element_pop(rdf_parser);
+  if(!raptor_ns_names_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
-    rapier_parser_warning(rdf_parser, 
+    raptor_parser_warning(rdf_parser, 
                           "Element %s ended, expected end of element %s\n",
                           name, element->name->local_name);
     return;
   }
 
-  rapier_end_element_grammar(rdf_parser, element);
+  raptor_end_element_grammar(rdf_parser, element);
 
-  rapier_free_ns_name(element_name);
+  raptor_free_ns_name(element_name);
 
-  rapier_end_namespaces_for_depth(rdf_parser);
+  raptor_end_namespaces_for_depth(rdf_parser);
 
-  rapier_free_element(element);
+  raptor_free_element(element);
 
   rdf_parser->depth--;
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
   fputc('\n', stderr);
 #endif
 
@@ -1521,11 +1521,11 @@ rapier_xml_end_element_handler(void *user_data, const XML_Char *name)
  * s is not 0 terminated for expat, is for libxml - grrrr.
  */
 static void
-rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
+raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 {
-  rapier_parser* rdf_parser=(rapier_parser*)user_data;
-  rapier_element* element;
-  rapier_state state;
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_element* element;
+  raptor_state state;
   char *buffer;
   char *ptr;
   int all_whitespace=1;
@@ -1542,10 +1542,10 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   /* cdata never changes the parser state */
 
   state=element->state;
-  LIBRDF_DEBUG3(rapier_xml_cdata_handler, "in state %d - %s\n", state,
-                rapier_state_as_string(state));
+  LIBRDF_DEBUG3(raptor_xml_cdata_handler, "in state %d - %s\n", state,
+                raptor_state_as_string(state));
   switch(state) {
-    case RAPIER_STATE_UNKNOWN:
+    case RAPTOR_STATE_UNKNOWN:
       /* Ignore all cdata if still looking for RDF */
       if(rdf_parser->feature_scanning_for_rdf_RDF)
         return;
@@ -1557,16 +1557,16 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
       /* This probably will never happen since that would make the
        * XML not be well-formed
        */
-      rapier_parser_warning(rdf_parser, "Found cdata before RDF element.");
+      raptor_parser_warning(rdf_parser, "Found cdata before RDF element.");
       break;
 
-    case RAPIER_STATE_PARSETYPE_OTHER:
+    case RAPTOR_STATE_PARSETYPE_OTHER:
       /* FIXME */
 
       /* FALLTHROUGH */
 
-    case RAPIER_STATE_PARSETYPE_LITERAL:
-      element->content_type=RAPIER_ELEMENT_CONTENT_TYPE_LITERAL;
+    case RAPTOR_STATE_PARSETYPE_LITERAL:
+      element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
       break;
 
     default:
@@ -1574,19 +1574,19 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
     } /* end switch */
 
 
-  if(element->content_type != RAPIER_ELEMENT_CONTENT_TYPE_LITERAL &&
-     element->content_type != RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED) {
+  if(element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL &&
+     element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED) {
 
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
-      LIBRDF_DEBUG2(rapier_xml_cdata_handler, "Ignoring whitespace cdata inside element %s\n", element->name->local_name);
+      LIBRDF_DEBUG2(raptor_xml_cdata_handler, "Ignoring whitespace cdata inside element %s\n", element->name->local_name);
       return;
     }
 
     if(++element->content_cdata_seen == 1 &&
        element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
-      rapier_parser_warning(rdf_parser, "element %s has mixed content.", 
+      raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                             element->name->local_name);
     }
   }
@@ -1594,7 +1594,7 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 
   buffer=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + len + 1);
   if(!buffer) {
-    rapier_parser_fatal_error(rdf_parser, "Out of memory");
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return;
   }
 
@@ -1618,36 +1618,36 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   ptr += len;
   *ptr = '\0';
 
-  LIBRDF_DEBUG3(rapier_xml_cdata_handler, 
+  LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
                 "content cdata now: '%s' (%d bytes)\n", 
                 buffer, element->content_cdata_length);
 
-  LIBRDF_DEBUG3(rapier_xml_cdata_handler, 
+  LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
                 "ending in state %d - %s\n",
-                state, rapier_state_as_string(state));
+                state, raptor_state_as_string(state));
 
 }
 
 
 #ifdef HAVE_XML_SetNamespaceDeclHandler
 static void
-rapier_start_namespace_decl_handler(void *user_data,
+raptor_start_namespace_decl_handler(void *user_data,
                                     const XML_Char *prefix, const XML_Char *uri)
 {
-  rapier_parser* rdf_parser=(rapier_parser*)user_data;
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
   fprintf(stderr_parser->locator, "saw namespace %s URI %s\n", prefix, uri);
 #endif
 }
 
 
 static void
-rapier_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
+raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
 {
-  rapier_parser* rdf_parser=(rapier_parser*)user_data;
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
-#ifdef RAPIER_DEBUG
+#ifdef RAPTOR_DEBUG
   fprintf(stderr_parser->locator, "saw end namespace prefix %s\n", prefix);
 #endif
 }
@@ -1657,16 +1657,16 @@ rapier_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
 #ifdef NEED_EXPAT
 /* This is called for a declaration of an unparsed (NDATA) entity */
 static void
-rapier_xml_unparsed_entity_decl_handler(void *user_data,
+raptor_xml_unparsed_entity_decl_handler(void *user_data,
                                         const XML_Char *entityName,
                                         const XML_Char *base,
                                         const XML_Char *systemId,
                                         const XML_Char *publicId,
                                         const XML_Char *notationName) 
 {
-/*  rapier_parser* rdf_parser=(rapier_parser*)user_data; */
+/*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
   fprintf(stderr,
-          "rapier_xml_unparsed_entity_decl_handler: entityName %s base %s systemId %s publicId %s notationName %s\n",
+          "raptor_xml_unparsed_entity_decl_handler: entityName %s base %s systemId %s publicId %s notationName %s\n",
           entityName, (base ? base : "(None)"), 
           systemId, (publicId ? publicId: "(None)"),
           notationName);
@@ -1674,15 +1674,15 @@ rapier_xml_unparsed_entity_decl_handler(void *user_data,
 
 
 static int 
-rapier_xml_external_entity_ref_handler(void *user_data,
+raptor_xml_external_entity_ref_handler(void *user_data,
                                        const XML_Char *context,
                                        const XML_Char *base,
                                        const XML_Char *systemId,
                                        const XML_Char *publicId)
 {
-/*  rapier_parser* rdf_parser=(rapier_parser*)user_data; */
+/*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
   fprintf(stderr,
-          "rapier_xml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
+          "raptor_xml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
           (base ? base : "(None)"), 
           systemId, (publicId ? publicId: "(None)"));
 
@@ -1704,10 +1704,10 @@ static const char* xml_validation_error_prefix="XML parser validation error - ";
 static const char* xml_validation_warning_prefix="XML parser validation warning - ";
 
 static void
-rapier_xml_warning(void *ctx, const char *msg, ...) 
+raptor_xml_warning(void *ctx, const char *msg, ...) 
 {
   va_list args;
-  rapier_parser* rdf_parser=(rapier_parser*)ctx;
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   int length;
   char *nmsg;
 
@@ -1716,11 +1716,11 @@ rapier_xml_warning(void *ctx, const char *msg, ...)
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
-    rapier_parser_warning(rdf_parser, msg, args);
+    raptor_parser_warning(rdf_parser, msg, args);
   } else {
     strcpy(nmsg, xml_warning_prefix);
     strcat(nmsg, msg);
-    rapier_parser_warning(rdf_parser, nmsg, args);
+    raptor_parser_warning(rdf_parser, nmsg, args);
     LIBRDF_FREE(cstring,nmsg);
   }
   va_end(args);
@@ -1728,10 +1728,10 @@ rapier_xml_warning(void *ctx, const char *msg, ...)
 
 
 static void
-rapier_xml_error(void *ctx, const char *msg, ...) 
+raptor_xml_error(void *ctx, const char *msg, ...) 
 {
   va_list args;
-  rapier_parser* rdf_parser=(rapier_parser*)ctx;
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   int length;
   char *nmsg;
 
@@ -1740,11 +1740,11 @@ rapier_xml_error(void *ctx, const char *msg, ...)
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
-    rapier_parser_error(rdf_parser, nmsg, args);
+    raptor_parser_error(rdf_parser, nmsg, args);
   } else {
     strcpy(nmsg, xml_error_prefix);
     strcat(nmsg, msg);
-    rapier_parser_error(rdf_parser, nmsg, args);
+    raptor_parser_error(rdf_parser, nmsg, args);
     LIBRDF_FREE(cstring,nmsg);
   }
   va_end(args);
@@ -1752,10 +1752,10 @@ rapier_xml_error(void *ctx, const char *msg, ...)
 
 
 static void
-rapier_xml_fatal_error(void *ctx, const char *msg, ...) 
+raptor_xml_fatal_error(void *ctx, const char *msg, ...) 
 {
   va_list args;
-  rapier_parser* rdf_parser=(rapier_parser*)ctx;
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   int length;
   char *nmsg;
 
@@ -1764,11 +1764,11 @@ rapier_xml_fatal_error(void *ctx, const char *msg, ...)
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
-    rapier_parser_fatal_error(rdf_parser, nmsg, args);
+    raptor_parser_fatal_error(rdf_parser, nmsg, args);
   } else {
     strcpy(nmsg, xml_error_prefix);
     strcat(nmsg, msg);
-    rapier_parser_fatal_error(rdf_parser, nmsg, args);
+    raptor_parser_fatal_error(rdf_parser, nmsg, args);
     LIBRDF_FREE(cstring,nmsg);
   }
   va_end(args);
@@ -1776,10 +1776,10 @@ rapier_xml_fatal_error(void *ctx, const char *msg, ...)
 
 
 static void
-rapier_xml_validation_error(void *ctx, const char *msg, ...) 
+raptor_xml_validation_error(void *ctx, const char *msg, ...) 
 {
   va_list args;
-  rapier_parser* rdf_parser=(rapier_parser*)ctx;
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   int length;
   char *nmsg;
 
@@ -1788,11 +1788,11 @@ rapier_xml_validation_error(void *ctx, const char *msg, ...)
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
-    rapier_parser_fatal_error(rdf_parser, nmsg, args);
+    raptor_parser_fatal_error(rdf_parser, nmsg, args);
   } else {
     strcpy(nmsg, xml_validation_error_prefix);
     strcat(nmsg, msg);
-    rapier_parser_fatal_error(rdf_parser, nmsg, args);
+    raptor_parser_fatal_error(rdf_parser, nmsg, args);
     LIBRDF_FREE(cstring,nmsg);
   }
   va_end(args);
@@ -1800,10 +1800,10 @@ rapier_xml_validation_error(void *ctx, const char *msg, ...)
 
 
 static void
-rapier_xml_validation_warning(void *ctx, const char *msg, ...) 
+raptor_xml_validation_warning(void *ctx, const char *msg, ...) 
 {
   va_list args;
-  rapier_parser* rdf_parser=(rapier_parser*)ctx;
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   int length;
   char *nmsg;
 
@@ -1812,11 +1812,11 @@ rapier_xml_validation_warning(void *ctx, const char *msg, ...)
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
-    rapier_parser_warning(rdf_parser, nmsg, args);
+    raptor_parser_warning(rdf_parser, nmsg, args);
   } else {
     strcpy(nmsg, xml_validation_warning_prefix);
     strcat(nmsg, msg);
-    rapier_parser_fatal_error(rdf_parser, nmsg, args);
+    raptor_parser_fatal_error(rdf_parser, nmsg, args);
     LIBRDF_FREE(cstring,nmsg);
   }
   va_end(args);
@@ -1824,11 +1824,11 @@ rapier_xml_validation_warning(void *ctx, const char *msg, ...)
 
 
 static void
-rapier_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc) 
+raptor_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc) 
 {
-  rapier_parser* rdf_parser=(rapier_parser*)ctx;
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
   /* for storing error info */
-  rapier_locator *locator=&rdf_parser->locator;
+  raptor_locator *locator=&rdf_parser->locator;
 
   locator->line=loc->getLineNumber(rdf_parser->xc);
   locator->column=loc->getColumnNumber(rdf_parser->xc);
@@ -1841,13 +1841,13 @@ rapier_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc)
 
 #ifndef LIBRDF_INTERNAL
 /**
- * rapier_file_uri_to_filename - Convert a URI representing a file (starting file:) to a filename
+ * raptor_file_uri_to_filename - Convert a URI representing a file (starting file:) to a filename
  * @uri: URI of string
  * 
  * Return value: the filename or NULL on failure
  **/
 static char *
-rapier_file_uri_to_filename(const char *uri) 
+raptor_file_uri_to_filename(const char *uri) 
 {
   int length;
   char *filename;
@@ -1868,10 +1868,10 @@ rapier_file_uri_to_filename(const char *uri)
 
 
 /*
- * rapier_parser_fatal_error - Error from a parser - Internal
+ * raptor_parser_fatal_error - Error from a parser - Internal
  **/
 static void
-rapier_parser_fatal_error(rapier_parser* parser, const char *message, ...)
+raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
 
@@ -1885,8 +1885,8 @@ rapier_parser_fatal_error(rapier_parser* parser, const char *message, ...)
 
   va_start(arguments, message);
 
-  rapier_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " rapier fatal error - ");
+  raptor_print_locator(stderr, &parser->locator);
+  fprintf(stderr, " raptor fatal error - ");
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
 
@@ -1897,10 +1897,10 @@ rapier_parser_fatal_error(rapier_parser* parser, const char *message, ...)
 
 
 /*
- * rapier_parser_error - Error from a parser - Internal
+ * raptor_parser_error - Error from a parser - Internal
  **/
 static void
-rapier_parser_error(rapier_parser* parser, const char *message, ...)
+raptor_parser_error(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
 
@@ -1912,8 +1912,8 @@ rapier_parser_error(rapier_parser* parser, const char *message, ...)
 
   va_start(arguments, message);
 
-  rapier_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " rapier error - ");
+  raptor_print_locator(stderr, &parser->locator);
+  fprintf(stderr, " raptor error - ");
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
 
@@ -1922,10 +1922,10 @@ rapier_parser_error(rapier_parser* parser, const char *message, ...)
 
 
 /*
- * rapier_parser_warning - Warning from a parser - Internal
+ * raptor_parser_warning - Warning from a parser - Internal
  **/
 static void
-rapier_parser_warning(rapier_parser* parser, const char *message, ...)
+raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
 
@@ -1937,8 +1937,8 @@ rapier_parser_warning(rapier_parser* parser, const char *message, ...)
 
   va_start(arguments, message);
 
-  rapier_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " rapier warning - ");
+  raptor_print_locator(stderr, &parser->locator);
+  fprintf(stderr, " raptor warning - ");
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
 
@@ -1950,12 +1950,12 @@ rapier_parser_warning(rapier_parser* parser, const char *message, ...)
 /* PUBLIC FUNCTIONS */
 
 /**
- * rapier_new - Initialise the Rapier RDF parser
+ * raptor_new - Initialise the Raptor RDF parser
  *
  * Return value: non 0 on failure
  **/
-rapier_parser*
-rapier_new(
+raptor_parser*
+raptor_new(
 #ifdef LIBRDF_INTERNAL
   librdf_world *world
 #else
@@ -1963,12 +1963,12 @@ rapier_new(
 #endif
 )
 {
-  rapier_parser* rdf_parser;
+  raptor_parser* rdf_parser;
 #ifdef NEED_EXPAT
   XML_Parser xp;
 #endif
 
-  rdf_parser=(rapier_parser*)LIBRDF_CALLOC(rapier_parser, 1, sizeof(rapier_parser));
+  rdf_parser=(raptor_parser*)LIBRDF_CALLOC(raptor_parser, 1, sizeof(raptor_parser));
 
   if(!rdf_parser)
     return NULL;
@@ -1987,38 +1987,38 @@ rapier_new(
 
   /* XML_SetEncoding(xp, "..."); */
 
-  XML_SetElementHandler(xp, rapier_xml_start_element_handler,
-                        rapier_xml_end_element_handler);
-  XML_SetCharacterDataHandler(xp, rapier_xml_cdata_handler);
+  XML_SetElementHandler(xp, raptor_xml_start_element_handler,
+                        raptor_xml_end_element_handler);
+  XML_SetCharacterDataHandler(xp, raptor_xml_cdata_handler);
 
   XML_SetUnparsedEntityDeclHandler(xp,
-                                   rapier_xml_unparsed_entity_decl_handler);
+                                   raptor_xml_unparsed_entity_decl_handler);
 
   XML_SetExternalEntityRefHandler(xp,
-                                  rapier_xml_external_entity_ref_handler);
+                                  raptor_xml_external_entity_ref_handler);
 
 
 #ifdef HAVE_XML_SetNamespaceDeclHandler
   XML_SetNamespaceDeclHandler(xp,
-                              rapier_start_namespace_decl_handler,
-                              rapier_end_namespace_decl_handler);
+                              raptor_start_namespace_decl_handler,
+                              raptor_end_namespace_decl_handler);
 #endif
   rdf_parser->xp=xp;
 #endif
 
 #ifdef NEED_LIBXML
   xmlDefaultSAXHandlerInit();
-  rdf_parser->sax.startElement=rapier_xml_start_element_handler;
-  rdf_parser->sax.endElement=rapier_xml_end_element_handler;
+  rdf_parser->sax.startElement=raptor_xml_start_element_handler;
+  rdf_parser->sax.endElement=raptor_xml_end_element_handler;
 
-  rdf_parser->sax.characters=rapier_xml_cdata_handler;
-  rdf_parser->sax.ignorableWhitespace=rapier_xml_cdata_handler;
+  rdf_parser->sax.characters=raptor_xml_cdata_handler;
+  rdf_parser->sax.ignorableWhitespace=raptor_xml_cdata_handler;
 
-  rdf_parser->sax.warning=rapier_xml_warning;
-  rdf_parser->sax.error=rapier_xml_error;
-  rdf_parser->sax.fatalError=rapier_xml_fatal_error;
+  rdf_parser->sax.warning=raptor_xml_warning;
+  rdf_parser->sax.error=raptor_xml_error;
+  rdf_parser->sax.fatalError=raptor_xml_fatal_error;
 
-  rdf_parser->sax.setDocumentLocator=rapier_xml_set_document_locator;
+  rdf_parser->sax.setDocumentLocator=raptor_xml_set_document_locator;
 
   /* xmlInitParserCtxt(&rdf_parser->xc); */
 #endif
@@ -2027,7 +2027,7 @@ rapier_new(
   rdf_parser->world=world;
 #endif
 
-  rapier_init_namespaces(rdf_parser);
+  raptor_init_namespaces(rdf_parser);
 
   return rdf_parser;
 }
@@ -2036,34 +2036,34 @@ rapier_new(
 
 
 /**
- * rapier_free - Free the Rapier RDF parser
+ * raptor_free - Free the Raptor RDF parser
  * @rdf_parser: parser object
  * 
  **/
 void
-rapier_free(rapier_parser *rdf_parser) 
+raptor_free(raptor_parser *rdf_parser) 
 {
-  rapier_element* element;
-  rapier_ns_map* ns;
+  raptor_element* element;
+  raptor_ns_map* ns;
 
   ns=rdf_parser->namespaces;
   while(ns) {
-    rapier_ns_map* next_ns=ns->next;
+    raptor_ns_map* next_ns=ns->next;
 
-    rapier_free_namespace(rdf_parser, ns);
+    raptor_free_namespace(rdf_parser, ns);
     ns=next_ns;
   }
 
-  while((element=rapier_element_pop(rdf_parser))) {
-    rapier_free_element(element);
+  while((element=raptor_element_pop(rdf_parser))) {
+    raptor_free_element(element);
   }
 
-  LIBRDF_FREE(rapier_parser, rdf_parser);
+  LIBRDF_FREE(raptor_parser, rdf_parser);
 }
 
 
 /**
- * rapier_set_fatal_error_handler - Set the parser error handling function
+ * raptor_set_fatal_error_handler - Set the parser error handling function
  * @parser: the parser
  * @user_data: user data to pass to function
  * @handler: pointer to the function
@@ -2072,8 +2072,8 @@ rapier_free(rapier_parser *rdf_parser)
  * 
  **/
 void
-rapier_set_fatal_error_handler(rapier_parser* parser, void *user_data,
-                               rapier_message_handler handler)
+raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data,
+                               raptor_message_handler handler)
 {
   parser->fatal_error_user_data=user_data;
   parser->fatal_error_handler=handler;
@@ -2081,7 +2081,7 @@ rapier_set_fatal_error_handler(rapier_parser* parser, void *user_data,
 
 
 /**
- * rapier_set_error_handler - Set the parser error handling function
+ * raptor_set_error_handler - Set the parser error handling function
  * @parser: the parser
  * @user_data: user data to pass to function
  * @handler: pointer to the function
@@ -2090,8 +2090,8 @@ rapier_set_fatal_error_handler(rapier_parser* parser, void *user_data,
  * 
  **/
 void
-rapier_set_error_handler(rapier_parser* parser, void *user_data,
-                         rapier_message_handler handler)
+raptor_set_error_handler(raptor_parser* parser, void *user_data,
+                         raptor_message_handler handler)
 {
   parser->error_user_data=user_data;
   parser->error_handler=handler;
@@ -2099,7 +2099,7 @@ rapier_set_error_handler(rapier_parser* parser, void *user_data,
 
 
 /**
- * rapier_set_warning_handler - Set the parser warning handling function
+ * raptor_set_warning_handler - Set the parser warning handling function
  * @parser: the parser
  * @user_data: user data to pass to function
  * @handler: pointer to the function
@@ -2108,8 +2108,8 @@ rapier_set_error_handler(rapier_parser* parser, void *user_data,
  * 
  **/
 void
-rapier_set_warning_handler(rapier_parser* parser, void *user_data,
-                           rapier_message_handler handler)
+raptor_set_warning_handler(raptor_parser* parser, void *user_data,
+                           raptor_message_handler handler)
 {
   parser->warning_user_data=user_data;
   parser->warning_handler=handler;
@@ -2117,9 +2117,9 @@ rapier_set_warning_handler(rapier_parser* parser, void *user_data,
 
 
 void
-rapier_set_statement_handler(rapier_parser* parser,
+raptor_set_statement_handler(raptor_parser* parser,
                           void *user_data, 
-                          rapier_statement_handler handler)
+                          raptor_statement_handler handler)
 {
   parser->user_data=user_data;
   parser->statement_handler=handler;
@@ -2130,7 +2130,7 @@ rapier_set_statement_handler(rapier_parser* parser,
 
 
 /**
- * rapier_parse_file - Retrieve the RDF/XML content at URI
+ * raptor_parse_file - Retrieve the RDF/XML content at URI
  * @rdf_parser: parser
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
@@ -2138,8 +2138,8 @@ rapier_set_statement_handler(rapier_parser* parser,
  * Return value: non 0 on failure
  **/
 int
-rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
-                  rapier_uri *base_uri) 
+raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
+                  raptor_uri *base_uri) 
 {
 #ifdef NEED_EXPAT
   XML_Parser xp;
@@ -2155,7 +2155,7 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
   int len;
   const char *filename;
   /* for storing error info */
-  rapier_locator *locator=&rdf_parser->locator;
+  raptor_locator *locator=&rdf_parser->locator;
 
   /* initialise fields */
   rdf_parser->depth=0;
@@ -2168,14 +2168,14 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 #ifdef NEED_EXPAT
   xp=rdf_parser->xp;
 
-  XML_SetBase(xp, RAPIER_URI_AS_STRING(base_uri));
+  XML_SetBase(xp, RAPTOR_URI_AS_STRING(base_uri));
 #endif
 
 
-#ifdef RAPIER_URI_AS_FILENAME
-  filename=RAPIER_URI_AS_FILENAME(uri);
+#ifdef RAPTOR_URI_AS_FILENAME
+  filename=RAPTOR_URI_AS_FILENAME(uri);
 #else
-  filename=RAPIER_URI_TO_FILENAME(uri);
+  filename=RAPTOR_URI_TO_FILENAME(uri);
 #endif
   if(!filename)
     return 1;
@@ -2185,11 +2185,11 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 
   fh=fopen(filename, "r");
   if(!fh) {
-    rapier_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
+    raptor_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
 #ifdef NEED_EXPAT
     XML_ParserFree(xp);
 #endif /* EXPAT */
-#ifdef RAPIER_URI_TO_FILENAME
+#ifdef RAPTOR_URI_TO_FILENAME
     LIBRDF_FREE(cstring, (void*)filename);
 #endif
     return 1;
@@ -2204,15 +2204,15 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
                                  buffer, len, filename);
     if(!xc) {
       fclose(fh);
-#ifdef RAPIER_URI_TO_FILENAME
+#ifdef RAPTOR_URI_TO_FILENAME
       LIBRDF_FREE(cstring, (void*)filename);
 #endif
       return 1;
     }
     xc->userData = rdf_parser;
     xc->vctxt.userData = rdf_parser;
-    xc->vctxt.error=rapier_xml_validation_error;
-    xc->vctxt.warning=rapier_xml_validation_warning;
+    xc->vctxt.error=raptor_xml_validation_error;
+    xc->vctxt.warning=raptor_xml_validation_warning;
     
     rdf_parser->xc = xc;
     
@@ -2260,7 +2260,7 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
     locator->column=XML_GetCurrentColumnNumber(xp);
     locator->byte=XML_GetCurrentByteIndex(xp);
 
-    rapier_parser_error(rdf_parser, "XML Parsing failed - %s",
+    raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
                         XML_ErrorString(xe));
     rc=1;
   } else
@@ -2270,13 +2270,13 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 #endif /* EXPAT */
 #ifdef NEED_LIBXML
   if(rc)
-    rapier_parser_error(rdf_parser, "XML Parsing failed");
+    raptor_parser_error(rdf_parser, "XML Parsing failed");
 
   xmlFreeParserCtxt(xc);
 
 #endif
 
-#ifdef RAPIER_URI_TO_FILENAME
+#ifdef RAPTOR_URI_TO_FILENAME
   LIBRDF_FREE(cstring, (void*)filename);
 #endif
 
@@ -2285,13 +2285,13 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 
 
 void
-rapier_print_locator(FILE *stream, rapier_locator* locator) 
+raptor_print_locator(FILE *stream, raptor_locator* locator) 
 {
   if(!locator)
     return;
 
   if(locator->uri)
-    fprintf(stream, "URI %s", RAPIER_URI_AS_STRING(locator->uri));
+    fprintf(stream, "URI %s", RAPTOR_URI_AS_STRING(locator->uri));
   else if (locator->file)
     fprintf(stream, "file %s", locator->file);
   else
@@ -2306,21 +2306,21 @@ rapier_print_locator(FILE *stream, rapier_locator* locator)
 
 
 void
-rapier_set_feature(rapier_parser *parser, rapier_feature feature, int value) {
+raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
   switch(feature) {
-    case RAPIER_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_SCANNING:
       parser->feature_scanning_for_rdf_RDF=value;
       break;
 
-    case RAPIER_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
       parser->feature_allow_non_ns_attributes=value;
       break;
 
-    case RAPIER_FEATURE_INTERPRET_CONTAINERS_AS_TYPEDNODE:
+    case RAPTOR_FEATURE_INTERPRET_CONTAINERS_AS_TYPEDNODE:
       parser->feature_interpret_containers_as_typedNode=value;
       break;
 
-    case RAPIER_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
       parser->feature_allow_other_parseTypes=value;
       break;
 
@@ -2331,19 +2331,19 @@ rapier_set_feature(rapier_parser *parser, rapier_feature feature, int value) {
 
 
 static void
-rapier_generate_statement(rapier_parser *rdf_parser, 
+raptor_generate_statement(raptor_parser *rdf_parser, 
                           const void *subject,
-                          const rapier_subject_type subject_type,
-                          const rapier_uri_source subject_uri_source,
+                          const raptor_subject_type subject_type,
+                          const raptor_uri_source subject_uri_source,
                           const void *predicate,
-                          const rapier_predicate_type predicate_type,
-                          const rapier_uri_source predicate_uri_source,
+                          const raptor_predicate_type predicate_type,
+                          const raptor_uri_source predicate_uri_source,
                           const void *object,
-                          const rapier_object_type object_type,
-                          const rapier_uri_source object_uri_source,
-                          rapier_uri *bag)
+                          const raptor_object_type object_type,
+                          const raptor_uri_source object_uri_source,
+                          raptor_uri *bag)
 {
-  rapier_statement *statement=&rdf_parser->statement;
+  raptor_statement *statement=&rdf_parser->statement;
 
   statement->subject=subject;
   statement->subject_type=subject_type;
@@ -2352,19 +2352,19 @@ rapier_generate_statement(rapier_parser *rdf_parser,
   statement->object=object;
   statement->object_type=object_type;
 
-#ifdef RAPIER_DEBUG
-  fprintf(stderr, "rapier_generate_statement: Generating statement: ");
-  rapier_print_statement_detailed(statement, 1, stderr);
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "raptor_generate_statement: Generating statement: ");
+  raptor_print_statement_detailed(statement, 1, stderr);
   fputc('\n', stderr);
 
   if(!subject)
-    LIBRDF_FATAL1(rapier_generate_statement, "Statement has no subject\n");
+    LIBRDF_FATAL1(raptor_generate_statement, "Statement has no subject\n");
   
   if(!predicate)
-    LIBRDF_FATAL1(rapier_generate_statement, "Statement has no predicate\n");
+    LIBRDF_FATAL1(raptor_generate_statement, "Statement has no predicate\n");
   
   if(!object)
-    LIBRDF_FATAL1(rapier_generate_statement, "Statement has no object\n");
+    LIBRDF_FATAL1(raptor_generate_statement, "Statement has no object\n");
   
 #endif
 
@@ -2378,25 +2378,25 @@ rapier_generate_statement(rapier_parser *rdf_parser,
     return;
 
   /* generate reified statements */
-  statement->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
-  statement->predicate_type=RAPIER_PREDICATE_TYPE_PREDICATE;
+  statement->subject_type=RAPTOR_SUBJECT_TYPE_RESOURCE;
+  statement->predicate_type=RAPTOR_PREDICATE_TYPE_PREDICATE;
 
   statement->subject=bag;
-  statement->object_type=RAPIER_OBJECT_TYPE_RESOURCE;
+  statement->object_type=RAPTOR_OBJECT_TYPE_RESOURCE;
 
-  statement->predicate=RAPIER_RDF_type_URI;
-  statement->object=RAPIER_RDF_Statement_URI;
+  statement->predicate=RAPTOR_RDF_type_URI;
+  statement->object=RAPTOR_RDF_Statement_URI;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate=RAPIER_RDF_subject_URI;
+  statement->predicate=RAPTOR_RDF_subject_URI;
   statement->object=subject;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate=RAPIER_RDF_predicate_URI;
+  statement->predicate=RAPTOR_RDF_predicate_URI;
   statement->object=predicate;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate=RAPIER_RDF_object_URI;
+  statement->predicate=RAPTOR_RDF_object_URI;
   statement->object=object;
   statement->object_type=object_type;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
@@ -2404,36 +2404,36 @@ rapier_generate_statement(rapier_parser *rdf_parser,
 
 
 static void
-rapier_generate_named_statement(rapier_parser *rdf_parser, 
+raptor_generate_named_statement(raptor_parser *rdf_parser, 
                                 const void *subject,
-                                const rapier_subject_type subject_type,
-                                const rapier_uri_source subject_uri_source,
-                                rapier_ns_name *predicate,
-                                const rapier_uri_source predicate_uri_source,
+                                const raptor_subject_type subject_type,
+                                const raptor_uri_source subject_uri_source,
+                                raptor_ns_name *predicate,
+                                const raptor_uri_source predicate_uri_source,
                                 const void *object,
-                                const rapier_object_type object_type,
-                                const rapier_uri_source object_uri_source,
-                                rapier_uri *bag)
+                                const raptor_object_type object_type,
+                                const raptor_uri_source object_uri_source,
+                                raptor_uri *bag)
 {
     if(predicate->uri)
-      rapier_generate_statement(rdf_parser, 
+      raptor_generate_statement(rdf_parser, 
                                 subject,
                                 subject_type,
                                 subject_uri_source,
                                 predicate->uri,
-                                RAPIER_PREDICATE_TYPE_PREDICATE,
+                                RAPTOR_PREDICATE_TYPE_PREDICATE,
                                 predicate_uri_source,
                                 object,
                                 object_type,
                                 object_uri_source,
                                 bag);
     else
-      rapier_generate_statement(rdf_parser, 
+      raptor_generate_statement(rdf_parser, 
                                 subject,
                                 subject_type,
                                 subject_uri_source,
                                 predicate->local_name,
-                                RAPIER_PREDICATE_TYPE_XML_NAME,
+                                RAPTOR_PREDICATE_TYPE_XML_NAME,
                                 predicate_uri_source,
                                 object,
                                 object_type,
@@ -2443,40 +2443,40 @@ rapier_generate_named_statement(rapier_parser *rdf_parser,
 
 
 static void
-rapier_print_statement_detailed(const rapier_statement * const statement,
+raptor_print_statement_detailed(const raptor_statement * const statement,
                                 int detailed, FILE *stream) 
 {
   fprintf(stream, "[%s, ",
-          RAPIER_URI_AS_STRING((rapier_uri*)statement->subject));
+          RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
 
-  if(statement->predicate_type == RAPIER_PREDICATE_TYPE_ORDINAL)
+  if(statement->predicate_type == RAPTOR_PREDICATE_TYPE_ORDINAL)
     fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate));
-  else if(statement->predicate_type == RAPIER_PREDICATE_TYPE_XML_NAME)
+  else if(statement->predicate_type == RAPTOR_PREDICATE_TYPE_XML_NAME)
     fputs((const char*)statement->predicate, stream);
   else
-    fputs(RAPIER_URI_AS_STRING((rapier_uri*)statement->predicate), stream);
+    fputs(RAPTOR_URI_AS_STRING((raptor_uri*)statement->predicate), stream);
 
-  if(statement->object_type == RAPIER_OBJECT_TYPE_LITERAL || 
-     statement->object_type == RAPIER_OBJECT_TYPE_XML_LITERAL)
+  if(statement->object_type == RAPTOR_OBJECT_TYPE_LITERAL || 
+     statement->object_type == RAPTOR_OBJECT_TYPE_XML_LITERAL)
     fprintf(stream, ", \"%s\"]",  (const char*)statement->object);
-  else if(statement->object_type == RAPIER_OBJECT_TYPE_XML_NAME)
+  else if(statement->object_type == RAPTOR_OBJECT_TYPE_XML_NAME)
     fprintf(stream, ", %s]", (const char*)statement->object);
   else
     fprintf(stream, ", %s]", 
-            RAPIER_URI_AS_STRING((rapier_uri*)statement->object));
+            RAPTOR_URI_AS_STRING((raptor_uri*)statement->object));
 }
 
 
 void
-rapier_print_statement(const rapier_statement * const statement, FILE *stream) 
+raptor_print_statement(const raptor_statement * const statement, FILE *stream) 
 {
-  rapier_print_statement_detailed(statement, 0, stream);
+  raptor_print_statement_detailed(statement, 0, stream);
 }
 
 
 
 static const char *
-rapier_generate_id(rapier_parser *rdf_parser, const int id_for_bag)
+raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 {
   char *buffer;
   /* "genid" + min length 1 + \0 */
@@ -2495,8 +2495,8 @@ rapier_generate_id(rapier_parser *rdf_parser, const int id_for_bag)
 }
 
 
-static rapier_uri*
-rapier_make_uri_from_id(rapier_uri *base_uri, const char *id) 
+static raptor_uri*
+raptor_make_uri_from_id(raptor_uri *base_uri, const char *id) 
 {
 #ifdef LIBRDF_INTERNAL
   librdf_uri *new_uri;
@@ -2507,8 +2507,8 @@ rapier_make_uri_from_id(rapier_uri *base_uri, const char *id)
   int len;
 #endif
 
-#if defined(RAPIER_DEBUG) && RAPIER_DEBUG > 1
-  LIBRDF_DEBUG3(rapier_make_uri_from_id, 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG3(raptor_make_uri_from_id, 
                 "Using base URI %s and ID %s\n", 
                 base_uri, id);
 #endif
@@ -2535,8 +2535,8 @@ rapier_make_uri_from_id(rapier_uri *base_uri, const char *id)
 }
 
 
-static rapier_uri*
-rapier_make_uri(rapier_uri *base_uri, const char *uri_string) 
+static raptor_uri*
+raptor_make_uri(raptor_uri *base_uri, const char *uri_string) 
 {
 #ifdef LIBRDF_INTERNAL
 #else
@@ -2545,8 +2545,8 @@ rapier_make_uri(rapier_uri *base_uri, const char *uri_string)
   int base_uri_len=strlen(base_uri);
 #endif
 
-#if defined(RAPIER_DEBUG) && RAPIER_DEBUG > 1
-  LIBRDF_DEBUG3(rapier_make_uri, 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG3(raptor_make_uri, 
                 "Using base URI %s and URI string '%s'\n", 
                 base_uri, uri_string);
 #endif
@@ -2607,8 +2607,8 @@ rapier_make_uri(rapier_uri *base_uri, const char *uri_string)
 }
 
 
-static rapier_uri*
-rapier_copy_uri(rapier_uri *uri) 
+static raptor_uri*
+raptor_copy_uri(raptor_uri *uri) 
 {
 #ifdef LIBRDF_INTERNAL
   return librdf_new_uri_from_uri(uri);
@@ -2624,24 +2624,24 @@ rapier_copy_uri(rapier_uri *uri)
 
 
 /**
- * rapier_process_property_attributes: Process the property attributes for an element for a given resource
- * @rdf_parser: Rapier parser object
+ * raptor_process_property_attributes: Process the property attributes for an element for a given resource
+ * @rdf_parser: Raptor parser object
  * @attributes_element: element with the property attributes 
  * @resource_element: element that defines the resource URI 
  *                    subject_uri, subject_uri_source etc.
  * 
  **/
 static void 
-rapier_process_property_attributes(rapier_parser *rdf_parser, 
-                                   rapier_element *attributes_element,
-                                   rapier_element *resource_element)
+raptor_process_property_attributes(raptor_parser *rdf_parser, 
+                                   raptor_element *attributes_element,
+                                   raptor_element *resource_element)
 {
   int i;
 
   /* Process attributes as propAttr* = * (propName="string")*
    */
   for(i=0; i<attributes_element->attribute_count; i++) {
-    rapier_ns_name* attribute=attributes_element->attributes[i];
+    raptor_ns_name* attribute=attributes_element->attributes[i];
     const char *value = attribute->value;
     
     /* Generate the property - either with a namespaced predicate
@@ -2652,27 +2652,27 @@ rapier_process_property_attributes(rapier_parser *rdf_parser,
        IS_RDF_MS_CONCEPT(attribute->local_name, attribute->uri, li)) {
       /* recognise rdf:li attribute */
       resource_element->last_ordinal++;
-      rapier_generate_statement(rdf_parser,
+      raptor_generate_statement(rdf_parser,
                                 resource_element->subject_uri,
-                                RAPIER_SUBJECT_TYPE_RESOURCE,
+                                RAPTOR_SUBJECT_TYPE_RESOURCE,
                                 resource_element->subject_uri_source,
                                 (void*)&resource_element->last_ordinal,
-                                RAPIER_PREDICATE_TYPE_ORDINAL,
-                                RAPIER_URI_SOURCE_ATTRIBUTE,
+                                RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                RAPTOR_URI_SOURCE_ATTRIBUTE,
                                 (void*)value,
-                                RAPIER_OBJECT_TYPE_LITERAL,
-                                RAPIER_URI_SOURCE_NOT_URI,
+                                RAPTOR_OBJECT_TYPE_LITERAL,
+                                RAPTOR_URI_SOURCE_NOT_URI,
                                 resource_element->bag_uri);
     } else
-      rapier_generate_named_statement(rdf_parser, 
+      raptor_generate_named_statement(rdf_parser, 
                                       resource_element->subject_uri,
-                                      RAPIER_SUBJECT_TYPE_RESOURCE,
+                                      RAPTOR_SUBJECT_TYPE_RESOURCE,
                                       resource_element->subject_uri_source,
                                       attribute,
-                                      RAPIER_URI_SOURCE_ATTRIBUTE,
+                                      RAPTOR_URI_SOURCE_ATTRIBUTE,
                                       (void*)value,
-                                      RAPIER_OBJECT_TYPE_LITERAL,
-                                      RAPIER_URI_SOURCE_NOT_URI,
+                                      RAPTOR_OBJECT_TYPE_LITERAL,
+                                      RAPTOR_URI_SOURCE_NOT_URI,
                                       resource_element->bag_uri);
 
   } /* end for ... attributes */
@@ -2680,11 +2680,11 @@ rapier_process_property_attributes(rapier_parser *rdf_parser,
 
 
 static void
-rapier_start_element_grammar(rapier_parser *rdf_parser,
-                             rapier_element *element) 
+raptor_start_element_grammar(raptor_parser *rdf_parser,
+                             raptor_element *element) 
 {
   int finished;
-  rapier_state state;
+  raptor_state state;
   int i;
   const char *el_name=element->name->local_name;
   int element_in_rdf_ns=(element->name->nspace && 
@@ -2695,24 +2695,24 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
     state=element->parent->child_state;
     if(!state) {
       state=element->parent->state;
-      LIBRDF_DEBUG3(rapier_start_element_grammar,
+      LIBRDF_DEBUG3(raptor_start_element_grammar,
                     "NO CHILD STATE set - taking parent state %d - %s\n",
-                    state, rapier_state_as_string(state));
+                    state, raptor_state_as_string(state));
     }
     
   } else
-    state=RAPIER_STATE_UNKNOWN;
-  LIBRDF_DEBUG3(rapier_start_element_grammar, "starting in state %d - %s\n",
-                state, rapier_state_as_string(state));
+    state=RAPTOR_STATE_UNKNOWN;
+  LIBRDF_DEBUG3(raptor_start_element_grammar, "starting in state %d - %s\n",
+                state, raptor_state_as_string(state));
 
   finished= 0;
   while(!finished) {
     switch(state) {
-      case RAPIER_STATE_UNKNOWN:
+      case RAPTOR_STATE_UNKNOWN:
         /* found <rdf:RDF> ? */
         if(element_in_rdf_ns && 
           IS_RDF_MS_CONCEPT(el_name, element->name->uri, RDF)) {
-          element->child_state=RAPIER_STATE_OBJ;
+          element->child_state=RAPTOR_STATE_OBJ;
           /* Yes - need more content before can continue,
            * so wait for another element
            */
@@ -2729,12 +2729,12 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
         /* Otherwise the choice of the next state can be made
          * from the current element by the IN_RDF state
          */
-        state=RAPIER_STATE_OBJ;
+        state=RAPTOR_STATE_OBJ;
         break;
 
 
-      case RAPIER_STATE_OBJ:
-      case RAPIER_STATE_INLINEITEM:
+      case RAPTOR_STATE_OBJ:
+      case RAPTOR_STATE_INLINEITEM:
         /* Handling either 6.2 (obj) or 6.17 (value) (inside
          * rdf:RDF, propertyElt or rdf:li) and expecting
          * description (6.3) | sequence (6.25) | bag (6.26) | alternative (6.27)
@@ -2751,25 +2751,25 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
         if(element_in_rdf_ns) {
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description)) {
-            state=RAPIER_STATE_DESCRIPTION;
+            state=RAPTOR_STATE_DESCRIPTION;
             break;
           } 
 
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Seq)) {
             /* CHOICE - can choose either sequence or typedNode productions */
             if(rdf_parser->feature_interpret_containers_as_typedNode) {
-              rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_SEQ;
-              state=RAPIER_STATE_TYPED_NODE;
+              rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_SEQ;
+              state=RAPTOR_STATE_TYPED_NODE;
             } else {
               /* However, if there are non rdf:ID attributes, it must
                * be interpreted as a typedNode
                */
               if(element->rdf_attr_count -
                  (element->rdf_attr[RDF_ATTR_ID] != NULL))
-                state=RAPIER_STATE_TYPED_NODE;
+                state=RAPTOR_STATE_TYPED_NODE;
               else {
-                state=RAPIER_STATE_SEQ;
-                element->container_type=RAPIER_RDF_Seq_URI;
+                state=RAPTOR_STATE_SEQ;
+                element->container_type=RAPTOR_RDF_Seq_URI;
               }
             }
 
@@ -2779,18 +2779,18 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Bag)) {
             /* CHOICE - can choose either sequence or typedNode productions */
             if(rdf_parser->feature_interpret_containers_as_typedNode) {
-              rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_BAG;
-              state=RAPIER_STATE_TYPED_NODE;
+              rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_BAG;
+              state=RAPTOR_STATE_TYPED_NODE;
             } else {
               /* However, if there are non rdf:ID attributes, it must
                * be interpreted as a typedNode
                */
               if(element->rdf_attr_count -
                  (element->rdf_attr[RDF_ATTR_ID] != NULL))
-                state=RAPIER_STATE_TYPED_NODE;
+                state=RAPTOR_STATE_TYPED_NODE;
               else {
-                state=RAPIER_STATE_BAG;
-                element->container_type=RAPIER_RDF_Bag_URI;
+                state=RAPTOR_STATE_BAG;
+                element->container_type=RAPTOR_RDF_Bag_URI;
               }
             }
 
@@ -2800,18 +2800,18 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Alt)) {
             /* CHOICE - can choose either sequence or typedNode productions */
             if(rdf_parser->feature_interpret_containers_as_typedNode) {
-              rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_ALT;
-              state=RAPIER_STATE_TYPED_NODE;
+              rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_ALT;
+              state=RAPTOR_STATE_TYPED_NODE;
             } else {
               /* However, if there are non rdf:ID attributes, it must
                * be interpreted as a typedNode
                */
               if(element->rdf_attr_count -
                  (element->rdf_attr[RDF_ATTR_ID] != NULL))
-                state=RAPIER_STATE_TYPED_NODE;
+                state=RAPTOR_STATE_TYPED_NODE;
               else {
-                state=RAPIER_STATE_ALT;
-                element->container_type=RAPIER_RDF_Alt_URI;
+                state=RAPTOR_STATE_ALT;
+                element->container_type=RAPTOR_RDF_Alt_URI;
               }
             }
 
@@ -2819,14 +2819,14 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           }
 
           if(rdf_parser->container_test_handler) {
-            rapier_uri *container_type=rdf_parser->container_test_handler(element->name->uri);
+            raptor_uri *container_type=rdf_parser->container_test_handler(element->name->uri);
             if(container_type) {
               /* CHOICE - can choose either 'container' or typedNode productions */
               if(rdf_parser->feature_interpret_containers_as_typedNode) {
-                rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_CONTAINER;
-                state=RAPIER_STATE_TYPED_NODE;
+                rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_CONTAINER;
+                state=RAPTOR_STATE_TYPED_NODE;
               } else {
-                state=RAPIER_STATE_CONTAINER;
+                state=RAPTOR_STATE_CONTAINER;
                 element->container_type=container_type;
               }
 
@@ -2840,16 +2840,16 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
         }
 
         /* Default to typedNode */
-        state=RAPIER_STATE_TYPED_NODE;
+        state=RAPTOR_STATE_TYPED_NODE;
         break;
 
 
       /* No need for 6.2 - already chose 6.3, 6.25, 6.26 or 6.27 */
 
 
-      case RAPIER_STATE_DESCRIPTION:
-      case RAPIER_STATE_TYPED_NODE:
-      case RAPIER_STATE_PARSETYPE_RESOURCE:
+      case RAPTOR_STATE_DESCRIPTION:
+      case RAPTOR_STATE_TYPED_NODE:
+      case RAPTOR_STATE_PARSETYPE_RESOURCE:
         /* Handling 6.3 (description), 6.13 (typedNode) or contents
          * of a property (propertyElt or member) with parseType="resource"
          *
@@ -2880,60 +2880,60 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
            (element->rdf_attr[RDF_ATTR_about] != NULL) +
            (element->rdf_attr[RDF_ATTR_aboutEach] != NULL) +
            (element->rdf_attr[RDF_ATTR_aboutEachPrefix] != NULL) > 1) {
-          rapier_parser_warning(rdf_parser, "More than one of RDF ID, about, aboutEach or aboutEachPrefix attributes on element %s - from productions 6.5, 6.6, 6.7 and 6.8 expect at most one.", el_name);
+          raptor_parser_warning(rdf_parser, "More than one of RDF ID, about, aboutEach or aboutEachPrefix attributes on element %s - from productions 6.5, 6.6, 6.7 and 6.8 expect at most one.", el_name);
         }
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
-          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
-          element->subject_uri_source=RAPIER_URI_SOURCE_ID;
+          element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_type=RAPTOR_SUBJECT_TYPE_RESOURCE;
+          element->subject_uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
-          element->subject_uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
-          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
-          element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+          element->subject_uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
+          element->subject_type=RAPTOR_SUBJECT_TYPE_RESOURCE;
+          element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_aboutEach]) {
-          element->subject_uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
-          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE_EACH;
-          element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+          element->subject_uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
+          element->subject_type=RAPTOR_SUBJECT_TYPE_RESOURCE_EACH;
+          element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
-          element->subject_uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
-          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE_EACH_PREFIX;
-          element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+          element->subject_uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
+          element->subject_type=RAPTOR_SUBJECT_TYPE_RESOURCE_EACH_PREFIX;
+          element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->parent && element->parent->object_uri) {
           /* copy from parent, it has a URI for us */
-          element->subject_uri=rapier_copy_uri(element->parent->object_uri);
-          if(element->parent->object_uri_source == RAPIER_URI_SOURCE_GENERATED)
-            element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+          element->subject_uri=raptor_copy_uri(element->parent->object_uri);
+          if(element->parent->object_uri_source == RAPTOR_URI_SOURCE_GENERATED)
+            element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
           else
             element->subject_uri_source=element->parent->object_uri_source;
         } else {
-          element->id=rapier_generate_id(rdf_parser, 0);
-          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
-          element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
+          element->id=raptor_generate_id(rdf_parser, 0);
+          element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
 
 
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           element->bag_id=element->rdf_attr[RDF_ATTR_bagID];
           element->rdf_attr[RDF_ATTR_bagID]=NULL;
-          element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
-          element->bag_uri_source=RAPIER_URI_SOURCE_GENERATED;
+          element->bag_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+          element->bag_uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
 
         /* If there is a parent element (property) containing this
          * element (node) and it has no object, set it from this subject
          */
         if(element->parent && !element->parent->object_uri &&
-           element->parent->state != RAPIER_STATE_UNKNOWN) {
+           element->parent->state != RAPTOR_STATE_UNKNOWN) {
           
           /* Store our URI in our parent as the object URI */
-          element->parent->object_uri=rapier_copy_uri(element->subject_uri);
+          element->parent->object_uri=raptor_copy_uri(element->subject_uri);
 
-          element->parent->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
-          if(element->subject_uri_source == RAPIER_URI_SOURCE_GENERATED)
-            element->parent->object_uri_source=RAPIER_URI_SOURCE_URI;
+          element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+          if(element->subject_uri_source == RAPTOR_URI_SOURCE_GENERATED)
+            element->parent->object_uri_source=RAPTOR_URI_SOURCE_URI;
           else
             element->parent->object_uri_source=element->subject_uri_source;
         }
@@ -2942,17 +2942,17 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
         /* If this is a typed node, generate the rdf:type statement
          * from this node
          */
-        if(state == RAPIER_STATE_TYPED_NODE) {
-          rapier_object_type object_type=(element->name->uri) ? RAPIER_OBJECT_TYPE_RESOURCE : RAPIER_OBJECT_TYPE_XML_NAME;
+        if(state == RAPTOR_STATE_TYPED_NODE) {
+          raptor_object_type object_type=(element->name->uri) ? RAPTOR_OBJECT_TYPE_RESOURCE : RAPTOR_OBJECT_TYPE_XML_NAME;
           void *object=(element->name->uri) ? (void*)element->name->uri : (void*)element->name->local_name;
 
-          rapier_generate_statement(rdf_parser, 
+          raptor_generate_statement(rdf_parser, 
                                     element->subject_uri,
-                                    RAPIER_SUBJECT_TYPE_RESOURCE,
+                                    RAPTOR_SUBJECT_TYPE_RESOURCE,
                                     element->subject_uri_source,
-                                    RAPIER_RDF_type_URI,
-                                    RAPIER_PREDICATE_TYPE_PREDICATE,
-                                    RAPIER_URI_SOURCE_URI,
+                                    RAPTOR_RDF_type_URI,
+                                    RAPTOR_PREDICATE_TYPE_PREDICATE,
+                                    RAPTOR_URI_SOURCE_URI,
                                     object,
                                     object_type,
                                     element->object_uri_source,
@@ -2961,22 +2961,22 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
         }
 
 
-        rapier_process_property_attributes(rdf_parser, element, element);
+        raptor_process_property_attributes(rdf_parser, element, element);
 
         /* for both productions now need some more content or
          * property elements before can do any more work.
          */
 
-        element->child_state=RAPIER_STATE_PROPERTYELT;
-        element->content_type=RAPIER_ELEMENT_CONTENT_TYPE_PROPERTIES;
+        element->child_state=RAPTOR_STATE_PROPERTYELT;
+        element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
         finished=1;
         break;
 
 
-      case RAPIER_STATE_SEQ:
-      case RAPIER_STATE_BAG:
-      case RAPIER_STATE_ALT:
-      case RAPIER_STATE_CONTAINER:
+      case RAPTOR_STATE_SEQ:
+      case RAPTOR_STATE_BAG:
+      case RAPTOR_STATE_ALT:
+      case RAPTOR_STATE_CONTAINER:
         /* choices here from production 6.25 (sequence), 6.26 (bag)
          * and 6.27 (alternative)
          * <rdf:Seq idAttr?>...</rdf:Seq> (attribute productions: 6.6)
@@ -2993,46 +2993,46 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
-          element->subject_uri_source=RAPIER_URI_SOURCE_ID;
+          element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->parent && element->parent->object_uri) {
           /* copy from parent, it has a URI for us */
-          element->subject_uri=rapier_copy_uri(element->parent->object_uri);
-          if(element->parent->object_uri_source == RAPIER_URI_SOURCE_GENERATED)
-            element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+          element->subject_uri=raptor_copy_uri(element->parent->object_uri);
+          if(element->parent->object_uri_source == RAPTOR_URI_SOURCE_GENERATED)
+            element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
           else
             element->subject_uri_source=element->parent->object_uri_source;
         } else {
-          element->id=rapier_generate_id(rdf_parser, 0);
-          element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
-          element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
+          element->id=raptor_generate_id(rdf_parser, 0);
+          element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
 
         /* Store URI of new thing in our parent */
         if(element->parent && !element->parent->object_uri &&
-           element->parent->state != RAPIER_STATE_UNKNOWN) {
+           element->parent->state != RAPTOR_STATE_UNKNOWN) {
 
           /* Store our URI in our parent as the object URI */
-          element->parent->object_uri=rapier_copy_uri(element->subject_uri);
+          element->parent->object_uri=raptor_copy_uri(element->subject_uri);
 
-          element->parent->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
-          if(element->subject_uri_source == RAPIER_URI_SOURCE_GENERATED)
-            element->parent->object_uri_source=RAPIER_URI_SOURCE_URI;
+          element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+          if(element->subject_uri_source == RAPTOR_URI_SOURCE_GENERATED)
+            element->parent->object_uri_source=RAPTOR_URI_SOURCE_URI;
           else
             element->parent->object_uri_source=element->subject_uri_source;
         }
 
 
         /* Generate the rdf:type statement for the container node */
-        rapier_generate_statement(rdf_parser, 
+        raptor_generate_statement(rdf_parser, 
                                   element->subject_uri,
-                                  RAPIER_SUBJECT_TYPE_RESOURCE,
+                                  RAPTOR_SUBJECT_TYPE_RESOURCE,
                                   element->subject_uri_source,
-                                  RAPIER_RDF_type_URI,
-                                  RAPIER_PREDICATE_TYPE_PREDICATE,
-                                  RAPIER_URI_SOURCE_URI,
+                                  RAPTOR_RDF_type_URI,
+                                  RAPTOR_PREDICATE_TYPE_PREDICATE,
+                                  RAPTOR_URI_SOURCE_URI,
                                   element->container_type,
-                                  RAPIER_OBJECT_TYPE_RESOURCE,
+                                  RAPTOR_OBJECT_TYPE_RESOURCE,
                                   element->object_uri_source,
                                   NULL);
 
@@ -3041,7 +3041,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          * 6.31 (memberAttr) = member* = (rdf:_n="string")*
          */
         for(i=0; i<element->attribute_count; i++) {
-          rapier_ns_name* attribute=element->attributes[i];
+          raptor_ns_name* attribute=element->attributes[i];
           const char *name=attribute->local_name;
           const char *value = attribute->value;
           int ordinal = 0;
@@ -3063,7 +3063,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
             }
 
             if(ordinal < 1) {
-              rapier_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attribute->local_name, el_name);
+              raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attribute->local_name, el_name);
               attribute_problems+=2;
             }
           }
@@ -3073,7 +3073,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
             /* Warn if unexpected or bad rdf: attributes seen and not
              * already warned
              */
-            rapier_parser_warning(rdf_parser, "Unexpected rdf: attribute %s seen on container element %s - from production 6.25, 6.26 and 6.27 expected rdf:ID or rdf:_n only.", name, el_name);
+            raptor_parser_warning(rdf_parser, "Unexpected rdf: attribute %s seen on container element %s - from production 6.25, 6.26 and 6.27 expected rdf:ID or rdf:_n only.", name, el_name);
 
 
           /* Always generate a property - either an ordinal,
@@ -3081,35 +3081,35 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
            * regular one using the attribute value
            */
           if(!attribute_problems)
-            rapier_generate_statement(rdf_parser, 
+            raptor_generate_statement(rdf_parser, 
                                       element->subject_uri,
-                                      RAPIER_SUBJECT_TYPE_RESOURCE,
+                                      RAPTOR_SUBJECT_TYPE_RESOURCE,
                                       element->subject_uri_source,
                                       (void*)&ordinal,
-                                      RAPIER_PREDICATE_TYPE_ORDINAL,
-                                      RAPIER_URI_SOURCE_NOT_URI,
+                                      RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                      RAPTOR_URI_SOURCE_NOT_URI,
                                       (void*)value,
-                                      RAPIER_OBJECT_TYPE_LITERAL,
-                                      RAPIER_URI_SOURCE_NOT_URI,
+                                      RAPTOR_OBJECT_TYPE_LITERAL,
+                                      RAPTOR_URI_SOURCE_NOT_URI,
                                       NULL);
 
           else
-            rapier_generate_named_statement(rdf_parser, 
+            raptor_generate_named_statement(rdf_parser, 
                                             element->subject_uri,
-                                            RAPIER_SUBJECT_TYPE_RESOURCE,
+                                            RAPTOR_SUBJECT_TYPE_RESOURCE,
                                             element->subject_uri_source,
                                             attribute,
-                                            RAPIER_URI_SOURCE_ATTRIBUTE,
+                                            RAPTOR_URI_SOURCE_ATTRIBUTE,
                                             (void*)value,
-                                            RAPIER_OBJECT_TYPE_LITERAL,
-                                            RAPIER_URI_SOURCE_NOT_URI,
+                                            RAPTOR_OBJECT_TYPE_LITERAL,
+                                            RAPTOR_URI_SOURCE_NOT_URI,
                                             NULL);
 
 
         } /* end for ... attributes */
 
 
-        element->child_state=RAPIER_STATE_MEMBER;
+        element->child_state=RAPTOR_STATE_MEMBER;
         finished=1;
         break;
 
@@ -3126,56 +3126,56 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          *   3) <rdf:li rdf:parseType="literal">
          *   4) <rdf:li rdf:parseType="resource">
          *
-         * 1) moves to RAPIER_STATE_REFERENCEDITEM
-         * 2) moves to RAPIER_STATE_INLINEITEM to handle contents of rdf:li
-         * 3) moves to RAPIER_STATE_PARSETYPE_LITERAL
-         * 4) moves to RAPIER_STATE_PARSETYPE_RESOURCE
-         * Other parseType content moves to RAPIER_STATE_PARSETYPE_OTHER
+         * 1) moves to RAPTOR_STATE_REFERENCEDITEM
+         * 2) moves to RAPTOR_STATE_INLINEITEM to handle contents of rdf:li
+         * 3) moves to RAPTOR_STATE_PARSETYPE_LITERAL
+         * 4) moves to RAPTOR_STATE_PARSETYPE_RESOURCE
+         * Other parseType content moves to RAPTOR_STATE_PARSETYPE_OTHER
          */
-      case RAPIER_STATE_MEMBER:
+      case RAPTOR_STATE_MEMBER:
         if(element->rdf_attr[RDF_ATTR_resource]) {
-          element->subject_uri=rapier_make_uri(rdf_parser->base_uri,
+          element->subject_uri=raptor_make_uri(rdf_parser->base_uri,
                                                element->rdf_attr[RDF_ATTR_resource]);
-          element->subject_uri_source=RAPIER_URI_SOURCE_URI,
-          state=RAPIER_STATE_REFERENCEDITEM;
+          element->subject_uri_source=RAPTOR_URI_SOURCE_URI,
+          state=RAPTOR_STATE_REFERENCEDITEM;
         } else if (element->rdf_attr[RDF_ATTR_parseType]) {
           const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
           
           if(!strcasecmp(parse_type, "literal")) {
-            element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
+            element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
           } else if (!strcasecmp(parse_type, "resource")) {
-            state=RAPIER_STATE_PARSETYPE_RESOURCE;
-            element->child_state=RAPIER_STATE_PROPERTYELT;
-            element->id=rapier_generate_id(rdf_parser, 0);
-            element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
-            element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
+            state=RAPTOR_STATE_PARSETYPE_RESOURCE;
+            element->child_state=RAPTOR_STATE_PROPERTYELT;
+            element->id=raptor_generate_id(rdf_parser, 0);
+            element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->id);
+            element->subject_uri_source=RAPTOR_URI_SOURCE_GENERATED;
           } else {
             if(rdf_parser->feature_allow_other_parseTypes)
-              element->child_state=RAPIER_STATE_PARSETYPE_OTHER;
+              element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
             else
-              element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
+              element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
           }
         } else
-          element->child_state=RAPIER_STATE_INLINEITEM;
+          element->child_state=RAPTOR_STATE_INLINEITEM;
 
         finished=1;
         break;
 
-      case RAPIER_STATE_REFERENCEDITEM:
+      case RAPTOR_STATE_REFERENCEDITEM:
         /* FIXME - need to generate warning for unexpected content */
         finished=1;
         break;
 
-      case RAPIER_STATE_PARSETYPE_OTHER:
+      case RAPTOR_STATE_PARSETYPE_OTHER:
         /* FIXME */
 
         /* FALLTHROUGH */
 
-      case RAPIER_STATE_PARSETYPE_LITERAL:
+      case RAPTOR_STATE_PARSETYPE_LITERAL:
         {
           char *fmt_buffer;
           int fmt_length;
-          fmt_buffer=rapier_format_element(element, &fmt_length,0);
+          fmt_buffer=raptor_format_element(element, &fmt_length,0);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
             if(element->content_cdata) {
@@ -3212,12 +3212,12 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          * The only one that must be handled here is the last one which
          * uses only attributes and no content.
          */
-      case RAPIER_STATE_PROPERTYELT:
+      case RAPTOR_STATE_PROPERTYELT:
 
         /* Handle rdf:li as a property in member state above */ 
         if(element_in_rdf_ns && 
            IS_RDF_MS_CONCEPT(el_name, element->name->uri, li)) {
-          state=RAPIER_STATE_MEMBER;
+          state=RAPTOR_STATE_MEMBER;
           break;
         }
 
@@ -3237,26 +3237,26 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
 
           if(!strcasecmp(parse_type, "literal")) {
-            element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
+            element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
           } else if (!strcasecmp(parse_type, "resource")) {
-            state=RAPIER_STATE_PARSETYPE_RESOURCE;
-            element->child_state=RAPIER_STATE_PROPERTYELT;
-            element->id=rapier_generate_id(rdf_parser, 0);
-            element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
-            element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
+            state=RAPTOR_STATE_PARSETYPE_RESOURCE;
+            element->child_state=RAPTOR_STATE_PROPERTYELT;
+            element->id=raptor_generate_id(rdf_parser, 0);
+            element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->id);
+            element->subject_uri_source=RAPTOR_URI_SOURCE_GENERATED;
           } else {
             if(rdf_parser->feature_allow_other_parseTypes)
-              element->child_state=RAPIER_STATE_PARSETYPE_OTHER;
+              element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
             else
-              element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
+              element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
           }
         } else {
 
           /* Can only be last case */
           if(element->rdf_attr[RDF_ATTR_resource]) {
-            element->subject_uri=rapier_make_uri(rdf_parser->base_uri,
+            element->subject_uri=raptor_make_uri(rdf_parser->base_uri,
                                                  element->rdf_attr[RDF_ATTR_resource]);
-            element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+            element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
           }
           
 
@@ -3265,15 +3265,15 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           if(element->rdf_attr[RDF_ATTR_bagID]) {
             element->bag_id=element->rdf_attr[RDF_ATTR_bagID];
             element->rdf_attr[RDF_ATTR_bagID]=NULL;
-            element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
-            element->bag_uri_source=RAPIER_URI_SOURCE_GENERATED;
+            element->bag_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+            element->bag_uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
 #endif
           
           /* Assign the properties on this element to the resource
            * URI held in our parent element
            */
-          rapier_process_property_attributes(rdf_parser, element, 
+          raptor_process_property_attributes(rdf_parser, element, 
                                              element->parent);
 
           /*
@@ -3281,18 +3281,18 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
            * this bagID 
            */
           if(element->bag_id) {
-            element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
-            element->bag_uri_source=RAPIER_URI_SOURCE_GENERATED;
+            element->bag_uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+            element->bag_uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
 
           if(element->rdf_attr[RDF_ATTR_resource]) {
             /* Done - wait for end of this element to end in order to 
              * check the element was empty as expected */
-            element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_EMPTY;
+            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY;
           } else {
             /* Otherwise process content in obj (value) state */
-            element->child_state=RAPIER_STATE_OBJ;
-            element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN;
+            element->child_state=RAPTOR_STATE_OBJ;
+            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
           }
         }
 
@@ -3302,31 +3302,31 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
 
       default:
-        rapier_parser_fatal_error(rdf_parser, "rapier_start_element_grammar - unexpected parser state %d - %s\n", state, rapier_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_start_element_grammar - unexpected parser state %d - %s\n", state, raptor_state_as_string(state));
         finished=1;
 
     } /* end switch */
 
     if(state != element->state) {
       element->state=state;
-      LIBRDF_DEBUG3(rapier_start_element_grammar, 
+      LIBRDF_DEBUG3(raptor_start_element_grammar, 
                     "moved to state %d - %s\n",
-                    state, rapier_state_as_string(state));
+                    state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
-  LIBRDF_DEBUG3(rapier_start_element_grammar, 
+  LIBRDF_DEBUG3(raptor_start_element_grammar, 
                 "ending in state %d - %s\n",
-                state, rapier_state_as_string(state));
+                state, raptor_state_as_string(state));
 }
 
 
 static void
-rapier_end_element_grammar(rapier_parser *rdf_parser,
-                           rapier_element *element) 
+raptor_end_element_grammar(raptor_parser *rdf_parser,
+                           raptor_element *element) 
 {
-  rapier_state state;
+  raptor_state state;
   int finished;
   const char *el_name=element->name->local_name;
   int element_in_rdf_ns=(element->name->nspace && 
@@ -3334,21 +3334,21 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
 
 
   state=element->state;
-  LIBRDF_DEBUG3(rapier_end_element_grammar, "starting in state %d - %s\n",
-                state, rapier_state_as_string(state));
+  LIBRDF_DEBUG3(raptor_end_element_grammar, "starting in state %d - %s\n",
+                state, raptor_state_as_string(state));
 
   finished= 0;
   while(!finished) {
     switch(state) {
-      case RAPIER_STATE_UNKNOWN:
+      case RAPTOR_STATE_UNKNOWN:
         finished=1;
         break;
 
-      case RAPIER_STATE_OBJ:
+      case RAPTOR_STATE_OBJ:
         if(element_in_rdf_ns && 
           IS_RDF_MS_CONCEPT(el_name, element->name->uri,RDF)) {
           /* end of RDF - boo hoo */
-          state=RAPIER_STATE_UNKNOWN;
+          state=RAPTOR_STATE_UNKNOWN;
           finished=1;
           break;
         }
@@ -3356,7 +3356,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
          * world so this can happen without further work
          */
         if(rdf_parser->feature_scanning_for_rdf_RDF) {
-          state=RAPIER_STATE_UNKNOWN;
+          state=RAPTOR_STATE_UNKNOWN;
           finished=1;
           break;
         }
@@ -3364,33 +3364,33 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
          * document (probably never get here since this would be
          * a mismatched XML tag and cause an error earlier)
          */
-        rapier_parser_warning(rdf_parser, "Element %s ended, expected end of RDF element\n", el_name);
-        state=RAPIER_STATE_UNKNOWN;
+        raptor_parser_warning(rdf_parser, "Element %s ended, expected end of RDF element\n", el_name);
+        state=RAPTOR_STATE_UNKNOWN;
         finished=1;
         break;
 
       /* No need for 6.2 - already chose 6.3, 6.25, 6.26 or 6.27 */
 
-      case RAPIER_STATE_DESCRIPTION:
-      case RAPIER_STATE_TYPED_NODE:
-      case RAPIER_STATE_PARSETYPE_RESOURCE:
+      case RAPTOR_STATE_DESCRIPTION:
+      case RAPTOR_STATE_TYPED_NODE:
+      case RAPTOR_STATE_PARSETYPE_RESOURCE:
 
         /* If there is a parent element containing this element and
          * the parent isn't a description, create the statement
          * between this node using parent property
          */
-        if(state != RAPIER_STATE_DESCRIPTION && 
+        if(state != RAPTOR_STATE_DESCRIPTION && 
            element->parent && 
            element->parent->subject_uri) {
 
-          rapier_generate_named_statement(rdf_parser, 
+          raptor_generate_named_statement(rdf_parser, 
                                           element->parent->subject_uri,
-                                          RAPIER_SUBJECT_TYPE_RESOURCE,
+                                          RAPTOR_SUBJECT_TYPE_RESOURCE,
                                           element->parent->subject_uri_source,
                                           element->name,
-                                          RAPIER_URI_SOURCE_ELEMENT,
+                                          RAPTOR_URI_SOURCE_ELEMENT,
                                           element->subject_uri,
-                                          RAPIER_OBJECT_TYPE_RESOURCE,
+                                          RAPTOR_OBJECT_TYPE_RESOURCE,
                                           element->subject_uri_source,
                                           NULL);
         }
@@ -3398,64 +3398,64 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         finished=1;
         break;
 
-      case RAPIER_STATE_SEQ:
-      case RAPIER_STATE_BAG:
-      case RAPIER_STATE_ALT:
-      case RAPIER_STATE_CONTAINER:
+      case RAPTOR_STATE_SEQ:
+      case RAPTOR_STATE_BAG:
+      case RAPTOR_STATE_ALT:
+      case RAPTOR_STATE_CONTAINER:
 
         finished=1;
         break;
 
-      case RAPIER_STATE_REFERENCEDITEM:
+      case RAPTOR_STATE_REFERENCEDITEM:
         if((element->content_element_seen + element->content_cdata_seen))
-          rapier_parser_warning(rdf_parser, "Unexpected content in %s with resource attribute - from production 6.29 expected an empty element.", el_name);
+          raptor_parser_warning(rdf_parser, "Unexpected content in %s with resource attribute - from production 6.29 expected an empty element.", el_name);
 
         element->parent->last_ordinal++;
-        rapier_generate_statement(rdf_parser, 
+        raptor_generate_statement(rdf_parser, 
                                   element->parent->subject_uri,
-                                  RAPIER_SUBJECT_TYPE_RESOURCE,
+                                  RAPTOR_SUBJECT_TYPE_RESOURCE,
                                   element->parent->subject_uri_source,
                                   (void*)&element->parent->last_ordinal,
-                                  RAPIER_PREDICATE_TYPE_ORDINAL,
-                                  RAPIER_URI_SOURCE_NOT_URI,
+                                  RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                  RAPTOR_URI_SOURCE_NOT_URI,
                                   (void*)element->subject_uri,
-                                  RAPIER_OBJECT_TYPE_RESOURCE,
+                                  RAPTOR_OBJECT_TYPE_RESOURCE,
                                   element->subject_uri_source,
                                   NULL);
 
         finished=1;
         break;
 
-      case RAPIER_STATE_INLINEITEM:
+      case RAPTOR_STATE_INLINEITEM:
         element->parent->last_ordinal++;
-        rapier_generate_statement(rdf_parser, 
+        raptor_generate_statement(rdf_parser, 
                                   element->parent->subject_uri,
-                                  RAPIER_SUBJECT_TYPE_RESOURCE,
+                                  RAPTOR_SUBJECT_TYPE_RESOURCE,
                                   element->parent->subject_uri_source,
                                   (void*)&element->parent->last_ordinal,
-                                  RAPIER_PREDICATE_TYPE_ORDINAL,
-                                  RAPIER_URI_SOURCE_NOT_URI,
+                                  RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                  RAPTOR_URI_SOURCE_NOT_URI,
                                   (void*)element->content_cdata,
-                                  RAPIER_OBJECT_TYPE_LITERAL,
-                                  RAPIER_URI_SOURCE_NOT_URI,
+                                  RAPTOR_OBJECT_TYPE_LITERAL,
+                                  RAPTOR_URI_SOURCE_NOT_URI,
                                   NULL);
         finished=1;
         break;
 
 
-      case RAPIER_STATE_PARSETYPE_OTHER:
+      case RAPTOR_STATE_PARSETYPE_OTHER:
         /* FIXME */
 
         /* FALLTHROUGH */
 
-      case RAPIER_STATE_PARSETYPE_LITERAL:
-        element->parent->content_type=RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED;
+      case RAPTOR_STATE_PARSETYPE_LITERAL:
+        element->parent->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
 
         /* Append closing element */
         {
           char *fmt_buffer;
           int fmt_length;
-          fmt_buffer=rapier_format_element(element, &fmt_length,1);
+          fmt_buffer=raptor_format_element(element, &fmt_length,1);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
             char *new_cdata=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + fmt_length + 1);
@@ -3496,8 +3496,8 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         break;
 
 
-      case RAPIER_STATE_PROPERTYELT:
-      case RAPIER_STATE_MEMBER:
+      case RAPTOR_STATE_PROPERTYELT:
+      case RAPTOR_STATE_MEMBER:
         /* This is used inside these: productions
          *   6.12 (propertyElt) part 1 (element OR literal content),
          *                      part 4 (expect no content),
@@ -3510,29 +3510,29 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
          * Empty content is checked here.
          */
 
-        if(element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN) {
+        if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN) {
           if(element->content_cdata_seen) 
-            element->content_type= RAPIER_ELEMENT_CONTENT_TYPE_LITERAL;
+            element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
           else if (element->content_element_seen) 
-            element->content_type= RAPIER_ELEMENT_CONTENT_TYPE_PROPERTIES;
+            element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
           else
-            element->content_type= RAPIER_ELEMENT_CONTENT_TYPE_EMPTY;
+            element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY;
         }
 
-        if(element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_EMPTY) {
+        if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY) {
           if(element->rdf_attr[RDF_ATTR_resource]) {
-            element->subject_uri=rapier_make_uri(rdf_parser->base_uri,
+            element->subject_uri=raptor_make_uri(rdf_parser->base_uri,
                                                  element->rdf_attr[RDF_ATTR_resource]);
-            element->subject_uri_source=RAPIER_URI_SOURCE_URI;
+            element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
             element->rdf_attr[RDF_ATTR_resource]=NULL;
-            element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
           } else {
-            char *subject_id=(char*)rapier_generate_id(rdf_parser, 0);
+            char *subject_id=(char*)raptor_generate_id(rdf_parser, 0);
             if(subject_id) {
-              element->subject_uri=rapier_make_uri_from_id(rdf_parser->base_uri, 
+              element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, 
                                                           (const char*)subject_id);
-              element->subject_uri_source=RAPIER_URI_SOURCE_GENERATED;
-              element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+              element->subject_uri_source=RAPTOR_URI_SOURCE_GENERATED;
+              element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
             }
           }
         }
@@ -3541,11 +3541,11 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         /* If there is a parent resource node (Description,
          * typedNode or parseTypeResource)
          */
-        if(element->parent->state == RAPIER_STATE_DESCRIPTION ||
-           element->parent->state == RAPIER_STATE_TYPED_NODE ||
-           element->parent->state == RAPIER_STATE_PARSETYPE_RESOURCE) {
+        if(element->parent->state == RAPTOR_STATE_DESCRIPTION ||
+           element->parent->state == RAPTOR_STATE_TYPED_NODE ||
+           element->parent->state == RAPTOR_STATE_PARSETYPE_RESOURCE) {
           int object_is_literal=(element->content_cdata != NULL);
-          rapier_object_type object_type=object_is_literal ? RAPIER_OBJECT_TYPE_LITERAL : RAPIER_OBJECT_TYPE_RESOURCE;
+          raptor_object_type object_type=object_is_literal ? RAPTOR_OBJECT_TYPE_LITERAL : RAPTOR_OBJECT_TYPE_RESOURCE;
           void *object=object_is_literal ? (void*)element->content_cdata : (void*)element->object_uri;
 
           /* then generate the statement:
@@ -3553,26 +3553,26 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
            *   predicate: ordinal / this property
            *   object   : child object (node)
            */
-          if(state == RAPIER_STATE_MEMBER) {
+          if(state == RAPTOR_STATE_MEMBER) {
             element->parent->last_ordinal++;
-            rapier_generate_statement(rdf_parser, 
+            raptor_generate_statement(rdf_parser, 
                                       element->parent->subject_uri,
-                                      RAPIER_SUBJECT_TYPE_RESOURCE,
-                                      RAPIER_URI_SOURCE_ELEMENT,
+                                      RAPTOR_SUBJECT_TYPE_RESOURCE,
+                                      RAPTOR_URI_SOURCE_ELEMENT,
                                       (void*)&element->parent->last_ordinal,
-                                      RAPIER_PREDICATE_TYPE_ORDINAL,
-                                      RAPIER_URI_SOURCE_NOT_URI,
+                                      RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                      RAPTOR_URI_SOURCE_NOT_URI,
                                       object,
                                       object_type,
                                       element->subject_uri_source,
                                       element->bag_uri);
           } else
-            rapier_generate_named_statement(rdf_parser, 
+            raptor_generate_named_statement(rdf_parser, 
                                             element->parent->subject_uri,
-                                            RAPIER_SUBJECT_TYPE_RESOURCE,
-                                            RAPIER_URI_SOURCE_ELEMENT,
+                                            RAPTOR_SUBJECT_TYPE_RESOURCE,
+                                            RAPTOR_URI_SOURCE_ELEMENT,
                                             element->name,
-                                            RAPIER_URI_SOURCE_ELEMENT,
+                                            RAPTOR_URI_SOURCE_ELEMENT,
                                             object,
                                             object_type,
                                             element->subject_uri_source,
@@ -3581,32 +3581,32 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         } else {
           int object_is_literal=(element->content_cdata != NULL);
           void *object=object_is_literal ? (void*)element->content_cdata : (void*)element->subject_uri;
-          rapier_object_type object_type=object_is_literal ? RAPIER_OBJECT_TYPE_LITERAL : RAPIER_OBJECT_TYPE_RESOURCE;
+          raptor_object_type object_type=object_is_literal ? RAPTOR_OBJECT_TYPE_LITERAL : RAPTOR_OBJECT_TYPE_RESOURCE;
 
           /* Not child of Description, so process as child of propertyElt */
           switch(element->content_type) {
-            case RAPIER_ELEMENT_CONTENT_TYPE_LITERAL:
-            case RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE:
-              if(state == RAPIER_STATE_MEMBER) {
+            case RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL:
+            case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
+              if(state == RAPTOR_STATE_MEMBER) {
                 element->parent->last_ordinal++;
-                rapier_generate_statement(rdf_parser, 
+                raptor_generate_statement(rdf_parser, 
                                           element->parent->subject_uri,
-                                          RAPIER_SUBJECT_TYPE_RESOURCE,
-                                          RAPIER_URI_SOURCE_ELEMENT,
+                                          RAPTOR_SUBJECT_TYPE_RESOURCE,
+                                          RAPTOR_URI_SOURCE_ELEMENT,
                                           (void*)&element->parent->last_ordinal,
-                                          RAPIER_PREDICATE_TYPE_ORDINAL,
-                                          RAPIER_URI_SOURCE_NOT_URI,
+                                          RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                          RAPTOR_URI_SOURCE_NOT_URI,
                                           object,
                                           object_type,
                                           element->subject_uri_source,
                                           element->bag_uri);
               } else
-                rapier_generate_named_statement(rdf_parser, 
+                raptor_generate_named_statement(rdf_parser, 
                                                 element->parent->subject_uri,
-                                                RAPIER_SUBJECT_TYPE_RESOURCE,
-                                                RAPIER_URI_SOURCE_ELEMENT,
+                                                RAPTOR_SUBJECT_TYPE_RESOURCE,
+                                                RAPTOR_URI_SOURCE_ELEMENT,
                                                 element->name,
-                                                RAPIER_URI_SOURCE_NOT_URI,
+                                                RAPTOR_URI_SOURCE_NOT_URI,
                                                 object, 
                                                 object_type,
                                                 element->subject_uri_source,
@@ -3614,66 +3614,66 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
               
               break;
               
-            case RAPIER_ELEMENT_CONTENT_TYPE_EMPTY:
+            case RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY:
               /* empty property of form
                * <property rdf:resource="object-URI"/> 
                */
-              if(state == RAPIER_STATE_MEMBER) {
+              if(state == RAPTOR_STATE_MEMBER) {
                 element->parent->last_ordinal++;
-                rapier_generate_statement(rdf_parser, 
+                raptor_generate_statement(rdf_parser, 
                                           element->parent->subject_uri,
-                                          RAPIER_SUBJECT_TYPE_RESOURCE,
-                                          RAPIER_URI_SOURCE_ELEMENT,
+                                          RAPTOR_SUBJECT_TYPE_RESOURCE,
+                                          RAPTOR_URI_SOURCE_ELEMENT,
                                           (void*)&element->parent->last_ordinal,
-                                          RAPIER_PREDICATE_TYPE_ORDINAL,
-                                          RAPIER_URI_SOURCE_NOT_URI,
+                                          RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                          RAPTOR_URI_SOURCE_NOT_URI,
                                           (void*)element->subject_uri,
-                                          RAPIER_OBJECT_TYPE_RESOURCE,
+                                          RAPTOR_OBJECT_TYPE_RESOURCE,
                                           element->subject_uri_source,
                                           element->bag_uri);
               } else
-                rapier_generate_named_statement(rdf_parser, 
+                raptor_generate_named_statement(rdf_parser, 
                                                 element->parent->subject_uri,
-                                                RAPIER_SUBJECT_TYPE_RESOURCE,
-                                                RAPIER_URI_SOURCE_ELEMENT,
+                                                RAPTOR_SUBJECT_TYPE_RESOURCE,
+                                                RAPTOR_URI_SOURCE_ELEMENT,
                                                 element->name,
-                                                RAPIER_URI_SOURCE_ELEMENT,
+                                                RAPTOR_URI_SOURCE_ELEMENT,
                                                 (void*)element->subject_uri,
-                                                RAPIER_OBJECT_TYPE_RESOURCE,
+                                                RAPTOR_OBJECT_TYPE_RESOURCE,
                                                 element->subject_uri_source,
                                                 element->bag_uri);
               break;
 
-          case RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED:
-              if(state == RAPIER_STATE_MEMBER) {
+          case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
+              if(state == RAPTOR_STATE_MEMBER) {
                 element->parent->last_ordinal++;
-                rapier_generate_statement(rdf_parser, 
+                raptor_generate_statement(rdf_parser, 
                                           element->parent->subject_uri,
-                                          RAPIER_SUBJECT_TYPE_RESOURCE,
+                                          RAPTOR_SUBJECT_TYPE_RESOURCE,
                                           element->parent->subject_uri_source,
                                           (void*)&element->parent->last_ordinal,
-                                          RAPIER_PREDICATE_TYPE_ORDINAL,
-                                          RAPIER_URI_SOURCE_NOT_URI,
+                                          RAPTOR_PREDICATE_TYPE_ORDINAL,
+                                          RAPTOR_URI_SOURCE_NOT_URI,
                                           element->content_cdata,
-                                          RAPIER_OBJECT_TYPE_XML_LITERAL,
-                                          RAPIER_URI_SOURCE_NOT_URI,
+                                          RAPTOR_OBJECT_TYPE_XML_LITERAL,
+                                          RAPTOR_URI_SOURCE_NOT_URI,
                                           element->bag_uri);
               } else
-                rapier_generate_named_statement(rdf_parser, 
+                raptor_generate_named_statement(rdf_parser, 
                                                 element->parent->subject_uri,
-                                                RAPIER_SUBJECT_TYPE_RESOURCE,
+                                                RAPTOR_SUBJECT_TYPE_RESOURCE,
                                                 element->parent->subject_uri_source,
                                                 element->name,
-                                                RAPIER_URI_SOURCE_ELEMENT,
+                                                RAPTOR_URI_SOURCE_ELEMENT,
                                                 element->content_cdata, 
-                                                RAPIER_OBJECT_TYPE_XML_LITERAL,
-                                                RAPIER_URI_SOURCE_NOT_URI,
+                                                RAPTOR_OBJECT_TYPE_XML_LITERAL,
+                                                RAPTOR_URI_SOURCE_NOT_URI,
                                                 element->bag_uri);
               
             break;
             
             default:
-              rapier_parser_fatal_error(rdf_parser, "rapier_end_element_grammar state RAPIER_STATE_PROPERTYELT - unexpected content type %d\n", element->content_type);
+              raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %d\n", element->content_type);
           } /* end switch */
           
         }
@@ -3683,21 +3683,21 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
 
 
       default:
-        rapier_parser_fatal_error(rdf_parser, "rapier_end_element_grammar - unexpected parser state %d - %s\n", state, rapier_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar - unexpected parser state %d - %s\n", state, raptor_state_as_string(state));
         finished=1;
 
     } /* end switch */
 
     if(state != element->state) {
       element->state=state;
-      LIBRDF_DEBUG3(rapier_end_element_grammar, "moved to state %d - %s\n",
-                    state, rapier_state_as_string(state));
+      LIBRDF_DEBUG3(raptor_end_element_grammar, "moved to state %d - %s\n",
+                    state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
-  LIBRDF_DEBUG3(rapier_end_element_grammar, 
+  LIBRDF_DEBUG3(raptor_end_element_grammar, 
                 "ending in state %d - %s\n",
-                state, rapier_state_as_string(state));
+                state, raptor_state_as_string(state));
 
 }

@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * rapier.h - Redland Parser for RDF (Rapier) interfaces and definition
+ * raptor.h - Redland Parser Toolkit for RDF (Raptor) interfaces and definition
  *
  * $Id$
  *
@@ -21,8 +21,8 @@
 
 
 
-#ifndef RAPIER_H
-#define RAPIER_H
+#ifndef RAPTOR_H
+#define RAPTOR_H
 
 
 #ifdef __cplusplus
@@ -30,13 +30,13 @@ extern "C" {
 #endif
 
 /* Public structure */
-typedef struct rapier_parser_s rapier_parser;
+typedef struct raptor_parser_s raptor_parser;
 
-typedef enum { RAPIER_SUBJECT_TYPE_RESOURCE, RAPIER_SUBJECT_TYPE_RESOURCE_EACH, RAPIER_SUBJECT_TYPE_RESOURCE_EACH_PREFIX } rapier_subject_type;
-typedef enum { RAPIER_PREDICATE_TYPE_PREDICATE, RAPIER_PREDICATE_TYPE_ORDINAL, RAPIER_PREDICATE_TYPE_XML_NAME } rapier_predicate_type;
-typedef enum { RAPIER_OBJECT_TYPE_RESOURCE, RAPIER_OBJECT_TYPE_LITERAL, RAPIER_OBJECT_TYPE_XML_LITERAL, RAPIER_OBJECT_TYPE_XML_NAME } rapier_object_type;
+typedef enum { RAPTOR_SUBJECT_TYPE_RESOURCE, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH_PREFIX } raptor_subject_type;
+typedef enum { RAPTOR_PREDICATE_TYPE_PREDICATE, RAPTOR_PREDICATE_TYPE_ORDINAL, RAPTOR_PREDICATE_TYPE_XML_NAME } raptor_predicate_type;
+typedef enum { RAPTOR_OBJECT_TYPE_RESOURCE, RAPTOR_OBJECT_TYPE_LITERAL, RAPTOR_OBJECT_TYPE_XML_LITERAL, RAPTOR_OBJECT_TYPE_XML_NAME } raptor_object_type;
 
-typedef enum { RAPIER_URI_SOURCE_NOT_URI, RAPIER_URI_SOURCE_ELEMENT, RAPIER_URI_SOURCE_ATTRIBUTE, RAPIER_URI_SOURCE_ID, RAPIER_URI_SOURCE_URI, RAPIER_URI_SOURCE_GENERATED } rapier_uri_source;
+typedef enum { RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED } raptor_uri_source;
   
 
 typedef struct {
@@ -49,34 +49,34 @@ typedef struct {
   int line;
   int column;
   int byte;  
-} rapier_locator;
+} raptor_locator;
 
 
 typedef enum {
-  RAPIER_FEATURE_SCANNING,
-  RAPIER_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
-  RAPIER_FEATURE_INTERPRET_CONTAINERS_AS_TYPEDNODE,
-  RAPIER_FEATURE_ALLOW_OTHER_PARSETYPES
-} rapier_feature;
+  RAPTOR_FEATURE_SCANNING,
+  RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
+  RAPTOR_FEATURE_INTERPRET_CONTAINERS_AS_TYPEDNODE,
+  RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES
+} raptor_feature;
 
 
 /* Returned by statement_handler */
 typedef struct {
   const void *subject;
-  rapier_subject_type subject_type;
+  raptor_subject_type subject_type;
   const void *predicate;
-  rapier_predicate_type predicate_type;
+  raptor_predicate_type predicate_type;
   const void *object;
-  rapier_object_type object_type;
-} rapier_statement;
+  raptor_object_type object_type;
+} raptor_statement;
 
 
-typedef void (*rapier_message_handler)(void *user_data, rapier_locator* locator, const char *msg, ...);
-typedef void (*rapier_statement_handler)(void *user_data, const rapier_statement *statement);
+typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *msg, ...);
+typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
 #ifdef LIBRDF_INTERNAL
-typedef librdf_uri* (*rapier_container_test_handler)(librdf_uri *element_uri);
+typedef librdf_uri* (*raptor_container_test_handler)(librdf_uri *element_uri);
 #else
-typedef const char* (*rapier_container_test_handler)(const char *element_uri);
+typedef const char* (*raptor_container_test_handler)(const char *element_uri);
 #endif
 
 
@@ -85,39 +85,39 @@ typedef const char* (*rapier_container_test_handler)(const char *element_uri);
 
 /* Create */
 #ifdef LIBRDF_INTERNAL
-rapier_parser* rapier_new(librdf_world *world);
+raptor_parser* raptor_new(librdf_world *world);
 #else
-rapier_parser* rapier_new(void);
+raptor_parser* raptor_new(void);
 #endif
 
 /* Destroy */
-void rapier_free(rapier_parser *rdf_parser);
+void raptor_free(raptor_parser *rdf_parser);
 
 /* Handlers */
-void rapier_set_fatal_error_handler(rapier_parser* parser, void *user_data, rapier_message_handler handler);
-void rapier_set_error_handler(rapier_parser* parser, void *user_data, rapier_message_handler handler);
-void rapier_set_warning_handler(rapier_parser* parser, void *user_data, rapier_message_handler handler);
-void rapier_set_statement_handler(rapier_parser* parser, void *user_data, rapier_statement_handler handler);
+void raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+void raptor_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 
-void rapier_print_statement(const rapier_statement * const statement, FILE *stream);
+void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
 
 /* Parsing functions */
 #ifdef LIBRDF_INTERNAL
-int rapier_parse_file(rapier_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
+int raptor_parse_file(raptor_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
 #else
-int rapier_parse_file(rapier_parser* rdf_parser,  const char *filename, const char *base_uri);
+int raptor_parse_file(raptor_parser* rdf_parser,  const char *filename, const char *base_uri);
 #endif
 
 /* Utility functions */
-void rapier_print_locator(FILE *stream, rapier_locator* locator);
+void raptor_print_locator(FILE *stream, raptor_locator* locator);
 
-void rapier_set_feature(rapier_parser *parser, rapier_feature feature, int value);
+void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 
 
 #ifndef LIBRDF_INTERNAL
 
-#define RAPIER_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-#define RAPIER_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
+#define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+#define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
 
 #endif
 
