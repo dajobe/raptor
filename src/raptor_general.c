@@ -1106,6 +1106,9 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
       if(unichar > 0xffff)
         /* &#xXXXXX; */
         new_len++;
+      if(unichar > 0xfffff)
+        /* &#xXXXXXX; */
+        new_len++;
     } else
       new_len++;
 
@@ -1150,10 +1153,14 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
         /* &#xXXXX; */
         sprintf(q, "&#x%04lX;", unichar);
         q+= 8;
-      } else {
+      } else if (unichar < 0x100000) {
         /* &#xXXXXX; */
         sprintf(q, "&#x%05lX;", unichar);
         q+= 9;
+      } else {
+        /* &#xXXXXXX; */
+        sprintf(q, "&#x%06lX;", unichar);
+        q+= 10;
       }
     } else
       *q++ = unichar;
