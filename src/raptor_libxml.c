@@ -527,7 +527,7 @@ raptor_libxml_init(xmlSAXHandler *sax) {
   sax->startElement=raptor_xml_start_element_handler;
   sax->endElement=raptor_xml_end_element_handler;
   sax->reference = NULL;     /* reference */
-  sax->characters=raptor_xml_cdata_handler;
+  sax->characters=raptor_xml_characters_handler;
   sax->cdataBlock = raptor_xml_cdata_handler; /* like <![CDATA[...]> */
   sax->ignorableWhitespace=raptor_xml_cdata_handler;
   sax->processingInstruction = NULL; /* processingInstruction */
