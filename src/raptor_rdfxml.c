@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_parse.c - Redland Parser for RDF (RAPTOR)
+ * raptor_rdfxml.c - Raptor RDF/XML Parser
  *
  * $Id$
  *
