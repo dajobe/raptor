@@ -2624,7 +2624,8 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   const char *language=NULL;
   static const char empty_literal[1]="";
 
-  if(object_type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+  if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
+     object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     language=raptor_inscope_xml_language(rdf_parser);
     if(!object_uri)
       object_uri=(void*)empty_literal;
