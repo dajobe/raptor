@@ -78,7 +78,7 @@ typedef struct
   int ignore_warnings;
 
   char *url;
-  GList *triples_list;
+  /* GList *triples_list; */
   int triples_count;
   int warnings_count;
   int errors_count;
@@ -187,7 +187,7 @@ grapper_view_add_warning_message(grapper_state *state, gchar *error) {
 static void
 grapper_model_add_triple(grapper_state *state, char *nodes[3])  
 {
-  g_list_append(state->triples_list, nodes);
+  /* g_list_append(state->triples_list, nodes); */
   state->triples_count++;
 
   grapper_view_add_triple(state, nodes, state->triples_count-1);
@@ -198,7 +198,7 @@ grapper_model_add_triple(grapper_state *state, char *nodes[3])
 static void
 grapper_model_empty_triples(grapper_state *state)  
 {
-  g_list_free(state->triples_list);
+  /* g_list_free(state->triples_list); */
 
   grapper_view_empty_triples(state);
 }
@@ -256,7 +256,7 @@ grapper_model_set_syntax (grapper_state *state, grapper_syntax syntax) {
   if(state->syntax == syntax)
     return;
   
-  g_print("Syntax changed to '%s'\n", grapper_syntax_info[state->syntax].name);
+  g_print("Syntax changed to '%s'\n", grapper_syntax_info[syntax].name);
   state->syntax=syntax;
   grapper_view_syntax_changed(state);
 }
@@ -315,9 +315,9 @@ grapper_model_warning_handler(void *data, raptor_locator *locator,
 }
 
 
-static
-void grapper_model_statements_handler(void *data,
-                                      const raptor_statement *statement) {
+static void
+grapper_model_statements_handler(void *data,
+                                 const raptor_statement *statement) {
   grapper_state* state=(grapper_state*)data;
   char* nodes[3];
   
@@ -331,6 +331,16 @@ void grapper_model_statements_handler(void *data,
                                            statement->object_type,
                                            statement->object_literal_datatype,
                                            statement->object_literal_language);
+  
+  {
+    char *p;
+    for(p=nodes[2];*p;p++) {
+      if(*p == '\n')
+        *p=' ';
+    }
+  }
+    
+
   grapper_model_add_triple(state, nodes);
   free(nodes[0]);
   free(nodes[1]);
