@@ -128,7 +128,7 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 %}
 
-%x PREF
+%x PREF LITERAL
 
 
 %%
@@ -163,6 +163,20 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 \"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
+\"\"\"				{ BEGIN(LITERAL); }
+
+<LITERAL>(.|\ |\|t|\|v|\|r|\n)*\"\"\"	{ turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext, yyleng-3, '"'); /* ' */
+                          BEGIN(INITIAL);
+                          return STRING_LITERAL; }
+
+<LITERAL>.|\r|\n	{ BEGIN(INITIAL);
+		  if (*yytext == EOF)
+                    return EOF;
+
+                  turtle_syntax_error(rdf_parser, "syntax error at %c - \"\"\"string was not terminated", *yytext);
+                  yyterminate();  }
+
+
 _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
@@ -190,7 +204,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigne
                     return EOF;
 
                   turtle_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
-                  return ERROR_TOKEN;  }
+                  yyterminate();  }
 
 
 \<[^>]*\>   { if(yyleng == 2) 
@@ -215,7 +229,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigne
                     return EOF;
 
                   turtle_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
-                  return ERROR_TOKEN;
+                  yyterminate();
 		}
 
 %%
