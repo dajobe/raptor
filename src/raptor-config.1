@@ -1,0 +1,46 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\"
+.\" raptor-config.1 - Raptor compiling utility manual page
+.\"
+.\" $Id$
+.\"
+.\" Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
+.\" Institute for Learning and Research Technology - http://www.ilrt.org/
+.\" University of Bristol - http://www.bristol.ac.uk/
+.\"
+.TH raptor-config 1 "2003-02-14"
+.\" Please adjust this date whenever revising the manpage.
+.SH NAME
+raptor-config \- script to get information about the installed version of Raptor
+.SH SYNOPSIS
+.B raptor-config
+[\-\-prefix\fI[=DIR]\fP] [\-\-libs] [\-\-cflags] [\-\-version] [\-\-help]
+.SH DESCRIPTION
+\fIraptor-config\fP is a tool that is used to determine the compile and
+linker flags that should be used to compile and link programs that use
+the Raptor RDF parser library.
+.SH OPTIONS
+.l
+\fIraptor-config\fP accepts the following options:
+.TP 8
+.B  \-\-version
+Print the currently installed version of raptor on the standard output.
+.TP 8
+.B  \-\-libs
+Print the linker flags that are necessary to link a raptor program.
+.TP 8
+.B  \-\-cflags
+Print the compiler flags that are necessary to compile a raptor program.
+.TP 8
+.B  \-\-prefix=PREFIX
+If specified, use PREFIX instead of the installation prefix that
+raptor was built with when computing the output for the
+\-\-cflags and \-\-libs options. This option must be specified before
+any \-\-libs or \-\-cflags options.
+.SH SEE ALSO
+.BR libraptor (3),
+.SH AUTHOR
+Dave Beckett - 
+.UR http://purl.org/net/dajobe/
+http://purl.org/net/dajobe/
+.UE
