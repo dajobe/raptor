@@ -185,9 +185,11 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 
 #ifdef HAVE_STRCASECMP
 #define raptor_strcasecmp strcasecmp
+#define raptor_strncasecmp strncasecmp
 #else
 #ifdef HAVE_STRICMP
 #define raptor_strcasecmp stricmp
+#define raptor_strncasecmp strnicmp
 #endif
 #endif
 
