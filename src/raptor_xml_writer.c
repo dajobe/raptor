@@ -492,12 +492,14 @@ void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                               raptor_xml_element* element)
 {
+  int is_empty;
+
   xml_writer->depth--;
   
   if (XML_WRITER_AUTO_INDENT(xml_writer) && element->content_element_seen)
     raptor_xml_writer_indent(xml_writer);
 
-  int is_empty = XML_WRITER_AUTO_EMPTY(xml_writer) ?
+  is_empty = XML_WRITER_AUTO_EMPTY(xml_writer) ?
     !(element->content_cdata_seen || element->content_element_seen) : 0;
   
   raptor_iostream_write_xml_element_end(xml_writer->iostr, element, is_empty);
