@@ -39,14 +39,7 @@ extern "C" {
   #define RAPTOR_API
 #endif
 
-#ifdef RAPTOR_IN_REDLAND
-#include <librdf.h>
-#include <rdf_uri.h>
-
-typedef librdf_uri raptor_uri;
-#else
-typedef const char raptor_uri;
-#endif
+typedef void* raptor_uri;
 
 
 
@@ -119,11 +112,8 @@ RAPTOR_API void raptor_finish(void);
 
 /* Create */
 /* OLD API */
-#ifdef RAPTOR_IN_REDLAND
-RAPTOR_API raptor_parser* raptor_new(librdf_world *world);
-#else
 RAPTOR_API raptor_parser* raptor_new(void);
-#endif
+
 /* NEW API */
 RAPTOR_API raptor_parser* raptor_new_parser(const char *name);
 
@@ -142,9 +132,6 @@ RAPTOR_API void raptor_set_fatal_error_handler(raptor_parser* parser, void *user
 RAPTOR_API void raptor_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
-#ifdef RAPTOR_IN_REDLAND
-RAPTOR_API void raptor_set_redland_world(raptor_parser* parser, librdf_world *world);
-#endif
 
 RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
 RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
@@ -155,11 +142,7 @@ RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
 
 /* Parsing functions */
 int raptor_parse_chunk(raptor_parser* rdf_parser, const char *buffer, size_t len, int is_end);
-#ifdef RAPTOR_IN_REDLAND
-RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
-#else
-RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  const char *filename, const char *base_uri);
-#endif
+RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri, raptor_uri *base_uri);
 
 /* Utility functions */
 RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
@@ -221,14 +204,8 @@ typedef struct {
 RAPTOR_API void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
 RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
 
-
-#ifndef RAPTOR_IN_REDLAND
-
 #define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
-#define RAPTOR_DAML_OIL_URI "http://www.daml.org/2001/03/daml+oil#"
-
-#endif
 
 #ifdef __cplusplus
 }

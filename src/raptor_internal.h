@@ -209,15 +209,6 @@ struct raptor_namespace_s {
  */
 struct raptor_parser_s {
 
-#ifdef RAPTOR_IN_REDLAND
-  /* DAML collection URIs */
-  librdf_uri *raptor_daml_oil_uri;
-  librdf_uri *raptor_daml_List_uri;
-  librdf_uri *raptor_daml_first_uri;
-  librdf_uri *raptor_daml_rest_uri;
-  librdf_uri *raptor_daml_nil_uri;
-#endif
-
   /* stack of namespaces, most recently added at top */
   raptor_namespace_stack namespaces;
 
@@ -337,13 +328,6 @@ extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *mes
 
 
 /* raptor_parse.c */
-
-#ifdef RAPTOR_IN_REDLAND
-raptor_parser* raptor_xml_new(raptor_parser *rdf_parser, librdf_world *world);
-#else
-raptor_parser* raptor_xml_new(raptor_parser *rdf_parser);
-#endif
-void raptor_xml_free(raptor_parser *rdf_parser);
 
 /* Prototypes for common expat/libxml parsing event-handling functions */
 extern void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
