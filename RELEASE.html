@@ -12,8 +12,9 @@
 
 <p>FIXME: DRAFT NOTES - NOT YET RELEASED - DRAFT NOTES</p>
 
-<p>A release with a major new feature of serializing along with other
-improvements and minor fixes.</p>
+<p>A release with the major new feature of providing serializing of
+RDF triples to syntaxes.  It also added a new support class for I/O
+streams and had other minor fixes.</p>
 
 <p>Added a Raptor Serializer class (<code>raptor_serializer</code>)
 with similar style to Parser (<code>raptor_parser</code>).  Two
@@ -23,7 +24,7 @@ raptor_iostream class that provides this also allows writing
 to any other form by creating a custom iostream.
 </p>
 
-<p>The new raptor_serializer functions are:
+<p>The new raptor_serializer class functions added are:
 <code>raptor_serializers_enumerate</code>,
 <code>raptor_serializer_syntax_name_check</code>,
 <code>raptor_new_serializer</code>,
@@ -47,7 +48,8 @@ multiple output streams such as to filenames, to C standard I/O
 cross-language use.  A <code>raptor_iostream_handler</code> can
 be used to construct a user-defined iostream.
 </p>
-<p>raptor_iostream functions:
+
+<p>The new raptor_iostream class functions added are:
 <code>raptor_new_iostream_from_handler</code>,
 <code>raptor_new_iostream_to_sink</code>,
 <code>raptor_new_iostream_to_filename</code>,
@@ -71,7 +73,8 @@ class so that the output formats supported are now N-Triples
 rdfxml</code>).</p>
 
 
-<p>Exports more static URI strings:
+<p>Raptor now exports more static namespace URI strings for
+general application use:
 <code>raptor_xml_namespace_uri</code>,
 <code>raptor_rdf_namespace_uri</code>,
 <code>raptor_rdf_schema_namespace_uri</code>,
@@ -81,9 +84,9 @@ and the length
 <code>raptor_rdf_namespace_uri_len</code>.
 </p>
 
-<p>Added raptor_stringbuffer function
+<p>The raptor_stringbuffer class gained a new method
 <code>raptor_stringbuffer_copy_to_string</code>
-to allow efficient copy-out of a constructed string.
+which allows efficient copy-out of a constructed string.
 </p>
 
 
