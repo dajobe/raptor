@@ -88,21 +88,21 @@
  */
 
 static const char * const raptor_xml_uri="http://www.w3.org/XML/1998/namespace";
-#ifndef RAPTOR_IN_REDLAND
 static const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
 static const char * const raptor_rdf_schema_uri=RAPTOR_RDF_SCHEMA_URI;
-#endif
 
 void
-raptor_namespaces_init(raptor_namespace_stack *nstack
-#ifdef RAPTOR_IN_REDLAND
-                       ,librdf_world *world
-#endif
-) {
+raptor_namespaces_init(raptor_namespace_stack *nstack,
+                       raptor_uri_handler *uri_handler,
+                       void *uri_context)
+{
   nstack->top=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  nstack->world=world;
-#endif
+  nstack->uri_handler=uri_handler;
+  nstack->uri_context=uri_context;
+
+  nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, raptor_rdf_ms_uri);
+  nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, raptor_rdf_schema_uri);
+
   /* defined at level -1 since always 'present' when inside the XML world */
   raptor_namespaces_start_namespace(nstack, "xml", raptor_xml_uri, -1);
 }
@@ -115,11 +115,7 @@ raptor_namespaces_start_namespace(raptor_namespace_stack *nstack,
 {
   raptor_namespace *ns;
 
-#ifdef RAPTOR_IN_REDLAND
-  ns=raptor_namespace_new(prefix, ns_uri_string, depth, nstack->world);
-#else
-  ns=raptor_namespace_new(prefix, ns_uri_string, depth);
-#endif
+  ns=raptor_namespace_new(nstack, prefix, ns_uri_string, depth);
   if(!ns)
     return 1;
   
@@ -141,6 +137,9 @@ raptor_namespaces_free(raptor_namespace_stack *nstack) {
     ns=next_ns;
   }
   nstack->top=NULL;
+
+  nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_ms_uri);
+  nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_schema_uri);
 }
 
 
@@ -190,18 +189,11 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 
 
 raptor_namespace*
-raptor_namespace_new(const char *prefix, 
-                     const char *ns_uri_string, int depth
-#ifdef RAPTOR_IN_REDLAND
-                     ,librdf_world *world
-#endif
-)
+raptor_namespace_new(raptor_namespace_stack *nstack,
+                     const char *prefix, 
+                     const char *ns_uri_string, int depth)
 {
   int prefix_length=0;
-#ifdef RAPTOR_IN_REDLAND
-#else
-  int uri_length=0;
-#endif
   int len;
   raptor_namespace *ns;
   char *p;
@@ -217,13 +209,6 @@ raptor_namespace_new(const char *prefix,
                 depth);
 
   len=sizeof(raptor_namespace);
-#ifdef RAPTOR_IN_REDLAND
-#else
-  if(ns_uri_string) {
-    uri_length=strlen(ns_uri_string);
-    len+=uri_length+1;
-  }
-#endif
   if(prefix) {
     prefix_length=strlen(prefix);
     len+=prefix_length+1;
@@ -236,17 +221,11 @@ raptor_namespace_new(const char *prefix,
 
   p=(char*)ns+sizeof(raptor_namespace);
   if(ns_uri_string) {
-#ifdef RAPTOR_IN_REDLAND
-    ns->uri=librdf_new_uri(world, ns_uri_string);
+    ns->uri=(*nstack->uri_handler->new_uri)(nstack->uri_context, ns_uri_string);
     if(!ns->uri) {
       LIBRDF_FREE(raptor_namespace, ns);
       return NULL;
     }
-#else
-    ns->uri=strcpy((char*)p, ns_uri_string);
-    ns->uri_length=uri_length;
-    p+= uri_length+1;
-#endif
   }
   if(prefix) {
     ns->prefix=strcpy((char*)p, prefix);
@@ -259,17 +238,10 @@ raptor_namespace_new(const char *prefix,
 
   /* set convienience flags when there is a defined namespace URI */
   if(ns_uri_string) {
-#ifdef RAPTOR_IN_REDLAND
-    if(librdf_uri_equals(ns->uri, librdf_concept_ms_namespace_uri))
+    if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nstack->rdf_ms_uri))
       ns->is_rdf_ms=1;
-    else if(librdf_uri_equals(ns->uri, librdf_concept_schema_namespace_uri))
+    else if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nstack->rdf_schema_uri))
       ns->is_rdf_schema=1;
-#else
-    if(!strcmp(ns_uri_string, raptor_rdf_ms_uri))
-      ns->is_rdf_ms=1;
-    else if(!strcmp(ns_uri_string, raptor_rdf_schema_uri))
-      ns->is_rdf_schema=1;
-#endif
   }
 
   return ns;
@@ -279,10 +251,9 @@ raptor_namespace_new(const char *prefix,
 void 
 raptor_namespace_free(raptor_namespace *ns)
 {
-#ifdef RAPTOR_IN_REDLAND
   if(ns->uri)
-    librdf_free_uri(ns->uri);
-#endif
+    nstack->uri_handler->free_uri(nstack->uri_context, ns->uri);
+
   LIBRDF_FREE(raptor_namespace, ns);
 }
 
@@ -305,19 +276,7 @@ raptor_uri*
 raptor_namespace_local_name_to_uri(const raptor_namespace *ns,
                                    const char *local_name)
 {
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri_from_uri_local_name(ns->uri, local_name);
-#else
-  char *uri=(char*)LIBRDF_MALLOC(cstring, 
-                                 ns->uri_length + strlen(local_name) + 1);
-  if(!uri)
-    return NULL;
-  
-  strcpy(uri, ns->uri);
-  strcpy(uri + ns->uri_length, local_name);
-  
-  return uri;
-#endif
+  return (*nstack->uri_handler->new_uri_from_uri_local_name)(nstack->uri_context, ns->uri, local_name);
 }
 
 
@@ -354,13 +313,21 @@ main(int argc, char *argv[])
 #ifdef RAPTOR_IN_REDLAND
   librdf_world *world=librdf_new_world();
   librdf_world_open(world);
+#else
+  raptor_uri_handler *handler;
+  void *context;
 #endif
-  
-  raptor_namespaces_init(&namespaces
+
+  /* initialise raptor uri module */
+  raptor_uri_init();
+
 #ifdef RAPTOR_IN_REDLAND
-                         ,world
+  raptor_namespaces_init(&namespaces,
+                         librdf_raptor_uri_handler, world);
+#else
+  raptor_uri_get_handler(&handler, &context);
+  raptor_namespaces_init(&namespaces, handler, context);
 #endif
-  );
   
   raptor_namespaces_start_namespace(&namespaces,
                                     "ex1",
