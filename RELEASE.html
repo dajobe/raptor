@@ -8,7 +8,84 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
-<h2 id="rel1_3_3"><a name="rel1_3_2">Raptor 1.3.3 Changes</a></h2>
+<h2 id="rel1_4_0"><a name="rel1_4_0">Raptor 1.4.0 Changes</a></h2>
+
+<p>A release with a major new feature of serializing along with other
+improvements and minor fixes.</p>
+
+<p>Added a Raptor Serializer class (<code>raptor_serializer</code>)
+with similar style to Parser (<code>raptor_parser</code>).  Two
+serializers are provided, for RDF/XML and N-Triples.  The serializing
+can be done to files, C <code>FILE*</code> or to strings.  The
+raptor_iostream class that provides this also allows writing
+to any other form by creating a custom iostream.
+</p>
+
+<p>The new raptor_serializer functions are:
+<code>raptor_serializers_enumerate</code>,
+<code>raptor_serializer_syntax_name_check</code>,
+<code>raptor_new_serializer</code>,
+<code>raptor_free_serializer</code>,
+<code>raptor_serialize_start</code>,
+<code>raptor_serialize_start_to_filename</code>,
+<code>raptor_serialize_start_to_string</code>,
+<code>raptor_serialize_start_to_file_handle</code>,
+<code>raptor_serialize_statement</code>,
+<code>raptor_serialize_end</code>,
+<code>raptor_serializer_get_iostream</code>,
+<code>raptor_serializer_set_error_handler</code>,
+<code>raptor_serializer_set_warning_handler</code> and
+<code>raptor_serializer_get_locator</code>
+</p>
+
+<p>Added a Raptor I/O stream abstraction in
+<code>raptor_iostream</code> class to support serializing of RDF to
+multiple output streams such as to filenames, to C standard I/O
+<code>FILE*</code> handles and to strings especially for
+cross-language use.  A <code>raptor_iostream_handler</code> can
+be used to construct a user-defined iostream.
+</p>
+<p>raptor_iostream functions:
+<code>raptor_new_iostream_from_handler</code>,
+<code>raptor_new_iostream_to_sink</code>,
+<code>raptor_new_iostream_to_filename</code>,
+<code>raptor_new_iostream_to_file_handle</code>,
+<code>raptor_new_iostream_to_string</code>,
+<code>raptor_free_iostream</code>,
+<code>raptor_iostream_write_bytes</code>,
+<code>raptor_iostream_write_byte</code>,
+<code>raptor_iostream_write_end</code>,
+<code>raptor_iostream_write_string</code>,
+<code>raptor_iostream_write_counted_string</code>,
+<code>raptor_iostream_get_bytes_written_count</code>,
+<code>raptor_iostream_write_decimal</code> and
+<code>raptor_iostream_format_hexadecimal</code>.
+</p>
+
+
+<p>The <code>rapper</code> utility was modified to use serializer
+class so that the output formats supported are now N-Triples
+(<code>-o ntriples</code>) - the default, and RDF/XML (<code>-o
+rdfxml</code>).</p>
+
+
+<p>Exports more static URI strings:
+<code>raptor_xml_namespace_uri</code>,
+<code>raptor_rdf_namespace_uri</code>,
+<code>raptor_rdf_schema_namespace_uri</code>,
+<code>raptor_xmlschema_datatypes_namespace_uri</code>,
+<code>raptor_owl_namespace_uri</code>,
+and the length
+<code>raptor_rdf_namespace_uri_len</code>.
+</p>
+
+<p>Added raptor_stringbuffer function
+<code>raptor_stringbuffer_copy_to_string</code>
+to allow efficient copy-out of a constructed string.
+</p>
+
+
+<h2 id="rel1_3_3"><a name="rel1_3_3">Raptor 1.3.3 Changes</a></h2>
 
 <p>A release with major improvements along with several minor fixes.</p>
 

@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-08-10"
+.TH libraptor 3 "2004-10-23"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -41,10 +41,15 @@ libraptor \- Raptor RDF parser toolkit library
 .fi
 .SH DESCRIPTION
 The \fIRaptor\fR library provides a high-level interface to a set
-of RDF format parsers, presently RDF/XML and N-Triples.  The
-parsers turn the syntax into a sequence of RDF triples/statements.
-The RDF/XML parser uses either \fIexpat\fR or \fIlibxml\fR
-XML parser for providing the SAX event stream.
+of parsers and serializers that generate
+Resource Description Framework (RDF) triples
+by parsing syntaxes or serialize the triples into syntaxes.
+.LP
+The supported parsing syntaxes are RDF/XML,
+N-Triples, Turtle, RSS tag soup including Atom 0.3 and the
+serializing syntaxes are RDF/XML and N-Triples.
+The RDF/XML parser can use either \fIexpat\fR or \fIlibxml\fR
+XML parsers for providing the SAX event stream.
 The library functions are arranged in an object-oriented style with
 constructors, destructors and method calls.  The statements
 and error messages are delivered via callback functions.
@@ -56,7 +61,9 @@ with another existing and compatible URI implementation.
 .LP
 It also provides a URI-retrieval class (raptor_www) for
 wrapping existing library such as libcurl, libxml2 or BSD libfetch
-that provides full or partial retrieval of data from URIs.
+that provides full or partial retrieval of data from URIs
+and an I/O stream abstraction (raptor_iostream) for supportin
+serializing to a variety of outputs.
 .LP
 Raptor uses Unicode strings for RDF literals and URIs
 and preserves them throughout the library.  It uses the UTF-8
@@ -68,8 +75,11 @@ still under development and standardisation.
 .IP "\fBraptor_init()\fR"
 .IP "\fBraptor_finish()\fR"
 Initialise and cleanup the library.  These must be called before
-any raptor_parser or raptor_uri is created or used.
-.SH PARSER CONSTRUCTORS
+any raptor class such as raptor_parser, raptor_uri is created or used.
+.SH "PARSER CLASS"
+This class provides the functionality of turning syntaxes into
+RDF triples - RDF parsing.
+.SH "PARSER CONSTRUCTORS"
 .IP "\fBraptor_parser* raptor_new_parser(name)\fR"
 Create a new raptor parser object for the parser with name
 \fIname\fR currently either "rdfxml", "turtle" or
@@ -79,7 +89,7 @@ Create a new raptor parser object for a syntax identified by URI \fIuri\fR,
 MIME type \fImime_type\fR, some initial content \fIbuffer\fR of size \fIlen\fR
 or content with identifier \fIidentifier\fR.  See
 the raptor_guess_parser_name description for further details.
-.SH PARSER DESTRUCTORS
+.SH "PARSER DESTRUCTOR"
 .IP "\fBvoid raptor_free_parser(raptor_parser *\fIparser\fB)\fR"
 Destroy a Raptor parser object.
 .SH "PARSER MESSAGE CALLBACK METHODS"
@@ -91,11 +101,11 @@ the message is about. This structure can be used with
 the raptor_format_locator, raptor_print_locator functions below
 or the structures fields directly, which are defined in raptor.h
 .IP "\fBvoid raptor_set_fatal_error_handler(raptor_parser* \fIparser, void *\fIuser_data, raptor_message_handler handler)\fR"
-Set fatal error handler callback.
+Set the parser fatal error handler callback.
 .IP "\fBvoid raptor_set_error_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
-Set non-fatal error handler callback.
+Set the parser non-fatal error handler callback.
 .IP "\fBvoid raptor_set_warning_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
-Set warning message handler callback.
+Set the parser warning message handler callback.
 .SH "PARSER STATEMENT CALLBACK METHOD"
 The parser allows the registration of a callback function to return
 the statements to the application.
@@ -166,7 +176,7 @@ The current defined features are:
   \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fR  Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fR       Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NON_NFC_FATAL\fR            Boolean (non 0 true)
-  \fbRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
 If the \fIscanning\fR
 feature is true (default false), then the RDF/XML parser will look for embedded
 rdf:RDF elements inside the XML content, and not require that the
@@ -235,7 +245,7 @@ is deallocated inside raptor.  Some systems require this to be
 allocated inside the same library, in which case the 
 \fBraptor_alloc_memory\fP function may be useful.
 .SH "PARSER UTILITY FUNCTIONS"
-.IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **name, const char **\fIlabel\fB)\fR"
+.IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **\fIname\fB, const char **\fIlabel\fB)\fR"
 Return the parser name/label for a parser with a given integer
 counter, returning non-zero if no such parser at that offset
 exists.  The counter should start from 0 and be incremented by 1
@@ -384,6 +394,62 @@ The minor version number as an integer.
 The release version number as an integer.
 .IP "\fBconst unsigned int raptor_version_decimal\fR"
 The version number as a single decimal.
+.SH "SERIALIZER CLASS"
+This class provides the functionality of turning RDF triples
+into syntaxes - RDF serializing.
+.SH "SERIALIZER CONSTRUCTOR"
+.IP "\fBraptor_serializer* raptor_new_serializer(const char *\fIname\fP)\fR"
+Create a new raptor serializer object for the serializer with name
+\fIname\fR currently either "rdfxml" or "ntriples".
+"rss-tag-soup" for the RSS Tag Soup parser.
+.SH "SERIALIZER DESTRUCTOR"
+.IP "\fBvoid raptor_free_serializer(raptor_serializer* \fIrdf_serializer\fB)\fR"
+Destroy a Raptor serializer object.
+.SH "SERIALIZER SERIALIZING METHODS"
+.IP "\fBint raptor_serialize_start(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, raptor_iostream *\fIiostream\fP)\fR"
+Start to serialize content using the given \fIiostream\fR to write
+to with optional base URI \fIuri\fR. Note that
+some syntaxes may refuse to serialize without a base URI, such as RDF/XML.
+.IP "\fBint raptor_serialize_start_to_filename(raptor_serializer* \fIrdf_serializer\fB, const char *\fIfilename\fP)\fR"
+Start to serialize content to the file \fIfilename\fR which is opened
+for writing. The base URI is calculated from the file name.
+.IP "\fBint raptor_serialize_start_to_string(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, void **\fIstring_p\fP, size_t *\fIlength_p\fP)\fR"
+Start to serialize content to a string.  \fIstring_p\fP must point
+to a void* pointer that will be used at the end of serializing to store
+the newly allocated string.  \fIlength_p\fP if not NULL, will
+be used to store the length of the new string.
+The serializing is done with optional base URI \fIuri\fR however
+some syntaxes may refuse to serialize without a base URI, such as RDF/XML.
+.IP "\fBint raptor_serialize_start_to_file_handle(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, FILE *\fIhandle\fP)\fR"
+Start to serialize content to the already open C Standard I/O FILE*
+\fIhandle\fR with the base URI \fIuri\fR, which is optional and may be
+NULL.  Note that some syntaxes may refuse to serialize without a base URI, such
+as RDF/XML.
+.IP "\fBint raptor_serialize_statement(raptor_serializer* \fIrdf_serializer\fB, const raptor_statement *\fIstatement\fP)\fR"
+Serialize a single \fIstatement\fP using the serializer.
+.IP "\fBint raptor_serialize_end(raptor_serializer* \fIrdf_serializer\fB)\fR"
+End the serializing.  This may close and delete resources used in
+serializing.  No more calls to raptor_serialize_statement or
+raptor_serialize_end may be done at this point.
+.IP "\fBraptor_iostream* raptor_serializer_get_iostream(raptor_serializer *\fIserializer\fP)\fR"
+Return a pointer to the raptor_iostream* used by the serializer.
+.SH "SERIALIZER UTILITY METHODS"
+.IP "\fBvoid raptor_serializer_set_error_handler(raptor_serializer* \fIserializer\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
+Set the serializer non-fatal error handler callback.
+.IP "\fBvoid raptor_serializer_set_warning_handler(raptor_serializer* \fIserializer\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
+Set the serializer warning message handler callback.
+.IP "\fBraptor_locator* raptor_serializer_get_locator(raptor_serializer* \fIrdf_serializer\fB)\fR"
+Return the current raptor_locator object for the serializer.
+This is a public structure defined in raptor.h that can be
+used directly, or formatted via raptor_print_locator.
+.SH "SERIALIZER UTILITY FUNCTIONS"
+.IP "\fBint raptor_serializers_enumerate(const unsigned \fIint counter\fB, const char **\fIname\fB, const char **\fIlabel\fB, const char **\fImime_type\fB, const unsigned char **\fIuri_string\fB)\fR"
+Return the serializer name/label for a serializer with a given integer
+counter, returning non-zero if no such parser at that offset
+exists.  The counter should start from 0 and be incremented by 1
+until the function returns non-zero.
+.IP "\fBint raptor_serializer_syntax_name_check(const char *\fIname\fB)\fR"
+Check \fIname\fP is a known serializer syntax name.
 .SH "URI CLASS"
 Raptor has a raptor_uri class must be used for manipulating and
 passing URI references.  The default internal implementation
@@ -721,7 +787,63 @@ Return the stringbuffer as a single string.  The string is shared and
 should be copied if needed.
 .IP "\fBsize_t raptor_stringbuffer_length(raptor_stringbuffer* \fIstringbuffer\fP)\fR"
 Return the length of the stringbuffer.
+.IP "\fBint raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer, unsigned char *string, size_t length)\fR"
+Copy the stringbuffer into a single string buffer \fIstring\fP of
+size \fIlength\fP.  Returns non-0 on failure.
+.SH "IOSTREAM CLASS"
+This class provides an I/O stream that can write to filenames, FILE*,
+strings and user-defined output via callbacks.
+.SH "IOSTREAM CONSTRUCTOR"
+.IP "\fBraptor_iostream* raptor_new_iostream_from_handler(void *\fIcontext\fB, raptor_iostream_handler *\fIhandler\fB)\fR"
+Create a new raptor iostream from a user-defined
+raptor_iostream_handler \fIhandler\fP that is called with the
+passed-in \fIcontext\fP for the write operations.
+.IP "\fBraptor_iostream* raptor_new_iostream_to_sink(void)\fR"
+Create a new raptor iostream that discards all written output.
+.IP "\fBraptor_iostream* raptor_new_iostream_to_filename(const char *\fIfilename\fB)\fR"
+Create a new raptor iostream that creates and writes to a new file
+\fIfilename\fP.
+.IP "\fBraptor_iostream* raptor_new_iostream_to_file_handle(FILE *\fIhandle\fB)\fR"
+Create a new raptor iostream that creates and writes to an existing,
+already opened, C Standard I/O handle FILE* \fIhandle\fP.
+.IP "\fBraptor_iostream* raptor_new_iostream_to_string(void **\fIstring_p\fB, size_t *\fIlength_p\fB, void *(*\fImalloc_handler\fB)(size_t size))\fR"
+Create a new raptor iostream which creates a new string
+once raptor_free_iostream is called.  The new string pointer
+is written in \fIstring\fP, the length in \fIlength_p\fP (if not
+NULL) and the memory allocation is made using the
+\fImalloc_handler\fP, or if NULL, raptor's default memory allocator.
+.SH "IOSTREAM DESTRUCTOR"
+.IP "\fBvoid raptor_free_iostream(raptor_iostream *\fIiostr\fB)\fR"
+Destroy a Raptor iostream object.
+.SH "IOSTREAM METHODS"
+.IP "\fBint raptor_iostream_write_bytes(raptor_iostream *\fIiostr\fB, const void *\fIptr\fB, size_t \fIsize\fB, size_t \fInmemb\fB)\fR"
+Write a counted set of elements to an iostream. \Inmemb\fP is the
+count of elements of size \fIsize\fP, starting at memory \fIptr\fP.
+Similar to fwrite(3) and write(2).
+.IP "\fBint raptor_iostream_write_byte(raptor_iostream *\fIiostr\fB, const int \fIbyte\fB)\fR"
+Write a single \fIbyte\fP an iostream.  Similar to fputc(3).
+.IP "\fBvoid raptor_iostream_write_end(raptor_iostream *\fIiostr\fB)\fR"
+Finish writing to an iostream.
+.IP "\fBint raptor_iostream_write_string(raptor_iostream *\fIiostr\fB, const void *\fIstring\fB)\fR"
+Write a NUL-terminated \fIstring\fP to an iostream.  Similar to fputs(3).
+.IP "\fBint raptor_iostream_write_counted_string(raptor_iostream *\fIiostr\fB, const void *\fIstring\fB, size_t \fIlen\fB)\fR"
+Write a \fIstring\fP of length \fIlen\fP to an iostream.
+.IP "\fBsize_t raptor_iostream_get_bytes_written_count(raptor_iostream *\fIiostr\fB)\fR"
+Return the number of bytes written so far to the iostream.
+.IP "\fBint raptor_iostream_write_decimal(raptor_iostream *\fIiostr\fB, int \fIinteger\fB)\fR"
+Write a decimal formatted integer \fIinteger\fP to the iostream.
+.IP "\fBint raptor_iostream_format_hexadecimal(raptor_iostream *\fIiostr\fB, unsigned int \fIinteger\fB, int \fIwidth\fB)\fR"
+Write a hexadecimal formatted unsigned \fIinteger\fP to the iostream,
+left-padded with '0's to \fIwidth\fR columns.
 .SH API CHANGES
+.SS 1.4.0
+Added new \fBraptor_serializer\fR class supporting RDF/XML (name
+\fBrdfxml\fP) and N-Triples (name \fBntriples\fP).
+.br
+Added new \fBraptor_iostram\fR class
+.br
+Added \fBraptor_stringbuffer_copy_to_string\fR to allow efficient
+copy-out of a constructed string.
 .SS 1.3.3
 Added \fBraptor_calloc_memory\fR to provide a calloc inside raptor.
 .br
