@@ -1,10 +1,10 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_serialize_xmlrdf.c - Serializers
+ * raptor_serialize_xmlrdf.c - RDF/XML abbreviations serializer
  *
  * $Id$
  *
- * Copyright (C) 2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  *
@@ -50,6 +50,13 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
+
+/*
+ * FIXME Duplicate code
+ *
+ * Parts of this is taken from redland librdf_node.h and librdf_node.c
+ */
+
 #define MAX_ASCII_INT_SIZE 13
 
 typedef struct {
@@ -79,6 +86,7 @@ typedef struct {
   
 } raptor_node;
 
+
 typedef struct {
   raptor_node *node;             /* node representing the subject of
                                   * this resource */
@@ -89,6 +97,7 @@ typedef struct {
   raptor_sequence *list_items;   /* list of container elements if
                                   * is rdf container */
 } raptor_subject;
+
   
 /*
  * Raptor rdfxml-abbrev serializer object
@@ -104,6 +113,7 @@ typedef struct {
   raptor_sequence *nodes;               /* nodes */
   raptor_node *rdf_type;                /* rdf:type uri */
 } raptor_rdfxmla_context;
+
 
 /* prototypes for functions */
 static unsigned char *raptor_unique_id(unsigned char *base);
@@ -183,9 +193,9 @@ static void raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* f
 /* static vars */
 static int raptor_namespace_count = 0;
 
-/******************************************************************************
- * misc helper function implementations                                       *
- ******************************************************************************/
+
+/* helper functions */
+
 static unsigned char *
 raptor_unique_id(unsigned char *base) 
 {
@@ -210,8 +220,10 @@ raptor_unique_id(unsigned char *base)
     
 }
 
-raptor_qname *
-raptor_new_qname_from_resource(raptor_serializer* serializer, raptor_node *node)
+
+static raptor_qname *
+raptor_new_qname_from_resource(raptor_serializer* serializer,
+                               raptor_node *node)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   unsigned char* name=NULL;  /* where to split predicate name */
@@ -224,7 +236,7 @@ raptor_new_qname_from_resource(raptor_serializer* serializer, raptor_node *node)
   raptor_namespace *ns;
   raptor_qname *qname;
   
-  if (node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+  if(node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
     RAPTOR_FATAL1("Node must be a resource\n");
     return NULL;
   }
@@ -260,7 +272,8 @@ raptor_new_qname_from_resource(raptor_serializer* serializer, raptor_node *node)
 
     /* We'll most likely need this namespace again. Push it on our
      * stack.  It will be deleted in
-     * raptor_rdfxmla_serialize_terminate */
+     * raptor_rdfxmla_serialize_terminate
+     */
     raptor_sequence_push(context->namespaces, ns);
   }
 
@@ -270,6 +283,7 @@ raptor_new_qname_from_resource(raptor_serializer* serializer, raptor_node *node)
 
   return qname;
 }
+
 
 static int
 raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
@@ -281,11 +295,11 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   unsigned char *attr_name;
   unsigned char *attr_value;
   
-  if (node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+  if(node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE)
     return 1;
 
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
-  if (!attrs)
+  if(!attrs)
     return 1;
     
   attr_name = (unsigned char *)"resource";
@@ -297,7 +311,8 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
     attr_value = raptor_uri_as_string(node->value.resource.uri);
 
   attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
-                                                        attr_name,  attr_value);
+                                                        attr_name, 
+                                                        attr_value);
       
   RAPTOR_FREE(cstring, attr_value);
 
@@ -310,6 +325,7 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   
 }
 
+
 static int
 raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
                             raptor_xml_element *element, raptor_node *node)
@@ -319,17 +335,17 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
   raptor_qname **attrs;
   int attrs_count;
   
-  if (node->type != RAPTOR_IDENTIFIER_TYPE_LITERAL)
+  if(node->type != RAPTOR_IDENTIFIER_TYPE_LITERAL)
     return 1;
   
-  if (node->value.literal.language || node->value.literal.datatype) {
+  if(node->value.literal.language || node->value.literal.datatype) {
           
     attrs_count = 0;
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray,2,sizeof(raptor_qname *));
-    if (!attrs)
+    if(!attrs)
       return 1;
 
-    if (node->value.literal.language) {
+    if(node->value.literal.language) {
       attrs[attrs_count++] = raptor_new_qname(context->nstack,
                                               (unsigned char*)"xml:lang",
                                               (unsigned char*)node->value.literal.language,
@@ -337,7 +353,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
                                               serializer);
     }
 
-    if (node->value.literal.datatype) {
+    if(node->value.literal.datatype) {
       unsigned char *datatype_value;
       datatype_value = raptor_uri_as_string(node->value.literal.datatype);
       attrs[attrs_count++] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace, "datatype",
@@ -368,11 +384,11 @@ raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
   raptor_xml_writer *xml_writer = context->xml_writer;
   raptor_qname **attrs;
   
-  if (node->type != RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
+  if(node->type != RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
     return 1;
   
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
-  if (!attrs)
+  if(!attrs)
     return 1;
   
   attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
@@ -387,16 +403,17 @@ raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
   
 }
 
+
 static int
 raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
                           raptor_xml_element *element, raptor_node *node) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
 
-  if (node->type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+  if(node->type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     return 1;
   
-  if (node->ref_count == 3) {
+  if(node->ref_count == 3) {
     /* If ref_count == 3, we know that this subject is only one
      * that refers to the blank resource. It holds one reference
      * because it is the subject of a statement, one because it
@@ -410,7 +427,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
     blank = raptor_rdfxmla_find_subject(context->blanks, node->type,
                                         node->value.blank.string, &idx);
           
-    if (blank) {
+    if(blank) {
       raptor_rdfxmla_emit_subject(serializer, blank);
       raptor_sequence_set_at(context->blanks, idx, NULL);
     }
@@ -421,7 +438,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
     raptor_qname **attrs;
 
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray,1,sizeof(raptor_qname *));
-    if (!attrs)
+    if(!attrs)
       return 1;
 
     attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
@@ -441,13 +458,14 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
 
 }
 
+
 static int
 raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
                                        raptor_subject *subject)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   int rv = 0;
-  int i = 0;
+  int i=0;
   
   while (!rv && i < raptor_sequence_size(subject->list_items)) {
 
@@ -456,7 +474,7 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
     raptor_xml_element *element;
     
     object = (raptor_node *)raptor_sequence_get_at(subject->list_items, i++);
-    if (!object)
+    if(!object)
       continue;
     
     qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
@@ -504,12 +522,13 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   int rv = 0;  
-
+  int i;
+  
   /* Emit any container props we've collected */
-  if (raptor_sequence_size(subject->list_items) > 0)
+  if(raptor_sequence_size(subject->list_items) > 0)
     rv = raptor_rdfxmla_emit_subject_list_items(serializer, subject);
 
-  int i = 0;
+  i=0;
   while (!rv && i < raptor_sequence_size(subject->properties)) {
 
     raptor_node *predicate;
@@ -520,7 +539,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
     predicate = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
     object = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
     
-    if (predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
       /* we should only get here in rare cases -- usually when there
        * are multiple ordinals with the same value. */
 
@@ -531,9 +550,8 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
       qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                          uri_string, NULL);
       
-    } else {
+    } else
       qname = raptor_new_qname_from_resource(serializer, predicate);
-    }
     
     element = raptor_new_xml_element(qname, NULL,
                                      raptor_uri_copy(serializer->base_uri));
@@ -568,6 +586,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   return rv;
 }
 
+
 static int
 raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
                             raptor_subject *subject) 
@@ -579,33 +598,33 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   unsigned char *attr_name;
   unsigned char *attr_value;
   
-  if (subject->node_type) { /* if rdf:type was associated with this subject */
+  if(subject->node_type) { /* if rdf:type was associated with this subject */
     qname = raptor_new_qname_from_resource(serializer, subject->node_type);
     
-    if (!qname) {
+    if(!qname) {
       raptor_serializer_error(serializer,
                               "Cannot split URI %s into an XML qname",
                               raptor_uri_as_string(subject->node_type->value.resource.uri));
       return 1;
     }
     
-  } else {
+  } else
     qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                        (unsigned const char*)"Description",  NULL);
-  }
     
+
   element = raptor_new_xml_element(qname, NULL,
                                    raptor_uri_copy(serializer->base_uri));
     
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
-  if (!attrs)
+  if(!attrs)
     return 1;
     
   attr_name = NULL;
   attr_value = NULL;
     
   /* emit the subject node */
-  if (subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+  if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
     attr_name = "about";
     if(serializer->feature_relative_uris)
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
@@ -613,8 +632,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     else
       attr_value = raptor_uri_as_string(subject->node->value.resource.uri);
     
-  } else if (subject->node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    if (subject->node->ref_count != 2 &&
+  } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    if(subject->node->ref_count != 2 &&
         subject->node->ref_count != 3) {
       /* If ref_count == 2, we know that this is a top-level
        * node. There is one reference because it is the subject of a
@@ -625,7 +644,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
       attr_name = "nodeID";
       attr_value = raptor_unique_id(subject->node->value.blank.string);
     }
-  } else if (subject->node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+  } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     attr_name = "about";
     attr_value = (unsigned char *)RAPTOR_MALLOC(string,
                                                 raptor_rdf_namespace_uri_len + MAX_ASCII_INT_SIZE + 2);
@@ -633,7 +652,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
             subject->node->value.ordinal.ordinal);
   } 
     
-  if (attr_name) {
+  if(attr_name) {
     attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                           attr_name,
                                                           attr_value);
@@ -655,8 +674,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   raptor_free_xml_element(element);
     
   return 0;
-    
 }
+
 
 static int
 raptor_rdfxmla_emit(raptor_serializer *serializer)
@@ -666,11 +685,11 @@ raptor_rdfxmla_emit(raptor_serializer *serializer)
   raptor_subject *blank;
   int i;
   
-  for (i = 0; i < raptor_sequence_size(context->subjects); i++) {
+  for(i=0; i < raptor_sequence_size(context->subjects); i++) {
   
     subject = (raptor_subject *)raptor_sequence_get_at(context->subjects, i);
   
-    if (subject) {
+    if(subject) {
       raptor_rdfxmla_emit_subject(serializer, subject);
       /*raptor_sequence_set_at(context->subjects, i, NULL); */
     }
@@ -678,21 +697,20 @@ raptor_rdfxmla_emit(raptor_serializer *serializer)
   }
     
   /* Emit any remaining anonymous nodes */
-  for (i = 0; i < raptor_sequence_size(context->blanks); i++) {
+  for(i=0; i < raptor_sequence_size(context->blanks); i++) {
     blank = (raptor_subject *)raptor_sequence_get_at(context->blanks, i);
-    if (blank) {
+    if(blank)
       raptor_rdfxmla_emit_subject(serializer, blank);
-    }
-  
   }
     
   return 0;
     
 }
 
-/*******************************************************************************
- * raptor_node implementation                                                  *
- *******************************************************************************/
+
+/*****************************************************************************
+ * raptor_node implementation                                                *
+ *****************************************************************************/
 
 static raptor_node *
 raptor_new_node(raptor_identifier_type node_type, const void *node_data,
@@ -701,12 +719,12 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
   unsigned char *string;
   raptor_node* node;
   
-  if (node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
+  if(node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
     return 0;
 
   node = (raptor_node *)RAPTOR_CALLOC(raptor_node, 1, sizeof(raptor_node));
 
-  if (node) {
+  if(node) {
 
     node->type = node_type;
     
@@ -739,7 +757,7 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
             node->value.literal.datatype = raptor_uri_copy(datatype);
           }
 
-          if (language) {
+          if(language) {
             unsigned char *lang;
             lang =(char*)RAPTOR_MALLOC(language,
                                        strlen((const char*)language)+1);
@@ -762,12 +780,12 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
 static void
 raptor_free_node(raptor_node *node)
 {
-  if (!node)
+  if(!node)
     return;
 
   node->ref_count--;
   
-  if (node->ref_count > 0)
+  if(node->ref_count > 0)
     return;
   
   switch (node->type) {
@@ -787,7 +805,7 @@ raptor_free_node(raptor_node *node)
         if(node->value.literal.datatype)
           raptor_free_uri(node->value.literal.datatype);
 
-        if (node->value.literal.language)
+        if(node->value.literal.language)
           RAPTOR_FREE(language, node->value.literal.language);
 
         break;
@@ -808,7 +826,7 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
 {
   int rv = 0;  
 
-  if (node1->type != node2->type)
+  if(node1->type != node2->type)
     return 0;
 
   switch (node1->type) {
@@ -825,7 +843,7 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
       case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
 
-        if ((char *)node1->value.literal.string != NULL &&
+        if((char *)node1->value.literal.string != NULL &&
             (char *)node2->value.literal.string != NULL) {
 
           // string
@@ -833,21 +851,21 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
                        (char *)node2->value.literal.string) == 0);
 
           // language
-          if ((char *)node1->value.literal.language != NULL &&
+          if((char *)node1->value.literal.language != NULL &&
               (char *)node2->value.literal.language != NULL) {
             rv &= (strcmp((char *)node1->value.literal.language,
                           (char *)node2->value.literal.language) == 0);
-          } else if ((char *)node1->value.literal.language != NULL ||
+          } else if((char *)node1->value.literal.language != NULL ||
                      (char *)node2->value.literal.language != NULL) {
             rv = 0;
           }
 
           // datatype
-          if (node1->value.literal.datatype != NULL &&
+          if(node1->value.literal.datatype != NULL &&
               node2->value.literal.datatype != NULL) {
             rv &= (raptor_uri_equals(node1->value.literal.datatype,
                                      node2->value.literal.datatype) != 0);
-          } else if (node1->value.literal.datatype != NULL ||
+          } else if(node1->value.literal.datatype != NULL ||
                      node2->value.literal.datatype != NULL) {
             rv = 0;
           }
@@ -873,6 +891,7 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
   
 }
 
+
 static int
 raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
                     const void *node_data, raptor_uri *datatype,
@@ -880,7 +899,7 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
 {
   int rv = 0;
   
-  if (node->type != node_type)
+  if(node->type != node_type)
     return 0;
 
   switch (node->type) {
@@ -897,7 +916,7 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
       case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
 
-        if ((char *)node->value.literal.string != NULL &&
+        if((char *)node->value.literal.string != NULL &&
             (char *)node_data != NULL) {
 
           // string
@@ -905,20 +924,20 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
                        (char *)node_data) == 0);
 
           // language
-          if ((char *)node->value.literal.language != NULL &&
+          if((char *)node->value.literal.language != NULL &&
               (char *)language != NULL) {
 
             rv &= (strcmp((char *)node->value.literal.language,
                           (char *)language) == 0);
-          } else if ((char *)node->value.literal.language != NULL ||
+          } else if((char *)node->value.literal.language != NULL ||
                      (char *)language != NULL) {
             rv = 0;
           }
 
           // datatype
-          if (node->value.literal.datatype != NULL && datatype != NULL) {
+          if(node->value.literal.datatype != NULL && datatype != NULL) {
             rv &= (raptor_uri_equals(node->value.literal.datatype,datatype) !=0);
-          } else if (node->value.literal.datatype != NULL || datatype != NULL) {
+          } else if(node->value.literal.datatype != NULL || datatype != NULL) {
             rv = 0;
           }
           
@@ -942,16 +961,17 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
   return rv;
 }
 
-/******************************************************************************
- * raptor_subject implementation                                              *
- ******************************************************************************/
+
+/*****************************************************************************
+ * raptor_subject implementation                                             *
+ *****************************************************************************/
 
 static raptor_subject *
 raptor_new_subject(raptor_node *node)
 {
   raptor_subject *subject;
   
-  if (!(node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+  if(!(node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
         node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
         node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
     RAPTOR_FATAL1("Subject node must be a resource, blank, or ordinal\n");
@@ -961,7 +981,7 @@ raptor_new_subject(raptor_node *node)
   subject = (raptor_subject *)RAPTOR_CALLOC(raptor_subject, 1,
                                             sizeof(raptor_subject));
 
-  if (subject) {
+  if(subject) {
     subject->node = node;
     subject->node->ref_count++;
     
@@ -971,7 +991,7 @@ raptor_new_subject(raptor_node *node)
     subject->list_items =
       raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_node, NULL);
 
-    if (subject->node == NULL ||
+    if(subject->node == NULL ||
         subject->properties == NULL ||
         subject->list_items == NULL) {
       raptor_free_subject(subject);
@@ -984,21 +1004,22 @@ raptor_new_subject(raptor_node *node)
 
 }
 
+
 static void
 raptor_free_subject(raptor_subject *subject) 
 {
-  if (subject) {
+  if(subject) {
 
-    if (subject->node)
+    if(subject->node)
       raptor_free_node(subject->node);
     
-    if (subject->node_type)
+    if(subject->node_type)
       raptor_free_node(subject->node_type);
     
-    if (subject->properties)
+    if(subject->properties)
       raptor_free_sequence(subject->properties);
 
-    if (subject->list_items)
+    if(subject->list_items)
       raptor_free_sequence(subject->list_items);
 
     RAPTOR_FREE(raptor_subject, subject);
@@ -1006,6 +1027,7 @@ raptor_free_subject(raptor_subject *subject)
   }
   
 }
+
 
 static int
 raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate,
@@ -1015,12 +1037,12 @@ raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate,
   int err;
   
   err = raptor_sequence_push(subject->properties, predicate);
-  if (err) {
+  if(err) {
     return err;
   }
   
   err = raptor_sequence_push(subject->properties, object);
-  if (err) {
+  if(err) {
     raptor_sequence_pop(subject->properties);
     return err;
   }
@@ -1032,6 +1054,7 @@ raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate,
   
 }
 
+
 static int
 raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
                                 raptor_node *object)
@@ -1039,11 +1062,11 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
   int rv = 1;
   
   raptor_node *node =  raptor_sequence_get_at(subject->list_items, ordinal);
-  if (!node) {
+  if(!node) {
     /* If there isn't already an entry */
     rv = raptor_sequence_set_at(subject->list_items, ordinal, object);
 
-    if (!rv)
+    if(!rv)
       object->ref_count++;
 
   } else {
@@ -1053,6 +1076,7 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
   return rv;
   
 }
+
 
 #ifdef RDFXMLA_DEBUG
 static void
@@ -1072,7 +1096,7 @@ raptor_print_subject(raptor_subject *subject)
   subj = raptor_statement_part_as_string(subject->node->value.resource.uri,
                                          subject->node->type, NULL, NULL);
 
-  if (subject->type) {
+  if(subject->type) {
       obj=raptor_statement_part_as_string(subject->type->value.resource.uri,
                                           subject->type->type,
                                           subject->type->value.literal.datatype,
@@ -1081,10 +1105,10 @@ raptor_print_subject(raptor_subject *subject)
       RAPTOR_FREE(cstring, obj);
   }
   
-  for (i = 0; i < raptor_sequence_size(subject->elements); i++) {
+  for(i=0; i < raptor_sequence_size(subject->elements); i++) {
 
     raptor_node *o = raptor_sequence_get_at(subject->elements, i);
-    if (o) {
+    if(o) {
       obj = raptor_statement_part_as_string(o->value.literal.string,
                                             o->type,
                                             o->value.literal.datatype,
@@ -1095,13 +1119,13 @@ raptor_print_subject(raptor_subject *subject)
     
   }
 
-  i = 0;
+  i=0;
   while (i < raptor_sequence_size(subject->properties)) {
 
     raptor_node *p = raptor_sequence_get_at(subject->properties, i++);
     raptor_node *o = raptor_sequence_get_at(subject->properties, i++);
 
-    if (p && o) {
+    if(p && o) {
       pred = raptor_statement_part_as_string(p->value.resource.uri, p->type,
                                              NULL, NULL);
       obj = raptor_statement_part_as_string(o->value.literal.string,
@@ -1135,21 +1159,21 @@ raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
   
   /* Search for specified node in array. TODO: this should really be a
    * hash, not a list. */
-  for (i = 0; i < raptor_sequence_size(context->nodes); i++) {
+  for(i=0; i < raptor_sequence_size(context->nodes); i++) {
     raptor_node *node = (raptor_node*)raptor_sequence_get_at(context->nodes, i);
 
-    if (raptor_node_matches(node, node_type, node_value, datatype, language)) {
+    if(raptor_node_matches(node, node_type, node_value, datatype, language)) {
       rv_node = node;
       break;
     }
   }
   
   /* If not found, create one and insert it */
-  if (!rv_node) {
+  if(!rv_node) {
     rv_node = raptor_new_node(node_type, node_value, datatype, language);
     
-    if (rv_node) {
-      if (raptor_sequence_push(context->nodes, rv_node) == 0) {
+    if(rv_node) {
+      if(raptor_sequence_push(context->nodes, rv_node) == 0) {
         rv_node->ref_count++;
       } else {
         raptor_free_node(rv_node);
@@ -1172,22 +1196,23 @@ raptor_rdfxmla_find_subject(raptor_sequence *sequence,
   raptor_subject *rv_subject = 0;
   int i;
   
-  for (i = 0; i < raptor_sequence_size(sequence); i++) {
+  for(i=0; i < raptor_sequence_size(sequence); i++) {
     raptor_subject *subject=(raptor_subject*)raptor_sequence_get_at(sequence, i);
 
-    if (subject && raptor_node_matches(subject->node, node_type, node_data, 0, 0)) {
+    if(subject && raptor_node_matches(subject->node, node_type, node_data, 0, 0)) {
       rv_subject = subject;
       break;
     }
     
   }
 
-  if (idx)
+  if(idx)
     *idx = i;
   
   return rv_subject;
   
 }
+
 
 static raptor_subject *
 raptor_rdfxmla_lookup_subject(raptor_rdfxmla_context* context,
@@ -1203,13 +1228,13 @@ raptor_rdfxmla_lookup_subject(raptor_rdfxmla_context* context,
                                                            node_data, NULL);
 
   /* If not found, create one and insert it */
-  if (!rv_subject) {
+  if(!rv_subject) {
     raptor_node *node = raptor_rdfxmla_lookup_node(context, node_type,
                                                    node_data, NULL, NULL);
-    if (node) {      
+    if(node) {      
       rv_subject = raptor_new_subject(node);
-      if (rv_subject) {
-        if (raptor_sequence_push(sequence, rv_subject)) {
+      if(rv_subject) {
+        if(raptor_sequence_push(sequence, rv_subject)) {
           raptor_free_subject(rv_subject);
           rv_subject = NULL;
         }      
@@ -1252,13 +1277,13 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_node, NULL);
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
-  if (rdf_type_uri) {    
+  if(rdf_type_uri) {    
     context->rdf_type = raptor_new_node(RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                         rdf_type_uri, NULL, NULL);
     raptor_free_uri(rdf_type_uri);
   }
   
-  if (context->nstack == NULL || context->rdf_nspace == NULL ||
+  if(context->nstack == NULL || context->rdf_nspace == NULL ||
       context->namespaces == NULL || context->subjects == NULL ||
       context->blanks == NULL || context->nodes == NULL ||
       context->rdf_type == NULL) {
@@ -1297,19 +1322,19 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
     raptor_free_sequence(context->namespaces);
   }
 
-  if (context->subjects)
+  if(context->subjects)
     raptor_free_sequence(context->subjects);
   
-  if (context->blanks)
+  if(context->blanks)
     raptor_free_sequence(context->blanks);
   
-  if (context->nodes)
+  if(context->nodes)
     raptor_free_sequence(context->nodes);
   
   if(context->nstack)
     raptor_free_namespaces(context->nstack);
 
-  if (context->rdf_type)
+  if(context->rdf_type)
     raptor_free_node(context->rdf_type);
   
 }
@@ -1354,7 +1379,7 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
                                    raptor_serializer_simple_error,
                                    serializer,
                                    1);
-  if (!xml_writer)
+  if(!xml_writer)
     return 1;
 
   raptor_xml_writer_set_feature(xml_writer,RAPTOR_FEATURE_WRITER_AUTO_INDENT,1);
@@ -1383,6 +1408,7 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
   return 0;
 }
 
+
 /* serialize a statement */
 static int
 raptor_rdfxmla_serialize_statement(raptor_serializer* serializer, 
@@ -1394,13 +1420,13 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   raptor_node *object = 0;
   int rv;
   
-  if (statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
       statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
       statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     subject = raptor_rdfxmla_lookup_subject(context, statement->subject_type,
                                             statement->subject);
-    if (!subject)
+    if(!subject)
       return 1;
 
   } else {
@@ -1408,7 +1434,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     return 1;
   }  
   
-  if (statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
       statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
       statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
       statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
@@ -1418,7 +1444,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                                         statement->object,
                                         statement->object_literal_datatype,
                                         statement->object_literal_language);
-    if (!object)
+    if(!object)
       return 1;          
     
   } else {
@@ -1426,11 +1452,11 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     return 1;
   }
 
-  if (statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) {
+  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) {
     predicate = raptor_rdfxmla_lookup_node(context, statement->predicate_type,
                                            statement->predicate, NULL, NULL);
 
-    if (subject->node_type == NULL &&
+    if(subject->node_type == NULL &&
         raptor_node_equals(predicate, context->rdf_type)) {
 
       /* Store the first one as the type for abbreviation 2.14
@@ -1446,7 +1472,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     
     } else {    
       rv = raptor_subject_add_property(subject, predicate, object);
-      if (rv) {
+      if(rv) {
         raptor_serializer_error(serializer,
                                 "Unable to add properties to subject 0x%x\n",
                                 subject);
@@ -1454,23 +1480,23 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       
     }
   
-  } else if (statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+  } else if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     int idx = *(int*)statement->predicate;
     rv = raptor_subject_add_list_element(subject, idx, object);
-    if (rv != 0) {
+    if(rv != 0) {
       /* An ordinal might already exist at that location, the fallback
        * is to just put in the properties list */
       predicate = raptor_rdfxmla_lookup_node(context, statement->predicate_type,
                                              statement->predicate, NULL, NULL);
       rv = raptor_subject_add_property(subject, predicate, object);
-      if (rv) {
+      if(rv) {
         raptor_serializer_error(serializer,
                                 "Unable to add properties to subject 0x%x\n",
                                 subject);
       }
     }
 
-    if (rv != 0)
+    if(rv != 0)
       return rv;
     
   } else {
@@ -1483,6 +1509,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   return 0;
 
 }
+
 
 /* end a serialize */
 static int
@@ -1511,8 +1538,9 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
 static void
 raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* factory)
 {
-
+  /* NOP */
 }
+
 
 static void
 raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
@@ -1527,6 +1555,7 @@ raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
   factory->serialize_end       = raptor_rdfxmla_serialize_end;
   factory->finish_factory      = raptor_rdfxmla_serialize_finish_factory;
 }
+
 
 void
 raptor_init_serializer_rdfxmla(void)
