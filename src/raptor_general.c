@@ -627,9 +627,14 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
 
   if(!base_uri)
     base_uri=uri;
-
-  if((mime_type=raptor_get_mime_type(rdf_parser)))
-    raptor_www_set_http_accept(www, mime_type);
+ 
+  if((mime_type=raptor_get_mime_type(rdf_parser))) {
+    char *accept_h=(char*)RAPTOR_MALLOC(cstring, strlen(mime_type)+6);
+    strcpy(accept_h, mime_type);
+    strcat(accept_h, " ;*/*"); /* strlen()=5 chars */
+    raptor_www_set_http_accept(www, accept_h);
+    RAPTOR_FREE(cstring, accept_h);
+  }
   
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
                                      rdf_parser);
