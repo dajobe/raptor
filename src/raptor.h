@@ -209,6 +209,7 @@ RAPTOR_API void raptor_set_default_generate_id_parameters(raptor_parser* rdf_par
 
 /* Parsing functions */
 RAPTOR_API int raptor_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
+RAPTOR_API int raptor_parse_file_stream(raptor_parser* rdf_parser, FILE *stream, const char *filename, raptor_uri *base_uri);
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API int raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API int raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
