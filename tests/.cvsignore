@@ -4,3 +4,4 @@
 Makefile
 Makefile.in
 *.out
+raptor_empty_test
