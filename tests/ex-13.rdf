@@ -4,7 +4,7 @@
          xmlns:enc="http://somewhere.example.com/">
    <!-- Check this doesn't crash anymore - parseType="Resource" -->
 
-   <!-- Should generate 3 statements as described in ex-13.nt -->
+   <!-- Should generate 3 statements as described in ex-13.out -->
 
 <rdf:Description rdf:about="http://www.w3.org/">
    <play:xml-cannonicalized rdf:parseType="Resource">
