@@ -156,7 +156,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
       unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
         if(error_handler)
-          error_handler(error_data, NULL, "Bad UTF-8 encoding.");
+          error_handler(error_data, "Bad UTF-8 encoding.");
         return 0;
       }
     } else {
