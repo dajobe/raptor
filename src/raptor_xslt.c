@@ -171,6 +171,7 @@ main(int argc, char* argv[])
 /*  const char *xslt_filename=NULL;*/
   const char *xml_filename=NULL;
   raptor_uri *base_uri=NULL;
+  int base_uri_alloced=0;
   
   raptor_init();
 
@@ -220,10 +221,12 @@ main(int argc, char* argv[])
   else {
     unsigned char *uri_string=raptor_uri_filename_to_uri_string(xml_filename);
     base_uri=raptor_new_uri(uri_string);
+    raptor_free_memory(uri_string);
+    base_uri_alloced=1;
   }
   
-  fprintf(stderr, "Handling filename %s base URI %s\n",
-          xml_filename, raptor_uri_as_string(base_uri));
+  fprintf(stderr, "%s: Handling XML file '%s' with base URI %s\n",
+          program, xml_filename, raptor_uri_as_string(base_uri));
   
 
   xmlParserCtxtPtr ctxt=NULL; /* an XML parser context */
@@ -297,7 +300,7 @@ main(int argc, char* argv[])
     goto cleanup;
   }
   
-  fprintf(stderr, "Found GRDDL in document\n");
+  fprintf(stderr, "%s: Found GRDDL in document\n", program);
   
   for(i=0; i < xmlXPathNodeSetGetLength(nodes); i++) {
     xmlNodePtr node=nodes->nodeTab[i];
@@ -307,12 +310,12 @@ main(int argc, char* argv[])
       continue;
     }
 
-    xmlNode* children=node->children;
+    const unsigned char* uri_string=(const unsigned char*)node->children->content;
     
-    raptor_uri* uri=raptor_new_uri_relative_to_base(base_uri, (const unsigned char*)children->content);
+    raptor_uri* uri=raptor_new_uri_relative_to_base(base_uri, uri_string);
     
-    fprintf(stderr, "Running GRDDL transform with URI '%s'\n",
-            raptor_uri_as_string(uri));
+    fprintf(stderr, "%s: Running GRDDL transform with URI '%s'\n",
+            program, raptor_uri_as_string(uri));
     
     
     /* make an xsltStylesheetPtr */
@@ -342,10 +345,27 @@ main(int argc, char* argv[])
     res = xsltApplyStylesheet(sheet, doc, params);
     
     /* write the resulting XML to a file */
-    xsltSaveResultToFile(stdout, res, sheet);
+    /* xsltSaveResultToFile(stdout, res, sheet); */
+
+    /* write the resulting XML to a string */
+    xmlChar *doc_txt_ptr=NULL;
+    int doc_txt_len;
+    xsltSaveResultToString(&doc_txt_ptr, &doc_txt_len, 
+                           res, sheet);
+ 
+    fprintf(stderr, "%s: XSLT gave %d bytes XML result\n", 
+            program, doc_txt_len);
     
-    xsltFreeStylesheet(sheet);
+    if(doc_txt_ptr)    
+      xmlFree(doc_txt_ptr);
+
     xmlFreeDoc(res);
+
+    xsltFreeStylesheet(sheet);
+
+    xmlFreeParserCtxt(xslt_ctxt); 
+
+    raptor_free_uri(uri);
   }
   
 
@@ -371,7 +391,8 @@ main(int argc, char* argv[])
     fclose(fh);
   if(xpathCtx)
     xmlXPathFreeContext(xpathCtx); 
-
+  if(base_uri_alloced)
+    raptor_free_uri(base_uri);
 
   raptor_xslt_finish();
   
