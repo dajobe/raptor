@@ -1,4 +1,4 @@
-f/* -*- Mode: c; c-basic-offset: 2 -*-
+/* -*- Mode: c; c-basic-offset: 2 -*-
  *
  * raptor_xml.c - Raptor XML routines
  *
@@ -102,25 +102,35 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 
 
 /**
- * raptor_xml_escape_string - return an XML-escaped version of the current string
- * @string: string to XML escape
+ * raptor_xml_escape_string - return an XML-escaped version a string
+ * @string: string to XML escape (UTF-8)
  * @len: length of string
- * @buffer: the buffer to use
+ * @buffer: the buffer to use for new string (UTF-8)
  * @length: buffer size
- * @quote: optional quote character to escape, or 0
+ * @quote: optional quote character to escape for attribute content, or 0
  * 
- * Replaces each &, < and > with &amp; &lt; &gt; respectively
- * and turns characters 0x7e to 0xff inclusive into the 
- * escaped &#nnn form.
+ * Follows Canonical XML rules on Text Nodes and Attribute Nodes
+ *   http://www.w3.org/TR/xml-c14n#ProcessingModel
+ *
+ * Both:
+ *   Replaces & and < with &amp; and &lt; respectively, preserving other
+ *   characters.
+ * 
+ * Text Nodes:
+ *   > is turned into &gt; #xD is turned into &#xD;
+ *
+ * Attribute Nodes:
+ *   > is generated not &gt.  #x9, #xA and #xD are turned into
+ *   &#x9; &#xA; and &#xD; entities.
  *
  * If quote is given it can be either of '\'' or '\"'
  * which will be turned into &apos; or &quot; respectively.
  * ASCII NUL ('\0') or any other character will not be escaped.
  * 
  * If buffer is NULL, no work is done but the size of buffer
- * required is returned.
+ * required is returned.  The output in buffer remains in UTF-8.
  *
- * Return value: the number of bytes written or 0 on failure.
+ * Return value: the number of bytes required / used or 0 on failure.
  **/
 size_t
 raptor_xml_escape_string(raptor_parser *rdf_parser, 
@@ -152,30 +162,19 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
   
     if(unichar == '&')
       /* &amp; */
-      new_len+=5;
-    else if(unichar == '<' || unichar == '>')
+      new_len+= 5;
+    else if(unichar == '<' || (!quote && unichar == '>'))
       /* &lt; or &gt; */
-      new_len+=4;
+      new_len+= 4;
     else if (quote && unichar == quote)
       /* &apos; or &quot; */
       new_len+= 6;
-    else if (unichar == 0x09 || unichar == 0x0d || unichar == 0x0a)
-      /* XML whitespace excluding 0x20, since next condition skips it */
-      new_len++;
-    else if (unichar < 0x20 || unichar > 0x7e) {
-      /* &#xXX; (0/0x00 to 255/0xff) */
-      new_len += 6;
-      if(unichar > 0xff)
-        /* &#xXXXX; */
-        new_len+=2;
-      if(unichar > 0xffff)
-        /* &#xXXXXX; */
-        new_len++;
-      if(unichar > 0xfffff)
-        /* &#xXXXXXX; */
-        new_len++;
-    } else
-      new_len++;
+    else if (unichar == 0x0d ||
+             (quote && (unichar == 0x09 || unichar == 0x0a)))
+      /* &#xD; or &#x9; or &xA; */
+      new_len+= 5;
+    else
+      new_len+= unichar_len;
 
     unichar_len--; /* since loop does len-- */
     p += unichar_len; l -= unichar_len;
@@ -201,7 +200,7 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
     } else if (unichar == '<') {
       strncpy(q, "&lt;", 4);
       q+= 4;
-    } else if (unichar == '>') {
+    } else if (!quote && unichar == '>') {
       strncpy(q, "&gt;", 4);
       q+= 4;
     } else if (quote && unichar == quote) {
@@ -210,29 +209,21 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
       else
         strncpy(q, "&quot;", 6);
       q+= 6;
-    } else if (unichar == 0x09 || unichar == 0x0d || unichar == 0x0a)
-      /* XML whitespace excluding 0x20, since next condition skips it */
-      *q++ = unichar;
-    else if (unichar < 0x20 || unichar > 0x7e) {
-      if(unichar < 0x100) {
-        /* &#xXX; */
-        sprintf(q, "&#x%02lX;", unichar);
-        q+= 6;
-      } else if (unichar < 0x10000) {
-        /* &#xXXXX; */
-        sprintf(q, "&#x%04lX;", unichar);
-        q+= 8;
-      } else if (unichar < 0x100000) {
-        /* &#xXXXXX; */
-        sprintf(q, "&#x%05lX;", unichar);
-        q+= 9;
-      } else {
-        /* &#xXXXXXX; */
-        sprintf(q, "&#x%06lX;", unichar);
-        q+= 10;
-      }
-    } else
-      *q++ = unichar;
+    } else if (unichar == 0x0d ||
+               (quote && (unichar == 0x09 || unichar == 0x0a))) {
+      /* &#xX; */
+      *q++='&';
+      *q++='#';
+      *q++='x';
+      if(unichar == 0x09)
+        *q++ = '9';
+      else
+        *q++ = 'A'+unichar-0x0a;
+      *q++= ';';
+    } else {
+      strncpy(q, p, unichar_len);
+      q+= unichar_len;
+    }
 
     unichar_len--; /* since loop does len-- */
     p += unichar_len; l -= unichar_len;
@@ -243,3 +234,124 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
 
   return new_len;
 }
+
+
+
+
+
+#ifdef STANDALONE
+
+/* static prototypes */
+void raptor_bad_string_print(const unsigned char *input, FILE *stream);
+int main(int argc, char *argv[]);
+
+void
+raptor_bad_string_print(const unsigned char *input, FILE *stream)
+{
+  while(*input) {
+    char c=*input;
+    if(isprint(c))
+      fputc(c, stream);
+    else
+      fprintf(stream, "\\x%02X", (c & 0xff));
+    input++;
+  }
+}
+
+
+int
+main(int argc, char *argv[]) 
+{
+  char *program=argv[0];
+  struct tv {
+    const unsigned char *string;
+    const char quote;
+    const unsigned char *result;
+  };
+  struct tv *t;
+  struct tv test_values[]={
+    {"&", 0, "&amp;"},
+    {"<", 0, "&lt;"},
+    {">", 0, "&gt;"},
+    {"\x09", 0, "\x09"},
+    {"\x0a", 0, "\x0a"},
+    {"\x0d", 0, "&#xD;"},
+
+    {"'&'",  '\'', "&apos;&amp;&apos;"},
+    {"'<'",  '\'', "&apos;&lt;&apos;"},
+    {"'>'",  '\'', "&apos;>&apos;"},
+    {"\x09", '\'', "&#x9;"},
+    {"\x0a", '\'', "&#xA;"},
+    {"\x0d", '\'', "&#xD;"},
+
+    {"\"&\"", '\"', "&quot;&amp;&quot;"},
+    {"\"<\"", '\"', "&quot;&lt;&quot;"},
+    {"\">\"", '\"', "&quot;>&quot;"},
+    {"\x09",  '\"', "&#x9;"},
+    {"\x0a",  '\"', "&#xA;"},
+    {"\x0d",  '\"', "&#xD;"},
+
+    {"&amp;", 0, "&amp;amp;"},
+    {"<foo>", 0, "&lt;foo&gt;"},
+#if 0
+    {"\x1f", 0, "&#x1F;"},
+    {"\xc2\x80", 0, "&#x80;"},
+    {"\xe0\xa0\x80", 0, "&#x0800;"},
+    {"\xf0\x90\x80\x80", 0, "&#x10000;"},
+
+    {"\x7f", 0, "&#x7F;"},
+    {"\xdf\xbf", 0, "&#x07FF;"},
+    {"\xef\xbf\xbd", 0, "&#xFFFD;"},
+    {"\xf4\x8f\xbf\xbf", 0, "&#x10FFFF;"},
+
+    {"\xc3\xbf", 0, "&#xFF;"},
+    {"\xf0\x8f\xbf\xbf", 0, "&#xFFFF;"},
+#endif
+    {NULL, 0, 0}
+  };
+  int i;
+  int failures=0;
+
+  for(i=0; (t=&test_values[i]) && t->string; i++) {
+    const unsigned char *utf8_string=t->string;
+    int quote=t->quote;
+    size_t utf8_string_len=strlen(utf8_string);
+    unsigned char *xml_string;
+    int xml_string_len=0;
+
+    xml_string_len=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
+                                            NULL, 0, quote);
+    xml_string=(char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
+    
+    xml_string_len=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
+                                            xml_string, xml_string_len, quote);
+    if(!xml_string) {
+      fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
+              program);
+      raptor_bad_string_print(utf8_string, stderr);
+      fputs("'\n", stderr);
+      failures++;
+      continue;
+    }
+    if(strcmp(xml_string, t->result)) {
+      fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
+              program);
+      raptor_bad_string_print(utf8_string, stderr);
+      fprintf(stderr, "', expected '%s', result was '%s'\n",
+              t->result, xml_string);
+      failures++;
+      continue;
+    }
+    
+    fprintf(stderr, "%s: raptor_xml_escape_string escaped string to '%s' ok\n",
+            program, xml_string);
+    RAPTOR_FREE(cstring, xml_string);
+  }
+
+  if(!failures)
+    fprintf(stderr, "%s: raptor_xml_escape_string all tests OK\n", program);
+
+  return failures;
+}
+
+#endif
