@@ -268,7 +268,7 @@ if test $need_expat = 1; then
   fi
 
   AC_MSG_CHECKING(for XML_SetNamespaceDeclHandler in expat)
-  AC_TRY_RUN([main() {XML_SetNamespaceDeclHandler();}], worked=yes, worked=no, worked=no)
+  AC_TRY_RUN([main() {XML_SetNamespaceDeclHandler(); return(0);}], worked=yes, worked=no, worked=no)
   if test $worked = yes; then
     AC_DEFINE(HAVE_XML_SetNamespaceDeclHandler)
     AC_MSG_RESULT(yes)
