@@ -852,7 +852,6 @@ raptor_xml_start_element_handler(void *user_data,
        * OR
        *  2 We are not handling RDF content and 
        *    this element is at the top level (top level Desc. / typedNode)
-       *    FIXME  - is this correct!
        * then handle the RDF attributes
        */
       if ((rdf_xml_parser->sax2->current_element &&
