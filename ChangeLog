@@ -1,3 +1,16 @@
+2005-03-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_lexer.l, turtle_lexer.l: Tidy to use .|\n to match any char
+
+	* n3_lexer.l, turtle_lexer.l: Added """long literals"""
+	Use yyterminate() to end on errors
+
+	* tests/turtle/bad-14.ttl, tests/turtle/test-17.ttl,
+	tests/turtle/test-17.out: long literals
+
+	* tests/turtle/Makefile.am:
+	Added test-17.ttl bad-14.ttl for long literals
+
 2005-03-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_serialize_rdfxmla.c (raptor_new_qname_from_resource):
