@@ -378,7 +378,7 @@ raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
 
 /**
  * raptor_start_parse: Start a parse of content with base URI
- * @rdf_parser: 
+ * @rdf_parser: RDF parser
  * @uri: base URI or NULL if no base URI is required
  * 
  * Only the N-Triples parser has an optional base URI.
@@ -404,6 +404,18 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
 
 
 
+/**
+ * raptor_parse_chunk - Parse a block of content into triples
+ * @rdf_parser: RDF parser
+ * @buffer: content to parse
+ * @len: length of buffer
+ * @is_end: non-0 if this is the end of the content (such as EOF)
+ * 
+ * This method can only be called after raptor_start_parse has
+ * initialised the parser.
+ * 
+ * Return value: non-0 on failure.
+ **/
 int
 raptor_parse_chunk(raptor_parser* rdf_parser,
                    const unsigned char *buffer, size_t len, int is_end) 
