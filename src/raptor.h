@@ -29,6 +29,10 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
 #ifdef WIN32
   #ifdef RAPTOR_INTERNAL
     #define RAPTOR_API _declspec(dllexport)
