@@ -372,7 +372,7 @@ static int raptor_rss_common_initialised=0;
 static void
 raptor_rss_common_init(void) {
   int i;
-  if(raptor_rss_common_initialised++ > 1)
+  if(raptor_rss_common_initialised++)
     return;
   
   for(i=0; i<RSS_NAMESPACES_SIZE;i++) {
@@ -469,7 +469,8 @@ raptor_item_free(raptor_rss_item* item) {
   }
   if(item->enclosure) 
     raptor_enclosure_free(item->enclosure);
-  /* don't free node_type - it is always a shared pointer to a URI */
+  if(item->uri)
+    raptor_free_uri(item->uri);
   raptor_free_identifier(&item->identifier);
 }
 
@@ -1398,8 +1399,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
 
   raptor_rss_context_terminate(&rss_serializer->parser);
-  /* called by above */
-  /* raptor_rss_common_terminate(); */
+  raptor_rss_common_terminate();
 
   if(rss_serializer->triples)
     raptor_free_sequence(rss_serializer->triples);
@@ -1434,7 +1434,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
                       (char*)s->predicate,
                       (char*)raptor_rss_fields_info[field].uri);
 */
-        if(s->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+        if(s->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE &&
            raptor_uri_equals((raptor_uri*)s->predicate,
                              raptor_rss_fields_info[field].uri)) {
           /* found field this triple to go in 'item' so move the
@@ -1455,7 +1455,6 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       
       if(field < RAPTOR_RSS_FIELDS_SIZE) {
         raptor_sequence_set_at(rss_serializer->triples, t, NULL);
-        raptor_free_statement(s);
         handled=1;
       } else
         RAPTOR_DEBUG4("UNKNOWN property URI <%s> for typed node %i - %s\n",
@@ -1478,7 +1477,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   raptor_rss_item *item=NULL;
   int type;
   int handled=0;
-  
+
   for(type=0; type< RAPTOR_RSS_COMMON_SIZE; type++) {
     raptor_uri *item_uri=(&rss_parser->common[type])->uri;
     if(item_uri && 
@@ -1497,7 +1496,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
                     (char*)s->predicate,
                     (char*)raptor_rss_fields_info[field].uri);
 */    
-      if(s->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+      if(s->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE &&
          raptor_uri_equals((raptor_uri*)s->predicate,
                            raptor_rss_fields_info[field].uri)) {
         /* found field this triple to go in 'item' so move the
@@ -1581,28 +1580,23 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   }
 
   if(!handled) {
-    raptor_statement *t;
-    int i;
-    raptor_rss_type type=RAPTOR_RSS_NONE;
-
-    t=raptor_statement_copy(statement);
+    raptor_statement *t=raptor_statement_copy(statement);
 
     /* outside RDF land we don't need to distinguish URIs and blank nodes */
-    t->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-    if(t->object_type==RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    if(t->subject_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+      unsigned char *blank=(unsigned char*)t->subject;
+      t->subject=raptor_new_uri(blank);
+      t->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+      RAPTOR_FREE(cstring, blank);
+    }
+    if(t->object_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+      unsigned char *blank=(unsigned char*)t->subject;
+      t->object=raptor_new_uri(t->object);
       t->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-
-    for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-      raptor_rss_item* item=&rss_parser->common[i];
-      if(item->uri && raptor_uri_equals((raptor_uri*)t->subject, item->uri)) {
-        type=i;
-        RAPTOR_DEBUG3("Found statement for typed node %i - %s\n", type, raptor_rss_types_info[type].name);
-        break;
-      }
+      RAPTOR_FREE(cstring, blank);
     }
 
-    if(type != RAPTOR_RSS_NONE)
-      raptor_rss10_store_statement(rss_serializer, t);
+    raptor_rss10_store_statement(rss_serializer, t);
 
   }
   return 0;
