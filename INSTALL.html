@@ -62,11 +62,11 @@ dependency checking.  It requires an XML parser - either libxml2
 optionally use libcurl, libxml2 for retrieving URIs.</p>
 
 <p>Raptor is developed and built on x86 GNU/Linux
-(Redhat Fedora Core 2, Debian unstable) but is also regularly tested on
-sparc Sun Solaris 2.x, x86 FreeBSD 4.8, ppc Apple OSX 10.2 
+(Redhat Fedora Core 3, Debian unstable) but is also regularly tested on
+sparc Sun Solaris 2.x, x86 FreeBSD 4.10, ppc Apple OSX 10.3 
 and as part of Redland on several other systems via the 
 <a href="http://sourceforge.net/">SourceForge</a> compile farm
-(typically AMD IA64 SuSE 8 Linux 2.4, Alpha Debian Linux 2.2).</p>
+(typically AMD64, Alpha, Solaris x86, OpenBSD, NetBSD).</p>
 
 
 <h3><a id="sec-create-configure" name="sec-create-configure"></a>2.1. Create <code>configure</code> program</h3>
@@ -97,6 +97,13 @@ version 1.7), autoconf 2.59 (minimum version 2.54) and libtool 1.5.4
 sources.  autogen.sh enforces the requirements.  In future
 development will move to require automake 1.8, autoconf 2.58 and
 libtool 1.5.</p>
+
+<p>Raptor also requires
+<a href="http://lex.sourceforge.net/">flex</a> version 2.5.31 or newer
+(2.5.4 will not work) and
+<a href="http://www.gnu.org/software/bison/bison.html">GNU Bison</a>
+to build lexers and parsers.
+These are only required when building from CVS.</p>
 
 
 <h3>2.2 Options for <tt>configure</tt></h3>
@@ -160,6 +167,10 @@ libxml 2.6.8 (Redhat Fedora Core 2),
 libxml 2.6.9 (FreeBSD 4.10-STABLE)
 </p>
 <p>libxml1 is not supported.</p>
+
+<p>The libxml2 on Apple OSX 10.3.X is quite broken - the headers do
+not match the libraries.  Install your own to get something
+coherent.</p>
 </dd>
 
 <dt><tt>--with-www=NAME</tt><br /></dt>
@@ -255,9 +266,6 @@ They are in the <code>examples</code> sub-directory and can be built with:</p>
 
    # Raptor GUI - only if you have the GTK libraries
    make grapper
-
-   # Raptor parser abort test program
-   make raptor_abort
 
    # If you have all requirements
    make examples
