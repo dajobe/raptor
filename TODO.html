@@ -11,12 +11,10 @@
 <h2>Bugs and Features</h2>
 
 <ul>
-<li>Docs: describe in libraptor.3 raptor's use of UTF-8 for strings,
-URIs.  Maybe also describe some relevant raptor.h structures.</li>
+<li>Describe in libraptor.3 raptor's use of UTF-8 for strings,
+URIs.  Maybe also describe some relevant raptor.h structures (DOCS)</li>
 <li>Send an Accept: header with WWW requests, corresponding
 to the mime types accepted.  Plus others at lower q then guess? (FEATURE)</li>
-<li>Guess mime type/parser from a content fragment and/or
-content name (could be a filename or URI) (FEATURE)</li>
 <li>RSS tag soup parser junks/overwrites element content if it is
 delivered in chunks rather than as one big CDATA, such as when
 libxml2 sees entities, it emits the content in bits (BUG)</li>
@@ -39,6 +37,8 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Guess parser from a mime type, content fragment and/or
+content name such as a filename or URI (1.3.0)</li>
 <li>Turtle parser: use <code>raptor_generate_id</code> for blank node identifiers (1.3.0)</li>
 <li>Added <code>--enable-xml-1-1-names</code> to enable XML 1.1 name checking instead of XML 1.0 (1.1.0)</li>
 <li>Updated <a href="http://www.w3.org/TR/xml11/">XML 1.1</a> name checking for ranges in the XML/Namespaces in XML 1.1 proposed recommendations (1.1.0)</li>
