@@ -115,7 +115,8 @@ typedef enum {
   RAPTOR_FEATURE_ALLOW_BAGID,
   RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST,
   RAPTOR_FEATURE_NORMALIZE_LANGUAGE,
-  RAPTOR_FEATURE_NON_NFC_FATAL
+  RAPTOR_FEATURE_NON_NFC_FATAL,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_NON_NFC_FATAL
 } raptor_feature;
 
 
@@ -237,7 +238,10 @@ RAPTOR_API int raptor_format_locator(char *buffer, size_t length, raptor_locator
  
 RAPTOR_API const char* raptor_get_name(raptor_parser *rdf_parser);
 RAPTOR_API const char* raptor_get_label(raptor_parser *rdf_parser);
-RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+
+RAPTOR_API int raptor_features_enumerate(const unsigned int feature, const char **name, raptor_uri **uri, const char **label);
+RAPTOR_API int raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+RAPTOR_API int raptor_get_feature(raptor_parser *parser, raptor_feature feature);
 RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
 /* URI functions */
