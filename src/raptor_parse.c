@@ -2227,11 +2227,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
 #endif
 
 
-#ifdef RAPTOR_URI_AS_FILENAME
-  filename=RAPTOR_URI_AS_FILENAME(uri);
-#else
   filename=RAPTOR_URI_TO_FILENAME(uri);
-#endif
   if(!filename)
     return 1;
 
@@ -2244,9 +2240,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
 #ifdef RAPTOR_XML_EXPAT
     XML_ParserFree(xp);
 #endif /* EXPAT */
-#ifdef RAPTOR_URI_TO_FILENAME
     LIBRDF_FREE(cstring, (void*)filename);
-#endif
     return 1;
   }
 

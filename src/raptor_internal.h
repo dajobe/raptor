@@ -41,8 +41,7 @@ extern "C" {
 
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
 #define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
-#define RAPTOR_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
-#undef RAPTOR_URI_TO_FILENAME
+#define RAPTOR_URI_TO_FILENAME(uri) (librdf_uri_to_filename(uri))
 #define RAPTOR_FREE_URI(uri) librdf_free_uri(uri)
 #else
 /* else standalone */
@@ -53,7 +52,6 @@ extern "C" {
 
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
 #define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
-#undef RAPTOR_URI_AS_FILENAME
 #define RAPTOR_URI_TO_FILENAME(uri) (raptor_uri_uri_string_to_filename(uri))
 #define RAPTOR_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
 

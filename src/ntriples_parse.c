@@ -1054,11 +1054,7 @@ raptor_ntriples_parse_file(raptor_ntriples_parser* parser, raptor_uri *uri,
   locator->column=0;
   locator->byte=0;
 
-#ifdef RAPTOR_URI_AS_FILENAME
-  filename=RAPTOR_URI_AS_FILENAME(uri);
-#else
   filename=RAPTOR_URI_TO_FILENAME(uri);
-#endif
   if(!filename)
     return 1;
 
@@ -1068,9 +1064,7 @@ raptor_ntriples_parse_file(raptor_ntriples_parser* parser, raptor_uri *uri,
   fh=fopen(filename, "r");
   if(!fh) {
     raptor_ntriples_parser_error(parser, "file open failed - %s", strerror(errno));
-#ifdef RAPTOR_URI_TO_FILENAME
     LIBRDF_FREE(cstring, (void*)filename);
-#endif
     return 0;
   }
 
