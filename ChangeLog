@@ -1,3 +1,12 @@
+2005-02-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* examples/Makefile.am: Add gconf-2.0 to grapper args
+
+2005-02-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* examples/grapper.c: Added gconf storing of window width/height
+	at namespace /apps/grapper
+
 2005-02-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* win32_raptor_config.h: Define RASQAL_INLINE to __inline
