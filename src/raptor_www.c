@@ -123,7 +123,7 @@ raptor_www_finish(void)
 raptor_www *
 raptor_www_new_with_connection(void *connection)
 {
-  raptor_www *www=(raptor_www *)RAPTOR_CALLOC(www, sizeof(raptor_www), 1);
+  raptor_www *www=(raptor_www *)RAPTOR_CALLOC(www, 1, sizeof(raptor_www));
   if(!www)
     return NULL;
   
@@ -316,6 +316,8 @@ raptor_www_get_connection(raptor_www *www)
 #ifdef RAPTOR_WWW_LIBFETCH
   return NULL;
 #endif
+
+  return NULL;
 }
 
 
@@ -445,4 +447,6 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 #endif
 
 #endif
+
+  return 1; /* Default to failed */
 }
