@@ -52,8 +52,6 @@ extern int errno;
 #include <rdf_statement.h>
 #include <rdf_uri.h>
 
-typedef librdf_uri raptor_uri;
-
 #else
 /* else standalone */
 
@@ -85,8 +83,6 @@ typedef librdf_uri raptor_uri;
 #define LIBRDF_FATAL2(function, msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function, arg); abort();} while(0)
 
 
-
-typedef const char raptor_uri;
 
 #endif
 
@@ -655,23 +651,6 @@ static void raptor_end_element_grammar(raptor_parser *parser, raptor_element *el
 /* prototype for statement related functions */
 static void raptor_generate_statement(raptor_parser *rdf_parser, const void *subject, const raptor_subject_type subject_type, const raptor_uri_source subject_uri_source, const void *predicate, const raptor_predicate_type predicate_type, const raptor_uri_source predicate_uri_source, const void *object, const raptor_object_type object_type, const raptor_uri_source object_uri_source, raptor_uri *bag);
 static void raptor_print_statement_detailed(const raptor_statement *statement, int detailed, FILE *stream);
-
-
-#ifdef LIBRDF_INTERNAL
-#define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
-#define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
-#define RAPTOR_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
-#undef RAPTOR_URI_TO_FILENAME
-#define RAPTOR_FREE_URI(uri) librdf_free_uri(uri)
-#else
-#define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
-#define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
-#undef RAPTOR_URI_AS_FILENAME
-#define RAPTOR_URI_TO_FILENAME(uri) (raptor_file_uri_to_filename(uri))
-#define RAPTOR_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
-#endif
-
-
 
 
 /*
@@ -2298,7 +2277,7 @@ raptor_print_locator(FILE *stream, raptor_locator* locator)
     return;
   if(locator->line) {
     fprintf(stream, ":%d", locator->line);
-    if(locator->column)
+    if(locator->column >= 0)
       fprintf(stream, " column %d", locator->column);
   }
 }
@@ -2535,7 +2514,7 @@ raptor_make_uri_from_id(raptor_uri *base_uri, const char *id)
 }
 
 
-static raptor_uri*
+raptor_uri*
 raptor_make_uri(raptor_uri *base_uri, const char *uri_string) 
 {
 #ifdef LIBRDF_INTERNAL
@@ -2607,7 +2586,7 @@ raptor_make_uri(raptor_uri *base_uri, const char *uri_string)
 }
 
 
-static raptor_uri*
+raptor_uri*
 raptor_copy_uri(raptor_uri *uri) 
 {
 #ifdef LIBRDF_INTERNAL
