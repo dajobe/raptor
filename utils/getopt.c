@@ -40,7 +40,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <getopt.h>
+#include <raptor_getopt.h>
 
 int raptor_opterr;		/* error => print message */
 int raptor_optind;		/* next argv[] index */
