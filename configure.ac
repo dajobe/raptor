@@ -611,6 +611,12 @@ else
   AC_MSG_RESULT(not met - no libxml2 with XMLReader)
 fi
 
+AC_MSG_CHECKING(XML names version)
+AC_ARG_WITH(xml-names, [  --with-xml-names=1.1|1.0  Select XML version name checking (default 1.0)], xml_names="$withval", xml_names="1.0")
+if test $xml_names = 1.1; then
+  AC_DEFINE(RAPTOR_XML_1_1, 1, [Check XML 1.1 Names])
+fi
+AC_MSG_RESULT($xml_names)
 
 
 have_libcurl=0
