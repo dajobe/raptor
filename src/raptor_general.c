@@ -3685,7 +3685,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          * (Need to check for identifier so that top-level typed nodes
          * don't get connect to <rdf:RDF> parent element)
          */
-        if(state != RAPTOR_STATE_DESCRIPTION && 
+        if(state == RAPTOR_STATE_TYPED_NODE && 
            element->parent &&
            (element->parent->subject.uri || element->parent->subject.id))
           raptor_generate_statement(rdf_parser, 
@@ -3695,6 +3695,26 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                     element->parent->subject.uri_source,
 
                                     element->parent->name->uri,
+                                    NULL,
+                                    RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                    RAPTOR_URI_SOURCE_ELEMENT,
+
+                                    element->subject.uri,
+                                    element->subject.id,
+                                    element->subject.type,
+                                    element->subject.uri_source,
+
+                                    NULL);
+        else if(state == RAPTOR_STATE_PARSETYPE_RESOURCE && 
+           element->parent &&
+           (element->parent->subject.uri || element->parent->subject.id))
+          raptor_generate_statement(rdf_parser, 
+                                    element->parent->subject.uri,
+                                    element->parent->subject.id,
+                                    element->parent->subject.type,
+                                    element->parent->subject.uri_source,
+
+                                    element->name->uri,
                                     NULL,
                                     RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                     RAPTOR_URI_SOURCE_ELEMENT,
