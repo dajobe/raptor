@@ -276,6 +276,8 @@ RAPTOR_API unsigned char* raptor_ntriples_string_as_utf8_string(raptor_parser* r
 RAPTOR_API const char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
 RAPTOR_API size_t raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data);
 
+RAPTOR_API char* raptor_vsnprintf(const char *message, va_list arguments);
+
 /* raptor_xml_writer.c */
 /* NOT PUBLIC YET - SEE raptor_internal.h */
 
