@@ -1,6 +1,0 @@
-# N3/cwm oddity
-@prefix : <http://example.org/base1#> .
-@prefix a: <http://example.org/base2#> .
-a:a a:b .
-# same as
-a:a a :b .
