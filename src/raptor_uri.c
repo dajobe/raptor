@@ -646,8 +646,8 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   }
 
 
-  *filename='\0';
 #ifdef WIN32
+  *filename='\0';
   if(authority) {
     /* p was set above to ':' in authority */
     if(!p)
@@ -675,7 +675,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   }
   *to='\0';
 #else
-  strcat(filename, path);
+  strcpy(filename, path);
 #endif
 
 
