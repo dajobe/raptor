@@ -1,11 +1,31 @@
 2004-11-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
-	* raptor_rss.c (raptor_rss_parser_processNode):
-	Add cast for name when returned from
-	xmlTextReaderConstLocalName.
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement): use
+	feature feature_relative_uris to decide when to emit an absolute
+	or relative URI, the latter using
+	raptor_uri_to_relative_uri_string.
 
-	* raptor_rss.c (raptor_rss_parser_processNode):
-	Always declare name as xmlChar*
+	* raptor_uri.c: Added raptor relative URI generating code patch
+	from René Puls
+	(raptor_uri_path_common_base_length): Added. Helper to return the
+	common base length of two paths
+	(raptor_uri_path_make_relative_path): Added. Helper to build the
+	result relative URI string from already analysed parts.
+	(raptor_uri_to_relative_counted_uri_string): Added. Get the
+	relative URI string between a base and reference URI.
+	(raptor_uri_to_relative_uri_string): Added.  Wrapper about the above.
+	(assert_uri_to_relative): Added.  Helper for tests for above.
+	(main): Added relative URI string generation tests.
+
+	* raptor.h: Added prototypes for
+	raptor_uri_to_relative_counted_uri_string and
+	raptor_uri_to_relative_uri_string
+
+	* raptor_rss.c (raptor_rss_parser_processNode): Add cast for name
+	when returned from xmlTextReaderConstLocalName.
+
+	* raptor_rss.c (raptor_rss_parser_processNode): Always declare
+	name as xmlChar*
 
 2004-11-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
