@@ -323,7 +323,7 @@ struct raptor_parser_factory_s {
   int (*chunk)(raptor_parser* parser, const unsigned char *buffer, size_t len, int is_end);
 
   /* finish the parser factory */
-  int (*finish_factory)(raptor_parser_factory* factory);
+  void (*finish_factory)(raptor_parser_factory* factory);
 
 };
 
