@@ -93,7 +93,11 @@ typedef enum { RAPIER_OBJECT_TYPE_RESOURCE, RAPIER_OBJECT_TYPE_LITERAL, RAPIER_O
   
 
 typedef struct {
+#ifdef LIBRDF_INTERNAL
+  librdf_uri *uri;
+#else
   const char *uri;
+#endif
   const char *file;
   int line;
   int column;
@@ -147,7 +151,7 @@ void rapier_print_statement(const rapier_statement * const statement, FILE *stre
 
 /* Parsing functions */
 #ifdef LIBRDF_INTERNAL
-int rapier_parse_file(rapier_parser* rdf_parser,  const char *filename, librdf_uri *base_uri);
+int rapier_parse_file(rapier_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
 #else
 int rapier_parse_file(rapier_parser* rdf_parser,  const char *filename, const char *base_uri);
 #endif
