@@ -40,7 +40,7 @@ bad-19.rdf bad-20.rdf bad-21.rdf
 RDF_BAD_NFC_TEST_FILES=bad-15.rdf bad-16.rdf bad-17.rdf
 
 RDF_WARN_TEST_FILES=warn-00.rdf warn-02.rdf warn-04.rdf \
-warn-05.rdf warn-06.rdf \
+warn-05.rdf warn-06.rdf warn-07.rdf \
 $(RDF_BAGID_TEST_FILES)
 
 RDF_WARN_NFC_TEST_FILES=warn-03.rdf
@@ -61,7 +61,7 @@ ex-48.out ex-49.out ex-50.out ex-51.out ex-53.out \
 owl-schema.out daml-oil.out wine.out
 
 RDF_WARN_OUT_FILES=warn-00.out warn-02.out warn-03.out warn-04.out \
-warn-05.out warn-06.out
+warn-05.out warn-06.out warn-07.out
 
 RDF_ASSUME_OUT_FILES=ex-19.out
 
@@ -251,7 +251,12 @@ check-warn-rdf: $(top_builddir)/rapper $(RDF_WARN_TEST_FILES)
 	    $(ECHO) "FAILED - parsing failed when should have warned"; \
 	    cat $$name.res; grep Error $$name.err; result=1; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) "ok"; \
+	    if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	      $(ECHO) "ok"; \
+	    else \
+	      $(ECHO) "FAILED"; \
+	      diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    fi; \
 	  else \
 	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
@@ -273,7 +278,12 @@ check-warn-nfc-rdf: $(top_builddir)/rapper $(RDF_WARN_NFC_TEST_FILES)
 	    $(ECHO) "FAILED - parsing failed when should have warned"; \
 	    cat $$name.res; grep Error $$name.err; result=1; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) "ok"; \
+	    if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	      $(ECHO) "ok"; \
+	    else \
+	      $(ECHO) "FAILED"; \
+	      diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    fi; \
 	  else \
 	    $(ECHO) "FAILED - parsing succeed but should have warned (NFC test)"; \
 	    cat $$name.res; result=0; \
