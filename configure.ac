@@ -403,44 +403,8 @@ if test "X$CURL_CONFIG" = "X"; then
 fi
 
 
-AC_ARG_WITH(pkg-config, [  --with-pkg-config=PATH Location of GNOME pkg-config []], pkg_config="$withval", pkg_config="")
-
-if test "X$pkg_config" != "X" ; then
-  AC_MSG_CHECKING(for $pkg_config)
-
-  if test -f $pkg_config ; then
-    PKG_CONFIG=$pkg_config
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no - searching PATH)
-  fi
-fi
-if test "X$PKG_CONFIG" = "X"; then
-  AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
-fi
-
 oLIBS="$LIBS"
-if test "X$PKG_CONFIG" != X; then
-  AC_MSG_CHECKING(for gnome glib 2.0 library)
-  if `$PKG_CONFIG glib-2.0 --exists 2>/dev/null`; then
-    AC_MSG_RESULT(yes)
-    LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
-    AC_CHECK_FUNC(g_utf8_normalize)
-    LIBS="$oLIBS"
-    AC_MSG_CHECKING(for NFC checking with g_utf8_normalize)
-    if test "$ac_cv_func_g_utf8_normalize" = yes; then
-      AC_DEFINE([HAVE_G_UTF8_NORMALIZE], 1, [Have glib 2.0 g_utf8_normalize])
-      AC_MSG_RESULT(yes)
-    else
-      AC_MSG_RESULT(no)
-    fi
-  else
-    AC_MSG_RESULT(no)
-  fi
-fi
 
-
-need_glib2=0
 AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check     turn off Unicode NFC checking (default=auto).  ], nfc_check="$enableval", nfc_check="auto")	
 AC_MSG_CHECKING(using Unicode NFC checking)
 if test "X$ac_cv_func_g_utf8_normalize" = Xyes; then
@@ -453,7 +417,6 @@ fi
 AC_MSG_RESULT($nfc_check);
 if test $nfc_check = yes; then
   AC_DEFINE([RAPTOR_NFC_CHECK], 1, [Provide a Unicode NFC check])
-  need_glib2=1
 fi
 
 
@@ -854,11 +817,6 @@ if test $need_expat = 1; then
   else
     LIBS="$LIBS $expat_libs"
   fi
-fi
-
-if test $need_glib2 = 1; then
-  CPPFLAGS="$CPPFLAGS `$PKG_CONFIG glib-2.0 --cflags`"
-  LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
 fi
 
 RAPTOR_LIBTOOLLIBS=libraptor.la
