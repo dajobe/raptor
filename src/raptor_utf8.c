@@ -194,37 +194,25 @@ raptor_utf8_to_unicode_char(unsigned long *output,
 }
 
 
-#undef RAPTOR_XML_1_1
-
-#ifndef RAPTOR_XML_1_1  
 static int raptor_unicode_is_letter(long c);
 static int raptor_unicode_is_basechar(long c);
 static int raptor_unicode_is_ideographic(long c);
 static int raptor_unicode_is_combiningchar(long c);
 static int raptor_unicode_is_digit(long c);
 static int raptor_unicode_is_extender(long c);
-#endif
 
 
-/**
- * raptor_unicode_is_namestartchar - Check if Unicode character is legal to start an XML Namespace Name 
- * @c: Unicode character to check
- * 
- * Return value: non-0 if the character is legal
- **/
 int
-raptor_unicode_is_namestartchar(long c) 
-{
-#ifdef RAPTOR_XML_1_1
-  /* Namespaces in XML 1.1 PR
-   *   http://www.w3.org/TR/2003/PR-xml-names11-20031105/#NT-NCNameStartChar
+raptor_unicode_is_xml11_namestartchar(long c) {
+  /* Namespaces in XML 1.1 REC 2004-02-04
+   *   http://www.w3.org/TR/2004/REC-xml11-20040204/#NT-NameStartChar
    * updating
-   *   Extensible Markup Language (XML) 1.1 PR
-   *   http://www.w3.org/TR/2003/PR-xml11-20031105/#NT-NameStartChar
+   *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
+   *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
    * excluding the ':'
    */
   return (((c >= 0x0041)  && (c <= 0x005A)) || /* [A-Z] */
-          (c == 0x005F) ||                    /* '_' */
+          (c == 0x005F) ||                     /* '_' */
           ((c >= 0x0061)  && (c <= 0x007A)) || /* [a-z] */
           ((c >= 0x00C0)  && (c <= 0x00D6)) ||
           ((c >= 0x00D8)  && (c <= 0x00F6)) ||
@@ -238,17 +226,74 @@ raptor_unicode_is_namestartchar(long c)
           ((c >= 0xF900)  && (c <= 0xFDCF)) ||
           ((c >= 0xFDF0)  && (c <= 0xFFFD)) ||
           ((c >= 0x10000) && (c <= 0xEFFFF)));
-#else
-  /* Namespaces in XML REC
+}
+
+
+int
+raptor_unicode_is_xml10_namestartchar(long c) {
+  /* Namespaces in XML REC 1999-01-14
    *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
    * updating
-   *   Extensible Markup Language (XML) 1.0 (Second Edition) REC
-   *   http://www.w3.org/TR/2000/REC-xml-20001006#NT-Name
+   *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
+   *   http://www.w3.org/TR/2004/REC-xml-20040204/
    * excluding the ':'
    */
   return (raptor_unicode_is_letter(c) ||
           (c == '_'));
+}
+
+
+/**
+ * raptor_unicode_is_namestartchar - Check if Unicode character is legal to start an XML Namespace Name 
+ * @c: Unicode character to check
+ * 
+ * Return value: non-0 if the character is legal
+ **/
+int
+raptor_unicode_is_namestartchar(long c) {
+#ifdef RAPTOR_XML_1_1
+   return raptor_unicode_is_xml11_namestartchar(c);
+#else
+   return raptor_unicode_is_xml10_namestartchar(c);
 #endif
+}
+
+
+int
+raptor_unicode_is_xml11_namechar(long c) {
+  /* Namespaces in XML 1.1 REC 2004-02-04
+   *   http://www.w3.org/TR/2004/REC-xml11-20040204/
+   * updating
+   *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
+   *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
+   * excluding the ':'
+   */
+  return (raptor_unicode_is_namestartchar(c) ||
+          (c == 0x002D) || /* '-' */
+          (c == 0x002E) || /* '.' */
+          (c >= 0x0030 && c <= 0x0039) || /* 0-9 */
+          (c == 0x00B7) ||
+          (c >= 0x0300 && c <=0x036F) ||
+          (c >= 0x203F && c <=0x2040));
+}
+
+
+int
+raptor_unicode_is_xml10_namechar(long c) {
+  /* Namespaces in XML REC 1999-01-14
+   *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCNameChar
+   * updating
+   *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
+   *   http://www.w3.org/TR/2004/REC-xml-20040204/
+   * excluding the ':'
+   */
+  return (raptor_unicode_is_letter(c) ||
+          raptor_unicode_is_digit(c) ||
+          (c == 0x002E) || /* '.' */
+          (c == 0x002D) || /* '-' */
+          (c == 0x005F) || /* '_' */
+          raptor_unicode_is_combiningchar(c) ||
+          raptor_unicode_is_extender(c));
 }
  
 
@@ -262,40 +307,12 @@ int
 raptor_unicode_is_namechar(long c) 
 {
 #ifdef RAPTOR_XML_1_1
-  /* Namespaces in XML 1.1 PR
-   *   http://www.w3.org/TR/2003/PR-xml11-20031105/#NT-NameChar
-   * updating
-   *   Extensible Markup Language (XML) 1.1 WD
-   *   http://www.w3.org/TR/2002/CR-xml11-20021015/ sec 2.3, [4a]
-   * excluding the ':'
-   */
-  return (raptor_unicode_is_namestartchar(c) ||
-          (c == 0x005F) || /* '_' */
-          (c == 0x002E) || /* '.' */
-          (c >= 0x0030 && c <= 0x0039) || /* 0-9 */
-          (c == 0x00B7) ||
-          (c >= 0x0300 && c <=0x036F) ||
-          (c >= 0x203F && c <=0x2040));
+   return raptor_unicode_is_xml11_namechar(c);
 #else
-  /* Namespaces in XML REC
-   *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCNameChar
-   * updating
-   *   Extensible Markup Language (XML) 1.0 (Second Edition) REC
-   *   http://www.w3.org/TR/2000/REC-xml-20001006#NT-NameChar
-   * excluding the ':'
-   */
-  return (raptor_unicode_is_letter(c) ||
-          raptor_unicode_is_digit(c) ||
-          (c == 0x002E) || /* '.' */
-          (c == 0x002D) || /* '-' */
-          (c == 0x005F) || /* '_' */
-          raptor_unicode_is_combiningchar(c) ||
-          raptor_unicode_is_extender(c));
+   return raptor_unicode_is_xml10_namechar(c);
 #endif
 }
- 
 
-#ifndef RAPTOR_XML_1_1  
 
 /*
  * All this below was derived by machine-transforming the classes in Appendix B
@@ -670,9 +687,6 @@ raptor_unicode_is_extender(long c)
          (c >= 0x309D && c <= 0x309E ) ||
          (c >= 0x30FC && c <= 0x30FE ));
 }
-         
-
-#endif /* if not XML 1.1 */
 
 
 /**
