@@ -1,5 +1,7 @@
 2004-10-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* configure.ac, win32_raptor_config.h: 1.4.0
+
 	* raptor_internal.h:
 	Added warning_user_data, warning_handler to serializer
 	Added prototypes for raptor_serializer_warning and
