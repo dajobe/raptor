@@ -920,7 +920,7 @@ raptor_xml_start_element_handler(void *user_data,
 
         /* Save pointers to some RDF M&S attributes */
 
-        /* If RDF M&S namespace-prefixed attributes */
+        /* If RDF namespace-prefixed attributes */
         if(attr->nspace && attr->nspace->is_rdf_ms) {
           const char *attr_name=attr->local_name;
           int j;
@@ -932,7 +932,7 @@ raptor_xml_start_element_handler(void *user_data,
               /* Delete it if it was stored elsewhere */
 #if RAPTOR_DEBUG
               RAPTOR_DEBUG3(raptor_xml_start_element_handler,
-                            "Found RDF M&S attribute %s URI %s\n",
+                            "Found RDF namespace attribute %s URI %s\n",
                             attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from qname structure */
@@ -940,12 +940,12 @@ raptor_xml_start_element_handler(void *user_data,
               raptor_free_qname(attr);
               attr=NULL;
             }
-        } /* end if RDF M&S namespaced-prefixed attributes */
+        } /* end if RDF namespaced-prefixed attributes */
 
         if(!attr)
           continue;
 
-        /* If non namespace-prefixed RDF M&S attributes found on an element */
+        /* If non namespace-prefixed RDF attributes found on an element */
         if(rdf_parser->feature_allow_non_ns_attributes &&
            !attr->nspace) {
           const char *attr_name=attr->local_name;
@@ -964,7 +964,7 @@ raptor_xml_start_element_handler(void *user_data,
               attr=NULL;
               break;
             }
-        } /* end if non-namespace prefixed RDF M&S attributes */
+        } /* end if non-namespace prefixed RDF attributes */
 
         if(!attr)
           continue;
@@ -981,7 +981,7 @@ raptor_xml_start_element_handler(void *user_data,
     /* set actual count from attributes that haven't been skipped */
     ns_attributes_count=offset;
     if(!offset && named_attrs) {
-      /* all attributes were RDF M&S or other specials and deleted
+      /* all attributes were RDF namespace or other specials and deleted
        * so delete array and don't store pointer */
       RAPTOR_FREE(raptor_qname_array, named_attrs);
       named_attrs=NULL;
@@ -1849,7 +1849,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         }
       } else {
         raptor_update_document_locator(rdf_parser);
-        raptor_parser_warning(rdf_parser, "Found unknown RDF M&S attribute %s.", 
+        raptor_parser_warning(rdf_parser, "Found unknown RDF namespace attribute %s.", 
                               name);
       }
 
@@ -1876,7 +1876,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         handled=1;
       }
       
-    } /* end is RDF M&S property */
+    } /* end is RDF namespace property */
 
 
     if(!handled)
