@@ -393,8 +393,10 @@ RAPTOR_API void raptor_free_qname(raptor_qname* name);
 RAPTOR_API int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
 /* utility function */
 RAPTOR_API raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len, raptor_simple_message_handler error_handler, void *error_data);
+RAPTOR_API int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
 
 /* raptor_namespace_stack - stack of XML namespaces */
+RAPTOR_API raptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *nstack, const unsigned char *prefix,  raptor_uri* ns_uri, int depth);
 RAPTOR_API raptor_namespace_stack* raptor_new_namespaces(raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
 
 RAPTOR_API void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
