@@ -1,3 +1,8 @@
+2004-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Check for libxml 2.5.10+ for RSS tag soup parser
+	requirements, not features.
+
 2004-09-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_namespace.c (raptor_new_namespace):
