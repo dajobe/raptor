@@ -596,7 +596,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
   raptor_rss_enclosure *enclosure=NULL;
 
 #if LIBXML_VERSION > 20511
-  name = xmlTextReaderConstLocalName(reader);
+  name = (xmlChar *)xmlTextReaderConstLocalName(reader);
 #else
   name = xmlTextReaderLocalName(reader);
   free_name = 1;
