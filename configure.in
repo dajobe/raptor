@@ -196,33 +196,35 @@ CPPFLAGS="$oCPPFLAGS"
 
 AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="expat") 
 
-case $xml_parser in
-  expat)
-    if test $have_expat_lib = 1; then
-      need_expat=1
-      AC_DEFINE(NEED_EXPAT)
-    elif test $have_expat_source = 1; then
-      need_expat=1
-      need_expat_source=1
-      AC_DEFINE(NEED_EXPAT)
-    fi
-    ;;
+for xml_parser_name in $xml_parser libxml expat; do
+  case $xml_parser_name in
+    expat)
+      if test $have_expat_lib = 1; then
+	need_expat=1
+	AC_DEFINE(NEED_EXPAT)
+      elif test $have_expat_source = 1; then
+	need_expat=1
+	need_expat_source=1
+	AC_DEFINE(NEED_EXPAT)
+      fi
+      ;;
 
-  libxml)
-    if test $have_libxml_lib = 1; then
-      need_libxml=1
-      AC_DEFINE(NEED_LIBXML)
-    elif test $have_libxml_source = 1; then
-      need_libxml=1
-      need_libxml_source=1
-      AC_DEFINE(NEED_LIBXML)
-    fi
-    ;;
+    libxml)
+      if test $have_libxml_lib = 1; then
+	need_libxml=1
+	AC_DEFINE(NEED_LIBXML)
+      elif test $have_libxml_source = 1; then
+	need_libxml=1
+	need_libxml_source=1
+	AC_DEFINE(NEED_LIBXML)
+      fi
+      ;;
 
-  *)
-    AC_MSG_ERROR(No such XML parser $xml_parser)
-    ;;
+    *)
+      AC_MSG_ERROR(No such XML parser $xml_parser_name)
+      ;;
 esac
+done
 
 
 AC_MSG_CHECKING(XML parser to use)
