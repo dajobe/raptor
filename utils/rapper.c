@@ -199,6 +199,8 @@ main(int argc, char *argv[])
   char *filename=NULL;
   raptor_feature feature;
   int feature_value= -1;
+  raptor_feature serializer_feature;
+  int serializer_feature_value= -1;
 
   program=argv[0];
   if((p=strrchr(program, '/')))
@@ -260,12 +262,12 @@ main(int argc, char *argv[])
             int i;
             size_t arg_len=strlen(optarg);
             
-            for(i=0; 1; i++) {
+            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
               const char *feature_name;
               size_t len;
               
               if(raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, NULL))
-                break;
+                continue;
               len=strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
                 feature=(raptor_feature)i;
@@ -277,7 +279,24 @@ main(int argc, char *argv[])
               }
             }
             
-            if(feature_value < 0 ) {
+            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+              const char *feature_name;
+              size_t len;
+              
+              if(raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, NULL))
+                continue;
+              len=strlen(feature_name);
+              if(!strncmp(optarg, feature_name, len)) {
+                serializer_feature=(raptor_feature)i;
+                if(len < arg_len && optarg[len] == '=')
+                  serializer_feature_value=atoi(&optarg[len+1]);
+                else if(len == arg_len)
+                  serializer_feature_value=1;
+                break;
+              }
+            }
+            
+            if(feature_value < 0 && serializer_feature_value < 0) {
               fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s " HELP_ARG(f, feature) " help' for a list of valid features\n",
                       program, optarg, program);
               usage=1;
@@ -530,9 +549,6 @@ main(int argc, char *argv[])
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
 
-  if(feature_value >= 0)
-    raptor_set_feature(rdf_parser, feature, feature_value);
-
   if(!quiet) {
     if (filename) {
       if(base_uri_string)
@@ -561,6 +577,11 @@ main(int argc, char *argv[])
       return(1);
     }
     raptor_serialize_start_to_file_handle(serializer, base_uri, stdout);
+
+    if(serializer_feature_value >= 0)
+      raptor_serializer_set_feature(serializer, 
+                                    serializer_feature, serializer_feature_value);
+
   }
   
 
