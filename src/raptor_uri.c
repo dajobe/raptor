@@ -27,11 +27,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-#ifdef LIBRDF_INTERNAL
-#include <rdf_config.h>
-#else
 #include <config.h>
-#endif
 #endif
 
 #include <stdio.h>
@@ -43,6 +39,12 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
+
+/* Raptor includes */
+#include "raptor.h"
+#include "raptor_internal.h"
+
 
 extern int errno;
 
