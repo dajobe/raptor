@@ -225,8 +225,8 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
 
 static int
 raptor_xslt_parse_chunk(raptor_parser* rdf_parser, 
-                       const unsigned char *s, size_t len,
-                       int is_end)
+                        const unsigned char *s, size_t len,
+                        int is_end)
 {
   raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
   int i;
@@ -235,7 +235,7 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
   raptor_uri* uri;
   /* XML document DOM */
   xmlDocPtr doc;
-    
+  xmlNodeSetPtr nodes;
 
   if(!xslt_parser->ctxt) {
     uri_string=raptor_uri_as_string(rdf_parser->base_uri);
@@ -283,7 +283,7 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
     return 1;
    }
   
-  xmlNodeSetPtr nodes=xslt_parser->xpathObj->nodesetval;
+  nodes=xslt_parser->xpathObj->nodesetval;
   if(!nodes || xmlXPathNodeSetIsEmpty(nodes)) {
     raptor_parser_error(rdf_parser,
                         "No GRDDL found in document (no nodes returned from XPath expression \"%s\")", 
@@ -298,8 +298,10 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
     xmlDocPtr res=NULL;
     xmlParserCtxtPtr xslt_ctxt;
     raptor_www *www;
-    xmlChar *doc_txt;
-    int doc_txt_len;
+    xmlChar *doc_txt=NULL;
+    int doc_txt_len=0;
+    xmlChar *base_uri_string;
+    raptor_uri* base_uri=NULL;
     
     if(node->type != XML_ATTRIBUTE_NODE) {
       raptor_parser_error(rdf_parser, "Got unexpected node type %d", 
@@ -308,8 +310,19 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
     }
 
 
+    /* returns base URI or NULL - must be freed with xmlFree() */
+    base_uri_string=xmlNodeGetBase(doc, node);
+    if(base_uri_string) {
+      base_uri=raptor_new_uri(base_uri_string);
+      xmlFree(base_uri_string);
+      RAPTOR_DEBUG2("Got XML base URI '%s'\n", raptor_uri_as_string(base_uri));
+    } else if(rdf_parser->base_uri)
+      base_uri=raptor_uri_copy(rdf_parser->base_uri);
+      
     uri_string=(const unsigned char*)node->children->content;
-    uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
+    uri=raptor_new_uri_relative_to_base(base_uri, uri_string);
+    if(base_uri)
+      raptor_free_uri(base_uri);
     
     RAPTOR_DEBUG2("Running GRDDL transform with URI '%s'\n",
                   raptor_uri_as_string(uri));
@@ -350,10 +363,7 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
       
     
     /* write the resulting XML to a string */
-    doc_txt=NULL;
-    doc_txt_len=0;
-    xsltSaveResultToString(&doc_txt, &doc_txt_len, 
-                           res, sheet);
+    xsltSaveResultToString(&doc_txt, &doc_txt_len, res, sheet);
 
     if(!doc_txt || !doc_txt_len) {
       /* empty document - continue? FIXME */
