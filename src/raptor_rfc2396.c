@@ -2,7 +2,7 @@
  *
  * raptor_rfc2396.c - Raptor URI resolving
  *
- * $Id:
+ * $Id$
  *
  * Copyright (C) 2004 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
