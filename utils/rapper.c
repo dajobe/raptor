@@ -181,6 +181,7 @@ main(int argc, char *argv[])
 {
   raptor_parser* rdf_parser=NULL;
   char *uri_string=NULL;
+  int free_uri_string=0;
   char *base_uri_string=NULL;
   int rc;
   int scanning=0;
@@ -357,9 +358,11 @@ main(int argc, char *argv[])
   }
 
   /* If uri_string is "path-to-file", turn it into a file: URI */
-  if(!access(uri_string, R_OK))
+  if(!access(uri_string, R_OK)) {
     uri_string=raptor_uri_filename_to_uri_string(uri_string);
-
+    free_uri_string=1;
+  }
+  
   uri=raptor_new_uri(uri_string);
   if(!uri) {
     fprintf(stderr, "%s: Failed to create URI for %s\n",
@@ -426,6 +429,8 @@ main(int argc, char *argv[])
 
   raptor_free_uri(base_uri);
   raptor_free_uri(uri);
+  if(free_uri_string)
+    free(uri_string);
 
 #ifdef RAPTOR_IN_REDLAND
   librdf_free_world(world);
