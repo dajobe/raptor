@@ -1,4 +1,48 @@
+2005-01-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss10_store_statement):
+	Don't lose statements that are about
+	a known type node, but of unknown predicate.
+	(raptor_rss10_serialize_end): Add more debug info on remaining
+	statements.
+
+	* raptor_rdfxml.c (raptor_start_element_grammar):
+	Update raptor_new_xml_writer call.
+
+	* raptor.h: raptor_new_xml_writer gets nstack parameter.
+	raptor_xml_writer_start_namespace_full deleted
+
+	* libraptor.3: raptor_new_xml_writer gets nstack param.
+	raptor_xml_writer_start_namespace_full gone
+
+	* raptor_general.c (raptor_free_statement): Don't free null pointers.
+
 2004-12-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss10_serialize_terminate):
+	Free all namespaces, now they are
+	not stacked explicitly.  Free namespace stack.
+	(raptor_rss10_build_xml_names): Use raptor_new_namespace and don't
+	start the rdf namespace.
+	(raptor_rss10_build_xml_names):  Use raptor_new_namespace and don't
+	start the namespaces
+	((raptor_rss10_serialize_end): Make a namespace stack here, with
+	only xml: defined.
+
+	* raptor_xml_writer.c (raptor_xml_writer_start_namespace_full):
+	Deleted.
+	(main): Declare the foo namespace but don't start it, so that the xml
+	writer will do that.
+
+	* raptor_xml_writer.c: Optionally declare a namespace stack internally.
+	(raptor_new_xml_writer): Add optional raptor_namespace_stack
+	parameter, if NULL declare one internally.
+
+	* turtle_lexer.l, turtle_parser.y: Delete unused WS token
+
+	* raptor_xml_writer.c, raptor_sax2.c, raptor_rss.c,
+	raptor_rdfxml.c, raptor_internal.h, raptor.h, libraptor.3:
+	Rename raptor_sax2_element to raptor_xml_element throughout.
 
 	* raptor_internal.h: Added feature_start_uri to raptor_serializer
 
