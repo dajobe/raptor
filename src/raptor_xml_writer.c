@@ -185,13 +185,13 @@ void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                         const unsigned char *s, unsigned int len)
 {
-  size_t buffer_len=raptor_xml_escape_string(s, len,
-                                             NULL, 0, '\0',
-                                             xml_writer->error_handler,
-                                             xml_writer->error_data);
+  int buffer_len=raptor_xml_escape_string(s, len,
+                                          NULL, 0, '\0',
+                                          xml_writer->error_handler,
+                                          xml_writer->error_data);
   unsigned char *buffer=(unsigned char*)RAPTOR_MALLOC(cstring, buffer_len+1);
   
-  if(!buffer)
+  if(buffer < 0)
     return;
 
   if(buffer_len != len)
