@@ -112,14 +112,14 @@ typedef struct {
 
 
 static raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE]={
-  { NULL,                     NULL,   NULL },
-  { NULL,                     NULL,   NULL },
-  { RSS0_91_NAMESPACE_URI,    NULL,   NULL },
-  { NULL,                     NULL,   NULL },
-  { RSS1_0_NAMESPACE_URI,     "rss",  NULL },
-  { ATOM0_3_NAMESPACE_URI,    "atom", NULL },
-  { DC_NAMESPACE_URI,         "dc",   NULL },
-  { RSS2_0_ENC_NAMESPACE_URI, NULL,   NULL }
+  { NULL,                     NULL,  },
+  { NULL,                     NULL,  },
+  { RSS0_91_NAMESPACE_URI,    NULL,  },
+  { NULL,                     NULL,  },
+  { RSS1_0_NAMESPACE_URI,     "rss", },
+  { ATOM0_3_NAMESPACE_URI,    "atom",},
+  { DC_NAMESPACE_URI,         "dc",  },
+  { RSS2_0_ENC_NAMESPACE_URI, NULL,  }
 };
 
 
