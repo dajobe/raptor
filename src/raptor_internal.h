@@ -221,6 +221,7 @@ int raptor_xml_external_entity_ref_handler(void *user_data, const XML_Char *cont
 
 typedef struct raptor_parser_factory_s raptor_parser_factory;
 typedef struct raptor_id_set_s raptor_id_set;
+typedef struct raptor_uri_detail_s raptor_uri_detail;
 
 
 /* Raptor Namespace Stack node */
@@ -434,6 +435,7 @@ raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 #ifdef RAPTOR_DEBUG
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
+const char* raptor_basename(const char *name);
 
 
 /* raptor_parse.c */
@@ -536,6 +538,10 @@ void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
 void raptor_init_parser_rss(void);
 
+/* raptor_rfc2396.c */
+raptor_uri_detail* raptor_new_uri_detail(const unsigned char *uri_string);
+void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
+unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p);
 
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(long c);
@@ -727,6 +733,29 @@ typedef struct {
   raptor_identifier *object;
 } raptor_triple;
 
+
+/* raptor_rfc2396.c */
+struct raptor_uri_detail_s
+{
+  size_t uri_len;
+  /* buffer is the same size as the original uri_len */
+  unsigned char *buffer;
+
+  /* URI Components.  These all point into buffer */
+  unsigned char *scheme;
+  unsigned char *authority;
+  unsigned char *path;
+  unsigned char *query;
+  unsigned char *fragment;
+
+  /* Lengths of the URI Components  */
+  size_t scheme_len;
+  size_t authority_len;
+  size_t path_len;
+  size_t query_len;
+  size_t fragment_len;
+};
+  
 
 /* end of RAPTOR_INTERNAL */
 #endif
