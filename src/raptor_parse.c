@@ -111,14 +111,14 @@ extern int errno;
 #endif
 
 
-/* for the memory allocation functions */
-#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-#include <dmalloc.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
 #undef HAVE_STDLIB_H
 #endif
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+/* for the memory allocation functions */
+#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
+#include <dmalloc.h>
 #undef HAVE_STDLIB_H
 #endif
 
