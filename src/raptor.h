@@ -334,7 +334,7 @@ RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 /* Utility functions */
 RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const unsigned char *string, const char delim);
 RAPTOR_API unsigned char* raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, unsigned char *src, int len, size_t *dest_lenp);
-RAPTOR_API const char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
+RAPTOR_API RAPTOR_DEPRECATED const char* raptor_ntriples_term_as_string(raptor_ntriples_term_type term);
 RAPTOR_API int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
 RAPTOR_API void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
 RAPTOR_API int raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data);
@@ -395,7 +395,7 @@ RAPTOR_API void raptor_www_abort(raptor_www *www, const char *reason);
 /* raptor_qname - XML qnames */
 RAPTOR_API raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API raptor_qname* raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
-raptor_qname* raptor_qname_copy(raptor_qname *qname);
+RAPTOR_API raptor_qname* raptor_qname_copy(raptor_qname *qname);
 RAPTOR_API void raptor_free_qname(raptor_qname* name);
 RAPTOR_API int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
 /* utility function */
@@ -457,7 +457,7 @@ RAPTOR_API void raptor_sequence_set_print_handler(raptor_sequence *seq, raptor_s
 RAPTOR_API void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
 
-/* raptor_utf8.c */
+/* Unicode and UTF8 */
 RAPTOR_API int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
 RAPTOR_API int raptor_utf8_to_unicode_char(unsigned long *output, const unsigned char *input, int length);
 RAPTOR_API int raptor_unicode_is_xml11_namestartchar(long c);
@@ -516,6 +516,29 @@ RAPTOR_API int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor
 
 /* Parser and Serializer features */
 RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
+
+/* SAX2 element Class (raptor_sax2_element) */
+RAPTOR_API raptor_sax2_element* raptor_new_sax2_element(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base);
+RAPTOR_API void raptor_free_sax2_element(raptor_sax2_element *element);
+RAPTOR_API raptor_qname* raptor_sax2_element_get_element(raptor_sax2_element *sax2_element);
+RAPTOR_API void raptor_sax2_element_set_attributes(raptor_sax2_element* sax2_element, raptor_qname **attributes, int count);
+RAPTOR_API void raptor_sax2_declare_namespace(raptor_sax2_element* sax2_element, raptor_namespace *nspace);
+RAPTOR_API int raptor_iostream_write_sax2_element(raptor_iostream *iostr, raptor_sax2_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
+
+/* XML Writer Class (raptor_xml_writer) */
+RAPTOR_API raptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
+RAPTOR_API void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
+RAPTOR_API raptor_namespace* raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
+RAPTOR_API void raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
+RAPTOR_API void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
+RAPTOR_API void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
+RAPTOR_API void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str);
+RAPTOR_API void raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+RAPTOR_API void raptor_xml_writer_raw(raptor_xml_writer* xml_writer, const unsigned char *str);
+RAPTOR_API void raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+RAPTOR_API void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str);
+RAPTOR_API void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+
 
 #ifdef __cplusplus
 }
