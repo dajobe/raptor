@@ -65,7 +65,7 @@ typedef struct
   int assume;
   int ignore_warnings;
 
-  char *url;
+  unsigned char *url;
   /* GList *triples_list; */
   int triples_count;
   int warnings_count;
@@ -101,7 +101,7 @@ grapper_view_url_changed(grapper_state *state)
 {
   GtkWidget *url_entry=state->url_entry;
 
-  gtk_entry_set_text(GTK_ENTRY(url_entry), state->url);
+  gtk_entry_set_text(GTK_ENTRY(url_entry), (const gchar*)state->url);
 }
 
 #ifdef GRAPPER_QNAMES
@@ -138,7 +138,7 @@ grapper_view_set_triples_count(grapper_state *state, int count)
 }
 
 static void
-grapper_view_add_triple(grapper_state *state, char* nodes[3], int i)  
+grapper_view_add_triple(grapper_state *state, unsigned char* nodes[3], int i)  
 {
   GtkListStore *store=state->triples_store;
   GtkTreeIter iter;
@@ -175,7 +175,7 @@ grapper_view_add_warning_message(grapper_state *state, gchar *error) {
 
 
 static void
-grapper_model_add_triple(grapper_state *state, char *nodes[3])  
+grapper_model_add_triple(grapper_state *state, unsigned char *nodes[3])  
 {
   /* g_list_append(state->triples_list, nodes); */
   state->triples_count++;
@@ -195,16 +195,16 @@ grapper_model_empty_triples(grapper_state *state)
 
 
 static void
-grapper_model_set_url(grapper_state *state, const gchar *url) 
+grapper_model_set_url(grapper_state *state, const unsigned char *url) 
 {
   if(state->url) {
-    if(!strcmp(state->url, url))
+    if(!strcmp((const char*)state->url, (const char*)url))
       return;
     g_free(state->url);
   }
   
-  state->url=g_strdup(url);
-  strcpy(state->url, url);
+  state->url=(unsigned char*)g_strdup((const char*)url);
+  strcpy((char*)state->url, (const char*)url);
 
   grapper_view_url_changed(state);
 }
@@ -296,7 +296,7 @@ static void
 grapper_model_statements_handler(void *data,
                                  const raptor_statement *statement) {
   grapper_state* state=(grapper_state*)data;
-  char* nodes[3];
+  unsigned char* nodes[3];
   
   nodes[0]=raptor_statement_part_as_string(statement->subject,
                                            statement->subject_type,
@@ -358,7 +358,7 @@ url_entry_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state=(grapper_state*)data;
   GtkWidget *url_entry=state->url_entry;
-  grapper_model_set_url(state, gtk_entry_get_text(GTK_ENTRY(url_entry)));
+  grapper_model_set_url(state, (const unsigned char*)gtk_entry_get_text(GTK_ENTRY(url_entry)));
   grapper_model_parse(state);
 }
 
@@ -369,7 +369,7 @@ fs_ok_button_callback(GtkWidget *widget, gpointer data)
   grapper_state* state=(grapper_state*)data;
   GtkWidget *files=state->file_selection;
   const gchar *filename;
-  char *uri_string;
+  unsigned char *uri_string;
   
   filename=gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
   
@@ -802,11 +802,11 @@ main(int argc, char *argv[])
   if(argc>1) {
     if(!access(argv[1], R_OK)) {
       /* it's a file - make a URL out of it */
-      char *uri_string=raptor_uri_filename_to_uri_string(argv[1]);
+      unsigned char *uri_string=raptor_uri_filename_to_uri_string(argv[1]);
       grapper_model_set_url(&state, uri_string);
       free(uri_string);
     } else
-      grapper_model_set_url(&state, argv[1]);
+      grapper_model_set_url(&state, (unsigned char*)argv[1]);
 
     grapper_model_parse(&state);
   }
