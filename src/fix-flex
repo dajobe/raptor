@@ -13,6 +13,17 @@
 # University of Bristol
 #
 
+print <<'EOT';
+#ifdef HAVE_CONFIG_H
+#include <raptor_config.h>
+#endif
+
+#ifdef WIN32
+#include <win32_raptor_config.h>
+#endif
+
+EOT
+
 while(<>) {
   # the default parser tries to free(NULL)
   s/(^\s+)(free\(.*ptr.*\))/${1}if(ptr) $2/;
