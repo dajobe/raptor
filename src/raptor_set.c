@@ -335,6 +335,7 @@ raptor_free_id_set(raptor_id_set *set)
     raptor_free_base_id_set(base);
     base=next;
   }
+  RAPTOR_FREE(raptor_id_set, set);
 }
 
 
