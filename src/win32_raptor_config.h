@@ -75,10 +75,10 @@ extern "C" {
 #define RAPTOR_VERSION_MINOR 3
 
 /* Release version number */
-#define RAPTOR_VERSION_RELEASE 0
+#define RAPTOR_VERSION_RELEASE 2
 
 /* Version number of package */
-#define VERSION "1.3.0"
+#define VERSION "1.3.2"
 
 #include <windows.h>
 #include <io.h>
