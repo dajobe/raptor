@@ -55,6 +55,7 @@ typedef enum
 {
   GRAPPER_SYNTAX_RDFXML,
   GRAPPER_SYNTAX_NTRIPLES,
+  GRAPPER_SYNTAX_N3,
   GRAPPER_SYNTAX_RSS_TAG_SOUP,
 
   GRAPPER_SYNTAX_SIZE=GRAPPER_SYNTAX_RSS_TAG_SOUP+1
@@ -68,6 +69,7 @@ typedef struct {
 static const grapper_syntax_item grapper_syntax_info[GRAPPER_SYNTAX_SIZE]={
   {"rdfxml",   "RDF/XML"      },
   {"ntriples", "N-Triples"    },
+  {"n3", "N3"    },
   {"rss-tag-soup", "RSS Tag Soup" }
 };
 
