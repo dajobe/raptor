@@ -45,15 +45,17 @@ libraptor_la_LIBADD = @LTLIBOBJS@
 EXTRA_DIST=ChangeLog \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
-MPL.html \
+MPL.html libraptor.html \
 raptor-config.in raptor-src-config.in \
 autogen.sh \
 raptor.spec.in \
 dc.rdf \
 raptor_cc.gperf \
 raptor_cc.c \
-raptor_www_test.c\
+raptor_www_test.c \
+fix-groff-xhtml \
 $(man_MANS)
+
 
 
 SUBDIRS= debian tests win32 examples
@@ -102,6 +104,9 @@ README: README.html
 
 NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
+
+@MAINT@libraptor.html: $(srcdir)/libraptor.3
+@MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
 raptor_cc.c : $(srcdir)/raptor_cc.gperf
 	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $< > $@
