@@ -280,7 +280,7 @@ main(int argc, char *argv[])
           else {
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(o, output) "'\n",
                     program, optarg);
-            fprintf(stderr, "Valid arguments are:\n  - `simple'\n  - `ntriples'\n");
+            fprintf(stderr, "Valid arguments are:\n  `simple'   for a simple format (default)\n  `ntriples' for N-Triples\n");
             usage=1;
           }
         }
@@ -297,7 +297,7 @@ main(int argc, char *argv[])
           } else {
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
                     program, optarg);
-            fprintf(stderr, "Valid arguments are:\n  `rdfxml'        for RDF/XML content \n  `ntriples'      for N-Triples \n  `ntriples-plus'     for N-Triples Plus\n  `rss-tag-soup'  for RSS Tag Soup\n");
+            fprintf(stderr, "Valid arguments are:\n  `rdfxml'        for RDF/XML (default)\n  `ntriples'      for N-Triples \n  `ntriples-plus' for N-Triples Plus\n  `rss-tag-soup'  for RSS Tag Soup\n");
             usage=1;
             break;
             
