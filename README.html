@@ -13,9 +13,10 @@
 
 <p><a href="http://www.redland.opensource.ac.uk/raptor/">Raptor</a>
 is the
-<b>R</b>DF <b>P</b>arser <b>T</b>oolkit for
-<a href="http://www.redland.opensource.ac.uk/"><b>R</b>edland</a>.
-It is designed to integrate with Redland closely
+<b>R</b>DF <b>P</b>arser <b>T</b>oolkit f<b>o</b>r
+<a href="http://www.redland.opensource.ac.uk/"><b>R</b>edland</a>
+and currently consists of two parsers: RDF/XML and N-Triples.
+Raptor is designed to integrate closely with Redland
 and also work entirely standalone, in which case it will
 use simple internal routines to perform the functions.
 </p>
@@ -25,7 +26,8 @@ use simple internal routines to perform the functions.
 can be found in the <a href="NEWS.html">NEWS</a> file or more
 detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 
-<p>Features</p>
+<h2>RAPTOR RDF/XML PARSER</h2>
+
 <ul>
 <li>An RDF/XML Parser written in C designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
 <li>Can extract RDF content embedded in XML (such as XHTML)</li>
@@ -46,6 +48,15 @@ be followed when debugging.</li>
 <p><b>WARNING</b> This is alpha quality software - the APIs will
 change, it is not feature complete and it needs lots of testing and
 conformance checking.</p>
+
+
+<h2>RAPTOR NTRIPLES PARSER</h2>
+
+<p>A parser for the
+<a href="http://www.w3.org/2001/sw/RDFCore/ntriples/">N-Triples</a>
+format which emits RDF statements and is used by the RDF Core
+working group for test cases.
+</p>
 
 
 <h2>DOCUMENTATION</h2>
