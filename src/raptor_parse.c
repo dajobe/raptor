@@ -1169,13 +1169,6 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 #endif
 
   element=rdf_xml_parser->current_element;
-  if(!raptor_qname_equal(element->name, element_name)) {
-    /* Hmm, unexpected name - FIXME, should do something! */
-    raptor_parser_warning(rdf_parser, 
-                          "Element %s ended, expected end of element %s",
-                          name, element->name->local_name);
-    return;
-  }
 
   raptor_end_element_grammar(rdf_parser, element);
 
