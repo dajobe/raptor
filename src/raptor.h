@@ -219,6 +219,8 @@ typedef struct {
 
 
 RAPTOR_API void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
+RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
+
 
 #ifndef RAPTOR_IN_REDLAND
 
