@@ -244,12 +244,6 @@ if test -d $srcdir/expat; then
   expat_source_dir="\$(top_srcdir)/expat"
   expat_obj_dir="\$(top_builddir)/expat"
   AC_MSG_RESULT(yes - expat)
-elif test "X$have_redland" = X1 -a -d $srcdir/../expat; then
-  have_expat_source=1
-  have_expat=1
-  expat_source_dir="\$(top_srcdir)/../expat"
-  expat_obj_dir="\$(top_builddir)/../expat"
-  AC_MSG_RESULT(yes - ../expat via redland)
 else
   AC_MSG_RESULT(no)
 fi
