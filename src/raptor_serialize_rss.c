@@ -701,9 +701,10 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
                 attrValue=NULL;
                */
             }
-          } else if (!strcmp((const char*)name, "enclosure") && enclosure)
+          } else if (!strcmp((const char*)name, "enclosure") && enclosure) {
             RAPTOR_DEBUG2("  setting enclosure URL %s\n", attrValue);
             enclosure->url=raptor_new_uri((const unsigned char*)attrValue);
+          }
         } else if(!strcmp((const char*)attrName, "domain")) {
           if(!strcmp((const char*)name, "category")) {
             /* <category domain="URL">foo</source> */
