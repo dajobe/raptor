@@ -153,7 +153,7 @@ typedef enum {
 
   /* met production 6.30 (inlineItem) - container item 
    * with rdf:parseType value "daml:collection" */
-  RAPTOR_STATE_PARSETYPE_COLLECTION = 6430,
+  RAPTOR_STATE_PARSETYPE_COLLECTION = 6430
 
 } raptor_state;
 
@@ -337,7 +337,8 @@ typedef enum {
   RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION,
 
   /* dummy for use in strings below */
-  RAPTOR_ELEMENT_CONTENT_TYPE_LAST,
+  RAPTOR_ELEMENT_CONTENT_TYPE_LAST
+
 } raptor_element_content_type;
 
 

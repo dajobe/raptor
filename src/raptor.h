@@ -53,7 +53,7 @@ typedef enum {
   RAPTOR_IDENTIFIER_TYPE_PREDICATE,           /* Predicate URI */
   RAPTOR_IDENTIFIER_TYPE_ORDINAL,             /* rdf:li, rdf:_<n> etc. */
   RAPTOR_IDENTIFIER_TYPE_LITERAL,             /* regular literal */
-  RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,         /* rdf:parseType="Literal" */
+  RAPTOR_IDENTIFIER_TYPE_XML_LITERAL          /* rdf:parseType="Literal" */
 } raptor_identifier_type;
 
 typedef enum { RAPTOR_URI_SOURCE_UNKNOWN, RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED, RAPTOR_URI_SOURCE_BLANK_ID } raptor_uri_source;
