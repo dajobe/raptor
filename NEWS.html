@@ -8,6 +8,33 @@
 
 <h1 align="center">Raptor RDF Parser Toolkit - News</h1>
 
+<h2>2002-10-02 Version 0.9.6 Released</h2>
+<p><b>Calling API changed</b> to provide a common interface to
+the RDF parsers.  The libraptor.3 manual page describes the changes.<br />
+Added support for RDF datatyped literals in 
+<a href="http://www.w3.org/TR/rdf-syntax-grammar">RDF/XML</a> with
+<tt>rdf:datatype</tt> attribute on property elements and
+<a href="http://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a>
+with the <tt>"string"^^&lt;datatypeURIref&gt;</tt>.<br />
+Added support for <tt>rdf:parseType="Collection"</tt> for RDF Collections<br />
+URI class allows swappable implementation by applications.<br />
+URI class now handles file: URIs for Win32 and Unix conventions.<br />
+Fixes to enable it to work on Apple OSX 10.1, 10.2
+(also tested working on Linux/x86, Solaris/sparc, FreeBSD/x86)<br />
+Many internal changes to support API changes, allow it to work
+with Redland when compiled as a separate library<br />
+Reorganised source into separate modules - URI, xml parser,
+ntriples parser, XML namespaces, XML qnames, locator.<br />
+More resilience with XML errors and XML parser errors - none of 
+libxml2's XML test suite examples crash raptor.<br />
+<a href="http://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a>
+parser recovers gracefully from errors in content<br />
+Packing for debian included<br />
+Added manual pages libraptor.3 and rdfdump.1<br />
+Added raptor-config script for compiling with the library.
+</p>
+
+
 <h2>2002-06-08 Version 0.9.5 Released</h2>
 <p>Many bugs fixed<br />
 Added full relative URI resolving<br />
