@@ -1,3 +1,7 @@
+.deps
+.libs
 .cvsignore
 Makefile
 Makefile.in
+raptor_abort
+grapper

@@ -25,6 +25,7 @@ configure
 dmalloc*
 example?
 install-sh
+libraptor.html
 libtool
 missing
 mkinstalldirs
@@ -33,6 +34,7 @@ old
 rapper
 raptor-config
 raptor-src-config
+raptor.pc
 raptor.spec
 raptor_cc.c
 stamp-h*
