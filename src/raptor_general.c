@@ -2506,15 +2506,17 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
   statement->predicate=RAPTOR_RDF_subject_URI;
-  statement->object=subject_uri;
+  statement->object=subject_uri ? (void*)subject_uri : (void*)subject_id;
+  statement->object_type=subject_type;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
   statement->predicate=RAPTOR_RDF_predicate_URI;
-  statement->object=predicate_uri;
+  statement->object=predicate_uri ? (void*)predicate_uri : (void*)predicate_id;
+  statement->object_type=(predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ? RAPTOR_IDENTIFIER_TYPE_RESOURCE : predicate_type;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
   statement->predicate=RAPTOR_RDF_object_URI;
-  statement->object=object_uri;
+  statement->object=object_uri ? (void*)object_uri : (void*)object_id;
   statement->object_type=object_type;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 }
