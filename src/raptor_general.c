@@ -187,8 +187,18 @@ raptor_vsnprintf(const char *message, va_list arguments)
 }
 
 
+/* wrapper */
+const char*
+raptor_basename(const char *name)
+{
+  char *p;
+  if((p=strrchr(name, '/')))
+    name=p+1;
+  else if((p=strrchr(name, '\\')))
+    name=p+1;
 
-
+  return name;
+}
 
 
 const char * const raptor_xml_literal_datatype_uri_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
