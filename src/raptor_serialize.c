@@ -413,7 +413,8 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
   rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
 
 
-  rdf_serializer->iostream=raptor_new_iostream_to_string(string_p, length_p);
+  rdf_serializer->iostream=raptor_new_iostream_to_string(string_p, length_p, 
+                                                         NULL);
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
