@@ -270,13 +270,13 @@ check-warn-nfc-rdf: $(top_builddir)/rapper $(RDF_WARN_NFC_TEST_FILES)
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) "FAILED - parsing failed when should have warned (NFC test)"; \
-	    cat $$name.res; grep Error $$name.err; result=0; \
+	    $(ECHO) "FAILED - parsing failed when should have warned"; \
+	    cat $$name.res; grep Error $$name.err; result=1; \
 	  elif test $$status -eq 2 ; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED - parsing succeed but should have warned (NFC test)"; \
-	    cat $$name.res; result=1; \
+	    cat $$name.res; result=0; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
 	done; \
