@@ -47,7 +47,7 @@
 #include <raptor.h>
 #include <raptor_internal.h>
 
-#include <turtle_parser.tab.h>
+#include <turtle_parser.h>
 
 #define YY_DECL int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner)
 #define YY_NO_UNISTD_H 1
