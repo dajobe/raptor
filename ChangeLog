@@ -1,5 +1,11 @@
 2004-08-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rss.c: compare namespace URIs the cheaper way
+
+	* raptor_rss.c: Added atom:copyright
+	Rewrite atom fields earlier.
+	Compare namespaces too, if they have them.
+
 	* raptor_rss.c: Handle atom 0.3 somewhat.
 	- Add atom author type.
 	- Add atom 0.3 NS and atom 0.3 properties
