@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "blah">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <title>Raptor RDF Parser Toolkit - Installation</title>
@@ -73,6 +73,13 @@ inside some XHTML, it could be extracted with:</p>
   rdfdump -n file:test.nt
 </pre>
 
+<p>The default output is a simple statement dump format, but it can
+be changed to emit <a href="http://www.w3.org/2001/sw/RDFCore/ntriples/">N-Triples</a> by using the <code>-o</code> option, like this:</p>
+
+<pre>
+  rdfdump -o ntriples file:dc.rdf
+</pre>
+
 <p>These example files are part of the Raptor test files which you
 can invoke with:</p>
 <pre>
@@ -82,8 +89,6 @@ can invoke with:</p>
 <hr />
 
 <p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
-
-<p><a href="http://www.mirror.ac.uk/services/validator/check/referer">Validate me</a></p>
 
 </body>
 </html>
