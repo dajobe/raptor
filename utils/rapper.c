@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2000-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -286,11 +286,7 @@ main(int argc, char *argv[])
               const char *help_label;
               if(raptor_syntaxes_enumerate(i, &help_name, &help_label, NULL, NULL))
                 break;
-              printf("  %-12s for %s", help_name, help_label);
-              if(!i)
-                puts(" (default)");
-              else
-                putchar('\n');
+              printf("  %-12s for %s\n", help_name, help_label);
             }
             usage=1;
             break;
