@@ -21,11 +21,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-#ifdef LIBRDF_INTERNAL
-#include <rdf_config.h>
-#else
 #include <config.h>
-#endif
 #endif
 
 #ifdef WIN32
