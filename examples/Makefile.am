@@ -37,4 +37,4 @@ $(top_builddir)/libraptor.la:
 	cd $(top_builddir) && $(MAKE) libraptor.la
 
 $(top_builddir)/../librdf/librdf.la:
-	$(top_builddir)/../librdf && $(MAKE) librdf.la
+	cd $(top_builddir)/../librdf && $(MAKE) librdf.la
