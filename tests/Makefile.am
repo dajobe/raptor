@@ -106,7 +106,7 @@ $(top_builddir)/rapper:
 
 check-local: check-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
-check-nt check-bad-nt
+check-nt check-bad-nt check-ntriples-plus
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@result=0; \
@@ -294,4 +294,21 @@ check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
 	  rm -f $$name.res $$name.err ; \
 	done; \
 	set -e; exit $$result
+
+check-ntriples-plus: $(top_builddir)/rapper $(NT_TEST_FILES)
+	@result=0; \
+	$(ECHO) "Testing N-Triples Plus with N-Triples tests"; \
+	for test in $(NT_TEST_FILES); do \
+	  name=`basename $$test .nt` ; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -i ntriples-plus -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res ; \
+	done; \
+	exit $$result
 
