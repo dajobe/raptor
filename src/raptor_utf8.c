@@ -213,24 +213,28 @@ int
 raptor_unicode_is_namestartchar(long c) 
 {
 #ifdef RAPTOR_XML_1_1
-  /* Namespaces in XML 1.1 WD
-   *   http://www.w3.org/TR/2002/WD-xml-names11-20020905/#NT-NCNameStartChar
+  /* Namespaces in XML 1.1 PR
+   *   http://www.w3.org/TR/2003/PR-xml-names11-20031105/#NT-NCNameStartChar
    * updating
-   *   Extensible Markup Language (XML) 1.1 WD
-   *   http://www.w3.org/TR/2002/CR-xml11-20021015/ sec 2.3, [4]
+   *   Extensible Markup Language (XML) 1.1 PR
+   *   http://www.w3.org/TR/2003/PR-xml11-20031105/#NT-NameStartChar
    * excluding the ':'
    */
-  return (((c >= 0x0041) && (c <= 0x005A)) || /* [A-Z] */
+  return (((c >= 0x0041)  && (c <= 0x005A)) || /* [A-Z] */
           (c == 0x005F) ||                    /* '_' */
-          ((c >= 0x0061) && (c <= 0x007A)) || /* [a-z] */
-          ((c >= 0x00C0) && (c <= 0x02FF)) ||
-          ((c >= 0x0370) && (c <= 0x037D)) ||
-          ((c >= 0x037F) && (c <= 0x1FFF)) ||
-          ((c >= 0x200C) && (c <= 0x200D)) ||
-          ((c >= 0x2070) && (c <= 0x218F)) ||
-          ((c >= 0x2C00) && (c <= 0x2FEF)) ||
-          ((c >= 0x3001) && (c <= 0xD7FF)) ||
-          ((c >= 0xF900) && (c <= 0xEFFFF)));
+          ((c >= 0x0061)  && (c <= 0x007A)) || /* [a-z] */
+          ((c >= 0x00C0)  && (c <= 0x00D6)) ||
+          ((c >= 0x00D8)  && (c <= 0x00F6)) ||
+          ((c >= 0x00F8)  && (c <= 0x02FF)) ||
+          ((c >= 0x0370)  && (c <= 0x037D)) ||
+          ((c >= 0x037F)  && (c <= 0x1FFF)) ||
+          ((c >= 0x200C)  && (c <= 0x200D)) ||
+          ((c >= 0x2070)  && (c <= 0x218F)) ||
+          ((c >= 0x2C00)  && (c <= 0x2FEF)) ||
+          ((c >= 0x3001)  && (c <= 0xD7FF)) ||
+          ((c >= 0xF900)  && (c <= 0xFDCF)) ||
+          ((c >= 0xFDF0)  && (c <= 0xFFFD)) ||
+          ((c >= 0x10000) && (c <= 0xEFFFF)));
 #else
   /* Namespaces in XML REC
    *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
@@ -255,8 +259,8 @@ int
 raptor_unicode_is_namechar(long c) 
 {
 #ifdef RAPTOR_XML_1_1
-  /* Namespaces in XML 1.1 WD
-   *   http://www.w3.org/TR/2002/WD-xml-names11-20020905/#NT-NameChar
+  /* Namespaces in XML 1.1 PR
+   *   http://www.w3.org/TR/2003/PR-xml11-20031105/#NT-NameChar
    * updating
    *   Extensible Markup Language (XML) 1.1 WD
    *   http://www.w3.org/TR/2002/CR-xml11-20021015/ sec 2.3, [4a]
