@@ -123,17 +123,41 @@ AC_TRY_LINK([#ifdef HAVE_GETOPT_H
             AC_MSG_RESULT(yes))
 
 
+AC_MSG_CHECKING(for redland sources in parent directory)
+if test -d $srcdir/../librdf -a -r $srcdir/../librdf/rdf_node.c ; then
+  have_redland=1
+  AC_MSG_RESULT(yes)
+  AC_DEFINE(RAPTOR_IN_REDLAND)
+  REDLAND_LIBS="../librdf/librdf.la"
+  REDLAND_CPPFLAGS=" -I\$(srcdir)/../librdf"
+  AC_SUBST(REDLAND_LIBS)
+  AC_SUBST(REDLAND_CPPFLAGS)
+else
+  AC_MSG_RESULT(no)
+fi
+
+
 dnl Checks for XML parsers
 have_expat=0
 have_expat_lib=0
 have_expat_source=0
 need_expat=0
 need_expat_source=0
+expat_source_dir=
+expat_obj_dir=
 AC_MSG_CHECKING(for expat sources)
 if test -d $srcdir/expat; then
   have_expat_source=1
   have_expat=1
-  AC_MSG_RESULT(yes)
+  expat_source_dir="\$(top_srcdir)/expat"
+  expat_obj_dir="\$(top_builddir)/expat"
+  AC_MSG_RESULT(yes - expat)
+elif test "X$have_redland" = X1 -a -d $srcdir/../expat; then
+  have_expat_source=1
+  have_expat=1
+  expat_source_dir="\$(top_srcdir)/../expat"
+  expat_obj_dir="\$(top_builddir)/../expat"
+  AC_MSG_RESULT(yes - ../expat via redland)
 else
   AC_MSG_RESULT(no)
 fi
@@ -378,8 +402,8 @@ if test $need_expat = 1; then
   # Only build local copy if it is needed
   if test $need_expat_source = 1; then
     SD="$SD expat"
-    CPPFLAGS="-I\$(top_srcdir)/expat/xmlparse $CPPFLAGS"
-    LIBS="$LIBS \$(top_builddir)/expat/xmlparse/xmlparse.o \$(top_builddir)/expat/xmlparse/hashtable.o \$(top_builddir)/expat/xmltok/xmlrole.o \$(top_builddir)/expat/xmltok/xmltok.o"
+    CPPFLAGS="-I$expat_source_dir/xmlparse $CPPFLAGS"
+    LIBS="$LIBS $expat_obj_dir/xmlparse/xmlparse.o $expat_obj_dir/xmlparse/hashtable.o $expat_obj_dir/xmltok/xmlrole.o $expat_obj_dir/xmltok/xmltok.o"
     # We know local expat sources has XML_SetNamespaceDeclHandler already
     found=yes
   else
@@ -423,21 +447,6 @@ if test $need_expat = 1; then
     fi
   fi
 fi
-
-
-AC_MSG_CHECKING(for redland sources in parent directory)
-if test -d $srcdir/../librdf -a -r $srcdir/../librdf/rdf_node.c ; then
-  have_redland=1
-  AC_MSG_RESULT(yes)
-  AC_DEFINE(RAPTOR_IN_REDLAND)
-  REDLAND_LIBS="../librdf/librdf.la"
-  REDLAND_CPPFLAGS=" -I\$(srcdir)/../librdf"
-  AC_SUBST(REDLAND_LIBS)
-  AC_SUBST(REDLAND_CPPFLAGS)
-else
-  AC_MSG_RESULT(no)
-fi
-
 
 
 # Make final changes to cflags
