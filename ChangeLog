@@ -1,5 +1,23 @@
 2004-08-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* configure.ac, Makefile.am:
+	Added conditional makefile support for XML parsers (expat, libxml),
+	selecting RDF parsers (RDF/XML, Turtle, N-Triples, RSS tag soup),
+	NFC checking.
+	Added new configure argument --enable-parsers to control this.
+
+	* raptor_utf8.c (raptor_utf8_is_nfc):
+	Protect NFC check with define RAPTOR_NFC_CHECK
+
+	* raptor_locator.c (raptor_update_document_locator):
+	Protect RDF/XML bits with define
+	RAPTOR_PARSER_RDFXML
+
+	* raptor_general.c (raptor_stats_print):
+	Protect RDF/XML bits with define RAPTOR_PARSER_RDFXML
+
+	* raptor.h: Added prototype for raptor_calloc_memory
+
 	* raptor_set.c, raptor_nfc.c: Casts for C++
 
 	* LICENSE.html: More LGPL v2.1 fixes
