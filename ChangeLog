@@ -1,4 +1,76 @@
+2004-09-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h: Added raptor_uri_detail.
+	Added internal raptor_basename.
+
+	* raptor.h: docs
+
+	* Makefile.am: Added raptor_rfc2396.c and raptor_rfc2396_test
+	Link all tests with librdf.la $(LIBS)
+
+	* raptor_rfc2396.c: RFC2396 URI detail
+
+	* raptor_uri.c: Remove old URI resolving code.
+
+	* raptor_xml.c, raptor_parse.c, raptor_sequence.c, raptor_set.c,
+	raptor_stringbuffer.c, raptor_nfc_test.c: Use raptor_basename in
+	test code main()
+
+	* raptor_general.c (raptor_basename): Added
+
+	* raptor_rdfxml.c: correct comment
+
+	* Makefile.am: Run tests raptor_set_test and raptor_xml_test
+	only if rdf/xml is enabled.
+
+	* raptor_parse.c (raptor_stats_print):
+	Print rdfxml stats only if rdf/xml is enabled.
+
+	* Makefile.am: Change test to be raptor_parse_test
+	Use raptor_rdfxml.c only if rdf/xml enabled.
+
+	* raptor.h: Export raptor_xml_literal_datatype_uri_string_len
+
+	* raptor_internal.h: Declare raptor_delete_parser_factories.
+
+	* raptor_parse.c, raptor_general.c:
+	Moved the following parser related functions and methods to
+	raptor_parse.c:
+	raptor_default_generate_id_handler,
+	raptor_delete_parser_factories, raptor_feature_from_uri,
+	raptor_features_enumerate, raptor_free_parser, raptor_generate_id,
+	raptor_get_feature, raptor_get_label, raptor_get_locator,
+	raptor_get_mime_type, raptor_get_name, raptor_get_parser_factory ,
+	raptor_guess_parser_name, raptor_new_parser,
+	raptor_new_parser_for_content, raptor_parse_abort,
+	raptor_parse_chunk, raptor_parse_file, raptor_parse_file_stream,
+	raptor_parse_uri, raptor_parse_uri_with_connection,
+	raptor_parse_uri_write_bytes, raptor_parser_error,
+	raptor_parser_error_varargs, raptor_parser_fatal_error,
+	raptor_parser_fatal_error_varargs, raptor_parser_register_factory,
+	raptor_parser_simple_error, raptor_parser_warning,
+	raptor_parser_warning_varargs, raptor_parsers_enumerate,
+	raptor_set_default_generate_id_parameters, raptor_set_error_handler,
+	raptor_set_fatal_error_handler, raptor_set_feature,
+	raptor_set_generate_id_handler, raptor_set_parser_strict,
+	raptor_set_statement_handler, raptor_set_warning_handler,
+	raptor_start_parse, raptor_stats_print, raptor_syntax_name_check,
+	raptor_syntaxes_enumerate
+
+	* raptor_rdfxml.c: Added as copy of raptor_parse.c
+	
+	* Makefile.am: -MPL.html (MPL 1.1), +LICENSE-2.0.txt (Apache 2.0)
+
+	* README.html, LICENSE.html: -MPL1.1, +Apache2.0
+
+	* LICENSE-2.0.txt: Added.
+
+	* MPL.html: Deleted.
+
 2004-09-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/turtle/test-16.ttl, tests/turtle/test-16.out:
+	10000 triples exactly now
 
 	* raptor_sequence.c: docs
 
