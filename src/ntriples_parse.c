@@ -483,9 +483,6 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
       case '_':
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE;
 
-        /* NOTE: here: start includes _ */
-        start=p;
-
         p++;
         len--;
         parser->locator.column++;
@@ -501,6 +498,9 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         len--;
         parser->locator.column++;
         parser->locator.byte++;
+
+        /* start after _: */
+        start=p;
 
         while(len>0 && isalnum(*p)) {
           p++;
