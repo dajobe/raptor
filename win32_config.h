@@ -47,6 +47,9 @@ extern "C" {
 /* MS names for these functions */
 #define vsnprintf _vsnprintf
 #define snprintf _snprintf
+#define access _access
+#define stricmp _stricmp
+#define strnicmp _strnicmp
 
 #define HAVE_C99_VSNPRINTF 1
 
@@ -55,7 +58,31 @@ extern "C" {
 #define R_OK 4
 #endif
 
+/* __func__ doesn't exist in Visual Studio 6 */
+#define __func__ ""
+
+/* 
+ * Defines that come from config.h
+ */
+
+/* Release version as a decimal */
+#define RAPTOR_VERSION_DECIMAL 10300
+
+/* Major version number */
+#define RAPTOR_VERSION_MAJOR 1
+
+/* Minor version number */
+#define RAPTOR_VERSION_MINOR 3
+
+/* Release version number */
+#define RAPTOR_VERSION_RELEASE 0
+
+/* Version number of package */
+#define VERSION "1.3.0"
+
 #include <windows.h>
+#include <io.h>
+#include <memory.h>
 
 #ifdef __cplusplus
 }
