@@ -417,10 +417,10 @@ AC_MSG_CHECKING(for redland sources in parent directory)
 if test -d $srcdir/../librdf -a -r $srcdir/../librdf/rdf_node.c ; then
   have_redland=1
   AC_MSG_RESULT(yes)
+  AC_DEFINE(RAPTOR_IN_REDLAND)
 else
   AC_MSG_RESULT(no)
 fi
-AC_DEFINE(RAPTOR_IN_REDLAND)
 
 
 # Make final changes to cflags
