@@ -40,15 +40,15 @@ README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
 autogen.sh \
 raptor.spec.in \
-dc.rdf \
-raptor_cc.gperf \
-raptor_cc.c raptor_uri.c
+dc.rdf
+# raptor_cc.gperf \
+# raptor_cc.c raptor_uri.c
 
 SUBDIRS= \
 	tests \
 	win32
 
-TESTS=raptor_cc_test raptor_uri_test
+#TESTS=raptor_cc_test raptor_uri_test
 
 # Why is this not in the default makefile?
 CC=@CC@
@@ -86,17 +86,17 @@ README: README.html
 NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
-raptor_cc.c : raptor_cc.gperf
-	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $? > $@
-
+#raptor_cc.c : raptor_cc.gperf
+#	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $? > $@
+#
 
 # Some people need a little help ;-)
-test: check
-
-raptor_cc_test: raptor_cc.c libraptor.la
-	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
-
-raptor_uri_test: raptor_uri.c libraptor.la
-	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+#test: check
+#
+#raptor_cc_test: raptor_cc.c libraptor.la
+#	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
+#
+#raptor_uri_test: raptor_uri.c libraptor.la
+#	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 @SET_MAKE@
