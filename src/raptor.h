@@ -126,11 +126,9 @@ void raptor_print_locator(FILE *stream, raptor_locator* locator);
 
 void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 
-#ifdef RAPTOR_INTERNAL
 /* URI functions */
 raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_string);
 raptor_uri* raptor_copy_uri(raptor_uri *uri);
-#endif
 
 
 #ifndef LIBRDF_INTERNAL
