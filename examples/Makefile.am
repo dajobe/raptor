@@ -18,16 +18,11 @@
 # full license terms.
 # 
 
-EXAMPLES=raptor_abort
-GUI_EXAMPLES=grapper
+EXTRA_PROGRAMS = raptor_abort grapper
 
-# Need this so that automake doesn't moan
-noinst_PROGRAMS = $(EXAMPLES)
-EXTRA_PROGRAMS = $(GUI_EXAMPLES)
+examples: grapper
 
-CLEANFILES=$(EXAMPLES) $(GUI_EXAMPLES)
-
-examples: $(EXAMPLES)
+CLEANFILES = $(EXTRA_PROGRAMS)
 
 AM_CFLAGS=@CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
