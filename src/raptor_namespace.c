@@ -95,7 +95,7 @@ void
 raptor_namespaces_init(raptor_namespace_stack *nstack,
                        raptor_uri_handler *uri_handler,
                        void *uri_context,
-                       raptor_internal_message_handler error_handler,
+                       raptor_simple_message_handler error_handler,
                        void *error_data)
 {
   nstack->top=NULL;
@@ -116,7 +116,7 @@ int
 raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
                                   const unsigned char *prefix, 
                                   const unsigned char *ns_uri_string, int depth,
-                                  raptor_internal_message_handler error_handler,
+                                  raptor_simple_message_handler error_handler,
                                   void *error_data)
 
 {
@@ -205,7 +205,7 @@ raptor_namespace*
 raptor_namespace_new(raptor_namespace_stack *nstack,
                      const unsigned char *prefix, 
                      const unsigned char *ns_uri_string, int depth,
-                     raptor_internal_message_handler error_handler,
+                     raptor_simple_message_handler error_handler,
                      void *error_data)
 {
   int prefix_length=0;
