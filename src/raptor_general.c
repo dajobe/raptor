@@ -1750,6 +1750,27 @@ raptor_check_ordinal(const unsigned char *name) {
 }
 
 
+
+/**
+ * raptor_free_memory - Free memory allocated inside raptor.
+ * @ptr: memory pointer
+ * 
+ * Some systems require memory allocated in a library to
+ * be deallocated in that library.  This function allows
+ * memory allocated by raptor to be freed.
+ *
+ * Examples include the result of the '_to_' methods that returns
+ * allocated memory such as raptor_uri_to_filename() or
+ * raptor_uri_to_string().
+ *
+ **/
+void
+raptor_free_memory(void *ptr)
+{
+  return RAPTOR_FREE(void, ptr);
+}
+
+
 #if defined (RAPTOR_DEBUG) && defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
 
 #undef malloc

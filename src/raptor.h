@@ -245,6 +245,9 @@ RAPTOR_API int raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
 RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
+/* memory functions */
+RAPTOR_API void raptor_free_memory(void *ptr);
+
 /* URI functions */
 RAPTOR_API raptor_uri* raptor_new_uri(const unsigned char *uri_string);
 RAPTOR_API raptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_name);
