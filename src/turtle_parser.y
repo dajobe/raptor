@@ -5,7 +5,7 @@
  * $Id$
  *
  * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -120,6 +120,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
   raptor_identifier *identifier;
   raptor_sequence *sequence;
   raptor_uri *uri;
+  int integer; /* 0+ for a xsd:nonNegativeInteger datatyped RDF literal */
 }
 
 
@@ -142,6 +143,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token <uri> QNAME_LITERAL
 %token <string> PREFIX
 %token <string> IDENTIFIER
+%token <integer> INTEGER_LITERAL
 
 /* syntax error */
 %token ERROR
@@ -616,6 +618,18 @@ URI_LITERAL
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
   else
     $$=NULL;
+}
+| INTEGER_LITERAL
+{
+  unsigned char *string;
+  raptor_uri *uri;
+#if RAPTOR_DEBUG > 1  
+  printf("resource integer=%d\n", $1);
+#endif
+  string=(unsigned char*)malloc(32); /* FIXME */
+  sprintf((unsigned char*)string, "%d", $1);
+  uri=raptor_new_uri("http://www.w3.org/2001/XMLSchema#nonNegativeInteger");
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
 }
 
 
