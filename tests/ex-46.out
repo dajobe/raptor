@@ -45,10 +45,9 @@
 <http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "abc" .
 <http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> "abc" .
 <http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "abc" .
-<http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:jnode2 .
-_:jnode1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://example.org/node2> .
+<http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:node2 .
+_:node1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://example.org/node2> .
 <http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "apples" .
-# 'Literal'
 <http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "pears"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "oranges"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "10"^^<http://www.w3.org/2000/10/XMLSchema#decimal> .
