@@ -1166,6 +1166,18 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
 }
 
 
+#ifdef RAPTOR_DEBUG
+void
+raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
+{
+  if(!strcmp(rdf_parser->factory->name, "rdfxml")) {
+    fputs("raptor parser stats\n  ", stream);
+    raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+    raptor_xml_parser_stats_print(rdf_xml_parser, stream);
+  }
+}
+#endif
+
 
 
 
