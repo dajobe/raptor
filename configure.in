@@ -157,7 +157,7 @@ fi
 
 LIBS="$oLIBS"
 
-AC_CHECK_PROG(XML_CONFIG, xml-config, xml-config)
+AC_CHECK_PROGS(XML_CONFIG, xml2-config xml-config)
 
 
 have_libxml=0
@@ -184,7 +184,8 @@ if test "X$XML_CONFIG" != X; then
     have_libxml_lib=1
     have_libxml=1
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
-    AC_MSG_RESULT(yes)
+    LIBXML_VERSION=`$XML_CONFIG --version`
+    AC_MSG_RESULT(yes - version $LIBXML_VERSION)
   else
     AC_MSG_RESULT(no)
   fi
@@ -302,7 +303,7 @@ if test $need_libxml = 1; then
   if test $need_libxml_source = 1; then
     xml_parsers_available="$xml_parsers_available libxml(source)"
   else
-    xml_parsers_available="$xml_parsers_available libxml(system)"
+    xml_parsers_available="$xml_parsers_available libxml(system $LIBXML_VERSION)"
   fi
 fi
 if test $need_expat = 1; then
@@ -342,5 +343,4 @@ AC_OUTPUT(Makefile raptor.spec win32/Makefile)
 AC_MSG_RESULT([
 Raptor build summary:
   XML parser: $xml_parsers_available
-
 ])
