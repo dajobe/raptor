@@ -360,6 +360,50 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 }
 
 
+static void
+raptor_parse_uri_write_bytes(raptor_www* www,
+                             void *userdata, const void *ptr, size_t size, size_t nmemb)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)userdata;
+  int len=size*nmemb;
+  
+  int is_end=(len < RAPTOR_READ_BUFFER_SIZE);
+  if(raptor_parse_chunk(rdf_parser, ptr, len, is_end))
+    www->status=1;
+}
+
+
+/**
+ * raptor_parse_uri - Retrieve the RDF/XML content at URI
+ * @rdf_parser: parser
+ * @uri: URI of RDF content
+ * @base_uri: the base URI to use (or NULL if the same)
+ * 
+ * Return value: non 0 on failure
+ **/
+int
+raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
+                 raptor_uri *base_uri)
+{
+  raptor_www *www=raptor_www_new();
+
+  if(!www)
+    return 1;
+
+  raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
+                                     rdf_parser);
+
+  if(raptor_start_parse(rdf_parser, base_uri))
+    return 1;
+
+  raptor_www_fetch(www, uri);
+
+  raptor_www_free(www);
+
+  return www->status;
+}
+
+
 /*
  * raptor_parser_fatal_error - Fatal Error from a parser - Internal
  **/
