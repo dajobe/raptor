@@ -20,19 +20,18 @@
 
 
 bin_PROGRAMS = rdfdump
-lib_LIBRARIES = libraptor.a
+lib_LTLIBRARIES = libraptor.la
 
 include_HEADERS = raptor.h ntriples.h
 
-# RDF/XML parser - Raptor
-rdfdump_LDADD = libraptor.a
+# Create the test program, statically linked (easier to debug)
+rdfdump_SOURCES = rdfdump.c
+rdfdump_LDADD = libraptor.la
+rdfdump_LDFLAGS = -static
 
-libraptor_a_SOURCES = raptor_parse.c ntriples_parse.c
+libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c
 
-libraptor_a_LIBADD = @XML_OBJS@
-libraptor_a_DEPENDENCIES = @XML_OBJS@
-
-EXTRA_libraptor_a_SOURCES = rdfdump.c
+libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 
 
 EXTRA_DIST=ChangeLog \
