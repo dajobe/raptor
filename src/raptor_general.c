@@ -487,6 +487,24 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 }
 
 
+/* 
+ * Thanks to the patch in this Debian bug for the solution
+ * to the crash inside vsnprintf on some architectures.
+ *
+ * "reuse of args inside the while(1) loop is in violation of the
+ * specs and only happens to work by accident on other systems."
+ *
+ * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=104325 
+ */
+
+#ifndef va_copy
+#ifdef __va_copy
+#define va_copy(dest,src) __va_copy(dest,src)
+#else
+#define va_copy(dest,src) (dest) = (src)
+#endif
+#endif
+
 /* Compatiblity wrapper */
 char*
 raptor_vsnprintf(const char *message, va_list arguments) 
@@ -494,16 +512,24 @@ raptor_vsnprintf(const char *message, va_list arguments)
   char empty_buffer[1];
   int len;
   char *buffer=NULL;
+  va_list args_copy;
 
 #ifdef HAVE_C99_VSNPRINTF
-  len=vsnprintf(empty_buffer, 1, message, arguments)+1;
+  /* copy for re-use */
+  va_copy(args_copy, arguments);
+  len=vsnprintf(empty_buffer, 1, message, args_copy)+1;
+  va_end(args_copy);
+
   if(len<=0)
     return NULL;
   
   buffer=(char*)RAPTOR_MALLOC(cstring, len);
-  if(!buffer)
-    return NULL;
-  vsnprintf(buffer, len, message, arguments);
+  if(buffer) {
+    /* copy for re-use */
+    va_copy(args_copy, arguments);
+    vsnprintf(buffer, len, message, args_copy);
+    va_end(args_copy);
+  }
 #else
   /* This vsnprintf doesn't return number of bytes required */
   int size=2;
@@ -511,9 +537,13 @@ raptor_vsnprintf(const char *message, va_list arguments)
   while(1) {
     buffer=(char*)RAPTOR_MALLOC(cstring, size+1);
     if(!buffer)
-      return NULL;
+      break;
     
-    len=vsnprintf(buffer, size, message, arguments);
+    /* copy for re-use */
+    va_copy(args_copy, arguments);
+    len=vsnprintf(buffer, size, message, args_copy);
+    va_end(args_copy);
+
     if(len>=0)
       break;
     RAPTOR_FREE(cstring, buffer);
