@@ -35,3 +35,15 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource13> <http://example.org/property> <http://example.org/resource2>.
 <http://example.org/resource14> <http://example.org/property> "x".
 <http://example.org/resource15> <http://example.org/property> _:anon.
+
+# \u and \U escapes
+# latin small letter e with acute symbol \u00E9 - 3 UTF-8 bytes #xC3 #A9
+<http://example.org/resource16> <http://example.org/property> "\u00E9" .
+# Euro symbol \u20ac  - 3 UTF-8 bytes #xE2 #x82 #xAC
+<http://example.org/resource17> <http://example.org/property> "\u20AC" .
+# ? symbol \U001FFFFF - 4 UTF-8 bytes #xF7 #xBF #xBF #xBF
+<http://example.org/resource18> <http://example.org/property> "\U001FFFFF" .
+# ? symbol \U03FFFFFF - 5 UTF-8 bytes #xFB #xBF #xBF #xBF #xBF
+<http://example.org/resource19> <http://example.org/property> "\U03FFFFFF" .
+# ? symbol \U7FFFFFFF - 6 UTF-8 bytes #xFD #xBF #xBF #xBF #xBF #xBF
+<http://example.org/resource20> <http://example.org/property> "\U7FFFFFFF" .
