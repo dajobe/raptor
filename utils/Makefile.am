@@ -33,7 +33,8 @@ rdfdump_SOURCES = rdfdump.c
 rdfdump_LDADD = libraptor.la @REDLAND_LIBS@
 rdfdump_DEPENDENCIES = @REDLAND_LIBS@
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
-raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c
+raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
+raptor_namespace.c raptor_qname.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
@@ -53,7 +54,7 @@ $(man_MANS)
 
 SUBDIRS= debian tests win32
 
-TESTS=raptor_cc_test raptor_uri_test strcasecmp_test
+TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test
 
 # Use tar, whatever it is called (better be GNU tar though)
 TAR=@TAR@
@@ -107,6 +108,9 @@ raptor_cc_test: $(srcdir)/raptor_cc.c libraptor.la
 
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+
+raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/raptor_namespace.c libraptor.la $(LIBS)
 
 strcasecmp_test: $(srcdir)/strcasecmp.c
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -static $(srcdir)/strcasecmp.c
