@@ -820,7 +820,8 @@ raptor_xml_start_element_handler(void *user_data,
     /* Round 2 - turn string attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
-    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, ns_attributes_count, 
+    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, 
+                                              ns_attributes_count, 
                                               sizeof(raptor_qname*));
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -930,9 +931,9 @@ raptor_xml_start_element_handler(void *user_data,
 
   } /* end if ns_attributes_count */
 
-  sax2_element->attributes=named_attrs;
-  sax2_element->attribute_count=ns_attributes_count;
-
+  if(named_attrs)
+    raptor_sax2_element_set_attributes(sax2_element, 
+                                       named_attrs, ns_attributes_count);
   raptor_sax2_element_push(rdf_xml_parser->sax2, sax2_element);
 
   raptor_element_push(rdf_xml_parser, element);
