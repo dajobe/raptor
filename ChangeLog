@@ -1,5 +1,51 @@
 2005-01-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_serialize.c:
+	Add XML Writer to raptor_rdfxml_serializer_context, delete depth.
+	(raptor_rdfxml_serialize_init): Delete depth stuff.
+	(raptor_rdfxml_serialize_terminate): Tidy up xml writer, namespaces
+	and rdf:RDF element.
+	(raptor_rdfxml_serialize_declare_namespace): Don't copy uri, prefixes
+	since raptor_new_namesapce_from_uri copies them anyway.
+	(raptor_rdfxml_serialize_start): Convert to use xml writer.
+	(raptor_rdfxml_serialize_write_xml_attribute): Deleted.
+	(raptor_rdfxml_serialize_statement, raptor_rdfxml_serialize_end):
+	Convert to use xml writer.
+
+	* raptor_xml_writer.c (raptor_xml_writer_empty_element):
+	Ensure namespace declarations
+	are removed at end of element.
+
+	* raptor.h: Added raptor_namespaces_find_namespace_by_uri
+
+	* raptor_namespace.c (raptor_namespaces_find_namespace_by_uri): Added.
+
+	* libraptor.3, raptor_sax2.c, raptor_rss.c, raptor.h:
+	raptor_xml_declare_namespace renamed to
+	raptor_xml_element_declare_namespace
+
+	* raptor_rss.c (raptor_rss10_build_xml_names):
+	Use raptor_xml_declare_namespace
+
+	* raptor_rss.c:
+	9raptor_rss10_build_xml_names): Use raptor_xml_declare_namespace
+
+	* raptor_sax2.c, raptor.h:
+	raptor_sax2_declare_namespace renamed to raptor_xml_declare_namespace
+
+	* raptor_serialize.c (raptor_new_serializer):
+	Default to emitting relative URIs
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_ok_xml_name): Deleted.
+	(raptor_rdfxml_serialize_statement): Replace use of
+	raptor_rdfxml_serialize_ok_xml_name with raptor_xml_name_check for
+	XML 1.0 names.
+
+	* raptor_sax2.c, raptor_rdfxml.c, raptor.h, libraptor.3:
+	Rename raptor_xml_element_get_element to raptor_xml_element_get_name
+
+	* raptor_rss.c: Added rss:image and rss:textinput properties
+
 	* raptor_rss.c (raptor_rss10_store_statement):
 	Don't lose statements that are about
 	a known type node, but of unknown predicate.
