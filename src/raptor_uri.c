@@ -751,8 +751,9 @@ raptor_uri_init(void)
   raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
 }
 
+
 /**
- * raptor_uri_path_common_base_length - Return the common base length of two paths
+ * raptor_uri_path_common_base_length - Find the common base length of two URI path components
  * @first_path: The first path (path only, not a full URI)
  * @first_path_len: Length of first_path
  * @second_path: The second path (path only, not a full URI)
@@ -772,11 +773,12 @@ raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first
   /* Compare each path component of first_path and second_path until there is
      a mismatch. Then return the length from the start of the path to the last
      successful match. */
-  while ((cur_ptr=(const unsigned char*)memchr(cur_ptr, '/', first_path_len))) {
+  while((cur_ptr=(const unsigned char*)memchr(cur_ptr, '/', first_path_len))) {
     cur_ptr++;
     if(strncmp((const char*)first_path+common_len,
                (const char*)second_path+common_len, cur_ptr-prev_ptr))
       break;
+
     first_path_len -= cur_ptr - prev_ptr;
     prev_ptr=cur_ptr;
     common_len = prev_ptr - first_path;
@@ -784,8 +786,9 @@ raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first
   return prev_ptr - first_path;
 }
 
+
 /**
- * raptor_uri_path_make_relative_path - Return a relative path
+ * raptor_uri_path_make_relative_path - Make a relative URI path
  * @from_path: The base path (path only, not a full URI)
  * @from_path_len: Length of the base path
  * @to_path: The reference path (path only, not a full URI)
@@ -807,7 +810,8 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
   const unsigned char *cur_ptr, *prev_ptr;
   unsigned char *final_path, *final_path_cur;
 
-  common_len=raptor_uri_path_common_base_length(from_path, from_path_len, to_path, to_path_len);
+  common_len=raptor_uri_path_common_base_length(from_path, from_path_len,
+                                                to_path, to_path_len);
   
   if(result_length_p)
     *result_length_p=0;
