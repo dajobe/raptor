@@ -641,7 +641,7 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_qname* el_name;
   raptor_sax2* sax2;
   unsigned char **xml_atts_copy=NULL;
-  size_t xml_atts_size;
+  size_t xml_atts_size=0;
   int all_atts_count=0;
   int ns_attributes_count=0;
   raptor_qname** named_attrs=NULL;

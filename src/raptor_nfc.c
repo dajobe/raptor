@@ -203,8 +203,8 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
   int is_start;
   size_t offset;
   
-  raptor_nfc_code_flag prev_char_flag;
-  unsigned long prev_char;
+  raptor_nfc_code_flag prev_char_flag=(raptor_nfc_code_flag)0;
+  unsigned long prev_char=0L;
   int prev_class;
   
   start=string;
@@ -215,7 +215,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
   while(offset < len) {
     unsigned long unichar;
     int unichar_len;
-    int combining_class;
+    int combining_class=0;
     raptor_nfc_code_flag flag;
     
     unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);

@@ -453,7 +453,7 @@ raptor_iostream_write_sax2_element(raptor_iostream* iostr,
                                    void *error_data,
                                    int depth)
 {
-  struct nsd *nspace_declarations;
+  struct nsd *nspace_declarations=NULL;
   size_t nspace_declarations_count=0;  
   unsigned int i;
 

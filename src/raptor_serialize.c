@@ -1004,7 +1004,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 {
   /* raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context; */
   raptor_iostream* iostr=serializer->iostream;
-  unsigned char* uri_string; /* predicate URI */
+  unsigned char* uri_string=NULL; /* predicate URI */
   unsigned char* name=NULL;  /* where to split predicate name */
   unsigned char* output_uri_string;
   int name_is_rdf_ns=0;

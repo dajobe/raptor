@@ -607,7 +607,7 @@ main(int argc, char *argv[])
     size_t count;
 
     /* for _to_file */
-    FILE *handle;
+    FILE *handle=NULL;
     /* for _to_string */
     void *string;
     size_t string_len;
