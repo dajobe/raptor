@@ -1,0 +1,1938 @@
+2004-06-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* ntriples_parse.c (raptor_ntriples_parse_line):
+	Make language on a datatyped literal a warning.
+
+2004-06-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: Added raptor_alloc_memory.  Note where and why it and
+	raptor_free_memory may need to be used in the descriptiona
+	and next to the methods that it applies to.
+
+	* raptor_general.c, raptor.h: Added raptor_alloc_memory. Docs.
+
+2004-06-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac:
+	Added --with-expat-source option to build against an external
+	expat source.
+	Handle old and new style expat source areas.
+	Report expat source dir in summary.
+	Tidy up default messages.
+	Only use expat subdir if it exists.
+
+	* tests/Makefile.am:
+	AM_LDFLAGS does not need LIBS, libraptor.la includes it all.
+
+2004-06-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am: Zap extra $@ on rule line
+
+2004-06-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: pkg-config is too noisy on errors
+
+	* configure.ac:
+	Only muck about with removing -O2 from flags in maintainer mode.
+
+2004-06-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am:
+	Added local distclean-compile rule to override the insane
+	one automake uses by default: rm -f *.tab.c
+
+	* configure.ac: Bumped version to 1.3.2
+
+	* Snapshotted raptor_1_3_1 for 1.3.1 release
+	
+	* tests/Makefile.am: add CLEANFILES
+
+	* tests/Makefile.am:
+	Added TESTS with raptor_empty_test the only one right now.
+	Added C include, linking lines
+
+	* tests/empty.c: Test of empty C file, just using raptor.h work
+
+	* raptor_uri.c (raptor_uri_filename_to_uri_string,
+	raptor_uri_uri_string_to_filename_fragment): Casts and
+	char/unsigned char fixes for C++
+
+2004-06-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_uri.c (raptor_default_new_uri): Avoid free(NULL) for filename.
+
+	* raptor_general.c (raptor_parse_file): Check before fopen that it
+	is not a directory attempting to be fopen()ed - unix only, with
+	lstat.
+
+	* raptor_www.c (raptor_www_file_fetch): Check before fopen that it
+	is not a directory attempting to be fopen()ed - unix only, with
+	lstat.
+
+	* rdfdump.c: Add error for failure of raptor_uri_filename_to_uri_string
+
+	* raptor_uri.c (raptor_uri_filename_to_uri_string):
+	Unix malloc too large by 2.
+
+	* raptor_uri.c (raptor_default_new_uri): Zero fragment pointer.
+
+	* raptor_uri.c (raptor_default_new_uri): Do not use a NULL filename.
+
+	* raptor_uri.c (raptor_uri_uri_string_to_filename_fragment):
+	Fail if the URI has no path or was going to return an empty string.
+	(assert_filename_to_uri): Test code allow checks for NULL.
+	(main): Test code for silly URIs that should work or fail.
+
+2004-06-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h: Added RAPTOR_FATAL3
+
+	* raptor_uri.c: Fix win32 file/URI encoding to use file:///name
+	and escape things better.
+	(raptor_uri_filename_to_uri_string): Calculate new length correctly,
+	with %-escaping.
+	(raptor_uri_uri_string_to_filename_fragment): Calculate new format.
+	Also do less strlen, strcpy.
+	(main): Change tests to match new win32 file URI, test %-escaping
+	and %-unescaping correctly.
+
+2004-06-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_uri.c:
+	NOTE: Not all below is fully working - 3 tests fail at this point.
+	(raptor_uri_filename_to_uri_string): %-escape ' ' and '%' at least
+	as a minimum.  Document this.  On Windows, generate file:///c:/ ...
+	not c|
+	(raptor_uri_uri_string_to_filename_fragment): Add %-unescaping.
+	(main): Added test cases for %-escaping, %-expanding
+
+	* Makefile.am: Added raptor_uri_win32_test
+
+2004-06-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/turtle/rdfq-results.ttl:
+	Updated to
+	http://www.w3.org/2003/03/rdfqr-tests/recording-query-results.html
+	CVS $Id: recording-query-results.html,v 1.9 2004/06/03 12:41:37 aseaborne Exp $
+
+2004-05-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_parser_error_varargs,
+	raptor_parser_warning_varargs): Chop off trailing \n from messages.
+
+	* raptor_libxml.c (raptor_libxml_error):
+	Chop off trailing \n correctly.
+
+2004-05-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_lexer.l: Set the uri union field for ':' qname.
+
+	* turtle_parser.y (raptor_turtle_parse_start):
+	Delete any existing buffer content before
+	starting.
+
+	* raptor_general.c:
+	Added feature warn_other_parseTypes, default true in lax mode.
+
+	* raptor_parse.c:
+	Added feature warn_other_parseTypes and used to warn when a parseType
+	Literal is assumed.
+
+	* raptor_internal.h: Added feature warn_other_parsetypes
+
+	* raptor.h: Aded feature warn_other_parsetypes
+
+	* tests/warn-07.out, tests/warn-07.rdf: Replaced by warn-07
+
+	* tests/Makefile.am: Remove ex-50, warn-07 covers it
+
+	* tests/ex-50.out, tests/ex-50.rdf: Replaced by warn-07
+
+	* tests/Makefile.am: Add warn-07
+	Check for right values for warning tests, not just presence of a
+	warning.
+
+2004-05-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* autogen.sh: Add --enable-maintainer-mode
+
+	* configure.ac:
+	Add check for glib-2.0 presence rather than an error barf.
+
+2004-05-28  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am:
+	Add set +e, set -e around multiple tests so they only fail at the end.
+
+	* configure.ac: Only check flex version in maintainer mode
+
+	* Makefile.am: Re-order directives and tidy up.
+	Make lex and yacc rules be maintainer only.
+
+	* Makefile.am: Use automakefile conditionals STRCASECMP and GETOPT
+	for conditional sources.
+
+	* configure.ac: Use automakefile conditionals STRCASECMP and GETOPT
+
+2004-05-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: check for perl
+
+	* Makefile.am: Add fix-flex and use it
+
+	* fix-flex: Fix flex output
+
+	* raptor_internal.h: Added raptor_libxml_free
+
+	* raptor_parse.c (raptor_xml_parse_start, raptor_xml_parse_terminate):
+	Use
+	raptor_libxml_free to tidy up.
+
+	* raptor_libxml.c (raptor_libxml_free):
+	Added to tidy up after a parsing.
+
+	* raptor_parse.c (raptor_xml_parse_terminate):
+	Clean up sax2_element stack after
+	errors.
+
+2004-05-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_lexer.l: Allow _ after : in qnames.
+	Make bare ':' work.
+
+	* tests/turtle/rdf-schema.out, tests/turtle/rdf-schema.ttl:
+	RDF namespace document
+
+	* tests/turtle/rdfs-namespace.out, tests/turtle/rdfs-namespace.ttl:
+	RDFS namespace
+
+	* tests/turtle/Makefile.am: Added test-13, rdf-schema, rdfs-namespace
+
+	* tests/turtle/test-13.out, tests/turtle/test-13.ttl: test bare :
+
+	* turtle_parser.y: Fix RAPTOR_DEBUG args in old format.
+
+	* tests/turtle/Makefile.am: Added test-12
+
+	* tests/turtle/test-12.out, tests/turtle/test-12.ttl:
+	test for _ after : in qnames
+
+	* libraptor.3:
+	Describe use of UTF-8 for literals and strings
+
+	* libraptor.3: 1.3.1 changes
+
+2004-05-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: Added RAPTOR_STATIC for WIN32 when statically linking
+	Fix raptor_print_statement arg s/const//
+
+2004-05-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_free_memory, raptor_system_free):
+	Do not return, no return value.
+
+2004-05-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/turtle/rdfq-results.ttl, tests/turtle/rdfq-results.out:
+	Replace XML Schema namespace with 2001 versi
+
+2004-05-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c: Includes re-order, doc
+
+	* rdfdump.c: don't do stdarg.h here - it should be in raptor.h
+
+	* raptor.h:
+	Add include for stdarg.h to get va_list for raptor_vsnprintf
+
+	* raptor_xml.c (raptor_xml_escape_string):
+	q should be an unsigned char*
+
+	* raptor_utf8.c (raptor_unicode_char_to_utf8):
+	Cast for unsigned long to unsigned char
+
+	* raptor_parse.c (raptor_xml_start_element_handler): Cast for memcpy.
+
+	* win32_config.h: patch from Jose for VC6
+
+2004-05-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* ntriples_parse.c (raptor_ntriples_generate_statement):
+	Remove use of ntriples_parser,
+	not used.
+
+2004-05-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.spec.in: SNAP
+
+2004-05-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_parser.y, turtle_common.h, ntriples_parse.c:
+	Do not allow any language with datatype literals.
+
+	* tests/turtle/Makefile.am: add zip, tests.zip targets
+
+2004-05-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Bumped version to 1.3.1
+
+	* Snapshotted raptor_1_3_0 for 1.3.0 release
+
+	* turtle_lexer.l: Allow - in qnames, prefix qnames.
+
+	* tests/turtle/Makefile.am: Added test-11
+
+	* tests/turtle/test-11.out, tests/turtle/test-11.ttl:
+	- and _ in qnames, prefixes
+
+2004-05-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_sequence.c, raptor_internal.h: Add assert macros
+
+2004-05-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c, raptor.h:
+	Export raptor_xml_literal_datatype_uri_string
+
+	* raptor_internal.h:
+	raptor_xml_literal_datatype_uri_string now exported.
+
+	* libraptor.3: Added 1.3.0 items
+
+	* raptor_general.c (raptor_parse_uri_with_connection): Document
+	the Accept: header malarky.  Only send it if connection is NULL.
+	Use Accept: MIME-TYPE,*/*;q=0.1
+
+	* raptor_www_curl.c (raptor_www_curl_fetch): append to slist right
+
+	* raptor_general.c (raptor_parse_uri_with_connection): Send
+	"Accept: MIME-TYPE ;*/*" to prefer the specified one rather than
+	accept only that.
+
+	* raptor.h: Added raptor_get_mime_type
+
+	* raptor_general.c (raptor_parse_uri_with_connection):
+	Set Accept header with mime type of this syntax if there is one
+
+	* raptor_www.c (raptor_www_set_http_accept):
+	Make accept value overwrite \0 from Accept:
+
+	* configure.ac: make raptor.rdf
+
+	* turtle_parser.y, raptor_www_libxml.c, raptor_parse.c,
+	ntriples_parse.c: Fixes for c++
+
+	* Makefile.am: added raptor.rdf.in
+
+	* raptor.rdf.in: DOAP
+
+2004-05-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_parser.y: Add xml_literal_datatype_uri to parser context.
+	(raptor_turtle_parse_init,raptor_turtle_parse_terminate): use above
+	(raptor_turtle_generate_statement): Use above to remove language
+	from all literals except xml literals.
+
+	* turtle_common.h: Add xml_literal_datatype_uri to parser context.
+
+	* ntriples_parse.c: Add xml_literal_datatype_uri to parser context.
+	(raptor_ntriples_parse_init,raptor_ntriples_parse_terminate): use
+	above
+	(raptor_ntriples_generate_statement): Use above to remove language
+	from all literals except xml literals.
+
+	* raptor_identifier.c (raptor_identifier_print):
+	Use raptor_xml_literal_datatype_uri_string
+	and save a string.
+
+2004-04-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c (main):
+	Use raptor_free_memory to free memory allocated in libraptor.
+
+	* raptor_www_libxml.c (raptor_www_libxml_fetch):
+	Free content type using libxml's xmlFree
+	since it was allocated there.
+
+	* raptor_www_libxml.c, raptor_www_curl.c (raptor_www_libxml_fetch):
+	Make headers for User-Agent: and/or
+	Accept: if they were set in the raptor_www.
+
+	* raptor_www.c (raptor_www_set_http_accept): Added.
+
+	* raptor_internal.h: Added http_accept to raptor_www
+
+	* raptor.h: Added raptor_www_set_http_accept
+
+2004-04-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_guess_parser_name):
+	use strrchr to find *last* .
+
+2004-04-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_sequence.c (raptor_new_sequence): Zap sequence field.
+
+	* raptor_xml_writer.c (raptor_xml_writer_cdata):
+	Do not copy more bytes than allowed.
+
+	* Makefile.am: Added raptor_expat.c
+
+	* raptor_parse.c: Export some expat-only handlers:
+	raptor_xml_unparsed_entity_decl_handler,
+	raptor_xml_external_entity_ref_handler.
+	(raptor_xml_parse_init): Do not call expat init code here.
+	(raptor_xml_parse_start): Call new raptor_expat_init to initialise
+	parser state.
+
+	* raptor_internal.h: Added RAPTOR_XML_EXPAT only exports including
+	raptor_expat_init prototype.
+
+	* raptor_expat.c: raptor expat parser
+
+2004-04-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: Added xsd and owl namespace URIs
+
+	* raptor_namespace.c (raptor_namespaces_init):
+	Define xsd, owl when defaults is 2+
+
+2004-04-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_parse.c:
+	(raptor_xml_parse_start) Free expat/libxml contexts from an earlier parsing to ensure resetting of state
+
+	* raptor_stringbuffer.c (raptor_stringbuffer_prepend_string_common):
+	Added
+	(raptor_stringbuffer_prepend_counted_string,
+	raptor_stringbuffer_prepend_string): Added, implemented by above
+	internal function.
+	(main): Added tests for prepending.
+
+	* raptor.h: Add RAPTOR_API for newly exported functions.  Add
+	raptor_stringbuffer_prepend_counted_string,
+	raptor_stringbuffer_prepend_string
+
+	* raptor_stringbuffer.c: (main) printf arg
+
+	* raptor_internal.h, raptor.h: Moved raptor_stringbuffer to public API
+
+	* raptor_stringbuffer.c (raptor_stringbuffer_append_stringbuffer):
+	Added.
+	(main): Updated test code for raptor_stringbuffer_append_stringbuffer
+
+2004-04-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c, raptor.h (raptor_guess_parser_name):
+	Added new public class method.
+	(raptor_new_parser_for_content): Now uses above.
+
+	* raptor_internal.h, raptor.h:
+	Move raptor_unicode_char_to_utf8, raptor_utf8_to_unicode_char to
+	public API.
+
+	* INSTALL.html: consistency with librdf instructions.
+	update libxml versions.
+	update automake, autoconf minimums.
+
+	* tests/Makefile.am: fix result codes for split off NFC warnings
+
+	* tests/Makefile.am:
+	Split off NFC warnings so they can fail noisily when glib isn't
+	present to do the check.
+
+	* rapper.1:
+	Document -g/--guess flag to guess the parser to use from the
+	identifier (URI or file name).
+
+	* rdfdump.c:
+	Added -g/--guess flag to use raptor_new_parser_for_content guessing
+	the parser to use from the identifier (URI or file name).
+
+	* turtle_parser.y, raptor_rss.c, raptor_parse.c, ntriples_parse.c:
+	Added scoring factory method recognise_syntax for rdfxml, ntriples,
+	rss, turtle parsers.
+
+	* raptor_internal.h:
+	Added parser scoring factory method recognise_syntax.
+
+	* raptor_general.c (raptor_new_parser_for_content):
+	Added, guessing which parser to
+	instance using scoring factory method recognise_syntax.
+
+	* raptor.h: Added raptor_new_parser_for_content
+
+2004-04-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_sequence.c: cast for c++
+
+2004-04-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_parse.c: Removed use of raptor_print_statement_detailed
+
+	* raptor_internal.h:
+	Removed raptor_print_statement_part_as_ntriples, made static
+
+	* raptor.h: Deprecate raptor_print_statement_detailed
+
+	* raptor_general.c (raptor_print_statement_detailed):
+	Restored, was in raptor.h but useless.
+
+	* raptor_general.c: dates, docucomments
+	(raptor_print_statement_detailed): Deleted - never publically
+	documented or used.
+
+2004-04-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am: raptor_sequence_test needs to link with libraptor.la
+
+	* turtle_parser.y:
+	rename raptor_free_handler,raptor_print_handler -> as raptor_sequence...
+
+	* raptor.h, raptor_internal.h: Move sequence class to public api.
+
+	* raptor_sequence.c:
+	rename raptor_free_handler,raptor_print_handler -> as raptor_sequence...
+	(raptor_sequence_print_uri): Added.
+	(raptor_sequence_set_print_handler): Added.
+
+	* raptor_internal.h, raptor.h: Export raptor_vsnprintf public.
+
+2004-04-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_parser.y (turtle_parse): Remove un-necessary cast.
+
+	* turtle_parser.y (turtle_parse): Free lexer
+
+2004-04-05  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c:
+	Added HELP_PAD to format long help description over multiple lines.
+
+2004-03-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/turtle/test-00.out: Updated base uri
+
+	* tests/turtle/Makefile.am: Added rdfq-results
+
+	* tests/turtle/rdfq-results.out, tests/turtle/rdfq-results.ttl:
+	RDF Query result set example from
+	http://www.w3.org/2003/03/rdfqr-tests/recording-query-results.html
+
+2004-03-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c, turtle_parser.y, rdfdump.c: casts for C++
+
+	* NEWS.html: skeleton 1.3.0 news
+
+	* configure.ac, autogen.sh: Use some AM_INIT_AUTOMAKE options.
+	Require automake1.7, which requires autoconf 2.54
+
+	* examples/Makefile.am:
+	Drop $(shell .. ) which is not portable between makes
+
+	* raptor-src-config.in, raptor-config.in: emit --help usage to
+	stdout, Support --help and exit 0.
+
+2004-03-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: words
+
+	* rapper.1: Document -f
+
+	* TODO.html: bug was libxml2 not me
+
+	* tests/Makefile.am: Add bad-21
+
+	* tests/bad-21.rdf:
+	Check non-namespaced attributes on a property are reported
+
+	* raptor_parse.c (raptor_xml_start_element_handler):
+	Check element, attributes for
+	non-namespaces once we know we are in rdf processing.
+	Check all named attributes for lack of namespace, error and zap
+	if found.
+	(raptor_process_property_attributes): Skip any deleted attributes.
+
+2004-03-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am: Added warn-05, warn-06
+
+	* tests/warn-05.out, tests/warn-06.out, tests/warn-05.rdf,
+	tests/warn-06.rdf: Check for warning for unknown rdf namespaced
+	property element, attributes
+
+	* raptor_parse.c (raptor_process_property_attributes):
+	Generate an error for forbidden
+	rdf names, warning for unknown rdf names.
+
+	* raptor_parse.c: Merged rdf_attr_info into rdf_syntax_terms_info.
+	Now we can check for unknown rdf: names
+	(raptor_forbidden_nodeElement_name,
+	raptor_forbidden_propertyElement_name,
+	raptor_forbidden_propertyAttribute_name): Return -1 on unknown name.
+	(raptor_start_element_grammar): Generate an error for forbidden
+	rdf names, warning for unknown rdf names.
+
+	* tests/Makefile.am: Added warn-04
+
+	* tests/warn-04.out, tests/warn-04.rdf:
+	Check for warning for unknown rdf namespaced node element
+
+	* tests/turtle/Makefile.am, tests/Makefile.am:
+	fix grep for Warning output
+
+	* raptor_general.c, raptor.h:
+	Added raptor_free_memory to dealloc memory returned by raptor
+	functions - some systems need this due to having multiple heaps.
+
+	* raptor_general.c (raptor_default_generate_id_handler): doh
+
+	* raptor_general.c (raptor_default_generate_id_handler):
+	Rework not to use tmpid before
+	initialising it.
+
+	* raptor_general.c (main): Free returned uri
+
+	* raptor.h: Added raptor_feature_from_uri
+
+	* Makefile.am: Added raptor_general_test
+
+	* raptor_general.c (raptor_feature_from_uri):
+	Turn a feature URI into a feature number.
+	(main): Added, testing feature enumerations.
+
+	* rdfdump.c: note feature values in -f help
+
+	* rdfdump.c: More help message tidying.
+
+	* rdfdump.c: Alter HELP_TEXT macro so short arg isn't auto-quoted.
+	Use this to add short option options arg to help.
+
+2004-03-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_default_generate_id_handler):
+	Don't bump default genid
+	counter when a user_bnodeid is present.
+
+	* rdfdump.c:
+	Allow setting feature optional values -f NAME=VALUE (integer).
+
+	* raptor_general.c, raptor.h:
+	Use raptor_feature type for enumeration calls.
+
+	* raptor_general.c: Tidy feature labels
+
+	* rdfdump.c: Tidy -f help message.
+
+	* rdfdump.c: Re-ordered long_options to be alphabetical by option char.
+	Added -f/--feature FEATURE to set a parser feature.
+	With the value 'help', lists them all using raptor_features_enumerate.
+
+	* raptor.h: Added raptor_get_feature, raptor_features_enumerate.
+	raptor_set_feature gets a return value.
+
+	* raptor_general.c (raptor_set_feature):
+	Delete docs, now has an API.  Return a failure value.
+	raptor_features_list - static added.
+	(raptor_features_enumerate): Added, to allow returning
+	of parser feature name, URI and/or label.
+	(raptor_get_feature): Added.
+
+2004-03-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html: Add turtle use of raptor_generate_id
+
+	* turtle_parser.y (blank):
+	Use raptor_generate_id when a blank identifier name is
+	given, to allow application to change it.
+
+2004-03-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/turtle/test-10.out, tests/turtle/test-09.out, turtle_parser.y:
+	Make Turtle integers emit xsd:integer
+
+2004-03-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_parse.c: Twice.
+
+	* raptor_parse.c: Remove FIXME for other rdf:parseType values -
+	just fall through to Literal
+
+	* raptor_parse.c: FIXME not relevant.
+
+	* ntriples_parse.c (raptor_ntriples_generate_statement):
+	Kill a FIXME, fail with an
+	error on bad rdf:_n property.
+
+	* tests/Makefile.am: Added bad-06.nt
+
+	* tests/bad-06.nt: bad rdf:_n in ntriples
+
+2004-03-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_parser.y: Added INTEGER_LITERAL.
+	Turn it into a xsd:nonNegativeInteger
+
+	* turtle_lexer.l: Added INTEGER_LITERAL.
+
+	* tests/turtle/Makefile.am: Added test-09 test-10
+
+	* tests/turtle/test-09.out, tests/turtle/test-09.ttl,
+	tests/turtle/test-10.out, tests/turtle/test-10.ttl: Integer
+	literal tests
+
+	* tests/Makefile.am, Makefile.am:
+	Ensure rapper is up-to-date and built before tests are run.
+
+2004-03-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/warn-03.out, tests/warn-03.rdf:
+	Added warn-03 warning not dieing on NFC in XML literals
+
+	* tests/Makefile.am: Added warn-03
+
+	* raptor_parse.c (raptor_end_element_grammar):
+	For NFC problems in an XML literal,
+	take notice of feature_non_nfc_fatal which defaults to warning,
+	rather than given an error.
+
+2004-02-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/turtle/Makefile.am: Added bad-04.ttl
+
+	* tests/turtle/bad-04.ttl: Check , in collection items fails
+
+	* tests/turtle/test-07.ttl: Remove , between items - forbidden.
+
+	* turtle_parser.y (objectList):
+	Remove optional commas for triple objects.
+	(itemList): Added with no commas.
+	(collection): Use itemList not objectList.
+
+	* tests/turtle/Makefile.am: remove test-09.ttl
+
+	* tests/turtle/test-09.out, tests/turtle/test-09.ttl:
+	Comma is required or not in collections, not optional
+
+2004-02-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.spec.in: Export library la files
+
+	* turtle_parser.y (objectList):
+	Allow optional commas in lists of objects - such as in
+	all triple objects and collections.
+
+	* tests/turtle/test-09.out, tests/turtle/test-09.ttl:
+	Added test for optional comms in a collection
+
+	* tests/turtle/Makefile.am: Added test-09.ttl
+
+2004-02-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: Add stdio.h
+
+2004-02-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_lexer.l, turtle_lexer.l (main):
+	Don't re-reset the scanner to its address.
+
+	* n3_lexer.l, turtle_lexer.l: Remove RAPTOR_IN_REDLAND
+
+	* turtle_parser.y (main): Use lineno.
+
+	* turtle_parser.y: comment
+
+2004-01-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am: deps
+
+	* rapper.1: fix changelog
+
+	* Makefile.am: Make rapper.html
+
+	* rapper.1: urls
+
+2004-01-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_delete_parser_factories):
+	Free alias if it was set.
+
+2004-01-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c: Don't print (default) when listing valid args for -i
+
+	* rdfdump.c: Use raptor_syntax_name_check to check name; don't
+	make/destroy a parser.
+
+	* raptor_general.c (raptor_syntax_name_check): Added, to check names.
+
+	* raptor.h: Added raptor_syntax_name_check
+
+	* rdfdump.c: Make -i try to make a parser, don't hardcode names.
+
+	* rdfdump.c: Use raptor_syntaxes_enumerate in -i error
+
+	* rdfdump.c: Use raptor_syntaxes_enumerate in usage -i help
+
+	* rapper.1: Updated to mention Turtle.
+
+	* configure.ac: Bumped version to 1.3.0
+
+	* README.html: turtle
+
+	* Snapshotted raptor_1_2_0 for 1.2.0 release
+
+	* libraptor.3, README.html, NEWS.html: Updated for 1.2.0
+
+	* TODO.html: N-Triples Plus to Turtle
+
+2004-01-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Use AC_PROG_LEX and handle when there is no lex or
+	flex gracefully.  AM_PROG_LEX set LEX to a value that caused odd
+	configure output.
+
+2004-01-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Updated output files check from n3/ntriples plus
+	to turtle
+
+	* turtle_parser.y, raptor_rss.c, raptor_parse.c, ntriples_parse.c:
+	Update to use raptor_parser_register_factory alias argument
+	to register any old or alternate names.
+
+	* raptor_internal.h: Add alias field to raptor_parser_factory_s.
+	Add alias argument to raptor_parser_register_factory prototype.
+
+	* raptor_general.c (raptor_parser_register_factory,
+	raptor_get_parser_factory): Added an alias argument, used to
+	register a alternate name which is never used or returned in
+	parser enumerations.
+
+	* examples/grapper.c:
+	Added a tooltip for the errors/warnings output box.
+
+	* examples/grapper.c: Use G_TYPE_INT for column 1 of errors
+
+	* examples/grapper.c:
+	Added errors/warnings box, updated with results of parsing.
+
+	* Makefile.am: Added ChangeLog.1
+
+2004-01-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c: Define raptor_system_malloc, raptor_system_free
+
+	* raptor_internal.h: RAPTOR_... not LIBRDF_
+
+	* raptor_utf8.c (raptor_utf8_is_nfc): Use SYSTEM_FREE
+
+	* raptor_internal.h: Define SYSTEM_MALLOC, SYSTEM_FREE
+
+2004-01-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_parser.y: fix double free of first_identifier
+
+	* turtle_parser.y: Collections generating triples.
+
+	* turtle_common.h: Add nil/first/rest_uri fields
+
+	* tests/turtle/test-07.out: Updated as a collection test result.
+
+	* tests/turtle/Makefile.am: Added test-08
+
+	* tests/turtle/test-08.out, tests/turtle/test-08.ttl,
+	tests/turtle/test-07.ttl: collection test
+
+	* turtle_lexer.l: Added '(' and ')' for collections.
+
+	* turtle_parser.y:
+	Added collection grammar parts, triples not right yet.
+
+	* raptor_identifier.c (raptor_copy_identifier):
+	Copy literal languages correctly.
+
+	* tests/turtle/test-00.out, tests/turtle/Makefile.am,
+	tests/Makefile.am, turtle_parser.y, turtle_lexer.l,
+	turtle_common.h, raptor_internal.h, raptor_general.c,
+	configure.ac, Makefile.am:
+	N-Triples Plus to Turtle
+	n3_ in filenames to turtle_
+	.ntp to .ttl
+
+	* rdfdump.c: indenting
+
+	* rdfdump.c: Allow turtle, don't document ntriples-plus
+
+	* n3_parser.y, turtle_parser.y: Register under the name turtle
+
+2004-01-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xml_writer.c, raptor_uri.c, raptor_rss.c, raptor_qname.c,
+	raptor_parse.c, raptor_namespace.c, raptor_internal.h,
+	raptor_general.c, ntriples_parse.c: RAPTOR_ERROR* and
+	RAPTOR_FATAL* lose their function arg, using __func__
+
+	* raptor_general.c (raptor_finish):
+	Remove direct call of raptor_terminate_parser_rdfxml
+
+	* raptor_parse.c (raptor_xml_parse_finish_factory): Renamed from
+	raptor_terminate_parser_rdfxml and now static.
+
+	* raptor_internal.h: finish_factory returns void
+
+	* raptor_internal.h: Added finish_factory factory cleanup method.
+	Removed raptor_terminate_parser_rdfxml.
+
+	* raptor_general.c (raptor_delete_parser_factories):
+	Free mime type, URI string.  Call
+	new finish_factory factory method.
+
+2004-01-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c: year
+
+2004-01-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c: casts for string ops
+
+	* raptor_www.c, raptor_internal.h, configure.ac:
+	Added WWW access with BSD libfetch.
+
+	* raptor_www_libfetch.c: WWW access with BSD libfetch
+
+2003-12-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c, raptor_parse.c, ntriples_parse.c, n3_parser.y:
+	Use expanded raptor_parser_register_factory with mime_type and
+	uri_string args where appropriate.
+
+	* libraptor.3, raptor.h: Added raptor_syntaxes_enumerate
+
+	* raptor_general.c (raptor_parser_register_factory):
+	Add mime_type and uri_string args, both optional.
+	(raptor_syntaxes_enumerate): Added to get syntax name, label,
+	mime_type or uri_string - all optional.
+	(raptor_parsers_enumerate): Uses raptor_syntaxes_enumerate.
+
+	* raptor_internal.h:
+	Store parser mime_type, URI in raptor_parser_factory
+	Update raptor_parser_register_factory to take mime_type,
+	uri_string args.
+
+	* configure.ac: Bumped version to 1.2.0
+
+	* Snapshotted raptor_1_1_0 for 1.1.0 release
+
+	* configure.ac:
+	Update RAPTOR_LIBTOOL_VERSION to reflect interfaces added,
+	none removed giving current 2:0:1
+
+	* NEWS.html: 1.1.0 released 2003-12-31
+
+	* libraptor.3: nroff/man style tweaks
+
+2003-12-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: nroff/man style tweaks
+
+2003-12-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* NEWS.html: Link to W3C docs for 1.1.0
+
+	* configure.ac: words
+
+	* configure.ac: Make flex version warnings mention N-Triples Plus more
+
+2003-12-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* NEWS.html: Link to W3C docs for 1.1.0
+
+	* configure.ac: Make flex version warnings mention N-Triples Plus more
+
+2003-12-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html, README.html, NEWS.html, LICENSE.html, INSTALL.html:
+	XHTML 1 strict
+
+	* NEWS.html: Prepare for 1.1.0
+
+	* libraptor.3: bump date
+
+	* raptor_stringbuffer.c (main): Do not free as_string returned strings
+
+	* raptor_stringbuffer.c: brackets
+
+	* raptor_stringbuffer.c (raptor_free_stringbuffer):
+	Free any constructed string.
+
+	* raptor_xml_writer.c:
+	Use raptor_stringbuffer to better grow the output cdata.
+
+	* raptor_stringbuffer.c: stringbuffer now uses unsigned char
+	Removed raptor_new|free_stringbuffer_node - used once, now inlined.
+	(raptor_stringbuffer_append_string_common): Added with
+	common append code merged here.
+	(raptor_stringbuffer_append_counted_string,
+	raptor_stringbuffer_append_string): Added do_copy arg.
+	(main): Test code updated for api changes.
+
+	* raptor_internal.h:
+	Added prototypes for raptor_stringbuffer class to internal API
+
+	* Makefile.am:
+	Re-added raptor_stringbuffer.c and raptor_stringbuffer_test
+
+2003-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rapper.1: Updated for 1.1.0, -a is gone.  Added ntriples-plus
+
+	* libraptor.3: parser name is ntriples-plus
+
+	* libraptor.3: Updated for 1.1.0
+
+	* raptor.h: remove raptor_namespaces_end_namespace - does not exist.
+
+2003-12-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am:
+	Remove raptor_stringbuffer.c/test from dist - not used at present.
+
+	* configure.ac:
+	Added --with-xml-names to choose XML 1.0 name checking (default) or 1.1
+
+	* TODO.html: Added --enable-xml-1-1-names and updated to XML 1.1 PRs
+
+	* raptor_utf8.c (raptor_unicode_is_namestartchar):
+	Update to Namespaces in XML 1.1 WD
+	http://www.w3.org/TR/2003/PR-xml-names11-20031105/#NT-NCNameStartChar
+	and Extensible Markup Language (XML) 1.1 PR
+	http://www.w3.org/TR/2003/PR-xml11-20031105/#NT-NameStartChar
+	(raptor_unicode_is_namechar): Updated comment, no code changes
+	needed.
+
+	* tests/ntriplesplus/Makefile.am: No check-warn-rdf tests yet
+
+	* TODO.html: Added --disable-nfc-check to disable Unicode NFC checking.
+
+	* raptor_utf8.c:
+	Use RAPTOR_NFC_CHECK to wrap any use of the glib g_utf8_normalize.
+
+	* configure.ac: Define RAPTOR_NFC_CHECK when NFC check is needed
+
+	* configure.ac:
+	Added --disable-nfc-check to disable Unicode NFC checking even if a
+	suitable glib is present and providing it.  Otherwise, autodetects
+	as before.
+
+	* TODO.html: I claim the CDATA counting problem with libxml is a
+	libxml bug.
+
+	* TODO.html: Record win32 file://c: somewhat handled.
+
+	* TODO.html: Added --disable-nfc-check to disable Unicode NFC checking.
+
+	* raptor_utf8.c:
+	Use RAPTOR_NFC_CHECK to wrap any use of the glib g_utf8_normalize.
+
+	* configure.ac: Define RAPTOR_NFC_CHECK when NFC check is needed
+
+	* configure.ac:
+	Added --disable-nfc-check to disable Unicode NFC checking even if a
+	suitable glib is present and providing it.  Otherwise, autodetects
+	as before.
+
+	* TODO.html:
+	I claim the CDATA counting problem with libxml is a libxml bug.
+
+	* TODO.html: Record win32 file://c: somewhat handled.
+
+2003-12-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html: updates, note bug or feature
+
+	* examples/Makefile.am: Removed REDLAND_LIBS
+
+2003-12-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_parse.c:
+	Update for changed raptor_generate_id handler calls - no const.
+
+	* raptor_general.c, raptor.h, raptor_internal.h:
+	raptor_generate_id handler does not take const string
+
+	* raptor_general.c, raptor.h, raptor_internal.h:
+	raptor_generate_id returns non const
+
+	* ntriples_parse.c (raptor_ntriples_parse_line):
+	Casts, unsigned char* for blank node IDs.
+
+	* ntriples_parse.c (raptor_ntriples_parse_line):
+	Enforce predicate must be URIref
+
+2003-12-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* ntriples_parse.c (raptor_ntriples_parse_line):
+	Pass blank node identifier generation
+	through raptor_generate_id.  Rewrite returns into setting rc and jump
+	to cleanup to ensure allocated blank node IDs are freed.
+
+	* raptor.pc.in: Restore LDFLAGS, LIBS
+
+	* raptor-src-config.in: Removed --static-libs
+
+2003-12-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.pc.in: Just link -lraptor
+
+	* configure.ac:
+	Remove use of have_redland for expat sources (no longer shipped with
+	redland anyway)
+
+	* configure.ac: Remove redland source check.
+
+	* Makefile.am: No need for librdf.la rule
+
+	* rdfdump.c, raptor_stringbuffer.c, raptor_set.c,
+	raptor_namespace.c, Makefile.am: Remove all RAPTOR_IN_REDLAND code
+	use of REDLAND_LIBS, REDLAND_CFLAGS.  Now the test and rdfdump
+	programs always just use raptor alone.
+
+2003-12-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html:
+	CDATA sections do not count line numbers at all (seen with libxml)
+
+	* raptor_general.c (raptor_print_statement_part_as_ntriples):
+	Update call of raptor_print_ntriples_string
+
+	* raptor.h: Update raptor_print_ntriples_string prototype
+
+	* raptor_general.c (raptor_print_ntriples_string):
+	Take unsigned const char*
+
+2003-12-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html: libxml2.6.0 SAX API support done
+
+2003-12-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am:
+	Narrower yyerrlabl fix since bison 1.875a no longer requires it
+
+	* examples/grapper.c:
+	Casts and updates to use URI strings from raptor as unsigned char*
+	and converting to/from gchar*
+
+	* rdfdump.c, raptor_xml_writer.c, raptor_xml.c,
+	raptor_www_libxml.c, raptor_www.c, raptor_uri.c, raptor_sax2.c,
+	raptor_rss.c, raptor_parse.c, raptor_namespace.c, n3_parser.y,
+	n3_lexer.l:
+	Lots of casts for str* function args, return values between
+	unsigned char* as used for UTF8 and URI strings and char* used by
+	str* functions.
+	Some further casts for strings from XML.
+
+	* raptor_www_test.c (write_bytes_fh): No return value.
+	(main) Test code casts unsigned char* for URI strings
+	Fix write_content_type and write_bytes_fh set handler methods.
+
+	* raptor_utf8.c (raptor_unicode_char_to_utf8): unsigned char* arg.
+	(raptor_utf8_is_nfc): unsigned int, cast for unsigned char*
+
+	* raptor_sequence.c (raptor_sequence_ensure):
+	Use void** not void*.  C++ cares.
+	(main): Test code casts to void* for args.
+
+	* raptor_qname.c (raptor_qname_string_to_uri):
+	cast for signed/unsigned int
+	comparison.
+
+	* raptor_locator.c (raptor_format_locator):
+	Use raptor_uri_as_counted_string to save a strlen.
+
+	* raptor_identifier.c:
+	(raptor_identifier_print) fputs arg cast [function for
+        RAPTOR_DEBUG only]
+
+	* raptor_general.c (raptor_parsers_enumerate): Unsigned int.
+	(raptor_parse_uri_write_bytes): unsigned char* cast.
+	Declare raptor_xml_literal_datatype_uri_string.
+	(raptor_print_statement_detailed): Replace several fprintf with fputs
+	and fputc.
+	(raptor_print_ntriples_string): Use unsigned long/size_t for counts.
+	(raptor_statement_part_as_counted_string): unsigned char*
+	Use raptor_xml_literal_datatype_uri_string.
+	(raptor_statement_part_as_string): unsigned char*
+	(raptor_print_statement_part_as_ntriples): unsigned char*.  Replace
+	several fprintf with fputs and fputc.
+	Use raptor_xml_literal_datatype_uri_string
+	(raptor_default_generate_id_handler): Casts for str* functions
+	(raptor_check_ordinal): unsigned char*
+
+	* ntriples_parse.c:
+	(raptor_ntriples_generate_statement,
+	raptor_ntriples_string_as_utf8_string, raptor_ntriples_parse_line):
+	Updated to take/return unsigned char* args and internals.  Update
+	raptor_uri calls for similar changes.
+	Use raptor_xml_literal_datatype_uri_string
+	Lots of casts for str* functions char* arguments.
+
+	* Makefile.am: Remove maintainer only n3 lex/yacc rules (flex/bison)
+	Post process the bison output to remove unused label to make g++
+	happier.
+
+	* raptor_internal.h:
+	Added raptor_xml_literal_datatype_uri_string for the RDF datatype
+	literal URI string, used several times.
+	raptor_check_ordinal takes unsigned char*
+	A couple of lengths, counts become unsigned int.
+	raptor_unicode_char_to_utf8, raptor_format_sax2_element,
+	raptor_xml_writer_cdata, raptor_xml_writer_comment,
+	raptor_xml_writer_as_string changed to
+	take/return unsigned char* for UTF8 strings.
+
+	* raptor.h: raptor_new_uri_func, raptor_new_uri_from_local_name_func,
+	raptor_new_uri_relative_to_base_func, raptor_uri_as_string_func,
+	raptor_uri_as_counted_string_func URI factory methods
+	changed to all take/return unsigned char* for URI strings
+	raptor_statement_part_as_counted_string,
+	raptor_statement_part_as_string,
+	raptor_new_uri, raptor_new_uri_from_uri_local_name,
+	raptor_new_uri_relative_to_base, raptor_uri_as_string,
+	raptor_uri_as_counted_string
+	URI methods changed to take/return unsigned char* for URI strings
+	raptor_ntriples_string_as_utf8_string changed to return unsigned
+	char* for UTF8 string
+	raptor_uri_resolve_uri_reference, raptor_uri_filename_to_uri_string,
+	raptor_uri_uri_string_to_filename,
+	raptor_uri_uri_string_to_filename_fragment, raptor_uri_is_file_uri
+	Changed to use unsigned char* for URI strings, char* for filenames
+
+2003-12-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html: ntriples parser should use raptor_generate_id for bnodes
+
+2003-12-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_set.c (raptor_set_stats_print): Debug printing tweak.
+
+2003-11-28  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h: raptor_check_ordinal with now unsigned char* arg
+	raptor_sax2 content_cdata now unsigned char*
+
+	* raptor_general.c (raptor_check_ordinal): unsigned char *name
+
+	* raptor_parse.c: Lots of char/unsigned char casting.
+
+	* n3_common.h: Undo n3_syntax_error back to raptor_parser arg.
+
+	* n3_parser.y: (n3_parser_error) aka yyerror; take a void arg.
+
+	* n3_common.h:
+	The n3_syntax_error aka yyerror function takes a void arg.
+
+	* n3_parser.y: Casts for rdf_parser, strings.
+
+	* n3_lexer.l: Define INPUT_FN as yyinput (C++) or input (otherwise)
+	Add more casts for C++ near rdf_parser, yytext.
+	(copy_token): More casts for malloc and string functions.
+	(copy_string_token): More size_t, casts.
+
+	* ntriples_parse.c (raptor_ntriples_term): Use a size_t; cast for C++.
+
+	* ntriples_parse.c (raptor_ntriples_term_valid,raptor_ntriples_term):
+	Change argument names from class to term_class to avoid C++ keyword.
+
+	* raptor_getopt.h: Protect prototypes for C++
+
+	* raptor_stringbuffer.c: casts for RAPTOR_*ALLOC returns
+
+	* n3_parser.y: oops, raptort -> raptor
+
+	* n3_parser.y: another cast for RAPTOR_MALLOC return
+
+	* n3_parser.y: casts for RAPTOR_CALLOC returns
+
+	* configure.ac:
+	Move adding pkg-config glib2.0 cppflags/libs till after the other
+	libraries since that's more likely to be system wide and least
+	effect libxml2, other libraries that might be elsewhere.  Mostly
+	affects OSX which is more sensitive to link order.
+
+	* raptor_stringbuffer.c (main): declare at start of block
+
+	* configure.ac: Check for libxml/SAX2.h - the new SAX2 API
+
+	* raptor_libxml.c:
+	Added a pile of libxml2_* macros to use the libxml2 SAX2 functions
+	when they are present, otherwise the SAX1.  Not using the SAX2 parts
+	of the libxml2 API at present.
+
+	* strcasecmp.c: Add debug message arg casts.
+
+	* configure.ac:
+	Include libxml/parser.h when checking for other libxml2 headers
+
+	* ntriples_parse.c: Add some debug message arg casts.
+	(raptor_ntriples_parse_chunk): At end of input, check that there is
+	no remaining junk.
+
+	* ntriples_parse.c (raptor_ntriples_parse_chunk):
+	Fix line counting problems when \r\n
+	crosses a buffer or when a line ends at the end of a buffer.
+	last_char recorded in state.
+
+	* TODO.html: N-Triples Plus parser
+	More line counting fixes.
+
+	* README.html: Added N-Triples Plus parser
+
+	* raptor_stringbuffer.c (main): Free returned strings.
+
+	* Makefile.am:
+	Added raptor_stringbuffer.c raptor_stringbuffer_test code
+
+	* raptor.h: Added raptor_stringbuffer.
+
+	* raptor_stringbuffer.c: Stringbuffer class for growing strings
+
+	* raptor_libxml.c (raptor_libxml_init): With libxml2 use
+	raptor_xml_characters_handler for sax->characters.
+
+	* raptor_parse.c (raptor_cdata_grammar): Added is_cdata arg.
+	(raptor_xml_characters_handler): Added, calling raptor_cdata_grammar.
+	(raptor_xml_cdata_handler): Updated to call raptor_cdata_grammar with
+	is_cdata=1.
+	(raptor_xml_parse_init): With expat use raptor_xml_characters_handler
+	with XML_SetCharacterDataHandler.
+	(raptor_cdata_grammar): Tidy error reporting; do not use
+	raptor_xml_writer_as_string for a simple print.
+
+	* raptor_internal.h: Added raptor_xml_characters_handler prototype.
+
+2003-11-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* manifest.pl: Add withdrawn tests check
+
+2003-11-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/ntriplesplus/Makefile.am:
+	Added more N-Triples Plus tests (1-7) and bad (0-3)
+
+	* tests/ntriplesplus/test-07.out, tests/ntriplesplus/test-07.ntp,
+	tests/ntriplesplus/test-06.out, tests/ntriplesplus/test-06.ntp,
+	tests/ntriplesplus/test-05.out, tests/ntriplesplus/test-05.ntp,
+	tests/ntriplesplus/test-04.out, tests/ntriplesplus/test-04.ntp,
+	tests/ntriplesplus/test-03.out, tests/ntriplesplus/test-03.ntp,
+	tests/ntriplesplus/test-02.out, tests/ntriplesplus/test-02.ntp,
+	tests/ntriplesplus/test-01.out, tests/ntriplesplus/test-01.ntp:
+	More N-Triples Plus tests
+
+	* tests/ntriplesplus/bad-00.ntp, tests/ntriplesplus/bad-01.ntp,
+	tests/ntriplesplus/bad-02.ntp, tests/ntriplesplus/bad-03.ntp:
+	N-Triples Plus bad tests
+
+	* n3_lexer.l: In prefix state, always return to initial on
+	matching '.', then error out.
+	(n3_syntax_error): Copy removed here.
+	(main): Init enough more of parser/locator so that n3_syntax_error
+	in main library can be used.
+
+2003-11-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c: extra newline in version
+
+	* rdfdump.c: extra newline in help
+
+2003-11-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am:
+	Added check-ntriples-plus to check N-Triples Plus with the N-Triples
+	tests.
+
+	* n3_parser.y, n3_lexer.l, n3_common.h:
+	Added lineno to raptor_n3_parser context to track newlines for dos,
+	unix, mac since flex doesn't do that by default with yylineno.
+
+	* rdfdump.c: tidy help messages
+
+	* TODO.html: line counting for dos files
+
+	* ntriples_parse.c:
+	Track newlines correctly for \r\n across chunks; move last_nl into
+	ntriples parser context.
+	(raptor_ntriples_parse_chunk,raptor_ntriples_parse_start): Use and
+	init last_nl in ntriples parser context.
+
+2003-11-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: Added raptor_ntriples_string_as_utf8_string
+
+	* ntriples_parse.c (raptor_ntriples_term):
+	Added allow_utf8 argument and new class
+	RAPTOR_TERM_CLASS_FULL which uses all the passed in string.
+	(raptor_ntriples_string_as_utf8_string): Added, using
+	raptor_ntriples_term as above.
+	(raptor_ntriples_parse_line): Use size_t len args.
+
+	* rdfdump.c: Use f/puts instead of print/fprintf when there are no %s
+
+	* raptor_uri.c (raptor_default_new_uri_for_rdf_concept):
+	Remove duplicate strlen(base_uri)
+
+2003-11-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_lexer.l: Document more ntriples plus
+	Error out if @prefix's name doesn't match name
+
+	* TODO.html: todos near xml1.1 names
+
+	* raptor_utf8.c (raptor_unicode_is_namestartchar):
+	Two | changed to ||.  Likely worked anyway
+
+2003-11-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: Noted raptor_set_feature with non_nfc_fatal
+
+	* raptor.h: Added RAPTOR_FEATURE_NON_NFC_FATAL to pick between NFC
+	errors or warnings.
+
+	* raptor_general.c (raptor_set_feature): Added
+	RAPTOR_FEATURE_NON_NFC_FATAL to pick between NFC errors or warnings.
+	(raptor_set_parser_strict): Set feature_non_nfc_fatal default off.
+
+	* raptor_internal.h:
+	Added feature_non_nfc_fatal to pick between NFC errors or warnings.
+
+	* raptor_parse.c:
+	Put 'quotes' around element/attribute names in messages.
+	Use feature_non_nfc_fatal to pick between NFC errors or warnings.
+
+	* tests/Makefile.am: check-bad-nfc-rdf - use strict mode
+
+	* rdfdump.c: Document -m/--mode arg
+
+	* TODO.html: gzip2/bzip2 api
+
+2003-11-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html: Note libxml2 2.6.0 SAX2 issues
+
+	* configure.ac: Added tests/ntriplesplus
+
+	* tests/ntriplesplus/Makefile.am: N-Triples plus tests
+
+	* tests/ntriplesplus/test-00.ntp, tests/ntriplesplus/test-00.out:
+	N-Triples Plus default namespace test
+
+	* tests/Makefile.am: added ntriplesplus dir
+
+	* raptor_qname.c (raptor_qname_string_to_uri):
+	Keep original name around for error reporting.
+
+	* rdfdump.c, n3_parser.y: parser now called ntriples-plus
+
+	* n3_parser.y: parser called ntriplesplus
+
+	* n3_parser.y (production directive):
+	Fix declaring default namespace prefix
+
+2003-11-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am: added bad-20.rdf
+
+	* tests/bad-20.rdf: check non-namespaced element does not crash parser
+
+	* raptor_qname.c (raptor_new_qname,
+	raptor_new_qname_from_namespace_local_name): Do not die if no URI
+	for qname is available.  It might be <a xmlns=""> which is at
+	least needed for some error reports or for embedded qnames.
+	Caused unnecessary crashes when parsing failed.
+
+2003-11-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xml.c (main): Make tests less chatty on success
+
+	* raptor_uri.c (main): Make it less chatty on success
+
+	* raptor_uri.c (raptor_uri_uri_string_to_filename_fragment):
+	Allow file://a|/ and file://a:/
+	(main): For WIN32, check the above works.
+
+	* autogen.sh: remove ltmain.sh libtool before libtoolize
+
+	* raptor_general.c (raptor_parse_uri_with_connection):
+	Fail before parsing if raptor_www_fetch failed.
+
+	* raptor_internal.h: Added raptor_www_error_varargs internal prototype.
+
+	* raptor_www_libxml.c (raptor_www_libxml_http_error):
+	This was just all wrong, printing to
+	stderr and then exit(1).  Change to use the proper
+	raptor_www_error_varargs callback.
+
+	* raptor_www.c (raptor_www_error_varargs):
+	Added, with va_list signature.
+
+	* raptor_general.c (raptor_parse_file):
+	When uri is given and base_uri is NULL, copy
+	the uri and free it later - fix to match the function documentation.
+
+2003-10-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_parse_file): fclose only when fh is not NULL
+
+2003-10-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html: Note Win32 URI code possible bug
+
+	* raptor_parse.c (raptor_xml_end_element_handler):
+	For RAPTOR_DEBUG, declare element_name at start of function.
+
+2003-10-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: raptor_namespace(s)_(new|free) renamed to
+	raptor_(new|free)_namespace(s) 
+	Added raptor_new_qname_from_namespace_local_name
+
+	* raptor_qname.c (raptor_new_qname_from_namespace_local_name): Added.
+
+	* raptor_namespace.c:
+	raptor_namespaces_(new|free) renamed to raptor_(new|free)_namespaces
+
+	* raptor_namespace.c:
+	raptor_namespace_(new|free) renamed to raptor_(new|free)_namespace
+
+	* raptor_xml_writer.c:
+	raptor_namespaces_free renamed to raptor_namespaces_clear
+
+	* raptor_parse.c (raptor_xml_start_element_handler):
+	Use raptor_new_sax2_element.
+	raptor_namespaces_free renamed to raptor_namespaces_clear
+
+	* raptor_internal.h: Added raptor_new_sax2_element
+
+	* raptor_sax2.c (raptor_new_sax2_element): Added.
+
+	* raptor.h:
+	Added prototypes for raptor_namespaces_new, raptor_namespaces_clear
+
+	* raptor_namespace.c (raptor_namespaces_new,raptor_namespaces_free):
+	Added for constructor and destructor.
+	raptor_namespaces_free renamed to raptor_namespaces_clear for
+	emptying a statically allocated namespace stack.
+
+	* n3_parser.y:
+	raptor_namespaces_free renamed to raptor_namespaces_clear
+
+2003-10-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_parser.y: Moved n3 lexer/parser stuff to n3_common.h
+	Added uri field to union.
+	URI_LITERAL and QNAME_LITERAL now are uri.
+	PREFIX now expects an IDENTIFIER to follow.
+	Remove all make qname/uri and free(copied token) sequences since the
+	lexer does it.
+	Added fake yy_init_globals to stop dumb warning.
+
+	* n3_lexer.l: Make raptor_uris here from lexer tokens (qnames or URIs)
+	For @prefix, recognise following token as an identifier specially
+	rather than try to make it a URI.
+	(n3_token_free): Free string or raptor_uri.
+	(main): Lots of fixups to fake enough n3 parser structure to
+	get it working fairly standalone.
+
+	* Makefile.am: Added n3_common.h
+	Fixup free of null inside flex-generated lexer.
+
+	* n3_common.h: N3 parser/lexer shared internals
+
+	* raptor_internal.h: Moved n3 lexer/parser stuff to n3_common.h
+
+	* n3_parser.y (n3_qname_to_uri): Replace with call to
+	raptor_qname_string_to_uri and added length parameter.
+
+	* raptor_qname.c (raptor_new_qname):
+	Replace raptor_namespace_local_name_to_uri
+	with use of raptor_new_uri_from_uri_local_name.
+	(raptor_qname_string_to_uri): Added, making only the URI
+	equivalent to the qname and handling N3/RDQL-style special
+	cases such as "prefix:", ":" and NULL.
+
+	* raptor_internal.h, raptor.h:
+	Moved raptor_qname, raptor_namespace, raptor_namespace_stack
+	classes into public API.
+	Added raptor_qname_string_to_uri
+
+	* raptor_namespace.c (raptor_namespace_local_name_to_uri):
+	Removed - only used once internally and was never public.
+
+2003-10-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_lexer.l (n3_token_free): Added, for cleanup in debugging.
+	(main): Init and clear token/lval.
+
+	* tests/Makefile.am: Added ex-53
+
+	* tests/ex-53.out, tests/ex-53.rdf: Check allowing optional rdf:RDF
+
+	* rdfdump.c:
+	--assume/-a feature_assume_is_rdf deleted; rdf:RDF is optional.
+
+	* raptor_general.c, raptor_parse.c:
+	feature_assume_is_rdf deleted; rdf:RDF is optional.
+
+	* raptor_internal.h: feature_assume_is_rdf deleted
+
+2003-10-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/wine.out, tests/wine.rdf:
+	OWL Wine Ontology from http://www.w3.org/TR/owl-guide/wine.rdf
+
+	* tests/Makefile.am:
+	Added OWL Wine ontology from http://www.w3.org/TR/owl-guide/wine.rdf
+	as wine.rdf wine.out
+
+2003-09-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* TODO.html: NTP lval
+
+	* n3_parser.y: Remove n3_parser_lex; re-#define yylex to call direct
+
+	* n3_lexer.l (copy_string_token):
+	Destroy malloced string on error return.
+
+	* n3_parser.y (n3_parse):
+	Don't delete buffer, pop buffer state; a successful lex does that.
+
+	* raptor_internal.h: Remove n3_token_print
+
+	* n3_parser.y: Use reentrant yacc parser.
+	Store the lexer lval in the n3_parser context.
+	Lots of #define trickery to get flex/bison to talk nicely.
+	Make n3_parser_error take an rdf_parser arg (this isn't configurable
+	by bison itself, so is likely fragile).
+	Remove use of extern in lineno; get it from the lexer.
+	Remove N3_Parser global; use rdf_parser local.
+	(n3_parser_error): Update for having rdf_parser arg, update locator
+	lineno from scanner.
+	(n3_syntax_error, n3_qname_to_uri): Get lineno from scanner.
+	(n3_parse): Remove fixmes, no need for protecting globals.
+	(main): Update for reentrant parser; init locator from standalone
+	args.
+
+	* n3_lexer.l:
+	Remove n3_lexer.c/.h prototypes no longer(?) needed with
+        re-entrant lexer.
+	Remove use of lineno; let lexer do it.
+	Change lexer call to pass in lval from reentrant parser.
+	(n3_token_print): Pass in lval.
+	(main): Update for api changes.
+
+2003-09-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h: Updates for reentrant lexer.
+
+	* n3_parser.y: Use reentrant lexer API.
+	Define YYLEX_PARAM to be scanner arg, from current grammar.
+	(n3_parser_lex): Take scanner arg.
+	(n3_syntax_error): Add rdf_parser arg.
+	(n3_parse): Init and destroy reentrant lexer.
+	(raptor_n3_parse_terminate): Tidy up any lexer stuff.
+	(main): Check for file not found, report it.
+
+	* n3_lexer.l:
+	Switch to reentrant lexer.  Pass rdf_parser into code, yyextra
+	internally.
+	(yywrap): Add scanner arg.
+	(copy_string_token, n3_syntax_error): Add rdf_parser arg.
+	(main): Use reentrant calls for lexer to set yyin, get_text.  Use
+	yylex_init/yylex_destroy.
+
+	* Makefile.am: n3_lexer_test depends on raptor_utf8
+
+	* raptor_parse.c:
+	Add EXPAT_UTF8_BOM_CRASH fix updates for sax2 changes.
+
+	* configure.ac: Tweak for old flex version output
+
+	* configure.ac: Try to check flex is new enough.
+
+2003-09-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_parser.y: Minor C reformatting
+
+2003-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: Added raptor_parsers_enumerate prototype
+
+	* n3_lexer.l: minor reformatting
+
+	* n3_lexer.l (copy_string_token): Make \r, \n and \t work
+
+	* raptor_general.c (raptor_init): Ensure rdf/xml is default parser.
+	(raptor_parsers_enumerate): Added, to enumerate parsers, returning
+	their name & label.
+
+	* examples/grapper.c:
+	Use raptor_parsers_enumerate to get parser names, labels.
+
+	* n3_lexer.l: flex archaeology for options
+
+	* examples/Makefile.am: Don't build examples by default
+
+2003-09-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_www.c, raptor_general.c:
+	Revert to old API for raptor_uri_uri_string_to_filename
+
+	* raptor.h, raptor_uri.c (raptor_uri_uri_string_to_filename):
+	Restored to old API.
+	(raptor_uri_uri_string_to_filename_fragment): Added with fragment arg.
+
+2003-09-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_parser.y (n3_qname_to_uri):
+	Handle NULL (":" in N3) returning the default
+	namespace.  It's not quite clear if this is legal.
+
+	* n3_parser.y (raptor_n3_generate_statement):
+	Do nothing if some part of the triple
+	is NULL.
+
+	* raptor_internal.h: n3_syntax_error now takes varargs
+
+	* n3_parser.y (n3_syntax_error): Now takes varargs
+
+	* n3_lexer.l: n3_syntax_error now takes varargs
+	(copy_string_token): Added \u, \U.  Fixed, \r, \n, \t
+
+	* n3_parser.y: Wrap a debugging printf
+
+	* n3_lexer.l: For blank literal "_:abc", don't include _: in the
+	id passed to the parser.
+
+	* n3_parser.y:
+	Throughout replace raptor_new_uri with raptor_copy_uri when copying
+	existing base URI.
+
+	* n3_parser.y:
+	Throughout: Handle NULL uri string meaning use the base URI
+
+	* n3_lexer.l: Handle <> (returning NULL) as well as <> with content.
+	(n3_token_print): Update to match.
+	(n3_syntax_error): Simple standalone copy here.
+
+	* n3_parser.y (n3_parser_error):
+	Set lineno and call raptor_parser_simple_error to
+	pass on the parsing error.
+	(n3_syntax_error): Added. Set lineno and call raptor_parser_error
+	to pass on a general syntax error.
+	(n3_qname_to_uri): Init locator line before calling raptor_new_qname
+	that may fail, calling raptor_parser_simple_error.
+
+	* raptor_internal.h: Add n3_syntax_error
+
+	* n3_lexer.l: Call n3_syntax_error on a syntax error
+
+	* TODO.html: uris work for ntriples+
+
+	* examples/grapper.c: Add n3 syntax
+
+	* n3_parser.y (propertyList): Handle NULL verb, two cases.
+	(raptor_n3_parse_start): No locator column, byte values just yet.
+
+	* n3_parser.y (n3_qname_to_uri):
+	Call raptor_new_qname with rdf_parser for errors
+
+	* TODO.html: +RFE to disable NFC linking/check to glib
+
+2003-09-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_parser.y: Don't raptor_free_uri shared uris made from qnames
+
+	* n3_parser.y (n3_parse): Tidy up flex buffers.
+	(raptor_n3_parse_terminate): Destroy any flex state on exit.
+
+	* n3_parser.y (n3_parse): delete buffer after parse.
+
+	* n3_parser.y: Free uri strings returned from URI_LITERAL.
+
+	* raptor_identifier.c (raptor_new_identifier):
+	Note uri, literal_datatype are shared and not copied.
+
+	* n3_parser.y: Free strings returned from QNAME_LITERAL.
+
+	* raptor_sequence.c (raptor_new_sequence): Use RAPTOR_MALLOC.
+	(raptor_free_sequence): Free the raptor_sequence.
+
+	* raptor_identifier.c (raptor_new_identifier):
+	Note id, literal, literal_language are shared and not copied.
+
+	* n3_parser.y (statement): Free identifier used for subject
+	(propertyList): Free identifier used for verb
+
+	* n3_parser.y: Track when an identifier is copied using is_malloced
+	(raptor_free_triple): Actually free the triple.
+
+	* raptor_internal.h, n3_parser.y: raptor_triple now just has 3 items.
+
+	* n3_parser.y (raptor_n3_parse_terminate): Free namespaces
+
+	* n3_parser.y (n3_parse): Do not parser NULL or empty string.
+	(raptor_n3_parse_chunk): Do not parser empty buffer.
+
+	* rdfdump.c: (main) Don't free NULL uri
+
+	* TODO.html: More N-Triples+ todos
+
+	* TODO.html, README.html, NEWS.html, INSTALL.html:
+	XHTML fixes, removing align="center"
+
+	* TODO.html: Some N-Triples+ todos
+
+	* n3_parser.y: More debugging messages.
+	Recover from errors, don't generate partial triples.
+	(n3_qname_to_uri): Return NULL if raptor_new_qname does not give a
+	URI (some error happened).
+
+	* n3_lexer.l: Remove END token, should only use EOF
+	Count lines right for \r\n|\r|\n
+	Handle EOF in comments
+
+	* n3_parser.y: Remove END token, should only use EOF
+	Add more debugging statements.
+	Throughtout, change raptor_new_uri to raptor_new_uri_relative_to_base.
+	(statement): Handle empty propertyList ("[]").
+	(propertyList 1): Copy verb into objectList, then append
+	propertyList items (if not empty "[]" again).
+	(objectList): Add empty item for "[]", returning NULL.
+	(resource): For [], handle NULL and generate statements here
+	before returning the generated id.
+	(n3_parser_print_statement): Added for test code
+	(main): In test code, init URI module only, create fake
+	static rdf_parser and n3_parser and initialise enough (base URI,
+	and context) so that it works.
+
+	* n3_parser.y: Add error recovery at '.'
+
+2003-09-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* n3_parser.y: raptor_print_triple renamed to raptor_triple_print
+
+	* n3_parser.y: Only define raptor_print_triple if debugging.
+
+	* raptor_identifier.c, n3_parser.y:
+	raptor_print_identifier renamed to raptor_identifier_print
+
+	* n3_parser.y: Raptor N-Triples+/N3 parser
+
+	* n3_lexer.l: Raptor N-Triples+/N3 lexer
+
+	* raptor_identifier.c (raptor_identifier_print): Added for debugging
+
+	* raptor_internal.h: When debugging, raptor_identifier_print
+
+	* raptor_identifier.c (raptor_new_identifier):
+	Add literal, literal_datatype,
+	literal_language args and handle them.
+	(raptor_init_identifier): Deleted, not used (enough).
+	(raptor_copy_identifier, raptor_free_identifier): Updated for
+	literal, literal language and literal datatype.
+
+	* rdfdump.c:
+	Use the syntax name (after validation) to intialise the parser rather
+	than an ever-growing set of flags.
+
+	* raptor_uri.c (raptor_default_new_uri):
+	If the filename had a fragment, re-append
+	it to the file:URI after updating it to be correct.
+	(raptor_uri_uri_string_to_filename): Add fragment_p arg to return
+	the URI fragment after a discovered filename in a file:URI.
+	(assert_uri_to_filename): Update call to
+	raptor_uri_uri_string_to_filename.
+
+	* raptor_parse.c (raptor_xml_parser): Add namespaces.
+	Elsewhere change rdf_parser->namespaces to
+	rdf_xml_parser->namespaces.
+	(raptor_xml_parse_start): Initialise the namespaces for rdf/xml.
+
+	* raptor_sequence.c: Raptor sequence ADT
+
+	* raptor_namespace.c (raptor_namespace_init):
+	Add defaults arg to control which
+	namespaces are added by default. 0=none, 1=xml, 2=... others
+	(main): Update test code to give new arg.
+
+	* raptor_general.c (raptor_init): Call raptor_init_parser_n3.
+	(raptor_start_parser, raptor_free_parser): Remove namespace code from
+	here; moves into specific parser context code.
+	(raptor_parse_file): Update for raptor_uri_uri_string_to_filename
+	extra arg.
+
+	* raptor_xml_writer.c:
+	(raptor_new_xml_writer) Update for raptor_namespaces_init defaults
+	arg.
+
+	* raptor_rss.c (raptor_rss_emit): Use raptor_new_identifier rather than
+	raptor_init_identifier and make items dynamically allocated.
+
+	* raptor_www.c:
+	(raptor_www_file_fetch) Update for raptor_uri_uri_string_to_filename
+	extra argument.
+
+	* raptor.h:
+	Add literal, literal_datatype, literal_language to raptor_identifier
+	structure.
+	Add above arguments to raptor_new_identifier.
+	Remove raptor_init_identifier - not used.
+	Add fragment_p argument to raptor_uri_uri_string_to_filename.
+
+	* raptor_internal.h:
+	Remove namespaces from raptor_parser; now in per-syntax contexts.
+	Updated raptor_namespaces_init to take defaults arg.
+	Added N3 class prototypes, for n3_token_print, raptor_init_parser_n3,
+	n3_parser_lex.
+	Added raptor_triple structure.
+	Added sequence class prototypes.
+
+	* Makefile.am:
+	Add n3_lexer.c n3_lexer.h both generated from n3_lexer.l by flex;
+	add maintainer-only rules to do that.
+	Add n3_parser.tab.c n3_parser.tab.h generated from n3_parser.y by
+	yacc; add maintainer-only rules to do that.
+	Add raptor_sequence.c and test.
+
+	* configure.ac: Add lex (flex required) and yacc
+
+2003-09-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Bumped version to 1.1.0
+
+	* ntriples.h: deprecated
+
+	* Snapshotted raptor_1_0_0 for 1.0.0 release
+
+	* libraptor.3: new date
+
+	* NEWS.html: Note functions were removed, soname was increased
+
+	* ntriples.h, Makefile.am: Removed old header ntriples.h
+
+	* raptor_general.c, raptor.h, ntriples_parse.c:
+	Removed deprecated functions as promised. Changes are described in
+	the libraptor.3 man page.
+
+	* configure.ac: Updated for Raptor 1.0.0
+	Shared library soname major now 1
+
+	* NEWS.html, libraptor.3: Updated for Raptor 1.0.0
+
+	* win32_config.h: Added R_OK define for access()
+
+	* tests/Makefile.am: test wording for failures
+
