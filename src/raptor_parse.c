@@ -1862,21 +1862,15 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     }
 
     /* Generate the property statement using one of these properties:
-     * 1) rdf:li -> rdf:_n
-     * 2) rdf:_n
-     * 3) the URI from the attribute
+     * 1) rdf:_n
+     * 2) the URI from the rdf:* attribute where allowed
+     * 3) otherwise forbidden (including rdf:li)
      */
     if(attr->nspace->is_rdf_ms) {
       /* is rdf: namespace */
       int ordinal=0;
         
-      if(raptor_uri_equals(attr->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
-        /* recognise rdf:li attribute */
-        if(property_node_identifier)
-          ordinal= ++local_last_ordinal;
-        else
-          ordinal= ++resource_element->last_ordinal;
-      } else if(*name == '_') {
+      if(*name == '_') {
         /* recognise rdf:_ */
         name++;
         while(*name >= '0' && *name <= '9') {
