@@ -31,7 +31,7 @@ rdfdump_SOURCES = rdfdump.c
 rdfdump_LDADD = libraptor.la @REDLAND_LIBS@
 rdfdump_DEPENDENCIES = @REDLAND_LIBS@
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
-raptor_uri.c
+raptor_uri.c raptor_libxml.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 
