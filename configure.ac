@@ -95,6 +95,7 @@ AC_PROG_YACC
 
 # Find a tar command for 'make dist'
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
+AC_CHECK_PROGS(PERL, perl)
 
 AM_MISSING_PROG(ACLOCAL, aclocal, $missing_dir)
 AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
