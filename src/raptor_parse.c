@@ -2429,6 +2429,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
           if(!strcmp((char*)parse_type, "Literal")) {
+            /* ensure this matches: "reset to rdf:parseType="Literal"
+             * code below
+             */
             raptor_uri_handler *uri_handler;
             void *uri_context;
 
@@ -2455,20 +2458,24 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION;
           } else {
-            if(rdf_parser->feature_allow_other_parseTypes) {
-              if(!raptor_strcasecmp((char*)parse_type, "daml:collection")) {
+            if(rdf_parser->feature_allow_other_parseTypes &&
+               !raptor_strcasecmp((char*)parse_type, "daml:collection")) {
                 /* A DAML collection appears as a single node */
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
                 element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
                 element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
-              } else {
-                element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-                element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
-                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-              }
             } else {
-              element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
+              /* reset to rdf:parseType="Literal" */
+              raptor_uri_handler *uri_handler;
+              void *uri_context;
+
+              raptor_uri_get_handler(&uri_handler, &uri_context);
+              rdf_xml_parser->xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
+                                                               raptor_parser_simple_error, rdf_parser,
+                                                               1);
+
               element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
+              element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
               element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
             }
           }
