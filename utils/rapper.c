@@ -197,9 +197,9 @@ main(int argc, char *argv[])
 #ifdef RAPTOR_IN_REDLAND
   world=librdf_new_world();
   librdf_world_open(world);
-#endif
-
+#else
   raptor_init();
+#endif
   
   while (!usage)
   {
@@ -429,9 +429,9 @@ main(int argc, char *argv[])
 
 #ifdef RAPTOR_IN_REDLAND
   librdf_free_world(world);
-#endif
-
+#else
   raptor_finish();
+#endif
 
   if(error_count && !ignore_errors)
     return 1;
