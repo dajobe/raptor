@@ -7,6 +7,7 @@
   <rdf:Description rdf:about="http://example.org/node">
     <rdf:li rdf:datatype="http://example.org/datatype1">val1</rdf:li>
     <ex:prop2 rdf:datatype="http://example.org/datatype2">val2</ex:prop2>
+    <ex:prop3 rdf:datatype="http://example.org/datatype3" xml:lang="de">val3</ex:prop3>
   </rdf:Description>
 
 </rdf:RDF>
