@@ -168,6 +168,16 @@ used directly, or formatted via raptor_print_locator.
 Return the string short name for the parser.
 .IP "\fBvoid raptor_get_label(raptor_parser *\fIparser\fB\fB)\fR"
 Return a string label for the parser.
+.IP "\fBvoid raptor_set_default_generate_id_parameters(raptor_parser* \fIrdf_parser\fB, char *\fIprefix\fB, int \fIbase\fB)\fR"
+Control the default method for generation of IDs for blank nodes and
+bags.  The method uses a short string \fIprefix\fR and an integer
+\fIbase\fR to generate the identifier which is not guaranteed to
+be a strict concatenation.  If \fIprefix\fR is NULL, the
+default is used.  If base is less than 1, it is initialised to 1.
+.IP "\fBvoid raptor_set_generate_id_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_generate_id_handler \fIhandler\fB)\fR"
+Allow full customisation of the generated IDs by setting a callback
+\fIhandler\fR and associated \fIuser_data\fR that is called whenever
+a blank node or bag identifier is required.
 .SH "STATEMENT UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging only.
@@ -376,6 +386,9 @@ raptor WWW handlers.
 Added \fBraptor_get_name\fR, \fBraptor_get_label\fR.
 \fBraptor_xml_escape_string\fR now takes error message handler, data
 pointer, loses parser argument.
+Added \fBraptor_set_default_generate_id_parameters\fR and
+\fBraptor_set_generate_id_handler\fR to control the default
+generation of IDs, allow full customisation.
 .IP 0.9.10
 Added \fBraptor_set_parser_strict\fR, \fBraptor_www_no_www_library_init_finish\fR.
 \fBraptor_xml_escape_string\fR now takes an output string length pointer.
