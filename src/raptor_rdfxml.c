@@ -2356,6 +2356,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          */
         if (element->rdf_attr[RDF_ATTR_datatype]) {
           element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)element->rdf_attr[RDF_ATTR_datatype]);
+          RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_datatype]); 
           element->rdf_attr[RDF_ATTR_datatype]=NULL; 
         }
 
@@ -2488,7 +2489,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * Assign reified URI here so we don't reify property attributes
            * using this id
            */
-          if(element->reified.id) {
+          if(element->reified.id && !element->reified.uri) {
             element->reified.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->reified.id);
             element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
