@@ -1,4 +1,19 @@
+2005-01-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c: set serializer features before starting to serialize
+
+	* rdfdump.c: Actually set parser feature values again.  Set
+	strings for parser or serializer string feature values.
+
+	* raptor_general.c: 2005 copyrights
+
+	* rapper.1: No simple output format anymore
+
+	* rapper.1: Added RSS 1.0 ref
+
 2005-01-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rapper.1: Update for new parser, serializers, xmlns syntax
 
 	* raptor_serialize.c (raptor_serializer_set_feature_string): Docs,
 	and return values for integer value features
