@@ -60,7 +60,7 @@ $(top_builddir)/rdfdump:
 	@(cd .. ; $(MAKE) rdfdump)
 
 check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
-	result=0; for test in $(RDF_TEST_FILES); do \
+	@result=0; for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
 	    baseuri=$(RDF_NS_URI); \
