@@ -46,16 +46,14 @@ Show a summary of the options.
 Set the input
 .I FORMAT
 to one of 'rdfxml' (RDF/XML, default), 'ntriples'
-(N-Triples, see below) or 'rss-tag-soup' (RSS tag soup).
+(N-Triples, see below), 'ntriples-plus' (N-Triples Plus, see below)
+or 'rss-tag-soup' (RSS tag soup).
 .UE
 .TP
 .B \-o, \-\-output FORMAT
 Set the output
 .I FORMAT
 to 'simple' (default) or 'ntriples' (N-Triples, see below)
-.TP
-.B \-a, \-\-assume
-Assume the document is the RDF/XML (and rdf:RDF is optional).
 .TP
 .B \-c, \-\-count
 Only count the triples and produce no other output.
@@ -84,13 +82,20 @@ W3C Working Draft (work in progress),
 http://www.w3.org/TR/rdf-syntax-grammar/
 .UE
 
-\fIN-Triples\fR,
-W3C Working Draft (work in progress),
+\fIN-Triples\fR, in \fIRDF Test Cases\fR, Jan Grant and Dave Beckett (eds.)
+W3C Proposed Recommendation,
 .UR http://www.w3.org/TR/rdf-testcases/#ntriples
 http://www.w3.org/TR/rdf-testcases/#ntriples
 .UE
+
+\fIN-Triples Plus\fR, Dave Beckett,
+.UR http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/
+http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/
+.UE
 .SH SEE ALSO
 .BR libraptor (7), raptor-config (1)
+.SH API CHANGES
+Removed \-a, \-\-assume since rdf:RDF is now always optional.
 .SH AUTHOR
 Dave Beckett - 
 .UR http://purl.org/net/dajobe/
