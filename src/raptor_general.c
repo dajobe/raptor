@@ -848,8 +848,8 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
   char *prefix_copy=NULL;
   size_t length=0;
 
-  if(--base<1)
-    base=1;
+  if(--base<0)
+    base=0;
 
   if(prefix) {
     length=strlen(prefix);
