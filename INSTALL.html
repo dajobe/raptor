@@ -121,9 +121,9 @@ expat source directory structures.
 <dd><p>Pick the RDF parsers to build from the list:<br />
 <code>rdfxml ntriples turtle rss-tag-soup</code><br />
 The default when this option is omitted is to enable all parsers.
-<code>rss-tag-soup</code> has a requirement on libxml2 with XMLReader
-so may not always be available.  If all parsers are not enabled,
-parts of the test suite will likely fail.</p>
+<code>rss-tag-soup</code> requires version 2.5.10 of libxml2
+or newer so may not always be available.  If all parsers are not
+enabled, parts of the test suite will likely fail.</p>
 
 <p>The parsers that a built library supports can be found from the
 API level using functions such as
@@ -133,7 +133,8 @@ API level using functions such as
 
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
-minimum version 2.4.0 or <tt>expat</tt>.  If this option is not given,
+minimum version 2.4.0 (2.6.0 or newer prefered)
+or <tt>expat</tt>.  If this option is not given,
 either will be used, with libxml preferred if both are present.
 These can either be installed system libraries or source
 trees in subdirectories of these sources named libxml, expat.</p>
