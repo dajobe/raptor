@@ -852,12 +852,10 @@ raptor_xml_start_element_handler(void *user_data,
         /* there is more i.e. xmlns:foo */
         const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
 
-        if(raptor_namespaces_start_namespace(&rdf_parser->namespaces,
-                                             prefix, atts[i+1],
-                                             rdf_xml_parser->depth)) {
-          raptor_parser_fatal_error(rdf_parser, "Out of memory");
-          return;
-        }
+        raptor_namespaces_start_namespace(&rdf_parser->namespaces,
+                                          prefix, atts[i+1],
+                                          rdf_xml_parser->depth,
+                                          raptor_parser_error, rdf_parser);
         
         atts[i]=NULL; 
         continue;
