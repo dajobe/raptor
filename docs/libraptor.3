@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-10-28"
+.TH libraptor 3 "2004-12-14"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -166,7 +166,7 @@ strictness can be controlled by raptor_set_feature.
 .IP "\fBint raptor_set_feature(raptor_parser *\fIparser\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
 Set a parser feature \fIfeature\fR to a particular \fIvalue\fR.
 Returns non 0 on failure or if the feature is unknown.
-The current defined features are:
+The current defined parser features are:
   \fIFeature                                 Values\fR
   \fBRAPTOR_FEATURE_SCANNING\fR                 Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ASSUME_IS_RDF\fR            Boolean (non 0 true)
@@ -337,21 +337,30 @@ by the character \fIdelim\fR which is usually either \(dq or <
 .SH "XML UTILITY FUNCTIONS"
 .IP "\fBint raptor_xml_escape_string(const unsigned char *\fIstring\fB, size_t \fIlen\fB, unsigned char *\fIbuffer\fB, size_t \fIlength\fB, char \fIquote\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Apply the XML escaping rules to the string given in (string, len)
-into the buffer of size length.  If quote
+into the \fIbuffer\fP of size \fIlength\fP.  If \fIquote\fP
 is given, the escaped content is for an XML attribute and the
 appropriate quote character \" or \' is used, otherwise it is
 XML element content (CDATA).   The \fIerror_handler\fR method along
 with \fIerror_data\fR allow error reporting to be given.
 If buffer is NULL, returns the size of the buffer required to escape.
 Otherwise the return value is the number of bytes used or <0 on failure.
+.IP "\fBint raptor_iostream_write_xml_escaped_string(raptor_iostream* \fIiostr\fB, const unsigned char *\fIstring\fB, size_t \fIlen\fB, char \fIquote\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
+Write an XML-escaped version of the string given in (string, len) to
+iostream \fIiostr\fP.  If \fIquote\fP is given, the escaped content
+is for an XML attribute and the appropriate quote character \" or \'
+is used, otherwise it is XML element content (CDATA).  The
+\fIerror_handler\fR method along with \fIerror_data\fR allow error
+reporting to be given.
 .SH "MEMORY UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_free_memory(void *\fIptr\fP)\fR"
 Free memory allocated inside raptor.  Some systems require
 memory allocated in a library to be deallocated inside that library.
 This function can be used in that situation to free memory
 allocated by raptor, such as the result of the \fI_to_\fP methods
-that return allocated memory such as \fBraptor_uri_to_filename\fP or
-\fBraptor_uri_to_string\fP.
+that return allocated memory such as \fBraptor_uri_to_filename\fP,
+\fBraptor_uri_to_string\fP, \fBraptor_uri_to_relative_counted_uri_string\fP,
+\fBraptor_uri_to_relative_uri_string\fP or 
+\fBraptor_new_namespace_parts_from_string\fP.
 .IP "\fBvoid* raptor_alloc_memory(size_t \fIsize\fP)\fR"
 Allocate memory inside the raptor library.  Some systems require
 memory allocated in a library to be deallocated inside that library.
@@ -433,6 +442,8 @@ serializing.  No more calls to raptor_serialize_statement or
 raptor_serialize_end may be done at this point.
 .IP "\fBraptor_iostream* raptor_serializer_get_iostream(raptor_serializer *\fIserializer\fP)\fR"
 Return a pointer to the raptor_iostream* used by the serializer.
+.IP "\fBint raptor_serializer_set_namespace(raptor_serializer* \fIserializer\fP, raptor_uri *\fIuri\fP, const char *\fIprefix\fP)\fR"
+Set a suggested namespace URI/prefix mapping for use in serializing.
 .SH "SERIALIZER UTILITY METHODS"
 .IP "\fBvoid raptor_serializer_set_error_handler(raptor_serializer* \fIserializer\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
 Set the serializer non-fatal error handler callback.
@@ -442,6 +453,18 @@ Set the serializer warning message handler callback.
 Return the current raptor_locator object for the serializer.
 This is a public structure defined in raptor.h that can be
 used directly, or formatted via raptor_print_locator.
+.IP "\fBint raptor_serializer_set_feature(raptor_serializer *\fIserializer\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
+Set a serializer feature \fIfeature\fR to a particular \fIvalue\fR.
+Returns non 0 on failure or if the feature is unknown.
+The current defined serializer features are:
+  \fIFeature                                 Values\fR
+  \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
+.P
+If the \fIrelative_uris\fR
+feature is true (default false) then when serialising, preference
+is given to generating relative URIs where possible. 
+.IP "\fBint raptor_serializer_get_feature(raptor_serializer* \fIserializer\fB, raptor_feature \fIfeature\fB)\fR"
+Get serializer features, the allowed \fIfeature\fP values are available
 .SH "SERIALIZER UTILITY FUNCTIONS"
 .IP "\fBint raptor_serializers_enumerate(const unsigned \fIint counter\fB, const char **\fIname\fB, const char **\fIlabel\fB, const char **\fImime_type\fB, const unsigned char **\fIuri_string\fB)\fR"
 Return the serializer name/label for a serializer with a given integer
@@ -495,13 +518,20 @@ Destroy a raptor URI object.
 .IP "\fBint raptor_uri_equals(raptor_uri* \fIuri1\fB, raptor_uri* \fIuri2\fB)\fR"
 Return non-zero if the given URIs are equal.
 .IP "\fBraptor_uri* raptor_uri_copy(raptor_uri* \fIuri\fB)\fR"
-Return a copy of the given raptor URI \fIuri\fR.
+Return a copy of the given raptor URI \fIuri\fP.
 .IP "\fBunsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)\fR"
 .IP "\fBunsigned char* raptor_uri_as_string(raptor_uri* \fIuri\fB)\fR"
 Return a shared pointer to a string representation of the given raptor URI
 \fIuri\fR.  This string is shared and must not be freed.  If
-raptor_uri_as_counted_string is used, the length of the returned
-string is stored in *len_p if not NULL.
+\fBraptor_uri_as_counted_string\fP is used, the length of the returned
+string is stored in *\fIlen_p\fP if not NULL.
+.IP "\fBunsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *\fIbase_uri\fB, raptor_uri *\fIreference_uri\fB, size_t *\fIlength_p\fB)\fR"
+.IP "\fBunsigned char* raptor_uri_to_relative_uri_string(raptor_uri *\fIbase_uri\fB, raptor_uri *\fIreference_uri\fB)\fR"
+Return a new relative URI string of a URI \fIreference_uri\fI against
+a base URI \fIbase_uri\fR.  The returned string must be freed 
+with \fBraptor_free_memory\fP.
+If \fBraptor_uri_to_relative_counted_string\fP is used, the length of
+the returned string is stored in *\fIlen_p\fP if not NULL.
 .SH "URI UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_uri_resolve_uri_reference (const unsigned char* \fIbase_uri\fB, const unsigned char* \fIreference_uri\fB, char unsigned* \fIbuffer\fB, size_t \fIlength\fB)\fR"
 This is a standalone function that resolves the relative URI
@@ -631,8 +661,10 @@ the error handling and data of the namespace.
 .IP "\fBvoid raptor_free_qname(raptor_qname* \fIname\fB)\fR"
 Destroy a raptor qname object
 .SH "QNAME METHODS"
-.IP "\fBint raptor_qname_equal(raptor_qname *\fIname1\fR, raptor_qname *\fIname2\fB)\fR"
+.IP "\fBint raptor_qname_equal(raptor_qname* \fIname1\fP, raptor_qname *\fIname2\fP)\fR"
 Return non-zero if the given QNames are equal.
+.IP "\fBint raptor_iostream_write_qname(raptor_iostream* \fIiostr\fP, raptor_qname *\fIqname\fP)\fR"
+Write the qname to the iostream \fIostr\fP.
 .SH "QNAME UTILITY FUNCTIONS"
 .IP "\fBraptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *\fInstack\fB,  const unsigned char *\fIname\fB, size_t \fIname_len\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Return the URI corresponding to the QName according to the RDF
@@ -644,16 +676,22 @@ An XML namespace class - each entry is on a stack and consists of a
 name (URI) and prefix.  The prefix or the name but not both may be
 empty.  If the prefix is empty, it defines the default prefix.  If
 the name is empty, it undefines the given prefix.
-.SH "NAMESPACE CONSTRUCTOR"
-.IP "\fBraptor_namespace* raptor_new_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth)\fR"
-Create a raptor_namespace object on the given namespace stack
-\fInstack\fR with prefix \fIprefix\fR and namespace name (URI string)
-\fIns_uri_string\fR.  If \fIprefix\fR is NULL, it defines the URI for the
-default namespace prefix.  If the \fIns_uri_string\fR is NULL, it undefines
-the given \fIprefix\fR in the current scope.  Both may not be NULL.
-\fIdepth\fR signifies the position of the namespace on the stack;
-0 is the bottom of the stack and generally the first depth for
-user namespace declarations.  Namespaces declared on the same
+.SH "NAMESPACE CONSTRUCTORS"
+.IP "\fBraptor_namespace* raptor_new_namespace(raptor_namespace_stack *\fInstack\fP, const unsigned char *\fIprefix\fP, const unsigned char *\fIns_uri_string\fP, int \fIdepth\fP)\fR"
+.IP "\fBraptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *\fInstack\fP, const unsigned char *\fIprefix\fP, raptor_uri* \fIns_uri\fP, int \fIdepth\fP)\fR"
+Create a new raptor_namespace object on the given namespace stack
+\fInstack\fR with prefix \fIprefix\fR and namespace name either
+from URI string \fIns_uri_string\fR or from copying URI \fIns_uri\fP.
+.P
+If \fIprefix\fR is NULL, it defines the URI for the default namespace
+prefix.  If the namespace name (\fIns_uri_string\fP or \fIns_uri\fP)
+is NULL, it undefines the given \fIprefix\fR in the current scope.
+Both prefix and URI may be NULL to undefine the default namespace.
+\fIdepth\fR signifies the position of the namespace on the stack; 0
+is the bottom of the stack and generally the first depth for user
+namespace declarations.
+.P
+Namespaces declared on the same
 depth (such as on the same XML element, typically) can be handily
 freed with \fIraptor_namespaces_end_for_depth\fR method on
 the namespace stack class.
@@ -670,10 +708,19 @@ Format the namespace as a string and return it as a new string, returning the
 length of the resulting string in \fIlength_p\fR if it is not NULL.
 The string format is suitable for emitting in XML to declare the
 namespace.
+.IP "\fBint raptor_iostream_write_namespace(raptor_iostream* \fIiostr\fP, raptor_namespace *\fIns\fP)\fR"
+Write a formatted namespace declaration like xmlns... to an
+iostream \fIiostr\fP.
 .SH "NAMESPACE UTILITY FUNCTIONS"
 .IP "\fBint raptor_namespace_copy(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)\fR"
 Copy the namespace from the current stack to the new one,
 \fInstack\fR at depth \fInew_depth\fR.
+.IP "\fBint raptor_new_namespace_parts_from_string(unsigned char *\fIstring\fP, unsigned char **\fIprefix\fP, unsigned char **\fIuri_string\fP)\fR"
+Parse \fIstring\fR with an XML-style namespace declaration like
+xmlns="", xmlns="uri", xmlns:prefix="" or xmlns:prefix="uri"
+into the strings pointed to by \fIprefix\fP string and a \fIuri_string\fP.
+Empty prefixes or namespace names return NULL pointers.  Returned
+strings must be freed by the caller using \fBraptor_free_memory\fP.
 .SH "NAMESPACE STACK CLASS"
 A stack of raptor_namespace objects where the namespaces on top of the stack
 have wider scope and override earlier (lower) namespace declarations.
@@ -761,6 +808,11 @@ raptor_uri* objects.
 Print out the sequence in a debug format to the given file handler
 \fIfh\fP.  NOTE: The exact format is not guaranteed to remain 
 the same between releases.
+.IP "\fBint raptor_sequence_join(raptor_sequence* \fIdest\fP, raptor_sequence *\fIsrc\fP)\fR"
+Join two sequences moving all items from sequence \fIsrc\fP to the
+end of sequence \fIdest\fP.  After this operation, sequence \fIsrc\fP
+will be empty (zero size) but will have the same item capacity as
+before.
 .SH "STRINGBUFFER CLASS"
 A class for growing strings, small chunks at a time.
 .SH "STRINGBUFFER CONSTRUCTOR"
@@ -840,7 +892,32 @@ Write a decimal formatted integer \fIinteger\fP to the iostream.
 .IP "\fBint raptor_iostream_format_hexadecimal(raptor_iostream *\fIiostr\fB, unsigned int \fIinteger\fB, int \fIwidth\fB)\fR"
 Write a hexadecimal formatted unsigned \fIinteger\fP to the iostream,
 left-padded with '0's to \fIwidth\fR columns.
+.IP "\fBint raptor_iostream_write_stringbuffer(raptor_iostream* \fIiostr\fB, raptor_stringbuffer *\fIsb\fB)\fR"
+Write the stringbuffer to an iostream \fIiostr\fP.
 .SH API CHANGES
+.SS 1.4.2
+Added \fBraptor_serializer_set_namespace\fP,
+\fBraptor_serializer_set_feature\fP and
+\fBraptor_serializer_get_feature\fP.
+.P
+Added \fBraptor_iostream_write_qname\fP to write a qname to an iostream.
+.P
+Added \fBraptor_uri_to_relative_counted_uri_string\fP and
+\fBraptor_uri_to_relative_uri_string\fP.
+.P
+Added
+\fBraptor_new_namespace_from_uri\fP,
+\fBraptor_new_namespace_parts_from_string\fP and
+\fBraptor_iostream_write_namespace\fP to write a namespace
+declaration to an iostream.
+.P
+Added \fBraptor_sequence_join\fP to join two sequences, leaving one empty.
+.P
+Added \fBraptor_iostream_write_stringbuffer\fP to write a
+stringbuffer to an iostream.
+.P
+Added \fBraptor_iostream_write_xml_escaped_string\fP to write
+an XML-escaped string to an iostream.
 .SS 1.4.1
 The \fBraptor_xml_escape_string\fR now returns <0 on failure rather
 than 0, so that if an empty string is escaped, 0 bytes required is
