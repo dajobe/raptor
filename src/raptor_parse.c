@@ -2401,6 +2401,8 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
   fputc('\n', stderr);
 
   va_end(arguments);
+
+  exit(1);
 }
 
 
@@ -3707,16 +3709,20 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
             element->parent->tail_id=idList;
             
-          } else if(!element->parent->object.uri &&
-                    (element->parent->state != RAPTOR_STATE_UNKNOWN &&
-                     element->state != RAPTOR_STATE_PARSETYPE_RESOURCE)) {
+          } else if(element->parent->state != RAPTOR_STATE_UNKNOWN &&
+                    element->state != RAPTOR_STATE_PARSETYPE_RESOURCE) {
             /* If there is a parent element (property) containing this
              * element (node) and it has no object, set it from this subject
              */
             
-            /* Store URI of this node in our parent as the property object */
-            raptor_copy_identifier(&element->parent->object, &element->subject);
-            element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+            if(element->parent->object.uri) {
+              raptor_parser_error(rdf_parser, "Tried to set multiple objects of a statement");
+            } else {
+              /* Store URI of this node in our parent as the property object */
+              raptor_copy_identifier(&element->parent->object, &element->subject);
+              element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+            }
+
           }
         }
         
