@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "blah">
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <title>Raptor RDF Parser Toolkit - News</title>
@@ -7,15 +8,26 @@
 
 <h1 align="center">Raptor RDF Parser Toolkit - News</h1>
 
+<h2>2002-03-27 Version 0.9.4 Released</h2>
+<p>XML Base support (xml:base) added<br />
+xml:lang support added with <a href="http://www.w3.org/2001/08/rdf-test/#langString">N-Triples lang-string</a> support<br />
+All <a href="http://www.w3.org/2001/08/rdf-test/#ntrip_strings">N-Triples string escapes</a> implemented<br />
+<a href="http://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a> support with <a href="http://www.w3.org/2001/08/rdf-test/#xmlString">XML literals</a> - xml("&lt;foo/&gt;") and plain "foo"<br />
+removed all special code for containers; treated as regular typedNodes<br />
+rdf:parseType="Literal" now working<br />
+Builds as shared and static libraries<br />
+Conformance test suite added
+</p>
+
 <h2>2001-08-21 Version 0.9.3 Released</h2>
-<p><a href="http://www.w3.org/2001/sw/RDFCore/ntriples/">N-Triples</a>
+<p><a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
 parser added<br />
 rdf:parseType="Literal" works much better (Aaron Michal and me)<br />
 DAML collections support added (Aaron Michal)<br />
 Win32 patch added - I can't confirm my merge didn't break this (Aaron Michal)<br />
-N-Triples updated to support CR, LF and CR LF endings<br />
+<a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> updated to support CR, LF and CR LF endings<br />
 Make parser generated ids appear distinguised from regular URIs<br />
-Added N-Triples output<br />
+Added <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> output<br />
 Made rdf:type, rdf:value as property attributes work<br />
 Made empty typed nodes work<br />
 GNOME xml / libxml error location (line, column) values corrected.
@@ -36,7 +48,7 @@ Added better XML parser auto-detection for various expats and libxml
 
 <hr />
 
-<p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001-2002 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
