@@ -48,8 +48,8 @@
     <rdf:value rdf:resource="http://example.org/node2"/>
     <rdf:first rdf:resource="http://example.org/node2"/>
     <rdf:rest rdf:resource="http://example.org/node2"/>
-    <rdf:_1 rdf:resource="http://example.org/node2"/>
-    <rdf:li rdf:resource="http://example.org/node2"/>
+    <rdf:li rdf:resource="http://example.org/node1"/>
+    <rdf:_2 rdf:resource="http://example.org/node2"/>
   </rdf:Description>
 
   <!-- Property attributes 
