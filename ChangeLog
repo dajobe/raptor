@@ -1,5 +1,20 @@
 2004-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rss.c (raptor_rss_insert_identifiers): For channel type,
+	check both the link field and the atom:id field.
+
+	* raptor_rss.c (raptor_rss10_emit_item): Emit the
+	<rss:items><rdf:Seq><rdf:li /> .... </rdf:Seq></rss:items> here.
+	(raptor_rss10_serialize_end): Moved items code above.
+
+	* raptor_parse.c (raptor_guess_parser_name): Don't emit debug
+	messages about scores unless very debuggy.
+
+	* n3_lexer.l, turtle_lexer.l: In <PREF> state, accept remaining
+	characters so -s is true.
+
+	* raptor.h: Export raptor_xml_name_check
+
 	* raptor_xml.c (raptor_valid_xml_ID): Use raptor_xml_name_check
 	with appropriate XML version.
 	(raptor_xml_name_check): Added to check for a legal XML name.
