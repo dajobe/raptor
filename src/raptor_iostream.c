@@ -412,7 +412,7 @@ int
 raptor_iostream_write_string(raptor_iostream *iostr, const void *string)
 {
   size_t len=strlen((const char*)string);
-  return (raptor_iostream_write_bytes(iostr, string, 1, len) != len);
+  return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
 }
 
 
@@ -427,7 +427,7 @@ raptor_iostream_write_string(raptor_iostream *iostr, const void *string)
 int
 raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *string, size_t length) 
 {
-  return (raptor_iostream_write_bytes(iostr, string, 1, length) != length);
+  return (raptor_iostream_write_bytes(iostr, string, 1, length) != (int)length);
 }
 
 
@@ -520,7 +520,7 @@ raptor_iostream_format_hexadecimal(raptor_iostream* iostr,
   if(width <1)
     return 1;
   
-  buf=RAPTOR_MALLOC(cstring, width);
+  buf=(unsigned char*)RAPTOR_MALLOC(cstring, width);
   if(!buf)
     return 1;
   

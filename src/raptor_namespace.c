@@ -121,8 +121,8 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
   nstack->error_handler=error_handler;
   nstack->error_data=error_data;
 
-  nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, raptor_rdf_namespace_uri);
-  nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, raptor_rdf_schema_namespace_uri);
+  nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, (const unsigned char*)raptor_rdf_namespace_uri);
+  nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, (const unsigned char*)raptor_rdf_schema_namespace_uri);
 
   if(defaults) {
     /* defined at level -1 since always 'present' when inside the XML world */

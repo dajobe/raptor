@@ -658,7 +658,7 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
   context->depth=0;
   context->rdf_ns=raptor_new_namespace(context->nstack,
                                        (const unsigned char*)"rdf",
-                                       raptor_rdf_namespace_uri,
+                                       (const unsigned char*)raptor_rdf_namespace_uri,
                                        context->depth);
   return 0;
 }
@@ -960,7 +960,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         raptor_iostream_write_byte(iostr, '>');
         
         if(len) {
-          xml_string_len=raptor_xml_escape_string(statement->object, len,
+          xml_string_len=raptor_xml_escape_string((const unsigned char*)statement->object, len,
                                                   NULL, 0, 0, 
                                                   NULL, NULL);
           if(!xml_string_len) {
@@ -975,7 +975,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
             unsigned char *xml_string;
 
             xml_string=(unsigned char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
-            xml_string_len=raptor_xml_escape_string(statement->object, len,
+            xml_string_len=raptor_xml_escape_string((const unsigned char*)statement->object, len,
                                                     xml_string, xml_string_len, 0,
                                                     NULL, NULL);
             raptor_iostream_write_counted_string(iostr, xml_string, xml_string_len);
