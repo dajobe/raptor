@@ -186,6 +186,7 @@ extern void raptor_libxml_free_entities(raptor_parser *rdf_parser);
 #endif
 extern void raptor_libxml_validation_error(void *context, const char *msg, ...);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...);
+void raptor_libxml_free(xmlParserCtxtPtr xc);
 
 /* raptor_parse.c - exported to libxml part */
 extern void raptor_libxml_update_document_locator (raptor_parser *rdf_parser);
