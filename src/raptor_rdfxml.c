@@ -630,6 +630,9 @@ raptor_free_element(raptor_element *element)
   if(element->base_uri)
     raptor_free_uri(element->base_uri);
 
+  if(element->xml_language)
+    RAPTOR_FREE(cstring, element->xml_language);
+
   if(element->object_literal_datatype)
     RAPTOR_FREE(cstring, (char*)element->object_literal_datatype);
 
