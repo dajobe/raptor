@@ -162,7 +162,7 @@ turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/fix-flex
 
 turtle_parser.c: $(srcdir)/turtle_parser.y
 	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
-	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' turtle_parser.tab.c > $@
+	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/turtle_parser.tab.c/$@/" turtle_parser.tab.c > $@
 	mv turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
 
