@@ -47,12 +47,13 @@
  * @type: raptor_identifier_type of identifier
  * @uri: &raptor_uri of identifier (if relevant)
  * @uri_source: raptor_uri_source of URI (if relevnant)
- * @id: string for ID or genid (if relevant)
- * @literal: string for literal
+ * @id: string for ID or genid (if relevant) (SHARED)
+ * @literal: string for literal (SHARED)
  * @literal_datatype: &raptor_uri of identifier
- * @literal_language: literal language
+ * @literal_language: literal language (SHARED)
  * 
  * Constructs a new identifier copying the URI, ID fields.
+ * SHARED means raptor_new_identifier owns this argument after calling.
  * 
  * Return value: a new raptor_identifier object or NULL on failure
  **/
@@ -83,28 +84,10 @@ raptor_new_identifier(raptor_identifier_type type,
     }
   }
 
-  if(id) {
-    int len=strlen((char*)id);
-    
-    identifier->id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-    if(!identifier->id) {
-      raptor_free_identifier(identifier);
-      return NULL;
-    }
-    strncpy((char*)identifier->id, (char*)id, len+1);
-  }
-  
-  if(literal) {
-    int len=strlen(literal);
-    
-    identifier->literal=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-    if(!identifier->literal) {
-      raptor_free_identifier(identifier);
-      return NULL;
-    }
-    strncpy((char*)identifier->literal, (char*)literal, len+1);
-  }
-  
+  /* SHARED */
+  identifier->id=id;
+  /* SHARED */
+  identifier->literal=literal;
 
   if(literal_datatype) {
     identifier->literal_datatype=raptor_uri_copy(literal_datatype);
@@ -114,16 +97,8 @@ raptor_new_identifier(raptor_identifier_type type,
     }
   }
 
-  if(literal_language) {
-    int len=strlen(literal_language);
-    
-    identifier->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-    if(!len) {
-      raptor_free_identifier(identifier);
-      return NULL;
-    }
-    strncpy((char*)identifier->literal_language, (char*)literal_language, len+1);
-  }
+  /* SHARED */
+  identifier->literal_language=literal_language;
   
   return identifier;
 }
