@@ -2633,20 +2633,6 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 
 
 raptor_uri*
-raptor_new_uri(raptor_parser *rdf_parser, const char *uri_string) 
-{
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri(rdf_parser->world, uri_string);
-#else
-  int new_uri_len=strlen(uri_string)+1;
-  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len+1);
-  
-  return new_uri;
-#endif
-}
-
-
-raptor_uri*
 raptor_make_uri(raptor_uri *base_uri, const char *reference_uri_string) 
 {
 #ifdef RAPTOR_IN_REDLAND
