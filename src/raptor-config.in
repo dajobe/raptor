@@ -83,7 +83,7 @@ while test $# -gt 0; do
       echo_libtool_libs=yes
       ;;
     --help|--usage)
-      usage 0 1>&2
+      usage 0
       ;;
     *)
       usage 1 1>&2
