@@ -323,6 +323,34 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
   fputc(']', fh);
 }
 
+
+/**
+ * raptor_sequence_join: Join two sequences moving all items from one sequence to the end of another
+ * @param dest: &raptor_sequence destination sequence
+ * @param src: &raptor_sequence source sequence
+ *
+ * After this operation, sequence src will be empty (zero size) but
+ * will have the same item capacity as before.
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(dest, raptor_sequence, 1);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(src, raptor_sequence, 1);
+
+  if(raptor_sequence_ensure(dest, dest->size + src->size))
+    return 1;
+  memcpy(&dest->sequence[dest->size], src->sequence, src->size);
+  dest->size += src->size;
+
+  src->size=0;
+
+  return 0;
+}
+
+
 #endif
 
 
@@ -333,68 +361,77 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
 int main(int argc, char *argv[]);
 
 
-#define assert_match(function, result, string) do { if(strcmp(result, string)) { fprintf(stderr, #function " failed - returned %s, expected %s\n", result, string); exit(1); } } while(0)
+#define assert_match_string(function, expr, string) do { char *result=expr; if(strcmp(result, string)) { fprintf(stderr, "%s:" #function " failed - returned %s, expected %s\n", program, result, string); exit(1); } } while(0)
+#define assert_match_int(function, expr, value) do { int result=expr; if(result != value) { fprintf(stderr, "%s:" #function " failed - returned %d, expected %d\n", program, result, value); exit(1); } } while(0)
 
 int
 main(int argc, char *argv[]) 
 {
   const char *program=raptor_basename(argv[0]);
-  raptor_sequence* seq=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  raptor_sequence* seq1=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  raptor_sequence* seq2=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
   char *s;
 
-  raptor_sequence_set_at(seq, 0, (void*)"first");
+  raptor_sequence_set_at(seq1, 0, (void*)"first");
 
-  raptor_sequence_push(seq, (void*)"third");
+  raptor_sequence_push(seq1, (void*)"third");
 
-  raptor_sequence_shift(seq, (void*)"second");
+  raptor_sequence_shift(seq1, (void*)"second");
 
-  s=(char*)raptor_sequence_get_at(seq, 0);
-  assert_match(raptor_sequence_get_at, s, "second");
+  s=(char*)raptor_sequence_get_at(seq1, 0);
+  assert_match_string(raptor_sequence_get_at, s, "second");
 
-  s=(char*)raptor_sequence_get_at(seq, 1);
-  assert_match(raptor_sequence_get_at, s, "first");
+  s=(char*)raptor_sequence_get_at(seq1, 1);
+  assert_match_string(raptor_sequence_get_at, s, "first");
   
-  s=(char*)raptor_sequence_get_at(seq, 2);
-  assert_match(raptor_sequence_get_at, s, "third");
+  s=(char*)raptor_sequence_get_at(seq1, 2);
+  assert_match_string(raptor_sequence_get_at, s, "third");
   
-  if(raptor_sequence_size(seq) !=3)
-    exit(1);
+  assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 3);
 
   fprintf(stderr, "%s: sequence after additions: ", program);
-  raptor_sequence_print(seq, stderr);
+  raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
 
   /* now made alphabetical i.e. first, second, third */
-  raptor_sequence_sort(seq, raptor_compare_strings);
+  raptor_sequence_sort(seq1, raptor_compare_strings);
 
   fprintf(stderr, "%s: sequence after sort: ", program);
-  raptor_sequence_print(seq, stderr);
+  raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
 
-  s=(char*)raptor_sequence_pop(seq);
-  assert_match(raptor_sequence_get_at, s, "third");
+  s=(char*)raptor_sequence_pop(seq1);
+  assert_match_string(raptor_sequence_get_at, s, "third");
 
-  if(raptor_sequence_size(seq) !=2)
-    exit(1);
+  assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 2);
 
   fprintf(stderr, "%s: sequence after pop: ", program);
-  raptor_sequence_print(seq, stderr);
+  raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
 
-  s=(char*)raptor_sequence_unshift(seq);
-  assert_match(raptor_sequence_get_at, s, "first");
+  s=(char*)raptor_sequence_unshift(seq1);
+  assert_match_string(raptor_sequence_get_at, s, "first");
 
-  if(raptor_sequence_size(seq) !=1)
-    exit(1);
+  assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 1);
 
   fprintf(stderr, "%s: sequence after unshift: ", program);
-  raptor_sequence_print(seq, stderr);
+  raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
 
-  s=(char*)raptor_sequence_get_at(seq, 0);
-  assert_match(raptor_sequence_get_at, s, "second");
+  s=(char*)raptor_sequence_get_at(seq1, 0);
+  assert_match_string(raptor_sequence_get_at, s, "second");
   
-  raptor_free_sequence(seq);
+  raptor_sequence_push(seq2, (void*)"first.2");
+  if(raptor_sequence_join(seq2, seq1)) {
+    fprintf(stderr, "%s: raptor_sequence_join failed\n", program);
+    exit(1);
+  }
+
+  assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 0);
+  assert_match_int(raptor_sequence_size, raptor_sequence_size(seq2), 2);
+
+  raptor_free_sequence(seq1);
+  raptor_free_sequence(seq2);
 
   return (0);
 }
