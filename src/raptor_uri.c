@@ -488,10 +488,11 @@ raptor_uri_filename_to_uri_string(const char *filename)
 {
   char *buffer;
 #ifdef WIN32
-  char *from, *to;
+  const char *from;
+  char *to;
 #endif
-  /*     file:// (filename) \0 */
-  int len=7+strlen(filename)+1;
+  /*     file: (filename) \0 */
+  int len=5+strlen(filename)+1;
   
 #ifdef WIN32
 /*
@@ -511,7 +512,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * that turn into file:///server/share/blah
  * using the above algorithm.
  */
-  len++;
+  len+=2; /* // */
   if(*filename != '\\')
     len+=2; /* relative filename - add ./ */
 
@@ -519,8 +520,10 @@ raptor_uri_filename_to_uri_string(const char *filename)
 /* others - unix ... ? */
 
 /*
- * "file://" + filename
+ * "file://" + filename or "file:" filename
  */
+  if(*filename == '/')
+    len+=2;
 #endif
 
   buffer=(char*)LIBRDF_MALLOC(cstring, len);
@@ -548,8 +551,10 @@ raptor_uri_filename_to_uri_string(const char *filename)
   }
   *to='\0';
 #else
-  strcpy(buffer, "file://");
-  strcpy(buffer+7, filename);
+  strcpy(buffer, "file:");
+  if(*filename == '/')
+    strcpy(buffer+5, "//");
+  strcat(buffer, filename);
 #endif
   
   return buffer;
@@ -574,7 +579,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   int len=0;
   char *scheme, *authority, *path, *query, *fragment;
 #ifdef WIN32
-  char *p;
+  char *p, *from, *to;
   int is_relative_path=0;
 #endif
 
@@ -597,7 +602,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   }
   LIBRDF_FREE(cstring, scheme);
 
-  if(strcasecmp(authority, "localhost")) {
+  if(authority && !strcasecmp(authority, "localhost")) {
     LIBRDF_FREE(cstring,authority);
     authority=NULL;
   }
@@ -625,6 +630,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   } /* end if authority */
   if(!is_relative_path)
     len++;/* for \ between authority and path */
+  len--; /* for removing leading / off path */
 #endif
   len+=strlen(path);
 
@@ -639,21 +645,37 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   }
 
 
+  *filename='\0';
 #ifdef WIN32
   if(authority) {
     /* p was set above to ':' in authority */
     if(!p)
-      filename[1]=filename[0]='\\';
+      strcpy(filename, "\\\\");
     strcat(filename, authority);
-  } else 
-   *filename='\0';
+  }
 
   if(!is_relative_path)
     strcat(filename,"\\");
+
+  /* find end of filename */
+  to=filename;
+  while(*to++)
+    ;
+  to--;
+  
+  /* copy path after leading \ */
+  from=path+1;
+  while(*from) {
+    char c=*from++;
+    if(c == '/')
+      *to++ ='\\';
+    else
+      *to++ =c;
+  }
+  *to='\0';
 #else
-  *filename='\0';
-#endif
   strcat(filename, path);
+#endif
 
 
   if(authority)
@@ -810,6 +832,9 @@ main(int argc, char *argv[])
 
   failures += assert_filename_to_uri ("/path/to/file", "file:///path/to/file");
   failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
+
+  failures += assert_filename_to_uri ("file", "file:file");
+  failures += assert_uri_to_filename ("file:file", "file");
 
 #endif
 
