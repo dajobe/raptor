@@ -1,39 +1,59 @@
-# Note that this is NOT a relocatable package
 %define name    @PACKAGE@
 %define version @VERSION@
 %define release 1
-%define prefix  /usr
 
-Summary:   Redland Parser Toolkit for RDF (Raptor)
+Summary:   Raptor RDF Parser Toolkit for Redland
 Name:      %{name}
 Version:   %{version}
 Release:   %{release}
-Prefix:    %{prefix}
+Prefix:    %{_prefix}
 Copyright: LGPL/MPL
-Group:     System Environment/Libraries
+Group:     Development/Libraries
 Source:    http://www.redland.opensource.ac.uk/dist/source/%{name}-%{version}.tar.gz
 URL:       http://www.redland.opensource.ac.uk/raptor/
 BuildRoot: /tmp/%{name}-%{version}
+BuildRequires: libxml2 libxml2-devel
 Packager:  Dave Beckett <Dave.Beckett@bristol.ac.uk>
-Docdir: %{prefix}/doc
+Docdir: %{_docdir}
 
 %description
 
-Raptor contains the Redland RDF Parser that reads RDF encoded in XML.
+Raptor is the RDF Parser Toolkit for Redland that provides
+a set of standalone RDF parsers, generating triples from RDF/XML
+or N-Triples.
+
+%package devel
+Summary: Libraries, includes etc to develop with Raptor RDF parser library
+Group: Development/Libraries
+Requires: raptor = %{version}
+Requires: libxml2-devel
+
+%description devel
+Libraries, includes etc to develop with Raptor RDF parser library.
+It provides a set of standalone RDF parsers, generating triples from
+RDF/XML or N-Triples.
 
 %prep
-%setup
+%setup -q
 
 %build
-
+# Needed for snapshot releases.
 if [ ! -f configure ]; then
-  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --prefix=%{prefix} --sysconfdir=/etc
+%ifarch alpha
+  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --host=alpha-redhat-linux --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
+%else
+  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
+%endif
 else
-  CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} --sysconfdir=/etc
+%ifarch alpha
+  CFLAGS="$RPM_OPT_FLAGS" ./configure --host=alpha-redhat-linux --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
+%else
+  CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
+%endif
 fi
 
 if [ "$SMP" != "" ]; then
-  make -k -j$SMP "MAKE=make -k -j $SMP"
+  (make "MAKE=make -k -j $SMP"; exit 0)
 else
   make
 fi
@@ -41,20 +61,45 @@ fi
 %install
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
-make prefix=$RPM_BUILD_ROOT%{prefix} sysconfdir=$RPM_BUILD_ROOT/etc install
+install -d $RPM_BUILD_ROOT%{_mandir}/man1
+install -d $RPM_BUILD_ROOT%{_mandir}/man3
+
+make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RPM_BUILD_ROOT%{_mandir} install
 
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
 
-%files
-%defattr(0555, bin, bin)
-%{prefix}/bin/rdfdump
-%{prefix}/lib/libraptor.a
+%post -p /sbin/ldconfig
 
-%defattr (0444, bin, bin, 0555)
-%{prefix}/include/raptor.h
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(-, root, root)
 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
-%doc *.html
+%doc MPL.html
+%doc %{_mandir}/man1/rdfdump.1*
+%doc %{_mandir}/man3/libraptor.3*
+
+%{_libdir}/lib*.so.*
+%{prefix}/bin/rdfdump
+
+
+%files devel
+%defattr(-, root, root)
+
+%doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
+%doc MPL.html
+%doc INSTALL.html
+
+%{_libdir}/lib*.so
+%{_libdir}/*a
+%{prefix}/include/*
+%{prefix}/bin/raptor-config
+
 
 %changelog
+* Fri Dec 20 2002 Dave Beckett <Dave.Beckett@bristol.ac.uk>
+
+- Updated to have two RPMs for raptor and raptor-devel.  Depend on
+  libxml2 as XML parser.
