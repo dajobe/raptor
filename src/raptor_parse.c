@@ -1339,7 +1339,9 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
                                       mime_type);
 
     scores[i].score=score < 10 ? score : 10; scores[i].factory=factory;
+#if RAPTOR_DEBUG > 2
     RAPTOR_DEBUG3("Score %15s : %d\n", factory->name, score);
+#endif
   }
   
   if(!factory) {
