@@ -63,14 +63,14 @@ static int raptor_uri_is_absolute (const char *uri);
 static void raptor_uri_parse (const char *uri, char *buffer, size_t len, char **scheme, char **authority, char **path, char **query, char **fragment);
 
 
-static raptor_uri_handler *raptor_current_uri_handler;
-static void *raptor_current_uri_context;
+static raptor_uri_handler *raptor_uri_current_uri_handler;
+static void *raptor_uri_current_uri_context;
 
 void
 raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
 {
-  raptor_current_uri_handler=handler;
-  raptor_current_uri_context=context;
+  raptor_uri_current_uri_handler=handler;
+  raptor_uri_current_uri_context=context;
 }
 
 
@@ -89,7 +89,7 @@ raptor_default_new_uri(void *context, const char *uri_string)
 raptor_uri*
 raptor_new_uri(const char *uri_string) 
 {
-  return (*raptor_current_uri_handler->new_uri)(raptor_current_uri_context, uri_string);
+  return (*raptor_uri_current_uri_handler->new_uri)(raptor_uri_current_uri_context, uri_string);
 }
 
 
@@ -114,7 +114,7 @@ raptor_default_new_uri_from_uri_local_name(void *context,
 raptor_uri*
 raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name)
 {
-  return (*raptor_current_uri_handler->new_uri_from_uri_local_name)(raptor_current_uri_context, uri, local_name);
+  return (*raptor_uri_current_uri_handler->new_uri_from_uri_local_name)(raptor_uri_current_uri_context, uri, local_name);
 }
 
 
@@ -145,7 +145,7 @@ raptor_default_new_uri_relative_to_base(void *context,
 raptor_uri*
 raptor_new_uri_relative_to_base(raptor_uri *base_uri, const char *uri_string) 
 {
-  return (*raptor_current_uri_handler->new_uri_relative_to_base)(raptor_current_uri_context, base_uri, uri_string);
+  return (*raptor_uri_current_uri_handler->new_uri_relative_to_base)(raptor_uri_current_uri_context, base_uri, uri_string);
 }
 
 
@@ -195,7 +195,7 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
 raptor_uri*
 raptor_new_uri_for_rdf_concept(const char *name) 
 {
-  return (*raptor_current_uri_handler->new_uri_for_rdf_concept)(raptor_current_uri_context, name);
+  return (*raptor_uri_current_uri_handler->new_uri_for_rdf_concept)(raptor_uri_current_uri_context, name);
 }
 
 
@@ -209,7 +209,7 @@ raptor_default_free_uri(void *context, raptor_uri *uri)
 void
 raptor_free_uri(raptor_uri *uri)
 {
-  return (*raptor_current_uri_handler->free_uri)(raptor_current_uri_context, uri);
+  return (*raptor_uri_current_uri_handler->free_uri)(raptor_uri_current_uri_context, uri);
 }
 
 
@@ -223,7 +223,7 @@ raptor_default_uri_equals(void *context, raptor_uri* uri1, raptor_uri* uri2)
 int
 raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 {
-  return (*raptor_current_uri_handler->uri_equals)(raptor_current_uri_context, uri1, uri2);
+  return (*raptor_uri_current_uri_handler->uri_equals)(raptor_uri_current_uri_context, uri1, uri2);
 }
 
 
@@ -265,7 +265,7 @@ raptor_default_uri_copy(void *context, raptor_uri *uri)
 raptor_uri*
 raptor_uri_copy(raptor_uri *uri) 
 {
-  return (*raptor_current_uri_handler->uri_copy)(raptor_current_uri_context, uri);
+  return (*raptor_uri_current_uri_handler->uri_copy)(raptor_uri_current_uri_context, uri);
 }
 
 
