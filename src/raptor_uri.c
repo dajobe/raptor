@@ -109,7 +109,8 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
         uri=new_uri;
       }
     }
-    RAPTOR_FREE(cstring, filename);
+    if(filename)
+      RAPTOR_FREE(cstring, filename);
     if(fragment)
       RAPTOR_FREE(cstring, fragment);
     if(uri)
