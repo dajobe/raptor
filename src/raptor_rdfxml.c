@@ -2110,11 +2110,6 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
 
 
-        if (element->rdf_attr[RDF_ATTR_datatype]) {
-          element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), element->rdf_attr[RDF_ATTR_datatype]);
-          element->rdf_attr[RDF_ATTR_datatype]=NULL; 
-        }
-        
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           element->bag.id=(char*)element->rdf_attr[RDF_ATTR_bagID];
           element->rdf_attr[RDF_ATTR_bagID]=NULL;
@@ -2374,6 +2369,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
         
+        if (element->rdf_attr[RDF_ATTR_datatype]) {
+          element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), element->rdf_attr[RDF_ATTR_datatype]);
+          element->rdf_attr[RDF_ATTR_datatype]=NULL; 
+        }
 
         element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
 
@@ -2810,7 +2809,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               int object_is_literal=(element->content_cdata != NULL); /* FIXME */
               raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
               raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
-              raptor_uri *literal_datatype=object_is_literal ? element->parent->object_literal_datatype: NULL;
+              raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
 
               element->parent->last_ordinal++;
               raptor_generate_statement(rdf_parser, 
@@ -2835,7 +2834,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               int object_is_literal=(element->content_cdata != NULL); /* FIXME */
               raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
               raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
-              raptor_uri *literal_datatype=object_is_literal ? element->parent->object_literal_datatype: NULL;
+              raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
               
               raptor_generate_statement(rdf_parser, 
                                         element->parent->subject.uri,
