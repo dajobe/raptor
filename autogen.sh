@@ -30,6 +30,7 @@ fi
 autoconf_vers=2.13
 automake_vers=1.4
 aclocal_vers=1.4
+libtoolize_vers=1.4
 
 program=`basename $0`
 
@@ -77,6 +78,21 @@ else
     DIE="yes"
 fi
 
+if (libtoolize --version) < /dev/null > /dev/null 2>&1 ; then
+    if (libtoolize --version | awk 'NR==1 { if( $4 >= '$libtoolize_vers') \
+			       exit 1; exit 0; }');
+    then
+       echo "$program: ERROR: \`libtoolize' is too old."
+       echo "           (version $libtoolize_vers or newer is required)"
+       DIE="yes"
+    fi
+else
+    echo
+    echo "$program: ERROR: You must have \`libtoolize' installed to compile $PACKAGE."
+    echo "           (version $libtoolize_vers or newer is required)"
+    DIE="yes"
+fi
+
 
 if test "X$DIE" != X; then
   exit 1
@@ -92,7 +108,10 @@ am_opt=
 
 # Ensure that these are created by the versions on this system
 # (indirectly via automake)
-rm -f libtool ltmain.sh
+rm -f ltconfig ltmain.sh libtool
+
+echo "$program: Running libtoolize --copy --automake"
+$DRYRUN libtoolize --copy --automake
 
 if test -d $CONFIG_DIR; then
   for file in config.guess config.sub; do
@@ -123,6 +142,10 @@ do
       $DRYRUN automake --add-missing $am_opt
       echo "$program: Running autoconf"
       $DRYRUN autoconf
+
+      # Remove autoconf 2.5x's cache directory
+      rm -rf autom4te*.cache
+
     )
   fi
 done
