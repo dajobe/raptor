@@ -2423,27 +2423,6 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
 
 
 void
-raptor_print_locator(FILE *stream, raptor_locator* locator) 
-{
-  if(!locator)
-    return;
-
-  if(locator->uri)
-    fprintf(stream, "URI %s", RAPTOR_URI_AS_STRING(locator->uri));
-  else if (locator->file)
-    fprintf(stream, "file %s", locator->file);
-  else
-    return;
-  if(locator->line) {
-    fprintf(stream, ":%d", locator->line);
-    if(locator->column >= 0)
-      fprintf(stream, " column %d", locator->column);
-  }
-}
-
-
-
-void
 raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
   switch(feature) {
     case RAPTOR_FEATURE_SCANNING:
