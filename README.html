@@ -17,13 +17,12 @@ is the
 <b>R</b>DF <b>P</b>arser <b>T</b>oolkit f<b>o</b>r
 <a href="http://www.redland.opensource.ac.uk/"><b>R</b>edland</a>
 and currently consists of two parsers: RDF/XML and N-Triples.
-Raptor is designed to integrate closely with Redland
-and also work entirely standalone, in which case it will
-use simple internal routines to perform the functions.
+Raptor is designed to work efficiently when used with Redland
+but is entirely separate.
 </p>
 
-<p>This library is <b>Beta</b> quality - most things work but there
-are known problems.  See
+<p>This library is mature and <b>Beta</b> quality - most things work
+but there are known problems.  See
 the <a href="TODO.html">todo list</a> for more information.  Changes
 can be found in the <a href="NEWS.html">NEWS</a> file or more
 detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
@@ -32,9 +31,8 @@ detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 
 <ul>
 <li>An RDF/XML Parser written in C designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
-<li>Can extract RDF content embedded in XML (such as XHTML)</li>
-<li>Handles RDF Core WG syntax updates for XML Base and xml:lang</li>
-<li>Generates N-Triples supporting XML literals and language tagging</li>
+<li>Handles RDF Core WG syntax updates for XML Base, xml:lang, datatyping.</li>
+<li>Generates N-Triples supporting XML literals, language tagging and datatypes</li>
 <li>Handles rdf:resource / resource attributes</li>
 <li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or (GNOME) <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
 <li>Provides features to select options at run time.</li>
@@ -43,8 +41,8 @@ detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 <li>Fast</li>
 </ul>
 
-<p>This is beta quality software - the APIs may change, it is mostly
-feature complete but needs more testing for conformance.</p>
+<p>This is mature, beta quality software - the APIs are unlikely to
+change and it is mostly feature complete.</p>
 
 
 <h2>RAPTOR NTRIPLES PARSER</h2>
