@@ -135,7 +135,7 @@ raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream)
 char *
 raptor_format_sax2_element(raptor_sax2_element *element,
                            int *length_p, int is_end,
-                           raptor_message_handler error_handler,
+                           raptor_simple_message_handler error_handler,
                            void *error_data)
 {
   int length;
