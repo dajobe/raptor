@@ -695,6 +695,9 @@ if test $need_expat = 1; then
   fi
 fi
 
+RAPTOR_LIBTOOLLIBS=libraptor.la
+AC_SUBST(RAPTOR_LIBTOOLLIBS)
+
 
 xml_parsers_available=
 if test $need_libxml = 1; then
