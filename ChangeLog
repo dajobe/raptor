@@ -1,5 +1,25 @@
 2004-11-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_serialize.c (raptor_rdfxml_serialize_init):
+	Add a sequence of user-declared namespaces.
+	(raptor_rdfxml_serialize_terminate): Tidy sequence.
+	(raptor_rdfxml_serialize_declare_namespace): Use sequence to store
+	declared namespaces.
+	(raptor_rdfxml_serialize_start): Declare used-defined namespaces
+	and start them in the namespace stack.
+
+	* raptor_namespace.c (raptor_new_namespace_from_uri):
+	Added with raptor_new_namespace code.
+	(raptor_new_namespace): Now a wrapper around
+	raptor_new_namespace_from_uri.
+	(raptor_namespace_copy): Use raptor_new_namespace_from_uri.
+
+	* raptor_qname.c (raptor_iostream_write_qname):
+	Added to write a qname to an iostream.
+
+	* raptor.h: Add prototypes for raptor_iostream_write_qname,
+	raptor_new_namespace_from_uri
+
 	* raptor_rdfxml.c (raptor_xml_start_element_handler,
 	raptor_xml_end_element_handler, raptor_xml_comment_handler,
 	raptor_start_element_grammar, raptor_end_element_grammar,
