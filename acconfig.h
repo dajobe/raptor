@@ -17,3 +17,6 @@
 
 /* need 'extern int optind' declaration? */
 #undef NEED_OPTIND_DECLARATION
+
+/* does expat crash in error handling? */
+#undef EXPAT_ERROR_CRASH
