@@ -74,6 +74,10 @@ typedef struct raptor_www_s raptor_www;
 typedef struct raptor_sax2_element_s raptor_sax2_element;
 typedef struct raptor_xml_writer_s raptor_xml_writer;
 
+typedef struct raptor_qname_s raptor_qname;
+typedef struct raptor_namespace_s raptor_namespace;
+typedef struct raptor_namespace_stack_s raptor_namespace_stack;
+
 /* OLD structure - can't deprecate a typedef */
 typedef raptor_parser raptor_ntriples_parser;
 
@@ -294,6 +298,34 @@ RAPTOR_API void raptor_www_set_error_handler(raptor_www *www, raptor_message_han
 RAPTOR_API int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API void raptor_www_abort(raptor_www *www, const char *reason);
+
+
+/* raptor_qname - XML qnames */
+RAPTOR_API raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value, raptor_simple_message_handler error_handler, void *error_data);
+RAPTOR_API void raptor_free_qname(raptor_qname* name);
+RAPTOR_API int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
+/* utility function */
+RAPTOR_API raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len, raptor_simple_message_handler error_handler, void *error_data);
+
+/* raptor_namespace_stack - stack of XML namespaces */
+RAPTOR_API void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
+RAPTOR_API void raptor_namespaces_free(raptor_namespace_stack *nstack);
+RAPTOR_API void raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *nspace);
+RAPTOR_API int raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth);
+RAPTOR_API void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
+RAPTOR_API void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
+RAPTOR_API raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
+RAPTOR_API raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
+RAPTOR_API int raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace);
+
+/* raptor_namespace - XML namespace */
+RAPTOR_API raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
+RAPTOR_API void raptor_namespace_free(raptor_namespace *ns);
+RAPTOR_API int raptor_namespace_copy(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth);
+RAPTOR_API raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
+RAPTOR_API const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
+RAPTOR_API unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
+
 
 #ifdef __cplusplus
 }
