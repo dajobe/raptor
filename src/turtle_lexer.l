@@ -197,7 +197,8 @@ yywrap (void) {
 }
 
 
-unsigned char *copy_token(unsigned char *text, size_t len) {
+unsigned char *
+copy_token(unsigned char *text, size_t len) {
   unsigned char *s;
   if(!len)
     len=strlen(text);
@@ -209,11 +210,12 @@ unsigned char *copy_token(unsigned char *text, size_t len) {
 }
 
 
-unsigned char *copy_string_token(unsigned char *text, size_t len, int delim) {
+unsigned char *
+copy_string_token(unsigned char *text, size_t len, int delim) {
   int i;
   unsigned char *s, *d;
-  unsigned char *string;
-  string=(unsigned char *)malloc(len+1);
+  unsigned char *string=(unsigned char *)malloc(len+1);
+
   for(s=text, d=string, i=0; i<len; s++, i++) {
     unsigned char c=*s;
 
