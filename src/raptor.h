@@ -175,9 +175,7 @@ RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const ch
 RAPTOR_API char *raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string);
 RAPTOR_API int raptor_uri_is_file_uri(const char* uri_string);
-
-/* FIXME temporary redland stuff */
-void raptor_set_world(raptor_parser *rdf_parser, void *world);
+RAPTOR_API void raptor_uri_init(void);
 
 typedef raptor_uri* (*new_uri_func) (void *context, const char *uri_string);
 typedef raptor_uri* (*new_uri_from_uri_local_name_func) (void *context, raptor_uri *uri, const char *local_name);
