@@ -135,6 +135,14 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_BIGENDIAN
 
+AC_CHECK_TYPE([u8 u16 u32])
+
+AC_CHECK_SIZEOF(unsigned char, 1)
+AC_CHECK_SIZEOF(unsigned short, 2)
+AC_CHECK_SIZEOF(unsigned int, 4)
+AC_CHECK_SIZEOF(unsigned long, 4)
+  
+
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
 version_major=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`
