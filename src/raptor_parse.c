@@ -1916,7 +1916,8 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
 #ifdef RAPTOR_XML_LIBXML
   if(!xc) {
     xc = xmlCreatePushParserCtxt(&rdf_parser->sax, rdf_parser,
-                                 buffer, len, rdf_parser->filename);
+                                 buffer, len, 
+                                 NULL);
     if(!xc)
       return 1;
 
@@ -1927,7 +1928,11 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
     xc->replaceEntities = 1;
     
     rdf_parser->xc = xc;
-    return;
+
+    if(is_end)
+      len= -1;
+    else
+      return 0;
   }
 #endif
 
@@ -1984,6 +1989,19 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
 
 
 
+/**
+ * raptor_xml_parse_chunk - Parse a chunk of memory
+ * @rdf_parser: RDF Parser object
+ * @buffer: memory to parse
+ * @len: size of memory
+ * @is_end: non-zero if this is the last chunk to parse
+ * 
+ * Parse the content in the given buffer, emitting RDF statements
+ * as a side-effect, to the registered statement handler if they
+ * are generated, and errors to the appropriate error handlers.
+ * 
+ * Return value: Non zero on failure.
+ **/
 int
 raptor_xml_parse_chunk(raptor_parser* rdf_parser, const char *buffer,
                        size_t len, int is_end) 
@@ -2020,9 +2038,9 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   
   while(rdf_parser->fh && !feof(rdf_parser->fh)) {
     int len=fread(buffer, 1, RAPTOR_XML_READ_BUFFER_SIZE, rdf_parser->fh);
-    rc=raptor_xml_parse_chunk_(rdf_parser, buffer,
-                               len, (len < RAPTOR_XML_READ_BUFFER_SIZE));
-    if(rc)
+    int is_end=(len < RAPTOR_XML_READ_BUFFER_SIZE);
+    rc=raptor_xml_parse_chunk_(rdf_parser, buffer, len, is_end);
+    if(rc || is_end)
       break;
   }
 
