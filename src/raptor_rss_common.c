@@ -1012,20 +1012,33 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
       identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
       identifier->uri_source=RAPTOR_URI_SOURCE_URI;
     } else {
-      int url_field=(i== RAPTOR_RSS_IMAGE) ? RAPTOR_RSS_FIELD_URL :
-                                             RAPTOR_RSS_FIELD_LINK;
-      if(i == RAPTOR_RSS_CHANNEL)
-        url_field=RAPTOR_RSS_FIELD_ATOM_ID;
+      int url_fields[2];
+      int url_fields_count=1;
+      int f;
       
-      if(item->fields[url_field]) {
-        identifier->uri=raptor_new_uri((const unsigned char*)item->fields[url_field]);
-        identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-        identifier->uri_source=RAPTOR_URI_SOURCE_URI;
-      } else if(item->uri_fields[url_field]) {
-        identifier->uri=raptor_uri_copy(item->uri_fields[url_field]);
-        identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-        identifier->uri_source=RAPTOR_URI_SOURCE_URI;
-      } else {
+      url_fields[0]=(i== RAPTOR_RSS_IMAGE) ? RAPTOR_RSS_FIELD_URL :
+                                             RAPTOR_RSS_FIELD_LINK;
+      if(i == RAPTOR_RSS_CHANNEL) {
+        url_fields[1]=RAPTOR_RSS_FIELD_ATOM_ID;
+        url_fields_count++;
+      }
+
+      for(f=0; f < url_fields_count; f++) {
+        int field=url_fields[f];
+        if(item->fields[field]) {
+          identifier->uri=raptor_new_uri((const unsigned char*)item->fields[field]);
+          identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+          identifier->uri_source=RAPTOR_URI_SOURCE_URI;
+          break;
+        } else if(item->uri_fields[field]) {
+          identifier->uri=raptor_uri_copy(item->uri_fields[field]);
+          identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+          identifier->uri_source=RAPTOR_URI_SOURCE_URI;
+          break;
+        }
+      }
+      
+      if(!identifier->uri) {
         /* need to make bnode */
         identifier->id=raptor_generate_id(rdf_parser, 0, NULL);
         identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
