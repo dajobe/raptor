@@ -582,5 +582,11 @@ raptor_libxml_init(xmlSAXHandler *sax) {
 }
 
 
+void
+raptor_libxml_free(xmlParserCtxtPtr xc) {
+  libxml2_endDocument(xc);
+  xmlFreeParserCtxt(xc);
+}
+
 /* end if RAPTOR_XML_LIBXML */
 #endif
