@@ -1,3 +1,8 @@
+2004-10-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xml.c (raptor_xml_escape_string):
+	Call error_handler correctly.
+
 2004-09-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor-config.1: Restore deleted content
