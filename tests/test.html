@@ -1,0 +1,30 @@
+<html>
+<head>
+  <title>Owl</title>
+
+  <!-- $Id$ -->
+
+  <!-- Test for searching for rdf:RDF inside some other XML
+
+       Note: this is not VALID HTML or XHTML since
+       the rdf:RDF element and contents is not allowed here.  It
+       remains well-formed XML.
+    -->
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	   xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <rdf:Description rdf:about="http://example.org/owl.html">
+      <dc:title>Monkey Home Page</dc:title>
+      <dc:creator>Dave Beckett</dc:creator>
+      <dc:description>The monkeys live in the jungle.</dc:description>
+    </rdf:Description> 
+  </rdf:RDF>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1>Monkeys</h1>
+
+<p>Blah blah blah swinging from trees.  Pictures of monkies.</p>
+
+</body>
+</html>
