@@ -49,6 +49,8 @@ int main(int argc, char* argv[])
 	}
 
 
+	raptor_init();
+
 	raptor_parser* p = raptor_new("");
 
 	raptor_set_statement_handler(p, NULL, dump_statement);
@@ -71,6 +73,9 @@ int main(int argc, char* argv[])
 #endif
 
 	raptor_free(p);
+
+	raptor_finish();
+
 	return 0;
 }
 
