@@ -53,146 +53,97 @@
 /* Raptor structures */
 
 typedef enum {
+  /* Catch uninitialised state */
   RAPTOR_STATE_INVALID = 0,
 
   /* Skipping current tree of elements - used to recover finding
    * illegal content, when parsling permissively.
    */
-  RAPTOR_STATE_SKIPPING = 1,
+  RAPTOR_STATE_SKIPPING =1,
 
   /* Not in RDF grammar yet - searching for a start element.
-   * This can be <rdf:RDF> (goto 6.1) but since it is optional,
-   * the start element can also be <Description> (goto 6.3), 
-   * <rdf:Seq> (goto 6.25) <rdf:Bag> (goto 6.26) or <rdf:Alt> (goto 6.27)
-   * OR from 6.3 can have ANY other element matching
-   * typedNode (6.13) - goto 6.3
-   * CHOICE: Search for <rdf:RDF> node before starting match
-   * OR assume RDF content, hence go straight to production
+   *
+   * This can be <rdf:RDF> (goto NODE_ELEMENT_LIST) but since it is optional,
+   * the start element can also be one of  
+   *   http://www.w3.org/TR/rdf-syntax-grammar/#nodeElementURIs
+   * 
+   * If RDF content is assumed, go straight to OBJ
    */
-  RAPTOR_STATE_UNKNOWN = 1000,
+  RAPTOR_STATE_UNKNOWN,
 
-  /* No need for 6.1 - go straight to 6.2 */
-
-  /* Met production 6.1 (RDF) <rdf:RDF> element or 6.17 (value) and expecting
-   *   description (6.3) | container (6.4)
-   * = description (6.3) | sequence (6.25) | bag (6.26) | alternative (6.27)
+  /* A list of node elements
+   *   http://www.w3.org/TR/rdf-syntax-grammar/#nodeElementList 
    */
-  RAPTOR_STATE_OBJ   = 6020,
+  RAPTOR_STATE_NODE_ELEMENT_LIST,
 
-  /* Met production 6.3 (description) <rdf:Description> element
-   * OR 6.13 (typedNode)
+  /* Found an <rdf:Description> */
+  RAPTOR_STATE_DESCRIPTION,
+
+  /* Found a property element
+   *   http://www.w3.org/TR/rdf-syntax-grammar/#propertyElt
    */
-  RAPTOR_STATE_DESCRIPTION = 6030,
+  RAPTOR_STATE_PROPERTYELT,
 
-  /* production 6.4 (container) - not used (pick one of sequence, bag,
-   * alternative immediately in state 6.2
+  /* A property element that is an ordinal - rdf:li, rdf:_n
    */
-  
-  /* productions 6.5-6.11 are for attributes - not used */
+  RAPTOR_STATE_MEMBER_PROPERTYELT,
 
-  /* met production 6.12 (propertyElt)
+  /* Found a node element
+   *   http://www.w3.org/TR/rdf-syntax-grammar/#nodeElement
    */
-  RAPTOR_STATE_PROPERTYELT = 6120,
+  RAPTOR_STATE_NODE_ELEMENT,
 
-  /* met production 6.13 (typedNode)
+  /* A property element with rdf:parseType="Literal"
+   *   http://www.w3.org/TR/rdf-syntax-grammar/#parseTypeLiteralPropertyElt
    */
-  RAPTOR_STATE_TYPED_NODE = 6130,
+  RAPTOR_STATE_PARSETYPE_LITERAL,
 
-
-  /* productions 6.14-6.16 are for attributes - not used */
-
-  /* production 6.17 (value) - not used */
-
-  /* productions 6.18-6.24 are for attributes / values - not used */
-
-
-  /* Met production 6.25 (sequence) <rdf:Seq> element seen. Goto 6.28  */
-  /* RAPTOR_STATE_SEQ = 6250, */
-
-  /* Met production 6.26 (bag) <rdf:Bag> element seen. Goto 6.28  */
-  /* RAPTOR_STATE_BAG = 6260, */
-
-  /* Met production 6.27 (alternative) <rdf:Alt> element seen. Goto 6.28 */
-  /* RAPTOR_STATE_ALT = 6270, */
-
-  /* Met production 6.28 (member) 
-   * Now expect <rdf:li> element and if it empty, with resource attribute
-   * goto 6.29 otherwise goto 6.30
-   * CHOICE: Match rdf:resource/resource
+  /* A property element with rdf:parseType="Resource"
+   *   http://www.w3.org/TR/rdf-syntax-grammar/#parseTypeResourcePropertyElt
    */
-  RAPTOR_STATE_MEMBER = 6280,
+  RAPTOR_STATE_PARSETYPE_RESOURCE,
 
-  /* met production 6.29 (referencedItem) after 
-   * Found a container item with reference - <rdf:li (rdf:)resource=".."/> */
-  /* RAPTOR_STATE_REFERENCEDITEM = 6290, */
+  /* A property element with rdf:parseType="Collection"
+   *  http://www.w3.org/TR/rdf-syntax-grammar/#parseTypeCollectionPropertyElt
+   *
+   * (This also handles daml:Collection)
+   */
+  RAPTOR_STATE_PARSETYPE_COLLECTION,
 
-  /* met production 6.30 (inlineItem) part 1 - plain container item */
-  /* RAPTOR_STATE_INLINEITEM = 6300, */
+  /* A property element with a rdf:parseType attribute and a value
+   * not "Literal" or "Resource"
+   *   http://www.w3.org/TR/rdf-syntax-grammar/#parseTypeOtherPropertyElt
+   */
+  RAPTOR_STATE_PARSETYPE_OTHER,
 
+  RAPTOR_STATE_PARSETYPE_LAST = RAPTOR_STATE_PARSETYPE_OTHER
 
-  /* productions 6.31-6.33 are for attributes - not used */
-
-
-  /* met production 6.30 (inlineItem) part 2 - container item with
-   * rdf:parseType="literal" */
-  RAPTOR_STATE_PARSETYPE_LITERAL = 6400,
-
-  /* met production 6.30 (inlineItem) part 3 - container item with 
-   * rdf:parseType="literal" */
-  RAPTOR_STATE_PARSETYPE_RESOURCE = 6410,
-
-
-
-
-  /* ******************************************************************* */
-  /* Additional non-M&S states */
-
-  /* met production 6.30 (inlineItem) - container item 
-   * with other rdf:parseType value */
-  RAPTOR_STATE_PARSETYPE_OTHER = 6420,
-
-  /* met production 6.30 (inlineItem) - container item 
-   * with rdf:parseType value "daml:collection" */
-  RAPTOR_STATE_PARSETYPE_COLLECTION = 6430
 
 } raptor_state;
 
 
-static const char * const raptor_state_names[]={
-  NULL, /* No 6.0 */
-  NULL, /* 6.1 not used */
-  "object (6.2)",
-  "description (6.3)",
-  NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, /* 6.4 - 6.11 not used */
-  "propertyElt (6.12)",
-  "typedNode (6.13)",
-  NULL,NULL,NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL,NULL, /* 6.14 - 6.24 not used */
-  NULL, /* was sequence (6.25) */
-  NULL, /* was bag (6.26) */
-  NULL, /* was alternative (6.27) */
-  "member (6.28)",
-  NULL, /* was referencedItem (6.29) */
-  NULL, /* was inlineItem (6.30 part 1) */
-  NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-  "parseTypeLiteral (6.30 part 2)",
-  "parseTypeResource (6.30 part 3)",
-  "parseTypeOther (not M&S)", /* 6.43 */
-  "parseTypeCollection (revised syntax)", /* 6.44 */
+static const char * const raptor_state_names[RAPTOR_STATE_PARSETYPE_LAST+2]={
+  "INVALID",
+  "SKIPPING",
+  "UNKNOWN",
+  "nodeElementList",
+  "propertyElt",
+  "Description",
+  "propertyElt",
+  "memberPropertyElt",
+  "nodeElement",
+  "parseTypeLiteral",
+  "parseTypeResource",
+  "parseTypeCollection",
+  "parseTypeOther"
 };
 
 
 static const char * raptor_state_as_string(raptor_state state) 
 {
-  int offset=(state - 6000)/10;
-  if(state == RAPTOR_STATE_UNKNOWN)
-    return "UNKNOWN";
-  if(state == RAPTOR_STATE_SKIPPING)
-    return "SKIPPING";
-  if(offset<0 || offset > 43)
-    return "INVALID";
-  if(!raptor_state_names[offset])
-    return "NOT-USED";
-  return raptor_state_names[offset];
+  if(state<1 || state > RAPTOR_STATE_PARSETYPE_LAST)
+    state=0;
+  return raptor_state_names[state];
 }
 
 
@@ -276,10 +227,90 @@ static const struct {
   { "nil",             RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 }
 };
 
-/* In above 'Useless' indicates it generates parts of a reified statement
- * in which in the current RDF model, those parts are not allowed - i.e.
- * literals in the subject and predicate positions
- */
+
+/*
+ * http://www.w3.org/TR/rdf-syntax-grammar/#section-grammar-summary
+ * coreSyntaxTerms := rdf:RDF | rdf:ID | rdf:about | rdf:bagID | 
+                      rdf:parseType | rdf:resource | rdf:nodeID | rdf:datatype
+ * syntaxTerms     := coreSyntaxTerms | rdf:Description | rdf:li
+ * oldTerms        := rdf:aboutEach | rdf:aboutEachPrefix
+ *
+ * nodeElementURIs       := anyURI - ( coreSyntaxTerms | rdf:li | oldTerms )
+ * propertyElementURIs   := anyURI - ( coreSyntaxTerms | rdf:Description | oldTerms )
+ * propertyAttributeURIs := anyURI - ( coreSyntaxTerms | rdf:Description | rdf:li | oldTerms )
+ *
+ * So, forbidden terms in the RDF namespace are:
+ * nodeElements 
+ *   RDF | ID | about | bagID | parseType | resource | nodeID | datatype |
+ *   li | aboutEach | aboutEachPrefix
+ *
+ * propertyElements
+ *   RDF | ID | about | bagID | parseType | resource | nodeID | datatype |
+ *   Description | aboutEach | aboutEachPrefix
+ *
+ * propertyAttributes
+ *   RDF | ID | about | bagID | parseType | resource | nodeID | datatype |
+ *   Description | li | aboutEach | aboutEachPrefix
+ *
+*/
+
+
+static const struct { 
+  const char * const name;            /* term name */
+  int forbidden_as_nodeElement;
+  int forbidden_as_propertyElement;
+  int forbidden_as_propertyAttribute;
+} rdf_syntax_terms_info[]={
+  { "RDF",             1, 1, 1 },
+  { "ID",              1, 1, 1 },
+  { "about",           1, 1, 1 },
+  { "bagID",           1, 1, 1 },
+  { "parseType",       1, 1, 1 },
+  { "resource",        1, 1, 1 },
+  { "nodeID",          1, 1, 1 },
+  { "datatype",        1, 1, 1 },
+  { "Description",     0, 1, 1 },
+  { "li",              1, 0, 0 },
+  { "aboutEach",       1, 1, 1 },
+  { "aboutEachPrefix", 1, 1, 1 },
+  /* Other names are allowed anywhere */
+  { NULL,              0, 0, 0 },
+};
+
+
+static int
+raptor_forbidden_nodeElement_name(const char *name) 
+{
+  int i;
+  for(i=0; rdf_syntax_terms_info[i].name; i++)
+    if(!strcmp(rdf_syntax_terms_info[i].name, name))
+      return rdf_syntax_terms_info[i].forbidden_as_nodeElement;
+  return 0;
+}
+
+
+static int
+raptor_forbidden_propertyElement_name(const char *name) 
+{
+  int i;
+  for(i=0; rdf_syntax_terms_info[i].name; i++)
+    if(!strcmp(rdf_syntax_terms_info[i].name, name))
+      return rdf_syntax_terms_info[i].forbidden_as_propertyElement;
+  return 0;
+}
+
+#if 0
+/* This is probably not needed; covered by rdf_attr_info */
+static int
+raptor_forbidden_propertyAttribute_name(const char *name) 
+{
+  int i;
+  for(i=0; rdf_syntax_terms_info[i].name; i++)
+    if(!strcmp(rdf_syntax_terms_info[i].name, name))
+      return rdf_syntax_terms_info[i].forbidden_as_propertyAttribute;
+  return 0;
+}
+#endif
 
 
 typedef enum {
@@ -1161,7 +1192,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
      * PARSETYPE_RESOURCE should never be propogated up since it
      * will turn the next child (node) element into a property
      */
-    if(element->state != RAPTOR_STATE_MEMBER &&
+    if(element->state != RAPTOR_STATE_MEMBER_PROPERTYELT &&
        element->state != RAPTOR_STATE_PARSETYPE_RESOURCE)
       element->parent->child_state=element->state;
   }
@@ -1226,7 +1257,7 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
    * Use the child_state first if there is one, since that applies
    */
   state=element->child_state;
-  RAPTOR_DEBUG3(raptor_xml_cdata_handler, "Working in state %d - %s\n", state,
+  RAPTOR_DEBUG2(raptor_xml_cdata_handler, "Working in state %s\n",
                 raptor_state_as_string(state));
 
 
@@ -1314,9 +1345,8 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
                 "Content cdata now: '%s' (%d bytes)\n", 
                 buffer, element->content_cdata_length);
 
-  RAPTOR_DEBUG3(raptor_xml_cdata_handler, 
-                "Ending in state %d - %s\n",
-                state, raptor_state_as_string(state));
+  RAPTOR_DEBUG2(raptor_xml_cdata_handler, 
+                "Ending in state %s\n", raptor_state_as_string(state));
 
 }
 
@@ -1960,8 +1990,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
-  RAPTOR_DEBUG3(raptor_start_element_grammar, "Starting in state %d - %s\n",
-                state, raptor_state_as_string(state));
+  RAPTOR_DEBUG2(raptor_start_element_grammar, "Starting in state %s\n",
+                raptor_state_as_string(state));
 
   finished= 0;
   while(!finished) {
@@ -1977,7 +2007,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         if(element_in_rdf_ns) {
           if(raptor_uri_equals(element->name->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
-            element->child_state=RAPTOR_STATE_OBJ;
+            element->child_state=RAPTOR_STATE_NODE_ELEMENT_LIST;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
             /* Yes - need more content before can continue,
              * so wait for another element
@@ -1989,6 +2019,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 	    state=RAPTOR_STATE_DESCRIPTION;
 	    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
             /* Yes - found something so move immediately to description */
+            break;
+          }
+          if(element_in_rdf_ns && raptor_forbidden_nodeElement_name(el_name)) {
+            raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
             break;
           }
         }
@@ -2011,40 +2048,38 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         /* Otherwise the choice of the next state can be made
          * from the current element by the OBJ state
          */
-        state=RAPTOR_STATE_OBJ;
+        state=RAPTOR_STATE_NODE_ELEMENT_LIST;
         element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
         break;
 
 
-      case RAPTOR_STATE_OBJ:
-        /* Handling either 6.2 (obj) or 6.17 (value) (inside
-         * rdf:RDF, propertyElt) and expecting
-         * description (6.3) | sequence (6.25) | bag (6.26) | alternative (6.27)
-         * [|other container (not M&S)]
+      case RAPTOR_STATE_NODE_ELEMENT_LIST:
+        /* Handling
+         *   http://www.w3.org/TR/rdf-syntax-grammar/#nodeElementList 
          *
-         * Everything goes to typedNode (6.13) now
+         * Everything goes to nodeElement
          */
 
-        state=RAPTOR_STATE_TYPED_NODE;
+        state=RAPTOR_STATE_NODE_ELEMENT;
 
         element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
 
         break;
 
 
-      /* No need for 6.2 - already chose 6.3, 6.25, 6.26 or 6.27 */
-
 
       case RAPTOR_STATE_DESCRIPTION:
-      case RAPTOR_STATE_TYPED_NODE:
+      case RAPTOR_STATE_NODE_ELEMENT:
       case RAPTOR_STATE_PARSETYPE_RESOURCE:
       case RAPTOR_STATE_PARSETYPE_COLLECTION:
-        /* Handling 6.3 (description), 6.13 (typedNode), contents
-         * of a property (propertyElt or member) with parseType="Resource"
-         * and rdf:Seq, rdf:Bag, rdf:Alt which are just typedNodes now
+        /* Handling <rdf:Description> or other node element
+         *   http://www.w3.org/TR/rdf-syntax-grammar/#nodeElement
          *
-         * Expect here from merge of production 6.3, 6.13, 6.25-6.27
-         * <typeName (ID|about)? bagID? propAttr* />
+         * or a property element acting as a node element for
+         * rdf:parseType="Resource"
+         *   http://www.w3.org/TR/rdf-syntax-grammar/#parseTypeResourcePropertyElt
+         * or rdf:parseType="Collection" (and daml:Collection)
+         *   http://www.w3.org/TR/rdf-syntax-grammar/#parseTypeCollectionPropertyElt
          *
          * Only create a bag if bagID given
          */
@@ -2053,7 +2088,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION && 
            element->parent && 
            (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
-            element->parent->state == RAPTOR_STATE_MEMBER) &&
+            element->parent->state == RAPTOR_STATE_MEMBER_PROPERTYELT) &&
            element->parent->content_element_seen > 1) {
           raptor_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "The enclosing property already has an object");
@@ -2063,22 +2098,30 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           break;
         }
 
-        if(state == RAPTOR_STATE_TYPED_NODE || 
+        if(state == RAPTOR_STATE_NODE_ELEMENT || 
            state == RAPTOR_STATE_DESCRIPTION || 
            state == RAPTOR_STATE_PARSETYPE_COLLECTION) {
           if(element_in_rdf_ns &&
              raptor_uri_equals(element->name->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser)))
             state=RAPTOR_STATE_DESCRIPTION;
           else
-            state=RAPTOR_STATE_TYPED_NODE;
+            state=RAPTOR_STATE_NODE_ELEMENT;
         }
         
+
+        if(element_in_rdf_ns && raptor_forbidden_nodeElement_name(el_name)) {
+          raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
+          state=RAPTOR_STATE_SKIPPING;
+          element->child_state=RAPTOR_STATE_SKIPPING;
+          finished=1;
+          break;
+        }
 
         if((element->rdf_attr[RDF_ATTR_ID]!=NULL) +
            (element->rdf_attr[RDF_ATTR_about]!=NULL) +
            (element->rdf_attr[RDF_ATTR_nodeID]!=NULL)>1) {
           raptor_update_document_locator(rdf_parser);
-          raptor_parser_warning(rdf_parser, "Multiple attributes of rdf:ID, rdf:about and rdf:nodeID on element %s - only one allowed.", el_name);
+          raptor_parser_error(rdf_parser, "Multiple attributes of rdf:ID, rdf:about and rdf:nodeID on element %s - only one allowed.", el_name);
         }
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
@@ -2244,10 +2287,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
         
 
-        /* If this is a typed node, generate the rdf:type statement
+        /* If this is a node element, generate the rdf:type statement
          * from this node
          */
-        if(state == RAPTOR_STATE_TYPED_NODE)
+        if(state == RAPTOR_STATE_NODE_ELEMENT)
           raptor_generate_statement(rdf_parser, 
                                     element->subject.uri,
                                     element->subject.id,
@@ -2328,38 +2371,36 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         finished=1;
         break;
 
-        /* choices here from production 6.12 (propertyElt)
-         *   <propName idAttr?> value </propName>
-         *     Attributes: ID?
-         *   <propName idAttr? parseLiteral> literal </propName>
-         *     Attributes: ID? parseType="literal"
-         *   <propName idAttr? parseResource> propertyElt* </propName>
-         *     Attributes: ID? parseType="resource"
-         *   <propName idRefAttr? bagIdAttr? propAttr* />
-         *     Attributes: (ID|resource)? bagIdAttr? propAttr*
+        /* Handle all the detail of the various options of property element
+         *   http://www.w3.org/TR/rdf-syntax-grammar/#propertyElt
          *
-         * The only one that must be handled here is the last one which
-         * uses only attributes and no content.
+         * All the attributes must be scanned here to see what additional
+         * property element work is needed.  No triples are generated
+         * until the end of this element, until it is clear if the
+         * element was empty.
          */
-      case RAPTOR_STATE_MEMBER:
+      case RAPTOR_STATE_MEMBER_PROPERTYELT:
       case RAPTOR_STATE_PROPERTYELT:
 
         /* Handling rdf:li as a property, noting special processing */ 
         if(element_in_rdf_ns && 
            raptor_uri_equals(element->name->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
-          state=RAPTOR_STATE_MEMBER;
+          state=RAPTOR_STATE_MEMBER_PROPERTYELT;
         }
 
 
-        /* M&S says: "The value of the ID attribute, if specified, is
-         * the identifier for the resource that represents the
-         * reification of the statement." */
+        if(element_in_rdf_ns && raptor_forbidden_propertyElement_name(el_name)) {
+          raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a property element.", el_name);
+          state=RAPTOR_STATE_SKIPPING;
+          element->child_state=RAPTOR_STATE_SKIPPING;
+          finished=1;
+          break;
+        }
+          
 
-        /* Later on it implies something different
-         * FIXME 1 - reference to this
-         * FIXME 2 - pick one of these interpretations
+        /* rdf:ID on a property element - reify a statement. 
+         * Allowed on all property element forms
          */
-
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->reified.id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
@@ -2368,6 +2409,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
         
+        /* rdf:datatype on a property element.  
+         * Only allowed for
+         *   http://www.w3.org/TR/rdf-syntax-grammar/#literalPropertyElt 
+         */
         if (element->rdf_attr[RDF_ATTR_datatype]) {
           element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (char*)element->rdf_attr[RDF_ATTR_datatype]);
           element->rdf_attr[RDF_ATTR_datatype]=NULL; 
@@ -2416,9 +2461,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           }
         } else {
 
-          /* Can only be last case */
+          /* Can only be the empty property element case
+           *   http://www.w3.org/TR/rdf-syntax-grammar/#emptyPropertyElt
+           */
 
-          /* rdf:resource attribute checked at element close time */
+          /* The presence of the rdf:resource or rdf:nodeID
+           * attributes is checked at element close time
+           */
 
           /*
            * Assign reified URI here so we don't reify property attributes
@@ -2437,7 +2486,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
           } else {
             /* Otherwise process content in obj (value) state */
-            element->child_state=RAPTOR_STATE_OBJ;
+            element->child_state=RAPTOR_STATE_NODE_ELEMENT_LIST;
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
           }
         }
@@ -2462,9 +2511,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
   } /* end while */
 
-  RAPTOR_DEBUG3(raptor_start_element_grammar, 
-                "Ending in state %d - %s\n",
-                state, raptor_state_as_string(state));
+  RAPTOR_DEBUG2(raptor_start_element_grammar, 
+                "Ending in state %s\n",
+                raptor_state_as_string(state));
 }
 
 
@@ -2481,8 +2530,8 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
-  RAPTOR_DEBUG3(raptor_end_element_grammar, "Starting in state %d - %s\n",
-                state, raptor_state_as_string(state));
+  RAPTOR_DEBUG2(raptor_end_element_grammar, "Starting in state %s\n",
+                raptor_state_as_string(state));
 
   finished= 0;
   while(!finished) {
@@ -2495,7 +2544,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         finished=1;
         break;
 
-      case RAPTOR_STATE_OBJ:
+      case RAPTOR_STATE_NODE_ELEMENT_LIST:
         if(element_in_rdf_ns && 
            raptor_uri_equals(element->name->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
           /* end of RDF - boo hoo */
@@ -2521,10 +2570,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         finished=1;
         break;
 
-      /* No need for 6.2 - already chose 6.3, 6.25, 6.26 or 6.27 */
 
       case RAPTOR_STATE_DESCRIPTION:
-      case RAPTOR_STATE_TYPED_NODE:
+      case RAPTOR_STATE_NODE_ELEMENT:
       case RAPTOR_STATE_PARSETYPE_RESOURCE:
 
         /* If there is a parent element containing this element and
@@ -2533,7 +2581,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          * (Need to check for identifier so that top-level typed nodes
          * don't get connect to <rdf:RDF> parent element)
          */
-        if(state == RAPTOR_STATE_TYPED_NODE && 
+        if(state == RAPTOR_STATE_NODE_ELEMENT && 
            element->parent &&
            (element->parent->subject.uri || element->parent->subject.id))
           raptor_generate_statement(rdf_parser, 
@@ -2680,15 +2728,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
       case RAPTOR_STATE_PROPERTYELT:
-      case RAPTOR_STATE_MEMBER:
-        /* This is used inside these: productions
-         *   6.12 (propertyElt) part 1 (element OR literal content),
-         *                      part 4 (expect no content),
-         *   6.30 (inlineItem) part 1 (element OR literal content)
+      case RAPTOR_STATE_MEMBER_PROPERTYELT:
+        /* A property element
+         *   http://www.w3.org/TR/rdf-syntax-grammar/#propertyElt
          *
-         * and similar parts of 6.28, 6.29 and 6.30 for rdf:li property
-         *
-         * The literal content part is handled here.
+         * Literal content part is handled here.
          * The element content is handled in the internal states
          * Empty content is checked here.
          */
@@ -2804,7 +2848,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             }
             
 
-            if(state == RAPTOR_STATE_MEMBER) {
+            if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
               int object_is_literal=(element->content_cdata != NULL); /* FIXME */
               raptor_uri *object_uri=object_is_literal ? (raptor_uri*)element->content_cdata : element->object.uri;
               raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
@@ -2859,10 +2903,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
         case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
         case RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL:
-          /* FIXME: undetermined yet if XML literals have a datatype URI 
-           * If they do gain it, change FIXME XML1 and FIXME XML2 below
-           */
-            if(state == RAPTOR_STATE_MEMBER) {
+            if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
               element->parent->last_ordinal++;
               raptor_generate_statement(rdf_parser, 
                                         element->parent->subject.uri,
@@ -2879,7 +2920,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         NULL,
                                         RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
                                         RAPTOR_URI_SOURCE_NOT_URI,
-                                        NULL, /* FIXME XML1 */
+                                        NULL,
 
                                         element->reified.uri);
             } else {
@@ -2898,7 +2939,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         NULL,
                                         RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
                                         RAPTOR_URI_SOURCE_NOT_URI,
-                                        NULL, /* FIXME XML2 */
+                                        NULL,
 
                                         element->reified.uri);
             }
@@ -2933,9 +2974,8 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
   } /* end while */
 
-  RAPTOR_DEBUG3(raptor_end_element_grammar, 
-                "Ending in state %d - %s\n",
-                state, raptor_state_as_string(state));
+  RAPTOR_DEBUG2(raptor_end_element_grammar, 
+                "Ending in state %s\n", raptor_state_as_string(state));
 
 }
 
