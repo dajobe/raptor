@@ -1327,15 +1327,15 @@ raptor_xml_comment_handler(void *user_data, const unsigned char *s)
 static int
 raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 {
+#ifdef RAPTOR_XML_EXPAT
+  XML_Parser xp;
+#endif
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_sax2* sax2;
   sax2=(raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, sizeof(raptor_sax2), 1);
 
   rdf_xml_parser->sax2=sax2;
 
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp;
-#endif
   RAPTOR_RDF_type_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("type");
   RAPTOR_RDF_value_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("value");
   RAPTOR_RDF_subject_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("subject");
