@@ -873,7 +873,7 @@ raptor_xml_start_element_handler(void *user_data,
               /* Delete it if it was stored elsewhere */
 #if RAPTOR_DEBUG
               RAPTOR_DEBUG3(raptor_xml_start_element_handler,
-                            "Found RDF namespace attribute %s URI %s\n",
+                            "Found RDF namespace attribute '%s' URI %s\n",
                             (char*)attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from qname structure */
@@ -898,7 +898,7 @@ raptor_xml_start_element_handler(void *user_data,
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               if(!rdf_attr_info[i].allowed_unprefixed_on_attribute)
-                raptor_parser_warning(rdf_parser, "Using rdf attribute %s without the RDF namespace has been deprecated.", attr_name);
+                raptor_parser_warning(rdf_parser, "Using rdf attribute '%s' without the RDF namespace has been deprecated.", attr_name);
               /* Delete it if it was stored elsewhere */
               /* make sure value isn't deleted from qname structure */
               attr->value=NULL;
@@ -953,7 +953,7 @@ raptor_xml_start_element_handler(void *user_data,
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
-      raptor_parser_error(rdf_parser, "property element %s has multiple object node elements, skipping.", 
+      raptor_parser_error(rdf_parser, "property element '%s' has multiple object node elements, skipping.", 
                             element->parent->sax2->name->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
       element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
@@ -971,7 +971,7 @@ raptor_xml_start_element_handler(void *user_data,
         if(++element->parent->sax2->content_element_seen == 1 &&
            element->parent->sax2->content_cdata_seen == 1) {
           /* Uh oh - mixed content, the parent element has cdata too */
-          raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
+          raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
                                 element->parent->sax2->name->local_name);
         }
         
@@ -1011,7 +1011,7 @@ raptor_xml_start_element_handler(void *user_data,
    */
   if (rdf_content_type_info[element->content_type].rdf_processing &&
       non_nspaced_count) {
-    raptor_parser_error(rdf_parser, "Using an element %s without a namespace is forbidden.", 
+    raptor_parser_error(rdf_parser, "Using an element '%s' without a namespace is forbidden.", 
                         element->sax2->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
@@ -1023,7 +1023,7 @@ raptor_xml_start_element_handler(void *user_data,
 
   if (element->rdf_attr[RDF_ATTR_aboutEach] || 
       element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
-    raptor_parser_warning(rdf_parser, "element %s has aboutEach / aboutEachPrefix, skipping.", 
+    raptor_parser_warning(rdf_parser, "element '%s' has aboutEach / aboutEachPrefix, skipping.", 
                           element->sax2->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
@@ -1727,14 +1727,18 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     
     if(!attr->nspace) {
       raptor_update_document_locator(rdf_parser);
-      raptor_parser_error(rdf_parser, "Using property attribute %s without a namespace is forbidden.", name);
+      raptor_parser_error(rdf_parser, "Using property attribute '%s' without a namespace is forbidden.", name);
       continue;
     }
 
 
     if(!raptor_utf8_is_nfc(value, strlen(value))) {
+      const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_update_document_locator(rdf_parser);
-      raptor_parser_error(rdf_parser, "Property attribute %s has a string not in Unicode Normal Form C: %s", name, value);
+      if(rdf_parser->feature_non_nfc_fatal)
+        raptor_parser_error(rdf_parser, message, name, value);
+      else
+        raptor_parser_warning(rdf_parser, message, name, value);
       continue;
     }
     
@@ -1754,7 +1758,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         ordinal=raptor_check_ordinal(name);
         if(ordinal < 1) {
           raptor_update_document_locator(rdf_parser);
-          raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property attribute %s seen on containing element %s.", ordinal, attr->local_name, name);
+          raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property attribute '%s' seen on containing element '%s'.", ordinal, attr->local_name, name);
           ordinal=1;
         }
       } else {
@@ -1763,7 +1767,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
           raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
           continue;
         } else {
-          raptor_parser_warning(rdf_parser, "Unknown RDF namespace property attribute %s.", 
+          raptor_parser_warning(rdf_parser, "Unknown RDF namespace property attribute '%s'.", 
                                 name);
         }
       }
@@ -1844,8 +1848,12 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     }
 
     if(object_is_literal && !raptor_utf8_is_nfc(value, strlen(value))) {
+      const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_update_document_locator(rdf_parser);
-      raptor_parser_error(rdf_parser, "Property attribute %s has a string not in Unicode Normal Form C: %s", rdf_attr_info[i].name, value);
+      if(rdf_parser->feature_non_nfc_fatal)
+        raptor_parser_error(rdf_parser, message, rdf_attr_info[i].name, value);
+      else
+        raptor_parser_warning(rdf_parser, message, rdf_attr_info[i].name, value);
       continue;
     }
 
@@ -1983,7 +1991,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         if(!sax2_element->name->uri) {
           /* We cannot handle this */
-          raptor_parser_warning(rdf_parser, "Using node element %s without a namespace is forbidden.", 
+          raptor_parser_warning(rdf_parser, "Using node element '%s' without a namespace is forbidden.", 
                                 element->sax2->name->local_name);
           raptor_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
@@ -2029,7 +2037,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            (element->rdf_attr[RDF_ATTR_about]!=NULL) +
            (element->rdf_attr[RDF_ATTR_nodeID]!=NULL)>1) {
           raptor_update_document_locator(rdf_parser);
-          raptor_parser_error(rdf_parser, "Multiple attributes of rdf:ID, rdf:about and rdf:nodeID on element %s - only one allowed.", el_name);
+          raptor_parser_error(rdf_parser, "Multiple attributes of rdf:ID, rdf:about and rdf:nodeID on element '%s' - only one allowed.", el_name);
         }
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
@@ -2330,7 +2338,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_PROPERTYELT:
 
         if(!sax2_element->name->uri) {
-          raptor_parser_error(rdf_parser, "Using property element %s without a namespace is forbidden.", 
+          raptor_parser_error(rdf_parser, "Using property element '%s' without a namespace is forbidden.", 
                               element->sax2->name->local_name);
           raptor_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
@@ -2398,7 +2406,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             if(element->rdf_attr[RDF_ATTR_resource] ||
                element->rdf_attr[RDF_ATTR_parseType]) {
               
-              raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on property element %s with an rdf:resource or rdf:parseType attribute.", el_name);
+              raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on property element '%s' with an rdf:resource or rdf:parseType attribute.", el_name);
               /* prevent this being used later either */
               element->rdf_attr[RDF_ATTR_bagID]=NULL;
             } else {
@@ -2613,7 +2621,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          * a mismatched XML tag and cause an error earlier)
          */
         raptor_update_document_locator(rdf_parser);
-        raptor_parser_warning(rdf_parser, "Element %s ended, expected end of RDF element", el_name);
+        raptor_parser_warning(rdf_parser, "Element '%s' ended, expected end of RDF element", el_name);
         state=RAPTOR_STATE_UNKNOWN;
         finished=1;
         break;
@@ -2840,7 +2848,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 /* Only an empty literal can have a rdf:bagID */
                 if(element->bag.uri || element->bag.id) {
                   if(sax2_element->content_cdata_length > 0) {
-                    raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on a literal property element %s.", el_name);
+                    raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on a literal property element '%s'.", el_name);
                     /* prevent this being used later either */
                     element->rdf_attr[RDF_ATTR_bagID]=NULL;
                   } else
@@ -2871,7 +2879,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                */
               if(raptor_element_has_property_attributes(element) &&
                  sax2_element->content_cdata_length > 0) {
-                raptor_parser_error(rdf_parser, "Literal property element %s has property attributes", el_name);
+                raptor_parser_error(rdf_parser, "Literal property element '%s' has property attributes", el_name);
                 state=RAPTOR_STATE_SKIPPING;
                 element->child_state=RAPTOR_STATE_SKIPPING;
                 finished=1;
@@ -2900,8 +2908,12 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
               if(object_is_literal && !literal_datatype &&
                  !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
+                const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
                 raptor_update_document_locator(rdf_parser);
-                raptor_parser_error(rdf_parser, "Property element %s has a string not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
+                if(rdf_parser->feature_non_nfc_fatal)
+                  raptor_parser_error(rdf_parser, message, el_name, sax2_element->content_cdata);
+                else
+                  raptor_parser_warning(rdf_parser, message, el_name, sax2_element->content_cdata);
               }
 
               element->parent->last_ordinal++;
@@ -2932,8 +2944,12 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               
               if(object_is_literal && !literal_datatype && 
                  !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
+                const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
                 raptor_update_document_locator(rdf_parser);
-                raptor_parser_error(rdf_parser, "Property element %s has a string not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
+                if(rdf_parser->feature_non_nfc_fatal)
+                  raptor_parser_error(rdf_parser, message, el_name, sax2_element->content_cdata);
+                else
+                  raptor_parser_warning(rdf_parser, message, el_name, sax2_element->content_cdata);
               }
 
               raptor_generate_statement(rdf_parser, 
@@ -2974,7 +2990,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
               if(!raptor_utf8_is_nfc(buffer, length)) {
                 raptor_update_document_locator(rdf_parser);
-                raptor_parser_error(rdf_parser, "Property element %s has XML literal content not in Unicode Normal Form C: %s", el_name, buffer);
+                raptor_parser_error(rdf_parser, "Property element '%s' has XML literal content not in Unicode Normal Form C: %s", el_name, buffer);
               }
               
 
@@ -3150,7 +3166,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
 #ifdef RAPTOR_DEBUG_CDATA
-      RAPTOR_DEBUG2(raptor_cdata_grammar, "Ignoring whitespace cdata inside element %s\n", element->sax2->name->local_name);
+      RAPTOR_DEBUG2(raptor_cdata_grammar, "Ignoring whitespace cdata inside element '%s'\n", element->sax2->name->local_name);
 #endif
       return;
     }
@@ -3158,7 +3174,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     if(sax2_element->content_cdata_seen == 1 &&
        sax2_element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
-      raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
+      raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
                             element->sax2->name->local_name);
     }
   }
