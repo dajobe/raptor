@@ -375,8 +375,6 @@ raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
   rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
 
   RAPTOR_FREE(cstring, uri_string);
-  if(!rdf_serializer->base_uri)
-    return 1;
 
   rdf_serializer->iostream=raptor_new_iostream_to_filename(filename);
 
@@ -390,6 +388,7 @@ raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
 /**
  * raptor_serialize_start_to_string: Start serializing to a string
  * @rdf_serializer:  the &raptor_serializer
+ * @uri: base URI or NULL if no base URI is required
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
  * 
@@ -400,15 +399,13 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
                                  raptor_uri *uri,
                                  void **string_p, size_t *length_p) 
 {
-  if(!uri)
-    return 1;
-  
   if(rdf_serializer->base_uri)
     raptor_free_uri(rdf_serializer->base_uri);
 
-  rdf_serializer->base_uri=raptor_uri_copy(uri);
-  if(!rdf_serializer->base_uri)
-    return 1;
+  if(uri)
+    rdf_serializer->base_uri=raptor_uri_copy(uri);
+  else
+    rdf_serializer->base_uri=NULL;
   rdf_serializer->locator.uri=rdf_serializer->base_uri;
   rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
 
@@ -425,6 +422,7 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
 /**
  * raptor_serialize_start_to_file_handle: Start serializing to a FILE*
  * @rdf_serializer:  the &raptor_serializer
+ * @uri: base URI or NULL if no base URI is required
  * @fh:  FILE* to serialize to
  * 
  * NOTE: This does not fclose the handle when it is finished.
@@ -435,15 +433,13 @@ int
 raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
                                       raptor_uri *uri, FILE *fh) 
 {
-  if(!uri)
-    return 1;
-  
   if(rdf_serializer->base_uri)
     raptor_free_uri(rdf_serializer->base_uri);
 
-  rdf_serializer->base_uri=raptor_uri_copy(uri);
-  if(!rdf_serializer->base_uri)
-    return 1;
+  if(uri)
+    rdf_serializer->base_uri=raptor_uri_copy(uri);
+  else
+    rdf_serializer->base_uri=NULL;
   rdf_serializer->locator.uri=rdf_serializer->base_uri;
   rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
 
