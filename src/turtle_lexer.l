@@ -233,7 +233,8 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
         s++; i++;
         if(i+ulen > len) {
           n3_syntax_error(rdf_parser, "\\%c over end of line", c);
-          return 0;
+          free(string);
+          return NULL;
         }
         
         sscanf(s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
@@ -242,7 +243,8 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
         
         if(unichar < 0 || unichar > 0x10ffff) {
           n3_syntax_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
-          break;
+          free(string);
+          return NULL;
         }
           
         d+=raptor_unicode_char_to_utf8(unichar, d);
