@@ -271,7 +271,7 @@ static const char * const raptor_state_names[]={
   "description (6.3)",
   NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, /* 6.4 - 6.11 not used */
   "propertyElt (6.12)",
-  "typed_node (6.13)",
+  "typedNode (6.13)",
   NULL,NULL,NULL, NULL, NULL,NULL,NULL,NULL,NULL,NULL,NULL, /* 6.14 - 6.24 not used */
   NULL, /* was sequence (6.25) */
   NULL, /* was bag (6.26) */
