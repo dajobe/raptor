@@ -1,5 +1,7 @@
 2004-11-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Snapshotted raptor_1_4_2 for 1.4.2 release
+
 	* win32_raptor_config.h, configure.ac:
 	Bumped version to 1.4.2
 
