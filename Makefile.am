@@ -32,8 +32,8 @@ man_MANS = rapper.1 libraptor.3 raptor-config.1
 
 SUBDIRS= tests win32 examples
 
-TESTS=raptor_parse_test raptor_uri_test raptor_namespace_test	\
-strcasecmp_test raptor_www_test \
+TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
+raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test
 if RAPTOR_PARSER_RDFXML
@@ -63,7 +63,7 @@ LIBS=@LIBS@ $(MEM_LIBS)
 
 
 libraptor_la_SOURCES = raptor_parse.c \
-raptor_uri.c raptor_locator.c \
+raptor_rfc2396.c raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c \
 raptor_identifier.c \
@@ -187,6 +187,9 @@ test: check
 raptor_parse_test: $(srcdir)/raptor_general.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_parse.c libraptor.la $(LIBS)
 
+raptor_rfc2396_test: $(srcdir)/raptor_rfc2396.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_rfc2396.c libraptor.la $(LIBS)
+
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
@@ -196,8 +199,8 @@ raptor_uri_win32_test: $(srcdir)/raptor_uri.c libraptor.la
 raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor.la $(LIBS)
 
-strcasecmp_test: $(srcdir)/strcasecmp.c
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/strcasecmp.c
+strcasecmp_test: $(srcdir)/strcasecmp.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/strcasecmp.c libraptor.la $(LIBS)
 
 raptor_www_test: $(srcdir)/raptor_www_test.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_www_test.c libraptor.la $(LIBS)
@@ -208,11 +211,11 @@ raptor_set_test: $(srcdir)/raptor_set.c libraptor.la
 raptor_xml_test: $(srcdir)/raptor_xml.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml.c libraptor.la $(LIBS)
 
-raptor_sequence_test: $(srcdir)/raptor_sequence.c
+raptor_sequence_test: $(srcdir)/raptor_sequence.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_sequence.c libraptor.la $(LIBS)
 
-raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c $(LIBS)
+raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c libraptor.la $(LIBS)
 
 raptor_nfc_test: $(srcdir)/raptor_nfc_test.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_nfc_test.c libraptor.la $(LIBS)
