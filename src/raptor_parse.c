@@ -1113,7 +1113,7 @@ raptor_xml_start_element_handler(void *user_data,
   element->state=RAPTOR_STATE_UNKNOWN;
   element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
 
-  if(!rdf_parser->feature_scanning_for_rdf_RDF && element->parent) {
+  if(element->parent) {
     element->content_type=element->parent->child_content_type;
       
     if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
@@ -1491,7 +1491,8 @@ raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
   parser->failed=1;
 
   if(parser->fatal_error_handler) {
-    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char empty_buffer[1];
+    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
     char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_fatal_error_varargs: Out of memory\n");
@@ -1537,7 +1538,8 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
                             va_list arguments)
 {
   if(parser->error_handler) {
-    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char empty_buffer[1];
+    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
     char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_error_varargs: Out of memory\n");
@@ -1582,7 +1584,8 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
 {
 
   if(parser->warning_handler) {
-    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char empty_buffer[1];
+    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
     char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_warning_varargs: Out of memory\n");
@@ -2763,7 +2766,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
   const char *el_name=element->name->local_name;
   int element_in_rdf_ns=(element->name->nspace && 
                          element->name->nspace->is_rdf_ms);
-
+  int at_grammar_start=(!element->parent ||
+                        (element->parent->state == RAPTOR_STATE_UNKNOWN));
 
   state=element->state;
   LIBRDF_DEBUG3(raptor_start_element_grammar, "Starting in state %d - %s\n",
@@ -2800,13 +2804,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
 
         /* If scanning for element, can continue */
-        if(rdf_parser->feature_scanning_for_rdf_RDF) {
+        if(at_grammar_start && rdf_parser->feature_scanning_for_rdf_RDF) {
           finished=1;
           break;
         }
 
         /* If cannot assume document is rdf/xml, must have rdf:RDF at root */
-        if(!rdf_parser->feature_assume_is_rdf) {
+        if(at_grammar_start && !rdf_parser->feature_assume_is_rdf) {
           raptor_parser_error(rdf_parser, "Document element rdf:RDF missing.");
           state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
