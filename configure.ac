@@ -98,12 +98,16 @@ AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(getopt_long stricmp strcasecmp)
+AC_CHECK_FUNCS(getopt getopt_long stricmp strcasecmp)
 
 # was AC_REPLACE_FUNCS(strcasecmp) but strcasecmp has two alternatives:
 # the other non-standard function stricmp or a local alternative
 if test $ac_cv_func_stricmp = no -a $ac_cv_func_stricmp = no; then
   AC_LIBOBJ([strcasecmp])
+fi
+
+if test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long = no; then
+  AC_LIBOBJ([getopt])
 fi
 
 
