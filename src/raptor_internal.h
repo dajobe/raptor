@@ -434,6 +434,7 @@ struct  raptor_www_s {
   CURL* curl_handle;
   CURLcode status;
   char error_buffer[CURL_ERROR_SIZE];
+  int curl_init_here;
 #endif
 
 #ifdef RAPTOR_WWW_LIBXML
