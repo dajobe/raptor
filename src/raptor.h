@@ -35,10 +35,14 @@ extern "C" {
 #include <stdarg.h>
 
 #ifdef WIN32
-#  ifdef RAPTOR_INTERNAL
-#    define RAPTOR_API _declspec(dllexport)
+#  ifdef RAPTOR_STATIC
+#    define RAPTOR_API
 #  else
-#    define RAPTOR_API _declspec(dllimport)
+#    ifdef RAPTOR_INTERNAL
+#      define RAPTOR_API _declspec(dllexport)
+#    else
+#      define RAPTOR_API _declspec(dllimport)
+#    endif
 #  endif
 #else
 #  define RAPTOR_API
@@ -220,7 +224,7 @@ RAPTOR_API void raptor_set_warning_handler(raptor_parser* parser, void *user_dat
 RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 RAPTOR_API void raptor_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
 
-RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
+RAPTOR_API void raptor_print_statement(const raptor_statement * statement, FILE *stream);
 RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API RAPTOR_DEPRECATED void raptor_print_statement_detailed(const raptor_statement * statement, int detailed, FILE *stream);
 RAPTOR_API unsigned char* raptor_statement_part_as_counted_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
