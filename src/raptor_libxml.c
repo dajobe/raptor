@@ -61,6 +61,7 @@ static void raptor_libxml_fatal_error(void *context, const char *msg, ...);
 
 static const char* xml_warning_prefix="XML parser warning - ";
 static const char* xml_error_prefix="XML parser error - ";
+static const char* xml_generic_error_prefix="XML error - ";
 static const char* xml_fatal_error_prefix="XML parser fatal error - ";
 static const char* xml_validation_error_prefix="XML parser validation error - ";
 static const char* xml_validation_warning_prefix="XML parser validation warning - ";
@@ -273,40 +274,69 @@ raptor_libxml_warning(void *ctx, const char *msg, ...)
 
 
 static void
-raptor_libxml_error(void *ctx, const char *msg, ...) 
+raptor_libxml_error_common(void *ctx, const char *msg, va_list args, 
+                           const char *prefix, int is_fatal)
 {
-  raptor_parser* rdf_parser;
-  va_list args;
-  int prefix_length=strlen(xml_error_prefix);
+  raptor_parser* rdf_parser=NULL;
+  int prefix_length=strlen(prefix);
   int length;
   char *nmsg;
 
-  /* Work around libxml2 bug - sometimes the sax2->error
-   * returns a ctx, sometimes the userdata
-   */
-  if(((raptor_parser*)ctx)->magic == RAPTOR_LIBXML_MAGIC)
-    rdf_parser=(raptor_parser*)ctx;
-  else
-    /* ctx is not userData */
-    rdf_parser=(raptor_parser*)((xmlParserCtxtPtr)ctx)->userData;
-
-  va_start(args, msg);
-
-  raptor_libxml_update_document_locator(rdf_parser);
+  if(ctx) {
+    /* Work around libxml2 bug - sometimes the sax2->error
+     * returns a ctx, sometimes the userdata
+     */
+    if(((raptor_parser*)ctx)->magic == RAPTOR_LIBXML_MAGIC)
+      rdf_parser=(raptor_parser*)ctx;
+    else
+      /* ctx is not userData */
+      rdf_parser=(raptor_parser*)((xmlParserCtxtPtr)ctx)->userData;
+  }
+  
+  if(rdf_parser)
+    raptor_libxml_update_document_locator(rdf_parser);
 
   length=prefix_length+strlen(msg)+1;
   nmsg=(char*)RAPTOR_MALLOC(cstring, length);
   if(!nmsg) {
     /* just pass on, might be out of memory error */
-    raptor_parser_error_varargs(rdf_parser, nmsg, args);
+    if(is_fatal)
+      raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
+    else
+      raptor_parser_error_varargs(rdf_parser, nmsg, args);
   } else {
-    strcpy(nmsg, xml_error_prefix);
+    strcpy(nmsg, prefix);
     strcpy(nmsg+prefix_length, msg);
     if(nmsg[length-1]=='\n')
       nmsg[length-1]='\0';
-    raptor_parser_error_varargs(rdf_parser, nmsg, args);
+    if(is_fatal)
+      raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
+    else
+      raptor_parser_error_varargs(rdf_parser, nmsg, args);
     RAPTOR_FREE(cstring,nmsg);
   }
+}
+
+
+static void
+raptor_libxml_error(void *ctx, const char *msg, ...) 
+{
+  va_list args;
+
+  va_start(args, msg);
+  raptor_libxml_error_common(ctx, msg, args, xml_error_prefix, 0);
+  va_end(args);
+}
+
+
+
+static void
+raptor_libxml_generic_error(void *ctx, const char *msg, ...) 
+{
+  va_list args;
+
+  va_start(args, msg);
+  raptor_libxml_error_common(ctx, msg, args, xml_generic_error_prefix, 0);
   va_end(args);
 }
 
@@ -315,28 +345,9 @@ static void
 raptor_libxml_fatal_error(void *ctx, const char *msg, ...) 
 {
   va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  int prefix_length=strlen(xml_fatal_error_prefix);
-  int length;
-  char *nmsg;
 
   va_start(args, msg);
-
-  raptor_libxml_update_document_locator(rdf_parser);
-
-  length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
-  if(!nmsg) {
-    /* just pass on, might be out of memory error */
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-  } else {
-    strcpy(nmsg, xml_error_prefix);
-    strcpy(nmsg+prefix_length, msg);
-    if(nmsg[length-2]=='\n')
-      nmsg[length-2]='\0';
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    RAPTOR_FREE(cstring,nmsg);
-  }
+  raptor_libxml_error_common(ctx, msg, args, xml_fatal_error_prefix, 1);
   va_end(args);
 }
 
@@ -345,28 +356,9 @@ void
 raptor_libxml_validation_error(void *ctx, const char *msg, ...) 
 {
   va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  int prefix_length=strlen(xml_validation_error_prefix);
-  int length;
-  char *nmsg;
 
   va_start(args, msg);
-
-  raptor_libxml_update_document_locator(rdf_parser);
-
-  length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
-  if(!nmsg) {
-    /* just pass on, might be out of memory error */
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-  } else {
-    strcpy(nmsg, xml_validation_error_prefix);
-    strcpy(nmsg+prefix_length, msg);
-    if(nmsg[length-2]=='\n')
-      nmsg[length-2]='\0';
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    RAPTOR_FREE(cstring,nmsg);
-  }
+  raptor_libxml_error_common(ctx, msg, args, xml_validation_error_prefix, 1);
   va_end(args);
 }
 
@@ -597,6 +589,13 @@ raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
   sax->initialized = 1;
 #endif
+}
+
+
+void
+raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser) {
+  xmlGenericError = raptor_libxml_generic_error;
+  xmlGenericErrorContext = rdf_parser;
 }
 
 
