@@ -22,6 +22,11 @@
  * 
  * Missing: UTF-8 support (and N-Triples escapes)
  *
+ * To generate the C files from this source, rather than use the
+ * shipped n3_lexer.c/.h needs a patched version of flex 2.5.31 such
+ * as the one available in Debian GNU/Linux.   Details below
+ * near the %option descriptions.
+ *
  */
 
 
@@ -32,15 +37,25 @@
 /* all symbols prefixed by this */
 %option prefix="n3_lexer_"
 
-%option outfile="n3_lexer.c"
+/* This is not needed, flex is invoked -on3_lexer.c */
+/* %option outfile="n3_lexer.c" */
+
+/* Emit a C header file for prototypes
+ * Only available in flex 2.5.13 or newer.
+ * It was renamed to header-file in flex 2.5.19
+ */
 %option header-file="n3_lexer.h"
 
-/* Do not emit #include <unistd.h> */
+/* Do not emit #include <unistd.h>
+ * Only available in flex 2.5.7 or newer.
+ * Broken in flex 2.5.31 without patches.
+ */
 %option nounistd
 
 /* Never interactive */
 /*  No isatty() check */
 %option never-interactive
+
 /* Batch scanner */
 %option batch
 
