@@ -1088,6 +1088,12 @@ raptor_turtle_parse_start(raptor_parser *rdf_parser)
   locator->column= -1; /* No column info */
   locator->byte= -1; /* No bytes info */
 
+  if(turtle_parser->buffer_length) {
+    RAPTOR_FREE(cdata, turtle_parser->buffer);
+    turtle_parser->buffer=NULL;
+    turtle_parser->buffer_length=0;
+  }
+  
   turtle_parser->lineno=1;
 
   return 0;
