@@ -8,11 +8,12 @@
 
 <h1 align="center">Raptor RDF Parser Toolkit - News</h1>
 
-<h2>2003-08-XX Version 0.9.12 Released</h2>
-<p>Fix XML literal creation lost pointer bug.<br />
+<h2>2003-08-25 Version 0.9.12 Released</h2>
+<p>Fix some XML memory leaks in Exclusive XML Canonicalization.<br />
 Stop parsing RSS tag soup after a user abort<br />
 Improved N-Triples syntax checking.<br />
-Portability fixes for 64 bit Alpha/Sparc Linux/Solaris (varargs, size_t)
+Portability fixes for 64 bit Alpha/Sparc Linux/Solaris (varargs, size_t)<br />
+Fixed some other minor memory leaks with <tt>rdf:datatype</tt> and <tt>rdf:ID</tt> attributes.
 </p>
 
 <h2>2003-07-29 Version 0.9.11 Released</h2>
@@ -23,7 +24,7 @@ GNOME glib 2.0 at present)<br />
 Added Exclusive XML Canonicalization for XML Literals<br />
 Added many more checks for bad syntax (mostly illegal property
 attributes)<br />
-Updated parseType="Collection" triples after RDF Core WG change<br />
+Updated <tt>parseType="Collection"</tt> triples after RDF Core WG change<br />
 Added an experimental RSS Tag Soup parser to read any pile of XML that has
 elements such as channel, image, item tags with title, description
 etc inside them into coherent RSS 1.0 RDF triples.
@@ -63,7 +64,7 @@ More debian packaging updates.
 <h2>2003-02-13 Version 0.9.8 Released</h2>
 <p>Minor bug fixes (synchronising with Redland 0.9.12 release).<br />
 Fixed crashing on empty files<br />
-Fixed accepting illegal xmlns:prefix="" (prefix without URI not allowed)<br />
+Fixed accepting illegal <tt>xmlns:prefix=""</tt> (prefix without URI not allowed)<br />
 N-Triples bnodeIDs can now have '0's<br />
 Utility program rdfdump renamed to rapper; name conflicted with a common
 Linux utility.
@@ -110,7 +111,7 @@ Added raptor-config script for compiling with the library.
 Added full relative URI resolving<br />
 Work around bugs in libxml and expat (older versions)<br />
 Support libxml with the use of entities in the document<br />
-Support xml:lang passing to application
+Support <tt>xml:lang</tt> passing to application
 </p>
 
 <h2>2002-03-27 Version 0.9.4 Released</h2>
@@ -119,7 +120,7 @@ xml:lang support added with <a href="http://www.w3.org/2001/08/rdf-test/#langStr
 All <a href="http://www.w3.org/2001/08/rdf-test/#ntrip_strings">N-Triples string escapes</a> implemented<br />
 <a href="http://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a> support with <a href="http://www.w3.org/2001/08/rdf-test/#xmlString">XML literals</a> - xml("&lt;foo/&gt;") and plain "foo"<br />
 removed all special code for containers; treated as regular typedNodes<br />
-rdf:parseType="Literal" now working<br />
+<tt>rdf:parseType="Literal"</tt> now working<br />
 Builds as shared and static libraries<br />
 Conformance test suite added
 </p>
@@ -127,7 +128,7 @@ Conformance test suite added
 <h2>2001-08-21 Version 0.9.3 Released</h2>
 <p><a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
 parser added<br />
-rdf:parseType="Literal" works much better (Aaron Michal and me)<br />
+<tt>rdf:parseType="Literal"</tt> works much better (Aaron Michal and me)<br />
 DAML collections support added (Aaron Michal)<br />
 Win32 patch added - I can't confirm my merge didn't break this (Aaron Michal)<br />
 <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> updated to support CR, LF and CR LF endings<br />
@@ -144,7 +145,7 @@ GNOME xml / libxml error location (line, column) values corrected.
 <h2>2001-06-06 Version 0.9.1 Released</h2>
 <p>Many bug fixes<br />
 Updates for Redland API changes<br />
-Fixed rdf:parsetype="literal" buffer overrun<br />
+Fixed <tt>rdf:parsetype="Literal"</tt> buffer overrun<br />
 Added better XML parser auto-detection for various expats and libxml
 </p>
 
@@ -153,7 +154,7 @@ Added better XML parser auto-detection for various expats and libxml
 
 <hr />
 
-<p>Copyright 2001-2002 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001-2003 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
