@@ -31,18 +31,24 @@
 #include <stdio.h>
 #include <string.h>
 
+/* Raptor includes */
+#include <raptor.h>
+
+/* for access() and R_OK */
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+/* many places for getopt */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
 #include <raptor_getopt.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
-/* Raptor includes */
-#include <raptor.h>
 
 
 
