@@ -595,6 +595,7 @@ void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
 void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
 void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
 void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str, int length);
+void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str, int length);
 unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, int *length_p);
 
 /* end of RAPTOR_INTERNAL */
