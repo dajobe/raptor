@@ -37,7 +37,7 @@ my $manifest_URL='http://www.w3.org/2000/10/rdf-tests/rdfcore/Manifest.rdf';
 my $local_tests_url='http://www.w3.org/2000/10/rdf-tests/rdfcore/';
 
 # CHANGE THIS for your system
-my $local_tests_area="./rdfcore";
+my $local_tests_area="./rdfcore/";
 my $local_manifest_file="./rdfcore/Manifest.rdf";
 
 my $format="%-6s %5d %7.2f%%\n";
