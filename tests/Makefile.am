@@ -126,9 +126,9 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $name.err; \
 	  status=$$?; \
-	  if test $$status == 1 ; then \
+	  if test $$status -eq 1 ; then \
 	    echo ok; \
-	  elif test $$status == 2 ; then \
+	  elif test $$status -eq 2 ; then \
 	    echo FAILED - parsing succeeded with a warning; \
 	    cat $$name.res; grep Warning $name.err; result=1; \
 	  else \
