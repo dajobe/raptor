@@ -21,6 +21,9 @@
 /* does libxml xmlSAXHandler have initialized field */
 #undef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
 
+/* does libxml xmlSAXHandler have externalSubset field */
+#undef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
+
 /* is this being built inside redland? */
 #undef RAPTOR_IN_REDLAND
 
