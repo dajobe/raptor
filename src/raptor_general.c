@@ -950,11 +950,11 @@ static struct
   const char *name;
   const char *label;
 } raptor_features_list [RAPTOR_FEATURE_LAST+1]= {
-  { RAPTOR_FEATURE_SCANNING                ,"scanForRDF", "Scan for rdf:RDF in XML" },
+  { RAPTOR_FEATURE_SCANNING                ,"scanForRDF", "Scan for rdf:RDF in XML content" },
   { RAPTOR_FEATURE_ASSUME_IS_RDF           ,"assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
-  { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES ,"allowNonNsAttributes", "Allow bare 'ID' rather than 'rdf:ID'" },
-  { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  ,"allowOtherParsetypes", "Allow user defined rdf:parseType values" },
-  { RAPTOR_FEATURE_ALLOW_BAGID             ,"allowBagID", "Allow deprecated rdf:bagID" },
+  { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES ,"allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
+  { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  ,"allowOtherParsetypes", "Allow user-defined rdf:parseType values" },
+  { RAPTOR_FEATURE_ALLOW_BAGID             ,"allowBagID", "Allow rdf:bagID" },
   { RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST ,"allowRDFtypeRDFlist", "Generate the collection rdf:type rdf:List triple" },
   { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      ,"normalizeLanguage", "Normalize xml:lang values to lowercase" },
   { RAPTOR_FEATURE_NON_NFC_FATAL           ,"nonNFCfatal", "Make non-NFC literals cause a fatal error" }
