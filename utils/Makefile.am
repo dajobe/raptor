@@ -28,11 +28,7 @@ include_HEADERS = raptor.h raptor_internal.h ntriples.h
 man_MANS = rdfdump.1 libraptor.3
 
 rdfdump_SOURCES = rdfdump.c
-rdfdump_LDADD = libraptor.la
-if MAINTAINER_MODE
-# easier to debug static
-rdfdump_LDFLAGS = -static
-endif
+rdfdump_LDADD = libraptor.la @REDLAND_LIBS@
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c
 
@@ -75,7 +71,7 @@ MEM_LIBS=@MEM_LIBS@
 #MEM_LIBS=-ldmalloc
 
 
-CPPFLAGS=@CPPFLAGS@ $(MEM)
+CPPFLAGS=@CPPFLAGS@ @REDLAND_CPPFLAGS@ $(MEM)
 STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
