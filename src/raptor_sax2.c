@@ -406,8 +406,8 @@ raptor_xml_element_set_attributes(raptor_xml_element* xml_element,
 
 
 void
-raptor_xml_declare_namespace(raptor_xml_element* xml_element,
-                             raptor_namespace *nspace) {
+raptor_xml_element_declare_namespace(raptor_xml_element* xml_element,
+                                     raptor_namespace *nspace) {
   if(!xml_element->declared_nspaces)
     xml_element->declared_nspaces=raptor_new_sequence(NULL, NULL);
   raptor_sequence_push(xml_element->declared_nspaces, nspace);

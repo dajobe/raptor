@@ -943,7 +943,7 @@ Get the XML element QName of XML element \fIxml_element\fP.
 .IP "\fBvoid raptor_xml_element_set_attributes(raptor_xml_element* \fIxml_element\fP, raptor_qname **\fIattributes\fP, int \fIcount\fP)\fR"
 Set the attributes on XML element \fIxml_element\fP to the
 array of QNames in array \fIattributes\fP of size \fIcount\fP.
-.IP "\fBvoid raptor_sax2_declare_namespace(raptor_xml_element* \fIxml_element\fP, raptor_namespace* \fInspace\fP)\fR"
+.IP "\fBvoid raptor_xml_element_declare_namespace(raptor_xml_element* \fIxml_element\fP, raptor_namespace* \fInspace\fP)\fR"
 Declare an XML namespace \fInspace\fP expliclitly on XML element
 \fIxml_element\fP.  Namespaces used in the element or attribute
 names are automatically declared, this method allows additional ones
