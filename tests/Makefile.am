@@ -20,11 +20,13 @@
 
 RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-03.rdf ex-04.rdf ex-05.rdf \
 ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf ex-11.rdf ex-12.rdf \
-ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf
+ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf ex-19.rdf \
+ex-20.rdf
 
 RDF_OUT_FILES=ex-00.out ex-01.out ex-02.out ex-03.out ex-04.out ex-05.out \
 ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
-ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out
+ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out ex-19.out \
+ex-20.out
 
 RDF_TEST_ANSWER_FILES=ex-13.nt
 
@@ -32,6 +34,8 @@ NT_TEST_FILES=test.nt
 
 NT_OUT_FILES=test.out
 
+# Used to make N-triples output consistent
+BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
@@ -48,7 +52,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	@for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  echo Checking $$test; \
-	  $(top_builddir)/rdfdump -q file:$(srcdir)/$$test | sed -e 's/^.*rdfdump: //' > $$name.res; \
+	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test | sed -e 's/^.*rdfdump: //' > $$name.res; \
 	  if [ ! -f $(srcdir)/$$name.out ] ; then cp $$name.res $(srcdir)/$$name.out ; \
 	  else if  [ ! -s $$name.res ] ; then echo "Fatal error, no $$name.res\n" ; \
 	  else diff $(srcdir)/$$name.out $$name.res ; fi ; fi; \
@@ -57,7 +61,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  echo Checking $$test; \
-	  $(top_builddir)/rdfdump -q -n file:$(srcdir)/$$test | sed -e 's/^.*rdfdump: //'  > $$name.res; \
+	  $(top_builddir)/rdfdump -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test | sed -e 's/^.*rdfdump: //'  > $$name.res; \
 	  if [ ! -f $(srcdir)/$$name.out ] ; then cp $$name.res $(srcdir)/$$name.out ; \
 	  else if  [ ! -s $$name.res ] ; then echo "Fatal error, no $$name.res\n" ; \
 	  else diff $(srcdir)/$$name.out $$name.res ; fi ; fi; \
