@@ -412,7 +412,7 @@ if test "X$PKG_CONFIG" = "X"; then
   AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
 fi
 
-
+need_glib2=0
 oLIBS="$LIBS"
 if test "X$PKG_CONFIG" != X; then
   LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
@@ -420,8 +420,7 @@ if test "X$PKG_CONFIG" != X; then
   LIBS="$oLIBS"
   AC_MSG_CHECKING(for NFC checking with g_utf8_normalize)
   if test "$ac_cv_func_g_utf8_normalize" = yes; then
-    CPPFLAGS="$CPPFLAGS `$PKG_CONFIG glib-2.0 --cflags`"
-    LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
+    need_glib2=1
     AC_DEFINE([HAVE_G_UTF8_NORMALIZE], 1, [Have glib 2.0 g_utf8_normalize])
     AC_MSG_RESULT(yes)
   else
@@ -780,6 +779,11 @@ if test $need_expat = 1; then
   else
     LIBS="$LIBS $expat_libs"
   fi
+fi
+
+if test $need_glib2 = 1; then
+  CPPFLAGS="$CPPFLAGS `$PKG_CONFIG glib-2.0 --cflags`"
+  LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
 fi
 
 RAPTOR_LIBTOOLLIBS=libraptor.la
