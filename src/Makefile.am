@@ -30,10 +30,11 @@ noinst_HEADERS = raptor_internal.h win32_config.h
 
 man_MANS = rapper.1 libraptor.3 raptor-config.1
 
-rapper_SOURCES = rdfdump.c raptor_getopt.h
-rapper_LDADD = libraptor.la @RAPPER_EXTRA_OBJS@
-rapper_DEPENDENCIES = libraptor.la @RAPPER_EXTRA_OBJS@
-EXTRA_rapper_SOURCES = getopt.c
+rapper_SOURCES = rdfdump.c
+if GETOPT
+rapper_SOURCES += getopt.c raptor_getopt.h
+endif
+rapper_LDADD=libraptor.la
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c raptor_expat.c raptor_libxml.c raptor_win32.c raptor_locator.c \
@@ -42,6 +43,9 @@ raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
 raptor_identifier.c raptor_xml_writer.c \
 turtle_lexer.c turtle_lexer.h turtle_parser.tab.c turtle_parser.tab.h turtle_common.h \
 raptor_sequence.c raptor_stringbuffer.c
+if STRCASECMP
+libraptor_la_SOURCES += strcasecmp.c
+endif
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
