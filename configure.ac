@@ -493,7 +493,7 @@ if test "X$CURL_CONFIG" != X; then
   AC_MSG_CHECKING(for libcurl library)
   if test $have_curl_easy_init = yes; then
     have_libcurl=1
-    LIBCURL_VERSION=`$CURL_CONFIG --version`
+    LIBCURL_VERSION=`$CURL_CONFIG --version | sed -e 's/^libcurl//'`
     AC_MSG_RESULT(yes - version $LIBCURL_VERSION)
   else
     AC_MSG_RESULT(no)
