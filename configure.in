@@ -35,10 +35,10 @@ AC_CANONICAL_HOST
 AC_ARG_PROGRAM
 AM_SANITY_CHECK
 AM_PROG_CC_STDC
+AM_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 AM_MISSING_PROG(ACLOCAL, aclocal, $missing_dir)
 AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
@@ -78,6 +78,10 @@ changequote([, ])dnl
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_MAJOR, $version_major)
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_MINOR, $version_minor)
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_RELEASE, $version_release)
+
+# syntax: CURRENT[:REVISION[:AGE]]
+RAPTOR_LIBTOOL_VERSION=0:0:0
+AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 
 
 dnl Checks for library functions.
@@ -252,14 +256,12 @@ fi
 AC_MSG_RESULT($result)
 
 
-XML_OBJS=
-
 if test $need_libxml = 1; then
   if test $need_libxml_source = 1; then
     SD="$SD libxml"
     (cd libxml && ./configure --cache=../config.cache --enable-shared=no)
     CPPFLAG="-I$srcdir/libxml $CPPFLAGS"
-    XML_OBS="libxml/libxml.a"
+    LIBS="$LIBS -Llibxml -llibxml"
   else
     LIBS="$LIBS `$XML_CONFIG --libs`"
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
@@ -272,7 +274,7 @@ if test $need_expat = 1; then
   if test $need_expat_source = 1; then
     SD="$SD expat"
     CPPFLAGS="-I\$(top_srcdir)/expat/xmlparse $CPPFLAGS"
-    XML_OBJS="\$(top_builddir)/expat/xmlparse/xmlparse.o \$(top_builddir)/expat/xmlparse/hashtable.o \$(top_builddir)/expat/xmltok/xmlrole.o \$(top_builddir)/expat/xmltok/xmltok.o"
+    LIBS="$LIBS \$(top_builddir)/expat/xmlparse/xmlparse.o \$(top_builddir)/expat/xmlparse/hashtable.o \$(top_builddir)/expat/xmltok/xmlrole.o \$(top_builddir)/expat/xmltok/xmltok.o"
     # We know local expat sources has XML_SetNamespaceDeclHandler already
     found=yes
   else
@@ -295,7 +297,6 @@ if test $need_expat = 1; then
   fi
 
 fi
-AC_SUBST(XML_OBJS)
 
 
 xml_parsers_available=
