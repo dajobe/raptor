@@ -8,7 +8,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.org/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2002-06-14"
+.TH libraptor 3 "2002-11-02"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -16,145 +16,254 @@ libraptor \- Raptor RDF parser toolkit library
 .nf
 .B #include <raptor.h>
 .br
-.BI "raptor_parser *" p =raptor_new_parser(name);
+
+.br
+.BI raptor_init();
+.br
+.BI "raptor_parser *" p =raptor_new_parser("rdfxml");
 .br
 .BI raptor_set_statement_handler( p , NULL , print_statements );
+.br
+.BI "raptor_uri *" file_uri =raptor_new_uri("http://example.org/");
 .br
 .BI raptor_parse_file( p , file_uri , base_uri );
 .br
 .BI raptor_free_parser( p );
+.br
+.BI raptor_free_uri( file_uri );
+.br
+.BI raptor_finish();
 .br
 
 .B cc file.c -lraptor
 .br
 .fi
 .SH DESCRIPTION
-The
-.I libraptor
-library provides a high-level interface to a set of RDF parsers -
-which turn a syntax into a sequence of RDF statements (or triples).
-It uses an underlying XML parser, either
-.I expat
-or
-.I libxml
-.
+The \fIRaptor\fR library provides a high-level interface to a set
+of RDF format parsers, presently RDF/XML and N-Triples.  The
+parsers turn the syntax into a sequence of RDF statements (or
+triples).  The RDF/XML parser uses either \fIexpat\fR or \fIlibxml\fR
+XML parser for providing the SAX event stream.
 The library functions are arranged in an object-oriented style with
-constructors, destructors and method calls.  The statements are
-delivered via callback functions that can be registered.
+constructors, destructors and method calls.  The statements
+and error messages are delivered via callback functions.
+.LP
+Raptor also provides a small URI-reference parsing and resolving (not
+retrieval) library sufficient for dealing with URI-references inside
+RDF.  This functionality is modular and can be transparently replaced
+with an existing URI implementation.
 
-.SH CONSTRUCTORS
+.SH LIBRARY INITIALISATION AND CLEANUP
+.IP "\fBraptor_init()\fR"
+.IP "\fBraptor_finish()\fR"
+Initialise and cleanup the library.  These must be called before
+any raptor_parser or raptor_uri is created or used.
+.SH PARSER CONSTRUCTORS
 .IP "\fBraptor_parser* raptor_new_parser(name)\fR"
-Create a new Raptor RDF/XML parser object for the parser with name
-.I name
-currently either "rdfxml" or "ntriples"
-.SH DESTRUCTORS
+Create a new raptor parser object for the parser with name
+\fIname\fR currently either "rdfxml" or "ntriples"
+.SH PARSER DESTRUCTORS
 .IP "\fBvoid raptor_free_parser(raptor_parser *\fIparser\fB)\fR"
 Destroy a Raptor parser object.
-.SH "MESSAGE CALLBACKS"
+.SH "PARSER MESSAGE CALLBACK METHODS"
 Several methods can be registered for the parser that return
 a variable-argument message in the style of printf(3).  These
-also return a
-.I raptor_locator
+also return a \fIraptor_locator\fR
 that can contain URI, file, line, column and byte counts of where
-the message is about.  See raptor.h for the definition of the
-signature for a
-.I raptor_message_handler
-and the fields in the
-.I raptor_locator
-structure.
-.SH "MESSAGE CALLBACK METHODS"
+the message is about. This structure can be used with
+the raptor_format_locator, raptor_print_locator functions below
+or the structures fields directly, which are defined in raptor.h
 .IP "\fBvoid raptor_set_fatal_error_handler(raptor_parser* \fIparser, void *\fIuser_data, raptor_message_handler handler)\fR"
-Set fatal error handler callback (RDF/XML parser)
+Set fatal error handler callback.
 .IP "\fBvoid raptor_set_error_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
-Set non-fatal error handler callback
+Set non-fatal error handler callback.
 .IP "\fBvoid raptor_set_warning_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
-Set warning message handler callback (RDF/XML parser)
-.IP "\fBvoid raptor_print_locator(FILE *\fIstream\fB, raptor_locator* \fIlocator\fB)\fR"
-This method takes a
-.I raptor_locator
-object as passed to an error, warning or other handler
-and formats it for printing to the given stream.
-.sH "STATEMENT CALLBACKS"
-The parsers allwo the registration of callback functions to return
-the statements to the application.  These take a method of the
-signature
-.I raptor_statement_handler
-and return a pointer to a
-.I raptor_statement
-object.  These structures are defined in the raptor.h header file.
-.SH "STATEMENT CALLBACK METHODS"
+Set warning message handler callback.
+.SH "PARSER STATEMENT CALLBACK METHOD"
+The parser allows the registration of a callback function to return
+the statements to the application.
 .IP "\fBvoid raptor_set_statement_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_statement_handler \fIhandler\fB)\fR"
 Set the statement callback function for the parser.
-
-.SH "PARSING METHODS"
-There are several parsing methods that can be called
-to initiate the parsing.  These run to completion, or fatal error
-and return statements via the registered statement handler callback.
+The \fIraptor_statement\fR
+structure is defined in raptor.h and includes fields for the
+subject, predicate, object of the statements along with their types
+and for literals, language and datatype.
+.SH "PARSER PARSING METHODS"
+These methods perform the parsing either in one method or
+by working on multiple chunks of memory passed by the application.
+These methods run and by callbacks deliver, warnings, errors, fatal errors
+and statements via the registered statement handler callback.
 .IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  const char *\fIfilename\fB, const char *\fIbase_uri\fB)\fR"
-Parse the given file (file:filename) according to the base URI
-.I base_uri
-(or NULL if not needed)
+Parse the given filename (a URI like file:filename)
+according to the base URI \fIbase_uri\fR, or NULL if not needed.
+.IP "\fBint raptor_parse_start(raptor_parser* \fIparser\fB, const char *\fIuri\fB)\fR"
+Start a parse of content with the base URI \fIuri\fR (or NULL if not needed)
+.IP "\fBint raptor_parse_chunk(raptor_parser* \fIparser\fB,  const char *buffer, size_t \fIlen\fB, int \fIis_end\fB)\fR"
+Parse the memory at \fIbuffer\fR of size \fIlen\fR returning
+statements via the statement handler callback.
+If \fIis_end\fR is non-zero, it indicates the end of the parsing stream.
+This method can only be called after raptor_parse_start.
 .SH "PARSER UTILITY METHODS"
 .IP "\fBvoid raptor_set_feature(raptor_parser *\fIparser\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
-Set a parser feature
-.I feature
-to a particular
-.I value.
+Set a parser feature \fIfeature\fR to a particular \fIvalue\fR.
 The current defined features are:
   \fIFeature                                 Values\fR
   \fBRAPTOR_FEATURE_SCANNING\fR                 Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ASSUME_IS_RDF\fR            Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES\fR  Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES\fR   Boolean (non 0 true)
-If the
-.I scanning
-feature is true, then the rdf/xml parser will look for embedded
+If the \fIscanning\fR
+feature is true, then the RDF/XML parser will look for embedded
 rdf:RDF elements inside the XML content, and not require that the
 XML start with an rdf:RDF root element.
 .P
-If the
-.I assume_is_rdf
-feature is true, then the rdf/xml parser will assume the content is
-rdf/xml, not require that rdf:RDF root element, and immediately
-interpret the content as rdf/xml.
+If the \fIassume_is_rdf\fR
+feature is true, then the RDF/XML parser will assume the content is
+RDF/XML, not require that rdf:RDF root element, and immediately
+interpret the content as RDF/XML.
 .P
-If the
-.I allow_non_ns_attributes
-feature is true, then the rdf/xml parser will allow
+If the \fIallow_non_ns_attributes\fR
+feature is true, then the RDF/XML parser will allow
 non-XML namespaced attributes to be accepted
 as well as rdf: namespaced ones.  For example, 'about' and 'ID' will
 be interpreted as if they were rdf:about and rdf:ID respectively.
 .P
-If the
-.I allow_other_parsetypes
-feature is true then the rdf/xml parser will allow unknown parsetypes
+If the \fIallow_other_parsetypes\fR
+feature is true then the RDF/XML parser will allow unknown parsetypes
 to be present and will pass them on to the user.  Unimplemented at present.
-.SH "STATEMENT METHODS"
+.IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
+Return the current raptor_locator object for the parser.
+This is a public structure defined in raptor.h that can be
+used directly, or formatted via raptor_print_locator.
+.SH "STATEMENT UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
-Print a raptor statement object in a simple format for debugging.
+Print a raptor statement object in a simple format for debugging only.
+The format of this output is not guaranteed to remain the same
+between releases.
 .IP "\fBvoid raptor_print_statement_as_ntriples(const raptor_statement* \fIstatement\fB, FILE *\fIstream\fB)\fR"
-Print a raptor statement object in N-Triples format, using all the escapes.
+Print a raptor statement object in N-Triples format, using all the
+escapes as defined in
+.UR http://www.w3.org/TR/rdf-testcases/#ntriples
+http://www.w3.org/TR/rdf-testcases/#ntriples
+.UE
+.SH "LOCATOR UTILITY FUNCTIONS"
+.IP "\fBint raptor_format_locator(char *\fIbuffer\fB, size_t \fIlength\fB, raptor_locator* \fIlocator\fB)\fR"
+This method takes a \fIraptor_locator\fR object as passed to an
+error, warning or other handler callback and formats it into the
+\fIbuffer\fR of size \fIlength\fR bytes.  If \fIbuffer\fR is NULL or
+\fIlength\fR is insufficient for the size of the formatted locator,
+returns the number of additional bytes required in the buffer to
+write the locator.
 
+In particular, if this form is used:
+  length=raptor_format_locator(NULL, 0, locator)
+it will return in \fIlength\fR the size of a buffer that can be allocated for
+\fIlocator\fR and a second call will perform the formatting:
+  raptor_format_locator(buffer, length, locator)
+
+.IP "\fBvoid raptor_print_locator(FILE *\fIstream\fB, raptor_locator* \fIlocator\fB)\fR"
+This method takes a \fIraptor_locator\fR object as passed to an
+error, warning or other handler callback, formats and prints it to
+the given stdio \fIstream\fR.
 .SH "N-TRIPLES UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_ntriples_string(FILE* \fIstream\fB, const char* \fIstring\fB, const char \fIdelim\fB)\fR"
 This is a standalone function that prints the given string
 according to N-Triples escaping rules, expecting to be delimited
-by the character
-.I delin
-which is usually either " or <
+by the character \fIdelim\fR which is usually either " or <
 
+.SH "URI CLASS"
+Raptor has a raptor_uri class must be used for manipulating and
+passing URI references.  The default internal implementation
+uses char* strings for URIs, manipulating them and constructing them.
+This URI implementation can be replaced by any other that provides the
+equivalent functionality, using the raptor_uri_set_handler function.
+
+.SH "URI CONSTRUCTORS"
+There a several constructors for raptor_uri to build them from
+char* strings and existing raptor_uri objects.
+.SH "URI METHODS
+.IP "\fBraptor_uri* raptor_new_uri(const char* \fIuri_string\fB)\fR"
+Create a raptor URI from a string URI-reference
+\fIuri_string\fR.
+.IP "\fBraptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri* \fIuri\fB, const char* \fIlocal_name\fB)\fR"
+Create a raptor URI from a string URI-reference
+\fIlocal_name\fR
+relative to an existing URI-reference.  This performs concatenation of the 
+\fIlocal_name\fR
+to the
+\fIuri\fR
+and not relative URI resolution, which is done by the
+raptor_new_uri_relative_to_base constructor.
+.IP "\fBraptor_uri* raptor_new_uri_relative_to_base(raptor_uri* \fIbase_uri, const char* \fIuri_string\fB)\fR"
+Create a raptor URI from a string URI-reference
+\fIuri_string\fR
+using relative URI resolution to the
+\fIbase_uri\fR.
+.IP "\fBraptor_uri* raptor_new_uri_from_id(raptor_uri* \fIbase_uri\fB, const char* \fIid\fB)\fR"
+Create a raptor URI from a string RDF ID
+\fIid\fR
+concatenated to the
+\fIbase_uri\fR
+base URI.
+.IP "\fBraptor_uri* raptor_new_uri_for_rdf_concept(const char* \fIname\fB)\fR"
+Create a raptor URI for the RDF namespace concept
+\fIname\fR.
+.SH "URI DESTRUCTOR"
+.IP "\fBvoid raptor_free_uri(raptor_uri* \fIuri\fB)\fR"
+.Destroy a Raptor URI object.
+.SH "URI METHODS"
+.IP "\fBint raptor_uri_equals(raptor_uri* \fIuri1\fB, raptor_uri* \fIuri2\fB)\fR"
+Return non-zero if the given URIs are equal.
+.IP "\fBraptor_uri* raptor_uri_copy(raptor_uri* \fIuri\fB)\fR"
+Return a copy of the given raptor URI \fIuri\fR.
+.IP "\fBchar* raptor_uri_as_string(raptor_uri* \fIuri\fB);\fR"
+Return a shared pointer to a string representation of the given raptor URI
+\fIuri\fR.  This string is shared and must not be freed.
 .SH "URI UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_uri_resolve_uri_reference (const char* \fIbase_uri\fB, const char* \fIreference_uri\fB, char* \fIbuffer\fB, size_t \fIlength\fB)\fR"
 This is a standalone function that resolves the relative URI
-.I reference_uri
-agains the base URI
-.I base_uri
+\fIreference_uri\fR against the base URI \fIbase_uri\fR
 according to the URI resolution rules in RFC2396.
-The resulting URI is stored in
-.I buffer
-which is of
-.I length
+The resulting URI is stored in \fIbuffer\fR which is of \fIlength\fR
 bytes.  If this is too small, no work will be done.
+.IP "\fBchar *raptor_uri_filename_to_uri_string(const char* \fIfilename\fB)\fR
+This is a standalone function that turns a local filename (Windows
+or Unix style as appropriate for platform) into a URI string (file).
+ The returned string must be freed by the caller.
+.IP "\fBchar *raptor_uri_uri_string_to_filename(const char* \fIuri_string\fB)\fR
+This is a standalone function that turns a URI string that
+represents a local filename (file:) into a filename.  The returned string
+must be freed by the caller.
+.IP "\fBint raptor_uri_is_file_uri(const char* \fIuri_string\fB)\fR
+Returns non-zero if the given URI string represents a filename,
+is a file: URI.
+.SH "URI CLASS IMPLEMENTATION"
+.IP "\fBvoid raptor_uri_set_handler(raptor_uri_handler *\fIhandler\fB, void *\fIcontext\fB)\fR
+Change the URI class implementation to the functions provided by the
+\fIhandler\fR
+URI implementation.
+The
+\fIcontext\fR
+user data is passed in to the handler URI implementation calls.
+.IP "\fBvoid raptor_uri_get_handler(raptor_uri_handler **\fIhandler\fB, void **\fIcontext\fB)\fR
+Return the current raptor URI class implementation
+\fIhandler\fR
+and
+\fIcontext\fR
+.
+.SH API CHANGES
+In version 0.9.6, the raptor/ntriples parser calling APIs were
+modified.  The following table lists the changes:
+  \fIOLD API                   NEW API (0.9.6+)\fR
+  \fBraptor_new()\fR              \fBraptor_new_parser("rdfxml")\fR
+  \fBntriples_new()\fR            \fBraptor_new_parser("ntriples")\fR
+  \fBraptor_free\fR               \fBraptor_free_parser\fR
+  \fBntriples_free\fR             \fBraptor_ntriples_parser\fR
+  \fBraptor_ntriples_parse_file\fR              \fBraptor_parse_file\fR
+  \fBraptor_ntriples_set_error_handler\fR       \fBraptor_set_error_handler\fR
+  \fBraptor_ntriples_set_fatal_error_handler\fR \fBraptor_set_fatal_error_handler\fR
+  \fBraptor_ntriples_set_statement_handler\fR   \fBraptor_set_statement_handler\fR
+
 .SH "CONFORMING TO"
 \fIRDF/XML Syntax (Revised)\fR, 
 W3C Working Draft (work in progress),
@@ -173,4 +282,14 @@ http://www.w3.org/TR/rdf-testcases/#ntriples
 Dave Beckett - 
 .UR http://purl.org/net/dajobe/
 http://purl.org/net/dajobe/
+.UE
+.br
+.UR
+Institute for Learning and Research Technology (ILRT)
+http://www.ilrt.bristol.ac.uk/
+.UE
+.br
+.UR
+University of Bristol
+http://www.bristol.ac.uk/
 .UE
