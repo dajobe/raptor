@@ -1772,7 +1772,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
     statement->predicate=(void*)&bag_element->last_bag_ordinal;
     statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
 
-    if(reified->uri || reified->id) {
+    if(reified && (reified->uri || reified->id)) {
       statement->object=reified->uri ? (void*)reified->uri : (void*)reified->id;
       statement->object_type=reified->type;
     } else {
@@ -1941,7 +1941,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                   RAPTOR_URI_SOURCE_NOT_URI,
                                   NULL,
                                   
-                                  NULL,
+                                  NULL, /* Property attributes are never reified*/
                                   resource_element);
         handled=1;
       }
@@ -1970,7 +1970,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                 RAPTOR_URI_SOURCE_NOT_URI,
                                 NULL,
                                 
-                                &resource_element->reified,
+                                NULL, /* Property attributes are never reified*/
                                 resource_element);
 
   } /* end for ... attributes */
@@ -2010,7 +2010,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                               RAPTOR_URI_SOURCE_NOT_URI,
                               NULL,
 
-                              &resource_element->reified,
+                              NULL, /* Property attributes are never reified*/
                               resource_element);
     if(!object_is_literal)
       raptor_free_uri(object_uri);
@@ -2548,7 +2548,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           if(element->rdf_attr[RDF_ATTR_resource] ||
              element->rdf_attr[RDF_ATTR_parseType]) {
             
-            raptor_parser_warning(rdf_parser, "rdf:bagID is forbidden / ignored on property element %s with an rdf:resource or rdf:parseType attribute.", el_name);
+            raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on property element %s with an rdf:resource or rdf:parseType attribute.", el_name);
             /* prevent this being used later either */
             element->rdf_attr[RDF_ATTR_bagID]=NULL;
           } else {
@@ -3012,7 +3012,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               /* Only an empty literal can have a rdf:bagID */
               if(element->bag.uri || element->bag.id) {
                 if(element->content_cdata_length > 0) {
-                  raptor_parser_warning(rdf_parser, "rdf:bagID is forbidden / ignored on a literal property element %s.", el_name);
+                  raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on a literal property element %s.", el_name);
                   /* prevent this being used later either */
                   element->rdf_attr[RDF_ATTR_bagID]=NULL;
                 } else
