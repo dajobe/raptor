@@ -701,11 +701,25 @@ raptor_xml_start_element_handler(void *user_data,
       if(!memcmp((const char*)atts[i], "xmlns", 5)) {
         /* there is more i.e. xmlns:foo */
         const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
+        const unsigned char *namespace_name=atts[i+1];
+        int namespace_name_len=strlen(namespace_name);
+        const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
+        int raptor_rdf_ms_uri_len=strlen(raptor_rdf_ms_uri);
 
-        raptor_namespaces_start_namespace(&rdf_parser->namespaces,
-                                          prefix, atts[i+1],
-                                          sax2->depth,
-                                          raptor_parser_error, rdf_parser);
+        if(namespace_name_len == raptor_rdf_ms_uri_len-1 && 
+           !strncmp(namespace_name, raptor_rdf_ms_uri, namespace_name_len)) {
+          raptor_parser_warning(rdf_parser, "Declaring a namespace with prefix %s to URI %s - one letter short of the RDF namespace URI and probably a mistake.", prefix, namespace_name);
+        } 
+
+        if(namespace_name_len > raptor_rdf_ms_uri_len && 
+           !strncmp(namespace_name, raptor_rdf_ms_uri, raptor_rdf_ms_uri_len)) {
+          raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
+        } else {
+          raptor_namespaces_start_namespace(&rdf_parser->namespaces,
+                                            prefix, namespace_name,
+                                            sax2->depth,
+                                            raptor_parser_error, rdf_parser);
+        }
         
         atts[i]=NULL; 
         continue;
