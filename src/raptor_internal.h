@@ -237,6 +237,13 @@ struct raptor_parser_s {
    */
   int feature_allow_bagID;
 
+  /* FEATURE: 
+   * non 0 if rdf:Collection generates the <idList> rdf:type rdf:List triple.
+   * post-last call WD of RDF/XML Syntax (Revised) 2003 forbids amended
+   * the rules to not generate this.
+   */
+  int feature_allow_rdf_type_rdf_List;
+
   /* stuff for our user */
   void *user_data;
 
