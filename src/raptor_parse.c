@@ -1840,9 +1840,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                    raptor_identifier *property_node_identifier)
 {
   int i;
-  int local_last_ordinal=0;
   raptor_identifier *resource_identifier;
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
 
   resource_identifier=property_node_identifier ? property_node_identifier : &resource_element->subject;
   
@@ -1860,6 +1858,14 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
       raptor_parser_error(rdf_parser, "Using a property attribute %s without a namespace is forbidden.", name);
       continue;
     }
+
+
+    if(!raptor_utf8_is_nfc(value, strlen(value))) {
+      raptor_update_document_locator(rdf_parser);
+      raptor_parser_error(rdf_parser, "Property attribute %s has a string not in Unicode Normal Form C: %s", name, value);
+      continue;
+    }
+    
 
     /* Generate the property statement using one of these properties:
      * 1) rdf:_n
@@ -1966,6 +1972,12 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
           raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
           continue;
       }
+    }
+
+    if(object_is_literal && !raptor_utf8_is_nfc(value, strlen(value))) {
+      raptor_update_document_locator(rdf_parser);
+      raptor_parser_error(rdf_parser, "Property %s has a string not in Unicode Normal Form C: %s", rdf_attr_info[i].name, value);
+      continue;
     }
 
     property_uri=raptor_new_uri_for_rdf_concept(rdf_attr_info[i].name);
@@ -3098,6 +3110,13 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
               raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
 
+              if(object_is_literal && !literal_datatype &&
+                 !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
+                raptor_update_document_locator(rdf_parser);
+                raptor_parser_error(rdf_parser, "Property element %s has a string not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
+                continue;
+              }
+
               element->parent->last_ordinal++;
               raptor_generate_statement(rdf_parser, 
                                         element->parent->subject.uri,
@@ -3124,6 +3143,13 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
               raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
               
+              if(object_is_literal && !literal_datatype && 
+                 !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
+                raptor_update_document_locator(rdf_parser);
+                raptor_parser_error(rdf_parser, "Property element %s has a string not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
+                continue;
+              }
+
               raptor_generate_statement(rdf_parser, 
                                         element->parent->subject.uri,
                                         element->parent->subject.id,
