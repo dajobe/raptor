@@ -232,3 +232,37 @@ raptor_free_identifier(raptor_identifier *identifier)
   if(identifier->is_malloced)
     RAPTOR_FREE(identifier, (void*)identifier);
 }
+
+
+#ifdef RAPTOR_DEBUG
+void
+raptor_print_identifier(FILE *stream, raptor_identifier *identifier)
+{
+  if(!identifier) {
+    fputs("-", stream);
+    return;
+  }
+  
+  if(identifier->type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
+     identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+    fputc('"', stream);
+    fputs((const char*)identifier->literal, stream);
+    fputc('"', stream);
+    if(identifier->literal_language)
+      fprintf(stream, "@%s", identifier->literal_language);
+    if(identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+      fputs("<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
+    } else if(identifier->literal_datatype) {
+      fputc('<', stream);
+      fputs(raptor_uri_as_string(identifier->literal_datatype), stream);
+      fputc('>', stream);
+    }
+  } else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    fputs((const char*)identifier->id, stream);
+  else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    fprintf(stream, "[rdf:_%d]", identifier->ordinal);
+  else {
+    fprintf(stream, "%s", raptor_uri_as_string(identifier->uri));
+  }
+}
+#endif
