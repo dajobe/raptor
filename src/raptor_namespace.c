@@ -191,7 +191,6 @@ raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack,
                                        const unsigned char *prefix, 
                                        const unsigned char *ns_uri_string,
                                        int depth)
-
 {
   raptor_namespace *ns;
 
@@ -205,7 +204,8 @@ raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack,
 
 
 void
-raptor_namespaces_clear(raptor_namespace_stack *nstack) {
+raptor_namespaces_clear(raptor_namespace_stack *nstack)
+{
   raptor_namespace *ns=nstack->top;
   while(ns) {
     raptor_namespace* next_ns=ns->next;
@@ -226,7 +226,8 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack) {
 
 
 void
-raptor_free_namespaces(raptor_namespace_stack *nstack) {
+raptor_free_namespaces(raptor_namespace_stack *nstack)
+{
   raptor_namespaces_clear(nstack);
   RAPTOR_FREE(raptor_namespace_stack, nstack);
 }
