@@ -328,7 +328,7 @@ typedef struct {
 
 /* These are used in the RDF/XML syntax as attributes, not
  * elements and are mostly not concepts in the RDF model (except for
- * the type attribute which is a property too).
+ * the type and value attributes which are properties too).
  */
 typedef enum {
   RDF_ATTR_about           = 0, /* value of rdf:about attribute */
