@@ -849,6 +849,37 @@ raptor_xml_start_element_handler(void *user_data,
   rdf_xml_parser->depth++;
 
   if(atts) {
+#ifdef RAPTOR_XML_LIBXML
+    /* Round 0 - do XML attribute value normalization */
+    for (i = 0; atts[i]; i+=2) {
+      unsigned char *value=(unsigned char*)atts[i+1];
+      unsigned char *src = value;
+      unsigned char *dst = xmlStrdup(value);
+
+      if (!dst) {
+        raptor_parser_fatal_error(rdf_parser, "Out of memory");
+	return;
+      }
+
+      atts[i+1]=dst;
+
+      while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) 
+        src++;
+      while (*src) {
+	if (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) {
+          while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09)
+            src++;
+          if (*src)
+            *dst++ = 0x20;
+	} else {
+          *dst++ = *src++;
+	}
+      }
+      *dst = '\0';
+      xmlFree(value);
+    }
+#endif
+
     /* Save passed in XML attributes pointers so we can 
      * NULL the pointers when they get handled below (various atts[i]=NULL)
      */
@@ -856,7 +887,6 @@ raptor_xml_start_element_handler(void *user_data,
     xml_atts_size=sizeof(unsigned char*) * i;
     xml_atts_copy=(unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
     memcpy(xml_atts_copy, atts, xml_atts_size);
-
 
     /* Round 1 - process XML attributes */
     for (i = 0; atts[i]; i+=2) {
@@ -1511,7 +1541,7 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 
   XML_SetUnparsedEntityDeclHandler(xp, raptor_xml_unparsed_entity_decl_handler);
 
-  XML_SetExternalEntityRefHandler(xp, raptor_xml_external_entity_ref_handler);
+  XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)raptor_xml_external_entity_ref_handler);
 
   rdf_xml_parser->xp=xp;
 #endif
