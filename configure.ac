@@ -496,16 +496,15 @@ fi
 
 
 # Make final changes to cflags
-CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
 MEM=
 MEM_LIBS=
+CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
 if test "$USE_MAINTAINER_MODE" = yes; then
   if test "$ac_cv_header_dmalloc_h" = yes; then
     MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
     MEM_LIBS=-ldmalloc
   fi
-  CPPFLAGS="-DRAPTOR_DEBUG=1 $CPPFLAGS"
-  CFLAGS="-g $CFLAGS"
+  CPPFLAGS="-g -DRAPTOR_DEBUG=1 $CPPFLAGS"
 fi
 STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
 if test "$USE_MAINTAINER_MODE" = yes; then
