@@ -1,5 +1,11 @@
 2004-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Switched to LGPL / Apache 2.0 license in the sources
+	  CVS tags before: raptor_license_lgpl_mpl,
+	  and after: raptor_license_lgpl_apache2
+
+2004-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
 	* configure.ac: Check for libxml 2.5.10+ for RSS tag soup parser
 	requirements, not features.
 
