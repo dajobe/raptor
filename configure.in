@@ -81,7 +81,7 @@ AC_PREREQ(2.13)
 AC_INIT(rapier_parse.c)
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(rapier, 0.0.1)
+AM_INIT_AUTOMAKE(rapier, 0.8)
 
 AM_MAINTAINER_MODE
 
@@ -202,24 +202,36 @@ if test "X$XML_CONFIG" != X; then
     AC_MSG_RESULT(no)
   fi
 fi
-AC_CHECK_HEADERS(gnome-xml/parser.h)
 
+AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="expat") 
 
-if test $have_expat_lib = 1; then
-  need_expat=1
-  AC_DEFINE(NEED_EXPAT)
-elif test $have_expat_source = 1; then
-  need_expat=1
-  need_expat_source=1
-  AC_DEFINE(NEED_EXPAT)
-elif test $have_libxml_lib = 1; then
-  need_libxml=1
-  AC_DEFINE(NEED_LIBXML)
-elif test $have_libxml_source = 1; then
-  need_libxml=1
-  need_libxml_source=1
-  AC_DEFINE(NEED_LIBXML)
-fi
+case $xml_parser in
+  expat)
+    if test $have_expat_lib = 1; then
+      need_expat=1
+      AC_DEFINE(NEED_EXPAT)
+    elif test $have_expat_source = 1; then
+      need_expat=1
+      need_expat_source=1
+      AC_DEFINE(NEED_EXPAT)
+    fi
+    ;;
+
+  libxml)
+    if test $have_libxml_lib = 1; then
+      need_libxml=1
+      AC_DEFINE(NEED_LIBXML)
+    elif test $have_libxml_source = 1; then
+      need_libxml=1
+      need_libxml_source=1
+      AC_DEFINE(NEED_LIBXML)
+    fi
+    ;;
+
+  *)
+    AC_MSG_ERROR(No such XML parser $xml_parser)
+    ;;
+esac
 
 
 AC_MSG_CHECKING(XML parsers required)
@@ -243,23 +255,26 @@ AC_MSG_RESULT($result)
 
 XML_OBJS=
 
-if test $have_libxml = 1 -a $need_libxml = 1; then
+if test $need_libxml = 1; then
   if test $need_libxml_source = 1; then
     SD="$SD libxml"
     (cd libxml && ./configure --cache=../config.cache --enable-shared=no)
-    CFLAGS="$CFLAGS -I$srcdir/libxml"
+    CPPFLAG="-I$srcdir/libxml $CPPFLAGS"
     XML_OBS="libxml/libxml.a"
   else
     LIBS="$LIBS `$XML_CONFIG --libs`"
-    CFLAGS="$CFLAGS `$XML_CONFIG --cflags`"
+    CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
   fi
 fi
+
+AC_CHECK_HEADERS(parser.h gnome-xml/parser.h)
+
 
 if test $need_expat = 1; then
   # Only build local copy if it is needed
   if test $need_expat_source = 1; then
     SD="$SD expat"
-    CFLAGS="-I\$(top_srcdir)/expat/xmlparse $CFLAGS"
+    CPPFLAGS="-I\$(top_srcdir)/expat/xmlparse $CPPFLAGS"
     XML_OBJS="\$(top_builddir)/expat/xmlparse/xmlparse.o \$(top_builddir)/expat/xmlparse/hashtable.o \$(top_builddir)/expat/xmltok/xmlrole.o \$(top_builddir)/expat/xmltok/xmltok.o"
   else
     LIBS="$LIBS -lxmlparse -lxmltok"
@@ -273,7 +288,7 @@ MEM_LIBS=
 if test "$USE_MAINTAINER_MODE" = yes; then
   MEM=-DRAPIER_MEMORY_DEBUG_DMALLOC=1
   MEM_LIBS=-ldmalloc
-  CFLAGS="-DRAPIER_DEBUG=1 $CFLAGS"
+  CPPFLAGS="-DRAPIER_DEBUG=1 $CPPFLAGS"
 fi
 STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
 if test "$USE_MAINTAINER_MODE" = yes; then
