@@ -96,6 +96,8 @@
 
 #include <n3_parser.tab.h>
 
+#include <n3_common.h>
+
 
 static unsigned char *copy_token(unsigned char *text, size_t len);
 unsigned char *copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
@@ -115,6 +117,8 @@ int n3_lexer_get_column(yyscan_t yyscanner);
 void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 %}
+
+%x PREF
 
 
 %%
@@ -136,7 +140,7 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 ";"       { return SEMICOLON; }
 "["       { return LEFT_SQUARE; }
 "]"       { return RIGHT_SQUARE; }
-"@prefix" { return PREFIX; }
+"@prefix" { BEGIN(PREF); return PREFIX; }
 "@"       { return AT; }
 "^^"      { return HAT; }
 
@@ -149,22 +153,30 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token(yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token(yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token(yytext, yyleng);
+:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, yytext, yyleng);
                           return QNAME_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval->string=copy_token(yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, yytext, yyleng);
                           return QNAME_LITERAL; }
 
 :	{ n3_parser_lval->string=NULL;
                           return QNAME_LITERAL; }
 
+<PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
+<PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token(yytext, yyleng);
+                          BEGIN(INITIAL);
+                          return IDENTIFIER; }
+
+
 \<[^>]*\>   { if(yyleng == 2) 
-                n3_parser_lval->string=NULL;
-              else
-                n3_parser_lval->string=copy_token(yytext+1, yyleng-2);
+                n3_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
+              else {
+                yytext[yyleng-1]='\0';
+                n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, yytext+1);
+              }
               return URI_LITERAL; }
 
 [A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token(yytext, yyleng);
@@ -309,7 +321,7 @@ n3_token_print(int token, YYSTYPE *lval)
 
     case URI_LITERAL:
       sprintf(buffer, "URI_LITERAL(%s)", 
-        (lval->string ? (char*)lval->string : ""));
+        (lval->uri ? raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case BLANK_LITERAL:
@@ -318,7 +330,7 @@ n3_token_print(int token, YYSTYPE *lval)
 
     case QNAME_LITERAL:
       sprintf(buffer, "QNAME_LITERAL(%s)", 
-              (lval->string ? (char*)lval->string : ""));
+              (lval->uri ? raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case IDENTIFIER:
@@ -343,7 +355,8 @@ n3_token_print(int token, YYSTYPE *lval)
 int
 n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
-  yyscan_t yyscanner=(yyscan_t)rdf_parser;
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  yyscan_t yyscanner=n3_parser->scanner;
   va_list arguments;
 
   fprintf(stderr, "%s:%d: ", filename, n3_lexer_get_lineno(yyscanner));
@@ -363,10 +376,22 @@ n3_token_free(int token, YYSTYPE *lval)
 {
   if(!token)
     return;
-  
-  if(lval->string) {
-    free(lval->string);
-    lval->string=NULL;
+
+  switch(token) {
+    case STRING_LITERAL:
+    case BLANK_LITERAL:
+    case IDENTIFIER:
+      if(lval->string)
+        free(lval->string);
+      break;
+
+    case URI_LITERAL:
+    case QNAME_LITERAL:
+      if(lval->uri)
+        raptor_free_uri(lval->uri);
+      break;
+    default:
+      break;
   }
 }
 
@@ -374,10 +399,23 @@ n3_token_free(int token, YYSTYPE *lval)
 int
 main(int argc, char *argv[]) 
 {
-  int token=EOF;
+  raptor_parser rdf_parser;
+  raptor_n3_parser n3_parser;
   yyscan_t scanner;
+  int token=EOF;
   FILE *fh;
   YYSTYPE lval;
+  const char *uri_string;
+#ifdef RAPTOR_IN_REDLAND
+  librdf_world *world;
+#endif
+  
+#ifdef RAPTOR_IN_REDLAND
+  world=librdf_new_world();
+  librdf_world_open(world);
+#else
+  raptor_init();
+#endif
   
   if(argc > 1) {
     filename=argv[1];
@@ -392,10 +430,24 @@ main(int argc, char *argv[])
     fh=stdin;
   }
 
-  yylex_init(&scanner);
-  n3_lexer_set_in(fh, scanner);
-  n3_lexer_set_extra(scanner, scanner);
+  memset(&rdf_parser, 0, sizeof(raptor_parser));
+  memset(&n3_parser, 0, sizeof(raptor_n3_parser));
 
+  yylex_init(&n3_parser.scanner);
+  scanner=n3_parser.scanner;
+  n3_lexer_set_in(fh, scanner);
+  n3_lexer_set_extra(&rdf_parser, scanner);
+
+  rdf_parser.context=&n3_parser;
+  n3_parser.scanner=&scanner;
+
+  uri_string=raptor_uri_filename_to_uri_string(filename);
+  rdf_parser.base_uri=raptor_new_uri(uri_string);
+#if defined (RASQAL_DEBUG) && defined(HAVE_DMALLOC_H) && defined(RASQAL_MEMORY_DEBUG_DMALLOC)
+#undef free
+#endif
+  free((void*)uri_string);
+  
   while(1) {
     memset(&lval, 0, sizeof(YYSTYPE));
     if(n3_lexer_get_text(scanner) != NULL)
@@ -412,6 +464,15 @@ main(int argc, char *argv[])
   }
 
   yylex_destroy(scanner);
+
+  raptor_free_uri(rdf_parser.base_uri);
+
+#ifdef RAPTOR_IN_REDLAND
+  librdf_free_world(world);
+#else
+  raptor_finish();
+#endif
+
 
   if(token==ERROR)
     return 1;
