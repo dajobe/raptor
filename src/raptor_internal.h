@@ -158,73 +158,21 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 #endif
 
 
-/* raptor_general.c */
 
-const char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
-raptor_uri* raptor_make_uri_from_id(raptor_parser *rdf_parser, raptor_uri *base_uri, const char *id);
-#ifndef RAPTOR_IN_REDLAND
-raptor_uri* raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name);
-#endif
-
-const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
-raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
-
-
-/* raptor_parse.c */
-
-typedef void (*raptor_internal_message_handler)(raptor_parser* parser, const char *message, ...);
-
-extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
-extern void raptor_parser_error(raptor_parser* parser, const char *message, ...);
-extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
-extern void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
-extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
-extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments);
-
-
-/* raptor_parse.c */
-
-#ifdef RAPTOR_IN_REDLAND
-raptor_parser* raptor_xml_new(raptor_parser *rdf_parser, librdf_world *world);
-#else
-raptor_parser* raptor_xml_new(raptor_parser *rdf_parser);
-#endif
-void raptor_xml_free(raptor_parser *rdf_parser);
-
-/* Prototypes for common expat/libxml parsing event-handling functions */
-extern void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
-extern void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
-/* s is not 0 terminated. */
-extern void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
-
-/* raptor_general.c */
-extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
-
-
-/* raptor_locator.c */
-extern void raptor_update_document_locator (raptor_parser *rdf_parser);
-
-
-#ifdef HAVE_STRCASECMP
-#define raptor_strcasecmp strcasecmp
-#define raptor_strncasecmp strncasecmp
-#else
-#ifdef HAVE_STRICMP
-#define raptor_strcasecmp stricmp
-#define raptor_strncasecmp strnicmp
-#endif
-#endif
-
-
-/* namespace stack node */
+typedef struct raptor_xml_parser_s raptor_xml_parser;
+typedef struct raptor_parser_factory_s raptor_parser_factory;
 typedef struct raptor_namespace_s raptor_namespace;
 
+
+
+/* Raptor Namespace Stack node */
 typedef struct {
   raptor_namespace* top;
 #ifdef RAPTOR_IN_REDLAND
   librdf_world* world;
 #endif
 } raptor_namespace_stack;
+
 
 /* Forms:
  * 1) prefix=NULL uri=<URI>      - default namespace defined
@@ -257,75 +205,16 @@ struct raptor_namespace_s {
   int is_rdf_schema;
 };
 
-/* raptor_nspace.c */
-#ifdef RAPTOR_IN_REDLAND
-void raptor_namespaces_init(raptor_namespace_stack *nstack, librdf_world *world);
-#else
-void raptor_namespaces_init(raptor_namespace_stack *nstack);
-#endif
-void raptor_namespaces_free(raptor_namespace_stack *nstack);
-int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const char *prefix, const char *nspace, int depth);
-void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
-void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
-raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
-raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const char *prefix, int prefix_length);
-
-#ifdef RAPTOR_IN_REDLAND
-raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth, librdf_world *world);
-#else
-raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth);
-#endif
-void raptor_namespace_free(raptor_namespace *ns);
-raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
-const char* raptor_namespace_get_prefix(const raptor_namespace *ns);
-raptor_uri* raptor_namespace_local_name_to_uri(const raptor_namespace *ns, const char *local_name);
-
-#ifdef RAPTOR_DEBUG
-void raptor_namespace_print(FILE *stream, raptor_namespace* ns);
-#endif
-
-
-/* 
- * Raptor XML-namespace qualified name (qname), for elements or attributes 
- *
- * namespace is only defined when the XML name has a namespace and
- * only then is uri also given.
- */
-typedef struct {
-  /* Name - always present */
-  const char *local_name;
-  int local_name_length;
-  /* Namespace or NULL if not in a namespace */
-  const raptor_namespace *nspace;
-  /* URI of namespace+local_name or NULL if not defined */
-  raptor_uri *uri;
-  /* optional value - used when name is an attribute */
-  const char *value;
-  int value_length;
-} raptor_qname;
-
-
-
-/* raptor_qname.c */
-raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const char *name, const char *value, raptor_internal_message_handler error_handler, void *error_data);
-#ifdef RAPTOR_DEBUG
-void raptor_qname_print(FILE *stream, raptor_qname* name);
-#endif
-void raptor_free_qname(raptor_qname* name);
-int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
-
-
-
-typedef struct raptor_xml_parser_s raptor_xml_parser;
 
 /*
  * Raptor parser object
  */
 struct raptor_parser_s {
 
+  /* FIXME temporary redland stuff */
+  void *world;
+  
 #ifdef RAPTOR_IN_REDLAND
-  librdf_world *world;
-
   /* DAML collection URIs */
   librdf_uri *raptor_daml_oil_uri;
   librdf_uri *raptor_daml_List_uri;
@@ -398,11 +287,159 @@ struct raptor_parser_s {
   raptor_statement_handler statement_handler;
 
 
-  /* XML parser specific stuff */
-  raptor_xml_parser *xml_parser;
-  
+  /* parser specific stuff */
+  void *context;
+
+  struct raptor_parser_factory_s* factory;
 };
 
+
+/** A Storage Factory */
+struct raptor_parser_factory_s {
+  struct raptor_parser_factory_s* next;
+  char* name;
+  
+  /* the rest of this structure is populated by the
+     parser-specific register function */
+  size_t context_length;
+  
+  /* create a new parser */
+  int (*init)(raptor_parser* parser, const char *name);
+  
+  /* destroy a parser */
+  void (*terminate)(raptor_parser* parser);
+  
+  /* start a parse */
+  int (*start)(raptor_parser* parser, raptor_uri *uri);
+  
+  /* parse a chunk of memory */
+  int (*chunk)(raptor_parser* parser, const char *buffer, size_t len, int is_end);
+
+};
+
+
+
+
+/* raptor_general.c */
+
+void raptor_parser_register_factory(const char *name, void (*factory) (raptor_parser_factory*));
+
+const char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
+raptor_uri* raptor_make_uri_from_id(raptor_parser *rdf_parser, raptor_uri *base_uri, const char *id);
+#ifndef RAPTOR_IN_REDLAND
+raptor_uri* raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name);
+#endif
+
+const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
+raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
+
+
+/* raptor_parse.c */
+
+typedef void (*raptor_internal_message_handler)(raptor_parser* parser, const char *message, ...);
+
+extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
+extern void raptor_parser_error(raptor_parser* parser, const char *message, ...);
+extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
+extern void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
+extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
+extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments);
+
+
+/* raptor_parse.c */
+
+#ifdef RAPTOR_IN_REDLAND
+raptor_parser* raptor_xml_new(raptor_parser *rdf_parser, librdf_world *world);
+#else
+raptor_parser* raptor_xml_new(raptor_parser *rdf_parser);
+#endif
+void raptor_xml_free(raptor_parser *rdf_parser);
+
+/* Prototypes for common expat/libxml parsing event-handling functions */
+extern void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
+extern void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
+/* s is not 0 terminated. */
+extern void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
+
+/* raptor_general.c */
+extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
+
+
+/* raptor_locator.c */
+extern void raptor_update_document_locator (raptor_parser *rdf_parser);
+
+
+#ifdef HAVE_STRCASECMP
+#define raptor_strcasecmp strcasecmp
+#define raptor_strncasecmp strncasecmp
+#else
+#ifdef HAVE_STRICMP
+#define raptor_strcasecmp stricmp
+#define raptor_strncasecmp strnicmp
+#endif
+#endif
+
+
+/* raptor_nspace.c */
+#ifdef RAPTOR_IN_REDLAND
+void raptor_namespaces_init(raptor_namespace_stack *nstack, librdf_world *world);
+#else
+void raptor_namespaces_init(raptor_namespace_stack *nstack);
+#endif
+void raptor_namespaces_free(raptor_namespace_stack *nstack);
+int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const char *prefix, const char *nspace, int depth);
+void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
+void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
+raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
+raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const char *prefix, int prefix_length);
+
+#ifdef RAPTOR_IN_REDLAND
+raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth, librdf_world *world);
+#else
+raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth);
+#endif
+void raptor_namespace_free(raptor_namespace *ns);
+raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
+const char* raptor_namespace_get_prefix(const raptor_namespace *ns);
+raptor_uri* raptor_namespace_local_name_to_uri(const raptor_namespace *ns, const char *local_name);
+
+#ifdef RAPTOR_DEBUG
+void raptor_namespace_print(FILE *stream, raptor_namespace* ns);
+#endif
+
+
+/* 
+ * Raptor XML-namespace qualified name (qname), for elements or attributes 
+ *
+ * namespace is only defined when the XML name has a namespace and
+ * only then is uri also given.
+ */
+typedef struct {
+  /* Name - always present */
+  const char *local_name;
+  int local_name_length;
+  /* Namespace or NULL if not in a namespace */
+  const raptor_namespace *nspace;
+  /* URI of namespace+local_name or NULL if not defined */
+  raptor_uri *uri;
+  /* optional value - used when name is an attribute */
+  const char *value;
+  int value_length;
+} raptor_qname;
+
+
+
+/* raptor_qname.c */
+raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const char *name, const char *value, raptor_internal_message_handler error_handler, void *error_data);
+#ifdef RAPTOR_DEBUG
+void raptor_qname_print(FILE *stream, raptor_qname* name);
+#endif
+void raptor_free_qname(raptor_qname* name);
+int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
+
+
+void raptor_init_parser_rdfxml(void);
+void raptor_init_parser_ntriples(void);
 
 /* end of RAPTOR_INTERNAL */
 #endif
