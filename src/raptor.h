@@ -160,6 +160,9 @@ RAPTOR_API int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API raptor_uri* raptor_uri_copy(raptor_uri *uri);
 RAPTOR_API char* raptor_uri_as_string(raptor_uri *uri);
 
+/* Make an xml:base-compatible URI from an existing one */
+RAPTOR_API raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
+
 
 /* Identifier functions */
 RAPTOR_API raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, unsigned char *id);
