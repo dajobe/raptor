@@ -38,10 +38,12 @@ bad-19.rdf
 
 RDF_BAD_NFC_TEST_FILES=bad-15.rdf bad-16.rdf bad-17.rdf
 
-RDF_WARN_TEST_FILES=warn-00.rdf warn-01.rdf warn-02.rdf warn-03.rdf \
+RDF_WARN_TEST_FILES=warn-00.rdf warn-01.rdf warn-02.rdf \
 $(RDF_BAGID_TEST_FILES)
 
 RDF_ASSUME_TEST_FILES=ex-19.rdf
+
+RDF_SCAN_TEST_FILES=ex-52.svg
 
 RDF_OUT_FILES=ex-00.out ex-01.out ex-02.out ex-03.out ex-04.out ex-05.out \
 ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
@@ -57,6 +59,8 @@ owl-schema.out daml-oil.out
 RDF_WARN_OUT_FILES=warn-00.out warn-01.out warn-02.out
 
 RDF_ASSUME_OUT_FILES=ex-19.out
+
+RDF_SCAN_OUT_FILES=ex-52.out
 
 NT_TEST_FILES=test.nt
 
@@ -79,11 +83,13 @@ DAML_OIL_DOC_URI="http://www.daml.org/2001/03/daml+oil"
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
 	$(RDF_ASSUME_TEST_FILES) \
+	$(RDF_SCAN_TEST_FILES) \
 	$(RDF_BAD_TEST_FILES) \
 	$(RDF_BAD_NFC_TEST_FILES) \
 	$(RDF_WARN_TEST_FILES) \
 	$(RDF_OUT_FILES) \
 	$(RDF_ASSUME_OUT_FILES) \
+	$(RDF_SCAN_OUT_FILES) \
 	$(RDF_WARN_OUT_FILES) \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES) \
@@ -93,8 +99,9 @@ EXTRA_DIST = \
 $(top_builddir)/rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
-check-local: check-rdf check-assume-rdf check-bad-rdf check-bad-nfc-rdf \
-check-warn-rdf check-nt check-bad-nt
+check-local: check-rdf check-assume-rdf check-scan-rdf \
+check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
+check-nt check-bad-nt
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@result=0; \
@@ -139,6 +146,24 @@ check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res ; \
+	done; \
+	exit $$result
+
+check-scan-rdf: $(top_builddir)/rapper $(RDF_SCAN_TEST_FILES)
+	@result=0; \
+	$(ECHO) "Testing rdf/xml insider other XML"; \
+	for test in $(RDF_SCAN_TEST_FILES); do \
+	  name=`echo $$test | sed -e 's/\..*//'` ; \
+	  baseuri=$(BASE_URI)$$name.rdf; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -s -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
