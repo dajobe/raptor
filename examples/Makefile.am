@@ -28,11 +28,13 @@ CLEANFILES=$(EXAMPLES)
 examples: $(EXAMPLES)
 
 AM_CPPFLAGS=-I$(top_srcdir)
-LDADD=$(top_builddir)/libraptor.la
-LIBS=@LIBS@ @REDLAND_LIBS@
+LDADD=$(top_builddir)/libraptor.la @REDLAND_LIBS@
 
 raptor_abort_SOURCES = raptor_abort.c
 
 
 $(top_builddir)/libraptor.la:
 	cd $(top_builddir) && $(MAKE) libraptor.la
+
+$(top_builddir)/../librdf/librdf.la:
+	$(top_builddir)/../librdf && $(MAKE) librdf.la
