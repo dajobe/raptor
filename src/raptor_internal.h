@@ -438,8 +438,10 @@ struct raptor_serializer_s {
   raptor_locator locator;
 
   void *error_user_data;
+  void *warning_user_data;
 
   raptor_message_handler error_handler;
+  raptor_message_handler warning_handler;
 
   /* non 0 if serializer had fatal error and cannot continue */
   int failed;
@@ -630,6 +632,8 @@ void raptor_delete_serializer_factories(void);
 void raptor_serializer_error(raptor_serializer* serializer, const char *message, ...);
 void raptor_serializer_simple_error(void* serializer, const char *message, ...);
 void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *message,  va_list arguments);
+void raptor_serializer_warning(raptor_serializer* serializer, const char *message, ...);
+void raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, va_list arguments);
 
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(long c);
