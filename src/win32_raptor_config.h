@@ -36,9 +36,6 @@ extern "C" {
 
 #define WIN32_LEAN_AND_MEAN 1
 
-/* Compiling inside Raptor */
-#define RAPTOR_INTERNAL 1
-
 /* getopt is not in standard win32 C library - define if we have it */
 /* #define HAVE_GETOPT_H 1 */
 
