@@ -144,7 +144,8 @@ RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  const char *filenam
 
 /* Utility functions */
 RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
-
+RAPTOR_API int raptor_format_locator(char *buffer, size_t length, raptor_locator* locator);
+ 
 RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 
 /* URI functions */
