@@ -1103,17 +1103,20 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"nodeID",  (unsigned char*)statement->subject);
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      /* FIXME */
-      break;
-
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-      if(serializer->feature_relative_uris)
-        subject_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                            (raptor_uri*)statement->subject);
-      else
-        subject_uri_string=raptor_uri_as_string((raptor_uri*)statement->subject);
-
+    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+      if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+        subject_uri_string=RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+20);
+        sprintf(subject_uri_string, "%s_%d", 
+                raptor_rdf_namespace_uri, *((int*)statement->subject));
+      } else {
+        if(serializer->feature_relative_uris)
+          subject_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                              (raptor_uri*)statement->subject);
+        else
+          subject_uri_string=raptor_uri_as_string((raptor_uri*)statement->subject);
+      }
+      
       attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
       RAPTOR_FREE(cstring, subject_uri_string);
       
@@ -1199,13 +1202,21 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-      /* must be URI */
-      if(serializer->feature_relative_uris)
-        object_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                            (raptor_uri*)statement->object);
-      else
-        object_uri_string=raptor_uri_as_string((raptor_uri*)statement->object);
+    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
 
+      if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+        object_uri_string=RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+20);
+        sprintf(object_uri_string, "%s_%d",
+                raptor_rdf_namespace_uri, *((int*)statement->object));
+      } else {
+        /* must be URI */
+        if(serializer->feature_relative_uris)
+          object_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                              (raptor_uri*)statement->object);
+        else
+          object_uri_string=raptor_uri_as_string((raptor_uri*)statement->object);
+      }
+      
       attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
       RAPTOR_FREE(cstring, object_uri_string);
 
@@ -1214,10 +1225,6 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       raptor_xml_writer_cdata_counted(xml_writer, "    ", 4);
       raptor_xml_writer_empty_element(xml_writer, predicate_element);
       raptor_xml_writer_cdata_counted(xml_writer, "\n", 1);
-      break;
-
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      /* FIXME */
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
