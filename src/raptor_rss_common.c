@@ -586,11 +586,7 @@ static void
 raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
   raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
   xmlTextReaderPtr reader=rss_parser->reader;
-#if LIBXML_VERSION > 20511
-  const xmlChar *name;
-#else
   xmlChar *name;
-#endif
   int free_name=0;
   xmlChar *value;
   int type;
