@@ -541,7 +541,7 @@ main(int argc, char *argv[])
   if(uri)
     raptor_free_uri(uri);
   if(free_uri_string)
-    free(uri_string);
+    raptor_free_memory(uri_string);
 
   raptor_finish();
 
