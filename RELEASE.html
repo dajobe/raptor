@@ -40,6 +40,14 @@ structured error information from language bindings via Redland
 <li><code>const char * raptor_locator_uri(raptor_locator *locator);</code></li>
 </ul>
 
+<p>The Unicode Normal Form C (NFC) checking via the GNOME glib
+library function <code>g_utf8_normalize</code> is broken, comparing
+the data it says is failed against other NFC checkers.  It is also
+slower than need be since it is doing full normalizing rather than
+just checking for NFC, and adds a rather large dependency for just
+one function.  A new portable checker will be added in a later
+release.</p>
+
 
 
 
