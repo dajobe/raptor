@@ -276,11 +276,13 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
   statement->predicate_type=RAPTOR_PREDICATE_TYPE_PREDICATE;
 
   /* Three choices for object from N-Triples */
-  if((object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) ||
-     (object_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE)) {
+  if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
     object_uri=raptor_make_uri(parser->base_uri, object);
     statement->object=object_uri;
-    statement->object_type=(object_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE) ? RAPTOR_OBJECT_TYPE_ANONYMOUS : RAPTOR_OBJECT_TYPE_RESOURCE;
+    statement->object_type=RAPTOR_OBJECT_TYPE_RESOURCE;
+  } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE) {
+    statement->object=object;
+    statement->object_type=RAPTOR_OBJECT_TYPE_ANONYMOUS;
   } else { 
     statement->object_type=RAPTOR_OBJECT_TYPE_LITERAL;
     statement->object=object;
@@ -292,7 +294,8 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
   /* Generate the statement; or is it fact? */
   (*parser->statement_handler)(parser->user_data, statement);
 
-  RAPTOR_FREE_URI(subject_uri);
+  if(subject_uri)
+    RAPTOR_FREE_URI(subject_uri);
   RAPTOR_FREE_URI(predicate_uri);
   if(object_uri)
     RAPTOR_FREE_URI(object_uri);
