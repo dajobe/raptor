@@ -931,6 +931,6 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
 
 void
 raptor_init_parser_ntriples (void) {
-  raptor_parser_register_factory("ntriples", 
+  raptor_parser_register_factory("ntriples",  "N-Triples",
                                  &raptor_ntriples_parser_register_factory);
 }

@@ -3503,7 +3503,8 @@ raptor_init_parser_rdfxml (void) {
 #ifdef RAPTOR_XML_LIBXML
   xmlInitParser();
 #endif
-  raptor_parser_register_factory("rdfxml", &raptor_xml_parser_register_factory);
+  raptor_parser_register_factory("rdfxml", "RDF/XML",
+                                 &raptor_xml_parser_register_factory);
 }
 
 void
