@@ -1004,8 +1004,8 @@ raptor_xml_start_element_handler(void *user_data,
    */
   if (rdf_content_type_info[element->content_type].rdf_processing &&
       non_nspaced_count) {
-    raptor_parser_warning(rdf_parser, "element %s has non-namespaced parts, skipping.", 
-                          element->sax2->name->local_name);
+    raptor_parser_error(rdf_parser, "Using an element %s without a namespace is forbidden.", 
+                        element->sax2->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
@@ -1708,7 +1708,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     
     if(!attr->nspace) {
       raptor_update_document_locator(rdf_parser);
-      raptor_parser_error(rdf_parser, "Using a property attribute %s without a namespace is forbidden.", name);
+      raptor_parser_error(rdf_parser, "Using property attribute %s without a namespace is forbidden.", name);
       continue;
     }
 
@@ -1970,6 +1970,17 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          *
          * Only create a bag if bagID given
          */
+
+        if(!sax2_element->name->uri) {
+          /* We cannot handle this */
+          raptor_parser_warning(rdf_parser, "Using node element %s without a namespace is forbidden.", 
+                                element->sax2->name->local_name);
+          raptor_update_document_locator(rdf_parser);
+          element->state=RAPTOR_STATE_SKIPPING;
+          element->child_state=RAPTOR_STATE_SKIPPING;
+          finished=1;
+          break;
+        }
 
         if(element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
            element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION && 
@@ -2307,6 +2318,16 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          */
       case RAPTOR_STATE_MEMBER_PROPERTYELT:
       case RAPTOR_STATE_PROPERTYELT:
+
+        if(!sax2_element->name->uri) {
+          raptor_parser_error(rdf_parser, "Using property element %s without a namespace is forbidden.", 
+                              element->sax2->name->local_name);
+          raptor_update_document_locator(rdf_parser);
+          element->state=RAPTOR_STATE_SKIPPING;
+          element->child_state=RAPTOR_STATE_SKIPPING;
+          finished=1;
+          break;
+        }
 
         /* Handling rdf:li as a property, noting special processing */ 
         if(element_in_rdf_ns && 
