@@ -2498,6 +2498,9 @@ raptor_new(
   rdf_parser->sax.entityDecl=raptor_xml_entity_decl;
 
   rdf_parser->entities = xmlCreateEntitiesTable();
+#ifndef XML_ENTITY_DECL
+  rdf_parser->entities->nb_entities=0;
+#endif
 
 #endif
 
