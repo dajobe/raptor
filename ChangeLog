@@ -1,5 +1,19 @@
 2004-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_xml.c (raptor_valid_xml_ID): Use raptor_xml_name_check
+	with appropriate XML version.
+	(raptor_xml_name_check): Added to check for a legal XML name.
+
+	* raptor_utf8.c (raptor_utf8_check): Added, to just check a string
+	is good UTF-8 and all the Unicode characters are 0 <= char <=
+	0x10ffff
+
+	* raptor.h: Export raptor_utf8_check
+
+	* raptor_nfc_test.c (main): Use raptor_utf8_check
+
+	* raptor_xml_writer.c (main): Update tests for changed xml_writer api
+
 	* raptor.h: Export raptor_unicode_is_xml11_namestartchar,
 	raptor_unicode_is_xml10_namestartchar
 	raptor_unicode_is_xml11_namechar and
