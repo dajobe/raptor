@@ -224,8 +224,7 @@ raptor_make_uri(raptor_uri *base_uri, const char *reference_uri_string)
 
 
 raptor_uri*
-raptor_make_uri_from_id(raptor_parser *rdf_parser,
-                        raptor_uri *base_uri, const char *id) 
+raptor_make_uri_from_id(raptor_uri *base_uri, const char *id) 
 {
   raptor_uri *new_uri;
   char *local_name;
