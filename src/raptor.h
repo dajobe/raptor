@@ -185,6 +185,10 @@ typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata,
 RAPTOR_API void raptor_init(void);
 RAPTOR_API void raptor_finish(void);
 
+/* Get parser names */
+RAPTOR_API int raptor_parsers_enumerate(const unsigned int counter, const char **name, const char **label);
+
+
 /* Create */
 RAPTOR_API raptor_parser* raptor_new_parser(const char *name);
 
