@@ -87,7 +87,7 @@ int main (int argc, char *argv[])
   } else {
     printf("HTTP response status %d\n", www->status_code);
     
-    printf("Returned %d bytes of content\n", string_length);
+    printf("Returned %d bytes of content\n", (int)string_length);
   }
   if(string)
     free(string);
