@@ -67,9 +67,6 @@
 /* Never use yyunput */
 %option nounput
 
-/* make a yylineno please */
-%option yylineno
-
 %option reentrant
 
 
@@ -131,9 +128,9 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
   int c;
   raptor_parser *rdf_parser=(raptor_parser*)yyextra;
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
-
-\r\n|\r|\n   { /* empty - lineno++ */ }
+\r\n|\r|\n   { n3_parser->lineno++; }
  
 [\ \t\v]+   { /* empty */ }
 
@@ -194,7 +191,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token(yytext+2, yyleng-2);
 
 \#              { while((c=input(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
                     ;
-                  /* lineno++; */
+                  n3_parser->lineno++;
                   if(c == EOF)
                     return EOF;
                 }
@@ -369,7 +366,7 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
   yyscan_t yyscanner=n3_parser->scanner;
   va_list arguments;
 
-  fprintf(stderr, "%s:%d: ", filename, n3_lexer_get_lineno(yyscanner));
+  fprintf(stderr, "%s:%d: ", filename, n3_parser->lineno);
 
   va_start(arguments, message);
   vfprintf(stderr, message, arguments);
@@ -450,6 +447,7 @@ main(int argc, char *argv[])
 
   rdf_parser.context=&n3_parser;
   n3_parser.scanner=&scanner;
+  n3_parser.lineno=1;
 
   uri_string=raptor_uri_filename_to_uri_string(filename);
   rdf_parser.base_uri=raptor_new_uri(uri_string);

@@ -679,9 +679,8 @@ int
 n3_parser_error(raptor_parser* rdf_parser, const char *msg)
 {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
-  yyscan_t yyscanner=n3_parser->scanner;
   
-  rdf_parser->locator.line=n3_lexer_get_lineno(yyscanner);
+  rdf_parser->locator.line=n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
   rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
 #endif
@@ -695,10 +694,9 @@ int
 n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
-  yyscan_t yyscanner=n3_parser->scanner;
   va_list arguments;
 
-  rdf_parser->locator.line=n3_lexer_get_lineno(yyscanner);
+  rdf_parser->locator.line=n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
   rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
 #endif
@@ -717,9 +715,8 @@ raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
 {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
-  yyscan_t yyscanner=n3_parser->scanner;
 
-  rdf_parser->locator.line=n3_lexer_get_lineno(yyscanner);
+  rdf_parser->locator.line=n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
   rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
 #endif
@@ -919,10 +916,13 @@ static int
 raptor_n3_parse_start(raptor_parser *rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
+  raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
   locator->line=1;
   locator->column= -1; /* No column info */
   locator->byte= -1; /* No bytes info */
+
+  n3_parser->lineno=1;
 
   return 0;
 }
@@ -1003,6 +1003,8 @@ main(int argc, char *argv[])
 
   locator->line= locator->column = -1;
   locator->file= filename;
+
+  n3_parser.line= 1;
 
   rdf_parser.context=&n3_parser;
   rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");

@@ -54,6 +54,8 @@ struct raptor_n3_parser_s {
   yyscan_t scanner;
 
   int scanner_set;
+
+  int lineno;
 };
 
 
