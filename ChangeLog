@@ -1,4 +1,19 @@
+2004-10-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: Updates for 1.4.0
+
+	* raptor.h, raptor_iostream.c: s/fh/handle/ for clarity.
+
+	* raptor.rdf.in: Add Raptor to the desc
+
+	* raptor.rdf.in, raptor.spec.in:
+	Update descriptions to include serializers
+
 2004-10-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_namespace.c: less namespace debugs
+
+	* raptor_xml_writer.c: less cdata debugs
 
 	* raptor_namespace.c: Make most namespace debug messages appear
 	only if #ifdef RAPTOR_DEBUG_VERBOSE
