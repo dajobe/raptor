@@ -2165,7 +2165,9 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 #ifdef NEED_EXPAT
     XML_ParserFree(xp);
 #endif /* EXPAT */
+#ifdef RAPIER_URI_TO_FILENAME
     LIBRDF_FREE(cstring, (void*)filename);
+#endif
     return 1;
   }
 
@@ -2178,7 +2180,9 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
                                  buffer, len, filename);
     if(!xc) {
       fclose(fh);
+#ifdef RAPIER_URI_TO_FILENAME
       LIBRDF_FREE(cstring, (void*)filename);
+#endif
       return 1;
     }
     xc->userData = rdf_parser;
