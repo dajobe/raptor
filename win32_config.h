@@ -36,9 +36,9 @@ extern "C" {
 #define RAPTOR_XML_EXPAT 1
 #define HAVE_XMLPARSE_H 1
 
-#include <windows.h>
+#define HAVE_STRCMPI
 
-#define strcasecmp(X,Y) strcmpi(X,Y)
+#include <windows.h>
 
 #ifdef __cplusplus
 }
