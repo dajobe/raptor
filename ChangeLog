@@ -1,3 +1,84 @@
+2004-11-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rdfxml.c (raptor_xml_start_element_handler,
+	raptor_xml_end_element_handler, raptor_xml_comment_handler,
+	raptor_start_element_grammar, raptor_end_element_grammar,
+	raptor_cdata_grammar): Update the use of xml_writer for building
+	parseType="Literal" content to use an iostream. Use more sax2
+	methods rather than direct access to internals - still some left.
+	(raptor_xml_parse_init, raptor_xml_parse_start,
+	raptor_xml_parse_terminate, raptor_inscope_xml_language,
+	raptor_inscope_base_uri): Move expat/libxml details to
+	raptor_new_sax2, raptor_sax2_parse_start, raptor_free_sax2,
+	raptor_sax2_inscope_xml_language, raptor_sax2_inscope_base_uri
+	respectively.
+	(raptor_xml_parse_chunk_): Deleted, moved to raptor_sax2_parse_chunk
+
+	* raptor_xml_writer.c: Change to output to an iostream not build
+	up a stringbuffer.
+	(raptor_new_xml_writer): Add iostream arg, delete never-used
+	canonicalize.
+	(raptor_free_xml_writer): Remove stringbuffer.
+	(raptor_xml_writer_start_element, raptor_xml_writer_end_element):
+	Delete stringbuffer and use raptor_iostream_write_sax2_element.
+	(raptor_xml_writer_cdata): Delete stringbuffer and use
+	raptor_iostream_write_xml_escaped_string.
+	(raptor_xml_writer_raw): Added to write just the bytes.
+	(raptor_xml_writer_comment): Fixed to emit <!-- and -->
+	(raptor_xml_writer_as_string): Deleted.
+	(main): Added with test case.
+
+	* raptor_sax2.c (raptor_new_sax2, raptor_free_sax2,
+	raptor_sax2_inscope_xml_language, raptor_sax2_inscope_base_uri,
+	raptor_sax2_get_depth, raptor_sax2_inc_depth,
+	raptor_sax2_dec_depth, raptor_sax2_parse_start,
+	raptor_sax2_parse_chunk, raptor_sax2_element_get_element): Added.
+	(raptor_iostream_write_sax2_element): Renamed from
+	raptor_format_sax2_element and now writing to a raptor_iostream
+	with no allocing/freeing buffers.
+
+	* raptor_xml.c (raptor_iostream_write_xml_escaped_string): Added,
+	to write an XML-escaped version of a string to an iostream
+
+2004-11-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_namespace.c (raptor_iostream_write_namespace): Added to
+	write a namespace to a raptor_iostream
+
+	* raptor.h: Added raptor_iostream_write_namespace
+
+	* Makefile.am: Added raptor_xml_writer_test
+
+	* raptor_expat.c (raptor_expat_init): Take void* user data
+
+	* raptor_internal.h: raptor_exp_init takes void*
+	Add user_data to raptor_sax2
+	Added prototypes or raptor_new_sax2, raptor_free_sax2,
+	raptor_sax2_parse_start, raptor_sax2_parse_chunk,
+	raptor_sax2_parse_handle_errors, raptor_sax2_get_depth,
+	raptor_sax2_inc_depth, raptor_sax2_dec_depth,
+	raptor_sax2_inscope_xml_language, raptor_sax2_inscope_base_uri,
+	raptor_sax2_element_get_element, raptor_iostream_write_sax2_element
+	Deleted raptor_format_sax2_element, raptor_xml_writer_as_string and
+	raptor_xml_writer_write_to_iostream
+	Changed raptor_new_xml_writer to write to a raptor_iostream
+
+	* raptor.h: Added raptor_iostream_write_xml_escaped_string and
+	raptor_namespace_write
+
+2004-11-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h: Added prototype for
+	raptor_xml_writer_write_to_iostream
+
+	* raptor_xml_writer.c (raptor_xml_writer_write_to_iostream): Added
+
+	* raptor.h: Added prototype for raptor_iostream_write_stringbuffer
+
+	* raptor_iostream.c: (raptor_iostream_write_stringbuffer) Added
+
+	* configure.ac: --with-dmalloc default is now no
+
 2004-11-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* configure.ac:
