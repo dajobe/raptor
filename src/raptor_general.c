@@ -1162,6 +1162,9 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
     p += unichar_len; l -= unichar_len;
   }
 
+  /* Terminate new string */
+  *q = '\0';
+
   return new_string;
 }
 
