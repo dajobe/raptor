@@ -336,14 +336,6 @@ raptor_namespace_get_prefix(const raptor_namespace *ns)
 }
 
 
-raptor_uri*
-raptor_namespace_local_name_to_uri(const raptor_namespace *ns,
-                                   const unsigned char *local_name)
-{
-  return ns->nstack->uri_handler->new_uri_from_uri_local_name(ns->nstack->uri_context, ns->uri, (const char*)local_name);
-}
-
-
 unsigned char *
 raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 {
