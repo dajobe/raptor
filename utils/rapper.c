@@ -66,7 +66,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 
   /* replace newlines with spaces if object is a literal string */
   if(replace_newlines && 
-     statement->object_type == RAPTOR_OBJECT_TYPE_LITERAL) {
+     statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     char *s;
     for(s=(char*)statement->object; *s; s++)
       if(*s == '\n')
