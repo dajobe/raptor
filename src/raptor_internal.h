@@ -579,6 +579,7 @@ struct raptor_sax2_s {
 
 raptor_sax2_element* raptor_sax2_element_pop(raptor_sax2 *sax2);
 void raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element);
+raptor_sax2_element* raptor_new_sax2_element(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base);
 void raptor_free_sax2_element(raptor_sax2_element *element);
 #ifdef RAPTOR_DEBUG
 void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
