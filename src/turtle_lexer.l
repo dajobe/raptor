@@ -192,7 +192,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*
                     return EOF;
 
                   turtle_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
-                  return ERROR;  }
+                  return ERROR_TOKEN;  }
 
 
 \<[^>]*\>   { if(yyleng == 2) 
@@ -217,7 +217,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*
                     return EOF;
 
                   turtle_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
-                  return ERROR;
+                  return ERROR_TOKEN;
 		}
 
 %%
@@ -366,7 +366,7 @@ turtle_token_print(int token, YYSTYPE *lval)
               (lval->string ? (char*)lval->string : ""));
       return buffer;
 
-    case ERROR:
+    case ERROR_TOKEN:
       return "ERROR";
 
    default:
@@ -463,7 +463,7 @@ main(int argc, char *argv[])
     printf("token %d\n", token);
 #endif
     turtle_token_free(token, &lval);
-    if(!token || token == EOF || token == ERROR)
+    if(!token || token == EOF || token == ERROR_TOKEN)
       break;
   }
 
@@ -474,7 +474,7 @@ main(int argc, char *argv[])
   raptor_finish();
 
 
-  if(token==ERROR)
+  if(token == ERROR_TOKEN)
     return 1;
  
   return 0;

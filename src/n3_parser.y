@@ -148,7 +148,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 %token <string> IDENTIFIER
 
 /* syntax error */
-%token ERROR
+%token ERROR_TOKEN
 
 %type <identifier> subject predicate object verb literal resource
 %type <sequence> objectList propertyList

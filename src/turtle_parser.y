@@ -153,7 +153,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token <integer> INTEGER_LITERAL
 
 /* syntax error */
-%token ERROR
+%token ERROR_TOKEN
 
 %type <identifier> subject predicate object verb literal resource blank collection
 %type <sequence> objectList itemList propertyList
