@@ -1,7 +1,29 @@
 2004-10-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
-	* raptor_namespace.c, raptor_serialize.c, raptor_iostream.c:
-	Casts for C++
+	* raptor.h:
+	Updated raptor_new_iostream_to_string with malloc_handler argument
+
+	* raptor_serialize.c (raptor_serialize_start_to_string): Update
+	raptor_new_iostream_to_string for malloc_handler argument
+
+	* raptor_iostream.c (raptor_string_iostream_finish):
+	Use passed-in malloc_handler to
+	make string, raptor_stringbuffer_copy_to_string to copy directly in.
+	(raptor_new_iostream_to_string): Add optional malloc_handler argument
+	so caller can control allocation.
+	(main): Update tests for above.
+
+	* raptor.h: Added raptor_stringbuffer_copy_to_string
+
+	* raptor_stringbuffer.c (raptor_stringbuffer_copy_to_string):
+	Added to allow exporting to
+	externally alloced buffers - handy for cross-library/heap work.
+	(main): Added test for above.
+
+	* raptor_general.c (raptor_init): Don't register 'simple' type.
+
+	* raptor_iostream.c, raptor_namespace.c, raptor_serialize.c,
+	raptor_iostream.c: Casts for C++
 
 	* tests/Makefile.am, tests/turtle/Makefile.am:
 	Replace direct dependency on $(top_builddir)/rapper with build-rapper
