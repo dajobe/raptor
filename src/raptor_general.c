@@ -585,7 +585,7 @@ raptor_parser_simple_error(void* parser, const char *message, ...)
 
   va_start(arguments, message);
 
-  raptor_parser_error((raptor_parser*)parser, message);
+  raptor_parser_error_varargs((raptor_parser*)parser, message, arguments);
   
   va_end(arguments);
 }
