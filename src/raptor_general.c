@@ -1276,7 +1276,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->feature_normalize_language=1;
   rdf_parser->feature_non_nfc_fatal=is_strict;
   rdf_parser->feature_warn_other_parseTypes=!is_strict;
-  rdf_parser->feature_check_rdf_id=is_strict;
+  rdf_parser->feature_check_rdf_id=1;
 }
 
 
