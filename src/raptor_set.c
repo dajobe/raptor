@@ -44,6 +44,7 @@
 #include "raptor_internal.h"
 
 
+#ifndef STANDALONE
 
 /*
  * The only methods needed here are:
@@ -488,6 +489,8 @@ void
 raptor_id_set_stats_print(raptor_id_set* set, FILE *stream) {
   fprintf(stream, "set hits: %d misses: %d\n", set->hits, set->misses);
 }
+#endif
+
 #endif
 
 
