@@ -484,7 +484,12 @@ if test "X$XML_CONFIG" != X; then
     AC_MSG_RESULT(no)
   fi
 
-  AC_CHECK_HEADERS(libxml/parser.h libxml/hash.h libxml/xmlreader.h)
+  AC_CHECK_HEADERS(libxml/parser.h)
+  AC_CHECK_HEADERS(libxml/hash.h libxml/xmlreader.h,,,
+  [#ifdef HAVE_LIBXML_PARSER_H
+#include <libxml/parser.h>
+#endif
+])
 
   if test "$ac_cv_header_libxml_parser.h" = no -a "$ac_cv_header_gnome_xml_parser.h" = no; then
     AC_MSG_WARN(libxml library found but not headers - disabling)
