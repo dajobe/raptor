@@ -82,7 +82,10 @@ check-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	  fi; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
-	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  status=$$?; \
+	  if test $$status != 0 ; then \
+	    echo FAILED returned status $$status; restult=1; \
+	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    echo ok; \
 	  else \
 	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
