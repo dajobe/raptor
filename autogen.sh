@@ -200,9 +200,9 @@ rm -f missing depcomp
 # automake junk
 rm -rf autom4te*.cache
 
-config_dir
+config_dir=
 if test -d $CONFIG_DIR; then
-  config_dir=`cd ../$CONFIG_DIR; pwd`
+  config_dir=`cd $CONFIG_DIR; pwd`
 fi
 
 for coin in `find $SRCDIR -name configure.ac -print`
