@@ -961,6 +961,10 @@ static struct
 };
 
 
+static const char *raptor_feature_uri_prefix="http://feature.librdf.org/raptor-";
+/* NOTE: this is strlen(raptor_feature_uri_prefix) */
+#define RAPTOR_FEATURE_URI_PREFIX_LEN 33
+
 /**
  * raptor_features_enumerate - Get list of syntax features
  * @counter: feature enumeration (0+)
@@ -971,7 +975,7 @@ static struct
  * If uri is not NULL, a pointer toa new raptor_uri is returned
  * that must be freed by the caller with raptor_free_uri().
  *
- * Return value: non 0 on failure or the feature is unknown
+ * Return value: non 0 on failure or if the feature is unknown
  **/
 int
 raptor_features_enumerate(const raptor_feature feature,
@@ -986,7 +990,7 @@ raptor_features_enumerate(const raptor_feature feature,
         *name=raptor_features_list[i].name;
       
       if(uri) {
-        raptor_uri *base_uri=raptor_new_uri("http://feature.librdf.org/raptor-");
+        raptor_uri *base_uri=raptor_new_uri(raptor_feature_uri_prefix);
         if(!base_uri)
           return 1;
         
@@ -1010,9 +1014,9 @@ raptor_features_enumerate(const raptor_feature feature,
  * @feature: feature to set from enumerated &raptor_feature values
  * @value: integer feature value (0 or larger)
  * 
- * The allow features are returned via raptor_features_enumerate().
+ * The allowed features are available via raptor_features_enumerate().
  *
- * Return value: non 0 on failure or the feature is unknown
+ * Return value: non 0 on failure or if the feature is unknown
  **/
 int
 raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
@@ -1065,7 +1069,7 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
  * raptor_get_feature - Get various parser features
  * @parser: &raptor_parser parser object
  * 
- * The allow features are returned via raptor_features_enumerate().
+ * The allowed features are available via raptor_features_enumerate().
  *
  * Note: no feature value is negative
  *
@@ -1114,6 +1118,42 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
   }
   
   return result;
+}
+
+
+/**
+ * raptor_feature_from_uri - Turn a parser feature URI into an enum
+ * @parser: &raptor_parser parser object
+ * @uri: feature URI
+ * 
+ * The allowed feature URIs are available via raptor_features_enumerate().
+ *
+ * Return value: < 0 if the feature is unknown
+ **/
+raptor_feature
+raptor_feature_from_uri(raptor_uri *uri)
+{
+  char *uri_string;
+  int i;
+  raptor_feature feature= -1;
+  
+  if(!uri)
+    return -1;
+  
+  uri_string=raptor_uri_as_string(uri);
+  if(strncmp(uri_string, raptor_feature_uri_prefix,
+             RAPTOR_FEATURE_URI_PREFIX_LEN))
+    return -1;
+
+  uri_string += RAPTOR_FEATURE_URI_PREFIX_LEN;
+
+  for(i=0; i <= RAPTOR_FEATURE_LAST; i++)
+    if(!strcmp(raptor_features_list[i].name, uri_string)) {
+      feature=i;
+      break;
+    }
+
+  return feature;
 }
 
 
@@ -1726,3 +1766,51 @@ raptor_system_free(void *ptr)
 
 #endif
 
+
+
+#ifdef STANDALONE
+#include <stdio.h>
+
+int main(int argc, char *argv[]);
+
+
+char *program;
+
+int
+main(int argc, char *argv[])
+{
+  int i;
+
+  program=argv[0];
+
+  raptor_init();
+  
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "%s: Known features:\n", program);
+#endif
+
+  for(i=0; 1; i++) {
+    const char *feature_name;
+    const char *feature_label;
+    raptor_uri *feature_uri;
+    int fn;
+    
+    if(raptor_features_enumerate(i, &feature_name, &feature_uri, &feature_label))
+      break;
+
+#ifdef RAPTOR_DEBUG
+    fprintf(stderr, " %2d %-20s %s\n", i, feature_name, feature_label);
+#endif
+    fn=raptor_feature_from_uri(feature_uri);
+    if(fn != i) {
+      fprintf(stderr, "raptor_feature_from_uri returned %d expected %d\n", fn, i);
+      return 1;
+    }
+  }
+
+  raptor_finish();
+  
+  return 0;
+}
+
+#endif
