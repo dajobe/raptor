@@ -214,7 +214,6 @@ RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri, rap
 RAPTOR_API int raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API int raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
 RAPTOR_API void raptor_parse_abort(raptor_parser* rdf_parser);
-RAPTOR_API RAPTOR_DEPRECATED void raptor_parser_abort(raptor_parser* rdf_parser, char *reason);
 
 /* Utility functions */
 RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
@@ -289,23 +288,6 @@ RAPTOR_API int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API void raptor_www_abort(raptor_www *www, const char *reason);
 
-
-
-/* OLD RDF/XML Parser Public functions */
-
-RAPTOR_API raptor_parser* RAPTOR_DEPRECATED raptor_new(void);
-RAPTOR_API void RAPTOR_DEPRECATED raptor_free(raptor_parser *rdf_parser);
-
-/* OLD N-Triples Parser Public functions */
-
-RAPTOR_API raptor_parser* RAPTOR_DEPRECATED raptor_ntriples_new(void);
-RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_free(raptor_parser *parser);
-
-RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
-RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
-RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
-
-RAPTOR_API int RAPTOR_DEPRECATED raptor_ntriples_parse_file(raptor_parser* parser, raptor_uri *uri, raptor_uri *base_uri);
 
 #ifdef __cplusplus
 }

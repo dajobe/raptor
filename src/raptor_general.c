@@ -729,36 +729,6 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
 /* PUBLIC FUNCTIONS */
 
 /**
- * raptor_new - Initialise the Raptor RDF parser
- *
- * OLD API - use raptor_new_parser("rdfxml")
- *
- * Return value: non 0 on failure
- **/
-raptor_parser*
-raptor_new(void)
-{
-  return raptor_new_parser("rdfxml");
-}
-
-
-
-
-/**
- * raptor_free - Free the Raptor RDF parser
- * @rdf_parser: parser object
- *
- * OLD API - use raptor_free_parser
- * 
- **/
-void
-raptor_free(raptor_parser *rdf_parser) 
-{
-  raptor_free_parser(rdf_parser);
-}
-
-
-/**
  * raptor_set_fatal_error_handler - Set the parser error handling function
  * @parser: the parser
  * @user_data: user data to pass to function
@@ -1018,13 +988,6 @@ raptor_get_label(raptor_parser *rdf_parser)
 void
 raptor_parse_abort(raptor_parser *parser)
 {
-  parser->failed=1;
-}
-
-
-/* 0.9.9 added, deprecated */
-void
-raptor_parser_abort(raptor_parser *parser, char *reason) {
   parser->failed=1;
 }
 

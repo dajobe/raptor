@@ -84,33 +84,6 @@ raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
 
 /* PUBLIC FUNCTIONS */
 
-/**
- * raptor_ntriples_new - Initialise the Raptor NTriples parser
- *
- * OLD API - use raptor_new_parser("ntriples")
- *
- * Return value: non 0 on failure
- **/
-
-raptor_parser*
-raptor_ntriples_new(void)
-{
-  return raptor_new_parser("ntriples");
-}
-
-
-/**
- * raptor_ntriples_free - Free the Raptor NTriples parser
- * @rdf_parser: parser object
- * 
- * OLD API - use raptor_free_parser
- **/
-void
-raptor_ntriples_free(raptor_parser *rdf_parser)
-{
-  raptor_free_parser(rdf_parser);
-}
-
 
 /*
  * raptor_ntriples_parse_terminate - Free the Raptor NTriples parser
@@ -122,62 +95,6 @@ raptor_ntriples_parse_terminate(raptor_parser *rdf_parser) {
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   if(ntriples_parser->line_length)
     RAPTOR_FREE(cdata, ntriples_parser->line);
-}
-
-
-/**
- * raptor_ntriples_set_error_handler - Set the parser error handling function
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- * 
- * The function will receive callbacks when the parser fails.
- *
- * OLD API - use raptor_set_error_handler
- * 
- **/
-void
-raptor_ntriples_set_error_handler(raptor_parser* parser,
-                                  void *user_data,
-                                  raptor_message_handler handler)
-{
-  raptor_set_error_handler(parser, user_data, handler);
-}
-
-
-/**
- * raptor_ntriples_set_fatal_error_handler - Set the parser error handling function
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- * 
- * The function will receive callbacks when the parser fails.
- * 
- * OLD API - use raptor_set_fatal_error_handler
- **/
-void
-raptor_ntriples_set_fatal_error_handler(raptor_parser* parser,
-                                        void *user_data,
-                                        raptor_message_handler handler)
-{
-  raptor_set_fatal_error_handler(parser, user_data, handler);
-}
-
-
-/**
- * raptor_ntriples_set_statement_handler - set the statement handler callback
- * @parser: ntriples parser
- * @user_data: user data for callback
- * @handler: callback function
- * 
- * OLD API - use raptor_set_statement_handler
- **/
-void
-raptor_ntriples_set_statement_handler(raptor_parser* parser,
-                                      void *user_data, 
-                                      raptor_statement_handler handler) 
-{
-  raptor_set_statement_handler(parser, user_data, handler);
 }
 
 
@@ -997,24 +914,6 @@ raptor_ntriples_parse_start(raptor_parser *rdf_parser)
   locator->byte=0;
 
   return 0;
-}
-
-
-/**
- * raptor_ntriples_parse_file - Retrieve the Ntriples content at URI
- * @rdf_parser: parser
- * @uri: URI of NTriples content
- * @base_uri: the base URI to use (or NULL if the same)
- * 
- * OLD API - use raptor_parse_file
- *
- * Return value: non 0 on failure
- **/
-int
-raptor_ntriples_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
-                           raptor_uri *base_uri) 
-{
-  return raptor_parse_file(rdf_parser, uri, base_uri);
 }
 
 
