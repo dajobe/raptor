@@ -279,11 +279,8 @@ raptor_www_abort(raptor_www *www, const char *reason) {
 
 
 void
-raptor_www_error(raptor_www *www, const char *message, ...) 
+raptor_www_error_varargs(raptor_www *www, const char *message, va_list arguments)
 {
-  va_list arguments;
-
-  va_start(arguments, message);
   if(www->error_handler) {
     char *buffer=raptor_vsnprintf(message, arguments);
     if(!buffer) {
@@ -298,7 +295,16 @@ raptor_www_error(raptor_www *www, const char *message, ...)
     vfprintf(stderr, message, arguments);
     fputc('\n', stderr);
   }
+}
 
+  
+void
+raptor_www_error(raptor_www *www, const char *message, ...) 
+{
+  va_list arguments;
+
+  va_start(arguments, message);
+  raptor_www_error_varargs(www, message, arguments);
   va_end(arguments);
 }
 
@@ -309,7 +315,6 @@ raptor_www_file_fetch(raptor_www *www)
   char *filename;
   FILE *fh;
   unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE];
-  int status=0;
   char *uri_string=raptor_uri_as_string(www->uri);
   
   filename=raptor_uri_uri_string_to_filename(uri_string);
@@ -341,10 +346,10 @@ raptor_www_file_fetch(raptor_www *www)
 
   RAPTOR_FREE(cstring, filename);
   
-  if(!status)
+  if(!www->failed)
     www->status_code=200;
   
-  return status;
+  return www->failed;
 }
 
 
