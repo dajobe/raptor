@@ -1,9 +1,14 @@
 2004-11-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
-	* raptor_serialize.c (raptor_rdfxml_serialize_statement): use
+	* raptor_uri.c: C style, indenting. const unsigned char.
+	(raptor_uri_path_make_relative_path): Remove a small memcpy.
+	(raptor_uri_to_relative_counted_uri_string) Docs edit.
+	Remove a large if {} block.  Rename 'reference' var since libxml2
+	defines it (SEP).  Use buildresult to make empty string result.
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement): Use
 	feature feature_relative_uris to decide when to emit an absolute
-	or relative URI, the latter using
-	raptor_uri_to_relative_uri_string.
+	or relative URI, the latter using raptor_uri_to_relative_uri_string.
 
 	* raptor_uri.c: Added raptor relative URI generating code patch
 	from René Puls
