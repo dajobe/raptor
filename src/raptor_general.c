@@ -1399,7 +1399,7 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_locator *locator;
 #endif
   int non_nspaced_count=0;
-  char *xml_language=NULL;
+  const char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
   
   
