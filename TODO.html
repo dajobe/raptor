@@ -21,7 +21,6 @@ delivered in chunks rather than as one big CDATA, such as when
 libxml2 sees entities, it emits the content in bits (BUG)</li>
 <li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work (FEATURE)</li>
 <li>Turtle parser: the lexer <code>lval-&gt;string</code> values get overwritten on errors (BUG)</li>
-<li>Turtle parser: use <code>raptor_generate_id</code> for blank node identifiers (BUG)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Add a N3 parser (FEATURE)</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a> (FEATURE)</li>
@@ -39,6 +38,7 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Turtle parser: use <code>raptor_generate_id</code> for blank node identifiers (1.3.0)</li>
 <li>Added <code>--enable-xml-1-1-names</code> to enable XML 1.1 name checking instead of XML 1.0 (1.1.0)</li>
 <li>Updated <a href="http://www.w3.org/TR/xml11/">XML 1.1</a> name checking for ranges in the XML/Namespaces in XML 1.1 proposed recommendations (1.1.0)</li>
 <li>Added <code>--disable-nfc-check</code> to disable the NFC linking/checking with GNOME glib, even if that library is present (1.1.0)</li>
