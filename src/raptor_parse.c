@@ -1041,7 +1041,7 @@ raptor_xml_start_element_handler(void *user_data,
 
   if(xml_atts_copy) {
     /* Restore passed in XML attributes, free the copy */
-    memcpy(atts, xml_atts_copy, xml_atts_size);
+    memcpy((void*)atts, xml_atts_copy, xml_atts_size);
     RAPTOR_FREE(cstringpointer, xml_atts_copy);
   }
     
