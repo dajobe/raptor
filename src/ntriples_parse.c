@@ -263,10 +263,10 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
   (*parser->statement_handler)(parser->user_data, statement);
 
   if(subject_uri)
-    RAPTOR_FREE_URI(subject_uri);
-  RAPTOR_FREE_URI(predicate_uri);
+    raptor_free_uri(subject_uri);
+  raptor_free_uri(predicate_uri);
   if(object_uri)
-    RAPTOR_FREE_URI(object_uri);
+    raptor_free_uri(object_uri);
 }
 
 
