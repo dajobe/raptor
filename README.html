@@ -14,12 +14,14 @@
 
 <p><a href="http://librdf.org/raptor/">Raptor</a>
 is a free software / Open Source C library that provides
-a set of Resource Description Framework (RDF) parsers
-generating RDF triples from RDF/XML, N-Triples,
-Turtle, several XML RSS tag soup formats and Atom 0.3.</p>
+a set of parsers and serializers that
+generate Resource Description Framework (RDF) triples
+by parsing syntaxes or serialize the triples into a syntax.
+The supported parsing syntaxes are RDF/XML,
+N-Triples, Turtle, RSS tag soup including Atom 0.3 and the
+serializing syntaxes are RDF/XML and N-Triples.</p>
 
-<p>Raptor
-was designed to work closely with the
+<p>Raptor was designed to work closely with the
 <a href="http://librdf.org/">Redland RDF library</a>
 (<b>R</b>DF <b>P</b>arser <b>T</b>oolkit f<b>o</b>r <b>R</b>edland)
 but is entirely separate.  It is a portable library that works
@@ -39,7 +41,7 @@ and file-by-file changes in the CVS <a href="ChangeLog">ChangeLog</a>.</p>
 
 <h3>RDF/XML Parser</h3>
 
-<p>A Parser for the
+<p>A Parser for the standard
 <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</a>
 as revised by the
 <a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>.</p>
@@ -89,12 +91,34 @@ such as channel, item, title, description in different ways.
 Attempts to turn the input into
 <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>
 RDF triples.  True <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>,
-as a full RDF vocabulary, is best parsed by the RDF/XML parser.</p>
+as a full RDF vocabulary, is best parsed by the RDF/XML parser.
+It also generates triples for RSS enclosures.</p>
 
 <p>This parser also handles the Atom 0.3 syndication format
 currently being standardised by the
 <a href="http://www.ietf.org/html.charters/atompub-charter.html">IETF Atom Publishing Format and Protocol</a>
 working group.
+</p>
+
+
+<h2>Serializers</h2>
+
+<h3>RDF/XML Serializer</h3>
+
+<p>A serializer to the standard
+<a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</a>
+as revised by the
+<a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>.
+This writes a statement-based RDF/XML serialization with
+no optimisation or pretty-printing.</p>
+
+<h3>N-Triples Serializer</h3>
+
+<p>A serializer to the
+<a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
+syntax as used by the 
+<a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>
+for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 </p>
 
 
@@ -104,8 +128,8 @@ working group.
 <a href="libraptor.html">libraptor.3</a> UNIX manual page.
 It is demonstrated in the
 <a href="rapper.html">rapper</a>
-utility program which shows how to call the parser and get back the
-triples.  When Raptor is used inside
+utility program which shows how to call the parser and write
+the triples in a serialization.  When Raptor is used inside
 <a href="http://librdf.org/">Redland</a>,
 the Redland documentation explains
 how to call the parser and contains several example programs.
