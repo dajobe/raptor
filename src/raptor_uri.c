@@ -4,12 +4,6 @@
  *
  * $Id$
  *
- * Originally from code
- * Copyright (C) 2000 Jason Diamond - http://injektilo.org/
- * from http://injektilo.org/rdf/repat.html
- *
- * Updated and integrated into Raptor:
- *
  * Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
@@ -296,6 +290,16 @@ raptor_copy_uri(raptor_uri *uri)
 #endif
 }
 
+
+
+/*
+ * raptor_uri_parse() and raptor_uri_resolve_uri_reference()
+ * originally from code
+ * Copyright (C) 2000 Jason Diamond - http://injektilo.org/
+ * from http://injektilo.org/rdf/repat.html
+ *
+ * Much updated, documented and improved for removing fixed-size buffers.
+ */
 
 
 /**
