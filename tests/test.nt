@@ -62,6 +62,9 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource29> <http://example.org/property> xml"chat"@en .
 
 # literals with languages
-# space before final . not optional?
 <http://example.org/resource30> <http://example.org/property> "chat"@fr .
 <http://example.org/resource31> <http://example.org/property> "chat"@en .
+
+# Datatype Literals
+<http://example.org/resource32> <http://example.org/property> "abc"^^<http://example.org/datatype1> .
+<http://example.org/resource32> <http://example.org/property> "abc"@en^^<http://example.org/datatype2> .
