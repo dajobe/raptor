@@ -244,31 +244,32 @@ typedef enum {
 static const struct { 
   const char * const name;            /* attribute name */
   const raptor_identifier_type type;  /* statement value */
+  int allowed_unprefixed_on_attribute;
 } rdf_attr_info[]={
-  { "about",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "aboutEach",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "aboutEachPrefix", RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "ID",              RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "bagID",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "resource",        RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "parseType",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "nodeID",          RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
-  { "datatype",        RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "about",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 1 },
+  { "aboutEach",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 0 },
+  { "aboutEachPrefix", RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 0 },
+  { "ID",              RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 1 },
+  { "bagID",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 1 },
+  { "resource",        RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 1 },
+  { "parseType",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 1 },
+  { "nodeID",          RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 0 },
+  { "datatype",        RAPTOR_IDENTIFIER_TYPE_UNKNOWN , 0 },
   /* rdf:Property-s */
-  { "type",            RAPTOR_IDENTIFIER_TYPE_RESOURCE },
-  { "value",           RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "subject",         RAPTOR_IDENTIFIER_TYPE_LITERAL  }, /* Useless */
-  { "predicate",       RAPTOR_IDENTIFIER_TYPE_LITERAL  }, /* Useless */
-  { "object",          RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "first",           RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "rest",            RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "type",            RAPTOR_IDENTIFIER_TYPE_RESOURCE, 1 },
+  { "value",           RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "subject",         RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "predicate",       RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "object",          RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "first",           RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "rest",            RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
   /* rdfs:Class-s */
-  { "Seq",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "Bag",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "Alt",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "Statement",       RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "Property",        RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "List",            RAPTOR_IDENTIFIER_TYPE_LITERAL  }
+  { "Seq",             RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "Bag",             RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "Alt",             RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "Statement",       RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "Property",        RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 },
+  { "List",            RAPTOR_IDENTIFIER_TYPE_LITERAL , 0 }
 };
 
 /* In above 'Useless' indicates it generates parts of a reified statement
@@ -954,7 +955,8 @@ raptor_xml_start_element_handler(void *user_data,
             if(!strcmp(attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
-              raptor_parser_warning(rdf_parser, "Unqualified use of rdf:%s has been deprecated.", attr_name);
+              if(!rdf_attr_info[i].allowed_unprefixed_on_attribute)
+                raptor_parser_warning(rdf_parser, "Unqualified use of rdf:%s has been deprecated.", attr_name);
               /* Delete it if it was stored elsewhere */
               /* make sure value isn't deleted from qname structure */
               attr->value=NULL;
