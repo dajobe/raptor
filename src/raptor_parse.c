@@ -4138,6 +4138,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             if(element->content_cdata) {
               LIBRDF_FREE(raptor_ns_name_array, element->content_cdata);
               element->content_cdata=NULL;
+              element->content_cdata_length=0;
             }
 
             /* FALLTHROUGH */
