@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2002-2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -155,6 +155,19 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 /* end of libxml-only */
 #endif
 
+
+/* expat-only prototypes */
+
+#ifdef RAPTOR_XML_EXPAT
+/* raptor_expat.c exports */
+extern XML_Parser raptor_expat_init(raptor_parser *rdf_parser);
+
+/* raptor_parse.c */
+void raptor_xml_unparsed_entity_decl_handler(void *user_data, const XML_Char *entityName, const XML_Char *base, const XML_Char *systemId, const XML_Char *publicId, const XML_Char *notationName);
+int raptor_xml_external_entity_ref_handler(void *user_data, const XML_Char *context, const XML_Char *base, const XML_Char *systemId, const XML_Char *publicId);
+
+/* end of expat-only */
+#endif
 
 
 typedef struct raptor_parser_factory_s raptor_parser_factory;
