@@ -542,13 +542,6 @@ typedef struct raptor_xml_parser_s raptor_xml_parser;
 /* RAPTOR_N_CONCEPTS defines size of array */
 
 
-#ifdef HAVE_XML_SetNamespaceDeclHandler
-static void raptor_start_namespace_decl_handler(void *user_data, const XML_Char *prefix, const XML_Char *uri);
-static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix);
-#endif
-
-
-
 /* prototypes for element functions */
 static raptor_element* raptor_element_pop(raptor_xml_parser *rdf_parser);
 static void raptor_element_push(raptor_xml_parser *rdf_parser, raptor_element* element);
@@ -762,7 +755,7 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
 
 void
 raptor_xml_start_element_handler(void *user_data,
-                                 const XML_Char *name, const XML_Char **atts)
+                                 const unsigned char *name, const unsigned char **atts)
 {
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
@@ -1091,7 +1084,7 @@ raptor_xml_start_element_handler(void *user_data,
 
 
 void
-raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
+raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 {
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
@@ -1169,7 +1162,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
  * s is not 0 terminated for expat, is for libxml - grrrr.
  */
 void
-raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
+raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
 {
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
@@ -1307,25 +1300,6 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 }
 
 
-#ifdef HAVE_XML_SetNamespaceDeclHandler
-static void
-raptor_start_namespace_decl_handler(void *user_data,
-                                    const XML_Char *prefix, const XML_Char *uri)
-{
-  RAPTOR_DEBUG3(raptor_start_namespace_decl_handler,
-                "saw namespace %s URI %s\n", prefix, uri);
-}
-
-
-static void
-raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
-{
-  RAPTOR_DEBUG2(raptor_start_namespace_decl_handler,
-                "saw end namespace prefix %s\n", prefix);
-}
-#endif
-
-
 #ifdef RAPTOR_XML_EXPAT
 /* This is called for a declaration of an unparsed (NDATA) entity */
 static void
@@ -1410,22 +1384,15 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 
   /* XML_SetEncoding(xp, "..."); */
 
-  XML_SetElementHandler(xp, raptor_xml_start_element_handler,
-                        raptor_xml_end_element_handler);
-  XML_SetCharacterDataHandler(xp, raptor_xml_cdata_handler);
+  XML_SetElementHandler(xp, 
+                        (XML_StartElementHandler)raptor_xml_start_element_handler,
+                        (XML_EndElementHandler)raptor_xml_end_element_handler);
+  XML_SetCharacterDataHandler(xp, 
+                              (XML_CharacterDataHandler)raptor_xml_cdata_handler);
 
-  XML_SetUnparsedEntityDeclHandler(xp,
-                                   raptor_xml_unparsed_entity_decl_handler);
+  XML_SetUnparsedEntityDeclHandler(xp, raptor_xml_unparsed_entity_decl_handler);
 
-  XML_SetExternalEntityRefHandler(xp,
-                                  raptor_xml_external_entity_ref_handler);
-
-
-#ifdef HAVE_XML_SetNamespaceDeclHandler
-  XML_SetNamespaceDeclHandler(xp,
-                              raptor_start_namespace_decl_handler,
-                              raptor_end_namespace_decl_handler);
-#endif
+  XML_SetExternalEntityRefHandler(xp, raptor_xml_external_entity_ref_handler);
 
   rdf_xml_parser->xp=xp;
 #endif
