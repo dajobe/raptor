@@ -41,7 +41,7 @@ TEST_WARN_FILES=
 TEST_OUT_FILES=test-00.out test-01.out test-02.out test-03.out \
 test-04.out test-05.out test-06.out test-07.out test-08.out \
 test-09.out test-10.out test-11.out test-12.out test-13.out \
-test-14.out test-15.out test-16.out \
+test-14.out test-15.out test-16.out test-17.out \
 rdf-schema.out \
 rdfs-namespace.out \
 rdfq-results.out
