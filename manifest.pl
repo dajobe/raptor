@@ -254,7 +254,7 @@ $content .= join('',<IN>);
 close($content);
 
 # Remove comments
-1 while $content =~ s/<!-- .+? -->//gs;
+1 while $content =~ s/<!--.+?-->//gms;
 
 # Unify blanks
 $content =~ s/\s+/ /gs;
