@@ -1,8 +1,11 @@
 2004-09-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_uri.c (main): Use program and raptor_basename in messages
+
 	* raptor_xml.c, raptor_stringbuffer.c, raptor_sequence.c,
-	raptor_rfc2396.c: Wrap functions with #ifndef STANDALONE
-	... #endif to prevent multiple link warnings on OSX with tests.
+	raptor_rfc2396.c: Wrap functions with
+	#ifndef STANDALONE ... #endif
+	to prevent multiple link warnings on OSX with tests.
 
 	* raptor.spec.in, Makefile.am, NOTICE: Added NOTICE for Apache
 	License 2.0
