@@ -1,4 +1,31 @@
+2004-12-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_common_init): Prevent 2x initialising.
+	(raptor_item_free): Free type URI
+	(raptor_rss10_serialize_terminate): Call raptor_rss_common_terminate.
+	(raptor_rss10_move_statements): Use RAPTOR_IDENTIFIER_TYPE_PREDICATE
+	set raptor_sequence_set_at destroy overwritten object.
+	(raptor_rss10_store_statement): Use RAPTOR_IDENTIFIER_TYPE_PREDICATE
+	Make fake URIs from blank node strings and free them.
+
+	* raptor_general.c (raptor_free_statement):
+	Handle more statement part types.
+
+	* raptor_rss.c:
+	RAPTOR_RSS_FIELDS_SIZE now stops before UNKNOWN for real field names.
+	(raptor_rss10_move_statements): Added, to move statements from
+	the sequence of triples to below a typed node once a new typed node
+	of the given type appears.
+	(raptor_rss10_store_statement): Added, to store a given statement
+	either below an existing typed node or in a sequence of triples if
+	it can't be found one.
+
+	* raptor_rss.c (raptor_rss10_serialize_statement):
+	iostream write turned into debug.
+
 2004-12-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_uri.c (raptor_uri_print): Cast for gcc
 
 	* raptor_rss.c: Use raptor_uri in raptor_rss_item.
 	(raptor_rss_context_init, raptor_rss_context_terminate): Added and
