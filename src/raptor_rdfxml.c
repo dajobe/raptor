@@ -1772,13 +1772,11 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         }
       } else {
         raptor_update_document_locator(rdf_parser);
-        if(raptor_forbidden_propertyAttribute_name((const char*)name)) {
+        if(raptor_forbidden_propertyAttribute_name((const char*)name) > 0)
           raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
-          continue;
-        } else {
+        else
           raptor_parser_warning(rdf_parser, "Unknown RDF namespace property attribute '%s'.", 
                                 name);
-        }
       }
 
       if(ordinal >= 1) {
