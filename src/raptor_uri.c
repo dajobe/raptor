@@ -275,18 +275,25 @@ raptor_uri_is_absolute (const char *uri)
 }
 
 
-raptor_uri*
-raptor_copy_uri(raptor_uri *uri) 
+static raptor_uri*
+raptor_default_uri_copy(void *context, raptor_uri *uri)
 {
-#ifdef RAPTOR_IN_REDLAND
-  return librdf_new_uri_from_uri(uri);
-#else
-  char *new_uri;
-  new_uri=(char*)LIBRDF_MALLOC(cstring, strlen(uri)+1);
+  char *new_uri=(char*)LIBRDF_MALLOC(cstring, strlen((char*)uri)+1);
   if(!new_uri)
     return NULL;
-  strcpy(new_uri, uri);
+  strcpy(new_uri, (char*)uri);
   return new_uri;
+}
+
+
+raptor_uri*
+raptor_uri_copy(raptor_uri *uri) 
+{
+  void *context=NULL;
+#ifdef RAPTOR_IN_REDLAND
+  return librdf_new_uri_from_uri(context, uri);
+#else
+  return raptor_default_uri_copy(context, uri);
 #endif
 }
 
@@ -901,6 +908,42 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
 int
 raptor_uri_is_file_uri(const char* uri_string) {
   return strncasecmp(uri_string, "file:", 5)==0;
+}
+
+
+void
+raptor_init_uri_default_handler(raptor_uri_handler *handler, void *context) 
+{
+  if(handler->initialised)
+    return;
+  
+  handler->new_uri=raptor_default_new_uri;
+  handler->new_uri_from_uri_local_name=raptor_default_new_uri_from_uri_local_name;
+  handler->new_uri_relative_to_base=raptor_default_new_uri_relative_to_base;
+  handler->new_uri_for_rdf_concept=raptor_default_new_uri_for_rdf_concept;
+  handler->free_uri=raptor_default_free_uri;
+  handler->uri_equals=raptor_default_uri_equals;
+  handler->uri_copy=raptor_default_uri_copy;
+
+  handler->initialised=1;
+}
+
+static raptor_uri_handler raptor_uri_default_handler = {
+  raptor_default_new_uri,
+  raptor_default_new_uri_from_uri_local_name,
+  raptor_default_new_uri_relative_to_base,
+  raptor_default_new_uri_for_rdf_concept,
+  raptor_default_free_uri,
+  raptor_default_uri_equals,
+  raptor_default_uri_copy,
+  1
+};
+
+
+void
+raptor_init_uri_class(void)
+{
+  raptor_init_uri_default_handler(&raptor_uri_default_handler, NULL);
 }
 
 
