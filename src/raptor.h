@@ -145,7 +145,8 @@ typedef enum {
   RAPTOR_FEATURE_WARN_OTHER_PARSETYPES,
   RAPTOR_FEATURE_CHECK_RDF_ID,
   RAPTOR_FEATURE_RELATIVE_URIS,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_RELATIVE_URIS
+  RAPTOR_FEATURE_START_URI,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_START_URI
 } raptor_feature;
 
 
@@ -278,7 +279,9 @@ RAPTOR_API const char* raptor_get_mime_type(raptor_parser *rdf_parser);
 
 RAPTOR_API int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API int raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+RAPTOR_API int raptor_parser_set_feature_string(raptor_parser *parser, raptor_feature feature, const unsigned char *value);
 RAPTOR_API int raptor_get_feature(raptor_parser *parser, raptor_feature feature);
+RAPTOR_API const unsigned char* raptor_parser_get_feature_string(raptor_parser *parser, raptor_feature feature);
 RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
 /* Get serializer names */
@@ -302,7 +305,9 @@ RAPTOR_API void raptor_serializer_set_warning_handler(raptor_serializer* seriali
 RAPTOR_API raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 RAPTOR_API int raptor_serializer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API int raptor_serializer_set_feature(raptor_serializer *serializer, raptor_feature feature, int value);
+RAPTOR_API int raptor_serializer_set_feature_string(raptor_serializer *serializer, raptor_feature feature, const unsigned char *value);
 RAPTOR_API int raptor_serializer_get_feature(raptor_serializer *serializer, raptor_feature feature);
+RAPTOR_API const unsigned char *raptor_serializer_get_feature_string(raptor_serializer *serializer, raptor_feature feature);
 
 /* memory functions */
 RAPTOR_API void raptor_free_memory(void *ptr);
@@ -516,6 +521,7 @@ RAPTOR_API int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor
 
 /* Parser and Serializer features */
 RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
+RAPTOR_API int raptor_feature_value_type(const raptor_feature feature);
 
 /* SAX2 element Class (raptor_sax2_element) */
 RAPTOR_API raptor_sax2_element* raptor_new_sax2_element(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base);
