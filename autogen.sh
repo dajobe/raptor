@@ -111,7 +111,6 @@ am_opt=
 # Ensure that these are created by the versions on this system
 # (indirectly via automake)
 rm -f ltconfig ltmain.sh libtool
-rm -rf autom4te.cache
 
 echo "$program: Running libtoolize --copy --automake"
 $DRYRUN libtoolize --copy --automake
