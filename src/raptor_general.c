@@ -732,6 +732,29 @@ raptor_set_statement_handler(raptor_parser* parser,
 
 
 /**
+ * raptor_set_generate_id_handler - Set the generate ID handler function for the parser
+ * @parser: &raptor_parser parser object
+ * @user_data: user data pointer for callback
+ * @handler: generate ID callback function
+ *
+ * Sets the function to generate IDs for the parser.  The handler is
+ * called with the @user_data parameter and an ID type of either
+ * RAPTOR_GENID_TYPE_BNODEID or RAPTOR_GENID_TYPE_BAGID (latter is deprecated).
+ *
+ * If handler is NULL, the default method is used
+ * 
+ **/
+void
+raptor_set_generate_id_handler(raptor_parser* parser,
+                               void *user_data,
+                               raptor_generate_id_handler handler)
+{
+  parser->generate_id_handler_user_data=user_data;
+  parser->generate_id_handler=handler;
+}
+
+
+/**
  * raptor_set_feature - Set various parser features
  * @parser: &raptor_parser parser object
  * @feature: feature to set from enumerated &raptor_feature values
@@ -793,6 +816,53 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->feature_allow_other_parseTypes=!is_strict;
   rdf_parser->feature_allow_bagID=!is_strict;
 
+}
+
+
+/**
+ * raptor_set_default_generate_id_parameters - Set default ID generation parameters
+ * @rdf_parser: &raptor_parse object
+ * @prefix: prefix string
+ * @base: integer base identifier
+ *
+ * Sets the parameters for the default algoriothm used to generate IDs.
+ * The default algorithm uses both @prefix and @base to generate a new
+ * identifier.   The exact identifier generated is not guaranteed to
+ * be a strict concatenation of @prefix and @base but will use both
+ * parts.
+ *
+ * For finer control of the generated identifiers, use
+ * &raptor_set_default_generate_id_handler.
+ *
+ * If prefix is NULL, the default prefix is used (currently "genid")
+ * If base is less than 1, it is initialised to 1.
+ * 
+ **/
+void
+raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser, 
+                                          char *prefix, int base)
+{
+  char *prefix_copy=NULL;
+  size_t length=0;
+  
+  if(base<1)
+    base=1;
+
+  if(prefix) {
+    length=strlen(prefix);
+    
+    prefix_copy=(char*)RAPTOR_MALLOC(cstring, length+1);
+    if(!prefix_copy)
+      return;
+    strcpy(prefix_copy, prefix);
+  }
+  
+  if(rdf_parser->default_generate_id_handler_prefix)
+    RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
+
+  rdf_parser->default_generate_id_handler_prefix=prefix_copy;
+  rdf_parser->default_generate_id_handler_prefix_length=length;
+  rdf_parser->default_generate_id_handler_base=base;
 }
 
 
@@ -1212,24 +1282,47 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 
 
 
-const unsigned char *
-raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
+static const unsigned char*
+raptor_default_generate_id_handler(void *user_data, raptor_genid_type type) 
 {
-  static int myid=0;
+  raptor_parser *rdf_parser=(raptor_parser *)user_data;
+  int id=++rdf_parser->default_generate_id_handler_base;
   unsigned char *buffer;
-  /* "genid" + min length 1 + \0 */
-  int length=7;
-  int id=++myid;
+  int length=2; /* min length 1 + \0 */
   int tmpid=id;
 
   while(tmpid/=10)
     length++;
+  if(rdf_parser->default_generate_id_handler_prefix)
+    length += rdf_parser->default_generate_id_handler_prefix_length;
+  else
+    length += 5; /* genid */
+  
   buffer=(unsigned char*)RAPTOR_MALLOC(cstring, length);
   if(!buffer)
     return NULL;
-  sprintf((char*)buffer, "genid%d", id);
+  if(rdf_parser->default_generate_id_handler_prefix) {
+    strncpy(buffer, rdf_parser->default_generate_id_handler_prefix,
+            rdf_parser->default_generate_id_handler_prefix_length);
+    sprintf(buffer+rdf_parser->default_generate_id_handler_prefix_length,
+            "%d", id);
+  } else 
+    sprintf(buffer, "genid%d", id);
 
   return buffer;
+}
+
+
+const unsigned char *
+raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
+{
+  raptor_genid_type type=id_for_bag ? RAPTOR_GENID_TYPE_BNODEID :
+                                      RAPTOR_GENID_TYPE_BAGID;
+  if(rdf_parser->generate_id_handler)
+    return rdf_parser->generate_id_handler(rdf_parser->generate_id_handler_user_data,
+                                           type);
+  else
+    return raptor_default_generate_id_handler(rdf_parser, type);
 }
 
 
