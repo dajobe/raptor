@@ -246,7 +246,7 @@ raptor_free_qname(raptor_qname* name)
     LIBRDF_FREE(cstring, (void*)name->local_name);
 
   if(name->uri)
-    RAPTOR_FREE_URI(name->uri);
+    raptor_free_uri(name->uri);
 
   if(name->value)
     LIBRDF_FREE(cstring, (void*)name->value);
