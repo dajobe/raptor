@@ -783,7 +783,7 @@ static void
 raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
-  raptor_namespaces_free(&n3_parser->namespaces);
+  raptor_namespaces_clear(&n3_parser->namespaces);
 
   if(n3_parser->scanner_set) {
     n3_lexer_lex_destroy(&n3_parser->scanner);
