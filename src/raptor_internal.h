@@ -312,6 +312,9 @@ struct raptor_parser_factory_s {
 
   /* syntax name */
   const char* name;
+  /* alternate syntax name; not mentioned in enumerations */
+  const char* alias;
+
   /* syntax readable label */
   const char* label;
   /* syntax MIME type (or NULL) */
@@ -347,7 +350,7 @@ struct raptor_parser_factory_s {
 
 extern const char *raptor_xml_literal_datatype_uri_string;
 
-void raptor_parser_register_factory(const char *name, const char *label, const char *mime_type, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
+void raptor_parser_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
 
 unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
 const unsigned char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
