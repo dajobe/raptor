@@ -84,6 +84,7 @@ raptor_init(void)
   /* FIXME */
   raptor_init_parser_rdfxml();
   raptor_init_parser_ntriples();
+  raptor_init_parser_n3();
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
 #endif
@@ -286,9 +287,6 @@ raptor_new_parser(const char *name) {
 int
 raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) 
 {
-  raptor_uri_handler *uri_handler;
-  void *uri_context;
-
   if(uri)
     uri=raptor_uri_copy(uri);
   
@@ -298,13 +296,6 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
   rdf_parser->base_uri=uri;
   rdf_parser->locator.uri=uri;
   rdf_parser->locator.line= rdf_parser->locator.column = 0;
-
-  raptor_namespaces_free(&rdf_parser->namespaces);
-
-  raptor_uri_get_handler(&uri_handler, &uri_context);
-  raptor_namespaces_init(&rdf_parser->namespaces,
-                         uri_handler, uri_context,
-                         raptor_parser_simple_error, rdf_parser);
 
   return rdf_parser->factory->start(rdf_parser);
 }
@@ -339,8 +330,6 @@ raptor_free_parser(raptor_parser* rdf_parser)
 
   if(rdf_parser->default_generate_id_handler_prefix)
     RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
-
-  raptor_namespaces_free(&rdf_parser->namespaces);
 
   RAPTOR_FREE(raptor_parser, rdf_parser);
 }
@@ -411,7 +400,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   FILE *fh;
 
   if(uri) {
-    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
+    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri), NULL);
     if(!filename)
       return 1;
 
