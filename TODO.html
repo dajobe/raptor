@@ -11,8 +11,6 @@
 <h2>Bugs and Features</h2>
 
 <ul>
-<li>Add some way to trigger once-only www library shutdown on raptor_finish()
-- by default? since higher level apps may not even know or care.</li>
 <li>XML attribute value normalization doesn't happen in libxml.</li>
 <li>Unicode character normalization NFC checks not implemented (CONFORMANCE)</li>
 <li>XML (Exclusive) Canonicalization for XML Literals not implemented (CONFORMANCE)</li>
@@ -36,6 +34,9 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Added raptor_www_no_www_library_init_finish to allow once-only
+www library startup/shutdown to be prevented.  Default to performed
+so that most higher level apps do not need to know or care (0.9.10)</li>
 <li>Docs updated for 0.9.7 to 0.9.10 API changes in the <a href="libraptor.html">libraptor.3</a> manual page</li>
 <li>Escape XML attribute values in parseType literal content generation (0.9.10)</li>
 <li>Passing NULL to raptor_start_parse base URI for rdfxml parser
