@@ -25,7 +25,7 @@ ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf
 
-RDF_BAD_TEST_FILES=bad-00.rdf
+RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf
 
 RDF_OUT_FILES=ex-00.out ex-01.out ex-02.out ex-03.out ex-04.out ex-05.out \
 ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
