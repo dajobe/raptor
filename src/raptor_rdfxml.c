@@ -3410,7 +3410,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             element->parent->tail_uri=uriList;
             
           } else if(!element->parent->object.uri &&
-                    element->parent->state != RAPTOR_STATE_UNKNOWN) {
+                    (element->parent->state != RAPTOR_STATE_UNKNOWN &&
+                     element->parent->state != RAPTOR_STATE_PARSETYPE_RESOURCE)) {
             /* If there is a parent element (property) containing this
              * element (node) and it has no object, set it from this subject
              */
