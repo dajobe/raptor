@@ -26,7 +26,7 @@ AC_PREREQ(2.13)
 AC_INIT(raptor_parse.c)
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(raptor, 0.9.6)
+AM_INIT_AUTOMAKE(raptor, 0.9.7)
 
 AM_MAINTAINER_MODE
 
