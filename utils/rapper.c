@@ -96,7 +96,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "nshrqo:"
+#define GETOPT_STRING "nshrqo:w"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
@@ -108,9 +108,17 @@ static struct option long_options[] =
   {"replace-newlines", 0, 0, 'r'},
   {"quiet", 0, 0, 'q'},
   {"output", 1, 0, 'o'},
+  {"ignore-warnings", 0, 0, 'w'},
   {NULL, 0, 0, 0}
 };
 #endif
+
+
+static char *program=NULL;
+static int error_count=0;
+static int warning_count=0;
+
+static int ignore_warnings=0;
 
 
 static void
@@ -122,13 +130,34 @@ rdfdump_error_handler(void *data, raptor_locator *locator,
   va_start(arguments, message);
 
   raptor_print_locator(stderr, locator);
-  fprintf(stderr, " raptor error - ");
+  fprintf(stderr, "%s: raptor error - ", program);
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
 
   va_end(arguments);
 
-  exit(1);
+  error_count++;
+}
+
+
+static void
+rdfdump_warning_handler(void *data, raptor_locator *locator,
+                        const char *message, ...) 
+{
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  if(!ignore_warnings) {
+    raptor_print_locator(stderr, locator);
+    fprintf(stderr, "%s: raptor warning - ", program);
+    vfprintf(stderr, message, arguments);
+    fputc('\n', stderr);
+  }
+  
+  va_end(arguments);
+
+  warning_count++;
 }
 
 
@@ -140,7 +169,6 @@ main(int argc, char *argv[])
   raptor_ntriples_parser* rdfnt_parser=NULL;
   char *uri_string;
   char *base_uri_string;
-  char *program=argv[0];
   int rc;
   int scanning=0;
   int rdfxml=1;
@@ -152,6 +180,8 @@ main(int argc, char *argv[])
   const char *base_uri;
   const char *uri;
 #endif
+
+  program=argv[0];
 
 #ifdef LIBRDF_INTERNAL
   librdf_init_world(NULL, NULL);
@@ -211,6 +241,9 @@ main(int argc, char *argv[])
             output_format=OUTPUT_FORMAT_NTRIPLES;
         }
         break;
+
+      case 'w':
+        ignore_warnings=1;
     }
     
   }
@@ -228,6 +261,7 @@ main(int argc, char *argv[])
     fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
     fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
     fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
+    fprintf(stderr, HELP_TEXT(w, "ignore-warnings ", "Ignore warning messages"));
     return(usage>1);
   }
 
@@ -272,6 +306,7 @@ main(int argc, char *argv[])
     }
 
     raptor_set_error_handler(rdfxml_parser, NULL, rdfdump_error_handler);
+    raptor_set_warning_handler(rdfxml_parser, NULL, rdfdump_warning_handler);
 
     if(scanning)
       raptor_set_feature(rdfxml_parser, RAPTOR_FEATURE_SCANNING, 1);
@@ -329,6 +364,12 @@ main(int argc, char *argv[])
 
   librdf_destroy_world();
 #endif
+
+  if(error_count)
+    return error_count;
+
+  if(warning_count && !ignore_warnings)
+    return 128+warning_count;
 
   return(rc);
 }
