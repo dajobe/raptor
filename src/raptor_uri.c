@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2002-2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -810,21 +810,14 @@ unsigned char *
 raptor_uri_filename_to_uri_string(const char *filename) 
 {
   unsigned char *buffer;
-  int i;
   const char *from;
   char *to;
 #ifndef WIN32
   char path[PATH_MAX];
 #endif
-  /*     "file:" ... \0 */
-  int len=5+1;
+  /*     "file://" ... \0 */
+  int len=7+1;
   
-  for(i=0; i< len-8; i++) {
-    const char c=filename[i];
-    if(c == ' ' || c == '%')
-      len+=2; /* strlen(%xx)-1 */
-  }
-
 #ifdef WIN32
 /*
  * On WIN32, filenames turn into
@@ -845,17 +838,20 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * that turn into file:///server/share/blah
  * using the above algorithm.
  */
-  len+=strlen((const char*)filename)+2; /* filename + // */
-  if(*filename != '\\')
-    len+=2; /* relative filename - add ./ */
+  if(filename[1] == ':' && filename[2] != '\\')
+    len+=3; /* relative filename - add / and ./ */
+  else if(*filename == '\\')
+    len-=2; /* two // from not needed in filename */
+  else
+    len++; /* / at start of path */
 
 #else
 /* others - unix: turn spaces into %20, '%' into %25 */
 
 /*
- * "file://" + filename
+ * "file://"
  */
-  len+=2;
+  len+=2; /* // */
   if(*filename != '/') {
     if(!getcwd(path, PATH_MAX))
       return NULL;
@@ -863,8 +859,14 @@ raptor_uri_filename_to_uri_string(const char *filename)
     strcat(path, filename);
     filename=(const char*)path;
   }
-  len+=strlen((const char*)filename);
 #endif
+
+  /* add URI-escaped filename length */
+  for(from=filename; *from ; from++) {
+    len++;
+    if(*from == ' ' || *from == '%')
+      len+=2; /* strlen(%xx)-1 */
+  }
 
   buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len);
   if(!buffer)
@@ -876,30 +878,45 @@ raptor_uri_filename_to_uri_string(const char *filename)
 #ifdef WIN32
   if(*from == '\\' && from[1] == '\\')
     from+=2;
+  else
+    *to++ ='/';
 #endif
   while(*from) {
     char c=*from++;
 #ifdef WIN32
     if (c == '\\')
-      *to++='/';
+      *to++ ='/';
     else if(c == ':') {
       *to++=c;
       if(*from != '\\') {
-        *to++='.';
-        *to++='/';
+        *to++ ='.';
+        *to++ ='/';
       }
     } else
 #endif
     if(c == ' ' || c == '%') {
-      /* FIXME - need to consider other chars to escape */
-      *to++='%';
-      *to++='2';
-      *to++=(c == ' ') ? '0' : '5';
+      *to++ ='%';
+      *to++ ='2';
+      *to++ =(c == ' ') ? '0' : '5';
     } else
-      *to++=c;
+      *to++ =c;
   }
   *to='\0';
   
+#ifdef RAPTOR_DEBUG
+  if(1) {
+    size_t actual_len=strlen(buffer)+1;
+    if(actual_len != len) {
+      if(actual_len > len)
+        RAPTOR_FATAL3("uri length %d is LONGER than malloced %d\n", 
+                      (int)actual_len, (int)len);
+      else
+        RAPTOR_DEBUG3("uri length %d is shorter than malloced %d\n", 
+                      (int)actual_len, (int)len);
+    }
+  }
+#endif
+
   return buffer;
 }
 
@@ -929,7 +946,6 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   unsigned char *from, *to;
 #ifdef WIN32
   unsigned char *p;
-  int is_relative_path=0;
 #endif
 
   buffer=(unsigned char*)RAPTOR_MALLOC(cstring, uri_string_len+1);
@@ -944,40 +960,44 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
     return NULL;
   }
 
-  if(authority && !raptor_strcasecmp((const char*)authority, "localhost")) {
-    authority=NULL;
+  if(authority) {
+    if(!*authority)
+      authority=NULL;
+    else if(!raptor_strcasecmp((const char*)authority, "localhost"))
+      authority=NULL;
   }
 
   /* See raptor_uri_filename_to_uri_string for details of the mapping */
 #ifdef WIN32
-  if(authority) {
-    len+=strlen((const char*)authority);
-    p=strchr(authority, '|');
-    if(!p)
-      p=strchr(authority, ':');
-    if(p) {
-      /* Either 
-       *   "a:" like in file://a|/... or file://a:/... 
-       * or
-       *   "a:." like in file://a:./foo
-       * giving device-relative path a:foo
-       */
-      if(p[1]=='.') {
-        p[1]='\0';
-        is_relative_path=1;
-      }
-      *p=':';
-    } else {
-      /* Otherwise UNC like "server" in file://server//share */
-      len+=2; /* \\ between "server" and "share" */
-    }
-  } /* end if authority */
-  if(!is_relative_path)
-    len++;/* for \ between authority and path */
+  if(authority)
+    len+=strlen((const char*)authority)+3;
+
+  p=path+1;
+  if(p[1] == '|' || p[1] == ':') {
+    /* Either 
+     *   "a:" like in file://a|/... or file://a:/... 
+     * or
+     *   "a:." like in file://a:./foo
+     * giving device-relative path a:foo
+     */
+    if(p[2]=='.') {
+      p[2]=*p;
+      p[3]=':';
+      p+= 2;
+      len-= 2; /* remove 2 for ./ */
+    } else
+      p[1]=':';
+  }
   len--; /* for removing leading / off path */
 #endif
-  len+=strlen((const char*)path);
 
+
+  /* add URI-escaped filename length */
+  for(from=path; *from ; from++) {
+    len++;
+    if(*from == '%')
+      from+= 2;
+  }
 
   filename=(char*)RAPTOR_MALLOC(cstring, len+1);
   if(!filename) {
@@ -986,29 +1006,23 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   }
 
 
-#ifdef WIN32
-  *filename='\0';
-  if(authority) {
-    /* p was set above to point to ':' (was '|') in authority */
-    if(!p)
-      strcpy(filename, "\\\\");
-    strcat(filename, authority);
-  }
-
-  if(!is_relative_path)
-    strcat(filename,"\\");
-
-  /* find end of filename */
   to=filename;
-  while(*to++)
-    ;
-  to--;
+
+#ifdef WIN32
+  if(authority) {
+    *to++ = '\\';
+    *to++ = '\\';
+    from=authority;
+    while( (*to++ = *from++) )
+      ;
+    to--;
+    *to++ = '\\';
+  }
   
-  /* copy path after leading \ */
-  from=path+1;
+  /* copy path after all /s */
+  from=p;
 #else
   from=path;
-  to=filename;
 #endif
 
   while(*from) {
@@ -1029,11 +1043,26 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
         if(endptr == &hexbuf[2])
           *to++ = c;
       }
-      from+=2;
+      from+= 2;
     } else
       *to++ =c;
   }
   *to='\0';
+
+#ifdef RAPTOR_DEBUG
+  if(1) {
+    size_t actual_len=strlen(filename);
+    if(actual_len != len) {
+      if(actual_len > len) {
+        fprintf(stderr, "filename '%s'\n", filename);
+        RAPTOR_FATAL3("Filename length %d is LONGER than malloced %d\n", 
+                      (int)actual_len, (int)len);
+      } else
+        RAPTOR_DEBUG3("Filename length %d is shorter than malloced %d\n", 
+                      (int)actual_len, (int)len);
+    }
+  }
+#endif
 
   if(fragment_p) {
     if(fragment) {
@@ -1362,19 +1391,19 @@ main(int argc, char *argv[])
 
 
 #ifdef WIN32
-  failures += assert_filename_to_uri ("c:\\windows\\system", "file://c:/windows/system");
+  failures += assert_filename_to_uri ("c:\\windows\\system", "file:///c:/windows/system");
   failures += assert_filename_to_uri ("\\\\server\\share\\file.doc", "file://server/share/file.doc");
-  failures += assert_filename_to_uri ("a:foo", "file://a:./foo");
+  failures += assert_filename_to_uri ("a:foo", "file:///a:./foo");
 
   failures += assert_filename_to_uri ("C:\\Documents and Settings\\myapp\\foo.bat", "file:///C:/Documents%20and%20Settings/myapp/foo.bat");
-  failures += assert_filename_to_uri ("C:\\My Documents\\%25age.txt", "file:///C:/My%20Documents/%age.txt");
+  failures += assert_filename_to_uri ("C:\\My Documents\\%age.txt", "file:///C:/My%20Documents/%25age.txt");
 
-  failures += assert_uri_to_filename ("file://c|/windows/system", "c:\\windows\\system");
-  failures += assert_uri_to_filename ("file://c:/windows/system", "c:\\windows\\system");
+  failures += assert_uri_to_filename ("file:///c|/windows/system", "c:\\windows\\system");
+  failures += assert_uri_to_filename ("file:///c:/windows/system", "c:\\windows\\system");
   failures += assert_uri_to_filename ("file://server/share/file.doc", "\\\\server\\share\\file.doc");
-  failures += assert_uri_to_filename ("file://a:./foo", "a:foo");
+  failures += assert_uri_to_filename ("file:///a:./foo", "a:foo");
   failures += assert_uri_to_filename ("file:///C:/Documents%20and%20Settings/myapp/foo.bat", "C:\\Documents and Settings\\myapp\\foo.bat");
-  failures += assert_uri_to_filename ("file:///C:/My%20Documents/%age.txt", "C:\\My Documents\\%25age.txt");
+  failures += assert_uri_to_filename ("file:///C:/My%20Documents/%25age.txt", "C:\\My Documents\\%age.txt");
 
 #else
 
