@@ -110,6 +110,9 @@ extern "C" {
 /* flex: const is available */
 #define YY_USE_CONST
 
+#undef RASQAL_INLINE
+#define RASQAL_INLINE __inline
+
 /* The size of a `unsigned char', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_CHAR 1
 
