@@ -1,3 +1,9 @@
+2004-11-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c: allow -f to set serializer features
+
+	* raptor_feature.c (raptor_features_enumerate_common): return -1
+
 2004-11-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_uri.c: C style, indenting. const unsigned char.
