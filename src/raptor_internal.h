@@ -432,8 +432,13 @@ void raptor_free_qname(raptor_qname* name);
 int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
 
 
+/* raptor_uri.c */
+void raptor_init_uri_default_handler(raptor_uri_handler *handler, void *context);
+
+
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
+void raptor_init_uri_class(void);
 
 /* end of RAPTOR_INTERNAL */
 #endif
