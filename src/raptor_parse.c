@@ -1286,7 +1286,7 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
 #endif
 
   if(rdf_xml_parser->sax2->xc) {
-    xmlFreeParserCtxt(rdf_xml_parser->sax2->xc);
+    raptor_libxml_free(rdf_xml_parser->sax2->xc);
     rdf_xml_parser->sax2->xc=NULL;
   }
 #endif
@@ -1320,7 +1320,7 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 
 #ifdef RAPTOR_XML_LIBXML
   if(rdf_xml_parser->sax2->xc) {
-    xmlFreeParserCtxt(rdf_xml_parser->sax2->xc);
+    raptor_libxml_free(rdf_xml_parser->sax2->xc);
     rdf_xml_parser->sax2->xc=NULL;
   }
 #endif
