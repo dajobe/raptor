@@ -26,14 +26,15 @@ lib_LTLIBRARIES = libraptor.la
 
 include_HEADERS = raptor.h ntriples.h
 
-noinst_HEADERS = raptor_internal.h win32_config.h
+noinst_HEADERS = raptor_internal.h win32_config.h \
+raptor_getopt.h
 
 man_MANS = rapper.1 libraptor.3 raptor-config.1
 
 rapper_SOURCES = rdfdump.c
 rapper_LDADD = libraptor.la @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
 rapper_DEPENDENCIES = @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
-EXTRA_rapper_SOURCES = getopt.c raptor_getopt.h
+EXTRA_rapper_SOURCES = getopt.c
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
