@@ -131,7 +131,7 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
                                    const unsigned char *object_literal_language,
                                    const unsigned char *object_literal_datatype)
 {
-  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)parser->context;
+  /* raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)parser->context; */
   raptor_statement *statement=&parser->statement;
   raptor_uri *subject_uri=NULL;
   int predicate_ordinal=0;
