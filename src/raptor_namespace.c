@@ -154,7 +154,7 @@ raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack,
 {
   raptor_namespace *ns;
 
-  ns=raptor_namespace_new(nstack, prefix, ns_uri_string, depth);
+  ns=raptor_new_namespace(nstack, prefix, ns_uri_string, depth);
   if(!ns)
     return 1;
   
@@ -169,7 +169,7 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack) {
   while(ns) {
     raptor_namespace* next_ns=ns->next;
 
-    raptor_namespace_free(ns);
+    raptor_free_namespace(ns);
     ns=next_ns;
   }
   nstack->top=NULL;
@@ -203,7 +203,7 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
                   "namespace prefix %s depth %d\n",
                   ns->prefix ? (char*)ns->prefix : "(default)", depth);
 
-    raptor_namespace_free(ns);
+    raptor_free_namespace(ns);
 
     nstack->top=next;
   }
@@ -250,7 +250,7 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
 
 
 raptor_namespace*
-raptor_namespace_new(raptor_namespace_stack *nstack,
+raptor_new_namespace(raptor_namespace_stack *nstack,
                      const unsigned char *prefix, 
                      const unsigned char *ns_uri_string, int depth)
 {
@@ -329,7 +329,7 @@ raptor_namespace_copy(raptor_namespace_stack *nstack,
 
   char *uri_string=(*nstack->uri_handler->uri_as_string)(nstack->uri_context, ns->uri);
 
-  new_ns=raptor_namespace_new(nstack, ns->prefix, uri_string, new_depth);
+  new_ns=raptor_new_namespace(nstack, ns->prefix, uri_string, new_depth);
   if(!new_ns)
     return 1;
   
@@ -339,7 +339,7 @@ raptor_namespace_copy(raptor_namespace_stack *nstack,
 
 
 void 
-raptor_namespace_free(raptor_namespace *ns)
+raptor_free_namespace(raptor_namespace *ns)
 {
   if(ns->uri)
     ns->nstack->uri_handler->free_uri(ns->nstack->uri_context, ns->uri);
