@@ -625,7 +625,10 @@ void raptor_uri_init_default_handler(raptor_uri_handler *handler);
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
+
+/* raptor_rss.c */
 void raptor_init_parser_rss(void);
+void raptor_init_serializer_rss10(void);
 
 /* raptor_rfc2396.c */
 raptor_uri_detail* raptor_new_uri_detail(const unsigned char *uri_string);
