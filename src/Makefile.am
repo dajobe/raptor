@@ -31,14 +31,16 @@ noinst_HEADERS = raptor_internal.h win32_config.h
 man_MANS = rapper.1 libraptor.3 raptor-config.1
 
 rapper_SOURCES = rdfdump.c
-rapper_LDADD = libraptor.la @REDLAND_LIBS@
-rapper_DEPENDENCIES = @REDLAND_LIBS@
+rapper_LDADD = libraptor.la @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
+rapper_DEPENDENCIES = @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
+EXTRA_rapper_SOURCES = getopt.c raptor_getopt.h
+
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
-libraptor_la_LIBADD = @LTLIBOBJS@
+libraptor_la_LIBADD = @LIBOBJS@
 
 EXTRA_DIST=ChangeLog \
 README      NEWS      LICENSE.txt \
