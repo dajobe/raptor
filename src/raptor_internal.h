@@ -319,7 +319,8 @@ void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
 /* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
-
+char* raptor_vsnprintf(const char *message, va_list arguments);
+  
 /* raptor_locator.c */
 extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 
@@ -455,8 +456,8 @@ struct  raptor_www_s {
   size_t (*write_bytes)(void *userdata, const void *ptr, size_t size, size_t nmemb);
   void (*content_type)(void *userdata, const char *content_type);
 
-  void *error_user_data;
-  raptor_message_handler error_handler;
+  void *error_data;
+  raptor_www_message_handler error_handler;
 };
 
 
@@ -465,6 +466,8 @@ struct  raptor_www_s {
 void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www, const char *url);
+
+void raptor_www_error(raptor_www *www, const char *message, ...);
 
 void raptor_www_ghttp_init(raptor_www *www);
 void raptor_www_ghttp_free(raptor_www *www);
