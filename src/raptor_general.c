@@ -85,13 +85,18 @@ raptor_init(void)
 {
   if(parsers)
     return;
-  /* FIXME */
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
 #endif
+#ifdef RAPTOR_PARSER_TURTLE
   raptor_init_parser_turtle();
+#endif
+#ifdef RAPTOR_PARSER_NTRIPLES
   raptor_init_parser_ntriples();
+#endif
+#ifdef RAPTOR_PARSER_RDFXML
   raptor_init_parser_rdfxml();
+#endif
 
   raptor_uri_init();
   raptor_www_init();
