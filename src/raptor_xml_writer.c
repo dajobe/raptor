@@ -63,8 +63,8 @@ struct raptor_xml_writer_s {
   int depth;
   
   /* namespaces stack when canonicalizing */
-  raptor_namespace_stack content_cdata_namespaces;
-  int content_cdata_namespaces_depth;
+  raptor_namespace_stack nstack;
+  int nstack_depth;
 
   raptor_uri_handler *uri_handler;
   void *uri_context;
@@ -93,7 +93,7 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
     return NULL;
 
   /* Initialise to the empty string */
-  xml_writer->content_cdata_namespaces_depth=0;
+  xml_writer->nstack_depth=0;
 
   xml_writer->uri_handler=uri_handler;
   xml_writer->uri_context=uri_context;
@@ -101,7 +101,7 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
   xml_writer->error_handler=error_handler;
   xml_writer->error_data=error_data;
 
-  raptor_namespaces_init(&xml_writer->content_cdata_namespaces,
+  raptor_namespaces_init(&xml_writer->nstack,
                          uri_handler, uri_context,
                          error_handler, error_data,
                          0);
@@ -120,10 +120,29 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
 void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
-  raptor_namespaces_clear(&xml_writer->content_cdata_namespaces);
+  raptor_namespaces_clear(&xml_writer->nstack);
 
   RAPTOR_FREE(raptor_xml_writer, xml_writer);
 }
+
+
+raptor_namespace*
+raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer,
+                                       const unsigned char *prefix, 
+                                       const unsigned char *ns_uri_string,
+                                       int depth) 
+{
+  raptor_namespace_stack *nstack=&xml_writer->nstack;
+  raptor_namespace *ns;
+
+  ns=raptor_new_namespace(nstack, prefix, ns_uri_string, depth);
+  if(!ns)
+    return NULL;
+  
+  raptor_namespaces_start_namespace(nstack, ns);
+  return ns;
+}
+
 
 
 void
@@ -132,7 +151,7 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
 {
   raptor_iostream_write_sax2_element(xml_writer->iostr,
                                      element, 
-                                     &xml_writer->content_cdata_namespaces,
+                                     &xml_writer->nstack,
                                      1,
                                      0,
                                      xml_writer->error_handler,
@@ -147,7 +166,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
 {
   raptor_iostream_write_sax2_element(xml_writer->iostr,
                                      element, 
-                                     &xml_writer->content_cdata_namespaces,
+                                     &xml_writer->nstack,
                                      0,
                                      0,
                                      xml_writer->error_handler,
@@ -168,7 +187,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
 {
   raptor_iostream_write_sax2_element(xml_writer->iostr, 
                                      element, 
-                                     &xml_writer->content_cdata_namespaces,
+                                     &xml_writer->nstack,
                                      0,
                                      1,
                                      xml_writer->error_handler,
@@ -177,8 +196,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
   
   xml_writer->depth--;
 
-  raptor_namespaces_end_for_depth(&xml_writer->content_cdata_namespaces, 
-                                  xml_writer->depth);
+  raptor_namespaces_end_for_depth(&xml_writer->nstack, xml_writer->depth);
 
   if(xml_writer->current_element)
     xml_writer->current_element = xml_writer->current_element->parent;
@@ -187,7 +205,22 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
 
 void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
-                        const unsigned char *s, unsigned int len)
+                        const unsigned char *s)
+{
+  raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
+                                           s, strlen(s),
+                                           '\0',
+                                           xml_writer->error_handler,
+                                           xml_writer->error_data);
+
+  if(xml_writer->current_element)
+    xml_writer->current_element->content_cdata_seen=1;
+}
+
+
+void
+raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
+                                const unsigned char *s, unsigned int len)
 {
   raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
                                            s, len,
@@ -200,9 +233,20 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 }
 
 
-static void
+void
 raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
-                      const unsigned char *s, unsigned int len)
+                      const unsigned char *s)
+{
+  raptor_iostream_write_string(xml_writer->iostr, s);
+
+  if(xml_writer->current_element)
+    xml_writer->current_element->content_cdata_seen=1;
+}
+
+
+void
+raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
+                              const unsigned char *s, unsigned int len)
 {
   raptor_iostream_write_counted_string(xml_writer->iostr, s, len);
 
@@ -213,11 +257,21 @@ raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
 
 void
 raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
-                          const unsigned char *s, unsigned int len)
+                          const unsigned char *s)
 {
-  raptor_xml_writer_raw(xml_writer, (const unsigned char*)"<!-- ", 5);
-  raptor_xml_writer_cdata(xml_writer, s, len);
-  raptor_xml_writer_raw(xml_writer, (const unsigned char*)" -->", 4);
+  raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<!-- ", 5);
+  raptor_xml_writer_cdata(xml_writer, s);
+  raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)" -->", 4);
+}
+
+
+void
+raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
+                                  const unsigned char *s, unsigned int len)
+{
+  raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<!-- ", 5);
+  raptor_xml_writer_cdata_counted(xml_writer, s, len);
+  raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)" -->", 4);
 }
 
 
