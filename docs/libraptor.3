@@ -207,6 +207,12 @@ default is used.  If base is less than 1, it is initialised to 1.
 Allow full customisation of the generated IDs by setting a callback
 \fIhandler\fR and associated \fIuser_data\fR that is called whenever
 a blank node or bag identifier is required.
+.SH "PARSER UTILITY FUNCTIONS"
+.IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **name, const char **\fIlabel\fB)\fR"
+Return the parser name/label for a parser with a given integer
+counter, returning non-zero if no such parser at that offset
+exists.  The counter should start from 0 and be incremented by 1
+until the function returns non-zero.
 .SH "STATEMENT UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging only.
@@ -294,10 +300,10 @@ equivalent functionality, using the raptor_uri_set_handler function.
 .SH "URI CONSTRUCTORS"
 There a several constructors for raptor_uri to build them from
 char* strings and existing raptor_uri objects.
-.IP "\fBraptor_uri* raptor_new_uri(const char* \fIuri_string\fB)\fR"
+.IP "\fBraptor_uri* raptor_new_uri(const unsigned char* \fIuri_string\fB)\fR"
 Create a raptor URI from a string URI-reference
 \fIuri_string\fR.
-.IP "\fBraptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri* \fIuri\fB, const char* \fIlocal_name\fB)\fR"
+.IP "\fBraptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri* \fIuri\fB, const unsigned char* \fIlocal_name\fB)\fR"
 Create a raptor URI from a string URI-reference
 \fIlocal_name\fR
 relative to an existing URI-reference.  This performs concatenation of the 
@@ -306,7 +312,7 @@ to the
 \fIuri\fR
 and not relative URI resolution, which is done by the
 raptor_new_uri_relative_to_base constructor.
-.IP "\fBraptor_uri* raptor_new_uri_relative_to_base(raptor_uri* \fIbase_uri, const char* \fIuri_string\fB)\fR"
+.IP "\fBraptor_uri* raptor_new_uri_relative_to_base(raptor_uri* \fIbase_uri, const unsigned char* \fIuri_string\fB)\fR"
 Create a raptor URI from a string URI-reference
 \fIuri_string\fR
 using relative URI resolution to the
@@ -330,28 +336,28 @@ Destroy a raptor URI object.
 Return non-zero if the given URIs are equal.
 .IP "\fBraptor_uri* raptor_uri_copy(raptor_uri* \fIuri\fB)\fR"
 Return a copy of the given raptor URI \fIuri\fR.
-.IP "\fBchar* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)\fR"
-.IP "\fBchar* raptor_uri_as_string(raptor_uri* \fIuri\fB)\fR"
+.IP "\fBunsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)\fR"
+.IP "\fBunsigned char* raptor_uri_as_string(raptor_uri* \fIuri\fB)\fR"
 Return a shared pointer to a string representation of the given raptor URI
 \fIuri\fR.  This string is shared and must not be freed.  If
 raptor_uri_as_counted_string is used, the length of the returned
 string is stored in *len_p if not NULL.
 .SH "URI UTILITY FUNCTIONS"
-.IP "\fBvoid raptor_uri_resolve_uri_reference (const char* \fIbase_uri\fB, const char* \fIreference_uri\fB, char* \fIbuffer\fB, size_t \fIlength\fB)\fR"
+.IP "\fBvoid raptor_uri_resolve_uri_reference (const unsigned char* \fIbase_uri\fB, const unsigned char* \fIreference_uri\fB, char unsigned* \fIbuffer\fB, size_t \fIlength\fB)\fR"
 This is a standalone function that resolves the relative URI
 \fIreference_uri\fR against the base URI \fIbase_uri\fR
 according to the URI resolution rules in RFC2396.
 The resulting URI is stored in \fIbuffer\fR which is of \fIlength\fR
 bytes.  If this is too small, no work will be done.
-.IP "\fBchar *raptor_uri_filename_to_uri_string(const char* \fIfilename\fB)\fR
+.IP "\fBchar *raptor_uri_filename_to_uri_string(const unsigned char* \fIfilename\fB)\fR
 This is a standalone function that turns a local filename (Windows
 or Unix style as appropriate for platform) into a URI string (file).
  The returned string must be freed by the caller.
-.IP "\fBchar *raptor_uri_uri_string_to_filename(const char* \fIuri_string\fB)\fR
+.IP "\fBchar *raptor_uri_uri_string_to_filename(const unsigned char* \fIuri_string\fB)\fR
 This is a standalone function that turns a URI string that
 represents a local filename (file:) into a filename.  The returned string
 must be freed by the caller.
-.IP "\fBint raptor_uri_is_file_uri(const char* \fIuri_string\fB)\fR
+.IP "\fBint raptor_uri_is_file_uri(const unsigned char* \fIuri_string\fB)\fR
 Returns non-zero if the given URI string represents a filename,
 is a file: URI.
 .SH "URI CLASS IMPLEMENTATION"
@@ -426,8 +432,155 @@ Retrieve the given URL, returning non zero on failure.
 .IP "\fBvoid raptor_www_abort(raptor_www *www, const char *reason)\fR"
 Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
+.SH "QNAME CLASS"
+This is a class for handling XML QNames consisting
+of the pair of (a URI from a namespace, a local name) along with 
+an optional value -- useful for XML attributes.  This is used with
+the raptor_namespace_stack and raptor_namespace classes to handle a
+stack of raptor_namespace that build on raptor_qname.
+.SH "QNAME CONSTRUCTORS"
+There are two constructors for raptor_qname to build qnames
+with optional values on a stack of names.
+.IP "\fBraptor_qname* raptor_new_qname(raptor_namespace_stack *\fInstack\fB, const unsigned char *\fIname\fB, const unsigned char *\fIvalue\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)"
+Create a raptor QName \fIname\fR (a possibly :-separated name) with
+name to be resolved against the given \fInstack\fR namespace stack.
+An optional \fIvalue\fR can be given, and if there is an error,
+the \fIerror_handler\fB and \fIerror_data\fR will be used to invoke
+the callback.
+.IP "\fBraptor_qname* raptor_new_qname_from_namespace_local_name(raptor_namespace *\fIns\fB, const unsigned char *\fIlocal_name\fB, const unsigned char *\fIvalue\fB)"
+Create a raptor QName using the namespace name of the
+raptor_namespace \fIns\fR and the local name \fIlocal_name\fR, along
+with optional value \fIvalue\fR.  Errors are reported using
+the error handling and data of the namespace.
+.SH "QNAME DESTRUCTOR"
+.IP "\fBvoid raptor_free_qname(raptor_qname* \fIname\fB)\fR"
+Destroy a raptor qname object
+.SH "QNAME METHODS"
+.IP "\fBint raptor_qname_equal(raptor_qname *\fIname1\fR, raptor_qname *\fIname2\fB)\fR"
+Return non-zero if the given QNames are equal.
+.SH "QNAME UTILITY FUNCTIONS"
+.IP "\fBraptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *\fInstack\fB,  const unsigned char *\fIname\fB, size_t \fIname_len\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
+Return the URI corresponding to the QName according to the RDF
+method; concatenating the namespace's name (URI) with the local
+name.  Takes the same arguments as \fBraptor_new_qname\fR but
+does not create a raptor_qname object.
+.SH "NAMESPACE CLASS"
+An XML namespace class - each entry is on a stack and consists of a
+name (URI) and prefix.  The prefix or the name but not both may be
+empty.  If the prefix is empty, it defines the default prefix.  If
+the name is empty, it undefines the given prefix.
+.SH "NAMESPACE CONSTRUCTOR"
+.IP "\fBraptor_namespace* raptor_new_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth)\fR"
+Create a raptor_namespace object on the given namespace stack
+\fInstack\fR with prefix \fIprefix\fR and namespace name (URI string)
+\fIns_uri_string\fR.  If \fIprefix\fR is NULL, it defines the URI for the
+default namespace prefix.  If the \fIns_uri_string\fR is NULL, it undefines
+the given \fIprefix\fR in the current scope.  Both may not be NULL.
+\fIdepth\fR signifies the position of the namespace on the stack;
+0 is the bottom of the stack and generally the first depth for
+user namespace declarations.  Namespaces declared on the same
+depth (such as on the same XML element, typically) can be handily
+freed with \fIraptor_namespaces_end_for_depth\fR method on
+the namespace stack class.
+.SH "NAMESPACE DESTRUCTOR"
+.IP "\fBvoid raptor_free_namespace(raptor_namespace *ns)\fR"
+Destroy a raptor namespace object.
+.SH "NAMESPACE METHODS"
+.IP "\fBraptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns)\fR"
+Return the namespace name (URI) of the namespace.
+.IP "\fBconst unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns)\fR"
+Return the prefix of the namespace.
+.IP "\fBunsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)\fR"
+Format the namespace as a string and return it as a new string, returning the
+length of the resulting string in \fIlength_p\fR if it is not NULL.
+The string format is suitable for emitting in XML to declare the
+namespace.
+.SH "NAMESPACE UTILITY FUNCTIONS"
+.IP "\fBint raptor_namespace_copy(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)\fR"
+Copy the namespace from the current stack to the new one,
+\fInstack\fR at depth \fInew_depth\fR.
+.SH "NAMESPACE STACK CLASS"
+A stack of raptor_namespace objects where the namespaces on top of the stack
+have wider scope and override earlier (lower) namespace declarations.
+Intended to match the XML namespace declaring semantics using
+xmlns attributes.
+.SH "NAMESPACE STACK CONSTRUCTORS"
+.IP "\fBraptor_namespace_stack* raptor_new_namespaces(raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults)\fR"
+.IP "\fBvoid raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults)\fR"
+Create or initialise a new raptor_namespace_stack object with the given URI and
+error handlers.  \fBraptor_namespaces_new\fR allocates new memory
+for the namespace stack and \fBraptor_namespaces_init\fR initialises an
+existing declared \fInstack\fR, which could be statically allocated.
+Note that \fBraptor_uri_get_handler\fR can be useful to return the
+current raptor URI handler/context.  The \fIdefaults\fR argument
+describes which default namespaces are declared in the empty stack.
+At present, 0 is none, 1 for just the XML namespace and 2 is for
+a typical set of namespaces used for RDF, RDFS, Dublin Core, OWL, ...
+that may vary over time.
+.SH "NAMESPACE STACK DESTRUCTORS"
+.IP "\fBvoid raptor_free_namespaces(raptor_namespace_stack *nstack)\fR"
+Destroy a namespace stack object, freeing the \fInstack\fR
+(goes with \fBraptor_new_namespaces\fR).
+.IP "\fBvoid raptor_namespaces_clear(raptor_namespace_stack *nstack)\fR"
+Clear a statically allocated namespace stack; does not free the \fInstack\fR.
+(goes with \fBraptor_namespaces_init\fR).
+.SH "NAMESPACE STACK METHODS"
+.IP "\fBvoid raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *nspace)\fR"
+Start the given \fInspace\fR on the stack, at the depth already defined.
+.IP "\fBint raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth)\fR"
+Create a new raptor_namespace and start it on the stack.
+See \fBraptor_new_namespace\fR for the meaning of the argumens.
+.IP "\fBvoid raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)\fR"
+End (and free) all namespaces on the stack at the given \fIdepth\fR.
+.IP "\fBraptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)\fR"
+Return the current default raptor_namespace of the namespace stack
+or NULL if there is none.
+.IP "\fBraptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length)\fR"
+Find the first namespace on the stack with the given namespace \fIprefix\fR
+or NULL if there is none.
+.IP "\fBint raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace)\fR"
+Return non-zero if the raptor_namespace \fInspace\fR is declared
+on the stack; i.e. in scope if this is a stack of XML namespaces.
 .SH API CHANGES
 .IP 1.1.0
+Added N-Triples Plus parser (name ntriplesplus)
+.br
+Made URI class constructors, methods and factory methods as
+well as some other utility functions using or returning URIs or
+literals take unsigned char* rather than char*.  The affected calls are:
+.IP
+  raptor_new_uri_func
+  raptor_new_uri_from_local_name_func
+  raptor_new_uri_relative_to_base_func
+  raptor_uri_as_string_func
+  raptor_uri_as_counted_string_func
+    URI factory methods changed to all take/return unsigned char* for URI strings.
+  raptor_statement_part_as_counted_string
+  raptor_statement_part_as_string
+  raptor_new_uri
+  raptor_new_uri_from_uri_local_name
+  raptor_new_uri_relative_to_base
+  raptor_uri_as_string
+  raptor_uri_as_counted_string
+  raptor_print_ntriples_string
+    Constructors and methods changed to take/return unsigned char* for URI strings.
+  raptor_uri_resolve_uri_reference
+  raptor_uri_filename_to_uri_string
+  raptor_uri_uri_string_to_filename
+  raptor_uri_uri_string_to_filename_fragment
+  raptor_uri_is_file_uri
+    Changed to use unsigned char* for URI strings, char* for filenames.
+  raptor_ntriples_string_as_utf8_string
+    Changed to return unsigned char* for UTF8 string.
+.br
+Added raptor_parsers_enumerate to discover supported parsers.
+.br
+Added raptor_uri_uri_string_to_filename_fragment with fragment arg to
+return the URI fragment.
+.br
+Made the raptor_namespace, raptor_namespace_stack and raptor_qname
+class and APIs public.
+.br
 Added feature non_nfc_fatal (see raptor_set_feature documentation).
 .IP 1.0.0
 Removed the following deprecated methods and functions (see 0.9.6
@@ -481,16 +634,21 @@ modified.  The following table lists the changes:
   \fBraptor_ntriples_set_statement_handler\fR   \fBraptor_set_statement_handler\fR
 
 .SH "CONFORMING TO"
-\fIRDF/XML Syntax (Revised)\fR, 
-W3C Working Draft (work in progress),
+\fIRDF/XML Syntax (Revised)\fR, Dave Beckett (ed.)
+W3C Proposed Recommendation,
 .UR http://www.w3.org/TR/rdf-syntax-grammar/
 http://www.w3.org/TR/rdf-syntax-grammar/
 .UE
 
-\fIN-Triples\fR, 
-W3C Working Draft (work in progress),
+\fIN-Triples\fR, in \fIRDF Test Cases\fR, Jan Grant and Dave Beckett (eds.)
+W3C Proposed Recommendation,
 .UR http://www.w3.org/TR/rdf-testcases/#ntriples
 http://www.w3.org/TR/rdf-testcases/#ntriples
+.UE
+
+\fIN-Triples Plus\fR, Dave Beckett,
+.UR http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/
+http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/
 .UE
 .SH SEE ALSO
 .BR rapper (1), raptor-config (1)
