@@ -54,7 +54,8 @@ raptor_cc.gperf \
 raptor_cc.c \
 raptor_www_test.c \
 fix-groff-xhtml \
-$(man_MANS)
+$(man_MANS) \
+raptor.pc.in
 
 
 
@@ -110,6 +111,9 @@ NEWS: NEWS.html
 
 raptor_cc.c : $(srcdir)/raptor_cc.gperf
 	 gperf --struct-type --duplicates --language=ANSI-C --readonly-tables --delimiters=\; $< > $@
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = raptor.pc
 
 
 # Some people need a little help ;-)
