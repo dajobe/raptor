@@ -3773,6 +3773,39 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           
         }
 
+
+        /* Handle terminating a daml:collection list */
+        if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
+          if (!element->tail_id) {
+            /* If No List: set object of statement to daml:nil */
+            element->object.uri= raptor_copy_uri(RAPTOR_DAML_NIL_URI(rdf_parser));
+            element->object.id= NULL;
+            element->object.type= RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+            element->object.uri_source= RAPTOR_URI_SOURCE_URI;
+          } else {
+            /* terminate the list */
+            raptor_generate_statement(rdf_parser, 
+                                      NULL,
+                                      element->tail_id,
+                                      RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+                                      RAPTOR_URI_SOURCE_ID,
+                                      
+                                      RAPTOR_DAML_REST_URI(rdf_parser),
+                                      NULL,
+                                      RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                      RAPTOR_URI_SOURCE_URI,
+                                      
+                                      RAPTOR_DAML_NIL_URI(rdf_parser),
+                                      NULL,
+                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                      RAPTOR_URI_SOURCE_URI,
+                                      
+                                      NULL);
+          }
+
+        } /* end daml:collection list termination stuff */
+        
+
         LIBRDF_DEBUG3(raptor_end_element_grammar,
                       "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
 
@@ -3949,51 +3982,6 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)", raptor_element_content_type_as_string(element->content_type), element->content_type);
         } /* end switch */
 
-
-        /* Handle terminating a daml:collection list */
-        if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
-          if (!element->tail_id) {
-            /* If No List: set object to daml:nil */
-            raptor_generate_statement(rdf_parser, 
-                                      element->subject.uri,
-                                      element->subject.id,
-                                      element->subject.type,
-                                      element->subject.uri_source,
-                                      
-                                      element->subject.uri,
-                                      element->subject.id,
-                                      RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                      RAPTOR_URI_SOURCE_URI,
-                                      
-                                      RAPTOR_DAML_NIL_URI(rdf_parser),
-                                      NULL,
-                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                      RAPTOR_URI_SOURCE_URI,
-                                      
-                                      NULL);
-          } else {
-              /* terminate the list */
-              raptor_generate_statement(rdf_parser, 
-                                        NULL,
-                                        element->tail_id,
-                                        RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
-                                        RAPTOR_URI_SOURCE_ID,
-
-                                        RAPTOR_DAML_REST_URI(rdf_parser),
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                        RAPTOR_URI_SOURCE_URI,
-
-                                        RAPTOR_DAML_NIL_URI(rdf_parser),
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                        RAPTOR_URI_SOURCE_URI,
-
-                                        NULL);
-          }
-
-        } /* end daml:collection list termination stuff */
-        
       finished=1;
       break;
 
