@@ -429,7 +429,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 {
   int rc=0;
   const char *filename=NULL;
-  FILE *fh;
+  FILE *fh=NULL;
 
   if(uri) {
     filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
@@ -452,7 +452,8 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 
   cleanup:
   if(uri) {
-    fclose(fh);
+    if(fh)
+      fclose(fh);
     RAPTOR_FREE(cstring, (void*)filename);
   }
 
