@@ -93,7 +93,8 @@ typedef enum {
   RAPTOR_FEATURE_SCANNING,
   RAPTOR_FEATURE_ASSUME_IS_RDF,
   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
-  RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES
+  RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES,
+  RAPTOR_FEATURE_ALLOW_BAGID
 } raptor_feature;
 
 
@@ -168,6 +169,7 @@ RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
 RAPTOR_API int raptor_format_locator(char *buffer, size_t length, raptor_locator* locator);
  
 RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
 /* URI functions */
 RAPTOR_API raptor_uri* raptor_new_uri(const char *uri_string);
@@ -240,6 +242,8 @@ RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **cont
 /* raptor_www */
 RAPTOR_API void raptor_www_init(void);
 RAPTOR_API void raptor_www_finish(void);
+
+RAPTOR_API void raptor_www_no_www_library_init_finish();
 
 RAPTOR_API raptor_www *raptor_www_new(void);
 RAPTOR_API raptor_www *raptor_www_new_with_connection(void* connection);
