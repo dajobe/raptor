@@ -1399,7 +1399,7 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_locator *locator;
 #endif
   int non_nspaced_count=0;
-  const char *xml_language=NULL;
+  char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
   
   
@@ -1740,7 +1740,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   fputc('\n', stderr);
 #endif
 
-  element=raptor_element_pop(rdf_parser);
+  element=rdf_parser->current_element;
   if(!raptor_ns_names_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
     raptor_parser_warning(rdf_parser, 
@@ -1750,6 +1750,8 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   }
 
   raptor_end_element_grammar(rdf_parser, element);
+
+  element=raptor_element_pop(rdf_parser);
 
   raptor_free_ns_name(element_name);
 
