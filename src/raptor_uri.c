@@ -1365,8 +1365,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "FAIL raptor_uri_as_string URI %s gave %s != %s\n",
             base_uri, str, base_uri);
     failures++;
-  } else
-    fprintf(stderr, "%s: URI is %s\n", argv[0], str);
+  }
   
   uri2=raptor_new_uri_for_xmlbase(uri1);
   str=raptor_uri_as_string(uri2);
@@ -1374,9 +1373,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "FAIL raptor_new_uri_for_xmlbase URI %s gave %s != %s\n",
             base_uri, str, base_uri_xmlbase);
     failures++;
-  } else
-    fprintf(stderr, "%s: XML Base URI is %s\n", argv[0], str);
-
+  }
   
   uri3=raptor_new_uri_for_retrieval(uri1);
 
@@ -1385,8 +1382,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "FAIL raptor_new_uri_for_retrievable URI %s gave %s != %s\n",
             base_uri, str, base_uri_retrievable);
     failures++;
-  } else
-    fprintf(stderr, "%s: Retrievable URI is %s\n", argv[0], str);
+  }
   
   raptor_free_uri(uri3);
   raptor_free_uri(uri2);
