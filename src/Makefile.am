@@ -32,7 +32,7 @@ man_MANS = rapper.1 libraptor.3 raptor-config.1
 
 rapper_SOURCES = rdfdump.c raptor_getopt.h
 rapper_LDADD = libraptor.la @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
-rapper_DEPENDENCIES = @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
+rapper_DEPENDENCIES = libraptor.la @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
 EXTRA_rapper_SOURCES = getopt.c
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
