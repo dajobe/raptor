@@ -3878,7 +3878,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
         }
 
-        if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY) {
+        if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE) {
           if(element->rdf_attr[RDF_ATTR_resource]) {
             element->object.uri=raptor_make_uri(rdf_parser->base_uri,
                                                  element->rdf_attr[RDF_ATTR_resource]);
@@ -3955,7 +3955,6 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           /* Not child of Description, so process as child of propertyElt */
           switch(element->content_type) {
             case RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL:
-            case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
               if(state == RAPTOR_STATE_MEMBER) {
                 element->parent->last_ordinal++;
                 raptor_generate_statement(rdf_parser, 
@@ -3996,7 +3995,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               
               break;
               
-            case RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY:
+            case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
               /* empty property of form
                * <property rdf:resource="object-URI"/> 
                */
