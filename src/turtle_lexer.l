@@ -187,7 +187,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*
 <PREF>(:|[A-Za-z][-A-Za-z0-9_]*:)	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
-<PREF>.		{ BEGIN(INITIAL);
+<PREF>.|\r|\n	{ BEGIN(INITIAL);
 		  if (*yytext == EOF)
                     return EOF;
 

@@ -189,7 +189,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token((unsigned char*)yytext+2, yyl
 <PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
-<PREF>.		{ BEGIN(INITIAL);
+<PREF>.|\r|\n	{ BEGIN(INITIAL);
 		  if (*yytext == EOF)
                     return EOF;
 
