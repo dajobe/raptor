@@ -469,6 +469,10 @@ int
 raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
                                raptor_uri *uri, const char *prefix) 
 {
+  if(rdf_serializer->factory->declare_namespace)
+    return rdf_serializer->factory->declare_namespace(rdf_serializer, 
+                                                      prefix, uri);
+
   return 1;
 }
 
@@ -860,9 +864,18 @@ raptor_rdfxml_serialize_declare_namespace(raptor_serializer* serializer,
                                           raptor_uri *uri)
 {
   raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context;
+  unsigned char *prefix_copy=NULL;
   raptor_namespace *ns;
 
-  ns=raptor_new_namespace_from_uri(context->nstack, prefix, uri, 0);
+  if(uri)
+    uri=raptor_uri_copy(uri);
+  if(prefix) {
+    size_t prefix_len=strlen(prefix);
+    prefix_copy=(unsigned char*)RAPTOR_MALLOC(cstring, prefix_len+1);
+    strncpy((char*)prefix_copy, (const char*)prefix, prefix_len+1);
+  }
+  
+  ns=raptor_new_namespace_from_uri(context->nstack, prefix_copy, uri, 0);
   if(!ns)
     return 1;
   
@@ -890,8 +903,8 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
   
   raptor_iostream_write_counted_string(iostr, "<rdf:RDF ", 9);
   raptor_iostream_write_namespace(iostr, context->rdf_ns);
-  for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
-    raptor_namespace* ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
+  while(raptor_sequence_size(context->namespaces)) {
+    raptor_namespace* ns=(raptor_namespace*)raptor_sequence_pop(context->namespaces);
     raptor_iostream_write_byte(iostr, ' ');
     raptor_iostream_write_namespace(iostr, ns);
   }
