@@ -336,6 +336,12 @@ struct raptor_parser_s {
    */
   int feature_non_nfc_fatal;
 
+  /* FEATURE:
+   * non 0 to give a warning when other rdf:parseType values that are not
+   * Literal, Resource or Collection are seen.
+   */
+  int feature_warn_other_parseTypes;
+
   /* stuff for our user */
   void *user_data;
 
