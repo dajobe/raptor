@@ -38,16 +38,12 @@ extern "C" {
 #ifdef LIBRDF_DEBUG
 #define RAPTOR_DEBUG 1
 #endif
+#endif
 
-#define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
-#else
-/* else standalone */
 
 #define LIBRDF_MALLOC(type, size) malloc(size)
 #define LIBRDF_CALLOC(type, size, count) calloc(size, count)
 #define LIBRDF_FREE(type, ptr)   free((void*)ptr)
-
-#define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
 
 #ifdef RAPTOR_DEBUG
 /* Debugging messages */
@@ -73,7 +69,6 @@ extern "C" {
 #define LIBRDF_FATAL1(function, msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function); abort();} while(0)
 #define LIBRDF_FATAL2(function, msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function, arg); abort();} while(0)
 
-#endif
 
 
 /* XML parser includes */
