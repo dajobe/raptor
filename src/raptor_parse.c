@@ -294,7 +294,7 @@ raptor_forbidden_propertyElement_name(const char *name)
 {
   int i;
   for(i=0; rdf_syntax_terms_info[i].name; i++)
-    if(!strcmp(rdf_syntax_terms_info[i].name, name))
+    if(!strcmp(rdf_syntax_terms_info[i].name, (const char*)name))
       return rdf_syntax_terms_info[i].forbidden_as_propertyElement;
   return 0;
 }
@@ -304,7 +304,7 @@ raptor_forbidden_propertyAttribute_name(const char *name)
 {
   int i;
   for(i=0; rdf_syntax_terms_info[i].name; i++)
-    if(!strcmp(rdf_syntax_terms_info[i].name, name))
+    if(!strcmp(rdf_syntax_terms_info[i].name, (const char*)name))
       return rdf_syntax_terms_info[i].forbidden_as_propertyAttribute;
   return 0;
 }
@@ -708,17 +708,17 @@ raptor_xml_start_element_handler(void *user_data,
         /* there is more i.e. xmlns:foo */
         const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
         const unsigned char *namespace_name=atts[i+1];
-        int namespace_name_len=strlen(namespace_name);
+        size_t namespace_name_len=strlen((const char*)namespace_name);
         const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
-        int raptor_rdf_ms_uri_len=strlen(raptor_rdf_ms_uri);
+        size_t raptor_rdf_ms_uri_len=strlen(raptor_rdf_ms_uri);
 
         if(namespace_name_len == raptor_rdf_ms_uri_len-1 && 
-           !strncmp(namespace_name, raptor_rdf_ms_uri, namespace_name_len)) {
+           !strncmp((const char*)namespace_name, raptor_rdf_ms_uri, namespace_name_len)) {
           raptor_parser_warning(rdf_parser, "Declaring a namespace with prefix %s to URI %s - one letter short of the RDF namespace URI and probably a mistake.", prefix, namespace_name);
         } 
 
         if(namespace_name_len > raptor_rdf_ms_uri_len && 
-           !strncmp(namespace_name, raptor_rdf_ms_uri, raptor_rdf_ms_uri_len)) {
+           !strncmp((const char*)namespace_name, raptor_rdf_ms_uri, raptor_rdf_ms_uri_len)) {
           raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
         } else {
           raptor_namespaces_start_namespace_full(&rdf_xml_parser->namespaces,
@@ -738,8 +738,8 @@ raptor_xml_start_element_handler(void *user_data,
         }
 
         if(rdf_parser->feature_normalize_language) {
-          char *from=(char*)atts[i+1];
-          char *to=xml_language;
+          unsigned char *from=(unsigned char*)atts[i+1];
+          unsigned char *to=xml_language;
           
           /* Normalize language to lowercase
            * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
@@ -867,7 +867,7 @@ raptor_xml_start_element_handler(void *user_data,
           int j;
 
           for(j=0; j<= RDF_ATTR_LAST; j++)
-            if(!strcmp((char*)attr_name, rdf_attr_info[j].name)) {
+            if(!strcmp((const char*)attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
@@ -894,7 +894,7 @@ raptor_xml_start_element_handler(void *user_data,
           int j;
 
           for(j=0; j<= RDF_ATTR_LAST; j++)
-            if(!strcmp((char*)attr_name, rdf_attr_info[j].name)) {
+            if(!strcmp((const char*)attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               if(!rdf_attr_info[i].allowed_unprefixed_on_attribute)
@@ -1194,7 +1194,7 @@ raptor_xml_comment_handler(void *user_data, const unsigned char *s)
 
   if(element) {
     if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
-      raptor_xml_writer_comment(rdf_xml_parser->xml_writer, s, strlen(s));
+      raptor_xml_writer_comment(rdf_xml_parser->xml_writer, s, strlen((const char*)s));
   }
   
 
@@ -1743,7 +1743,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     }
 
 
-    if(!raptor_utf8_is_nfc(value, strlen(value))) {
+    if(!raptor_utf8_is_nfc(value, strlen((const char*)value))) {
       const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_update_document_locator(rdf_parser);
       if(rdf_parser->feature_non_nfc_fatal)
@@ -1774,7 +1774,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         }
       } else {
         raptor_update_document_locator(rdf_parser);
-        if(raptor_forbidden_propertyAttribute_name(name)) {
+        if(raptor_forbidden_propertyAttribute_name((const char*)name)) {
           raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
           continue;
         } else {
@@ -1850,7 +1850,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
       continue;
 
     if(rdf_attr_info[i].type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
-      const unsigned char *name=rdf_attr_info[i].name;
+      const char *name=rdf_attr_info[i].name;
       if(raptor_forbidden_propertyAttribute_name(name)) {
         raptor_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
@@ -1858,7 +1858,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
       }
     }
 
-    if(object_is_literal && !raptor_utf8_is_nfc(value, strlen(value))) {
+    if(object_is_literal && !raptor_utf8_is_nfc(value, strlen((const char*)value))) {
       const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_update_document_locator(rdf_parser);
       if(rdf_parser->feature_non_nfc_fatal)
@@ -3099,7 +3099,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
   raptor_element* element;
   raptor_sax2_element* sax2_element;
   raptor_state state;
-  char *ptr;
+  unsigned char *ptr;
   int all_whitespace=1;
   int i;
 
@@ -3210,7 +3210,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     }
     
     if(sax2_element->content_cdata_length) {
-      strncpy(buffer, sax2_element->content_cdata, sax2_element->content_cdata_length);
+      strncpy((char*)buffer, (const char*)sax2_element->content_cdata, sax2_element->content_cdata_length);
       RAPTOR_FREE(cstring, sax2_element->content_cdata);
       element->content_cdata_all_whitespace &= all_whitespace;
     } else
@@ -3224,7 +3224,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     /* adjust stored length */
     sax2_element->content_cdata_length += len;
     
-    strncpy(ptr, (char*)s, len);
+    strncpy((char*)ptr, (char*)s, len);
     ptr += len;
     *ptr = '\0';
   }
@@ -3314,7 +3314,7 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   int rc;
   
   base_uri_string=raptor_uri_as_counted_string(base_uri, &base_uri_string_len);
-  id_len=strlen(id);
+  id_len=strlen((const char*)id);
   
   /* Storing ID + ' ' + base-uri-string + '\0' */
   len=id_len+1+strlen(base_uri_string)+1;
@@ -3323,7 +3323,7 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   if(!item)
     return 1;
 
-  strcpy(item, id);
+  strcpy(item, (const char*)id);
   item[id_len]=' ';
   strcpy(item+id_len+1, base_uri_string); /* strcpy for end '\0' */
   
