@@ -19,8 +19,7 @@
 # 
 
 TEST_FILES=test-00.ttl test-01.ttl test-02.ttl test-03.ttl \
-test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl \
-test-09.ttl
+test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl
 
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl
 
