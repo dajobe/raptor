@@ -1,5 +1,7 @@
 2004-07-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* configure.ac: Bumped version to 1.3.3
+
 	* Snapshotted raptor_1_3_2 for 1.3.2 release
 
 	* configure.ac:
