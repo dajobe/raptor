@@ -34,6 +34,7 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#include <unistd.h>
 
 /* for the memory allocation functions */
 #if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
@@ -385,19 +386,19 @@ fs_ok_button_callback(GtkWidget *widget, gpointer data)
   grapper_state* state=(grapper_state*)data;
   GtkWidget *files=state->file_selection;
   const gchar *filename;
-  gchar* url;
+  char *uri_string;
   
   filename=gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
   
-  url=(char*)g_malloc(7+strlen(filename)+1);
-  sprintf(url,"file://%s",filename);
+  uri_string=raptor_uri_filename_to_uri_string(filename);
   
   gtk_widget_destroy(files);
   state->file_selection=NULL;
 
-  grapper_model_set_url(state, url);
+  grapper_model_set_url(state, uri_string);
+  free(uri_string);
+
   grapper_model_parse(state);
-  g_free(url);
 }
 
 /* open button clicked callback */
@@ -813,7 +814,14 @@ main(int argc, char *argv[])
   gtk_widget_show (window);
 
   if(argc>1) {
-    grapper_model_set_url(&state, argv[1]);
+    if(!access(argv[1], R_OK)) {
+      /* it's a file - make a URL out of it */
+      char *uri_string=raptor_uri_filename_to_uri_string(argv[1]);
+      grapper_model_set_url(&state, uri_string);
+      free(uri_string);
+    } else
+      grapper_model_set_url(&state, argv[1]);
+
     grapper_model_parse(&state);
   }
 
