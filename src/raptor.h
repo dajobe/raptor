@@ -56,6 +56,14 @@ extern "C" {
 typedef void* raptor_uri;
 
 
+/* Public statics */
+extern const char * const raptor_copyright_string;
+extern const char * const raptor_version_string;
+extern const unsigned int raptor_version_major;
+extern const unsigned int raptor_version_minor;
+extern const unsigned int raptor_version_release;
+extern const unsigned int raptor_version_decimal;
+
 
 /* Public structure */
 typedef struct raptor_parser_s raptor_parser;
