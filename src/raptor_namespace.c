@@ -51,6 +51,10 @@
 #include "raptor_internal.h"
 
 
+/* Define these for far too much output */
+#define RAPTOR_DEBUG_VERBOSE
+
+
 /*
  * Namespaces in XML
  * http://www.w3.org/TR/1999/REC-xml-names-19990114/#nsc-NSDeclared
@@ -172,6 +176,13 @@ raptor_namespaces_start_namespace(raptor_namespace_stack *nstack,
   if(nstack->top)
     nspace->next=nstack->top;
   nstack->top=nspace;
+
+#ifndef STANDALONE
+#ifdef RAPTOR_DEBUG_VERBOSE
+    RAPTOR_DEBUG3("start namespace prefix %s depth %d\n", nspace->prefix ? (char*)nspace->prefix : "(default)", nspace->depth);
+#endif
+#endif
+
 }
 
 
@@ -230,7 +241,9 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
     raptor_namespace* next=ns->next;
 
 #ifndef STANDALONE
+#ifdef RAPTOR_DEBUG_VERBOSE
     RAPTOR_DEBUG3("namespace prefix %s depth %d\n", ns->prefix ? (char*)ns->prefix : "(default)", depth);
+#endif
 #endif
     raptor_free_namespace(ns);
 
