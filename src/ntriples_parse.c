@@ -361,6 +361,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
   int ulen=0;
   unsigned long unichar=0;
   unsigned int position=0;
+  int end_char_seen=0;
   
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
@@ -381,8 +382,10 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     
     if(c != '\\') {
       /* finish at non-backslashed end_char */
-      if(end_char && c == end_char)
+      if(end_char && c == end_char) {
+        end_char_seen=1;
         break;
+      }
 
       if(!raptor_ntriples_term_valid(rdf_parser, c, position, class)) {
         if(end_char) {
@@ -458,6 +461,11 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     position++;
   } /* end while */
 
+  
+  if(end_char && !end_char_seen) {
+    raptor_parser_error(rdf_parser, "Missing terminating '%c' before end of line.", end_char);
+    return 1;
+  }
 
   /* terminate dest, can be shorter than source */
   *dest='\0';
