@@ -310,6 +310,10 @@ raptor_new_serializer(const char *name) {
   
   rdf_serializer->factory=factory;
 
+  /* Default features */
+  /* Emit relative URIs where possible */
+  rdf_serializer->feature_relative_uris=1;
+
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
     return NULL;
