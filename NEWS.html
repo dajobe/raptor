@@ -11,6 +11,17 @@
 <h2>2004-??-?? Version 1.3.0 Released</h2>
 <p>
 <a href="http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/">Turtle</a> parser updated to correct the collections syntax and add integer literals.<br />
+Added raptor_new_parser_for_content to guess the parser to use from
+hints in URIs or content<br />
+Added raptor_syntax_name_check to check for valid parser names.<br />
+Added raptor_get_feature, raptor_features_enumerate. raptor_set_feature
+now gets a return value<br />
+Added raptor_free_memory to dealloc memory returned by raptor functions<br />
+Turtle parser uses raptor_generate_id when a blank identifier name is needed<br />
+rdfdump gains -f and -g flags<br />
+Added more checks for forbidden (giving an error) and unknown (giving
+a warning) rdf-namespaced names in element and attributes.<br />
+Expose raptor_sequence class to public API<br />
 FIXME
 </p>
 
