@@ -126,6 +126,8 @@ raptor_delete_parser_factories(void)
 
     RAPTOR_FREE(raptor_parser_factory, factory->name);
     RAPTOR_FREE(raptor_parser_factory, factory->label);
+    if(factory->alias)
+      RAPTOR_FREE(raptor_parser_factory, factory->alias);
     if(factory->mime_type)
       RAPTOR_FREE(raptor_parser_factory, factory->mime_type);
     if(factory->uri_string)
