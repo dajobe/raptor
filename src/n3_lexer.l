@@ -165,8 +165,8 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext, yyleng);
 
 .         	{ if (*yytext == EOF)
                     return EOF;
-                  printf("%s:%d: Syntax error at '%c'\n", filename, 
-                         lineno, *yytext);
+
+                    n3_syntax_error(*yytext);
                   return ERROR;
 		}
 
