@@ -30,7 +30,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdarg.h>
+
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
