@@ -456,8 +456,11 @@ RAPTOR_API int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
 /* raptor_utf8.c */
 RAPTOR_API int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
 RAPTOR_API int raptor_utf8_to_unicode_char(unsigned long *output, const unsigned char *input, int length);
-
-
+RAPTOR_API int raptor_unicode_is_xml11_namestartchar(long c);
+RAPTOR_API int raptor_unicode_is_xml10_namestartchar(long c);
+RAPTOR_API int raptor_unicode_is_xml11_namechar(long c);
+RAPTOR_API int raptor_unicode_is_xml10_namechar(long c);
+  
 /* raptor_stringbuffer */
 RAPTOR_API raptor_stringbuffer* raptor_new_stringbuffer(void);
 RAPTOR_API void raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer);
