@@ -176,7 +176,7 @@ check-scan-rdf: $(top_builddir)/rapper $(RDF_SCAN_TEST_FILES)
 
 check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing bad rdf/xml fails"; \
+	$(ECHO) "Testing that bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
@@ -201,7 +201,7 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
 
 check-bad-nfc-rdf: $(top_builddir)/rapper $(RDF_BAD_NFC_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing bad rdf/xml that should fail for Unicode NFC checking"; \
+	$(ECHO) "Testing that rdf/xml with bad Unicode NFC fails"; \
 	for test in $(RDF_BAD_NFC_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
@@ -265,7 +265,7 @@ check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
 
 check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing bad N-Triples fails"; \
+	$(ECHO) "Testing that bad N-Triples fails"; \
 	for test in $(NT_BAD_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=$(BASE_URI)$$name.nt; \
