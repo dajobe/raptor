@@ -12,6 +12,8 @@
 
 <p>A release primarily to fix some win32 and portability issues.</p>
 
+<p>raptor.h now includes stdarg.h</p>
+
 <p>Corrected the <code>raptor_print_statement</code> declaration in
 raptor.h for the argument statement to have one less 'const' which
 matches the actual code.</p>
@@ -29,6 +31,10 @@ and
 For Win32, more tests were added and the
 format of URIs supported corrected to use the <code>file:///c:</code>
 form rather than <code>file://c|/</code></p>
+
+<p>URIs that resolve to directories now return an error when lstat is
+available to check.</p>
+
 
 
 <h3>Parser Changes</h3>
