@@ -106,8 +106,6 @@ extern "C" {
 
 /* flex: const is available */
 #define YY_USE_CONST
-/* flex: unistd.h is not */
-#define YY_NO_UNISTD_H
 
 
 #ifdef __cplusplus
