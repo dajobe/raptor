@@ -167,7 +167,8 @@ raptor_default_new_uri_relative_to_base(void *context,
   raptor_uri* new_uri;
   size_t new_uri_len=strlen((const char*)base_uri)+strlen((const char*)uri_string)+1;
 
-  new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len+1);
+  /* +2 is for \0 plus an extra 1 for adding any missing URI path '/' */
+  new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len+2);
   if(!new_uri)
     return NULL;
   
