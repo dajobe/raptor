@@ -839,6 +839,9 @@ raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
   raptor_statement *statement=&parser->statement;
   int predicate_ordinal=0;
 
+  if(!t->subject || !t->predicate || !t->object)
+    return;
+
   /* Two choices for subject from N-Triples */
   statement->subject_type=t->subject->type;
   if(t->subject->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
