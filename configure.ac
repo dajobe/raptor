@@ -419,6 +419,7 @@ else
 fi
 AC_MSG_RESULT($nfc_check);
 if test $nfc_check = yes; then
+  AC_DEFINE([RAPTOR_NFC_CHECK], 1, [Provide a Unicode NFC check])
   need_glib2=1
 fi
 
