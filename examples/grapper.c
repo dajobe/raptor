@@ -51,27 +51,6 @@
 /* Qnames button does nothing */
 #undef GRAPPER_QNAMES
 
-typedef enum 
-{
-  GRAPPER_SYNTAX_RDFXML,
-  GRAPPER_SYNTAX_NTRIPLES,
-  GRAPPER_SYNTAX_N3,
-  GRAPPER_SYNTAX_RSS_TAG_SOUP,
-
-  GRAPPER_SYNTAX_SIZE=GRAPPER_SYNTAX_RSS_TAG_SOUP+1
-} grapper_syntax;
-
-typedef struct {
-  const gchar *name;
-  const gchar *label;
-} grapper_syntax_item;
-
-static const grapper_syntax_item grapper_syntax_info[GRAPPER_SYNTAX_SIZE]={
-  {"rdfxml",   "RDF/XML"      },
-  {"ntriples", "N-Triples"    },
-  {"n3", "N3"    },
-  {"rss-tag-soup", "RSS Tag Soup" }
-};
 
 
 
@@ -81,7 +60,7 @@ typedef struct
 #ifdef GRAPPER_QNAMES
   int qnames;
 #endif
-  grapper_syntax syntax;
+  unsigned int syntax;
   int scanning;
   int assume;
   int ignore_warnings;
@@ -251,7 +230,7 @@ grapper_model_set_scanning (grapper_state *state, int scanning) {
 }
 
 static void
-grapper_model_set_syntax (grapper_state *state, grapper_syntax syntax) {
+grapper_model_set_syntax (grapper_state *state, unsigned int syntax) {
   if(state->syntax == syntax)
     return;
   
@@ -342,6 +321,7 @@ grapper_model_parse(grapper_state *state)
 {
   raptor_uri* uri;
   raptor_parser* rdf_parser;
+  const char *syntax_name;
   
   if(!state->url)
     return;
@@ -352,7 +332,8 @@ grapper_model_parse(grapper_state *state)
   grapper_model_reset_error(state);
 
   uri=raptor_new_uri(state->url);
-  rdf_parser=raptor_new_parser(grapper_syntax_info[state->syntax].name);
+  raptor_parsers_enumerate(state->syntax, &syntax_name, NULL);
+  rdf_parser=raptor_new_parser(syntax_name);
 
   if(state->scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
@@ -461,7 +442,7 @@ syntax_menu_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state=(grapper_state*)data;
  
-  grapper_syntax syntax=(grapper_syntax)gtk_option_menu_get_history(GTK_OPTION_MENU(widget));
+  unsigned int syntax=(unsigned int)gtk_option_menu_get_history(GTK_OPTION_MENU(widget));
   
   grapper_model_set_syntax(state, syntax);
 }
@@ -746,10 +727,13 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   syntax_optionmenu = gtk_option_menu_new();
 
   syntax_menu=gtk_menu_new();
-  for(i=0; i< GRAPPER_SYNTAX_SIZE; i++) {
-    const gchar *label=grapper_syntax_info[i].label;
+  for(i=0; 1; i++) {
+    const char *syntax_label;
     
-    GtkWidget *syntax_menu_item = gtk_menu_item_new_with_label(label);
+    if(raptor_parsers_enumerate(i, NULL, &syntax_label))
+      break;
+
+    GtkWidget *syntax_menu_item = gtk_menu_item_new_with_label((const gchar*)syntax_label);
     gtk_widget_show (syntax_menu_item);
     gtk_menu_shell_append(GTK_MENU_SHELL(syntax_menu), syntax_menu_item);
   }
@@ -759,7 +743,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   gtk_option_menu_set_menu(GTK_OPTION_MENU(syntax_optionmenu), syntax_menu);
 
-  /* Default is first */
+  /* Default is item 0 (should be RDF/XML) */
   gtk_option_menu_set_history(GTK_OPTION_MENU(syntax_optionmenu), 0);
 
   syntax_tooltips = gtk_tooltips_new ();
