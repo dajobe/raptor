@@ -1,5 +1,7 @@
 2004-08-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* configure.ac: nfc_needed default
+
 	* configure.ac, Makefile.am:
 	Added conditional makefile support for XML parsers (expat, libxml),
 	selecting RDF parsers (RDF/XML, Turtle, N-Triples, RSS tag soup),
