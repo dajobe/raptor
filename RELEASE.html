@@ -19,6 +19,13 @@ actual code.</p>
 <p>Made several portability fixes for compiling natively on win32
 which doesn't quite do POSIX or C99.</p>
 
+<p>Changed the support for file: URIs and converting to and from
+filenames.  It now %-escapes spaces and % characters on conversion
+to and from filenames.  For Win32, more tests were added and the
+format of URIs supported corrected to use the file:///c: form
+rather than file://c|/</p>
+
+
 <h3>Parser Changes</h3>
 
 <p>The
@@ -31,7 +38,6 @@ qname work correctly.
 <p>The Turtle parser was fixed to re-initialise correctly when
 performing multiple parsings.  The other parsers already did this
 correctly.</p>
-
 
 <p>Added a warning to the RDF/XML parser for unknown
 <code>rdf:parseType</code> values, when parsing in lax mode - which
