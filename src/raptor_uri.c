@@ -308,7 +308,14 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
     char *p = NULL;
 
     /* Make result path be path buffer; initialise it to empty */
-    int path_buffer_len=strlen(base_path)+1;
+    int path_buffer_len=1;
+
+    if(base_path)
+      path_buffer_len +=strlen(base_path);
+    else {
+      base_path="/"; /* static, but copied and not free()d  */
+      path_buffer_len++;
+    }
 
     if(reference_path)
       path_buffer_len +=strlen(reference_path);
