@@ -182,6 +182,7 @@ statement: directive
 
   raptor_free_sequence($2);
 }
+| error DOT
 ;
 
 
