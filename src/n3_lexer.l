@@ -73,8 +73,8 @@
   /* definitions */
 
 %{
-/* NOTE: These headers are NOT included here are inserted by fix-flex
- * since otherwise it appears far too late in the generated C
+/* NOTE: These headers are NOT included here but are inserted by 
+ * fix-flex since otherwise it appears far too late in the generated C
  */
 
 /*
