@@ -746,6 +746,9 @@ raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
 static void
 raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
+
+  raptor_namespaces_free(&n3_parser->namespaces);
+
   if(n3_parser->buffer_length)
     RAPTOR_FREE(cdata, n3_parser->buffer);
 }
