@@ -26,6 +26,8 @@ AM_LDFLAGS=@LIBS@ $(top_builddir)/libraptor.la $(MEM_LIBS)
 
 EXTRA_PROGRAMS=$(TESTS)
 
+CLEANFILES=$(TESTS)
+
 raptor_empty_test_SOURCES=empty.c
 
 
