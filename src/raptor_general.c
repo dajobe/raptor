@@ -487,7 +487,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
 
 
 /* Size of XML buffer to use when reading from a file */
-#define RAPTOR_READ_BUFFER_SIZE 1024
+#define RAPTOR_READ_BUFFER_SIZE 4096
 
 
 /**
