@@ -1139,8 +1139,6 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 
   element=raptor_element_pop(rdf_xml_parser);
 
-  raptor_free_qname(element_name);
-
   raptor_namespaces_end_for_depth(&rdf_parser->namespaces, rdf_xml_parser->depth);
 
   if(element->parent) {
