@@ -17,12 +17,11 @@ is the
 <b>R</b>DF <b>P</b>arser <b>T</b>oolkit f<b>o</b>r
 <a href="http://www.redland.opensource.ac.uk/"><b>R</b>edland</a>
 written in C consisting of two parsers for the RDF/XML and N-Triples
-syntaxes for RDF. Raptor is designed to work efficiently when used
+syntaxes for RDF.  Raptor is designed to work efficiently when used
 with Redland but is entirely separate.
 </p>
 
-<p>This library is mature and <b>Beta</b> quality - there are some
-known conformance issues and the APIs are unlikely to change.  See
+<p>This library is mature and the APIs are unlikely to change.  See
 the <a href="TODO.html">to do list</a> for more information.  Changes
 can be found in the <a href="NEWS.html">NEWS</a> file or more
 detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
@@ -35,8 +34,9 @@ detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 
 <ul>
 <li>Designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
-<li>Handles <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax updates</a> for <a href="http://www.w3.org/TR/xmlbase/">XML Base</a>, <code>xml:lang</code> and RDF datatyping.</li>
-<li>Generates <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> supporting XML literals, language tagging and datatypes</li>
+<li>Fully handles <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax updates</a> for <a href="http://www.w3.org/TR/xmlbase/">XML Base</a>, <code>xml:lang</code> RDF datatyping and Collections.</li>
+<li>Handles all RDF vocabularies such as <a href="http://www.foaf-project.org/">FOAF</a>, <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>, <a href="http://dublincore.org/">Dublin Core</a>, <a href="http://www.w3.org/TR/owl-features/">OWL</a></li>
+<li>Parses and generates <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> supporting XML literals, language tagging and datatypes</li>
 <li>Parses content on the web if <a href="http://curl.haxx.se/libcurl/">libcurl</a> or <a href="http://xmlsoft.org/">libxml2</a> is available.</li>
 <li>Handles <code>rdf:resource</code> / <code>resource</code> attributes</li>
 <li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or (GNOME) <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
@@ -57,6 +57,16 @@ detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 syntax as used by the 
 <a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>
 for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
+</p>
+
+
+<h3>RSS "TAG SOUP" PARSER</h3>
+
+<p>An experimental parser for XML formats that use RSS elements such
+as channel, item, title, description.  Turns the input where possible
+into legal <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>
+RDF triples.  <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>
+should be parsed by the RDF/XML parser.
 </p>
 
 
@@ -103,7 +113,7 @@ future plans and announcement of releases.</p>
 
 <hr />
 
-<p>Copyright 2001-2003 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2000-2003 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
