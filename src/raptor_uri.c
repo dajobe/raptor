@@ -453,7 +453,7 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
 
     } /* end BLOCK */
 
-  } /* end if (XX) */
+  } /* end resolve relative path */
 
 
   resolve_end:
