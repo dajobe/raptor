@@ -52,18 +52,16 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	@for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  echo Checking $$test; \
-	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test | sed -e 's/^.*rdfdump: //' > $$name.res; \
+	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res; \
 	  if [ ! -f $(srcdir)/$$name.out ] ; then cp $$name.res $(srcdir)/$$name.out ; \
-	  else if  [ ! -s $$name.res ] ; then echo "Fatal error, no $$name.res\n" ; \
-	  else diff $(srcdir)/$$name.out $$name.res ; fi ; fi; \
+	  else diff $(srcdir)/$$name.out $$name.res ; fi; \
 	  rm -f $$name.res ; \
 	done; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  echo Checking $$test; \
-	  $(top_builddir)/rdfdump -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test | sed -e 's/^.*rdfdump: //'  > $$name.res; \
+	  $(top_builddir)/rdfdump -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res; \
 	  if [ ! -f $(srcdir)/$$name.out ] ; then cp $$name.res $(srcdir)/$$name.out ; \
-	  else if  [ ! -s $$name.res ] ; then echo "Fatal error, no $$name.res\n" ; \
-	  else diff $(srcdir)/$$name.out $$name.res ; fi ; fi; \
+	  else diff $(srcdir)/$$name.out $$name.res ; fi; \
 	  rm -f $$name.res ; \
 	done
