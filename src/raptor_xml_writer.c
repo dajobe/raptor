@@ -52,13 +52,17 @@
 
 #ifndef STANDALONE
 
-#define XML_WRITER_AUTO_INDENT  0x01
-#define XML_WRITER_AUTO_EMPTY   0x02
 
-#define AUTO_INDENT(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_INDENT) != 0)
-#define AUTO_EMPTY(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_EMPTY) != 0)
+typedef enum {
+  XML_WRITER_AUTO_INDENT = 1,
+  XML_WRITER_AUTO_EMPTY  = 2
+} raptor_xml_writer_flags;
 
-#define FLUSH_CLOSE_BRACKET(xml_writer)                         \
+
+#define XML_WRITER_AUTO_INDENT(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_INDENT) != 0)
+#define XML_WRITER_AUTO_EMPTY(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_EMPTY) != 0)
+
+#define XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer)              \
   if ((xml_writer->flags & XML_WRITER_AUTO_EMPTY) &&            \
       xml_writer->current_element &&                            \
       !(xml_writer->current_element->content_cdata_seen ||      \
@@ -91,7 +95,7 @@ struct raptor_xml_writer_s {
   /* outputting to this iostream */
   raptor_iostream *iostr;
 
-  /* Formatting flags */
+  /* XML Writer flags - bits defined in enum raptor_xml_writer_flags */
   int flags;
 
   /* indentation per level if formatting */
@@ -99,32 +103,35 @@ struct raptor_xml_writer_s {
   
 };
 
-#define NUM_SPACES 16
+
+#define SPACES_BUFFER_SIZE 16
+static unsigned char spaces_buffer[SPACES_BUFFER_SIZE];
+static int spaces_inited = 0;
+
 
 /* helper functions */
 static int
 raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
 {
-  static unsigned char spaces[NUM_SPACES];
-  static int spaces_inited = 0;
-
+  int num_spaces;
+  
   if (!spaces_inited) {
     int i;
-    for (i = 0; i < NUM_SPACES; i++)
-      spaces[i] = ' ';
+    for (i = 0; i < SPACES_BUFFER_SIZE; i++)
+      spaces_buffer[i] = ' ';
     
     spaces_inited = 1;
   }
   
-  int num_spaces = xml_writer->depth * xml_writer->indent;
+  num_spaces = xml_writer->depth * xml_writer->indent;
 
   raptor_iostream_write_byte(xml_writer->iostr, '\n');
   
   while (num_spaces > 0) {
 
-    int count = (num_spaces > NUM_SPACES) ? NUM_SPACES : num_spaces;
+    int count = (num_spaces > SPACES_BUFFER_SIZE) ? SPACES_BUFFER_SIZE : num_spaces;
 
-    raptor_iostream_write_counted_string(xml_writer->iostr, spaces, count);    
+    raptor_iostream_write_counted_string(xml_writer->iostr, spaces_buffer, count);
 
     num_spaces -= count;
   }
@@ -133,24 +140,30 @@ raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
     xml_writer->current_element->content_cdata_seen=1;
 
   return 0;
-  
 }
 
-struct nsd
-{
+
+struct nsd {
   const raptor_namespace *nspace;
   unsigned char *declaration;
   size_t length;
 };
 
 
+/*
+ * FIXME: This is duplicate code taken from raptor_sax2.c:
+ *   struct nsd
+ *  raptor_xml_writer_nsd_compare (from raptor_nsd_compare)
+ */
+
 static int
-raptor_nsd_compare(const void *a, const void *b) 
+raptor_xml_writer_nsd_compare(const void *a, const void *b)
 {
   struct nsd* nsd_a=(struct nsd*)a;
   struct nsd* nsd_b=(struct nsd*)b;
   return strcmp((const char*)nsd_a->declaration, (const char*)nsd_b->declaration);
 }
+
 
 static int
 raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
@@ -255,7 +268,7 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
     /* sort them into the canonical order */
     qsort((void*)nspace_declarations, 
           nspace_declarations_count, sizeof(struct nsd),
-          raptor_nsd_compare);
+          raptor_xml_writer_nsd_compare);
     /* add them */
     for (i=0; i < nspace_declarations_count; i++) {
       raptor_iostream_write_byte(iostr, ' ');
@@ -308,14 +321,15 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
   return 0;
 }
 
+
 static int
 raptor_iostream_write_xml_element_end(raptor_iostream* iostr,
                                       raptor_xml_element *element,
                                       int is_empty)
 {
-  if (is_empty) {
+  if (is_empty)
     raptor_iostream_write_byte(iostr, '/');
-  } else {
+  else {
     
     raptor_iostream_write_byte(iostr, '<');
 
@@ -338,6 +352,7 @@ raptor_iostream_write_xml_element_end(raptor_iostream* iostr,
   
 }
 
+
 raptor_xml_writer*
 raptor_new_xml_writer(raptor_namespace_stack *nstack,
                       raptor_uri_handler *uri_handler,
@@ -345,7 +360,8 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
                       raptor_iostream* iostr,
                       raptor_simple_message_handler error_handler,
                       void *error_data,
-                      int canonicalize) {
+                      int canonicalize)
+{
   raptor_xml_writer* xml_writer;
   
   xml_writer=(raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1, sizeof(raptor_xml_writer)+1);
@@ -376,6 +392,7 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
   return xml_writer;
 }
 
+
 /**
  * raptor_free_xml_writer: Free XML writer content
  * @xml_writer: XML writer object
@@ -391,11 +408,19 @@ raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 }
 
 
+/**
+ * raptor_xml_writer_empty_element - Write an empty XML element to the XML writer
+ * @xml_writer: XML writer object
+ * @element: XML element object
+ * 
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ **/
 void
 raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
                                 raptor_xml_element *element)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_xml_element_start(xml_writer->iostr,
                                           element, 
@@ -411,13 +436,23 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_start_element - Write a start XML element to the XML writer
+ * @xml_writer: XML writer object
+ * @element: XML element object
+ *
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ *
+ * Indents the start element if XML writer feature AUTO_INDENT is enabled.
+ **/
 void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                 raptor_xml_element *element)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  if (AUTO_INDENT(xml_writer))
+  if (XML_WRITER_AUTO_INDENT(xml_writer))
     raptor_xml_writer_indent(xml_writer);
   
   raptor_iostream_write_xml_element_start(xml_writer->iostr,
@@ -425,7 +460,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                           xml_writer->nstack,
                                           xml_writer->error_handler,
                                           xml_writer->error_data,
-                                          AUTO_EMPTY(xml_writer),
+                                          XML_WRITER_AUTO_EMPTY(xml_writer),
                                           xml_writer->depth);
 
   xml_writer->depth++;
@@ -435,7 +470,8 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
    * whose parent field is already set. The first time this function
    * is called, it sets element->parent to 0, causing the warn-07.rdf
    * test to fail. Subsequent calls to this function set
-   * element->parent to its existing value. */
+   * element->parent to its existing value. 
+   */
   if (xml_writer->current_element)
     element->parent = xml_writer->current_element;
   
@@ -444,16 +480,24 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
     element->parent->content_element_seen=1;
 }
 
+
+/**
+ * raptor_xml_writer_end_element - Write an end XML element to the XML writer
+ * @xml_writer: XML writer object
+ * @element: XML element object
+ *
+ * Indents the end element if XML writer feature AUTO_INDENT is enabled.
+ **/
 void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                               raptor_xml_element* element)
 {
   xml_writer->depth--;
   
-  if (AUTO_INDENT(xml_writer) && element->content_element_seen)
+  if (XML_WRITER_AUTO_INDENT(xml_writer) && element->content_element_seen)
     raptor_xml_writer_indent(xml_writer);
 
-  int is_empty = AUTO_EMPTY(xml_writer) ?
+  int is_empty = XML_WRITER_AUTO_EMPTY(xml_writer) ?
     !(element->content_cdata_seen || element->content_element_seen) : 0;
   
   raptor_iostream_write_xml_element_end(xml_writer->iostr, element, is_empty);
@@ -465,11 +509,20 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_cdata - Write CDATA XML-escaped to the XML writer
+ * @xml_writer: XML writer object
+ * @s: string to XML escape and write
+ *
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ *
+ **/
 void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                         const unsigned char *s)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
                                            s, strlen((const char*)s),
@@ -482,11 +535,21 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_cdata_counted - Write counted CDATA XML-escaped to the XML writer
+ * @xml_writer: XML writer object
+ * @s: string to XML escape and write
+ * @len: length of string
+ *
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ *
+ **/
 void
 raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
                                 const unsigned char *s, unsigned int len)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
                                            s, len,
@@ -499,11 +562,20 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_raw - Write a string raw to the XML writer
+ * @xml_writer: XML writer object
+ * @s: string to write
+ *
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ *
+ **/
 void
 raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
                       const unsigned char *s)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_string(xml_writer->iostr, s);
 
@@ -512,11 +584,21 @@ raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_raw_counted - Write a counted string raw to the XML writer
+ * @xml_writer: XML writer object
+ * @s: string to write
+ * @len: length of string
+ *
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ *
+ **/
 void
 raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
                               const unsigned char *s, unsigned int len)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_counted_string(xml_writer->iostr, s, len);
 
@@ -525,11 +607,20 @@ raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_comment - Write an XML comment to the XML writer
+ * @xml_writer: XML writer object
+ * @s: comment string to write
+ *
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ *
+ **/
 void
 raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
                           const unsigned char *s)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<!-- ", 5);
   raptor_xml_writer_cdata(xml_writer, s);
@@ -537,11 +628,21 @@ raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_comment - Write a counted XML comment to the XML writer
+ * @xml_writer: XML writer object
+ * @s: comment string to write
+ * @len: length of string
+ *
+ * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * is enabled.
+ *
+ **/
 void
 raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
                                   const unsigned char *s, unsigned int len)
 {
-  FLUSH_CLOSE_BRACKET(xml_writer);
+  XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<!-- ", 5);
   raptor_xml_writer_cdata_counted(xml_writer, s, len);
@@ -659,11 +760,11 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
   
   switch(feature) {
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-      result=AUTO_INDENT(xml_writer);
+      result=XML_WRITER_AUTO_INDENT(xml_writer);
       break;
 
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-      result=AUTO_EMPTY(xml_writer);
+      result=XML_WRITER_AUTO_EMPTY(xml_writer);
       break;
 
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
