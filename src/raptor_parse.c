@@ -476,6 +476,15 @@ struct raptor_element_s {
    * this identifies the anon node of current tail of the collection(list). 
    */
   const unsigned char *tail_id;
+
+  /* RDF/XML specific checks */
+
+  /* how many cdata blocks seen */
+  unsigned int content_cdata_seen;
+  /* all cdata so far is whitespace */
+  unsigned int content_cdata_all_whitespace;
+  /* how many contained elements seen */
+  unsigned int content_element_seen;
 };
 
 typedef struct raptor_element_s raptor_element;
@@ -497,6 +506,9 @@ struct raptor_xml_parser_s {
 
   /* set of seen rdf:ID / rdf:bagID values (with in-scope base URI) */
   raptor_set* id_set;
+
+  /* writer for building parseType="Literal" content */
+  raptor_xml_writer* xml_writer;
 };
 
 
@@ -606,6 +618,7 @@ raptor_free_element(raptor_element *element)
     RAPTOR_FREE(cstring, (char*)element->tail_id);
   if(element->object_literal_datatype)
     raptor_free_uri(element->object_literal_datatype);
+
   RAPTOR_FREE(raptor_element, element);
 }
 
@@ -715,7 +728,7 @@ raptor_xml_start_element_handler(void *user_data,
           raptor_namespaces_start_namespace(&rdf_parser->namespaces,
                                             prefix, namespace_name,
                                             sax2->depth,
-                                            raptor_parser_error, rdf_parser);
+                                            raptor_parser_simple_error, rdf_parser);
         }
         
         atts[i]=NULL; 
@@ -775,8 +788,8 @@ raptor_xml_start_element_handler(void *user_data,
   
 
   /* Prepare for possible element content */
-  sax2_element->content_element_seen=0;
-  sax2_element->content_cdata_seen=0;
+  element->content_element_seen=0;
+  element->content_cdata_seen=0;
   sax2_element->content_cdata_length=0;
 
   sax2_element->xml_language=xml_language;
@@ -785,7 +798,7 @@ raptor_xml_start_element_handler(void *user_data,
 
   /* Now can recode element name with a namespace */
   sax2_element->name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
-                                      raptor_parser_error, rdf_parser);
+                                      raptor_parser_simple_error, rdf_parser);
   if(!sax2_element->name) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     RAPTOR_FREE(raptor_sax2_element, sax2_element);
@@ -820,7 +833,7 @@ raptor_xml_start_element_handler(void *user_data,
       /* namespace-name[i] stored in named_attrs[i] */
       attr=raptor_new_qname(&rdf_parser->namespaces,
                             atts[i<<1], atts[(i<<1)+1],
-                            raptor_parser_error, rdf_parser);
+                            raptor_parser_simple_error, rdf_parser);
       if(!attr) { /* failed - tidy up and return */
         int j;
 
@@ -947,13 +960,13 @@ raptor_xml_start_element_handler(void *user_data,
         raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set");      
 
       element->state=element->parent->child_state;
-      sax2_element->parent->content_element_seen++;
+      element->parent->content_element_seen++;
       count_bumped++;
     
       /* leave literal XML alone */
       if (!rdf_content_type_info[element->content_type].cdata_allowed) {
-        if(sax2_element->parent->content_element_seen == 1 &&
-           sax2_element->parent->content_cdata_seen == 1) {
+        if(element->parent->content_element_seen == 1 &&
+           element->parent->content_cdata_seen == 1) {
           /* Uh oh - mixed content, the parent element has cdata too */
           raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                                 element->parent->sax2->name->local_name);
@@ -963,8 +976,8 @@ raptor_xml_start_element_handler(void *user_data,
          * before this node element, delete it
          */
         if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES &&
-           element->parent->sax2->content_element_seen &&
-           element->parent->sax2->content_cdata_all_whitespace &&
+           element->parent->content_element_seen &&
+           element->parent->content_cdata_all_whitespace &&
            element->parent->sax2->content_cdata) {
           
           element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
@@ -1000,7 +1013,7 @@ raptor_xml_start_element_handler(void *user_data,
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
-      element->parent->sax2->content_element_seen--;
+      element->parent->content_element_seen--;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
   
@@ -1012,7 +1025,7 @@ raptor_xml_start_element_handler(void *user_data,
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
-      element->parent->sax2->content_element_seen--;
+      element->parent->content_element_seen--;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
   
@@ -1050,7 +1063,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 
 #ifdef RAPTOR_DEBUG
     raptor_qname *element_name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
-                                                raptor_parser_error, rdf_parser);
+                                                raptor_parser_simple_error, rdf_parser);
     if(!element_name) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return;
@@ -1094,11 +1107,16 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 }
 
 static void
-raptor_xml_parser_error_handler(void *user_data, raptor_locator* locator, 
-                                const char *message) 
+raptor_xml_parser_simple_error_handler(void *user_data, const char *message, ...) 
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
-  raptor_parser_error(rdf_parser, message);
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  raptor_parser_error((raptor_parser*)rdf_parser, message);
+  
+  va_end(arguments);
 }
 
 
@@ -1197,8 +1215,8 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
       return;
     }
 
-    if(++sax2_element->content_cdata_seen == 1 &&
-       sax2_element->content_element_seen == 1) {
+    if(++element->content_cdata_seen == 1 &&
+       element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
       raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                             element->sax2->name->local_name);
@@ -1215,8 +1233,7 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL) {
     size_t escaped_buffer_len=raptor_xml_escape_string(s, len,
                                                        NULL, 0, '\0',
-                                                       raptor_xml_parser_error_handler,
-                                                       rdf_parser);
+                                                       raptor_xml_parser_simple_error_handler, rdf_parser);
     /* save a malloc/free when there is no escaping */
     if(escaped_buffer_len != len) {
       escaped_buffer=(char*)RAPTOR_MALLOC(cstring, escaped_buffer_len+1);
@@ -1226,7 +1243,7 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
       }
       raptor_xml_escape_string(s, len,
                                escaped_buffer, escaped_buffer_len, '\0',
-                               raptor_xml_parser_error_handler, rdf_parser);
+                               raptor_xml_parser_simple_error_handler, rdf_parser);
       len=escaped_buffer_len;
     }
   }
@@ -1240,9 +1257,9 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   if(sax2_element->content_cdata_length) {
     strncpy(buffer, sax2_element->content_cdata, sax2_element->content_cdata_length);
     RAPTOR_FREE(cstring, sax2_element->content_cdata);
-    sax2_element->content_cdata_all_whitespace &= all_whitespace;
+    element->content_cdata_all_whitespace &= all_whitespace;
   } else
-    sax2_element->content_cdata_all_whitespace = all_whitespace;
+    element->content_cdata_all_whitespace = all_whitespace;
 
   sax2_element->content_cdata=buffer;
 
@@ -2126,7 +2143,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            element->parent && 
            (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
             element->parent->state == RAPTOR_STATE_MEMBER_PROPERTYELT) &&
-           element->parent->sax2->content_element_seen > 1) {
+           element->parent->content_element_seen > 1) {
           raptor_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "The enclosing property already has an object");
           state=RAPTOR_STATE_SKIPPING;
@@ -2443,7 +2460,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         {
           char *fmt_buffer;
           int fmt_length;
-          fmt_buffer=raptor_format_sax2_element(sax2_element, &fmt_length, 0, raptor_xml_parser_error_handler, rdf_parser);
+          fmt_buffer=raptor_format_sax2_element(sax2_element, &fmt_length, 0, raptor_xml_parser_simple_error_handler, rdf_parser);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
             if(sax2_element->content_cdata) {
@@ -2620,6 +2637,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
           if(!strcmp((char*)parse_type, "Literal")) {
+            raptor_uri_handler *uri_handler;
+            void *uri_context;
+
+            raptor_uri_get_handler(&uri_handler, &uri_context);
+            rdf_xml_parser->xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
+                                                             raptor_parser_simple_error, rdf_parser,
+                                                             1);
+
             element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
@@ -2864,11 +2889,12 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_PARSETYPE_LITERAL:
         element->parent->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
 
+
         /* Append closing element */
         {
           char *fmt_buffer;
           int fmt_length;
-          fmt_buffer=raptor_format_sax2_element(sax2_element, &fmt_length,1, raptor_xml_parser_error_handler, rdf_parser);
+          fmt_buffer=raptor_format_sax2_element(sax2_element, &fmt_length,1, raptor_xml_parser_simple_error_handler, rdf_parser);
           if(fmt_buffer && fmt_length) {
             /* Append cdata content content */
             char *new_cdata=(char*)RAPTOR_MALLOC(cstring, sax2_element->content_cdata_length + fmt_length + 1);
@@ -2944,9 +2970,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          */
 
         if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
-          if(sax2_element->content_cdata_seen) 
+          if(element->content_cdata_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
-          else if (sax2_element->content_element_seen) 
+          else if (element->content_element_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
           else { /* Empty Literal */
             element->object.type= RAPTOR_IDENTIFIER_TYPE_LITERAL;
@@ -3221,6 +3247,10 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         element->parent);
             }
 
+            /* Finish the xml writer for parseType="Literal" */
+            if(rdf_xml_parser->xml_writer)
+              raptor_free_xml_writer(rdf_xml_parser->xml_writer);
+        
           break;
 
           case RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION:
