@@ -38,7 +38,7 @@ typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_ANON
 /* Public functions */
 
 /* Create */
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 raptor_ntriples_parser* raptor_ntriples_new(librdf_world *world);
 #else
 raptor_ntriples_parser* raptor_ntriples_new(void);
@@ -52,7 +52,7 @@ void raptor_ntriples_set_fatal_error_handler(raptor_ntriples_parser* parser, voi
 void raptor_ntriples_set_statement_handler(raptor_ntriples_parser* parser, void *user_data, raptor_statement_handler handler);
 
 /* Parsing functions */
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 int raptor_ntriples_parse_file(raptor_ntriples_parser* parser, librdf_uri *uri, librdf_uri *base_uri);
 #else
 int raptor_ntriples_parse_file(raptor_ntriples_parser* parser, const char *filename, const char *base_uri);
