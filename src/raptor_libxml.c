@@ -183,11 +183,15 @@ raptor_libxml_update_document_locator (raptor_parser *rdf_parser) {
   xmlSAXLocatorPtr loc=raptor_get_libxml_document_locator(rdf_parser);
   xmlParserCtxtPtr xc=raptor_get_libxml_context(rdf_parser);
 
-  if(xc->inSubset)
+  if(xc && xc->inSubset)
     return;
 
   locator->line= -1;
   locator->column= -1;
+
+  if(!xc)
+    return;
+
   if(loc) {
     locator->line=loc->getLineNumber(xc);
     /* Seems to be broken */
