@@ -1057,20 +1057,6 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 
 
 /**
- * raptor_feature_from_uri - Turn a parser feature URI into an enum
- * @uri: feature URI
- * 
- * The allowed feature URIs are available via raptor_features_enumerate().
- *
- * Return value: < 0 if the feature is unknown
- **/
-raptor_feature
-raptor_feature_from_uri(raptor_uri *uri)
-{
-  return raptor_feature_from_uri_common(uri, 1);
-}
-
-/**
  * raptor_set_parser_strict - Set parser to strict / lax mode
  * @rdf_parser: &raptor_parse object
  * @is_strict: Non 0 for strict parsing
