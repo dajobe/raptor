@@ -1,5 +1,35 @@
 2004-08-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Makefile.am: Added raptor_nfc_test.c, raptor_nfc_data.c,
+	raptor_nfc.c and raptor_nfc.h
+	Added raptor_nfc_test
+
+	* raptor_utf8.c (raptor_utf8_is_nfc): Use raptor_nfc_check.
+
+	* raptor_nfc.c, raptor_nfc.h: Unicode NFC
+
+	* raptor_internal.h: Added prototype for raptor_nfc_check
+
+	* configure.ac:
+	Check for lengths of u8, u16, u32, char, short, int, long
+
+	* raptor_nfc_data.c: Unicode NFC data tables
+
+	* raptor_parse.c: Updated for raptor_set to raptor_id_set renaming.
+	(raptor_record_ID): Pass in the base_uri to the raptor_id_set_add, do
+	not malloc / free a larger string.
+
+	* raptor_internal.h:
+	Rename the raptor_set* typedef and functions to be raptor_id_set
+
+	* raptor_set.c:
+	Change the implementation to a list of (set of IDs)-per base URI.
+	Each time a base URI is checked it is swapped with the first in
+	the list.  The set of IDs (raptor_base_id_set) takes a lot less
+	memory since it isn't storing the string concat(base URI,ID) but just
+	ID.  The capacity and size parts are part of the raptor_base_id_set.
+	Rename the structures and functions to be raptor_id_set not raptor_set.
+
 	* raptor_parse.c (raptor_end_element_grammar):
 	Add check for a non-empty property
 	element with both a node element <rdf:Description/> child and
