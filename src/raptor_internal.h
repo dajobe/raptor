@@ -167,9 +167,10 @@ typedef struct raptor_namespace_s raptor_namespace;
 /* Raptor Namespace Stack node */
 typedef struct {
   raptor_namespace* top;
-#ifdef RAPTOR_IN_REDLAND
-  librdf_world* world;
-#endif
+  raptor_uri_handler *uri_handler;
+  void *uri_context;
+  raptor_uri *rdf_ms_uri;
+  raptor_uri *rdf_schema_uri;
 } raptor_namespace_stack;
 
 
@@ -187,11 +188,6 @@ struct raptor_namespace_s {
   int prefix_length;
   /* URI of namespace or NULL for default */
   raptor_uri *uri;
-#ifdef RAPTOR_IN_REDLAND
-#else
-  /* When implementing URIs as char*, need this for efficiency */
-  int uri_length;
-#endif
   /* parsing depth that this ns was added.  It will
    * be deleted when the parser leaves this depth 
    */
@@ -210,9 +206,6 @@ struct raptor_namespace_s {
  */
 struct raptor_parser_s {
 
-  /* FIXME temporary redland stuff */
-  void *world;
-  
 #ifdef RAPTOR_IN_REDLAND
   /* DAML collection URIs */
   librdf_uri *raptor_daml_oil_uri;
@@ -375,11 +368,7 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 
 
 /* raptor_nspace.c */
-#ifdef RAPTOR_IN_REDLAND
-void raptor_namespaces_init(raptor_namespace_stack *nstack, librdf_world *world);
-#else
-void raptor_namespaces_init(raptor_namespace_stack *nstack);
-#endif
+void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context);
 void raptor_namespaces_free(raptor_namespace_stack *nstack);
 int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const char *prefix, const char *nspace, int depth);
 void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
@@ -387,11 +376,7 @@ void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
 raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const char *prefix, int prefix_length);
 
-#ifdef RAPTOR_IN_REDLAND
-raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth, librdf_world *world);
-#else
-raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth);
-#endif
+raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const char *prefix, const char *ns_uri_string, int depth);
 void raptor_namespace_free(raptor_namespace *ns);
 raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 const char* raptor_namespace_get_prefix(const raptor_namespace *ns);
