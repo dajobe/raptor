@@ -2051,10 +2051,10 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
   }
 
-
+  /*
   if(item->enclosure)
     raptor_rss10_emit_enclosure(rss_serializer, item->enclosure);
-
+  */
 
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"  ", 2);
   raptor_xml_writer_end_element(xml_writer, element);
