@@ -150,6 +150,8 @@ extern void raptor_libxml_validation_warning(void *context, const char *msg, ...
 extern xmlParserCtxtPtr raptor_get_libxml_context(raptor_parser *rdf_parser);
 extern void raptor_set_libxml_document_locator(raptor_parser *rdf_parser, xmlSAXLocatorPtr loc);
 extern xmlSAXLocatorPtr raptor_get_libxml_document_locator(raptor_parser *rdf_parser);
+extern void raptor_libxml_update_document_locator (raptor_parser *rdf_parser);
+
 #ifdef RAPTOR_LIBXML_MY_ENTITIES
 extern raptor_xml_entity* raptor_get_libxml_entities(raptor_parser *rdf_parser);
 extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_entity* entities);
@@ -166,11 +168,19 @@ extern void raptor_parser_error_varargs(raptor_parser* parser, const char *messa
 extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments);
 
 
+/* raptor_parse.c */
+
 /* Prototypes for common expat/libxml parsing event-handling functions */
 extern void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
 extern void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
 /* s is not 0 terminated. */
 extern void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
+
+extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
+
+
+/* raptor_locator.c */
+extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 
 
 #ifdef HAVE_STRCASECMP
