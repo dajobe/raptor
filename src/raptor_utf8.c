@@ -39,6 +39,10 @@
 #include <dmalloc.h>
 #endif
 
+#ifdef HAVE_G_UTF8_NORMALIZE
+#include <glib.h>
+#endif
+
 
 /* Raptor includes */
 #include "raptor.h"
@@ -666,3 +670,43 @@ raptor_unicode_is_extender(long c)
          
 
 #endif /* if not XML 1.1 */
+
+
+/**
+ * raptor_utf8_is_nfc - Check a string is in Unicode Normal Form C
+ * @input: UTF-8 string
+ * @length: length of string
+ * 
+ * Return value: Non 0 if the string is NFC
+ **/
+int
+raptor_utf8_is_nfc(const unsigned char *input, size_t length) 
+{
+  int i;
+  int plain=1;
+#ifdef HAVE_G_UTF8_NORMALIZE
+  unsigned char *norm;
+#endif
+  
+  for(i=0; i<length; i++)
+    if(input[i]>0x7f) {
+      plain=0;
+      break;
+    }
+    
+  if(plain)
+    return 1;
+  
+#ifdef HAVE_G_UTF8_NORMALIZE
+  norm=(unsigned char*)g_utf8_normalize(input, length, G_NORMALIZE_NFKC);
+  for(i=0; i<length; i++)
+    if(input[i] != norm[i]) {
+      free(norm);
+      return 0;
+    }
+  
+  free(norm);
+#endif
+
+  return 1;
+}
