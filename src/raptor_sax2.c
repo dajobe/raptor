@@ -210,7 +210,7 @@ raptor_format_sax2_element(raptor_sax2_element *element,
 
   if (!is_end && element->attributes) {
     for(i=0; i < element->attribute_count; i++) {
-      size_t escaped_attr_val_len;
+      int escaped_attr_val_len;
       
       length++; /* ' ' between attributes and after element name */
 
