@@ -114,11 +114,8 @@ typedef struct {
   raptor_identifier_type predicate_type;
   const void *object;
   raptor_identifier_type object_type;
-/*
-  raptor_identifier *subject;
-  raptor_identifier *predicate;
-  raptor_identifier *object;
-*/
+  int object_literal_is_XML;
+  const char *object_literal_language;
 } raptor_statement;
 
 
