@@ -217,6 +217,107 @@ const char * const raptor_xml_literal_datatype_uri_string="http://www.w3.org/199
 const unsigned int raptor_xml_literal_datatype_uri_string_len=53;
 
 
+raptor_statement*
+raptor_statement_copy(const raptor_statement *statement) {
+  raptor_statement *s;
+
+  s=(raptor_statement*)RAPTOR_CALLOC(raptor_statement, 1, sizeof(raptor_statement));
+  if(!s)
+    return NULL;
+  
+  s->subject_type=statement->subject_type;
+  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    unsigned char *new_blank=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->subject)+1);
+    strcpy((char*)new_blank, (const char*)statement->subject);
+    s->subject=new_blank;
+  } else if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    int *new_ordinal=(int*)RAPTOR_MALLOC(int, sizeof(int));
+    *new_ordinal=*((int*)statement->subject);
+    s->subject=new_ordinal;
+  } else
+    s->subject=raptor_uri_copy((raptor_uri*)statement->subject);
+
+  s->predicate_type=statement->predicate_type;
+  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    int *new_ordinal=(int*)RAPTOR_MALLOC(int, sizeof(int));
+    *new_ordinal=*((int*)statement->predicate);
+    s->predicate=new_ordinal;
+  } else
+    s->predicate=raptor_uri_copy((raptor_uri*)statement->predicate);
+
+
+  s->object_type=statement->object_type;
+  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
+     statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+    unsigned char *string;
+    char *language=NULL;
+    raptor_uri *uri=NULL;
+    
+    string=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->object)+1);
+    strcpy((char*)string, (const char*)statement->object);
+    s->object=string;
+
+    if(statement->object_literal_language) {
+      language=(char*)RAPTOR_MALLOC(cstring, strlen((const char*)statement->object_literal_language)+1);
+      strcpy(language, (const char*)statement->object_literal_language);
+      s->object_literal_language=language;
+    }
+
+    if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+      /* nop */
+    } else if(statement->object_literal_datatype) {
+      uri=raptor_uri_copy((raptor_uri*)statement->object_literal_datatype);
+      s->object_literal_datatype=uri;
+    }
+  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    char *blank=(char*)statement->object;
+    unsigned char *new_blank=(unsigned char*)RAPTOR_MALLOC(cstring, strlen(blank)+1);
+    strcpy((char*)new_blank, (const char*)blank);
+    s->object=new_blank;
+  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    int *new_ordinal=(int*)RAPTOR_MALLOC(int, sizeof(int));
+    *new_ordinal=*((int*)statement->object);
+    s->object=new_ordinal;
+  } else {
+    raptor_uri *uri=raptor_uri_copy((raptor_uri*)statement->object);
+    s->object=uri;
+  }
+
+  return s;
+}
+
+
+void
+raptor_free_statement(raptor_statement *statement) {
+  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
+     statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    RAPTOR_FREE(cstring, statement->subject);
+  else
+    raptor_free_uri((raptor_uri*)statement->subject);
+
+  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    RAPTOR_FREE(cstring, statement->predicate);
+  else
+    raptor_free_uri((raptor_uri*)statement->predicate);
+
+  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
+     statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+    RAPTOR_FREE(cstring, statement->object);
+
+    if(statement->object_literal_language)
+      RAPTOR_FREE(cstring, statement->object_literal_language);
+    if(statement->object_literal_datatype)
+      raptor_free_uri((raptor_uri*)statement->object_literal_datatype);
+  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
+            statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    RAPTOR_FREE(cstring, statement->object);
+  else
+    raptor_free_uri((raptor_uri*)statement->object);
+
+  RAPTOR_FREE(raptor_statement, statement);
+}
+
+
 /**
  * raptor_print_statement - Print a raptor_statement to a stream
  * @statement: &raptor_statement object to print
