@@ -121,8 +121,11 @@ raptor_www_ghttp_fetch(raptor_www *www)
 
   www->type=(char*)ghttp_get_header(www->request, http_hdr_Content_Type);
   if(www->type) {
-    if(www->content_type)
+    if(www->content_type) {
       www->content_type(www, www->userdata, www->type);
+      if(www->failed)
+        return 1;
+    }
     www->free_type=0;
   }
   www->total_bytes=ghttp_get_body_len(www->request);
@@ -136,5 +139,8 @@ raptor_www_ghttp_fetch(raptor_www *www)
                      www->userdata, 
                      ghttp_get_body(www->request), ghttp_get_body_len(www->request), 1);
 
+  if(www->failed)
+    return 1;
+  
   return 0;
 }

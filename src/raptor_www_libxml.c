@@ -40,10 +40,10 @@
 static void
 raptor_www_libxml_http_error (void *ctx, const char *msg, ...) 
 {
-  raptor_www* cx=(raptor_www*)ctx;
+  raptor_www* www=(raptor_www*)ctx;
   va_list args;
   
-  cx->failed=1;
+  www->failed=1;
   
   va_start(args, msg);
   fprintf(stderr, "libxml nanoHTTP error - ");
@@ -83,30 +83,33 @@ raptor_www_libxml_fetch(raptor_www *www, const char *url)
     return 1;
   
   if(www->type) {
-    if(www->content_type)
+    if(www->content_type) {
       www->content_type(www, www->userdata, www->type);
+      if(www->failed) {
+        xmlNanoHTTPClose(www->ctxt);
+        return 1;
+      }
+    }
   }
 
   www->status_code=xmlNanoHTTPReturnCode(www->ctxt);
   
   while(1) {
     int len=xmlNanoHTTPRead(www->ctxt, www->buffer, BUFFER_SIZE);
-    
     if(len<0)
       break;
-    
     
     www->total_bytes += len;
 
     if(www->write_bytes)
       www->write_bytes(www, www->userdata, www->buffer, len, 1);
     
-    if(len < BUFFER_SIZE)
+    if(len < BUFFER_SIZE || www->failed)
       break;
   }
   
   xmlNanoHTTPClose(www->ctxt);
 
-  return 0;
+  return www->failed;
 }
 
