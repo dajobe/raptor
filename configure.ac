@@ -377,8 +377,6 @@ if test "X$XML_CONFIG" != X; then
     AC_TRY_LINK([
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
-#else
-#include <gnome-xml/parser.h>
 #endif
 ], [xmlEntity foo; foo.name_length=0],
                 AC_MSG_RESULT(yes)
@@ -389,8 +387,6 @@ if test "X$XML_CONFIG" != X; then
     AC_TRY_LINK([
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
-#else
-#include <gnome-xml/parser.h>
 #endif
 ], [xmlEntity foo; foo.etype=0],
                 AC_MSG_RESULT(yes)
@@ -401,8 +397,6 @@ if test "X$XML_CONFIG" != X; then
     AC_TRY_LINK([
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
-#else
-#include <gnome-xml/parser.h>
 #endif
 ], [xmlSAXHandler foo; foo.initialized=0],
                 AC_MSG_RESULT(yes)
@@ -413,8 +407,6 @@ if test "X$XML_CONFIG" != X; then
     AC_TRY_LINK([
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
-#else
-#include <gnome-xml/parser.h>
 #endif
 ], [xmlSAXHandler foo; foo.externalSubset=NULL],
                 AC_MSG_RESULT(yes)
