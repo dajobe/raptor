@@ -1,15 +1,12 @@
 <http://www.w3.org/2002/07/owl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
-<http://www.w3.org/2002/07/owl> <http://www.w3.org/2002/07/owl#versionInfo> "March 18. 2003, GS" .
 <http://www.w3.org/2002/07/owl> <http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/2000/01/rdf-schema> .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/title> "Classes and properties for the Web Ontology Language OWL" .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/creator> "W3C Web Ontology (WebOnt) Working Group" .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/subject> "OWL; Web Ontology Language; Semantic Web" .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/description> "This file specifies in RDF Schema format the\n    built-in classes and properties that together form the basis of\n    the RDF/XML syntax of OWL Full, OWL DL and OWL Lite with the help  \n    of RDF Schema. We do not expect people to import this file\n    explcitly into their ontology. People that do import this file\n    should expect their ontology to be an OWL Full ontology. \n  " .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/publisher> "W3C" .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/date> "2003-02-10" .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/format> "text/xml" .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/language> "en" .
-<http://www.w3.org/2002/07/owl> <http://purl.org/dc/elements/1.1/identifier> "http://www.w3.org/2002/07/owl" .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/2001/sw/WebOnt/> .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/TR/owl-features/> .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/TR/2003/CR-owl-test-20030818/> .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/TR/2003/CR-owl-semantics-20030818/> .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2000/01/rdf-schema#comment> "This file specifies in RDF Schema format the\n    built-in classes and properties that together form the basis of\n    the RDF/XML syntax of OWL Full, OWL DL and OWL Lite.\n    We do not expect people to import this file\n    explicitly into their ontology. People that do import this file\n    should expect their ontology to be an OWL Full ontology. \n  " .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2000/01/rdf-schema#comment> "$Id: owl.rdf,v 1.5 2003/08/19 15:07:19 connolly Exp $" .
+<http://www.w3.org/2002/07/owl> <http://www.w3.org/2002/07/owl#versionInfo> "$Id: owl.rdf,v 1.5 2003/08/19 15:07:19 connolly Exp $" .
 <http://www.w3.org/2002/07/owl#Class> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#Class> <http://www.w3.org/2000/01/rdf-schema#label> "Class" .
 <http://www.w3.org/2002/07/owl#Class> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Class> .
@@ -38,14 +35,10 @@ _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/19
 <http://www.w3.org/2002/07/owl#equivalentProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#equivalentProperty> <http://www.w3.org/2000/01/rdf-schema#label> "equivalentProperty" .
 <http://www.w3.org/2002/07/owl#equivalentProperty> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> .
-<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
-<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#label> "sameIndividualAs" .
-<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Thing> .
-<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Thing> .
-<http://www.w3.org/2002/07/owl#sameIndividualAs> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2002/07/owl#sameAs> .
 <http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/2000/01/rdf-schema#label> "sameAs" .
-<http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2002/07/owl#sameIndividualAs> .
+<http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Thing> .
+<http://www.w3.org/2002/07/owl#sameAs> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Thing> .
 <http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/2000/01/rdf-schema#label> "differentFrom" .
 <http://www.w3.org/2002/07/owl#differentFrom> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Thing> .
@@ -70,7 +63,7 @@ _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/19
 <http://www.w3.org/2002/07/owl#complementOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Class> .
 <http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#label> "oneOf" .
-<http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#oneOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#List> .
 <http://www.w3.org/2002/07/owl#Restriction> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#Restriction> <http://www.w3.org/2000/01/rdf-schema#label> "Restriction" .
@@ -123,7 +116,7 @@ _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/19
 <http://www.w3.org/2002/07/owl#FunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#label> "InverseFunctionalProperty" .
-<http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+<http://www.w3.org/2002/07/owl#InverseFunctionalProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2002/07/owl#ObjectProperty> .
 <http://www.w3.org/2002/07/owl#AnnotationProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#AnnotationProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
@@ -132,8 +125,11 @@ _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/19
 <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
 <http://www.w3.org/2002/07/owl#Ontology> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#Ontology> <http://www.w3.org/2000/01/rdf-schema#label> "Ontology" .
+<http://www.w3.org/2002/07/owl#OntologyProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
+<http://www.w3.org/2002/07/owl#OntologyProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/2000/01/rdf-schema#label> "imports" .
+<http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#OntologyProperty> .
 <http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#imports> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#versionInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
@@ -141,19 +137,22 @@ _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/19
 <http://www.w3.org/2002/07/owl#versionInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
 <http://www.w3.org/2002/07/owl#priorVersion> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#priorVersion> <http://www.w3.org/2000/01/rdf-schema#label> "priorVersion" .
+<http://www.w3.org/2002/07/owl#priorVersion> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#OntologyProperty> .
 <http://www.w3.org/2002/07/owl#priorVersion> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#priorVersion> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#backwardCompatibleWith> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
-<http://www.w3.org/2002/07/owl#backwardCompatibleWith> <http://www.w3.org/2000/01/rdf-schema#label> "backwardCompatibleWith" .
+<http://www.w3.org/2002/07/owl#backwardCompatibleWith> <http://www.w3.org/2000/01/rdf-schema#label> "backwardCompatibleWitesh" .
+<http://www.w3.org/2002/07/owl#backwardCompatibleWith> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#OntologyProperty> .
 <http://www.w3.org/2002/07/owl#backwardCompatibleWith> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#backwardCompatibleWith> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#incompatibleWith> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2002/07/owl#incompatibleWith> <http://www.w3.org/2000/01/rdf-schema#label> "incompatibleWith" .
+<http://www.w3.org/2002/07/owl#incompatibleWith> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#OntologyProperty> .
 <http://www.w3.org/2002/07/owl#incompatibleWith> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#incompatibleWith> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2002/07/owl#Ontology> .
 <http://www.w3.org/2002/07/owl#DeprecatedClass> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#DeprecatedClass> <http://www.w3.org/2000/01/rdf-schema#label> "DeprecatedClass" .
-<http://www.w3.org/2002/07/owl#DeprecatedClass> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2002/07/owl#DeprecatedClass> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#DeprecatedProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2002/07/owl#DeprecatedProperty> <http://www.w3.org/2000/01/rdf-schema#label> "DeprecatedProperty" .
 <http://www.w3.org/2002/07/owl#DeprecatedProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
