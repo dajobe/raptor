@@ -216,10 +216,12 @@ rdfdiff_new_file(const unsigned char *name, const char *syntax)
   return file;  
 }
 
+
 static void
-rdfdiff_free_file(rdfdiff_file*file) 
+rdfdiff_free_file(rdfdiff_file* file) 
 {
   rdfdiff_link *cur, *next;
+  rdfdiff_blank *cur1, *next1;
   
   if(file->name)
     RAPTOR_FREE(cstring, file->name);
@@ -234,10 +236,10 @@ rdfdiff_free_file(rdfdiff_file*file)
     RAPTOR_FREE(rdfdiff_link, cur);
   }
 
-  for(cur = file->first_blank; cur; cur = next1) {
-    next = cur->next;
+  for(cur1 = file->first_blank; cur1; cur1 = next1) {
+    next1 = cur1->next;
 
-    rdfdiff_free_blank(cur);
+    rdfdiff_free_blank(cur1);
   }
   
   RAPTOR_FREE(rdfdiff_file, file);  
