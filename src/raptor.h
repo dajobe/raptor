@@ -124,6 +124,8 @@ RAPTOR_API void raptor_set_warning_handler(raptor_parser* parser, void *user_dat
 RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 
 RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
+RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
+
 
 /* Parsing functions */
 #ifdef LIBRDF_INTERNAL
