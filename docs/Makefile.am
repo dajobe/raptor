@@ -21,6 +21,7 @@
 
 bin_PROGRAMS = rdfdump
 bin_SCRIPTS = raptor-config
+noinst_SCRIPTS = raptor-src-config
 lib_LTLIBRARIES = libraptor.la
 
 include_HEADERS = raptor.h ntriples.h
@@ -43,7 +44,7 @@ EXTRA_DIST=ChangeLog \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
-raptor-config.in \
+raptor-config.in raptor-src-config.in \
 autogen.sh \
 raptor.spec.in \
 dc.rdf \
