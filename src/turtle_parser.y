@@ -406,8 +406,13 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
 
   if(prefix) {
     int len=strlen(prefix);
-    if(prefix[len-1] == ':')
-      prefix[len-1]='\0';
+    if(prefix[len-1] == ':') {
+      if(len == 1)
+         /* declaring default namespace prefix @prefix : ... */
+        prefix=NULL;
+      else
+        prefix[len-1]='\0';
+    }
   }
 
   raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
