@@ -1,0 +1,127 @@
+/* -*- Mode: c; c-basic-offset: 2 -*-
+ *
+ * raptor_nfc.h - Raptor Unicode NFC headers
+ *
+ * $Id$
+ *
+ * Copyright (C) 2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
+ * University of Bristol - http://www.bristol.ac.uk/
+ * 
+ * This package is Free Software or Open Source available under the
+ * following licenses (these are alternatives):
+ *   1. GNU Lesser General Public License (LGPL)
+ *   2. GNU General Public License (GPL)
+ *   3. Mozilla Public License (MPL)
+ * 
+ * See LICENSE.html or LICENSE.txt at the top of this package for the
+ * full license terms.
+ * 
+ */
+
+
+#include <sys/types.h>
+
+#if u32 == MISSING
+  #undef u32
+  #if SIZEOF_UNSIGNED_INT == 4
+    typedef unsigned int u32;
+  #elif SIZEOF_UNSIGNED_LONG == 4
+    typedef unsigned long u32;
+  #else
+    #error u32 type not defined
+  #endif
+#endif
+
+
+#if u16 == MISSING
+  #undef u16
+  #if SIZEOF_UNSIGNED_SHORT == 2
+    typedef unsigned int u16;
+  #elif SIZEOF_UNSIGNED_INT == 2
+    typedef unsigned long u16;
+  #else
+    #error u16 type not defined
+  #endif
+#endif
+
+
+#if u8 == MISSING
+  #undef u8
+  #if SIZEOF_UNSIGNED_CHAR == 1
+    typedef unsigned char u8;
+  #else
+    #error u8 type not defined
+  #endif
+#endif
+
+/*
+ * Definitions for Unicode NFC data tables
+ *
+ * See Unicode Normalization http://unicode.org/unicode/reports/tr15/
+ * for the definition of Unicode Normal Form C (NFC)
+ */
+
+
+/* Unicode combining classes
+ *
+ * The combining class is taken from the 4th field of UnicodeData.txt
+ * and are mostly class 0 - nothing special.  This structure
+ * is used to make a sparse sequence of (key, class) pairs
+ * ordered by key, of the non-0 class entries.
+ *
+ */
+typedef struct 
+{
+  /* the code (0.. 0x10FFD inclusive - 24 bits) */
+  unsigned int key:24;
+ /* the combining class (0.. 255 - 8 bits is enough, there are ~50-60 used) */
+  unsigned int combining_class:8;
+} raptor_nfc_key_class;
+
+
+/* Unicode combining characters
+ *
+ * Pairs of characters (base, follow) that must be in that order
+ * They are all 0..0xFFFF inclusive
+ *
+ * This structure is used to make a sparse sequence of (base, follow)
+ * pairs of valid combinations. 'base' may have several valid 'follow's in
+ * the sequence.
+ */
+typedef struct
+{
+  u16 base;
+  u16 follow;
+}  raptor_nfc_base_follow;
+
+
+/*
+ * Flags for codes U+0 to U+108FF, U+1D000 to U+1D7FF
+ */
+
+typedef enum {
+  HIGH,  /* U+D800 to U+DBFF High Surrogates */
+  loww,  /* U+DC00 to U+DFFF Low Surrogates */
+  NoNo,  /* code that does not exist */
+  NOFC,  /* forbidden or excluded in NFC */
+  ReCo,  /* class > 0 recombining */
+  NoRe,  /* class > 0 not recombining */
+  COM0,  /* class 0 and composing */
+  Hang,  /* U+1100 to U+1112 - Hangul Jamo (Korean) initial consonants */
+  hAng,  /* U+1161 to U+1175 - Hangul Jamo (Korean) medial vowels */
+  haNG,  /* U+11A8 to U+11C2 - Hangul Jamo (Korean) trailing consonants */
+  HAng,  /* U+AC00 to U+D7A3 (except for every 28) - Hangul syllables */
+  Base,  /* base that combines */
+  simp   /* class 0 nothing special */
+} raptor_nfc_code_flag;
+
+
+#define RAPTOR_NFC_CLASSES_COUNT 352
+extern raptor_nfc_key_class raptor_nfc_classes[RAPTOR_NFC_CLASSES_COUNT];
+
+#define RAPTOR_NFC_RECOMBINERS_COUNT 2177
+extern raptor_nfc_base_follow raptor_nfc_recombiners[RAPTOR_NFC_RECOMBINERS_COUNT];
+
+#define RAPTOR_NFC_CODE_FLAGS_COUNT 34944
+extern u8 raptor_nfc_flags[RAPTOR_NFC_CODE_FLAGS_COUNT];
