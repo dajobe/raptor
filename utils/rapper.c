@@ -383,7 +383,7 @@ main(int argc, char *argv[])
     puts("Parse RDF content at the source URI into RDF triples.");
     puts("\nMain options:");
     puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
-    puts(HELP_TEXT("i FORMAT", "input FORMAT    ", "Set input format to one of:"));
+    puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set input format to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
       const char *help_label;
@@ -395,9 +395,9 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
-    puts(HELP_TEXT("o FORMAT", "output FORMAT   ", "Set output format to one of:"));
+    puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set output format to one of:"));
     puts("    'simple'                A simple format (default)\n    'ntriples'              N-Triples");
-    puts(HELP_TEXT("m", "mode MODE       ", "Set parser mode - 'lax' (default) or 'strict'"));
+    puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
     puts("\nAdditional options:");
     puts(HELP_TEXT("c", "count           ", "Count triples - no output"));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
