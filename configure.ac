@@ -79,7 +79,7 @@ if test "X$LEX" != "X:"; then
 	AC_MSG_WARN(available from http://lex.sourceforge.net/)
     else
 	AC_MSG_WARN(There are no generated Turtle lexer files present.)
-	AC_MSG_WARN(Raptor cannot NOT build these.  Please get)
+	AC_MSG_WARN(Raptor CANNOT build these.  Please get)
 	AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
 	AC_MSG_WARN(available from http://lex.sourceforge.net/)
 	AC_MSG_WARN(Alternatively copy the generated Turtle lexer)
