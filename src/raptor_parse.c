@@ -503,6 +503,13 @@ struct raptor_element_s {
   /* how many of above seen */
   int rdf_attr_count;
 
+  /* value of xml:lang attribute on this element or NULL */
+  const char *xml_language;
+
+  /* URI of xml:base attribute value on this element or NULL */
+  raptor_uri *base_uri;
+
+
   /* state that this production matches */
   raptor_state state;
 
@@ -771,6 +778,9 @@ static void raptor_print_ns_name(FILE *stream, raptor_ns_name* name);
 #endif
 static void raptor_free_ns_name(raptor_ns_name* name);
 static int raptor_ns_names_equal(raptor_ns_name *name1, raptor_ns_name *name2);
+
+static const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
+static raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 
 
 /* prototypes for element functions */
@@ -1221,6 +1231,9 @@ raptor_free_element(raptor_element *element)
   if(element->tail_uri)
     RAPTOR_FREE_URI(element->tail_uri);
 
+  if(element->base_uri)
+    RAPTOR_FREE_URI(element->base_uri);
+
   raptor_free_ns_name(element->name);
   LIBRDF_FREE(raptor_element, element);
 }
@@ -1355,6 +1368,9 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_locator *locator;
 #endif
   int non_nspaced_count=0;
+  const char *xml_language=NULL;
+  raptor_uri *xml_base=NULL;
+  
   
   rdf_parser=(raptor_parser*)user_data;
 #ifdef NEED_EXPAT
@@ -1374,11 +1390,11 @@ raptor_xml_start_element_handler(void *user_data,
   rdf_parser->depth++;
 
   if (atts) {
-    /* Round 1 - find special attributes, at present just namespaces */
+    /* Round 1 - process XML attributes */
     for (i = 0; atts[i]; i+=2) {
       all_atts_count++;
 
-      /* synthesise the XML NS events */
+      /* synthesise the XML namespace events */
       if(!strncmp(atts[i], "xmlns", 5)) {
         /* there is more i.e. xmlns:foo */
         const char *prefix=atts[i][5] ? &atts[i][6] : NULL;
@@ -1389,6 +1405,25 @@ raptor_xml_start_element_handler(void *user_data,
         atts[i]=NULL; 
         continue;
       }
+
+      if(!strcmp(atts[i], "xml:lang")) {
+        xml_language=atts[i+1];
+        atts[i]=NULL; 
+        continue;
+      }
+      
+      if(!strcmp(atts[i], "xml:base")) {
+        xml_base=raptor_make_uri(raptor_inscope_base_uri(rdf_parser), atts[i+1]);
+        atts[i]=NULL; 
+        continue;
+      }
+
+      /* delete other xml attributes - not used */
+      if(!strncmp(atts[i], "xml", 3)) {
+        atts[i]=NULL; 
+        continue;
+      }
+      
 
       ns_attributes_count++;
     }
@@ -1421,6 +1456,8 @@ raptor_xml_start_element_handler(void *user_data,
   element->content_cdata_seen=0;
   element->content_cdata_length=0;
 
+  element->xml_language=xml_language;
+  element->base_uri=xml_base;
 
   if(!element_name->nspace)
     non_nspaced_count++;
@@ -1429,7 +1466,7 @@ raptor_xml_start_element_handler(void *user_data,
   if(ns_attributes_count) {
     int offset = 0;
 
-    /* Round 2 - turn attributes into namespaced-attributes */
+    /* Round 2 - turn string attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
     named_attrs=(raptor_ns_name**)LIBRDF_CALLOC(raptor_ns_name-array, sizeof(raptor_ns_name*), ns_attributes_count);
@@ -2584,7 +2621,15 @@ raptor_generate_statement(raptor_parser *rdf_parser,
                           raptor_uri *bag)
 {
   raptor_statement *statement=&rdf_parser->statement;
+  const char *language=NULL;
+  static const char empty_literal[1]="";
 
+  if(object_type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+    language=raptor_inscope_xml_language(rdf_parser);
+    if(!object_uri)
+      object_uri=(void*)empty_literal;
+  }
+  
   statement->subject=subject_uri ? (void*)subject_uri : (void*)subject_id;
   statement->subject_type=subject_type;
 
@@ -2593,6 +2638,9 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
   statement->object=object_uri ? (void*)object_uri : (void*)object_id;
   statement->object_type=object_type;
+
+  statement->object_literal_language=language;
+
 
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "raptor_generate_statement: Generating statement: ");
@@ -2623,6 +2671,8 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
 
+  statement->object_literal_language=NULL;
+
   statement->subject=bag;
   statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
@@ -2643,6 +2693,8 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   statement->predicate=RAPTOR_RDF_object_URI;
   statement->object=object_uri ? (void*)object_uri : (void*)object_id;
   statement->object_type=object_type;
+  statement->object_literal_language=language;
+
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 }
 
@@ -2760,8 +2812,9 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 
 
 static raptor_uri*
-raptor_make_uri_from_id(raptor_uri *base_uri, const char *id) 
+raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id) 
 {
+  raptor_uri *base_uri = raptor_inscope_base_uri(rdf_parser);
 #ifdef LIBRDF_INTERNAL
   librdf_uri *new_uri;
   char *local_name;
@@ -3143,7 +3196,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     property_uri=raptor_make_uri(RAPTOR_RDF_MS_URI, rdf_attr_info[i].name);
 #endif
     
-    object_uri=object_is_literal ? (raptor_uri*)value : raptor_make_uri(rdf_parser->base_uri, value);
+    object_uri=object_is_literal ? (raptor_uri*)value : raptor_make_uri(raptor_inscope_base_uri(rdf_parser), value);
     object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     
     raptor_generate_statement(rdf_parser, 
@@ -3257,25 +3310,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_TYPED_NODE:
       case RAPTOR_STATE_PARSETYPE_RESOURCE:
       case RAPTOR_STATE_PARSETYPE_DAML_COLLECTION:
-        /* Handling 6.3 (description), 6.13 (typedNode) or contents
-         * of a property (propertyElt or member) with parseType="resource"
+        /* Handling 6.3 (description), 6.13 (typedNode), contents
+         * of a property (propertyElt or member) with parseType="Resource"
+         * and rdf:Seq, rdf:Bag, rdf:Alt which are just typedNodes now
          *
-         * 6.3 (description):
-         * <rdf:Description idAboutAttr? bagIdAttr? propAttr* >
-         *   Attributes: (ID|about|aboutEach|aboutEachPrefix)? bagID? propAttr*
-         * (may have no content, that is tested in the end element code)
+         * Expect here from merge of production 6.3, 6.13, 6.25-6.27
+         * <typeName (ID|about)? bagID? propAttr* />
          *
-         * 6.13 (typedNode):
-         * haved fallen through and not chosen other productions -
-         * 6.3, 6.25, 6.26, 6.27.
-         * and handling rdf:Seq, rdf:Bag, rdf:Alt or other container
-         *
-         * Expect here from production 6.13 (typedNode)
-         * <typeName idAboutAttr? bagIdAttr? propAttr* />
-         *   Attributes: (ID|about|aboutEach|aboutEachPrefix)? bagID? propAttr*
-         *
-         * CHOICE (description): Create a bag here (always? even if
-         * no bagId given?) FIXME - not decided / implemented yet.
+         * Only create a bag if bagID given
          */
 
         if(state == RAPTOR_STATE_TYPED_NODE || 
@@ -3296,11 +3338,11 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->subject.id=(char*)element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject.uri=raptor_make_uri_from_id(rdf_parser->base_uri, element->subject.id);
+          element->subject.uri=raptor_make_uri_from_id(rdf_parser, element->subject.id);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
         } else if (element->rdf_attr[RDF_ATTR_about]) {
-          element->subject.uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
+          element->subject.uri=raptor_make_uri(raptor_inscope_base_uri(rdf_parser), element->rdf_attr[RDF_ATTR_about]);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->parent && 
@@ -3317,7 +3359,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           element->bag.id=(char*)element->rdf_attr[RDF_ATTR_bagID];
           element->rdf_attr[RDF_ATTR_bagID]=NULL;
-          element->bag.uri=raptor_make_uri_from_id(rdf_parser->base_uri,  element->bag.id);
+          element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
           element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
@@ -3330,7 +3372,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            */
           if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
             const char * idList = raptor_generate_id(rdf_parser, 0);
-            raptor_uri* uriList = raptor_make_uri_from_id(rdf_parser->base_uri, idList);
+            raptor_uri* uriList = raptor_make_uri_from_id(rdf_parser, idList);
             LIBRDF_FREE(cstring, (char*)idList);
             
             /* <uriList> rdf:type daml:List */
@@ -3587,7 +3629,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           if(element->rdf_attr[RDF_ATTR_bagID]) {
             element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
             element->rdf_attr[RDF_ATTR_bagID]=NULL;
-            element->bag.uri=raptor_make_uri_from_id(rdf_parser->base_uri,  element->bag.id);
+            element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
             element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
@@ -3604,7 +3646,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * this bagID 
            */
           if(element->bag.id) {
-            element->bag.uri=raptor_make_uri_from_id(rdf_parser->base_uri,  element->bag.id);
+            element->bag.uri=raptor_make_uri_from_id(rdf_parser,  element->bag.id);
             element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
@@ -3848,8 +3890,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
           else if (element->content_element_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
-          else
-            element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+          else { /* Empty Literal */
+            element->object.type= RAPTOR_IDENTIFIER_TYPE_LITERAL;
+            element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
+          }
+          
         }
 
         LIBRDF_DEBUG3(raptor_end_element_grammar,
@@ -3860,7 +3905,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
             if(element->object.type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
               if(element->rdf_attr[RDF_ATTR_resource]) {
-                element->object.uri=raptor_make_uri(rdf_parser->base_uri,
+                element->object.uri=raptor_make_uri(raptor_inscope_base_uri(rdf_parser),
                                                     element->rdf_attr[RDF_ATTR_resource]);
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
                 element->object.uri_source=RAPTOR_URI_SOURCE_URI;
@@ -4062,4 +4107,46 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 "Ending in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
+}
+
+
+/**
+ * raptor_inscope_xml_language - Return the in-scope xml:lang
+ * @rdf_parser: Raptor parser object
+ * 
+ * Looks for the innermost xml:lang on an element
+ * 
+ * Return value: The xml:lang value or NULL if none is in scope. 
+ **/
+static const char*
+raptor_inscope_xml_language(raptor_parser *rdf_parser)
+{
+  raptor_element *element;
+  
+  for(element=rdf_parser->current_element; element; element=element->parent)
+    if(element->xml_language)
+      return element->xml_language;
+    
+  return NULL;
+}
+
+
+/**
+ * raptor_inscope_base_uri - Return the in-scope base URI
+ * @rdf_parser: Raptor parser object
+ * 
+ * Looks for the innermost xml:base on an element or document URI
+ * 
+ * Return value: The URI string value or NULL on failure.
+ **/
+static raptor_uri*
+raptor_inscope_base_uri(raptor_parser *rdf_parser)
+{
+  raptor_element *element;
+  
+  for(element=rdf_parser->current_element; element; element=element->parent)
+    if(element->base_uri)
+      return element->base_uri;
+    
+  return rdf_parser->base_uri;
 }
