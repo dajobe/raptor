@@ -315,6 +315,7 @@ main(int argc, char *argv[])
 
       case 'v':
         fputs(raptor_version_string, stdout);
+        fputc('\n', stdout);
         exit(0);
     }
     
