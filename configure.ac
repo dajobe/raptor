@@ -291,7 +291,7 @@ if test "X$xml2_config" != "X" ; then
   fi
 fi
 if test "X$XML_CONFIG" = "X"; then
-  AC_CHECK_PROGS(XML_CONFIG, xml2-config xml-config)
+  AC_CHECK_PROGS(XML_CONFIG, xml2-config)
 fi
 
 AC_ARG_WITH(curl-config, [  --with-curl-config=PATH Location of libcurl curl-config []], curl_config="$withval", curl_config="")
