@@ -73,18 +73,18 @@ raptor_www_libxml_free(raptor_www *www)
 
 
 int
-raptor_www_libxml_fetch(raptor_www *www, const char *url) 
+raptor_www_libxml_fetch(raptor_www *www) 
 {
   if(www->proxy)
     xmlNanoHTTPScanProxy(www->proxy);
 
-  www->ctxt=xmlNanoHTTPOpen(url, &www->type);
+  www->ctxt=xmlNanoHTTPOpen(raptor_uri_as_string(www->uri), &www->type);
   if(!www->ctxt)
     return 1;
   
   if(www->type) {
     if(www->content_type) {
-      www->content_type(www, www->userdata, www->type);
+      www->content_type(www, www->content_type_userdata, www->type);
       if(www->failed) {
         xmlNanoHTTPClose(www->ctxt);
         return 1;
@@ -102,7 +102,7 @@ raptor_www_libxml_fetch(raptor_www *www, const char *url)
     www->total_bytes += len;
 
     if(www->write_bytes)
-      www->write_bytes(www, www->userdata, www->buffer, len, 1);
+      www->write_bytes(www, www->write_bytes_userdata, www->buffer, len, 1);
     
     if(len < BUFFER_SIZE || www->failed)
       break;
