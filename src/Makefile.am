@@ -39,7 +39,8 @@ README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
 autogen.sh \
-raptor.spec.in
+raptor.spec.in \
+dc.rdf
 
 SUBDIRS= \
 	tests \
