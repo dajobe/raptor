@@ -118,6 +118,9 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
     }
   }
 
+  if(stringbuffer->string) {
+    RAPTOR_FREE(cstring, stringbuffer->string);
+
   RAPTOR_FREE(raptor_stringbuffer, stringbuffer);
 }
 
