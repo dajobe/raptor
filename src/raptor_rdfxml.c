@@ -2883,7 +2883,18 @@ static int
 raptor_element_has_property_attributes(raptor_parser *rdf_parser, 
                                        raptor_element *element) 
 {
-  return element->attribute_count >0;
+  int i;
+  
+  if(element->attribute_count >0)
+    return 1;
+
+  /* look for rdf: properties */
+  for(i=0; i<= RDF_ATTR_LAST; i++) {
+    if(element->rdf_attr[i] &&
+       rdf_attr_info[i].type != RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
+      return 1;
+  }
+  return 0;
 }
 
 
