@@ -1465,13 +1465,16 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   if(rss_serializer->xml_writer)
     raptor_free_xml_writer(rss_serializer->xml_writer);
 
-  /* xml_writer does this using raptor_free_namespaces  */
-  /*
   for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
     if(raptor_rss_namespaces_info[i].nspace)
       raptor_free_namespace(raptor_rss_namespaces_info[i].nspace);
   }
-  */
+  
+  if(rss_serializer->rdf_nspace)
+    raptor_free_namespace(rss_serializer->rdf_nspace);
+
+  if(rss_serializer->nstack)
+    raptor_free_namespaces(rss_serializer->nstack);
 
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     if(raptor_rss_fields_info[i].qname)
@@ -1784,15 +1787,14 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
   raptor_rss_parser_context* rss_parser=&rss_serializer->parser;
   raptor_uri *base_uri=serializer->base_uri;
-  raptor_xml_writer* xml_writer=rss_serializer->xml_writer;
   raptor_xml_element *element;
   raptor_qname *qname;
   int i;
 
-  rss_serializer->rdf_nspace=raptor_xml_writer_start_namespace_full(xml_writer,
-                                                                    (const unsigned char*)"rdf",
-                                                                    (const unsigned char*)raptor_rdf_namespace_uri,
-                                                                    0);
+  rss_serializer->rdf_nspace=raptor_new_namespace(rss_serializer->nstack,
+                                                  (const unsigned char*)"rdf",
+                                                  (const unsigned char*)raptor_rdf_namespace_uri,
+                                                  0);
 
   qname=raptor_new_qname_from_namespace_local_name(rss_serializer->rdf_nspace, (const unsigned char*)"RDF",  NULL);
   element=raptor_new_xml_element(qname, NULL, raptor_uri_copy(base_uri));
@@ -1806,7 +1808,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
     raptor_uri* uri=raptor_rss_namespaces_info[i].uri;
     const unsigned char *prefix=(const unsigned char*)raptor_rss_namespaces_info[i].prefix;
     if(uri) {
-      raptor_namespace* nspace=raptor_xml_writer_start_namespace_full(xml_writer, prefix, raptor_uri_as_string(uri), 0);
+      raptor_namespace* nspace=raptor_new_namespace(rss_serializer->nstack, prefix, raptor_uri_as_string(uri), 0);
       raptor_rss_namespaces_info[i].nspace=nspace;
       raptor_sax2_declare_namespace(element, nspace);
     }
@@ -1989,7 +1991,13 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 #endif
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
-  xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
+
+  rss_serializer->nstack=raptor_new_namespaces(uri_handler, uri_context,
+                                               NULL, NULL, /* errors */
+                                               1);
+
+  xml_writer=raptor_new_xml_writer(rss_serializer->nstack,
+                                   uri_handler, uri_context,
 
                                    serializer->iostream,
                                    NULL, NULL, /* errors */
