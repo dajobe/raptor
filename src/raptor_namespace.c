@@ -244,6 +244,8 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
       ns->is_rdf_schema=1;
   }
 
+  ns->nstack=nstack;
+  
   return ns;
 }
 
@@ -252,7 +254,7 @@ void
 raptor_namespace_free(raptor_namespace *ns)
 {
   if(ns->uri)
-    nstack->uri_handler->free_uri(nstack->uri_context, ns->uri);
+    ns->nstack->uri_handler->free_uri(ns->nstack->uri_context, ns->uri);
 
   LIBRDF_FREE(raptor_namespace, ns);
 }
@@ -276,7 +278,7 @@ raptor_uri*
 raptor_namespace_local_name_to_uri(const raptor_namespace *ns,
                                    const char *local_name)
 {
-  return (*nstack->uri_handler->new_uri_from_uri_local_name)(nstack->uri_context, ns->uri, local_name);
+  return ns->nstack->uri_handler->new_uri_from_uri_local_name(ns->nstack->uri_context, ns->uri, local_name);
 }
 
 
