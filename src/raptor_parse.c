@@ -1606,10 +1606,18 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
 #endif
 
 #ifdef RAPTOR_XML_LIBXML
-  /* Work around some libxml versions that fail to work
+
+  /* This works around some libxml versions that fail to work
    * if the buffer size is larger than the entire file
    * and thus the entire parsing is done in one operation.
+   *
+   * The code below:
+   *   2.4.19 (oldest tested) to 2.4.24 - required
+   *   2.4.25                           - works with or without it
+   *   2.4.26 or later                  - fails with this code
    */
+
+#if LIBXML_VERSION < 20425
   if(rdf_xml_parser->first_read && is_end) {
     /* parse all but the last character */
     rc=xmlParseChunk(xc, buffer, len-1, 0);
@@ -1624,6 +1632,7 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
     xmlParseChunk(xc, buffer, 0, 1);
     return 0;
   }
+#endif
 
   rdf_xml_parser->first_read=0;
     
