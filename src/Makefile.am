@@ -23,7 +23,7 @@ bin_PROGRAMS = rdfdump
 bin_SCRIPTS = raptor-config
 lib_LTLIBRARIES = libraptor.la
 
-include_HEADERS = raptor.h ntriples.h
+include_HEADERS = raptor.h raptor_internal.h ntriples.h
 
 man_MANS = rdfdump.1 libraptor.3
 
