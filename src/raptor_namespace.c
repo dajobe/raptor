@@ -315,25 +315,21 @@ int
 main(int argc, char *argv[]) 
 {
   raptor_namespace_stack namespaces;
+  raptor_uri_handler *handler;
+  void *context;
 
 #ifdef RAPTOR_IN_REDLAND
+  /* Redland initialises the raptor URI class during these calls: */
   librdf_world *world=librdf_new_world();
   librdf_world_open(world);
 #else
-  raptor_uri_handler *handler;
-  void *context;
-#endif
-
-  /* initialise raptor uri module */
   raptor_uri_init();
-
-#ifdef RAPTOR_IN_REDLAND
-  raptor_namespaces_init(&namespaces,
-                         librdf_raptor_uri_handler, world);
-#else
-  raptor_uri_get_handler(&handler, &context);
-  raptor_namespaces_init(&namespaces, handler, context);
 #endif
+
+  /* Use whatever the raptor_uri class has */
+  raptor_uri_get_handler(&handler, &context);
+
+  raptor_namespaces_init(&namespaces, handler, context);
   
   raptor_namespaces_start_namespace(&namespaces,
                                     "ex1",
