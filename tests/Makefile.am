@@ -87,7 +87,7 @@ check-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    echo FAILED returned status $$status; restult=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    if test $$status == 2 ; then \
+	    if test $$status = 2 ; then \
 	      echo ok with warnings; \
 	    else \
 	      echo ok; \
