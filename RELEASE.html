@@ -8,6 +8,71 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
+<h2 id="rel1_3_3"><a name="rel1_3_2">Raptor 1.3.3 Changes</a></h2>
+
+<p>FIXME: NOT RELEASED YET</p>
+
+<p>A release with major improvements along with several minor fixes.</p>
+
+<p>Raptor's License was changed from LGPL 2.1/MPL 1.1 to
+LGPL 2.1/Apache 2</p>
+
+<p>Thanks to Chris Pointon for several patches to make Raptor
+easier to build under Win32 which were applied, with some slight
+modifications.</p>
+
+<p>Increased WWW content retrieval buffer size from 256 bytes to 4K
+since this was causing problems for even moderate size documents.</p>
+
+<p>After testing raptor on a very large RDF/XML file with many
+<code>rdf:ID</code> values, the check for duplicate values was found
+to be inefficient in memory and slow.  The implementation was
+improved to be more memory efficient and a new parser feature
+<code>check_rdf_id</code> was added to disable checking (default is
+enabled).</p>
+
+<p>Added a new Unicode NFC checker to replace the functionality
+formally available by calling the GNOME glib function
+g_utf8_normalize.  This new checker is done via several tables and
+adds approximately 50K to the object size of the library when
+compiled on x86.  This code and tables can be disabled with configure
+option <code>--disable-nfc-check</code> causing all checks to
+succeed.</p>
+
+<p>Fix the exporting of
+<code>raptor_xml_literal_datatype_uri_string</code> and
+<code>raptor_xml_literal_datatype_uri_string_len</code> as constants
+for use by applications.  Previously raptor.h wasn't doing this
+correctly.</p>
+
+<p>Added <code>raptor_calloc_memory</code> for allocating zeroed
+memory inside raptor, for use by applications passing memory in/out
+of raptor.</p>
+
+<p>Added a new configure option <code>--enable-parsers</code> to
+allow the selection of the required RDF parsers from any of those
+supported (RDF/XML, Turtle, N-Triples, RSS tag soup).
+</p>
+
+<p>Reorganised the sources to split parsing support from RDF/XML
+to support compiling without this parser.</p>
+
+<p>Updated the RSS Tag Soup parser to start to handle the Atom 0.3
+currently being standardised by the
+<a href="http://www.ietf.org/html.charters/atompub-charter.html">IETF Atom Publishing Format and Protocol</a>
+working group.
+</p>
+
+<p>Altered the Turtle parser to work with large source documents that
+exceeded bison limits.  Thanks to Geoff Chappell for providing a fix for
+this.</p>
+
+<p>Rewrote the URI parsing to create an internal structure and
+improved the relative URI resolving in preparation for future work
+such as potentially supporting URI canonicalisation such as proposed
+to be used by Atom.</p>
+
+
 <h2 id="rel1_3_2"><a name="rel1_3_2">Raptor 1.3.2 Changes</a></h2>
 
 <p>A release with some minor fixes.</p>
