@@ -12,7 +12,7 @@ Group:     Development/Libraries
 Source:    http://www.redland.opensource.ac.uk/dist/source/%{name}-%{version}.tar.gz
 URL:       http://www.redland.opensource.ac.uk/raptor/
 BuildRoot: /tmp/%{name}-%{version}
-BuildRequires: libxml2 libxml2-devel
+BuildRequires: libxml2 libxml2-devel curl curl-devel
 Packager:  Dave Beckett <Dave.Beckett@bristol.ac.uk>
 Docdir: %{_docdir}
 
@@ -91,14 +91,21 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
 %doc MPL.html
 %doc INSTALL.html
+%doc %{_mandir}/man1/raptor-config.1*
 
 %{_libdir}/lib*.so
 %{_libdir}/*a
+%{_libdir}/pkgconfig/raptor.pc
 %{prefix}/include/*
 %{prefix}/bin/raptor-config
 
 
 %changelog
+* Thu Apr 17 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
+
+- Added pkgconfig raptor.pc, raptor-config
+- Requires curl
+
 * Mon Jan 13 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
 
 - rdfdump now rapper
