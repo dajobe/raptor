@@ -1026,37 +1026,6 @@ raptor_ntriples_parser_fatal_error(raptor_ntriples_parser* parser,
 }
 
 
-/* COPIED FROM raptor_parse.c */
-
-#ifndef LIBRDF_INTERNAL
-/**
- * raptor_file_uri_to_filename - Convert a URI representing a file (starting file:) to a filename
- * @uri: URI of string
- * 
- * Return value: the filename or NULL on failure
- **/
-static char *
-raptor_file_uri_to_filename(const char *uri) 
-{
-  int length;
-  char *filename;
-
-  if (strncmp(uri, "file:", 5))
-    return NULL;
-
-  /* FIXME: unix version of URI -> filename conversion */
-  length=strlen(uri) -5 +1;
-  filename=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!filename)
-    return NULL;
-
-  strcpy(filename, uri+5);
-  return filename;
-}
-#endif
-
-
-
 /**
  * raptor_ntriples_parse_file - Retrieve the Ntriples content at URI
  * @ntriples_parser: parser

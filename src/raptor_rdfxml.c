@@ -687,13 +687,6 @@ static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *p
 
 
 
-/* Prototypes for local functions */
-#ifndef RAPTOR_IN_REDLAND
-static char * raptor_file_uri_to_filename(const char *uri);
-#endif
-
-
-
 /* prototypes for namespace and name/local_name functions */
 static void raptor_init_namespaces(raptor_parser *rdf_parser);
 static void raptor_start_namespace(raptor_parser *rdf_parser, const char *prefix, const char *nspace, int depth);
@@ -1858,45 +1851,6 @@ raptor_xml_external_entity_ref_handler(void *user_data,
    * because of a fatal error in the handling of the external entity."
    */
   return 1;
-}
-#endif
-
-
-
-
-#ifndef RAPTOR_IN_REDLAND
-/**
- * raptor_file_uri_to_filename - Convert a URI representing a file (starting file:) to a filename
- * @uri: URI of string
- * 
- * Return value: the filename or NULL on failure
- **/
-static char *
-raptor_file_uri_to_filename(const char *uri) 
-{
-  char *filename;
-#ifndef WIN32
-  int length;
-#endif
-
-#ifdef WIN32
-  filename=LIBRDF_MALLOC(cstring, MAX_PATH);
-  if (S_OK != URLDownloadToCacheFile(NULL, uri, filename, URLOSTRM_GETNEWESTVERSION, 0, NULL))
-    return NULL;
-#else
-  if (strncmp(uri, "file:", 5))
-    return NULL;
-
-  /* FIXME: unix version of URI -> filename conversion */
-  length=strlen(uri) -5 +1;
-  filename=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!filename)
-    return NULL;
-
-  strcpy(filename, uri+5);
-#endif
-
-  return filename;
 }
 #endif
 
