@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-#define WIN32_LEAD_AND_MEAN 1
+#define WIN32_LEAN_AND_MEAN 1
 
 /* Compiling inside Raptor */
 #define RAPTOR_INTERNAL 1
