@@ -106,7 +106,9 @@ libtool 1.5.</p>
 <dl>
 <dt><tt>--disable-nfc-check</tt><br /></dt>
 <dd><p>Disable Unicode Normal Form C (NFC) checking code.
-(Does nothing in 1.3.2 or later while new NFC code is developed).
+The code primarily consists of large tables plus some checking code
+which can be removed from the library with this option.  All NFC
+checks will succeed when this is disabled.
 </p></dd>
 
 <dt><tt>--with-expat-source=DIR</tt><br /></dt>
@@ -114,6 +116,18 @@ libtool 1.5.</p>
 directory <em>DIR</em>.  This handles the older and newer style 
 expat source directory structures.
 </p></dd>
+
+<dt><tt>--enable-parsers=PARSERS</tt><br /></dt>
+<dd><p>Pick the RDF parsers to build from the list:
+<code>rdfxml ntriples turtle rss-tag-soup</code>.  The default when
+this option is omitted is to build all of them.
+<code>rss-tag-soup</code> has a requirement on libxml2 with XMLReader
+so may not always be available.  If all parsers are not enabled,
+parts of the test suite will likely fail.</p>
+<p>The parsers that the library supports can be found from the API
+level using functions such as <code>raptor_parsers_enumerate</code>
+and <code>raptor_syntaxes_enumerate</code> or from teh
+<code>rapper</code> utility in the help message.</p></dd>
 
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
