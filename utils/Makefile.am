@@ -24,7 +24,7 @@ bin_SCRIPTS = raptor-config
 noinst_SCRIPTS = raptor-src-config
 lib_LTLIBRARIES = libraptor.la
 
-include_HEADERS = raptor.h ntriples.h
+include_HEADERS = raptor.h
 
 noinst_HEADERS = raptor_internal.h win32_config.h
 
