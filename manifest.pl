@@ -27,21 +27,43 @@
 use strict;
 
 use File::Basename;
+use IO::File;
 use LWP::Simple;
 
 my $progname = basename $0;
 
 my $offline=0;
 
-my $global_verbose=0;
+my $global_verbose=1;
 
 my $manifest_URL='http://www.w3.org/2000/10/rdf-tests/rdfcore/Manifest.rdf';
 my $local_tests_url='http://www.w3.org/2000/10/rdf-tests/rdfcore/';
+
+# Configuration for OWL-style test run summary RDF generation
+#  RDF/XML written here
+my $results_rdf_file="results.rdf";
+
+#  Header info
+my $system_name="Raptor RDF Parser";
+my $system_desc=<<"EOT";
+Raptor RDF Parser ToolkitV1.1.0+ (CVS) as of 2003-10-31
+passes all RDF Test Cases Postive and Negative Parser test cases.
+EOT
+
+# System URL for r:system
+my $system_url="http://www.redland.opensource.ac.uk/raptor/";
+# Results URL for r:output
+my $results_url="http://www.redland.opensource.ac.uk/raptor/testcases/results.rdf";
+# Test run output URL for r:output
+my $output_url="http://www.redland.opensource.ac.uk/raptor/testcases/output.txt";
 
 # CHANGE THIS for your system
 my $local_tests_area="./rdfcore/";
 my $local_manifest_file="./rdfcore/Manifest.rdf";
 
+
+# Internal globals
+my $test_counter=0;
 my $format="%-6s %5d %7.2f%%\n";
 
 
@@ -66,6 +88,88 @@ sub get_test_content($$) {
 }
 
 
+sub emit_testrun_start($) {
+  my $fh=shift;
+  print $fh <<"EOT";
+ <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:r="http://www.w3.org/2002/03owlt/resultsOntology#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<rdf:Description rdf:nodeID="system">
+  <foaf:homepage rdf:resource="$system_url" />
+  <rdfs:label>$system_name</rdfs:label>
+  <rdfs:comment>$system_desc</rdfs:comment>
+</rdf:Description>
+
+
+    <!-- RDF schema -->
+    <rdfs:Class rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#PassingRun"/>
+    <rdfs:Class rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#IncompleteRun"/>
+    <rdfs:Class rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#FailingRun"/>
+    <rdfs:Class rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#TestRun"/>
+    <rdf:Property rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#test"/>
+    <rdf:Property rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#output"/>
+    <rdf:Property rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#system"/>
+    <rdf:Property rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#begins"/>
+    <rdf:Property rdf:about="http://www.w3.org/2002/03owlt/resultsOntology#duration"/>
+
+EOT
+}
+
+sub emit_testrun_end($) {
+  my $fh=shift;
+  print $fh <<"EOT";
+ </rdf:RDF>
+EOT
+}
+
+sub emit_testrun_test($$$$$$$) {
+  my($fh, $test_id, $test_url, $start_time, $end_time, $type, $is_positive)=@_;
+
+  # starttime/end_time format: YYYY-MM-DD'T'HH:MM:SS'Z'
+  my @tm = (gmtime($start_time))[0..5]; $tm[5]+= 1900; $tm[4]++;
+  $start_time=sprintf("%04d-%02d-%02dT%02d:%02d:%02dZ", reverse @tm);
+
+  @tm = (gmtime($end_time))[0..5]; $tm[5]+= 1900; $tm[4]++;
+  $end_time=sprintf("%04d-%02d-%02dT%02d:%02d:%02dZ", reverse @tm);
+
+  if(!$is_positive) {
+    if($type eq 'BAD') {
+      $type='OK';
+    } elsif ($type eq 'OK') {
+      $type='BAD';
+    }
+  }
+
+  my(%internal_to_testrun_types)=(
+    SYSTEM => 'Incomplete',
+    BAD    => 'Failing',
+    OK     => 'Passing'
+  );
+
+
+  $type=$internal_to_testrun_types{$type} || 'Incomplete';
+  $type.="Run";
+
+  #  rdf:nodeID="A$test_id"
+  print $fh <<"EOT";
+ <r:$type>
+    <r:test rdf:resource="$test_url"/>
+    <r:begins rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">$start_time</r:begins>
+    <r:ends rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">$end_time</r:ends>
+    <r:system rdf:nodeID="system"/>
+    <r:output rdf:resource="$output_url"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/03owlt/resultsOntology#TestRun"/>
+ </r:$type>
+EOT
+}
+
+ 
+
+
 sub run_test($$$$$$) {
   my($test_url, $test_status,
      $is_positive, $is_verbose, $rdfxml_url, $ntriples_url)=@_;
@@ -74,7 +178,7 @@ sub run_test($$$$$$) {
   my $ntriples_file=$is_positive ? get_test_content($ntriples_url, 'test.nt') : undef;
  
   if(!-r $rdfxml_file || ($is_positive && ! -r $ntriples_file)) {
-    return undef;
+    return ();
   }
 
   my $plabel=($is_positive) ? 'Positive' : 'Negative';
@@ -89,19 +193,24 @@ sub run_test($$$$$$) {
   my $cmd="./rapper -q --m strict -o ntriples $rdfxml_file '$rdfxml_url'";
   
   unlink 'test.err', 'parser.nt', 'expected.nt', 'test.ntc';
+  my $start_time=time;
   my $status=system("$cmd 2>test.err >parser.nt");
   $status = ($status & 0xff00) >> 8;
+  my $end_time=time;
 
   if($status > 128) {
-    return ('SYSTEM', "$cmd failed - returned status $status\n");
+    return (result=>'SYSTEM', msg=>"$cmd failed - returned status $status\n", 
+	    start_time=>$start_time, end_time=>$end_time);
   }
 
   # Nothing to compare to, it must be a negative test
   if(!$ntriples_url) { # && !$is_positive
     if($status) {
-      return ('BAD', "$cmd failed\n");
+      return (result=>'BAD', msg=>"$cmd failed\n", 
+	      start_time=>$start_time, end_time=>$end_time);
     }
-    return ('OK', "$cmd succeeded");
+    return (result=>'OK', msg=>"$cmd succeeded", 
+	    start_time=>$start_time, end_time=>$end_time);
   }
 
   open(NT,"<$ntriples_file") or die "Cannot read $ntriples_file - $!\n";
@@ -119,19 +228,23 @@ sub run_test($$$$$$) {
   $status = ($status & 0xff00) >> 8;
 
   if($status > 2) {
-    return ('SYSTEM', "$cmd failed - returned status $status\n");
+    return (result=>'SYSTEM', msg=>"$cmd failed - returned status $status\n", 
+	    start_time=>$start_time, end_time=>$end_time);
   }
 
   if($status == 1) {
     my $msg=`diff -u expected.nt parser.nt | tail +3`;
-    return ('BAD', "N-Triples match failed\n$msg");
+    return (result=>'BAD', msg=>"N-Triples match failed\n$msg", 
+	    start_time=>$start_time, end_time=>$end_time);
   }
 
   if($status == 2) {
-    return ('PRINTING', "N-Triples matched with printings\n");
+    return (result=>'PRINTINGS', msg=>"N-Triples matched with warnings\n", 
+	    start_time=>$start_time, end_time=>$end_time);
   }
 
-  return ('OK', "N-Triples matched");
+  return (result=>'OK', msg=>"N-Triples matched", 
+	  start_time=>$start_time, end_time=>$end_time);
 }
 
 
@@ -143,8 +256,8 @@ sub read_err($) {
   return $err;
 }
 
-sub run_tests($$$$$@) {
-  my($tests,$test_statuses,$is_verbose,$results,$totals,@test_urls)=@_;
+sub run_tests($$$$$$@) {
+  my($fh,$tests,$test_statuses,$is_verbose,$results,$totals,@test_urls)=@_;
 
   for my $test (@test_urls) {
 
@@ -173,9 +286,17 @@ sub run_tests($$$$$@) {
     my $input_rdfxml=$inputs->{'test:RDF-XML-Document'}->[0];
     my $output_ntriples=$is_positive ? $outputs->{'test:NT-Document'}->[0] : undef;
 
-    my($result,$msg)=run_test($test, $test_statuses->{$test}, 
+    my(%this_test_result)=run_test($test, $test_statuses->{$test}, 
 			      $is_positive, $is_verbose, 
 			      $input_rdfxml, $output_ntriples);
+    my $result=$this_test_result{result};
+    my $msg=$this_test_result{msg};
+
+    emit_testrun_test($fh, $test_counter++, $test, 
+		      $this_test_result{start_time}, 
+		      $this_test_result{end_time},
+		      $result, $is_positive)
+      if $fh;
 
     if($result eq 'SYSTEM') {
       my $err=read_err('test.err');
@@ -382,24 +503,35 @@ my(%results);
 if(@ARGV) {
   my(%totals);
   print "$progname: Running user parser tests:\n";
-  run_tests(\%tests, \%test_statuses, 1, \%results, \%totals, @ARGV);
+  run_tests(undef, \%tests, \%test_statuses, 1, \%results, \%totals, @ARGV);
 
   summarize_results("User Parser Tests", \%results, \%totals, scalar(@ARGV));
   exit 0;
 }
 
+my $fh=new IO::File ">$results_rdf_file";
+
+if($fh) {
+  emit_testrun_start($fh)
+}
 
 my(%approved_positive_totals)=();
-run_tests(\%tests, \%test_statuses, $global_verbose, \%results, \%approved_positive_totals, @approved_positive_test_urls);
+run_tests($fh, \%tests, \%test_statuses, $global_verbose, \%results, \%approved_positive_totals, @approved_positive_test_urls);
 summarize_results("Positive Approved Parser Tests", \%results, \%approved_positive_totals, scalar(@approved_positive_test_urls));
 
 print "\n\n";
 
 my(%approved_negative_totals)=();
-run_tests(\%tests, \%test_statuses, $global_verbose, \%results, \%approved_negative_totals, @approved_negative_test_urls);
+run_tests($fh, \%tests, \%test_statuses, $global_verbose, \%results, \%approved_negative_totals, @approved_negative_test_urls);
 summarize_results("Negative Approved Parser Tests", \%results, \%approved_negative_totals, scalar(@approved_negative_test_urls));
-
 print "\n\n";
+
+if($fh) {
+  emit_testrun_end($fh);
+  close($fh);
+
+  warn "Wrote test run RDF/XML to $results_rdf_file - should be installed at $results_url\n";
+}
 
 exit 0;
 
