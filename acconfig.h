@@ -18,5 +18,5 @@
 /* need 'extern int optind' declaration? */
 #undef NEED_OPTIND_DECLARATION
 
-/* does expat crash in error handling? */
-#undef EXPAT_ERROR_CRASH
+/* does expat crash when it sees an initial UTF8 BOM? */
+#undef EXPAT_UTF8_BOM_CRASH

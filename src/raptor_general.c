@@ -601,7 +601,7 @@ struct raptor_parser_s {
   /* XML parser specific stuff */
 #ifdef NEED_EXPAT
   XML_Parser xp;
-#ifdef EXPAT_ERROR_CRASH
+#ifdef EXPAT_UTF8_BOM_CRASH
   int tokens_count; /* used to see if trying to get location info is safe */
 #endif
 #endif
@@ -1388,7 +1388,7 @@ raptor_xml_start_element_handler(void *user_data,
   rdf_parser=(raptor_parser*)user_data;
 #ifdef NEED_EXPAT
   locator=&rdf_parser->locator; 
-#ifdef EXPAT_ERROR_CRASH
+#ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
 #endif
 #endif
@@ -1699,7 +1699,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 #endif
 
 #ifdef NEED_EXPAT
-#ifdef EXPAT_ERROR_CRASH
+#ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
 #endif
   locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
@@ -1772,7 +1772,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   int all_whitespace=1;
   int i;
 
-#ifdef EXPAT_ERROR_CRASH
+#ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
 #endif
 
@@ -2755,7 +2755,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   if(!rc) {
     int xe=XML_GetErrorCode(xp);
 
-#ifdef EXPAT_ERROR_CRASH
+#ifdef EXPAT_UTF8_BOM_CRASH
     if(rdf_parser->tokens_count) {
 #endif
       /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
@@ -2765,7 +2765,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
       locator->line=XML_GetCurrentLineNumber(xp);
       locator->column=XML_GetCurrentColumnNumber(xp);
       locator->byte=XML_GetCurrentByteIndex(xp);
-#ifdef EXPAT_ERROR_CRASH
+#ifdef EXPAT_UTF8_BOM_CRASH
     }
 #endif
       
