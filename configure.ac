@@ -714,7 +714,8 @@ AC_CONFIG_FILES([Makefile
 raptor.spec
 examples/Makefile
 tests/Makefile
-win32/Makefile])
+win32/Makefile
+raptor.pc])
 AC_CONFIG_FILES([raptor-config], [chmod +x raptor-config])
 AC_CONFIG_FILES([raptor-src-config], [chmod +x raptor-src-config])
 
