@@ -491,7 +491,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, size_t len)
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3(raptor_ntriples_parse_line,
                 "handling line '%s' (%d bytes)\n", 
-                buffer, len);
+                buffer, (unsigned int)len);
 #endif
   
   p=buffer;
@@ -802,7 +802,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, size_t len)
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "item %d: term '%s' len %d type %s\n",
-            i, terms[i], term_lengths[i],
+            i, terms[i], (unsigned int)term_lengths[i],
             raptor_ntriples_term_as_string(term_types[i]));
 #endif    
   }
@@ -847,7 +847,8 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_ntriples_parse_chunk, "adding %d bytes to buffer\n", len);
+  RAPTOR_DEBUG2(raptor_ntriples_parse_chunk, "adding %d bytes to buffer\n",
+                (unsigned int)len);
 #endif
 
   /* No data?  It's the end */
@@ -904,8 +905,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     while(*ptr && *ptr != '\n' && *ptr != '\r')
       ptr++;
 
-    /* buffer ended but more data will be arriving */
-    if(!*ptr && !is_end)
+    if(!*ptr)
       break;
 
     if(*ptr) {
@@ -940,8 +940,11 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   }
 
   /* exit now, no more input */
-  if(is_end)
+  if(is_end) {
+    if(ptr-buffer != ntriples_parser->line_length)
+       raptor_parser_error(rdf_parser, "Junk at end of input.\"");
     return 0;
+  }
     
   ntriples_parser->offset=start-buffer;
 
@@ -953,7 +956,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     RAPTOR_DEBUG3(raptor_ntriples_parse_chunk,
                   "collapsing buffer from %d to %d bytes\n", 
-                  ntriples_parser->line_length, len);
+                  ntriples_parser->line_length, (unsigned int)len);
 #endif
     buffer=(char*)RAPTOR_MALLOC(cstring, len + 1);
     if(!buffer) {
