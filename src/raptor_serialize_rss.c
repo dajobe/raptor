@@ -655,8 +655,10 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
   raptor_rss_item* item;
   
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    raptor_identifier* identifier;
+
     item=&rss_parser->common[i];
-    raptor_identifier* identifier=&item->identifier;
+    identifier=&item->identifier;
     
     if(!item->fields_count)
       continue;
