@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -609,8 +609,11 @@ blank: BLANK_LITERAL
 
 collection: LEFT_ROUND objectList RIGHT_ROUND
 {
-  raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, 0);
-  raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+  int i;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_identifier* first_identifier;
+  raptor_identifier* rest_identifier;
+  raptor_identifier* object;
 
 #if RAPTOR_DEBUG > 1  
   printf("collection\n objectList=");
@@ -618,22 +621,67 @@ collection: LEFT_ROUND objectList RIGHT_ROUND
   printf("\n");
 #endif
 
-  i2=t2->object;
-  t2->object=NULL;
+  first_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(turtle_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  rest_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(turtle_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   
+  /* non-empty property list, handle it  */
+#if RAPTOR_DEBUG > 1  
+  printf("resource\n propertyList=");
+  raptor_sequence_print($2, stdout);
+  printf("\n");
+#endif
+
+  object=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(turtle_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+
+  for(i=raptor_sequence_size($2)-1; i>=0; i--) {
+    raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+    const unsigned char *blank_id=raptor_generate_id((raptor_parser*)rdf_parser, 0, NULL);
+    raptor_identifier* blank=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
+    raptor_identifier* temp;
+    
+    t2->subject=blank;
+    t2->predicate=first_identifier;
+    /* t2->object already set to the value we want */
+    raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
+    
+    temp=t2->object;
+    
+    t2->subject=blank;
+    t2->predicate=rest_identifier;
+    t2->object=object;
+    raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
+
+    raptor_free_identifier(object);
+      
+    t2->subject=NULL;
+    t2->predicate=NULL;
+    t2->object=temp;
+
+    object=blank;
+  }
+  
+#if RAPTOR_DEBUG > 1
+  printf(" after substitution objectList=");
+  raptor_sequence_print($2, stdout);
+  printf("\n\n");
+#endif
+
   raptor_free_sequence($2);
-  $$=i2;
+
+  raptor_free_identifier(first_identifier);
+  raptor_free_identifier(first_identifier);
+
+  $$=object;
 }
 |  LEFT_ROUND RIGHT_ROUND 
 {
-  raptor_uri* uri;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
 
 #if RAPTOR_DEBUG > 1  
   printf("collection\n empty\n");
 #endif
 
-  uri=raptor_new_uri_for_rdf_concept("nil");
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(turtle_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
 
 %%
@@ -789,6 +837,10 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
                          raptor_parser_simple_error, rdf_parser, 
                          0);
 
+  turtle_parser->nil_uri=raptor_new_uri_for_rdf_concept("nil");
+  turtle_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
+  turtle_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
+
   return 0;
 }
 
@@ -804,6 +856,10 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
 static void
 raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
+
+  raptor_free_uri(turtle_parser->nil_uri);
+  raptor_free_uri(turtle_parser->first_uri);
+  raptor_free_uri(turtle_parser->rest_uri);
 
   raptor_namespaces_clear(&turtle_parser->namespaces);
 
