@@ -89,6 +89,7 @@ raptor_init(void)
 void
 raptor_finish(void) 
 {
+  raptor_terminate_parser_rdfxml();
   raptor_delete_parser_factories();
 }
 
