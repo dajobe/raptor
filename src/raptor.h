@@ -380,6 +380,17 @@ int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
 int raptor_utf8_to_unicode_char(unsigned long *output, const unsigned char *input, int length);
 
 
+/* raptor_stringbuffer */
+raptor_stringbuffer* raptor_new_stringbuffer(void);
+void raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer);
+int raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, size_t length, int do_copy);
+int raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, int do_copy);
+int raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer, int integer);
+int raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer, raptor_stringbuffer* append);
+unsigned char * raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer);
+size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
+
+
 #ifdef __cplusplus
 }
 #endif
