@@ -1,6 +1,6 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
 .\"
-.\" rapper.1 - Raptor RDF parser tool manual page
+.\" rapper.1 - Raptor RDF parser utility manual page
 .\"
 .\" $Id$
 .\"
@@ -8,10 +8,10 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.org/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2003-06-21"
+.TH rapper 1 "2003-08-31"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
-rapper \- Raptor RDF parser tool
+rapper \- Raptor RDF parser utility
 .SH SYNOPSIS
 .B rapper
 .RB [ OPTIONS ]
@@ -28,7 +28,7 @@ rapper \- Raptor RDF parser tool
 .SH DESCRIPTION
 The
 .B rapper
-tool allows parsing of RDF content by the
+utility allows parsing of RDF content by the
 .B Raptor
 RDF parser toolkit emitting the results as RDF triples in
 a choice of syntaxes.  The \fIsource-URI\fR can be a file name or if
@@ -74,6 +74,9 @@ Scan for <rdf:RDF> element in the RDF/XML source content..
 .TP
 .B \-w, \-\-ignore-warnings
 Ignore warnings, do not emit the messages.
+.TP
+.B \-v, \-\-version
+Print the raptor version and exit.
 .SH "CONFORMING TO"
 \fIRDF/XML Syntax (Revised)\fR,
 W3C Working Draft (work in progress),
