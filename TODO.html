@@ -7,13 +7,30 @@
 
 <h1 align="center">Raptor RDF Parser Toolkit - To Do List</h1>
 
-<ul>
-<li>Provide a perl interface</li>
-<li>perform xml:lang processing and pass to application (FEATURE)</li>
-<li>add namespace/prefix decl user level callback (FEATURE)</li>
-<li>regression tests (FEATURE)</li>
+<h2>Bugs and Features</h2>
 
-<li>fix this crash (BUG):
+<ul>
+<li>Provide a perl interface (FEATURE)</li>
+<li>Perform xml:lang processing and pass to application (FEATURE)</li>
+<li>Add namespace/prefix declaration user level callback (FEATURE)</li>
+<li>regression tests (FEATURE)</li>
+<li>URI resolving is ad-hoc (BUG)</li>
+<li>Reification of statements (bagID etc.) implemented but not tested (FEATURE)</li>
+<li>Other (non resource, literal, daml:collection) parseType support (FEATURE)</li>
+<li>rdf:li used as a propertyElt does not work (BUG)</li>
+<li>No aboutEach support (BUG)</li>
+<li>Need to make tracking of user IDs/generated IDs to user code (FEATURE)</li>
+
+</ul>
+
+<h2>Done</h2>
+
+<p>The most recent changes are at the top, with the first
+release version where appropriate.</p>
+
+<ul>
+<li>parseType literal support (0.9.3)</li>
+<li>Fixed crash (0.9.3):
 <pre>
 &lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -29,15 +46,21 @@
 &lt;/rdf:RDF&gt;
 </pre>
 </li>
+</ul>
 
-<li>URI resolving is ad-hoc (BUG)</li>
-<li>Reification of statements (bagID etc.) implemented but not tested (FEATURE)</li>
-<li>parseType literal implemented, full parseType support not done (FEATURE)</li>
-<li>Full flexible container support not done (FEATURE)</li>
-<li>rdf:li used as a propertyElt does not work (BUG)</li>
-<li>aboutEach or aboutEachPrefix support not complete (FEATURE)</li>
-<li>need to make tracking of user IDs/generated IDs to user code (FEATURE)</li>
 
+<h2>No need to do list</h2>
+
+<p>After decisions from the
+<a href="http://www.w3.org/2001/sw/RDFCore/">RDF Core WG</a>
+as recorded in the
+<a href="http://www.w3.org/2000/03/rdf-tracking/#attention-developers">attention developers</a>
+area of the
+<a href="http://www.w3.org/2000/03/rdf-tracking/#attention-developers">RDF Issue Tracking document</a>.</p>
+
+<ul>
+<li>aboutEachPrefix support - removed from syntax</li>
+<li>Special Container support - not special anymore, just typed nodes</li>
 </ul>
 
 <hr />
