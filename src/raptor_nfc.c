@@ -47,7 +47,7 @@
 #include "raptor_nfc.h"
 
 
-#undef RAPTOR_DEBUG_NFC_CHECK
+#define RAPTOR_DEBUG_NFC_CHECK
 
 
 /*
@@ -173,9 +173,9 @@ raptor_nfc_get_code_flag (unsigned long c)
 
 
 #ifdef RAPTOR_DEBUG_NFC_CHECK
-#define RAPTOR_NFC_CHECK_FAIL(char, reason) do { fprintf(stderr, "%s:%d:%s: NFC check failed on U+%04lX: " reason "\n", __FILE__, __LINE__, __func__, char); return 0; } while(0)
+#define RAPTOR_NFC_CHECK_FAIL(char, reason) do { fprintf(stderr, "%s:%d:%s: NFC check failed on U+%04lX: " reason "\n", __FILE__, __LINE__, __func__, char); } while(0)
 #else
-#define RAPTOR_NFC_CHECK_FAIL(char, reason) return 0
+#define RAPTOR_NFC_CHECK_FAIL(char, reason)
 #endif
 
 
@@ -218,7 +218,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
       if(error)
         *error=offset;
       RAPTOR_NFC_CHECK_FAIL(unichar, "UTF-8 decoding error");
-      break;
+      return 0;
     }
     string += unichar_len; 
     offset += unichar_len;
@@ -243,14 +243,16 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
         if(error)
           *error=offset;
         RAPTOR_NFC_CHECK_FAIL(unichar, "forbidden combinations - HIGH, loww, NOFC");
-        break;
+        return 0;
         
+
       case NoNo:
         /* character does not exist */
         if(error)
           *error=offset;
         RAPTOR_NFC_CHECK_FAIL(unichar, "NoNo - character does not exist");
-        break;
+        return 0;
+
 
       case ReCo:
         /* class > 0 and recombining */
@@ -260,6 +262,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo at start");
+          return 0;
         }
         combining_class=raptor_nfc_get_class(unichar);
 
@@ -268,7 +271,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo and prev class > current");
-          break;
+          return 0;
         }
         
         /* check 2 - previous class same as current - always OK */
@@ -282,12 +285,11 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo and combiners check failed");
-          break;
+          return 0;
         }
-        
-        prev_class = combining_class;
-        is_start = 0;
+
         break;
+
 
       case NoRe:
         /* class >0, not recombining */
@@ -297,7 +299,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "NoRe at start");
-          break;
+          return 0;
         }
 
         combining_class=raptor_nfc_get_class(unichar);
@@ -305,11 +307,11 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "NoRe and prev class > current");
-          break;
+          return 0;
         }
 
-        prev_class=combining_class;
         break;
+
 
       case COM0:
         /* class is 0 and composing */
@@ -319,7 +321,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "COMB at start");
-          break;
+          return 0;
         }
         
         /* Only perform combining check when both are in range */
@@ -328,15 +330,19 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "COMB and combiners check failed");
-          break;
+          return 0;
         }
-        
-        /* class 0 can be a prev_char */
+
+        combining_class=0;
         break;
+
 
       case Hang:
         /* hangul Jamo (Korean) initial consonants */
+
+        combining_class=0;
         break;
+
 
       case hAng:
         /* Hangul Jamo (Korean) medial vowels 
@@ -347,9 +353,12 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "hAng at start");
-          break;
+          return 0;
         }
+
+        combining_class=0;
         break;
+
 
       case haNG:  
         /* hangul trailing consonants 
@@ -360,24 +369,33 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "haNG at start");
-          break;
+          return 0;
         }
+
+        combining_class=0;
         break;
+
 
       case HAng:
         /* Hangul Jamo (Korean) initial/medial syllables */
+
+        combining_class=0;
         break;
+
 
       case Base:
         /* base that combines */
       case simp:
         /* simple characters */
+
+        combining_class=0;
         break;
     }
 
     prev_char=unichar;
     prev_char_flag=flag;
-    prev_class=0;
+    prev_class=combining_class;
+
     is_start=0;
   }
 
