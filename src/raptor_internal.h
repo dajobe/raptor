@@ -87,8 +87,6 @@ DIE
 #endif
 #endif
 
-#define XML_Char xmlChar
-
 
 /*
  * Raptor entity expansion list
@@ -312,10 +310,10 @@ extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *mes
 /* raptor_parse.c */
 
 /* Prototypes for common expat/libxml parsing event-handling functions */
-extern void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
-extern void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
+extern void raptor_xml_start_element_handler(void *user_data, const unsigned char *name, const unsigned char **atts);
+extern void raptor_xml_end_element_handler(void *user_data, const unsigned char *name);
 /* s is not 0 terminated. */
-extern void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
+extern void raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len);
 
 /* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
