@@ -109,10 +109,12 @@ extern int errno;
 
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_ntriples_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type);
+static void raptor_ntriples_generate_statement(raptor_ntriples_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, int object_literal_is_XML, char *object_literal_language);
 static void raptor_ntriples_parser_fatal_error(raptor_ntriples_parser* parser, const char *message, ...);
 static int raptor_ntriples_parse(raptor_ntriples_parser* parser, char *buffer, int length, int is_end);
 
+static int raptor_ntriples_unicode_char_to_utf8(long c, char *output);
+static int raptor_ntriples_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
 
 
 
@@ -252,7 +254,9 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
                                    const char *predicate,
                                    const raptor_ntriples_term_type predicate_type,
                                    const void *object,
-                                   const raptor_ntriples_term_type object_type)
+                                   const raptor_ntriples_term_type object_type,
+                                   int object_literal_is_XML,
+                                   char *object_literal_language)
 {
   raptor_statement *statement=&parser->statement;
   raptor_uri *subject_uri=NULL;
@@ -284,8 +288,12 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
     statement->object=object;
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else { 
-    statement->object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    statement->object_type=object_literal_is_XML ?
+                           RAPTOR_IDENTIFIER_TYPE_XML_LITERAL :
+                           RAPTOR_IDENTIFIER_TYPE_LITERAL;
     statement->object=object;
+    statement->object_literal_is_XML=object_literal_is_XML;
+    statement->object_literal_language=object_literal_language;
   }
 
   if(!parser->statement_handler)
@@ -367,14 +375,94 @@ raptor_ntriples_unicode_char_to_utf8(long c, char *output)
   return size;
 }
 
+/*
+ * Based on librdf_utf8_to_unicode_char
+ * replacing librdf_unicode_char with long
+ *
+ * Return value: number of bytes used or <0 on failure
+ */
+
+static int
+raptor_ntriples_utf8_to_unicode_char(long *output,
+                                     const unsigned char *input, int length)
+{
+  unsigned char in;
+  int size;
+  long c=0;
+  
+  if(length < 1)
+    return -1;
+
+  in=*input++;
+  if((in & 0x80) == 0) {
+    size=1;
+    c= in & 0x7f;
+  } else if((in & 0xe0) == 0xc0) {
+    size=2;
+    c= in & 0x1f;
+  } else if((in & 0xf0) == 0xe0) {
+    size=3;
+    c= in & 0x0f;
+  } else if((in & 0xf8) == 0xf0) {
+    size=4;
+    c = in & 0x07;
+  } else if((in & 0xfc) == 0xf8) {
+    size=5;
+    c = in & 0x03;
+  } else if((in & 0xfe) == 0xfc) {
+    size=6;
+    c = in & 0x01;
+  } else
+    return -1;
+
+
+  if(!output)
+    return size;
+
+  if(length < size)
+    return -1;
+
+  switch(size) {
+    case 6:
+      in=*input++ & 0x3f;
+      c= c << 6;
+      c |= in;
+      /* FALLTHROUGH */
+    case 5:
+      in=*input++ & 0x3f;
+      c= c << 6;
+      c |= in;
+      /* FALLTHROUGH */
+    case 4:
+      in=*input++ & 0x3f;
+      c= c << 6;
+      c |= in;
+      /* FALLTHROUGH */
+    case 3:
+      in=*input++ & 0x3f;
+      c= c << 6;
+      c |= in;
+      /* FALLTHROUGH */
+    case 2:
+      in=*input++ & 0x3f;
+      c= c << 6;
+      c |= in;
+      /* FALLTHROUGH */
+    default:
+      *output=c;
+  }
+
+  return size;
+}
+
 
 static void
 raptor_ntriples_string(raptor_ntriples_parser* parser, 
-                       char *start, char *dest, 
+                       char **start, char *dest, 
                        int *lenp, int *dest_lenp,
                        char end_char, int is_uri)
 {
-  char *p=start;
+  char *p=*start;
   char c='\0';
   int ulen=0;
   long unichar=0;
@@ -453,7 +541,9 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
     raptor_ntriples_parser_fatal_error(parser, "Missing terminating '%c'", 
                                        end_char);
 
-  *dest_lenp=p-start;
+  *dest_lenp=p-*start;
+
+  *start=p;
 }
 
 
@@ -463,12 +553,15 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 {
   int i;
   char *p;
-  char *start=NULL; /* keeps gcc -Wall happy */
   char *dest;
   char *terms[3];
   int term_lengths[3];
   raptor_ntriples_term_type term_types[3];
   int term_length= 0;
+  int object_literal_is_XML=0;
+  char *object_literal_language=NULL;
+  int object_literal_language_length=0;
+
 
   /* ASSERTION:
    * p always points to first char we are considering
@@ -530,9 +623,15 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
     
     /* Expect either <anonURI> or _:name */
     if(i == 2) {
-      if(*p != '<' && *p != '_' && *p != '"') {
+      if(*p != '<' && *p != '_' && *p != '"' && *p != 'x') {
         raptor_ntriples_parser_fatal_error(parser, "Saw '%c', expected <URIref>, _:anonNode or \"literal\"", *p);
         return 1;
+      }
+      if(*p == 'x') {
+        if(len < 5 || strncmp(p, "xml(\"", 5)) {
+          raptor_ntriples_parser_fatal_error(parser, "Saw '%c', expected xml(\"...\")", *p);
+          return 1;
+        }
       }
     } else {
       if(*p != '<' && *p != '_') {
@@ -552,10 +651,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         parser->locator.column++;
         parser->locator.byte++;
 
-        start=p;
         raptor_ntriples_string(parser,
-                               start, dest, &len, &term_length, '>', 1);
-        p += term_length;
+                               &p, dest, &len, &term_length, '>', 1);
         break;
 
       case '"':
@@ -568,11 +665,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         parser->locator.column++;
         parser->locator.byte++;
 
-        start=p;
-
         raptor_ntriples_string(parser,
-                               start, dest, &len, &term_length, '"', 0);
-        p += term_length;
+                               &p, dest, &len, &term_length, '"', 0);
         break;
 
 
@@ -596,8 +690,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         parser->locator.byte++;
 
         /* start after _: */
-        start=p;
-        dest=start;
+        dest=p;
 
         while(len>0 && isalnum(*p)) {
           p++;
@@ -606,9 +699,90 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
           parser->locator.byte++;
         }
 
-        term_length=p-start;
+        term_length=p-dest;
 
         break;
+
+      case 'x':
+        /* already know we have xml(" coming up */
+        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
+        
+        p+=4;
+        len-=4;
+
+        dest=p;
+
+        p++;
+        len--;
+        parser->locator.column++;
+        parser->locator.byte++;
+
+        raptor_ntriples_string(parser,
+                               &p, dest, &len, &term_length, '"', 0);
+
+        /* got XML literal string */
+        object_literal_is_XML=1;
+
+        /* Skip whitespace between 'xml("xx"' and following ')' or ',' */
+        while(len>0 && isspace(*p)) {
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+        }
+
+        if(len && *p == ',') {
+          /* Skip , */
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+
+          /* Skip whitespace between 'xml("xx",' and following '"' */
+          while(len>0 && isspace(*p)) {
+            p++;
+            len--;
+            parser->locator.column++;
+            parser->locator.byte++;
+          }
+
+          if(!len)
+            raptor_ntriples_parser_fatal_error(parser, "Missing language in xml(\"string\",\"language\") after ,");
+
+          if(*p != '"') 
+            raptor_ntriples_parser_fatal_error(parser, "Missing language in xml(\"string\",\"language\") after ,\"");
+
+
+          object_literal_language=p;
+
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+
+          raptor_ntriples_string(parser,
+                                 &p, object_literal_language, &len,
+                                 &object_literal_language_length, '"', 0);
+
+          /* Skip whitespace between 'xml("xx","yy"' and following ')' */
+          while(len>0 && isspace(*p)) {
+            p++;
+            len--;
+            parser->locator.column++;
+            parser->locator.byte++;
+          }
+        }
+
+        if(!len || *p != ')')
+          raptor_ntriples_parser_fatal_error(parser, "Missing terminating ')'");
+
+        p++;
+        len--;
+        parser->locator.column++;
+        parser->locator.byte++;
+
+        break;
+
 
       default:
         raptor_ntriples_parser_fatal_error(parser, "Unknown term type");
@@ -618,7 +792,6 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
     /* Store term */
     terms[i]=dest; term_lengths[i]=term_length;
-
 
     /* Replace
      *   end '>' for <URIref>
@@ -659,7 +832,9 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
   raptor_ntriples_generate_statement(parser, 
                                      terms[0], term_types[0],
                                      terms[1], term_types[1],
-                                     terms[2], term_types[2]);
+                                     terms[2], term_types[2],
+                                     object_literal_is_XML,
+                                     object_literal_language);
 
   parser->locator.byte += len;
 
@@ -917,3 +1092,64 @@ raptor_ntriples_parse_file(raptor_ntriples_parser* parser, raptor_uri *uri,
 
   return (rc != 0);
 }
+
+
+void
+raptor_print_ntriples_string(FILE *stream,
+                             const char *string,
+                             const char delim) 
+{
+  unsigned char c;
+  int len=strlen(string);
+  int unichar_len;
+  long unichar;
+  
+  for(; (c=*string); string++, len--) {
+    if(c == delim || c == '\\') {
+      fprintf(stream, "\\%c", c);
+      continue;
+    }
+    
+    /* Note: NTriples is ASCII */
+    if(c == 0x09) {
+      fputs("\\t", stream);
+      continue;
+    } else if(c == 0x0a) {
+      fputs("\\n", stream);
+      continue;
+    } else if(c == 0x0d) {
+      fputs("\\r", stream);
+      continue;
+    } else if(c < 0x20|| c == 0x7f) {
+      fprintf(stream, "\\u%04X", c);
+      continue;
+    } else if(c < 0x80) {
+      fputc(c, stream);
+      continue;
+    }
+    
+    /* It is unicode */
+    
+    unichar_len=raptor_ntriples_utf8_to_unicode_char(NULL, string, len);
+    if(unichar_len > len) {
+      /* FIXME: UTF-8 encoding ended in the middle of a string
+       * but no way to report an error
+       */
+      return;
+    }
+
+    unichar_len=raptor_ntriples_utf8_to_unicode_char(&unichar,
+                                                     string, len);
+    
+    if(unichar < 0x10000)
+      fprintf(stream, "\\u%04lX", unichar);
+    else
+      fprintf(stream, "\\U%08lX", unichar);
+    
+    unichar_len--; /* since loop does len-- */
+    string += unichar_len; len -= unichar_len;
+
+  }
+  
+}
+
