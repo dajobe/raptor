@@ -536,6 +536,8 @@ struct raptor_parser_s {
   xmlSAXHandler sax;
   /* parser context */
   xmlParserCtxtPtr xc;
+  /* pointer to SAX document locator */
+  xmlSAXLocatorPtr loc;
 #endif  
 
   /* element depth */
@@ -1792,6 +1794,23 @@ static const char* xml_validation_error_prefix="XML parser validation error - ";
 static const char* xml_validation_warning_prefix="XML parser validation warning - ";
 
 static void
+raptor_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc) 
+{
+  raptor_parser* rdf_parser=(raptor_parser*)ctx;
+  rdf_parser->loc=loc;
+}
+
+static void
+raptor_xml_update_document_locator (raptor_parser *rdf_parser) {
+  /* for storing error info */
+  raptor_locator *locator=&rdf_parser->locator;
+
+  locator->line=rdf_parser->loc->getLineNumber(rdf_parser->xc);
+  locator->column=rdf_parser->loc->getColumnNumber(rdf_parser->xc);
+}
+  
+
+static void
 raptor_xml_warning(void *ctx, const char *msg, ...) 
 {
   va_list args;
@@ -1800,6 +1819,9 @@ raptor_xml_warning(void *ctx, const char *msg, ...)
   char *nmsg;
 
   va_start(args, msg);
+
+  raptor_xml_update_document_locator(rdf_parser);
+  
   length=strlen(xml_warning_prefix)+strlen(msg)+1;
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
@@ -1824,6 +1846,9 @@ raptor_xml_error(void *ctx, const char *msg, ...)
   char *nmsg;
 
   va_start(args, msg);
+
+  raptor_xml_update_document_locator(rdf_parser);
+
   length=strlen(xml_error_prefix)+strlen(msg)+1;
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
@@ -1848,6 +1873,9 @@ raptor_xml_fatal_error(void *ctx, const char *msg, ...)
   char *nmsg;
 
   va_start(args, msg);
+
+  raptor_xml_update_document_locator(rdf_parser);
+
   length=strlen(xml_fatal_error_prefix)+strlen(msg)+1;
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
@@ -1872,6 +1900,9 @@ raptor_xml_validation_error(void *ctx, const char *msg, ...)
   char *nmsg;
 
   va_start(args, msg);
+
+  raptor_xml_update_document_locator(rdf_parser);
+
   length=strlen(xml_validation_error_prefix)+strlen(msg)+1;
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
@@ -1896,6 +1927,9 @@ raptor_xml_validation_warning(void *ctx, const char *msg, ...)
   char *nmsg;
 
   va_start(args, msg);
+
+  raptor_xml_update_document_locator(rdf_parser);
+
   length=strlen(xml_validation_warning_prefix)+strlen(msg)+1;
   nmsg=(char*)LIBRDF_MALLOC(cstring, length);
   if(!nmsg) {
@@ -1910,18 +1944,6 @@ raptor_xml_validation_warning(void *ctx, const char *msg, ...)
   va_end(args);
 }
 
-
-static void
-raptor_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc) 
-{
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  /* for storing error info */
-  raptor_locator *locator=&rdf_parser->locator;
-
-  locator->line=loc->getLineNumber(rdf_parser->xc);
-  locator->column=loc->getColumnNumber(rdf_parser->xc);
-}
-  
 
 #endif
 
