@@ -825,6 +825,7 @@ raptor_xml_start_element_handler(void *user_data,
           return;
         }
         strcpy((char*)xml_language, (char*)atts[i+1]);
+        atts[i]=NULL; 
         continue;
       }
       
