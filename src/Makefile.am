@@ -171,7 +171,7 @@ raptor_xml_test: $(srcdir)/raptor_xml.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml.c libraptor.la $(LIBS)
 
 raptor_sequence_test: $(srcdir)/raptor_sequence.c
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_sequence.c $(LIBS)
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_sequence.c libraptor.la $(LIBS)
 
 raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c $(LIBS)
