@@ -52,6 +52,318 @@
 #include "raptor_internal.h"
 
 
+/* prototypes for helper functions */
+static void raptor_delete_parser_factories(void);
+static raptor_parser_factory* raptor_get_parser_factory(const char *name);
+
+
+/* statics */
+
+/* list of parser factories */
+static raptor_parser_factory* parsers=NULL;
+
+
+/**
+ * raptor_init - Initialise the raptor library
+ * 
+ * Initialises the library.
+ *
+ * Should be called before using any of the parsers otherwise
+ * will be called automatically.
+ **/
+void
+raptor_init(void) 
+{
+  if(parsers)
+    return;
+  /* FIXME */
+  raptor_init_parser_rdfxml();
+  raptor_init_parser_ntriples();
+}
+
+
+/**
+ * raptor_finish - Terminate the raptor library
+ *
+ * Cleans up state of the library.
+ **/
+void
+raptor_finish(void) 
+{
+  raptor_delete_parser_factories();
+}
+
+
+/* helper functions */
+
+
+/*
+ * raptor_delete_parser_factories - helper function to delete all the registered parser factories
+ */
+static void
+raptor_delete_parser_factories(void)
+{
+  raptor_parser_factory *factory, *next;
+  
+  for(factory=parsers; factory; factory=next) {
+    next=factory->next;
+    LIBRDF_FREE(raptor_parser_factory, factory->name);
+    LIBRDF_FREE(raptor_parser_factory, factory);
+  }
+  parsers=NULL;
+}
+
+
+/* class methods */
+
+/*
+ * raptor_parser_register_factory - Register a parser factory
+ * @name: the parser factory name
+ * @factory: pointer to function to call to register the factory
+ * 
+ **/
+void
+raptor_parser_register_factory(const char *name,
+                               void (*factory) (raptor_parser_factory*)) 
+{
+  raptor_parser_factory *parser, *h;
+  char *name_copy;
+  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG2(raptor_parser_register_factory,
+                "Received registration for parser %s\n", name);
+#endif
+  
+  parser=(raptor_parser_factory*)LIBRDF_CALLOC(raptor_parser_factory, 1,
+                                               sizeof(raptor_parser_factory));
+  if(!parser)
+    LIBRDF_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+
+  name_copy=(char*)LIBRDF_CALLOC(cstring, strlen(name)+1, 1);
+  if(!name_copy) {
+    LIBRDF_FREE(raptor_parser, parser);
+    LIBRDF_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+  }
+  strcpy(name_copy, name);
+  parser->name=name_copy;
+        
+  for(h = parsers; h; h = h->next ) {
+    if(!strcmp(h->name, name_copy)) {
+      LIBRDF_FATAL2(raptor_parser_register_factory,
+                    "parser %s already registered\n", h->name);
+    }
+  }
+  
+  /* Call the parser registration function on the new object */
+  (*factory)(parser);
+  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG3(raptor_parser_register_factory, "%s has context size %d\n",
+                name, parser->context_length);
+#endif
+  
+  parser->next = parsers;
+  parsers = parser;
+}
+
+
+/*
+ * raptor_get_parser_factory - Get a parser factory by name
+ * @name: the factory name or NULL for the default factory
+ * 
+ * Return value: the factory object or NULL if there is no such factory
+ **/
+static raptor_parser_factory*
+raptor_get_parser_factory (const char *name) 
+{
+  raptor_parser_factory *factory;
+
+  /* return 1st parser if no particular one wanted - why? */
+  if(!name) {
+    factory=parsers;
+    if(!factory) {
+      LIBRDF_DEBUG1(raptor_get_parser_factory, 
+                    "No (default) parsers registered\n");
+      return NULL;
+    }
+  } else {
+    for(factory=parsers; factory; factory=factory->next) {
+      if(!strcmp(factory->name, name)) {
+        break;
+      }
+    }
+    /* else FACTORY name not found */
+    if(!factory) {
+      LIBRDF_DEBUG2(raptor_get_parser_factory,
+                    "No parser with name %s found\n",
+                    name);
+      return NULL;
+    }
+  }
+        
+  return factory;
+}
+
+
+
+/**
+ * raptor_new_parser - Constructor - create a new raptor_parser object
+ * @name: the parser name
+ *
+ * Return value: a new &raptor_parser object or NULL on failure
+ */
+raptor_parser*
+raptor_new_parser(char *name) {
+  raptor_parser_factory* factory;
+  raptor_parser* rdf_parser;
+
+  raptor_init();
+
+  factory=raptor_get_parser_factory(name);
+  if(!factory)
+    return NULL;
+
+  rdf_parser=(raptor_parser*)LIBRDF_CALLOC(raptor_parser, 1,
+                                           sizeof(raptor_parser));
+  if(!rdf_parser)
+    return NULL;
+  
+  rdf_parser->context=(char*)LIBRDF_CALLOC(raptor_parser_context, 1,
+                                           factory->context_length);
+  if(!rdf_parser->context) {
+    raptor_free_parser(rdf_parser);
+    return NULL;
+  }
+  
+  rdf_parser->factory=factory;
+
+  rdf_parser->failed=0;
+
+  /* Initialise default feature values */
+  rdf_parser->feature_scanning_for_rdf_RDF=0;
+  rdf_parser->feature_assume_is_rdf=0;
+  rdf_parser->feature_allow_non_ns_attributes=1;
+  rdf_parser->feature_allow_other_parseTypes=1;
+
+  if(factory->init(rdf_parser, name)) {
+    raptor_free_parser(rdf_parser);
+    return NULL;
+  }
+  
+  return rdf_parser;
+}
+
+
+int
+raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
+  rdf_parser->base_uri=uri;
+  rdf_parser->locator.uri=uri;
+
+  raptor_namespaces_free(&rdf_parser->namespaces);
+
+#ifdef RAPTOR_IN_REDLAND
+  raptor_namespaces_init(&rdf_parser->namespaces, (librdf_world*)rdf_parser->world);
+#else
+  raptor_namespaces_init(&rdf_parser->namespaces);
+#endif
+
+  return rdf_parser->factory->start(rdf_parser, uri);
+}
+
+
+int
+raptor_start_parse_file(raptor_parser *rdf_parser, 
+                        const char *filename, raptor_uri *uri)
+{
+  raptor_locator *locator=&rdf_parser->locator;
+  locator->file=filename;
+
+  if(!strcmp(filename, "-")) {
+    rdf_parser->fh=stdin;
+    return 0;
+  }
+
+  rdf_parser->fh=fopen(filename, "r");
+  if(!rdf_parser->fh) {
+    raptor_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
+    LIBRDF_FREE(cstring, (void*)filename);
+    return 1;
+  }
+
+  return raptor_start_parse(rdf_parser, uri);
+}
+
+
+int
+raptor_parse_chunk(raptor_parser* rdf_parser,
+                   const char *buffer, size_t len, int is_end) 
+{
+  return rdf_parser->factory->chunk(rdf_parser, buffer, len, is_end);
+}
+
+
+/**
+ * raptor_free_parser - Destructor - destroy a raptor_parser object
+ * @parser: &raptor_parser object
+ * 
+ **/
+void
+raptor_free_parser(raptor_parser* rdf_parser) 
+{
+  if(rdf_parser->factory)
+    rdf_parser->factory->terminate(rdf_parser);
+
+  if(rdf_parser->context)
+    LIBRDF_FREE(raptor_parser_context, rdf_parser->context);
+
+  raptor_namespaces_free(&rdf_parser->namespaces);
+
+  LIBRDF_FREE(raptor_parser, rdf_parser);
+}
+
+
+/* Size of XML buffer to use when reading from a file */
+#define RAPTOR_READ_BUFFER_SIZE 1024
+
+/**
+ * raptor_parse_file - Retrieve the RDF/XML content at URI
+ * @rdf_parser: parser
+ * @uri: URI of RDF content
+ * @base_uri: the base URI to use (or NULL if the same)
+ * 
+ * Return value: non 0 on failure
+ **/
+int
+raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
+                  raptor_uri *base_uri) 
+{
+  /* Read buffer */
+  char buffer[RAPTOR_READ_BUFFER_SIZE];
+  int rc=0;
+  const char *filename=RAPTOR_URI_TO_FILENAME(uri);
+
+  if(!filename)
+    return 1;
+
+  if(raptor_start_parse_file(rdf_parser, filename, base_uri))
+    return 1;
+  
+  while(rdf_parser->fh && !feof(rdf_parser->fh)) {
+    int len=fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, rdf_parser->fh);
+    int is_end=(len < RAPTOR_READ_BUFFER_SIZE);
+    rc=raptor_parse_chunk(rdf_parser, buffer, len, is_end);
+    if(rc || is_end)
+      break;
+  }
+
+#ifdef RAPTOR_URI_TO_FILENAME
+  LIBRDF_FREE(cstring, (void*)filename);
+#endif
+
+  return (rc != 0);
+}
+
+
 /*
  * raptor_parser_fatal_error - Fatal Error from a parser - Internal
  **/
@@ -198,6 +510,8 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
 /**
  * raptor_new - Initialise the Raptor RDF parser
  *
+ * OLD API - use raptor_new_parser
+ *
  * Return value: non 0 on failure
  **/
 raptor_parser*
@@ -209,18 +523,13 @@ raptor_new(
 #endif
 )
 {
-  raptor_parser* rdf_parser;
-
-  rdf_parser=(raptor_parser*)LIBRDF_CALLOC(raptor_parser, 1, sizeof(raptor_parser));
-
-  if(!rdf_parser)
-    return NULL;
-
-  raptor_xml_new(rdf_parser
+  raptor_parser *rdf_parser=raptor_new_parser("rdfxml");
+  
 #ifdef RAPTOR_IN_REDLAND
-  ,world
+  /* FIXME temporary redland stuff */
+  if(rdf_parser)
+    raptor_set_world(rdf_parser, world);
 #endif
-  );
   return rdf_parser;
 }
 
@@ -230,13 +539,14 @@ raptor_new(
 /**
  * raptor_free - Free the Raptor RDF parser
  * @rdf_parser: parser object
+ *
+ * OLD API - use raptor_free_parser
  * 
  **/
 void
 raptor_free(raptor_parser *rdf_parser) 
 {
-  raptor_xml_free(rdf_parser);
-  LIBRDF_FREE(raptor_parser, rdf_parser);
+  raptor_free_parser(rdf_parser);
 }
 
 
@@ -329,6 +639,11 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value) {
 }
 
 
+/* FIXME temporary redland stuff */
+void
+raptor_set_world(raptor_parser *rdf_parser, void *world) {
+  rdf_parser->world=world;
+}
 
 
 void
