@@ -898,6 +898,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string) {
 
   turtle_parser_parse(rdf_parser);
 
+  turtle_lexer_lex_destroy(turtle_parser->scanner);
   turtle_parser->scanner_set=0;
 
   return 0;
