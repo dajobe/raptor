@@ -56,10 +56,7 @@
 #include "ntriples.h"
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_ntriples_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, int object_literal_is_XML, char *object_literal_language);
-static void raptor_ntriples_parser_error(raptor_ntriples_parser* parser, const char *message, ...);
-static void raptor_ntriples_parser_fatal_error(raptor_ntriples_parser* parser, const char *message, ...);
-static int raptor_ntriples_parse(raptor_ntriples_parser* parser, char *buffer, int length, int is_end);
+static void raptor_ntriples_generate_statement(raptor_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, int object_literal_is_XML, char *object_literal_language);
 
 static int raptor_ntriples_unicode_char_to_utf8(unsigned long c, char *output);
 static int raptor_ntriples_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
@@ -69,14 +66,7 @@ static int raptor_ntriples_utf8_to_unicode_char(long *output, const unsigned cha
 /*
  * NTriples parser object
  */
-struct raptor_ntriples_parser_s {
-#ifdef LIBRDF_INTERNAL
-  librdf_world *world;
-#endif
-
-  /* is filled with current line, column, byte location information */
-  raptor_locator locator;
-
+struct raptor_ntriples_parser_context_s {
   /* current line */
   char *line;
   /* current line length */
@@ -84,29 +74,25 @@ struct raptor_ntriples_parser_s {
   /* current char in line buffer */
   int offset;
   
-  /* non 0 if parser had fatal error and cannot continue */
-  int failed;
-
-  /* base URI of RDF/XML */
-  raptor_uri *base_uri;
-
   /* static statement for use in passing to user code */
   raptor_statement statement;
-
-  /* stuff for our user */
-  void *user_data;
-
-  void *error_user_data;
-  void *fatal_error_user_data;
-
-  raptor_message_handler error_handler;
-  raptor_message_handler fatal_error_handler;
-
-  /* parser callbacks */
-  raptor_statement_handler statement_handler;
 };
 
 
+typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
+
+
+
+/**
+ * raptor_ntriples_parse_init - Initialise the Raptor NTriples parser
+ *
+ * Return value: non 0 on failure
+ **/
+
+static int
+raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
+  return 0;
+}
 
 
 /* PUBLIC FUNCTIONS */
@@ -114,10 +100,12 @@ struct raptor_ntriples_parser_s {
 /**
  * raptor_ntriples_new - Initialise the Raptor NTriples parser
  *
+ * OLD API - use raptor_new_parser("ntriples")
+ *
  * Return value: non 0 on failure
  **/
 
-raptor_ntriples_parser*
+raptor_parser*
 raptor_ntriples_new(
 #ifdef LIBRDF_INTERNAL
   librdf_world *world
@@ -126,17 +114,28 @@ raptor_ntriples_new(
 #endif
 )
 {
-  raptor_ntriples_parser* parser;
-
-  parser=(raptor_ntriples_parser*)LIBRDF_CALLOC(raptor_ntriples_parser, 1, sizeof(raptor_ntriples_parser));
-
-  if(!parser)
-    return NULL;
-
-  return parser;
+  raptor_parser *rdf_parser=raptor_new_parser("ntriples");
+  
+#ifdef RAPTOR_IN_REDLAND
+  /* FIXME temporary redland stuff */
+  if(rdf_parser)
+    raptor_set_world(rdf_parser, world);
+#endif
+  return rdf_parser;
 }
 
 
+/**
+ * raptor_ntriples_free - Free the Raptor NTriples parser
+ * @rdf_parser: parser object
+ * 
+ * OLD API - use raptor_free_parser
+ **/
+void
+raptor_ntriples_free(raptor_parser *rdf_parser)
+{
+  raptor_free_parser(rdf_parser);
+}
 
 
 /**
@@ -144,13 +143,11 @@ raptor_ntriples_new(
  * @rdf_parser: parser object
  * 
  **/
-void
-raptor_ntriples_free(raptor_ntriples_parser *parser) 
-{
-  if(parser->line_length)
-    LIBRDF_FREE(cdata, parser->line);
-  
-  LIBRDF_FREE(raptor_ntriples_parser, parser);
+static void
+raptor_ntriples_parse_terminate(raptor_parser *rdf_parser) {
+  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
+  if(ntriples_parser->line_length)
+    LIBRDF_FREE(cdata, ntriples_parser->line);
 }
 
 
@@ -161,15 +158,16 @@ raptor_ntriples_free(raptor_ntriples_parser *parser)
  * @handler: pointer to the function
  * 
  * The function will receive callbacks when the parser fails.
+ *
+ * OLD API - use raptor_set_error_handler
  * 
  **/
 void
-raptor_ntriples_set_error_handler(raptor_ntriples_parser* parser,
+raptor_ntriples_set_error_handler(raptor_parser* parser,
                                   void *user_data,
                                   raptor_message_handler handler)
 {
-  parser->error_user_data=user_data;
-  parser->error_handler=handler;
+  raptor_set_error_handler(parser, user_data, handler);
 }
 
 
@@ -181,24 +179,31 @@ raptor_ntriples_set_error_handler(raptor_ntriples_parser* parser,
  * 
  * The function will receive callbacks when the parser fails.
  * 
+ * OLD API - use raptor_set_fatal_error_handler
  **/
 void
-raptor_ntriples_set_fatal_error_handler(raptor_ntriples_parser* parser,
+raptor_ntriples_set_fatal_error_handler(raptor_parser* parser,
                                         void *user_data,
                                         raptor_message_handler handler)
 {
-  parser->fatal_error_user_data=user_data;
-  parser->fatal_error_handler=handler;
+  raptor_set_fatal_error_handler(parser, user_data, handler);
 }
 
 
+/**
+ * raptor_ntriples_set_statement_handler - set the statement handler callback
+ * @parser: ntriples parser
+ * @user_data: user data for callback
+ * @handler: callback function
+ * 
+ * OLD API - use raptor_set_statement_handler
+ **/
 void
-raptor_ntriples_set_statement_handler(raptor_ntriples_parser* parser,
+raptor_ntriples_set_statement_handler(raptor_parser* parser,
                                       void *user_data, 
                                       raptor_statement_handler handler) 
 {
-  parser->user_data=user_data;
-  parser->statement_handler=handler;
+  raptor_set_statement_handler(parser, user_data, handler);
 }
 
 
@@ -217,7 +222,7 @@ raptor_ntriples_term_as_string (raptor_ntriples_term_type term) {
 
 
 static void
-raptor_ntriples_generate_statement(raptor_ntriples_parser *parser, 
+raptor_ntriples_generate_statement(raptor_parser *parser, 
                                    const char *subject,
                                    const raptor_ntriples_term_type subject_type,
                                    const char *predicate,
@@ -445,7 +450,7 @@ raptor_ntriples_utf8_to_unicode_char(long *output,
  * Return value: Non 0 on failure
  **/
 static int
-raptor_ntriples_string(raptor_ntriples_parser* parser, 
+raptor_ntriples_string(raptor_parser* rdf_parser, 
                        char **start, char *dest, 
                        int *lenp, int *dest_lenp,
                        char end_char, int is_uri)
@@ -454,21 +459,21 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
   unsigned char c='\0';
   int ulen=0;
   unsigned long unichar=0;
-  
+ 
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
     c = *p;
 
     p++;
     (*lenp)--;
-    parser->locator.column++;
-    parser->locator.byte++;
+    rdf_parser->locator.column++;
+    rdf_parser->locator.byte++;
 
     /* This is an ASCII check, not a printable character check 
      * so isprint() is not appropriate, since that is a locale check.
      */
     if(!IS_ASCII_PRINT(c)) {
-      raptor_ntriples_parser_error(parser, "Non-printable ASCII character %d (0x%02X) found.", c, c);
+      raptor_parser_error(rdf_parser, "Non-printable ASCII character %d (0x%02X) found.", c, c);
       continue;
     }
     
@@ -486,7 +491,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
     }
 
     if(!*lenp) {
-      raptor_ntriples_parser_error(parser, "\\ at end of line");
+      raptor_parser_error(rdf_parser, "\\ at end of line");
       return 0;
     }
 
@@ -494,8 +499,8 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
 
     p++;
     (*lenp)--;
-    parser->locator.column++;
-    parser->locator.byte++;
+    rdf_parser->locator.column++;
+    rdf_parser->locator.byte++;
 
     switch(c) {
       case '"':
@@ -516,7 +521,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
         ulen=(c == 'u') ? 4 : 8;
         
         if(*lenp < ulen) {
-          raptor_ntriples_parser_error(parser, "%c over end of line", c);
+          raptor_parser_error(rdf_parser, "%c over end of line", c);
           return 0;
         }
         
@@ -524,14 +529,14 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
 
         p+=ulen;
         (*lenp)-=ulen;
-        parser->locator.column+=ulen;
-        parser->locator.byte+=ulen;
+        rdf_parser->locator.column+=ulen;
+        rdf_parser->locator.byte+=ulen;
         
         dest+=raptor_ntriples_unicode_char_to_utf8(unichar, dest);
         break;
 
       default:
-        raptor_ntriples_parser_error(parser, "Illegal string escape \\%c in \"%s\"", c, start);
+        raptor_parser_error(rdf_parser, "Illegal string escape \\%c in \"%s\"", c, start);
         return 0;
     }
     
@@ -539,7 +544,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
 
 
   if(c != end_char)
-    raptor_ntriples_parser_error(parser, "Missing terminating '%c'", end_char);
+    raptor_parser_error(rdf_parser, "Missing terminating '%c'", end_char);
 
   *dest_lenp=p-*start;
 
@@ -550,8 +555,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
 
 
 static int
-raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, 
-                            int len) 
+raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len) 
 {
   int i;
   char *p;
@@ -584,8 +588,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
   while(len>0 && isspace(*p)) {
     p++;
-    parser->locator.column++;
-    parser->locator.byte++;
+    rdf_parser->locator.column++;
+    rdf_parser->locator.byte++;
     len--;
   }
 
@@ -608,9 +612,9 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
   /* Check for terminating '.' */
   if(p[len-1] != '.') {
     /* Move current location to point to problem */
-    parser->locator.column += len-2;
-    parser->locator.byte += len-2;
-    raptor_ntriples_parser_error(parser, "Missing . at end of line");
+    rdf_parser->locator.column += len-2;
+    rdf_parser->locator.byte += len-2;
+    raptor_parser_error(rdf_parser, "Missing . at end of line");
     return 0;
   }
 
@@ -622,25 +626,25 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
   for(i=0; i<3; i++) {
     if(!len) {
-      raptor_ntriples_parser_error(parser, "Unexpected end of line");
+      raptor_parser_error(rdf_parser, "Unexpected end of line");
       return 0;
     }
     
     /* Expect either <URI> or _:name */
     if(i == 2) {
       if(*p != '<' && *p != '_' && *p != '"' && *p != 'x') {
-        raptor_ntriples_parser_error(parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
+        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
         return 0;
       }
       if(*p == 'x') {
         if(len < 4 || strncmp(p, "xml\"", 4)) {
-          raptor_ntriples_parser_error(parser, "Saw '%c', expected xml\"...\")", *p);
+          raptor_parser_error(rdf_parser, "Saw '%c', expected xml\"...\")", *p);
           return 0;
         }
       }
     } else {
       if(*p != '<' && *p != '_') {
-        raptor_ntriples_parser_error(parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
+        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
         return 0;
       }
     }
@@ -653,10 +657,10 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
         p++;
         len--;
-        parser->locator.column++;
-        parser->locator.byte++;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
 
-        if(raptor_ntriples_string(parser,
+        if(raptor_ntriples_string(rdf_parser,
                                   &p, dest, &len, &term_length, '>', 1))
           return 1;
         break;
@@ -668,10 +672,10 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
         p++;
         len--;
-        parser->locator.column++;
-        parser->locator.byte++;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
 
-        if(raptor_ntriples_string(parser,
+        if(raptor_ntriples_string(rdf_parser,
                                   &p, dest, &len, &term_length, '"', 0))
           return 1;
         
@@ -681,16 +685,16 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
           /* Skip - */
           p++;
           len--;
-          parser->locator.column++;
-          parser->locator.byte++;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
 
           if(!len) {
-            raptor_ntriples_parser_error(parser, "Missing language in xml\"string\"-language after -");
+            raptor_parser_error(rdf_parser, "Missing language in xml\"string\"-language after -");
             return 0;
           }
           
 
-          if(raptor_ntriples_string(parser,
+          if(raptor_ntriples_string(rdf_parser,
                                     &p, object_literal_language, &len,
                                     &object_literal_language_length, ' ', 0))
             return 1;
@@ -705,22 +709,22 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
         p++;
         len--;
-        parser->locator.column++;
-        parser->locator.byte++;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
 
         if(!len || (len > 0 && *p != ':')) {
-          raptor_ntriples_parser_error(parser, "Illegal bNodeID - _ not followed by :");
+          raptor_parser_error(rdf_parser, "Illegal bNodeID - _ not followed by :");
           return 0;
         }
         /* Found ':' - move on */
 
         p++;
         len--;
-        parser->locator.column++;
-        parser->locator.byte++;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
 
         if(len>0 && !IS_ASCII_ALPHA(*p)) {
-          raptor_ntriples_parser_error(parser, "Illegal bnodeID - does not start with an ASCII alphabetic character.");
+          raptor_parser_error(rdf_parser, "Illegal bnodeID - does not start with an ASCII alphabetic character.");
           return 0;
         }
 
@@ -730,8 +734,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         while(len>0 && (IS_ASCII_ALPHA(*p) || IS_ASCII_DIGIT(*p))) {
           p++;
           len--;
-          parser->locator.column++;
-          parser->locator.byte++;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
         }
 
         term_length=p-dest;
@@ -750,10 +754,10 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
         p++;
         len--;
-        parser->locator.column++;
-        parser->locator.byte++;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
 
-        if(raptor_ntriples_string(parser,
+        if(raptor_ntriples_string(rdf_parser,
                                   &p, dest, &len, &term_length, '"', 0))
           return 1;
 
@@ -766,15 +770,15 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
           /* Skip - */
           p++;
           len--;
-          parser->locator.column++;
-          parser->locator.byte++;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
 
           if(!len) {
-            raptor_ntriples_parser_error(parser, "Missing language in xml\"string\"-language after -");
+            raptor_parser_error(rdf_parser, "Missing language in xml\"string\"-language after -");
             return 0;
           }
 
-          if(raptor_ntriples_string(parser,
+          if(raptor_ntriples_string(rdf_parser,
                                     &p, object_literal_language, &len,
                                     &object_literal_language_length, ' ', 0))
             return 1;
@@ -783,21 +787,21 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
         if(len) {
           if(*p != ' ') {
-            raptor_ntriples_parser_error(parser, "Missing terminating ' '");
+            raptor_parser_error(rdf_parser, "Missing terminating ' '");
             return 0;
           }
 
           p++;
           len--;
-          parser->locator.column++;
-          parser->locator.byte++;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
         }
         
         break;
 
 
       default:
-        raptor_ntriples_parser_fatal_error(parser, "Unknown term type");
+        raptor_parser_fatal_error(rdf_parser, "Unknown term type");
         return 1;
     }
 
@@ -815,8 +819,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
       *p='\0';
       p++;
       len--;
-      parser->locator.column++;
-      parser->locator.byte++;
+      rdf_parser->locator.column++;
+      rdf_parser->locator.byte++;
     }
     
     
@@ -824,8 +828,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
     while(len>0 && isspace(*p)) {
       p++;
       len--;
-      parser->locator.column++;
-      parser->locator.byte++;
+      rdf_parser->locator.column++;
+      rdf_parser->locator.byte++;
     }
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -836,55 +840,57 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
   }
 
   if(len) {
-    raptor_ntriples_parser_error(parser, "Junk before terminating \".\"");
+    raptor_parser_error(rdf_parser, "Junk before terminating \".\"");
     return 0;
   }
   
 
-  raptor_ntriples_generate_statement(parser, 
+  raptor_ntriples_generate_statement(rdf_parser, 
                                      terms[0], term_types[0],
                                      terms[1], term_types[1],
                                      terms[2], term_types[2],
                                      object_literal_is_XML,
                                      object_literal_language);
 
-  parser->locator.byte += len;
+  rdf_parser->locator.byte += len;
 
   return 0;
 }
 
 
-int
-raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
-                      int is_end)
+static int
+raptor_ntriples_parse_chunk(raptor_parser* rdf_parser, 
+                            const char *s, size_t len,
+                            int is_end)
 {
   char *buffer;
   char *ptr;
   char *start;
   char last_nl;
+  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(raptor_ntriples_parse, "adding %d bytes to line buffer\n", len);
+  LIBRDF_DEBUG2(raptor_ntriples_parse_chunk, "adding %d bytes to line buffer\n", len);
 #endif
 
-  buffer=(char*)LIBRDF_MALLOC(cstring, parser->line_length + len + 1);
+  buffer=(char*)LIBRDF_MALLOC(cstring, ntriples_parser->line_length + len + 1);
   if(!buffer) {
-    raptor_ntriples_parser_fatal_error(parser, "Out of memory");
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return 1;
   }
 
-  if(parser->line_length) {
-    strncpy(buffer, parser->line, parser->line_length);
-    LIBRDF_FREE(cstring, parser->line);
+  if(ntriples_parser->line_length) {
+    strncpy(buffer, ntriples_parser->line, ntriples_parser->line_length);
+    LIBRDF_FREE(cstring, ntriples_parser->line);
   }
 
-  parser->line=buffer;
+  ntriples_parser->line=buffer;
 
   /* move pointer to end of cdata buffer */
-  ptr=buffer+parser->line_length;
+  ptr=buffer+ntriples_parser->line_length;
 
   /* adjust stored length */
-  parser->line_length += len;
+  ntriples_parser->line_length += len;
 
   /* now write new stuff at end of cdata buffer */
   strncpy(ptr, s, len);
@@ -892,20 +898,20 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
   *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG3(raptor_ntriples_parse,
+  LIBRDF_DEBUG3(raptor_ntriples_parse_chunk,
                 "line buffer now '%s' (%d bytes)\n", 
-                parser->line, parser->line_length);
+                ntriples_parser->line, ntriples_parser->line_length);
 #endif
 
   last_nl='\n';  /* last newline character - \r triggers check */
 
-  ptr=buffer+parser->offset;
+  ptr=buffer+ntriples_parser->offset;
   start=ptr;
   while(*ptr) {
     /* skip \n when just seen \r - i.e. \r\n or CR LF */
     if(last_nl == '\r' && *ptr == '\n') {
       ptr++;
-      parser->locator.byte++;
+      rdf_parser->locator.byte++;
     }
     
     while(*ptr && *ptr != '\n' && *ptr != '\r')
@@ -918,17 +924,17 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
     last_nl=*ptr;
 
     len=ptr-start;
-    parser->locator.column=0;
+    rdf_parser->locator.column=0;
 
     *ptr='\0';
-    if(raptor_ntriples_parse_line(parser,start,len))
+    if(raptor_ntriples_parse_line(rdf_parser,start,len))
       return 1;
     
-    parser->locator.line++;
+    rdf_parser->locator.line++;
 
     /* go past newline */
     ptr++;
-    parser->locator.byte++;
+    rdf_parser->locator.byte++;
 
     start=ptr;
   }
@@ -937,37 +943,37 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
   if(is_end)
     return 0;
     
-  parser->offset=start-buffer;
+  ntriples_parser->offset=start-buffer;
 
-  len=parser->line_length - parser->offset;
+  len=ntriples_parser->line_length - ntriples_parser->offset;
     
   if(len) {
     /* collapse buffer */
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    LIBRDF_DEBUG3(raptor_ntriples_parse,
+    LIBRDF_DEBUG3(raptor_ntriples_parse_chunk,
                   "collapsing line buffer from %d to %d bytes\n", 
-                  parser->line_length, len);
+                  ntriples_parser->line_length, len);
 #endif
     buffer=(char*)LIBRDF_MALLOC(cstring, len + 1);
     if(!buffer) {
-      raptor_ntriples_parser_fatal_error(parser, "Out of memory");
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
     }
 
-    strncpy(buffer, parser->line+parser->line_length-len, len);
+    strncpy(buffer, ntriples_parser->line+ntriples_parser->line_length-len, len);
     buffer[len]='\0';
 
-    LIBRDF_FREE(cstring, parser->line);
+    LIBRDF_FREE(cstring, ntriples_parser->line);
 
-    parser->line=buffer;
-    parser->line_length -= parser->offset;
-    parser->offset=0;
+    ntriples_parser->line=buffer;
+    ntriples_parser->line_length -= ntriples_parser->offset;
+    ntriples_parser->offset=0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    LIBRDF_DEBUG3(raptor_ntriples_parse,
+    LIBRDF_DEBUG3(raptor_ntriples_parse_chunk,
                   "line buffer now '%s' (%d bytes)\n", 
-                  parser->line, parser->line_length);
+                  ntriples_parser->line, ntriples_parser->line_length);
 #endif    
   }
   
@@ -975,141 +981,34 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
 }
 
 
-/*
- * raptor_ntriples_parser_error - Error from a parser - Internal
- **/
-static void
-raptor_ntriples_parser_error(raptor_ntriples_parser* parser,
-                             const char *message, ...)
+static int
+raptor_ntriples_parse_start(raptor_parser *rdf_parser, raptor_uri *uri) 
 {
-  va_list arguments;
-
-  va_start(arguments, message);
-
-  if(parser->error_handler) {
-    int len=vsnprintf(NULL, 0, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
-    if(!buffer) {
-      fprintf(stderr, "raptor_ntriples_parser_error: Out of memory\n");
-      return;
-    }
-    vsnprintf(buffer, len, message, arguments);
-    parser->error_handler(parser->error_user_data, 
-                          &parser->locator, buffer);
-    LIBRDF_FREE(cstring, buffer);
-    va_end(arguments);
-    return;
-  }
-
-  raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " NTriples error - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
-
-  va_end(arguments);
-}
-
-
-/*
- * raptor_ntriples_parser_fatal_error - Error from a parser - Internal
- **/
-static void
-raptor_ntriples_parser_fatal_error(raptor_ntriples_parser* parser,
-                                   const char *message, ...)
-{
-  va_list arguments;
-
-  parser->failed=1;
-
-  va_start(arguments, message);
-
-  if(parser->fatal_error_handler) {
-    int len=vsnprintf(NULL, 0, message, arguments)+1;
-    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
-    if(!buffer) {
-      fprintf(stderr, "raptor_ntriples_parser_fatal_error: Out of memory\n");
-      return;
-    }
-    vsnprintf(buffer, len, message, arguments);
-    parser->fatal_error_handler(parser->fatal_error_user_data, 
-                                &parser->locator, buffer);
-    LIBRDF_FREE(cstring, buffer);
-    va_end(arguments);
-    abort();
-  }
-
-  raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " NTriples fatal error - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
-
-  va_end(arguments);
-
-  abort();
-}
-
-
-/**
- * raptor_ntriples_parse_file - Retrieve the Ntriples content at URI
- * @ntriples_parser: parser
- * @uri: URI of NTriples content
- * @base_uri: the base URI to use (or NULL if the same)
- * 
- * Return value: non 0 on failure
- **/
-int
-raptor_ntriples_parse_file(raptor_ntriples_parser* parser, raptor_uri *uri,
-                           raptor_uri *base_uri) 
-{
-#define RBS 1024
-  FILE *fh;
-  char buffer[RBS];
-  int rc=1;
-  int len;
-  const char *filename;
-  /* for storing error info */
-  raptor_locator *locator=&parser->locator;
-
-  /* initialise fields */
-  parser->base_uri=base_uri;
+  raptor_locator *locator=&rdf_parser->locator;
 
   locator->line=1;
   locator->column=0;
   locator->byte=0;
 
-  filename=RAPTOR_URI_TO_FILENAME(uri);
-  if(!filename)
-    return 1;
-
-  locator->file=filename;
-  locator->uri=base_uri;
-
-  fh=fopen(filename, "r");
-  if(!fh) {
-    raptor_ntriples_parser_error(parser, "file open failed - %s", strerror(errno));
-    LIBRDF_FREE(cstring, (void*)filename);
-    return 0;
-  }
+  return 0;
+}
 
 
-  while(fh && !feof(fh)) {
-    len=fread(buffer, 1, RBS, fh);
-    if(len <= 0) {
-      break;
-    }
-    rc=raptor_ntriples_parse(parser, buffer, len, (len < RBS));
-    if(len < RBS)
-      break;
-    if(rc) /* 0 is success */
-      break;
-  }
-  fclose(fh);
-
-#ifdef RAPTOR_URI_TO_FILENAME
-  LIBRDF_FREE(cstring, (void*)filename);
-#endif
-
-  return (rc != 0);
+/**
+ * raptor_ntriples_parse_file - Retrieve the Ntriples content at URI
+ * @rdf_parser: parser
+ * @uri: URI of NTriples content
+ * @base_uri: the base URI to use (or NULL if the same)
+ * 
+ * OLD API - use raptor_parse_file
+ *
+ * Return value: non 0 on failure
+ **/
+int
+raptor_ntriples_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
+                           raptor_uri *base_uri) 
+{
+  return raptor_parse_file(rdf_parser, uri, base_uri);
 }
 
 
@@ -1178,3 +1077,23 @@ raptor_print_ntriples_string(FILE *stream,
   return 0;
 }
 
+
+
+
+static void
+raptor_ntriples_parser_register_factory(raptor_parser_factory *factory) 
+{
+  factory->context_length     = sizeof(raptor_ntriples_parser_context);
+  
+  factory->init      = raptor_ntriples_parse_init;
+  factory->terminate = raptor_ntriples_parse_terminate;
+  factory->start     = raptor_ntriples_parse_start;
+  factory->chunk     = raptor_ntriples_parse_chunk;
+}
+
+
+void
+raptor_init_parser_ntriples (void) {
+  raptor_parser_register_factory("ntriples", 
+                                 &raptor_ntriples_parser_register_factory);
+}
