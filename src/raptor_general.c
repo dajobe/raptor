@@ -873,6 +873,7 @@ raptor_set_generate_id_handler(raptor_parser* parser,
  *   RAPTOR_FEATURE_ALLOW_BAGID             - allow deprecated rdf:bagID
  *   RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST - generate the rdf:type rdf:List triple for rdf:parseType="Collection"
  *   RAPTOR_FEATURE_NORMALIZE_LANGUAGE      - normalize xml:lang values to lowercase
+ *   RAPTOR_FEATURE_NON_NFC_FATAL           - non NFC literals cause a fatal error
  **/
 void
 raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
@@ -904,6 +905,10 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
       parser->feature_normalize_language=value;
       break;
+
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+      parser->feature_non_nfc_fatal=value;
+      break;
       
     default:
       break;
@@ -930,6 +935,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->feature_allow_bagID=!is_strict;
   rdf_parser->feature_allow_rdf_type_rdf_List=0;
   rdf_parser->feature_normalize_language=1;
+  rdf_parser->feature_non_nfc_fatal=is_strict;
 }
 
 
