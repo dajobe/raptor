@@ -1233,7 +1233,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
     /* This probably will never happen since that would make the
      * XML not be well-formed
      */
-    raptor_parser_warning(rdf_parser, "Found cdata before RDF element.");
+    raptor_parser_warning(rdf_parser, "Character data before RDF element.");
   }
 
 
@@ -1849,7 +1849,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         }
       } else {
         raptor_update_document_locator(rdf_parser);
-        raptor_parser_warning(rdf_parser, "Found unknown RDF namespace attribute %s.", 
+        raptor_parser_warning(rdf_parser, "Unknown RDF namespace attribute %s.", 
                               name);
       }
 
@@ -2081,7 +2081,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            (element->rdf_attr[RDF_ATTR_about]!=NULL) +
            (element->rdf_attr[RDF_ATTR_nodeID]!=NULL)>1) {
           raptor_update_document_locator(rdf_parser);
-          raptor_parser_warning(rdf_parser, "Found multiple attribute of rdf:ID, rdf:about and rdf:nodeID attrs on element %s - expected only one.", el_name);
+          raptor_parser_warning(rdf_parser, "Multiple attributes of rdf:ID, rdf:about and rdf:nodeID on element %s - only one allowed.", el_name);
         }
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
