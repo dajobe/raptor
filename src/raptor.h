@@ -340,6 +340,8 @@ RAPTOR_API int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, 
 
 RAPTOR_API char* raptor_vsnprintf(const char *message, va_list arguments);
 
+RAPTOR_API int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_version);
+
 /* raptor_xml_writer.c */
 /* NOT PUBLIC YET - SEE raptor_internal.h */
 
@@ -461,7 +463,7 @@ RAPTOR_API int raptor_unicode_is_xml10_namestartchar(long c);
 RAPTOR_API int raptor_unicode_is_xml11_namechar(long c);
 RAPTOR_API int raptor_unicode_is_xml10_namechar(long c);
 RAPTOR_API int raptor_utf8_check(const unsigned char *string, size_t length);
-  
+
 /* raptor_stringbuffer */
 RAPTOR_API raptor_stringbuffer* raptor_new_stringbuffer(void);
 RAPTOR_API void raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer);
