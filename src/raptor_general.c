@@ -1115,11 +1115,11 @@ raptor_print_statement(const raptor_statement * const statement, FILE *stream)
  **/
 int
 raptor_print_ntriples_string(FILE *stream,
-                             const char *string,
+                             const unsigned char *string,
                              const char delim) 
 {
   unsigned char c;
-  size_t len=strlen(string);
+  size_t len=strlen((const char*)string);
   int unichar_len;
   unsigned long unichar;
   
@@ -1149,13 +1149,12 @@ raptor_print_ntriples_string(FILE *stream,
     
     /* It is unicode */
     
-    unichar_len=raptor_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
+    unichar_len=raptor_utf8_to_unicode_char(NULL, string, len);
     if(unichar_len < 0 || unichar_len > (int)len)
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
 
-    unichar_len=raptor_utf8_to_unicode_char(&unichar,
-                                            (const unsigned char *)string, len);
+    unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
     
     if(unichar < 0x10000)
       fprintf(stream, "\\u%04lX", unichar);
