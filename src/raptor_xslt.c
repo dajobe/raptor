@@ -168,8 +168,8 @@ raptor_xslt_parse_start(raptor_parser *rdf_parser)
   raptor_parser *p=xslt_parser->rdfxml;
   
   locator->line=1;
-  locator->column=0;
-  locator->byte=0;
+  locator->column= -1;
+  locator->byte= -1;
 
   /* copy any user data to the internal parser */
   p->user_data=rdf_parser->user_data;
@@ -223,6 +223,23 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
 }
 
 
+static void
+raptor_xslt_xmlStructuredErrorFunc(void *userData, xmlErrorPtr error)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)userData;
+  raptor_locator *locator=raptor_get_locator(rdf_parser);
+
+  locator->line= -1;
+  locator->column= -1;
+
+  if(error->line >= 0)
+    locator->line= error->line;
+
+  raptor_parser_error(rdf_parser, error->message);
+}
+    
+
+
 static int
 raptor_xslt_parse_chunk(raptor_parser* rdf_parser, 
                         const unsigned char *s, size_t len,
@@ -252,7 +269,8 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
     
     xslt_parser->ctxt->replaceEntities = 1;
     xslt_parser->ctxt->loadsubset = 1;
-  } else if(s && len)
+
+  } else if((s && len) || is_end)
     xmlParseChunk(xslt_parser->ctxt, (const char*)s, len, is_end);
 
   if(!is_end)
@@ -260,15 +278,22 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
 
 
   doc=xslt_parser->ctxt->myDoc;
+  if(!doc) {
+    raptor_parser_error(rdf_parser, "Failed to create XML DOM for document");
+    return 1;
+  }
+  
 
   /* Create xpath evaluation context */
   xslt_parser->xpathCtx=NULL; 
 
   xslt_parser->xpathCtx = xmlXPathNewContext(doc);
   if(!xslt_parser->xpathCtx) {
-    raptor_parser_error(rdf_parser, "Failed to create new XPath context");
+    raptor_parser_error(rdf_parser, "Failed to create XPath context for document");
     return 1;
   }
+
+  xslt_parser->xpathCtx->error = raptor_xslt_xmlStructuredErrorFunc;
   
   xmlXPathRegisterNs(xslt_parser->xpathCtx,
                      "html", "http://www.w3.org/1999/xhtml");
