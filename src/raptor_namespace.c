@@ -232,19 +232,19 @@ raptor_namespace_new(const char *prefix,
     return NULL;
 
   p=(char*)ns+sizeof(raptor_namespace);
-#ifdef RAPTOR_IN_REDLAND
-  ns->uri=librdf_new_uri(world, ns_uri_string);
-  if(!ns->uri) {
-    LIBRDF_FREE(raptor_namespace, ns);
-    return NULL;
-  }
-#else
   if(ns_uri_string) {
+#ifdef RAPTOR_IN_REDLAND
+    ns->uri=librdf_new_uri(world, ns_uri_string);
+    if(!ns->uri) {
+      LIBRDF_FREE(raptor_namespace, ns);
+      return NULL;
+    }
+#else
     ns->uri=strcpy((char*)p, ns_uri_string);
     ns->uri_length=uri_length;
     p+= uri_length+1;
-  }
 #endif
+  }
   if(prefix) {
     ns->prefix=strcpy((char*)p, prefix);
     ns->prefix_length=prefix_length;
