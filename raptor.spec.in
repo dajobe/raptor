@@ -1,0 +1,60 @@
+# Note that this is NOT a relocatable package
+%define name    @PACKAGE@
+%define version @VERSION@
+%define release 1
+%define prefix  /usr
+
+Summary:   Rapier RDF Parser
+Name:      %{name}
+Version:   %{version}
+Release:   %{release}
+Prefix:    %{prefix}
+Copyright: LGPL/MPL
+Group:     System Environment/Libraries
+Source:    http://www.redland.opensource.ac.uk/dist/source/%{name}-%{version}.tar.gz
+URL:       http://www.redland.opensource.ac.uk/rapier/
+BuildRoot: /tmp/%{name}-%{version}
+Packager:  Dave Beckett <Dave.Beckett@bristol.ac.uk>
+Docdir: %{prefix}/doc
+
+%description
+
+Rapier is the Redland RDF Parser that reads RDF encoded in XML.
+
+%prep
+%setup
+
+%build
+
+if [ ! -f configure ]; then
+  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --prefix=%{prefix} --sysconfdir=/etc
+else
+  CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} --sysconfdir=/etc
+fi
+
+if [ "$SMP" != "" ]; then
+  make -k -j$SMP "MAKE=make -k -j $SMP"
+else
+  make
+fi
+
+%install
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+
+make prefix=$RPM_BUILD_ROOT%{prefix} sysconfdir=$RPM_BUILD_ROOT/etc install
+
+%clean
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(0555, bin, bin)
+%{prefix}/bin/rdfdump
+%{prefix}/lib/librapier.a
+
+%defattr (0444, bin, bin, 0555)
+%{prefix}/include/rapier.h
+
+%doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
+%doc *.html
+
+%changelog
