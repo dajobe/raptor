@@ -65,6 +65,8 @@
 /* make a yylineno please */
 %option yylineno
 
+%option reentrant
+
 
   /* definitions */
 
@@ -96,7 +98,7 @@
 
 
 static unsigned char *copy_token(unsigned char *text, size_t len);
-unsigned char *copy_string_token(unsigned char *text, size_t len, int delim);
+unsigned char *copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
 
 char *filename=NULL;
 int lineno=1;
@@ -105,19 +107,22 @@ int lineno=1;
 YYSTYPE n3_parser_lval;
 #endif
 
-/* Missing rqql_lexer.c/h prototypes */
-int n3_lexer_get_lineno(void);
-FILE *n3_lexer_get_in(void);
-FILE *n3_lexer_get_out(void);
-int n3_lexer_get_leng(void);
-char *n3_lexer_get_text(void);
-void n3_lexer_set_lineno(int line_number);
-void n3_lexer_set_in(FILE* in_str);
-void n3_lexer_set_out(FILE* out_str);
-int n3_lexer_get_debug(void);
-void n3_lexer_set_debug(int bdebug);
-int n3_lexer_lex_destroy(void);
-
+/* Missing n3_lexer.c/h prototypes */
+#if 0
+int n3_lexer_get_lineno(yyscan_t yyscanner);
+FILE *n3_lexer_get_in(yyscan_t yyscanner);
+FILE *n3_lexer_get_out(yyscan_t yyscanner);
+int n3_lexer_get_leng(yyscan_t yyscanner);
+char *n3_lexer_get_text(yyscan_t yyscanner);
+void n3_lexer_set_lineno(int line_number, yyscan_t yyscanner);
+void n3_lexer_set_in(FILE* in_str, yyscan_t yyscanner);
+void n3_lexer_set_out(FILE* out_str, yyscan_t yyscanner);
+int n3_lexer_get_debug(yyscan_t yyscanner);
+void n3_lexer_set_debug(int bdebug, yyscan_t yyscanner);
+int n3_lexer_lex_destroy(yyscan_t yyscanner);
+#endif
+int n3_lexer_get_column(yyscan_t yyscanner);
+void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 %}
 
@@ -144,10 +149,10 @@ int n3_lexer_lex_destroy(void);
 "@"       { return AT; }
 "^^"      { return HAT; }
 
-'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval.string=copy_string_token(yytext+1, yyleng-2, '\"'); /* ' */
+'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval.string=copy_string_token(yyextra, yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval.string=copy_string_token(yytext+1, yyleng-2, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval.string=copy_string_token(yyextra, yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
 _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
@@ -174,7 +179,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
 [A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval.string=copy_token(yytext, yyleng);
                           return IDENTIFIER; }
 
-\#              { while((c=input()) != EOF && c != '\n'  && c != '\r' && c)
+\#              { while((c=input(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
                     ;
                   lineno++;
                   if(c == EOF)
@@ -184,7 +189,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
 .         	{ if (*yytext == EOF)
                     return EOF;
 
-                  n3_syntax_error("Syntax error at '%c'", *yytext);
+                  n3_syntax_error((raptor_parser*)yyextra, "Syntax error at '%c'", *yytext);
                   return ERROR;
 		}
 
@@ -192,7 +197,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
   /* user code */
 
 int
-yywrap (void) {
+yywrap (yyscan_t yyscanner) {
   return 1;
 }
 
@@ -211,7 +216,7 @@ copy_token(unsigned char *text, size_t len) {
 
 
 unsigned char *
-copy_string_token(unsigned char *text, size_t len, int delim) {
+copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim) {
   int i;
   unsigned char *s, *d;
   unsigned char *string=(unsigned char *)malloc(len+1);
@@ -236,7 +241,7 @@ copy_string_token(unsigned char *text, size_t len, int delim) {
         
         s++; i++;
         if(i+ulen > len) {
-          n3_syntax_error("\\%c over end of line", c);
+          n3_syntax_error(rdf_parser, "\\%c over end of line", c);
           return 0;
         }
         
@@ -245,7 +250,7 @@ copy_string_token(unsigned char *text, size_t len, int delim) {
         i+= ulen-1;
         
         if(unichar < 0 || unichar > 0x10ffff) {
-          n3_syntax_error("Illegal Unicode character with code point #x%lX.", unichar);
+          n3_syntax_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
           break;
         }
           
@@ -253,7 +258,7 @@ copy_string_token(unsigned char *text, size_t len, int delim) {
 
       } else {
         /* don't handle \x where x isn't one of: \n \r \\ (delim) */
-        n3_syntax_error("Illegal string escape \\%c in \"%s\"", c, text);
+        n3_syntax_error(rdf_parser, "Illegal string escape \\%c in \"%s\"", c, text);
       }
     } else
       *d++=c;
@@ -343,7 +348,7 @@ n3_token_print(int token)
 #ifdef STANDALONE
 
 int
-n3_syntax_error(const char *message, ...)
+n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
   va_list arguments;
 
@@ -362,19 +367,29 @@ int
 main(int argc, char *argv[]) 
 {
   int token=EOF;
+  yyscan_t scanner;
+  FILE *fh;
 
   if(argc > 1) {
     filename=argv[1];
-    yyin = fopen(argv[1], "r");
+    fh=fopen(filename, "r");
+    if(!fh) {
+      fprintf(stderr, "%s: Cannot open file %s - %s\n", argv[0], filename,
+              strerror(errno));
+      exit(1);
+    }
   } else {
     filename="<stdin>";
-    yyin = stdin;
+    fh=stdin;
   }
 
+  yylex_init(&scanner);
+  n3_lexer_set_in(fh, scanner);
+
   while(1) {
-    if(yytext != NULL)
-      printf("yyinput '%s'\n", yytext);
-    token=yylex();
+    if(n3_lexer_get_text(scanner) != NULL)
+      printf("yyinput '%s'\n", n3_lexer_get_text(scanner));
+    token=yylex(scanner);
 #ifdef RAPTOR_DEBUG
     printf("token %s\n", n3_token_print(token));
 #else
@@ -383,6 +398,8 @@ main(int argc, char *argv[])
     if(!token || token == EOF || token == ERROR)
       break;
   }
+
+  yylex_destroy(scanner);
 
   if(token==ERROR)
     return 1;
