@@ -55,6 +55,42 @@
 #undef RAPTOR_DEBUG_CDATA
 
 
+raptor_sax2*
+raptor_new_sax2(void *user_data) {
+  raptor_sax2* sax2;
+  sax2=(raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(raptor_sax2));
+  if(!sax2)
+    return NULL;
+  
+  sax2->user_data=user_data;
+  return sax2;
+}
+
+
+void
+raptor_free_sax2(raptor_sax2 *sax2) {
+  raptor_sax2_element *sax2_element;
+
+#ifdef RAPTOR_XML_EXPAT
+  if(sax2->xp) {
+    XML_ParserFree(sax2->xp);
+    sax2->xp=NULL;
+  }
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+  if(sax2->xc) {
+    raptor_libxml_free(sax2->xc);
+    sax2->xc=NULL;
+  }
+#endif
+
+  while( (sax2_element=raptor_sax2_element_pop(sax2)) )
+    raptor_free_sax2_element(sax2_element);
+
+  RAPTOR_FREE(raptor_sax2, sax2);
+}
+
 
 
 raptor_sax2_element*
@@ -80,6 +116,225 @@ raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element)
   sax2->current_element=element;
   if(!sax2->root_element)
     sax2->root_element=element;
+}
+
+
+const unsigned char*
+raptor_sax2_inscope_xml_language(raptor_sax2 *sax2) {
+  raptor_sax2_element* sax2_element;
+  
+  for(sax2_element=sax2->current_element;
+      sax2_element; 
+      sax2_element=sax2_element->parent)
+    if(sax2_element->xml_language)
+      return sax2_element->xml_language;
+    
+  return NULL;
+}
+
+
+raptor_uri*
+raptor_sax2_inscope_base_uri(raptor_sax2 *sax2) {
+  raptor_sax2_element *sax2_element;
+  
+  for(sax2_element=sax2->current_element; 
+      sax2_element; 
+      sax2_element=sax2_element->parent)
+    if(sax2_element->base_uri)
+      return sax2_element->base_uri;
+    
+  return NULL;
+}
+
+
+int
+raptor_sax2_get_depth(raptor_sax2 *sax2) {
+  return sax2->depth;
+}
+
+void
+raptor_sax2_inc_depth(raptor_sax2 *sax2) {
+  sax2->depth++;
+}
+
+void
+raptor_sax2_dec_depth(raptor_sax2 *sax2) {
+  sax2->depth--;
+}
+
+
+void
+raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri) {
+#ifdef RAPTOR_XML_EXPAT
+  XML_Parser xp;
+#endif
+
+  sax2->depth=0;
+  sax2->root_element=NULL;
+  sax2->current_element=NULL;
+
+#ifdef RAPTOR_XML_EXPAT
+  if(sax2->xp) {
+    XML_ParserFree(sax2->xp);
+    sax2->xp=NULL;
+  }
+
+  xp=sax2->xp=raptor_expat_init(sax2->user_data);
+  XML_SetBase(xp, raptor_uri_as_string(base_uri));
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+  raptor_libxml_init(&sax2->sax);
+
+#if LIBXML_VERSION < 20425
+  sax2->first_read=1;
+#endif
+
+  if(sax2->xc) {
+    raptor_libxml_free(sax2->xc);
+    sax2->xc=NULL;
+  }
+#endif
+}
+
+
+int
+raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
+                        size_t len, int is_end) 
+{
+  raptor_parser* rdf_parser=(raptor_parser*)sax2->user_data;
+#ifdef RAPTOR_XML_EXPAT
+  raptor_locator *locator=&rdf_parser->locator;
+  XML_Parser xp=sax2->xp;
+#endif
+#ifdef RAPTOR_XML_LIBXML
+  /* parser context */
+  xmlParserCtxtPtr xc=sax2->xc;
+#endif
+  int rc;
+  
+#ifdef RAPTOR_XML_LIBXML
+  if(!xc) {
+    if(!len) {
+      /* no data given at all - emit a similar message to expat */
+      raptor_update_document_locator(rdf_parser);
+      raptor_parser_error(rdf_parser, "XML Parsing failed - no element found");
+      return 1;
+    }
+
+    xc = xmlCreatePushParserCtxt(&sax2->sax, sax2->user_data,
+                                 (char*)buffer, len, 
+                                 NULL);
+    if(!xc)
+      goto handle_error;
+    
+    xc->userData = sax2->user_data;
+    xc->vctxt.userData = sax2->user_data;
+    xc->vctxt.error=raptor_libxml_validation_error;
+    xc->vctxt.warning=raptor_libxml_validation_warning;
+    xc->replaceEntities = 1;
+    
+    sax2->xc = xc;
+
+    if(is_end)
+      len=0;
+    else
+      return 0;
+  }
+#endif
+
+  if(!len) {
+#ifdef RAPTOR_XML_EXPAT
+    rc=XML_Parse(xp, (char*)buffer, 0, 1);
+    if(!rc) /* expat: 0 is failure */
+      goto handle_error;
+#endif
+#ifdef RAPTOR_XML_LIBXML
+    xmlParseChunk(xc, (char*)buffer, 0, 1);
+#endif
+    return 0;
+  }
+
+
+#ifdef RAPTOR_XML_EXPAT
+  rc=XML_Parse(xp, (char*)buffer, len, is_end);
+  if(!rc) /* expat: 0 is failure */
+    goto handle_error;
+  if(is_end)
+    return 0;
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+
+  /* This works around some libxml versions that fail to work
+   * if the buffer size is larger than the entire file
+   * and thus the entire parsing is done in one operation.
+   *
+   * The code below:
+   *   2.4.19 (oldest tested) to 2.4.24 - required
+   *   2.4.25                           - works with or without it
+   *   2.4.26 or later                  - fails with this code
+   */
+
+#if LIBXML_VERSION < 20425
+  if(sax2->first_read && is_end) {
+    /* parse all but the last character */
+    rc=xmlParseChunk(xc, (char*)buffer, len-1, 0);
+    if(rc)
+      goto handle_error;
+    /* last character */
+    rc=xmlParseChunk(xc, (char*)buffer + (len-1), 1, 0);
+    if(rc)
+      goto handle_error;
+    /* end */
+    xmlParseChunk(xc, (char*)buffer, 0, 1);
+    return 0;
+  }
+#endif
+
+#if LIBXML_VERSION < 20425
+  sax2->first_read=0;
+#endif
+    
+  rc=xmlParseChunk(xc, (char*)buffer, len, is_end);
+  if(rc) /* libxml: non 0 is failure */
+    goto handle_error;
+  if(is_end)
+    return 0;
+#endif
+
+  return 0;
+
+  handle_error:
+
+#ifdef RAPTOR_XML_EXPAT
+#ifdef EXPAT_UTF8_BOM_CRASH
+  if(sax2->tokens_count) {
+#endif
+    /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
+     * which dies here if the error is before <?xml?...
+     * The expat 1.95.1 source release version works fine.
+     */
+    locator->line=XML_GetCurrentLineNumber(xp);
+    locator->column=XML_GetCurrentColumnNumber(xp);
+    locator->byte=XML_GetCurrentByteIndex(xp);
+#ifdef EXPAT_UTF8_BOM_CRASH
+  }
+#endif
+#endif /* EXPAT */
+      
+  raptor_update_document_locator(rdf_parser);
+
+#if RAPTOR_XML_EXPAT
+  raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
+                      XML_ErrorString(XML_GetErrorCode(xp)));
+#endif /* EXPAT */
+
+#ifdef RAPTOR_XML_LIBXML
+  raptor_parser_error(rdf_parser, "XML Parsing failed");
+#endif
+
+  return 1;
 }
 
 
@@ -129,6 +384,12 @@ raptor_free_sax2_element(raptor_sax2_element *element)
 }
 
 
+raptor_qname*
+raptor_sax2_element_get_element(raptor_sax2_element *sax2_element) {
+  return sax2_element->name;
+}
+
+
 #ifdef RAPTOR_DEBUG
 void
 raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream)
@@ -169,17 +430,15 @@ raptor_nsd_compare(const void *a, const void *b)
 }
 
 
-unsigned char *
-raptor_format_sax2_element(raptor_sax2_element *element,
-                           raptor_namespace_stack *nstack,
-                           size_t *length_p, int is_end,
-                           raptor_simple_message_handler error_handler,
-                           void *error_data,
-                           int depth)
+int
+raptor_iostream_write_sax2_element(raptor_iostream* iostr,
+                                   raptor_sax2_element *element,
+                                   raptor_namespace_stack *nstack,
+                                   int is_end,
+                                   raptor_simple_message_handler error_handler,
+                                   void *error_data,
+                                   int depth)
 {
-  size_t length;
-  unsigned char *buffer;
-  unsigned char *ptr;
   struct nsd *nspace_declarations;
   size_t nspace_declarations_count=0;  
   unsigned int i;
@@ -188,12 +447,7 @@ raptor_format_sax2_element(raptor_sax2_element *element,
   if(nstack)
     nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, element->attribute_count+1, sizeof(struct nsd));
 
-  /* get length of element name (and namespace-prefix: if there is one) */
-  length=element->name->local_name_length + 1; /* < */
   if(element->name->nspace) {
-    if(element->name->nspace->prefix_length > 0)
-      length += element->name->nspace->prefix_length + 1; /* : */
-
     if(!is_end && nstack &&
        !raptor_namespaces_namespace_in_scope(nstack, element->name->nspace)) {
       nspace_declarations[0].declaration=
@@ -201,25 +455,13 @@ raptor_format_sax2_element(raptor_sax2_element *element,
                                  &nspace_declarations[0].length);
       nspace_declarations[0].nspace=element->name->nspace;
       nspace_declarations_count++;
-      length += nspace_declarations[0].length+1; /* plus space */
     }
   }
 
-  if(is_end)
-    length++; /* / */
-
   if (!is_end && element->attributes) {
     for(i=0; i < element->attribute_count; i++) {
-      int escaped_attr_val_len;
-      
-      length++; /* ' ' between attributes and after element name */
-
       /* qname */
-      length += element->attributes[i]->local_name_length;
       if(element->attributes[i]->nspace) {
-        if(element->attributes[i]->nspace->prefix_length > 0)
-          length += element->attributes[i]->nspace->prefix_length + 1; /* prefix: */
-
         if(nstack && 
            !raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
           /* not in scope and not same as element (so already going to be declared)*/
@@ -238,46 +480,29 @@ raptor_format_sax2_element(raptor_sax2_element *element,
               raptor_namespaces_format(element->attributes[i]->nspace,
                                        &nspace_declarations[nspace_declarations_count].length);
             nspace_declarations[nspace_declarations_count].nspace=element->attributes[i]->nspace;
-            length += nspace_declarations[nspace_declarations_count].length+1; /* plus space */
             nspace_declarations_count++;
           }
         }
 
       }
-      
 
-      /* XML escaped value */
-      escaped_attr_val_len=raptor_xml_escape_string(element->attributes[i]->value, element->attributes[i]->value_length,
-                                                    NULL, 0, '"',
-                                                    error_handler, error_data);
-      /* ="XML-escaped-value" */
-      length += 3+escaped_attr_val_len;
     }
   }
   
-  length++; /* > */
-  
-  if(length_p)
-    *length_p=length;
 
-  /* +1 here is for \0 at end */
-  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, length + 1);
-  if(!buffer)
-    return NULL;
-
-  ptr=buffer;
-
-  *ptr++ = '<';
+  raptor_iostream_write_byte(iostr, '<');
   if(is_end)
-    *ptr++ = '/';
+    raptor_iostream_write_byte(iostr, '/');
+
   if(element->name->nspace && element->name->nspace->prefix_length > 0) {
-    strncpy((char*)ptr, (const char*)element->name->nspace->prefix,
-            element->name->nspace->prefix_length);
-    ptr+= element->name->nspace->prefix_length;
-    *ptr++=':';
+    raptor_iostream_write_counted_string(iostr, 
+                                         (const char*)element->name->nspace->prefix, 
+                                         element->name->nspace->prefix_length);
+    raptor_iostream_write_byte(iostr, ':');
   }
-  strcpy((char*)ptr, (const char*)element->name->local_name);
-  ptr += element->name->local_name_length;
+  raptor_iostream_write_counted_string(iostr, 
+                                       (const char*)element->name->local_name,
+                                       element->name->local_name_length);
 
   /* declare namespaces */
   if(nspace_declarations_count) {
@@ -287,12 +512,12 @@ raptor_format_sax2_element(raptor_sax2_element *element,
           raptor_nsd_compare);
     /* add them */
     for (i=0; i < nspace_declarations_count; i++) {
-      *ptr++=' ';
-      strncpy((char*)ptr, (const char*)nspace_declarations[i].declaration,
-              nspace_declarations[i].length);
+      raptor_iostream_write_byte(iostr, ' ');
+      raptor_iostream_write_counted_string(iostr, 
+                                           (const char*)nspace_declarations[i].declaration,
+                                           nspace_declarations[i].length);
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration=NULL;
-      ptr+=nspace_declarations[i].length;
 
       raptor_namespace_copy(nstack,
                             (raptor_namespace*)nspace_declarations[i].nspace,
@@ -303,50 +528,35 @@ raptor_format_sax2_element(raptor_sax2_element *element,
 
   if(!is_end && element->attributes) {
     for(i=0; i < element->attribute_count; i++) {
-      size_t escaped_attr_val_len;
-
-      *ptr++ =' ';
+      raptor_iostream_write_byte(iostr, ' ');
       
       if(element->attributes[i]->nspace && 
          element->attributes[i]->nspace->prefix_length > 0) {
-        strncpy((char*)ptr, (char*)element->attributes[i]->nspace->prefix,
-                element->attributes[i]->nspace->prefix_length);
-        ptr+= element->attributes[i]->nspace->prefix_length;
-        *ptr++=':';
+        raptor_iostream_write_counted_string(iostr,
+                                             (char*)element->attributes[i]->nspace->prefix,
+                                             element->attributes[i]->nspace->prefix_length);
+        raptor_iostream_write_byte(iostr, ':');
       }
-    
-      strcpy((char*)ptr, (const char*)element->attributes[i]->local_name);
-      ptr += element->attributes[i]->local_name_length;
+
+      raptor_iostream_write_counted_string(iostr, 
+                                           (const char*)element->attributes[i]->local_name,
+                                           element->attributes[i]->local_name_length);
       
-      *ptr++ ='=';
-      *ptr++ ='"';
+      raptor_iostream_write_counted_string(iostr, "=\"", 2);
       
-      escaped_attr_val_len=raptor_xml_escape_string(element->attributes[i]->value, element->attributes[i]->value_length,
-                                                    NULL, 0, '"',
-                                                    error_handler, error_data);
-      if(escaped_attr_val_len == element->attributes[i]->value_length) {
-        /* save a malloc/free when there is no escaping */
-        strcpy((char*)ptr, (const char*)element->attributes[i]->value);
-        ptr += element->attributes[i]->value_length;
-      } else {
-        unsigned char *escaped_attr_val=(unsigned char*)RAPTOR_MALLOC(cstring,escaped_attr_val_len+1);
-        raptor_xml_escape_string(element->attributes[i]->value, element->attributes[i]->value_length,
-                                 escaped_attr_val, escaped_attr_val_len, '"',
-                                 error_handler, error_data);
-        
-        strcpy((char*)ptr, (const char*)escaped_attr_val);
-        RAPTOR_FREE(cstring,escaped_attr_val);
-        ptr += escaped_attr_val_len;
-      }
-      *ptr++ ='"';
+      raptor_iostream_write_xml_escaped_string(iostr,
+                                               element->attributes[i]->value, 
+                                               element->attributes[i]->value_length,
+                                               '"',
+                                               error_handler, error_data);
+      raptor_iostream_write_byte(iostr, '"');
     }
   }
   
-  *ptr++ = '>';
-  *ptr='\0';
+  raptor_iostream_write_byte(iostr, '>');
 
   if(nstack)
     RAPTOR_FREE(stringarray, nspace_declarations);
 
-  return buffer;
+  return 0;
 }
