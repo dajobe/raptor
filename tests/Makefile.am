@@ -83,20 +83,20 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    echo FAILED returned status $$status; result=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      echo ok with warnings; \
+	      echo ok with warnings; grep Warning $name.err; \
 	    else \
 	      echo ok; \
 	    fi; \
 	  else \
 	    echo FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
-	  rm -f $$name.res ; \
+	  rm -f $$name.res $name.err; \
 	done; \
 	exit $$result
 
@@ -124,15 +124,18 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $name.err; \
 	  status=$$?; \
-	  if test $$status != 0 ; then \
+	  if test $$status == 1 ; then \
 	    echo ok; \
+	  elif test $$status == 2 ; then \
+	    echo FAILED - parsing succeeded with a warning; \
+	    cat $$name.res; grep Warning $name.err; result=1; \
 	  else \
-	    echo FAILED - parsing should have failed but returned $$status; \
+	    echo FAILED - parsing failed with unknown status $$status; \
 	    cat $$name.res; result=1; \
 	  fi; \
-	  rm -f $$name.res ; \
+	  rm -f $$name.res $name.err ; \
 	done; \
 	set -e; exit $$result
 
