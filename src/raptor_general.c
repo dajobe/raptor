@@ -649,11 +649,13 @@ static void rapier_print_statement_detailed(const rapier_statement *statement, i
 #define IS_RDF_MS_CONCEPT(name, uri, qname) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##qname])
 #define RAPIER_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
 #define RAPIER_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
+#undef RAPIER_URI_TO_FILENAME
 #define RAPIER_FREE_URI(uri) librdf_free_uri(uri)
 #else
 #define IS_RDF_MS_CONCEPT(name, uri, qname) !strcmp(name, #qname)
 #define RAPIER_URI_AS_STRING(uri) ((const char*)uri)
-#define RAPIER_URI_AS_FILENAME(uri) (rapier_file_uri_to_filename(uri))
+#undef RAPIER_URI_AS_FILENAME
+#define RAPIER_URI_TO_FILENAME(uri) (rapier_file_uri_to_filename(uri))
 #define RAPIER_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
 #endif
 
@@ -2146,7 +2148,11 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 #endif
 
 
+#ifdef RAPIER_URI_AS_FILENAME
   filename=RAPIER_URI_AS_FILENAME(uri);
+#else
+  filename=RAPIER_URI_TO_FILENAME(uri);
+#endif
   if(!filename)
     return 1;
 
@@ -2242,7 +2248,9 @@ rapier_parse_file(rapier_parser* rdf_parser,  rapier_uri *uri,
 
 #endif
 
+#ifdef RAPIER_URI_TO_FILENAME
   LIBRDF_FREE(cstring, (void*)filename);
+#endif
 
   return (rc != 0);
 }
