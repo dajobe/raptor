@@ -20,7 +20,7 @@
  * Turtle is defined in http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
  *
  * Made from a subset of the terms in
- *   http://www.w3.org/DesignIssues/Notatioturtle.html
+ *   http://www.w3.org/DesignIssues/Notation3.html
  *
  */
 
