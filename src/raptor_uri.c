@@ -937,6 +937,9 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   if(!strncmp((const char*)base_detail->buffer,
               (const char*)reference_detail->buffer, prefix_len)) {
     
+    if(!base_detail->path)
+      goto buildresult;
+    
     /* Find the file name components */
     base_file = (const unsigned char*)strrchr((const char*)base_detail->path, '/');
     if(!base_file)
@@ -1332,6 +1335,8 @@ main(int argc, char *argv[])
   failures += assert_uri_to_relative("http://example.com/base/foo", "http://example2.com/base/bar", "http://example2.com/base/bar");
   failures += assert_uri_to_relative("http://example.com/base/one?path=/should/be/ignored", "http://example.com/base/two?path=/should/be/ignored", "two?path=/should/be/ignored");
   failures += assert_uri_to_relative("http://example.org/base#", "http://www.foo.org", "http://www.foo.org");
+  failures += assert_uri_to_relative("http://example.org", "http://a.example.org/", "http://a.example.org/");
+  failures += assert_uri_to_relative("http://example.org", "http://a.example.org", "http://a.example.org");
 
   return failures ;
 }
