@@ -95,6 +95,7 @@ autogen.sh \
 raptor.spec.in \
 dc.rdf \
 raptor_www_test.c \
+raptor_nfc_test.c \
 fix-groff-xhtml \
 $(man_MANS) \
 raptor.pc.in \
