@@ -801,7 +801,10 @@ raptor_xml_start_element_handler(void *user_data,
     return;
   } 
 
-  if(!sax2_element->name->nspace)
+  /* If has no namespace or the namespace has no name (xmlns="") */
+  if(!sax2_element->name->nspace ||
+     (sax2_element->name->nspace &&
+      !raptor_namespace_get_uri(sax2_element->name->nspace)))
     non_nspaced_count++;
 
 
@@ -907,7 +910,9 @@ raptor_xml_start_element_handler(void *user_data,
         if(!attr)
           continue;
 
-        if(!attr->nspace)
+        /* If has no namespace or the namespace has no name (xmlns="") */
+        if(!attr->nspace ||
+           (attr->nspace && !raptor_namespace_get_uri(attr->nspace)))
           non_nspaced_count++;
 
       } /* end if leave literal XML alone */
