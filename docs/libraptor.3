@@ -99,7 +99,7 @@ according to the base URI \fIbase_uri\fR, or NULL if not needed.
 .IP "\fBint raptor_start_parse(raptor_parser* \fIparser\fB, const char *\fIuri\fB)\fR"
 Start a parse of content with the base URI \fIuri\fR (or NULL if not
 needed - the ntriples parser does not use it at present)
-.IP "\fBint raptor_parse_chunk(raptor_parser* \fIparser\fB,  const char *buffer, size_t \fIlen\fB, int \fIis_end\fB)\fR"
+.IP "\fBint raptor_parse_chunk(raptor_parser* \fIparser\fB,  const unsigned char *buffer, size_t \fIlen\fB, int \fIis_end\fB)\fR"
 Parse the memory at \fIbuffer\fR of size \fIlen\fR returning
 statements via the statement handler callback.
 If \fIis_end\fR is non-zero, it indicates the end of the parsing stream.
