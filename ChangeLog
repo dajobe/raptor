@@ -1,3 +1,23 @@
+2004-10-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Added generation of triples for RSS enclosures
+	based on a patch from Suzan Foster.  Changes made include
+	correcting the enclosures namespace, tidying some memory leaks and
+	printing some debug information.
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement):
+	Make rdf:_<n> 'ordinal' properties serialize correctly.
+
+	* raptor_www_test.c (main): Use raptor_www_fetch_to_string for testing.
+
+	* raptor_iostream.c (raptor_string_iostream_finish): Code tidy.
+
+	* libraptor.3, raptor.h: Added raptor_www_fetch_to_string
+
+	* raptor_www.c (raptor_www_fetch_to_string_write_bytes):
+	Added handler for the following function.
+	(raptor_www_fetch_to_string): Added, to get content back as a string.
+
 2004-10-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* libraptor.3: Updates for 1.4.0
