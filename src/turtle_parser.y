@@ -138,7 +138,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 
 /* others */
 
-%token WS A AT HAT
+%token A AT HAT
 %token DOT COMMA SEMICOLON
 %token LEFT_SQUARE RIGHT_SQUARE
 %token LEFT_ROUND RIGHT_ROUND

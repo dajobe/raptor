@@ -312,9 +312,6 @@ turtle_token_print(int token, YYSTYPE *lval)
     case PREFIX:
       return "PREFIX";
 
-    case WS:
-      return "WS";
-
     case A:
       return "A";
 
