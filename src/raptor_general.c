@@ -488,8 +488,10 @@ raptor_statement_part_as_counted_string(const void *term,
                                         const unsigned char *literal_language,
                                         size_t* len_p)
 {
-  size_t len, term_len, language_len, uri_len;
-  unsigned char *s, *buffer, *uri_string;
+  size_t len, term_len, uri_len;
+  size_t language_len=NULL;
+  unsigned char *s, *buffer;
+  unsigned *uri_string=NULL;
   
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
