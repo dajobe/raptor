@@ -437,7 +437,9 @@ void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 
 
 /* raptor_parse.c */
+void raptor_delete_parser_factories(void);
 
+/* raptor_general.c */
 extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
 extern void raptor_parser_error(raptor_parser* parser, const char *message, ...);
 extern void raptor_parser_simple_error(void* parser, const char *message, ...);
