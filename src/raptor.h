@@ -70,6 +70,9 @@ typedef struct raptor_parser_s raptor_parser;
 
 typedef struct raptor_www_s raptor_www;
 
+typedef struct raptor_sax2_element_s raptor_sax2_element;
+typedef struct raptor_xml_writer_s raptor_xml_writer;
+
 /* OLD structure - can't deprecate a typedef */
 typedef raptor_parser raptor_ntriples_parser;
 
@@ -136,6 +139,34 @@ typedef struct {
 } raptor_statement;
 
 
+typedef raptor_uri* (*raptor_new_uri_func) (void *context, const char *uri_string);
+typedef raptor_uri* (*raptor_new_uri_from_uri_local_name_func) (void *context, raptor_uri *uri, const char *local_name);
+typedef raptor_uri* (*raptor_new_uri_relative_to_base_func) (void *context, raptor_uri *base_uri, const char *uri_string);
+typedef raptor_uri* (*raptor_new_uri_for_rdf_concept_func) (void *context, const char *name);
+typedef void (*raptor_free_uri_func) (void *context, raptor_uri *uri);
+typedef int (*raptor_uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
+typedef raptor_uri* (*raptor_uri_copy_func) (void *context, raptor_uri *uri);
+typedef char* (*raptor_uri_as_string_func)(void *context, raptor_uri *uri);
+typedef char* (*raptor_uri_as_counted_string_func)(void *context, raptor_uri *uri, size_t* len_p);
+
+typedef struct {
+  /* constructors */
+  raptor_new_uri_func                     new_uri;
+  raptor_new_uri_from_uri_local_name_func new_uri_from_uri_local_name;
+  raptor_new_uri_relative_to_base_func    new_uri_relative_to_base;
+  raptor_new_uri_for_rdf_concept_func     new_uri_for_rdf_concept;
+  /* destructor */
+  raptor_free_uri_func                    free_uri;
+  /* methods */
+  raptor_uri_equals_func                  uri_equals;
+  raptor_uri_copy_func                    uri_copy; /* well, copy constructor */
+  raptor_uri_as_string_func               uri_as_string;
+  raptor_uri_as_counted_string_func       uri_as_counted_string;
+  int initialised;
+} raptor_uri_handler;
+
+
+typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...);
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
 typedef const unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_genid_type type);
@@ -216,7 +247,10 @@ RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 /* Utility functions */
 RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
 RAPTOR_API const char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
-RAPTOR_API size_t raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_message_handler error_handler, void *error_data);
+RAPTOR_API size_t raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data);
+
+/* raptor_xml_writer.c */
+/* NOT PUBLIC YET - SEE raptor_internal.h */
 
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
@@ -224,33 +258,6 @@ RAPTOR_API char *raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string);
 RAPTOR_API int raptor_uri_is_file_uri(const char* uri_string);
 RAPTOR_API void raptor_uri_init(void);
-
-typedef raptor_uri* (*raptor_new_uri_func) (void *context, const char *uri_string);
-typedef raptor_uri* (*raptor_new_uri_from_uri_local_name_func) (void *context, raptor_uri *uri, const char *local_name);
-typedef raptor_uri* (*raptor_new_uri_relative_to_base_func) (void *context, raptor_uri *base_uri, const char *uri_string);
-typedef raptor_uri* (*raptor_new_uri_for_rdf_concept_func) (void *context, const char *name);
-typedef void (*raptor_free_uri_func) (void *context, raptor_uri *uri);
-typedef int (*raptor_uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
-typedef raptor_uri* (*raptor_uri_copy_func) (void *context, raptor_uri *uri);
-typedef char* (*raptor_uri_as_string_func)(void *context, raptor_uri *uri);
-typedef char* (*raptor_uri_as_counted_string_func)(void *context, raptor_uri *uri, size_t* len_p);
-
-typedef struct {
-  /* constructors */
-  raptor_new_uri_func                     new_uri;
-  raptor_new_uri_from_uri_local_name_func new_uri_from_uri_local_name;
-  raptor_new_uri_relative_to_base_func    new_uri_relative_to_base;
-  raptor_new_uri_for_rdf_concept_func     new_uri_for_rdf_concept;
-  /* destructor */
-  raptor_free_uri_func                    free_uri;
-  /* methods */
-  raptor_uri_equals_func                  uri_equals;
-  raptor_uri_copy_func                    uri_copy; /* well, copy constructor */
-  raptor_uri_as_string_func               uri_as_string;
-  raptor_uri_as_counted_string_func       uri_as_counted_string;
-  int initialised;
-} raptor_uri_handler;
-
 
 RAPTOR_API void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
 RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
@@ -277,7 +284,8 @@ RAPTOR_API void raptor_www_set_error_handler(raptor_www *www, raptor_message_han
 RAPTOR_API int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API void raptor_www_abort(raptor_www *www, const char *reason);
-  
+
+
 
 /* OLD RDF/XML Parser Public functions */
 
