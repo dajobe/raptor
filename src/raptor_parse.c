@@ -256,6 +256,7 @@ static const struct {
  *   RDF | ID | about | bagID | parseType | resource | nodeID | datatype |
  *   Description | li | aboutEach | aboutEachPrefix
  *
+ * Later: bagID removed
 */
 
 
@@ -1885,7 +1886,8 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
 
   /* the bagID mess */
-  if(bag_element && (bag_element->bag.uri || bag_element->bag.id)) {
+  if(rdf_parser->feature_allow_bagID &&
+     bag_element && (bag_element->bag.uri || bag_element->bag.id)) {
     raptor_identifier* bag=&bag_element->bag;
     
     statement->subject=bag->uri ? (void*)bag->uri : (void*)bag->id;
@@ -2343,47 +2345,57 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
         if(element->rdf_attr[RDF_ATTR_bagID]) {
-          element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
-          element->rdf_attr[RDF_ATTR_bagID]=NULL;
-          element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
-          element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+          if(rdf_parser->feature_allow_bagID) {
+            element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
+            element->rdf_attr[RDF_ATTR_bagID]=NULL;
+            element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
+            element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+            element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+            
+            if(!raptor_valid_xml_ID(rdf_parser, element->bag.id)) {
+              raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", element->bag.id);
+              state=RAPTOR_STATE_SKIPPING;
+              element->child_state=RAPTOR_STATE_SKIPPING;
+              finished=1;
+              break;
+            }
+            if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
+              raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
+              state=RAPTOR_STATE_SKIPPING;
+              element->child_state=RAPTOR_STATE_SKIPPING;
+              finished=1;
+              break;
+            }
 
-          if(!raptor_valid_xml_ID(rdf_parser, element->bag.id)) {
-            raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", element->bag.id);
+            raptor_parser_warning(rdf_parser, "rdf:bagID is deprecated.");
+
+            raptor_generate_statement(rdf_parser, 
+                                      element->bag.uri,
+                                      element->bag.id,
+                                      element->bag.type,
+                                      element->bag.uri_source,
+                                      
+                                      RAPTOR_RDF_type_URI(rdf_xml_parser),
+                                      NULL,
+                                      RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                      RAPTOR_URI_SOURCE_URI,
+                                      
+                                      RAPTOR_RDF_Bag_URI(rdf_xml_parser),
+                                      NULL,
+                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                      RAPTOR_URI_SOURCE_NOT_URI,
+                                      NULL,
+                                      
+                                      NULL,
+                                      NULL);
+          } else {
+            /* bagID forbidden */
+            raptor_parser_error(rdf_parser, "rdf:bagID is forbidden.");
             state=RAPTOR_STATE_SKIPPING;
             element->child_state=RAPTOR_STATE_SKIPPING;
             finished=1;
             break;
           }
-          if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
-            raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
-            state=RAPTOR_STATE_SKIPPING;
-            element->child_state=RAPTOR_STATE_SKIPPING;
-            finished=1;
-            break;
-          }
-
-          raptor_generate_statement(rdf_parser, 
-                                    element->bag.uri,
-                                    element->bag.id,
-                                    element->bag.type,
-                                    element->bag.uri_source,
-                                    
-                                    RAPTOR_RDF_type_URI(rdf_xml_parser),
-                                    NULL,
-                                    RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                    RAPTOR_URI_SOURCE_URI,
-                                    
-                                    RAPTOR_RDF_Bag_URI(rdf_xml_parser),
-                                    NULL,
-                                    RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                    RAPTOR_URI_SOURCE_NOT_URI,
-                                    NULL,
-                                    
-                                    NULL,
-                                    NULL);
-
         }
 
 
@@ -2669,36 +2681,46 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         if(element->rdf_attr[RDF_ATTR_bagID]) {
 
-          if(element->rdf_attr[RDF_ATTR_resource] ||
-             element->rdf_attr[RDF_ATTR_parseType]) {
-            
-            raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on property element %s with an rdf:resource or rdf:parseType attribute.", el_name);
-            /* prevent this being used later either */
-            element->rdf_attr[RDF_ATTR_bagID]=NULL;
-          } else {
-            element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
-            element->rdf_attr[RDF_ATTR_bagID]=NULL;
-            element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
-            element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-            element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
-            
-            if(!raptor_valid_xml_ID(rdf_parser, element->bag.id)) {
-              raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", element->bag.id);
-              state=RAPTOR_STATE_SKIPPING;
-              element->child_state=RAPTOR_STATE_SKIPPING;
-              finished=1;
-              break;
-            }
-            if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
-              raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
-              state=RAPTOR_STATE_SKIPPING;
-              element->child_state=RAPTOR_STATE_SKIPPING;
-              finished=1;
-              break;
-            }
+          if(rdf_parser->feature_allow_bagID) {
 
+            if(element->rdf_attr[RDF_ATTR_resource] ||
+               element->rdf_attr[RDF_ATTR_parseType]) {
+              
+              raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on property element %s with an rdf:resource or rdf:parseType attribute.", el_name);
+              /* prevent this being used later either */
+              element->rdf_attr[RDF_ATTR_bagID]=NULL;
+            } else {
+              element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
+              element->rdf_attr[RDF_ATTR_bagID]=NULL;
+              element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
+              element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+              element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+              
+              if(!raptor_valid_xml_ID(rdf_parser, element->bag.id)) {
+                raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", element->bag.id);
+                state=RAPTOR_STATE_SKIPPING;
+                element->child_state=RAPTOR_STATE_SKIPPING;
+                finished=1;
+                break;
+              }
+              if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
+                raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
+                state=RAPTOR_STATE_SKIPPING;
+                element->child_state=RAPTOR_STATE_SKIPPING;
+                finished=1;
+                break;
+              }
+
+              raptor_parser_warning(rdf_parser, "rdf:bagID is deprecated.");
+            }
+          } else {
+            /* bagID forbidden */
+            raptor_parser_error(rdf_parser, "rdf:bagID is forbidden.");
+            state=RAPTOR_STATE_SKIPPING;
+            element->child_state=RAPTOR_STATE_SKIPPING;
+            finished=1;
+            break;
           }
-          
         } /* if rdf:bagID on property element */
         
 
@@ -3133,33 +3155,35 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
             if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL) {
 
-              /* Only an empty literal can have a rdf:bagID */
-              if(element->bag.uri || element->bag.id) {
-                if(element->content_cdata_length > 0) {
-                  raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on a literal property element %s.", el_name);
-                  /* prevent this being used later either */
-                  element->rdf_attr[RDF_ATTR_bagID]=NULL;
-                } else
-                  raptor_generate_statement(rdf_parser, 
-                                            element->bag.uri,
-                                            element->bag.id,
-                                            element->bag.type,
-                                            element->bag.uri_source,
-                                            
-                                            RAPTOR_RDF_type_URI(rdf_xml_parser),
-                                            NULL,
-                                            RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                            RAPTOR_URI_SOURCE_URI,
-                                            
-                                            RAPTOR_RDF_Bag_URI(rdf_xml_parser),
-                                            NULL,
-                                            RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                            RAPTOR_URI_SOURCE_NOT_URI,
-                                            NULL,
-                                            
-                                            NULL,
-                                            NULL);
-              }
+              if(rdf_parser->feature_allow_bagID) {
+                /* Only an empty literal can have a rdf:bagID */
+                if(element->bag.uri || element->bag.id) {
+                  if(element->content_cdata_length > 0) {
+                    raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on a literal property element %s.", el_name);
+                    /* prevent this being used later either */
+                    element->rdf_attr[RDF_ATTR_bagID]=NULL;
+                  } else
+                    raptor_generate_statement(rdf_parser, 
+                                              element->bag.uri,
+                                              element->bag.id,
+                                              element->bag.type,
+                                              element->bag.uri_source,
+                                              
+                                              RAPTOR_RDF_type_URI(rdf_xml_parser),
+                                              NULL,
+                                              RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                              RAPTOR_URI_SOURCE_URI,
+                                              
+                                              RAPTOR_RDF_Bag_URI(rdf_xml_parser),
+                                              NULL,
+                                              RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                              RAPTOR_URI_SOURCE_NOT_URI,
+                                              NULL,
+                                              
+                                              NULL,
+                                              NULL);
+                }
+              } /* if rdf:bagID */
 
               /* If there is empty literal content with properties
                * generate a node to hang properties off 
