@@ -717,7 +717,8 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   buffer= n3_lexer__scan_string(string);
   n3_lexer__switch_to_buffer(buffer);
   n3_parser_parse();
-
+  n3_lexer__delete_buffer(buffer);
+  
   N3_Parser=NULL;
 
   /* FIXME UNLOCKING or re-entrant parser/lexer */
