@@ -28,7 +28,7 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource26> <http://example.org/property> xml"a <b></b> c" .
 <http://example.org/resource26> <http://example.org/property> xml"a\n<b></b>\nc" .
 <http://example.org/resource27> <http://example.org/property> xml"chat" .
-<http://example.org/resource28> <http://example.org/property> xml"chat"-fr .
-<http://example.org/resource29> <http://example.org/property> xml"chat"-en .
-<http://example.org/resource30> <http://example.org/property> "chat"-fr .
-<http://example.org/resource31> <http://example.org/property> "chat"-en .
+<http://example.org/resource28> <http://example.org/property> xml"chat"@fr .
+<http://example.org/resource29> <http://example.org/property> xml"chat"@en .
+<http://example.org/resource30> <http://example.org/property> "chat"@fr .
+<http://example.org/resource31> <http://example.org/property> "chat"@en .
