@@ -815,56 +815,138 @@ raptor_print_statement(const raptor_statement * const statement, FILE *stream)
 }
 
 
+/**
+ * raptor_print_ntriples_string - Print an UTF-8 string using N-Triples escapes
+ * @stream: FILE* stream to print to
+ * @string: UTF-8 string to print
+ * @delim: Delimiter character for string (such as ") or \0 for no delim
+ * escaping.
+ * 
+ * Return value: non-0 on failure such as bad UTF-8 encoding.
+ **/
+int
+raptor_print_ntriples_string(FILE *stream,
+                             const char *string,
+                             const char delim) 
+{
+  unsigned char c;
+  int len=strlen(string);
+  int unichar_len;
+  long unichar;
+  
+  for(; (c=*string); string++, len--) {
+    if((delim && c == delim) || c == '\\') {
+      fprintf(stream, "\\%c", c);
+      continue;
+    }
+    
+    /* Note: NTriples is ASCII */
+    if(c == 0x09) {
+      fputs("\\t", stream);
+      continue;
+    } else if(c == 0x0a) {
+      fputs("\\n", stream);
+      continue;
+    } else if(c == 0x0d) {
+      fputs("\\r", stream);
+      continue;
+    } else if(c < 0x20|| c == 0x7f) {
+      fprintf(stream, "\\u%04X", c);
+      continue;
+    } else if(c < 0x80) {
+      fputc(c, stream);
+      continue;
+    }
+    
+    /* It is unicode */
+    
+    unichar_len=raptor_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
+    if(unichar_len < 0 || unichar_len > len)
+      /* UTF-8 encoding had an error or ended in the middle of a string */
+      return 1;
+
+    unichar_len=raptor_utf8_to_unicode_char(&unichar,
+                                            (const unsigned char *)string, len);
+    
+    if(unichar < 0x10000)
+      fprintf(stream, "\\u%04lX", unichar);
+    else
+      fprintf(stream, "\\U%08lX", unichar);
+    
+    unichar_len--; /* since loop does len-- */
+    string += unichar_len; len -= unichar_len;
+
+  }
+
+  return 0;
+}
+
+
+
+
+void
+raptor_print_statement_part_as_ntriples(FILE* stream,
+                                        const void *term, 
+                                        raptor_identifier_type type,
+                                        raptor_uri* literal_datatype,
+                                        const unsigned char *literal_language) 
+{
+  switch(type) {
+    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
+      fputc('"', stream);
+      raptor_print_ntriples_string(stream, (const char*)term, '"');
+      fputc('"', stream);
+      if(literal_language)
+        fprintf(stream, "@%s",  (const char*)literal_language);
+      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
+        fputs("^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
+      else if(literal_datatype)
+        fprintf(stream, "^^<%s>", raptor_uri_as_string((raptor_uri*)literal_datatype));
+
+      break;
+      
+    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+      fprintf(stream, "_:%s", (const char*)term);
+      break;
+      
+    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+      fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
+              *((int*)term));
+      break;
+  
+    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
+      fputc('<', stream);
+      raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)term), '\0');
+      fputc('>', stream);
+      break;
+      
+    default:
+      RAPTOR_FATAL2(raptor_statement_part_as_string, "Unknown type %d", type);
+  }
+}
+
+
 void
 raptor_print_statement_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
 {
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    fprintf(stream, "_:%s", (const char*)statement->subject);
-  else { /* must be URI */
-    fputc('<', stream);
-    raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)statement->subject), '\0');
-    fputc('>', stream);
-  }
+  raptor_print_statement_part_as_ntriples(stream,
+                                          statement->subject,
+                                          statement->subject_type,
+                                          NULL, NULL);
   fputc(' ', stream);
-
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
-            *((int*)statement->predicate));
-  else { /* must be URI */
-    fputc('<', stream);
-    raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)statement->predicate), '\0');
-    fputc('>', stream);
-  }
+  raptor_print_statement_part_as_ntriples(stream,
+                                          statement->predicate,
+                                          statement->predicate_type,
+                                          NULL, NULL);
   fputc(' ', stream);
-
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
-    fputc('"', stream);
-    raptor_print_ntriples_string(stream, (const char*)statement->object, '"');
-    fputc('"', stream);
-    if(statement->object_literal_language)
-      fprintf(stream, "@%s",  (const char*)statement->object_literal_language);
-    if(statement->object_literal_datatype)
-      fprintf(stream, "^^<%s>", 
-              raptor_uri_as_string((raptor_uri*)statement->object_literal_datatype));
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    fputc('"', stream);
-    raptor_print_ntriples_string(stream, (const char*)statement->object, '"');
-    fputc('"', stream);
-    if(statement->object_literal_language)
-      fprintf(stream, "@%s",  (const char*)statement->object_literal_language);
-    fputs("^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    fprintf(stream, "_:%s", (const char*)statement->object);
-  else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
-            *((int*)statement->object));
-  else { /* must be URI */
-    fputc('<', stream);
-    raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)statement->object), '\0');
-    fputc('>', stream);
-  }
-
+  raptor_print_statement_part_as_ntriples(stream,
+                                          statement->object,
+                                          statement->object_type,
+                                          statement->object_literal_datatype,
+                                          statement->object_literal_language);
   fputs(" .", stream);
 }
 
