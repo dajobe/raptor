@@ -168,8 +168,18 @@ RAPTOR_API int raptor_format_locator(char *buffer, size_t length, raptor_locator
 RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 
 /* URI functions */
-RAPTOR_API raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_string);
+RAPTOR_API raptor_uri* raptor_new_uri(const char *uri_string);
+RAPTOR_API raptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name);
+RAPTOR_API void raptor_free_uri(raptor_uri *uri);
+RAPTOR_API int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API raptor_uri* raptor_copy_uri(raptor_uri *uri);
+
+RAPTOR_API raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_string);
+raptor_uri* raptor_make_uri_from_id(raptor_uri *base_uri, const char *id);
+#ifndef RAPTOR_IN_REDLAND
+raptor_uri* raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name);
+#endif
+
 
 /* Identifier functions */
 RAPTOR_API raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
