@@ -48,7 +48,7 @@ libraptor_la_LIBADD = @LTLIBOBJS@
 EXTRA_DIST=ChangeLog ChangeLog.1 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
-MPL.html libraptor.html \
+MPL.html libraptor.html rapper.html \
 raptor-config.in raptor-src-config.in \
 autogen.sh \
 raptor.spec.in \
@@ -115,6 +115,9 @@ NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
 @MAINT@libraptor.html: $(srcdir)/libraptor.3
+@MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
+
+@MAINT@rapper.html: $(srcdir)/rapper.1
 @MAINT@	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
 pkgconfigdir = $(libdir)/pkgconfig
