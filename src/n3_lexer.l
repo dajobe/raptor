@@ -427,7 +427,6 @@ main(int argc, char *argv[])
 
   /* Initialise enough of the parser and locator to get error messages */
   rdf_parser.context=&n3_parser;
-  n3_parser.scanner=&scanner;
   n3_parser.lineno=1;
   rdf_parser.locator.file=filename;
   rdf_parser.locator.column= -1;

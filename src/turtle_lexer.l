@@ -422,7 +422,6 @@ main(int argc, char *argv[])
 
   /* Initialise enough of the parser and locator to get error messages */
   rdf_parser.context=&turtle_parser;
-  turtle_parser.scanner=&scanner;
   turtle_parser.lineno=1;
   rdf_parser.locator.file=filename;
   rdf_parser.locator.column= -1;
