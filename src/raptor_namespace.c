@@ -140,6 +140,7 @@ raptor_namespaces_free(raptor_namespace_stack *nstack) {
     raptor_namespace_free(ns);
     ns=next_ns;
   }
+  nstack->top=NULL;
 }
 
 
