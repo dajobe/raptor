@@ -1930,8 +1930,16 @@ raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
   parser->failed=1;
 
   if(parser->fatal_error_handler) {
+    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    if(!buffer) {
+      fprintf(stderr, "raptor_parser_fatal_error_varargs: Out of memory\n");
+      return;
+    }
+    vsnprintf(buffer, len, message, arguments);
     parser->fatal_error_handler(parser->fatal_error_user_data, 
-                                &parser->locator, message, arguments);
+                                &parser->locator, buffer); 
+    LIBRDF_FREE(cstring, buffer);
     abort();
   }
 
@@ -1968,8 +1976,16 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
                             va_list arguments)
 {
   if(parser->error_handler) {
+    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    if(!buffer) {
+      fprintf(stderr, "raptor_parser_error_varargs: Out of memory\n");
+      return;
+    }
+    vsnprintf(buffer, len, message, arguments);
     parser->error_handler(parser->error_user_data, 
-                          &parser->locator, message, arguments);
+                          &parser->locator, buffer);
+    LIBRDF_FREE(cstring, buffer);
     return;
   }
 
@@ -2005,8 +2021,16 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
 {
 
   if(parser->warning_handler) {
+    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    if(!buffer) {
+      fprintf(stderr, "raptor_parser_warning_varargs: Out of memory\n");
+      return;
+    }
+    vsnprintf(buffer, len, message, arguments);
     parser->warning_handler(parser->warning_user_data,
-                            &parser->locator, message, arguments);
+                            &parser->locator, buffer);
+    LIBRDF_FREE(cstring, buffer);
     return;
   }
 
