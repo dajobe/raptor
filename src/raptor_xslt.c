@@ -168,10 +168,8 @@ main(int argc, char* argv[])
   int i;
   int rc=0;
   FILE *fh=NULL;
-/*  const char *xslt_filename=NULL;*/
   const char *xml_filename=NULL;
   raptor_uri *base_uri=NULL;
-  int base_uri_alloced=0;
   
   raptor_init();
 
@@ -222,7 +220,6 @@ main(int argc, char* argv[])
     unsigned char *uri_string=raptor_uri_filename_to_uri_string(xml_filename);
     base_uri=raptor_new_uri(uri_string);
     raptor_free_memory(uri_string);
-    base_uri_alloced=1;
   }
   
   fprintf(stderr, "%s: Handling XML file '%s' with base URI %s\n",
@@ -377,8 +374,6 @@ main(int argc, char* argv[])
 
   goto cleanup;
   
-  xmlFreeParserCtxt(ctxt);
-
   if(rc) {
     fprintf(stderr, "transform failed - %d\n", rc);
     goto cleanup;
@@ -387,11 +382,19 @@ main(int argc, char* argv[])
   rc=0;
 
   cleanup:
+  if(ctxt) {
+    if(ctxt->myDoc) {
+      xmlFreeDoc(ctxt->myDoc);
+      ctxt->myDoc=NULL;
+    }
+    xmlFreeParserCtxt(ctxt);
+  }
+  
   if(fh)
     fclose(fh);
   if(xpathCtx)
     xmlXPathFreeContext(xpathCtx); 
-  if(base_uri_alloced)
+  if(base_uri)
     raptor_free_uri(base_uri);
 
   raptor_xslt_finish();
