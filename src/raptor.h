@@ -98,6 +98,12 @@ typedef enum {
 } raptor_feature;
 
 
+typedef enum {
+  RAPTOR_GENID_TYPE_BNODEID,
+  RAPTOR_GENID_TYPE_BAGID
+} raptor_genid_type;
+
+
 typedef struct {
   raptor_identifier_type type;
   raptor_uri *uri;
@@ -123,6 +129,7 @@ typedef struct {
 
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
+typedef const unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_genid_type type);
 typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
 typedef void (*raptor_www_write_bytes_handler)(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata, const char *content_type);
@@ -146,6 +153,7 @@ RAPTOR_API void raptor_set_fatal_error_handler(raptor_parser* parser, void *user
 RAPTOR_API void raptor_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
+RAPTOR_API void raptor_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
 
 RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
 RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
@@ -155,9 +163,10 @@ RAPTOR_API char* raptor_statement_part_as_string(const void *term, raptor_identi
 
 RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
 
+RAPTOR_API void raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser, char *prefix, int base);
 
 /* Parsing functions */
-int raptor_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
+RAPTOR_API int raptor_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API int raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API int raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
