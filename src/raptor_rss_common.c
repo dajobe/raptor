@@ -1924,6 +1924,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   }
 
   raptor_xml_writer_end_element(xml_writer, rss_serializer->rdf_RDF_element);
+  raptor_xml_writer_raw_counted(xml_writer, "\n", 1);
 
   raptor_free_sax2_element(rss_serializer->rdf_RDF_element);
 
