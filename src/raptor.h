@@ -242,6 +242,7 @@ RAPTOR_API const char* raptor_get_label(raptor_parser *rdf_parser);
 RAPTOR_API int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API int raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 RAPTOR_API int raptor_get_feature(raptor_parser *parser, raptor_feature feature);
+RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
 RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
 /* URI functions */
