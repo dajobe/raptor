@@ -136,7 +136,7 @@ struct nsd
 {
   const raptor_namespace *nspace;
   unsigned char *declaration;
-  int length;
+  size_t length;
 };
 
 
