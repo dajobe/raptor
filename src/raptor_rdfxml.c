@@ -1731,14 +1731,11 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
       if(*name == '_') {
         /* recognise rdf:_ */
         name++;
-        while(*name >= '0' && *name <= '9') {
-          ordinal *= 10;
-          ordinal += (*name++ - '0');
-        }
-        
+        ordinal=raptor_check_ordinal(name);
         if(ordinal < 1) {
           raptor_update_document_locator(rdf_parser);
-          raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in property attribute %s seen on containing element %s.", ordinal, attr->local_name, name);
+          raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property attribute %s seen on containing element %s.", ordinal, attr->local_name, name);
+          ordinal=1;
         }
       } else {
         raptor_update_document_locator(rdf_parser);
