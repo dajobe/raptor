@@ -114,6 +114,18 @@ static const char* const rss_namespace_uri_strings[RSS_NAMESPACES_SIZE]={
 };
 
 
+static const char* const rss_namespace_prefix_strings[RSS_NAMESPACES_SIZE]={
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  "rss",
+  "atom",
+  "dc",
+  NULL
+};
+
+
 static raptor_uri* rss_namespace_uris[RSS_NAMESPACES_SIZE];
 
 
@@ -121,6 +133,7 @@ typedef struct {
   const char* name;
   rss_info_namespace nspace;
   raptor_uri* uri;
+  raptor_qname* qname;
 } raptor_rss_info;
 
 raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
@@ -1374,6 +1387,9 @@ typedef struct {
   /* URI of rdf:Seq node */
   raptor_uri *seq_uri;
 
+  /* Namespace stack for serializing */
+  raptor_namespace_stack *nstack;
+
 } raptor_rss10_serializer_context;
 
 
@@ -1383,6 +1399,9 @@ static int
 raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
+  raptor_uri_handler *uri_handler;
+  void *uri_context;
+  int i;
 
   raptor_rss_common_init();
   raptor_rss_context_init(&rss_serializer->parser);
@@ -1390,6 +1409,17 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   rss_serializer->triples=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, (raptor_sequence_print_handler*)raptor_print_statement);
 
   rss_serializer->items=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_uri, (raptor_sequence_print_handler*)raptor_uri_print);
+
+  raptor_uri_get_handler(&uri_handler, &uri_context);
+  rss_serializer->nstack=raptor_new_namespaces(uri_handler, uri_context,
+                                               raptor_serializer_simple_error,
+                                               serializer,
+                                               1);
+
+  for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
+    /* raptor_rss_fields_info[i].qname=raptor_new_qname_from_namespace_local_name(rss_serializer->nstack, raptor_rss_fields_info[i].name, NULL); */
+    
+  }
 
   return 0;
 }
@@ -1400,7 +1430,8 @@ static void
 raptor_rss10_serialize_terminate(raptor_serializer* serializer)
 {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
-
+  int i;
+  
   raptor_rss_context_terminate(&rss_serializer->parser);
   raptor_rss_common_terminate();
 
@@ -1412,6 +1443,15 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
 
   if(rss_serializer->seq_uri)
     raptor_free_uri(rss_serializer->seq_uri);
+
+  /* Frees all namespaces on the stack */
+  if(rss_serializer->nstack)
+    raptor_free_namespaces(rss_serializer->nstack);
+
+  for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
+    if(raptor_rss_fields_info[i].qname)
+      raptor_free_qname(raptor_rss_fields_info[i].qname);
+  }
 }
   
 
@@ -1668,7 +1708,7 @@ raptor_rss10_emit_item(raptor_rss10_serializer_context *rss_serializer,
     if(!rss_parser->statement.predicate)
       continue;
     
-    raptor_iostream_write_string(iostr, "  <pred");
+    raptor_iostream_write_string(iostr, "    <pred");
     if(item->fields[f]) {
       raptor_iostream_write_byte(iostr, '>');
       raptor_iostream_write_string(iostr, item->fields[f]);
@@ -1695,12 +1735,37 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
   raptor_rss_parser_context* rss_parser=&rss_serializer->parser;
   raptor_iostream *iostr=serializer->iostream;
+  raptor_namespace *nspace;
   int i;
 
   raptor_rss10_build_items(rss_serializer);
 
-  raptor_iostream_write_string(iostr, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\
-<rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns=\"http://purl.org/rss/1.0/\">\n");
+
+  raptor_iostream_write_string(iostr, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+
+  raptor_iostream_write_string(iostr, "<rdf:RDF ");
+
+  nspace=raptor_new_namespace(rss_serializer->nstack,
+                              (const unsigned char*)"rdf",
+                              (const unsigned char*)raptor_rdf_namespace_uri,
+                              0);
+  raptor_iostream_write_namespace(iostr, nspace);
+  
+  for(i=0; i<RSS_NAMESPACES_SIZE;i++) {
+    const char *uri_string=rss_namespace_uri_strings[i];
+    const char *prefix=rss_namespace_prefix_strings[i];
+    if(uri_string && prefix) {
+      nspace=raptor_new_namespace(rss_serializer->nstack,
+                                  (const unsigned char*)prefix,
+                                  (const unsigned char*)uri_string,
+                                  0);
+      raptor_iostream_write_namespace(iostr, nspace);
+      raptor_iostream_write_byte(iostr, ' ');
+    }
+  }
+  
+  raptor_iostream_write_string(iostr, ">\n");
+
 
   raptor_iostream_write_string(iostr, "<channel rdf:about=\"");
   raptor_iostream_write_string(iostr, "http://channel-uri/");
@@ -1725,9 +1790,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
 
     for(i=0; i < raptor_sequence_size(rss_serializer->items); i++) {
-      raptor_iostream_write_string(iostr, "  <!-- RSS item block ");
+      raptor_iostream_write_string(iostr, "  <!-- item ");
       raptor_iostream_write_decimal(iostr, i+1);
-      raptor_iostream_write_string(iostr, "-->");
+      raptor_iostream_write_string(iostr, " -->\n\n");
 
       /*
       raptor_rss10_emit_block(rss_serializer,
