@@ -569,7 +569,7 @@ struct raptor_element_s {
   /* If this element's parseType is a daml:collection 
    * this identifies the anon node of current tail of the collection(list). 
    */
-  char *tail_id;
+  const char *tail_id;
 };
 
 typedef struct raptor_element_s raptor_element;
@@ -3373,7 +3373,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * to the list at the genid element->parent->tail_id
            */
           if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
-            char * idList = raptor_generate_id(rdf_parser, 0);
+            const char * idList = raptor_generate_id(rdf_parser, 0);
             
             /* <idList> rdf:type daml:List */
             raptor_generate_statement(rdf_parser, 
