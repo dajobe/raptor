@@ -167,15 +167,9 @@ if test $libexpat = 1 -a $ac_cv_header_expat_h = yes ; then
     expat_libs="-lexpat"
 
     AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no)
-  fi
-else
-  AC_MSG_RESULT(no)
-fi
 
-AC_MSG_CHECKING(for expat support of UTF-8 BOM)
-AC_TRY_RUN([
+    AC_MSG_CHECKING(for expat support of UTF-8 BOM)
+    AC_TRY_RUN([
 #include <stdio.h>
 #include <string.h>
 #ifdef HAVE_STDARG_H
@@ -213,6 +207,13 @@ int main(int argc, char **argv) {
             AC_MSG_RESULT(yes),
             AC_DEFINE(EXPAT_UTF8_BOM_CRASH)
             AC_MSG_RESULT(no - expat will fail to parse XML with a UTF-8 BOM))
+
+  else
+    AC_MSG_RESULT(no)
+  fi
+else
+  AC_MSG_RESULT(no)
+fi
 
 LIBS="$oLIBS"
 
