@@ -396,6 +396,7 @@ directive : PREFIX QNAME_LITERAL URI_LITERAL DOT
   }
 
   uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
+  free($3);
   raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
                                          prefix, raptor_uri_as_string(uri), 0);
   if($2)
@@ -424,6 +425,7 @@ predicate: URI_LITERAL
 #endif
 
   uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
+  free($1);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
 | QNAME_LITERAL
@@ -486,6 +488,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $5);
+  free($5);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
   raptor_free_uri(uri);
 }
@@ -516,6 +519,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
+  free($3);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
   raptor_free_uri(uri);
 }
@@ -557,6 +561,7 @@ URI_LITERAL
 #endif
 
   uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
+  free($1);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
 | QNAME_LITERAL
