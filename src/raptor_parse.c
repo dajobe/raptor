@@ -458,7 +458,7 @@ typedef struct raptor_element_s raptor_element;
 
 
 
-#define RAPTOR_N_CONCEPTS 18
+#define RAPTOR_N_CONCEPTS 21
 
 /*
  * Raptor parser object
@@ -528,6 +528,10 @@ typedef struct raptor_xml_parser_s raptor_xml_parser;
 #define RAPTOR_DAML_first_URI(rdf_xml_parser) rdf_xml_parser->concepts[15]
 #define RAPTOR_DAML_rest_URI(rdf_xml_parser)  rdf_xml_parser->concepts[16]
 #define RAPTOR_DAML_nil_URI(rdf_xml_parser)   rdf_xml_parser->concepts[17]
+
+#define RAPTOR_RDF_RDF_URI(rdf_xml_parser)         rdf_xml_parser->concepts[18]
+#define RAPTOR_RDF_Description_URI(rdf_xml_parser) rdf_xml_parser->concepts[19]
+#define RAPTOR_RDF_li_URI(rdf_xml_parser)          rdf_xml_parser->concepts[20]
 
 /* RAPTOR_N_CONCEPTS defines size of array */
 
@@ -1386,6 +1390,9 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
   RAPTOR_DAML_rest_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), "rest");
   RAPTOR_DAML_nil_URI(rdf_xml_parser)=raptor_new_uri_from_uri_local_name(RAPTOR_DAML_NS_URI(rdf_xml_parser), "nil");
 
+  RAPTOR_RDF_RDF_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("RDF");
+  RAPTOR_RDF_Description_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("Description");
+  RAPTOR_RDF_li_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("li");
 
 #ifdef RAPTOR_XML_EXPAT
   xp=XML_ParserCreate(NULL);
@@ -1789,6 +1796,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
   int i;
   int local_last_ordinal=0;
   raptor_identifier *resource_identifier;
+  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
 
   resource_identifier=property_node_identifier ? property_node_identifier : &resource_element->subject;
   
@@ -1816,7 +1824,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
       /* is rdf: namespace */
       int ordinal=0;
         
-      if(IS_RDF_MS_CONCEPT(attr->local_name, attr->uri, li)) {
+      if(raptor_uri_equals(attr->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
         /* recognise rdf:li attribute */
         if(property_node_identifier)
           ordinal= ++local_last_ordinal;
@@ -1966,7 +1974,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         /* found <rdf:RDF> ? */
 
         if(element_in_rdf_ns) {
-          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, RDF)) {
+          if(raptor_uri_equals(element->name->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
             element->child_state=RAPTOR_STATE_OBJ;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
             /* Yes - need more content before can continue,
@@ -1975,7 +1983,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             finished=1;
             break;
           }
-          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description)) {
+          if(raptor_uri_equals(element->name->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
 	    state=RAPTOR_STATE_DESCRIPTION;
 	    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
             /* Yes - found something so move immediately to description */
@@ -2057,7 +2065,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            state == RAPTOR_STATE_DESCRIPTION || 
            state == RAPTOR_STATE_PARSETYPE_COLLECTION) {
           if(element_in_rdf_ns &&
-             IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description))
+             raptor_uri_equals(element->name->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser)))
             state=RAPTOR_STATE_DESCRIPTION;
           else
             state=RAPTOR_STATE_TYPED_NODE;
@@ -2342,7 +2350,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         /* Handling rdf:li as a property, noting special processing */ 
         if(element_in_rdf_ns && 
-           IS_RDF_MS_CONCEPT(el_name, element->name->uri, li)) {
+           raptor_uri_equals(element->name->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
           state=RAPTOR_STATE_MEMBER;
         }
 
@@ -2489,7 +2497,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_OBJ:
         if(element_in_rdf_ns && 
-          IS_RDF_MS_CONCEPT(el_name, element->name->uri,RDF)) {
+           raptor_uri_equals(element->name->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
           /* end of RDF - boo hoo */
           state=RAPTOR_STATE_UNKNOWN;
           finished=1;
@@ -2551,7 +2559,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 (element->parent->subject.uri || element->parent->subject.id)) {
           /* Handle rdf:li as the rdf:parseType="resource" property */
           if(element_in_rdf_ns && 
-             IS_RDF_MS_CONCEPT(el_name, element->name->uri, li)) {
+             raptor_uri_equals(element->name->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
             element->parent->last_ordinal++;
             raptor_generate_statement(rdf_parser, 
                                       element->parent->subject.uri,
