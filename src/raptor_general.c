@@ -297,7 +297,8 @@ raptor_free_statement(raptor_statement *statement) {
   }
 
   if(statement->predicate) {
-    if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE)
+    if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE ||
+       statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
       raptor_free_uri((raptor_uri*)statement->predicate);
     else
       RAPTOR_FREE(cstring, statement->predicate);
