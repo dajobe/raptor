@@ -939,7 +939,8 @@ raptor_xml_start_element_handler(void *user_data,
   element->state=RAPTOR_STATE_UNKNOWN;
   element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
 
-  if(!rdf_parser->feature_scanning_for_rdf_RDF && element->parent) {
+  if(element->parent && 
+     element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN) {
     element->content_type=element->parent->child_content_type;
       
     if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
