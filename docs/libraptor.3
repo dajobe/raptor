@@ -104,7 +104,12 @@ parsers (name "rdfxml").  The N-Triples parser (name "ntriples") or
 RSS Tag Soup parser (name "rss-tag-soup") do not use this.
 .IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  raptor_uri *\fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the given filename (a URI like file:filename)
-according to the base URI \fIbase_uri\fR, or NULL if not needed.
+according to the optional base URI \fIbase_uri\fR.  If \fIuri\fR
+is NULL, read from standard input and \fIbase_uri\fR is then required.
+.IP "\fBint raptor_parse_file_stream(raptor_parser* \fIparser\fB, FILE* \fIstream\fB, const char* \fIfilename\fB, raptor_uri *\fIbase_uri\fB)\fR"
+Parse the given C FILE* stream according to the base URI
+\fIbase_uri\fR (required).  \fIfilename\fR is optional and
+if given, is used for error messages via the raptor_locator structure.
 .IP "\fBint raptor_parse_uri(raptor_parser* \fIparser\fB,  raptor_uri* \fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the URI according to the base URI \fIbase_uri\fR, or NULL if
 not needed.  If no base URI is given, the \fIuri\fR is used.
@@ -143,36 +148,42 @@ The current defined features are:
   \fBRAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES\fR   Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_BAGID\fR              Boolean (non 0 true)
   \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fR  Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fR       Boolean (non 0 true)
 If the \fIscanning\fR
-feature is true, then the RDF/XML parser will look for embedded
+feature is true (default false), then the RDF/XML parser will look for embedded
 rdf:RDF elements inside the XML content, and not require that the
 XML start with an rdf:RDF root element.
 .P
 If the \fIassume_is_rdf\fR
-feature is true, then the RDF/XML parser will assume the content is
-RDF/XML, not require that rdf:RDF root element, and immediately
-interpret the content as RDF/XML.
+feature is true (default false), then the RDF/XML parser will assume
+the content is RDF/XML, not require that rdf:RDF root element, and
+immediately interpret the content as RDF/XML.
 .P
 If the \fIallow_non_ns_attributes\fR
-feature is true, then the RDF/XML parser will allow
+feature is true (default true), then the RDF/XML parser will allow
 non-XML namespaced attributes to be accepted
 as well as rdf: namespaced ones.  For example, 'about' and 'ID' will
 be interpreted as if they were rdf:about and rdf:ID respectively.
 .P
 If the \fIallow_other_parsetypes\fR
-feature is true then the RDF/XML parser will allow unknown parsetypes
-to be present and will pass them on to the user.  Unimplemented at present.
+feature is true (default true) then the RDF/XML parser will allow
+unknown parsetypes to be present and will pass them on to the user.
+Unimplemented at present.
 .P
 If the \fIallow_bagid\fR
-feature is true then the RDF/XML parser will support the rdf:bagID
-attribute that was removed from the RDF/XML language when it was
-revised.  This support may be removed in future.
+feature is true (default true) then the RDF/XML parser will support
+the rdf:bagID attribute that was removed from the RDF/XML language
+when it was revised.  This support may be removed in future.
 .P
 If the \fIallow_rdf_type_rdf_list\fR
-feature is true then the RDF/XML parser will generate the
+feature is true (default false) then the RDF/XML parser will generate the
 idList rdf:type rdf:List triple in the handling of
 rdf:parseType="Collection".  This triple was removed during the
 revising of RDF/XML after collections were initially added.
+.P
+If the \fInormalize_language\fR
+feature is true (default true) then XML language values
+such as from xml:lang will be normalized to lowercase.
 .IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
 Return the current raptor_locator object for the parser.
 This is a public structure defined in raptor.h that can be
@@ -252,6 +263,22 @@ XML element content (CDATA).   The \fIerror_handler\fR method along
 with \fIerror_data\fR allow error reporting to be given.
 If buffer is NULL, returns the size of the buffer required to escape.
 Otherwise the return value is the number of bytes used or 0 on failure.
+.SH "STATIC VARIABLES"
+There are several read-only static variables in the raptor library:
+.IP "\fBconst char * const raptor_short_copyright_string\fR"
+Short copyright string, suitable for one line.
+.IP "\fBconst char * const raptor_copyright_string\fR"
+Full copyright over several lines including URLs.
+.IP "\fBconst char * const raptor_version_string\fR"
+The version as a string
+.IP "\fBconst unsigned int raptor_version_major\fR"
+The major version number as an integer.
+.IP "\fBconst unsigned int raptor_version_minor\fR"
+The minor version number as an integer.
+.IP "\fBconst unsigned int raptor_version_release\fR"
+The release version number as an integer.
+.IP "\fBconst unsigned int raptor_version_decimal\fR"
+The version number as a single decimal.
 .SH "URI CLASS"
 Raptor has a raptor_uri class must be used for manipulating and
 passing URI references.  The default internal implementation
@@ -395,6 +422,9 @@ Retrieve the given URL, returning non zero on failure.
 Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
 .SH API CHANGES
+.IP 0.9.13
+Added \fBraptor_parse_file_stream\fR
+for reading FILE* streams without necessarily having a file.
 .IP 0.9.12
 Added \fBraptor_new_uri_for_retrieval\fR
 to turn URI references into URIs suitable for retrieval (no fragments).
