@@ -1,5 +1,7 @@
 2005-01-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Snapshotted raptor_1_4_4 for 1.4.4 release
+
 	* raptor_rss.c (raptor_rss10_emit_item): Portability - declare
 	rdf_Seq* variables at start of block.
 
