@@ -199,25 +199,25 @@ static int raptor_namespace_count = 0;
 static unsigned char *
 raptor_unique_id(unsigned char *base) 
 {
-  /* Raptor doesn't check that blank ids it generates are unique
-   * from any specified by rdf:nodeID. Here, we need to emit ids that
+  /* Raptor doesn't check that blank IDs it generates are unique
+   * from any specified by rdf:nodeID. Here, we need to emit IDs that
    * are different from the ones the parser generates so that there
-   * is no collision. For now, just prepend a '_' to the parser
-   * generated name. */
+   * is no collision. For now, just prefix a '_' to the parser
+   * generated name.
+   */
     
-  char *prefix = "_";
+  const char *prefix = "_";
   int prefix_len = strlen(prefix);
-  int base_len = strlen(base);
+  int base_len = strlen((const char*)base);
   int len = prefix_len + base_len + 1;
-  
-  unsigned char *unique_id = (unsigned char *)RAPTOR_MALLOC(cstring, len);
-  unique_id[0] = 0;
-  
-  strcat(unique_id, prefix);
-  strcat(unique_id, (char *)base);
+  unsigned char *unique_id;
+
+  unique_id= (unsigned char *)RAPTOR_MALLOC(cstring, len);
+  strncpy((char*)unique_id, prefix, prefix_len);
+  strncpy((char*)unique_id+prefix_len, (char *)base, base_len);
+  unique_id[len]='\0';
     
   return unique_id;
-    
 }
 
 
@@ -356,7 +356,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
     if(node->value.literal.datatype) {
       unsigned char *datatype_value;
       datatype_value = raptor_uri_as_string(node->value.literal.datatype);
-      attrs[attrs_count++] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace, "datatype",
+      attrs[attrs_count++] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"datatype",
                                                                         datatype_value);
       /* SJS Note: raptor_default_uri_as_string simply returns a
        * pointer to the string. Hope this is also true of alternate
@@ -392,8 +392,8 @@ raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
     return 1;
   
   attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
-                                                        "parseType",
-                                                        "Literal");
+                                                        (const unsigned char*)"parseType",
+                                                        (const unsigned char*)"Literal");
   raptor_xml_element_set_attributes(element, attrs, 1);
   raptor_xml_writer_start_element(xml_writer, element);
   raptor_xml_writer_raw(xml_writer, node->value.literal.string);
@@ -433,7 +433,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
     }
           
   } else {
-    unsigned char *attr_name = "nodeID";
+    unsigned char *attr_name = (unsigned char*)"nodeID";
     unsigned char *attr_value = raptor_unique_id(node->value.blank.string);
     raptor_qname **attrs;
 
@@ -625,7 +625,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     
   /* emit the subject node */
   if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    attr_name = "about";
+    attr_name = (unsigned char*)"about";
     if(serializer->feature_relative_uris)
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                      subject->node->value.resource.uri);
@@ -641,11 +641,11 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
        * ref_count == 3, we know it is a "private" node. The
        * additional ref_count is due to the fact that it is the object
        * of a statement.*/
-      attr_name = "nodeID";
+      attr_name = (unsigned char*)"nodeID";
       attr_value = raptor_unique_id(subject->node->value.blank.string);
     }
   } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    attr_name = "about";
+    attr_name = (unsigned char*)"about";
     attr_value = (unsigned char *)RAPTOR_MALLOC(string,
                                                 raptor_rdf_namespace_uri_len + MAX_ASCII_INT_SIZE + 2);
     sprintf((char*)attr_value, "%s_%d", raptor_rdf_namespace_uri,
@@ -759,9 +759,9 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
 
           if(language) {
             unsigned char *lang;
-            lang =(char*)RAPTOR_MALLOC(language,
-                                       strlen((const char*)language)+1);
-            strcpy(lang, (const char*)language);
+            lang =(unsigned char*)RAPTOR_MALLOC(language,
+                                                strlen((const char*)language)+1);
+            strcpy((char*)lang, (const char*)language);
             node->value.literal.language = lang;
           }
           break;
@@ -837,7 +837,7 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        rv = strcmp(node1->value.blank.string, node2->value.blank.string)==0;
+        rv = !strcmp((const char*)node1->value.blank.string, (const char*)node2->value.blank.string);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
@@ -910,7 +910,7 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        rv = strcmp(node->value.blank.string, (char *)node_data)==0;
+        rv = !strcmp((const char*)node->value.blank.string, (const char *)node_data);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
@@ -1060,8 +1060,9 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
                                 raptor_node *object)
 {
   int rv = 1;
-  
-  raptor_node *node =  raptor_sequence_get_at(subject->list_items, ordinal);
+  raptor_node *node;
+
+  node = (raptor_node*)raptor_sequence_get_at(subject->list_items, ordinal);
   if(!node) {
     /* If there isn't already an entry */
     rv = raptor_sequence_set_at(subject->list_items, ordinal, object);
