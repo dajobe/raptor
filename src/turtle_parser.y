@@ -893,7 +893,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string) {
   turtle_lexer_lex_init(&turtle_parser->scanner);
   turtle_parser->scanner_set=1;
 
-  turtle_lexer_set_extra(((raptor_parser*)rdf_parser), turtle_parser->scanner);
+  turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
   buffer= turtle_lexer__scan_string(string, turtle_parser->scanner);
 
   turtle_parser_parse(rdf_parser);
