@@ -98,7 +98,8 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
 
   raptor_namespaces_init(&xml_writer->content_cdata_namespaces,
                          uri_handler, uri_context,
-                         error_handler, error_data);
+                         error_handler, error_data,
+                         0);
 
   return xml_writer;
 }
