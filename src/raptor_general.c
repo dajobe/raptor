@@ -252,6 +252,9 @@ raptor_new_parser(const char *name) {
     return NULL;
   }
   
+#ifdef RAPTOR_XML_LIBXML
+  rdf_parser->magic=RAPTOR_LIBXML_MAGIC;
+#endif  
   rdf_parser->factory=factory;
 
   rdf_parser->failed=0;
