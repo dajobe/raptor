@@ -41,6 +41,8 @@
 #include "raptor_internal.h"
 
 
+#ifndef STANDALONE
+
 /**
  * raptor_new_uri_detail - Create a URI detailed structure from a URI string
  * @uri_string: The URI string to split
@@ -555,6 +557,7 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
     raptor_free_uri_detail(ref);
 }
 
+#endif
 
 
 

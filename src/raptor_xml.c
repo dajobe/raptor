@@ -45,6 +45,8 @@
 #include "raptor_internal.h"
 
 
+#ifndef STANDALONE
+
 /**
  * raptor_validate_xml_ID - check the string matches the xml:ID value constraints
  * @rdf_parser: RDF parser
@@ -231,6 +233,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
   return new_len;
 }
 
+#endif
 
 
 

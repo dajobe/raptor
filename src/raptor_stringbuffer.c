@@ -44,6 +44,8 @@
 #include "raptor_internal.h"
 
 
+#ifndef STANDALONE
+
 struct raptor_stringbuffer_node_s
 {
   struct raptor_stringbuffer_node_s* next;
@@ -454,6 +456,8 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
   *p='\0';
   return stringbuffer->string;
 }
+
+#endif
 
 
 
