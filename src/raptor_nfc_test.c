@@ -204,6 +204,14 @@ main (int argc, char *argv[])
     if(nfc2_len > max_c4_len)
       max_c4_len=nfc2_len;
 
+    if(!raptor_utf8_check(nfc1, nfc1_len)) {
+      fprintf(stderr, "%s:%d: UTF8 check 1 failed on: '", filename, line);
+      utf8_print(nfc1, nfc1_len, stderr);
+      fputs("'\n", stderr);
+      fails++;
+    } else
+      passes++;
+
     nfc_rc=raptor_nfc_check(nfc1, nfc1_len, &error);
     if(!nfc_rc) {
       fprintf(stderr, "%s:%d: NFC check 1 failed on: '", filename, line);
@@ -215,6 +223,14 @@ main (int argc, char *argv[])
 
     if(nfc1_len == nfc2_len && !memcmp(nfc1, nfc2, nfc1_len))
       continue;
+
+    if(!raptor_utf8_check(nfc2, nfc2_len)) {
+      fprintf(stderr, "%s:%d: UTF8 check 2 failed on: '", filename, line);
+      utf8_print(nfc2, nfc2_len, stderr);
+      fputs("'\n", stderr);
+      fails++;
+    } else
+      passes++;
 
     nfc_rc=raptor_nfc_check(nfc2, nfc2_len, &error);
     if(!nfc_rc) {
