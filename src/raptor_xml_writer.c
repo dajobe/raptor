@@ -50,6 +50,8 @@
 #include "raptor_internal.h"
 
 
+#define RAPTOR_DEBUG_CDATA 0
+
 
 struct raptor_xml_writer_s {
   int canonicalize;
@@ -116,40 +118,143 @@ void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                 raptor_sax2_element *element)
 {
-  int length;
-  char *str=raptor_format_sax2_element(element, &length, 0, 
-                                       xml_writer->error_handler,
-                                       xml_writer->error_data);
-  /* append (str, length) */
-  RAPTOR_FREE(cstring, str);
+  int fmt_length;
+  char *fmt_buffer=raptor_format_sax2_element(element, &fmt_length, 0, 
+                                              xml_writer->error_handler,
+                                              xml_writer->error_data);
+  if(fmt_buffer && fmt_length) {
+    /* Append cdata content content */
+    if(xml_writer->content_cdata) {
+      /* Append */
+      char *new_cdata=(char*)RAPTOR_MALLOC(cstring, xml_writer->content_cdata_length + fmt_length + 1);
+      if(new_cdata) {
+        strncpy(new_cdata, xml_writer->content_cdata,
+                xml_writer->content_cdata_length);
+        strcpy(new_cdata+xml_writer->content_cdata_length, fmt_buffer);
+        RAPTOR_FREE(cstring, xml_writer->content_cdata);
+        xml_writer->content_cdata=new_cdata;
+        xml_writer->content_cdata_length+=fmt_length;
+      }
+      RAPTOR_FREE(cstring, fmt_buffer);
+      
+#ifdef RAPTOR_DEBUG_CDATA
+      RAPTOR_DEBUG3(raptor_xml_writer_start_element,
+                    "content cdata appended, now: '%s' (%d bytes)\n", 
+                    xml_writer->content_cdata,
+                    xml_writer->content_cdata_length);
+#endif
+      
+    } else {
+      /* Copy - is empty */
+      xml_writer->content_cdata=fmt_buffer;
+      xml_writer->content_cdata_length=fmt_length;
+      
+#ifdef RAPTOR_DEBUG_CDATA
+      RAPTOR_DEBUG3(raptor_xml_writer_start_element,
+                    "content cdata copied, now: '%s' (%d bytes)\n", 
+                    xml_writer->content_cdata,
+                    xml_writer->content_cdata_length);
+#endif
+      
+    }
+  }
+
 }
 
 
 void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
-                              raptor_sax2_element *element)
+                              raptor_sax2_element* element)
 {
-  int length;
-  char * str=raptor_format_sax2_element(element, &length, 1, 
-                                        xml_writer->error_handler,
-                                        xml_writer->error_data);
-  /* append (str, length) */
-  RAPTOR_FREE(cstring, str);
+  int fmt_length;
+  char *fmt_buffer=raptor_format_sax2_element(element, &fmt_length, 1,
+                                              xml_writer->error_handler,
+                                              xml_writer->error_data);
+
+  if(fmt_buffer && fmt_length) {
+    /* Append cdata content content */
+    char *new_cdata=(char*)RAPTOR_MALLOC(cstring, xml_writer->content_cdata_length + fmt_length + 1);
+    if(new_cdata) {
+      strncpy(new_cdata, xml_writer->content_cdata,
+              xml_writer->content_cdata_length);
+      strcpy(new_cdata+xml_writer->content_cdata_length, fmt_buffer);
+      RAPTOR_FREE(cstring, xml_writer->content_cdata);
+      xml_writer->content_cdata=new_cdata;
+      xml_writer->content_cdata_length += fmt_length;
+    }
+    RAPTOR_FREE(cstring, fmt_buffer);
+  }
+
+#ifdef RAPTOR_DEBUG_CDATA
+  RAPTOR_DEBUG3(raptor_xml_writer_end_xml_writer,
+                "content cdata now: '%s' (%d bytes)\n", 
+                xml_writer->content_cdata, xml_writer->content_cdata_length);
+#endif
 }
 
 
 void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
-                        char *str, int length)
+                        const unsigned char *s, int len)
 {
-  /* append (str, length) */
+  unsigned char *escaped_buffer=NULL;
+  unsigned char *buffer;
+  size_t escaped_buffer_len=raptor_xml_escape_string(s, len,
+                                                     NULL, 0, '\0',
+                                                     xml_writer->error_handler,
+                                                     xml_writer->error_data);
+  unsigned char *ptr;
+
+  /* save a malloc/free when there is no escaping */
+  if(escaped_buffer_len != len) {
+    escaped_buffer=(unsigned char*)RAPTOR_MALLOC(cstring, escaped_buffer_len+1);
+    if(!escaped_buffer)
+      return;
+
+    raptor_xml_escape_string(s, len,
+                             escaped_buffer, escaped_buffer_len, '\0',
+                             xml_writer->error_handler,
+                             xml_writer->error_data);
+    len=escaped_buffer_len;
+  }
+
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, xml_writer->content_cdata_length + len + 1);
+  if(!buffer)
+    return;
+
+  if(xml_writer->content_cdata_length) {
+    strncpy(buffer, xml_writer->content_cdata, xml_writer->content_cdata_length);
+    RAPTOR_FREE(cstring, xml_writer->content_cdata);
+  }
+
+  xml_writer->content_cdata=buffer;
+
+  /* move pointer to end of cdata buffer */
+  ptr=buffer+xml_writer->content_cdata_length;
+
+  /* adjust stored length */
+  xml_writer->content_cdata_length += len;
+
+  /* now write new stuff at end of cdata buffer */
+  if(escaped_buffer) {
+    strncpy(ptr, escaped_buffer, len);
+    RAPTOR_FREE(cstring, escaped_buffer);
+  } else
+    strncpy(ptr, (char*)s, len);
+  ptr += len;
+  *ptr = '\0';
+
 }
 
 
-char *
-raptor_xml_writer_as_string(raptor_xml_writer* xml_writer)
+unsigned char*
+raptor_xml_writer_as_string(raptor_xml_writer* xml_writer,
+                            int *length_p)
 {
-  return NULL;
+  if(length_p)
+    *length_p=xml_writer->content_cdata_length;
+
+  return xml_writer->content_cdata;
 }
 
 
