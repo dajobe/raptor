@@ -365,64 +365,66 @@ verb: predicate
 ;
 
 
-propertyList: verb objectList SEMICOLON propertyList
+propertyList: propertyList SEMICOLON verb objectList
 {
   int i;
   
 #if RAPTOR_DEBUG > 1  
   printf("propertyList 1\n verb=");
-  raptor_identifier_print(stdout, $1);
+  raptor_identifier_print(stdout, $3);
   printf("\n objectList=");
-  raptor_sequence_print($2, stdout);
-  printf("\n propertyList=");
   raptor_sequence_print($4, stdout);
+  printf("\n propertyList=");
+  raptor_sequence_print($1, stdout);
   printf("\n\n");
 #endif
   
-  if($2 == NULL) {
+  if($4 == NULL) {
 #if RAPTOR_DEBUG > 1  
     printf(" empty objectList not processed\n");
 #endif
-  } else if($1 && $2) {
+  } else if($3 && $4) {
     /* non-empty property list, handle it  */
-    for(i=0; i<raptor_sequence_size($2); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+    for(i=0; i<raptor_sequence_size($4); i++) {
+      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-      raptor_copy_identifier(i2, $1);
+      raptor_copy_identifier(i2, $3);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
     }
   
 #if RAPTOR_DEBUG > 1  
     printf(" after substitution objectList=");
-    raptor_sequence_print($2, stdout);
+    raptor_sequence_print($4, stdout);
     printf("\n");
 #endif
   }
 
-  if($4 == NULL) {
+  if($1 == NULL) {
 #if RAPTOR_DEBUG > 1  
     printf(" empty propertyList not copied\n\n");
 #endif
-  } else if ($1 && $2 && $4) {
-    while(raptor_sequence_size($4) > 0) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_unshift($4);
-      raptor_sequence_push($2, t2);
+  } else if ($3 && $4 && $1) {
+    for(i=0; i<raptor_sequence_size($4); i++) {
+      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
+      raptor_sequence_push($1, t2);
     }
+    while(raptor_sequence_size($4))
+      raptor_sequence_pop($4);
 
 #if RAPTOR_DEBUG > 1  
-    printf(" after appending objectList=");
-    raptor_sequence_print($2, stdout);
+    printf(" after appending objectList (reverse order)=");
+    raptor_sequence_print($1, stdout);
     printf("\n\n");
 #endif
 
     raptor_free_sequence($4);
   }
 
-  if($1)
-    raptor_free_identifier($1);
+  if($3)
+    raptor_free_identifier($3);
 
-  $$=$2;
+  $$=$1;
 }
 | verb objectList
 {
@@ -462,9 +464,18 @@ propertyList: verb objectList SEMICOLON propertyList
 | /* empty */
 {
 #if RAPTOR_DEBUG > 1  
-  printf("propertyList 3\n empty returning NULL\n\n");
+  printf("propertyList 4\n empty returning NULL\n\n");
 #endif
   $$=NULL;
+}
+| propertyList SEMICOLON
+{
+  $$=$1;
+#if RAPTOR_DEBUG > 1  
+  printf("propertyList 5\n trailing semicolon returning existing list ");
+  raptor_sequence_print($$, stdout);
+  printf("\n\n");
+#endif
 }
 ;
 
@@ -666,7 +677,7 @@ blank: BLANK_LITERAL
     printf("\n");
 #endif
 
-    for(i=0; i<raptor_sequence_size($2); i++) {
+    for(i=raptor_sequence_size($2)-1; i>=0; i--) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $$);
@@ -951,7 +962,7 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_namespaces_clear(&turtle_parser->namespaces);
 
   if(turtle_parser->scanner_set) {
-    turtle_lexer_lex_destroy(&turtle_parser->scanner);
+    turtle_lexer_lex_destroy(turtle_parser->scanner);
     turtle_parser->scanner_set=0;
   }
 
