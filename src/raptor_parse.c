@@ -3169,6 +3169,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
     switch(state) {
       case RAPTOR_STATE_SKIPPING:
         element->child_state=state;
+        element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
         finished=1;
         break;
         
@@ -3177,6 +3178,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element_in_rdf_ns) {
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, RDF)) {
             element->child_state=RAPTOR_STATE_OBJ;
+            element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
             /* Yes - need more content before can continue,
              * so wait for another element
              */
@@ -3185,6 +3187,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           }
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description)) {
             state=RAPTOR_STATE_OBJ;
+            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
             /* Yes - found something so move immediately to obj */
             break;
           }
@@ -3200,6 +3203,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * from the current element by the IN_RDF state
          */
         state=RAPTOR_STATE_OBJ;
+        element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
         break;
 
 
@@ -3248,6 +3252,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         /* Default to typedNode */
         state=RAPTOR_STATE_TYPED_NODE;
+
+        element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
+
         break;
 
 
@@ -3456,7 +3463,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          */
 
         element->child_state=RAPTOR_STATE_PROPERTYELT;
-        element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
+        element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
         finished=1;
         break;
 
@@ -3504,6 +3511,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           }
 
           element->child_state = RAPTOR_STATE_PARSETYPE_LITERAL;
+          element->child_content_type = RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
         }
         
         finished=1;
@@ -3550,21 +3558,30 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
           if(!strcasecmp(parse_type, "literal")) {
             element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
+            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
+            element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
           } else if (!strcasecmp(parse_type, "resource")) {
             state=RAPTOR_STATE_PARSETYPE_RESOURCE;
             element->child_state=RAPTOR_STATE_PROPERTYELT;
+            element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
             element->subject.id=raptor_generate_id(rdf_parser, 0);
             element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
             element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           } else {
             if(rdf_parser->feature_allow_other_parseTypes) {
               if(!strcasecmp(parse_type, "daml:collection")) {
+                /* A DAML collection appears as a single node */
+                element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
                 element->child_state=RAPTOR_STATE_PARSETYPE_DAML_COLLECTION;
+                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
               } else {
                 element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
+                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
               }
             } else {
+              element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
               element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
+              element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
             }
           }
         } else {
@@ -3608,11 +3625,11 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           if(element->rdf_attr[RDF_ATTR_resource]) {
             /* Done - wait for end of this element to end in order to 
              * check the element was empty as expected */
-            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
           } else {
             /* Otherwise process content in obj (value) state */
             element->child_state=RAPTOR_STATE_OBJ;
-            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
+            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
           }
         }
 
