@@ -4,11 +4,11 @@
 .\"
 .\" $Id$
 .\"
-.\" Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2002-2003 David Beckett - http://purl.org/net/dajobe/
 .\" Institute for Learning and Research Technology - http://www.ilrt.org/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2002-11-02"
+.TH libraptor 3 "2003-04-17"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -127,6 +127,10 @@ statements via the statement handler callback.
 If \fIis_end\fR is non-zero, it indicates the end of the parsing stream.
 This method can only be called after raptor_start_parse.
 .SH "PARSER UTILITY METHODS"
+.IP "\fBvoid raptor_set_parser_strict(raptor_parser *\fIparser\fB, int \fIis_strict\fB)\fR"
+Set the parser to strict (\fIis_strict\fR not zero)
+or lax (default) mode.  The detail of the
+strictness can be controlled by raptor_set_feature.
 .IP "\fBvoid raptor_set_feature(raptor_parser *\fIparser\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
 Set a parser feature \fIfeature\fR to a particular \fIvalue\fR.
 The current defined features are:
@@ -313,12 +317,20 @@ Initialise or terminate the raptor_www infrastructure.  raptor_www_init
 and raptor_finish are called by raptor_init and raptor_finish
 respecitively, otherwise must be called once each.
 .IP NOTE
-If an curl is being used as the WWW implementation, it also
-requires a once-only initialisation, termination.  The initialisation
-can be omitted but raptor cannot determine whether the terminatation
-should be called inside raptor_www_finish.  Therefore,
-curl_global_cleanup() should be called at the end of user code if
-the remaining libcurl resources need to be removed.
+Several of the WWW library implementations require once-only
+initialisation and termination functions to be called, however raptor
+cannot determine whether this is already done before the library
+is initialised in \fBraptor_www_init\fR or terminated in 
+\fBraptor_www_finish\fR, so always performs it.
+This can be changed by \fBraptor_www_no_www_library_init_finish\fR.
+.IP "\fBvoid raptor_www_no_www_library_init_finish(void)\fR"
+If this is called before \fBraptor_www_init\fR, it will not call
+the underlying WWW library global initialise or terminate functions.
+The application code must perform both operations.
+.IP
+For example with curl, after this function is called, neither
+\fBcurl_global_init\fR nor \fBcurl_global_cleanup\fR will be called
+during \fBraptor_www_init\fR or \fBraptor_www_finish\fR respectively.
 .SH "WWW CONSTRUCTORS"
 .IP "\fBraptor_www *raptor_www_new(void)\fR"
 .IP "\fBraptor_www *raptor_www_new_with_connection(void* \fIconnection\fB)\fR"
@@ -353,6 +365,8 @@ Retrieve the given URL, returning non zero on failure.
 Abort an ongoing raptor WWW operation. Typically used within one of the
 raptor WWW handlers.
 .SH API CHANGES
+.IP 0.9.11
+Added \fBraptor_set_parser_strict\fR, \fBraptor_www_no_www_library_init_finish\fR.
 .IP 0.9.10
 \fBraptor_xml_escape_string\fR now takes an output string length pointer.
 .br
