@@ -335,7 +335,7 @@ raptor_xml_name_check(const unsigned char *string, size_t length,
     unsigned long unichar=0;
 
     int unichar_len=raptor_utf8_to_unicode_char(&unichar, string, length);
-    if(unichar_len < 0 || unichar_len > length)
+    if(unichar_len < 0 || unichar_len > (int)length)
       return 0;
 
     if(unichar < 0 || unichar > 0x10ffff)

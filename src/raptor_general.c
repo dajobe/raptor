@@ -260,7 +260,7 @@ raptor_statement_copy(const raptor_statement *statement) {
     if(statement->object_literal_language) {
       language=(char*)RAPTOR_MALLOC(cstring, strlen((const char*)statement->object_literal_language)+1);
       strcpy(language, (const char*)statement->object_literal_language);
-      s->object_literal_language=language;
+      s->object_literal_language=(const unsigned char*)language;
     }
 
     if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {

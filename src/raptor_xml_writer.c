@@ -208,7 +208,7 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                         const unsigned char *s)
 {
   raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
-                                           s, strlen(s),
+                                           s, strlen((const char*)s),
                                            '\0',
                                            xml_writer->error_handler,
                                            xml_writer->error_data);

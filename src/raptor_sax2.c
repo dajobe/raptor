@@ -523,8 +523,9 @@ raptor_iostream_write_sax2_element(raptor_iostream* iostr,
   }
   
 
-  if(!is_end && nstack && element->declared_nspaces) {
-    for(i=0; i< raptor_sequence_size(element->declared_nspaces); i++) {
+  if(!is_end && nstack && element->declared_nspaces &&
+     raptor_sequence_size(element->declared_nspaces) > 0) {
+    for(i=0; i< (unsigned int)raptor_sequence_size(element->declared_nspaces); i++) {
       raptor_namespace* nspace=(raptor_namespace*)raptor_sequence_get_at(element->declared_nspaces, i);
       unsigned int j;
       int declare_me=1;
