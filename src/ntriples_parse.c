@@ -56,7 +56,7 @@
 #include "ntriples.h"
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, int object_literal_is_XML, char *object_literal_language);
+static void raptor_ntriples_generate_statement(raptor_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, int object_literal_is_XML, char *object_literal_language, char *object_literal_datatype);
 
 static int raptor_ntriples_unicode_char_to_utf8(unsigned long c, char *output);
 static int raptor_ntriples_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
@@ -217,12 +217,14 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
                                    const void *object,
                                    const raptor_ntriples_term_type object_type,
                                    int object_literal_is_XML,
-                                   char *object_literal_language)
+                                   char *object_literal_language,
+                                   char *object_literal_datatype)
 {
   raptor_statement *statement=&parser->statement;
   raptor_uri *subject_uri=NULL;
   raptor_uri *predicate_uri; /* always freed, no need for a sentinel */
   raptor_uri *object_uri=NULL;
+  raptor_uri *datatype_uri=NULL;
 
   /* Two choices for subject from N-Triples */
   if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
@@ -234,6 +236,8 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
 
+  if(object_literal_datatype)
+    datatype_uri=raptor_new_uri_relative_to_base(parser->base_uri, (const char*)object_literal_datatype);
 
   /* One choice for predicate from N-Triples */
   predicate_uri=raptor_new_uri_relative_to_base(parser->base_uri, predicate);
@@ -254,6 +258,7 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
                            RAPTOR_IDENTIFIER_TYPE_LITERAL;
     statement->object=object;
     statement->object_literal_language=object_literal_language;
+    statement->object_literal_datatype=datatype_uri;
   }
 
   if(!parser->statement_handler)
@@ -267,6 +272,8 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
   raptor_free_uri(predicate_uri);
   if(object_uri)
     raptor_free_uri(object_uri);
+  if(datatype_uri)
+    raptor_free_uri(datatype_uri);
 }
 
 
@@ -554,6 +561,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
   int object_literal_is_XML=0;
   char *object_literal_language=NULL;
   int object_literal_language_length=0;
+  char *object_literal_datatype=NULL;
 
 
   /* ASSERTION:
@@ -843,7 +851,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
                                      terms[1], term_types[1],
                                      terms[2], term_types[2],
                                      object_literal_is_XML,
-                                     object_literal_language);
+                                     object_literal_language,
+                                     object_literal_datatype);
 
   rdf_parser->locator.byte += len;
 
