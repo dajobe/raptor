@@ -44,6 +44,10 @@
 static int raptor_www_file_fetch(raptor_www *www);
 
 
+/* should raptor_www do initializing and cleanup of the WWW library */
+static int raptor_www_do_www_init_finish=1;
+
+
 #ifdef RAPTOR_WWW_LIBWWW
 /* Non-zero only if Raptor initialised the W3C libwww library */
 static int raptor_libwww_initialised=0;
@@ -55,23 +59,60 @@ raptor_www_init(void)
   static int initialized=0;
   if(initialized)
     return;
-#ifdef RAPTOR_WWW_LIBWWW
-  if(!HTLib_isInitialized()) {
-    raptor_libwww_initialised=1;
-    HTLibInit(PACKAGE, VERSION);
-  }
+
+  if(raptor_www_do_www_init_finish) {
+#ifdef RAPTOR_WWW_LIBCURL
+    curl_global_init(CURL_GLOBAL_ALL);
 #endif
+#ifdef RAPTOR_WWW_LIBWWW
+    if(!HTLib_isInitialized()) {
+      raptor_libwww_initialised=1;
+      HTLibInit(PACKAGE, VERSION);
+    }
+#endif
+  }
   initialized=1;
+}
+
+
+/**
+ * raptor_www_no_www_library_init_finish - Do not initialise or finish the lower level WWW library
+ *
+ * If this is called then the raptor_www library will neither
+ * initialise or terminate the lower level WWW library.  Usually in
+ * raptor_init either curl_global_init (for libcurl) or HTLibInit
+ * (for w3c libwww) are called and in raptor_finish either
+ * curl_global_cleanup or HTLibTerminate are called.
+ *
+ * This allows the application finer control over these libraries such
+ * as setting other global options or potentially calling and terminating
+ * raptor several times.  It does mean that applications which use
+ * this call must do their own extra work in order to allocate and free
+ * all resources to the system.
+ * 
+ * This function must be called before raptor_init.
+ *
+ **/
+void
+raptor_www_no_www_library_init_finish(void)
+{
+  raptor_www_do_www_init_finish=0;
 }
 
 
 void
 raptor_www_finish(void)
 {
-#ifdef RAPTOR_WWW_LIBWWW
-  if(raptor_libwww_initialised)
-    HTLibTerminate();
+  if(raptor_www_do_www_init_finish) {
+#ifdef RAPTOR_WWW_LIBCURL
+    curl_global_cleanup();
 #endif
+
+#ifdef RAPTOR_WWW_LIBWWW
+    if(raptor_libwww_initialised)
+      HTLibTerminate();
+#endif
+  }
 }
 
 
