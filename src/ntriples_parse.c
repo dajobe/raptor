@@ -315,6 +315,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
   int term_lengths[3];
   raptor_ntriples_term_type term_types[3];
   int backslash=0;
+  int term_length= 0;
 
   /* ASSERTION:
    * p always points to first char we are considering
@@ -409,6 +410,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
           return 1;
         }
 
+        term_length=p-start;
+
         break;
 
       case '"':
@@ -476,6 +479,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
           raptor_ntriples_parser_fatal_error(parser, "Missing end \" for literal");
           return 1;
         }
+
+        term_length=dest-start;
         
         break;
 
@@ -509,12 +514,18 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
           parser->locator.byte++;
         }
 
+        term_length=p-start;
+
         break;
 
       default:
         raptor_ntriples_parser_fatal_error(parser, "Unknown term type");
         return 1;
     }
+
+
+    /* Store term */
+    terms[i]=start; term_lengths[i]=term_length;
 
 
     /* Replace
@@ -531,9 +542,6 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
       parser->locator.byte++;
     }
     
-    /* Store term */
-    terms[i]=start; term_lengths[i]=(p-start);
-
     
     /* Skip whitespace between parts */
     while(len>0 && isspace(*p)) {
