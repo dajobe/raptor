@@ -61,6 +61,9 @@ NT_TEST_FILES=test.nt
 
 NT_OUT_FILES=test.out
 
+NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt
+
+
 # Used to make N-triples output consistent
 BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/
 # for 22-rdf-syntax-ns.rdf
@@ -79,13 +82,14 @@ EXTRA_DIST = \
 	$(RDF_ASSUME_OUT_FILES) \
 	$(RDF_WARN_OUT_FILES) \
 	$(NT_TEST_FILES) \
-	$(NT_OUT_FILES)
+	$(NT_OUT_FILES) \
+	$(NT_BAD_TEST_FILES)
 
 
 $(top_builddir)/rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
-check-local: check-rdf check-assume-rdf check-bad-rdf check-warn-rdf check-nt
+check-local: check-rdf check-assume-rdf check-bad-rdf check-warn-rdf check-nt check-bad-nt
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@result=0; \
@@ -198,3 +202,29 @@ check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
 	  rm -f $$name.res ; \
 	done; \
 	exit $$result
+
+check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing bad N-Triples fails"; \
+	for test in $(NT_BAD_TEST_FILES); do \
+	  name=`basename $$test .nt` ; \
+	  baseuri=$(BASE_URI)$$name.nt; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status -eq 1 ; then \
+	    $(ECHO) ok; \
+	  elif test $$status -eq 2 ; then \
+	    $(ECHO) FAILED - parsing succeeded with a warning; \
+	    cat $$name.res; grep Warning $$name.err; result=1; \
+	  elif test $$status -eq 0 ; then \
+	    $(ECHO) FAILED - parsing succeeded but should have failed; \
+	    cat $$name.res; result=1; \
+	  else \
+	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
+	    cat $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res $$name.err ; \
+	done; \
+	set -e; exit $$result
+
