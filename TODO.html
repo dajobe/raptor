@@ -11,6 +11,7 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>XML attribute value normalization doesn't happen in libxml.</li>
 <li>Document raptor_parse_uri, raptor_parse_abort, raptor_parse_uri_with_connection.  Check other stuff I missed. (DOCS)</li>
 <li>Unicode character normalization checks not implemented (CONFORMANCE)</li>
 <li>XML (Exclusive) Canonicalization for XML Literals not implemented (CONFORMANCE)</li>
@@ -34,6 +35,7 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Escape XML attribute value in parseType literal content generation</li>
 <li>Passing NULL to raptor_start_parse base URI for rdfxml parser
 crashed it.  Now the RDF/XML parser fails. (0.9.9)</li>
 <li>rdf:parseType="Literal" content with &amp;, &lt;, &gt; and
