@@ -10,9 +10,6 @@
 
 <h2 id="rel1_4_4"><a name="rel1_4_4">Raptor 1.4.4 Changes</a></h2>
 
-<p>FIXME - not released<br />
-</p>
-
 <p>Make the RSS tag soup parser handle RSS 0.9 namespace elements by
 turning them into RSS 1.0.</p>
 
@@ -23,6 +20,12 @@ no base URI is used.</p>
 work when the base or reference URI have no paths such as like
 <em>http://example.org</em>
 </p>
+
+<p>Added portability fixes for Win32 to get Raptor 1.4.3 building
+with MS Visual Studio using expat and libcurl.  The RAPTOR_INTERNAL
+define was moved to the build configuration and defines added for
+integral type sizes.  Patch from Dave Viner (dviner at apache dot
+org).</p>
 
 
 
