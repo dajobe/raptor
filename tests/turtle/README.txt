@@ -15,6 +15,6 @@ bad tests are of the form
 which must fail.
 
 The tests should be performed with an assumed base URI
-of http://librdf.org/raptor/tests/turtle/
+of http://www.w3.org/2001/sw/DataAccess/df1/tests/
 
 Dave

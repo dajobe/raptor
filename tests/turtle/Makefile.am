@@ -51,7 +51,7 @@ TEST_WARN_OUT_FILES=
 TEST_MANIFEST_FILES=manifest.ttl manifest-bad.ttl
 
 # Used to make N-triples output consistent
-BASE_URI=http://librdf.org/raptor/tests/turtle/
+BASE_URI=http://www.w3.org/2001/sw/DataAccess/df1/tests/
 
 ALL_TEST_FILES= README.txt \
 	$(TEST_FILES) \
