@@ -117,7 +117,7 @@ check-assume-rdf: $(top_builddir)/rdfdump $(RDF_ASSUME_TEST_FILES)
 	exit $$result
 
 check-bad-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
-	@result=0; \
+	@set +e; result=0; \
 	echo "Testing bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
@@ -133,7 +133,7 @@ check-bad-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
-	exit $$result
+	set -e; exit $$result
 
 check-nt: $(top_builddir)/rdfdump $(NT_TEST_FILES)
 	@result=0; \
