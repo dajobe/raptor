@@ -628,8 +628,8 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         return 1;
       }
       if(*p == 'x') {
-        if(len < 5 || strncmp(p, "xml(\"", 5)) {
-          raptor_ntriples_parser_fatal_error(parser, "Saw '%c', expected xml(\"...\")", *p);
+        if(len < 4 || strncmp(p, "xml\"", 4)) {
+          raptor_ntriples_parser_fatal_error(parser, "Saw '%c', expected xml\"...\")", *p);
           return 1;
         }
       }
@@ -667,6 +667,25 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
         raptor_ntriples_string(parser,
                                &p, dest, &len, &term_length, '"', 0);
+        
+        if(len && *p == '-') {
+          object_literal_language=p;
+
+          /* Skip - */
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+
+          if(!len)
+            raptor_ntriples_parser_fatal_error(parser, "Missing language in xml\"string\"-language after -");
+
+          raptor_ntriples_string(parser,
+                                 &p, object_literal_language, &len,
+                                 &object_literal_language_length, ' ', 0);
+        }
+
+
         break;
 
 
@@ -704,11 +723,12 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         break;
 
       case 'x':
-        /* already know we have xml(" coming up */
+        /* already know we have 'xml"' coming up */
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
         
-        p+=4;
-        len-=4;
+        /* 3=strlen("xml") */
+        p+=3;
+        len-=3;
 
         dest=p;
 
@@ -723,64 +743,35 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         /* got XML literal string */
         object_literal_is_XML=1;
 
-        /* Skip whitespace between 'xml("xx"' and following ')' or ',' */
-        while(len>0 && isspace(*p)) {
-          p++;
-          len--;
-          parser->locator.column++;
-          parser->locator.byte++;
-        }
-
-        if(len && *p == ',') {
-          /* Skip , */
-          p++;
-          len--;
-          parser->locator.column++;
-          parser->locator.byte++;
-
-          /* Skip whitespace between 'xml("xx",' and following '"' */
-          while(len>0 && isspace(*p)) {
-            p++;
-            len--;
-            parser->locator.column++;
-            parser->locator.byte++;
-          }
-
-          if(!len)
-            raptor_ntriples_parser_fatal_error(parser, "Missing language in xml(\"string\",\"language\") after ,");
-
-          if(*p != '"') 
-            raptor_ntriples_parser_fatal_error(parser, "Missing language in xml(\"string\",\"language\") after ,\"");
-
-
+        if(len && *p == '-') {
           object_literal_language=p;
 
+          /* Skip - */
           p++;
           len--;
           parser->locator.column++;
           parser->locator.byte++;
+
+          if(!len)
+            raptor_ntriples_parser_fatal_error(parser, "Missing language in xml\"string\"-language after -");
+
 
           raptor_ntriples_string(parser,
                                  &p, object_literal_language, &len,
-                                 &object_literal_language_length, '"', 0);
-
-          /* Skip whitespace between 'xml("xx","yy"' and following ')' */
-          while(len>0 && isspace(*p)) {
-            p++;
-            len--;
-            parser->locator.column++;
-            parser->locator.byte++;
-          }
+                                 &object_literal_language_length, ' ', 0);
+          
         }
 
-        if(!len || *p != ')')
-          raptor_ntriples_parser_fatal_error(parser, "Missing terminating ')'");
+        if(len) {
+          if(*p != ' ')
+            raptor_ntriples_parser_fatal_error(parser, "Missing terminating ' '");
 
-        p++;
-        len--;
-        parser->locator.column++;
-        parser->locator.byte++;
-
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+        }
+        
         break;
 
 
