@@ -98,6 +98,8 @@ EXTRA_DIST = \
 	$(NT_OUT_FILES) \
 	$(NT_BAD_TEST_FILES)
 
+SUBDIRS = ntriplesplus
+
 
 $(top_builddir)/rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
