@@ -774,6 +774,11 @@ raptor_set_statement_handler(raptor_parser* parser,
  * called with the @user_data parameter and an ID type of either
  * RAPTOR_GENID_TYPE_BNODEID or RAPTOR_GENID_TYPE_BAGID (latter is deprecated).
  *
+ * The final argument of the callback method is user_bnodeid, the value of
+ * the rdf:nodeID attribute that the user provided if any (or NULL).
+ * It can either be returned directly as the generated value when present or
+ * modified.  The passed in value must be free()d if it is not used.
+ *
  * If handler is NULL, the default method is used
  * 
  **/
@@ -1321,13 +1326,17 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 
 
 static const unsigned char*
-raptor_default_generate_id_handler(void *user_data, raptor_genid_type type) 
+raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
+                                   const unsigned char *user_bnodeid) 
 {
   raptor_parser *rdf_parser=(raptor_parser *)user_data;
   int id=++rdf_parser->default_generate_id_handler_base;
   unsigned char *buffer;
   int length=2; /* min length 1 + \0 */
   int tmpid=id;
+
+  if(user_bnodeid)
+    return user_bnodeid;
 
   while(tmpid/=10)
     length++;
@@ -1352,15 +1361,16 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type)
 
 
 const unsigned char *
-raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
+raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag,
+                   const unsigned char *user_bnodeid)
 {
   raptor_genid_type type=id_for_bag ? RAPTOR_GENID_TYPE_BNODEID :
                                       RAPTOR_GENID_TYPE_BAGID;
   if(rdf_parser->generate_id_handler)
     return rdf_parser->generate_id_handler(rdf_parser->generate_id_handler_user_data,
-                                           type);
+                                           type, user_bnodeid);
   else
-    return raptor_default_generate_id_handler(rdf_parser, type);
+    return raptor_default_generate_id_handler(rdf_parser, type, user_bnodeid);
 }
 
 
