@@ -84,7 +84,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	  echo -n "Checking $$test "; \
 	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  status=$$?; \
-	  if test $$status ; then \
+	  if test $$status != 0 ; then \
 	    echo ok; \
 	  else \
 	    echo FAILED - parsing should have failed but returned $$status; \
