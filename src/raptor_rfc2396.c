@@ -103,7 +103,6 @@ raptor_new_uri_detail(const unsigned char *uri_string)
 
       while(*uri_string != ':')
         *b++ = *uri_string++;
-      b+= ud->scheme_len;
       
       *b++ = '\0';
 
