@@ -253,7 +253,7 @@ raptor_uri_is_absolute (const char *uri)
 {
   int result = 0;
 
-  if (*uri && isalpha (*uri)) {
+  if (*uri && isalpha((int)*uri)) {
     ++uri;
 
 
@@ -261,7 +261,7 @@ raptor_uri_is_absolute (const char *uri)
     * RFC 2396 3.1 Scheme Component
     * scheme        = alpha *( alpha | digit | "+" | "-" | "." )
     */
-    while (*uri && (isalnum (*uri)
+    while (*uri && (isalnum((int)*uri)
                     || (*uri == '+') || (*uri == '-') || (*uri == '.')))
       ++uri;
 
