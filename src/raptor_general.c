@@ -80,7 +80,7 @@ raptor_init(void)
   raptor_init_parser_rdfxml();
   raptor_init_parser_ntriples();
 
-  raptor_init_uri_class();
+  raptor_uri_init();
 }
 
 
