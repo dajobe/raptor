@@ -35,6 +35,8 @@
 #endif
 
 #include <raptor.h>
+#include <ntriples.h>
+
 
 #ifdef NEED_OPTIND_DECLARATION
 extern int optind;
@@ -75,7 +77,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 
 
 #ifdef HAVE_GETOPT_LONG
-#define HELP_TEXT(short, long, description) "  -" #short ", --" #long "  " description "\n"
+#define HELP_TEXT(short, long, description) "  -" #short ", --" long "  " description "\n"
 #else
 #define HELP_TEXT(short, long, description) "  -" #short "  " description "\n"
 #endif
@@ -87,6 +89,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 static struct option long_options[] =
 {
   /* name, has_arg, flag, val */
+  {"ntriples", 0, 0, 'n'},
   {"scan", 0, 0, 's'},
   {"help", 0, 0, 'h'},
   {"replace-newlines", 0, 0, 'r'},
@@ -100,12 +103,14 @@ static struct option long_options[] =
 int
 main(int argc, char *argv[]) 
 {
-  raptor_parser* parser;
+  raptor_parser* rdfxml_parser=NULL;
+  raptor_ntriples_parser* rdfnt_parser=NULL;
   char *uri_string;
   char *base_uri_string;
   char *program=argv[0];
   int rc;
   int scanning=0;
+  int rdfxml=1;
   int usage=0;
 #ifdef LIBRDF_INTERNAL
   librdf_uri *base_uri;
@@ -148,6 +153,10 @@ main(int argc, char *argv[])
         usage=1;
         break;
 
+      case 'n':
+        rdfxml=0;
+        break;
+
       case 's':
         scanning=1;
         break;
@@ -169,11 +178,12 @@ main(int argc, char *argv[])
 
   if(usage) {
     fprintf(stderr, "Usage: %s [OPTIONS] <source file: URI> [base URI]\n", program);
-    fprintf(stderr, "Parse the given file as RDF using Raptor\n");
-    fprintf(stderr, HELP_TEXT(h, help, "This message"));
-    fprintf(stderr, HELP_TEXT(s, scan, "Scan for <rdf:RDF> element in source"));
-    fprintf(stderr, HELP_TEXT(r, replace-newlines, "Replace newlines with spaces in literals"));
-    fprintf(stderr, HELP_TEXT(q, quiet, "No extra information messages"));
+    fprintf(stderr, "Parse the given file as RDF/XML or NTriples using Raptor\n");
+    fprintf(stderr, HELP_TEXT(h, "help            ", "This message"));
+    fprintf(stderr, HELP_TEXT(n, "ntriples        ", "Parse NTriples format rather than RDF/XML"));
+    fprintf(stderr, HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
+    fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
+    fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
     return(usage>1);
   }
 
@@ -203,19 +213,27 @@ main(int argc, char *argv[])
   uri=uri_string;
   base_uri=base_uri_string;
 #endif
+
+  if(rdfxml) {
+    rdfxml_parser=raptor_new();
+    if(!rdfxml_parser) {
+      fprintf(stderr, "%s: Failed to create raptor parser\n", program);
+      return(1);
+    }
+
+    if(scanning)
+      raptor_set_feature(rdfxml_parser, RAPTOR_FEATURE_SCANNING, 1);
   
-  parser=raptor_new();
-  if(!parser) {
-    fprintf(stderr, "%s: Failed to create raptor parser\n", program);
-    return(1);
+  
+  } else {
+    rdfnt_parser=raptor_ntriples_new();
+    if(!rdfnt_parser) {
+      fprintf(stderr, "%s: Failed to create raptor parser\n", program);
+      return(1);
+    }
   }
 
 
-  if(scanning)
-    raptor_set_feature(parser, RAPTOR_FEATURE_SCANNING, 1);
-  
-
-  /* PARSE the URI as RDF/XML */
   if(!quiet) {
     if(base_uri_string)
       fprintf(stdout, "%s: Parsing URI %s with base URI %s\n", program,
@@ -224,15 +242,30 @@ main(int argc, char *argv[])
       fprintf(stdout, "%s: Parsing URI %s\n", program, uri_string);
   }
   
-  raptor_set_statement_handler(parser, NULL, print_statements);
+
+  if(rdfxml)
+    raptor_set_statement_handler(rdfxml_parser, NULL, print_statements);
+  else
+    raptor_ntriples_set_statement_handler(rdfnt_parser, NULL, print_statements);
 
 
-  if(raptor_parse_file(parser, uri, base_uri)) {
-    fprintf(stderr, "%s: Failed to parse RDF into model\n", program);
-    rc=1;
-  } else
-    rc=0;
-  raptor_free(parser);
+  if(rdfxml) {
+    /* PARSE the URI as RDF/XML */
+    if(raptor_parse_file(rdfxml_parser, uri, base_uri)) {
+      fprintf(stderr, "%s: Failed to parse RDF/XML into model\n", program);
+      rc=1;
+    } else
+      rc=0;
+    raptor_free(rdfxml_parser);
+  } else {
+    /* PARSE the URI as NTriples */
+    if(raptor_ntriples_parse_file(rdfnt_parser, uri, base_uri)) {
+      fprintf(stderr, "%s: Failed to parse RDF into model\n", program);
+      rc=1;
+    } else
+      rc=0;
+    raptor_ntriples_free(rdfnt_parser);
+  }
 
   fprintf(stdout, "%s: Parsing returned %d statements\n", program,
           statement_count);
