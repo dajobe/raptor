@@ -952,53 +952,53 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
 
   /* predicate */
-  raptor_iostream_write_counted_string(iostr, "    <", 5);
-  raptor_iostream_write_string(iostr, nsprefix);
-  raptor_iostream_write_byte(iostr, ':');
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    raptor_iostream_write_byte(iostr, '_');
+    raptor_iostream_write_counted_string(iostr, "    <rdf:_", 10);
     raptor_iostream_write_decimal(iostr, *((int*)statement->predicate));
-  } else
+  } else {
+    raptor_iostream_write_counted_string(iostr, "    <", 5);
+    raptor_iostream_write_string(iostr, nsprefix);
+    raptor_iostream_write_byte(iostr, ':');
     raptor_iostream_write_string(iostr, (const char*)name);
 
-  if(!name_is_rdf_ns) {
-    size_t escaped_len;
-    unsigned char *buffer;
-    unsigned char *p;
+    if(!name_is_rdf_ns) {
+      size_t escaped_len;
+      unsigned char *buffer;
+      unsigned char *p;
 
-    len=name-uri_string;
+      len=name-uri_string;
 
-    raptor_iostream_write_counted_string(iostr, " xmlns:", 7);
-    raptor_iostream_write_string(iostr, nsprefix);
-    raptor_iostream_write_byte(iostr, '=');
+      raptor_iostream_write_counted_string(iostr, " xmlns:", 7);
+      raptor_iostream_write_string(iostr, nsprefix);
+      raptor_iostream_write_byte(iostr, '=');
 
-    escaped_len=raptor_xml_escape_string(uri_string, len,
-                                         NULL, 0, '"',
-                                         NULL, NULL);
-    if(!escaped_len) {
-      raptor_serializer_error(serializer, 
-                              "Bad UTF-8 encoding found while XML escaping namespace URI '%s'", uri_string);
-      return 1;
+      escaped_len=raptor_xml_escape_string(uri_string, len,
+                                           NULL, 0, '"',
+                                           NULL, NULL);
+      if(!escaped_len) {
+        raptor_serializer_error(serializer, 
+                                "Bad UTF-8 encoding found while XML escaping namespace URI '%s'", uri_string);
+        return 1;
+      }
+
+      /* " + string + " + \0 */
+      buffer=(unsigned char*)RAPTOR_MALLOC(cstring, 1 + escaped_len + 1 + 1);
+      if(!buffer)
+        return 1;
+
+      p=buffer;
+      *p++='"';
+      raptor_xml_escape_string(uri_string, len,
+                               p, escaped_len, '"',
+                               NULL, NULL);
+      p+= escaped_len;
+      *p++='"';
+      *p='\0';
+
+      raptor_iostream_write_counted_string(iostr, (const char*)buffer, p-buffer);
+      RAPTOR_FREE(cstring, buffer);
     }
-
-    /* " + string + " + \0 */
-    buffer=(unsigned char*)RAPTOR_MALLOC(cstring, 1 + escaped_len + 1 + 1);
-    if(!buffer)
-      return 1;
-
-    p=buffer;
-    *p++='"';
-    raptor_xml_escape_string(uri_string, len,
-                             p, escaped_len, '"',
-                             NULL, NULL);
-    p+= escaped_len;
-    *p++='"';
-    *p='\0';
-
-    raptor_iostream_write_counted_string(iostr, (const char*)buffer, p-buffer);
-    RAPTOR_FREE(cstring, buffer);
   }
-
 
   /* object */
   switch(statement->object_type) {
