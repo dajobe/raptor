@@ -41,7 +41,7 @@ ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf ex-32.rdf ex-33.rdf \
 ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
 ex-41.rdf ex-46.rdf ex-47.rdf ex-48.rdf ex-49.rdf ex-51.rdf \
-ex-53.rdf \
+ex-53.rdf ex-54.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
 owl-schema.rdf daml-oil.rdf wine.rdf
 
@@ -56,8 +56,6 @@ RDF_WARN_TEST_FILES=warn-00.rdf warn-02.rdf warn-04.rdf \
 warn-05.rdf warn-06.rdf warn-07.rdf \
 $(RDF_BAGID_TEST_FILES)
 
-RDF_WARN_NFC_TEST_FILES=warn-03.rdf
-
 RDF_ASSUME_TEST_FILES=ex-19.rdf
 
 RDF_SCAN_TEST_FILES=ex-52.svg
@@ -69,11 +67,11 @@ ex-20.out ex-21.out ex-22.out ex-23.out ex-24.out ex-25.out ex-26.out \
 ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out ex-32.out ex-33.out \
 ex-34.out ex-35.out ex-36.out ex-37.out ex-38.out ex-39.out ex-40.out \
 ex-41.out ex-42.out ex-43.out ex-44.out ex-45.out ex-46.out ex-47.out \
-ex-48.out ex-49.out ex-51.out ex-53.out \
+ex-48.out ex-49.out ex-51.out ex-53.out ex-54.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out daml-oil.out wine.out
 
-RDF_WARN_OUT_FILES=warn-00.out warn-02.out warn-03.out warn-04.out \
+RDF_WARN_OUT_FILES=warn-00.out warn-02.out warn-04.out \
 warn-05.out warn-06.out warn-07.out
 
 RDF_ASSUME_OUT_FILES=ex-19.out
@@ -108,7 +106,6 @@ EXTRA_DIST = \
 	$(RDF_BAD_TEST_FILES) \
 	$(RDF_BAD_NFC_TEST_FILES) \
 	$(RDF_WARN_TEST_FILES) \
-	$(RDF_WARN_NFC_TEST_FILES) \
 	$(RDF_OUT_FILES) \
 	$(RDF_ASSUME_OUT_FILES) \
 	$(RDF_SCAN_OUT_FILES) \
@@ -125,7 +122,7 @@ $(top_builddir)/rapper:
 
 check-local: $(top_builddir)/rapper \
 check-rdf check-assume-rdf check-scan-rdf \
-check-bad-rdf check-bad-nfc-rdf check-warn-rdf check-warn-nfc-rdf \
+check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
 check-nt check-bad-nt check-turtle
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
@@ -273,33 +270,6 @@ check-warn-rdf: $(top_builddir)/rapper $(RDF_WARN_TEST_FILES)
 	  else \
 	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
-	  fi; \
-	  rm -f $$name.res $$name.err ; \
-	done; \
-	set -e; exit $$result
-
-check-warn-nfc-rdf: $(top_builddir)/rapper $(RDF_WARN_NFC_TEST_FILES)
-	@set +e; result=0; \
-	$(ECHO) "Testing rdf/xml with NFC gives warnings"; \
-	for test in $(RDF_WARN_NFC_TEST_FILES); do \
-	  name=`basename $$test .rdf` ; \
-	  baseuri=$(BASE_URI)$$name.rdf; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
-	  status=$$?; \
-	  if test $$status -eq 1 ; then \
-	    $(ECHO) "FAILED - parsing failed when should have warned"; \
-	    cat $$name.res; grep Error $$name.err; result=1; \
-	  elif test $$status -eq 2 ; then \
-	    if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	      $(ECHO) "ok"; \
-	    else \
-	      $(ECHO) "FAILED"; \
-	      diff $(srcdir)/$$name.out $$name.res; result=1; \
-	    fi; \
-	  else \
-	    $(ECHO) "FAILED - parsing succeed but should have warned (NFC test)"; \
-	    cat $$name.res; result=0; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
 	done; \
