@@ -3700,7 +3700,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
             /* update new tail */
             if(element->parent->tail_id)
-              RAPTOR_FREE_URI(element->parent->tail_id);
+              LIBRDF_FREE(element->parent->tail_id);
 
             element->parent->tail_id=idList;
             
