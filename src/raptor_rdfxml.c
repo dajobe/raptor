@@ -59,7 +59,7 @@ typedef enum {
   /* Skipping current tree of elements - used to recover finding
    * illegal content, when parsling permissively.
    */
-  RAPTOR_STATE_SKIPPING =1,
+  RAPTOR_STATE_SKIPPING,
 
   /* Not in RDF grammar yet - searching for a start element.
    *
