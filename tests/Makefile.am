@@ -1,7 +1,22 @@
-## Process this file with automake to produce Makefile.in
-
-$(top_builddir)/rdfdump:
-	@(cd .. ; $(MAKE) rdfdump)
+# -*- Mode: Makefile -*-
+#
+# Makefile.am - automake file for Raptor tests
+#
+# $Id$
+#
+# Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+# Institute for Learning and Research Technology - http://www.ilrt.org/
+# University of Bristol - http://www.bristol.ac.uk/
+# 
+# This package is Free Software or Open Source available under the
+# following licenses (these are alternatives):
+#   1. GNU Lesser General Public License (LGPL)
+#   2. GNU General Public License (GPL)
+#   3. Mozilla Public License (MPL)
+# 
+# See LICENSE.html or LICENSE.txt at the top of this package for the
+# full license terms.
+# 
 
 RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-03.rdf ex-04.rdf ex-05.rdf \
 ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf ex-11.rdf ex-12.rdf \
@@ -26,11 +41,10 @@ EXTRA_DIST = \
 	$(NT_OUT_FILES)
 
 
-all: test
+$(top_builddir)/rdfdump:
+	@(cd .. ; $(MAKE) rdfdump)
 
-test tests: check-local
-
-check-local: $(top_builddir)/rdfdump
+check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	@for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  echo Checking $$test; \
