@@ -951,13 +951,11 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     if(!*ptr)
       break;
 
-    if(*ptr) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-      RAPTOR_DEBUG3("found newline \\x%02x at offset %d\n", *ptr,
-                    ptr-line_start);
+    RAPTOR_DEBUG3("found newline \\x%02x at offset %d\n", *ptr,
+                  ptr-line_start);
 #endif
-      ntriples_parser->last_char=*ptr;
-    }
+    ntriples_parser->last_char=*ptr;
 
     len=ptr-line_start;
     rdf_parser->locator.column=0;
@@ -981,13 +979,6 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #endif
   }
 
-  /* exit now, no more input */
-  if(is_end) {
-    if(ptr-buffer != ntriples_parser->line_length)
-       raptor_parser_error(rdf_parser, "Junk at end of input.\"");
-    return 0;
-  }
-    
   ntriples_parser->offset=start-buffer;
 
   len=ntriples_parser->line_length - ntriples_parser->offset;
@@ -1020,6 +1011,13 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #endif    
   }
   
+  /* exit now, no more input */
+  if(is_end) {
+    if(ntriples_parser->offset != ntriples_parser->line_length)
+       raptor_parser_error(rdf_parser, "Junk at end of input.\"");
+    return 0;
+  }
+    
   return 0;
 }
 
