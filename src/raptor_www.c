@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -176,6 +176,11 @@ raptor_www_free(raptor_www *www)
     www->proxy=NULL;
   }
 
+  if(www->http_accept) {
+    RAPTOR_FREE(cstring, www->http_accept);
+    www->http_accept=NULL;
+  }
+
 #ifdef RAPTOR_WWW_LIBCURL
   raptor_www_curl_free(www);
 #endif
@@ -248,6 +253,35 @@ raptor_www_set_proxy(raptor_www *www, const char *proxy)
   strcpy(proxy_copy, proxy);
   
   www->proxy=proxy_copy;
+}
+
+
+/**
+ * raptor_www_set_http_accept - Set HTTP Accept header
+ * @www: &raptor_www class
+ * @value: Accept: header value or NULL to have an empty one.
+ * 
+ **/
+void
+raptor_www_set_http_accept(raptor_www *www, const char *value)
+{
+  char *value_copy;
+  size_t len=8; /* strlen("Accept:")+1 */
+  
+  if(value)
+    len+=1+strlen(value); /* " "+value */
+  
+  value_copy=(char*)RAPTOR_MALLOC(cstring, len);
+  if(!value_copy)
+    return;
+  www->http_accept=value_copy;
+
+  strcpy(value_copy, "Accept:");
+  value_copy+=8;
+  if(value) {
+    *value_copy++=' ';
+    strcpy(value_copy, value);
+  }
 }
 
 
