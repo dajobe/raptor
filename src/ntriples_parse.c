@@ -1094,6 +1094,15 @@ raptor_ntriples_parse_file(raptor_ntriples_parser* parser, raptor_uri *uri,
 }
 
 
+/**
+ * raptor_print_ntriples_string - Print an UTF-8 string using N-Triples escapes
+ * @stream: FILE* stream to print to
+ * @string: UTF-8 string to print
+ * @delim: Delimiter character for string (such as ")
+ * 
+ * Will silently stop printing on bad UTF-8 encoding such as string
+ * ending early.
+ **/
 void
 raptor_print_ntriples_string(FILE *stream,
                              const char *string,
@@ -1132,7 +1141,7 @@ raptor_print_ntriples_string(FILE *stream,
     
     unichar_len=raptor_ntriples_utf8_to_unicode_char(NULL, string, len);
     if(unichar_len > len) {
-      /* FIXME: UTF-8 encoding ended in the middle of a string
+      /* UTF-8 encoding ended in the middle of a string
        * but no way to report an error
        */
       return;
