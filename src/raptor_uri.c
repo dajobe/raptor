@@ -847,8 +847,9 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
   /* First, add the necessary "../" parts */
   final_path_cur=final_path;
   while (up_dirs--) {
-    memcpy(final_path_cur, "../", 3);
-    final_path_cur+=3;
+    *final_path_cur++='.';
+    *final_path_cur++='.';
+    *final_path_cur++='/';
   }
   
   /* Then, add the path from the common base to the to_path */
@@ -885,10 +886,10 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
 
 
 /**
- * raptor_uri_to_relative_counted_uri_string - Return a URI as relative to a base URI to a string
+ * raptor_uri_to_relative_counted_uri_string - Get the counted relative URI string of a URI against a base URI
  * @base_uri: The base absolute URI to resolve against
  * @reference_uri: The reference absolute URI to use
- * @length_p: Location to store the length of the string or NULL
+ * @length_p: Location to store the length of the relative URI string or NULL
  * 
  * Return value: A newly allocated relative URI string or NULL on failure
  **/
@@ -898,7 +899,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
                                           raptor_uri *reference_uri,
                                           size_t *length_p) {
   raptor_uri_detail *base_detail=NULL, *reference_detail;
-  const unsigned char *base, *reference, *base_file, *reference_file;
+  const unsigned char *base, *reference_str, *base_file, *reference_file;
   unsigned char *suffix, *cur_ptr;
   size_t base_len, reference_len, reference_file_len, prefix_len, suffix_len;
   unsigned char *result=NULL;
@@ -909,8 +910,8 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   if(!reference_uri)
     return NULL;
     
-  reference=raptor_uri_as_counted_string(reference_uri, &reference_len);
-  reference_detail=raptor_new_uri_detail(reference);
+  reference_str=raptor_uri_as_counted_string(reference_uri, &reference_len);
+  reference_detail=raptor_new_uri_detail(reference_str);
   
   if(!base_uri)
     goto buildresult;
@@ -923,85 +924,93 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   
   /* Check if the whole URIs are equal */
   if(raptor_uri_equals(base_uri, reference_uri)) {
-    result=(unsigned char*)RAPTOR_MALLOC(cstring, 1);
-    *result=0;
+    reference_len=0;
     goto buildresult;
   }
   
   /* Check if scheme and authority of the URIs are equal */
-  if(prefix_len == (reference_detail->scheme_len + reference_detail->authority_len)) {
-    if (strncmp((const char*)base_detail->buffer, (const char*)reference_detail->buffer, prefix_len) == 0) {
+  if(prefix_len != (reference_detail->scheme_len + reference_detail->authority_len))
+    goto buildresult;
+  
 
-      /* Find the file name components */
-      base_file = (const unsigned char*)strrchr((const char*)base_detail->path, '/');
-      if(!base_file)
-        goto buildresult;
-      base_file++;
-      
-      reference_file = (const unsigned char*)strrchr((const char*)reference_detail->path, '/');
-      if(!reference_file)
-        goto buildresult;
-      reference_file++;
-      
-      reference_file_len = reference_detail->path_len - (reference_file - reference_detail->path);
-      
-      /* If the file names are equal, don't include them in the relative URI */
-      if (strcmp((const char*)base_file, (const char*)reference_file) == 0) {
-        reference_file=NULL;
-        reference_file_len=0;
-      }
-      /* If the base file is non-empty, but the reference file is empty, use "."
-         as the file name. */
-      else if (*base_file && *reference_file == 0) {
-        reference_file=(const unsigned char*)".";
-        reference_file_len=1;
-      }
-      
-      /* Calculate the length of the suffix (file name + query + fragment) */
-      suffix_len = reference_file_len + reference_detail->query_len + reference_detail->fragment_len;
-      if (reference_detail->query)
-        suffix_len++; /* add one char for the '?' */
-      if (reference_detail->fragment)
-        suffix_len++; /* add one char for the '#' */
-      
-      /* Assemble the suffix */
-      suffix=(unsigned char*)RAPTOR_MALLOC(cstring, suffix_len + 1);
-      cur_ptr=suffix;
-      if(reference_file) {
-        memcpy(suffix, reference_file, reference_file_len);
-        cur_ptr += reference_file_len;
-      }
-      if(reference_detail->query) {
-        *(cur_ptr++)='?';
-        memcpy(cur_ptr, reference_detail->query, reference_detail->query_len);
-        cur_ptr += reference_detail->query_len;
-      }
-      if(reference_detail->fragment) {
-        *(cur_ptr++)='#';
-        memcpy(cur_ptr, reference_detail->fragment, reference_detail->fragment_len);
-        cur_ptr += reference_detail->fragment_len;
-      }
-      *cur_ptr = 0;
-      
-      /* Finally, create the full relative path */
-      result = raptor_uri_path_make_relative_path(base_detail->path,
-                                                  base_detail->path_len,
-                                                  reference_detail->path,
-                                                  reference_detail->path_len,
-                                                  suffix,
-                                                  suffix_len,
-                                                  length_p);
-      RAPTOR_FREE(cstring, suffix);
-    }
-  }
+  if(!strncmp((const char*)base_detail->buffer,
+              (const char*)reference_detail->buffer, prefix_len)) {
     
+    /* Find the file name components */
+    base_file = (const unsigned char*)strrchr((const char*)base_detail->path, '/');
+    if(!base_file)
+      goto buildresult;
+    base_file++;
+    
+    reference_file=(const unsigned char*)strrchr((const char*)reference_detail->path, '/');
+    if(!reference_file)
+      goto buildresult;
+    reference_file++;
+    
+    reference_file_len=reference_detail->path_len -
+                       (reference_file - reference_detail->path);
+    
+    if(!strcmp((const char*)base_file, (const char*)reference_file)) {
+      /* If the file names are equal, don't put them in the relative URI */
+      reference_file=NULL;
+      reference_file_len=0;
+    } else if(*base_file && !*reference_file) {
+      /* If the base file is non-empty, but the reference file is
+       * empty, use "."  as the file name.
+       */
+      reference_file=(const unsigned char*)".";
+      reference_file_len=1;
+    }
+    
+    /* Calculate the length of the suffix (file name + query + fragment) */
+    suffix_len=reference_file_len + reference_detail->query_len + 
+               reference_detail->fragment_len;
+    
+    if (reference_detail->query)
+      suffix_len++; /* add one char for the '?' */
+    if (reference_detail->fragment)
+      suffix_len++; /* add one char for the '#' */
+    
+    /* Assemble the suffix */
+    suffix=(unsigned char*)RAPTOR_MALLOC(cstring, suffix_len + 1);
+    cur_ptr=suffix;
+    if(reference_file) {
+      memcpy(suffix, reference_file, reference_file_len);
+      cur_ptr+= reference_file_len;
+    }
+
+    if(reference_detail->query) {
+      *cur_ptr++='?';
+      memcpy(cur_ptr, reference_detail->query, reference_detail->query_len);
+      cur_ptr+= reference_detail->query_len;
+    }
+
+    if(reference_detail->fragment) {
+      *cur_ptr++='#';
+      memcpy(cur_ptr, reference_detail->fragment, reference_detail->fragment_len);
+      cur_ptr+= reference_detail->fragment_len;
+    }
+    *cur_ptr=0;
+    
+    /* Finally, create the full relative path */
+    result = raptor_uri_path_make_relative_path(base_detail->path,
+                                                base_detail->path_len,
+                                                reference_detail->path,
+                                                reference_detail->path_len,
+                                                suffix,
+                                                suffix_len,
+                                                length_p);
+    RAPTOR_FREE(cstring, suffix);
+  }
+
+  
  buildresult:
- 
   /* If result is NULL at this point, it means that we were unable to find a
      relative URI, so we'll return a full absolute URI instead. */
   if(!result) {
     result=(unsigned char*)RAPTOR_MALLOC(cstring, reference_len+1);
-    memcpy(result, reference, reference_len);
+    if(reference_len)
+      memcpy(result, reference_str, reference_len);
     result[reference_len] = 0;
     if(length_p)
       *length_p=reference_len;
@@ -1016,7 +1025,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
 
 
 /**
- * raptor_uri_to_relative_uri_string - Return a URI as relative to a base URI to a string
+ * raptor_uri_to_relative_uri_string - Get the relative URI string of a URI against a base URI
  * @base_uri: The base absolute URI to resolve against
  * @reference_uri: The reference absolute URI to use
  * 
