@@ -379,7 +379,7 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 
 
 /* Compatiblity wrapper */
-static char*
+char*
 raptor_vsnprintf(const char *message, va_list arguments) 
 {
   char empty_buffer[1];
