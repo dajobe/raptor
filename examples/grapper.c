@@ -46,6 +46,10 @@
 /* Gtk 2.0 */
 #include <gtk/gtk.h>
 
+
+/* Qnames button does nothing */
+#undef GRAPPER_QNAMES
+
 typedef enum 
 {
   GRAPPER_SYNTAX_RDFXML,
@@ -71,7 +75,9 @@ static const grapper_syntax_item grapper_syntax_info[GRAPPER_SYNTAX_SIZE]={
 typedef struct
 {
   /* model data */
+#ifdef GRAPPER_QNAMES
   int qnames;
+#endif
   grapper_syntax syntax;
   int scanning;
   int assume;
@@ -116,11 +122,13 @@ grapper_view_url_changed(grapper_state *state)
   gtk_entry_set_text(GTK_ENTRY(url_entry), state->url);
 }
 
+#ifdef GRAPPER_QNAMES
 static void
 grapper_view_qnames_changed(grapper_state *state) 
 {
 
 }
+#endif
 
 static void
 grapper_view_scanning_changed(grapper_state *state) 
@@ -216,25 +224,19 @@ grapper_model_set_url(grapper_state *state, const gchar *url)
   state->url=g_strdup(url);
   strcpy(state->url, url);
 
-  g_print ("URL changed to '%s'\n", url);
-
   grapper_view_url_changed(state);
 }
 
+#ifdef GRAPPER_QNAMES
 static void
 grapper_model_set_qnames (grapper_state *state, int qnames) {
   if(state->qnames == qnames)
     return;
   
   state->qnames=qnames;
-  if (state->qnames) {
-    g_print ("Qnames now active\n");
-  } else {
-    g_print ("Qnames now disabled\n");
-  }
-  
   grapper_view_qnames_changed(state);
 }
+#endif
 
 static void
 grapper_model_set_scanning (grapper_state *state, int scanning) {
@@ -242,12 +244,6 @@ grapper_model_set_scanning (grapper_state *state, int scanning) {
     return;
   
   state->scanning=scanning;
-  if (state->scanning) {
-    g_print ("Scanning now active\n");
-  } else {
-    g_print ("Scanning now disabled\n");
-  }
-  
   grapper_view_scanning_changed(state);
 }
 
@@ -256,7 +252,6 @@ grapper_model_set_syntax (grapper_state *state, grapper_syntax syntax) {
   if(state->syntax == syntax)
     return;
   
-  g_print("Syntax changed to '%s'\n", grapper_syntax_info[syntax].name);
   state->syntax=syntax;
   grapper_view_syntax_changed(state);
 }
@@ -332,15 +327,6 @@ grapper_model_statements_handler(void *data,
                                            statement->object_literal_datatype,
                                            statement->object_literal_language);
   
-  {
-    char *p;
-    for(p=nodes[2];*p;p++) {
-      if(*p == '\n')
-        *p=' ';
-    }
-  }
-    
-
   grapper_model_add_triple(state, nodes);
   free(nodes[0]);
   free(nodes[1]);
@@ -443,6 +429,7 @@ quit_callback(GtkWidget *widget, gpointer data)
 }
 
 
+#ifdef GRAPPER_QNAMES
 /* qnames button clicked callback */
 static void
 qnames_button_callback(GtkWidget *widget, gpointer data)
@@ -452,7 +439,7 @@ qnames_button_callback(GtkWidget *widget, gpointer data)
   
   grapper_model_set_qnames(state, active);
 }
-
+#endif
 
 /* scanning button clicked callback */
 static void
@@ -481,7 +468,6 @@ syntax_menu_callback(GtkWidget *widget, gpointer data)
 static gboolean
 delete_event_callback(GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
-  g_print ("delete event occurred\n");
   return FALSE; /* continue normal event handing */
 }
 
@@ -489,7 +475,6 @@ delete_event_callback(GtkWidget *widget, GdkEvent  *event, gpointer data)
 static void
 destroy_callback(GtkWidget *widget, gpointer data)
 {
-  g_print ("destroy event occurred\n");
   gtk_main_quit ();
 }
 
@@ -555,7 +540,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *menu_bar;
   GtkWidget *v_box;
   GtkWidget *box;
-  GtkWidget *go_button, *qnames_button, *scanning_button;
+  GtkWidget *go_button, *scanning_button;
+#ifdef GRAPPER_QNAMES
+  GtkWidget *qnames_button;
+#endif
   GtkWidget *syntax_optionmenu;
   GtkWidget *syntax_menu;
   GtkWidget *url_entry;
@@ -564,7 +552,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *triples_treeview;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
-  GtkTooltips *qnames_tooltips, *scanning_tooltips, *syntax_tooltips;
+#ifdef GRAPPER_QNAMES
+  GtkTooltips *qnames_tooltips;
+#endif
+  GtkTooltips *scanning_tooltips, *syntax_tooltips;
   GtkWidget *prefs_box;
   GtkListStore *store;
   int i;
@@ -711,13 +702,13 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   /* gtk_container_set_border_width(GTK_CONTAINER (prefs_box), 5); */
   gtk_button_box_set_layout(GTK_BUTTON_BOX(prefs_box),GTK_BUTTONBOX_START);
 
+#ifdef GRAPPER_QNAMES
   /* qnames button in horizontal box */
   qnames_button = gtk_check_button_new_with_label("QNames");
 
   qnames_tooltips = gtk_tooltips_new ();
   gtk_tooltips_set_tip (qnames_tooltips, qnames_button, "Display URIs as XML QNames", NULL);
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(qnames_button), (state->qnames));
-  
 
   /* connect button clicked event to callback */
   g_signal_connect (G_OBJECT (qnames_button), "clicked",
@@ -727,6 +718,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_box_pack_start (GTK_BOX(prefs_box), qnames_button, TRUE, TRUE, 0);
 
   gtk_widget_show (qnames_button);
+#endif  
 
 
   /* scanning button in horizontal box */
