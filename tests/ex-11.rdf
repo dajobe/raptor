@@ -3,7 +3,7 @@
          xmlns:ex="http://example.org/">
    <!-- Check parseType literal with XML markup -->
    <rdf:Description rdf:about="http://example.org/resource">
-      <ex:property rdf:parseType="literal">
+      <ex:property rdf:parseType="Literal">
         <em>some markup</em>
         <a href="http://example.org/somewhere/else">blah</a>
       </ex:property>
