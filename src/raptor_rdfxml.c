@@ -2382,7 +2382,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             rdf_xml_parser->xml_content=NULL;
             rdf_xml_parser->xml_content_length=0;
             rdf_xml_parser->iostream=raptor_new_iostream_to_string(&rdf_xml_parser->xml_content, &rdf_xml_parser->xml_content_length, raptor_alloc_memory);
-            rdf_xml_parser->xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
+            rdf_xml_parser->xml_writer=raptor_new_xml_writer(NULL,
+                                                             uri_handler, uri_context,
                                                              rdf_xml_parser->iostream,
                                                              raptor_parser_simple_error, rdf_parser,
                                                              1);
