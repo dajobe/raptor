@@ -132,6 +132,9 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * If buffer is NULL, no work is done but the size of buffer
  * required is returned.  The output in buffer remains in UTF-8.
  *
+ * If the input string is empty, a single NUL will be written to the
+ * buffer.
+ *
  * Return value: the number of bytes required / used or <0 on failure.
  **/
 int
@@ -147,9 +150,6 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
   unsigned char *q;
   int unichar_len;
   unsigned long unichar;
-
-  if(!len)
-    return 0;
 
   if(quote != '\"' && quote != '\'')
     quote='\0';
