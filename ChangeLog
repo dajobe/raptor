@@ -1,4 +1,18 @@
+2005-02-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am (check-rdfxmla): rdfdiff should read
+	$name-rdfxmla.rdf from builddir
+
 2005-02-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdiff.c: C style Move more declarations to start of blocks.
+
+	* rdfdiff.c (rdfdiff_free_file): Restore what I broke.
+
+	* rdfdiff.c: C style Move more declarations to start of blocks.
+
+	* raptor_xml_writer.c (raptor_xml_writer_end_element): Move int
+	decl to start of block.
 
 	* raptor_serialize_rdfxmla.c (raptor_unique_id): Terminate string
 	right again after I broke it.
@@ -7,7 +21,8 @@
 
 	* raptor_serialize_rdfxmla.c: C style
 	(raptor_rdfxmla_emit_subject_list_items,
-	raptor_rdfxmla_emit_subject_properties): Declare i at start of block.
+	raptor_rdfxmla_emit_subject_properties): Declare i at start of
+	block.
 
 	* rapper.1: rdfxml-abbrev
 
