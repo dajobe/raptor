@@ -366,8 +366,6 @@ struct raptor_parser_factory_s {
 
 /* raptor_general.c */
 
-extern const char *raptor_xml_literal_datatype_uri_string;
-
 void raptor_parser_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
 
 unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
