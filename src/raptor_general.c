@@ -258,14 +258,17 @@ raptor_new_parser(const char *name) {
 
 int
 raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
+  raptor_uri_handler *uri_handler;
+  void *uri_context;
+
   rdf_parser->base_uri=uri;
   rdf_parser->locator.uri=uri;
 
   raptor_namespaces_free(&rdf_parser->namespaces);
 
-  raptor_namespaces_init(&rdf_parser->namespaces, 
-                         raptor_uri_handler,
-                         raptor_uri_context);
+  raptor_uri_get_handler(&uri_handler, &uri_context);
+  raptor_namespaces_init(&rdf_parser->namespaces,
+                         uri_handler, uri_context);
 
   return rdf_parser->factory->start(rdf_parser, uri);
 }
