@@ -54,9 +54,17 @@ raptor_new_uri_detail(const unsigned char *uri_string)
   raptor_uri_detail *ud;
   size_t uri_len;
 
+  if(!uri_string)
+    return NULL;
+
   uri_len=strlen((const char*)uri_string);
 
-  ud=(raptor_uri_detail*)RAPTOR_CALLOC(raptor_uri_detail, sizeof(raptor_uri_detail)+uri_len+1, 1);
+  /* The extra +5 is for the 5 \0s that may be added for each component 
+   * even if the entire URI is empty 
+   */
+  ud=(raptor_uri_detail*)RAPTOR_CALLOC(raptor_uri_detail,
+                                       sizeof(raptor_uri_detail)+uri_len+5+1,
+                                       1);
   ud->uri_len=uri_len;
   ud->buffer=(unsigned char*)((void*)ud + sizeof(raptor_uri_detail));
   
@@ -353,6 +361,7 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
   if(ref->path) {
     strncpy((char*)path_buffer+result.path_len, (const char*)ref->path, ref->path_len+1);
     result.path_len += ref->path_len;
+    path_buffer[result.path_len]='\0';
   }
 
 
@@ -682,6 +691,10 @@ main(int argc, char *argv[])
   failures += check_parses("mailto:mduerst@ifi.unizh.ch");
   failures += check_parses("news:comp.infosystems.www.servers.unix");
   failures += check_parses("telnet://melvyl.ucop.edu/");
+  failures += check_parses("");
+
+  /* This is a not-crashing test */
+  raptor_new_uri_detail(NULL);
 
   /* Extra checks not in RFC2396 */
 
