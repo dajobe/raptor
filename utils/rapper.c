@@ -29,6 +29,12 @@
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 
 #ifdef LIBRDF_INTERNAL
 #include <librdf.h>
@@ -107,6 +113,25 @@ static struct option long_options[] =
 #endif
 
 
+static void
+rdfdump_error_handler(void *data, raptor_locator *locator,
+                      const char *message, ...) 
+{
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  raptor_print_locator(stderr, locator);
+  fprintf(stderr, " raptor error - ");
+  vfprintf(stderr, message, arguments);
+  fputc('\n', stderr);
+
+  va_end(arguments);
+
+  exit(1);
+}
+
+
 
 int
 main(int argc, char *argv[]) 
@@ -131,6 +156,7 @@ main(int argc, char *argv[])
 #ifdef LIBRDF_INTERNAL
   librdf_init_world(NULL, NULL);
 #endif
+
 
   
   while (!usage)
@@ -245,6 +271,8 @@ main(int argc, char *argv[])
       return(1);
     }
 
+    raptor_set_error_handler(rdfxml_parser, NULL, rdfdump_error_handler);
+
     if(scanning)
       raptor_set_feature(rdfxml_parser, RAPTOR_FEATURE_SCANNING, 1);
   
@@ -255,6 +283,7 @@ main(int argc, char *argv[])
       fprintf(stderr, "%s: Failed to create raptor parser\n", program);
       return(1);
     }
+
   }
 
 
