@@ -1770,13 +1770,11 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
 /**
  * raptor_element_has_property_attributes: Return true if the element has at least one property attribute
- * @rdf_parser: Raptor parser object
  * @element: element with the property attributes 
  * 
  **/
 static int
-raptor_element_has_property_attributes(raptor_parser *rdf_parser, 
-                                       raptor_element *element) 
+raptor_element_has_property_attributes(raptor_element *element) 
 {
   int i;
   
@@ -2805,7 +2803,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                * generate a node to hang properties off 
                */
               if(element->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL &&
-                 raptor_element_has_property_attributes(rdf_parser, element) &&
+                 raptor_element_has_property_attributes(element) &&
                  !element->object.uri) {
                 element->object.id=raptor_generate_id(rdf_parser, 0);
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
