@@ -52,7 +52,7 @@
 
 
 /* Define these for far too much output */
-#define RAPTOR_DEBUG_VERBOSE
+#undef RAPTOR_DEBUG_VERBOSE
 
 
 /*
