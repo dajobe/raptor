@@ -356,6 +356,7 @@ my(@approved_positive_test_urls);
 my(@approved_negative_test_urls);
 my(@unapproved_positive_test_urls);
 my(@unapproved_negative_test_urls);
+my(@withdrawn_test_urls);
 
 if($offline) {
   print "$progname: OFFLINE - using stored manifest URL $manifest_URL\n";
@@ -435,6 +436,8 @@ while(length $content) {
       } else {
 	push(@unapproved_negative_test_urls, $url);
       }
+    } elsif ($test_status eq 'WITHDRAWN') {
+      push(@withdrawn_test_urls, $url);
     } else { 
       print "$progname: Ignoring test with unknown test:status $test_status\n";
       next;
@@ -494,6 +497,8 @@ print "$progname:   Negative: ",scalar(@approved_negative_test_urls),"\n";
 print "$progname: not APPROVED parser tests found:\n";
 print "$progname:   Positive: ",scalar(@unapproved_positive_test_urls),"\n";
 print "$progname:   Negative: ",scalar(@unapproved_negative_test_urls),"\n";
+
+print "$progname: withdrawn parser tests found: ",scalar(@withdrawn_test_urls),"\n";
 
 print "\n\n";
 
