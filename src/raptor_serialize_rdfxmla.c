@@ -466,6 +466,7 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   int rv = 0;
   int i=0;
+  raptor_uri* base_uri=NULL;
   
   while (!rv && i < raptor_sequence_size(subject->list_items)) {
 
@@ -481,8 +482,9 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
                                                        (unsigned char *)"li",
                                                        NULL);
     
-    element = raptor_new_xml_element(qname, NULL,
-                                     raptor_uri_copy(serializer->base_uri));
+    if(serializer->base_uri)
+      base_uri=raptor_uri_copy(serializer->base_uri);
+    element = raptor_new_xml_element(qname, NULL, base_uri);
 
     switch (object->type) {
       
@@ -530,7 +532,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
 
   i=0;
   while (!rv && i < raptor_sequence_size(subject->properties)) {
-
+    raptor_uri *base_uri=NULL;
     raptor_node *predicate;
     raptor_node *object;
     raptor_qname *qname;
@@ -553,8 +555,9 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
     } else
       qname = raptor_new_qname_from_resource(serializer, predicate);
     
-    element = raptor_new_xml_element(qname, NULL,
-                                     raptor_uri_copy(serializer->base_uri));
+    if(serializer->base_uri)
+      base_uri=raptor_uri_copy(serializer->base_uri);
+    element = raptor_new_xml_element(qname, NULL, base_uri);
 
     switch (object->type) {
       
@@ -597,6 +600,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   raptor_qname **attrs;
   unsigned char *attr_name;
   unsigned char *attr_value;
+  raptor_uri *base_uri=NULL;
   
   if(subject->node_type) { /* if rdf:type was associated with this subject */
     qname = raptor_new_qname_from_resource(serializer, subject->node_type);
@@ -613,8 +617,9 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
                                                        (unsigned const char*)"Description",  NULL);
     
 
-  element = raptor_new_xml_element(qname, NULL,
-                                   raptor_uri_copy(serializer->base_uri));
+  if(serializer->base_uri)
+    base_uri=raptor_uri_copy(serializer->base_uri);
+  element = raptor_new_xml_element(qname, NULL, base_uri);
     
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
   if(!attrs)
@@ -1392,7 +1397,9 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
   qname=raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                    (const unsigned char*)"RDF",
                                                    NULL);
-  element=raptor_new_xml_element(qname, NULL, raptor_uri_copy(base_uri));
+  if(base_uri)
+    base_uri=raptor_uri_copy(base_uri);
+  element=raptor_new_xml_element(qname, NULL, base_uri);
   context->rdf_RDF_element=element;
   for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
     raptor_namespace* ns;
@@ -1453,7 +1460,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     return 1;
   }
 
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) {
+  if((statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
+     (statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
     predicate = raptor_rdfxmla_lookup_node(context, statement->predicate_type,
                                            statement->predicate, NULL, NULL);
 
