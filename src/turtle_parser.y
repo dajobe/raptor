@@ -120,7 +120,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
   raptor_identifier *identifier;
   raptor_sequence *sequence;
   raptor_uri *uri;
-  int integer; /* 0+ for a xsd:nonNegativeInteger datatyped RDF literal */
+  int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
 
@@ -628,7 +628,7 @@ URI_LITERAL
 #endif
   string=(unsigned char*)malloc(32); /* FIXME */
   sprintf((unsigned char*)string, "%d", $1);
-  uri=raptor_new_uri("http://www.w3.org/2001/XMLSchema#nonNegativeInteger");
+  uri=raptor_new_uri("http://www.w3.org/2001/XMLSchema#integer");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
 }
 
