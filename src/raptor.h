@@ -363,6 +363,8 @@ RAPTOR_API int raptor_uri_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
 RAPTOR_API unsigned char* raptor_uri_to_relative_uri_string(raptor_uri *base_uri,  raptor_uri *reference_uri);
 RAPTOR_API void raptor_uri_print(const raptor_uri* uri, FILE *stream);
+RAPTOR_API unsigned char* raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p);
+RAPTOR_API unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
 RAPTOR_API void raptor_uri_init(void);
 

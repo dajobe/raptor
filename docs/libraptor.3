@@ -566,8 +566,16 @@ Return a copy of the given raptor URI \fIuri\fP.
 .IP "\fBunsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)\fR"
 .IP "\fBunsigned char* raptor_uri_as_string(raptor_uri* \fIuri\fB)\fR"
 Return a shared pointer to a string representation of the given raptor URI
-\fIuri\fR.  This string is shared and must not be freed.  If
+\fIuri\fR.  This string is shared and must not be freed (otherwise
+see the \fBraptor_uri_to_*\fP methods below).  If
 \fBraptor_uri_as_counted_string\fP is used, the length of the returned
+string is stored in *\fIlen_p\fP if not NULL.
+.IP "\fBunsigned char* raptor_uri_to_counted_string(raptor_uri *\fIuri\fP, size_t *\fIlen_p\fP)\fR"
+.IP "\fBunsigned char* raptor_uri_to_string(raptor_uri *\fIuri\fP)\fR"
+Return a to a newly alloced string representation of the given raptor URI
+\fIuri\fR.  This string must be freed by the caller using
+\fBraptor_free_memory\fP.  If
+\fBraptor_uri_to_counted_string\fP is used, the length of the returned
 string is stored in *\fIlen_p\fP if not NULL.
 .IP "\fBunsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *\fIbase_uri\fB, raptor_uri *\fIreference_uri\fB, size_t *\fIlength_p\fB)\fR"
 .IP "\fBunsigned char* raptor_uri_to_relative_uri_string(raptor_uri *\fIbase_uri\fB, raptor_uri *\fIreference_uri\fB)\fR"
@@ -1060,7 +1068,9 @@ utility functions for writing to raptor_iostreams.
 .P
 Added \fBraptor_uri_to_relative_counted_uri_string\fP,
 \fBraptor_uri_to_relative_uri_string\fP.
-and \fBraptor_uri_print\fP
+\fBraptor_uri_print\fP,
+\fBraptor_uri_to_counted_string\fP and
+\fBraptor_uri_to_string\fP
 .P
 Added unicode name checking utility functions for XML 1.0 and XML 1.1
 name starting character and continued name character.
