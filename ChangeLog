@@ -1,3 +1,82 @@
+2005-04-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xslt.c:
+	Added a list of XPaths to try, fixed searching for a profile.
+	Now handles 2 XHTML forms and XML.
+	(raptor_xslt_parse_chunk): Walk through the list of XPaths.
+	Do not give an error if no GRDDL is found, 0 triples are ok.
+
+	* raptor_libxml.c (raptor_libxml_error_common):
+	Added, passing in prefix and is_fatal
+	flag.  Handle NULL ctx and hence NULL parser.
+	(raptor_libxml_error, raptor_libxml_generic_error,
+	raptor_libxml_fatal_error, raptor_libxml_validation_error): Use the
+	new function, share very common code.
+
+	* raptor_parse.c (raptor_parser_error_varargs): Survive a NULL parser.
+
+	* raptor_rdfxml.c (raptor_get_libxml_context,
+	 raptor_set_libxml_document_locator,
+	 raptor_get_libxml_document_locator): Survive NULL rdf_parser
+	 calls.
+
+	* raptor_internal.h: Added
+	raptor_libxml_init_generic_error_handlers prototype
+
+	* raptor_xslt.c (raptor_xslt_parse_start): Init column, byte to -1
+	(raptor_xslt_xmlStructuredErrorFunc): Added, not tested.
+	(raptor_xslt_parse_chunk): Ensure last chunk with is_end is always
+	run.  Report error if no XML DOM made.  Set xslt context
+	structured error handler to raptor_xslt_xmlStructuredErrorFunc.
+
+2005-04-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xslt.c (raptor_xslt_parse_chunk):
+	Declare 'nodes' at top of block.
+	Init doc_txt/doc_txt_len earlier so do not free junk.
+	Get the base URI string from the XML doc if it exists.
+
+2005-03-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Added --with-xslt-config
+	Added grddl parser and checking.
+	Added simple search for libxslt needed by grddl.
+
+	* Makefile.am: Added grddl if RAPTOR_PARSER_GRDDL
+
+	* raptor_general.c (raptor_init): Added grddl
+
+	* raptor_libxml.c (raptor_libxml_init_sax_error_handlers):
+	Added to just init the
+	static error handlers for libxml for grddl.
+
+	* raptor_internal.h:
+	Export raptor_libxml_init_sax_error_handlers for grddl.
+	Added raptor_init_parser_grddl
+
+	* raptor_xslt.c: Generates triples via in internal rdf/xml parser.
+	(raptor_xslt_parse_start): Copy any user-set handlers to the
+	internal rdf/xml parser.
+	(main): Deleted, experimental code merged.
+
+	* raptor_xslt.c: Reformed test code into parser named 'grddl'
+	(raptor_xslt_parse_init, raptor_xslt_parse_terminate,
+	raptor_xslt_parse_start, raptor_xslt_parse_chunk,
+	raptor_xslt_parse_recognise_syntax,
+	raptor_xslt_parser_register_factory, raptor_init_parser_xslt): Added
+
+2005-03-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xslt.c: Fix some memory leaks.
+
+	* raptor_xslt.c: Remove commented out standalone xslt
+
+	* Makefile.am: Added bodge raptor_xslt_test
+
+	* raptor_xslt.c: Raptor GRDDL XSLT
+
+	* raptor_parse.c (raptor_parse_chunk): docs
+
 2005-03-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* n3_lexer.l, turtle_lexer.l: Tidy to use .|\n to match any char
