@@ -465,6 +465,9 @@ struct rapier_element_s {
   /* starting state for children of this element */
   rapier_state child_state;
 
+  /* child element has a pre-assigned URI (probably from rdf:resource) */
+  rapier_uri *child_uri;
+
   /* XML elements in RDF can contain EITHER cdata OR just sub-elements
    * Mixed content is not allowed 
    */
@@ -1135,6 +1138,9 @@ rapier_free_element(rapier_element *element)
   if(element->uri)
     RAPIER_FREE_URI(element->uri);
 
+  if(element->child_uri)
+    RAPIER_FREE_URI(element->child_uri);
+
   if(element->bag_uri)
     RAPIER_FREE_URI(element->bag_uri);
 
@@ -1412,6 +1418,7 @@ rapier_xml_start_element_handler(void *user_data,
         for(j=0; j<= RDF_ATTR_LAST; j++)
           if(!strcmp(attr_name, rdf_attr_names[j])) {
             element->rdf_attr[j]=attribute->value;
+            element->rdf_attr_count++;
             /* Delete it if it was stored elsewhere */
 #if RAPIER_DEBUG
             LIBRDF_DEBUG3(rapier_xml_start_element_handler,
@@ -2673,6 +2680,12 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
 
   if(element->parent) {
+    if(element->parent->child_uri) {
+       element->uri=element->parent->child_uri;
+       /* delete parent reference to prevent multiple frees */
+       element->parent->child_uri=NULL;
+    }
+       
     state=element->parent->child_state;
     if(!state) {
       state=element->parent->state;
@@ -3082,7 +3095,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
           state=RAPIER_STATE_REFERENCEDITEM;
         } else if (element->rdf_attr[RDF_ATTR_parseType]) {
           const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
-
+          
           if(!strcasecmp(parse_type, "literal")) {
             element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
           } else if (!strcasecmp(parse_type, "resource")) {
@@ -3178,46 +3191,67 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
             else
               element->child_state=RAPIER_STATE_PARSETYPE_LITERAL;
           }
-        } else if(element->rdf_attr[RDF_ATTR_resource]) {
+        } else {
+
           /* Can only be last case */
-          element->uri=rapier_make_uri(rdf_parser->base_uri,
-                                       element->rdf_attr[RDF_ATTR_resource]);
+          if(element->rdf_attr[RDF_ATTR_resource]) {
+            element->child_uri=rapier_make_uri(rdf_parser->base_uri,
+                                               element->rdf_attr[RDF_ATTR_resource]);
 
-          /* Store URI of new thing in our parent */
-          if(element->parent) {
-            /* Free any existing object URI still around */
-            if(element->parent->object_uri)
-              RAPIER_FREE_URI(element->parent->object_uri);
-            
-            /* Store our URI in our parent as the object URI *FIXME*  Needed? */
-            element->parent->object_uri=rapier_copy_uri(element->uri);
-            
-            element->parent->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+            /* Store URI of child node in our parent */
+            if(element->parent) {
+              /* Free any existing object URI still around */
+              if(element->parent->object_uri)
+                RAPIER_FREE_URI(element->parent->object_uri);
+              
+              /* Store our URI in our parent as the object URI */
+              element->parent->object_uri=rapier_copy_uri(element->child_uri);
+              
+              element->parent->content_type = RAPIER_ELEMENT_CONTENT_TYPE_RESOURCE;
+            }
+          } else {
+            /* need to generate a node for this object */
+            element->id=rapier_generate_id(rdf_parser, 0);
+            element->id_is_generated=1;
+            element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
           }
+          
 
+          /* FIXME - what should be done here */
+#if 0
           if(element->rdf_attr[RDF_ATTR_bagID]) {
             element->bag_id=element->rdf_attr[RDF_ATTR_bagID];
             element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
           }
-
+#endif
+          
           rapier_process_property_attributes(rdf_parser, element);
 
-          rapier_generate_named_statement(rdf_parser, 
-                                          element->parent->uri,
-                                          RAPIER_SUBJECT_TYPE_RESOURCE,
-                                          element->name,
-                                          (void*)element->uri, 
-                                          RAPIER_OBJECT_TYPE_RESOURCE,
-                                          element->bag_uri);
-          
-          /* Done - wait for end of this element to end in order to 
-           * check the element was empty as expected */
-          element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_EMPTY;
-        } else {
-          /* Otherwise process content in obj (value) state */
-          element->child_state=RAPIER_STATE_OBJ;
-          element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN;
-        } /* end if parseType or resource attribute seen */
+          /*
+           * Assign bag URI here so we don't reify property attributes using 
+           * this bagID 
+           */
+          if(element->bag_id)
+            element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+
+          if(element->rdf_attr[RDF_ATTR_resource]) {
+            rapier_generate_named_statement(rdf_parser, 
+                                            element->parent->uri,
+                                            RAPIER_SUBJECT_TYPE_RESOURCE,
+                                            element->name,
+                                            (void*)element->child_uri, 
+                                            RAPIER_OBJECT_TYPE_RESOURCE,
+                                            element->bag_uri);
+
+            /* Done - wait for end of this element to end in order to 
+             * check the element was empty as expected */
+            element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_EMPTY;
+          } else {
+            /* Otherwise process content in obj (value) state */
+            element->child_state=RAPIER_STATE_OBJ;
+            element->content_type = RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN;
+          }
+        }
 
         finished=1;
 
@@ -3463,7 +3497,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                       RAPIER_PREDICATE_TYPE_ORDINAL,
                                       object,
                                       object_type,
-                                      NULL);
+                                      element->bag_uri);
           } else
             rapier_generate_named_statement(rdf_parser, 
                                             element->parent->uri,
@@ -3471,7 +3505,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                             element->name,
                                             object,
                                             object_type,
-                                            NULL);
+                                            element->bag_uri);
           
         } else {
           int object_is_literal=(element->content_cdata != NULL);
@@ -3491,7 +3525,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                           RAPIER_PREDICATE_TYPE_ORDINAL,
                                           object,
                                           object_type,
-                                          NULL);
+                                          element->bag_uri);
               } else
                 rapier_generate_named_statement(rdf_parser, 
                                                 element->parent->uri,
@@ -3499,7 +3533,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                                 element->name,
                                                 object, 
                                                 object_type,
-                                                NULL);
+                                                element->bag_uri);
               
               break;
               
@@ -3516,7 +3550,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                           RAPIER_PREDICATE_TYPE_ORDINAL,
                                           (void*)element->uri,
                                           RAPIER_OBJECT_TYPE_RESOURCE,
-                                          NULL);
+                                          element->bag_uri);
               } else
                 rapier_generate_named_statement(rdf_parser, 
                                                 element->parent->uri,
@@ -3524,7 +3558,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                                 element->name,
                                                 (void*)element->uri,
                                                 RAPIER_OBJECT_TYPE_RESOURCE,
-                                                NULL);
+                                                element->bag_uri);
               break;
 
           case RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED:
@@ -3537,7 +3571,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                           RAPIER_PREDICATE_TYPE_ORDINAL,
                                           element->content_cdata,
                                           RAPIER_OBJECT_TYPE_XML_LITERAL,
-                                          NULL);
+                                          element->bag_uri);
               } else
                 rapier_generate_named_statement(rdf_parser, 
                                                 element->parent->uri,
@@ -3545,7 +3579,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                                                 element->name,
                                                 element->content_cdata, 
                                                 RAPIER_OBJECT_TYPE_XML_LITERAL,
-                                                NULL);
+                                                element->bag_uri);
               
             break;
             
