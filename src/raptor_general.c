@@ -259,6 +259,7 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
 
   rdf_parser->base_uri=uri;
   rdf_parser->locator.uri=uri;
+  rdf_parser->locator.line= rdf_parser->locator.column = 0;
 
   raptor_namespaces_free(&rdf_parser->namespaces);
 
@@ -271,28 +272,6 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
 }
 
 
-static int
-raptor_start_parse_file(raptor_parser *rdf_parser, 
-                        const char *filename, raptor_uri *uri)
-{
-  raptor_locator *locator=&rdf_parser->locator;
-  locator->file=filename;
-
-  if(!strcmp(filename, "-")) {
-    rdf_parser->fh=stdin;
-    return 0;
-  }
-
-  rdf_parser->fh=fopen(filename, "r");
-  if(!rdf_parser->fh) {
-    raptor_parser_error(rdf_parser, "file '%s' open failed - %s",
-                        filename, strerror(errno));
-    RAPTOR_FREE(cstring, (void*)filename);
-    return 1;
-  }
-
-  return raptor_start_parse(rdf_parser, uri);
-}
 
 
 int
@@ -342,11 +321,27 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   unsigned char buffer[RAPTOR_READ_BUFFER_SIZE];
   int rc=0;
   const char *filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
+  raptor_locator *locator=&rdf_parser->locator;
 
   if(!filename)
     return 1;
 
-  if(raptor_start_parse_file(rdf_parser, filename, base_uri))
+  locator->file=filename;
+  locator->line= locator->column = -1;
+
+  if(!strcmp(filename, "-"))
+    rdf_parser->fh=stdin;
+  else {
+    rdf_parser->fh=fopen(filename, "r");
+    if(!rdf_parser->fh) {
+      raptor_parser_error(rdf_parser, "file '%s' open failed - %s",
+                          filename, strerror(errno));
+      RAPTOR_FREE(cstring, (void*)filename);
+      return 1;
+    }
+  }
+
+  if(raptor_start_parse(rdf_parser, base_uri))
     return 1;
   
   while(rdf_parser->fh && !feof(rdf_parser->fh)) {
