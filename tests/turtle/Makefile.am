@@ -63,7 +63,7 @@ check-rdf: $(top_builddir)/rapper $(TEST_FILES)
 	    $(ECHO) FAILED returned status $$status; result=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(ECHO) "ok with warnings; grep Warning $$name.err"; \
+	      $(ECHO) "ok with warnings"; grep Warning $$name.err; \
 	    else \
 	      $(ECHO) "ok"; \
 	    fi; \
