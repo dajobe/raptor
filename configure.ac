@@ -665,8 +665,9 @@ for parser in $parsers; do
   rdf_parsers_enabled="$rdf_parsers_enabled $parser"
 done
 
+nfc_needed=no
 if test $rdfxml_parser = yes; then
-  nfc_needed=yes;
+  nfc_needed=yes
 fi
 
 AM_CONDITIONAL(RAPTOR_PARSER_RDFXML, test $rdfxml_parser = yes)
