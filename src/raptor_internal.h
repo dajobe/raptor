@@ -173,6 +173,15 @@ extern void raptor_xml_end_element_handler(void *user_data, const XML_Char *name
 extern void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
 
 
+#ifdef HAVE_STRCASECMP
+#define raptor_strcasecmp strcasecmp
+#else
+#ifdef HAVE_STRICMP
+#define raptor_strcasecmp stricmp
+#endif
+#endif
+
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
