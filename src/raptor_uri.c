@@ -602,20 +602,12 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   raptor_uri_parse (uri_string, buffer, uri_string_len,
                     &scheme, &authority, &path, &query, &fragment);
 
-  LIBRDF_FREE(cstring, query);
-  LIBRDF_FREE(cstring, fragment);
-
-  if(strcasecmp(scheme, "file")) {
-    LIBRDF_FREE(cstring, scheme);
-    LIBRDF_FREE(cstring, authority);
-    LIBRDF_FREE(cstring, path);
+  if(!scheme || strcasecmp(scheme, "file")) {
     LIBRDF_FREE(cstring, buffer);
     return NULL;
   }
-  LIBRDF_FREE(cstring, scheme);
 
   if(authority && !strcasecmp(authority, "localhost")) {
-    LIBRDF_FREE(cstring,authority);
     authority=NULL;
   }
 
@@ -649,9 +641,6 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
 
   filename=(char*)LIBRDF_MALLOC(cstring, len+1);
   if(!filename) {
-    if(authority)
-      LIBRDF_FREE(cstring, authority);
-    LIBRDF_FREE(cstring, path);
     LIBRDF_FREE(cstring, buffer);
     return NULL;
   }
@@ -690,9 +679,6 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
 #endif
 
 
-  if(authority)
-    LIBRDF_FREE(cstring, authority);
-  LIBRDF_FREE(cstring, path);
   LIBRDF_FREE(cstring, buffer);
 
   return filename;
