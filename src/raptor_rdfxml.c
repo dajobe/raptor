@@ -3205,18 +3205,23 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
 #ifdef RAPTOR_XML_LIBXML
 xmlParserCtxtPtr
 raptor_get_libxml_context(raptor_parser *rdf_parser) {
-  return ((raptor_xml_parser*)rdf_parser->context)->sax2->xc;
+  raptor_xml_parser* rdfxml=(raptor_xml_parser*)rdf_parser->context;
+  return rdfxml->sax2 ? rdfxml->sax2->xc : NULL;
 }
 
 void
 raptor_set_libxml_document_locator(raptor_parser *rdf_parser,
                                    xmlSAXLocatorPtr loc) {
-  ((raptor_xml_parser*)rdf_parser->context)->sax2->loc=loc;
+  raptor_xml_parser* rdfxml=(raptor_xml_parser*)rdf_parser->context;
+
+  if(rdfxml->sax2)
+     rdfxml->sax2->loc=loc;
 }
 
 xmlSAXLocatorPtr
 raptor_get_libxml_document_locator(raptor_parser *rdf_parser) {
-  return ((raptor_xml_parser*)rdf_parser->context)->sax2->loc;
+  raptor_xml_parser* rdfxml=(raptor_xml_parser*)rdf_parser->context;
+  return rdfxml->sax2 ? rdfxml->sax2->loc : NULL;
 }
 
 #ifdef RAPTOR_LIBXML_MY_ENTITIES
