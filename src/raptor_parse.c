@@ -3316,12 +3316,9 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   strcpy(item+id_len+1, base_uri_string); /* strcpy for end '\0' */
   
   rc=raptor_set_add(rdf_xml_parser->id_set, item, len);
-  if(rc) {
-    RAPTOR_FREE(cstring, item);
-    return 1;
-  }
+  RAPTOR_FREE(cstring, item);
 
-  return 0;
+  return (rc != 0);
 }
 
 
