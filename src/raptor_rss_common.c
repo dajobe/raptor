@@ -1817,7 +1817,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
     if(uri) {
       raptor_namespace* nspace=raptor_new_namespace(rss_serializer->nstack, prefix, raptor_uri_as_string(uri), 0);
       raptor_rss_namespaces_info[i].nspace=nspace;
-      raptor_sax2_declare_namespace(element, nspace);
+      raptor_xml_declare_namespace(element, nspace);
     }
   }
   
