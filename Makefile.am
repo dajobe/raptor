@@ -41,9 +41,9 @@ libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
 EXTRA_DIST=ChangeLog \
-README      NEWS      LICENSE.txt \
-README.html NEWS.html LICENSE.html \
-INSTALL.html MPL.html \
+README      NEWS \
+README.html NEWS.html LICENSE.html INSTALL.html \
+MPL.html \
 raptor-config.in raptor-src-config.in \
 autogen.sh \
 raptor.spec.in \
