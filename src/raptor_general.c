@@ -596,6 +596,9 @@ raptor_parse_uri_write_bytes(raptor_www* www,
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
  * 
+ * Sends an HTTP Accept: header whent the URI is of the HTTP protocol,
+ * see raptor_parse_uri_with_connection for details.
+ *
  * Return value: non 0 on failure
  **/
 int
@@ -611,29 +614,42 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  * @rdf_parser: parser
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
- * @connection: connection object pointer
+ * @connection: connection object pointer or NULL to create a new one
  * 
+ * When @connection is NULL and a MIME Type exists for the parser
+ * type - such as returned by raptor_get_mime_type(parser) - this
+ * type is sent in an HTTP Accept: header in the form
+ * Accept: MIME-TYPE along with a wildcard of 0.1 quality, so MIME-TYPE is
+ * prefered rather than the sole answer.  The latter part may not be
+ * necessary but should ensure an HTTP 200 response.
+ *
  * Return value: non 0 on failure
  **/
 int
 raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                  raptor_uri *base_uri, void *connection)
 {
-  raptor_www *www=raptor_www_new_with_connection(connection);
+  raptor_www *www;
   const char* mime_type;
   
-  if(!www)
-    return 1;
-
   if(!base_uri)
     base_uri=uri;
  
-  if((mime_type=raptor_get_mime_type(rdf_parser))) {
-    char *accept_h=(char*)RAPTOR_MALLOC(cstring, strlen(mime_type)+6);
-    strcpy(accept_h, mime_type);
-    strcat(accept_h, " ;*/*"); /* strlen()=5 chars */
-    raptor_www_set_http_accept(www, accept_h);
-    RAPTOR_FREE(cstring, accept_h);
+  if(connection) {
+    www=raptor_www_new_with_connection(connection);
+    if(!www)
+      return 1;
+  } else {
+    www=raptor_www_new();
+    if(!www)
+      return 1;
+    if((mime_type=raptor_get_mime_type(rdf_parser))) {
+      char *accept_h=(char*)RAPTOR_MALLOC(cstring, strlen(mime_type)+11);
+      strcpy(accept_h, mime_type);
+      strcat(accept_h, ",*/*;q=0.1"); /* strlen()=4 chars */
+      raptor_www_set_http_accept(www, accept_h);
+      RAPTOR_FREE(cstring, accept_h);
+    }
   }
   
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
