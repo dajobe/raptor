@@ -50,6 +50,7 @@
 #include <turtle_parser.tab.h>
 
 #define YY_DECL int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner)
+#define YY_NO_UNISTD_H 1
 #include <turtle_lexer.h>
 
 #include <turtle_common.h>
