@@ -487,6 +487,9 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 #endif
 
 
+/* raptor_nfc.c */
+int raptor_nfc_check (const unsigned char* string, size_t len, int *error);
+
 /* raptor_nspace.c */
 
 #ifdef RAPTOR_DEBUG
