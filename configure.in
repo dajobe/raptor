@@ -36,6 +36,12 @@ AC_ARG_ENABLE(release, [  --enable-release        Turn on optimizations.  ], \
 	release_version=yes
 fi;)	
 
+AC_ARG_ENABLE(rdf-datatypes, [  --enable-rdf-datatypes Turn on RDF datatypes test code.  ], \
+ if test "$enableval" = "yes"; then \
+	AC_DEFINE(RAPTOR_RDF_DATATYPES_TEST)
+fi;)	
+
+
 if test $release_version = no; then 
   CFLAGS=`echo $CFLAGS | sed s/-O2//`
   CXXFLAGS=`echo $CXXFLAGS | sed s/-O2//`
