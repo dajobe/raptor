@@ -130,7 +130,7 @@ n3_lexer.c: $(srcdir)/n3_lexer.l n3_parser.tab.c
 n3_parser.tab.c: $(srcdir)/n3_parser.y
 	$(YACC) -b n3_parser -p n3_parser_ -d -v $(srcdir)/n3_parser.y
 	mv $@ n3_parser.t
-	sed -e '/^yyerrlab1:/,/^\#endif/d' n3_parser.t > $@
+	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' n3_parser.t > $@
 	rm -f n3_parser.t
 
 
