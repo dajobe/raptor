@@ -75,12 +75,7 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
   #define XML_ID_XML_VERSION 10
 #endif
 
-  if(!raptor_xml_name_check(string, len, XML_ID_XML_VERSION)) {
-    raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
-    return 0;
-  }
-
-  return 1;
+  return raptor_xml_name_check(string, len, XML_ID_XML_VERSION);
 }
 
 
