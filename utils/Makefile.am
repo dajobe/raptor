@@ -108,4 +108,9 @@ raptor_cc_test: raptor_cc.c libraptor.la
 raptor_uri_test: raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
+deb: distcheck
+	rm -rf $(distdir)
+	tar xfz $(distdir).tar.gz
+	cd $distdir && dpkg-buildpackage -rfakeroot
+
 @SET_MAKE@
