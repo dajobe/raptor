@@ -1035,13 +1035,9 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_sax2_element* sax2_element;
-  raptor_qname *element_name;
 
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
-
-  if(rdf_parser->failed)
-    return;
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
@@ -1049,50 +1045,49 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 #endif
 #endif
 
-  raptor_update_document_locator(rdf_parser);
-
-  /* recode element name */
-
-  element_name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
-                                raptor_parser_error, rdf_parser);
-  if(!element_name) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return;
-  }
-
+  if(!rdf_parser->failed) {
+    raptor_update_document_locator(rdf_parser);
 
 #ifdef RAPTOR_DEBUG
-  fprintf(stderr, "\nraptor_xml_end_element_handler: End ns-element: ");
-  raptor_qname_print(stderr, element_name);
-  fputc('\n', stderr);
+    raptor_qname *element_name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
+                                                raptor_parser_error, rdf_parser);
+    if(!element_name) {
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      return;
+    }
+    
+    fprintf(stderr, "\nraptor_xml_end_element_handler: End ns-element: ");
+    raptor_qname_print(stderr, element_name);
+    fputc('\n', stderr);
+    raptor_free_qname(element_name);
 #endif
 
-  element=rdf_xml_parser->current_element;
-
-  raptor_end_element_grammar(rdf_parser, element);
-
+    raptor_end_element_grammar(rdf_parser, rdf_xml_parser->current_element);
+  }
+  
   element=raptor_element_pop(rdf_xml_parser);
-  raptor_free_qname(element_name);
 
   raptor_namespaces_end_for_depth(&rdf_parser->namespaces, rdf_xml_parser->sax2->depth);
 
-  if(element->parent) {
-    /* Do not change this; PROPERTYELT will turn into MEMBER if necessary
-     * See the switch case for MEMBER / PROPERTYELT where the test is done.
-     *
-     * PARSETYPE_RESOURCE should never be propogated up since it
-     * will turn the next child (node) element into a property
-     */
-    if(element->state != RAPTOR_STATE_MEMBER_PROPERTYELT &&
-       element->state != RAPTOR_STATE_PARSETYPE_RESOURCE)
-      element->parent->child_state=element->state;
-  }
+  if(element) {
+    if(element->parent) {
+      /* Do not change this; PROPERTYELT will turn into MEMBER if necessary
+       * See the switch case for MEMBER / PROPERTYELT where the test is done.
+       *
+       * PARSETYPE_RESOURCE should never be propogated up since it
+       * will turn the next child (node) element into a property
+       */
+      if(element->state != RAPTOR_STATE_MEMBER_PROPERTYELT &&
+         element->state != RAPTOR_STATE_PARSETYPE_RESOURCE)
+        element->parent->child_state=element->state;
+    }
   
-
-  raptor_free_element(element);
+    raptor_free_element(element);
+  }
 
   sax2_element=raptor_sax2_element_pop(rdf_xml_parser->sax2);
-  raptor_free_sax2_element(sax2_element);
+  if(sax2_element)
+    raptor_free_sax2_element(sax2_element);
 
   rdf_xml_parser->sax2->depth--;
 
