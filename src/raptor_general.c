@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2000-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -69,7 +69,7 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 
 
 
-/*
+/**
  * raptor_init - Initialise the raptor library
  * 
  * Initialises the library.
@@ -94,7 +94,7 @@ raptor_init(void)
 }
 
 
-/*
+/**
  * raptor_finish - Terminate the raptor library
  *
  * Cleans up state of the library.
@@ -333,7 +333,7 @@ raptor_parsers_enumerate(const unsigned int counter,
 }
 
 
-/*
+/**
  * raptor_syntax_name_check -  Check name of a parser
  * @name: the syntax name
  *
@@ -345,7 +345,7 @@ raptor_syntax_name_check(const char *name) {
 }
 
 
-/*
+/**
  * raptor_new_parser - Constructor - create a new raptor_parser object
  * @name: the parser name
  *
@@ -1272,9 +1272,15 @@ raptor_parse_abort(raptor_parser *parser)
 const char *raptor_xml_literal_datatype_uri_string="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 const unsigned int raptor_xml_literal_datatype_uri_string_len=53;
 
+
+/**
+ * raptor_print_statement - Print a raptor_statement to a stream
+ * @statement: &raptor_statement object to print
+ * @stream: &FILE* stream
+ *
+ **/
 void
-raptor_print_statement_detailed(const raptor_statement * statement,
-                                int detailed, FILE *stream) 
+raptor_print_statement(const raptor_statement * statement, FILE *stream) 
 {
   fputc('[', stream);
 
@@ -1329,19 +1335,6 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   }
 
   fputc(']', stream);
-}
-
-
-/**
- * raptor_print_statement - Print a raptor_statement to a stream
- * @statement: &raptor_statement object to print
- * @stream: &FILE* stream
- *
- **/
-void
-raptor_print_statement(const raptor_statement * const statement, FILE *stream) 
-{
-  raptor_print_statement_detailed(statement, 0, stream);
 }
 
 
@@ -1576,7 +1569,7 @@ raptor_statement_part_as_string(const void *term,
 }
 
 
-void
+static void
 raptor_print_statement_part_as_ntriples(FILE* stream,
                                         const void *term, 
                                         raptor_identifier_type type,
@@ -1699,6 +1692,9 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 }
 
 
+/**
+ * raptor_generate_id - Default generate id - internal
+ **/
 unsigned char *
 raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag,
                    unsigned char *user_bnodeid)
@@ -1713,6 +1709,12 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag,
 }
 
 
+/**
+ * raptor_get_locator: Get the current raptor locator object
+ * @rdf_parser: raptor parser
+ * 
+ * Return value: raptor locator
+ **/
 raptor_locator*
 raptor_get_locator(raptor_parser *rdf_parser) 
 {
