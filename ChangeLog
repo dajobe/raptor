@@ -1,4 +1,64 @@
+2004-12-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Use raptor_uri in raptor_rss_item.
+	(raptor_rss_context_init, raptor_rss_context_terminate): Added and
+	used in parser and serializer init and terminate.
+	(raptor_rss10_serialize_init): Initialise list of triples, items.
+	(raptor_rss10_serialize_terminate): Tidy up triples, items.
+	(raptor_rss10_serialize_statement): Look for known typed nodes,
+	identify ones matching rss 1.0 model and also look for the
+	rdf:Seq.  Store other triples for later.
+	(raptor_rss10_serialize_end): Added skeleton.
+
+2004-12-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_uri.c (raptor_uri_print): Added.
+
+	* raptor.h: Added raptor_uri_print
+
+	* raptor_general.c (raptor_statement_copy):
+	Added statement copy constructor
+	(raptor_free_statement): Added statement destructor.
+
+	* raptor_internal.h:
+	Added raptor_statement_copy and raptor_free_statement
+
+	* raptor_rss.c:
+	Moved parser namespace URIs to common code rss_namespace_uris.
+	(raptor_rss_common_init, raptor_rss_common_terminate): Added to
+	initialise and free up common rss items - namespace URIs, URIs for
+	types and uris for properties.
+	Added skeleton RSS 1.0 serializer
+	(raptor_rss10_serialize_init, raptor_rss10_serialize_terminate,
+	raptor_rss10_serialize_statement,
+	raptor_rss10_serialize_finish_factory,
+	raptor_rss10_serializer_register_factory,
+	raptor_init_serializer_rss10): Added skeleton RSS 1.0 serializer
+	factory and methods.
+
+	* raptor_general.c (raptor_init):
+	Added call to raptor_init_serializer_rss10
+
+	* raptor_internal.h: Added raptor_init_serializer_rss10
+
+	* raptor_rss.c (raptor_rss_parse_recognise_syntax): Add atom checks.
+
 2004-12-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am: Added
+	RDF_MAYFAIL_XML_TEST_FILES,RDF_MAYFAIL_XML_OUT_FILES and rule
+	check-mayfail-xml-rdf to run checks that may fail due to XML
+	parser bugs.
+
+	* raptor_sax2.c, raptor_serialize.c, raptor_iostream.c,
+	raptor_nfc.c, raptor_rdfxml.c: Initialise possibly used but
+	uninitialised vars to remove gcc warning with -O.
+
+	* raptor_namespace.c, raptor_rdfxml.c, raptor_serialize.c,
+	raptor_xml_writer.c, rdfdump.c, raptor.h, raptor_internal.h,
+	raptor_iostream.c: Casts for c++
+
+	* raptor_rdfxml.c: Fix using wrong element name in warnings.
 
 	* raptor_rdfxml.c (raptor_xml_start_element_handler):
 	Use raptor_sax2_element_set_attributes.
