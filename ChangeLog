@@ -1,7 +1,14 @@
 2004-10-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_namespace.c, raptor_serialize.c, raptor_iostream.c:
+	Casts for C++
+
+	* tests/Makefile.am, tests/turtle/Makefile.am:
+	Replace direct dependency on $(top_builddir)/rapper with build-rapper
+	so re-compile check is forced before testing.
+
 	* raptor.h, raptor_namespace.c, raptor_serialize.c:
-	Fix a bunch of consistency typos in namespace URIs
+	Fix a bunch of constitency typos in namespace URIs
 
 	* raptor_internal.h:
 	Add locator, error_user_data and error_handler to raptor_serializer.
