@@ -520,9 +520,9 @@ if test "X$PKG_CONFIG" != X; then
 fi
 
 
-AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, ghttp], www="$withval", www="curl") 
+AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, ghttp, none], www="$withval", www="curl") 
 
-for www_name in $www curl xml ghttp; do
+for www_name in $www curl xml ghttp none; do
   case $www_name in
     curl)
       if test $have_libcurl = 1; then
@@ -547,6 +547,14 @@ for www_name in $www curl xml ghttp; do
 	AC_DEFINE([RAPTOR_WWW_LIBGHTTP], 1, [Have libghttp WWW library])
         break
       fi
+      ;;
+
+    none)
+      need_libcurl=0
+      need_libxml_www=0
+      need_libghttp=0
+      AC_DEFINE([RAPTOR_WWW_NONE], 1, [No WWW library])
+      break
       ;;
 
     *)
@@ -586,9 +594,13 @@ elif test $need_libxml_www = 1; then
 elif test $need_libghttp = 1; then
   www_library="libghttp $LIBGHTTP_VERSION"
 else
-  AC_MSG_ERROR(No WWW library available - please install libcurl, libxml2 or libghttp)
+  www_library=none
 fi
 AC_MSG_RESULT($www_library)
+if test "X$www_library" = Xnone; then
+  AC_MSG_WARN([No WWW library in use - only file: URLs will work])
+  AC_MSG_WARN([Install libcurl, libxml2 or libghttp to provide WWW access])
+fi
 
 
 if test $need_libcurl = 1; then
