@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WIN32_EXPORTS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "...." /D "RAPTOR_INTERNAL" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WIN32_EXPORTS" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "...." /I "../curl-7.12.1/include" /I ".." /I "../../expat-1.95.8/lib" /D "RAPTOR_INTERNAL" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WIN32_EXPORTS" /FD /c
 # SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -70,8 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WIN32_EXPORTS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I ".." /D "RAPTOR_INTERNAL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WIN32_EXPORTS" /FR /FD /GZ /c
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../curl-7.12.1/include" /I ".." /I "../../expat-1.95.8/lib" /D "RAPTOR_INTERNAL" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WIN32_EXPORTS" /FR /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -81,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 urlmon.lib libexpat.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept /libpath:"..\expat\lib"
+# ADD LINK32 urlmon.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept /libpath:"..\expat\lib"
 
 !ENDIF 
 
@@ -98,11 +97,15 @@ SOURCE=..\ntriples_parse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\raptor_cc.c
+SOURCE=..\raptor_expat.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\raptor_general.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_identifier.c
 # End Source File
 # Begin Source File
 
@@ -126,6 +129,26 @@ SOURCE=..\raptor_qname.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\raptor_rss.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_sax2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_sequence.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_set.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_stringbuffer.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\raptor_uri.c
 # End Source File
 # Begin Source File
@@ -138,16 +161,48 @@ SOURCE=..\raptor_win32.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\raptor_www.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_www_curl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_www_libfetch.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_www_libwww.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_www_libxml.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_xml.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\raptor_xml_writer.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\strcasecmp.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\turtle_lexer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\turtle_parser.tab.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\acconfig.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\ntriples.h
@@ -158,11 +213,27 @@ SOURCE=..\raptor.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\raptor_getopt.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\raptor_internal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\win32_config.h
+SOURCE=..\turtle_common.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\turtle_lexer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\turtle_parser.tab.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\win32_raptor_config.h
 # End Source File
 # End Group
 # End Target

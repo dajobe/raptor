@@ -3,14 +3,10 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "raptor"=".\raptor.dsp" - Package Owner=<4>
+Project: "curllib"="..\..\curl-7.12.1\lib\curllib.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    $/RDFDB/DSPs/RDF File/raptor
-    .
-    end source code control
 }}}
 
 Package=<4>
@@ -19,14 +15,40 @@ Package=<4>
 
 ###############################################################################
 
-Project: "raptortest"=".\win32\raptortest.dsp" - Package Owner=<4>
+Project: "expat"="..\..\expat-1.95.8\lib\expat.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    $/RDFDB/DSPs/RDF File/raptor/win32
-    .\win32
-    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "raptor"=".\raptor.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name curllib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name expat
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "raptortest"=".\raptortest.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
 }}}
 
 Package=<4>
@@ -42,10 +64,6 @@ Global:
 
 Package=<5>
 {{{
-    begin source code control
-    $/RDFDB/DSPs/RDF File/raptor
-    .
-    end source code control
 }}}
 
 Package=<3>
