@@ -1033,17 +1033,11 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
 #endif
 
   if(len) {
-    buffer=(char*)RAPTOR_MALLOC(cstring, turtle_parser->buffer_length + len + 1);
+    buffer=(char*)RAPTOR_REALLOC(cstring, turtle_parser->buffer, turtle_parser->buffer_length + len + 1);
     if(!buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
     }
-
-    if(turtle_parser->buffer_length) {
-      strncpy(buffer, turtle_parser->buffer, turtle_parser->buffer_length);
-      RAPTOR_FREE(cstring, turtle_parser->buffer);
-    }
-
     turtle_parser->buffer=buffer;
 
     /* move pointer to end of cdata buffer */
