@@ -132,8 +132,8 @@ raptor_features_enumerate_common(const raptor_feature feature,
  * raptor_set_feature and raptor_get_feature 
  * ( raptor_serializer_set_feature raptor_serializer_get_feature)
  *
- * String value features use raptor_set_feature_string and
- * raptor_get_feature_string ( raptor_serializer_set_feature_string
+ * String value features use raptor_parser_set_feature_string and
+ * raptor_parser_get_feature_string ( raptor_serializer_set_feature_string
  * and raptor_serializer_get_feature_string )
  *
  * Return value: the type of the feature or <0 if feature is unknown
