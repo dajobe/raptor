@@ -43,14 +43,6 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
-raptor_stringbuffer* raptor_new_stringbuffer(void);
-void raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer);
-int raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer, const char *string, size_t length);
-int raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer, const char *string);
-int raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer, int integer);
-char * raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer);
-size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
-
 
 /*
  * The only methods needed here are:
@@ -63,7 +55,7 @@ size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
 struct raptor_stringbuffer_node_s
 {
   struct raptor_stringbuffer_node_s* next;
-  char *string;
+  unsigned char *string;
   size_t length;
 };
 typedef struct raptor_stringbuffer_node_s raptor_stringbuffer_node;
@@ -80,54 +72,12 @@ struct raptor_stringbuffer_s
   size_t length;
 
   /* frozen string if already calculated, or NULL if not present */
-  char *string;
+  unsigned char *string;
 };
 
 
 /* prototypes for local functions */
-static raptor_stringbuffer_node* raptor_new_stringbuffer_node(raptor_stringbuffer* buf, const char *string, size_t length);
-static void raptor_free_stringbuffer_node(raptor_stringbuffer_node* node);
-
-
-
-/**
- * raptor_new_stringbuffer_node - add a new stringbuffer node for the given counted string
- * @stringbuffer: the stringbuffer
- * @string: string
- * @length: string length
- * 
- * Return value: &raptor_stringbuffer_node of content or NULL on failure
- **/
-static raptor_stringbuffer_node*
-raptor_new_stringbuffer_node(raptor_stringbuffer* sb, 
-                             const char *string, size_t length) 
-{
-  raptor_stringbuffer_node* node;
-  node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
-  if(!node)
-    return NULL;
-
-  /* Note these do not include the cstring NULL character */
-  node->string=(char*)RAPTOR_MALLOC(bytes, length);
-  if(!node->string) {
-    RAPTOR_FREE(raptor_stringbuffer_node, node);
-    return NULL;
-  }
-  strncpy(node->string, string, length);
-  
-  node->length=length;
-
-  return node;
-}
-
-
-static void
-raptor_free_stringbuffer_node(raptor_stringbuffer_node* node) 
-{
-  if(node->string)
-    RAPTOR_FREE(cstring, node->string);
-  RAPTOR_FREE(raptor_stringbuffer_node, node);
-}
+static int raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer, const unsigned char *string, size_t length, int do_copy);
 
 
 /* functions implementing the stringbuffer api */
@@ -161,7 +111,9 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
     while(node) {
       raptor_stringbuffer_node *next=node->next;
       
-      raptor_free_stringbuffer_node(node);
+      if(node->string)
+        RAPTOR_FREE(cstring, node->string);
+      RAPTOR_FREE(raptor_stringbuffer_node, node);
       node=next;
     }
   }
@@ -172,24 +124,44 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
 
 
 /**
- * raptor_stringbuffer_append_counted_string: - Add a string to the stringbuffer
+ * raptor_stringbuffer_append_string_common: - Add a string to the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
- * 
- * Return value: <0 on failure, 0 on success, 1 if already present
+ * @do_copy: non-0 to copy the string
+ *
+ * INTERNAL
+ *
+ * If do_copy is non-0, the passed-in string is copied into new memory
+ * otherwise the stringbuffer becomes the owner of the string pointer
+ * and will free it when the stringbuffer is destroyed.
+ *
+ * Return value: non-0 on failure
  **/
-int
-raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer, 
-                                          const char *string, size_t length)
+static int
+raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer, 
+                                         const unsigned char *string, size_t length,
+                                         int do_copy)
 {
   raptor_stringbuffer_node *node;
 
-  node=raptor_new_stringbuffer_node(stringbuffer, string, length);
-
+  node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
   if(!node)
     return 1;
-  
+
+  if(do_copy) {
+    /* Note this copy does not include the \0 character - not needed  */
+    node->string=(unsigned char*)RAPTOR_MALLOC(bytes, length);
+    if(!node->string) {
+      RAPTOR_FREE(raptor_stringbuffer_node, node);
+      return 1;
+    }
+    strncpy((char*)node->string, (const char*)string, length);
+  } else
+    node->string=(unsigned char*)string;
+  node->length=length;
+
+
   if(stringbuffer->tail) {
     stringbuffer->tail->next=node;
     stringbuffer->tail=node;
@@ -210,17 +182,44 @@ raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer,
 
 
 /**
+ * raptor_stringbuffer_append_counted_string: - Add a string to the stringbuffer
+ * @stringbuffer: raptor stringbuffer
+ * @string: string
+ * @length: length of string
+ * @do_copy: non-0 to copy the string
+
+ * If do_copy is non-0, the passed-in string is copied into new memory
+ * otherwise the stringbuffer becomes the owner of the string pointer
+ * and will free it when the stringbuffer is destroyed.
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer, 
+                                          const unsigned char *string, size_t length,
+                                          int do_copy)
+{
+  return raptor_stringbuffer_append_string_common(stringbuffer, string, length, do_copy);
+}
+  
+
+/**
  * raptor_stringbuffer_append_string: - Add a string to the stringbuffer
  * @stringbuffer: raptor stringbuffer
  * @string: string
+ * @do_copy: non-0 to copy the string
  * 
- * Return value: <0 on failure, 0 on success, 1 if already present
+ * If do_copy is non-0, the passed-in string is copied into new memory
+ * otherwise the stringbuffer becomes the owner of the string pointer
+ * and will free it when the stringbuffer is destroyed.
+ *
+ * Return value: non-0 on failure
  **/
 int
 raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer, 
-                                  const char *string)
+                                  const unsigned char *string, int do_copy)
 {
-  return raptor_stringbuffer_append_counted_string(stringbuffer, string, strlen(string));
+  return raptor_stringbuffer_append_string_common(stringbuffer, string, strlen((const char*)string), do_copy);
 }
 
 
@@ -229,7 +228,7 @@ raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer,
  * @stringbuffer: raptor stringbuffer
  * @integer: integer to format as decimal and add
  * 
- * Return value: <0 on failure, 0 on success, 1 if already present
+ * Return value: non-0 on failure
  **/
 int
 raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer, 
@@ -238,8 +237,8 @@ raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer,
   /* enough for 64 bit signed integer
    * INT64_MAX is  9223372036854775807 (19 digits) + 1 for sign 
    */
-  char buf[20];
-  char *p;
+  unsigned char buf[20];
+  unsigned char *p;
   int i=integer;
   size_t length=1;
   if(integer<0) {
@@ -260,7 +259,7 @@ raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer,
   if(integer<0)
     *p= '-';
   
-  return raptor_stringbuffer_append_counted_string(stringbuffer, buf, length);
+  return raptor_stringbuffer_append_counted_string(stringbuffer, buf, length, 1);
 }
 
 
@@ -284,25 +283,25 @@ raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer)
  * 
  * Return value: NULL on failure or stringbuffer is mpety
  **/
-char *
+unsigned char *
 raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
 {
   raptor_stringbuffer_node *node;
-  char *p;
+  unsigned char *p;
   
   if(!stringbuffer->length)
     return NULL;
   if(stringbuffer->string)
     return stringbuffer->string;
 
-  stringbuffer->string=(char*)RAPTOR_MALLOC(cstring, stringbuffer->length+1);
+  stringbuffer->string=(unsigned char*)RAPTOR_MALLOC(cstring, stringbuffer->length+1);
   if(!stringbuffer->string)
     return NULL;
 
   node=stringbuffer->head;
   p=stringbuffer->string;
   while(node) {
-    strncpy(p, node->string, node->length);
+    strncpy((char*)p, (const char*)node->string, node->length);
     p+= node->length;
     node=node->next;
   }
@@ -330,7 +329,7 @@ main(int argc, char *argv[])
   const int test_integers[TEST_INTEGERS_COUNT]={ 0, 1, -1, 11, 1234, 12345, -12345 };
   const char *test_integer_results[TEST_INTEGERS_COUNT]={ "abcd0", "abcd1", "abcd-1", "abcd11", "abcd1234", "abcd12345", "abcd-12345" };
   raptor_stringbuffer *sb;
-  char *str;
+  unsigned char *str;
   size_t len;
   int i=0;
   
@@ -352,7 +351,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: Adding string buffer item '%s'\n", program, items[i]);
 #endif
   
-    rc=raptor_stringbuffer_append_counted_string(sb, items[i], len);
+    rc=raptor_stringbuffer_append_counted_string(sb, (unsigned char*)items[i], len, 1);
     if(rc) {
       fprintf(stderr, "%s: Adding string buffer item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
@@ -368,7 +367,7 @@ main(int argc, char *argv[])
   }
 
   str=raptor_stringbuffer_as_string(sb);
-  if(strcmp(str, items_string)) {
+  if(strcmp((const char*)str, items_string)) {
     fprintf(stderr, "%s: string buffer contains '%s', expected '%s'\n",
             program, str, items_string);
     exit(1);
@@ -382,7 +381,8 @@ main(int argc, char *argv[])
       exit(1);
     }
     
-    raptor_stringbuffer_append_string(isb, test_integer_string);
+    raptor_stringbuffer_append_string(isb, 
+                                      (const unsigned char*)test_integer_string, 1);
 
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, "%s: Adding decimal integer %d to buffer\n", program, test_integers[i]);
@@ -391,7 +391,7 @@ main(int argc, char *argv[])
     raptor_stringbuffer_append_decimal(isb, test_integers[i]);
 
     str=raptor_stringbuffer_as_string(isb);
-    if(strcmp(str, test_integer_results[i])) {
+    if(strcmp((const char*)str, test_integer_results[i])) {
       fprintf(stderr, "%s: string buffer contains '%s', expected '%s'\n",
               program, str, test_integer_results[i]);
       exit(1);
