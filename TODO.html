@@ -11,6 +11,10 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>BUG: Update neeed for libxml 2.6.0 SAX2 API.  Running gives warnings like
+<em>Use of deprecated SAXv1 function internalSubset</em>
+The new methods have names starting with xmlSAX2 replacing the old names.
+</li>
 <li>Report that the WIN32 uri code is not correct for file://C|/foo</li>
 <li>RFE: add a way to disable the gnome glib NFC linking/checking</li>
 <li>N-Triples+ parser - the lexer lval-&gt;string values get overwritten on errors</li>
