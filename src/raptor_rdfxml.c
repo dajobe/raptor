@@ -3340,6 +3340,9 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   size_t len;
   int rc;
   
+  if(!rdf_parser->feature_check_rdf_id)
+    return 0;
+
   base_uri_string=raptor_uri_as_counted_string(base_uri, &base_uri_string_len);
   id_len=strlen((const char*)id);
   
