@@ -29,3 +29,6 @@
 
 /* is this being built inside redland? */
 #undef RAPTOR_IN_REDLAND
+
+/* Build RDF datatypes test code? */
+#undef RAPTOR_RDF_DATATYPES_TEST
