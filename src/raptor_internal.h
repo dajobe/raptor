@@ -224,12 +224,6 @@ struct raptor_parser_s {
    */
   int feature_scanning_for_rdf_RDF;
 
-  /* FEATURE: 
-   * non 0 if assume document is rdf/xml, thus rdf:RDF is optional
-   * but still allowed.  See also feature_scanning_for_rdf:RDF.
-   */
-  int feature_assume_is_rdf;
-
   /* FEATURE:
    * non 0 to allow non-namespaced resource, ID etc attributes
    * on RDF namespaced-elements
