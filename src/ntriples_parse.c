@@ -7,8 +7,8 @@
  * N-Triples
  * http://www.w3.org/TR/rdf-testcases/#ntriples
  *
- * Copyright (C) 2001-2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2001-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -70,6 +70,8 @@ struct raptor_ntriples_parser_context_s {
   
   /* static statement for use in passing to user code */
   raptor_statement statement;
+
+  raptor_uri* xml_literal_datatype_uri;
 };
 
 
@@ -85,6 +87,8 @@ typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
 
 static int
 raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
+  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
+  ntriples_parser->xml_literal_datatype_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
   return 0;
 }
 
@@ -102,6 +106,7 @@ raptor_ntriples_parse_terminate(raptor_parser *rdf_parser) {
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   if(ntriples_parser->line_length)
     RAPTOR_FREE(cdata, ntriples_parser->line);
+  raptor_free_uri(ntriples_parser->xml_literal_datatype_uri);
 }
 
 
@@ -130,6 +135,7 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
                                    const unsigned char *object_literal_language,
                                    const unsigned char *object_literal_datatype)
 {
+  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)parser->context;
   raptor_statement *statement=&parser->statement;
   raptor_uri *subject_uri=NULL;
   int predicate_ordinal=0;
@@ -147,8 +153,11 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
 
-  if(object_literal_datatype)
+  if(object_literal_datatype) {
     datatype_uri=raptor_new_uri_relative_to_base(parser->base_uri, object_literal_datatype);
+    if(!raptor_uri_equals(datatype_uri, ntriples_parser->xml_literal_datatype_uri))
+      object_literal_language=NULL;
+  }
 
   /* Predicates in N-Triples are URIs or ordinals */
   if(!strncmp((const char*)predicate, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
