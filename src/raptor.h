@@ -190,7 +190,7 @@ RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 /* Utility functions */
 RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
 RAPTOR_API const char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
-RAPTOR_API char* raptor_xml_escape_string(raptor_parser *rdf_parser, const unsigned char *string, char quote);
+RAPTOR_API char* raptor_xml_escape_string(raptor_parser *rdf_parser, const unsigned char *string, size_t len, size_t *new_len_p, char quote);
 
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
