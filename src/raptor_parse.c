@@ -1663,6 +1663,9 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 
   raptor_end_namespaces_for_depth(rdf_parser);
 
+  if(element->parent)
+    element->parent->child_state=element->state;
+
   raptor_free_element(element);
 
   rdf_parser->depth--;
