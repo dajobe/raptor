@@ -1162,11 +1162,21 @@ void
 raptor_xml_comment_handler(void *user_data, const unsigned char *s)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_xml_parser* rdf_xml_parser;
+  raptor_element* element;
 
   if(rdf_parser->failed)
     return;
 
-  /* nop */
+  rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  element=rdf_xml_parser->current_element;
+
+  if(element) {
+    if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
+      raptor_xml_writer_comment(rdf_xml_parser->xml_writer, s, strlen(s));
+  }
+  
+
   RAPTOR_DEBUG2(raptor_xml_comment_handler, "XML Comment '%s'\n", s);
 }
 
