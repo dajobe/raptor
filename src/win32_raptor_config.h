@@ -110,6 +110,21 @@ extern "C" {
 /* flex: const is available */
 #define YY_USE_CONST
 
+/* The size of a `unsigned char', as computed by sizeof. */
+#define SIZEOF_UNSIGNED_CHAR 1
+
+/* The size of a `unsigned int', as computed by sizeof. */
+#define SIZEOF_UNSIGNED_INT 4
+
+/* The size of a `unsigned long', as computed by sizeof. */
+#define SIZEOF_UNSIGNED_LONG 4
+
+/* The size of a `unsigned long long', as computed by sizeof. */
+#define SIZEOF_UNSIGNED_LONG_LONG 8
+
+
+#define inline __inline
+
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "curllib"="..\..\curl-7.12.1\lib\curllib.dsp" - Package Owner=<4>
+Project: "curllib"="..\..\..\..\curl\curl-7.10.3\lib\curllib.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,19 @@ Package=<4>
 
 ###############################################################################
 
-Project: "expat"="..\..\expat-1.95.8\lib\expat.dsp" - Package Owner=<4>
+Project: "expat"="..\..\..\..\Expat-1.95.7\Source\lib\expat.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "rapper"=".\rapper.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
