@@ -265,7 +265,8 @@ struct raptor_parser_s {
 /** A Storage Factory */
 struct raptor_parser_factory_s {
   struct raptor_parser_factory_s* next;
-  char* name;
+  const char* name;
+  const char* label;
   
   /* the rest of this structure is populated by the
      parser-specific register function */
@@ -290,7 +291,7 @@ struct raptor_parser_factory_s {
 
 /* raptor_general.c */
 
-void raptor_parser_register_factory(const char *name, void (*factory) (raptor_parser_factory*));
+void raptor_parser_register_factory(const char *name, const char *label, void (*factory) (raptor_parser_factory*));
 
 const unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
 const unsigned char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
