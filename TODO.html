@@ -21,9 +21,6 @@ The new methods have names starting with xmlSAX2 replacing the old names.
 <li>Report that the WIN32 uri code is not correct for file://C|/foo</li>
 <li>RFE: add a way to disable the gnome glib NFC linking/checking</li>
 <li>N-Triples+ parser - the lexer lval-&gt;string values get overwritten on errors</li>
-<li>N-Triples+ parser - No UTF-8</li>
-<li>N-Triples+ parser - No N-Triples escapes in strings</li>
-<li>N-Triples+ parser - too much internal copying of strings/tokens</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Add a N3 parser (FEATURE)</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a> (FEATURE)</li>
@@ -41,7 +38,9 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
-<li>Correct line counting for N-Triples with \r\n line (DOS) files (1.1.0)</li>
+<li><a href="http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/">N-Triples Plus</a> parser (1.1.0)</li>
+<li>Correct line counting for N-Triples with \r\n line (DOS) files and
+when the line crosses a chunk. (1.1.0)</li>
 <li>Scanning (<tt>rapper --scan</tt>) for <tt>rdf:RDF</tt> in embedded XML does not work (0.9.13)</li>
 <li>URI retrieval - make sure it chops off the fragment before
 fetching. (0.9.12)</li>
