@@ -269,7 +269,7 @@ struct raptor_parser_factory_s {
   void (*terminate)(raptor_parser* parser);
   
   /* start a parse */
-  int (*start)(raptor_parser* parser, raptor_uri *uri);
+  int (*start)(raptor_parser* parser);
   
   /* parse a chunk of memory */
   int (*chunk)(raptor_parser* parser, const unsigned char *buffer, size_t len, int is_end);
