@@ -378,6 +378,44 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 }
 
 
+/* Compatiblity wrapper */
+static char*
+raptor_vsnprintf(const char *message, va_list arguments) 
+{
+  char empty_buffer[1];
+  int len;
+  char *buffer=NULL;
+
+#ifdef HAVE_C99_VSNPRINTF
+  len=vsnprintf(empty_buffer, 1, message, arguments)+1;
+  if(len<=0)
+    return NULL;
+  
+  buffer=(char*)RAPTOR_MALLOC(cstring, len);
+  if(!buffer)
+    return NULL;
+  vsnprintf(buffer, len, message, arguments);
+#else
+  /* This vsnprintf doesn't return number of bytes required */
+  int size=2;
+      
+  while(1) {
+    buffer=(char*)RAPTOR_MALLOC(cstring, size+1);
+    if(!buffer)
+      return NULL;
+    
+    len=vsnprintf(buffer, size, message, arguments);
+    if(len>=0)
+      break;
+    RAPTOR_FREE(cstring, buffer);
+    size+=4;
+  }
+#endif
+
+  return buffer;
+}
+
+
 /*
  * raptor_parser_fatal_error_varargs - Fatal Error from a parser - Internal
  **/
@@ -388,14 +426,12 @@ raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
   parser->failed=1;
 
   if(parser->fatal_error_handler) {
-    char empty_buffer[1];
-    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)RAPTOR_MALLOC(cstring, len);
+    char *buffer=raptor_vsnprintf(message, arguments);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_fatal_error_varargs: Out of memory\n");
       return;
     }
-    vsnprintf(buffer, len, message, arguments);
+
     parser->fatal_error_handler(parser->fatal_error_user_data, 
                                 &parser->locator, buffer); 
     RAPTOR_FREE(cstring, buffer);
@@ -435,14 +471,11 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
                             va_list arguments)
 {
   if(parser->error_handler) {
-    char empty_buffer[1];
-    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)RAPTOR_MALLOC(cstring, len);
+    char *buffer=raptor_vsnprintf(message, arguments);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_error_varargs: Out of memory\n");
       return;
     }
-    vsnprintf(buffer, len, message, arguments);
     parser->error_handler(parser->error_user_data, 
                           &parser->locator, buffer);
     RAPTOR_FREE(cstring, buffer);
@@ -481,14 +514,11 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
 {
 
   if(parser->warning_handler) {
-    char empty_buffer[1];
-    int len=vsnprintf(empty_buffer, 1, message, arguments)+1;
-    char *buffer=(char*)RAPTOR_MALLOC(cstring, len);
+    char *buffer=raptor_vsnprintf(message, arguments);
     if(!buffer) {
       fprintf(stderr, "raptor_parser_warning_varargs: Out of memory\n");
       return;
     }
-    vsnprintf(buffer, len, message, arguments);
     parser->warning_handler(parser->warning_user_data,
                             &parser->locator, buffer);
     RAPTOR_FREE(cstring, buffer);
