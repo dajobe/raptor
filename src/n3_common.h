@@ -28,7 +28,7 @@ extern "C" {
 
 
 /* n3_parser.y */
-int n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...);
+int n3_syntax_error(void *rdf_parser, const char *message, ...);
 raptor_uri* n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
 
 
