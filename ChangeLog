@@ -1,5 +1,13 @@
 2004-12-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_uri.c (raptor_default_new_uri_relative_to_base): Ask for
+	1 more char for new URI to allow inserting of a missing "/" path.
+
+	* raptor_rfc2396.c (raptor_uri_resolve_uri_reference): Add debug
+	message.  When adding a missing path "/", set the path_len and the
+	uri_len to match.
+	(main): Added test when a missing abs / path is added.
+
 	* raptor_sequence.c (raptor_sequence_set_at,
 	raptor_sequence_get_at): Check for non-negative idx
 
