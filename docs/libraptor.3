@@ -28,6 +28,8 @@ libraptor \- Raptor RDF parser toolkit library
 .br
 .BI raptor_parse_file( p , file_uri , base_uri );
 .br
+.BI raptor_parse_uri( p , uri , NULL );
+.br
 .BI raptor_free_parser( p );
 .br
 .BI raptor_free_uri( file_uri );
@@ -41,18 +43,21 @@ libraptor \- Raptor RDF parser toolkit library
 .SH DESCRIPTION
 The \fIRaptor\fR library provides a high-level interface to a set
 of RDF format parsers, presently RDF/XML and N-Triples.  The
-parsers turn the syntax into a sequence of RDF statements (or
-triples).  The RDF/XML parser uses either \fIexpat\fR or \fIlibxml\fR
+parsers turn the syntax into a sequence of RDF triples/statements.
+The RDF/XML parser uses either \fIexpat\fR or \fIlibxml\fR
 XML parser for providing the SAX event stream.
 The library functions are arranged in an object-oriented style with
 constructors, destructors and method calls.  The statements
 and error messages are delivered via callback functions.
 .LP
-Raptor also provides a small URI-reference parsing and resolving (not
-retrieval) library sufficient for dealing with URI-references inside
-RDF.  This functionality is modular and can be transparently replaced
-with an existing URI implementation.
-
+Raptor contains a URI-reference parsing and resolving (not
+retrieval) class (raptor_uri) sufficient for dealing with URI-references
+inside RDF.  This functionality is modular and can be transparently replaced 
+with another existing and compatible URI implementation.
+.LP
+It also provides a URI-retrieval class (raptor_www) for
+wrapping existing library such as libcurl or libxml2 that provides
+full or partial retrieval of data from URIs.
 .SH LIBRARY INITIALISATION AND CLEANUP
 .IP "\fBraptor_init()\fR"
 .IP "\fBraptor_finish()\fR"
@@ -89,16 +94,33 @@ structure is defined in raptor.h and includes fields for the
 subject, predicate, object of the statements along with their types
 and for literals, language and datatype.
 .SH "PARSER PARSING METHODS"
-These methods perform the parsing either in one method or
-by working on multiple chunks of memory passed by the application.
-These methods run and by callbacks deliver, warnings, errors, fatal errors
-and statements via the registered statement handler callback.
-.IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  const char *\fIfilename\fB, const char *\fIbase_uri\fB)\fR"
+These methods perform the entire parsing in one method.
+Statements warnings, errors and fatal errors are delivered
+via the registered statement, error etc. handler functions.
+.LP
+In both of these methods, the base URI is required for the RDF/XML
+parsers (name "rdfxml").  The N-Triples parser (name "ntriples") does
+not use this.
+.IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  raptor_uri *\fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the given filename (a URI like file:filename)
 according to the base URI \fIbase_uri\fR, or NULL if not needed.
+.IP "\fBint raptor_parse_uri(raptor_parser* \fIparser\fB,  raptor_uri* \fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
+Parse the URI according to the base URI \fIbase_uri\fR, or NULL if
+not needed.  If no base URI is given, the \fIuri\fR is used.
+This method depends on the raptor_www subsystem (see \fBWWW Class\fR
+section below)
+and an existing underlying URI retrieval implementation such as
+libcurl or libxml to retrieve the content.
+.SH "PARSER CHUNKED PARSING METHODS"
+These methods perform the parsing in parts
+by working on multiple chunks of memory passed by the application.
+Statements warnings, errors and fatal errors are delivered
+via the registered statement, error etc. handler functions.
 .IP "\fBint raptor_start_parse(raptor_parser* \fIparser\fB, const char *\fIuri\fB)\fR"
-Start a parse of content with the base URI \fIuri\fR (or NULL if not
-needed - the ntriples parser does not use it at present)
+Start a parse of chunked content with the base URI \fIuri\fR
+or NULL if not needed.
+The base URI is required for the RDF/XML parsers (name "rdfxml").
+The N-Triples parser (name "ntriples") does not use this.
 .IP "\fBint raptor_parse_chunk(raptor_parser* \fIparser\fB,  const unsigned char *buffer, size_t \fIlen\fB, int \fIis_end\fB)\fR"
 Parse the memory at \fIbuffer\fR of size \fIlen\fR returning
 statements via the statement handler callback.
@@ -147,6 +169,21 @@ escapes as defined in
 .UR http://www.w3.org/TR/rdf-testcases/#ntriples
 http://www.w3.org/TR/rdf-testcases/#ntriples
 .UE
+.IP "\fBraptor_statement_part_as_counted_string(const void *\fIterm\fB, raptor_identifier_type \fItype\fB, raptor_uri* \fIliteral_datatype\fB, const unsigned char *\fIliteral_language\fB, size_t* \fIlen_p\fB)\fR"
+.IP "\fBchar* raptor_statement_part_as_string(const void *\fIterm\fB, raptor_identifier_type \fItype\fB, raptor_uri* \fIliteral_datatype\fB, const unsigned char *\fIliteral_language\fB)\fR"
+Turns part of raptor statement into N-Triples format, using all the
+escapes as defined in
+.UR http://www.w3.org/TR/rdf-testcases/#ntriples
+http://www.w3.org/TR/rdf-testcases/#ntriples
+.UE
+The part (subject, predicate, object) of the raptor_statement is
+passed in as \fIterm\fR, the part type (subject_type, predicate_type,
+object_type) is passed in as \fItype\fR.  When the part is a literal,
+the \fIliteral_datatype\fR and \fIliteral_language\fR fields are set,
+otherwise NULL (usually object_datatype, object_literal_language).
+.IP
+If \fBraptor_statement_part_as_counted_string\fR is used,
+the length of the returned string is stored in *\fIlen_p\fR if not NULL.
 .SH "LOCATOR UTILITY FUNCTIONS"
 .IP "\fBint raptor_format_locator(char *\fIbuffer\fB, size_t \fIlength\fB, raptor_locator* \fIlocator\fB)\fR"
 This method takes a \fIraptor_locator\fR object as passed to an
@@ -171,7 +208,16 @@ the given stdio \fIstream\fR.
 This is a standalone function that prints the given string
 according to N-Triples escaping rules, expecting to be delimited
 by the character \fIdelim\fR which is usually either " or <
-
+.IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term)\fR"
+.SH "XML UTILITY FUNCTIONS"
+.IP "\fBsize_t raptor_xml_escape_string(raptor_parser *rdf_parser, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote)\fR"
+Apply the XML escaping rules to the string given in (string, len)
+into the buffer of size length. If buffer is NULL, returns the size
+of the buffer required, otherwise returns 0 on failure.  If quote
+is given, the escaped content is for an XML attribute and the
+appropriate quote character \" or \' is used, otherwise it is
+XML element content (CDATA).  The return value is the number of bytes
+used or 0 on failure.
 .SH "URI CLASS"
 Raptor has a raptor_uri class must be used for manipulating and
 passing URI references.  The default internal implementation
@@ -200,7 +246,7 @@ Create a raptor URI from a string URI-reference
 \fIuri_string\fR
 using relative URI resolution to the
 \fIbase_uri\fR.
-.IP "\fBraptor_uri* raptor_new_uri_from_id(raptor_uri* \fIbase_uri\fB, const char* \fIid\fB)\fR"
+.IP "\fBraptor_uri* raptor_new_uri_from_id(raptor_uri* \fIbase_uri\fB, const unsigned char* \fIid\fB)\fR"
 Create a raptor URI from a string RDF ID
 \fIid\fR
 concatenated to the
@@ -209,17 +255,22 @@ base URI.
 .IP "\fBraptor_uri* raptor_new_uri_for_rdf_concept(const char* \fIname\fB)\fR"
 Create a raptor URI for the RDF namespace concept
 \fIname\fR.
+.IP "\fBraptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* \fIold_uri\fB))\fR"
+Create a raptor URI suitable for use with xml:base (throw away fragment)
 .SH "URI DESTRUCTOR"
 .IP "\fBvoid raptor_free_uri(raptor_uri* \fIuri\fB)\fR"
-.Destroy a Raptor URI object.
+Destroy a raptor URI object.
 .SH "URI METHODS"
 .IP "\fBint raptor_uri_equals(raptor_uri* \fIuri1\fB, raptor_uri* \fIuri2\fB)\fR"
 Return non-zero if the given URIs are equal.
 .IP "\fBraptor_uri* raptor_uri_copy(raptor_uri* \fIuri\fB)\fR"
 Return a copy of the given raptor URI \fIuri\fR.
-.IP "\fBchar* raptor_uri_as_string(raptor_uri* \fIuri\fB);\fR"
+.IP "\fBchar* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)\fR"
+.IP "\fBchar* raptor_uri_as_string(raptor_uri* \fIuri\fB)\fR"
 Return a shared pointer to a string representation of the given raptor URI
-\fIuri\fR.  This string is shared and must not be freed.
+\fIuri\fR.  This string is shared and must not be freed.  If
+raptor_uri_as_counted_string is used, the length of the returned
+string is stored in *len_p if not NULL.
 .SH "URI UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_uri_resolve_uri_reference (const char* \fIbase_uri\fB, const char* \fIreference_uri\fB, char* \fIbuffer\fB, size_t \fIlength\fB)\fR"
 This is a standalone function that resolves the relative URI
@@ -251,9 +302,75 @@ Return the current raptor URI class implementation
 \fIhandler\fR
 and
 \fIcontext\fR
-.
+
+.SH "WWW CLASS"
+This is a small wrapper class around existing WWW libraries in
+order to provide HTTP GET or better URI retrieval for Raptor.  It
+is not intended to be a general purpose WWW retrieval interface.
+.SH "WWW CLASS INITIALISATION AND CLEANUP"
+.IP "\fBvoid raptor_www_init(void)\fR"
+.IP "\fBvoid raptor_www_finish(void)\fR"
+Initialise or terminate the raptor_www infrastructure.  raptor_www_init
+and raptor_finish are called by raptor_init and raptor_finish
+respecitively, otherwise must be called once each.
+.IP NOTE
+If an curl is being used as the WWW implementation, it also
+requires a once-only initialisation, termination.  The initialisation
+can be omitted but raptor cannot determine whether the terminatation
+should be called inside raptor_www_finish.  Therefore,
+curl_global_cleanup() should be called at the end of user code if
+the remaining libcurl resources need to be removed.
+.SH "WWW CONSTRUCTORS"
+.IP "\fBraptor_www *raptor_www_new(void)\fR"
+.IP "\fBraptor_www *raptor_www_new_with_connection(void* \fIconnection\fB)\fR"
+Create a raptor WWW object capable of URI retrieval.  If \fIconnection\fR
+is given, it must match the connection object of the underlying WWW
+implementation.  At present, this is only for libcurl, and allows you
+to re-use an existing curl handle, or use one which has been set up
+with some desired qualities.
+.SH "WWW DESTRUCTOR"
+.IP "\fBvoid raptor_www_free(raptor_www *\fIwww\fB)\fR"
+Destroy a raptor WWW object.
+.SH "WWW METHODS"
+.IP "\fBvoid raptor_www_set_user_agent(raptor_www *\fIwww\fB, const char *\fIuser_agent\fB)\fR"
+Set the user agent, for HTTP requests typically.
+.IP "\fBvoid raptor_www_set_proxy(raptor_www *\fIwww\fB, const char *\fIproxy\fB)\fR"
+Set the HTTP proxy - usually a string of the form http://server:port
+.IP "\fBraptor_www_set_write_bytes_handler(raptor_www *\fIwww\fB, raptor_www_write_bytes_handler \fIhandler\fB, void *\fIuser_data\fB)\fR"
+Set the handler to receive bytes written by the raptor_www implementation.
+.IP "\fBvoid raptor_www_set_content_type_handler(raptor_www *\fIwww\fB, raptor_www_content_type_handler \fIhandler\fB, void *\fIuser_data\fB)\fR"
+Set the handler to receive the HTTP Content-Type value, when/if
+discovered during retrieval by the raptor_www implementation.
+.IP "\fBvoid raptor_www_set_error_handler(raptor_www *www\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
+Set the error handler routine for the raptor_www class.  This takes the
+same arguments as the raptor_parser error, warning handler methods.
+.IP "\fBvoid* raptor_www_get_connection(raptor_www *\fIwww\fB)\fR"
+Return the underlying WWW library connection object.  For example,
+for libcurl this is the curl_handle.
+.SH "WWW ACTION METHODS"
+.IP "\fBint raptor_www_fetch(raptor_www *www, raptor_uri *uri)\fR"
+Retrieve the given URL, returning non zero on failure.
+.IP "\fBvoid raptor_www_abort(raptor_www *www, const char *reason)\fR"
+Abort an ongoing raptor WWW operation. Typically used within one of the
+raptor WWW handlers.
 .SH API CHANGES
-In version 0.9.6, the raptor/ntriples parser calling APIs were
+.IP 0.9.10
+\fBraptor_xml_escape_string\fR now takes an output string length pointer.
+.br
+Added \fBraptor_statement_part_as_counted_string\fR, \fBraptor_statement_part_as_string, \fBraptor_parse_abort\fR.
+.br
+Deprecated \fBraptor_parser_abort\fR.
+.IP 0.9.9
+Added raptor_www class and all its constructors, destructor, methods, calls.
+.br
+Added \fBraptor_parse_uri\fR, \fBraptor_parser_abort\fR, \fBraptor_ntriples_term_as_string\fR and \fBraptor_xml_escape_string\fR.
+.IP 0.9.7
+\fBraptor_parse_chunk, \fBraptor_new_uri_from_id\fR, arguments are now unsigned char.
+.br
+Added \fBraptor_new_uri_for_xmlbase\fR.
+.IP 0.9.6
+.LP
+In this version, the raptor/ntriples parser calling APIs were
 modified.  The following table lists the changes:
   \fIOLD API                   NEW API (0.9.6+)\fR
   \fBraptor_new()\fR              \fBraptor_new_parser("rdfxml")\fR
@@ -278,7 +395,7 @@ W3C Working Draft (work in progress),
 http://www.w3.org/TR/rdf-testcases/#ntriples
 .UE
 .SH SEE ALSO
-.BR rdfdump (1)
+.BR rapper (1), raptor-config (1)
 .SH AUTHOR
 Dave Beckett - 
 .UR http://purl.org/net/dajobe/
