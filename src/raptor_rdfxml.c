@@ -3373,7 +3373,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * to the list at the genid element->parent->tail_id
            */
           if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
-            const char * idList = raptor_generate_id(rdf_parser, 0);
+            char * idList = raptor_generate_id(rdf_parser, 0);
             
             /* <idList> rdf:type daml:List */
             raptor_generate_statement(rdf_parser, 
