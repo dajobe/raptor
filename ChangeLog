@@ -1,3 +1,31 @@
+2004-11-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac:
+	If expat_source is empty, set it to auto so no path-to-source is
+	added to libs, includes
+
+2004-11-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/ex-55.out, tests/ex-55.rdf: ex-55
+
+	* tests/Makefile.am: Added ex-55
+
+2004-11-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* examples/grapper.c:
+	Extensively updated to use GTK 2.4, 2.5 features when available.
+	Triples/Errors windows have a scalable pane between them
+	Triple columns can be sorted by clicking, width resized.
+	All known parser features are available on the preferences menu.
+	Added parser guessing button.
+	Moved syntax menu to top of display.
+	Updated about box fields to include more info when possible to
+	display.
+
+2004-11-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rapper.1: Updated -f for serializer features
+
 2004-11-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_sequence.c (raptor_sequence_join): Copy pointers correctly
