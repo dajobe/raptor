@@ -404,6 +404,22 @@ if test "X$XML_CONFIG" = "X"; then
   AC_CHECK_PROGS(XML_CONFIG, xml2-config)
 fi
 
+AC_ARG_WITH(xslt-config, [  --with-xslt-config=PATH Location of libxslt xslt-config []], xslt_config="$withval", xslt_config="")
+
+if test "X$xslt_config" != "X" ; then
+  AC_MSG_CHECKING(for $xslt_config)
+
+  if test -f $xslt_config ; then
+    XSLT_CONFIG=$xslt_config
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no - searching PATH)
+  fi
+fi
+if test "X$XSLT_CONFIG" = "X"; then
+  AC_CHECK_PROGS(XSLT_CONFIG, xslt-config)
+fi
+
 AC_ARG_WITH(curl-config, [  --with-curl-config=PATH Location of libcurl curl-config []], curl_config="$withval", curl_config="")
 
 if test "X$curl_config" != "X" ; then
@@ -542,6 +558,13 @@ CPPFLAGS="$oCPPFLAGS"
 LIBS="$oLIBS"
 
 
+have_libxslt=0
+if test "X$XSLT_CONFIG" != X; then
+  # FIXME
+  have_libxslt=1
+fi
+
+
 AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - libxml (default), expat], xml_parser="$withval", xml_parser="libxml") 
 
 for xml_parser_name in $xml_parser libxml expat; do
@@ -611,6 +634,7 @@ ntriples_parser=no
 turtle_parser=no
 n3_parser=no
 rss_parser=no
+grddl_parser=no
 
 rdf_parsers_available="rdfxml ntriples turtle"
 if test "$USE_MAINTAINER_MODE" = yes; then
@@ -633,6 +657,16 @@ else
   AC_MSG_RESULT(no - libxml2 not available)
 fi
 
+grddl_parser_ok=no
+AC_MSG_CHECKING(GRDDL parser requirements)
+if test $need_libxml = 1 -a $have_libxslt = 1; then
+  AC_MSG_RESULT(yes)
+  grddl_parser_ok=yes
+  rdf_parsers_available="$rdf_parsers_available grddl"
+else
+  AC_MSG_RESULT(no - libxml2 and libxslt are both not available)
+fi
+
 
 # This is needed because autoheader can't work out which computed
 # symbols must be pulled from acconfig.h into config.h.in
@@ -642,6 +676,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_PARSER_TURTLE, 1, [Building Turtle parser])
   AC_DEFINE(RAPTOR_PARSER_N3, 1, [Building Notation 3 parser])
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
+  AC_DEFINE(RAPTOR_PARSER_GRDDL, 1, [Building GRDDL parser])
 fi
 
 AC_MSG_CHECKING(RDF parsers required)
@@ -663,6 +698,13 @@ for parser in $parsers; do
     p=rss
   fi
 
+  if test $p = grddl; then
+    if test $grddl_parser_ok != yes; then
+      AC_MSG_WARN(GRDDL parser is not available)
+      continue
+    fi
+  fi
+
   eval $p'_parser=yes'
   NAME=`echo $p | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
   n=RAPTOR_PARSER_${NAME}
@@ -675,11 +717,17 @@ if test $rdfxml_parser = yes; then
   nfc_needed=yes
 fi
 
+need_libxslt=0
+if test $grddl_parser = yes; then
+  need_libxslt=1
+fi
+
 AM_CONDITIONAL(RAPTOR_PARSER_RDFXML, test $rdfxml_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_NTRIPLES, test $ntriples_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_N3, test $n3_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes)
 
 
 dnl Enable NFC code only if needed and the check is enabled
@@ -896,6 +944,11 @@ if test $need_expat = 1; then
   else
     LIBS="$LIBS $expat_libs"
   fi
+fi
+
+if test $need_libxslt = 1; then
+  LIBS="$LIBS `$XSLT_CONFIG --libs`"
+  CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
 fi
 
 RAPTOR_LIBTOOLLIBS=libraptor.la
