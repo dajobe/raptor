@@ -880,8 +880,8 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   is_strict=(is_strict) ? 1 : 0;
 
   /* Initialise default parser mode */
-  rdf_parser->feature_scanning_for_rdf_RDF=is_strict;
-  rdf_parser->feature_assume_is_rdf=is_strict;
+  rdf_parser->feature_scanning_for_rdf_RDF=0;
+  rdf_parser->feature_assume_is_rdf=0;
 
   rdf_parser->feature_allow_non_ns_attributes=!is_strict;
   rdf_parser->feature_allow_other_parseTypes=!is_strict;
