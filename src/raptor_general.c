@@ -86,6 +86,9 @@ raptor_init(void)
   if(raptor_initialised)
     return;
 
+#ifdef RAPTOR_PARSER_GRDDL
+  raptor_init_parser_grddl();
+#endif
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
   raptor_init_serializer_rss10();
