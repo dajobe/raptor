@@ -219,6 +219,7 @@ do
     echo $program: Processing directory $dir
     ( cd $dir
       echo "$program: Running libtoolize --copy --automake"
+      $DRYRUN rm -f ltmain.sh libtool
       $DRYRUN libtoolize --copy --automake
 
       echo "$program: Running $aclocal $aclocal_args"
