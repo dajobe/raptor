@@ -103,10 +103,10 @@ raptor_cc.c : $(srcdir)/raptor_cc.gperf
 test: check
 
 raptor_cc_test: $(srcdir)/raptor_cc.c libraptor.la
-	$(LINK) $(DEFS) -DSTANDALONE -static $? $(LIBS)
+	$(LINK) $(CCFLAGS) -I$(srcdir) -DSTANDALONE -static $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
 
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
-	$(LINK) $(DEFS) -DSTANDALONE -static $? $(LIBS)
+	$(LINK) $(CCFLAGS) -I$(srcdir) -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 finish: libraptor.la
 	rm -rf $(top_builddir)/lib
