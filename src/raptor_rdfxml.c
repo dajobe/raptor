@@ -50,6 +50,10 @@
 #include "raptor_internal.h"
 
 
+/* Define this for far too much output */
+#undef RAPTOR_DEBUG_CDATA
+
+
 /* Raptor structures */
 
 typedef enum {
@@ -825,10 +829,6 @@ raptor_xml_start_element_handler(void *user_data,
 #endif
 #endif
 
-#ifdef RAPTOR_DEBUG
-  fputc('\n', stderr);
-#endif
-
   raptor_update_document_locator(rdf_parser);
 
   rdf_xml_parser->depth++;
@@ -1212,10 +1212,6 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 
   rdf_xml_parser->depth--;
 
-#ifdef RAPTOR_DEBUG
-  fputc('\n', stderr);
-#endif
-
 }
 
 
@@ -1256,10 +1252,6 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   if(!element)
     return;
   
-#ifdef RAPTOR_DEBUG
-  fputc('\n', stderr);
-#endif
-
   raptor_update_document_locator(rdf_parser);
 
   /* cdata never changes the parser state 
@@ -1306,7 +1298,9 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
 
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
+#ifdef RAPTOR_DEBUG_CDATA
       RAPTOR_DEBUG2(raptor_xml_cdata_handler, "Ignoring whitespace cdata inside element %s\n", element->name->local_name);
+#endif
       return;
     }
 
@@ -1351,10 +1345,11 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   ptr += len;
   *ptr = '\0';
 
+#ifdef RAPTOR_DEBUG_CDATA
   RAPTOR_DEBUG3(raptor_xml_cdata_handler, 
                 "Content cdata now: '%s' (%d bytes)\n", 
                 buffer, element->content_cdata_length);
-
+#endif
   RAPTOR_DEBUG2(raptor_xml_cdata_handler, 
                 "Ending in state %s\n", raptor_state_as_string(state));
 
@@ -2394,20 +2389,24 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               }
               RAPTOR_FREE(cstring, fmt_buffer);
 
+#ifdef RAPTOR_DEBUG_CDATA
               RAPTOR_DEBUG3(raptor_start_element_grammar,
                             "content cdata appended, now: '%s' (%d bytes)\n", 
                             element->content_cdata,
                             element->content_cdata_length);
+#endif
 
             } else {
               /* Copy - is empty */
               element->content_cdata       =fmt_buffer;
               element->content_cdata_length=fmt_length;
 
+#ifdef RAPTOR_DEBUG_CDATA
               RAPTOR_DEBUG3(raptor_start_element_grammar,
                             "content cdata copied, now: '%s' (%d bytes)\n", 
                             element->content_cdata,
                             element->content_cdata_length);
+#endif
 
             }
           }
@@ -2770,9 +2769,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           }
         }
         
+#ifdef RAPTOR_DEBUG_CDATA
         RAPTOR_DEBUG3(raptor_end_element_grammar,
                       "content cdata now: '%s' (%d bytes)\n", 
                        element->content_cdata, element->content_cdata_length);
+#endif
          
         /* Append this cdata content to parent element cdata content */
         if(element->parent->content_cdata) {
@@ -2790,19 +2791,23 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             RAPTOR_FREE(cstring, element->content_cdata);
           }
 
+#ifdef RAPTOR_DEBUG_CDATA
           RAPTOR_DEBUG3(raptor_end_element_grammar,
                         "content cdata appended to parent, now: '%s' (%d bytes)\n", 
                         element->parent->content_cdata,
                         element->parent->content_cdata_length);
+#endif
 
         } else {
           /* Copy - parent is empty */
           element->parent->content_cdata       =element->content_cdata;
           element->parent->content_cdata_length=element->content_cdata_length+1;
+#ifdef RAPTOR_DEBUG_CDATA
           RAPTOR_DEBUG3(raptor_end_element_grammar,
                         "content cdata copied to parent, now: '%s' (%d bytes)\n",
                         element->parent->content_cdata,
                         element->parent->content_cdata_length);
+#endif
 
         }
 
