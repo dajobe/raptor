@@ -181,10 +181,10 @@ oCPPFLAGS="$CPPFLAGS"
 if test "X$XML_CONFIG" != X; then
   oLIBS="$LIBS"
   LIBS="$LIBS `$XML_CONFIG --libs`"
-  AC_CHECK_LIB(xml, xmlParseFile)
+  AC_CHECK_FUNC(xmlParseFile, have_xmlParseFile=yes, have_xmlParseFile=no)
   LIBS="$oLIBS"
   AC_MSG_CHECKING(for system (GNOME) libxml library)
-  if test $ac_cv_lib_xml_xmlParseFile = yes; then
+  if test $have_xmlParseFile = yes; then
     have_libxml_lib=1
     have_libxml=1
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
