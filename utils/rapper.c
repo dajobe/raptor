@@ -117,7 +117,6 @@ static struct option long_options[] =
   /* name, has_arg, flag, val */
   {"ntriples", 0, 0, 'n'},
   {"scan", 0, 0, 's'},
-  {"assume", 0, 0, 'a'},
   {"help", 0, 0, 'h'},
   {"replace-newlines", 0, 0, 'r'},
   {"quiet", 0, 0, 'q'},
@@ -185,7 +184,6 @@ main(int argc, char *argv[])
   char *base_uri_string=NULL;
   int rc;
   int scanning=0;
-  int assume=0;
   const char *syntax_name="rdfxml";
   int strict_mode=0;
   int usage=0;
@@ -232,7 +230,6 @@ main(int argc, char *argv[])
         break;
         
       case 'a':
-        assume=1;
         break;
 
       case 'c':
@@ -350,7 +347,6 @@ main(int argc, char *argv[])
     printf("    'simple'                A simple format (default)\n    'ntriples'              N-Triples\n");
     printf(HELP_TEXT(m, "mode            ", "Set parser mode - 'lax' (default) or 'strict'"));
     printf("\nAdditional options:\n");
-    printf(HELP_TEXT(a, "assume          ", "Assume document is rdf/xml (rdf:RDF optional)"));
     printf(HELP_TEXT(c, "count           ", "Count triples - no output"));
     printf(HELP_TEXT(e, "ignore-errors   ", "Ignore error messages"));
     printf(HELP_TEXT(q, "quiet           ", "No extra information messages"));
@@ -421,8 +417,6 @@ main(int argc, char *argv[])
   
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
-  if(assume)
-    raptor_set_feature(rdf_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
 
   if(!quiet) {
     if (filename) {
