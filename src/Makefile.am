@@ -33,9 +33,12 @@ man_MANS = rapper.1 libraptor.3 raptor-config.1
 SUBDIRS= tests win32 examples
 
 TESTS=raptor_parse_test raptor_uri_test raptor_namespace_test	\
-strcasecmp_test raptor_www_test raptor_set_test raptor_xml_test	\
+strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test
+if RAPTOR_PARSER_RDFXML
+TESTS += raptor_set_test raptor_xml_test
+endif
 
 CLEANFILES=$(TESTS) turtle_lexer_test turtle_parser_test
 
