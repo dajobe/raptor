@@ -4,13 +4,13 @@
   <!-- check daml:collection generates the right structure with
        blank nodes inside -->
 
-  <rdf:Description rdf:about="http://example.org/node0">
+  <rdf:Description rdf:about="http://example.org/node1">
      <ex:prop1 rdf:parseType="daml:collection">
        <rdf:Description>
-          <ex:prop2 rdf:resource="http://example.org/node1" />
+          <ex:prop2 rdf:resource="http://example.org/node2" />
        </rdf:Description>
        <rdf:Description>
-          <ex:prop3 rdf:resource="http://example.org/node2" />
+          <ex:prop3 rdf:resource="http://example.org/node3" />
        </rdf:Description>
      </ex:prop1>
   </rdf:Description>
