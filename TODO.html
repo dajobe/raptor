@@ -14,12 +14,10 @@
 <li>Perform xml:lang processing and pass to application (FEATURE)</li>
 <li>Add namespace/prefix declaration user level callback (FEATURE)</li>
 <li>regression tests (FEATURE)</li>
-<li>URI resolving is ad-hoc (BUG)</li>
+<li>URI resolving is very ad-hoc (BUG)</li>
 <li>Reification of statements (bagID etc.) implemented but not tested (FEATURE)</li>
 <li>Other (non resource, literal, daml:collection) parseType support (FEATURE)</li>
-<li>rdf:li used as a propertyElt does not work (BUG)</li>
 <li>No aboutEach support (BUG)</li>
-<li>Need to make tracking of user IDs/generated IDs to user code (FEATURE)</li>
 
 </ul>
 
@@ -29,23 +27,11 @@
 release version where appropriate.</p>
 
 <ul>
-<li>parseType literal support (0.9.3)</li>
-<li>Fixed crash (0.9.3):
-<pre>
-&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:play="http://somewhere.example.com/"
-         xmlns:enc="http://somewhere.example.com/"&gt;
-&lt;rdf:Description rdf:about="http://www.w3.org/"&gt;
-   &lt;play:xml-cannonicalized parseType="Resource"&gt;
-      &lt;enc:hash-sha-1 parseType="Resource"&gt;
-         &lt;enc:base64&gt;jd8734djr08347jyd4&lt;/enc:base64&gt;
-      &lt;/enc:hash-sha-1&gt;
-   &lt;/play:xml-cannonicalized&gt;
-&lt;/rdf:Description&gt;
-&lt;/rdf:RDF&gt;
-</pre>
-</li>
+<li>Tracking of user IDs/generated IDs available to user code (0.9.3)</li>
+<li>daml:collection parseType support (0.9.3)</li>
+<li>rdf:li used as a propertyElt does not work (0.9.3)</li>
+<li>parseType literal support complete (0.9.3)</li>
+<li>Fixed many crashes (0.9.3)</li>
 </ul>
 
 
