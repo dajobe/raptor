@@ -18,13 +18,15 @@
 # full license terms.
 # 
 
-TEST_FILES=test-00.ntp
+TEST_FILES=test-00.ntp test-01.ntp test-02.ntp test-03.ntp \
+test-04.ntp test-05.ntp test-06.ntp
 
-TEST_BAD_FILES=
+TEST_BAD_FILES=bad-00.ntp bad-01.ntp bad-02.ntp bad-03.ntp
 
 TEST_WARN_FILES=
 
-TEST_OUT_FILES=test-00.out
+TEST_OUT_FILES=test-00.out test-01.out test-02.out test-03.out \
+test-04.out test-05.out test-06.out
 
 TEST_WARN_OUT_FILES=
 
