@@ -19,7 +19,7 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource18> <http://example.org/property> "\U001FFFFF" .
 <http://example.org/resource19> <http://example.org/property> "\U03FFFFFF" .
 <http://example.org/resource20> <http://example.org/property> "\U7FFFFFFF" .
-<http://example.org/resource21> <http://example.org/property> "^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral> .
+<http://example.org/resource21> <http://example.org/property> ""^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral> .
 <http://example.org/resource22> <http://example.org/property> " "^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral> .
 <http://example.org/resource23> <http://example.org/property> "x"^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral> .
 <http://example.org/resource23> <http://example.org/property> "\""^^<http://www.w3.org/2000/01/rdf-schema#XMLLiteral> .
