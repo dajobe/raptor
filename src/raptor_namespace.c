@@ -425,10 +425,14 @@ raptor_namespace_get_prefix(const raptor_namespace *ns)
 unsigned char *
 raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 {
-  size_t uri_length;
-  const unsigned char *uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
-  size_t length=8+uri_length+ns->prefix_length; /* 8=length of [[xmlns=""] */
+  size_t uri_length=0L;
+  const unsigned char *uri_string=NULL;
+  size_t length;
   unsigned char *buffer;
+
+  if(ns->uri)
+    uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
+  length=8+uri_length+ns->prefix_length; /* 8=length of [[xmlns=""] */
 
   if(ns->prefix)
     length++; /* for : */
