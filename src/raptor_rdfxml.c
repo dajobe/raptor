@@ -427,6 +427,12 @@ typedef enum {
    */
   RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES,
 
+  /* property content - all content preserved
+   * any content type changes when first non-whitespace found
+   * <propElement>...
+   */
+  RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT,
+
   /* resource URI given - no element, no cdata, whitespace ignored,
    * any non-whitespace cdata is error 
    * <propElement rdf:resource="uri"/>
@@ -466,6 +472,7 @@ static const struct {
   {"XML Literal",     1, 1, 1, 0 },
   {"Nodes",           0, 0, 1, 1 },
   {"Properties",      0, 1, 1, 1 },
+  {"Property Content",1, 1, 1, 1 },
   {"Resource",        0, 0, 0, 0 },
   {"Preserved",       1, 1, 1, 0 },
   {"DAML Collection", 1, 1, 1, 1 },
@@ -1763,7 +1770,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   }
 
 
-  if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN) {
+  if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
     LIBRDF_DEBUG3(raptor_xml_cdata_handler,
                   "Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
@@ -3525,6 +3532,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         element->bag.id=element->rdf_attr[RDF_ATTR_ID];
         element->rdf_attr[RDF_ATTR_ID]=NULL;
 
+        element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
+
         if (element->rdf_attr[RDF_ATTR_parseType]) {
           const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
 
@@ -3598,7 +3607,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           } else {
             /* Otherwise process content in obj (value) state */
             element->child_state=RAPTOR_STATE_OBJ;
-            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
+            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
           }
         }
 
@@ -3825,7 +3834,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          * Empty content is checked here.
          */
 
-        if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN) {
+        if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
           if(element->content_cdata_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
           else if (element->content_element_seen) 
