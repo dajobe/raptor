@@ -152,6 +152,9 @@ DIE
 #endif
 
 
+/* Size of XML buffer to use when reading from a file */
+#define RAPTOR_XML_READ_BUFFER_SIZE 1024
+
 /* Raptor includes */
 #include "raptor.h"
 
@@ -2617,12 +2620,12 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   XML_Parser xp;
 #endif
 #ifdef RAPTOR_XML_LIBXML
+  int first_read=1;
   /* parser context */
   xmlParserCtxtPtr xc=NULL;
 #endif
-#define RBS 1024
   FILE *fh;
-  char buffer[RBS];
+  char buffer[RAPTOR_XML_READ_BUFFER_SIZE];
   int rc=1;
   int len;
   const char *filename;
@@ -2697,7 +2700,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
 #endif
 
   while(fh && !feof(fh)) {
-    len=fread(buffer, 1, RBS, fh);
+    len=fread(buffer, 1, RAPTOR_XML_READ_BUFFER_SIZE, fh);
     if(len <= 0) {
 #ifdef RAPTOR_XML_EXPAT
       XML_Parse(xp, buffer, 0, 1);
@@ -2708,15 +2711,35 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
       break;
     }
 #ifdef RAPTOR_XML_EXPAT
-    rc=XML_Parse(xp, buffer, len, (len < RBS));
-    if(len < RBS)
+    rc=XML_Parse(xp, buffer, len, (len < RAPTOR_XML_READ_BUFFER_SIZE));
+    if(len < RAPTOR_XML_READ_BUFFER_SIZE)
       break;
     if(!rc) /* expat: 0 is failure */
       break;
 #endif
 #ifdef RAPTOR_XML_LIBXML
-    rc=xmlParseChunk(xc, buffer, len, (len < RBS));
-    if(len < RBS)
+    /* Work around some libxml versions that fail to work
+     * if the buffer size is larger than the entire file
+     * and thus the entire parsing is done in one operation.
+     */
+    if(first_read && len < RAPTOR_XML_READ_BUFFER_SIZE) {
+      /* parse all but the last character */
+      rc=xmlParseChunk(xc, buffer, len-1, 0);
+      if(rc)
+        break;
+      /* last character */
+      rc=xmlParseChunk(xc, buffer+len-1, 1, 0);
+      if(rc)
+        break;
+      /* end */
+      len= -1; /* pretend to be EOF */
+      xmlParseChunk(xc, buffer, 0, 1);
+      break;
+    }
+    first_read=0;
+    
+    rc=xmlParseChunk(xc, buffer, len, (len < RAPTOR_XML_READ_BUFFER_SIZE));
+    if(len < RAPTOR_XML_READ_BUFFER_SIZE)
       break;
     if(rc) /* libxml: non 0 is failure */
       break;
