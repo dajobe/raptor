@@ -358,6 +358,19 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 }
 
 
+static void
+n3_token_free(int token, YYSTYPE *lval)
+{
+  if(!token)
+    return;
+  
+  if(lval->string) {
+    free(lval->string);
+    lval->string=NULL;
+  }
+}
+
+
 int
 main(int argc, char *argv[]) 
 {
@@ -384,6 +397,7 @@ main(int argc, char *argv[])
   n3_lexer_set_extra(scanner, scanner);
 
   while(1) {
+    memset(&lval, 0, sizeof(YYSTYPE));
     if(n3_lexer_get_text(scanner) != NULL)
       printf("yyinput '%s'\n", n3_lexer_get_text(scanner));
     token=yylex(&lval, scanner);
@@ -392,6 +406,7 @@ main(int argc, char *argv[])
 #else
     printf("token %d\n", token);
 #endif
+    n3_token_free(token, &lval);
     if(!token || token == EOF || token == ERROR)
       break;
   }
