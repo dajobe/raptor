@@ -778,6 +778,10 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   RAPTOR_DEBUG2(raptor_ntriples_parse_chunk, "adding %d bytes to line buffer\n", len);
 #endif
 
+  /* No data?  It's the end */
+  if(!len)
+    return 0;
+
   buffer=(char*)RAPTOR_MALLOC(cstring, ntriples_parser->line_length + len + 1);
   if(!buffer) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
