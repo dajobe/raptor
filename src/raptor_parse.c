@@ -1394,6 +1394,17 @@ raptor_xml_external_entity_ref_handler(void *user_data,
 #endif
 
 
+/* comment handler
+ * s is 0 terminated
+ */
+void
+raptor_xml_comment_handler(void *user_data, const unsigned char *s)
+{
+  /* nop */
+  RAPTOR_DEBUG2(raptor_xml_comment_handler, "XML Comment '%s'\n", s);
+}
+
+
 
 static int
 raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
@@ -1443,6 +1454,10 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
                         (XML_EndElementHandler)raptor_xml_end_element_handler);
   XML_SetCharacterDataHandler(xp, 
                               (XML_CharacterDataHandler)raptor_xml_cdata_handler);
+
+  XML_SetCommentHandler(xp,
+                        (XML_CommentHandler)raptor_xml_comment_handler);
+
 
   XML_SetUnparsedEntityDeclHandler(xp, raptor_xml_unparsed_entity_decl_handler);
 
