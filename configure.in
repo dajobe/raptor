@@ -174,6 +174,46 @@ else
   AC_MSG_RESULT(no)
 fi
 
+AC_MSG_CHECKING(for expat failure during error reporting)
+AC_TRY_RUN([
+#include <stdio.h>
+#include <string.h>
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
+#ifdef HAVE_EXPAT_H
+#include <expat.h>
+#else
+#ifdef HAVE_XMLPARSE_H
+#include <xmlparse.h>
+#endif
+#endif
+
+int main(int argc, char **argv) {
+  const char *xml_buffer=
+     "\xef\xbb\xbf<?xml version='1.0' encoding='UTF-8'?><tag/>";
+  XML_Parser xp=XML_ParserCreate(NULL);
+  int  len=strlen(xml_buffer);
+  
+  /* This should / might cause an error */
+  int rc=XML_Parse(xp, xml_buffer, len, 1);
+
+  /* and expat now allows me to get the error codes */
+  if(!rc) {
+    int xe=XML_GetErrorCode(xp);
+    /* The next line causes a crash in normal_updatePosition for some expats */
+    int line=XML_GetCurrentLineNumber(xp);
+  }
+  XML_ParserFree(xp);
+
+  return 0;
+}
+],
+            AC_MSG_RESULT(no),
+            AC_DEFINE(EXPAT_ERROR_CRASH)
+            AC_MSG_RESULT(yes))
+
 LIBS="$oLIBS"
 
 AC_CHECK_PROGS(XML_CONFIG, xml2-config xml-config)
