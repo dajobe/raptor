@@ -55,6 +55,9 @@ typedef void* raptor_uri;
 /* Public structure */
 typedef struct raptor_parser_s raptor_parser;
 
+/* OLD structure - can't deprecate a typedef */
+typedef raptor_parser raptor_ntriples_parser;
+
 typedef enum {
   RAPTOR_IDENTIFIER_TYPE_UNKNOWN,             /* Unknown type - illegal */
   RAPTOR_IDENTIFIER_TYPE_RESOURCE,            /* Resource URI (e.g. rdf:about) */
@@ -66,6 +69,8 @@ typedef enum {
 } raptor_identifier_type;
 
 typedef enum { RAPTOR_URI_SOURCE_UNKNOWN, RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED, RAPTOR_URI_SOURCE_BLANK_ID } raptor_uri_source;
+
+typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE, RAPTOR_NTRIPLES_TERM_TYPE_LITERAL } raptor_ntriples_term_type;
 
 
 typedef struct {
@@ -120,19 +125,11 @@ RAPTOR_API void raptor_init(void);
 RAPTOR_API void raptor_finish(void);
 
 /* Create */
-/* OLD API */
-RAPTOR_API raptor_parser* RAPTOR_DEPRECATED raptor_new(void);
-
-/* NEW API */
 RAPTOR_API raptor_parser* raptor_new_parser(const char *name);
 
 RAPTOR_API int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);
 
-
 /* Destroy */
-/* OLD API */
-RAPTOR_API void RAPTOR_DEPRECATED raptor_free(raptor_parser *rdf_parser);
-/* NEW API */
 void raptor_free_parser(raptor_parser* parser);
 
 /* Handlers */
@@ -179,7 +176,10 @@ RAPTOR_API void raptor_init_identifier(raptor_identifier *identifier, raptor_ide
 RAPTOR_API int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 
+/* Utility functions */
 RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
+RAPTOR_API const char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
+
 
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
@@ -220,34 +220,21 @@ RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **cont
 #define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
 
 
-/* Public structure */
-typedef raptor_parser raptor_ntriples_parser;
+/* OLD RDF/XML Parser Public functions */
 
-typedef enum { 
-  RAPTOR_NTRIPLES_TERM_TYPE_URI_REF,
-  RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE, 
-  RAPTOR_NTRIPLES_TERM_TYPE_LITERAL
-} raptor_ntriples_term_type;
+RAPTOR_API raptor_parser* RAPTOR_DEPRECATED raptor_new(void);
+RAPTOR_API void RAPTOR_DEPRECATED raptor_free(raptor_parser *rdf_parser);
 
+/* OLD N-Triples Parser Public functions */
 
-/* OLD N-Triples Public functions */
-
-/* Create OLD API */
 RAPTOR_API raptor_parser* RAPTOR_DEPRECATED raptor_ntriples_new(void);
-
-/* Destroy */
 RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_free(raptor_parser *parser);
 
-/* Handlers */
 RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 
-/* Parsing functions */
 RAPTOR_API int RAPTOR_DEPRECATED raptor_ntriples_parse_file(raptor_parser* parser, raptor_uri *uri, raptor_uri *base_uri);
-
-/* Utility functions */
-RAPTOR_API const char* RAPTOR_DEPRECATED raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
 
 #ifdef __cplusplus
 }
