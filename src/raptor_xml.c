@@ -68,7 +68,7 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
   unsigned char c;
   int len=strlen((const char*)string);
   int unichar_len;
-  long unichar;
+  unsigned long unichar;
   int pos;
   
   for(pos=0; (c=*string); string++, len--, pos++) {
@@ -139,7 +139,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
                          void *error_data)
 {
   int l;
-  int new_len=0;
+  size_t new_len=0;
   const unsigned char *p;
   char *q;
   int unichar_len;
@@ -167,7 +167,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
     else if(unichar == '<' || (!quote && unichar == '>'))
       /* &lt; or &gt; */
       new_len+= 4;
-    else if (quote && unichar == quote)
+    else if (quote && unichar == (unsigned long)quote)
       /* &apos; or &quot; */
       new_len+= 6;
     else if (unichar == 0x0d ||
@@ -187,7 +187,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
   if(!buffer)
     return new_len;
   
-  for(l=len, p=string, q=buffer; l; p++, l--) {
+  for(l=len, p=string, q=(char*)buffer; l; p++, l--) {
     if(*p > 0x7f) {
       unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
     } else {
@@ -204,7 +204,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
     } else if (!quote && unichar == '>') {
       strncpy(q, "&gt;", 4);
       q+= 4;
-    } else if (quote && unichar == quote) {
+    } else if (quote && unichar == (unsigned long)quote) {
       if(quote == '\'')  
         strncpy(q, "&apos;", 6);
       else
@@ -222,7 +222,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
         *q++ = 'A'+unichar-0x0a;
       *q++= ';';
     } else {
-      strncpy(q, p, unichar_len);
+      strncpy(q, (char*)p, unichar_len);
       q+= unichar_len;
     }
 
