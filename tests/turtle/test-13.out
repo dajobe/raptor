@@ -1,0 +1,2 @@
+_:genid1 <http://example.org/me#> _:genid2 .
+<http://example.org/me#> <http://example.org/me#> <http://example.org/me#> .
