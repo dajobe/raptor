@@ -1,3 +1,7 @@
+2005-01-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: remove old comment re xml writer
+
 2005-01-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* rdfdump.c: set serializer features before starting to serialize
@@ -56,9 +60,8 @@
 	(raptor_rdfxml_serialize_statement, raptor_rdfxml_serialize_end):
 	Convert to use xml writer.
 
-	* raptor_xml_writer.c (raptor_xml_writer_empty_element):
-	Ensure namespace declarations
-	are removed at end of element.
+	* raptor_xml_writer.c (raptor_xml_writer_empty_element): Ensure
+	namespace declarations are removed at end of element.
 
 	* raptor.h: Added raptor_namespaces_find_namespace_by_uri
 
@@ -68,11 +71,11 @@
 	raptor_xml_declare_namespace renamed to
 	raptor_xml_element_declare_namespace
 
-	* raptor_rss.c (raptor_rss10_build_xml_names):
-	Use raptor_xml_declare_namespace
+	* raptor_rss.c (raptor_rss10_build_xml_names): Use
+	raptor_xml_declare_namespace
 
 	* raptor_rss.c:
-	9raptor_rss10_build_xml_names): Use raptor_xml_declare_namespace
+	(raptor_rss10_build_xml_names): Use raptor_xml_declare_namespace
 
 	* raptor_sax2.c, raptor.h:
 	raptor_sax2_declare_namespace renamed to raptor_xml_declare_namespace
