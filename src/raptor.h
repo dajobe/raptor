@@ -77,6 +77,7 @@ typedef struct {
 
 typedef enum {
   RAPTOR_FEATURE_SCANNING,
+  RAPTOR_FEATURE_ASSUME_IS_RDF,
   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES
 } raptor_feature;
@@ -100,9 +101,7 @@ typedef struct {
   raptor_identifier_type predicate_type;
   const void *object;
   raptor_identifier_type object_type;
-#ifdef RAPTOR_RDF_DATATYPES_TEST
   raptor_uri *object_literal_datatype;
-#endif
   const char *object_literal_language;
 } raptor_statement;
 
@@ -160,7 +159,7 @@ RAPTOR_API void raptor_init_identifier(raptor_identifier *identifier, raptor_ide
 RAPTOR_API int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 
-RAPTOR_API void raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
+RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
 
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
