@@ -172,7 +172,6 @@ RAPTOR_API raptor_uri* raptor_new_uri(const char *uri_string);
 RAPTOR_API raptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name);
 RAPTOR_API raptor_uri* raptor_new_uri_relative_to_base(raptor_uri *base_uri, const char *uri_string);
 RAPTOR_API raptor_uri* raptor_new_uri_from_id(raptor_uri *base_uri, const char *id);
-RAPTOR_API raptor_uri* raptor_new_uri_from_base_name(raptor_uri *base_uri, const char *name);
 RAPTOR_API raptor_uri* raptor_new_uri_for_rdf_concept(const char *name);
 RAPTOR_API void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
