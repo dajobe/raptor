@@ -159,7 +159,7 @@ raptor_set_find_node(raptor_set* set,
     return NULL;
 
   if(!hash)
-    ONE_AT_A_TIME_SET(hash, item, item_len);
+    ONE_AT_A_TIME_SET(hash, (unsigned char*)item, item_len);
   
 
   /* find slot in table */
@@ -333,7 +333,7 @@ raptor_set_add(raptor_set* set, char *item, size_t item_len)
   if (raptor_set_expand_size(set))
     return -1;
 
-  ONE_AT_A_TIME_SET(hash, item, item_len);
+  ONE_AT_A_TIME_SET(hash, (unsigned char*)item, item_len);
   
   /* find node for item */
   node=raptor_set_find_node(set, item, item_len, hash);
