@@ -750,6 +750,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                     NULL);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
+  gtk_tooltips_set_tip (gtk_tooltips_new (), errors_treeview, 
+                        "Errors and warnings from parsing the content.", NULL);
+
+
   /* pack the errors store into the errors scrolled window */
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(errors_scrolled_window), errors_treeview);
   gtk_widget_show(errors_treeview);
