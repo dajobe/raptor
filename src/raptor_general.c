@@ -883,6 +883,122 @@ raptor_print_ntriples_string(FILE *stream,
 
 
 
+char*
+raptor_statement_part_as_counted_string(const void *term, 
+                                        raptor_identifier_type type,
+                                        raptor_uri* literal_datatype,
+                                        const unsigned char *literal_language,
+                                        size_t* len_p)
+{
+  size_t len, term_len, language_len, uri_len;
+  char *s, *buffer, *uri_string;
+  
+  switch(type) {
+    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
+      term_len=strlen(term);
+      len+=2;
+      if(literal_language) {
+        language_len=strlen(literal_language);
+        len+= language_len+1;
+      }
+      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
+        len+= 57;
+      else if(literal_datatype) {
+        uri_string=raptor_uri_as_counted_string((raptor_uri*)literal_datatype, &uri_len);
+        len += 4+uri_len;
+      }
+  
+      buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
+      if(!buffer)
+        return NULL;
+
+      s=buffer;
+      *s++ ='"';
+      /* raptor_print_ntriples_string(stream, (const char*)term, '"'); */
+      strcpy(s, term);
+      s+= term_len;
+      *s++ ='"';
+      if(literal_language) {
+        *s++ ='@';
+        strcpy(s, literal_language);
+        s+= language_len;
+      }
+
+      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
+        strcpy(s, "^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>");
+      else if(literal_datatype) {
+        *s++ ='^';
+        *s++ ='^';
+        *s++ ='<';
+        strcpy(s, uri_string);
+        s+= uri_len;
+        *s++ ='>';
+      }
+      *s++ ='\0';
+      
+      break;
+      
+    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+      len=2+strlen(term);
+      buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
+      if(!buffer)
+        return NULL;
+      s=buffer;
+      *s++ ='_';
+      *s++ =':';
+      strcpy(s, term);
+      break;
+      
+    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+      len=59; /* FIXME - um */
+      buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
+      if(!buffer)
+        return NULL;
+
+      sprintf(buffer, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
+              *((int*)term));
+      break;
+  
+    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
+      uri_string=raptor_uri_as_counted_string((raptor_uri*)term, &uri_len);
+      len=2+uri_len;
+      buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
+      if(!buffer)
+        return NULL;
+
+      s=buffer;
+      *s++ ='<';
+      /* raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)term), '\0'); */
+      strcpy(s, uri_string);
+      s+= uri_len;
+      *s++ ='>';
+      *s++ ='\0';
+      break;
+      
+    default:
+      RAPTOR_FATAL2(raptor_statement_part_as_string, "Unknown type %d", type);
+  }
+
+  if(len_p)
+    *len_p=len;
+  
+ return buffer;
+}
+
+
+char*
+raptor_statement_part_as_string(const void *term, 
+                                raptor_identifier_type type,
+                                raptor_uri* literal_datatype,
+                                const unsigned char *literal_language) {
+     return raptor_statement_part_as_counted_string(term, type,
+                                                    literal_datatype,
+                                                    literal_language,
+                                                    NULL);
+}
+
 
 void
 raptor_print_statement_part_as_ntriples(FILE* stream,
@@ -1180,7 +1296,8 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * raptor_xml_escape_string - return an XML-escaped version of the current string
  * @string: string to XML escape
  * @len: length of string
- * @new_len_p: pointer to store new string length
+ * @buffer: the buffer to use
+ * @length: buffer size
  * @quote: optional quote character to escape, or 0
  * 
  * Replaces each &, < and > with &amp; &lt; &gt; respectively
@@ -1191,17 +1308,19 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * which will be turned into &apos; or &quot; respectively.
  * ASCII NUL ('\0') or any other character will not be escaped.
  * 
- * Return value: a new string or NULL on failure
+ * If buffer is NULL, no work is done but the size of buffer
+ * required is returned.
+ *
+ * Return value: the number of bytes written or 0 on failure.
  **/
-char*
+size_t
 raptor_xml_escape_string(raptor_parser *rdf_parser, 
                          const unsigned char *string, size_t len,
-                         size_t* new_len_p,
+                         unsigned char *buffer, size_t length,
                          char quote)
 {
   int l;
   int new_len=0;
-  char *new_string;
   const unsigned char *p;
   char *q;
   int unichar_len;
@@ -1211,10 +1330,15 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
     quote='\0';
 
   for(l=len, p=string; l; p++, l--) {
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
-    if(unichar_len < 0 || unichar_len > l) {
-      raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
-      return 0;
+    if(*p > 0x7f) {
+      unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+      if(unichar_len < 0 || unichar_len > l) {
+        raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
+        return 0;
+      }
+    } else {
+      unichar=*p;
+      unichar_len=1;
     }
   
     if(unichar == '&')
@@ -1248,15 +1372,19 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
     p += unichar_len; l -= unichar_len;
   }
 
-  new_string=RAPTOR_MALLOC(cstring, new_len+1);
-  if(!new_string)
-    return NULL;
+  if(length && new_len > length)
+    return 0;
 
-  if(new_len_p)
-    *new_len_p=new_len;
+  if(!buffer)
+    return new_len;
   
-  for(l=len, p=string, q=new_string; l; p++, l--) {
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+  for(l=len, p=string, q=buffer; l; p++, l--) {
+    if(*p > 0x7f) {
+      unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+    } else {
+      unichar=*p;
+      unichar_len=1;
+    }
 
     if(unichar == '&') {
       strncpy(q, "&amp;", 5);
@@ -1304,7 +1432,7 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
   /* Terminate new string */
   *q = '\0';
 
-  return new_string;
+  return new_len;
 }
 
 
@@ -1393,9 +1521,14 @@ main(int argc, char *argv[])
     int quote=t->quote;
     size_t utf8_string_len=strlen(utf8_string);
     unsigned char *xml_string;
+    int xml_string_len=0;
 
-    xml_string=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
-                                        NULL, quote);
+    xml_string_len=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
+                                            NULL, 0, quote);
+    xml_string=(char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
+    
+    xml_string_len=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
+                                            xml_string, xml_string_len, quote);
     if(!xml_string) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
               program);
