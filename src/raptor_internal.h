@@ -54,7 +54,7 @@ extern "C" {
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
 #define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
 #undef RAPTOR_URI_AS_FILENAME
-#define RAPTOR_URI_TO_FILENAME(uri) (raptor_file_uri_to_filename(uri))
+#define RAPTOR_URI_TO_FILENAME(uri) (raptor_uri_uri_string_to_filename(uri))
 #define RAPTOR_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
 
 #ifdef RAPTOR_DEBUG
