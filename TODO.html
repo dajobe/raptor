@@ -14,7 +14,6 @@
 <li>Handle bad RDF URI references somehow - such as those containing
 dissallowed URI octets (RFC 2396 as updated by RFC 2732) - silently convert
 on input or noisly convert on input.  For example, &gt; in a URI in RDF/XML would get turned into \u003E in an N-Triples output.</li>
-<li>Related to the above, escape output &gt; delimiter for N-Triples URI-references</li>
 <li>Update the rdf/rdfs schema documents. Convert the turtle labels
 from unicode character form into UTF-8 (DATA, DOCS)</li>
 <li>LSID URN support (FEATURE)</li>
@@ -54,6 +53,7 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Escape outputing the &gt; delimiter for N-Triples URI-references (1.4.3)</li>
 <li>Allow the supported parsers to be selected by configure (1.3.3)</li>
 <li>Errors which happened when fetching WWW content were always
 printed to stderr.  They are now passed to the main error routines
