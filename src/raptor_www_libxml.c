@@ -94,7 +94,7 @@ raptor_www_libxml_fetch(raptor_www *www)
       len+=12+ua_len+2; /* strlen("User-Agent: ") + \r\n */
     }
 
-    headers=RAPTOR_MALLOC(cstring, len+1);
+    headers=(char*)RAPTOR_MALLOC(cstring, len+1);
     if(!headers)
       return 1;
     

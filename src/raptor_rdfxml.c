@@ -1363,22 +1363,23 @@ raptor_xml_parse_recognise_syntax(raptor_parser_factory* factory,
   int score= 0;
   
   if(suffix) {
-    if(!strcmp(suffix, "rdf") || !strcmp(suffix, "rdfs") ||
-      !strcmp(suffix, "owl") || !strcmp(suffix, "daml"))
+    if(!strcmp((const char*)suffix, "rdf") || 
+       !strcmp((const char*)suffix, "rdfs") ||
+      !strcmp((const char*)suffix, "owl") || !strcmp((const char*)suffix, "daml"))
       score=9;
-    if(!strcmp(suffix, "rss"))
+    if(!strcmp((const char*)suffix, "rss"))
       score=3;
   }
   
   if(identifier) {
-    if(strstr(identifier, "rss1"))
+    if(strstr((const char*)identifier, "rss1"))
       score+=5;
-    else if(!suffix && strstr(identifier, "rss"))
+    else if(!suffix && strstr((const char*)identifier, "rss"))
       score+=3;
   }
   
   if(mime_type &&
-     (!strcmp(mime_type, "text/rdf")))
+     (!strcmp((const char*)mime_type, "text/rdf")))
     score+=7;
   
   return score;

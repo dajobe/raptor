@@ -88,7 +88,7 @@ typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
 static int
 raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
-  ntriples_parser->xml_literal_datatype_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+  ntriples_parser->xml_literal_datatype_uri=raptor_new_uri((const unsigned char*)raptor_xml_literal_datatype_uri_string);
   return 0;
 }
 

@@ -928,7 +928,7 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   turtle_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
   turtle_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
 
-  turtle_parser->xml_literal_datatype_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+  turtle_parser->xml_literal_datatype_uri=raptor_new_uri((const unsigned char*)raptor_xml_literal_datatype_uri_string);
 
   return 0;
 }
