@@ -993,8 +993,32 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
 
 
 /**
+ * raptor_parser_set_feature_string - Set parser features with string values
+ * @parser: &raptor_parser parser object
+ * @feature: feature to set from enumerated &raptor_feature values
+ * @value: integer feature value (0 or larger)
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Return value: non 0 on failure or if the feature is unknown
+ **/
+int
+raptor_parser_set_feature_string(raptor_parser *parser, 
+                                 raptor_feature feature, 
+                                 const unsigned char *value)
+{
+  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  if(!value_is_string)
+    return -1;
+
+  return -1;
+}
+
+
+/**
  * raptor_get_feature - Get various parser features
  * @parser: &raptor_parser parser object
+ * @feature: feature to get value
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -1053,6 +1077,27 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
   }
   
   return result;
+}
+
+
+/**
+ * raptor_parser_get_feature_string - Get parser features with string values
+ * @parser: &raptor_parser parser object
+ * @feature: feature to get value
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Return value: feature value or NULL for an illegal feature or no value
+ **/
+const unsigned char *
+raptor_parser_get_feature_string(raptor_parser *parser, 
+                                 raptor_feature feature)
+{
+  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  if(!value_is_string)
+    return NULL;
+  
+  return NULL;
 }
 
 
