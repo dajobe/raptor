@@ -57,6 +57,13 @@ with another existing and compatible URI implementation.
 It also provides a URI-retrieval class (raptor_www) for
 wrapping existing library such as libcurl, libxml2 or BSD libfetch
 that provides full or partial retrieval of data from URIs.
+.LP
+Raptor uses Unicode strings for RDF literals and URIs
+and preserves them throughout the library.  It uses the UTF-8
+encoding of Unicode at the API for passing in or returning Unicode
+strings.  It is intended that the preservation of Unicode for URIs
+will support Internationalized Resource Identifiers (IRIs) which are
+still under development and standardisation.
 .SH LIBRARY INITIALISATION AND CLEANUP
 .IP "\fBraptor_init()\fR"
 .IP "\fBraptor_finish()\fR"
