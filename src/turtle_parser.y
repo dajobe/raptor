@@ -30,7 +30,7 @@
 #endif
 
 #ifdef WIN32
-#include <win32_config.h>
+#include <win32_raptor_config.h>
 #endif
 
 #include <stdio.h>
