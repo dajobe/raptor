@@ -1043,7 +1043,7 @@ raptor_uri_to_relative_uri_string(raptor_uri *base_uri,
 void
 raptor_uri_print(const raptor_uri* uri, FILE *stream) {
   size_t len;
-  unsigned char *string=raptor_uri_as_counted_string(uri, &len);
+  unsigned char *string=raptor_uri_as_counted_string((raptor_uri*)uri, &len);
   fwrite(string, len, 1, stream);
 }
 
