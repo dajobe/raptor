@@ -496,9 +496,18 @@ typedef struct raptor_element_s raptor_element;
  * Raptor parser object
  */
 struct raptor_parser_s {
+
 #ifdef LIBRDF_INTERNAL
   librdf_world *world;
+
+  /* DAML collection URIs */
+  librdf_uri *raptor_daml_oil_uri;
+  librdf_uri *raptor_daml_List_uri;
+  librdf_uri *raptor_daml_first_uri;
+  librdf_uri *raptor_daml_rest_uri;
+  librdf_uri *raptor_daml_nil_uri;
 #endif
+
   /* XML parser specific stuff */
 #ifdef NEED_EXPAT
   XML_Parser xp;
@@ -596,6 +605,11 @@ struct raptor_parser_s {
 #define RAPTOR_RDF_Bag_URI LIBRDF_MS_Bag_URI
 #define RAPTOR_RDF_Alt_URI LIBRDF_MS_Alt_URI
 
+#define RAPTOR_DAML_LIST_URI(rdf_parser) rdf_parser->raptor_daml_List_uri
+#define RAPTOR_DAML_FIRST_URI(rdf_parser) rdf_parser->raptor_daml_first_uri
+#define RAPTOR_DAML_REST_URI(rdf_parser) rdf_parser->raptor_daml_rest_uri
+#define RAPTOR_DAML_NIL_URI(rdf_parser) rdf_parser->raptor_daml_nil_uri
+
 #else
 
 static const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
@@ -625,6 +639,12 @@ static const char * const raptor_daml_nil_uri=RAPTOR_DAML_OIL_URI "nil";
 #define RAPTOR_RDF_Seq_URI raptor_rdf_Seq_uri
 #define RAPTOR_RDF_Bag_URI raptor_rdf_Bag_uri
 #define RAPTOR_RDF_Alt_URI raptor_rdf_Alt_uri
+
+#define RAPTOR_DAML_LIST_URI(rdf_parser) raptor_daml_List_uri
+#define RAPTOR_DAML_FIRST_URI(rdf_parser) raptor_daml_first_uri
+#define RAPTOR_DAML_REST_URI(rdf_parser) raptor_daml_rest_uri
+#define RAPTOR_DAML_NIL_URI(rdf_parser) raptor_daml_nil_uri
+
 #endif
 
 
@@ -2078,6 +2098,13 @@ raptor_new(
 
 #ifdef LIBRDF_INTERNAL
   rdf_parser->world=world;
+
+  rdf_parser->raptor_daml_oil_uri=librdf_new_uri(world, "http://www.daml.org/2001/03/daml+oil#");
+  rdf_parser->raptor_daml_List_uri=librdf_new_uri_from_uri_local_name(rdf_parser->raptor_daml_oil_uri, "List");
+  rdf_parser->raptor_daml_first_uri=librdf_new_uri_from_uri_local_name(rdf_parser->raptor_daml_oil_uri, "first");
+  rdf_parser->raptor_daml_rest_uri=librdf_new_uri_from_uri_local_name(rdf_parser->raptor_daml_oil_uri, "rest");
+  rdf_parser->raptor_daml_nil_uri=librdf_new_uri_from_uri_local_name(rdf_parser->raptor_daml_oil_uri, "nil");
+
 #endif
 
   raptor_init_namespaces(rdf_parser);
@@ -2110,6 +2137,19 @@ raptor_free(raptor_parser *rdf_parser)
   while((element=raptor_element_pop(rdf_parser))) {
     raptor_free_element(element);
   }
+
+#ifdef LIBRDF_INTERNAL
+  if(rdf_parser->raptor_daml_oil_uri)
+    librdf_free_uri(rdf_parser->raptor_daml_oil_uri);
+  if(rdf_parser->raptor_daml_List_uri)
+    librdf_free_uri(rdf_parser->raptor_daml_List_uri);
+  if(rdf_parser->raptor_daml_first_uri)
+    librdf_free_uri(rdf_parser->raptor_daml_first_uri);
+  if(rdf_parser->raptor_daml_rest_uri)
+    librdf_free_uri(rdf_parser->raptor_daml_rest_uri);
+  if(rdf_parser->raptor_daml_nil_uri)
+    librdf_free_uri(rdf_parser->raptor_daml_nil_uri);
+#endif
 
   LIBRDF_FREE(raptor_parser, rdf_parser);
 }
@@ -2619,7 +2659,7 @@ raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id)
     return NULL;
   *local_name='#';
   strcpy(local_name+1, id);
-  new_uri=librdf_new_uri(local_name);
+  new_uri=librdf_new_uri(rdf_parser->world, local_name);
   LIBRDF_FREE(cstring, local_name);
   return new_uri;
 #else
@@ -3016,8 +3056,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            */
           if (state == RAPTOR_STATE_PARSETYPE_DAML_COLLECTION) {
             const char * idList = raptor_generate_id(rdf_parser, 0);
-            const char * uriList = raptor_make_uri_from_id(rdf_parser,  idList);
-            LIBRDF_FREE(cstring, idList);
+            raptor_uri* uriList = raptor_make_uri_from_id(rdf_parser, idList);
+            LIBRDF_FREE(cstring, (char*)idList);
             
             /* <uriList> rdf:type daml:List */
             raptor_generate_statement(rdf_parser, 
@@ -3027,7 +3067,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       (void*)RAPTOR_RDF_type_URI,
                                       RAPTOR_PREDICATE_TYPE_PREDICATE,
                                       RAPTOR_URI_SOURCE_URI,
-                                      (void*)raptor_daml_List_uri,
+                                      (void*)RAPTOR_DAML_LIST_URI(rdf_parser),
                                       RAPTOR_OBJECT_TYPE_RESOURCE,
                                       RAPTOR_URI_SOURCE_URI,
                                       NULL);
@@ -3037,7 +3077,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       uriList,
                                       RAPTOR_SUBJECT_TYPE_RESOURCE,
                                       RAPTOR_URI_SOURCE_URI,
-                                      (void*)raptor_daml_first_uri,
+                                      (void*)RAPTOR_DAML_FIRST_URI(rdf_parser),
                                       RAPTOR_PREDICATE_TYPE_PREDICATE,
                                       RAPTOR_URI_SOURCE_URI,
                                       (void*)element->subject_uri,
@@ -3062,7 +3102,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                         element->parent->tail_uri,
                                         RAPTOR_SUBJECT_TYPE_RESOURCE,
                                         RAPTOR_URI_SOURCE_URI,
-                                        (void*)raptor_daml_rest_uri,
+                                        (void*)RAPTOR_DAML_REST_URI(rdf_parser),
                                         RAPTOR_PREDICATE_TYPE_PREDICATE,
                                         RAPTOR_URI_SOURCE_URI,
                                         (void*)uriList,
@@ -3840,7 +3880,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                           (void*)element->subject_uri,
                                           RAPTOR_PREDICATE_TYPE_PREDICATE,
                                           RAPTOR_URI_SOURCE_URI,
-                                          (void*)raptor_daml_nil_uri,
+                                          (void*)RAPTOR_DAML_NIL_URI(rdf_parser),
                                           RAPTOR_SUBJECT_TYPE_RESOURCE,
                                           RAPTOR_URI_SOURCE_URI,
                                           NULL);
@@ -3861,10 +3901,10 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                           element->tail_uri,
                                           RAPTOR_SUBJECT_TYPE_RESOURCE,
                                           RAPTOR_URI_SOURCE_URI,
-                                          (void*)raptor_daml_rest_uri,
+                                          (void*)RAPTOR_DAML_REST_URI(rdf_parser),
                                           RAPTOR_PREDICATE_TYPE_PREDICATE,
                                           RAPTOR_URI_SOURCE_URI,
-                                          (void*)raptor_daml_nil_uri,
+                                          (void*)RAPTOR_DAML_NIL_URI(rdf_parser),
                                           RAPTOR_SUBJECT_TYPE_RESOURCE,
                                           RAPTOR_URI_SOURCE_URI,
                                           NULL);
