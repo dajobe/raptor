@@ -274,13 +274,6 @@ main(int argc, char *argv[])
     base_uri_string=argv[optind];
   }
 
-  if(strncmp(uri_string, "file:", 5)) {
-    fprintf(stderr, "%s: URI %s must be file:FILE at present\n", 
-            program, uri_string);
-    return(1);
-  }
-  
-
   uri=raptor_new_uri(uri_string);
   if(!uri) {
     fprintf(stderr, "%s: Failed to create URI for %s\n",
@@ -330,7 +323,7 @@ main(int argc, char *argv[])
 
 
   /* PARSE the URI as RDF/XML */
-  if(raptor_parse_file(rdf_parser, uri, base_uri)) {
+  if(raptor_parse_uri(rdf_parser, uri, base_uri)) {
     fprintf(stderr, "%s: Failed to parse %s content into model\n", program, 
             parser_name);
     rc=1;
