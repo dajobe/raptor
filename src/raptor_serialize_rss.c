@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -52,12 +52,15 @@ typedef enum {
   RAPTOR_RSS_IMAGE,
   RAPTOR_RSS_TEXTINPUT,
 
+  /* list items */
+  RAPTOR_RSS_ITEM,
+
+  /* atom author */
+  RAPTOR_ATOM_AUTHOR,
+
   /* also common, but IGNORED */
   RAPTOR_RSS_SKIPHOURS,
   RAPTOR_RSS_SKIPDAYS,
-
-  /* list items */
-  RAPTOR_RSS_ITEM,
 
   /* unknown name found */
   RAPTOR_RSS_UNKNOWN,
@@ -73,6 +76,8 @@ typedef enum {
 
 #define RSS1_0_NAMESPACE_URI  "http://purl.org/rss/1.0/"
 #define RSS0_91_NAMESPACE_URI "http://purl.org/rss/1.0/modules/rss091#"
+#define ATOM0_3_NAMESPACE_URI "http://purl.org/atom/ns#"
+#define DC_NAMESPACE_URI      "http://purl.org/dc/elements/1.1/"
 
 typedef enum {
   RSS_UNKNOWN_NS = 0,
@@ -81,8 +86,10 @@ typedef enum {
   RSS0_92_NS     = RSS_NO_NS,
   RSS2_0_NS      = RSS_NO_NS,
   RSS1_0_NS      = 4,
+  ATOM0_3_NS     = 5,
+  DC_NS          = 6,
 
-  RSS_NAMESPACES_SIZE = RSS1_0_NS+1
+  RSS_NAMESPACES_SIZE = DC_NS+1
 } rss_info_namespace;
 
 
@@ -91,7 +98,9 @@ static const char* const rss_namespace_uri_strings[RSS_NAMESPACES_SIZE]={
   NULL,
   RSS0_91_NAMESPACE_URI,
   NULL,
-  RSS1_0_NAMESPACE_URI
+  RSS1_0_NAMESPACE_URI,
+  ATOM0_3_NAMESPACE_URI,
+  DC_NAMESPACE_URI
 };
 
 
@@ -105,9 +114,10 @@ raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
   { "channel",    RSS1_0_NS },
   { "image",      RSS1_0_NS },
   { "textinput",  RSS1_0_NS },
+  { "item",       RSS1_0_NS },
+  { "author",     ATOM0_3_NS },
   { "skipHours",  RSS0_91_NS },
   { "skipDays",   RSS0_91_NS },
-  { "item",       RSS1_0_NS },
   { "<unknown>",  RSS_UNKNOWN_NS },
 };
 
@@ -141,6 +151,33 @@ typedef enum {
   RAPTOR_RSS_FIELD_CATEGORY,      /* item 0.92, 2.0, channel 2.0 */
   RAPTOR_RSS_FIELD_COMMENTS,      /* comments v? */
   RAPTOR_RSS_FIELD_ITEMS,         /* rss 1.0 items */
+
+  RAPTOR_RSS_FIELD_ATOM_CONTENT,   /* atom 0.3 content */
+  RAPTOR_RSS_FIELD_ATOM_CREATED,   /* atom 0.3 created */
+  RAPTOR_RSS_FIELD_ATOM_ID,        /* atom 0.3 id */
+  RAPTOR_RSS_FIELD_ATOM_ISSUED,    /* atom 0.3 issued */
+  RAPTOR_RSS_FIELD_ATOM_LINK,      /* atom 0.3 link */
+  RAPTOR_RSS_FIELD_ATOM_MODIFIED,  /* atom 0.3 modified */
+  RAPTOR_RSS_FIELD_ATOM_SUMMARY,   /* atom 0.3 summary */
+  RAPTOR_RSS_FIELD_ATOM_TAGLINE,   /* atom 0.3 tagline */
+  RAPTOR_RSS_FIELD_ATOM_TITLE,     /* atom 0.3 title */
+
+  RAPTOR_RSS_FIELD_DC_TITLE,       /* DC title */
+  RAPTOR_RSS_FIELD_DC_CONTRIBUTOR, /* DC contributor */
+  RAPTOR_RSS_FIELD_DC_CREATOR,     /* DC creator */
+  RAPTOR_RSS_FIELD_DC_PUBLISHER,   /* DC publisher */
+  RAPTOR_RSS_FIELD_DC_SUBJECT,     /* DC subject */
+  RAPTOR_RSS_FIELD_DC_DESCRIPTION, /* DC description */
+  RAPTOR_RSS_FIELD_DC_DATE,        /* DC date */
+  RAPTOR_RSS_FIELD_DC_TYPE,        /* DC type */
+  RAPTOR_RSS_FIELD_DC_FORMAT,      /* DC format */
+  RAPTOR_RSS_FIELD_DC_IDENTIFIER,  /* DC identifier */
+  RAPTOR_RSS_FIELD_DC_LANGUAGE,    /* DC language */
+  RAPTOR_RSS_FIELD_DC_RELATION,    /* DC relation */
+  RAPTOR_RSS_FIELD_DC_SOURCE,      /* DC source */
+  RAPTOR_RSS_FIELD_DC_COVERAGE,    /* DC coverage */
+  RAPTOR_RSS_FIELD_DC_RIGHTS,      /* DC rights */
+
 
   RAPTOR_RSS_FIELD_UNKNOWN,
 
@@ -178,8 +215,57 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE]={
   { "category",       RSS0_92_NS },
   { "comments",       RSS0_92_NS },
   { "items",          RSS1_0_NS },
+
+  { "content",        ATOM0_3_NS },
+  { "created",        ATOM0_3_NS },
+  { "id",             ATOM0_3_NS },
+  { "issued",         ATOM0_3_NS },
+  { "link",           ATOM0_3_NS },
+  { "modified",       ATOM0_3_NS },
+  { "summary",        ATOM0_3_NS },
+  { "tagline",        ATOM0_3_NS },
+  { "title",          ATOM0_3_NS },
+
+  { "title",          DC_NS },
+  { "contributor",    DC_NS },
+  { "creator",        DC_NS },
+  { "publisher",      DC_NS },
+  { "subject",        DC_NS },
+  { "description",    DC_NS },
+  { "date",           DC_NS },
+  { "type",           DC_NS },
+  { "format",         DC_NS },
+  { "identifier",     DC_NS },
+  { "language",       DC_NS },
+  { "relation",       DC_NS },
+  { "source",         DC_NS },
+  { "coverage",       DC_NS },
+  { "rights",         DC_NS },
+
   { "<unknown>",      RSS_UNKNOWN_NS },
 };
+
+
+typedef struct {
+  raptor_rss_fields_type from;
+  raptor_rss_fields_type to;
+} raptor_field_pair;
+
+raptor_field_pair raptor_atom_to_rss[]={
+  { RAPTOR_RSS_FIELD_ATOM_CONTENT,  RAPTOR_RSS_FIELD_DESCRIPTION },
+#if 0
+  { RAPTOR_RSS_FIELD_ATOM_CREATED,  RAPTOR_RSS_FIELD_UNKNOWN },
+  { RAPTOR_RSS_FIELD_ATOM_ID,       RAPTOR_RSS_FIELD_UNKNOWN },
+  { RAPTOR_RSS_FIELD_ATOM_ISSUED,   RAPTOR_RSS_FIELD_UNKNOWN },
+  { RAPTOR_RSS_FIELD_ATOM_LINK,     RAPTOR_RSS_FIELD_UNKNOWN },
+  { RAPTOR_RSS_FIELD_ATOM_MODIFIED, RAPTOR_RSS_FIELD_UNKNOWN },
+  { RAPTOR_RSS_FIELD_ATOM_SUMMARY,  RAPTOR_RSS_FIELD_UNKNOWN },
+  { RAPTOR_RSS_FIELD_ATOM_TAGLINE,  RAPTOR_RSS_FIELD_UNKNOWN },
+  { RAPTOR_RSS_FIELD_ATOM_TITLE,    RAPTOR_RSS_FIELD_UNKNOWN },
+#endif
+  { RAPTOR_RSS_FIELD_UNKNOWN,       RAPTOR_RSS_FIELD_UNKNOWN }
+};
+  
 
 
 struct raptor_rss_item_s
@@ -188,6 +274,7 @@ struct raptor_rss_item_s
   raptor_identifier identifier;
   raptor_uri *node_type;
   char* fields[RAPTOR_RSS_FIELDS_SIZE];
+  raptor_uri* uri_fields[RAPTOR_RSS_FIELDS_SIZE];
   int fields_count;
   struct raptor_rss_item_s* next;
 };
@@ -282,6 +369,8 @@ raptor_item_free(raptor_rss_item* item) {
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     if(item->fields[i])
       RAPTOR_FREE(raptor_rss_item, item->fields[i]);
+    if(item->uri_fields[i])
+      raptor_free_uri(item->uri_fields[i]);
   }
   /* don't free node_type - it is always a shared pointer to a URI */
   raptor_free_identifier(&item->identifier);
@@ -421,6 +510,9 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
   xmlTextReaderPtr reader=rss_parser->reader;
   xmlChar *name, *value;
   int type;
+  int is_empty;
+  raptor_uri *uri=NULL;
+  xmlChar *rel=NULL;
   
   name = xmlTextReaderName(reader);
   if (name == NULL)
@@ -430,12 +522,20 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
   type=xmlTextReaderNodeType(reader);
   
   switch(type) {
-    case 1: /* start element */
+    case XML_READER_TYPE_ELEMENT: /* start element */
+
+      /* Must be checked before moving on to attributes */
+      is_empty=xmlTextReaderIsEmptyElement(reader);
+
       if(rss_parser->current_type==RAPTOR_RSS_NONE) {
         if(!strcmp((const char*)name, "rss") || 
            !strcmp((const char*)name, "rdf") || !strcmp((const char*)name, "RDF")) {
           break;
-        } if(!strcmp((const char*)name, "item")) {
+        } else if(!strcmp((const char*)name, "feed")) {
+          rss_parser->current_type=RAPTOR_RSS_CHANNEL;
+          break;
+        } if(!strcmp((const char*)name, "item") ||
+             !strcmp((const char*)name, "entry")) {
           raptor_rss_item_add(rss_parser);
           rss_parser->current_type=RAPTOR_RSS_ITEM;
         } else {
@@ -458,7 +558,8 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         raptor_rss_type old_type=rss_parser->current_type;
         
         /* check it is not a type here */
-        if(!strcmp((const char*)name, "item")) {
+        if(!strcmp((const char*)name, "item") ||
+           !strcmp((const char*)name, "entry")) {
           raptor_rss_item_add(rss_parser);
           rss_parser->current_type=RAPTOR_RSS_ITEM;
         } else {
@@ -523,18 +624,61 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
                */
             }
           }
+        } else if(!strcmp((const char*)attrName, "rel")) {
+          rel=attrValue;
+          attrValue=NULL;
+        } else if(!strcmp((const char*)attrName, "href")) {
+          if(!strcmp((const char*)name, "link")) {
+            RAPTOR_DEBUG2("  setting href as URI string for type %s\n", raptor_rss_types_info[rss_parser->current_type].name);
+            if(uri)
+              raptor_free_uri(uri);
+            uri=raptor_new_uri((const unsigned char*)attrValue);
+          }
         }
+
         xmlFree(attrName);
         if(attrValue)
           xmlFree(attrValue);
       }
-
-      if(!xmlTextReaderIsEmptyElement(reader))
+      
+      if(!is_empty) {
+        if(uri)
+          raptor_free_uri(uri);
+        if(rel)
+          xmlFree(rel);
         break;
+      }
+
+      /* Empty element, so consider adding one of the attributes as
+       * literal or URI content
+       */
+      if(rss_parser->current_type >= RAPTOR_RSS_COMMON_IGNORED) {
+        /* skipHours, skipDays common but IGNORED */ 
+        RAPTOR_DEBUG3("Ignoring empty element %s for type %s\n", name, raptor_rss_types_info[rss_parser->current_type].name);
+      } else if(uri && rel && !strcmp(rel, "alternate")) {
+        raptor_rss_item* update_item;
+
+        if(rss_parser->current_type == RAPTOR_RSS_ITEM)
+          update_item=rss_parser->last;
+        else
+          update_item=&rss_parser->common[rss_parser->current_type];
+        
+        RAPTOR_DEBUG3("Added URI to field %s of type %s\n", raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
+        if(!update_item->fields[rss_parser->current_field] &&
+           !update_item->uri_fields[rss_parser->current_field])
+          update_item->fields_count++;
+        update_item->uri_fields[rss_parser->current_field]=uri;
+        uri=NULL;
+      }
+      
+      if(uri)
+        raptor_free_uri(uri);
+      if(rel)
+        xmlFree(rel);
 
       /* FALLTHROUGH if is empty element */
 
-    case 15: /* end element */
+    case XML_READER_TYPE_END_ELEMENT: /* end element */
       if(rss_parser->current_type != RAPTOR_RSS_NONE) {
         if(rss_parser->current_field != RAPTOR_RSS_FIELD_NONE) {
           RAPTOR_DEBUG3("Ending element %s field %s\n", name, raptor_rss_fields_info[rss_parser->current_field].name);
@@ -552,7 +696,10 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
       
       break;
 
-    case 3: /* text */
+    case XML_READER_TYPE_TEXT:
+    case XML_READER_TYPE_SIGNIFICANT_WHITESPACE: /* FIXME */
+    case XML_READER_TYPE_CDATA: /* FIXME */
+
       if((rss_parser->current_type==RAPTOR_RSS_NONE ||
           rss_parser->current_type==RAPTOR_RSS_UNKNOWN) ||
          (rss_parser->current_field==RAPTOR_RSS_FIELD_NONE ||
@@ -564,13 +711,15 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           p++;
         }
         if(*p)
-          RAPTOR_DEBUG2("IGNORING non-whitespace text node '%s'\n", value);
+          RAPTOR_DEBUG4("IGNORING non-whitespace text '%s' inside type %s, field %s\n", 
+                        value, raptor_rss_types_info[rss_parser->current_type].name,
+                        raptor_rss_fields_info[rss_parser->current_field].name);
         break;
       }
 
-      if(rss_parser->current_type != RAPTOR_RSS_ITEM && 
-         rss_parser->current_type >= RAPTOR_RSS_COMMON_IGNORED) {
+      if(rss_parser->current_type >= RAPTOR_RSS_COMMON_IGNORED) {
         /* skipHours, skipDays common but IGNORED */ 
+        RAPTOR_DEBUG2("Ignoring fields for type %s\n", raptor_rss_types_info[rss_parser->current_type].name);
       } else {
         raptor_rss_item* update_item;
         
@@ -580,7 +729,8 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           update_item=&rss_parser->common[rss_parser->current_type];
         
         RAPTOR_DEBUG4("Added text '%s' to field %s of type %s\n", value, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
-        if(!update_item->fields[rss_parser->current_field])
+        if(!update_item->fields[rss_parser->current_field] &&
+           !update_item->uri_fields[rss_parser->current_field])
           update_item->fields_count++;
         update_item->fields[rss_parser->current_field]=(char*)value;
         value=NULL;
@@ -588,15 +738,17 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
       
       break;
 
-    case 4:  /* CData sections */
-    case 5:  /* entity references */
-    case 6:  /* entity declarations */
-    case 7:  /* PIs */
-    case 8:  /* comments */
-    case 9:  /* document nodes */
-    case 10: /* DTD/Doctype nodes */
-    case 11: /* document fragment */
-    case 12: /* notation nodes */
+    case XML_READER_TYPE_ENTITY_REFERENCE:
+    case XML_READER_TYPE_ENTITY:
+    case XML_READER_TYPE_PROCESSING_INSTRUCTION:
+    case XML_READER_TYPE_COMMENT:
+    case XML_READER_TYPE_DOCUMENT:
+    case XML_READER_TYPE_DOCUMENT_TYPE:
+    case XML_READER_TYPE_DOCUMENT_FRAGMENT:
+    case XML_READER_TYPE_NOTATION:
+    case XML_READER_TYPE_WHITESPACE: /* FIXME */
+    case XML_READER_TYPE_END_ENTITY:
+    case XML_READER_TYPE_XML_DECLARATION:
       break;
     
     default:
@@ -637,15 +789,21 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
       continue;
     
     if(item->uri_string) {
-      identifier->uri=raptor_new_uri((const unsigned char*)item->fields[RAPTOR_RSS_FIELD_LINK]);
+      identifier->uri=raptor_new_uri((const unsigned char*)item->uri_string);
       identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
       identifier->uri_source=RAPTOR_URI_SOURCE_URI;
     } else {
       int url_field=(i== RAPTOR_RSS_IMAGE) ? RAPTOR_RSS_FIELD_URL :
                                              RAPTOR_RSS_FIELD_LINK;
+      if(i == RAPTOR_RSS_CHANNEL)
+        url_field=RAPTOR_RSS_FIELD_ATOM_ID;
       
       if(item->fields[url_field]) {
         identifier->uri=raptor_new_uri((const unsigned char*)item->fields[url_field]);
+        identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        identifier->uri_source=RAPTOR_URI_SOURCE_URI;
+      } else if(item->uri_fields[url_field]) {
+        identifier->uri=raptor_uri_copy(item->uri_fields[url_field]);
         identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
         identifier->uri_source=RAPTOR_URI_SOURCE_URI;
       } else {
@@ -663,12 +821,24 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
     raptor_identifier* identifier=&item->identifier;
     
     if(item->uri_string) {
-      identifier->uri=raptor_new_uri((const unsigned char*)item->fields[RAPTOR_RSS_FIELD_LINK]);
+      identifier->uri=raptor_new_uri((const unsigned char*)item->uri_string);
       identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
       identifier->uri_source=RAPTOR_URI_SOURCE_URI;
     } else {
       if(item->fields[RAPTOR_RSS_FIELD_LINK]) {
         identifier->uri=raptor_new_uri((const unsigned char*)item->fields[RAPTOR_RSS_FIELD_LINK]);
+        identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        identifier->uri_source=RAPTOR_URI_SOURCE_URI;
+      } else if(item->uri_fields[RAPTOR_RSS_FIELD_LINK]) {
+        identifier->uri=raptor_uri_copy(item->uri_fields[RAPTOR_RSS_FIELD_LINK]);
+        identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        identifier->uri_source=RAPTOR_URI_SOURCE_URI;
+      } else if(item->fields[RAPTOR_RSS_FIELD_ATOM_LINK]) {
+        identifier->uri=raptor_new_uri((const unsigned char*)item->fields[RAPTOR_RSS_FIELD_ATOM_LINK]);
+        identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        identifier->uri_source=RAPTOR_URI_SOURCE_URI;
+      } else if(item->uri_fields[RAPTOR_RSS_FIELD_ATOM_LINK]) {
+        identifier->uri=raptor_uri_copy(item->uri_fields[RAPTOR_RSS_FIELD_ATOM_LINK]);
         identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
         identifier->uri_source=RAPTOR_URI_SOURCE_URI;
       } else {
@@ -718,18 +888,38 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
     return;
 
   raptor_rss_emit_type_triple(rdf_parser, identifier, item->node_type);
-  
-  for(f=0; f< RAPTOR_RSS_COMMON_SIZE; f++) {
-    char* value=item->fields[f];
-    if(!value)
+
+  /* Rewrite item fields */
+  for(f=0; raptor_atom_to_rss[f].from != RAPTOR_RSS_FIELD_UNKNOWN; f++) {
+    raptor_rss_fields_type from=raptor_atom_to_rss[f].from;
+    raptor_rss_fields_type to=raptor_atom_to_rss[f].to;
+
+    if(item->fields[from]) {
+      item->fields[to]=item->fields[from];
+      item->fields[from]=NULL;
+    }
+    if(item->uri_fields[from]) {
+      item->uri_fields[to]=item->uri_fields[from];
+      item->uri_fields[from]=NULL;
+    }
+  }
+       
+
+  for(f=0; f< RAPTOR_RSS_FIELDS_SIZE; f++) {
+    if(!item->fields[f] && !item->uri_fields[f])
       continue;
     
     rss_parser->statement.predicate=raptor_rss_fields_info[f].uri;
     if(!rss_parser->statement.predicate)
       continue;
     
-    rss_parser->statement.object=value;
-    rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    if(item->fields[f]) {
+      rss_parser->statement.object=item->fields[f];
+      rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    } else {
+      rss_parser->statement.object=item->uri_fields[f];
+      rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    }
     
     /* Generate the statement */
     (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
@@ -808,7 +998,6 @@ raptor_rss_emit(raptor_parser* rdf_parser)
                                &rss_parser->common[RAPTOR_RSS_CHANNEL].identifier,
                                raptor_rss_fields_info[RAPTOR_RSS_FIELD_ITEMS].uri, 0,
                                items);
-    
     
     /* sequence of rss:item */
     for(i=1, item=rss_parser->items; item; item=item->next, i++) {
