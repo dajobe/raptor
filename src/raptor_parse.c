@@ -435,7 +435,9 @@ static void rapier_free_namespace(rapier_parser *rdf_parser,  rapier_ns_map* nam
 static void rapier_end_namespace(rapier_parser *rdf_parser, const char *prefix, const char *namespace);
 static void rapier_end_namespaces_for_depth(rapier_parser *rdf_parser);
 static rapier_ns_name* rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name, const char *value, int is_element);
+#ifdef RAPIER_DEBUG
 static void rapier_print_ns_name(FILE *stream, rapier_ns_name* name);
+#endif
 static void rapier_free_ns_name(rapier_ns_name* name);
 static int rapier_ns_names_equal(rapier_ns_name *name1, rapier_ns_name *name2);
 
@@ -778,6 +780,7 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
 }
 
 
+#ifdef RAPIER_DEBUG
 static void
 rapier_print_ns_name(FILE *stream, rapier_ns_name* name) 
 {
@@ -789,7 +792,7 @@ rapier_print_ns_name(FILE *stream, rapier_ns_name* name)
   } else
     fputs(name->qname, stream);
 }
-
+#endif
 
 static void
 rapier_free_ns_name(rapier_ns_name* name) 
@@ -1825,7 +1828,7 @@ rapier_parse_file(rapier_parser* rdf_parser,  const char *uri,
     locator->line=XML_GetCurrentLineNumber(xp);
     locator->column=XML_GetCurrentColumnNumber(xp);
     locator->byte=XML_GetCurrentByteIndex(xp);
-    
+
     rapier_parser_error(rdf_parser, "XML Parsing failed - %s",
                         XML_ErrorString(xe));
     rc=1;
@@ -2068,7 +2071,7 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
-      fprintf(stderr, "rapier_start_element_grammar: moved to state %d\n", state);
+      LIBRDF_DEBUG2(rapier_start_element_grammar, "moved to state %d\n", state);
     }
   
   } /* end while */
@@ -2174,7 +2177,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
-      fprintf(stderr, "rapier_end_element_grammar: moved to state %d\n", state);
+      LIBRDF_DEBUG2(rapier_end_element_grammar, "moved to state %d\n", state);
     }
   
   } /* end while */
