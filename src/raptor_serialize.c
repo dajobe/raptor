@@ -658,7 +658,7 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
   context->depth=0;
   context->rdf_ns=raptor_new_namespace(context->nstack,
                                        (const unsigned char*)"rdf",
-                                       RAPTOR_RDF_MS_URI,
+                                       raptor_rdf_namespace_uri,
                                        context->depth);
   return 0;
 }
@@ -813,9 +813,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                             &uri_len);
 
     if(!strncmp((const char*)uri_string, 
-                raptor_xml_rdf_namespace_uri_string, 
-                raptor_xml_rdf_namespace_uri_string_len)) {
-      name=uri_string + raptor_xml_rdf_namespace_uri_string_len;
+                raptor_rdf_namespace_uri, raptor_rdf_namespace_uri_len)) {
+      name=uri_string + raptor_rdf_namespace_uri_len;
       name_is_rdf_ns=1;
       nsprefix="rdf";
     } else {

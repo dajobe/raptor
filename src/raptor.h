@@ -81,12 +81,12 @@ RAPTOR_API extern const unsigned int raptor_version_release;
 RAPTOR_API extern const unsigned int raptor_version_decimal;
 
 RAPTOR_API extern const char * const raptor_xml_namespace_uri;
-RAPTOR_API extern const char * const raptor_rdf_namespace_ms_uri;
-RAPTOR_API extern const char * const raptor_rdf_namespace_schema_uri;
+RAPTOR_API extern const char * const raptor_rdf_namespace_uri;
+RAPTOR_API extern const char * const raptor_rdf_schema_namespace_uri;
 RAPTOR_API extern const char * const raptor_xmlschema_datatypes_namespace_uri;
 RAPTOR_API extern const char * const raptor_owl_namespace_uri;
 
-RAPTOR_API extern const unsigned int raptor_rdf_namespace_ms_uri_len;
+RAPTOR_API extern const unsigned int raptor_rdf_namespace_uri_len;
 
 RAPTOR_API extern const char * const raptor_xml_literal_datatype_uri_string;
 RAPTOR_API extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
