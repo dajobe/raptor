@@ -216,7 +216,6 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
   int base_uri_len=strlen(base_uri);
   int new_uri_len;
 
-  base_uri_len=strlen(base_uri);
   new_uri_len=base_uri_len+strlen(name)+1;
   new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len);
   if(!new_uri)
