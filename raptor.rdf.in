@@ -1,47 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:foaf="http://xmlns.com/foaf/0.1/"
-         xmlns:doap="http://usefulinc.com/ns/doap#">
+         xmlns="http://usefulinc.com/ns/doap#">
 
-  <foaf:Person rdf:nodeID="p1">
-    <foaf:name>Dave Beckett</foaf:name>
-    <foaf:homepage rdf:resource="http://purl.org/net/dajobe/"/>
-  </foaf:Person>
+  <Project>
+    <name>Raptor</name>
+    <homepage rdf:resource="http://librdf.org/raptor/"/>
 
-  <doap:Project>
-    <doap:name>Raptor</doap:name>
-    <doap:summary xml:lang="en">Raptor RDF Parser Toolkit Library.</doap:summary>
+    <shortdesc xml:lang="en">Raptor RDF Parser Toolkit Library.</shortdesc>
 
-    <doap:description xml:lang="en">Raptor is the RDF Parser Toolkit for
+    <description xml:lang="en">Raptor is the RDF Parser Toolkit for
     Redland that provides a set of Resource Description Framework (RDF)
     parsers and serializers, generating RDF triples from RDF/XML,
     N-Triples, Turtle, several XML RSS tag soup formats and Atom 0.3
-    along with serializers to RDF/XML and N-Triples.</doap:description>
+    along with serializers to RDF/XML, N-Triples and RSS 1.0.</description>
 
-    <doap:homepage rdf:resource="http://librdf.org/raptor/"/>
+    <maintainer>
+      <foaf:Person>
+	<foaf:name>Dave Beckett</foaf:name>
+	<foaf:homepage rdf:resource="http://purl.org/net/dajobe/"/>
+	<foaf:mbox_sha1sum>970987f991961f2553a1bf2574166fa29befbccb</foaf:mbox_sha1sum>
+      </foaf:Person>
+    </maintainer>
 
-    <doap:maintainer rdf:nodeID="p1"/>
+    <release>
+      <Version>
+        <name>stable</name>
+	<created>2005-02-01</created>
+	<revision>@VERSION@</revision>
+      </Version>
+    </release>
 
-    <doap:download rdf:resource="http://librdf.org/dist/sources/"/>
+    <mailing-list rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-dev" />
+    <mailing-list rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-announce" />
+    <mailing-list rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-commits" />
 
-    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
-    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/lgpl"/>
-    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/asl20"/>
+    <download-page rdf:resource="http://librdf.org/dist/sources/"/>
+    <download-mirror rdf:resource="http://sourceforge.net/projects/librdf/" />
 
-    <doap:mailingList rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-dev"/>
+    <!-- Freshmeat category: Database Engines/Servers -->
+    <category rdf:resource="http://software.freshmeat.net/browse/67/" />
+    <!--   Internet :: WWW/HTTP :: Indexing/Search -->
+    <category rdf:resource="http://software.freshmeat.net/browse/93/" />
+    <!--  Software Development :: Libraries -->
+    <category rdf:resource="http://software.freshmeat.net/browse/809/" />
+    <!--  Software Development :: Libraries ::  Application Frameworks -->
+    <category rdf:resource="http://software.freshmeat.net/browse/810/" />
+    <!--  Text Processing :: Markup :: XML -->
+    <category rdf:resource="http://software.freshmeat.net/browse/868/" />
 
-    <doap:version>
-      <rdf:Description>
-	<doap:versionNumber>@VERSION@</doap:versionNumber>
-      </rdf:Description>
-    </doap:version>
+    <!-- Sourceforge category: -->
+    <category rdf:resource="http://sourceforge.net/softwaremap/trove_list.php?form_cat=237" />
 
-    <doap:repository>
-      <doap:CVSRepository>
-	<doap:anonCVS>:pserver:anonymous@cvs.librdf.org:/cvs/redland raptor</doap:anonCVS>
-	<doap:repositoryWebView rdf:resource="http://cvs.librdf.org/cvsweb/redland/raptor/"/>
-      </doap:CVSRepository>
-    </doap:repository>
-  </doap:Project>
+    <!-- Licensing details -->
+    <license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
+    <license rdf:resource="http://usefulinc.com/doap/licenses/lgpl"/>
+    <license rdf:resource="http://usefulinc.com/doap/licenses/asl20"/>
+
+    <!-- source repository -->
+    <repository>
+      <CVSRepository>
+	<anonCVS>:pserver:anonymous@cvs.librdf.org:/cvs/redland raptor</anonCVS>
+	<repositoryWebView rdf:resource="http://cvs.librdf.org/cvsweb/redland/raptor/"/>
+      </CVSRepository>
+    </repository>
+  </Project>
+
+
+  <!--
+       optional administravia:
+       authoring tools can add more here if they'd like.
+   -->
+  <rdf:Description rdf:about="">
+    <foaf:maker>
+      <foaf:Person>
+	<foaf:name>Dave Beckett</foaf:name>
+	<foaf:homepage rdf:resource="http://purl.org/net/dajobe/"/>
+	<foaf:mbox_sha1sum>970987f991961f2553a1bf2574166fa29befbccb</foaf:mbox_sha1sum>
+      </foaf:Person>
+    </foaf:maker>
+  </rdf:Description>
 
 </rdf:RDF>
+<!-- 
+Local variables:
+mode:nxml
+End:
+-->
