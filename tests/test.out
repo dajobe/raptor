@@ -33,4 +33,4 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource30> <http://example.org/property> "chat"@fr .
 <http://example.org/resource31> <http://example.org/property> "chat"@en .
 <http://example.org/resource32> <http://example.org/property> "abc"^^<http://example.org/datatype1> .
-<http://example.org/resource32> <http://example.org/property> "abc"@en^^<http://example.org/datatype2> .
+<http://example.org/resource33> <http://example.org/property> "abc"@en^^<http://example.org/datatype2> .
