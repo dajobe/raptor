@@ -269,7 +269,7 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
 
 /* These are for 7-bit ASCII and not locale-specific */
 #define IS_ASCII_ALPHA(c) (((c)>0x40 && (c)<0x5B) || ((c)>0x60 && (c)<0x7B))
-#define IS_ASCII_DIGIT(c) ((c)>0x30 && (c)<0x3A)
+#define IS_ASCII_DIGIT(c) ((c)>0x2F && (c)<0x3A)
 #define IS_ASCII_PRINT(c) ((c)>0x1F && (c)<0x7F)
 
 /**
