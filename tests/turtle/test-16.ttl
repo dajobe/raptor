@@ -1,7 +1,6 @@
 # 10000 items (10000 triples) more than the default Bison stack size
 @prefix : <http://example.org/ns#> .
-:a :b :c0;
-   :b :c1;
+:a :b :c1;
    :b :c2;
    :b :c3;
    :b :c4;
