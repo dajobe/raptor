@@ -538,6 +538,8 @@ struct  raptor_www_s {
 
   /* can be filled with error location information */
   raptor_locator locator;
+
+  char *http_accept;
 };
 
 
