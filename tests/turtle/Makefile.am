@@ -4,8 +4,8 @@
 #
 # $Id$
 #
-# Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
-# Institute for Learning and Research Technology - http://www.ilrt.org/
+# Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+# Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
 # University of Bristol - http://www.bristol.ac.uk/
 # 
 # This package is Free Software or Open Source available under the
@@ -19,14 +19,14 @@
 # 
 
 TEST_FILES=test-00.ttl test-01.ttl test-02.ttl test-03.ttl \
-test-04.ttl test-05.ttl test-06.ttl
+test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl
 
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl
 
 TEST_WARN_FILES=
 
 TEST_OUT_FILES=test-00.out test-01.out test-02.out test-03.out \
-test-04.out test-05.out test-06.out
+test-04.out test-05.out test-06.out test-07.out test-08.out
 
 TEST_WARN_OUT_FILES=
 
