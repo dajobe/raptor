@@ -68,7 +68,7 @@
 #undef RAPTOR_N3_USE_ERROR_COLUMNS
 
 /* Prototypes */ 
-int n3_parser_error(raptor_parser* rdf_parser, const char *msg);
+int n3_parser_error(void* rdf_parser, const char *msg);
 
 /* Missing n3_lexer.c/h prototypes */
 int n3_lexer_get_column(yyscan_t yyscanner);
@@ -604,7 +604,7 @@ URI_LITERAL
       raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 
-#if RAPTOR_DEBUG > 1  
+#if RAPTOR_DEBUG > 1
     printf(" after substitution objectList=");
     raptor_sequence_print($2, stdout);
     printf("\n\n");
@@ -677,8 +677,9 @@ raptor_triple_print(raptor_triple *t, FILE *fh)
 extern char *filename;
  
 int
-n3_parser_error(raptor_parser* rdf_parser, const char *msg)
+n3_parser_error(void* ctx, const char *msg)
 {
+  raptor_parser* rdf_parser=(raptor_parser *)ctx;
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
   
   rdf_parser->locator.line=n3_parser->lineno;
