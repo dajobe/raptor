@@ -50,6 +50,8 @@ static int replace_newlines=0;
 /* extra noise? */
 static int quiet=0;
 
+static int statement_count=0;
+
 
 static
 void print_statements(void *user_data, const rapier_statement *statement) 
@@ -67,6 +69,8 @@ void print_statements(void *user_data, const rapier_statement *statement)
 
   rapier_print_statement(statement, stdout);
   fputc('\n', stdout);
+
+  statement_count++;
 }
 
 
@@ -229,6 +233,9 @@ main(int argc, char *argv[])
   } else
     rc=0;
   rapier_free(parser);
+
+  fprintf(stdout, "%s: Parsing returned %d statements\n", program,
+          statement_count);
 
 #ifdef LIBRDF_INTERNAL
   librdf_free_uri(base_uri);
