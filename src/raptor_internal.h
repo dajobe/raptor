@@ -555,7 +555,6 @@ void raptor_xml_parser_stats_print(raptor_xml_parser* rdf_xml_parser, FILE *stre
 
 /* raptor_feature.c */
 int raptor_features_enumerate_common(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, int flags);
-raptor_feature raptor_feature_from_uri_common(raptor_uri *uri, int flags);
 
 /* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
