@@ -1597,7 +1597,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "raptor_generate_statement: Generating statement: ");
-  raptor_print_statement_detailed(statement, 1, stderr);
+  raptor_print_statement(statement, stderr);
   fputc('\n', stderr);
 
   if(!(subject_uri||subject_id))
