@@ -354,6 +354,8 @@ raptor_new_sax2_element(raptor_qname *name,
   sax2_element->xml_language=xml_language;
   sax2_element->base_uri=xml_base;
 
+  sax2_element->declared_nspaces=NULL;
+
   return sax2_element;
 }
 
@@ -380,6 +382,10 @@ raptor_free_sax2_element(raptor_sax2_element *element)
     RAPTOR_FREE(cstring, element->xml_language);
 
   raptor_free_qname(element->name);
+
+  if(element->declared_nspaces)
+    raptor_free_sequence(element->declared_nspaces);
+
   RAPTOR_FREE(raptor_element, element);
 }
 
@@ -396,6 +402,15 @@ raptor_sax2_element_set_attributes(raptor_sax2_element* sax2_element,
 {
   sax2_element->attributes=attributes;
   sax2_element->attribute_count=count;
+}
+
+
+void
+raptor_sax2_declare_namespace(raptor_sax2_element* sax2_element,
+                              raptor_namespace *nspace) {
+  if(!sax2_element->declared_nspaces)
+    sax2_element->declared_nspaces=raptor_new_sequence(NULL, NULL);
+  raptor_sequence_push(sax2_element->declared_nspaces, nspace);
 }
 
 
@@ -457,9 +472,14 @@ raptor_iostream_write_sax2_element(raptor_iostream* iostr,
   size_t nspace_declarations_count=0;  
   unsigned int i;
 
-  /* max is 1 per element and 1 for each attribute */
-  if(nstack)
-    nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, element->attribute_count+1, sizeof(struct nsd));
+  /* max is 1 per element and 1 for each attribute + size of declared */
+  if(nstack) {
+    int nspace_max_count=element->attribute_count+1;
+    if(element->declared_nspaces)
+      nspace_max_count += raptor_sequence_size(element->declared_nspaces);
+    
+    nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count, sizeof(struct nsd));
+  }
 
   if(element->name->nspace) {
     if(!is_end && nstack &&
@@ -499,10 +519,35 @@ raptor_iostream_write_sax2_element(raptor_iostream* iostr,
         }
 
       }
-
     }
   }
   
+
+  if(!is_end && nstack && element->declared_nspaces) {
+    for(i=0; i< raptor_sequence_size(element->declared_nspaces); i++) {
+      raptor_namespace* nspace=(raptor_namespace*)raptor_sequence_get_at(element->declared_nspaces, i);
+      unsigned int j;
+      int declare_me=1;
+      
+      /* check it wasn't an earlier declaration too */
+      for (j=0; j < nspace_declarations_count; j++)
+        if(nspace_declarations[j].nspace == nspace) {
+          declare_me=0;
+          break;
+        }
+      
+      if(declare_me) {
+        nspace_declarations[nspace_declarations_count].declaration=
+          raptor_namespaces_format(nspace,
+                                   &nspace_declarations[nspace_declarations_count].length);
+        nspace_declarations[nspace_declarations_count].nspace=nspace;
+        nspace_declarations_count++;
+      }
+
+    }
+  }
+
+
 
   raptor_iostream_write_byte(iostr, '<');
   if(is_end)
