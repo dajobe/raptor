@@ -3256,12 +3256,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          */
 
 
-        /* lets add booleans - isn't C wonderful! */
-        if((element->rdf_attr[RDF_ATTR_ID] != NULL) +
-           (element->rdf_attr[RDF_ATTR_about] != NULL) +
-           (element->rdf_attr[RDF_ATTR_aboutEach] != NULL) +
-           (element->rdf_attr[RDF_ATTR_aboutEachPrefix] != NULL) > 1) {
-          raptor_parser_warning(rdf_parser, "More than one of RDF ID, about, aboutEach or aboutEachPrefix attributes on element %s - from productions 6.5, 6.6, 6.7 and 6.8 expect at most one.", el_name);
+        if(element->rdf_attr[RDF_ATTR_ID] &&
+           element->rdf_attr[RDF_ATTR_about]) {
+          raptor_parser_warning(rdf_parser, "Found rdf:ID and rdf:about attributes on element %s - expected only one.", el_name);
         }
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
@@ -3273,14 +3270,6 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         } else if (element->rdf_attr[RDF_ATTR_about]) {
           element->subject.uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
-        } else if (element->rdf_attr[RDF_ATTR_aboutEach]) {
-          element->subject.uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
-          element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH;
-          element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
-        } else if (element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
-          element->subject.uri=raptor_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
-          element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH_PREFIX;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->parent && 
                    (element->parent->object.uri || element->parent->object.id)) {
