@@ -1577,6 +1577,9 @@ raptor_xml_start_element_handler(void *user_data,
 
 
 #ifdef RAPTOR_DEBUG
+  LIBRDF_DEBUG2(raptor_xml_start_element_handler, "Using content type %s\n",
+                rdf_content_type_info[element->content_type].name);
+
   fprintf(stderr, "raptor_xml_start_element_handler: Start ns-element: ");
   raptor_print_element(element, stderr);
 #endif
@@ -1673,13 +1676,24 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 
   element=rdf_parser->current_element;
 
+#ifdef RAPTOR_DEBUG
+  fputc('\n', stderr);
+#endif
+
   /* cdata never changes the parser state 
    * and the containing element state always determines what to do.
    * Use the child_state first if there is one, since that applies
    */
   state=element->child_state;
-  LIBRDF_DEBUG3(raptor_xml_cdata_handler, "in state %d - %s\n", state,
+  LIBRDF_DEBUG3(raptor_xml_cdata_handler, "Working in state %d - %s\n", state,
                 raptor_state_as_string(state));
+
+
+  LIBRDF_DEBUG3(raptor_xml_cdata_handler,
+                "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+  
+
+
   switch(state) {
     case RAPTOR_STATE_SKIPPING:
       return;
@@ -1762,11 +1776,11 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   *ptr = '\0';
 
   LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
-                "content cdata now: '%s' (%d bytes)\n", 
+                "Content cdata now: '%s' (%d bytes)\n", 
                 buffer, element->content_cdata_length);
 
   LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
-                "ending in state %d - %s\n",
+                "Ending in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
 }
@@ -3129,7 +3143,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
-  LIBRDF_DEBUG3(raptor_start_element_grammar, "starting in state %d - %s\n",
+  LIBRDF_DEBUG3(raptor_start_element_grammar, "Starting in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
   finished= 0;
@@ -3452,10 +3466,22 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                 element->content_cdata=new_cdata;
               }
               LIBRDF_FREE(cstring, fmt_buffer);
+
+              LIBRDF_DEBUG3(raptor_start_element_grammar,
+                            "content cdata appended, now: '%s' (%d bytes)\n", 
+                            element->content_cdata,
+                            element->content_cdata_length);
+
             } else {
               /* Copy - is empty */
               element->content_cdata       =fmt_buffer;
               element->content_cdata_length=fmt_length;
+
+              LIBRDF_DEBUG3(raptor_start_element_grammar,
+                            "content cdata copied, now: '%s' (%d bytes)\n", 
+                            element->content_cdata,
+                            element->content_cdata_length);
+
             }
           }
 
@@ -3586,14 +3612,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
     if(state != element->state) {
       element->state=state;
       LIBRDF_DEBUG3(raptor_start_element_grammar, 
-                    "moved to state %d - %s\n",
+                    "Moved to state %d - %s\n",
                     state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
   LIBRDF_DEBUG3(raptor_start_element_grammar, 
-                "ending in state %d - %s\n",
+                "Ending in state %d - %s\n",
                 state, raptor_state_as_string(state));
 }
 
@@ -3610,7 +3636,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
-  LIBRDF_DEBUG3(raptor_end_element_grammar, "starting in state %d - %s\n",
+  LIBRDF_DEBUG3(raptor_end_element_grammar, "Starting in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
   finished= 0;
@@ -3717,7 +3743,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             LIBRDF_FREE(cstring, fmt_buffer);
           }
         }
-
+        
+        LIBRDF_DEBUG3(raptor_end_element_grammar,
+                      "content cdata now: '%s' (%d bytes)\n", 
+                       element->content_cdata, element->content_cdata_length);
+         
         /* Append this cdata content to parent element cdata content */
         if(element->parent->content_cdata) {
           /* Append */
@@ -3733,10 +3763,21 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             /* Done with our cdata - free it before pointer is zapped */
             LIBRDF_FREE(cstring, element->content_cdata);
           }
+
+          LIBRDF_DEBUG3(raptor_end_element_grammar,
+                        "content cdata appended to parent, now: '%s' (%d bytes)\n", 
+                        element->parent->content_cdata,
+                        element->parent->content_cdata_length);
+
         } else {
           /* Copy - parent is empty */
           element->parent->content_cdata       =element->content_cdata;
           element->parent->content_cdata_length=element->content_cdata_length+1;
+          LIBRDF_DEBUG3(raptor_end_element_grammar,
+                        "content cdata copied to parent, now: '%s' (%d bytes)\n",
+                        element->parent->content_cdata,
+                        element->parent->content_cdata_length);
+
         }
 
         element->content_cdata=NULL;
@@ -3768,6 +3809,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           else
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
         }
+
+        LIBRDF_DEBUG3(raptor_end_element_grammar,
+                      "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
 
         if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE) {
           if(element->rdf_attr[RDF_ATTR_resource]) {
@@ -4049,14 +4093,14 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
-      LIBRDF_DEBUG3(raptor_end_element_grammar, "moved to state %d - %s\n",
+      LIBRDF_DEBUG3(raptor_end_element_grammar, "Moved to state %d - %s\n",
                     state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
   LIBRDF_DEBUG3(raptor_end_element_grammar, 
-                "ending in state %d - %s\n",
+                "Ending in state %d - %s\n",
                 state, raptor_state_as_string(state));
 
 }
