@@ -101,26 +101,16 @@ static unsigned char *copy_token(unsigned char *text, size_t len);
 unsigned char *copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
 
 char *filename=NULL;
-int lineno=1;
 
-#ifdef STANDALONE
-YYSTYPE n3_parser_lval;
+#ifdef RAPTOR_DEBUG
+const char * n3_token_print(int token, YYSTYPE *lval);
 #endif
+
+int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner);
+#define YY_DECL int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner)
+
 
 /* Missing n3_lexer.c/h prototypes */
-#if 0
-int n3_lexer_get_lineno(yyscan_t yyscanner);
-FILE *n3_lexer_get_in(yyscan_t yyscanner);
-FILE *n3_lexer_get_out(yyscan_t yyscanner);
-int n3_lexer_get_leng(yyscan_t yyscanner);
-char *n3_lexer_get_text(yyscan_t yyscanner);
-void n3_lexer_set_lineno(int line_number, yyscan_t yyscanner);
-void n3_lexer_set_in(FILE* in_str, yyscan_t yyscanner);
-void n3_lexer_set_out(FILE* out_str, yyscan_t yyscanner);
-int n3_lexer_get_debug(yyscan_t yyscanner);
-void n3_lexer_set_debug(int bdebug, yyscan_t yyscanner);
-int n3_lexer_lex_destroy(yyscan_t yyscanner);
-#endif
 int n3_lexer_get_column(yyscan_t yyscanner);
 void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
@@ -131,9 +121,10 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
   /* rules */
 
   int c;
+  raptor_parser *rdf_parser=(raptor_parser*)yyextra;
 
 
-\r\n|\r|\n   { lineno++; }
+\r\n|\r|\n   { /* empty - lineno++ */ }
  
 [\ \t\v]+   { /* empty */ }
 
@@ -149,39 +140,39 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 "@"       { return AT; }
 "^^"      { return HAT; }
 
-'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval.string=copy_string_token(yyextra, yytext+1, yyleng-2, '\"'); /* ' */
+'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=copy_string_token(rdf_parser, yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval.string=copy_string_token(yyextra, yytext+1, yyleng-2, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=copy_string_token(rdf_parser, yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-_:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
+_:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token(yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval.string=copy_token(yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token(yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval.string=copy_token(yytext, yyleng);
+:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token(yytext, yyleng);
                           return QNAME_LITERAL; }
 
-[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval.string=copy_token(yytext, yyleng);
+[A-Za-z][A-Za-z0-9_]*:	{ n3_parser_lval->string=copy_token(yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:	{ n3_parser_lval.string=NULL;
+:	{ n3_parser_lval->string=NULL;
                           return QNAME_LITERAL; }
 
 \<[^>]*\>   { if(yyleng == 2) 
-                n3_parser_lval.string=NULL;
+                n3_parser_lval->string=NULL;
               else
-                n3_parser_lval.string=copy_token(yytext+1, yyleng-2);
+                n3_parser_lval->string=copy_token(yytext+1, yyleng-2);
               return URI_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval.string=copy_token(yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=copy_token(yytext, yyleng);
                           return IDENTIFIER; }
 
 \#              { while((c=input(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
                     ;
-                  lineno++;
+                  /* lineno++; */
                   if(c == EOF)
                     return EOF;
                 }
@@ -189,7 +180,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
 .         	{ if (*yytext == EOF)
                     return EOF;
 
-                  n3_syntax_error((raptor_parser*)yyextra, "Syntax error at '%c'", *yytext);
+                  n3_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
                   return ERROR;
 		}
 
@@ -272,7 +263,7 @@ copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, in
 #ifdef RAPTOR_DEBUG
 
 const char *
-n3_token_print(int token)
+n3_token_print(int token, YYSTYPE *lval)
 {
   static char buffer[2048];
 
@@ -311,26 +302,26 @@ n3_token_print(int token)
       return "HAT";
 
     case STRING_LITERAL:
-      sprintf(buffer, "STRING_LITERAL(%s)", n3_parser_lval.string);
+      sprintf(buffer, "STRING_LITERAL(%s)", lval->string);
       return buffer;
 
     case URI_LITERAL:
       sprintf(buffer, "URI_LITERAL(%s)", 
-        (n3_parser_lval.string ? (char*)n3_parser_lval.string : ""));
+        (lval->string ? (char*)lval->string : ""));
       return buffer;
 
     case BLANK_LITERAL:
-      sprintf(buffer, "BLANK_LITERAL(%s)", n3_parser_lval.string);
+      sprintf(buffer, "BLANK_LITERAL(%s)", lval->string);
       return buffer;
 
     case QNAME_LITERAL:
       sprintf(buffer, "QNAME_LITERAL(%s)", 
-              (n3_parser_lval.string ? (char*)n3_parser_lval.string : ""));
+              (lval->string ? (char*)lval->string : ""));
       return buffer;
 
     case IDENTIFIER:
       sprintf(buffer, "IDENTIFIER(%s)", 
-              (n3_parser_lval.string ? (char*)n3_parser_lval.string : ""));
+              (lval->string ? (char*)lval->string : ""));
       return buffer;
 
     case ERROR:
@@ -350,15 +341,17 @@ n3_token_print(int token)
 int
 n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
+  yyscan_t yyscanner=(yyscan_t)rdf_parser;
   va_list arguments;
 
+  fprintf(stderr, "%s:%d: ", filename, n3_lexer_get_lineno(yyscanner));
+
   va_start(arguments, message);
-
   vfprintf(stderr, message, arguments);
-
   va_end(arguments);
 
   fputc('\n', stderr);
+
   return 0;
 }
 
@@ -369,7 +362,8 @@ main(int argc, char *argv[])
   int token=EOF;
   yyscan_t scanner;
   FILE *fh;
-
+  YYSTYPE lval;
+  
   if(argc > 1) {
     filename=argv[1];
     fh=fopen(filename, "r");
@@ -385,13 +379,14 @@ main(int argc, char *argv[])
 
   yylex_init(&scanner);
   n3_lexer_set_in(fh, scanner);
+  n3_lexer_set_extra(scanner, scanner);
 
   while(1) {
     if(n3_lexer_get_text(scanner) != NULL)
       printf("yyinput '%s'\n", n3_lexer_get_text(scanner));
-    token=yylex(scanner);
+    token=yylex(&lval, scanner);
 #ifdef RAPTOR_DEBUG
-    printf("token %s\n", n3_token_print(token));
+    printf("token %s\n", n3_token_print(token, &lval));
 #else
     printf("token %d\n", token);
 #endif
