@@ -1027,48 +1027,40 @@ Writer \fIxml_writer\fP.
 Added XML Writer class (\fBraptor_xml_writer\fP)
 and XML Element class (\fBraptor_xml_element\fP)
 .P
-Added \fBraptor_namespaces_find_namespace_by_uri\fP.
-.P
-Added \fBraptor_serializer_set_namespace\fP,
-\fBraptor_serializer_set_feature\fP and
-\fBraptor_serializer_get_feature\fP.
-.P
 Added \fBraptor_parser_get_feature_string\fP,
 \fBraptor_parser_set_feature_string\fP,
 \fBraptor_serializer_set_feature_string\fP,
 \fBraptor_serializer_get_feature_string\fP and
 \fBraptor_feature_value_type\fP.
 .P
-Added \fBraptor_iostream_write_qname\fP to write a qname to an iostream.
-.P
-Added \fBraptor_uri_to_relative_counted_uri_string\fP and
-\fBraptor_uri_to_relative_uri_string\fP.
+Added \fBraptor_serializer_set_namespace\fP,
+\fBraptor_serializer_set_feature\fP and
+\fBraptor_serializer_get_feature\fP.
 .P
 Added
 \fBraptor_new_namespace_from_uri\fP,
-\fBraptor_new_namespace_parts_from_string\fP and
+\fBraptor_new_namespace_parts_from_string\fP,
+Added \fBraptor_namespaces_find_namespace_by_uri\fP.
+and
 \fBraptor_iostream_write_namespace\fP to write a namespace
 declaration to an iostream.
+.P
+Added copy constructor \fBraptor_qname_copy\fP
+and \fBraptor_iostream_write_qname\fP to write a qname to an iostream.
 .P
 Added \fBraptor_sequence_join\fP to join two sequences, leaving one empty.
 .P
 Added \fBraptor_iostream_write_stringbuffer\fP to write a
 stringbuffer to an iostream.
 .P
-Added \fBraptor_iostream_write_xml_escaped_string\fP to write
-an XML-escaped string to an iostream.
-.P
 Added N-Triples
 \fBraptor_iostream_write_string_ntriples\fP and
 \fBraptor_iostream_write_statement_ntriples\fP
 utility functions for writing to raptor_iostreams.
 .P
-Added \fBraptor_xml_name_check\fP
-to check if a name is a legal XML 1.0 or 1.0 name.
-.P
-Added \fBraptor_uri_print\fP method to print a URI.
-.P
-Added copy constructor \fBraptor_qname_copy\fP
+Added \fBraptor_uri_to_relative_counted_uri_string\fP,
+\fBraptor_uri_to_relative_uri_string\fP.
+and \fBraptor_uri_print\fP
 .P
 Added unicode name checking utility functions for XML 1.0 and XML 1.1
 name starting character and continued name character.
@@ -1076,6 +1068,11 @@ name starting character and continued name character.
 \fBraptor_unicode_is_xml10_namechar\fP,
 \fBraptor_unicode_is_xml11_namechar\fP and
 \fBraptor_unicode_is_xml11_namestartchar\fP.
+.P
+Added \fBraptor_xml_name_check\fP
+to check if a name is a legal XML 1.0 or 1.0 name.
+and \fBraptor_iostream_write_xml_escaped_string\fP to write
+an XML-escaped string to an iostream.
 .P
 Added UTF8-checking utility function \fBraptor_utf8_check\fP.
 .SS 1.4.2
