@@ -172,6 +172,7 @@ statement: directive
       raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $1);
       t2->subject=i2;
+      t2->subject->is_malloced=1;
     }
 #if RAPTOR_DEBUG > 1  
     printf(" after substitution propertyList=");
@@ -300,6 +301,7 @@ propertyList: verb objectList SEMICOLON propertyList
     raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
     raptor_copy_identifier(i2, $1);
     t2->predicate=i2;
+    t2->predicate->is_malloced=1;
   }
 
 #if RAPTOR_DEBUG > 1  
@@ -347,6 +349,7 @@ propertyList: verb objectList SEMICOLON propertyList
       raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $1);
       t2->predicate=i2;
+      t2->predicate->is_malloced=1;
     }
 
 #if RAPTOR_DEBUG > 1  
@@ -576,6 +579,7 @@ URI_LITERAL
       raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $$);
       t2->subject=i2;
+      t2->subject->is_malloced=1;
       raptor_n3_generate_statement(N3_Parser, t2);
     }
 
@@ -625,6 +629,7 @@ void raptor_free_triple(raptor_triple *t) {
     raptor_free_identifier(t->predicate);
   if(t->object)
     raptor_free_identifier(t->object);
+  RAPTOR_FREE(raptor_triple, t);
 }
  
 #ifdef RAPTOR_DEBUG
