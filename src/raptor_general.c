@@ -1534,7 +1534,7 @@ raptor_xml_start_element_handler(void *user_data,
 
     } else {
       if(!element->parent->child_state)
-        raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set\n");      
+        raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set");      
 
       element->state=element->parent->child_state;
       element->parent->content_element_seen++;
@@ -1639,7 +1639,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   if(!raptor_ns_names_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
     raptor_parser_warning(rdf_parser, 
-                          "Element %s ended, expected end of element %s\n",
+                          "Element %s ended, expected end of element %s",
                           name, element->name->local_name);
     return;
   }
@@ -2970,7 +2970,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
           raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attr->local_name, name);
         }
       } else {
-        raptor_parser_warning(rdf_parser, "Found unknown RDF M&S attribute %s\n.", 
+        raptor_parser_warning(rdf_parser, "Found unknown RDF M&S attribute %s.", 
                               name);
       }
 
@@ -3540,7 +3540,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
       default:
-        raptor_parser_fatal_error(rdf_parser, "raptor_start_element_grammar - unexpected parser state %d - %s\n", state, raptor_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_start_element_grammar - unexpected parser state %d - %s", state, raptor_state_as_string(state));
         finished=1;
 
     } /* end switch */
@@ -3606,7 +3606,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          * document (probably never get here since this would be
          * a mismatched XML tag and cause an error earlier)
          */
-        raptor_parser_warning(rdf_parser, "Element %s ended, expected end of RDF element\n", el_name);
+        raptor_parser_warning(rdf_parser, "Element %s ended, expected end of RDF element", el_name);
         state=RAPTOR_STATE_UNKNOWN;
         finished=1;
         break;
@@ -3965,7 +3965,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             break;
 
           default:
-            raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+            raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)", raptor_element_content_type_as_string(element->content_type), element->content_type);
         } /* end switch */
 
 
@@ -4018,7 +4018,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
       default:
-        raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar - unexpected parser state %d - %s\n", state, raptor_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar - unexpected parser state %d - %s", state, raptor_state_as_string(state));
         finished=1;
 
     } /* end switch */
