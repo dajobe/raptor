@@ -522,7 +522,8 @@ raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 const char* raptor_basename(const char *name);
-
+raptor_statement* raptor_statement_copy(const raptor_statement *statement);
+void raptor_free_statement(raptor_statement *statement);
 
 /* raptor_parse.c */
 void raptor_delete_parser_factories(void);
