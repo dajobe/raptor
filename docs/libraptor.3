@@ -549,33 +549,33 @@ Made URI class constructors, methods and factory methods as
 well as some other utility functions using or returning URIs or
 literals take unsigned char* rather than char*.  The affected calls are:
 .IP
-  raptor_new_uri_func
-  raptor_new_uri_from_local_name_func
-  raptor_new_uri_relative_to_base_func
-  raptor_uri_as_string_func
-  raptor_uri_as_counted_string_func
+  \fBraptor_new_uri_func\fR
+  \fBraptor_new_uri_from_local_name_func\fR
+  \fBraptor_new_uri_relative_to_base_func\fR
+  \fBraptor_uri_as_string_func\fR
+  \fBraptor_uri_as_counted_string_func\fR
     URI factory methods changed to all take/return unsigned char* for URI strings.
-  raptor_statement_part_as_counted_string
-  raptor_statement_part_as_string
-  raptor_new_uri
-  raptor_new_uri_from_uri_local_name
-  raptor_new_uri_relative_to_base
-  raptor_uri_as_string
-  raptor_uri_as_counted_string
-  raptor_print_ntriples_string
+  \fBraptor_statement_part_as_counted_string\fR
+  \fBraptor_statement_part_as_string\fR
+  \fBraptor_new_uri\fR
+  \fBraptor_new_uri_from_uri_local_name\fR
+  \fBraptor_new_uri_relative_to_base\fR
+  \fBraptor_uri_as_string\fR
+  \fBraptor_uri_as_counted_string\fR
+  \fBraptor_print_ntriples_string\fR
     Constructors and methods changed to take/return unsigned char* for URI strings.
-  raptor_uri_resolve_uri_reference
-  raptor_uri_filename_to_uri_string
-  raptor_uri_uri_string_to_filename
-  raptor_uri_uri_string_to_filename_fragment
-  raptor_uri_is_file_uri
+  \fBraptor_uri_resolve_uri_reference\fR
+  \fBraptor_uri_filename_to_uri_string\fR
+  \fBraptor_uri_uri_string_to_filename\fR
+  \fBraptor_uri_uri_string_to_filename_fragment\fR
+  \fBraptor_uri_is_file_uri\fR
     Changed to use unsigned char* for URI strings, char* for filenames.
-  raptor_ntriples_string_as_utf8_string
+  \fBraptor_ntriples_string_as_utf8_string\fR
     Changed to return unsigned char* for UTF8 string.
 .br
-Added raptor_parsers_enumerate to discover supported parsers.
+Added \fBraptor_parsers_enumerate\fR to discover supported parsers.
 .br
-Added raptor_uri_uri_string_to_filename_fragment with fragment arg to
+Added \fBraptor_uri_uri_string_to_filename_fragment\fR with fragment arg to
 return the URI fragment.
 .br
 Made the raptor_namespace, raptor_namespace_stack and raptor_qname
@@ -586,10 +586,11 @@ Added feature non_nfc_fatal (see raptor_set_feature documentation).
 Removed the following deprecated methods and functions (see 0.9.6
 changes for the new names):
 .br
-raptor_free, raptor_new, raptor_ntriples_free,
-raptor_ntriples_new, raptor_ntriples_parse_file,
-raptor_ntriples_set_error_handler, raptor_ntriples_set_fatal_error_handler,
-raptor_ntriples_set_statement_handler and raptor_parser_abort.
+\fBraptor_free\fR, \fBraptor_new\fR, \fBraptor_ntriples_free\fR,
+\fBraptor_ntriples_new\fR, \fBraptor_ntriples_parse_file\fR,
+\fBraptor_ntriples_set_error_handler\fR,
+\fBraptor_ntriples_set_fatal_error_handler\fR,
+\fBraptor_ntriples_set_statement_handler\fR and \fBraptor_parser_abort\fR.
 .IP
 Added \fBraptor_parse_file_stream\fR
 for reading FILE* streams without necessarily having a file.
