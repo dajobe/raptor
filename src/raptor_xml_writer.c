@@ -78,7 +78,7 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
 {
   raptor_xml_writer* xml_writer;
   
-  xml_writer=(raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, sizeof(raptor_xml_writer)+1, 1);
+  xml_writer=(raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1, sizeof(raptor_xml_writer)+1);
   if(!xml_writer)
     return NULL;
 

@@ -781,8 +781,8 @@ raptor_xml_start_element_handler(void *user_data,
 
 
   /* Create new element structure */
-  element=(raptor_element*)RAPTOR_CALLOC(raptor_element, 
-                                         sizeof(raptor_element), 1);
+  element=(raptor_element*)RAPTOR_CALLOC(raptor_element, 1, 
+                                         sizeof(raptor_element));
   if(!element) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return;
@@ -809,7 +809,8 @@ raptor_xml_start_element_handler(void *user_data,
     /* Round 2 - turn string attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
-    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, sizeof(raptor_qname*), ns_attributes_count);
+    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, ns_attributes_count, 
+                                              sizeof(raptor_qname*));
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       RAPTOR_FREE(raptor_sax2_element, sax2_element);
@@ -1212,7 +1213,7 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 {
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_sax2* sax2;
-  sax2=(raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, sizeof(raptor_sax2), 1);
+  sax2=(raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(raptor_sax2));
 
   rdf_xml_parser->sax2=sax2;
 

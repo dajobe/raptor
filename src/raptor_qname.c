@@ -111,7 +111,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   RAPTOR_DEBUG2("name %s\n", name);
 #endif  
 
-  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, sizeof(raptor_qname), 1);
+  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!qname)
     return NULL;
 
@@ -237,7 +237,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
   if(!ns || !local_name)
     return NULL;
 
-  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, sizeof(raptor_qname), 1);
+  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!qname)
     return NULL;
 

@@ -304,7 +304,7 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
   }
 
   /* Just one malloc for structure + namespace (maybe) + prefix (maybe)*/
-  ns=(raptor_namespace*)RAPTOR_CALLOC(raptor_namespace, len, 1);
+  ns=(raptor_namespace*)RAPTOR_CALLOC(raptor_namespace, 1, len);
   if(!ns)
     return NULL;
 

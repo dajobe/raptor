@@ -425,8 +425,8 @@ raptor_libxml_new_entity(raptor_parser* rdf_parser,
 {
   raptor_libxml_entity *ent;
   
-  ent=(raptor_libxml_entity*)RAPTOR_CALLOC(raptor_libxml_entity, 
-                                        sizeof(raptor_libxml_entity), 1);
+  ent=(raptor_libxml_entity*)RAPTOR_CALLOC(raptor_libxml_entity, 1,
+                                           sizeof(raptor_libxml_entity));
   if(!ent) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return NULL;

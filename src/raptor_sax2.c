@@ -83,8 +83,8 @@ raptor_new_sax2_element(raptor_qname *name,
                         raptor_uri *xml_base) {
   raptor_sax2_element* sax2_element;
 
-  sax2_element=(raptor_sax2_element*)RAPTOR_CALLOC(raptor_sax2_element, 
-                                                   sizeof(raptor_sax2_element), 1);
+  sax2_element=(raptor_sax2_element*)RAPTOR_CALLOC(raptor_sax2_element, 1,
+                                                   sizeof(raptor_sax2_element));
   if(!sax2_element)
     return NULL;
 
