@@ -278,7 +278,9 @@ else
   AC_MSG_RESULT(no)
 fi
 
-if test "X$expat_source" != X; then
+if test "X$expat_source" = X; then
+  expat_source=auto
+else
   if test -d "$expat_source_dir/xmlparse"; then
     # old expat
     CPPFLAGS="-I$expat_source_dir/xmlparse $CPPFLAGS"
