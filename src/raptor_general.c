@@ -61,7 +61,7 @@ static raptor_parser_factory* raptor_get_parser_factory(const char *name);
 static raptor_parser_factory* parsers=NULL;
 
 
-/**
+/*
  * raptor_init - Initialise the raptor library
  * 
  * Initialises the library.
@@ -81,7 +81,7 @@ raptor_init(void)
 }
 
 
-/**
+/*
  * raptor_finish - Terminate the raptor library
  *
  * Cleans up state of the library.
@@ -167,7 +167,7 @@ raptor_parser_register_factory(const char *name,
 }
 
 
-/*
+/**
  * raptor_get_parser_factory - Get a parser factory by name
  * @name: the factory name or NULL for the default factory
  * 
@@ -206,7 +206,7 @@ raptor_get_parser_factory (const char *name)
 
 
 
-/**
+/*
  * raptor_new_parser - Constructor - create a new raptor_parser object
  * @name: the parser name
  *
@@ -252,10 +252,27 @@ raptor_new_parser(const char *name) {
 }
 
 
+
+/**
+ * raptor_start_parse: Start a parse of content with base URI
+ * @rdf_parser: 
+ * @uri: base URI or NULL if no base URI is required
+ * 
+ * Only the N-Triples parser has an optional base URI.
+ * 
+ * Return value: non-0 on failure.
+ **/
 int
-raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
+raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) 
+{
   raptor_uri_handler *uri_handler;
   void *uri_context;
+
+  if(uri)
+    uri=raptor_uri_copy(uri);
+  
+  if(rdf_parser->base_uri)
+    raptor_free_uri(rdf_parser->base_uri);
 
   rdf_parser->base_uri=uri;
   rdf_parser->locator.uri=uri;
@@ -268,7 +285,7 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
                          uri_handler, uri_context,
                          raptor_parser_error, rdf_parser);
 
-  return rdf_parser->factory->start(rdf_parser, uri);
+  return rdf_parser->factory->start(rdf_parser);
 }
 
 
@@ -295,6 +312,9 @@ raptor_free_parser(raptor_parser* rdf_parser)
 
   if(rdf_parser->context)
     RAPTOR_FREE(raptor_parser_context, rdf_parser->context);
+
+  if(rdf_parser->base_uri)
+    raptor_free_uri(rdf_parser->base_uri);
 
   raptor_namespaces_free(&rdf_parser->namespaces);
 
@@ -389,6 +409,9 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
   if(!www)
     return 1;
 
+  if(!base_uri)
+    base_uri=uri;
+  
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
                                      rdf_parser);
 
