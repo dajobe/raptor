@@ -159,26 +159,30 @@ a string is a legal XML name (1.0 or 1.1) as well as legal UTF-8.</p>
 
 <h3>Other Changes</h3>
 
-<p>Added raptor_feature_value_type to determine value of a feature -
-integer (most) or string.</p>
+<p>Added <code>raptor_feature_value_type</code> to determine value of
+a feature - integer (most) or string.</p>
 
-<p>Namespace class: Added raptor_namespace_copy copy constructor and
-raptor_new_namespace_from_uri.  Added
-raptor_new_namespace_parts_from_string to decode things like
-"xmlns:PREFIX='URI'" into prefix and uri string pairs.
-Added raptor_namespaces_find_namespace_by_uri to look up a namespace
-by URI.</p>
+<p>Namespace class: Added <code>raptor_namespace_copy</code> copy
+constructor and <code>raptor_new_namespace_from_uri</code>.  Added
+<code>raptor_new_namespace_parts_from_string</code> to decode syntax
+of the form
+<code>xmlns:</code><em>prefix</em><code>="</code><em>uri</em><code>"</code>
+into <em>prefix</em> and <em>uri</em> string pairs.
+Added <code>raptor_namespaces_find_namespace_by_uri</code> to look up
+a namespace by URI.</p>
 
-<p>Raptor statement class: Added raptor_statement_copy
-copy constructor and raptor_free_statement destructor.  Previously
-these were internal to raptor.</p>
+<p>Statement class: Added <code>raptor_statement_copy</code> copy
+constructor and <code>raptor_free_statement</code> destructor.
+Previously these were internal to raptor.</p>
 
-<p>XML QName class: Added raptor_qname_copy copy constructor.</p>
+<p>XML QName class: Added <code>raptor_qname_copy</code> copy
+constructor.</p>
 
-<p>Sequence class: Added raptor_sequence_join</p>
+<p>Sequence class: Added <code>raptor_sequence_join</code>
+to join two sequences of items, leaving one empty.</p>
 
-<p>The <code>rapper</code> utility was modified to add a feature form:<br />
-<code>-f xmlns:</code><em>PREFIX</em><code>="</code><em>URI</em><code>"</code><br />
+<p>The <code>rapper</code> utility was modified to add a feature form:
+<code>-f xmlns:</code><em>PREFIX</em><code>="</code><em>URI</em><code>"</code>
 allowing the setting of output serializer namespaces.</p>
 
 
