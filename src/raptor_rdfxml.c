@@ -1455,9 +1455,18 @@ raptor_xml_start_element_handler(void *user_data,
       }
 
       
-      /* leave literal XML alone */
-      if (!(rdf_parser->current_element &&
-            rdf_parser->current_element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL)) {
+      /* If:
+       *  1 We are handling RDF content and RDF processing is allowed on
+       *    this element
+       * OR
+       *  2 We are not handling RDF content and 
+       *    this element is at the top level (top level Desc. / typedNode)
+       *    FIXME  - is this correct!
+       * then handle the RDF attributes
+       */
+      if ((rdf_parser->current_element &&
+           rdf_content_type_info[rdf_parser->current_element->child_content_type].rdf_processing) ||
+          !rdf_parser->current_element) {
 
         /* Save pointers to some RDF M&S attributes */
 
@@ -1540,14 +1549,19 @@ raptor_xml_start_element_handler(void *user_data,
 
   /* start from unknown; if we have a parent, it may set this */
   element->state=RAPTOR_STATE_UNKNOWN;
+  element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN;
 
   if(element->parent) {
-    element->content_type=element->parent->content_type;
+    if(!element->parent->child_state)
+      raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set\n");      
+
+    element->state=element->parent->child_state;
+    element->content_type=element->parent->child_content_type;
 
     element->parent->content_element_seen++;
     
     /* leave literal XML alone */
-    if (rdf_parser->current_element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL) {
+    if (!rdf_content_type_info[element->content_type].cdata_allowed) {
       if(element->parent->content_element_seen == 1 &&
          element->parent->content_cdata_seen == 1) {
         /* Uh oh - mixed content, the parent element has cdata too */
@@ -1556,11 +1570,15 @@ raptor_xml_start_element_handler(void *user_data,
       }
     
       /* If there is some existing all-whitespace content cdata
-       * (which is probably before the first element) delete it
+       * before this node element, delete it
        */
-      if(element->parent->content_element_seen &&
+      if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES &&
+         element->parent->content_element_seen &&
          element->parent->content_cdata_all_whitespace &&
          element->parent->content_cdata) {
+
+        element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+        
         LIBRDF_FREE(raptor_ns_name_array, element->parent->content_cdata);
         element->parent->content_cdata=NULL;
         element->parent->content_cdata_length=0;
@@ -1568,11 +1586,6 @@ raptor_xml_start_element_handler(void *user_data,
 
     } /* end if leave literal XML alone */
 
-    if(element->parent->child_state)
-      element->state=element->parent->child_state;
-    else
-      raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set\n");      
-    
   } /* end if element->parent */
 
 
@@ -1585,9 +1598,17 @@ raptor_xml_start_element_handler(void *user_data,
 #endif
 
   
-  /* Check for non namespaced stuff */
-  if(non_nspaced_count)
+  /* Check for non namespaced stuff when not in a
+   * parseType literal, other
+   */
+  if (rdf_content_type_info[element->content_type].rdf_processing &&
+      non_nspaced_count) {
+    raptor_parser_warning(rdf_parser, "element %s has non-namspaced parts, skipping.", 
+                          element->parent->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
+    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
+  }
+  
 
   /* Right, now ready to enter the grammar */
   raptor_start_element_grammar(rdf_parser, element);
