@@ -83,6 +83,96 @@ extern "C" {
 
 #endif
 
+
+
+/* XML parser includes */
+#ifdef RAPTOR_XML_EXPAT
+#ifdef HAVE_EXPAT_H
+#include <expat.h>
+#endif
+#ifdef HAVE_XMLPARSE_H
+#include <xmlparse.h>
+#endif
+#endif
+
+
+#ifdef RAPTOR_XML_LIBXML
+
+#ifdef HAVE_LIBXML_PARSER_H
+#include <libxml/parser.h>
+#else
+#ifdef HAVE_GNOME_XML_PARSER_H
+#include <gnome-xml/parser.h>
+#else
+DIE
+#endif
+#endif
+
+#define XML_Char xmlChar
+
+
+/*
+ * Raptor entity expansion list
+ * (libxml only)
+ */
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
+
+struct raptor_xml_entity_t {
+  xmlEntity entity;
+#ifndef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
+  int name_length;
+#endif
+
+  struct raptor_xml_entity_t *next;
+};
+typedef struct raptor_xml_entity_t raptor_xml_entity;
+#ifdef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
+#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->entity.name_length
+#else
+#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->name_length
+#endif
+
+#endif
+
+
+/* libxml-only prototypes */
+
+
+/* raptor_libxml.c exports */
+extern void raptor_libxml_init(xmlSAXHandler *sax);
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
+extern void raptor_libxml_free_entities(raptor_parser *rdf_parser);
+#endif
+extern void raptor_libxml_validation_error(void *context, const char *msg, ...);
+extern void raptor_libxml_validation_warning(void *context, const char *msg, ...);
+
+/* raptor_parse.c - exported to libxml part */
+extern xmlParserCtxtPtr raptor_get_libxml_context(raptor_parser *rdf_parser);
+extern void raptor_set_libxml_document_locator(raptor_parser *rdf_parser, xmlSAXLocatorPtr loc);
+extern xmlSAXLocatorPtr raptor_get_libxml_document_locator(raptor_parser *rdf_parser);
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
+extern raptor_xml_entity* raptor_get_libxml_entities(raptor_parser *rdf_parser);
+extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_entity* entities);
+#endif
+/* end of libxml-only */
+#endif
+
+
+extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
+extern void raptor_parser_error(raptor_parser* parser, const char *message, ...);
+extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
+extern void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
+extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
+extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments);
+
+
+/* Prototypes for common expat/libxml parsing event-handling functions */
+extern void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
+extern void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
+/* s is not 0 terminated. */
+extern void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
+
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
