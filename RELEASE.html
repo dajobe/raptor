@@ -10,8 +10,177 @@
 
 <h2 id="rel1_4_3"><a name="rel1_4_3">Raptor 1.4.3 Changes</a></h2>
 
-<p>&nbsp;
+<p><strong>DRAFT DRAFT DRAFT - not yet released - DRAFT DRAFT DRAFT</strong></p>
+
+<p>A release with the major new feature of an XML writer API.
+This is now used along with a new supporting XML element class to
+improve the existing RDF/XML serializer and to provide a new
+<a href="http://purl.org/rss/1.0/spec">RSS 1.0</a> serializer.
 </p>
+
+<p>This API it is also used by the next release of
+<a href="http://librdf.org/rasqal/">Rasqal</a> to provide serializing
+of query results to XML.
+</p>
+
+<p>The new <code>raptor_xml_writer</code> class functions added are:
+<code>raptor_new_xml_writer</code> (constructor),
+<code>raptor_free_xml_writer</code> (destructor),
+<code>raptor_xml_writer_empty_element</code>,
+<code>raptor_xml_writer_start_element</code>,
+<code>raptor_xml_writer_end_element</code>,
+<code>raptor_xml_writer_cdata</code>,
+<code>raptor_xml_writer_cdata_counted</code>,
+<code>raptor_xml_writer_raw</code>,
+<code>raptor_xml_writer_raw_counted</code>,
+<code>raptor_xml_writer_comment</code> and
+<code>raptor_xml_writer_comment_counted</code>.
+</p>
+
+<p>The new <code>raptor_xml_element</code> class functions added are:
+<code>raptor_new_xml_element</code> (constructor),
+<code>raptor_free_xml_element</code> (destructor),
+<code>raptor_xml_element_get_name</code>,
+<code>raptor_xml_element_set_attributes</code>,
+<code>raptor_xml_element_declare_namespace</code> and
+<code>raptor_iostream_write_xml_element</code>.
+</p>
+
+
+<h3>Parser Changes</h3>
+
+<p>RSS tag soup parser now works with older libxml2s (2.5.10+),
+including the one shipped with some Apple OSX versions that has an
+inconsistent header file and library.</p>
+
+<p>RSS tag soup parser recognises/scores more common XML RSS file names.</p>
+
+<p>RSS tag soup parser turns XML RSS
+<code>&lt;guid isPermaLink="true"&gt;val&lt;/guid&gt;</code>
+into RDF/XML form <code>&lt;guid rdf:resource="val"/&gt;</code>, leaving
+the non isPermaLink form to be a literal value.</p>
+
+<p>A bug was found in libxml2 that causes double expanding of XML
+entities in RDF/XML.  This has been reported but cannot be worked
+around from raptor.  The expat XML parser can be used as an
+alternative, as it does not have this problem.  A test was added for
+this bug but it will not cause the test suite ('make check') to
+fail.</p>
+
+<p>Added additional 
+<a href="http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/">Turtle</a>
+parser tests that cover Notation 3 syntax that is not part of the
+Turtle language.</p>
+
+<p>Added
+<code>raptor_parser_set_feature_string</code> and
+<code>raptor_parser_get_feature_string</code>
+methods to set/get string feature values.</p>
+
+
+<h3>Serializer Changes</h3>
+
+<p>Added feature <code>relative_uris</code> for serializers.  This
+is used by the RDF/XML serializer and enabled by default.</p>
+
+<p>Added feature <code>start_uri</code> for serializers with a string
+value to set the start URI for serializing.  Not used at present.</p>
+
+<p>Added new methods <code>raptor_serializer_features_enumerate</code>
+to list serializer features and functions to set/get serializer
+feature integer or strings values:
+<code>raptor_serializer_set_feature</code>,
+<code>raptor_serializer_get_feature</code>,
+<code>raptor_serializer_set_feature_string</code> and
+<code>raptor_serializer_get_feature_string</code>.
+</p>
+
+<p>Added <code>raptor_serialize_set_namespace</code> to allow user
+declaration of prefix/URI namespaces pairs as serializing hints.</p>
+
+<p>the RDF/XML serializer was improved using the new XML Writer class
+so it now uses any user-declared namespace hints in it's output and
+emits relative URIs whenever possible.  The latter was provided
+by a patch from René Puls.</p>
+
+<p>A new 
+<a href="http://purl.org/rss/1.0/spec">RSS 1.0</a>
+serializer was added, using the new XML Writer class
+and using the same structures, classes and properties as the RSS tag
+soup parser.</p>
+
+
+<h3>URI class changes</h3>
+
+<p>Added relative URI generating code from a patch written by René Puls
+and provide this with two new methods
+<code>raptor_uri_to_relative_uri_string</code> and
+<code>raptor_uri_to_relative_counted_uri_string</code>.
+</p>
+
+<p>Added <code>raptor_uri_print</code> to print a URI to a file handle.</p>
+
+<p>Added methods <code>raptor_uri_to_string</code> and
+<code>raptor_uri_to_counted_string</code> to return a URI as newly
+allocated strings.</p>
+
+
+<h3>I/O stream Changes</h3>
+
+<p>Many classes gained methods to write to iostreams, supporting the
+new XML Writer class functionality.  The added methods are:
+<code>raptor_iostream_write_namespace</code>,
+<code>raptor_iostream_write_ntriples_string</code>,
+<code>raptor_iostream_write_qname</code>,
+<code>raptor_iostream_write_statement_ntriples</code>,
+<code>raptor_iostream_write_stringbuffer</code>,
+<code>raptor_iostream_write_xml_element</code> and
+<code>raptor_iostream_write_xml_escaped_string</code>.
+</p>
+
+
+<h3>Unicode and UTF-8 Changes</h3>
+
+<p>Added several methods for checking characters forming
+parts of XML 1.0 or XML 1.1 names:
+<code>raptor_unicode_is_xml11_namestartchar</code>,
+<code>raptor_unicode_is_xml10_namestartchar</code>,
+<code>raptor_unicode_is_xml11_namechar</code> and
+<code>raptor_unicode_is_xml10_namechar</code>.
+</p>
+
+<p>Added a function <code>raptor_utf8_check</code> to check that a
+string is legal UTF-8 and all the encoded Unicode characters are in
+the range 0 &lt;= char &lt;= 0x10ffff</p>
+
+<p>Added a function <code>raptor_xml_name_check</code> to check that
+a string is a legal XML name (1.0 or 1.1) as well as legal UTF-8.</p>
+
+
+<h3>Other Changes</h3>
+
+<p>Added raptor_feature_value_type to determine value of a feature -
+integer (most) or string.</p>
+
+<p>Namespace class: Added raptor_namespace_copy copy constructor and
+raptor_new_namespace_from_uri.  Added
+raptor_new_namespace_parts_from_string to decode things like
+"xmlns:PREFIX='URI'" into prefix and uri string pairs.
+Added raptor_namespaces_find_namespace_by_uri to look up a namespace
+by URI.</p>
+
+<p>Raptor statement class: Added raptor_statement_copy
+copy constructor and raptor_free_statement destructor.  Previously
+these were internal to raptor.</p>
+
+<p>XML QName class: Added raptor_qname_copy copy constructor.</p>
+
+<p>Sequence class: Added raptor_sequence_join</p>
+
+<p>The <code>rapper</code> utility was modified to add a feature form:<br />
+<code>-f xmlns:</code><em>PREFIX</em><code>="</code><em>URI</em><code>"</code><br />
+allowing the setting of output serializer namespaces.</p>
+
 
 <h2 id="rel1_4_2"><a name="rel1_4_2">Raptor 1.4.2 Changes</a></h2>
 
