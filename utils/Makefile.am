@@ -48,7 +48,7 @@ libraptor_la_LIBADD = @LTLIBOBJS@
 EXTRA_DIST=ChangeLog ChangeLog.1 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
-MPL.html libraptor.html rapper.html \
+MPL.html libraptor.html rapper.html RELEASE.html \
 raptor.rdf.in \
 raptor-config.in raptor-src-config.in \
 autogen.sh \
