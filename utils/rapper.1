@@ -1,6 +1,6 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
 .\"
-.\" rapper.1 - Raptor parser utility manual page
+.\" rapper.1 - Raptor RDF parser tool manual page
 .\"
 .\" $Id$
 .\"
@@ -8,66 +8,99 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.org/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2002-06-13"
+.TH rapper 1 "2003-06-21"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
-rapper \- Raptor RDF parser test program
+rapper \- Raptor RDF parser tool
 .SH SYNOPSIS
 .B rapper
-.RI [ options ] source file: URI [base URI]
+.RB [ OPTIONS ]
+.IR "<source-URI>"
+.IR "[base-URI]"
 .SH EXAMPLE
-.IP
-rapper -o ntriples file:data.rdf
+.nf
+.B rapper -o ntriples http://ilrt.org/discovery/rdf/resources/rss.rdf
+.br
+.B rapper -i rss-tag-soup pile-of-rss.xml http://example.org/base/
+.br
+.B rapper --count http://example.org/index.rdf
+.br
 .SH DESCRIPTION
-This manual page documents the
+The
 .B rapper
-command which is a test program for driving the parsers in
-the
-.B raptor
-RDF parser library and emitting the generated triples.
+tool allows parsing of RDF content by the
+.B Raptor
+RDF parser toolkit emitting the results as RDF triples in
+a choice of syntaxes.  The \fIsource-URI\fR can be a file name or if
+Raptor is built with a WWW retrieval library, a general URI.
+The optional \fIbase-URI\fR is used as the document URI if present.
 .SH OPTIONS
 rapper uses the usual GNU command line syntax, with long
-options starting with two dashes (`-').
+options starting with two dashes (`-') if supported by the
+getopt_long function.  Otherwise the short options are only available.
 .TP
 .B \-h, \-\-help
-Show summary of options.
+Show a summary of the options.
 .TP
-.B \-v, \-\-version
-Show version of program.
-.TP
-.B \-n, \-\-ntriples
-Parse N-Triples syntax, as defined in
-.UR http://www.w3.org/TR/rdf-testcases/#ntriples
+.B \-i, \-\-input FORMAT
+Set the input
+.I FORMAT
+to one of 'rdfxml' (RDF/XML, default), 'ntriples'
+(N-Triples, see below) or 'rss-tag-soup' (RSS tag soup).
 .UE
 .TP
-.B \-s, \-\-scan
-Scan for <rdf:RDF> element in the RDF/XML source content..
+.B \-o, \-\-output FORMAT
+Set the output
+.I FORMAT
+to 'simple' (default) or 'ntriples' (N-Triples, see below)
 .TP
 .B \-a, \-\-assume
 Assume the document is the RDF/XML (and rdf:RDF is optional).
 .TP
-.B \-r, \-\-replace-newlines
-Replace newlines in multi-line literals with spaces.
+.B \-c, \-\-count
+Only count the triples and produce no other output.
+.TP
+.B \-e, \-\-ignore-errors
+Ignore errors, do not emit the messages and try to continue parsing.
 .TP
 .B \-q, \-\-quiet
 No extra information messages.
 .TP
-.B \-o, \-\-output FORMAT
-Set the output format to 'simple' (default) or 'ntriples'
+.B \-r, \-\-replace-newlines
+Replace newlines in multi-line literals with spaces.
 .TP
-.B \-v, \-\-version
-Show version of program.
+.B \-s, \-\-scan
+Scan for <rdf:RDF> element in the RDF/XML source content..
 .TP
-.B \-c, \-\-count
-Count triples only, do not generate any output
-.SH SEE ALSO
-.BR libraptor (7),
-.BR \fIN-Triples\fR, 
+.B \-w, \-\-ignore-warnings
+Ignore warnings, do not emit the messages.
+.SH "CONFORMING TO"
+\fIRDF/XML Syntax (Revised)\fR,
+W3C Working Draft (work in progress),
+.UR http://www.w3.org/TR/rdf-syntax-grammar/
+http://www.w3.org/TR/rdf-syntax-grammar/
+.UE
+
+\fIN-Triples\fR,
+W3C Working Draft (work in progress),
 .UR http://www.w3.org/TR/rdf-testcases/#ntriples
 http://www.w3.org/TR/rdf-testcases/#ntriples
 .UE
+.SH SEE ALSO
+.BR libraptor (7), raptor-config (1)
 .SH AUTHOR
 Dave Beckett - 
 .UR http://purl.org/net/dajobe/
 http://purl.org/net/dajobe/
 .UE
+.br
+.UR
+Institute for Learning and Research Technology (ILRT)
+http://www.ilrt.bristol.ac.uk/
+.UE
+.br
+.UR
+University of Bristol
+http://www.bristol.ac.uk/
+.UE
+
