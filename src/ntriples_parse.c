@@ -295,23 +295,36 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
 
 
 static int
-ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len) 
+raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, 
+                            int len) 
 {
   int i;
   char *p;
-  char *q=NULL; /* keeps gcc -Wall happy */
+  char *start=NULL; /* keeps gcc -Wall happy */
   char *dest;
-  char c;
+  char c = '\0';
   char *terms[3];
   int term_lengths[3];
   raptor_ntriples_term_type term_types[3];
   int backslash=0;
+
+  /* ASSERTION:
+   * p always points to first char we are considering
+   * p[len-1] always points to last char
+   */
   
   /* Handle empty  lines */
   if(!len)
     return 0;
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG3(raptor_ntriples_parse_line,
+                "handling line '%s' (%d bytes)\n", 
+                buffer, len);
+#endif
   
   p=buffer;
+
   while(len>0 && isspace(*p)) {
     p++;
     parser->locator.column++;
@@ -327,13 +340,28 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
   if(*p == '#')
     return 0;
   
+  /* Remove trailing spaces */
+  while(len>0 && isspace(p[len-1])) {
+    p[len-1]='\0';
+    len--;
+  }
+
+  /* can't be empty now - that would have been caught above */
+  
+  /* Check for terminating '.' */
+  if(p[len-1] != '.') {
+    raptor_ntriples_parser_fatal_error(parser, "Missing . at end of line");
+    return 1;
+  }
+
+  p[len-1]='\0';
+  len--;
+
 
   /* Must be triple */
 
   for(i=0; i<3; i++) {
-    int tlen;
-    
-    if(!*p) {
+    if(!len) {
       raptor_ntriples_parser_fatal_error(parser, "Unexpected end of line");
       return 1;
     }
@@ -341,12 +369,12 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
     /* Expect either <anonURI> or _:name */
     if(i == 2) {
       if(*p != '<' && *p != '_' && *p != '"') {
-        raptor_ntriples_parser_fatal_error(parser, "Expected <URIref>, _:anonNode or \"literal\"");
+        raptor_ntriples_parser_fatal_error(parser, "Saw '%c', expected <URIref>, _:anonNode or \"literal\"", *p);
         return 1;
       }
     } else {
       if(*p != '<' && *p != '_') {
-        raptor_ntriples_parser_fatal_error(parser, "Expected <URIref> or _:anonNode");
+        raptor_ntriples_parser_fatal_error(parser, "Saw '%c', expected <URIref> or _:anonNode", *p);
         return 1;
       }
     }
@@ -356,27 +384,45 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_URI_REF;
         
         p++;
+        len--;
         parser->locator.column++;
         parser->locator.byte++;
-        len--;
 
-        q=p;
-        while(*q && *q != '>')
-          q++;
+        start=p;
+        while(len > 0 && *p != '>') {
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+        }
+
+        if(!len) {
+          raptor_ntriples_parser_fatal_error(parser, "Missing end > for URI");
+          return 1;
+        }
+
         break;
 
       case '"':
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
         
+        start=p;
+        dest=p;
+
         p++;
+        len--;
         parser->locator.column++;
         parser->locator.byte++;
-        len--;
 
         /* find end of string, fixing backslashed characters on the way */
-        q=p;
-        dest=p;
-        while((c = *q++)) {
+        while(len > 0) {
+          c = *p;
+
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+
           if(c == '\\') {
             if(backslash) {
               *dest++='\\';
@@ -400,7 +446,7 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
                 *dest++='\t';
                 break;
               default:
-                raptor_ntriples_parser_fatal_error(parser, "Illegal string escape \\%c in \"%s\"", c, p);
+                raptor_ntriples_parser_fatal_error(parser, "Illegal string escape \\%c in \"%s\"", c, start);
                 break;
             }
             backslash=0;
@@ -417,27 +463,44 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
           /* otherwise store and move on */
           *dest++=c;
         } /* end while */
+
+        if(c != '"') {
+          raptor_ntriples_parser_fatal_error(parser, "Missing end \" for literal");
+          return 1;
+        }
         
         break;
+
 
       case '_':
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE;
 
-        q=p;
-        q++;
-        if(!*q || (*q && *q != ':')) {
-          if(*q) {
-            parser->locator.column++;
-            parser->locator.byte++;
-          }
+        /* NOTE: here: start includes _ */
+        start=p;
+
+        p++;
+        len--;
+        parser->locator.column++;
+        parser->locator.byte++;
+
+        if(!len || (len > 0 && *p != ':')) {
           raptor_ntriples_parser_fatal_error(parser, "Illegal anonNode _ not followed by :");
           return 1;
         }
         /* Found ':' - move on */
-        q++;
 
-        while(*q && isalnum(*q))
-          q++;
+        p++;
+        len--;
+        parser->locator.column++;
+        parser->locator.byte++;
+
+        while(len>0 && isalnum(*p)) {
+          p++;
+          len--;
+          parser->locator.column++;
+          parser->locator.byte++;
+        }
+
         break;
 
       default:
@@ -446,61 +509,30 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
     }
 
 
-    /* Move locator to last char */
-    tlen=q-p-1;
-    parser->locator.column +=tlen;
-    parser->locator.byte   +=tlen;
-
-    if(!*q) {
-      switch(term_types[i]) {
-        case RAPTOR_NTRIPLES_TERM_TYPE_URI_REF:
-          raptor_ntriples_parser_fatal_error(parser, "Missing end > for URI");
-          break;
-        case RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE:
-          raptor_ntriples_parser_fatal_error(parser, "Missing space after anonNode");
-          break;
-        case RAPTOR_NTRIPLES_TERM_TYPE_LITERAL:
-          raptor_ntriples_parser_fatal_error(parser, "Missing end \" for literal");
-          break;
-        default:
-          raptor_ntriples_parser_fatal_error(parser, "Illegal term type %d", 
-                                             term_types[i]);
-      }
-      return 1;
-    }
-
-
     /* Replace
      *   end '>' for <URIref>
      *   whitespace after _:anonNode
      * with '\0' to terminate string
+     * and move to char after delimiter
      */
-    if(term_types[i] != RAPTOR_NTRIPLES_TERM_TYPE_LITERAL)
-      *q='\0';
-
-    /* Store term */
-    terms[i]=p; term_lengths[i]=tlen+1;
-
-    /* move to last char seen
-     *   for literal and anonNode, is char after end
-     *   for <URIref> is '>'
-     */
-    p=q;
-
-    /* move to char after delimter for non-literal */
-    if(term_types[i] != RAPTOR_NTRIPLES_TERM_TYPE_LITERAL) {
+    if(len>0 && term_types[i] != RAPTOR_NTRIPLES_TERM_TYPE_LITERAL) {
+      *p='\0';
       p++;
       len--;
       parser->locator.column++;
       parser->locator.byte++;
     }
     
+    /* Store term */
+    terms[i]=start; term_lengths[i]=(p-start);
+
+    
     /* Skip whitespace between parts */
     while(len>0 && isspace(*p)) {
       p++;
+      len--;
       parser->locator.column++;
       parser->locator.byte++;
-      len--;
     }
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -510,21 +542,8 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
 #endif    
   }
 
-  /* Check for terminating '.' */
-  if(!*p || (*p && *p != '.')) {
-    raptor_ntriples_parser_fatal_error(parser, "Missing . at end of line");
-    return 1;
-  }
-
-  do {
-    p++;
-    parser->locator.column++;
-    parser->locator.byte++;
-    len--;
-  } while(len>0 && isspace(*p));
-
-  if(*p) {
-    raptor_ntriples_parser_fatal_error(parser, "Extra junk after .");
+  if(len) {
+    raptor_ntriples_parser_fatal_error(parser, "Extra junk before .: '%s' (%d bytes)", p, len);
     return 1;
   }
   
@@ -533,12 +552,6 @@ ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer, int len)
                                      terms[0], term_types[0],
                                      terms[1], term_types[1],
                                      terms[2], term_types[2]);
-
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  fprintf(stderr, "%d: '", parser->locator.line);
-  fwrite(p, 1, len, stderr);
-  fprintf(stderr, "' (%d bytes)\n", len);
-#endif
 
   parser->locator.byte += len;
 
@@ -553,9 +566,10 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
   char *buffer;
   char *ptr;
   char *start;
-
+  char last_nl;
+  
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(ntriples_parse, "adding %d data bytes\n", len);
+  LIBRDF_DEBUG2(raptor_ntriples_parse, "adding %d bytes to line buffer\n", len);
 #endif
 
   buffer=(char*)LIBRDF_MALLOC(cstring, parser->line_length + len + 1);
@@ -583,42 +597,52 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
   *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(raptor_xml_cdata_handler, 
-                "line buffer now %d bytes\n", 
-                parser->line_length);
+  LIBRDF_DEBUG3(raptor_ntriples_parse,
+                "line buffer now '%s' (%d bytes)\n", 
+                parser->line, parser->line_length);
 #endif
+
+  last_nl='\n';  /* last newline character - \r triggers check */
 
   ptr=buffer+parser->offset;
   start=ptr;
   while(*ptr) {
-    if(*ptr != '\n') {
+    /* skip \n when just seen \r - i.e. \r\n or CR LF */
+    if(last_nl == '\r' && *ptr == '\n') {
       ptr++;
-      continue;
+      parser->locator.byte++;
     }
+    
+    while(*ptr && *ptr != '\n' && *ptr != '\r')
+      ptr++;
+
+    /* keep going - no newline yet */
+    if(!*ptr && !is_end)
+      break;
+
+    last_nl=*ptr;
 
     len=ptr-start;
-    if(len>0 && ptr[-1] == '\r')
-      len--;
     parser->locator.column=0;
 
     *ptr='\0';
-    if(ntriples_parse_line(parser,start,len))
+    if(raptor_ntriples_parse_line(parser,start,len))
       return 1;
     
-    /* go past '\r' in bytes only */
-    if(ptr[-1] == '\r')
-      parser->locator.byte++;
-
     parser->locator.line++;
 
-    /* go past '\n' */
+    /* go past newline */
     ptr++;
     parser->locator.byte++;
 
     start=ptr;
   }
-  parser->offset=start-buffer;
 
+  /* exit now, no more input */
+  if(is_end)
+    return 0;
+    
+  parser->offset=start-buffer;
 
   len=parser->line_length - parser->offset;
     
@@ -626,7 +650,7 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
     /* collapse buffer */
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
+    LIBRDF_DEBUG3(raptor_ntriples_parse,
                   "collapsing line buffer from %d to %d bytes\n", 
                   parser->line_length, len);
 #endif
@@ -646,7 +670,7 @@ raptor_ntriples_parse(raptor_ntriples_parser* parser, char *s, int len,
     parser->offset=0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    LIBRDF_DEBUG3(raptor_xml_cdata_handler, 
+    LIBRDF_DEBUG3(raptor_ntriples_parse,
                   "line buffer now '%s' (%d bytes)\n", 
                   parser->line, parser->line_length);
 #endif    
