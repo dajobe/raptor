@@ -1,3 +1,36 @@
+2005-01-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+	* rapper.1: mention what RSS tag soup can do
+
+	* turtle_parser.y, n3_parser.y: Rename
+	raptor_new_triple/raptor_free_triple to have n3/turtle in the
+	name.
+
+	* raptor_internal.h, raptor_general.c, n3_parser.y, n3_lexer.l,
+	n3_common.h, configure.ac, Makefile.am: Update Notation3 code with
+	later Turtle improvements.  Built it with maintainer mode only.
+
+	* turtle_lexer.l (turtle_copy_token): Renamed from copy_token
+	(turtle_copy_string_token): Renamed from copy_string_token.
+	(main): filename moved here from global!
+
+2005-01-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_emit_item): Do not emit an items
+	property, that's only done by raptor_rss_emit_connection.
+
+2005-01-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Added RSS1.1 namespace http://inamidst.com/rss1.1/
+	(raptor_rss_parser_processNode): Turn Channel into RSS type channel.
+	(raptor_rss_emit_type_triple, raptor_rss_emit_enclosure,
+	raptor_rss_emit_item, raptor_rss_emit_connection, raptor_rss_emit):
+	Add error return value and stop if there is no identifier.
+	(raptor_rss_emit): Stop if channel or any item has no identifier.
+	(raptor_rss_parse_chunk): Pass on failures from above to user.
+	(raptor_rss10_build_xml_names): Replace RSS1.1 namespace with RSS1.0
+	(raptor_rss10_emit_item): Add item_type arg and use it to only emit
+	items for the channel.
+
 2005-01-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor.h: Added const to src arg of
