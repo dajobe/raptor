@@ -77,7 +77,8 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 %defattr(-, root, root)
 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
-%doc MPL.html
+%doc *.html
+
 %doc %{_mandir}/man1/rapper.1*
 %doc %{_mandir}/man3/libraptor.3*
 
@@ -90,7 +91,6 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
 %doc MPL.html
-%doc INSTALL.html
 %doc %{_mandir}/man1/raptor-config.1*
 
 %{prefix}/bin/raptor-config
@@ -103,8 +103,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 
 %changelog
-* Thu Apr 17 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
+* Tue May 11 2004  Dave Beckett <Dave.Beckett@bristol.ac.uk>
+- Added RELEASE.html
 
+* Thu Apr 17 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
 - Added pkgconfig raptor.pc, raptor-config
 - Requires curl
 
