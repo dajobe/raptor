@@ -125,6 +125,9 @@ typedef struct {
   const unsigned char *id;
   int ordinal;
   int is_malloced;
+  const unsigned char *literal;
+  raptor_uri *literal_datatype;
+  const unsigned char *literal_language;
 } raptor_identifier;
 
 
@@ -242,8 +245,7 @@ RAPTOR_API raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
 RAPTOR_API raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
 
 /* Identifier functions */
-RAPTOR_API raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, unsigned char *id);
-RAPTOR_API void raptor_init_identifier(raptor_identifier *identifier, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, unsigned char *id);
+RAPTOR_API raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
 RAPTOR_API int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 
@@ -258,7 +260,7 @@ RAPTOR_API size_t raptor_xml_escape_string(const unsigned char *string, size_t l
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
 RAPTOR_API char *raptor_uri_filename_to_uri_string(const char *filename);
-RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string);
+RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string, char **fragment_p);
 RAPTOR_API int raptor_uri_is_file_uri(const char* uri_string);
 RAPTOR_API void raptor_uri_init(void);
 
@@ -287,7 +289,6 @@ RAPTOR_API void raptor_www_set_error_handler(raptor_www *www, raptor_message_han
 RAPTOR_API int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API void raptor_www_abort(raptor_www *www, const char *reason);
-
 
 #ifdef __cplusplus
 }
