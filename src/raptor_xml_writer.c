@@ -210,6 +210,8 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                 "content cdata now: '%s' (%d bytes)\n", 
                 xml_writer->content_cdata, xml_writer->content_cdata_length);
 #endif
+
+  xml_writer->current_element = xml_writer->current_element->parent;
 }
 
 
