@@ -118,15 +118,17 @@ expat source directory structures.
 </p></dd>
 
 <dt><tt>--enable-parsers=PARSERS</tt><br /></dt>
-<dd><p>Pick the RDF parsers to build from the list:
-<code>rdfxml ntriples turtle rss-tag-soup</code>.  The default when
-this option is omitted is to build all of them.
+<dd><p>Pick the RDF parsers to build from the list:<br />
+<code>rdfxml ntriples turtle rss-tag-soup</code><br />
+The default when this option is omitted is to enable all parsers.
 <code>rss-tag-soup</code> has a requirement on libxml2 with XMLReader
 so may not always be available.  If all parsers are not enabled,
 parts of the test suite will likely fail.</p>
-<p>The parsers that the library supports can be found from the API
-level using functions such as <code>raptor_parsers_enumerate</code>
-and <code>raptor_syntaxes_enumerate</code> or from teh
+
+<p>The parsers that a built library supports can be found from the
+API level using functions such as
+<code>raptor_parsers_enumerate</code> and
+<code>raptor_syntaxes_enumerate</code> or from the
 <code>rapper</code> utility in the help message.</p></dd>
 
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
