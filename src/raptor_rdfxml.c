@@ -1316,7 +1316,7 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   }
 
   if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL) {
-    escaped_buffer=raptor_xml_escape_string(rdf_parser, s, len, &len, '\0');
+    escaped_buffer=raptor_xml_escape_string(rdf_parser, s, len, (size_t*)&len, '\0');
   }
 
   buffer=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + len + 1);
