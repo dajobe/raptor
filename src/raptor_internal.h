@@ -755,9 +755,9 @@ typedef struct raptor_sax2_s raptor_sax2;
 /*
  * SAX2 elements/attributes on stack 
  */
-struct raptor_sax2_element_s {
+struct raptor_xml_element_s {
   /* NULL at bottom of stack */
-  struct raptor_sax2_element_s *parent;
+  struct raptor_xml_element_s *parent;
   raptor_qname *name;
   raptor_qname **attributes;
   unsigned int attribute_count;
@@ -813,8 +813,8 @@ struct raptor_sax2_s {
   int depth;
 
   /* stack of elements - elements add after current_element */
-  raptor_sax2_element *root_element;
-  raptor_sax2_element *current_element;
+  raptor_xml_element *root_element;
+  raptor_xml_element *current_element;
 };
 
 raptor_sax2* raptor_new_sax2(void *user_data);
@@ -823,8 +823,8 @@ void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
 void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
 
-raptor_sax2_element* raptor_sax2_element_pop(raptor_sax2 *sax2);
-void raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element);
+raptor_xml_element* raptor_xml_element_pop(raptor_sax2 *sax2);
+void raptor_xml_element_push(raptor_sax2 *sax2, raptor_xml_element* element);
 int raptor_sax2_get_depth(raptor_sax2 *sax2);
 void raptor_sax2_inc_depth(raptor_sax2 *sax2);
 void raptor_sax2_dec_depth(raptor_sax2 *sax2);
@@ -832,7 +832,7 @@ const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2 *sax2);
 raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2 *sax2);
 
 #ifdef RAPTOR_DEBUG
-void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
+void raptor_print_xml_element(raptor_xml_element *element, FILE* stream);
 #endif
 
 /* turtle_parser.y and turtle_lexer.l */

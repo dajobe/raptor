@@ -72,7 +72,7 @@ struct raptor_xml_writer_s {
   raptor_simple_message_handler error_handler;
   void *error_data;
 
-  raptor_sax2_element* current_element;
+  raptor_xml_element* current_element;
 
   /* outputting to this iostream */
   raptor_iostream *iostr;
@@ -147,9 +147,9 @@ raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer,
 
 void
 raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
-                                raptor_sax2_element *element)
+                                raptor_xml_element *element)
 {
-  raptor_iostream_write_sax2_element(xml_writer->iostr,
+  raptor_iostream_write_xml_element(xml_writer->iostr,
                                      element, 
                                      &xml_writer->nstack,
                                      1,
@@ -162,9 +162,9 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
 
 void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
-                                raptor_sax2_element *element)
+                                raptor_xml_element *element)
 {
-  raptor_iostream_write_sax2_element(xml_writer->iostr,
+  raptor_iostream_write_xml_element(xml_writer->iostr,
                                      element, 
                                      &xml_writer->nstack,
                                      0,
@@ -183,9 +183,9 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
 
 void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
-                              raptor_sax2_element* element)
+                              raptor_xml_element* element)
 {
-  raptor_iostream_write_sax2_element(xml_writer->iostr, 
+  raptor_iostream_write_xml_element(xml_writer->iostr, 
                                      element, 
                                      &xml_writer->nstack,
                                      0,
@@ -300,7 +300,7 @@ main(int argc, char *argv[])
   raptor_xml_writer* xml_writer;
   raptor_uri* base_uri;
   raptor_qname* el_name;
-  raptor_sax2_element *element;
+  raptor_xml_element *element;
   size_t count;
   raptor_qname **attrs;
 
@@ -343,7 +343,7 @@ main(int argc, char *argv[])
                            (const unsigned char*)"foo:bar", 
                            NULL, /* no attribute value - element */
                            NULL, NULL); /* errors */
-  element=raptor_new_sax2_element(el_name,
+  element=raptor_new_xml_element(el_name,
                                   NULL, /* language */
                                   raptor_uri_copy(base_uri));
 
@@ -353,7 +353,7 @@ main(int argc, char *argv[])
   raptor_xml_writer_cdata(xml_writer, (const unsigned char*)"\n");
   raptor_xml_writer_end_element(xml_writer, element);
 
-  raptor_free_sax2_element(element);
+  raptor_free_xml_element(element);
 
   raptor_xml_writer_cdata(xml_writer, (const unsigned char*)"\n");
 
@@ -361,7 +361,7 @@ main(int argc, char *argv[])
                            (const unsigned char*)"blah", 
                            NULL, /* no attribute value - element */
                            NULL, NULL); /* errors */
-  element=raptor_new_sax2_element(el_name,
+  element=raptor_new_xml_element(el_name,
                                   NULL, /* language */
                                   raptor_uri_copy(base_uri));
 
@@ -370,7 +370,7 @@ main(int argc, char *argv[])
                             (const unsigned char*)"a",
                             (const unsigned char*)"b", /* attribute value */
                             NULL, NULL); /* errors */
-  raptor_sax2_element_set_attributes(element, attrs, 1);
+  raptor_xml_element_set_attributes(element, attrs, 1);
 
   raptor_xml_writer_empty_element(xml_writer, element);
 
@@ -378,7 +378,7 @@ main(int argc, char *argv[])
 
   raptor_free_xml_writer(xml_writer);
 
-  raptor_free_sax2_element(element);
+  raptor_free_xml_element(element);
   raptor_free_namespaces(nstack);
 
   raptor_free_uri(base_uri);

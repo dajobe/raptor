@@ -926,30 +926,30 @@ Write a hexadecimal formatted unsigned \fIinteger\fP to the iostream,
 left-padded with '0's to \fIwidth\fR columns.
 .IP "\fBint raptor_iostream_write_stringbuffer(raptor_iostream* \fIiostr\fB, raptor_stringbuffer *\fIsb\fB)\fR"
 Write the stringbuffer to an iostream \fIiostr\fP.
-.SH "SAX2 XML ELEMENT CLASS"
+.SH "XML ELEMENT CLASS"
 This class provides an XML element that can be used with the
 XML Writer Class to generate XML documents.
-.SH "SAX2 XML ELEMENT CONSTRUCTOR"
-.IP "\fBraptor_sax2_element* raptor_new_sax2_element(raptor_qname* \fIname\fP, const unsigned char* \fIxml_language\fP, raptor_uri* \fIxml_base\fP)\fR"
-Create a new SAX2 XML element with the element name \fIname\fP and
+.SH "XML ELEMENT CONSTRUCTOR"
+.IP "\fBraptor_xml_element* raptor_new_xml_element(raptor_qname* \fIname\fP, const unsigned char* \fIxml_language\fP, raptor_uri* \fIxml_base\fP)\fR"
+Create a new xml element with the element name \fIname\fP and
 in context of xml:lang \fIxml_language\fP and base URI
 \fIxml_base\fP.
-.SH "SAX2 XML ELEMENT DESTRUCTOR"
-.IP "\fBvoid raptor_free_sax2_element(raptor_sax2_element *\fIelement\fP)\fR"
-Destroy a SAX2 XML element object.
-.SH "SAX2 XML ELEMENT METHODS"
-.IP "\fBraptor_qname* raptor_sax2_element_get_element(raptor_sax2_element* \fIsax2_element\fP)\fR"
-Get the XML element QName of SAX2 XML element \fIsax2_element\fP. 
-.IP "\fBvoid raptor_sax2_element_set_attributes(raptor_sax2_element* \fIsax2_element\fP, raptor_qname **\fIattributes\fP, int \fIcount\fP)\fR"
-Set the attributes on SAX2 XML element \fIsax2_element\fP to the
+.SH "XML ELEMENT DESTRUCTOR"
+.IP "\fBvoid raptor_free_xml_element(raptor_xml_element *\fIelement\fP)\fR"
+Destroy a xml element object.
+.SH "XML ELEMENT METHODS"
+.IP "\fBraptor_qname* raptor_xml_element_get_element(raptor_xml_element* \fIxml_element\fP)\fR"
+Get the XML element QName of xml element \fIxml_element\fP. 
+.IP "\fBvoid raptor_xml_element_set_attributes(raptor_xml_element* \fIxml_element\fP, raptor_qname **\fIattributes\fP, int \fIcount\fP)\fR"
+Set the attributes on xml element \fIxml_element\fP to the
 array of QNames in array \fIattributes\fP of size \fIcount\fP.
-.IP "\fBvoid raptor_sax2_declare_namespace(raptor_sax2_element* \fIsax2_element\fP, raptor_namespace* \fInspace\fP)\fR"
-Declare an XML namespace \fInspace\fP expliclitly on SAX2 XML element
-\fIsax2_element\fP.  Namespaces used in the element or attribute
+.IP "\fBvoid raptor_sax2_declare_namespace(raptor_xml_element* \fIxml_element\fP, raptor_namespace* \fInspace\fP)\fR"
+Declare an XML namespace \fInspace\fP expliclitly on xml element
+\fIxml_element\fP.  Namespaces used in the element or attribute
 names are automatically declared, this method allows additional ones
 to be done.
-.IP "\fBint raptor_iostream_write_sax2_element(raptor_iostream* \fIiostr\fP, raptor_sax2_element *\fIelement\fP, raptor_namespace_stack* \fInstack\fP, int \fIis_empty\fP, int \fIis_end\fP, raptor_simple_message_handler \fIerror_handler\fP, void* \fIerror_data\fP, int \fIdepth\fP)\fR"
-Write a SAX2 XML element \fIsax2_element\fP to iostream \fIostr\fP.
+.IP "\fBint raptor_iostream_write_xml_element(raptor_iostream* \fIiostr\fP, raptor_xml_element *\fIelement\fP, raptor_namespace_stack* \fInstack\fP, int \fIis_empty\fP, int \fIis_end\fP, raptor_simple_message_handler \fIerror_handler\fP, void* \fIerror_data\fP, int \fIdepth\fP)\fR"
+Write a xml element \fIxml_element\fP to iostream \fIostr\fP.
 This is done in context of an XML namespace stack \fInstack\fP and
 at depth \fIdepth\fP in the stack (see Namespace class constructors).
 .IP
@@ -977,15 +977,15 @@ Destroy a XML Writer object.
 .IP "\fBraptor_namespace* raptor_xml_writer_start_namespace_full(raptor_xml_writer* \fIxml_writer\fP, const unsigned char* \fIprefix\fP, const unsigned char* \fIns_uri_string\fP, int \fIdepth\fP)\fR"
 Start a new XML namespace with XML prefix \fIprefix\P and URI string
 \fIns_uri_string\fP in the XML writer at namespace stack place \fIdepth\fP.
-.IP "\fBvoid raptor_xml_writer_empty_element(raptor_xml_writer* \fIxml_writer\fP, raptor_sax2_element *\fIelement\fP)\fR"
-Write SAX2 XML element \fIelement\fP as an empty element (no element
+.IP "\fBvoid raptor_xml_writer_empty_element(raptor_xml_writer* \fIxml_writer\fP, raptor_xml_element *\fIelement\fP)\fR"
+Write xml element \fIelement\fP as an empty element (no element
 content) to the XML Writer \fIxml_writer\fP.
-.IP "\fBvoid raptor_xml_writer_start_element(raptor_xml_writer* \fIxml_writer\fP, raptor_sax2_element *\fIelement\fP)\fR"
+.IP "\fBvoid raptor_xml_writer_start_element(raptor_xml_writer* \fIxml_writer\fP, raptor_xml_element *\fIelement\fP)\fR"
 Write a start element along with an attributes and namespace
-declarations for SAX2 XML element \fIelement\fP to the XML Writer
+declarations for xml element \fIelement\fP to the XML Writer
 \fIxml_writer\fP.
-.IP "\fBvoid raptor_xml_writer_end_element(raptor_xml_writer* \fIxml_writer\fP, raptor_sax2_element *\fIelement\fP)\fR"
-Write an end element form for SAX2 XML element \fIelement\fP
+.IP "\fBvoid raptor_xml_writer_end_element(raptor_xml_writer* \fIxml_writer\fP, raptor_xml_element *\fIelement\fP)\fR"
+Write an end element form for xml element \fIelement\fP
 to the XML Writer \fIxml_writer\fP.
 .IP "\fBvoid raptor_xml_writer_cdata(raptor_xml_writer* \fIxml_writer\fP, const unsigned char *str)\fR"
 Write XML character data in \fIstr\fP to the XML Writer
@@ -1007,7 +1007,7 @@ Writer \fIxml_writer\fP.
 .SH API CHANGES
 .SS 1.4.3
 Added XML Writer class (\fBraptor_xml_writer\fP)
-and SAX2 XML element class (\fBraptor_sax2_element\fP)
+and XML Element class (\fBraptor_xml_element\fP)
 .P
 Added \fBraptor_serializer_set_namespace\fP,
 \fBraptor_serializer_set_feature\fP and

@@ -418,7 +418,7 @@ static const char * raptor_element_content_type_as_string(raptor_element_content
  * Raptor Element/attributes on stack 
  */
 struct raptor_element_s {
-  raptor_sax2_element *sax2;
+  raptor_xml_element *sax2;
 
   /* NULL at bottom of stack */
   struct raptor_element_s *parent;
@@ -647,7 +647,7 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_qname** named_attrs=NULL;
   int i;
   raptor_element* element=NULL;
-  raptor_sax2_element* sax2_element=NULL;
+  raptor_xml_element* xml_element=NULL;
   unsigned char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
   int count_bumped=0;
@@ -806,13 +806,13 @@ raptor_xml_start_element_handler(void *user_data,
   if(!el_name)
     return;
 
-  sax2_element=raptor_new_sax2_element(el_name, xml_language, xml_base);
-  if(!sax2_element) {
+  xml_element=raptor_new_xml_element(el_name, xml_language, xml_base);
+  if(!xml_element) {
     raptor_free_qname(el_name);
     return;
   }
 
-  element->sax2=sax2_element;
+  element->sax2=xml_element;
   
   if(ns_attributes_count) {
     int offset = 0;
@@ -825,8 +825,8 @@ raptor_xml_start_element_handler(void *user_data,
                                               sizeof(raptor_qname*));
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      RAPTOR_FREE(raptor_sax2_element, sax2_element);
-      raptor_free_qname(raptor_sax2_element_get_element(sax2_element));
+      RAPTOR_FREE(raptor_xml_element, xml_element);
+      raptor_free_qname(raptor_xml_element_get_element(xml_element));
       return;
     }
 
@@ -847,7 +847,7 @@ raptor_xml_start_element_handler(void *user_data,
         for (j=0; j < i; j++)
           RAPTOR_FREE(raptor_qname, named_attrs[j]);
         RAPTOR_FREE(raptor_qname_array, named_attrs);
-        raptor_free_sax2_element(sax2_element);
+        raptor_free_xml_element(xml_element);
         return;
       }
 
@@ -932,9 +932,9 @@ raptor_xml_start_element_handler(void *user_data,
   } /* end if ns_attributes_count */
 
   if(named_attrs)
-    raptor_sax2_element_set_attributes(sax2_element, 
+    raptor_xml_element_set_attributes(xml_element, 
                                        named_attrs, ns_attributes_count);
-  raptor_sax2_element_push(rdf_xml_parser->sax2, sax2_element);
+  raptor_xml_element_push(rdf_xml_parser->sax2, xml_element);
 
   raptor_element_push(rdf_xml_parser, element);
 
@@ -952,7 +952,7 @@ raptor_xml_start_element_handler(void *user_data,
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
       raptor_parser_error(rdf_parser, "property element '%s' has multiple object node elements, skipping.", 
-                            raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+                            raptor_xml_element_get_element(element->parent->sax2)->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
       element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
 
@@ -970,7 +970,7 @@ raptor_xml_start_element_handler(void *user_data,
            element->parent->sax2->content_cdata_seen == 1) {
           /* Uh oh - mixed content, the parent element has cdata too */
           raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
-                                raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+                                raptor_xml_element_get_element(element->parent->sax2)->local_name);
         }
         
         /* If there is some existing all-whitespace content cdata
@@ -999,7 +999,7 @@ raptor_xml_start_element_handler(void *user_data,
   RAPTOR_DEBUG2("Using content type %s\n", rdf_content_type_info[element->content_type].name);
 
   fprintf(stderr, "raptor_xml_start_element_handler: Start ns-element: ");
-  raptor_print_sax2_element(sax2_element, stderr);
+  raptor_print_xml_element(xml_element, stderr);
 #endif
 
   
@@ -1008,11 +1008,11 @@ raptor_xml_start_element_handler(void *user_data,
 
     /* The element */
     /* If has no namespace or the namespace has no name (xmlns="") */
-    if(!raptor_sax2_element_get_element(sax2_element)->nspace ||
-       (raptor_sax2_element_get_element(sax2_element)->nspace &&
-        !raptor_namespace_get_uri(raptor_sax2_element_get_element(sax2_element)->nspace))) {
+    if(!raptor_xml_element_get_element(xml_element)->nspace ||
+       (raptor_xml_element_get_element(xml_element)->nspace &&
+        !raptor_namespace_get_uri(raptor_xml_element_get_element(xml_element)->nspace))) {
       raptor_parser_error(rdf_parser, "Using an element '%s' without a namespace is forbidden.", 
-                          raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+                          raptor_xml_element_get_element(element->parent->sax2)->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
       /* Remove count above so that parent thinks this is empty */
       if(count_bumped)
@@ -1040,7 +1040,7 @@ raptor_xml_start_element_handler(void *user_data,
   if (element->rdf_attr[RDF_ATTR_aboutEach] || 
       element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
     raptor_parser_warning(rdf_parser, "element '%s' has aboutEach / aboutEachPrefix, skipping.", 
-                          raptor_sax2_element_get_element(sax2_element)->local_name);
+                          raptor_xml_element_get_element(xml_element)->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
@@ -1066,7 +1066,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
-  raptor_sax2_element* sax2_element;
+  raptor_xml_element* xml_element;
 #ifdef RAPTOR_DEBUG_VERBOSE
   raptor_qname *element_name;
 #endif
@@ -1121,9 +1121,9 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
     raptor_free_element(element);
   }
 
-  sax2_element=raptor_sax2_element_pop(rdf_xml_parser->sax2);
-  if(sax2_element)
-    raptor_free_sax2_element(sax2_element);
+  xml_element=raptor_xml_element_pop(rdf_xml_parser->sax2);
+  if(xml_element)
+    raptor_free_xml_element(xml_element);
 
   raptor_sax2_dec_depth(rdf_xml_parser->sax2);
 
@@ -1753,10 +1753,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 {
   int finished;
   raptor_state state;
-  raptor_sax2_element* sax2_element=element->sax2;
-  const unsigned char *el_name=raptor_sax2_element_get_element(sax2_element)->local_name;
-  int element_in_rdf_ns=(raptor_sax2_element_get_element(sax2_element)->nspace && 
-                         raptor_sax2_element_get_element(sax2_element)->nspace->is_rdf_ms);
+  raptor_xml_element* xml_element=element->sax2;
+  const unsigned char *el_name=raptor_xml_element_get_element(xml_element)->local_name;
+  int element_in_rdf_ns=(raptor_xml_element_get_element(xml_element)->nspace && 
+                         raptor_xml_element_get_element(xml_element)->nspace->is_rdf_ms);
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   int rc=0;
   
@@ -1778,7 +1778,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         /* found <rdf:RDF> ? */
 
         if(element_in_rdf_ns) {
-          if(raptor_uri_equals(raptor_sax2_element_get_element(sax2_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
+          if(raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
             element->child_state=RAPTOR_STATE_NODE_ELEMENT_LIST;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
             /* Yes - need more content before can continue,
@@ -1787,7 +1787,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             finished=1;
             break;
           }
-          if(raptor_uri_equals(raptor_sax2_element_get_element(sax2_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
+          if(raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
 	    state=RAPTOR_STATE_DESCRIPTION;
 	    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
             /* Yes - found something so move immediately to description */
@@ -1851,10 +1851,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * Only create a bag if bagID given
          */
 
-        if(!raptor_sax2_element_get_element(sax2_element)->uri) {
+        if(!raptor_xml_element_get_element(xml_element)->uri) {
           /* We cannot handle this */
           raptor_parser_warning(rdf_parser, "Using node element '%s' without a namespace is forbidden.", 
-                                raptor_sax2_element_get_element(sax2_element)->local_name);
+                                raptor_xml_element_get_element(xml_element)->local_name);
           raptor_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -1893,7 +1893,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            state == RAPTOR_STATE_DESCRIPTION || 
            state == RAPTOR_STATE_PARSETYPE_COLLECTION) {
           if(element_in_rdf_ns &&
-             raptor_uri_equals(raptor_sax2_element_get_element(sax2_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser)))
+             raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser)))
             state=RAPTOR_STATE_DESCRIPTION;
           else
             state=RAPTOR_STATE_NODE_ELEMENT;
@@ -2159,7 +2159,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                     RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                     RAPTOR_URI_SOURCE_URI,
 
-                                    raptor_sax2_element_get_element(sax2_element)->uri,
+                                    raptor_xml_element_get_element(xml_element)->uri,
                                     NULL,
                                     RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                     element->object.uri_source,
@@ -2184,7 +2184,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         /* FALLTHROUGH */
 
       case RAPTOR_STATE_PARSETYPE_LITERAL:
-        raptor_xml_writer_start_element(rdf_xml_parser->xml_writer, sax2_element);
+        raptor_xml_writer_start_element(rdf_xml_parser->xml_writer, xml_element);
         element->child_state = RAPTOR_STATE_PARSETYPE_LITERAL;
         element->child_content_type = RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
         
@@ -2202,9 +2202,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_MEMBER_PROPERTYELT:
       case RAPTOR_STATE_PROPERTYELT:
 
-        if(!raptor_sax2_element_get_element(sax2_element)->uri) {
+        if(!raptor_xml_element_get_element(xml_element)->uri) {
           raptor_parser_error(rdf_parser, "Using property element '%s' without a namespace is forbidden.", 
-                              raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+                              raptor_xml_element_get_element(element->parent->sax2)->local_name);
           raptor_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2214,7 +2214,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         /* Handling rdf:li as a property, noting special processing */ 
         if(element_in_rdf_ns && 
-           raptor_uri_equals(raptor_sax2_element_get_element(sax2_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
+           raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
           state=RAPTOR_STATE_MEMBER_PROPERTYELT;
         }
 
@@ -2455,10 +2455,10 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 {
   raptor_state state;
   int finished;
-  raptor_sax2_element* sax2_element=element->sax2;
-  const unsigned char *el_name=raptor_sax2_element_get_element(sax2_element)->local_name;
-  int element_in_rdf_ns=(raptor_sax2_element_get_element(sax2_element)->nspace && 
-                         raptor_sax2_element_get_element(sax2_element)->nspace->is_rdf_ms);
+  raptor_xml_element* xml_element=element->sax2;
+  const unsigned char *el_name=raptor_xml_element_get_element(xml_element)->local_name;
+  int element_in_rdf_ns=(raptor_xml_element_get_element(xml_element)->nspace && 
+                         raptor_xml_element_get_element(xml_element)->nspace->is_rdf_ms);
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
 
 
@@ -2480,7 +2480,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_NODE_ELEMENT_LIST:
         if(element_in_rdf_ns && 
-           raptor_uri_equals(raptor_sax2_element_get_element(sax2_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
+           raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
           /* end of RDF - boo hoo */
           state=RAPTOR_STATE_UNKNOWN;
           finished=1;
@@ -2524,7 +2524,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                     element->parent->subject.type,
                                     element->parent->subject.uri_source,
 
-                                    raptor_sax2_element_get_element(element->parent->sax2)->uri,
+                                    raptor_xml_element_get_element(element->parent->sax2)->uri,
                                     NULL,
                                     RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                     RAPTOR_URI_SOURCE_ELEMENT,
@@ -2542,7 +2542,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 (element->parent->subject.uri || element->parent->subject.id)) {
           /* Handle rdf:li as the rdf:parseType="resource" property */
           if(element_in_rdf_ns && 
-             raptor_uri_equals(raptor_sax2_element_get_element(sax2_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
+             raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
             element->parent->last_ordinal++;
             raptor_generate_statement(rdf_parser, 
                                       element->parent->subject.uri,
@@ -2570,7 +2570,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                       element->parent->subject.type,
                                       element->parent->subject.uri_source,
                                       
-                                      raptor_sax2_element_get_element(sax2_element)->uri,
+                                      raptor_xml_element_get_element(xml_element)->uri,
                                       NULL,
                                       RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                       RAPTOR_URI_SOURCE_ELEMENT,
@@ -2599,7 +2599,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_PARSETYPE_LITERAL:
         element->parent->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
 
-        raptor_xml_writer_end_element(rdf_xml_parser->xml_writer, sax2_element);
+        raptor_xml_writer_end_element(rdf_xml_parser->xml_writer, xml_element);
 
         finished=1;
         break;
@@ -2616,9 +2616,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          */
 
         if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
-          if(sax2_element->content_cdata_seen) 
+          if(xml_element->content_cdata_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
-          else if (sax2_element->content_element_seen) 
+          else if (xml_element->content_element_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
           else { /* Empty Literal */
             element->object.type= RAPTOR_IDENTIFIER_TYPE_LITERAL;
@@ -2719,10 +2719,10 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             /* We know object is a resource, so delete any unsignficant
              * whitespace so that FALLTHROUGH code below finds the object.
              */
-            if(sax2_element->content_cdata) {
-              RAPTOR_FREE(raptor_qname_array, sax2_element->content_cdata);
-              sax2_element->content_cdata=NULL;
-              sax2_element->content_cdata_length=0;
+            if(xml_element->content_cdata) {
+              RAPTOR_FREE(raptor_qname_array, xml_element->content_cdata);
+              xml_element->content_cdata=NULL;
+              xml_element->content_cdata_length=0;
             }
 
             /* FALLTHROUGH */
@@ -2733,7 +2733,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               if(rdf_parser->feature_allow_bagID) {
                 /* Only an empty literal can have a rdf:bagID */
                 if(element->bag.uri || element->bag.id) {
-                  if(sax2_element->content_cdata_length > 0) {
+                  if(xml_element->content_cdata_length > 0) {
                     raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on a literal property element '%s'.", el_name);
                     /* prevent this being used later either */
                     element->rdf_attr[RDF_ATTR_bagID]=NULL;
@@ -2764,7 +2764,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                * generate a node to hang properties off 
                */
               if(raptor_element_has_property_attributes(element) &&
-                 sax2_element->content_cdata_length > 0) {
+                 xml_element->content_cdata_length > 0) {
                 raptor_parser_error(rdf_parser, "Literal property element '%s' has property attributes", el_name);
                 state=RAPTOR_STATE_SKIPPING;
                 element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2787,19 +2787,19 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             
 
             if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
-              int object_is_literal=(sax2_element->content_cdata != NULL); /* FIXME */
-              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)sax2_element->content_cdata : element->object.uri;
+              int object_is_literal=(xml_element->content_cdata != NULL); /* FIXME */
+              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)xml_element->content_cdata : element->object.uri;
               raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
               raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
 
               if(object_is_literal && !literal_datatype &&
-                 !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
+                 !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
                 const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
                 raptor_update_document_locator(rdf_parser);
                 if(rdf_parser->feature_non_nfc_fatal)
-                  raptor_parser_error(rdf_parser, message, el_name, sax2_element->content_cdata);
+                  raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
                 else
-                  raptor_parser_warning(rdf_parser, message, el_name, sax2_element->content_cdata);
+                  raptor_parser_warning(rdf_parser, message, el_name, xml_element->content_cdata);
               }
 
               element->parent->last_ordinal++;
@@ -2823,19 +2823,19 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         &element->reified,
                                         element->parent);
             } else {
-              int object_is_literal=(sax2_element->content_cdata != NULL); /* FIXME */
-              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)sax2_element->content_cdata : element->object.uri;
+              int object_is_literal=(xml_element->content_cdata != NULL); /* FIXME */
+              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)xml_element->content_cdata : element->object.uri;
               raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
               raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
               
               if(object_is_literal && !literal_datatype && 
-                 !raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
+                 !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
                 const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
                 raptor_update_document_locator(rdf_parser);
                 if(rdf_parser->feature_non_nfc_fatal)
-                  raptor_parser_error(rdf_parser, message, el_name, sax2_element->content_cdata);
+                  raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
                 else
-                  raptor_parser_warning(rdf_parser, message, el_name, sax2_element->content_cdata);
+                  raptor_parser_warning(rdf_parser, message, el_name, xml_element->content_cdata);
               }
 
               raptor_generate_statement(rdf_parser, 
@@ -2844,7 +2844,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         element->parent->subject.type,
                                         RAPTOR_URI_SOURCE_ELEMENT,
 
-                                        raptor_sax2_element_get_element(sax2_element)->uri,
+                                        raptor_xml_element_get_element(xml_element)->uri,
                                         NULL,
                                         RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                         RAPTOR_URI_SOURCE_NOT_URI,
@@ -2874,8 +2874,8 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 buffer=(unsigned char*)rdf_xml_parser->xml_content;
                 length=rdf_xml_parser->xml_content_length;
               } else {
-                buffer=sax2_element->content_cdata;
-                length=sax2_element->content_cdata_length;
+                buffer=xml_element->content_cdata;
+                length=xml_element->content_cdata_length;
               }
 
               if(!raptor_utf8_is_nfc(buffer, length)) {
@@ -2916,7 +2916,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                           element->parent->subject.type,
                                           element->parent->subject.uri_source,
                                           
-                                          raptor_sax2_element_get_element(sax2_element)->uri,
+                                          raptor_xml_element_get_element(xml_element)->uri,
                                           NULL,
                                           RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                           RAPTOR_URI_SOURCE_ELEMENT,
@@ -2986,7 +2986,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 {
   raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
-  raptor_sax2_element* sax2_element;
+  raptor_xml_element* xml_element;
   raptor_state state;
   unsigned char *ptr;
   int all_whitespace=1;
@@ -3016,7 +3016,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     }
 
   element=rdf_xml_parser->current_element;
-  sax2_element=element->sax2;
+  xml_element=element->sax2;
 
   /* this file is very broke - probably not XML, whatever */
   if(!element)
@@ -3071,16 +3071,16 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
 #ifdef RAPTOR_DEBUG_CDATA
-      RAPTOR_DEBUG2("Ignoring whitespace cdata inside element '%s'\n", raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+      RAPTOR_DEBUG2("Ignoring whitespace cdata inside element '%s'\n", raptor_xml_element_get_element(element->parent->sax2)->local_name);
 #endif
       return;
     }
 
-    if(sax2_element->content_cdata_seen == 1 &&
-       sax2_element->content_element_seen == 1) {
+    if(xml_element->content_cdata_seen == 1 &&
+       xml_element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
       raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
-                            raptor_sax2_element_get_element(element->parent->sax2)->local_name);
+                            raptor_xml_element_get_element(element->parent->sax2)->local_name);
     }
   }
 
@@ -3095,26 +3095,26 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
   if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
     raptor_xml_writer_cdata_counted(rdf_xml_parser->xml_writer, s, len);
   else {
-    unsigned char *buffer=(unsigned char*)RAPTOR_MALLOC(cstring, sax2_element->content_cdata_length + len + 1);
+    unsigned char *buffer=(unsigned char*)RAPTOR_MALLOC(cstring, xml_element->content_cdata_length + len + 1);
     if(!buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return;
     }
     
-    if(sax2_element->content_cdata_length) {
-      strncpy((char*)buffer, (const char*)sax2_element->content_cdata, sax2_element->content_cdata_length);
-      RAPTOR_FREE(cstring, sax2_element->content_cdata);
+    if(xml_element->content_cdata_length) {
+      strncpy((char*)buffer, (const char*)xml_element->content_cdata, xml_element->content_cdata_length);
+      RAPTOR_FREE(cstring, xml_element->content_cdata);
       element->content_cdata_all_whitespace &= all_whitespace;
     } else
       element->content_cdata_all_whitespace = all_whitespace;
     
-    sax2_element->content_cdata=buffer;
+    xml_element->content_cdata=buffer;
     
     /* move pointer to end of cdata buffer */
-    ptr=buffer+sax2_element->content_cdata_length;
+    ptr=buffer+xml_element->content_cdata_length;
     
     /* adjust stored length */
-    sax2_element->content_cdata_length += len;
+    xml_element->content_cdata_length += len;
     
     strncpy((char*)ptr, (char*)s, len);
     ptr += len;
@@ -3123,7 +3123,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
 
 #ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG3("Content cdata now: '%s' (%d bytes)\n", sax2_element->content_cdata, sax2_element->content_cdata_length);
+  RAPTOR_DEBUG3("Content cdata now: '%s' (%d bytes)\n", xml_element->content_cdata, xml_element->content_cdata_length);
 #endif
 #ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));

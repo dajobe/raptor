@@ -69,7 +69,7 @@ raptor_new_sax2(void *user_data) {
 
 void
 raptor_free_sax2(raptor_sax2 *sax2) {
-  raptor_sax2_element *sax2_element;
+  raptor_xml_element *xml_element;
 
 #ifdef RAPTOR_XML_EXPAT
   if(sax2->xp) {
@@ -85,18 +85,18 @@ raptor_free_sax2(raptor_sax2 *sax2) {
   }
 #endif
 
-  while( (sax2_element=raptor_sax2_element_pop(sax2)) )
-    raptor_free_sax2_element(sax2_element);
+  while( (xml_element=raptor_xml_element_pop(sax2)) )
+    raptor_free_xml_element(xml_element);
 
   RAPTOR_FREE(raptor_sax2, sax2);
 }
 
 
 
-raptor_sax2_element*
-raptor_sax2_element_pop(raptor_sax2 *sax2) 
+raptor_xml_element*
+raptor_xml_element_pop(raptor_sax2 *sax2) 
 {
-  raptor_sax2_element *element=sax2->current_element;
+  raptor_xml_element *element=sax2->current_element;
 
   if(!element)
     return NULL;
@@ -110,7 +110,7 @@ raptor_sax2_element_pop(raptor_sax2 *sax2)
 
 
 void
-raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element) 
+raptor_xml_element_push(raptor_sax2 *sax2, raptor_xml_element* element) 
 {
   element->parent=sax2->current_element;
   sax2->current_element=element;
@@ -121,13 +121,13 @@ raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element)
 
 const unsigned char*
 raptor_sax2_inscope_xml_language(raptor_sax2 *sax2) {
-  raptor_sax2_element* sax2_element;
+  raptor_xml_element* xml_element;
   
-  for(sax2_element=sax2->current_element;
-      sax2_element; 
-      sax2_element=sax2_element->parent)
-    if(sax2_element->xml_language)
-      return sax2_element->xml_language;
+  for(xml_element=sax2->current_element;
+      xml_element; 
+      xml_element=xml_element->parent)
+    if(xml_element->xml_language)
+      return xml_element->xml_language;
     
   return NULL;
 }
@@ -135,13 +135,13 @@ raptor_sax2_inscope_xml_language(raptor_sax2 *sax2) {
 
 raptor_uri*
 raptor_sax2_inscope_base_uri(raptor_sax2 *sax2) {
-  raptor_sax2_element *sax2_element;
+  raptor_xml_element *xml_element;
   
-  for(sax2_element=sax2->current_element; 
-      sax2_element; 
-      sax2_element=sax2_element->parent)
-    if(sax2_element->base_uri)
-      return sax2_element->base_uri;
+  for(xml_element=sax2->current_element; 
+      xml_element; 
+      xml_element=xml_element->parent)
+    if(xml_element->base_uri)
+      return xml_element->base_uri;
     
   return NULL;
 }
@@ -338,30 +338,30 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 }
 
 
-raptor_sax2_element*
-raptor_new_sax2_element(raptor_qname *name,
+raptor_xml_element*
+raptor_new_xml_element(raptor_qname *name,
                         const unsigned char *xml_language, 
                         raptor_uri *xml_base) {
-  raptor_sax2_element* sax2_element;
+  raptor_xml_element* xml_element;
 
-  sax2_element=(raptor_sax2_element*)RAPTOR_CALLOC(raptor_sax2_element, 1,
-                                                   sizeof(raptor_sax2_element));
-  if(!sax2_element)
+  xml_element=(raptor_xml_element*)RAPTOR_CALLOC(raptor_xml_element, 1,
+                                                   sizeof(raptor_xml_element));
+  if(!xml_element)
     return NULL;
 
   /* Element name */
-  sax2_element->name=name;
-  sax2_element->xml_language=xml_language;
-  sax2_element->base_uri=xml_base;
+  xml_element->name=name;
+  xml_element->xml_language=xml_language;
+  xml_element->base_uri=xml_base;
 
-  sax2_element->declared_nspaces=NULL;
+  xml_element->declared_nspaces=NULL;
 
-  return sax2_element;
+  return xml_element;
 }
 
 
 void
-raptor_free_sax2_element(raptor_sax2_element *element)
+raptor_free_xml_element(raptor_xml_element *element)
 {
   unsigned int i;
 
@@ -391,32 +391,32 @@ raptor_free_sax2_element(raptor_sax2_element *element)
 
 
 raptor_qname*
-raptor_sax2_element_get_element(raptor_sax2_element *sax2_element) {
-  return sax2_element->name;
+raptor_xml_element_get_element(raptor_xml_element *xml_element) {
+  return xml_element->name;
 }
 
 
 void
-raptor_sax2_element_set_attributes(raptor_sax2_element* sax2_element,
+raptor_xml_element_set_attributes(raptor_xml_element* xml_element,
                                    raptor_qname **attributes, int count)
 {
-  sax2_element->attributes=attributes;
-  sax2_element->attribute_count=count;
+  xml_element->attributes=attributes;
+  xml_element->attribute_count=count;
 }
 
 
 void
-raptor_sax2_declare_namespace(raptor_sax2_element* sax2_element,
+raptor_sax2_declare_namespace(raptor_xml_element* xml_element,
                               raptor_namespace *nspace) {
-  if(!sax2_element->declared_nspaces)
-    sax2_element->declared_nspaces=raptor_new_sequence(NULL, NULL);
-  raptor_sequence_push(sax2_element->declared_nspaces, nspace);
+  if(!xml_element->declared_nspaces)
+    xml_element->declared_nspaces=raptor_new_sequence(NULL, NULL);
+  raptor_sequence_push(xml_element->declared_nspaces, nspace);
 }
 
 
 #ifdef RAPTOR_DEBUG
 void
-raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream)
+raptor_print_xml_element(raptor_xml_element *element, FILE* stream)
 {
   raptor_qname_print(stream, element->name);
   fputc('\n', stream);
@@ -459,14 +459,14 @@ raptor_nsd_compare(const void *a, const void *b)
 
 
 int
-raptor_iostream_write_sax2_element(raptor_iostream* iostr,
-                                   raptor_sax2_element *element,
-                                   raptor_namespace_stack *nstack,
-                                   int is_empty,
-                                   int is_end,
-                                   raptor_simple_message_handler error_handler,
-                                   void *error_data,
-                                   int depth)
+raptor_iostream_write_xml_element(raptor_iostream* iostr,
+                                  raptor_xml_element *element,
+                                  raptor_namespace_stack *nstack,
+                                  int is_empty,
+                                  int is_end,
+                                  raptor_simple_message_handler error_handler,
+                                  void *error_data,
+                                  int depth)
 {
   struct nsd *nspace_declarations=NULL;
   size_t nspace_declarations_count=0;  

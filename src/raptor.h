@@ -99,7 +99,7 @@ typedef struct raptor_serializer_s raptor_serializer;
 typedef struct raptor_www_s raptor_www;
 typedef struct raptor_iostream_s raptor_iostream;
 
-typedef struct raptor_sax2_element_s raptor_sax2_element;
+typedef struct raptor_xml_element_s raptor_xml_element;
 typedef struct raptor_xml_writer_s raptor_xml_writer;
 
 typedef struct raptor_qname_s raptor_qname;
@@ -523,21 +523,21 @@ RAPTOR_API int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor
 RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
 RAPTOR_API int raptor_feature_value_type(const raptor_feature feature);
 
-/* SAX2 element Class (raptor_sax2_element) */
-RAPTOR_API raptor_sax2_element* raptor_new_sax2_element(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base);
-RAPTOR_API void raptor_free_sax2_element(raptor_sax2_element *element);
-RAPTOR_API raptor_qname* raptor_sax2_element_get_element(raptor_sax2_element *sax2_element);
-RAPTOR_API void raptor_sax2_element_set_attributes(raptor_sax2_element* sax2_element, raptor_qname **attributes, int count);
-RAPTOR_API void raptor_sax2_declare_namespace(raptor_sax2_element* sax2_element, raptor_namespace *nspace);
-RAPTOR_API int raptor_iostream_write_sax2_element(raptor_iostream *iostr, raptor_sax2_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
+/* SAX2 element Class (raptor_xml_element) */
+RAPTOR_API raptor_xml_element* raptor_new_xml_element(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base);
+RAPTOR_API void raptor_free_xml_element(raptor_xml_element *element);
+RAPTOR_API raptor_qname* raptor_xml_element_get_element(raptor_xml_element *xml_element);
+RAPTOR_API void raptor_xml_element_set_attributes(raptor_xml_element* xml_element, raptor_qname **attributes, int count);
+RAPTOR_API void raptor_sax2_declare_namespace(raptor_xml_element* xml_element, raptor_namespace *nspace);
+RAPTOR_API int raptor_iostream_write_xml_element(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
 
 /* XML Writer Class (raptor_xml_writer) */
 RAPTOR_API raptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
 RAPTOR_API void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
 RAPTOR_API raptor_namespace* raptor_xml_writer_start_namespace_full(raptor_xml_writer* xml_writer, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
-RAPTOR_API void raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
-RAPTOR_API void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
-RAPTOR_API void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
+RAPTOR_API void raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
+RAPTOR_API void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
+RAPTOR_API void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
 RAPTOR_API void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str);
 RAPTOR_API void raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
 RAPTOR_API void raptor_xml_writer_raw(raptor_xml_writer* xml_writer, const unsigned char *str);
