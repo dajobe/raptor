@@ -55,6 +55,8 @@
 
 struct raptor_xml_writer_s {
   int canonicalize;
+
+  int depth;
   
   /* CDATA content of element and checks for mixed content */
   char *content_cdata;
@@ -110,6 +112,9 @@ void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
   raptor_namespaces_free(&xml_writer->content_cdata_namespaces);
+  if(xml_writer->content_cdata)
+    RAPTOR_FREE(cstring, xml_writer->content_cdata);
+
   RAPTOR_FREE(raptor_xml_writer, xml_writer);
 }
 
@@ -123,7 +128,8 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                               &xml_writer->content_cdata_namespaces,
                                               &fmt_length, 0, 
                                               xml_writer->error_handler,
-                                              xml_writer->error_data);
+                                              xml_writer->error_data,
+                                              xml_writer->depth);
   if(fmt_buffer && fmt_length) {
     /* Append cdata content content */
     if(xml_writer->content_cdata) {
@@ -161,6 +167,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
     }
   }
 
+  xml_writer->depth++;
 }
 
 
@@ -169,11 +176,14 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                               raptor_sax2_element* element)
 {
   int fmt_length;
-  char *fmt_buffer=raptor_format_sax2_element(element, 
-                                              &xml_writer->content_cdata_namespaces,
-                                              &fmt_length, 1,
-                                              xml_writer->error_handler,
-                                              xml_writer->error_data);
+  char *fmt_buffer;
+
+  fmt_buffer=raptor_format_sax2_element(element, 
+                                        &xml_writer->content_cdata_namespaces,
+                                        &fmt_length, 1,
+                                        xml_writer->error_handler,
+                                        xml_writer->error_data,
+                                        xml_writer->depth);
 
   if(fmt_buffer && fmt_length) {
     /* Append cdata content content */
@@ -188,6 +198,11 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
     }
     RAPTOR_FREE(cstring, fmt_buffer);
   }
+
+  xml_writer->depth--;
+
+  raptor_namespaces_end_for_depth(&xml_writer->content_cdata_namespaces, 
+                                  xml_writer->depth);
 
 #ifdef RAPTOR_DEBUG_CDATA
   RAPTOR_DEBUG3(raptor_xml_writer_end_element,
