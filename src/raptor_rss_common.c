@@ -470,7 +470,7 @@ raptor_enclosure_free(raptor_rss_enclosure* enclosure) {
 }
 
 static void
-raptor_free_rss_item(raptor_rss_item* item) {
+raptor_clear_rss_item(raptor_rss_item* item) {
   int i;
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     if(item->fields[i])
@@ -487,12 +487,18 @@ raptor_free_rss_item(raptor_rss_item* item) {
 
 
 static void
+raptor_free_rss_item(raptor_rss_item* item) {
+  raptor_clear_rss_item(item);
+  RAPTOR_FREE(raptor_rss_item, item);
+}
+
+static void
 raptor_free_rss_items(raptor_rss_parser_context *rss_parser) {
   raptor_rss_item* item=rss_parser->items;
   while(item) {
     raptor_rss_item *next=item->next;
 
-    raptor_free_rss_item(item);
+    raptor_clear_rss_item(item);
     RAPTOR_FREE(raptor_rss_item, item);
     item=next;
   }
@@ -513,7 +519,7 @@ raptor_rss_context_terminate(raptor_rss_parser_context* rss_parser) {
   raptor_free_rss_items(rss_parser);
 
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++)
-    raptor_free_rss_item(&rss_parser->common[i]);
+    raptor_clear_rss_item(&rss_parser->common[i]);
 
   for(i=0; i< RAPTOR_RSS_N_CONCEPTS; i++) {
     raptor_uri* concept_uri=rss_parser->concepts[i];
