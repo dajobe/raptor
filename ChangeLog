@@ -1,3 +1,8 @@
+2005-01-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss10_emit_item): Portability - declare
+	rdf_Seq* variables at start of block.
+
 2005-01-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* win32_raptor_config.h, win32/Makefile.am, win32/rapper.dsp,
