@@ -182,14 +182,9 @@ static void
 grapper_view_add_error_message(grapper_state *state, gchar *error,
                                raptor_locator *locator, int is_error) {
   if(error) {
-    char line[20];
     GtkListStore *store=state->errors_store;
     GtkTreeIter iter;
-
-    if(locator && locator->line >= 0)
-      sprintf(line, "%d", locator->line);
-    else
-      *line='\0';
+    int line=(locator && locator->line >=0) ? locator->line : 0;
 
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter, 
@@ -730,7 +725,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_container_add(GTK_CONTAINER(errors_frame), errors_scrolled_window);
   gtk_widget_show(errors_scrolled_window);
 
-  errors_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+  errors_store = gtk_list_store_new (3, G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING);
   state->errors_store = errors_store;
   
   errors_treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(errors_store));
