@@ -636,7 +636,7 @@ raptor_new_triple(raptor_identifier *subject,
 {
   raptor_triple* t;
   
-  t=RAPTOR_MALLOC(raptor_triple, sizeof(raptor_triple));
+  t=(raptor_triple*)RAPTOR_MALLOC(raptor_triple, sizeof(raptor_triple));
   if(!t)
     return NULL;
   
