@@ -296,8 +296,8 @@ raptor_libxml_error(void *ctx, const char *msg, ...)
   } else {
     strcpy(nmsg, xml_error_prefix);
     strcpy(nmsg+prefix_length, msg);
-    if(nmsg[length-2]=='\n')
-      nmsg[length-2]='\0';
+    if(nmsg[length-1]=='\n')
+      nmsg[length-1]='\0';
     raptor_parser_error_varargs(rdf_parser, nmsg, args);
     RAPTOR_FREE(cstring,nmsg);
   }
