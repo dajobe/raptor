@@ -514,7 +514,7 @@ raptor_ntriples_string(raptor_parser* rdf_parser,
           return 0;
         }
         
-        sscanf(p, ((ulen == 4) ? "%04x" : "%08x"), &unichar);
+        sscanf(p, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
 
         p+=ulen;
         (*lenp)-=ulen;
