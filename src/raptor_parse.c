@@ -149,6 +149,10 @@ DIE
 #include <libxml/hash.h>
 #endif
 
+#ifdef HAVE_GNOME_XML_XMLMEMORY_H
+#include <gnome-xml/xmlmemory.h>
+#endif
+
 /* translate names from expat to libxml */
 #define XML_Char xmlChar
 #endif
@@ -2097,13 +2101,17 @@ raptor_xml_validation_warning(void *ctx, const char *msg, ...)
 }
 
 
+#ifdef XML_ENTITY_DECL
+/* libxml v2 only */
+
 /*
  * raptor_xml_free_entity : clean-up an entity record.
  * a copy of xmlFreeEntity which is libxml-private.  Grrr.
  */
 static void
-raptor_xml_free_entity(xmlEntityPtr entity) {
-  if (entity == NULL) return;
+raptor_xml_free_entity(raptor_parser *rdf_parser, xmlEntityPtr entity) {
+  if (entity == NULL)
+    return;
   
   if ((entity->children) &&
       (entity == (xmlEntityPtr) entity->children->parent))
@@ -2120,8 +2128,59 @@ raptor_xml_free_entity(xmlEntityPtr entity) {
     xmlFree((char *) entity->content);
   if (entity->orig != NULL)
     xmlFree((char *) entity->orig);
-  xmlFree(entity);
+
+  LIBRDF_FREE(xmlEntity, entity);
 }
+#endif
+
+
+#ifndef XML_ENTITY_DECL
+/* libxml1 only */
+static void
+raptor_xml_libxml1_add_entry(xmlEntitiesTablePtr table, 
+                             const xmlChar *name, int type,
+                             const xmlChar *ExternalID,
+                             const xmlChar *SystemID, const xmlChar *content)
+{
+    xmlEntityPtr cur;
+    int len;
+
+    if (table->nb_entities >= table->max_entities) {
+        /*
+	 * need more elements.
+	 */
+	table->max_entities *= 2;
+	table->table = (xmlEntityPtr) 
+	    xmlRealloc(table->table, table->max_entities * sizeof(xmlEntity));
+	if (table->table == NULL) {
+	    perror("realloc failed");
+	    return;
+	}
+    }
+    cur = &table->table[table->nb_entities];
+    cur->name = xmlStrdup(name);
+    for (len = 0;name[0] != 0;name++)len++;
+    cur->len = len;
+    cur->type = type;
+    if (ExternalID != NULL)
+	cur->ExternalID = xmlStrdup(ExternalID);
+    else
+        cur->ExternalID = NULL;
+    if (SystemID != NULL)
+	cur->SystemID = xmlStrdup(SystemID);
+    else
+        cur->SystemID = NULL;
+    if (content != NULL) {
+        cur->length = xmlStrlen(content);
+	cur->content = xmlStrndup(content, cur->length);
+     } else {
+        cur->length = 0;
+        cur->content = NULL;
+    }
+    cur->orig = NULL;
+    table->nb_entities++;
+}
+#endif
 
 
 /*
@@ -2130,26 +2189,35 @@ raptor_xml_free_entity(xmlEntityPtr entity) {
  */
 
 static void
-raptor_xml_add_entity(xmlEntitiesTablePtr table, 
+raptor_xml_add_entity(raptor_parser *rdf_parser,
                       const xmlChar *name, int type,
                       const xmlChar *publicId, const xmlChar *systemId,
                       const xmlChar *content)
 {
+  xmlEntitiesTablePtr table;
+  #ifdef XML_ENTITY_DECL
+  /* libxml2 */
+
   xmlEntityPtr ret;
 
-  ret = (xmlEntityPtr) xmlMalloc(sizeof(xmlEntity));
+  table=rdf_parser->entities;
+  
+
+  ret = (xmlEntityPtr) LIBRDF_MALLOC(xmlEntity, (sizeof(xmlEntity)));
   if (ret == NULL) {
-    xmlGenericError(xmlGenericErrorContext,
-                    "xmlAddEntity: out of memory\n");
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    return;
   }
   memset(ret, 0, sizeof(xmlEntity));
-  ret->type = XML_ENTITY_DECL;
 
   /*
    * fill the structure.
    */
   ret->name = xmlStrdup(name);
+
+  ret->type = XML_ENTITY_DECL;
   ret->etype = (xmlEntityType) type;
+
   if (publicId != NULL)
     ret->ExternalID = xmlStrdup(publicId);
   if (systemId != NULL)
@@ -2169,8 +2237,15 @@ raptor_xml_add_entity(xmlEntitiesTablePtr table,
     /*
      * entity was already defined at another level.
      */
-    raptor_xml_free_entity(ret);
+    raptor_xml_free_entity(rdf_parser, ret);
   }
+
+  #else
+  /* libxml v1 */
+  table=rdf_parser->entities;
+  raptor_xml_libxml1_add_entry(table, name, type, publicId, systemId, content);
+  
+  #endif
 }
 
 
@@ -2182,9 +2257,24 @@ raptor_xml_entity_decl(void *ctx,
 {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
 
-  raptor_xml_add_entity(rdf_parser->entities , name, type,
+  raptor_xml_add_entity(rdf_parser, name, type,
                         publicId, systemId, content);
 }
+
+
+#ifndef XML_ENTITY_DECL
+static xmlEntityPtr
+xmlHashLookup(xmlEntitiesTablePtr table, const xmlChar *name) {
+  int i;
+  xmlEntityPtr cur;
+  for (i = 0;i < table->nb_entities;i++) {
+    cur = &table->table[i];
+    if (!xmlStrcmp(cur->name, name)) 
+      return(cur);
+  }
+  return NULL;
+}
+#endif
 
 
 static xmlEntityPtr
