@@ -404,19 +404,46 @@ static const struct {
 typedef enum {
   /* undetermined yet - whitespace is stored */
   RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN,
-  /* empty - no elements or cdata - whitespace is ignored */
-  RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY,
-  /* literal content (cdata) - whitespace is significant */
+
+  /* literal content - no elements, cdata allowed, whitespace significant 
+   * <propElement> blah </propElement>
+   */
   RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL,
-  /* properties (0+ elements) - whitespace is ignored,
-   * any non-whitespace is error */
+
+  /* parseType literal content (WF XML) - all content preserved
+   * <propElement rdf:parseType="Literal"><em>blah</em></propElement> 
+   */
+  RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL,
+
+  /* top-level nodes - 0+ elements expected, no cdata, whitespace ignored,
+   * any non-whitespace cdata is error
+   * only used for <rdf:RDF> or implict <rdf:RDF>
+   */
+  RAPTOR_ELEMENT_CONTENT_TYPE_NODES,
+
+  /* properties - 0+ elements expected, no cdata, whitespace ignored,
+   * any non-whitespace cdata is error
+   * <nodeElement><prop1>blah</prop1> <prop2>blah</prop2> </nodeElement>
+   */
   RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES,
-  /* resource (0 or 1 element) - whitespace is ignored,
-   * any non-whitespace is error */
+
+  /* resource URI given - no element, no cdata, whitespace ignored,
+   * any non-whitespace cdata is error 
+   * <propElement rdf:resource="uri"/>
+   * <propElement rdf:resource="uri"></propElement>
+   */
   RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE,
-  /* all content is preserved */
+
+  /* skipping content - all content is preserved 
+   * Used when skipping content for unknown parseType-s,
+   * error recovery, some other reason
+   */
   RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED,
-  /* a daml:collection */
+
+  /* parseType daml:collection - all content preserved
+   * Parsing of this determined by DAML collection rules
+   * <propElement rdf:parseType="daml:collection">...</propElement>
+   */
   RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION,
 
   /* dummy for use in strings below */
@@ -3597,7 +3624,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           if(element->rdf_attr[RDF_ATTR_resource]) {
             /* Done - wait for end of this element to end in order to 
              * check the element was empty as expected */
-            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY;
+            element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
           } else {
             /* Otherwise process content in obj (value) state */
             element->child_state=RAPTOR_STATE_OBJ;
@@ -3848,7 +3875,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           else if (element->content_element_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
           else
-            element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY;
+            element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
         }
 
         if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY) {
