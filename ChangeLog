@@ -1,3 +1,10 @@
+2004-12-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_sequence.c (raptor_sequence_set_at,
+	raptor_sequence_get_at): Check for non-negative idx
+
+	* raptor_sequence.c (raptor_sequence_get_at): Fix index offset check
+
 2004-12-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* rdfdump.c: Make a raptor_sequence of namespace declarations
