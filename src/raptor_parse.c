@@ -1420,7 +1420,10 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_init(&rdf_xml_parser->sax2->sax);
 
+#if LIBXML_VERSION < 20425
   rdf_xml_parser->sax2->first_read=1;
+#endif
+
 #endif
 
   return 0;
@@ -1606,7 +1609,9 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const unsigned char *buffer,
   }
 #endif
 
+#if LIBXML_VERSION < 20425
   rdf_xml_parser->sax2->first_read=0;
+#endif
     
   rc=xmlParseChunk(xc, (char*)buffer, len, is_end);
   if(rc) /* libxml: non 0 is failure */
