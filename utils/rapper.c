@@ -40,6 +40,7 @@
 
 #ifdef NEED_OPTIND_DECLARATION
 extern int optind;
+extern char *optarg;
 #endif
 
 static void print_statements(void *user_data, const raptor_statement *statement);
@@ -54,11 +55,14 @@ static int quiet=0;
 
 static int statement_count=0;
 
+static enum { OUTPUT_FORMAT_SIMPLE, OUTPUT_FORMAT_NTRIPLES } output_format = OUTPUT_FORMAT_SIMPLE;
+
 
 static
 void print_statements(void *user_data, const raptor_statement *statement) 
 {
-  fputs("rdfdump: Statement: ", stdout);
+  if(output_format == OUTPUT_FORMAT_SIMPLE)
+    fputs("rdfdump: Statement: ", stdout);
 
   /* replace newlines with spaces if object is a literal string */
   if(replace_newlines && 
@@ -69,7 +73,10 @@ void print_statements(void *user_data, const raptor_statement *statement)
         *s=' ';
   }
 
-  raptor_print_statement(statement, stdout);
+  if(output_format == OUTPUT_FORMAT_SIMPLE)
+    raptor_print_statement(statement, stdout);
+  else
+    raptor_print_statement_as_ntriples(statement, stdout);
   fputc('\n', stdout);
 
   statement_count++;
@@ -83,7 +90,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "shrq"
+#define GETOPT_STRING "shrqo:"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
@@ -94,6 +101,7 @@ static struct option long_options[] =
   {"help", 0, 0, 'h'},
   {"replace-newlines", 0, 0, 'r'},
   {"quiet", 0, 0, 'q'},
+  {"output", 1, 0, 'o'},
   {NULL, 0, 0, 0}
 };
 #endif
@@ -168,6 +176,15 @@ main(int argc, char *argv[])
       case 'r':
         replace_newlines=1;
         break;
+
+      case 'o':
+        if(optarg) {
+          if(!strcmp(optarg, "simple"))
+            output_format=OUTPUT_FORMAT_SIMPLE;
+          else if (!strcmp(optarg, "ntriples"))
+            output_format=OUTPUT_FORMAT_NTRIPLES;
+        }
+        break;
     }
     
   }
@@ -184,6 +201,7 @@ main(int argc, char *argv[])
     fprintf(stderr, HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
     fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
     fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
+    fprintf(stderr, HELP_TEXT(o, "output=FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
     return(usage>1);
   }
 
