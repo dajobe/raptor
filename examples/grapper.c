@@ -46,12 +46,33 @@
 /* Gtk 2.0 */
 #include <gtk/gtk.h>
 
+typedef enum 
+{
+  GRAPPER_SYNTAX_RDFXML,
+  GRAPPER_SYNTAX_NTRIPLES,
+  GRAPPER_SYNTAX_RSS,
+
+  GRAPPER_SYNTAX_SIZE=GRAPPER_SYNTAX_RSS+1
+} grapper_syntax;
+
+typedef struct {
+  const gchar *name;
+  const gchar *label;
+} grapper_syntax_item;
+
+static const grapper_syntax_item grapper_syntax_info[GRAPPER_SYNTAX_SIZE]={
+  {"rdfxml",   "RDF/XML"      },
+  {"ntriples", "N-Triples"    },
+  {"rss",      "RSS tag soup" }
+};
+
+
 
 typedef struct
 {
   /* model data */
   int qnames;
-  int ntriples;
+  grapper_syntax syntax;
   int scanning;
   int assume;
   int ignore_warnings;
@@ -108,9 +129,9 @@ grapper_view_scanning_changed(grapper_state *state)
 }
 
 static void
-grapper_view_ntriples_changed(grapper_state *state) 
+grapper_view_syntax_changed(grapper_state *state) 
 {
-
+  
 }
 
 static void
@@ -231,18 +252,13 @@ grapper_model_set_scanning (grapper_state *state, int scanning) {
 }
 
 static void
-grapper_model_set_ntriples (grapper_state *state, int ntriples) {
-  if(state->ntriples == ntriples)
+grapper_model_set_syntax (grapper_state *state, grapper_syntax syntax) {
+  if(state->syntax == syntax)
     return;
   
-  state->ntriples=ntriples;
-  if (state->ntriples) {
-    g_print ("Parsing N-Triples\n");
-  } else {
-    g_print ("Parsing RDF/XML\n");
-  }
-  
-  grapper_view_ntriples_changed(state);
+  g_print("Syntax changed to '%s'\n", grapper_syntax_info[state->syntax].name);
+  state->syntax=syntax;
+  grapper_view_syntax_changed(state);
 }
 
 static void
@@ -337,10 +353,8 @@ grapper_model_parse(grapper_state *state)
   grapper_model_reset_error(state);
 
   uri=raptor_new_uri(state->url);
-  if(state->ntriples)
-    rdf_parser=raptor_new_parser("ntriples");
-  else
-    rdf_parser=raptor_new_parser("rdfxml");
+  rdf_parser=raptor_new_parser(grapper_syntax_info[state->syntax].name);
+
   if(state->scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
   if(state->assume)
@@ -441,14 +455,15 @@ scanning_button_callback(GtkWidget *widget, gpointer data)
 }
 
 
-/* ntriples button clicked callback */
+/* syntax menu changed callback */
 static void
-ntriples_button_callback(GtkWidget *widget, gpointer data)
+syntax_menu_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state=(grapper_state*)data;
-  int active=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) != 0);
+ 
+  grapper_syntax syntax=(grapper_syntax)gtk_option_menu_get_history(GTK_OPTION_MENU(widget));
   
-  grapper_model_set_ntriples(state, active);
+  grapper_model_set_syntax(state, syntax);
 }
 
 
@@ -530,17 +545,19 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *menu_bar;
   GtkWidget *v_box;
   GtkWidget *box;
-  GtkWidget *go_button, *qnames_button, *scanning_button, *ntriples_button;
+  GtkWidget *go_button, *qnames_button, *scanning_button;
+  GtkWidget *syntax_optionmenu;
+  GtkWidget *syntax_menu;
   GtkWidget *url_entry;
   GtkWidget *triples_frame, *prefs_frame;
   GtkWidget *triples_scrolled_window;
   GtkWidget *triples_treeview;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
-  GtkTooltips *qnames_tooltips, *scanning_tooltips, *ntriples_tooltips;
+  GtkTooltips *qnames_tooltips, *scanning_tooltips, *syntax_tooltips;
   GtkWidget *prefs_box;
   GtkListStore *store;
-  
+  int i;
 
   state->window=window;
   
@@ -720,22 +737,33 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_widget_show (scanning_button);
 
 
-  /* ntriples button in horizontal box */
-  ntriples_button = gtk_check_button_new_with_label("Ntriples");
+  /* syntax button in horizontal box */
+  syntax_optionmenu = gtk_option_menu_new();
 
-  ntriples_tooltips = gtk_tooltips_new ();
-  gtk_tooltips_set_tip (ntriples_tooltips, ntriples_button, "Parse N-Triples", NULL);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ntriples_button), (state->ntriples));
-  
+  syntax_menu=gtk_menu_new();
+  for(i=0; i< GRAPPER_SYNTAX_SIZE; i++) {
+    const gchar *label=grapper_syntax_info[i].label;
+    
+    GtkWidget *syntax_menu_item = gtk_menu_item_new_with_label(label);
+    gtk_widget_show (syntax_menu_item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(syntax_menu), syntax_menu_item);
+  }
 
-  /* connect button clicked event to callback */
-  g_signal_connect (G_OBJECT (ntriples_button), "clicked",
-                    G_CALLBACK (ntriples_button_callback), state);
+  g_signal_connect (GTK_OBJECT(syntax_optionmenu), "changed",
+                    G_CALLBACK (syntax_menu_callback), state);
+
+  gtk_option_menu_set_menu(GTK_OPTION_MENU(syntax_optionmenu), syntax_menu);
+
+  /* Default is first */
+  gtk_option_menu_set_history(GTK_OPTION_MENU(syntax_optionmenu), 0);
+
+  syntax_tooltips = gtk_tooltips_new ();
+  gtk_tooltips_set_tip (syntax_tooltips, syntax_optionmenu, "Chose the Syntax to parse", NULL);
 
   /* pack into the invisible box */
-  gtk_box_pack_start (GTK_BOX(prefs_box), ntriples_button, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX(prefs_box), syntax_optionmenu, TRUE, TRUE, 0);
 
-  gtk_widget_show (ntriples_button);
+  gtk_widget_show (syntax_optionmenu);
 
 
   /* add prefs frame to vbox */
