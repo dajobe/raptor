@@ -1540,8 +1540,9 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   if(rdf_parser->failed)
     return;
 
-  if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
-     object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+  if((object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
+      object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) &&
+     !literal_datatype) {
     language=raptor_inscope_xml_language(rdf_parser);
     if(!object_uri)
       object_uri=(raptor_uri*)empty_literal;
