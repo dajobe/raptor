@@ -481,6 +481,83 @@ raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
 }
 
 
+int
+raptor_new_namespace_parts_from_string(unsigned char *string,
+                                       unsigned char **prefix,
+                                       unsigned char **uri_string)
+{
+  unsigned char *t;
+  unsigned char quote;
+  
+  if((!prefix || !uri_string))
+    return 1;
+  
+  if(!string || (string && !*string))
+    return 1;
+
+  if(strncmp((const char*)string, "xmlns", 5))
+    return 1;
+
+  *prefix=NULL;
+  *uri_string=NULL;
+
+  /*
+   * Four cases are expected and handled:
+   * xmlns=""
+   * xmlns="uri"
+   * xmlns:foo=""
+   * xmlns:foo="uri"
+   *
+   * (with " or ' quotes)
+   */
+
+  /* skip "xmlns" */
+  string+= 5;
+  
+  if (*string == ':') {
+    /* non-empty prefix */
+    t= ++string;
+    while(*string && *string != '=')
+      string++;
+    if(!*string || string == t)
+      return 1;
+
+    *prefix=(unsigned char*)RAPTOR_MALLOC(cstring, string-t+1);
+    if(!*prefix)
+      return 1;
+    strncpy((char*)*prefix, (const char*)t, string-t);
+    (*prefix)[string-t]='\0';
+  }
+
+  if(*string++ != '=')
+    return 1;
+
+  if(*string != '"' && *string != '\'')
+    return 1;
+  quote=*string++;
+
+  t=string;
+  while(*string && *string != quote)
+    string++;
+
+  if(*string != quote)
+    return 1;
+
+  if(!(string-t))
+    /* xmlns...="" */
+    *uri_string=NULL;
+  else {
+    *uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, string-t+1);
+    if(!*uri_string)
+      return 1;
+    strncpy((char*)*uri_string, (const char*)t, string-t);
+    (*uri_string)[string-t]='\0';
+  }
+  
+  return 0;
+}
+
+
 #ifdef RAPTOR_DEBUG
 void
 raptor_namespace_print(FILE *stream, raptor_namespace* ns) 
