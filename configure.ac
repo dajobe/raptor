@@ -496,7 +496,7 @@ fi
 AC_MSG_RESULT($result)
 
 
-if test $need_libxml = 1; then
+if test $need_libxml = 1 -a $ac_cv_header_libxml_reader_h = yes; then
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS parser])
   AC_LIBOBJ(raptor_rss)
 fi
