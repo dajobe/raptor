@@ -94,7 +94,9 @@ static const char * const raptor_rdf_schema_uri=RAPTOR_RDF_SCHEMA_URI;
 void
 raptor_namespaces_init(raptor_namespace_stack *nstack,
                        raptor_uri_handler *uri_handler,
-                       void *uri_context)
+                       void *uri_context,
+                       raptor_internal_message_handler error_handler,
+                       void *error_data)
 {
   nstack->top=NULL;
   nstack->uri_handler=uri_handler;
@@ -105,18 +107,23 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
 
   /* defined at level -1 since always 'present' when inside the XML world */
   raptor_namespaces_start_namespace(nstack, (const unsigned char*)"xml",
-                                    (unsigned char*)raptor_xml_uri, -1);
+                                    (unsigned char*)raptor_xml_uri, -1,
+                                    error_handler, error_data);
 }
 
 
 int
 raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
                                   const unsigned char *prefix, 
-                                  const unsigned char *ns_uri_string, int depth)
+                                  const unsigned char *ns_uri_string, int depth,
+                                  raptor_internal_message_handler error_handler,
+                                  void *error_data)
+
 {
   raptor_namespace *ns;
 
-  ns=raptor_namespace_new(nstack, prefix, ns_uri_string, depth);
+  ns=raptor_namespace_new(nstack, prefix, ns_uri_string, depth,
+                          error_handler, error_data);
   if(!ns)
     return 1;
   
@@ -197,7 +204,9 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 raptor_namespace*
 raptor_namespace_new(raptor_namespace_stack *nstack,
                      const unsigned char *prefix, 
-                     const unsigned char *ns_uri_string, int depth)
+                     const unsigned char *ns_uri_string, int depth,
+                     raptor_internal_message_handler error_handler,
+                     void *error_data)
 {
   int prefix_length=0;
   int len;
@@ -213,6 +222,14 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
                 prefix ? (char*)prefix : "(default)", 
                 ns_uri_string ? (char*)ns_uri_string : "(none)",
                 depth);
+
+  if(prefix && !ns_uri_string) {
+    /* failed to find namespace - now what? */
+    if(error_handler)
+      error_handler((raptor_parser*)error_data, "The namespace URI for prefix \"%s\" is empty.", prefix);
+    return NULL;
+  }
+  
 
   len=sizeof(raptor_namespace);
   if(prefix) {
@@ -331,17 +348,17 @@ main(int argc, char *argv[])
   /* Use whatever the raptor_uri class has */
   raptor_uri_get_handler(&handler, &context);
 
-  raptor_namespaces_init(&namespaces, handler, context);
+  raptor_namespaces_init(&namespaces, handler, context, NULL, NULL);
   
   raptor_namespaces_start_namespace(&namespaces,
                                     (const unsigned char*)"ex1",
                                     (const unsigned char*)"http://example.org/ns1",
-                                    0);
+                                    0, NULL, NULL);
 
   raptor_namespaces_start_namespace(&namespaces,
                                     (const unsigned char*)"ex2",
                                     (const unsigned char*)"http://example.org/ns2",
-                                    1);
+                                    1, NULL, NULL);
 
   raptor_namespaces_end_for_depth(&namespaces, 1);
 
