@@ -212,7 +212,7 @@ raptor_string_iostream_finish(void *context)
   
   str=(void*)RAPTOR_MALLOC(memory, len+1);
   if(str) {
-    strncpy(str, raptor_stringbuffer_as_string(con->sb), len+1);
+    memcpy(str, raptor_stringbuffer_as_string(con->sb), len+1);
     *con->string_p=str;
   } else {
     *con->string_p=NULL;
@@ -230,14 +230,14 @@ raptor_string_iostream_write_bytes(void *context,
 {
   struct raptor_string_iostream_context* con=(struct raptor_string_iostream_context*)context;
 
-  return raptor_stringbuffer_append_counted_string(con->sb, ptr, size * nmemb, 1);
+  return raptor_stringbuffer_append_counted_string(con->sb, (const unsigned char*)ptr, size * nmemb, 1);
 }
 
 static int
 raptor_string_iostream_write_byte(void *context, const int byte)
 {
   struct raptor_string_iostream_context* con=(struct raptor_string_iostream_context*)context;
-  char buf=(char)byte;
+  unsigned char buf=(unsigned char)byte;
   return raptor_stringbuffer_append_counted_string(con->sb, &buf, 1, 1);
 }
 
