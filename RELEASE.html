@@ -10,8 +10,6 @@
 
 <h2 id="rel1_4_3"><a name="rel1_4_3">Raptor 1.4.3 Changes</a></h2>
 
-<p><strong>DRAFT DRAFT DRAFT - not yet released - DRAFT DRAFT DRAFT</strong></p>
-
 <p>A release with the major new feature of an XML writer API.
 This is now used along with a new supporting XML element class to
 improve the existing RDF/XML serializer and to provide a new
@@ -125,7 +123,7 @@ and provide this with two new methods
 allocated strings.</p>
 
 
-<h3>I/O stream Changes</h3>
+<h3>I/O Stream Changes</h3>
 
 <p>Many classes gained methods to write to iostreams, supporting the
 new XML Writer class functionality.  The added methods are:
@@ -145,9 +143,8 @@ new XML Writer class functionality.  The added methods are:
 constructor and <code>raptor_new_namespace_from_uri</code>
 constructor to build a namespace from a raptor_uri object.</p>
 
-<p>Added utility function
-<code>raptor_new_namespace_parts_from_string</code> to decode syntax
-of the form
+<p>Added utility function <code>raptor_new_namespace_parts_from_string</code>
+to decode syntax of the form
 <code>xmlns:</code><em>prefix</em><code>="</code><em>uri</em><code>"</code>
 into <em>prefix</em> and <em>uri</em> string pairs.
 </p>
@@ -158,20 +155,19 @@ complements <code>raptor_namespaces_find_namespace</code> which
 already provides searching by prefix.</p>
 
 
-
 <h3>Unicode and UTF-8 Changes</h3>
 
 <p>Added several methods for checking characters forming
 parts of XML 1.0 or XML 1.1 names:
-<code>raptor_unicode_is_xml11_namestartchar</code>,
 <code>raptor_unicode_is_xml10_namestartchar</code>,
-<code>raptor_unicode_is_xml11_namechar</code> and
-<code>raptor_unicode_is_xml10_namechar</code>.
+<code>raptor_unicode_is_xml11_namestartchar</code>,
+<code>raptor_unicode_is_xml10_namechar</code> and
+<code>raptor_unicode_is_xml11_namechar</code>.
 </p>
 
 <p>Added a function <code>raptor_utf8_check</code> to check that a
 string is legal UTF-8 and all the encoded Unicode characters are in
-the range 0 &lt;= char &lt;= 0x10ffff</p>
+the range U+0 &lt;= character &lt;= U+10FFFF</p>
 
 <p>Added a function <code>raptor_xml_name_check</code> to check that
 a string is a legal XML name (1.0 or 1.1) as well as legal UTF-8.</p>
@@ -567,7 +563,7 @@ for constructing strings from substrings appended or prepended.</p>
 
 <hr />
 
-<p>Copyright 2003-2004 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bris.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2003-2005 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bris.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
