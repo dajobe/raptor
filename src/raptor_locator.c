@@ -68,7 +68,7 @@ raptor_print_locator(FILE *stream, raptor_locator* locator)
     fprintf(stream, "file %s", locator->file);
   else
     return;
-  if(locator->line) {
+  if(locator->line >= 0) {
     fprintf(stream, ":%d", locator->line);
     if(locator->column >= 0)
       fprintf(stream, " column %d", locator->column);
