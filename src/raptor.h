@@ -391,6 +391,7 @@ RAPTOR_API void raptor_www_abort(raptor_www *www, const char *reason);
 /* raptor_qname - XML qnames */
 RAPTOR_API raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API raptor_qname* raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
+raptor_qname* raptor_qname_copy(raptor_qname *qname);
 RAPTOR_API void raptor_free_qname(raptor_qname* name);
 RAPTOR_API int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
 /* utility function */
