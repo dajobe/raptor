@@ -964,8 +964,17 @@ raptor_ntriples_parser_error(raptor_ntriples_parser* parser,
   va_start(arguments, message);
 
   if(parser->error_handler) {
+    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    if(!buffer) {
+      fprintf(stderr, "raptor_ntriples_parser_error: Out of memory\n");
+      return;
+    }
+    vsnprintf(buffer, len, message, arguments);
     parser->error_handler(parser->error_user_data, 
-                          &parser->locator, message, arguments);
+                          &parser->locator, buffer);
+    LIBRDF_FREE(cstring, buffer);
+    va_end(arguments);
     return;
   }
 
@@ -992,9 +1001,18 @@ raptor_ntriples_parser_fatal_error(raptor_ntriples_parser* parser,
   va_start(arguments, message);
 
   if(parser->fatal_error_handler) {
+    int len=vsnprintf(NULL, 0, message, arguments)+1;
+    char *buffer=(char*)LIBRDF_MALLOC(cstring, len);
+    if(!buffer) {
+      fprintf(stderr, "raptor_ntriples_parser_fatal_error: Out of memory\n");
+      return;
+    }
+    vsnprintf(buffer, len, message, arguments);
     parser->fatal_error_handler(parser->fatal_error_user_data, 
-                                &parser->locator, message, arguments);
-    return;
+                                &parser->locator, buffer);
+    LIBRDF_FREE(cstring, buffer);
+    va_end(arguments);
+    abort();
   }
 
   raptor_print_locator(stderr, &parser->locator);
