@@ -2838,6 +2838,15 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         switch(element->content_type) {
           case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
 
+            if(raptor_element_has_property_attributes(element) &&
+               element->child_state == RAPTOR_STATE_DESCRIPTION) {
+              raptor_parser_error(rdf_parser, "Property element '%s' has both property attributes and a node element content", el_name);
+              state=RAPTOR_STATE_SKIPPING;
+              element->child_state=RAPTOR_STATE_SKIPPING;
+              finished=1;
+              break;
+            }
+
             if(element->object.type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
               if(element->rdf_attr[RDF_ATTR_resource]) {
                 element->object.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser),
