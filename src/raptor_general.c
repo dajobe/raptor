@@ -1418,7 +1418,7 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 
 
 
-static const unsigned char*
+static unsigned char*
 raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
                                    const unsigned char *user_bnodeid) 
 {
@@ -1453,7 +1453,7 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 }
 
 
-const unsigned char *
+unsigned char *
 raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag,
                    const unsigned char *user_bnodeid)
 {
