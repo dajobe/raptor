@@ -111,8 +111,6 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
       bufsize += snprintf(NULL, 0, " column %d", locator->column);
   }
   
-  bufsize++; /* For terminating \0 */
-
   if(!buffer || !length || length < bufsize)
     return bufsize;
   
