@@ -195,6 +195,7 @@ typedef struct raptor_xml_entity_t raptor_xml_entity;
 /* raptor_libxml.c exports */
 extern void raptor_libxml_init(xmlSAXHandler *sax);
 extern void raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax);
+extern void raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser);
 
 #ifdef RAPTOR_LIBXML_MY_ENTITIES
 extern void raptor_libxml_free_entities(raptor_parser *rdf_parser);
