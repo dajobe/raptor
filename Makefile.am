@@ -52,9 +52,7 @@ raptor_cc.c \
 $(man_MANS)
 
 
-SUBDIRS= \
-	tests \
-	win32
+SUBDIRS= debian tests win32
 
 TESTS=raptor_cc_test raptor_uri_test
 
