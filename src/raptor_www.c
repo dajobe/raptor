@@ -41,13 +41,49 @@
 
 
 
-#if defined(RAPTOR_WWW_LIBXML) || defined(RAPTOR_WWW_LIBGHTTP)
-static int raptor_www_file_fetch(raptor_www *www, const char *url);
+static int raptor_www_file_fetch(raptor_www *www);
+
+
+#ifdef RAPTOR_WWW_LIBWWW
+/* Non-zero only if Raptor initialised the W3C libwww library */
+static int raptor_libwww_initialised=0;
 #endif
+
+void
+raptor_www_init(void)
+{
+  static int initialized=0;
+  if(initialized)
+    return;
+#ifdef RAPTOR_WWW_LIBCURL
+  curl_global_init(CURL_GLOBAL_ALL);
+#endif
+#ifdef RAPTOR_WWW_LIBWWW
+  if(!HTLib_isInitialized()) {
+    raptor_libwww_initialised=1;
+    HTLibInit(PACKAGE, VERSION);
+  }
+#endif
+  initialized=1;
+}
+
+
+void
+raptor_www_finish(void)
+{
+#ifdef RAPTOR_WWW_LIBCURL
+  curl_global_cleanup();
+#endif
+#ifdef RAPTOR_WWW_LIBWWW
+  if(raptor_libwww_initialised)
+    HTLibTerminate();
+#endif
+}
+
 
 
 raptor_www *
-raptor_www_new(void)
+raptor_www_new_with_connection(void *connection)
 {
   raptor_www *www=calloc(sizeof(raptor_www), 1);
   if(!www)
@@ -62,6 +98,7 @@ raptor_www_new(void)
   www->content_type=NULL;
 
 #ifdef RAPTOR_WWW_LIBCURL
+  www->curl_handle=(CURL*)connection;
   raptor_www_curl_init(www);
 #endif
 #ifdef RAPTOR_WWW_LIBXML
@@ -72,6 +109,12 @@ raptor_www_new(void)
 #endif
 
   return www;
+}
+
+raptor_www*
+raptor_www_new(void)
+{
+  return raptor_www_new_with_connection(NULL);
 }
 
 
@@ -164,6 +207,40 @@ raptor_www_set_proxy(raptor_www *www, const char *proxy)
   www->proxy=proxy_copy;
 }
 
+
+/**
+ * raptor_www_get_connection - Get internal WWW library connection object
+ * @www: &raptor_www object 
+ * 
+ * Return value: connection object or NULL
+ **/
+void*
+raptor_www_get_connection(raptor_www *www) 
+{
+#ifdef RAPTOR_WWW_NONE
+  return NULL;
+#endif
+
+#ifdef RAPTOR_WWW_LIBCURL
+  return www->curl_handle;
+#endif
+
+#ifdef RAPTOR_WWW_LIBXML
+  return www->ctxt;
+#endif
+
+#ifdef RAPTOR_WWW_LIBGHTTP
+  return www->request;
+#endif
+}
+
+
+void
+raptor_www_abort(raptor_www *www, const char *reason) {
+  www->failed=1;
+}
+
+
 void
 raptor_www_error(raptor_www *www, const char *message, ...) 
 {
@@ -189,19 +266,18 @@ raptor_www_error(raptor_www *www, const char *message, ...)
 }
 
   
-#if defined(RAPTOR_WWW_LIBXML) || defined(RAPTOR_WWW_LIBGHTTP) || defined(RAPTOR_WWW_NONE)
-
 static int 
-raptor_www_file_fetch(raptor_www *www, const char *url) 
+raptor_www_file_fetch(raptor_www *www) 
 {
   char *filename;
   FILE *fh;
 /* FIXME */
-#define BUFFER_SIZE 256
+#define BUFFER_SIZE 1024
   unsigned char buffer[BUFFER_SIZE];
   int status=0;
- 
-  filename=raptor_uri_uri_string_to_filename(url);
+  char *uri_string=raptor_uri_as_string(www->uri);
+  
+  filename=raptor_uri_uri_string_to_filename(uri_string);
   if(!filename) {
     raptor_www_error(www, "Not a file: URI");
     return 1;
@@ -220,12 +296,11 @@ raptor_www_file_fetch(raptor_www *www, const char *url)
     int len=fread(buffer, 1, BUFFER_SIZE, fh);
     www->total_bytes += len;
 
-    if(www->write_bytes)
-      www->write_bytes(www, www->userdata, buffer, len, 1);
+    if(len > 0 && www->write_bytes)
+      www->write_bytes(www, www->write_bytes_userdata, buffer, len, 1);
 
-    if(len < BUFFER_SIZE)
+    if(feof(fh) || www->failed)
       break;
-
   }
   fclose(fh);
 
@@ -236,8 +311,6 @@ raptor_www_file_fetch(raptor_www *www, const char *url)
   
   return status;
 }
-
-#endif
 
 
 int
@@ -251,24 +324,22 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 
 #ifdef RAPTOR_WWW_NONE
   return raptor_www_file_fetch(www);
-#endif
+#else
+
+  if(raptor_uri_is_file_uri(raptor_uri_as_string(www->uri)))
+    return raptor_www_file_fetch(www);
 
 #ifdef RAPTOR_WWW_LIBCURL
   return raptor_www_curl_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBXML
-  if(raptor_uri_is_file_uri(url))
-    return raptor_www_file_fetch(www);
-
   return raptor_www_libxml_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBGHTTP
-  if(raptor_uri_is_file_uri(url))
-    return raptor_www_file_fetch(www);
-
   return raptor_www_ghttp_fetch(www);
 #endif
 
+#endif
 }
