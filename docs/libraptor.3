@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2005-01-01"
+.TH libraptor 3 "2005-01-21"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -1031,6 +1031,10 @@ Write an XML comment in \fIstr\fP to the XML Writer \fIxml_writer\fP.
 Write an XML comment in \fIstr\fP of length \fIlength\fP to the XML
 Writer \fIxml_writer\fP.
 .SH API CHANGES
+.SS 1.4.5
+Deprecated \fBraptor_ntriples_string_as_utf8_string\fP (never
+documented above) since it can only work with a raptor_parser object
+which makes it rather unusable alone.
 .SS 1.4.3
 Added XML Writer class (\fBraptor_xml_writer\fP)
 and XML Element class (\fBraptor_xml_element\fP)
