@@ -34,7 +34,8 @@ SUBDIRS= tests win32 examples
 
 TESTS=raptor_general_test raptor_uri_test raptor_namespace_test	\
 strcasecmp_test raptor_www_test raptor_set_test raptor_xml_test	\
-raptor_sequence_test raptor_stringbuffer_test
+raptor_sequence_test raptor_stringbuffer_test \
+raptor_uri_win32_test
 
 CLEANFILES=$(TESTS) turtle_lexer_test turtle_parser_test
 
@@ -157,6 +158,9 @@ raptor_general_test: $(srcdir)/raptor_general.c libraptor.la
 
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+
+raptor_uri_win32_test: $(srcdir)/raptor_uri.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -DWIN32_URI_TEST $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor.la $(LIBS)
