@@ -23,7 +23,7 @@ ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf ex-11.rdf ex-12.rdf \
 ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf ex-19.rdf \
 ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf \
-22-rdf-syntax-ns.rdf
+22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf
 
 RDF_BAD_TEST_FILES=bad-00.rdf
 
@@ -32,7 +32,7 @@ ex-06.out ex-07.out ex-08.out ex-09.out ex-10.out ex-11.out ex-12.out \
 ex-13.out ex-14.out ex-15.out ex-16.out ex-17.out ex-18.out ex-19.out \
 ex-20.out ex-21.out ex-22.out ex-23.out ex-24.out ex-25.out ex-26.out \
 ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out \
-22-rdf-syntax-ns.out
+22-rdf-syntax-ns.out rdf-namespace.out rdf-schema.out
 
 RDF_TEST_ANSWER_FILES=ex-13.nt
 
@@ -44,6 +44,8 @@ NT_OUT_FILES=test.out
 BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/
 # for 22-rdf-syntax-ns.rdf
 RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
+# for rdfs-namespace.rdf (2002-04-30) and rdf-schema.rdf (2000-03-27)
+RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema#
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
@@ -58,10 +60,12 @@ $(top_builddir)/rdfdump:
 	@(cd .. ; $(MAKE) rdfdump)
 
 check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
-	@result=0; for test in $(RDF_TEST_FILES); do \
+	result=0; for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
 	    baseuri=$(RDF_NS_URI); \
+	  elif test $$name = rdfs-namespace.rdf -o $$name = rdf-schema.rdf; then \
+	    baseuri=$(RDFS_NS_URI); \
 	  else \
 	    baseuri=$(BASE_URI)$$test; \
 	  fi; \
