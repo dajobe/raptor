@@ -1718,45 +1718,33 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   
 
 
-  switch(state) {
-    case RAPTOR_STATE_SKIPPING:
+  if(state == RAPTOR_STATE_SKIPPING)
+    return;
+
+  if(state == RAPTOR_STATE_UNKNOWN) {
+    /* Ignore all cdata if still looking for RDF */
+    if(rdf_parser->feature_scanning_for_rdf_RDF)
       return;
 
-    case RAPTOR_STATE_UNKNOWN:
-      /* Ignore all cdata if still looking for RDF */
-      if(rdf_parser->feature_scanning_for_rdf_RDF)
-        return;
-
-      /* Ignore all whitespace cdata before first element */
-      if(all_whitespace)
-        return;
-
-      /* This probably will never happen since that would make the
-       * XML not be well-formed
-       */
-      raptor_parser_warning(rdf_parser, "Found cdata before RDF element.");
-      break;
-
-    case RAPTOR_STATE_PARSETYPE_OTHER:
-      /* FIXME */
-
-      /* FALLTHROUGH */
-
-    case RAPTOR_STATE_PARSETYPE_LITERAL:
-      element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
-      break;
-
-    case RAPTOR_STATE_PARSETYPE_DAML_COLLECTION:
-      element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
-      break;
-
-    default:
-      break;
-    } /* end switch */
+    /* Ignore all whitespace cdata before first element */
+    if(all_whitespace)
+      return;
+    
+    /* This probably will never happen since that would make the
+     * XML not be well-formed
+     */
+    raptor_parser_warning(rdf_parser, "Found cdata before RDF element.");
+  }
 
 
-  if(element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL &&
-     element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED) {
+  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES) {
+    /* If found non-whitespace content, move to literal content */
+    if(!all_whitespace)
+      element->child_content_type = RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL; 
+  }
+
+
+  if(!rdf_content_type_info[element->child_content_type].whitespace_significant) {
 
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
@@ -1772,6 +1760,12 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
     }
   }
 
+
+  if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN) {
+    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
+    LIBRDF_DEBUG3(raptor_xml_cdata_handler,
+                  "Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+  }
 
   buffer=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + len + 1);
   if(!buffer) {
