@@ -33,7 +33,7 @@ librapier_a_DEPENDENCIES = @XML_OBJS@
 
 EXTRA_librapier_a_SOURCES = rdfdump.c
 
-RDF_TEST_FILES=ex-00.rdf ex-1.0rdf ex-02.rdf ex-03.rdf ex-40.rdf ex-05.rdf \
+RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-03.rdf ex-40.rdf ex-05.rdf \
 ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf
 
 EXTRA_DIST=ChangeLog \
