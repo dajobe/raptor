@@ -3,9 +3,8 @@
 	* libraptor.3: 1.4.1 raptor_xml_escape_string return value now
 	int, <0 on failure.
 
-	* raptor_xml_writer.c (raptor_xml_writer_cdata):
-	Use int for raptor_xml_escape_string
-	return variables and use error return <0
+	* raptor_xml_writer.c (raptor_xml_writer_cdata): Use int for
+	raptor_xml_escape_string return variables and use error return <0
 
 	* raptor_serialize.c: (raptor_rdfxml_serialize_write_xml_attribute,
 	raptor_rdfxml_serialize_statement) Use int for
@@ -17,15 +16,14 @@
 
 	* raptor.h: raptor_xml_escape_string changed return value to int
 
-	* raptor_xml.c (raptor_xml_escape_string):
-	Return value now int, <0 on failure to
-	allow escaping an empty string to return 0 bytes required.
-	(main): Add empty string escaping test.  Check for failure of first
-	raptor_xml_escape_string call.
+	* raptor_xml.c (raptor_xml_escape_string): Return value now int,
+	<0 on failure to allow escaping an empty string to return 0 bytes
+	required.
+	(main): Add empty string escaping test.  Check for failure of
+	first raptor_xml_escape_string call.
 
-	* raptor_rss.c (raptor_rss_parser_processNode):
-	Fix url attribute failing for
-	non-enclosure.
+	* raptor_rss.c (raptor_rss_parser_processNode): Fix url attribute
+	failing for non-enclosure.
 
 2004-10-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
