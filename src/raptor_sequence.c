@@ -342,7 +342,7 @@ raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
 
   if(raptor_sequence_ensure(dest, dest->size + src->size))
     return 1;
-  memcpy(&dest->sequence[dest->size], src->sequence, src->size);
+  memcpy(&dest->sequence[dest->size], src->sequence, sizeof(void*)*src->size);
   dest->size += src->size;
 
   src->size=0;
