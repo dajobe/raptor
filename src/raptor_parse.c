@@ -1016,6 +1016,7 @@ raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
 
     if(!ns) {
       /* failed to find namespace - now what? */
+      raptor_update_document_locator(rdf_parser);
       raptor_parser_error(rdf_parser, "The namespace prefix in \"%s\" was not declared", name);
     } else {
 #if RAPTOR_DEBUG > 1
@@ -1477,6 +1478,7 @@ raptor_xml_start_element_handler(void *user_data,
             if(!strcmp(attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
+              raptor_update_document_locator(rdf_parser);
               raptor_parser_warning(rdf_parser, "Unqualified use of rdf:%s has been deprecated.", attr_name);
               /* Delete it if it was stored elsewhere */
               /* make sure value isn't deleted from ns_name structure */
@@ -1527,6 +1529,7 @@ raptor_xml_start_element_handler(void *user_data,
     if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
+      raptor_update_document_locator(rdf_parser);
       raptor_parser_warning(rdf_parser, "element %s found inside property element with rdf:resource, skipping.", 
                             element->name->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
@@ -1544,6 +1547,7 @@ raptor_xml_start_element_handler(void *user_data,
         if(element->parent->content_element_seen == 1 &&
            element->parent->content_cdata_seen == 1) {
           /* Uh oh - mixed content, the parent element has cdata too */
+          raptor_update_document_locator(rdf_parser);
           raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                                 element->parent->name->local_name);
         }
@@ -1584,6 +1588,7 @@ raptor_xml_start_element_handler(void *user_data,
    */
   if (rdf_content_type_info[element->content_type].rdf_processing &&
       non_nspaced_count) {
+    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, "element %s has non-namespaced parts, skipping.", 
                           element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
@@ -1593,6 +1598,7 @@ raptor_xml_start_element_handler(void *user_data,
 
   if (element->rdf_attr[RDF_ATTR_aboutEach] || 
       element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
+    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, "element %s has aboutEach / aboutEachPrefix, skipping.", 
                           element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
@@ -1638,6 +1644,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   element=rdf_parser->current_element;
   if(!raptor_ns_names_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
+    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, 
                           "Element %s ended, expected end of element %s",
                           name, element->name->local_name);
@@ -1742,6 +1749,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
     /* This probably will never happen since that would make the
      * XML not be well-formed
      */
+    raptor_update_document_locator(rdf_parser);
     raptor_parser_warning(rdf_parser, "Found cdata before RDF element.");
   }
 
@@ -1764,6 +1772,7 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
     if(++element->content_cdata_seen == 1 &&
        element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
+      raptor_update_document_locator(rdf_parser);
       raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                             element->name->local_name);
     }
@@ -2402,6 +2411,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
     }
 #endif
       
+    raptor_update_document_locator(rdf_parser);
     raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
                         XML_ErrorString(xe));
     rc=1;
@@ -2411,8 +2421,10 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   XML_ParserFree(xp);
 #endif /* EXPAT */
 #ifdef RAPTOR_XML_LIBXML
-  if(rc)
+  if(rc) {
+    raptor_update_document_locator(rdf_parser);
     raptor_parser_error(rdf_parser, "XML Parsing failed");
+  }
 
   xmlFreeParserCtxt(xc);
 
@@ -2971,9 +2983,11 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         }
         
         if(ordinal < 1) {
+          raptor_update_document_locator(rdf_parser);
           raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attr->local_name, name);
         }
       } else {
+        raptor_update_document_locator(rdf_parser);
         raptor_parser_warning(rdf_parser, "Found unknown RDF M&S attribute %s.", 
                               name);
       }
@@ -3177,6 +3191,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
             element->parent->state == RAPTOR_STATE_MEMBER) &&
            element->parent->content_element_seen > 1) {
+          raptor_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "The enclosing property already has an object");
           state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -3198,6 +3213,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if((element->rdf_attr[RDF_ATTR_ID]!=NULL) +
            (element->rdf_attr[RDF_ATTR_about]!=NULL) +
            (element->rdf_attr[RDF_ATTR_nodeID]!=NULL)>1) {
+          raptor_update_document_locator(rdf_parser);
           raptor_parser_warning(rdf_parser, "Found multiple attribute of rdf:ID, rdf:about and rdf:nodeID attrs on element %s - expected only one.", el_name);
         }
 
@@ -3339,6 +3355,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
              */
             
             if(element->parent->object.uri) {
+              raptor_update_document_locator(rdf_parser);
               raptor_parser_error(rdf_parser, "Tried to set multiple objects of a statement");
             } else {
               /* Store URI of this node in our parent as the property object */
@@ -3610,6 +3627,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          * document (probably never get here since this would be
          * a mismatched XML tag and cause an error earlier)
          */
+        raptor_update_document_locator(rdf_parser);
         raptor_parser_warning(rdf_parser, "Element %s ended, expected end of RDF element", el_name);
         state=RAPTOR_STATE_UNKNOWN;
         finished=1;
@@ -4116,9 +4134,21 @@ raptor_set_libxml_entities(raptor_parser *rdf_parser,
 
 #endif
 
+
+#ifdef RAPTOR_XML_EXPAT
+void
+raptor_expat_update_document_locator (raptor_parser *rdf_parser) {
+  raptor_locator *locator=&rdf_parser->locator;
+
+  locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
+  locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
+  locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
+}
+#endif  
+
+
 raptor_locator*
 raptor_get_locator(raptor_parser *rdf_parser) 
 {
   return &rdf_parser->locator;
 }
-
