@@ -1,4 +1,23 @@
+2004-08-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_parse.c (raptor_end_element_grammar):
+	Add check for a non-empty property
+	element with both a node element <rdf:Description/> child and
+	property attributes.  For bad test bad-23.rdf
+
+	* tests/bad-23.rdf:
+	bad-23.rdf - property attributes and node element content check
+
+	* tests/Makefile.am: Added bad-23.rdf
+
+2004-08-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: Document check_rdf_id feature
+
 2004-08-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_set_parser_strict):
+	Set feature_check_rdf_id default true.
 
 	* raptor_parse.c (raptor_record_ID):
 	Use feature_check_rdf_id to always return
