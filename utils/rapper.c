@@ -497,7 +497,7 @@ main(int argc, char *argv[])
       const char *help_label;
       if(raptor_syntaxes_enumerate(i, &help_name, &help_label, NULL, NULL))
         break;
-      printf("    %-12s            %s", help_name, help_label);
+      printf("    %-14s          %s", help_name, help_label);
       if(!i)
         puts(" (default)");
       else
@@ -509,7 +509,7 @@ main(int argc, char *argv[])
       const char *help_label;
       if(raptor_serializers_enumerate(i, &help_name, &help_label, NULL, NULL))
         break;
-      printf("    %-12s            %s", help_name, help_label);
+      printf("    %-14s          %s", help_name, help_label);
       if(!i)
         puts(" (default)");
       else
