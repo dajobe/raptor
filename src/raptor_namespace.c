@@ -279,6 +279,20 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 }
 
 
+raptor_namespace*
+raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, 
+                                        raptor_uri *ns_uri)
+{
+  raptor_namespace* ns;
+  
+  for(ns=nstack->top; ns ; ns=ns->next)
+    if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, ns_uri))
+      return ns;
+
+  return NULL;
+}
+
+
 int
 raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, 
                                      const raptor_namespace *nspace)
