@@ -39,9 +39,11 @@ bad-19.rdf bad-20.rdf bad-21.rdf
 
 RDF_BAD_NFC_TEST_FILES=bad-15.rdf bad-16.rdf bad-17.rdf
 
-RDF_WARN_TEST_FILES=warn-00.rdf warn-02.rdf warn-03.rdf warn-04.rdf \
+RDF_WARN_TEST_FILES=warn-00.rdf warn-02.rdf warn-04.rdf \
 warn-05.rdf warn-06.rdf \
 $(RDF_BAGID_TEST_FILES)
+
+RDF_WARN_NFC_TEST_FILES=warn-03.rdf
 
 RDF_ASSUME_TEST_FILES=ex-19.rdf
 
@@ -93,6 +95,7 @@ EXTRA_DIST = \
 	$(RDF_BAD_TEST_FILES) \
 	$(RDF_BAD_NFC_TEST_FILES) \
 	$(RDF_WARN_TEST_FILES) \
+	$(RDF_WARN_NFC_TEST_FILES) \
 	$(RDF_OUT_FILES) \
 	$(RDF_ASSUME_OUT_FILES) \
 	$(RDF_SCAN_OUT_FILES) \
@@ -109,7 +112,7 @@ $(top_builddir)/rapper:
 
 check-local: $(top_builddir)/rapper \
 check-rdf check-assume-rdf check-scan-rdf \
-check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
+check-bad-rdf check-bad-nfc-rdf check-warn-rdf check-warn-nfc-rdf \
 check-nt check-bad-nt check-turtle
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
@@ -251,6 +254,28 @@ check-warn-rdf: $(top_builddir)/rapper $(RDF_WARN_TEST_FILES)
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
+	    cat $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res $$name.err ; \
+	done; \
+	set -e; exit $$result
+
+check-warn-nfc-rdf: $(top_builddir)/rapper $(RDF_WARN_NFC_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing rdf/xml with NFC gives warnings"; \
+	for test in $(RDF_WARN_NFC_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  baseuri=$(BASE_URI)$$name.rdf; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status -eq 1 ; then \
+	    $(ECHO) "FAILED - parsing failed when should have warned (NFC test)"; \
+	    cat $$name.res; grep Error $$name.err; result=0; \
+	  elif test $$status -eq 2 ; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED - parsing succeed but should have warned (NFC test)"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
