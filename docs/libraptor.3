@@ -4,10 +4,10 @@
 .\" $Id$
 .\"
 .\" Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
-.\" Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
+.\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-01-24"
+.TH libraptor 3 "2004-05-04"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -67,6 +67,11 @@ any raptor_parser or raptor_uri is created or used.
 Create a new raptor parser object for the parser with name
 \fIname\fR currently either "rdfxml", "turtle" or
 "rss-tag-soup" for the RSS Tag Soup parser.
+.IP "\fBraptor_parser* raptor_new_parser_for_content(raptor_uri *\fIuri\fP, const char *\fImime_type\fP, const unsigned char *\fIbuffer\fP, size_t \fIlen\fP, const unsigned char *\fIidentifier\fP)\fR"
+Create a new raptor parser object for a syntax identified by URI \fIuri\fR,
+MIME type \fImime_type\fR, some initial content \fIbuffer\fR of size \fIlen\fR
+or content with identifier \fIidentifier\fR.  See
+the raptor_guess_parser_name description for further details.
 .SH PARSER DESTRUCTORS
 .IP "\fBvoid raptor_free_parser(raptor_parser *\fIparser\fB)\fR"
 Destroy a Raptor parser object.
@@ -135,12 +140,15 @@ statements via the statement handler callback.
 If \fIis_end\fR is non-zero, it indicates the end of the parsing stream.
 This method can only be called after raptor_start_parse.
 .SH "PARSER UTILITY METHODS"
+.IP "\fBconst char* raptor_get_mime_type(raptor_parser* \fIrdf_parser\fB)\fR"
+Return the MIME type for the parser.
 .IP "\fBvoid raptor_set_parser_strict(raptor_parser *\fIparser\fB, int \fIis_strict\fB)\fR"
 Set the parser to strict (\fIis_strict\fR not zero)
 or lax (default) mode.  The detail of the
 strictness can be controlled by raptor_set_feature.
-.IP "\fBvoid raptor_set_feature(raptor_parser *\fIparser\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
+.IP "\fBint raptor_set_feature(raptor_parser *\fIparser\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
 Set a parser feature \fIfeature\fR to a particular \fIvalue\fR.
+Returns non 0 on failure or if the feature is unknown.
 The current defined features are:
   \fIFeature                                 Values\fR
   \fBRAPTOR_FEATURE_SCANNING\fR                 Boolean (non 0 true)
@@ -190,6 +198,9 @@ such as from xml:lang will be normalized to lowercase.
 If the \fInon_nfc_fatal\fR
 feature is true (default false) then illegal Unicode Normal Form C
 in literals will give a fatal error, otherwise it gives a warning.
+.IP "\fBint raptor_get_feature(raptor_parser* \fIparser\fB, raptor_feature \fIfeature\fB)\fR"
+Get parser features, the allowed \fIfeature\fP values are available
+via \fBraptor_features_enumerate\fP.
 .IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
 Return the current raptor_locator object for the parser.
 This is a public structure defined in raptor.h that can be
@@ -220,6 +231,20 @@ for a parser syntax with a given integer counter, returning non-zero
 if no such syntax parser at that offset exists.
 The counter should start from 0 and be incremented by 1
 until the function returns non-zero.
+.IP "\fBint raptor_features_enumerate(const raptor_feature \fIfeature\fP, const char **\fIname\fP, raptor_uri **\fIuri\fP, const char **\fIlabel\fP)\fR"
+Return the name, URI, string label (all optional)
+for a parser \fIfeature\fP, returning non-zero if no such feature exists.
+.IP "\fBint raptor_syntax_name_check(const char *\fIname\fP)\fR"
+Check \fIname\fP is a known syntax name.
+.IP "\fBconst char* raptor_guess_parser_name(raptor_uri *\fIuri\fP, const char *\fImime_type\fP, const unsigned char *\fIbuffer\fP, size_t \fIlen\fP, const unsigned char *\fIidentifier\fP)\fR"
+Guess a parser name for a syntax identified by URI \fIuri\fR,
+MIME type \fImime_type\fR, some initial content \fIbuffer\fR of size \fIlen\fR
+or with content identifier \fIidentifier\fR.  All of these
+parameters are optional and only used if not NULL.  The parser is
+chosen by scoring the hints that are given.
+.IP "\fBraptor_feature raptor_feature_from_uri(raptor_uri *\fIuri\fP)\fR"
+Turn a URI \fIuri\fR into a raptor feature identifier, or <0 if the
+feature is unknown.
 .SH "STATEMENT UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging only.
@@ -281,6 +306,21 @@ XML element content (CDATA).   The \fIerror_handler\fR method along
 with \fIerror_data\fR allow error reporting to be given.
 If buffer is NULL, returns the size of the buffer required to escape.
 Otherwise the return value is the number of bytes used or 0 on failure.
+.SH "MEMORY UTILITY FUNCTIONS"
+.IP "\fBvoid raptor_free_memory(void *ptr)\fR"
+Free memory allocated inside raptor.
+.SH "UNICODE UTILITY FUNCTIONS"
+.IP "\fBint raptor_unicode_char_to_utf8(unsigned long \fIc\fP, unsigned char *\fIoutput\fP)\fR"
+Turn a Unicode character into UTF8 bytes in \fIoutput\fP of
+size \fIc\fP bytes which must be of sufficient size.  Returns the
+number of bytes encoded or <0 on failure.
+.IP "\fBint raptor_utf8_to_unicode_char(unsigned long *\fIoutput\fP, const unsigned char *\fIinput\fP, int \fIlength\fP)\fR"
+Decode a sequence UTF8 bytes in \fIinput\fP of size \fIlength\fP
+into a Unicode character in \fIoutput\fR returning the number of
+bytes used or <0 on failure.
+.SH "MISCELLANEOUS UTILITY FUNCTIONS"
+.IP "\fBchar* raptor_vsnprintf(const char *message, va_list arguments)\fR"
+Compatibility wrapper around vsnprintf.
 .SH "STATIC VARIABLES"
 There are several read-only static variables in the raptor library:
 .IP "\fBconst char * const raptor_short_copyright_string\fR"
@@ -427,6 +467,9 @@ Set the handler to receive bytes written by the raptor_www implementation.
 .IP "\fBvoid raptor_www_set_content_type_handler(raptor_www *\fIwww\fB, raptor_www_content_type_handler \fIhandler\fB, void *\fIuser_data\fB)\fR"
 Set the handler to receive the HTTP Content-Type value, when/if
 discovered during retrieval by the raptor_www implementation.
+.IP "\fBvoid raptor_www_set_http_accept(raptor_www *\fIwww\fP, const char *\fIvalue\fP);
+Set the WWW HTTP Accept: header to \fIvalue\fP.  If \fIvalue\fP is
+NULL, an empty header is sent.
 .IP "\fBvoid raptor_www_set_error_handler(raptor_www *www\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Set the error handler routine for the raptor_www class.  This takes the
 same arguments as the raptor_parser error, warning handler methods.
@@ -548,7 +591,114 @@ or NULL if there is none.
 .IP "\fBint raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace)\fR"
 Return non-zero if the raptor_namespace \fInspace\fR is declared
 on the stack; i.e. in scope if this is a stack of XML namespaces.
+.SH "SEQUENCE CLASS"
+A class for ordered sequences of items, adding at either end of the
+sequence.  The method names should be familiar to Perl users.
+.SH "SEQUENCE CONSTRUCTOR"
+.IP "\fBraptor_sequence* raptor_new_sequence(raptor_sequence_free_handler* \fIfree_handler\fP, raptor_sequence_print_handler* \fIprint_handler\fP)\fR"
+Create a new empty sequence, with optional handler for freeing elements
+(as used by \fBraptor_free_sequence\fP
+and printing out elements (used by \fBraptor_sequence_print\fP).
+.SH "SEQUENCE DESTRUCTOR"
+.IP "\fBvoid raptor_free_sequence(raptor_sequence* \fIseq\fP)\fR"
+Destoy a sequence object, freeing any items if the free handler
+was defined in the constructor.
+.SH "SEQUENCE METHODS"
+.IP "\fBint raptor_sequence_size(raptor_sequence* \fIseq\fP)\fR"
+Return the number of items in the sequence.
+.IP "\fBint raptor_sequence_set_at(raptor_sequence* \fIseq\fP, int \fIidx\fP, void *data)\fR"
+Set the sequence item at index \fIidx\fP to the value \fIdata\fP, extending
+it if necessary.
+.IP "\fBint raptor_sequence_push(raptor_sequence* \fIseq\fP, void *\fIdata\fP)\fR"
+Add item \fIdata\fP to the end of the sequence.
+.IP "\fBint raptor_sequence_shift(raptor_sequence* \fIseq\fP, void *\fIdata\fP)\fR"
+Add item \fIdata\fP to the start of the sequence.
+.IP "\fBvoid* raptor_sequence_get_at(raptor_sequence* \fIseq\fP, int \fIidx\fP)\fR"
+Get the sequence item at index \fIidx\fP or NULL if no such index exists.
+.IP "\fBvoid* raptor_sequence_pop(raptor_sequence* \fIseq\fP)\fR"
+Remove and return an item from the end of the sequence, or NULL if is empty.
+.IP "\fBvoid* raptor_sequence_unshift(raptor_sequence* \fIseq\fP)\fR"
+Remove and return an item from the start of the sequence, or NULL if is empty.
+.IP "\fBvoid raptor_sequence_sort(raptor_sequence* \fIseq\fP, int(*\fIcompare\fP)(const void *, const void *))\fR"
+Sort the sequence using the given comparison function \fIcompare\fP
+which is passed to qsort(3) internally.
+.IP "\fBint raptor_compare_strings(const void *\fIa\fP, const void *\fIb\fP)\fR"
+Helper function useful with \fBraptor_sequence_sort\fP.
+.IP "\fBvoid raptor_sequence_set_print_handler(raptor_sequence *\fIseq\fP, raptor_sequence_print_handler *\fIprint_handler\fP)\fR"
+Set the print handler for the sequence, an alternative to setting
+it in the constructor.
+.IP "\fBvoid raptor_sequence_print_string(char *\fIdata\fP, FILE *\fIfh\fP)\fR"
+Helper print handler function useful for printing out sequences of strings.
+.IP "\fBvoid raptor_sequence_print_uri(char *\fIdata\fP, FILE *\fIfh\fP)\fR"
+Helper print handler function useful for printing out sequences of
+raptor_uri* objects.
+.IP "\fBvoid raptor_sequence_print(raptor_sequence* \fIseq\fP, FILE* \fIfh\fP)\fR"
+Print out the sequence in a debug format to the given file handler
+\fIfh\fP.  NOTE: The exact format is not guaranteed to remain 
+the same between releases.
+.SH "STRINGBUFFER CLASS"
+A class for growing strings, small chunks at a time.
+.SH "STRINGBUFFER CONSTRUCTOR"
+.IP "\fBraptor_stringbuffer* raptor_new_stringbuffer(void)\fR"
+Create a new stringbuffer.
+.SH "STRINGBUFFER DESTRUCTOR"
+.IP "\fBvoid raptor_free_stringbuffer(raptor_stringbuffer* \fIstringbuffer\fP)\fR"
+Destroy a stringbuffer.
+.SH "STRINGBUFFER METHODS"
+.IP "\fBint raptor_stringbuffer_append_counted_string(raptor_stringbuffer* \fIstringbuffer\fP, const unsigned char *\fIstring\fP, size_t \fIlength\fP, int \fIdo_copy\fP)\fR"
+Append a \fIstring\fP of \fIlength\fP bytes to a stringbuffer, copying it only if
+\fIdo_copy\fP is non-0.
+.IP "\fBint raptor_stringbuffer_append_string(raptor_stringbuffer* \fIstringbuffer\fP, const unsigned char* \fIstring\fP, int \fIdo_copy\fP)\fR"
+Append a \fIstring\fP to a stringbuffer, copying it only if
+\fIdo_copy\fP is non-0.
+.IP "\fBint raptor_stringbuffer_append_decimal(raptor_stringbuffer* \fIstringbuffer\fP, int \fIinteger\fP)\fR"
+Append a formatted decimal \fIinteger\fP to a stringbuffer.
+.IP "\fBint raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* \fIstringbuffer\fP, raptor_stringbuffer* \fIappend\fP)\fR"
+Append a stringbuffer \fIappend\fP to a stringbuffer.  The append
+stringbuffer is emptied but not destroyed.
+.IP "\fBint raptor_stringbuffer_prepend_counted_string(raptor_stringbuffer* \fIstringbuffer\fP, const unsigned char* \fIstring\fP, size_t \fIlength\fP, int \fIdo_copy\fP)\fR"
+Prepend a \fIstring\fP of \fIlength\fP bytes to the start of a
+stringbuffer, copying it only if \fIdo_copy\fP is non-0.
+.IP "\fBint raptor_stringbuffer_prepend_string(raptor_stringbuffer* \fIstringbuffer\fP, const unsigned char* \fIstring\fP, int \fIdo_copy\fP)\fR"
+Prepend a \fIstring\fP to the start of a stringbuffer, copying it
+only if \fIdo_copy\fP is non-0.
+.IP "\fBunsigned char * raptor_stringbuffer_as_string(raptor_stringbuffer* \fIstringbuffer\fP)\fR"
+Return the stringbuffer as a single string.  The string is shared and
+should be copied if needed.
+.IP "\fBsize_t raptor_stringbuffer_length(raptor_stringbuffer* \fIstringbuffer\fP)\fR"
+Return the length of the stringbuffer.
 .SH API CHANGES
+.SS 1.3.0
+Added:
+.br
+  \fBraptor_syntax_name_check\fR
+  \fBraptor_guess_parser_name\fR
+  \fBraptor_new_parser_for_content (Parser class constructor)\fR
+  \fBraptor_get_mime_type\fR
+  \fBraptor_features_enumerate\fR
+  \fBraptor_get_feature\fR
+  \fBraptor_feature_from_uri\fR
+  \fBraptor_free_memory\fR
+  \fBraptor_www_set_http_accept (WWW class)\fR
+.LP
+Made public the Sequence class (raptor_sequence) and many methods,
+helper functions.
+.LP
+Made public the following functions:
+.br
+  \fBraptor_unicode_char_to_utf8\fR
+  \fBraptor_utf8_to_unicode_char\fR
+  \fBraptor_vsnprintf\fR
+.LP
+Added the Stringbuffer class (raptor_stringbuffer) and many methods
+.LP
+Changes:
+.br
+raptor_set_feature now returns an int success or failure.
+.LP
+Deprecated:
+.br
+  \fBraptor_print_statement_detailed\fR
 .SS 1.2.0
 Added \fBraptor_syntaxes_enumerate\fR to get full information
 on syntax mime type and URIs as well as name and label.
