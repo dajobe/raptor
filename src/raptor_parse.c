@@ -601,6 +601,9 @@ struct raptor_parser_s {
   /* XML parser specific stuff */
 #ifdef NEED_EXPAT
   XML_Parser xp;
+#ifdef EXPAT_ERROR_CRASH
+  int tokens_count; /* used to see if trying to get location info is safe */
+#endif
 #endif
 #ifdef NEED_LIBXML
   /* structure holding sax event handlers */
@@ -1385,6 +1388,9 @@ raptor_xml_start_element_handler(void *user_data,
   rdf_parser=(raptor_parser*)user_data;
 #ifdef NEED_EXPAT
   locator=&rdf_parser->locator; 
+#ifdef EXPAT_ERROR_CRASH
+  rdf_parser->tokens_count++;
+#endif
 #endif
 
 #ifdef RAPTOR_DEBUG
@@ -1693,6 +1699,9 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 #endif
 
 #ifdef NEED_EXPAT
+#ifdef EXPAT_ERROR_CRASH
+  rdf_parser->tokens_count++;
+#endif
   locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
   locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
   locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
@@ -1762,6 +1771,10 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   char *ptr;
   int all_whitespace=1;
   int i;
+
+#ifdef EXPAT_ERROR_CRASH
+  rdf_parser->tokens_count++;
+#endif
 
   for(i=0; i<len; i++)
     if(!isspace(s[i])) {
@@ -2742,10 +2755,20 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   if(!rc) {
     int xe=XML_GetErrorCode(xp);
 
-    locator->line=XML_GetCurrentLineNumber(xp);
-    locator->column=XML_GetCurrentColumnNumber(xp);
-    locator->byte=XML_GetCurrentByteIndex(xp);
-
+#ifdef EXPAT_ERROR_CRASH
+    if(rdf_parser->tokens_count) {
+#endif
+      /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
+       * which dies here if the error is before <?xml?...
+       * The expat 1.95.1 source release version works fine.
+       */
+      locator->line=XML_GetCurrentLineNumber(xp);
+      locator->column=XML_GetCurrentColumnNumber(xp);
+      locator->byte=XML_GetCurrentByteIndex(xp);
+#ifdef EXPAT_ERROR_CRASH
+    }
+#endif
+      
     raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
                         XML_ErrorString(xe));
     rc=1;
