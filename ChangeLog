@@ -1,4 +1,62 @@
+2004-08-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Several fixes for building on win32 from Chris Pointon
+
+	* win32/raptor.dsw, win32/raptor.dsp: win32 updates from Chris Pointon
+
+	* win32_raptor_config.h:
+	No need for #define YY_NO_UNISTD_H here, it's done in the turtle
+	lexer and parser C source.
+
+	* turtle_parser.y, turtle_lexer.l: Use turtle_parser.h
+
+	* raptor_xml_writer.c, raptor_sax2.c, raptor_qname.c,
+	raptor_parse.c, raptor_namespace.c, raptor_libxml.c: calloc() fixes.
+
+	* Makefile.am:
+	Do not generate *.tab.[ch] for turtle parser but process and rename
+	to make .c, .h.
+	Apply fix-flex to the generated flex header file, to catch another
+	unprotected include of unistd.h.
+
+	* libraptor.3: Document raptor_calloc_memory.
+
+	* raptor_general.c: Added raptor_calloc_memory
+
+	* raptor_www_libwww.c:
+	Add #ifdef RAPTOR_WWW_LIBWWW ... #endif block around content
+
+	* raptor_www_libfetch.c:
+	Add #ifdef RAPTOR_WWW_LIBFETCH ... #endif block around content
+	Use #ifdef HAVE_SYS_PARAM_H for sys/param.h
+
+	* raptor_www_curl.c:
+	Add #ifdef RAPTOR_WWW_LIBCURL ... #endif block around content
+
+	* win32_raptor_config.h: win32 updates from Chris Pointon
+
+	* raptor_www.c: Calloc fix.
+	(raptor_www_get_connection): Return NULL if no WWW library available.
+
+	* raptor_internal.h: Correct RAPTOR_CALLOC macro param names.
+
+	* raptor.h: Export raptor_xml_literal_datatype_uri_string
+
+	* win32/Makefile.am, win32/README.txt, win32/README:
+	README renamed to README.txt
+
+2004-08-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_nfc.c: Tidy debug messages.
+	Reset prev_class explicitly.
+
 2004-08-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_parse.c (raptor_record_ID): c99
+
+	* raptor_nfc.c: Return 0 from raptor_nfc_check on failure
+
+	* raptor_nfc_test.c: Raptor NFC test
 
 	* Makefile.am: Added raptor_nfc_test.c, raptor_nfc_data.c,
 	raptor_nfc.c and raptor_nfc.h
