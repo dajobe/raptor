@@ -52,6 +52,9 @@ DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #undef HAVE_STDLIB_H
@@ -324,8 +327,8 @@ typedef enum {
   RDF_ATTR_subject         = 10, /* " rdf:subject -- a property in RDF model */
   RDF_ATTR_predicate       = 11, /* " rdf:predicate -- a property in RDF model */
   RDF_ATTR_object          = 12, /* " rdf:object -- a property in RDF model */
-  RDF_ATTR_first           = 13, /* " rdf:object -- a property in RDF model */
-  RDF_ATTR_rest            = 14, /* " rdf:object -- a property in RDF model */
+  RDF_ATTR_first           = 13, /* " rdf:first -- a property in RDF model */
+  RDF_ATTR_rest            = 14, /* " rdf:rest -- a property in RDF model */
   /* rdfs:Class-s */
   RDF_ATTR_Seq             = 15, /* " rdf:Seq -- a class in RDF Model */
   RDF_ATTR_Bag             = 16, /* " rdf:Bag -- a class in RDF model */
@@ -3481,9 +3484,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             break;
           }
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description)) {
-            state=RAPTOR_STATE_OBJ;
-            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
-            /* Yes - found something so move immediately to obj */
+	    state=RAPTOR_STATE_DESCRIPTION;
+	    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
+            /* Yes - found something so move immediately to description */
             break;
           }
         }
