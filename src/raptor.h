@@ -168,6 +168,8 @@ RAPTOR_API RAPTOR_DEPRECATED void raptor_parser_abort(raptor_parser* rdf_parser,
 RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
 RAPTOR_API int raptor_format_locator(char *buffer, size_t length, raptor_locator* locator);
  
+RAPTOR_API const char* raptor_get_name(raptor_parser *rdf_parser);
+RAPTOR_API const char* raptor_get_label(raptor_parser *rdf_parser);
 RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
