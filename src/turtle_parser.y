@@ -51,6 +51,8 @@
 #define YY_DECL int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner)
 #include <n3_lexer.h>
 
+#include <n3_common.h>
+
 
 /* Make verbose error messages for syntax errors */
 #ifdef RAPTOR_DEBUG
@@ -99,34 +101,7 @@ static void raptor_triple_print(raptor_triple *data, FILE *fh);
 
 
 /* Prototypes for local functions */
-static raptor_uri* n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
-
 static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *triple);
-
-/*
- * N3 parser object
- */
-struct raptor_n3_parser_s {
-  /* buffer */
-  char *buffer;
-
-  /* buffer length */
-  int buffer_length;
-  
-  /* static statement for use in passing to user code */
-  raptor_statement statement;
-
-  raptor_namespace_stack namespaces;
-
-  /* for lexer to store result in */
-  YYSTYPE lval;
-
-  /* STATIC lexer */
-  yyscan_t scanner;
-
-  int scanner_set;
-};
-
 
 %}
 
@@ -143,6 +118,7 @@ struct raptor_n3_parser_s {
   unsigned char *string;
   raptor_identifier *identifier;
   raptor_sequence *sequence;
+  raptor_uri *uri;
 }
 
 
@@ -159,10 +135,9 @@ struct raptor_n3_parser_s {
 
 /* literals */
 %token <string> STRING_LITERAL
-%token <string> URI_LITERAL
+%token <uri> URI_LITERAL
 %token <string> BLANK_LITERAL
-/*%token <string> VARIABLE_LITERAL*/
-%token <string> QNAME_LITERAL
+%token <uri> QNAME_LITERAL
 %token <string> PREFIX
 %token <string> IDENTIFIER
 
@@ -420,14 +395,13 @@ propertyList: verb objectList SEMICOLON propertyList
 }
 ;
 
-directive : PREFIX QNAME_LITERAL URI_LITERAL DOT
+directive : PREFIX IDENTIFIER URI_LITERAL DOT
 {
   char *prefix=$2;
-  raptor_uri* uri;
   raptor_n3_parser* n3_parser=((raptor_parser*)rdf_parser)->context;
 
 #if RAPTOR_DEBUG > 1  
-  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),$3);
+  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string($3));
 #endif
 
   if(prefix) {
@@ -436,17 +410,11 @@ directive : PREFIX QNAME_LITERAL URI_LITERAL DOT
       prefix[len-1]='\0';
   }
 
-  if($3) {
-    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $3);
-    free($3);
-  } else
-    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
-  
   raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
-                                         prefix, raptor_uri_as_string(uri), 0);
+                                         prefix, raptor_uri_as_string($3), 0);
   if($2)
     free($2);
-  raptor_free_uri(uri);
+  raptor_free_uri($3);
 }
 ;
 
@@ -465,36 +433,26 @@ subject: resource
 
 predicate: URI_LITERAL
 {
-  raptor_uri *uri;
-
 #if RAPTOR_DEBUG > 1  
-  printf("predicate URI=\"%s\"\n", $1);
+  printf("predicate URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
-  if($1) {
-    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $1);
-    free($1);
-  } else
-    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
-
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
-}
-| QNAME_LITERAL
-{
-  raptor_uri *uri;
-
-#if RAPTOR_DEBUG > 1  
-  printf("predicate qname=\"%s\"\n", $1);
-#endif
-
-  uri=n3_qname_to_uri(rdf_parser, $1, strlen($1));
-  if(uri)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
+  if($1)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   else
     $$=NULL;
 
+}
+| QNAME_LITERAL
+{
+#if RAPTOR_DEBUG > 1  
+  printf("predicate qname URI=<%s>\n", raptor_uri_as_string($1));
+#endif
+
   if($1)
-    free($1);
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
+  else
+    $$=NULL;
 }
 ;
 
@@ -532,67 +490,50 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 | STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
 {
-  raptor_uri *uri;
-  
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, $5);
+  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
-  if($5) {
-    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $5);
-    free($5);
-  } else
-    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
+  if($5)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
+  else
+    $$=NULL;
+    
 }
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
 {
-  raptor_uri *uri;
-  
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" qname=\"%s\"\n", $1, $3, $5);
+  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
-  uri=n3_qname_to_uri(rdf_parser, $5, strlen($5));
-  if(uri) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
-  } else
+  if($5)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
+  else
     $$=NULL;
 
-  if($5)
-    free($5);
 }
 | STRING_LITERAL HAT URI_LITERAL
 {
-  raptor_uri *uri;
-  
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, $3);
+  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string($3));
 #endif
 
-  if($3) {
-    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $3);
-    free($3);
-  } else
-    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
+  if($3)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
+  else
+    $$=NULL;
+    
 }
 | STRING_LITERAL HAT QNAME_LITERAL
 {
-  raptor_uri *uri;
-  
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" qname=\"%s\"\n", $1, $3);
+  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string($3));
 #endif
 
-  uri=n3_qname_to_uri(rdf_parser, $3, strlen($3));
-  if(uri) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
+  if($3) {
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
   } else
     $$=NULL;
-
-  if($3)
-    free($3);
 }
 | STRING_LITERAL
 {
@@ -607,36 +548,25 @@ literal: STRING_LITERAL AT IDENTIFIER
 resource:
 URI_LITERAL
 {
-  raptor_uri *uri;
-
 #if RAPTOR_DEBUG > 1  
-  printf("resource URI=\"%s\"\n", $1);
+  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
-  if($1) {
-    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $1);
-    free($1);
-  } else
-    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
-
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  if($1)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  else
+    $$=NULL;
 }
 | QNAME_LITERAL
 {
-  raptor_uri *uri;
-
 #if RAPTOR_DEBUG > 1  
-  printf("resource qname=\"%s\"\n", $1);
+  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
-  uri=n3_qname_to_uri(rdf_parser, $1, strlen($1));
-  if(uri)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
+  if($1)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
   else
     $$=NULL;
-
-  if($1)
-    free($1);
 }
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
@@ -686,6 +616,12 @@ URI_LITERAL
 
 
 /* Support functions */
+
+/* This is declared in n3_lexer.h but never used, so we always get
+ * a warning unless this dummy code is here.  Used once below as a return.
+ */
+static int yy_init_globals (yyscan_t yyscanner ) { return 0; };
+
 
 /* helper - everything passed in is now owned by triple */
 static raptor_triple*
@@ -746,7 +682,7 @@ n3_parser_error(raptor_parser* rdf_parser, const char *msg)
 #endif
 
   raptor_parser_simple_error(rdf_parser, msg);
-  return (0);
+  return yy_init_globals(NULL); /* 0 but a way to use yy_init_globals */
 }
 
 
@@ -772,7 +708,7 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 }
 
 
-static raptor_uri*
+raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
 {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
