@@ -230,10 +230,10 @@ typedef enum {
 
   /* met production 6.29 (referencedItem) after 
    * Found a container item with reference - <rdf:li (rdf:)resource=".."/> */
-  RAPTOR_STATE_REFERENCEDITEM = 6290,
+  /* RAPTOR_STATE_REFERENCEDITEM = 6290, */
 
   /* met production 6.30 (inlineItem) part 1 - plain container item */
-  RAPTOR_STATE_INLINEITEM = 6300,
+  /* RAPTOR_STATE_INLINEITEM = 6300, */
 
 
   /* productions 6.31-6.33 are for attributes - not used */
@@ -277,8 +277,8 @@ static const char * const raptor_state_names[]={
   NULL, /* was bag (6.26) */
   NULL, /* was alternative (6.27) */
   "member (6.28)",
-  "referencedItem (6.29)",
-  "inlineItem (6.30 part 1)",
+  NULL, /* was referencedItem (6.29) */
+  NULL, /* was inlineItem (6.30 part 1) */
   NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
   "parseTypeLiteral (6.30 part 2)",
   "parseTypeResource (6.30 part 3)",
@@ -3172,19 +3172,12 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
       case RAPTOR_STATE_OBJ:
-      case RAPTOR_STATE_INLINEITEM:
         /* Handling either 6.2 (obj) or 6.17 (value) (inside
-         * rdf:RDF, propertyElt or rdf:li) and expecting
+         * rdf:RDF, propertyElt) and expecting
          * description (6.3) | sequence (6.25) | bag (6.26) | alternative (6.27)
          * [|other container (not M&S)]
          *
-         * CHOICES:
-         *   <rdf:Description> (goto 6.3)
-         *   <rdf:Seq> (goto 6.25) (or typedNode CHOICE)
-         *   <rdf:Bag> (goto 6.26) (or typedNode CHOICE)
-         *   <rdf:Alt> (goto 6.27) (or typedNode CHOICE)
-         * OR from 6.3 can have ANY other element matching
-         * typedNode (6.13) - goto 6.3
+         * Everything goes to typedNode (6.13) now
          */
 
         if(element_in_rdf_ns) {
@@ -3436,60 +3429,6 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         break;
 
 
-        /* Expect to meet the production member - 
-         * referencedItem (6.29) | inlineItem (6.30) =
-         *   '<rdf:li' resourceAttr '/>'  | 
-         *   '<rdf:li' '>' value </rdf:li>' |
-         *   '<rdf:li' parseLiteral '>' literal </rdf:li>' |
-         *   '<rdf:li' parseResource '>' propertyElt* </rdf:li>' 
-         * 
-         * Taking just the start element work:
-         *   1) <rdf:li rdf:resource="..."/>
-         *   2) <rdf:li>
-         *   3) <rdf:li rdf:parseType="literal">
-         *   4) <rdf:li rdf:parseType="resource">
-         *
-         * 1) moves to RAPTOR_STATE_REFERENCEDITEM
-         * 2) moves to RAPTOR_STATE_INLINEITEM to handle contents of rdf:li
-         * 3) moves to RAPTOR_STATE_PARSETYPE_LITERAL
-         * 4) moves to RAPTOR_STATE_PARSETYPE_RESOURCE
-         * Other parseType content moves to RAPTOR_STATE_PARSETYPE_OTHER
-         */
-      case RAPTOR_STATE_MEMBER:
-        if(element->rdf_attr[RDF_ATTR_resource]) {
-          element->subject.uri=raptor_make_uri(rdf_parser->base_uri,
-                                               element->rdf_attr[RDF_ATTR_resource]);
-          element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          element->subject.uri_source=RAPTOR_URI_SOURCE_URI,
-          state=RAPTOR_STATE_REFERENCEDITEM;
-        } else if (element->rdf_attr[RDF_ATTR_parseType]) {
-          const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
-          
-          if(!strcasecmp(parse_type, "literal")) {
-            element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
-          } else if (!strcasecmp(parse_type, "resource")) {
-            state=RAPTOR_STATE_PARSETYPE_RESOURCE;
-            element->child_state=RAPTOR_STATE_PROPERTYELT;
-            element->subject.id=raptor_generate_id(rdf_parser, 0);
-            element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-            element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
-          } else {
-            if(rdf_parser->feature_allow_other_parseTypes)
-              element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
-            else
-              element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
-          }
-        } else
-          element->child_state=RAPTOR_STATE_INLINEITEM;
-
-        finished=1;
-        break;
-
-      case RAPTOR_STATE_REFERENCEDITEM:
-        /* FIXME - need to generate warning for unexpected content */
-        finished=1;
-        break;
-
       case RAPTOR_STATE_PARSETYPE_OTHER:
         /* FIXME */
 
@@ -3539,6 +3478,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * The only one that must be handled here is the last one which
          * uses only attributes and no content.
          */
+      case RAPTOR_STATE_MEMBER:
       case RAPTOR_STATE_PROPERTYELT:
 
         /* Handle rdf:li as a property in member state above */ 
@@ -3749,55 +3689,6 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
         finished=1;
         break;
-
-      case RAPTOR_STATE_REFERENCEDITEM:
-        if((element->content_element_seen + element->content_cdata_seen))
-          raptor_parser_warning(rdf_parser, "Unexpected content in %s with resource attribute - from production 6.29 expected an empty element.", el_name);
-
-        element->parent->last_ordinal++;
-        raptor_generate_statement(rdf_parser, 
-                                  element->parent->subject.uri,
-                                  element->parent->subject.id,
-                                  element->parent->subject.type,
-                                  element->parent->subject.uri_source,
-
-                                  (raptor_uri*)&element->parent->last_ordinal,
-                                  NULL,
-                                  RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                  RAPTOR_URI_SOURCE_NOT_URI,
-                                  
-                                  element->subject.uri,
-                                  element->subject.id,
-                                  element->subject.type,
-                                  element->subject.uri_source,
-
-                                  NULL);
-
-        finished=1;
-        break;
-
-      case RAPTOR_STATE_INLINEITEM:
-        element->parent->last_ordinal++;
-        raptor_generate_statement(rdf_parser, 
-                                  element->parent->subject.uri,
-                                  element->parent->subject.id,
-                                  element->parent->subject.type,
-                                  element->parent->subject.uri_source,
-
-                                  (raptor_uri*)&element->parent->last_ordinal,
-                                  NULL,
-                                  RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                  RAPTOR_URI_SOURCE_NOT_URI,
-
-                                  (raptor_uri*)element->content_cdata,
-                                  NULL,
-                                  RAPTOR_IDENTIFIER_TYPE_LITERAL,
-                                  RAPTOR_URI_SOURCE_NOT_URI,
-
-                                  NULL);
-        finished=1;
-        break;
-
 
       case RAPTOR_STATE_PARSETYPE_OTHER:
         /* FIXME */
