@@ -78,6 +78,8 @@ void
 raptor_free_sequence(raptor_sequence* seq) {
   int i;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
+
   if(seq->free_handler)
     for(i=0; i< seq->size; i++)
       if(seq->sequence[i])
@@ -93,6 +95,9 @@ raptor_free_sequence(raptor_sequence* seq) {
 static int
 raptor_sequence_ensure(raptor_sequence *seq, int capacity) {
   void **new_sequence;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
+
   if(seq->capacity > capacity)
     return 0;
 
@@ -118,6 +123,8 @@ raptor_sequence_ensure(raptor_sequence *seq, int capacity) {
 static int
 raptor_sequence_grow(raptor_sequence *seq) 
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
+
   return raptor_sequence_ensure(seq, seq->capacity*2);
 }
 
@@ -126,6 +133,8 @@ raptor_sequence_grow(raptor_sequence *seq)
 /* Methods */
 int
 raptor_sequence_size(raptor_sequence* seq) {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, -1);
+
   return seq->size;
 }
 
@@ -133,6 +142,8 @@ raptor_sequence_size(raptor_sequence* seq) {
 /* Store methods */
 int
 raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data) {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
+
   if(idx+1 > seq->capacity) {
     if(raptor_sequence_ensure(seq, idx+1))
       return 1;
@@ -151,6 +162,8 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data) {
 /* add to end of sequence */
 int
 raptor_sequence_push(raptor_sequence* seq, void *data) {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
+
   if(seq->size == seq->capacity) {
     if(raptor_sequence_grow(seq))
       return 1;
@@ -166,6 +179,8 @@ raptor_sequence_push(raptor_sequence* seq, void *data) {
 int
 raptor_sequence_shift(raptor_sequence* seq, void *data) {
   int i;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(seq->size == seq->capacity) {
     if(raptor_sequence_grow(seq))
@@ -184,6 +199,8 @@ raptor_sequence_shift(raptor_sequence* seq, void *data) {
 /* Retrieval methods */
 void*
 raptor_sequence_get_at(raptor_sequence* seq, int idx) {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
+
   if(idx > seq->size)
     return NULL;
   return seq->sequence[idx];
@@ -193,6 +210,8 @@ raptor_sequence_get_at(raptor_sequence* seq, int idx) {
 void*
 raptor_sequence_pop(raptor_sequence* seq) {
   void *data;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
 
   if(!seq->size)
     return NULL;
@@ -209,6 +228,8 @@ void*
 raptor_sequence_unshift(raptor_sequence* seq) {
   void *data;
   int i;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
 
   if(!seq->size)
     return NULL;
@@ -236,6 +257,8 @@ void
 raptor_sequence_sort(raptor_sequence* seq, 
                      int(*compare)(const void *, const void *))
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
+
   if(seq->size > 1)
     qsort(seq->sequence, seq->size, sizeof(void*), compare);
 }
@@ -272,9 +295,8 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
 {
   int i;
 
-  if(!seq)
-    return;
-  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
+
   fputc('[', fh);
   for(i=0; i<seq->size; i++) {
     if(i)
