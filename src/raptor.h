@@ -476,8 +476,8 @@ typedef struct {
 RAPTOR_API raptor_iostream* raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler);
 RAPTOR_API raptor_iostream* raptor_new_iostream_to_sink(void);
 RAPTOR_API raptor_iostream* raptor_new_iostream_to_filename(const char *filename);
-RAPTOR_API raptor_iostream* raptor_new_iostream_to_file_handle(FILE *fh);
-RAPTOR_API raptor_iostream* raptor_new_iostream_to_string(void **string, size_t *length_p, void *(*malloc_handler)(size_t size));
+RAPTOR_API raptor_iostream* raptor_new_iostream_to_file_handle(FILE *handle);
+RAPTOR_API raptor_iostream* raptor_new_iostream_to_string(void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
 RAPTOR_API void raptor_free_iostream(raptor_iostream *iostr);
 RAPTOR_API int raptor_iostream_write_bytes(raptor_iostream *iostr, const void *ptr, size_t size, size_t nmemb);
 RAPTOR_API int raptor_iostream_write_byte(raptor_iostream *iostr, const int byte);

@@ -126,23 +126,23 @@ raptor_new_iostream_to_sink(void)
 static int
 raptor_filename_iostream_write_byte(void *context, const int byte)
 {
-  FILE* fh=(FILE*)context;
-  return (fputc(byte, fh) == byte);
+  FILE* handle=(FILE*)context;
+  return (fputc(byte, handle) == byte);
 }
 
 static int
 raptor_filename_iostream_write_bytes(void *context,
                                      const void *ptr, size_t size, size_t nmemb)
 {
-  FILE* fh=(FILE*)context;
-  return (fwrite(ptr, size, nmemb, fh) == nmemb);
+  FILE* handle=(FILE*)context;
+  return (fwrite(ptr, size, nmemb, handle) == nmemb);
 }
 
 static void
 raptor_filename_iostream_write_end(void *context)
 {
-  FILE* fh=(FILE*)context;
-  fclose(fh);
+  FILE* handle=(FILE*)context;
+  fclose(handle);
 }
 
 
@@ -163,11 +163,11 @@ static raptor_iostream_handler raptor_iostream_filename_handler={
 raptor_iostream*
 raptor_new_iostream_to_filename(const char *filename)
 {
-  FILE *fh;
+  FILE *handle;
   raptor_iostream* iostr;
 
-  fh=fopen(filename, "wb");
-  if(!fh)
+  handle=fopen(filename, "wb");
+  if(!handle)
     return NULL;
   
   iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
@@ -175,7 +175,7 @@ raptor_new_iostream_to_filename(const char *filename)
     return NULL;
 
   iostr->handler=&raptor_iostream_filename_handler;
-  iostr->context=(void*)fh;
+  iostr->context=(void*)handle;
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->context)) {
@@ -197,17 +197,19 @@ static raptor_iostream_handler raptor_iostream_file_handler={
 
 /**
  * raptor_new_iostream_to_file_handle - Create a new iostream to a FILE*
+ * @handle: FILE* handle to write to
  * 
+ * The handle must already be open for writing.
  * NOTE: This does not fclose the handle when it is finished.
  *
  * Return value: new &raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_to_file_handle(FILE *fh)
+raptor_new_iostream_to_file_handle(FILE *handle)
 {
   raptor_iostream* iostr;
 
-  if(!fh)
+  if(!handle)
     return NULL;
 
   iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
@@ -215,7 +217,7 @@ raptor_new_iostream_to_file_handle(FILE *fh)
     return NULL;
 
   iostr->handler=&raptor_iostream_file_handler;
-  iostr->context=(void*)fh;
+  iostr->context=(void*)handle;
 
   if(iostr->handler->init && iostr->handler->init(iostr->context)) {
     RAPTOR_FREE(raptor_iostream, iostr);
@@ -581,7 +583,7 @@ main(int argc, char *argv[])
     size_t count;
 
     /* for _to_file */
-    FILE *fh;
+    FILE *handle;
     /* for _to_string */
     void *string;
     size_t string_len;
@@ -603,8 +605,8 @@ main(int argc, char *argv[])
 #ifdef RAPTOR_DEBUG
         fprintf(stderr, "%s: Creating iostream to file handle\n", program);
 #endif
-        fh=fopen((const char*)OUT_FILENAME, "wb");
-        iostr=raptor_new_iostream_to_file_handle(fh);
+        handle=fopen((const char*)OUT_FILENAME, "wb");
+        iostr=raptor_new_iostream_to_file_handle(handle);
         if(!iostr) {
           fprintf(stderr, "%s: Failed to create iostream to file handle\n", program);
           exit(1);
@@ -660,7 +662,7 @@ main(int argc, char *argv[])
         break;
 
       case 1:
-        fclose(fh);
+        fclose(handle);
         remove(OUT_FILENAME);
         break;
 
