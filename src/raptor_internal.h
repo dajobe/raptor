@@ -335,15 +335,15 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 
 
 /* raptor_nspace.c */
-void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context);
+void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_internal_message_handler error_handler, void *error_data);
 void raptor_namespaces_free(raptor_namespace_stack *nstack);
-int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth);
+int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth, raptor_internal_message_handler error_handler, void *error_data);
 void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
 void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
 raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
 
-raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
+raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth, raptor_internal_message_handler error_handler, void *error_data);
 void raptor_namespace_free(raptor_namespace *ns);
 raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
