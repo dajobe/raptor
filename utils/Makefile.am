@@ -56,7 +56,7 @@ raptor_www_test.c\
 $(man_MANS)
 
 
-SUBDIRS= debian tests win32
+SUBDIRS= debian tests win32 examples
 
 TESTS=raptor_cc_test raptor_uri_test raptor_namespace_test strcasecmp_test \
 raptor_www_test raptor_set_test raptor_general_test

@@ -714,6 +714,7 @@ AC_OUTPUT(Makefile
 raptor.spec
 raptor-config
 raptor-src-config
+examples/Makefile
 tests/Makefile
 win32/Makefile
 debian/Makefile,
