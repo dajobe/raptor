@@ -44,7 +44,8 @@ extern "C" {
 #define RAPTOR_DEBUG2(function, msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1);} while(0)
 #define RAPTOR_DEBUG3(function, msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2);} while(0)
 #define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
-#define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
+#define RAPTOR_DEBUG5(function, msg, arg1, arg2, arg3, arg4) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4);} while(0)
+#define RAPTOR_DEBUG6(function, msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4, arg5);} while(0)
 
 #else
 /* DEBUGGING TURNED OFF */
@@ -54,6 +55,8 @@ extern "C" {
 #define RAPTOR_DEBUG2(function, msg, arg1)
 #define RAPTOR_DEBUG3(function, msg, arg1, arg2)
 #define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3)
+#define RAPTOR_DEBUG5(function, msg, arg1, arg2, arg3, arg4)
+#define RAPTOR_DEBUG6(function, msg, arg1, arg2, arg3, arg4, arg5)
 
 #endif
 
@@ -401,6 +404,7 @@ void raptor_uri_init_default_handler(raptor_uri_handler *handler);
 /* raptor_parse.c */
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
+void raptor_init_parser_rss(void);
 
 void raptor_terminate_parser_rdfxml (void);
 
