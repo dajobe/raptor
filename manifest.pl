@@ -83,7 +83,7 @@ sub run_test($$$$$) {
       if $ntriples_url;
   }
 
-  my $cmd="./rdfdump -q -o ntriples file:$rdfxml_file '$rdfxml_url'";
+  my $cmd="./rapper -q -o ntriples file:$rdfxml_file '$rdfxml_url'";
   
   unlink 'test.err', 'parser.nt', 'expected.nt', 'test.ntc';
   my $status=system("$cmd 2>test.err >parser.nt");
