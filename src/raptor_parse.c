@@ -1308,6 +1308,7 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 {
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_element* element;
+  raptor_sax2_element *sax2_element;
   int i;
   
 #ifdef RAPTOR_XML_EXPAT
@@ -1324,11 +1325,13 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
   }
 #endif
 
+  while( (sax2_element=raptor_sax2_element_pop(rdf_xml_parser->sax2)) )
+    raptor_free_sax2_element(sax2_element);
+
   RAPTOR_FREE(raptor_sax2, rdf_xml_parser->sax2);
 
-  while((element=raptor_element_pop(rdf_xml_parser))) {
+  while( (element=raptor_element_pop(rdf_xml_parser)) )
     raptor_free_element(element);
-  }
 
 
   for(i=0; i< RAPTOR_N_CONCEPTS; i++) {
