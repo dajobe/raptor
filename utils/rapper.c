@@ -331,8 +331,10 @@ main(int argc, char *argv[])
 
   
   if(usage) {
-    if(usage>1)
+    if(usage>1) {
       fprintf(stderr, title_format_string, raptor_version_string);
+      fprintf(stderr, "%s\n", raptor_short_copyright_string);
+    }
     fprintf(stderr, "Try `%s " HELP_ARG(h, help) "' for more information.\n",
                     program);
     exit(1);
@@ -341,6 +343,7 @@ main(int argc, char *argv[])
   if(help) {
     printf("Usage: %s [OPTIONS] <source URI> [base URI]\n", program);
     printf(title_format_string, raptor_version_string);
+    printf("%s\n", raptor_short_copyright_string);
     printf("Parse RDF content at the source URI into RDF triples.\n");
     printf("\nMain options:\n");
     printf(HELP_TEXT(h, "help            ", "Print this help, then exit"));
