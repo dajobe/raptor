@@ -3052,25 +3052,54 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 }
 
 
+raptor_uri*
+raptor_make_uri(raptor_uri *base_uri, const char *reference_uri_string) 
+{
+#ifdef LIBRDF_INTERNAL
+#else
+  char *new_uri;
+  int new_uri_len;
+#endif
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG3(raptor_make_uri, 
+                "Using base URI %s and URI '%s'\n", 
+                base_uri, reference_uri);
+#endif
+
+#ifdef LIBRDF_INTERNAL
+  return librdf_new_uri_relative_to_base(base_uri, reference_uri_string);
+#else
+  new_uri_len=strlen(base_uri)+strlen(reference_uri_string)+1;
+  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len+1);
+  if(!new_uri)
+    return NULL;
+  
+  /* If URI string is empty, just copy base URI */
+  if(!*reference_uri_string) {
+    strcpy(new_uri, base_uri);
+    return new_uri;
+  }
+
+  raptor_uri_resolve_uri_reference(base_uri, reference_uri_string,
+                                   new_uri, new_uri_len);
+  return new_uri;
+#endif
+}
+
+
 static raptor_uri*
 raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id) 
 {
   raptor_uri *base_uri = raptor_inscope_base_uri(rdf_parser);
-#ifdef LIBRDF_INTERNAL
-  librdf_uri *new_uri;
+  raptor_uri *new_uri;
   char *local_name;
   int len;
-#else
-  char *new_uri;
-  int len;
-  int base_uri_len=strlen(base_uri);
-#endif
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   LIBRDF_DEBUG2(raptor_make_uri_from_id, "Using ID %s\n", id);
 #endif
 
-#ifdef LIBRDF_INTERNAL
   /* "#id\0" */
   len=1+strlen(id)+1;
   local_name=(char*)LIBRDF_MALLOC(cstring, len);
@@ -3078,94 +3107,30 @@ raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id)
     return NULL;
   *local_name='#';
   strcpy(local_name+1, id);
-  new_uri=librdf_new_uri_relative_to_base(base_uri, local_name);
+  new_uri=raptor_make_uri(base_uri, local_name);
   LIBRDF_FREE(cstring, local_name);
   return new_uri;
-#else
-  len=base_uri_len+1+strlen(id)+1;
-  new_uri=(char*)LIBRDF_MALLOC(cstring, len);
-  if(!new_uri)
-    return NULL;
-  strncpy(new_uri, base_uri, base_uri_len);
-  new_uri[base_uri_len]='#';
-  strcpy(new_uri+base_uri_len+1, id);
-  return new_uri;
-#endif
 }
 
 
-raptor_uri*
-raptor_make_uri(raptor_uri *base_uri, const char *uri_string) 
+#ifndef LIBRDF_INTERNAL
+static raptor_uri*
+raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name) 
 {
-#ifdef LIBRDF_INTERNAL
-#else
-  char *new_uri;
-  const char *p;
+  raptor_uri *new_uri;
   int base_uri_len=strlen(base_uri);
-#endif
+  int new_uri_len;
 
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG3(raptor_make_uri, 
-                "Using base URI %s and URI string '%s'\n", 
-                base_uri, uri_string);
-#endif
-
-#ifdef LIBRDF_INTERNAL
-  return librdf_new_uri_relative_to_base(base_uri, uri_string);
-#else
-  /* If URI string is empty, just copy base URI */
-  if(!*uri_string) {
-    new_uri=(char*)LIBRDF_MALLOC(cstring, base_uri_len+1);
-    if(!new_uri)
-      return NULL;
-    strcpy(new_uri, base_uri);
-    return new_uri;
-  }
-
-  /* If URI string is a fragment #foo, append to base URI */
-  if(*uri_string == '#') {
-    new_uri=(char*)LIBRDF_MALLOC(cstring, base_uri_len+1+strlen(uri_string)+1);
-    if(!new_uri)
-      return NULL;
-    strncpy(new_uri, base_uri, base_uri_len);
-    strcpy(new_uri+base_uri_len, uri_string);
-    return new_uri;
-  }
-
-  /* If URI string is an absolute URI, just copy it */
-  for(p=uri_string;*p; p++)
-    if(!isalnum(*p))
-       break;
-  /* If first non-alphanumeric char is a ':' then probably a absolute URI
-   * Need to check URI spec - FIXME
-   */
-  if(*p && *p == ':') {
-    new_uri=(char*)LIBRDF_MALLOC(cstring, strlen(uri_string)+1);
-    if(!new_uri)
-      return NULL;
-    strcpy(new_uri, uri_string);
-    return new_uri;
-  }
-
-  /* Otherwise is a general URI relative to base URI */
-
-  /* FIXME do this properly */
-
-  /* Move p to the last /, : or # char in the base URI */
-  for(p=base_uri+base_uri_len-1;
-      p > base_uri && *p != '/' && *p != ':' && *p != '#' ;
-      p--)
-    ;
-
-  new_uri=(char*)LIBRDF_MALLOC(cstring, (p-base_uri)+1+strlen(uri_string)+1);
+  base_uri_len=strlen(base_uri);
+  new_uri_len=base_uri_len+strlen(name)+1;
+  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len);
   if(!new_uri)
     return NULL;
-  strncpy(new_uri, base_uri, p-base_uri+1);
-  strcpy(new_uri+(p-base_uri)+1, uri_string);
+  strcpy((char*)new_uri, base_uri);
+  strcpy((char*)new_uri+base_uri_len, name);
   return new_uri;
-#endif
-
 }
+#endif
 
 
 raptor_uri*
@@ -3434,7 +3399,8 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     librdf_get_concept_by_name(rdf_parser->world, 1, rdf_attr_info[i].name,
                                &property_uri, NULL);
 #else    
-    property_uri=raptor_make_uri(RAPTOR_RDF_MS_URI, rdf_attr_info[i].name);
+    property_uri=raptor_make_uri_from_base_name(RAPTOR_RDF_MS_URI, 
+                                                rdf_attr_info[i].name);
 #endif
     
     object_uri=object_is_literal ? (raptor_uri*)value : raptor_make_uri(raptor_inscope_base_uri(rdf_parser), value);
