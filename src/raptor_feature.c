@@ -48,7 +48,12 @@
 static struct
 {
   raptor_feature feature;
-  int flags; /* bits: flags&1=parser feature, flags &2=serializer feature */
+  /* flag bits
+   *  1=parserfeature
+   *  2=serializer feature
+   *  4=string value (else int)
+   */
+  int flags;
   const char *name;
   const char *label;
 } raptor_features_list [RAPTOR_FEATURE_LAST+1]= {
@@ -62,7 +67,8 @@ static struct
   { RAPTOR_FEATURE_NON_NFC_FATAL           , 1, "nonNFCfatal", "Make non-NFC literals cause a fatal error" },
   { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   , 1, "warnOtherParseTypes", "Warn about unknown rdf:parseType values" },
   { RAPTOR_FEATURE_CHECK_RDF_ID            , 1, "checkRdfID", "Check rdf:ID values for duplicates" },
-  { RAPTOR_FEATURE_RELATIVE_URIS           , 2, "relativeURIs", "Write relative URIs wherever possible in serializing." }
+  { RAPTOR_FEATURE_RELATIVE_URIS           , 2, "relativeURIs", "Write relative URIs wherever possible in serializing." },
+  { RAPTOR_FEATURE_START_URI               , 6, "startURI", "Start URI for serializing to use." }
 };
 
 
@@ -115,6 +121,29 @@ raptor_features_enumerate_common(const raptor_feature feature,
   return 1;
 }
 
+
+
+/*
+ * raptor_feature_value_type - Get the type of a features
+ * @feature: raptor serializer or parser feature
+ *
+ * The type of the feature is 0=integer , 1=string.  Other values are
+ * undefined.  Most features are integer values and use
+ * raptor_set_feature and raptor_get_feature 
+ * ( raptor_serializer_set_feature raptor_serializer_get_feature)
+ *
+ * String value features use raptor_set_feature_string and
+ * raptor_get_feature_string ( raptor_serializer_set_feature_string
+ * and raptor_serializer_get_feature_string )
+ *
+ * Return value: the type of the feature or <0 if feature is unknown
+ */
+int
+raptor_feature_value_type(const raptor_feature feature) {
+  if (feature  < 0 || feature > RAPTOR_FEATURE_LAST)
+    return -1;
+  return (raptor_features_list[feature].flags & 4) ? 1 : 0;
+}
 
 
 /**
