@@ -220,7 +220,13 @@ unsigned char *copy_string_token(unsigned char *text, size_t len, int delim) {
     if(c == '\\' ) {
       s++; i++;
       c=*s;
-      if(c == 'n' || c == 'r' || c == 't' || c == '\\' || c == delim)
+      if(c == 'n')
+        *d++= '\n';
+      else if(c == 'r')
+        *d++= '\r';
+      else if(c == 't')
+        *d++= '\t';
+      else if(c == '\\' || c == delim)
         *d++=c;
       else if (c == 'u' || c == 'U') {
         int ulen=(c == 'u') ? 4 : 8;
