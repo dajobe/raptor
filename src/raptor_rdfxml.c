@@ -1221,6 +1221,7 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   raptor_state state;
   char *buffer;
   char *ptr;
+  char *escaped_buffer;
   int all_whitespace=1;
   int i;
 
@@ -1315,6 +1316,10 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
                   "Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
   }
 
+  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL) {
+    escaped_buffer=raptor_xml_escape_string(rdf_parser, s, len, &len, '\0');
+  }
+
   buffer=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + len + 1);
   if(!buffer) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -1337,7 +1342,11 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   element->content_cdata_length += len;
 
   /* now write new stuff at end of cdata buffer */
-  strncpy(ptr, (char*)s, len);
+  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL) {
+    strncpy(ptr, escaped_buffer, len);
+    RAPTOR_FREE(cstring, escaped_buffer);
+  } else
+    strncpy(ptr, (char*)s, len);
   ptr += len;
   *ptr = '\0';
 
