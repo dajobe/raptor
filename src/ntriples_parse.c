@@ -261,7 +261,6 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
                            RAPTOR_IDENTIFIER_TYPE_XML_LITERAL :
                            RAPTOR_IDENTIFIER_TYPE_LITERAL;
     statement->object=object;
-    statement->object_literal_is_XML=object_literal_is_XML;
     statement->object_literal_language=object_literal_language;
   }
 
