@@ -121,8 +121,17 @@ raptor_delete_parser_factories(void)
   
   for(factory=parsers; factory; factory=next) {
     next=factory->next;
+
+    if(factory->finish_factory)
+      factory->finish_factory(factory);
+
     RAPTOR_FREE(raptor_parser_factory, factory->name);
     RAPTOR_FREE(raptor_parser_factory, factory->label);
+    if(factory->mime_type)
+      RAPTOR_FREE(raptor_parser_factory, factory->mime_type);
+    if(factory->uri_string)
+      RAPTOR_FREE(raptor_parser_factory, factory->uri_string);
+
     RAPTOR_FREE(raptor_parser_factory, factory);
   }
   parsers=NULL;
