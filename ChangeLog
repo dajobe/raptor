@@ -1,3 +1,26 @@
+2005-01-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize.c:
+	(raptor_rdfxml_serialize_start,
+	raptor_rdfxml_serialize_statement): Only copy non-NULL base URIs
+
+	* raptor_rss.c:
+	(raptor_rss10_move_statements, raptor_rss10_store_statement,
+	raptor_rss10_build_xml_names, raptor_rss10_emit_item):Handle
+	predicates of type RAPTOR_IDENTIFIER_TYPE_RESOURCE as well as type
+	RAPTOR_IDENTIFIER_TYPE_PREDICATE
+
+	* raptor_general.c (raptor_free_statement): Free predicate URIs
+	that were RAPTOR_IDENTIFIER_TYPE_RESOURCE
+
+	* raptor_uri.c (raptor_uri_to_relative_counted_uri_string):
+	Handle no path in base URI
+	(main): Add test for that and test for no path in both.
+
+	* raptor_uri.c (raptor_uri_to_relative_counted_uri_string): Handle
+	no path in reference URI
+	(main): Add test for that
+
 2005-01-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.4
