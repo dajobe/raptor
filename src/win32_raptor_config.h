@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2002 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -75,14 +75,40 @@ extern "C" {
 #define RAPTOR_VERSION_MINOR 3
 
 /* Release version number */
-#define RAPTOR_VERSION_RELEASE 2
+#define RAPTOR_VERSION_RELEASE 3
 
 /* Version number of package */
-#define VERSION "1.3.2"
+#define VERSION "1.3.3"
+
+
+#ifdef RAPTOR_XML_LIBXML
+/* RSS parser needs libxml 2.5.x+ */
+#define RAPTOR_PARSER_RSS 1
+#else
+#undef RAPTOR_PARSER_RSS
+#endif
+
+#define RAPTOR_PARSER_TURTLE 1
+#define RAPTOR_PARSER_NTRIPLES 1
+#define RAPTOR_PARSER_RDFXML 1
+#define RAPTOR_WWW_LIBCURL 1
+
 
 #include <windows.h>
+
 #include <io.h>
 #include <memory.h>
+
+/* bison: output uses ERROR in an enum which breaks if this is defined */
+#ifdef ERROR
+#undef ERROR
+#endif
+
+/* flex: const is available */
+#define YY_USE_CONST
+/* flex: unistd.h is not */
+#define YY_NO_UNISTD_H
+
 
 #ifdef __cplusplus
 }
