@@ -123,9 +123,9 @@ typedef struct {
 typedef void (*rapier_message_handler)(void *user_data, rapier_locator* locator, const char *msg, ...);
 typedef void (*rapier_statement_handler)(void *user_data, const rapier_statement *statement);
 #ifdef LIBRDF_INTERNAL
-typedef int (*rapier_container_test_handler)(librdf_uri *element_uri);
+typedef librdf_uri* (*rapier_container_test_handler)(librdf_uri *element_uri);
 #else
-typedef int (*rapier_container_test_handler)(const char *element_uri);
+typedef const char* (*rapier_container_test_handler)(const char *element_uri);
 #endif
 
 
