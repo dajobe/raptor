@@ -271,7 +271,7 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) {
 }
 
 
-int
+static int
 raptor_start_parse_file(raptor_parser *rdf_parser, 
                         const char *filename, raptor_uri *uri)
 {
