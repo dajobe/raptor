@@ -625,6 +625,7 @@ raptor_xml_start_element_handler(void *user_data,
 {
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
+  raptor_qname* el_name;
   raptor_sax2* sax2;
   unsigned char **xml_atts_copy=NULL;
   size_t xml_atts_size;
@@ -788,34 +789,19 @@ raptor_xml_start_element_handler(void *user_data,
 
 
   /* Create new element structure */
-  sax2_element=(raptor_sax2_element*)RAPTOR_CALLOC(raptor_sax2_element, 
-                                                   sizeof(raptor_sax2_element), 1);
-  if(!sax2_element) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+  el_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
+                           raptor_parser_simple_error, rdf_parser);
+  if(!el_name)
     return;
-  } 
+
+  sax2_element=raptor_new_sax2_element(el_name, xml_language, xml_base);
+  if(!sax2_element) {
+    raptor_free_qname(el_name);
+    return;
+  }
 
   element->sax2=sax2_element;
   
-
-  /* Prepare for possible element content */
-  sax2_element->content_element_seen=0;
-  sax2_element->content_cdata_seen=0;
-  sax2_element->content_cdata_length=0;
-
-  sax2_element->xml_language=xml_language;
-  sax2_element->base_uri=xml_base;
-
-
-  /* Now can recode element name with a namespace */
-  sax2_element->name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
-                                      raptor_parser_simple_error, rdf_parser);
-  if(!sax2_element->name) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    RAPTOR_FREE(raptor_sax2_element, sax2_element);
-    return;
-  } 
-
   /* If has no namespace or the namespace has no name (xmlns="") */
   if(!sax2_element->name->nspace ||
      (sax2_element->name->nspace &&
@@ -829,7 +815,7 @@ raptor_xml_start_element_handler(void *user_data,
     /* Round 2 - turn string attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
-    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname-array, sizeof(raptor_qname*), ns_attributes_count);
+    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, sizeof(raptor_qname*), ns_attributes_count);
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       RAPTOR_FREE(raptor_sax2_element, sax2_element);
@@ -1307,7 +1293,7 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
 
 #endif
 
-  raptor_namespaces_free(&rdf_xml_parser->namespaces);
+  raptor_namespaces_clear(&rdf_xml_parser->namespaces);
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
   raptor_namespaces_init(&rdf_xml_parser->namespaces,
@@ -1364,7 +1350,7 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 
   raptor_free_set(rdf_xml_parser->id_set);
 
-  raptor_namespaces_free(&rdf_xml_parser->namespaces);
+  raptor_namespaces_clear(&rdf_xml_parser->namespaces);
 
 }
 
