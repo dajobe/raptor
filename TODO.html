@@ -11,14 +11,14 @@
 <h2>Bugs and Features</h2>
 
 <ul>
-<li>CDATA sections do not count line numbers at all (seen with libxml)</li>
-<li>Make ntriples parser use raptor_generate_id for bnodes</li>
-<li>Add --with-xml11-names configure option</li>
-<li>Update the raptor_utf8.c XML1.1 name checking for ranges in latest document</li>
+<li>CDATA sections do not count line numbers at all (seen with libxml) (BUG)</li>
+<li>Add --with-xml11-names configure option (FEATURE)</li>
+<li>Update the raptor_utf8.c XML1.1 name checking for ranges in latest document (FEATURE)</li>
 <li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work</li>
-<li>Report that the WIN32 uri code is not correct for file://C|/foo</li>
-<li>RFE: add a way to disable the gnome glib NFC linking/checking</li>
-<li>N-Triples+ parser - the lexer lval-&gt;string values get overwritten on errors</li>
+<li>Report that the WIN32 uri code is not correct for <code>file://C|/foo</code> (BUG)</li>
+<li>Add a way to disable the gnome glib NFC linking/checking (FEATURE)</li>
+<li>N-Triples+ parser: the lexer lval-&gt;string values get overwritten on errors (BUG)</li>
+<li>N-Triples+ parser: use raptor_generate_id for bnodes (BUG)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Add a N3 parser (FEATURE)</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a> (FEATURE)</li>
@@ -36,8 +36,9 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Make ntriples parser use raptor_generate_id for bnodes (1.1.0)</li>
 <li>Updated to handle libxml 2.6.0 SAX2 API which just replaces the
-names of the SAX1 calls.</li>
+names of the SAX1 calls (1.1.0).</li>
 <li><a href="http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/">N-Triples Plus</a> parser (1.1.0)</li>
 <li>Correct line counting for N-Triples with \r\n line (DOS) files and
 when the line crosses a chunk. (1.1.0)</li>
