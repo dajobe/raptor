@@ -32,19 +32,36 @@ extern "C" {
 /* Public structure */
 typedef struct raptor_parser_s raptor_parser;
 
-typedef enum { RAPTOR_SUBJECT_TYPE_RESOURCE, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH_PREFIX } raptor_subject_type;
+typedef enum { RAPTOR_SUBJECT_TYPE_RESOURCE, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH, RAPTOR_SUBJECT_TYPE_RESOURCE_EACH_PREFIX, RAPTOR_SUBJECT_TYPE_ANONYMOUS } raptor_subject_type;
 typedef enum { RAPTOR_PREDICATE_TYPE_PREDICATE, RAPTOR_PREDICATE_TYPE_ORDINAL, RAPTOR_PREDICATE_TYPE_XML_NAME } raptor_predicate_type;
-typedef enum { RAPTOR_OBJECT_TYPE_RESOURCE, RAPTOR_OBJECT_TYPE_LITERAL, RAPTOR_OBJECT_TYPE_XML_LITERAL, RAPTOR_OBJECT_TYPE_XML_NAME } raptor_object_type;
+typedef enum { RAPTOR_OBJECT_TYPE_RESOURCE, RAPTOR_OBJECT_TYPE_LITERAL, RAPTOR_OBJECT_TYPE_XML_LITERAL, RAPTOR_OBJECT_TYPE_XML_NAME, RAPTOR_OBJECT_TYPE_ANONYMOUS } raptor_object_type;
 
 typedef enum { RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED } raptor_uri_source;
   
+#ifdef LIBRDF_INTERNAL
+/* if inside Redland */
+typedef librdf_uri raptor_uri;
+#else
+typedef const char raptor_uri;
+#endif
+
+#ifdef LIBRDF_INTERNAL
+#define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
+#define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
+#define RAPTOR_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
+#undef RAPTOR_URI_TO_FILENAME
+#define RAPTOR_FREE_URI(uri) librdf_free_uri(uri)
+#else
+#define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
+#define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
+#undef RAPTOR_URI_AS_FILENAME
+#define RAPTOR_URI_TO_FILENAME(uri) (raptor_file_uri_to_filename(uri))
+#define RAPTOR_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
+#endif
+
 
 typedef struct {
-#ifdef LIBRDF_INTERNAL
-  librdf_uri *uri;
-#else
-  const char *uri;
-#endif
+  raptor_uri *uri;
   const char *file;
   int line;
   int column;
@@ -73,11 +90,7 @@ typedef struct {
 
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *msg, ...);
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
-#ifdef LIBRDF_INTERNAL
-typedef librdf_uri* (*raptor_container_test_handler)(librdf_uri *element_uri);
-#else
-typedef const char* (*raptor_container_test_handler)(const char *element_uri);
-#endif
+typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
 
 
 
@@ -112,6 +125,12 @@ int raptor_parse_file(raptor_parser* rdf_parser,  const char *filename, const ch
 void raptor_print_locator(FILE *stream, raptor_locator* locator);
 
 void raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+
+#ifdef RAPTOR_INTERNAL
+/* URI functions */
+raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_string);
+raptor_uri* raptor_copy_uri(raptor_uri *uri);
+#endif
 
 
 #ifndef LIBRDF_INTERNAL
