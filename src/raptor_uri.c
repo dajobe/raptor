@@ -84,8 +84,22 @@ raptor_uri_get_handler(raptor_uri_handler **handler, void **context)
 static raptor_uri*
 raptor_default_new_uri(void *context, const char *uri_string) 
 {
-  int len=strlen(uri_string);
-  char *p=(char*)RAPTOR_MALLOC(raptor_uri, len+1);
+  int len;
+  char *p;
+  
+  /* If uri_string is "file:path-to-file", turn it into a correct file:URI */
+  if(raptor_uri_is_file_uri(uri_string)) {
+    char *filename=raptor_uri_uri_string_to_filename(uri_string);
+    raptor_uri* uri=NULL;
+    if(!access(filename, R_OK))
+      uri=(raptor_uri*)raptor_uri_filename_to_uri_string(filename);
+    RAPTOR_FREE(cstring, filename);
+    if(uri)
+      return uri;
+  }
+
+  len=strlen(uri_string);
+  p=(char*)RAPTOR_MALLOC(raptor_uri, len+1);
   if(!p)
     return NULL;
   strcpy((char*)p, uri_string);
