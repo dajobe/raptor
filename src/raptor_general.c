@@ -343,7 +343,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   /* Read buffer */
   char buffer[RAPTOR_READ_BUFFER_SIZE];
   int rc=0;
-  const char *filename=raptor_uri_uri_string_to_filename(uri);
+  const char *filename=raptor_uri_uri_string_to_filename(RAPTOR_URI_AS_STRING(uri));
 
   if(!filename)
     return 1;
