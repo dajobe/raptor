@@ -1105,7 +1105,7 @@ raptor_statement_part_as_counted_string(const void *term,
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       term_len=strlen(term);
       len=2+term_len;
-      if(literal_language) {
+      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
         language_len=strlen(literal_language);
         len+= language_len+1;
       }
@@ -1126,7 +1126,7 @@ raptor_statement_part_as_counted_string(const void *term,
       strcpy(s, term);
       s+= term_len;
       *s++ ='"';
-      if(literal_language) {
+      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
         *s++ ='@';
         strcpy(s, literal_language);
         s+= language_len;
@@ -1239,7 +1239,7 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
       fputc('"', stream);
       raptor_print_ntriples_string(stream, (const char*)term, '"');
       fputc('"', stream);
-      if(literal_language)
+      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL)
         fprintf(stream, "@%s",  (const char*)literal_language);
       if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
         fputs("^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
