@@ -822,7 +822,7 @@ void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_el
 void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
 void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
 unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, unsigned int *length_p);
-
+int raptor_xml_writer_write_to_iostream(raptor_xml_writer* xml_writer, raptor_iostream *iostr);
 
 /* turtle_parser.y and turtle_lexer.l */
 typedef struct raptor_turtle_parser_s raptor_turtle_parser;
