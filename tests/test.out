@@ -23,14 +23,11 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource22> <http://example.org/property> " "^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/resource23> <http://example.org/property> "x"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/resource23> <http://example.org/property> "\""^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
-<http://example.org/resource24> <http://example.org/property> "<a/>"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
-<http://example.org/resource25> <http://example.org/property> "a <b/>"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
+<http://example.org/resource24> <http://example.org/property> "<a></a>"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
+<http://example.org/resource25> <http://example.org/property> "a <b></b>"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/resource26> <http://example.org/property> "a <b></b> c"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/resource26> <http://example.org/property> "a\n<b></b>\nc"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/resource27> <http://example.org/property> "chat"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
-<http://example.org/resource28> <http://example.org/property> "chat"@fr^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
-<http://example.org/resource29> <http://example.org/property> "chat"@en^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://example.org/resource30> <http://example.org/property> "chat"@fr .
 <http://example.org/resource31> <http://example.org/property> "chat"@en .
 <http://example.org/resource32> <http://example.org/property> "abc"^^<http://example.org/datatype1> .
-<http://example.org/resource33> <http://example.org/property> "abc"@en^^<http://example.org/datatype2> .
