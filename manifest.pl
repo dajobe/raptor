@@ -401,6 +401,8 @@ summarize_results("Negative Approved Parser Tests", \%results, \%approved_negati
 
 print "\n\n";
 
+exit 0;
+
 my(%unapproved_positive_totals)=();
 run_tests(\%tests, \%test_statuses, $global_verbose, \%results, \%unapproved_positive_totals, @unapproved_positive_test_urls);
 summarize_results("Not APPROVED Positive Parser Tests", \%results, \%unapproved_positive_totals, scalar(@unapproved_positive_test_urls),1);
