@@ -102,7 +102,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "nshrqo:w"
+#define GETOPT_STRING "nsahrqo:w"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
@@ -110,6 +110,7 @@ static struct option long_options[] =
   /* name, has_arg, flag, val */
   {"ntriples", 0, 0, 'n'},
   {"scan", 0, 0, 's'},
+  {"assume", 0, 0, 'a'},
   {"help", 0, 0, 'h'},
   {"replace-newlines", 0, 0, 'r'},
   {"quiet", 0, 0, 'q'},
@@ -133,7 +134,7 @@ rdfdump_error_handler(void *data, raptor_locator *locator,
 {
   fprintf(stderr, "%s: Error - ", program);
   raptor_print_locator(stderr, locator);
-  fprintf(stderr, " -  %s\n", message);
+  fprintf(stderr, " - %s\n", message);
 
   error_count++;
 }
@@ -163,6 +164,7 @@ main(int argc, char *argv[])
   char *base_uri_string;
   int rc;
   int scanning=0;
+  int assume=0;
   int rdfxml=1;
   int usage=0;
 #ifdef RAPTOR_IN_REDLAND
@@ -207,6 +209,10 @@ main(int argc, char *argv[])
         usage=2; /* usage and error */
         break;
         
+      case 'a':
+        assume=1;
+        break;
+
       case 'h':
         usage=1;
         break;
@@ -252,6 +258,7 @@ main(int argc, char *argv[])
     fprintf(stderr, HELP_TEXT(h, "help            ", "This message"));
     fprintf(stderr, HELP_TEXT(n, "ntriples        ", "Parse NTriples format rather than RDF/XML"));
     fprintf(stderr, HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
+    fprintf(stderr, HELP_TEXT(a, "assume          ", "Assume document is rdf/xml (rdf:RDF optional)"));
     fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
     fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
     fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
@@ -308,6 +315,8 @@ main(int argc, char *argv[])
 
     if(scanning)
       raptor_set_feature(rdfxml_parser, RAPTOR_FEATURE_SCANNING, 1);
+    if(assume)
+      raptor_set_feature(rdfxml_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
   
   
   } else {
