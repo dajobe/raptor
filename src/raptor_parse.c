@@ -1007,8 +1007,8 @@ raptor_xml_start_element_handler(void *user_data,
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
-      raptor_parser_warning(rdf_parser, "element %s found inside property element with rdf:resource, skipping.", 
-                            element->name->local_name);
+      raptor_parser_warning(rdf_parser, "property element %s has multiple object node elements, skipping.", 
+                            element->parent->name->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
       element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
 
