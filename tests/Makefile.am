@@ -33,8 +33,9 @@ owl-schema.rdf
 
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
-bad-10.rdf bad-11.rdf bad-12.rdf bad-13.rdf bad-14.rdf bad-15.rdf \
-bad-16.rdf bad-17.rdf
+bad-10.rdf bad-11.rdf bad-12.rdf bad-13.rdf bad-14.rdf
+
+RDF_BAD_NFC_TEST_FILES=bad-15.rdf bad-16.rdf bad-17.rdf
 
 RDF_WARN_TEST_FILES=warn-00.rdf warn-01.rdf warn-02.rdf warn-03.rdf \
 $(RDF_BAGID_TEST_FILES)
@@ -76,6 +77,7 @@ EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
 	$(RDF_ASSUME_TEST_FILES) \
 	$(RDF_BAD_TEST_FILES) \
+	$(RDF_BAD_NFC_TEST_FILES) \
 	$(RDF_WARN_TEST_FILES) \
 	$(RDF_OUT_FILES) \
 	$(RDF_ASSUME_OUT_FILES) \
@@ -88,7 +90,8 @@ EXTRA_DIST = \
 $(top_builddir)/rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
-check-local: check-rdf check-assume-rdf check-bad-rdf check-warn-rdf check-nt check-bad-nt
+check-local: check-rdf check-assume-rdf check-bad-rdf check-bad-nfc-rdf \
+check-warn-rdf check-nt check-bad-nt
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	@result=0; \
@@ -111,12 +114,13 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	    $(ECHO) FAILED returned status $$status; result=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(ECHO) ok with warnings; grep Warning $$name.err; \
+	      $(ECHO) "ok with warnings; grep Warning $$name.err"; \
 	    else \
-	      $(ECHO) ok; \
+	      $(ECHO) "ok"; \
 	    fi; \
 	  else \
-	    $(ECHO) FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
@@ -131,9 +135,10 @@ check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    $(ECHO) ok; \
+	    $(ECHO) "ok"; \
 	  else \
-	    $(ECHO) FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
@@ -149,15 +154,40 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) ok; \
+	    $(ECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) FAILED - parsing succeeded with a warning; \
+	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
 	  elif test $$status -eq 0 ; then \
-	    $(ECHO) FAILED - parsing succeeded but should have failed; \
+	    $(ECHO) "FAILED - parsing succeeded but should have failed"; \
 	    cat $$name.res; result=1; \
 	  else \
-	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
+	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
+	    cat $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res $$name.err ; \
+	done; \
+	set -e; exit $$result
+
+check-bad-nfc-rdf: $(top_builddir)/rapper $(RDF_BAD_NFC_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing bad rdf/xml that should fail for Unicode NFC checking"; \
+	for test in $(RDF_BAD_NFC_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  baseuri=$(BASE_URI)$$name.rdf; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status -eq 1 ; then \
+	    $(ECHO) "ok"; \
+	  elif test $$status -eq 2 ; then \
+	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
+	    cat $$name.res; grep Warning $$name.err; result=1; \
+	  elif test $$status -eq 0 ; then \
+	    $(ECHO) "FAILED - parsing succeeded but should have failed (NFC test)"; \
+	    cat $$name.res; result=0; \
+	  else \
+	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
@@ -174,12 +204,12 @@ check-warn-rdf: $(top_builddir)/rapper $(RDF_WARN_TEST_FILES)
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) FAILED - parsing failed when should have warned; \
+	    $(ECHO) "FAILED - parsing failed when should have warned"; \
 	    cat $$name.res; grep Error $$name.err; result=1; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) ok; \
+	    $(ECHO) "ok"; \
 	  else \
-	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
+	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
@@ -194,9 +224,10 @@ check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rapper -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    $(ECHO) ok; \
+	    $(ECHO) "ok"; \
 	  else \
-	    $(ECHO) FAILED; diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
@@ -212,15 +243,15 @@ check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
 	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) ok; \
+	    $(ECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) FAILED - parsing succeeded with a warning; \
+	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
 	  elif test $$status -eq 0 ; then \
-	    $(ECHO) FAILED - parsing succeeded but should have failed; \
+	    $(ECHO) "FAILED - parsing succeeded but should have failed"; \
 	    cat $$name.res; result=1; \
 	  else \
-	    $(ECHO) FAILED - parsing failed with unknown status $$status; \
+	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
