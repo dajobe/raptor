@@ -1036,6 +1036,33 @@ raptor_ntriples_parse_start(raptor_parser *rdf_parser)
 }
 
 
+static int
+raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory, 
+                                       const unsigned char *buffer, size_t len,
+                                       const unsigned char *identifier, 
+                                       const unsigned char *suffix, 
+                                       const char *mime_type)
+{
+  int score= 0;
+  
+  if(suffix) {
+    if(!strcmp((const char*)suffix, "nt"))
+      score=8;
+    if(!strcmp((const char*)suffix, "ttl"))
+      score=3;
+    if(!strcmp((const char*)suffix, "n3"))
+      score=1;
+  }
+  
+  if(mime_type) {
+    if(strstr((const char*)mime_type, "ntriples"))
+      score+=6;
+  }
+  
+  return score;
+}
+
+
 static void
 raptor_ntriples_parser_register_factory(raptor_parser_factory *factory) 
 {
@@ -1045,6 +1072,7 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
   factory->terminate = raptor_ntriples_parse_terminate;
   factory->start     = raptor_ntriples_parse_start;
   factory->chunk     = raptor_ntriples_parse_chunk;
+  factory->recognise_syntax = raptor_ntriples_parse_recognise_syntax;
 }
 
 

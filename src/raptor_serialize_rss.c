@@ -877,6 +877,32 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
   return (ret != 0);
 }
 
+
+static int
+raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory, 
+                                  const unsigned char *buffer, size_t len,
+                                  const unsigned char *identifier, 
+                                  const unsigned char *suffix, 
+                                  const char *mime_type)
+{
+  int score= 0;
+  
+  if(suffix) {
+    if(!strcmp((const char*)suffix, "rss"))
+      score=7;
+  }
+  
+  if(identifier) {
+    if(strstr((const char*)identifier, "rss2"))
+      score+=5;
+    else if(!suffix && strstr((const char*)identifier, "rss"))
+      score+=4;
+  }
+  
+  return score;
+}
+
+
 static void
 raptor_rss_parser_register_factory(raptor_parser_factory *factory) 
 {
@@ -886,6 +912,7 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
   factory->terminate = raptor_rss_parse_terminate;
   factory->start     = raptor_rss_parse_start;
   factory->chunk     = raptor_rss_parse_chunk;
+  factory->recognise_syntax = raptor_rss_parse_recognise_syntax;
 }
 
 

@@ -1373,6 +1373,39 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 }
 
 
+static int
+raptor_xml_parse_recognise_syntax(raptor_parser_factory* factory, 
+                                  const unsigned char *buffer, size_t len,
+                                  const unsigned char *identifier, 
+                                  const unsigned char *suffix, 
+                                  const char *mime_type)
+{
+  int score= 0;
+  
+  if(suffix) {
+    if(!strcmp(suffix, "rdf") || !strcmp(suffix, "rdfs") ||
+      !strcmp(suffix, "owl") || !strcmp(suffix, "daml"))
+      score=9;
+    if(!strcmp(suffix, "rss"))
+      score=3;
+  }
+  
+  if(identifier) {
+    if(strstr(identifier, "rss1"))
+      score+=5;
+    else if(!suffix && strstr(identifier, "rss"))
+      score+=3;
+  }
+  
+  if(mime_type &&
+     (!strcmp(mime_type, "text/rdf")))
+    score+=7;
+  
+  return score;
+}
+
+
+
 /* Internal - handle XML parser errors and pass them on to app */
 static void
 raptor_xml_parse_handle_errors(raptor_parser* rdf_parser) {
@@ -3405,6 +3438,7 @@ raptor_xml_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_xml_parse_start;
   factory->chunk     = raptor_xml_parse_chunk;
   factory->finish_factory = raptor_xml_parse_finish_factory;
+  factory->recognise_syntax = raptor_xml_parse_recognise_syntax;
 }
 
 
