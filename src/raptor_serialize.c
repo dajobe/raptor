@@ -619,9 +619,10 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
  * raptor_serializer_set_feature_string - Set serializer features with string values
  * @serializer: &raptor_serializer serializer object
  * @feature: feature to set from enumerated &raptor_feature values
- * @value: integer feature value (0 or larger)
+ * @value: feature value
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via raptor_serializer_features_enumerate().
+ * If the feature type is integer, the value is interpreted as an integer.
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -632,7 +633,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
 {
   int value_is_string=(raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
-    return -1;
+    return raptor_serializer_set_feature(serializer, feature, atoi(value));
 
   switch(feature) {
     case RAPTOR_FEATURE_START_URI:
@@ -700,7 +701,8 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
   
   switch(feature) {
     case RAPTOR_FEATURE_START_URI:
-      return raptor_uri_as_string(serializer->feature_start_uri);
+      if(serializer->feature_start_uri)
+        return raptor_uri_to_string(serializer->feature_start_uri);
       break;
 
     default:
