@@ -2737,6 +2737,8 @@ raptor_print_statement_detailed(const raptor_statement * statement,
     fprintf(stream, ", \"%s\"]",  (const char*)statement->object);
   else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fprintf(stream, ", %s]", (const char*)statement->object);
+  else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    fprintf(stream, ", [rdf:_%d]]", *((int*)statement->object));
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->object)
