@@ -90,7 +90,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "shrqo:"
+#define GETOPT_STRING "nshrqo:"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
