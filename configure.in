@@ -251,11 +251,42 @@ if test "X$XML_CONFIG" != X; then
   else
     AC_MSG_RESULT(no)
   fi
+
+  AC_CHECK_HEADERS(libxml/parser.h libxml/hash.h gnome-xml/parser.h)
+
+  if test "$ac_cv_header_libxml_parser.h" = no -a "$ac_cv_header_gnome_xml_parser.h" = no; then
+    AC_MSG_WARN(libxml library found but not headers - disabling)
+    have_libxml_lib=0
+    have_libxml=0
+  else
+    AC_MSG_CHECKING(if libxml xmlEntity has name_length field)
+    AC_TRY_LINK([
+#ifdef HAVE_LIBXML_PARSER_H
+#include <libxml/parser.h>
+#else
+#include <gnome-xml/parser.h>
+#endif
+], [xmlEntity foo; foo.name_length=0],
+                AC_MSG_RESULT(yes)
+		AC_DEFINE(RAPTOR_LIBXML_ENTITY_NAME_LENGTH),
+		AC_MSG_RESULT(no))
+
+    AC_MSG_CHECKING(if libxml xmlEntity has etype field)
+    AC_TRY_LINK([
+#ifdef HAVE_LIBXML_PARSER_H
+#include <libxml/parser.h>
+#else
+#include <gnome-xml/parser.h>
+#endif
+], [xmlEntity foo; foo.etype=0],
+                AC_MSG_RESULT(yes)
+		AC_DEFINE(RAPTOR_LIBXML_ENTITY_ETYPE),
+		AC_MSG_RESULT(no))
+  fi
+
 fi
-
-AC_CHECK_HEADERS(libxml/parser.h libxml/hash.h gnome-xml/parser.h gnome-xml/xmlmemory.h)
-
 CPPFLAGS="$oCPPFLAGS"
+
 
 AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="expat") 
 
