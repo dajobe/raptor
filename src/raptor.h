@@ -121,7 +121,6 @@ typedef struct {
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
 typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
-typedef void (*raptor_www_message_handler)(void *user_data, const char *message);
 
 
 
@@ -234,7 +233,7 @@ RAPTOR_API void raptor_www_free(raptor_www *www);
 RAPTOR_API void raptor_www_set_userdata(raptor_www *www, void *userdata);
 RAPTOR_API void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API void raptor_www_set_proxy(raptor_www *www, const char *proxy);
-RAPTOR_API void raptor_www_set_error_handler(raptor_www *www, raptor_www_message_handler error_handler, void *error_data);
+RAPTOR_API void raptor_www_set_error_handler(raptor_www *www, raptor_message_handler error_handler, void *error_data);
 RAPTOR_API int raptor_www_fetch(raptor_www *www, const char *url);
 
 
