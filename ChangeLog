@@ -1,3 +1,28 @@
+2005-01-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.h: Added const to src arg of
+	raptor_ntriples_string_as_utf8_string.
+
+	* libraptor.3: Deprecate raptor_ntriples_string_as_utf8_string
+
+	* raptor.h: Deprecate raptor_ntriples_string_as_utf8_string -
+	rather too internal to be useful, since it only works with a
+	parser.
+
+	* ntriples_parse.c (raptor_ntriples_term_valid): Remove rdf_parser
+	arg; only for a fatal error - just die.
+	(raptor_ntriples_term): Make start a const arg.  When copying UTF8
+	bytes, move on the correct number of bytes in src and dest.
+	Update use of raptor_ntriples_term_valid.
+	(raptor_ntriples_string_as_utf8_string,
+	raptor_ntriples_parse_line): Update uses of
+	raptor_ntriples_term_valid.
+
+2005-01-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_statement_part_as_counted_string):
+	Declare language_len to NULL, uri_string as unsigned char*.
+
 2005-01-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rss.c (raptor_rss10_emit_item): Copy original base_uri
