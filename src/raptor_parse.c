@@ -760,6 +760,8 @@ raptor_xml_start_element_handler(void *user_data,
 {
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
+  unsigned char **xml_atts_copy;
+  size_t xml_atts_size;
   int all_atts_count=0;
   int ns_attributes_count=0;
   raptor_qname** named_attrs=NULL;
@@ -786,7 +788,16 @@ raptor_xml_start_element_handler(void *user_data,
 
   rdf_xml_parser->depth++;
 
-  if (atts) {
+  if(atts) {
+    /* Save passed in XML attributes pointers so we can 
+     * NULL the pointers when they get handled below (various atts[i]=NULL)
+     */
+    for (i = 0; atts[i]; i++);
+    xml_atts_size=sizeof(unsigned char*) * i;
+    xml_atts_copy=(unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
+    memcpy(xml_atts_copy, atts, xml_atts_size);
+
+
     /* Round 1 - process XML attributes */
     for (i = 0; atts[i]; i+=2) {
       all_atts_count++;
@@ -803,7 +814,6 @@ raptor_xml_start_element_handler(void *user_data,
           return;
         }
         
-        /* Is it ok to zap XML parser array things? */
         atts[i]=NULL; 
         continue;
       }
@@ -938,6 +948,7 @@ raptor_xml_start_element_handler(void *user_data,
               attr->value=NULL;
               raptor_free_qname(attr);
               attr=NULL;
+              break;
             }
         } /* end if RDF namespaced-prefixed attributes */
 
@@ -1081,6 +1092,12 @@ raptor_xml_start_element_handler(void *user_data,
   /* Right, now ready to enter the grammar */
   raptor_start_element_grammar(rdf_parser, element);
 
+  if(atts) {
+    /* Restore passed in XML attributes, free the copy */
+    memcpy(atts, xml_atts_copy, xml_atts_size);
+    RAPTOR_FREE(cstringpointer, xml_atts_copy);
+  }
+    
 }
 
 
@@ -1131,6 +1148,8 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   raptor_end_element_grammar(rdf_parser, element);
 
   element=raptor_element_pop(rdf_xml_parser);
+
+  raptor_free_qname(element_name);
 
   raptor_namespaces_end_for_depth(&rdf_parser->namespaces, rdf_xml_parser->depth);
 
@@ -3024,5 +3043,15 @@ raptor_xml_parser_register_factory(raptor_parser_factory *factory)
 
 void
 raptor_init_parser_rdfxml (void) {
+#ifdef RAPTOR_XML_LIBXML
+  xmlInitParser();
+#endif
   raptor_parser_register_factory("rdfxml", &raptor_xml_parser_register_factory);
+}
+
+void
+raptor_terminate_parser_rdfxml (void) {
+#ifdef RAPTOR_XML_LIBXML
+  xmlCleanupParser();
+#endif
 }
