@@ -829,7 +829,12 @@ main(int argc, char *argv[])
 
   int failures=0;
 
-  program=raptor_basename(argv[0]);
+  if((program=strrchr(argv[0], '/')))
+    program++;
+  else if((program=strrchr(argv[0], '\\')))
+    program++;
+  else
+    program=argv[0];
   
 #ifdef WIN32
   failures += assert_filename_to_uri ("c:\\windows\\system", "file:///c:/windows/system");
