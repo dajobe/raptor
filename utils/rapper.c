@@ -351,7 +351,7 @@ main(int argc, char *argv[])
   raptor_finish();
 
   if(error_count)
-    return error_count;
+    return 1;
 
   if(warning_count && !ignore_warnings)
     return 2;
