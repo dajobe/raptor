@@ -447,6 +447,11 @@ main(int argc, char *argv[])
   } else if(!access((const char*)uri_string, R_OK)) {
     filename=(char*)uri_string;
     uri_string=raptor_uri_filename_to_uri_string(filename);
+    if(!uri_string) {
+      fprintf(stderr, "%s: Failed to create URI for file %s.\n",
+              program, filename);
+      return(1);
+    }
     free_uri_string=1;
   }
 
