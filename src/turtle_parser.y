@@ -47,6 +47,8 @@
 #include <raptor_internal.h>
 
 #include <n3_parser.tab.h>
+
+#define YY_DECL int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner)
 #include <n3_lexer.h>
 
 
@@ -60,23 +62,37 @@
 #define YYDEBUG 1
 #endif
 
+/* the lexer does not seem to track this */
+#undef RAPTOR_N3_USE_ERROR_COLUMNS
+
 /* Prototypes */ 
-int n3_parser_error(const char *msg);
+int n3_parser_error(raptor_parser* rdf_parser, const char *msg);
 
-#if 0
-/* Not in generated header files */
-void  n3_lexer_lex_destroy(void);
-#endif
+/* Missing n3_lexer.c/h prototypes */
+int n3_lexer_get_column(yyscan_t yyscanner);
+/* Not used here */
+/* void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);*/
 
-inline int n3_parser_lex(yyscan_t* scanner);
 
-#define YYLEX_PARAM ((raptor_n3_parser*)(N3_Parser->context))->scanner
+/* What the lexer wants */
+extern int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t scanner);
+
+inline int n3_parser_lex(YYSTYPE *n3_parser_lval, yyscan_t scanner);
+
+#define YYLEX_PARAM ((raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context))->scanner
+
+/* Pure parser argument (a void*) */
+#define YYPARSE_PARAM rdf_parser
+
+/* Make the yyerror below use the rdf_parser */
+#undef yyerror
+#define yyerror(message) n3_parser_error(rdf_parser, message)
 
 
 /* Make lex/yacc interface as small as possible */
 inline int
-n3_parser_lex(yyscan_t* scanner) {
-  return n3_lexer_lex(scanner);
+n3_parser_lex(YYSTYPE *lval, yyscan_t scanner) {
+  return n3_lexer_lex(lval, scanner);
 }
 
 static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object);
@@ -107,6 +123,9 @@ struct raptor_n3_parser_s {
 
   raptor_namespace_stack namespaces;
 
+  /* for lexer to store result in */
+  YYSTYPE lval;
+
   /* STATIC lexer */
   yyscan_t scanner;
 
@@ -114,10 +133,14 @@ struct raptor_n3_parser_s {
 };
 
 
-/* globals */
-static raptor_parser *N3_Parser;
-
 %}
+
+
+/* directives */
+
+
+
+%pure-parser
 
 
 /* Interface between lexer and parser */
@@ -195,7 +218,7 @@ statement: directive
 #endif
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_n3_generate_statement(N3_Parser, t2);
+      raptor_n3_generate_statement(rdf_parser, t2);
     }
 
     raptor_free_sequence($2);
@@ -406,7 +429,7 @@ directive : PREFIX QNAME_LITERAL URI_LITERAL DOT
 {
   char *prefix=$2;
   raptor_uri* uri;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)N3_Parser->context;
+  raptor_n3_parser* n3_parser=((raptor_parser*)rdf_parser)->context;
 
 #if RAPTOR_DEBUG > 1  
   printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),$3);
@@ -419,10 +442,10 @@ directive : PREFIX QNAME_LITERAL URI_LITERAL DOT
   }
 
   if($3) {
-    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
+    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $3);
     free($3);
   } else
-    uri=raptor_uri_copy(N3_Parser->base_uri);
+    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
   
   raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
                                          prefix, raptor_uri_as_string(uri), 0);
@@ -454,10 +477,10 @@ predicate: URI_LITERAL
 #endif
 
   if($1) {
-    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
+    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $1);
     free($1);
   } else
-    uri=raptor_uri_copy(N3_Parser->base_uri);
+    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
@@ -469,7 +492,7 @@ predicate: URI_LITERAL
   printf("predicate qname=\"%s\"\n", $1);
 #endif
 
-  uri=n3_qname_to_uri(N3_Parser, $1);
+  uri=n3_qname_to_uri(rdf_parser, $1);
   if(uri)
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
   else
@@ -521,10 +544,10 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5) {
-    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $5);
+    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $5);
     free($5);
   } else
-    uri=raptor_uri_copy(N3_Parser->base_uri);
+    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
 }
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
@@ -535,7 +558,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language=\"%s\" datatype string=\"%s\" qname=\"%s\"\n", $1, $3, $5);
 #endif
 
-  uri=n3_qname_to_uri(N3_Parser, $5);
+  uri=n3_qname_to_uri(rdf_parser, $5);
   if(uri) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
   } else
@@ -553,10 +576,10 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($3) {
-    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $3);
+    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $3);
     free($3);
   } else
-    uri=raptor_uri_copy(N3_Parser->base_uri);
+    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
 }
 | STRING_LITERAL HAT QNAME_LITERAL
@@ -567,7 +590,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + datatype string=\"%s\" qname=\"%s\"\n", $1, $3);
 #endif
 
-  uri=n3_qname_to_uri(N3_Parser, $3);
+  uri=n3_qname_to_uri(rdf_parser, $3);
   if(uri) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
   } else
@@ -596,10 +619,10 @@ URI_LITERAL
 #endif
 
   if($1) {
-    uri=raptor_new_uri_relative_to_base(N3_Parser->base_uri, $1);
+    uri=raptor_new_uri_relative_to_base(((raptor_parser*)rdf_parser)->base_uri, $1);
     free($1);
   } else
-    uri=raptor_uri_copy(N3_Parser->base_uri);
+    uri=raptor_uri_copy(((raptor_parser*)rdf_parser)->base_uri);
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
@@ -611,7 +634,7 @@ URI_LITERAL
   printf("resource qname=\"%s\"\n", $1);
 #endif
 
-  uri=n3_qname_to_uri(N3_Parser, $1);
+  uri=n3_qname_to_uri(rdf_parser, $1);
   if(uri)
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
   else
@@ -623,7 +646,7 @@ URI_LITERAL
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
   int i;
-  const unsigned char *id=raptor_generate_id(N3_Parser, 0, NULL);
+  const unsigned char *id=raptor_generate_id(rdf_parser, 0, NULL);
   
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
 
@@ -647,7 +670,7 @@ URI_LITERAL
       raptor_copy_identifier(i2, $$);
       t2->subject=i2;
       t2->subject->is_malloced=1;
-      raptor_n3_generate_statement(N3_Parser, t2);
+      raptor_n3_generate_statement(rdf_parser, t2);
     }
 
 #if RAPTOR_DEBUG > 1  
@@ -715,14 +738,18 @@ raptor_triple_print(raptor_triple *t, FILE *fh)
 
 
 extern char *filename;
-extern int lineno;
  
 int
-n3_parser_error(const char *msg)
+n3_parser_error(raptor_parser* rdf_parser, const char *msg)
 {
-  raptor_parser* rdf_parser=N3_Parser;
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  yyscan_t yyscanner=n3_parser->scanner;
+  
+  rdf_parser->locator.line=n3_lexer_get_lineno(yyscanner);
+#ifdef RAPTOR_N3_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+#endif
 
-  rdf_parser->locator.line=lineno;
   raptor_parser_simple_error(rdf_parser, msg);
   return (0);
 }
@@ -731,13 +758,18 @@ n3_parser_error(const char *msg)
 int
 n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  yyscan_t yyscanner=n3_parser->scanner;
   va_list arguments;
 
-  rdf_parser->locator.line=lineno;
+  rdf_parser->locator.line=n3_lexer_get_lineno(yyscanner);
+#ifdef RAPTOR_N3_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+#endif
 
   va_start(arguments, message);
   
-  raptor_parser_error_varargs(rdf_parser, message, arguments);
+  raptor_parser_error_varargs(((raptor_parser*)rdf_parser), message, arguments);
 
   va_end(arguments);
 
@@ -749,6 +781,7 @@ static raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string) 
 {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  yyscan_t yyscanner=n3_parser->scanner;
   raptor_uri* uri=NULL;
   raptor_qname *name;
 
@@ -767,7 +800,10 @@ n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string)
       qname_string[len-1]='\0';
   }
 
-  rdf_parser->locator.line=lineno;
+  rdf_parser->locator.line=n3_lexer_get_lineno(yyscanner);
+#ifdef RAPTOR_N3_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+#endif
 
   name=raptor_new_qname(&n3_parser->namespaces, qname_string, NULL,
                         raptor_parser_simple_error, rdf_parser);
@@ -791,25 +827,17 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   if(!string || !*string)
     return 0;
   
-  /* FIXME LOCKING or re-entrant parser/lexer */
-
-  N3_Parser=rdf_parser;
-
   n3_lexer_lex_init(&n3_parser->scanner);
   n3_parser->scanner_set=1;
 
-  n3_lexer_set_extra(rdf_parser, n3_parser->scanner);
+  n3_lexer_set_extra(((raptor_parser*)rdf_parser), n3_parser->scanner);
   buffer= n3_lexer__scan_string(string, n3_parser->scanner);
 
-  n3_parser_parse();
+  n3_parser_parse(rdf_parser);
 
   n3_lexer__delete_buffer(buffer, n3_parser->scanner);
   n3_lexer_pop_buffer_state(n3_parser->scanner);
 
-  N3_Parser=NULL;
-
-  /* FIXME UNLOCKING or re-entrant parser/lexer */
-  
   return 0;
 }
 
@@ -1031,6 +1059,7 @@ main(int argc, char *argv[])
   char string[N3_FILE_BUF_SIZE];
   raptor_parser rdf_parser; /* static */
   raptor_n3_parser n3_parser; /* static */
+  raptor_locator *locator=&rdf_parser.locator;
   FILE *fh;
 
 #if RAPTOR_DEBUG > 2
@@ -1060,6 +1089,9 @@ main(int argc, char *argv[])
 
   memset(&rdf_parser, 0, sizeof(raptor_parser));
   memset(&n3_parser, 0, sizeof(raptor_n3_parser));
+
+  locator->line= locator->column = -1;
+  locator->file= filename;
 
   rdf_parser.context=&n3_parser;
   rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");
