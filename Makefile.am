@@ -40,7 +40,7 @@ raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
 raptor_identifier.c raptor_xml_writer.c \
-n3_lexer.c n3_lexer.h n3_parser.tab.c n3_parser.tab.h \
+n3_lexer.c n3_lexer.h n3_parser.tab.c n3_parser.tab.h n3_common.h \
 raptor_sequence.c
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
@@ -123,14 +123,17 @@ pkgconfig_DATA = raptor.pc
 # Actually it needs n3_parser.h but nevermind
 @MAINT@n3_lexer.c: $(srcdir)/n3_lexer.l n3_parser.tab.c
 @MAINT@	$(LEX) -o$@ $(srcdir)/n3_lexer.l
+@MAINT@	mv $@ n3_lexer.t
+@MAINT@	sed -e 's/\(^[ \t]*free(.*ptr.*\)$$/if(ptr) \1/' n3_lexer.t > $@
+@MAINT@	rm -f n3_lexer.t
 
 @MAINT@n3_parser.tab.c: $(srcdir)/n3_parser.y
 @MAINT@	$(YACC) -b n3_parser -p n3_parser_ -d -v $(srcdir)/n3_parser.y
 
 
 # Actually it needs n3_parser.h but nevermind
-n3_lexer_test: $(srcdir)/n3_lexer.c $(srcdir)/n3_parser.tab.c raptor_utf8.lo
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c $(LIBS) @REDLAND_LIBS@ raptor_utf8.lo
+n3_lexer_test: $(srcdir)/n3_lexer.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c libraptor.la $(LIBS) @REDLAND_LIBS@
 
 n3_parser_test: $(srcdir)/n3_parser.tab.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_parser.tab.c libraptor.la $(LIBS) @REDLAND_LIBS@
