@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2000/REC-xhtml1-20000126/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -9,31 +10,89 @@
 <h2 align="center"><a href="http://purl.org/net/dajobe/">Dave Beckett</a><br /><a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a><br /><a href="http://www.bristol.ac.uk/">University of Bristol</a></h2>
   
 
-<h2>SOURCES</h2>
+<h2>1. Getting the sources</h2>
+
+<h2>1.1 Getting the sources from releases</h2>
 
 <p>The sources are available from
 <a href="http://www.redland.opensource.ac.uk/dist/source/">http://www.redland.opensource.ac.uk/dist/source/</a> (master site) and also from the
 <a href="http://sourceforge.net/projects/librdf/">SourceForge site</a>.</p>
 
 
-<h2>CONFIGURING and BUILDING</h2>
+<h2>1.2 Getting the sources from CVS</h2>
 
-<p>The configuring is done via the GNU configure program as generated
-by the autoconf system.  See the generic GNU installation instructions in 
-<a href="INSTALL">INSTALL</a> for information about general options
-such as <tt>--prefix</tt> etc.</p>
+<p>Note that using this rather than the bundles may require having
+some extra development tools.  Presently this includes the gperf
+tool.</p>
+
+<pre>
+  # sh, bash, ...
+  CVSROOT=:pserver:anonymous@cvs.ilrt.org:/cvsroot
+  export CVSROOT
+  # csh, tcsh, ...
+  setenv CVSROOT :pserver:anonymous@cvs.ilrt.org:/cvsroot
+
+  cvs login
+Logging in to :pserver:anonymous@cvs.ilrt.org:2401/cvsroot
+CVS password: 
+  [return]
+
+  cvs checkout redland/raptor
+
+  cd redland/raptor
+</pre>
+
+<p>At this stage, or after a <tt>cvs update</tt> you will
+need to create the automake and autoconf derived files, as described
+below in <em>create the configure program</em>
+by using the <tt>autogen.sh</tt> script.</p>
+
+
+
+<h2>2. Configuring and building</h2>
+
+<p>Raptor uses the GNU automake and autoconf to handle system
+dependency checking.  It is developed and built on x86 Linux (Redhat
+7.2 and Debian unstable) but is also used extensively locally on
+various versions of sparc Sun Solaris 2.x and tested as part of
+Redland on many other systems via the 
+<a href="http://sourceforge.net/">SourceForge</a> compile farm.</p>
+
+<h3>2.1. Create <tt>configure</tt> program</h3>
+
+<p>If there is no <tt>configure</tt> program, you can create it 
+using the <tt>autogen.sh</tt> script, as long as you have the
+<a href="http://www.gnu.org/software/automake/automake.html">automake</a> and
+<a href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a>
+tools.  Alternatively you can run them by hand with:</p>
+<pre>
+  aclocal; autoheader; automake --add-missing; autoconf
+</pre>
+<p>(Ignore any warnings from autoconf about AC_TRY_RUN, it is caused
+by an autoconf macro and IMHO is an autoconf bug.)</p>
+
+<h3>2.2 Options for <tt>configure</tt></h3>
 
 <p>Raptor also supports the following extra configure options:</p>
 
 <dl>
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
-<dd>Pick an XML parser to use - either <tt>expat</tt> (default)
+<dd><p>Pick an XML parser to use - either <tt>expat</tt> (default)
 or <tt>libxml</tt> otherwise either will be used, with expat preferred
 at present.   These can either be installed system libraries or source
-trees in subdirectories of these sources named libxml, expat.
+trees in subdirectories of these sources named libxml, expat.</p>
+<p>Raptor has been tested with various combinations of these libraries
+including 
+expat 1.95.1  (on RedHat 7.2),
+libxml 2.4.10 (on RedHat 7.2),
+libxml 2.4.17 (on FreeBSD 4.5-RELEASE-p2),
+libxml 2.4.19 (on RedHat 7.2)
+</p>
 </dd>
 
 </dl>
+
+<h3>2.3 Configuring</h3>
 
 <p>If everything is in the default place, do:</p>
 <pre>
@@ -45,12 +104,17 @@ trees in subdirectories of these sources named libxml, expat.
    ./configure --with-xml-parser=expat
 </pre>
 
+
+<h3>2.4 Compiling</h3>
+
 <p>Compile the parser and the test program <tt>rdfdump</tt> with;</p>
 <pre>
    make
 </pre>
 <p>Note: GNU make is probably required so it may be gmake or gnumake
 on your system</p>
+
+<h3>2.5 Testing</h3>
 
 <p>This test program can then be used with local RDF/XML content
 files like this:</p>
@@ -67,28 +131,32 @@ inside some XHTML, it could be extracted with:</p>
   rdfdump -s file:/path/to/test/doc.xhtml
 </pre>
 
-<p>You can also run it on <a href="http://www.w3.org/2001/sw/RDFCore/ntriples/">N-Triples</a> files like this:</p>
+<p>You can also run it on <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> files like this:</p>
 
 <pre>
   rdfdump -n file:test.nt
 </pre>
 
 <p>The default output is a simple statement dump format, but it can
-be changed to emit <a href="http://www.w3.org/2001/sw/RDFCore/ntriples/">N-Triples</a> by using the <code>-o</code> option, like this:</p>
+be changed to emit <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> by using the <code>-o</code> option, like this:</p>
 
 <pre>
   rdfdump -o ntriples file:dc.rdf
 </pre>
 
-<p>These example files are part of the Raptor test files which you
-can invoke with:</p>
+<p>You can build and run the built-in test suite with:</p>
 <pre>
   make check
 </pre>
 
+<p>which should emit lots of exciting test messages to the screen but
+conclude with something like:<br />
+  <tt>All </tt><em>n</em><tt> tests passed</tt><br />
+if everything works correctly.</p>
+
 <hr />
 
-<p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001-2002 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
