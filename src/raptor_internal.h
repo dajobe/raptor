@@ -182,6 +182,9 @@ typedef struct {
 struct raptor_namespace_s {
   /* next down the stack, NULL at bottom */
   struct raptor_namespace_s* next;
+
+  raptor_namespace_stack *nstack;
+
   /* NULL means is the default namespace */
   const char *prefix;
   /* needed to safely compare prefixed-names */
