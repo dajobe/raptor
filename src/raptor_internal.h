@@ -457,7 +457,10 @@ struct  raptor_www_s {
   void (*content_type)(void *userdata, const char *content_type);
 
   void *error_data;
-  raptor_www_message_handler error_handler;
+  raptor_message_handler error_handler;
+
+  /* can be filled with error location information */
+  raptor_locator locator;
 };
 
 
