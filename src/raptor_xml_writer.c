@@ -232,3 +232,11 @@ raptor_xml_writer_as_string(raptor_xml_writer* xml_writer,
 
   return raptor_stringbuffer_as_string(xml_writer->sb);
 }
+
+
+int
+raptor_xml_writer_write_to_iostream(raptor_xml_writer* xml_writer,
+                                    raptor_iostream *iostr)
+{
+  return raptor_iostream_write_stringbuffer(iostr, xml_writer->sb);
+}
