@@ -8,13 +8,14 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.org/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH raptor-config 1 "2003-02-14"
+.TH raptor-config 1 "2003-09-04"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 raptor-config \- script to get information about the installed version of Raptor
 .SH SYNOPSIS
 .B raptor-config
-[\-\-prefix\fI[=DIR]\fP] [\-\-libs] [\-\-cflags] [\-\-version] [\-\-help]
+[\-\-prefix\fI[=DIR]\fP] [\-\-libs] [\-\-libtool\-libs]
+[\-\-cflags] [\-\-version] [\-\-version\-decimal] [\-\-help]
 .SH DESCRIPTION
 \fIraptor-config\fP is a tool that is used to determine the compile and
 linker flags that should be used to compile and link programs that use
@@ -26,8 +27,14 @@ the Raptor RDF parser library.
 .B  \-\-version
 Print the currently installed version of raptor on the standard output.
 .TP 8
+.B  \-\-version\-decimal
+Print the currently installed version of raptor as a decimal integer.
+.TP 8
 .B  \-\-libs
 Print the linker flags that are necessary to link a raptor program.
+.TP 8
+.B  \-\-libtool\-libs
+Print the flags that are necessary to link a raptor program with libtool.
 .TP 8
 .B  \-\-cflags
 Print the compiler flags that are necessary to compile a raptor program.
