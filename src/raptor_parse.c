@@ -401,19 +401,6 @@ static const struct {
 };
 
 
-/* For a typedNode production, what is the real production of the
- * block?  This can be typedNode (the default), sequence, bag, alternative
- * or (invented) container for other container types.
- */
-typedef enum {
-  RAPTOR_TYPED_NODE_BLOCK_TYPE_TYPED_NODE, /* default */
-  RAPTOR_TYPED_NODE_BLOCK_TYPE_SEQ,
-  RAPTOR_TYPED_NODE_BLOCK_TYPE_BAG,
-  RAPTOR_TYPED_NODE_BLOCK_TYPE_ALT,
-  RAPTOR_TYPED_NODE_BLOCK_TYPE_CONTAINER
-} raptor_typed_node_block_type;
-
-
 typedef enum {
   /* undetermined yet - whitespace is stored */
   RAPTOR_ELEMENT_CONTENT_TYPE_UNKNOWN,
@@ -555,9 +542,6 @@ struct raptor_parser_s {
 
   /* non 0 if parser had fatal error and cannot continue */
   int failed;
-
-  /* typedNode block type */
-  raptor_typed_node_block_type typed_node_block_type;
 
   /* generated ID counter */
   int genid;
@@ -3141,19 +3125,16 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           } 
 
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Seq)) {
-            rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_SEQ;
             state=RAPTOR_STATE_TYPED_NODE;
             break;
           }
 
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Bag)) {
-            rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_BAG;
             state=RAPTOR_STATE_TYPED_NODE;
             break;
           }
 
           if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Alt)) {
-            rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_ALT;
             state=RAPTOR_STATE_TYPED_NODE;
             break;
           }
@@ -3161,7 +3142,6 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           if(rdf_parser->container_test_handler) {
             raptor_uri *container_type=rdf_parser->container_test_handler(element->name->uri);
             if(container_type) {
-              rdf_parser->typed_node_block_type=RAPTOR_TYPED_NODE_BLOCK_TYPE_CONTAINER;
               state=RAPTOR_STATE_TYPED_NODE;
               break;
             }
