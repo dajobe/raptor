@@ -58,6 +58,9 @@
 #undef GRAPPER_QNAMES
 
 
+static const char *application_name="Grapper";
+static const char *application_title="Grapper GUI RDF Parser Utility";
+static const char *application_description="GUI RDF parser utility based on the Redland Raptor library";
 
 
 typedef struct
@@ -66,12 +69,18 @@ typedef struct
 #ifdef GRAPPER_QNAMES
   int qnames;
 #endif
+  int guess;
   unsigned int syntax;
-  int scanning;
-  int assume;
+
+  int features[RAPTOR_FEATURE_LAST];
+  int features_set[RAPTOR_FEATURE_LAST];
   int ignore_warnings;
 
   unsigned char *url;
+
+  /* last picked filename or NULL */
+  gchar *filename;
+
   /* GList *triples_list; */
   int triples_count;
   int warnings_count;
@@ -89,6 +98,13 @@ typedef struct
   GtkWidget *errors_frame;
   GtkListStore *errors_store;
 } grapper_state;
+
+
+typedef struct 
+{
+  grapper_state* state;
+  int feature;
+} grapper_widget_data;
 
 
 enum {
@@ -120,7 +136,13 @@ grapper_view_qnames_changed(grapper_state *state)
 #endif
 
 static void
-grapper_view_scanning_changed(grapper_state *state) 
+grapper_view_guess_changed(grapper_state *state) 
+{
+
+}
+
+static void
+grapper_view_feature_changed(grapper_state *state, int feature) 
 {
 
 }
@@ -195,7 +217,7 @@ grapper_view_add_error_message(grapper_state *state, gchar *error,
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter, 
                        0, line,
-                       1, (is_error ? "E" : "W"),
+                       1, (is_error ? "Error" : "Warning"),
                        2, error,
                        -1);  
     grapper_view_update_error_count(state);
@@ -250,12 +272,22 @@ grapper_model_set_qnames (grapper_state *state, int qnames) {
 #endif
 
 static void
-grapper_model_set_scanning (grapper_state *state, int scanning) {
-  if(state->scanning == scanning)
+grapper_model_set_guess (grapper_state *state, int guess) {
+  if(state->guess == guess)
     return;
   
-  state->scanning=scanning;
-  grapper_view_scanning_changed(state);
+  state->guess=guess;
+  grapper_view_guess_changed(state);
+}
+
+static void
+grapper_model_set_feature(grapper_state *state, int feature, int value) {
+  if(state->features[feature] == value)
+    return;
+  
+  state->features[feature]=value;
+  state->features_set[feature]=1;
+  grapper_view_feature_changed(state, feature);
 }
 
 static void
@@ -352,6 +384,7 @@ grapper_model_parse(grapper_state *state)
   raptor_uri* uri;
   raptor_parser* rdf_parser;
   const char *syntax_name;
+  int i;
   
   if(!state->url)
     return;
@@ -363,12 +396,25 @@ grapper_model_parse(grapper_state *state)
 
   uri=raptor_new_uri(state->url);
   raptor_parsers_enumerate(state->syntax, &syntax_name, NULL);
-  rdf_parser=raptor_new_parser(syntax_name);
 
-  if(state->scanning)
-    raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
-  if(state->assume)
-    raptor_set_feature(rdf_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
+  if(state->guess) {
+    rdf_parser=raptor_new_parser_for_content(NULL, NULL, NULL, 0, state->url);
+    if(!rdf_parser) {
+      fprintf(stderr, "Failed to create guessed raptor parser from uri %s\n",
+              state->url);
+      exit(1);
+    }
+    fprintf(stdout, "Guessed parser name '%s' from uri %s\n",
+            raptor_get_name(rdf_parser), state->url);
+  } else {
+    rdf_parser=raptor_new_parser(syntax_name);
+  }
+  
+
+  for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+    if(state->features_set[i])
+      raptor_set_feature(rdf_parser, i, state->features[i]);
+  }
 
   raptor_set_error_handler(rdf_parser, state, grapper_model_error_handler);
   raptor_set_warning_handler(rdf_parser, state, grapper_model_warning_handler);
@@ -398,12 +444,11 @@ fs_ok_button_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state=(grapper_state*)data;
   GtkWidget *files=state->file_selection;
-  const gchar *filename;
   unsigned char *uri_string;
   
-  filename=gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
+  state->filename=(gchar*)gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
   
-  uri_string=raptor_uri_filename_to_uri_string(filename);
+  uri_string=raptor_uri_filename_to_uri_string(state->filename);
   
   gtk_widget_destroy(files);
   state->file_selection=NULL;
@@ -419,7 +464,34 @@ static void
 open_button_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state=(grapper_state*)data;
+
+#if GTK_CHECK_VERSION(2,4,0)
+  unsigned char *uri_string;
+  GtkWidget *files=gtk_file_chooser_dialog_new("Open",
+                                               GTK_WINDOW(state->window),
+                                               GTK_FILE_CHOOSER_ACTION_OPEN,
+                                               GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                               GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                               NULL);
+
+  if(state->filename)
+    gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(files), state->filename);
+
+  if (gtk_dialog_run(GTK_DIALOG (files)) == GTK_RESPONSE_ACCEPT) {
+    state->filename=gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(files));
+    uri_string=gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(files));
+    grapper_model_set_url(state, uri_string);
+    g_free(uri_string);
+
+    grapper_model_parse(state);
+  }
+  gtk_widget_destroy(files);
+
+#else  
   GtkWidget *files=gtk_file_selection_new("Open");
+
+  if(state->filename)
+    gtk_file_selection_set_filename(GTK_FILE_SELECTION(files), state->filename);
   
   state->file_selection=files;
   
@@ -432,6 +504,7 @@ open_button_callback(GtkWidget *widget, gpointer data)
                             G_OBJECT(files));
 
   gtk_widget_show(files);
+#endif
 }
 
 
@@ -440,6 +513,17 @@ static void
 quit_callback(GtkWidget *widget, gpointer data)
 {
   gtk_main_quit();
+}
+
+
+/* preferences feature menu item toggled callback */
+static void
+feature_menu_toggled(GtkCheckMenuItem *checkmenuitem, gpointer data)
+{
+  grapper_widget_data* sbdata=(grapper_widget_data*)data;
+  int active=gtk_check_menu_item_get_active(checkmenuitem);
+
+  grapper_model_set_feature(sbdata->state, sbdata->feature, active);
 }
 
 
@@ -455,14 +539,14 @@ qnames_button_callback(GtkWidget *widget, gpointer data)
 }
 #endif
 
-/* scanning button clicked callback */
+/* guess button clicked callback */
 static void
-scanning_button_callback(GtkWidget *widget, gpointer data)
+guess_button_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state=(grapper_state*)data;
   int active=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) != 0);
   
-  grapper_model_set_scanning(state, active);
+  grapper_model_set_guess(state, active);
 }
 
 
@@ -511,33 +595,70 @@ static void
 about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 {
   grapper_state* state=(grapper_state*)data;
+
+#if GTK_CHECK_VERSION(2,5,0)
+  /* 2.5.x about widget */
+  const gchar* authors[2]= { "Dave Beckett", NULL };
+
+#if 1
+  /* using 2.5.x stock about */
+  gtk_show_about_dialog(GTK_WINDOW(state->window), 
+                        "authors", authors,
+                        "comments", application_description,
+                        "copyright", raptor_short_copyright_string,
+                        "license", "LGPL 2.1 / Apache 2.0",
+                        "name", application_name,
+                        "version", raptor_version_string,
+                        "website", "http://librdf.org/raptor/",
+                        "website-label", "Raptor",
+                        NULL);
+#else
+  /* using 2.5.x by hand about */
+  GtkWidget *about;
+
+  about=gtk_about_dialog_new();
+  gtk_about_dialog_set_name(GTK_ABOUT_DIALOG(about), application_name);
+  gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about), raptor_version_string);
+  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about), raptor_short_copyright_string);
+  gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about), application_description);
+  gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(about), "LGPL 2.1 / Apache 2.0");
+  gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), "http://librdf.org/raptor/");
+  gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), "Raptor");
+  gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about), authors);
+
+  gtk_widget_show_all(about);
+#endif
+
+#else  
   GtkWidget *about;
   GtkWidget *label;
+
+  label=(GtkWidget*)application_description; /* mention it for gcc -Wannoy */
   
-  about=gtk_dialog_new_with_buttons("About grapper", 
+  /* GTK < 2.6.0 */
+  about=gtk_dialog_new_with_buttons("About Grapper", 
                                     GTK_WINDOW(state->window), 
                                     GTK_DIALOG_DESTROY_WITH_PARENT,
                                     GTK_STOCK_OK,
                                     GTK_RESPONSE_NONE,
                                     NULL);
-  label = gtk_label_new ("Grapper (C) 2003-2004 Dave Beckett");
-
+  label = gtk_label_new ("Grapper\nGUI RDF parser utility\n (C) 2003-2004 Dave Beckett");
   /* Connect the dialog response to about_response_callback */
   g_signal_connect_swapped (G_OBJECT (about), "response",
                     G_CALLBACK(gtk_widget_destroy), GTK_OBJECT(about));
 
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(about)->vbox), label);
-
   gtk_widget_show_all(about);
+#endif
 }
 
 
 static GtkItemFactoryEntry menu_item_factory_entries[] = {
   { "/_File",         NULL,      NULL,         0, "<Branch>" },
-  { "/File/tear1",    NULL,      NULL,         0, "<Tearoff>" },
   { "/File/_Open...", "<CTRL>O", (GtkItemFactoryCallback)open_menu_callback, 1, "<StockItem>", GTK_STOCK_OPEN },
   { "/File/sep1",     NULL,      NULL,         0, "<Separator>" },
   { "/File/_Quit",    "<CTRL>Q", (GtkItemFactoryCallback)quit_menu_callback, 1, "<StockItem>", GTK_STOCK_QUIT },
+  { "/_Preferences",  NULL,      NULL,         0, "<Branch>" },
   { "/_Help",         NULL,      NULL,         0, "<LastBranch>" },
   { "/Help/About",    NULL,     (GtkItemFactoryCallback)about_menu_callback, 1, "<Item>" } 
 };
@@ -552,12 +673,16 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkAccelGroup *accel_group;
   GtkItemFactory* menu_item_factory;
   GtkWidget *menu_bar;
+  GtkMenu *prefs_menu;
+  GtkWidget *v_paned;
   GtkWidget *v_box;
   GtkWidget *box;
-  GtkWidget *go_button, *scanning_button;
+  GtkWidget *go_button;
+  GtkWidget* feature_items[RAPTOR_FEATURE_LAST];
 #ifdef GRAPPER_QNAMES
   GtkWidget *qnames_button;
 #endif
+  GtkWidget *guess_button;
   GtkWidget *syntax_optionmenu;
   GtkWidget *syntax_menu;
   GtkWidget *url_entry;
@@ -569,7 +694,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 #ifdef GRAPPER_QNAMES
   GtkTooltips *qnames_tooltips;
 #endif
-  GtkTooltips *scanning_tooltips, *syntax_tooltips;
+  GtkTooltips *guess_tooltips;
+  GtkTooltips *syntax_tooltips;
   GtkWidget *prefs_box;
   GtkListStore *store;
   int i;
@@ -655,12 +781,68 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_box_pack_start (GTK_BOX (v_box), box, FALSE, FALSE, 0);
 
 
-  /* frame in vertical box */
+  /* horizontal box for syntax prefs in vertical box (v_box) */
+  prefs_frame = gtk_frame_new ("RDF Syntax");
+
+  prefs_box = gtk_hbutton_box_new();
+
+  gtk_button_box_set_layout(GTK_BUTTON_BOX(prefs_box),GTK_BUTTONBOX_START);
+
+#ifdef GRAPPER_QNAMES
+  /* qnames button in horizontal box */
+  qnames_button = gtk_check_button_new_with_label("QNames");
+
+  qnames_tooltips = gtk_tooltips_new ();
+  gtk_tooltips_set_tip (qnames_tooltips, qnames_button, "Display URIs as XML QNames", NULL);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(qnames_button), (state->qnames));
+
+  /* connect button clicked event to callback */
+  g_signal_connect (G_OBJECT (qnames_button), "clicked",
+                    G_CALLBACK (qnames_button_callback), state);
+
+  /* pack into the invisible box */
+  gtk_box_pack_start (GTK_BOX(prefs_box), qnames_button, TRUE, TRUE, 0);
+
+  gtk_widget_show (qnames_button);
+#endif  
+
+  /* guess button in horizontal box */
+  guess_button = gtk_check_button_new_with_label("Guess Syntax");
+
+  guess_tooltips = gtk_tooltips_new ();
+  gtk_tooltips_set_tip (guess_tooltips, guess_button, "Try to guess the syntax from the URI", NULL);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(guess_button), (state->guess));
+
+  /* connect button clicked event to callback */
+  g_signal_connect (G_OBJECT (guess_button), "clicked",
+                    G_CALLBACK (guess_button_callback), state);
+
+  /* pack into the invisible box */
+  gtk_box_pack_start (GTK_BOX(prefs_box), guess_button, TRUE, TRUE, 0);
+
+  gtk_widget_show (guess_button);
+
+  /* add prefs frame to vbox */
+  gtk_container_add(GTK_CONTAINER(prefs_frame), prefs_box);
+
+  gtk_widget_show (prefs_box);
+
+  /* add prefs frame to start of vbox */
+  gtk_box_pack_start (GTK_BOX (v_box), prefs_frame, FALSE, TRUE, 0);
+
+  gtk_widget_show (prefs_frame);
+
+
+
+  /* paned in vertical box */
+  v_paned = gtk_vpaned_new ();
+
+
+  /* triples frame in vertical paned */
   triples_frame=gtk_frame_new("Triples");
   state->triples_frame=triples_frame;
   
-  gtk_box_pack_start (GTK_BOX (v_box), triples_frame, TRUE, TRUE, 0);
-
+  gtk_paned_pack1(GTK_PANED (v_paned), triples_frame, TRUE, FALSE);
   gtk_widget_show(triples_frame);
 
 
@@ -690,18 +872,26 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                     renderer,
                                                     "text", SUBJECT_COLUMN,
                                                     NULL);
+  gtk_tree_view_column_set_sort_column_id(column, SUBJECT_COLUMN);
+  gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
+
   renderer= gtk_cell_renderer_text_new ();
   column= gtk_tree_view_column_new_with_attributes ("Predicate",
                                                     renderer,
                                                     "text", PREDICATE_COLUMN,
                                                     NULL);
+  gtk_tree_view_column_set_sort_column_id(column, PREDICATE_COLUMN);
+  gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
+
   renderer= gtk_cell_renderer_text_new ();
   column= gtk_tree_view_column_new_with_attributes ("Object",
                                                     renderer,
                                                     "text", OBJECT_COLUMN,
                                                     NULL);
+  gtk_tree_view_column_set_sort_column_id(column, OBJECT_COLUMN);
+  gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
 
 
@@ -709,15 +899,17 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(triples_scrolled_window), triples_treeview);
   gtk_widget_show(triples_treeview);
 
-  
-  /* horizontal box for prefx in vertical box (v_box) */
 
+  /* errors frame in vertical paned */
   errors_frame = gtk_frame_new ("Errors");
   state->errors_frame=errors_frame;
 
-  gtk_box_pack_start (GTK_BOX (v_box), errors_frame, TRUE, TRUE, 0);
-
+  gtk_paned_pack2(GTK_PANED (v_paned), errors_frame, TRUE, FALSE);
   gtk_widget_show(errors_frame);
+
+
+  gtk_box_pack_start (GTK_BOX (v_box), v_paned, TRUE, TRUE, 0);
+  gtk_widget_show(v_paned);
 
 
   /* scroll window in errors frame */
@@ -742,18 +934,23 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                     renderer,
                                                     "text", 0,
                                                     NULL);
+  gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
+
   renderer= gtk_cell_renderer_text_new ();
-  column= gtk_tree_view_column_new_with_attributes ("T",
+  column= gtk_tree_view_column_new_with_attributes ("Type",
                                                     renderer,
                                                     "text", 1,
                                                     NULL);
+  gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
+
   renderer= gtk_cell_renderer_text_new ();
   column= gtk_tree_view_column_new_with_attributes ("Message",
                                                     renderer,
                                                     "text", 2,
                                                     NULL);
+  gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
   gtk_tooltips_set_tip (gtk_tooltips_new (), errors_treeview, 
@@ -766,48 +963,33 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
 
-  /* horizontal box for prefx in vertical box (v_box) */
-  prefs_frame = gtk_frame_new ("Preferences");
 
-  prefs_box = gtk_hbutton_box_new();
-  /* gtk_container_set_border_width(GTK_CONTAINER (prefs_box), 5); */
-  gtk_button_box_set_layout(GTK_BUTTON_BOX(prefs_box),GTK_BUTTONBOX_START);
+  prefs_menu=GTK_MENU(gtk_item_factory_get_widget(menu_item_factory, "/Preferences"));
 
-#ifdef GRAPPER_QNAMES
-  /* qnames button in horizontal box */
-  qnames_button = gtk_check_button_new_with_label("QNames");
+  /* features in the preferences menu */
+  for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+    const char *feature_name;
+    const char *feature_label;
+    grapper_widget_data* sbdata;
 
-  qnames_tooltips = gtk_tooltips_new ();
-  gtk_tooltips_set_tip (qnames_tooltips, qnames_button, "Display URIs as XML QNames", NULL);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(qnames_button), (state->qnames));
+    if(raptor_features_enumerate((raptor_feature)i, 
+                                 &feature_name, NULL, &feature_label))
+      break;
 
-  /* connect button clicked event to callback */
-  g_signal_connect (G_OBJECT (qnames_button), "clicked",
-                    G_CALLBACK (qnames_button_callback), state);
+    sbdata=(grapper_widget_data*)malloc(sizeof(grapper_widget_data));
+    sbdata->state=state;
+    sbdata->feature=i;
 
-  /* pack into the invisible box */
-  gtk_box_pack_start (GTK_BOX(prefs_box), qnames_button, TRUE, TRUE, 0);
+    /* add to the preferences menu */
+    feature_items[i] = gtk_check_menu_item_new_with_label(feature_label);
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(feature_items[i]), 
+                                   state->features[i]);
+    gtk_menu_shell_append(GTK_MENU_SHELL(prefs_menu), feature_items[i]);
 
-  gtk_widget_show (qnames_button);
-#endif  
-
-
-  /* scanning button in horizontal box */
-  scanning_button = gtk_check_button_new_with_label("Scanning");
-
-  scanning_tooltips = gtk_tooltips_new ();
-  gtk_tooltips_set_tip (scanning_tooltips, scanning_button, "Scanning for RDF/XML in content", NULL);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(scanning_button), (state->scanning));
-  
-
-  /* connect button clicked event to callback */
-  g_signal_connect (G_OBJECT (scanning_button), "clicked",
-                    G_CALLBACK (scanning_button_callback), state);
-
-  /* pack into the invisible box */
-  gtk_box_pack_start (GTK_BOX(prefs_box), scanning_button, TRUE, TRUE, 0);
-
-  gtk_widget_show (scanning_button);
+    g_signal_connect(G_OBJECT(feature_items[i]), "toggled",
+                     G_CALLBACK(feature_menu_toggled), (gpointer)sbdata);
+    gtk_widget_show (feature_items[i]);
+  }
 
 
   /* syntax button in horizontal box */
@@ -842,16 +1024,6 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_widget_show (syntax_optionmenu);
 
 
-  /* add prefs frame to vbox */
-  gtk_container_add(GTK_CONTAINER(prefs_frame), prefs_box);
-
-  gtk_widget_show (prefs_box);
-
-  /* add frame to vbox */
-  gtk_box_pack_start (GTK_BOX (v_box), prefs_frame, FALSE, TRUE, 0);
-
-  gtk_widget_show (prefs_frame);
-
   /* add vbox to window */
   gtk_container_add (GTK_CONTAINER (window), v_box);
   gtk_widget_show (v_box);
@@ -867,8 +1039,10 @@ main(int argc, char *argv[])
 {
   GtkWidget *window;
   grapper_state state;
-  
+
   gtk_init (&argc, &argv);
+
+  g_set_application_name(application_name);
   
   raptor_init();
   
@@ -877,7 +1051,7 @@ main(int argc, char *argv[])
   /* create a new window */
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-  gtk_window_set_title (GTK_WINDOW (window), "GNOME Rapper Example");
+  gtk_window_set_title (GTK_WINDOW (window), application_title);
 
   init_grapper_window(window, &state);
 
