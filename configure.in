@@ -173,6 +173,7 @@ else
   AC_MSG_RESULT(no)
 fi
 
+oCPPFLAGS="$CPPFLAGS"
 if test "X$XML_CONFIG" != X; then
   oLIBS="$LIBS"
   LIBS="$LIBS `$XML_CONFIG --libs`"
@@ -182,6 +183,7 @@ if test "X$XML_CONFIG" != X; then
   if test $ac_cv_lib_xml_xmlParseFile = yes; then
     have_libxml_lib=1
     have_libxml=1
+    CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
     AC_MSG_RESULT(yes)
   else
     AC_MSG_RESULT(no)
@@ -190,6 +192,7 @@ fi
 
 AC_CHECK_HEADERS(parser.h gnome-xml/parser.h)
 
+CPPFLAGS="$oCPPFLAGS"
 
 AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="expat") 
 
