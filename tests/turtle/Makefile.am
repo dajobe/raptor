@@ -20,7 +20,8 @@
 
 TEST_FILES=test-00.ttl test-01.ttl test-02.ttl test-03.ttl \
 test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl \
-test-09.ttl test-10.ttl
+test-09.ttl test-10.ttl \
+rdfq-results.ttl
 
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl \
 bad-04.ttl
@@ -29,12 +30,13 @@ TEST_WARN_FILES=
 
 TEST_OUT_FILES=test-00.out test-01.out test-02.out test-03.out \
 test-04.out test-05.out test-06.out test-07.out test-08.out \
-test-09.out test-10.out
+test-09.out test-10.out \
+rdfq-results.out
 
 TEST_WARN_OUT_FILES=
 
 # Used to make N-triples output consistent
-BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/
+BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/turtle/
 
 
 EXTRA_DIST = \
