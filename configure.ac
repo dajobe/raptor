@@ -485,7 +485,7 @@ if test "X$XML_CONFIG" != X; then
   fi
 
   AC_CHECK_HEADERS(libxml/parser.h)
-  AC_CHECK_HEADERS(libxml/hash.h libxml/xmlreader.h,,,
+  AC_CHECK_HEADERS(libxml/hash.h libxml/xmlreader.h libxml/SAX2.h,,,
   [#ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
