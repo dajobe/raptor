@@ -88,11 +88,15 @@ librapier_a_DEPENDENCIES = @XML_OBJS@
 
 EXTRA_librapier_a_SOURCES = rdfdump.c
 
+RDF_TEST_FILES=ex-0.rdf ex-1.rdf ex-2.rdf ex-3.rdf
+
 EXTRA_DIST=ChangeLog \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
-autogen.sh
+autogen.sh \
+$(RDF_TEST_FILES)
+
 
 # Why is this not in the default makefile?
 CC=@CC@
@@ -130,5 +134,8 @@ NEWS: NEWS.html
 
 @SET_MAKE@
 
-$(top_builddir)/expat/xmlparse/xmlparse.o $(top_builddir)/expat/xmlparse/hashtable.o $(top_builddir)/expat/xmltok/xmlrole.o $(top_builddir)/expat/xmltok/xmltok.o:
-	cd expat && $(MAKE) $(AM_MAKEFLAGS) all
+check-local: rdfdump
+	@for test in $(RDF_TEST_FILES); do \
+	  echo Checking $(srcdir)/$$test; \
+	  rdfdump file:$(srcdir)/$$test; \
+	done
