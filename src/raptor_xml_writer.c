@@ -71,6 +71,8 @@ struct raptor_xml_writer_s {
 
   raptor_simple_message_handler error_handler;
   void *error_data;
+
+  raptor_sax2_element* current_element;
 };
 
 
@@ -168,6 +170,10 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
   }
 
   xml_writer->depth++;
+
+  xml_writer->current_element=element;
+  if(element->parent)
+    element->parent->content_element_seen=1;
 }
 
 
@@ -263,6 +269,17 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
   ptr += len;
   *ptr = '\0';
 
+
+  if(xml_writer->current_element)
+    xml_writer->current_element->content_cdata_seen=1;
+}
+
+
+void
+raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
+                        const unsigned char *s, int len)
+{
+  raptor_xml_writer_cdata(xml_writer, s, len);
 }
 
 
