@@ -135,7 +135,7 @@ int n3_lexer_lex_destroy(void);
 \"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval.string=copy_string_token(yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-_:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext, yyleng);
+_:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
 [A-Za-z][A-Za-z0-9_]*:[A-Za-z][A-Za-z0-9_]*	{ n3_parser_lval.string=copy_token(yytext, yyleng);
