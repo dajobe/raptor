@@ -29,7 +29,7 @@ ex-41.rdf ex-42.rdf ex-43.rdf ex-44.rdf ex-45.rdf \
 
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
-bad-10.rdf
+bad-10.rdf bad-11.rdf
 
 RDF_ASSUME_TEST_FILES=ex-19.rdf
 
