@@ -1,5 +1,4 @@
 *.gz
-*.rdf
 *.rdfs
 *.log
 *test
