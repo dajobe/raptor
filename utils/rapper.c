@@ -273,12 +273,9 @@ main(int argc, char *argv[])
 
       case 'i':
         if(optarg) {
-          if(!strcmp(optarg, "rdfxml")
-             || !strcmp(optarg, "ntriples")
-             || !strcmp(optarg, "ntriples-plus")
-             || !strcmp(optarg, "turtle")
-             || !strcmp(optarg, "rss-tag-soup")
-            ) {
+          rdf_parser=raptor_new_parser(optarg);
+          if(rdf_parser) {
+            raptor_free_parser(rdf_parser);
             syntax_name=optarg;
           } else {
             int i;
