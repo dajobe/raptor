@@ -149,6 +149,8 @@ RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_d
 RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
 RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API void raptor_print_statement_detailed(const raptor_statement * statement, int detailed, FILE *stream);
+RAPTOR_API char* raptor_statement_part_as_counted_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
+RAPTOR_API char* raptor_statement_part_as_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
 
 RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
 
@@ -192,7 +194,7 @@ RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 /* Utility functions */
 RAPTOR_API int raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
 RAPTOR_API const char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
-RAPTOR_API char* raptor_xml_escape_string(raptor_parser *rdf_parser, const unsigned char *string, size_t len, size_t *new_len_p, char quote);
+RAPTOR_API size_t raptor_xml_escape_string(raptor_parser *rdf_parser, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote);
 
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
