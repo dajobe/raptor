@@ -1,3 +1,5 @@
+.deps
+.libs
 .cvsignore
 Makefile
 Makefile.in
