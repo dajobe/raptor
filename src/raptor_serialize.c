@@ -1355,28 +1355,35 @@ raptor_ntriples_serialize_start(raptor_serializer* serializer)
 
 
 /**
- * raptor_serialize_ntriples_print_string - Print an UTF-8 string using N-Triples escapes
- * @stream: FILE* stream to print to
- * @string: UTF-8 string to print
- * @delim: Delimiter character for string (such as ") or \0 for no delim
- * escaping.
+ * raptor_iostream_write_string_ntriples - Write an UTF-8 string using N-Triples escapes to an iostream
+ * @iostr: &raptor_iostream to write to
+ * @string: UTF-8 string to write
+ * @len: length of UTF-8 string
+ * @delim: Terminating delimiter character for string (such as " or >)
+ * or \0 for no escaping.
  * 
  * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/
-static int
-raptor_serialize_ntriples_print_string(raptor_iostream *iostr,
-                                       const unsigned char *string,
-                                       const char delim) 
+int
+raptor_iostream_write_string_ntriples(raptor_iostream *iostr,
+                                      const unsigned char *string,
+                                      size_t len,
+                                      const char delim)
 {
   unsigned char c;
-  size_t len=strlen((const char*)string);
   int unichar_len;
   unsigned long unichar;
   
   for(; (c=*string); string++, len--) {
-    if((delim && c == delim) || c == '\\') {
+    if((delim && c == delim && (delim=='\'' || delim == '"')) ||
+       c == '\\') {
       raptor_iostream_write_byte(iostr, '\\');
       raptor_iostream_write_byte(iostr, c);
+      continue;
+    }
+    if(delim && c == delim) {
+      raptor_iostream_write_counted_string(iostr, "\\u", 2);
+      raptor_iostream_format_hexadecimal(iostr, c, 4);
       continue;
     }
     
@@ -1426,17 +1433,19 @@ raptor_serialize_ntriples_print_string(raptor_iostream *iostr,
 
 
 static void
-raptor_serialize_ntriples_print_statement_part(raptor_iostream* iostr,
+raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
                                                const void *term, 
                                                raptor_identifier_type type,
                                                raptor_uri* literal_datatype,
                                                const unsigned char *literal_language) 
 {
+  size_t len;
+  
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_iostream_write_byte(iostr, '"');
-      raptor_serialize_ntriples_print_string(iostr, (const unsigned char*)term, '"');
+      raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, strlen((const char*)term), '"');
       raptor_iostream_write_byte(iostr, '"');
       if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
         raptor_iostream_write_byte(iostr, '@');
@@ -1468,7 +1477,8 @@ raptor_serialize_ntriples_print_statement_part(raptor_iostream* iostr,
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_iostream_write_byte(iostr, '<');
-      raptor_serialize_ntriples_print_string(iostr, raptor_uri_as_string((raptor_uri*)term), '\0');
+      term=raptor_uri_as_counted_string((raptor_uri*)term, &len);
+      raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, len, '>');
       raptor_iostream_write_byte(iostr, '>');
       break;
       
@@ -1478,6 +1488,27 @@ raptor_serialize_ntriples_print_statement_part(raptor_iostream* iostr,
 }
 
 
+void
+raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
+                                         const raptor_statement *statement)
+{
+  raptor_iostream_write_statement_part_ntriples(iostr,
+                                                statement->subject,
+                                                statement->subject_type,
+                                                NULL, NULL);
+  raptor_iostream_write_byte(iostr, ' ');
+  raptor_iostream_write_statement_part_ntriples(iostr,
+                                                statement->predicate,
+                                                statement->predicate_type,
+                                                NULL, NULL);
+  raptor_iostream_write_byte(iostr, ' ');
+  raptor_iostream_write_statement_part_ntriples(iostr,
+                                                statement->object,
+                                                statement->object_type,
+                                                statement->object_literal_datatype,
+                                                statement->object_literal_language);
+  raptor_iostream_write_counted_string(iostr, " .\n", 3);
+}
 
 
 /* serialize a statement */
@@ -1485,26 +1516,7 @@ static int
 raptor_ntriples_serialize_statement(raptor_serializer* serializer, 
                                     const raptor_statement *statement)
 {
-  raptor_iostream *iostr=serializer->iostream;
-
-  /* from raptor_print_statement_as_ntriples(statement, stdout); */
-  raptor_serialize_ntriples_print_statement_part(iostr,
-                                                 statement->subject,
-                                                 statement->subject_type,
-                                                 NULL, NULL);
-  raptor_iostream_write_byte(iostr, ' ');
-  raptor_serialize_ntriples_print_statement_part(iostr,
-                                                 statement->predicate,
-                                                 statement->predicate_type,
-                                                 NULL, NULL);
-  raptor_iostream_write_byte(iostr, ' ');
-  raptor_serialize_ntriples_print_statement_part(iostr,
-                                                 statement->object,
-                                                 statement->object_type,
-                                                 statement->object_literal_datatype,
-                                                 statement->object_literal_language);
-  raptor_iostream_write_counted_string(iostr, " .\n", 3);
-
+  raptor_iostream_write_statement_ntriples(serializer->iostream, statement);
   return 0;
 }
 
