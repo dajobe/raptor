@@ -479,12 +479,8 @@ struct raptor_element_s {
 
   /* RDF/XML specific checks */
 
-  /* how many cdata blocks seen */
-  unsigned int content_cdata_seen;
   /* all cdata so far is whitespace */
   unsigned int content_cdata_all_whitespace;
-  /* how many contained elements seen */
-  unsigned int content_element_seen;
 };
 
 typedef struct raptor_element_s raptor_element;
@@ -726,10 +722,9 @@ raptor_xml_start_element_handler(void *user_data,
            !strncmp(namespace_name, raptor_rdf_ms_uri, raptor_rdf_ms_uri_len)) {
           raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
         } else {
-          raptor_namespaces_start_namespace(&rdf_parser->namespaces,
-                                            prefix, namespace_name,
-                                            sax2->depth,
-                                            raptor_parser_simple_error, rdf_parser);
+          raptor_namespaces_start_namespace_full(&rdf_parser->namespaces,
+                                                 prefix, namespace_name,
+                                                 sax2->depth);
         }
         
         atts[i]=NULL; 
@@ -789,8 +784,8 @@ raptor_xml_start_element_handler(void *user_data,
   
 
   /* Prepare for possible element content */
-  element->content_element_seen=0;
-  element->content_cdata_seen=0;
+  sax2_element->content_element_seen=0;
+  sax2_element->content_cdata_seen=0;
   sax2_element->content_cdata_length=0;
 
   sax2_element->xml_language=xml_language;
@@ -961,13 +956,13 @@ raptor_xml_start_element_handler(void *user_data,
         raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set");      
 
       element->state=element->parent->child_state;
-      element->parent->content_element_seen++;
+      element->parent->sax2->content_element_seen++;
       count_bumped++;
     
       /* leave literal XML alone */
       if (!rdf_content_type_info[element->content_type].cdata_allowed) {
-        if(element->parent->content_element_seen == 1 &&
-           element->parent->content_cdata_seen == 1) {
+        if(++element->parent->sax2->content_element_seen == 1 &&
+           element->parent->sax2->content_cdata_seen == 1) {
           /* Uh oh - mixed content, the parent element has cdata too */
           raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                                 element->parent->sax2->name->local_name);
@@ -977,7 +972,7 @@ raptor_xml_start_element_handler(void *user_data,
          * before this node element, delete it
          */
         if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES &&
-           element->parent->content_element_seen &&
+           element->parent->sax2->content_element_seen &&
            element->parent->content_cdata_all_whitespace &&
            element->parent->sax2->content_cdata) {
           
@@ -1014,7 +1009,7 @@ raptor_xml_start_element_handler(void *user_data,
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
-      element->parent->content_element_seen--;
+      element->parent->sax2->content_element_seen--;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
   
@@ -1026,7 +1021,7 @@ raptor_xml_start_element_handler(void *user_data,
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
-      element->parent->content_element_seen--;
+      element->parent->sax2->content_element_seen--;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
   
@@ -1973,7 +1968,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            element->parent && 
            (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
             element->parent->state == RAPTOR_STATE_MEMBER_PROPERTYELT) &&
-           element->parent->content_element_seen > 1) {
+           element->parent->sax2->content_element_seen > 1) {
           raptor_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "The enclosing property already has an object");
           state=RAPTOR_STATE_SKIPPING;
@@ -2696,9 +2691,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          */
 
         if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
-          if(element->content_cdata_seen) 
+          if(sax2_element->content_cdata_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
-          else if (element->content_element_seen) 
+          else if (sax2_element->content_element_seen) 
             element->content_type= RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
           else { /* Empty Literal */
             element->object.type= RAPTOR_IDENTIFIER_TYPE_LITERAL;
@@ -3119,8 +3114,8 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
       return;
     }
 
-    if(++element->content_cdata_seen == 1 &&
-       element->content_element_seen == 1) {
+    if(sax2_element->content_cdata_seen == 1 &&
+       sax2_element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
       raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
                             element->sax2->name->local_name);
