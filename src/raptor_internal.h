@@ -263,6 +263,13 @@ struct raptor_parser_s {
    */
   int feature_allow_rdf_type_rdf_List;
 
+  /* FEATURE: 
+   * non 0 if normalizing xml:lang attribute values to lowercase.
+   * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+   * says this is done when language-tagged literals are in the graph.
+   */
+  int feature_normalize_language;
+
   /* stuff for our user */
   void *user_data;
 
