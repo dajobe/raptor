@@ -211,5 +211,5 @@ raptor_locator_uri(raptor_locator *locator)
 {
   if (!locator)
     return NULL;
-  return raptor_uri_as_string(locator->uri);
+  return (const char*)raptor_uri_as_string(locator->uri);
 }
