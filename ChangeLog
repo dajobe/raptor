@@ -1,5 +1,8 @@
 2004-10-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor.h, raptor_namespace.c, raptor_serialize.c:
+	Fix a bunch of consistency typos in namespace URIs
+
 	* raptor_internal.h:
 	Add locator, error_user_data and error_handler to raptor_serializer.
 	Add raptor_init_serializer_rdfxml, raptor_serializer_error,
