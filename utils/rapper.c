@@ -131,9 +131,9 @@ static void
 rdfdump_error_handler(void *data, raptor_locator *locator,
                       const char *message)
 {
-  fprintf(stderr, "%s: error - ", program);
+  fprintf(stderr, "%s: Error - ", program);
   raptor_print_locator(stderr, locator);
-  fprintf(stderr, ": %s\n", message);
+  fprintf(stderr, " -  %s\n", message);
 
   error_count++;
 }
@@ -144,9 +144,9 @@ rdfdump_warning_handler(void *data, raptor_locator *locator,
                         const char *message) 
 {
   if(!ignore_warnings) {
-    fprintf(stderr, "%s: warning - ", program);
+    fprintf(stderr, "%s: Warning - ", program);
     raptor_print_locator(stderr, locator);
-    fprintf(stderr, ": %s\n", message);
+    fprintf(stderr, " - %s\n", message);
   }
   
   warning_count++;
