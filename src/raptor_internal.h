@@ -133,6 +133,7 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 
 typedef struct raptor_parser_factory_s raptor_parser_factory;
 typedef struct raptor_namespace_s raptor_namespace;
+typedef struct raptor_set_s raptor_set;
 
 
 
@@ -465,6 +466,10 @@ void raptor_www_libwww_init(raptor_www *www);
 void raptor_www_libwww_free(raptor_www *www);
 int raptor_www_libwww_fetch(raptor_www *www);
 
+  /* raptor_set.c */
+raptor_set* raptor_new_set(void);
+int raptor_free_set(raptor_set* set);
+int raptor_set_add(raptor_set* set, char *item, size_t item_len);
 
 /* end of RAPTOR_INTERNAL */
 #endif
