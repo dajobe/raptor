@@ -1,5 +1,19 @@
 2004-12-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* tests/turtle/README.txt, tests/turtle/rdfq-results.out,
+	tests/turtle/test-00.out, tests/turtle/Makefile.am: Switch to base
+	URI http://www.w3.org/2001/sw/DataAccess/df1/tests/
+
+	* tests/turtle/test-13.out, tests/turtle/test-13.ttl,
+	tests/turtle/manifest.ttl, tests/turtle/bad-12.ttl,
+	tests/turtle/bad-13.ttl, tests/turtle/manifest-bad.ttl,
+	tests/turtle/bad-10.ttl, tests/turtle/bad-11.ttl,
+	tests/turtle/bad-08.ttl, tests/turtle/bad-09.ttl,
+	tests/turtle/bad-04.ttl, tests/turtle/bad-05.ttl,
+	tests/turtle/bad-06.ttl, tests/turtle/bad-07.ttl,
+	tests/turtle/Makefile.am: Import more bad turtle tests, initial
+	manifest files
+
 	* raptor_namespace.c (raptor_iostream_write_namespace): Handle
 	ns->uri is NULL and no prefix, i.e. emitting xmlns=""
 
