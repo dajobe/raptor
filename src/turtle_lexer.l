@@ -143,6 +143,9 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 "@prefix" { BEGIN(PREF); return PREFIX; }
 "@"       { return AT; }
 "^^"      { return HAT; }
+"("       { return LEFT_ROUND; }
+")"       { return RIGHT_ROUND; }
+
 
 '([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
