@@ -41,12 +41,8 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource16> <http://example.org/property> "\u00E9" .
 # Euro symbol \u20ac  - 3 UTF-8 bytes #xE2 #x82 #xAC
 <http://example.org/resource17> <http://example.org/property> "\u20AC" .
-# ? symbol \U001FFFFF - 4 UTF-8 bytes #xF7 #xBF #xBF #xBF
-<http://example.org/resource18> <http://example.org/property> "\U001FFFFF" .
-# ? symbol \U03FFFFFF - 5 UTF-8 bytes #xFB #xBF #xBF #xBF #xBF
-<http://example.org/resource19> <http://example.org/property> "\U03FFFFFF" .
-# ? symbol \U7FFFFFFF - 6 UTF-8 bytes #xFD #xBF #xBF #xBF #xBF #xBF
-<http://example.org/resource20> <http://example.org/property> "\U7FFFFFFF" .
+# ? symbol \U0010FFFF - 4 UTF-8 bytes #xF4 #x8F #xBF #xBF
+<http://example.org/resource19> <http://example.org/property> "\U0010FFFF" .
 
 # extended literal syntax - parseType="Literal" (XML)
 <http://example.org/resource21> <http://example.org/property> ""^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
