@@ -548,6 +548,11 @@ struct raptor_sax2_s {
   raptor_xml_entity* entities;
 #endif
 
+#if LIBXML_VERSION < 20425
+  /* flag for some libxml eversions*/
+  int first_read;
+#endif
+
 #endif  
 
   /* element depth */
@@ -556,11 +561,6 @@ struct raptor_sax2_s {
   /* stack of elements - elements add after current_element */
   raptor_sax2_element *root_element;
   raptor_sax2_element *current_element;
-
-#ifdef RAPTOR_XML_LIBXML
-  /* flag for some libxml eversions*/
-  int first_read;
-#endif
 };
 
 raptor_sax2_element* raptor_sax2_element_pop(raptor_sax2 *sax2);
