@@ -451,6 +451,7 @@ RAPTOR_API int raptor_stringbuffer_prepend_counted_string(raptor_stringbuffer* s
 RAPTOR_API int raptor_stringbuffer_prepend_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, int do_copy);
 RAPTOR_API unsigned char * raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer);
 RAPTOR_API size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
+RAPTOR_API int raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer, unsigned char *string, size_t length);
 
 typedef int (*raptor_iostream_init_func) (void *context);
 typedef void (*raptor_iostream_finish_func) (void *context);
