@@ -641,8 +641,6 @@ blank: BLANK_LITERAL
   printf("subject blank=\"%s\"\n", $1);
 #endif
   id=raptor_generate_id((raptor_parser*)rdf_parser, 0, $1);
-  if(id != $1)
-    RAPTOR_FREE(cstring, $1);
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
 }
