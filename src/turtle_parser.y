@@ -154,21 +154,19 @@ statement: directive
 {
   int i;
 
-  if($2 == NULL) {
 #if RAPTOR_DEBUG > 1  
     printf("statement 2\n subject=");
     raptor_identifier_print(stdout, $1);
-    printf("\n and empty propertyList\n");
+    if($2) {
+      printf("\n propertyList=");
+      raptor_sequence_print($2, stdout);
+      printf("\n");
+    } else     
+      printf("\n and empty propertyList\n");
 #endif
-  } else {
+
+  if($2) {
     /* non-empty property list, handle it  */
-#if RAPTOR_DEBUG > 1  
-    printf("statement 2\n subject=");
-    raptor_identifier_print(stdout, $1);
-    printf("\n propertyList=");
-    raptor_sequence_print($2, stdout);
-    printf("\n");
-#endif
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
@@ -198,15 +196,32 @@ objectList: object COMMA objectList
 
 #if RAPTOR_DEBUG > 1  
   printf("objectList 1\n");
+  if($1) {
+    printf(" object=\n");
+    raptor_identifier_print(stdout, $1);
+    printf("\n");
+  } else  
+    printf(" and empty object\n");
+  if($3) {
+    printf(" objectList=");
+    raptor_sequence_print($3, stdout);
+    printf("\n");
+  } else
+    printf(" and empty objectList\n");
 #endif
-  triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
-  $$=$3;
-  raptor_sequence_shift($$, triple);
+
+  if(!$1)
+    $$=NULL;
+  else {
+    triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
+    $$=$3;
+    raptor_sequence_shift($$, triple);
 #if RAPTOR_DEBUG > 1  
-  printf(" objectList is now ");
-  raptor_sequence_print($$, stdout);
-  printf("\n\n");
+    printf(" objectList is now ");
+    raptor_sequence_print($$, stdout);
+    printf("\n\n");
 #endif
+  }
 }
 | object
 {
@@ -214,21 +229,31 @@ objectList: object COMMA objectList
 
 #if RAPTOR_DEBUG > 1  
   printf("objectList 2\n");
+  if($1) {
+    printf(" object=\n");
+    raptor_identifier_print(stdout, $1);
+    printf("\n");
+  } else  
+    printf(" and empty object\n");
 #endif
 
-  triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
+  if(!$1)
+    $$=NULL;
+  else {
+    triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
 #ifdef RAPTOR_DEBUG
-  $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
-                         (raptor_print_handler*)raptor_triple_print);
+    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
+                           (raptor_print_handler*)raptor_triple_print);
 #else
-  $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
+    $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
 #endif
-  raptor_sequence_push($$, triple);
+    raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
-  printf(" objectList is now ");
-  raptor_sequence_print($$, stdout);
-  printf("\n\n");
+    printf(" objectList is now ");
+    raptor_sequence_print($$, stdout);
+    printf("\n\n");
 #endif
+  }
 }
 ;
 
@@ -308,23 +333,28 @@ propertyList: verb objectList SEMICOLON propertyList
 #if RAPTOR_DEBUG > 1  
   printf("propertyList 2\n verb=");
   raptor_identifier_print(stdout, $1);
-  printf("\n objectList=");
-  raptor_sequence_print($2, stdout);
-  printf("\n");
+  if($2) {
+    printf("\n objectList=");
+    raptor_sequence_print($2, stdout);
+    printf("\n");
+  } else
+    printf("\n and empty objectList\n");
 #endif
-  
-  for(i=0; i<raptor_sequence_size($2); i++) {
-    raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-    raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-    raptor_copy_identifier(i2, $1);
-    t2->predicate=i2;
-  }
+
+  if($2) {
+    for(i=0; i<raptor_sequence_size($2); i++) {
+      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+      raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      raptor_copy_identifier(i2, $1);
+      t2->predicate=i2;
+    }
 
 #if RAPTOR_DEBUG > 1  
-  printf(" after substitution objectList=");
-  raptor_sequence_print($2, stdout);
-  printf("\n\n");
+    printf(" after substitution objectList=");
+    raptor_sequence_print($2, stdout);
+    printf("\n\n");
 #endif
+  }
 
   $$=$2;
 }
@@ -619,6 +649,7 @@ void raptor_triple_print(raptor_triple *t, FILE *fh)
 }
 #endif
 
+
 static raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string) 
 {
@@ -637,8 +668,10 @@ n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string)
                         raptor_parser_simple_error, n3_parser);
   if(!name)
     return NULL;
-  
-  uri=raptor_uri_copy(name->uri);
+  if(name->uri)
+    uri=raptor_uri_copy(name->uri);
+  else
+    uri=NULL;
   raptor_free_qname(name);
   return uri;
 }
