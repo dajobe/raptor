@@ -1652,10 +1652,9 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
       raptor_rss_type type=RAPTOR_RSS_NONE;
       
       for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-        raptor_uri *item_uri=(&rss_parser->common[type])->uri;
-        if(item_uri && 
-           raptor_uri_equals((raptor_uri*)statement->object,
-                             raptor_rss_types_info[i].uri)) {
+        raptor_uri *item_uri=raptor_rss_types_info[i].uri;
+        if(item_uri &&
+           raptor_uri_equals((raptor_uri*)statement->object, item_uri)) {
           type=i;
           RAPTOR_DEBUG4("Found RSS 1.0 typed node %i - %s with URI <%s>\n", type, raptor_rss_types_info[type].name,
                         raptor_uri_as_string((raptor_uri*)statement->subject));
@@ -1697,8 +1696,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
           handled=1;
         }
       } else
-        RAPTOR_DEBUG2("UNKNOWN RSS 1.0 typed node with URI <%s>\n",
-                      raptor_uri_as_string((raptor_uri*)statement->subject));
+        RAPTOR_DEBUG2("UNKNOWN RSS 1.0 typed node with type URI <%s>\n",
+                      raptor_uri_as_string((raptor_uri*)statement->object));
 
     }
   }
