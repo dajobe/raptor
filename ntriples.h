@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /* Public structure */
-typedef struct raptor_ntriples_parser_s raptor_ntriples_parser;
+typedef raptor_parser raptor_ntriples_parser;
 
 typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE, RAPTOR_NTRIPLES_TERM_TYPE_LITERAL } raptor_ntriples_term_type;
 
@@ -39,24 +39,24 @@ typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_BLAN
 
 /* Create */
 #ifdef RAPTOR_IN_REDLAND
-raptor_ntriples_parser* raptor_ntriples_new(librdf_world *world);
+raptor_parser* raptor_ntriples_new(librdf_world *world);
 #else
-raptor_ntriples_parser* raptor_ntriples_new(void);
+raptor_parser* raptor_ntriples_new(void);
 #endif
 
 /* Destroy */
-void raptor_ntriples_free(raptor_ntriples_parser *parser);
+void raptor_ntriples_free(raptor_parser *parser);
 
 /* Handlers */
-void raptor_ntriples_set_error_handler(raptor_ntriples_parser* parser, void *user_data, raptor_message_handler handler);
-void raptor_ntriples_set_fatal_error_handler(raptor_ntriples_parser* parser, void *user_data, raptor_message_handler handler);
-void raptor_ntriples_set_statement_handler(raptor_ntriples_parser* parser, void *user_data, raptor_statement_handler handler);
+void raptor_ntriples_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+void raptor_ntriples_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+void raptor_ntriples_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 
 /* Parsing functions */
 #ifdef RAPTOR_IN_REDLAND
-int raptor_ntriples_parse_file(raptor_ntriples_parser* parser, librdf_uri *uri, librdf_uri *base_uri);
+int raptor_ntriples_parse_file(raptor_parser* parser, librdf_uri *uri, librdf_uri *base_uri);
 #else
-int raptor_ntriples_parse_file(raptor_ntriples_parser* parser, const char *filename, const char *base_uri);
+int raptor_ntriples_parse_file(raptor_parser* parser, const char *filename, const char *base_uri);
 #endif
 
 /* Utility functions */
