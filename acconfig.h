@@ -9,8 +9,8 @@
 #undef RAPTOR_VERSION_RELEASE
 
 /* XML parsers */
-#undef NEED_EXPAT
-#undef NEED_LIBXML
+#undef RAPTOR_XML_EXPAT
+#undef RAPTOR_XML_LIBXML
 
 /* expat compiled with namespaces? */
 #undef HAVE_XML_SetNamespaceDeclHandler

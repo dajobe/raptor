@@ -34,7 +34,7 @@
 #define HAVE_STDARG_H 1
 
 /* use expat on win32 */
-#define NEED_EXPAT 1
+#define RAPTOR_XML_EXPAT 1
 #define HAVE_XMLPARSE_H 1
 
 #include <windows.h>
@@ -124,7 +124,7 @@ extern int errno;
 
 
 /* XML parser includes */
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
 #ifdef HAVE_EXPAT_H
 #include <expat.h>
 #endif
@@ -133,7 +133,7 @@ extern int errno;
 #endif
 #endif
 
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
 
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
@@ -599,13 +599,13 @@ struct raptor_parser_s {
 #endif
 
   /* XML parser specific stuff */
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   XML_Parser xp;
 #ifdef EXPAT_UTF8_BOM_CRASH
   int tokens_count; /* used to see if trying to get location info is safe */
 #endif
 #endif
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
   /* structure holding sax event handlers */
   xmlSAXHandler sax;
   /* parser context */
@@ -759,7 +759,7 @@ static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *p
 
 
 /* libxml-only prototypes */
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
 static void raptor_xml_warning(void *context, const char *msg, ...);
 static void raptor_xml_error(void *context, const char *msg, ...);
 static void raptor_xml_fatal_error(void *context, const char *msg, ...);
@@ -1376,7 +1376,7 @@ raptor_xml_start_element_handler(void *user_data,
   int i;
   raptor_ns_name* element_name;
   raptor_element* element=NULL;
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   /* for storing error info */
   raptor_locator *locator;
 #endif
@@ -1386,7 +1386,7 @@ raptor_xml_start_element_handler(void *user_data,
   
   
   rdf_parser=(raptor_parser*)user_data;
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   locator=&rdf_parser->locator; 
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
@@ -1397,7 +1397,7 @@ raptor_xml_start_element_handler(void *user_data,
   fputc('\n', stderr);
 #endif
 
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
   locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
   locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
@@ -1693,12 +1693,12 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
   raptor_element* element;
   raptor_ns_name *element_name;
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   /* for storing error info */
   raptor_locator *locator=&rdf_parser->locator;
 #endif
 
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
 #endif
@@ -1913,7 +1913,7 @@ raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
 #endif
 
 
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
 /* This is called for a declaration of an unparsed (NDATA) entity */
 static void
 raptor_xml_unparsed_entity_decl_handler(void *user_data,
@@ -1953,7 +1953,7 @@ raptor_xml_external_entity_ref_handler(void *user_data,
 #endif
 
 
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
 #include <stdarg.h>
 
 static const char* xml_warning_prefix="XML parser warning - ";
@@ -2440,7 +2440,7 @@ raptor_new(
 )
 {
   raptor_parser* rdf_parser;
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   XML_Parser xp;
 #endif
 
@@ -2454,7 +2454,7 @@ raptor_new(
   rdf_parser->feature_allow_non_ns_attributes=1;
   rdf_parser->feature_allow_other_parseTypes=1;
 
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   xp=XML_ParserCreate(NULL);
 
   /* create a new parser in the specified encoding */
@@ -2481,7 +2481,7 @@ raptor_new(
   rdf_parser->xp=xp;
 #endif
 
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
   rdf_parser->sax.startElement=raptor_xml_start_element_handler;
   rdf_parser->sax.endElement=raptor_xml_end_element_handler;
 
@@ -2639,10 +2639,10 @@ int
 raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
                   raptor_uri *base_uri) 
 {
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   XML_Parser xp;
 #endif
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
   /* parser context */
   xmlParserCtxtPtr xc=NULL;
 #endif
@@ -2663,7 +2663,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   rdf_parser->base_uri=base_uri;
 
 
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   xp=rdf_parser->xp;
 
   XML_SetBase(xp, RAPTOR_URI_AS_STRING(base_uri));
@@ -2684,7 +2684,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   fh=fopen(filename, "r");
   if(!fh) {
     raptor_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
     XML_ParserFree(xp);
 #endif /* EXPAT */
 #ifdef RAPTOR_URI_TO_FILENAME
@@ -2693,7 +2693,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
     return 1;
   }
 
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
   /* libxml needs at least 4 bytes from the XML content to allow
    * content encoding detection to work */
   len=fread(buffer, 1, 4, fh);
@@ -2725,22 +2725,22 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   while(fh && !feof(fh)) {
     len=fread(buffer, 1, RBS, fh);
     if(len <= 0) {
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
       XML_Parse(xp, buffer, 0, 1);
 #endif
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
       xmlParseChunk(xc, buffer, 0, 1);
 #endif
       break;
     }
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
     rc=XML_Parse(xp, buffer, len, (len < RBS));
     if(len < RBS)
       break;
     if(!rc) /* expat: 0 is failure */
       break;
 #endif
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
     rc=xmlParseChunk(xc, buffer, len, 0);
     if(len < RBS)
       break;
@@ -2751,7 +2751,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
   fclose(fh);
 
 
-#ifdef NEED_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   if(!rc) {
     int xe=XML_GetErrorCode(xp);
 
@@ -2777,7 +2777,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
 
   XML_ParserFree(xp);
 #endif /* EXPAT */
-#ifdef NEED_LIBXML
+#ifdef RAPTOR_XML_LIBXML
   if(rc)
     raptor_parser_error(rdf_parser, "XML Parsing failed");
 

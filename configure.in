@@ -264,12 +264,12 @@ for xml_parser_name in $xml_parser libxml expat; do
     expat)
       if test $have_expat_lib = 1; then
 	need_expat=1
-	AC_DEFINE(NEED_EXPAT)
+	AC_DEFINE(RAPTOR_XML_EXPAT)
         break
       elif test $have_expat_source = 1; then
 	need_expat=1
 	need_expat_source=1
-	AC_DEFINE(NEED_EXPAT)
+	AC_DEFINE(RAPTOR_XML_EXPAT)
         break
       fi
       ;;
@@ -277,12 +277,12 @@ for xml_parser_name in $xml_parser libxml expat; do
     libxml)
       if test $have_libxml_lib = 1; then
 	need_libxml=1
-	AC_DEFINE(NEED_LIBXML)
+	AC_DEFINE(RAPTOR_XML_LIBXML)
         break
       elif test $have_libxml_source = 1; then
 	need_libxml=1
 	need_libxml_source=1
-	AC_DEFINE(NEED_LIBXML)
+	AC_DEFINE(RAPTOR_XML_LIBXML)
         break
       fi
       ;;
