@@ -38,11 +38,7 @@ typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_BLAN
 /* Public functions */
 
 /* Create */
-#ifdef RAPTOR_IN_REDLAND
-raptor_parser* raptor_ntriples_new(librdf_world *world);
-#else
 raptor_parser* raptor_ntriples_new(void);
-#endif
 
 /* Destroy */
 void raptor_ntriples_free(raptor_parser *parser);
@@ -53,11 +49,7 @@ void raptor_ntriples_set_fatal_error_handler(raptor_parser* parser, void *user_d
 void raptor_ntriples_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 
 /* Parsing functions */
-#ifdef RAPTOR_IN_REDLAND
-int raptor_ntriples_parse_file(raptor_parser* parser, librdf_uri *uri, librdf_uri *base_uri);
-#else
-int raptor_ntriples_parse_file(raptor_parser* parser, const char *filename, const char *base_uri);
-#endif
+int raptor_ntriples_parse_file(raptor_parser* parser, raptor_uri *uri, raptor_uri *base_uri);
 
 /* Utility functions */
 const char * raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
