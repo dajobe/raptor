@@ -322,6 +322,8 @@ struct raptor_parser_factory_s {
 
 /* raptor_general.c */
 
+extern const char *raptor_xml_literal_datatype_uri_string;
+
 void raptor_parser_register_factory(const char *name, const char *label, void (*factory) (raptor_parser_factory*));
 
 const unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, const unsigned char* user_bnodeid);
@@ -409,7 +411,7 @@ struct raptor_qname_s {
   raptor_uri *uri;
   /* optional value - used when name is an attribute */
   const unsigned char *value;
-  int value_length;
+  unsigned int value_length;
 };
 
 
@@ -433,7 +435,7 @@ void raptor_terminate_parser_rdfxml (void);
 
 
 /* raptor_utf8.c */
-int raptor_unicode_char_to_utf8(unsigned long c, char *output);
+int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
 int raptor_utf8_to_unicode_char(unsigned long *output, const unsigned char *input, int length);
 int raptor_unicode_is_namestartchar(long c);
 int raptor_unicode_is_namechar(long c);
@@ -532,7 +534,7 @@ struct raptor_sax2_element_s {
   struct raptor_sax2_element_s *parent;
   raptor_qname *name;
   raptor_qname **attributes;
-  int attribute_count;
+  unsigned int attribute_count;
 
   /* value of xml:lang attribute on this element or NULL */
   const unsigned char *xml_language;
@@ -592,7 +594,7 @@ void raptor_free_sax2_element(raptor_sax2_element *element);
 #ifdef RAPTOR_DEBUG
 void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
 #endif
-char *raptor_format_sax2_element(raptor_sax2_element *element, raptor_namespace_stack* nstack, size_t *length_p, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
+unsigned char *raptor_format_sax2_element(raptor_sax2_element *element, raptor_namespace_stack* nstack, size_t *length_p, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
 
 /* raptor_xml_writer.c */
 /* FIXME: NOT PUBLIC YET - should be in raptor.h with RAPTOR_API added */
@@ -600,9 +602,9 @@ raptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler *uri_handler, void *
 void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
 void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
 void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_sax2_element *element);
-void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str, int length);
-void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str, int length);
-unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, int *length_p);
+void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *str, unsigned int length);
+unsigned char* raptor_xml_writer_as_string(raptor_xml_writer* xml_writer, unsigned int *length_p);
 
 
 /* n3_parser.y and n3_lexer.l */
