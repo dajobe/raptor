@@ -500,6 +500,9 @@ struct raptor_xml_parser_s {
 
   /* writer for building parseType="Literal" content */
   raptor_xml_writer* xml_writer;
+
+  /* stack of namespaces, most recently added at top */
+  raptor_namespace_stack namespaces;
 };
 
 
@@ -717,7 +720,7 @@ raptor_xml_start_element_handler(void *user_data,
            !strncmp(namespace_name, raptor_rdf_ms_uri, raptor_rdf_ms_uri_len)) {
           raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
         } else {
-          raptor_namespaces_start_namespace_full(&rdf_parser->namespaces,
+          raptor_namespaces_start_namespace_full(&rdf_xml_parser->namespaces,
                                                  prefix, namespace_name,
                                                  sax2->depth);
         }
@@ -805,7 +808,7 @@ raptor_xml_start_element_handler(void *user_data,
 
 
   /* Now can recode element name with a namespace */
-  sax2_element->name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
+  sax2_element->name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
                                       raptor_parser_simple_error, rdf_parser);
   if(!sax2_element->name) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -842,7 +845,7 @@ raptor_xml_start_element_handler(void *user_data,
         continue;
 
       /* namespace-name[i] stored in named_attrs[i] */
-      attr=raptor_new_qname(&rdf_parser->namespaces,
+      attr=raptor_new_qname(&rdf_xml_parser->namespaces,
                             atts[i<<1], atts[(i<<1)+1],
                             raptor_parser_simple_error, rdf_parser);
       if(!attr) { /* failed - tidy up and return */
@@ -1076,7 +1079,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
     raptor_update_document_locator(rdf_parser);
 
 #ifdef RAPTOR_DEBUG
-    raptor_qname *element_name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
+    raptor_qname *element_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
                                                 raptor_parser_simple_error, rdf_parser);
     if(!element_name) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -1094,7 +1097,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   
   element=raptor_element_pop(rdf_xml_parser);
 
-  raptor_namespaces_end_for_depth(&rdf_parser->namespaces, rdf_xml_parser->sax2->depth);
+  raptor_namespaces_end_for_depth(&rdf_xml_parser->namespaces, rdf_xml_parser->sax2->depth);
 
   if(element) {
     if(element->parent) {
@@ -1273,6 +1276,8 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 static int
 raptor_xml_parse_start(raptor_parser* rdf_parser)
 {
+  raptor_uri_handler *uri_handler;
+  void *uri_context;
   raptor_uri *uri=rdf_parser->base_uri;
 #ifdef RAPTOR_XML_EXPAT
   XML_Parser xp;
@@ -1301,6 +1306,14 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
 #endif
 
 #endif
+
+  raptor_namespaces_free(&rdf_xml_parser->namespaces);
+
+  raptor_uri_get_handler(&uri_handler, &uri_context);
+  raptor_namespaces_init(&rdf_xml_parser->namespaces,
+                         uri_handler, uri_context,
+                         raptor_parser_simple_error, rdf_parser, 
+                         1);
 
   return 0;
 }
@@ -1350,6 +1363,9 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 #endif
 
   raptor_free_set(rdf_xml_parser->id_set);
+
+  raptor_namespaces_free(&rdf_xml_parser->namespaces);
+
 }
 
 
