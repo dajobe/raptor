@@ -326,6 +326,9 @@ raptor_free_parser(raptor_parser* rdf_parser)
   if(rdf_parser->base_uri)
     raptor_free_uri(rdf_parser->base_uri);
 
+  if(rdf_parser->default_generate_id_handler_prefix)
+    RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
+
   raptor_namespaces_free(&rdf_parser->namespaces);
 
   RAPTOR_FREE(raptor_parser, rdf_parser);
