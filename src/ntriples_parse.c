@@ -660,7 +660,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
         }
 
         if(object_literal_datatype && object_literal_language) {
-          raptor_parser_error(rdf_parser, "Typed literal used with a language - ignoring the language");
+          raptor_parser_warning(rdf_parser, "Typed literal used with a language - ignoring the language");
           object_literal_language=NULL;
         }
           
