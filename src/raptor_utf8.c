@@ -701,11 +701,11 @@ raptor_utf8_is_nfc(const unsigned char *input, size_t length)
   norm=(unsigned char*)g_utf8_normalize((const gchar*)input, length, G_NORMALIZE_NFKC);
   for(i=0; i<length; i++)
     if(input[i] != norm[i]) {
-      free(norm);
+      SYSTEM_FREE(norm);
       return 0;
     }
   
-  free(norm);
+  SYSTEM_FREE(norm);
 #endif
 
   return 1;
