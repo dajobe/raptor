@@ -317,20 +317,24 @@ typedef enum {
   RDF_ATTR_bagID           = 4, /* " rdf:bagID */
   RDF_ATTR_resource        = 5, /* " rdf:resource */
   RDF_ATTR_parseType       = 6, /* " rdf:parseType */
+  RDF_ATTR_nodeID          = 7, /* " rdf:nodeID */
   /* rdf:Property-s */
-  RDF_ATTR_type            = 7, /* " rdf:type -- a property in RDF Model */
-  RDF_ATTR_value           = 8, /* " rdf:value -- a property in RDF model */
-  RDF_ATTR_subject         = 9, /* " rdf:subject -- a property in RDF model */
-  RDF_ATTR_predicate       = 10, /* " rdf:predicate -- a property in RDF model */
-  RDF_ATTR_object          = 11, /* " rdf:object -- a property in RDF model */
+  RDF_ATTR_type            = 8, /* " rdf:type -- a property in RDF Model */
+  RDF_ATTR_value           = 9, /* " rdf:value -- a property in RDF model */
+  RDF_ATTR_subject         = 10, /* " rdf:subject -- a property in RDF model */
+  RDF_ATTR_predicate       = 11, /* " rdf:predicate -- a property in RDF model */
+  RDF_ATTR_object          = 12, /* " rdf:object -- a property in RDF model */
+  RDF_ATTR_first           = 13, /* " rdf:object -- a property in RDF model */
+  RDF_ATTR_rest            = 14, /* " rdf:object -- a property in RDF model */
   /* rdfs:Class-s */
-  RDF_ATTR_Seq             = 12, /* " rdf:Seq -- a class in RDF Model */
-  RDF_ATTR_Bag             = 13, /* " rdf:Bag -- a class in RDF model */
-  RDF_ATTR_Alt             = 14, /* " rdf:Alt -- a class in RDF model */
-  RDF_ATTR_Statement       = 15, /* " rdf:Statement -- a class in RDF model */
-  RDF_ATTR_Property        = 16, /* " rdf:Property -- a class in RDF model */
+  RDF_ATTR_Seq             = 15, /* " rdf:Seq -- a class in RDF Model */
+  RDF_ATTR_Bag             = 16, /* " rdf:Bag -- a class in RDF model */
+  RDF_ATTR_Alt             = 17, /* " rdf:Alt -- a class in RDF model */
+  RDF_ATTR_Statement       = 18, /* " rdf:Statement -- a class in RDF model */
+  RDF_ATTR_Property        = 19, /* " rdf:Property -- a class in RDF model */
+  RDF_ATTR_List            = 20, /* " rdf:List -- a class in RDF model */
 
-  RDF_ATTR_LAST            = RDF_ATTR_Property
+  RDF_ATTR_LAST            = RDF_ATTR_List
 } rdf_attr;
 
 
@@ -354,18 +358,22 @@ static const struct {
   { "bagID",           RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
   { "resource",        RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
   { "parseType",       RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
+  { "nodeID",          RAPTOR_IDENTIFIER_TYPE_UNKNOWN  },
   /* rdf:Property-s */
   { "type",            RAPTOR_IDENTIFIER_TYPE_RESOURCE },
   { "value",           RAPTOR_IDENTIFIER_TYPE_LITERAL  },
   { "subject",         RAPTOR_IDENTIFIER_TYPE_LITERAL  }, /* Useless */
   { "predicate",       RAPTOR_IDENTIFIER_TYPE_LITERAL  }, /* Useless */
   { "object",          RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "first",           RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "rest",            RAPTOR_IDENTIFIER_TYPE_LITERAL  },
   /* rdfs:Class-s */
   { "Seq",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
   { "Bag",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
   { "Alt",             RAPTOR_IDENTIFIER_TYPE_LITERAL  },
   { "Statement",       RAPTOR_IDENTIFIER_TYPE_LITERAL  },
-  { "Property",        RAPTOR_IDENTIFIER_TYPE_LITERAL  }
+  { "Property",        RAPTOR_IDENTIFIER_TYPE_LITERAL  },
+  { "List",            RAPTOR_IDENTIFIER_TYPE_LITERAL  }
 };
 
 /* In above 'Useless' indicates it generates parts of a reified statement
@@ -3550,9 +3558,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
         
 
-        if(element->rdf_attr[RDF_ATTR_ID] &&
-           element->rdf_attr[RDF_ATTR_about]) {
-          raptor_parser_warning(rdf_parser, "Found rdf:ID and rdf:about attrs on element %s - expected only one.", el_name);
+        if((element->rdf_attr[RDF_ATTR_ID]!=NULL) +
+           (element->rdf_attr[RDF_ATTR_about]!=NULL) +
+           (element->rdf_attr[RDF_ATTR_nodeID]!=NULL)>1) {
+          raptor_parser_warning(rdf_parser, "Found multiple attribute of rdf:ID, rdf:about and rdf:nodeID attrs on element %s - expected only one.", el_name);
         }
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
@@ -3565,6 +3574,11 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.uri=raptor_make_uri(raptor_inscope_base_uri(rdf_parser), element->rdf_attr[RDF_ATTR_about]);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
+        } else if (element->rdf_attr[RDF_ATTR_nodeID]) {
+          element->subject.uri=element->rdf_attr[RDF_ATTR_nodeID];
+          element->rdf_attr[RDF_ATTR_nodeID]=NULL;
+          element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+          element->subject.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
         } else if (element->parent && 
                    (element->parent->object.uri || element->parent->object.id)) {
           /* copy from parent (property element), it has a URI for us */
@@ -3875,7 +3889,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
 
-          if(element->rdf_attr[RDF_ATTR_resource]) {
+          if(element->rdf_attr[RDF_ATTR_resource] ||
+             element->rdf_attr[RDF_ATTR_nodeID]) {
             /* Done - wait for end of this element to end in order to 
              * check the element was empty as expected */
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
@@ -4156,6 +4171,20 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                                     element->rdf_attr[RDF_ATTR_resource]);
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
                 element->object.uri_source=RAPTOR_URI_SOURCE_URI;
+                element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+
+                raptor_process_property_attributes(rdf_parser, element, 
+                                                   element->parent, 
+                                                   &element->object);
+
+              } else if(element->rdf_attr[RDF_ATTR_nodeID]) {
+                int idlen=strlen(element->rdf_attr[RDF_ATTR_nodeID]);
+ 
+                element->object.uri=(char*)LIBRDF_MALLOC(cstring, idlen);
+                /* FIXME check return */
+                strcpy((char*)element->object.uri, element->rdf_attr[RDF_ATTR_nodeID]);
+                element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+                element->object.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
                 element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
 
                 raptor_process_property_attributes(rdf_parser, element, 
