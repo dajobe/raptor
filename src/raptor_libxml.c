@@ -156,7 +156,14 @@ raptor_libxml_startDocument(void *ctx) {
 static void
 raptor_libxml_endDocument(void *ctx) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
+  xmlParserCtxtPtr xc=raptor_get_libxml_context(rdf_parser);
+
   endDocument(raptor_get_libxml_context(rdf_parser));
+
+  if(xc->myDoc) {
+    xmlFreeDoc(xc->myDoc);
+    xc->myDoc=NULL;
+  }
 }
 
 
