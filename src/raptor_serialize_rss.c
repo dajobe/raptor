@@ -114,12 +114,12 @@ typedef struct {
 static raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE]={
   { NULL,                     NULL,  },
   { NULL,                     NULL,  },
-  { RSS0_91_NAMESPACE_URI,    NULL,  },
-  { NULL,                     NULL,  },
-  { RSS1_0_NAMESPACE_URI,     "rss", },
-  { ATOM0_3_NAMESPACE_URI,    "atom",},
-  { DC_NAMESPACE_URI,         "dc",  },
-  { RSS2_0_ENC_NAMESPACE_URI, NULL,  }
+  { RSS0_91_NAMESPACE_URI,    "rss091", },
+  { NULL,                     NULL,   },
+  { RSS1_0_NAMESPACE_URI,     NULL,   }, /* default namespace on writing */
+  { ATOM0_3_NAMESPACE_URI,    "atom", },
+  { DC_NAMESPACE_URI,         "dc",   },
+  { RSS2_0_ENC_NAMESPACE_URI, "rss2", }
 };
 
 
@@ -1865,23 +1865,14 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
   raptor_iostream_write_string(iostr, "  </channel>\n");
 
-  for(i=RAPTOR_RSS_CHANNEL+1; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+  for(i=RAPTOR_RSS_CHANNEL; i< RAPTOR_RSS_COMMON_SIZE; i++) {
     if(!rss_parser->common[i].fields_count)
       continue;
 
-    RAPTOR_DEBUG3("Emitting type %i - %s\n", i, raptor_rss_types_info[i].name);
-
-    raptor_rss10_emit_item(serializer, &rss_parser->common[i], xml_writer, iostr);
-
-    /*
     if(i != RAPTOR_RSS_CHANNEL) {
-      raptor_rss10_emit_block(rss_serializer,
-                                   &rss_parser->common[RAPTOR_RSS_CHANNEL].identifier,
-                                   raptor_rss_types_info[i].uri, 0,
-                                   &rss_parser->common[i].identifier,
-                                   iostr);
+      RAPTOR_DEBUG3("Emitting type %i - %s\n", i, raptor_rss_types_info[i].name);
+      raptor_rss10_emit_item(serializer, &rss_parser->common[i], xml_writer, iostr);
     }
-    */
   }
 
   raptor_xml_writer_end_element(xml_writer, element);
