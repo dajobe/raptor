@@ -136,7 +136,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
   int l;
   size_t new_len=0;
   const unsigned char *p;
-  char *q;
+  unsigned char *q;
   int unichar_len;
   unsigned long unichar;
 
@@ -182,7 +182,7 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
   if(!buffer)
     return new_len;
   
-  for(l=len, p=string, q=(char*)buffer; l; p++, l--) {
+  for(l=len, p=string, q=buffer; l; p++, l--) {
     if(*p > 0x7f) {
       unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
     } else {
@@ -191,19 +191,19 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
     }
 
     if(unichar == '&') {
-      strncpy(q, "&amp;", 5);
+      strncpy((char*)q, "&amp;", 5);
       q+= 5;
     } else if (unichar == '<') {
-      strncpy(q, "&lt;", 4);
+      strncpy((char*)q, "&lt;", 4);
       q+= 4;
     } else if (!quote && unichar == '>') {
-      strncpy(q, "&gt;", 4);
+      strncpy((char*)q, "&gt;", 4);
       q+= 4;
     } else if (quote && unichar == (unsigned long)quote) {
       if(quote == '\'')  
-        strncpy(q, "&apos;", 6);
+        strncpy((char*)q, "&apos;", 6);
       else
-        strncpy(q, "&quot;", 6);
+        strncpy((char*)q, "&quot;", 6);
       q+= 6;
     } else if (unichar == 0x0d ||
                (quote && (unichar == 0x09 || unichar == 0x0a))) {
@@ -214,10 +214,10 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
       if(unichar == 0x09)
         *q++ = '9';
       else
-        *q++ = 'A'+unichar-0x0a;
+        *q++ = 'A'+ ((char)unichar-0x0a);
       *q++= ';';
     } else {
-      strncpy(q, (char*)p, unichar_len);
+      strncpy((char*)q, (const char*)p, unichar_len);
       q+= unichar_len;
     }
 
