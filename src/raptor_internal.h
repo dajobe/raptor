@@ -46,6 +46,11 @@ extern "C" {
 #endif
 
 
+/* Can be over-ridden or undefined in a config.h file or -Ddefine */
+#ifndef RAPTOR_INLINE
+#define RAPTOR_INLINE inline
+#endif
+
 #ifdef LIBRDF_DEBUG
 #define RAPTOR_DEBUG 1
 #endif
