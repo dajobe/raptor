@@ -59,7 +59,7 @@ STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
-libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
+libraptor_la_SOURCES = raptor_parse.c raptor_rdfxml.c ntriples_parse.c \
 raptor_uri.c raptor_expat.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
