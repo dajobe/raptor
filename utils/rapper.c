@@ -49,6 +49,10 @@
 #include "raptor.h"
 #include "ntriples.h"
 
+#ifdef RAPTOR_IN_REDLAND
+#include <librdf.h>
+#endif
+
 
 #ifdef NEED_OPTIND_DECLARATION
 extern int optind;
