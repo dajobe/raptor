@@ -10,7 +10,7 @@
 
   <doap:Project>
     <doap:name>Raptor</doap:name>
-    <doap:summary xml:lang="en">RDF Parser Toolkit Library.</doap:summary>
+    <doap:summary xml:lang="en">Raptor RDF Parser Toolkit Library.</doap:summary>
 
     <doap:description xml:lang="en">Raptor is the RDF Parser Toolkit for
     Redland that provides a set of Resource Description Framework (RDF)
