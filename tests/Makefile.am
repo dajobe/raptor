@@ -116,7 +116,7 @@ check-bad-rdf check-bad-nfc-rdf check-warn-rdf check-warn-nfc-rdf \
 check-nt check-bad-nt check-turtle
 
 check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
-	@result=0; \
+	@set +e; result=0; \
 	$(ECHO) "Testing legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
@@ -150,10 +150,10 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
-	exit $$result
+	set -e; exit $$result
 
 check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
-	@result=0; \
+	@set +e; result=0; \
 	$(ECHO) "Testing rdf/xml known by context"; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
@@ -168,10 +168,10 @@ check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
-	exit $$result
+	set -e; exit $$result
 
 check-scan-rdf: $(top_builddir)/rapper $(RDF_SCAN_TEST_FILES)
-	@result=0; \
+	@set +e; result=0; \
 	$(ECHO) "Testing rdf/xml inside other XML"; \
 	for test in $(RDF_SCAN_TEST_FILES); do \
 	  name=`echo $$test | sed -e 's/\..*//'` ; \
@@ -186,7 +186,7 @@ check-scan-rdf: $(top_builddir)/rapper $(RDF_SCAN_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
-	exit $$result
+	set -e; exit $$result
 
 check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
 	@set +e; result=0; \
@@ -283,7 +283,7 @@ check-warn-nfc-rdf: $(top_builddir)/rapper $(RDF_WARN_NFC_TEST_FILES)
 	set -e; exit $$result
 
 check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
-	@result=0; \
+	@set +e; result=0; \
 	$(ECHO) "Testing N-Triples"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
@@ -297,7 +297,7 @@ check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
-	exit $$result
+	set -e; exit $$result
 
 check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
 	@set +e; result=0; \
@@ -325,7 +325,7 @@ check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
 	set -e; exit $$result
 
 check-turtle: $(top_builddir)/rapper $(NT_TEST_FILES)
-	@result=0; \
+	@set +e; result=0; \
 	$(ECHO) "Testing Turtle with N-Triples tests"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
@@ -339,5 +339,4 @@ check-turtle: $(top_builddir)/rapper $(NT_TEST_FILES)
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
-	exit $$result
-
+	set -e; exit $$result
