@@ -79,7 +79,7 @@ check-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	  elif test $$name = rdfs-namespace -o $$name = rdf-schema; then \
 	    baseuri=$(RDFS_NS_URI); \
 	  else \
-	    baseuri=$(BASE_URI)$$test; \
+	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
@@ -104,7 +104,7 @@ check-assume-rdf: $(top_builddir)/rdfdump $(RDF_ASSUME_TEST_FILES)
 	echo "Testing rdf/xml known by context"; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
-	  baseuri=$(BASE_URI)$$test; \
+	  baseuri=$(BASE_URI)$$name.rdf; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdump -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
@@ -121,7 +121,7 @@ check-bad-rdf: $(top_builddir)/rdfdump $(RDF_TEST_FILES)
 	echo "Testing bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
-	  baseuri=$(BASE_URI)$$test; \
+	  baseuri=$(BASE_URI)$$name.rdf; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdump -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  status=$$?; \
