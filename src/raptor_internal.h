@@ -218,9 +218,6 @@ struct raptor_parser_s {
   /* base URI of RDF/XML */
   raptor_uri *base_uri;
 
-  /* Reading from this file */
-  FILE *fh;
-
   /* static statement for use in passing to user code */
   raptor_statement statement;
 
