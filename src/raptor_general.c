@@ -1819,7 +1819,8 @@ main(int argc, char *argv[])
     raptor_uri *feature_uri;
     int fn;
     
-    if(raptor_features_enumerate(i, &feature_name, &feature_uri, &feature_label))
+    if(raptor_features_enumerate((raptor_feature)i,
+                                 &feature_name, &feature_uri, &feature_label))
       break;
 
 #ifdef RAPTOR_DEBUG
