@@ -92,12 +92,12 @@
  *
  */
 
-const char * const raptor_xml_namespace_uri=(const char *)"http://www.w3.org/XML/1998/namespace";
-const char * const raptor_rdf_namespace_uri=(const char *)RAPTOR_RDF_MS_URI;
+const unsigned char * const raptor_xml_namespace_uri=(const unsigned char *)"http://www.w3.org/XML/1998/namespace";
+const unsigned char * const raptor_rdf_namespace_uri=(const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 const unsigned int raptor_rdf_namespace_uri_len=43;
-const char * const raptor_rdf_schema_namespace_uri=(const char *)RAPTOR_RDF_SCHEMA_URI;
-const char * const raptor_xmlschema_datatypes_namespace_uri=(const char *)RAPTOR_XMLSCHEMA_DATATYPES_URI;
-const char * const raptor_owl_namespace_uri=(const char *)RAPTOR_OWL_URI;
+const unsigned char * const raptor_rdf_schema_namespace_uri=(const unsigned char *)"http://www.w3.org/2000/01/rdf-schema#";
+const unsigned char * const raptor_xmlschema_datatypes_namespace_uri=(const unsigned char *)"http://www.w3.org/2001/XMLSchema#";
+const unsigned char * const raptor_owl_namespace_uri=(const unsigned char *)"http://www.w3.org/2002/07/owl#";
 
 
 /**
