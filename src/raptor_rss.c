@@ -902,12 +902,16 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         else
           update_item=&rss_parser->common[rss_parser->current_type];
         
-        RAPTOR_DEBUG3("Added URI to field %s of type %s\n", raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
-        if(!update_item->fields[rss_parser->current_field] &&
-           !update_item->uri_fields[rss_parser->current_field])
-          update_item->fields_count++;
-        update_item->uri_fields[rss_parser->current_field]=uri;
-        uri=NULL;
+        if(rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN)
+          RAPTOR_DEBUG2("Cannot add URI from alternate attribute to type %s unknown field\n", raptor_rss_types_info[rss_parser->current_type].name);
+        else {
+          RAPTOR_DEBUG3("Added URI to field %s of type %s\n", raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
+          if(!update_item->fields[rss_parser->current_field] &&
+             !update_item->uri_fields[rss_parser->current_field])
+            update_item->fields_count++;
+          update_item->uri_fields[rss_parser->current_field]=uri;
+          uri=NULL;
+        }
       }
       
       if(uri)
@@ -2048,10 +2052,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   }
 
 
-  /*
   if(item->enclosure)
     raptor_rss10_emit_enclosure(rss_serializer, item->enclosure);
-  */
 
 
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"  ", 2);
