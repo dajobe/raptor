@@ -93,7 +93,7 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
     raptor_uri* uri=NULL;
 
     filename=raptor_uri_uri_string_to_filename_fragment(uri_string, &fragment);
-    if(!access(filename, R_OK)) {
+    if(filename && !access(filename, R_OK)) {
       uri=(raptor_uri*)raptor_uri_filename_to_uri_string(filename);
       /* If there was a fragment, reattach it to the new URI */
       if(fragment) {
