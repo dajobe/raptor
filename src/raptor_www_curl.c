@@ -136,7 +136,7 @@ raptor_www_curl_fetch(raptor_www *www)
 
   /* Insert HTTP Accept: header only */
   if(www->http_accept) {
-    curl_slist_append(slist, (const char*)www->http_accept);
+    slist=curl_slist_append(slist, (const char*)www->http_accept);
     curl_easy_setopt(www->curl_handle, CURLOPT_HTTPHEADER, slist);
   }
   
