@@ -312,7 +312,7 @@ raptor_www_file_fetch(raptor_www *www)
   int status=0;
   char *uri_string=raptor_uri_as_string(www->uri);
   
-  filename=raptor_uri_uri_string_to_filename(uri_string);
+  filename=raptor_uri_uri_string_to_filename(uri_string, NULL);
   if(!filename) {
     raptor_www_error(www, "Not a file: URI");
     return 1;
