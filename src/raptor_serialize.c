@@ -538,6 +538,9 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
   if(rdf_serializer->base_uri)
     raptor_free_uri(rdf_serializer->base_uri);
 
+  if(rdf_serializer->feature_start_uri)
+    raptor_free_uri(rdf_serializer->feature_start_uri);
+
   RAPTOR_FREE(raptor_serializer, rdf_serializer);
 }
 
@@ -578,7 +581,7 @@ raptor_serializer_features_enumerate(const raptor_feature feature,
 
 
 /**
- * raptor_set_serializer_feature - Set various serializer features
+ * raptor_set_serializer_feature - Set serializer features with integer values
  * @serializer: &raptor_serializer serializer object
  * @feature: feature to set from enumerated &raptor_feature values
  * @value: integer feature value (0 or larger)
@@ -609,8 +612,45 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
 
 
 /**
+ * raptor_serializer_set_feature_string - Set serializer features with string values
+ * @serializer: &raptor_serializer serializer object
+ * @feature: feature to set from enumerated &raptor_feature values
+ * @value: integer feature value (0 or larger)
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Return value: non 0 on failure or if the feature is unknown
+ **/
+int
+raptor_serializer_set_feature_string(raptor_serializer *serializer, 
+                                     raptor_feature feature, 
+                                     const unsigned char *value)
+{
+  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  if(!value_is_string)
+    return -1;
+
+  switch(feature) {
+    case RAPTOR_FEATURE_START_URI:
+      if(value)
+        serializer->feature_start_uri=raptor_new_uri(value);
+      else
+        return -1;
+      break;
+
+    default:
+      return -1;
+      break;
+  }
+
+  return 0;
+}
+
+
+/**
  * raptor_serializer_get_feature - Get various serializer features
  * @serializer: &raptor_serializer serializer object
+ * @feature: feature to get value
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -634,6 +674,37 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
   }
   
   return result;
+}
+
+
+/**
+ * raptor_serializer_get_feature_string - Get serializer features with string values
+ * @serializer: &raptor_serializer serializer object
+ * @feature: feature to get value
+ * 
+ * The allowed features are available via raptor_features_enumerate().
+ *
+ * Return value: feature value or NULL for an illegal feature or no value
+ **/
+const unsigned char *
+raptor_serializer_get_feature_string(raptor_serializer *serializer, 
+                                     raptor_feature feature)
+{
+  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  if(!value_is_string)
+    return NULL;
+  
+  switch(feature) {
+    case RAPTOR_FEATURE_START_URI:
+      return raptor_uri_as_string(serializer->feature_start_uri);
+      break;
+
+    default:
+      return NULL;
+      break;
+  }
+
+  return NULL;
 }
 
 
