@@ -1237,7 +1237,7 @@ raptor_element_push(raptor_parser *rdf_parser, raptor_element* element)
 static void
 raptor_free_element(raptor_element *element)
 {
-  unsigned int i;
+  int i;
 
   for (i=0; i < element->attribute_count; i++)
     if(element->attributes[i])
@@ -1279,7 +1279,7 @@ raptor_print_element(raptor_element *element, FILE* stream)
   fputc('\n', stream);
 
   if(element->attribute_count) {
-    unsigned int i;
+    int i;
 
     fputs(" attributes: ", stream);
     for (i = 0; i < element->attribute_count; i++) {
@@ -1300,7 +1300,7 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
   int length;
   char *buffer;
   char *ptr;
-  unsigned int i;
+  int i;
 
   /* get length of element name (and namespace-prefix: if there is one) */
   length=element->name->local_name_length + 1; /* < */
@@ -1399,7 +1399,7 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_locator *locator;
 #endif
   int non_nspaced_count=0;
-  const char *xml_language=NULL;
+  char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
   
   
@@ -1441,8 +1441,12 @@ raptor_xml_start_element_handler(void *user_data,
       }
 
       if(!strcmp(atts[i], "xml:lang")) {
-        xml_language=atts[i+1];
-        atts[i]=NULL; 
+        xml_language=(char*)LIBRDF_MALLOC(cstring, strlen(atts[i+1])+1);
+        if(!xml_language) {
+          raptor_parser_fatal_error(rdf_parser, "Out of memory");
+          return;
+        }
+        strcpy(xml_language, atts[i+1]);
         continue;
       }
       
@@ -2214,7 +2218,7 @@ raptor_xml_new_entity(raptor_parser* rdf_parser,
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return NULL;
     }
-    strncpy(ent->entity.content, content, ent->entity.length);
+    strncpy(ent->entity.content, content, ent->entity.length+1);
   } else {
     ent->entity.length = 0;
     ent->entity.content = NULL;
@@ -2829,7 +2833,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
      object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     language=raptor_inscope_xml_language(rdf_parser);
     if(!object_uri)
-      object_uri=(void*)empty_literal;
+      object_uri=(raptor_uri*)empty_literal;
   }
   
   statement->subject=subject_uri ? (void*)subject_uri : (void*)subject_id;
@@ -2973,13 +2977,13 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     fputc('"', stream);
-    raptor_print_ntriples_string(stream, statement->object, '"');
+    raptor_print_ntriples_string(stream, (const char*)statement->object, '"');
     fputc('"', stream);
     if(statement->object_literal_language)
       fprintf(stream, "-%s",  (const char*)statement->object_literal_language);
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     fputs("xml\"", stream);
-    raptor_print_ntriples_string(stream, statement->object, '"');
+    raptor_print_ntriples_string(stream, (const char*)statement->object, '"');
     fputc('"', stream);
     if(statement->object_literal_language)
       fprintf(stream, "-%s",  (const char*)statement->object_literal_language);
@@ -3187,7 +3191,7 @@ raptor_new_identifier(raptor_identifier_type type,
   if(id) {
     int len=strlen(id);
     
-    new_id=LIBRDF_MALLOC(cstring, len+1);
+    new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
     if(!len) {
       if(new_uri)
         LIBRDF_FREE(cstring, new_uri);
@@ -3255,7 +3259,7 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
   if(src->id) {
     int len=strlen(src->id);
     
-    new_id=LIBRDF_MALLOC(cstring, len+1);
+    new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
     if(!len) {
       if(new_uri)
         LIBRDF_FREE(cstring, new_uri);
@@ -3308,7 +3312,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                    raptor_element *attributes_element,
                                    raptor_element *resource_element)
 {
-  unsigned int i;
+  int i;
 
   /* Process attributes as propAttr* = * (propName="string")*
    */
@@ -3631,7 +3635,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               }
 
               len=strlen(idList);
-              new_id=LIBRDF_MALLOC(cstring, len+1);
+              new_id=(char*)LIBRDF_MALLOC(cstring, len+1);
               if(!len) {
                 if(new_id)
                   LIBRDF_FREE(cstring, new_id);
