@@ -4,7 +4,10 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+ * N-Triples
+ * See my notes at http://purl.org/net/dajobe/2001/06/ntriples/
+ *
+ * Copyright (C) 2001 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -103,15 +106,6 @@ extern int errno;
 #include <ntriples.h>
 
 
-
-
-/*
-
-  N-Triples
-
-  See my notes at http://purl.org/net/dajobe/2001/06/ntriples/
-
-*/
 
 
 /* Prototypes for local functions */
