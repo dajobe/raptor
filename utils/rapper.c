@@ -36,12 +36,12 @@
 #include <stdlib.h>
 #endif
 
+#include "raptor.h"
+#include "ntriples.h"
+
 #ifdef LIBRDF_INTERNAL
 #include <librdf.h>
 #endif
-
-#include <raptor.h>
-#include <ntriples.h>
 
 
 #ifdef NEED_OPTIND_DECLARATION

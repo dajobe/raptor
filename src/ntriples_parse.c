@@ -37,6 +37,12 @@
 #include <stdlib.h>
 #endif
 
+/* Raptor includes */
+#include "raptor.h"
+#include "raptor_internal.h"
+#include "ntriples.h"
+
+
 #ifndef WIN32
 extern int errno;
 #endif
@@ -100,13 +106,6 @@ extern int errno;
 #include <stdlib.h>
 #undef HAVE_STDLIB_H
 #endif
-
-
-/* Raptor includes */
-#include <raptor.h>
-#include <ntriples.h>
-
-
 
 
 /* Prototypes for local functions */
