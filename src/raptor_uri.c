@@ -55,8 +55,6 @@
 #endif
 
 
-#ifndef STANDALONE
-
 static raptor_uri_handler *raptor_uri_current_uri_handler;
 static void *raptor_uri_current_uri_context;
 
@@ -747,7 +745,6 @@ raptor_uri_init(void)
   raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
 }
 
-#endif
 
 
 
