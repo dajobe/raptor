@@ -175,6 +175,7 @@ RAPTOR_API void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API raptor_uri* raptor_uri_copy(raptor_uri *uri);
 RAPTOR_API char* raptor_uri_as_string(raptor_uri *uri);
+RAPTOR_API char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p);
 
 /* Make an xml:base-compatible URI from an existing one */
 RAPTOR_API raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
@@ -206,6 +207,7 @@ typedef void (*raptor_free_uri_func) (void *context, raptor_uri *uri);
 typedef int (*raptor_uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
 typedef raptor_uri* (*raptor_uri_copy_func) (void *context, raptor_uri *uri);
 typedef char* (*raptor_uri_as_string_func)(void *context, raptor_uri *uri);
+typedef char* (*raptor_uri_as_counted_string_func)(void *context, raptor_uri *uri, size_t* len_p);
 
 typedef struct {
   /* constructors */
@@ -219,6 +221,7 @@ typedef struct {
   raptor_uri_equals_func                  uri_equals;
   raptor_uri_copy_func                    uri_copy; /* well, copy constructor */
   raptor_uri_as_string_func               uri_as_string;
+  raptor_uri_as_counted_string_func       uri_as_counted_string;
   int initialised;
 } raptor_uri_handler;
 
