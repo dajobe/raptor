@@ -1026,6 +1026,51 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 }
 
 
+/**
+ * raptor_new_uri_for_retrieval - Turn a URI into one suitable for retrieval
+ * @old_uri: URI to transform
+ * 
+ * Takes an existing URI and ensures it has a path (default /) and has
+ * no fragment - URI retrieval does not use the fragment part.
+ * 
+ * Return value: new URI object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_for_retrieval(raptor_uri* old_uri)
+{
+  char *uri_string=raptor_uri_as_string(old_uri);
+  char *buffer;
+  int buffer_len=strlen(uri_string)+1;
+  char *scheme;
+  char *authority;
+  char *path;
+  char *query;
+  char *fragment;
+  char *new_uri_string;
+  raptor_uri* new_uri;
+
+  buffer=(char*)RAPTOR_MALLOC(cstring, buffer_len);
+  if(!buffer)
+    return NULL;
+  
+  raptor_uri_parse (uri_string, buffer, buffer_len,
+                    &scheme, &authority, &path, &query, &fragment);
+
+  if(!path)
+    path="/";
+  
+  new_uri_string=raptor_uri_construct(scheme, authority, path, query, NULL);
+  RAPTOR_FREE(cstring, buffer);
+  if(!new_uri_string)
+    return NULL;
+  
+  new_uri=raptor_new_uri(new_uri_string);
+  RAPTOR_FREE(cstring, new_uri_string);
+
+  return new_uri;
+}
+
+
 void
 raptor_uri_init_default_handler(raptor_uri_handler *handler) 
 {
