@@ -1,4 +1,136 @@
+2004-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_clear_rss_items): Renamed from
+	raptor_free_rss_items. 	Use raptor_free_rss_item.
+	(raptor_rss_context_terminate): Rename call to raptor_clear_rss_items
+
+	* raptor_rss.c (raptor_clear_rss_item): Renamed from
+	raptor_free_rss_item to empty a static raptor_rss_item.
+	(raptor_free_rss_item): Same as above but deallocates the item too.
+	(raptor_free_rss_items, raptor_rss_context_terminate): Use
+	raptor_clear_rss_item.
+
+	* raptor_rss.c (raptor_rss10_move_statements): Add item arg.
+	Remove auto-fail with type RAPTOR_RSS_ITEM, and now look in the
+	sequence of items for instances of this type.
+	Count and report moved statements counts when debugging.
+	(raptor_rss10_store_statement): Only print out individal statement
+	moves when debugging.
+	(raptor_rss10_serialize_statement): When typed node is an item, get
+	the URI from the entry in the sequence if it exists, maybe move the
+	statements then.
+	(raptor_rss10_build_items): Move any item statements once the item
+	URIs have been made.
+	(raptor_rss10_serialize_end): Report triples remaining when
+	debugging.
+	Remove last raw use of raptor_iostream*
+
+2004-12-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Fix 'enc' prefix.
+	Add rdf_RDF_element and xml_writer to raptor_rss10_serializer_context.
+	(raptor_rss10_serialize_init): No need for nstack here.
+	(raptor_rss10_serialize_terminate): Delete nstack tidy.
+	Tidy up xml_writer and type qnames.
+	(raptor_rss10_move_statements): Note don't do rss items.
+	(raptor_rss10_build_items): Build list of raptor_rss_item* in
+	rss_serializer->items.
+	(raptor_rss10_build_xml_names): Added to make namespaces and qnames
+	for fields and types; pulled out of raptor_rss10_build_items.
+	(raptor_rss10_emit_item): Delete xml-writer, iostr args.
+	Replace more raptor_iostream* functions with raptor_xml_writer*
+	equivalents.
+	(raptor_rss10_serialize_end): Extra nl at end
+
+	* raptor_rss.c: Fix 'enc' prefix.
+	Add rdf_RDF_element and xml_writer to raptor_rss10_serializer_context.
+	(raptor_rss10_serialize_init): No need for nstack here.
+	(raptor_rss10_serialize_terminate): Delete nstack tidy.
+	Tidy up xml_writer and type qnames.
+	(raptor_rss10_move_statements): Note don't do rss items.
+	(raptor_rss10_build_items): Build list of raptor_rss_item* in
+	rss_serializer->items.
+	(raptor_rss10_build_xml_names): Added to make namespaces and qnames
+	for fields and types; pulled out of raptor_rss10_build_items.
+	(raptor_rss10_emit_item): Delete xml-writer, iostr args.
+	Replace more raptor_iostream* functions with raptor_xml_writer*
+	equivalents.
+	(raptor_rss10_serialize_end): Move rdf_RDF qname stuff to new
+	raptor_rss10_build_xml_names
+	Move bits around so that rdf:RDF is declared with all namespaces
+	known and using raptor_xml_writer_start_element.
+	Emit rdf:Seq and rdf:li elements using_xml_writer_start_element with
+	attributes as needed.
+	Attempt to emit channel items.
+
+	* raptor_internal.h: Remove
+	raptor_xml_writer_element_declare_namespace_full
+
+	* raptor_xml_writer.c: Renamed content_cdata_namespaces to nstack,
+	content_cdata_namespaces_depth to nstack_depth.
+	(raptor_xml_writer_start_namespace_full): Added, to start a new
+	namespace in the xml_writer at the current element.
+	(raptor_xml_writer_cdata_counted, raptor_xml_writer_raw_counted,
+	raptor_xml_writer_comment_counted): Added.counted string versions.
+
+	* raptor_sax2.c (raptor_new_sax2_element, raptor_free_sax2_element):
+	Init/tidy declared_namespaces.
+	(raptor_sax2_declare_namespace): Added to declare the given namespace
+	on the element.
+	(raptor_iostream_write_sax2_element): Handle declared_namespaces;
+	boost the nspace_declarations by size of the sequence.
+	Declare all the namespaces in the declared_nspaces sequence.
+
+	* raptor_rdfxml.c (raptor_xml_comment_handler):
+	Use raptor_xml_writer_comment (uncounted).
+	(raptor_cdata_grammar): Use raptor_xml_writer_cdata_counted
+
+	* raptor_internal.h: raptor_sax2_element added declared_nspaces field
+	Added prototype for raptor_sax2_declare_namespace.
+	Added prototypes for raptor_xml_writer_start_namespace_full and
+	raptor_xml_writer_element_declare_namespace_full
+	Split raptor_xml_writer_cdata / raptor_xml_writer_raw /
+	raptor_xml_writer_comment into uncounted and
+	raptor_xml_writer_cdata_counted / raw_counted / comment_counted
+
 2004-12-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Made rss1.0 the default namespace for writing;
+	added prefixes for others.
+	(raptor_rss10_serialize_end): Removed unused commented code.
+
+	* raptor_qname.c (raptor_qname_copy): Added.
+
+	* raptor.h: Added raptor_qname_copy.
+
+	* raptor_rss.c: raptor_rss_item field node_type is now a pointer to the
+	raptor_rss_info* for that node type.
+	(raptor_rss_insert_identifiers, raptor_rss_emit_item): Update for new
+	node_type definition.
+	raptor_rss10_serializer_context now has rdf_nspace
+	(raptor_rss10_build_items): Declare rdf namespace and store in
+	rss_serializer->rdf_nspace - freed when namespace stack is destroyed.
+	Declare all raptor_namespace* for the
+	raptor_rss_namespaces_info[].nspace
+	Declare all raptor_qname* for the raptor_rss_fields_info[].qname
+	Declare all raptor_qname* raptor_rss_types_info[].qname
+	Insert node_type pointers for all items.
+	(raptor_rss10_emit_item): Add xml_writer argument.
+	Use more of xml_writer to emit main type element and predicate names.
+	Incomplete.
+	(raptor_rss10_serialize_end): Declare and use mxl_writer and qname,
+	element for rdf:RDF.
+	Incomplete.
+
+	* raptor_rss.c: Do not init all NULL fields for
+	raptor_rss_namespaces_info
+
+	* raptor_rss.c: Added raptor_rss_namespace_info typedef and
+	raptor_rss_namespaces_info merging uri_strings and prefixes for
+	namespaces.  Made all rss info static.
+	(raptor_rss_common_init, raptor_rss_parser_processNode,
+	raptor_rss10_serialize_end): Update for namespace URIs struct
+	change.
 
 	* raptor_rss.c: Added rss_namespace_prefix_strings to list
 	namespaces to declare.  raptor_rss10_serializer_context gains
