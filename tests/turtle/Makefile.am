@@ -59,13 +59,13 @@ ALL_TEST_FILES= README.txt \
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
-$(top_builddir)/rapper:
+build-rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
 check-local: check-rdf check-bad-rdf
 # check-warn-rdf
 
-check-rdf: $(top_builddir)/rapper $(TEST_FILES)
+check-rdf: build-rapper $(TEST_FILES)
 	@result=0; \
 	$(ECHO) "Testing legal Turtle"; \
 	for test in $(TEST_FILES); do \
@@ -90,7 +90,7 @@ check-rdf: $(top_builddir)/rapper $(TEST_FILES)
 	done; \
 	exit $$result
 
-check-bad-rdf: $(top_builddir)/rapper $(TEST_BAD_FILES)
+check-bad-rdf: build-rapper $(TEST_BAD_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing bad Turtle fails"; \
 	for test in $(TEST_BAD_FILES); do \
@@ -115,7 +115,7 @@ check-bad-rdf: $(top_builddir)/rapper $(TEST_BAD_FILES)
 	done; \
 	set -e; exit $$result
 
-check-warn-rdf: $(top_builddir)/rapper $(TEST_WARN_FILES)
+check-warn-rdf: build-rapper $(TEST_WARN_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing Turtle with warnings"; \
 	for test in $(TEST_WARN_FILES); do \

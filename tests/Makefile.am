@@ -123,15 +123,15 @@ EXTRA_DIST = \
 SUBDIRS = turtle
 
 
-$(top_builddir)/rapper:
+build-rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
-check-local: $(top_builddir)/rapper \
+check-local: build-rapper \
 check-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
 check-nt check-bad-nt check-turtle
 
-check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
+check-rdf: build-rapper $(RDF_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
@@ -168,7 +168,7 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
+check-assume-rdf: build-rapper $(RDF_ASSUME_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing rdf/xml known by context"; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
@@ -186,7 +186,7 @@ check-assume-rdf: $(top_builddir)/rapper $(RDF_ASSUME_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-scan-rdf: $(top_builddir)/rapper $(RDF_SCAN_TEST_FILES)
+check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing rdf/xml inside other XML"; \
 	for test in $(RDF_SCAN_TEST_FILES); do \
@@ -204,7 +204,7 @@ check-scan-rdf: $(top_builddir)/rapper $(RDF_SCAN_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
+check-bad-rdf: build-rapper $(RDF_BAD_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing that bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
@@ -229,7 +229,7 @@ check-bad-rdf: $(top_builddir)/rapper $(RDF_BAD_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-bad-nfc-rdf: $(top_builddir)/rapper $(RDF_BAD_NFC_TEST_FILES)
+check-bad-nfc-rdf: build-rapper $(RDF_BAD_NFC_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing that rdf/xml with bad Unicode NFC fails"; \
 	for test in $(RDF_BAD_NFC_TEST_FILES); do \
@@ -254,7 +254,7 @@ check-bad-nfc-rdf: $(top_builddir)/rapper $(RDF_BAD_NFC_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-warn-rdf: $(top_builddir)/rapper $(RDF_WARN_TEST_FILES)
+check-warn-rdf: build-rapper $(RDF_WARN_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing rdf/xml with warnings"; \
 	for test in $(RDF_WARN_TEST_FILES); do \
@@ -281,7 +281,7 @@ check-warn-rdf: $(top_builddir)/rapper $(RDF_WARN_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
+check-nt: build-rapper $(NT_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing N-Triples"; \
 	for test in $(NT_TEST_FILES); do \
@@ -298,7 +298,7 @@ check-nt: $(top_builddir)/rapper $(NT_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
+check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing that bad N-Triples fails"; \
 	for test in $(NT_BAD_TEST_FILES); do \
@@ -323,7 +323,7 @@ check-bad-nt: $(top_builddir)/rapper $(NT_BAD_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-turtle: $(top_builddir)/rapper $(NT_TEST_FILES)
+check-turtle: build-rapper $(NT_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing Turtle with N-Triples tests"; \
 	for test in $(NT_TEST_FILES); do \
