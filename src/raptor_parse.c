@@ -3388,6 +3388,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
               strcpy(new_cdata+element->content_cdata_length, fmt_buffer);
               LIBRDF_FREE(cstring, element->content_cdata);
               element->content_cdata=new_cdata;
+              element->content_cdata_length += fmt_length;
             }
           }
         }
@@ -3403,11 +3404,12 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
                    element->content_cdata);
             LIBRDF_FREE(cstring, element->parent->content_cdata);
             element->parent->content_cdata=new_cdata;
+            element->parent->content_cdata_length += element->content_cdata_length;
           }
         } else {
           /* Copy - parent is empty */
           element->parent->content_cdata       =element->content_cdata;
-          element->parent->content_cdata_length=element->content_cdata_length;
+          element->parent->content_cdata_length=element->content_cdata_length+1;
         }
 
         element->content_cdata=NULL;
