@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -76,11 +76,12 @@ typedef struct
   GtkWidget *window;
   GtkWidget *v_box;
   GtkWidget *url_entry;
-  GtkWidget *triples;
   GtkListStore *triples_store;
   GtkWidget *file_selection;
   GtkWidget *status;
   GtkWidget *triples_frame;
+  GtkWidget *errors_frame;
+  GtkListStore *errors_store;
 } grapper_state;
 
 
@@ -155,22 +156,49 @@ static void
 grapper_view_empty_triples(grapper_state *state)
 {
   gtk_list_store_clear(state->triples_store);
+  gtk_list_store_clear(state->errors_store);
 }
 
 static void
 grapper_view_reset_status(grapper_state *state) {
+  gtk_list_store_clear(state->errors_store);
 }
 
 static void
-grapper_view_add_error_message(grapper_state *state, gchar *error) {
-  if(error)
-    fprintf(stderr, "Error: %s\n", error);
+grapper_view_update_error_count(grapper_state *state) {
+#define EC_BUF_LEN 18
+  char buf[EC_BUF_LEN+1];
+  int count=state->errors_count;
+
+  if(count>0)
+    snprintf(buf, EC_BUF_LEN, "Errors: %d", count);
+  else
+    strcpy(buf, "Errors");
+
+  gtk_frame_set_label(GTK_FRAME(state->errors_frame), buf);
 }
 
 static void
-grapper_view_add_warning_message(grapper_state *state, gchar *error) {
-  if(error)
-    fprintf(stderr, "Warning: %s\n", error);
+grapper_view_add_error_message(grapper_state *state, gchar *error,
+                               raptor_locator *locator, int is_error) {
+  if(error) {
+    char line[20];
+    GtkListStore *store=state->errors_store;
+    GtkTreeIter iter;
+
+    if(locator && locator->line >= 0)
+      sprintf(line, "%d", locator->line);
+    else
+      *line='\0';
+
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 
+                       0, line,
+                       1, (is_error ? "E" : "W"),
+                       2, error,
+                       -1);  
+    grapper_view_update_error_count(state);
+  }
 }
 
 
@@ -244,6 +272,7 @@ grapper_model_reset_counts(grapper_state *state)
   state->triples_count=0;
   state->warnings_count=0;
   state->errors_count=0;
+  grapper_view_update_error_count(state);
 }
 
 
@@ -269,7 +298,7 @@ grapper_model_error_handler(void *data, raptor_locator *locator,
     g_free(state->error);
   state->error=g_strdup(message);
   
-  grapper_view_add_error_message(state, state->error);
+  grapper_view_add_error_message(state, state->error, locator, 1);
 }
 
 
@@ -288,7 +317,7 @@ grapper_model_warning_handler(void *data, raptor_locator *locator,
     g_free(state->error);
   state->error=g_strdup(message);
 
-  grapper_view_add_warning_message(state, state->error);
+  grapper_view_add_error_message(state, state->error, locator, 0);
 }
 
 
@@ -490,7 +519,7 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
                                     GTK_STOCK_OK,
                                     GTK_RESPONSE_NONE,
                                     NULL);
-  label = gtk_label_new ("Grapper (C) 2003 Dave Beckett");
+  label = gtk_label_new ("Grapper (C) 2003-2004 Dave Beckett");
 
   /* Connect the dialog response to about_response_callback */
   g_signal_connect_swapped (G_OBJECT (about), "response",
@@ -543,6 +572,9 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *prefs_box;
   GtkListStore *store;
   int i;
+  GtkWidget *errors_frame, *errors_scrolled_window;
+  GtkWidget *errors_treeview;
+  GtkListStore *errors_store;
 
   state->window=window;
   
@@ -651,8 +683,6 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   triples_treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(triples_treeview), TRUE);
   
-  state->triples=triples_treeview;
-
   /* set columns renderer for treeview */
   renderer= gtk_cell_renderer_text_new ();
   column= gtk_tree_view_column_new_with_attributes ("Subject",
@@ -679,6 +709,58 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_widget_show(triples_treeview);
 
   
+  /* horizontal box for prefx in vertical box (v_box) */
+
+  errors_frame = gtk_frame_new ("Errors");
+  state->errors_frame=errors_frame;
+
+  gtk_box_pack_start (GTK_BOX (v_box), errors_frame, TRUE, TRUE, 0);
+
+  gtk_widget_show(errors_frame);
+
+
+  /* scroll window in errors frame */
+  errors_scrolled_window=gtk_scrolled_window_new(NULL, NULL);
+
+  gtk_container_set_border_width(GTK_CONTAINER(errors_scrolled_window), 10);
+    
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(errors_scrolled_window),
+                                 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+
+  gtk_container_add(GTK_CONTAINER(errors_frame), errors_scrolled_window);
+  gtk_widget_show(errors_scrolled_window);
+
+  errors_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+  state->errors_store = errors_store;
+  
+  errors_treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(errors_store));
+  gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(errors_treeview), TRUE);
+  
+  renderer= gtk_cell_renderer_text_new ();
+  column= gtk_tree_view_column_new_with_attributes ("Line",
+                                                    renderer,
+                                                    "text", 0,
+                                                    NULL);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
+  renderer= gtk_cell_renderer_text_new ();
+  column= gtk_tree_view_column_new_with_attributes ("T",
+                                                    renderer,
+                                                    "text", 1,
+                                                    NULL);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
+  renderer= gtk_cell_renderer_text_new ();
+  column= gtk_tree_view_column_new_with_attributes ("Message",
+                                                    renderer,
+                                                    "text", 2,
+                                                    NULL);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
+
+  /* pack the errors store into the errors scrolled window */
+  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(errors_scrolled_window), errors_treeview);
+  gtk_widget_show(errors_treeview);
+
+
+
   /* horizontal box for prefx in vertical box (v_box) */
   prefs_frame = gtk_frame_new ("Preferences");
 
