@@ -928,7 +928,7 @@ int
 raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 {
   unsigned char c;
-  int len=strlen(string);
+  int len=strlen((const char*)string);
   int unichar_len;
   long unichar;
   int pos;

@@ -146,8 +146,8 @@ static const char * const raptor_state_names[RAPTOR_STATE_PARSETYPE_LAST+2]={
 static const char * raptor_state_as_string(raptor_state state) 
 {
   if(state<1 || state > RAPTOR_STATE_PARSETYPE_LAST)
-    state=0;
-  return raptor_state_names[state];
+    state=(raptor_state)0;
+  return raptor_state_names[(int)state];
 }
 
 
@@ -2066,7 +2066,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             /* Yes - found something so move immediately to description */
             break;
           }
-          if(element_in_rdf_ns && raptor_forbidden_nodeElement_name(el_name)) {
+          if(element_in_rdf_ns && raptor_forbidden_nodeElement_name((const char*)el_name)) {
             raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
             state=RAPTOR_STATE_SKIPPING;
             element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2154,7 +2154,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
         
 
-        if(element_in_rdf_ns && raptor_forbidden_nodeElement_name(el_name)) {
+        if(element_in_rdf_ns && raptor_forbidden_nodeElement_name((const char*)el_name)) {
           raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
           state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2499,7 +2499,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
 
 
-        if(element_in_rdf_ns && raptor_forbidden_propertyElement_name(el_name)) {
+        if(element_in_rdf_ns && raptor_forbidden_propertyElement_name((const char*)el_name)) {
           raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a property element.", el_name);
           state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -3263,7 +3263,7 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   raptor_id_list* il;
 
   for(il=rdf_xml_parser->id_list; il; il=il->next) {
-    if(!strcmp(il->id, id) && raptor_uri_equals(il->base_uri, base_uri)) {
+    if(!strcmp((const char*)il->id, (const char*)id) && raptor_uri_equals(il->base_uri, base_uri)) {
       /* Found */
       return 1;
     }
@@ -3280,13 +3280,13 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
     return 1;
   }
   
-  il->id=(char*)RAPTOR_MALLOC(cstring, strlen(id)+1);
+  il->id=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)id)+1);
   if(!il->id) {
     raptor_free_uri(il->base_uri);
     RAPTOR_FREE(raptor_id_list, il);
     return 1;
   }
-  strcpy((char*)il->id, id);
+  strcpy((char*)il->id, (const char*)id);
 
   il->next=rdf_xml_parser->id_list;
   rdf_xml_parser->id_list=il;
