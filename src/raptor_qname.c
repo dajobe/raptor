@@ -122,14 +122,14 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
 
   if(value) {
-    int value_length=strlen(value);
-    char* new_value=(char*)RAPTOR_MALLOC(cstring, value_length+1);
+    int value_length=strlen((char*)value);
+    unsigned char* new_value=(unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
 
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
-    strcpy(new_value, value);
+    strcpy((char*)new_value, (char*)value);
     qname->value=new_value;
     qname->value_length=value_length;
   }
@@ -149,7 +149,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
       raptor_free_qname(qname);
       return NULL;
     }
-    strcpy(new_name, name);
+    strcpy((char*)new_name, (char*)name);
     qname->local_name=new_name;
     qname->local_name_length=local_name_length;
 
@@ -178,13 +178,13 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     p++; 
 
     /* p now is at start of local_name */
-    local_name_length=strlen(p);
-    new_name=(char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+    local_name_length=strlen((char*)p);
+    new_name=(unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
     }
-    strcpy(new_name, p);
+    strcpy((char*)new_name, (char*)p);
     qname->local_name=new_name;
     qname->local_name_length=local_name_length;
 
@@ -194,7 +194,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     if(!ns) {
       /* failed to find namespace - now what? */
       if(error_handler)
-        error_handler(error_data, "The namespace prefix in \"%s\" was not declared.", name);
+        error_handler((raptor_parser*)error_data, "The namespace prefix in \"%s\" was not declared.", name);
     } else {
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG3(raptor_new_qname,
@@ -230,13 +230,13 @@ void
 raptor_qname_print(FILE *stream, raptor_qname* name) 
 {
   if(name->nspace) {
-    const char *prefix=raptor_namespace_get_prefix(name->nspace);
+    const unsigned char *prefix=raptor_namespace_get_prefix(name->nspace);
     if(prefix)
       fprintf(stream, "%s:%s", prefix, name->local_name);
     else
       fprintf(stream, "(default):%s", name->local_name);
   } else
-    fputs(name->local_name, stream);
+    fputs((char*)name->local_name, stream);
 }
 #endif
 
@@ -262,7 +262,7 @@ raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
     return 0;
   if(name1->local_name_length != name2->local_name_length)
     return 0;
-  if(strcmp(name1->local_name, name2->local_name))
+  if(strcmp((char*)name1->local_name, (char*)name2->local_name))
     return 0;
   return 1;
 }

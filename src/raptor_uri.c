@@ -133,7 +133,7 @@ raptor_default_new_uri_relative_to_base(void *context,
   raptor_uri* new_uri;
   int new_uri_len=strlen((char*)base_uri)+strlen(uri_string)+1;
 
-  new_uri=RAPTOR_MALLOC(cstring, new_uri_len+1);
+  new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len+1);
   if(!new_uri)
     return NULL;
   
@@ -157,7 +157,7 @@ raptor_new_uri_relative_to_base(raptor_uri *base_uri, const char *uri_string)
 
 
 raptor_uri*
-raptor_new_uri_from_id(raptor_uri *base_uri, const char *id) 
+raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id) 
 {
   raptor_uri *new_uri;
   char *local_name;
@@ -168,12 +168,12 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const char *id)
 #endif
 
   /* "#id\0" */
-  len=1+strlen(id)+1;
+  len=1+strlen((char*)id)+1;
   local_name=(char*)RAPTOR_MALLOC(cstring, len);
   if(!local_name)
     return NULL;
   *local_name='#';
-  strcpy(local_name+1, id);
+  strcpy(local_name+1, (char*)id);
   new_uri=raptor_new_uri_relative_to_base(base_uri, local_name);
   RAPTOR_FREE(cstring, local_name);
   return new_uri;
@@ -190,7 +190,7 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
 
   base_uri_len=strlen(base_uri);
   new_uri_len=base_uri_len+strlen(name)+1;
-  new_uri=RAPTOR_MALLOC(cstring, new_uri_len);
+  new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len);
   if(!new_uri)
     return NULL;
   strcpy((char*)new_uri, base_uri);
@@ -261,7 +261,7 @@ raptor_uri_is_absolute (const char *uri)
 static raptor_uri*
 raptor_default_uri_copy(void *context, raptor_uri *uri)
 {
-  raptor_uri* new_uri=RAPTOR_MALLOC(cstring, strlen((char*)uri)+1);
+  raptor_uri* new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, strlen((char*)uri)+1);
   if(!new_uri)
     return NULL;
   strcpy((char*)new_uri, (char*)uri);

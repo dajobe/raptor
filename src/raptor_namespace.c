@@ -104,7 +104,8 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
   nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, raptor_rdf_schema_uri);
 
   /* defined at level -1 since always 'present' when inside the XML world */
-  raptor_namespaces_start_namespace(nstack, "xml", raptor_xml_uri, -1);
+  raptor_namespaces_start_namespace(nstack, (const unsigned char*)"xml",
+                                    (unsigned char*)raptor_xml_uri, -1);
 }
 
 
@@ -143,7 +144,8 @@ raptor_namespaces_free(raptor_namespace_stack *nstack) {
     nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_schema_uri);
   }
 
-  nstack->uri_handler=nstack->uri_context=NULL;
+  nstack->uri_handler=(raptor_uri_handler*)NULL;
+  nstack->uri_context=NULL;
 }
 
 
@@ -214,7 +216,7 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
 
   len=sizeof(raptor_namespace);
   if(prefix) {
-    prefix_length=strlen(prefix);
+    prefix_length=strlen((char*)prefix);
     len+=prefix_length+1;
   }
 
@@ -223,16 +225,16 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
   if(!ns)
     return NULL;
 
-  p=(char*)ns+sizeof(raptor_namespace);
+  p=(unsigned char*)ns+sizeof(raptor_namespace);
   if(ns_uri_string) {
-    ns->uri=(*nstack->uri_handler->new_uri)(nstack->uri_context, ns_uri_string);
+    ns->uri=(*nstack->uri_handler->new_uri)(nstack->uri_context, (const char*)ns_uri_string);
     if(!ns->uri) {
       RAPTOR_FREE(raptor_namespace, ns);
       return NULL;
     }
   }
   if(prefix) {
-    ns->prefix=strcpy((char*)p, prefix);
+    ns->prefix=(const unsigned char*)strcpy((char*)p, (char*)prefix);
     ns->prefix_length=prefix_length;
 
     if(!strcmp((char*)ns->prefix, "xml"))
@@ -282,7 +284,7 @@ raptor_uri*
 raptor_namespace_local_name_to_uri(const raptor_namespace *ns,
                                    const unsigned char *local_name)
 {
-  return ns->nstack->uri_handler->new_uri_from_uri_local_name(ns->nstack->uri_context, ns->uri, local_name);
+  return ns->nstack->uri_handler->new_uri_from_uri_local_name(ns->nstack->uri_context, ns->uri, (const char*)local_name);
 }
 
 
@@ -332,13 +334,13 @@ main(int argc, char *argv[])
   raptor_namespaces_init(&namespaces, handler, context);
   
   raptor_namespaces_start_namespace(&namespaces,
-                                    "ex1",
-                                    "http://example.org/ns1",
+                                    (const unsigned char*)"ex1",
+                                    (const unsigned char*)"http://example.org/ns1",
                                     0);
 
   raptor_namespaces_start_namespace(&namespaces,
-                                    "ex2",
-                                    "http://example.org/ns2",
+                                    (const unsigned char*)"ex2",
+                                    (const unsigned char*)"http://example.org/ns2",
                                     1);
 
   raptor_namespaces_end_for_depth(&namespaces, 1);

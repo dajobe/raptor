@@ -294,7 +294,7 @@ raptor_start_parse_file(raptor_parser *rdf_parser,
 
 int
 raptor_parse_chunk(raptor_parser* rdf_parser,
-                   const char *buffer, size_t len, int is_end) 
+                   const unsigned char *buffer, size_t len, int is_end) 
 {
   return rdf_parser->factory->chunk(rdf_parser, buffer, len, is_end);
 }
@@ -336,7 +336,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
                   raptor_uri *base_uri) 
 {
   /* Read buffer */
-  char buffer[RAPTOR_READ_BUFFER_SIZE];
+  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE];
   int rc=0;
   const char *filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
 
@@ -748,7 +748,7 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
   buffer=(unsigned char*)RAPTOR_MALLOC(cstring, length);
   if(!buffer)
     return NULL;
-  sprintf(buffer, "genid%d", id);
+  sprintf((char*)buffer, "genid%d", id);
 
   return buffer;
 }
@@ -769,11 +769,11 @@ raptor_identifier*
 raptor_new_identifier(raptor_identifier_type type,
                       raptor_uri *uri,
                       raptor_uri_source uri_source,
-                      char *id)
+                      unsigned char *id)
 {
   raptor_identifier *identifier;
   raptor_uri *new_uri=NULL;
-  char *new_id=NULL;
+  unsigned char *new_id=NULL;
 
   identifier=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1,
                                                 sizeof(raptor_identifier));
@@ -789,16 +789,16 @@ raptor_new_identifier(raptor_identifier_type type,
   }
 
   if(id) {
-    int len=strlen(id);
+    int len=strlen((char*)id);
     
-    new_id=(char*)RAPTOR_MALLOC(cstring, len+1);
+    new_id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
     if(!len) {
       if(new_uri)
         RAPTOR_FREE(cstring, new_uri);
       RAPTOR_FREE(raptor_identifier, identifier);
       return NULL;
     }
-    strncpy(new_id, id, len+1);
+    strncpy((char*)new_id, (char*)id, len+1);
   }
   
 
@@ -824,7 +824,7 @@ raptor_init_identifier(raptor_identifier *identifier,
                        raptor_identifier_type type,
                        raptor_uri *uri,
                        raptor_uri_source uri_source,
-                       char *id) 
+                       unsigned char *id) 
 {
   identifier->is_malloced=0;
   identifier->type=type;
@@ -845,7 +845,7 @@ int
 raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 {
   raptor_uri *new_uri=NULL;
-  char *new_id=NULL;
+  unsigned char *new_id=NULL;
   
   raptor_free_identifier(dest);
   raptor_init_identifier(dest, src->type, new_uri, src->uri_source, new_id);
@@ -857,15 +857,15 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
   }
 
   if(src->id) {
-    int len=strlen(src->id);
+    int len=strlen((char*)src->id);
     
-    new_id=(char*)RAPTOR_MALLOC(cstring, len+1);
+    new_id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
     if(!len) {
       if(new_uri)
         RAPTOR_FREE(cstring, new_uri);
       return 0;
     }
-    strncpy(new_id, src->id, len+1);
+    strncpy((char*)new_id, (char*)src->id, len+1);
   }
   dest->uri=new_uri;
   dest->id=new_id;

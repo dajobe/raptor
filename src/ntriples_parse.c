@@ -252,7 +252,7 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
   } else { 
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
     statement->object=object;
-    statement->object_literal_language=object_literal_language;
+    statement->object_literal_language=(unsigned char*)object_literal_language;
     statement->object_literal_datatype=datatype_uri;
   }
 
@@ -915,7 +915,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
 
 static int
 raptor_ntriples_parse_chunk(raptor_parser* rdf_parser, 
-                            const char *s, size_t len,
+                            const unsigned char *s, size_t len,
                             int is_end)
 {
   char *buffer;
@@ -948,7 +948,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   ntriples_parser->line_length += len;
 
   /* now write new stuff at end of cdata buffer */
-  strncpy(ptr, s, len);
+  strncpy(ptr, (char*)s, len);
   ptr += len;
   *ptr = '\0';
 

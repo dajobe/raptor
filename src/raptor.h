@@ -80,7 +80,7 @@ typedef struct {
   raptor_identifier_type type;
   raptor_uri *uri;
   raptor_uri_source uri_source;
-  const char *id;
+  const unsigned char *id;
   int ordinal;
   int is_malloced;
 } raptor_identifier;
@@ -95,7 +95,7 @@ typedef struct {
   const void *object;
   raptor_identifier_type object_type;
   raptor_uri *object_literal_datatype;
-  const char *object_literal_language;
+  const unsigned char *object_literal_language;
 } raptor_statement;
 
 
@@ -140,7 +140,7 @@ RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
 
 
 /* Parsing functions */
-int raptor_parse_chunk(raptor_parser* rdf_parser, const char *buffer, size_t len, int is_end);
+int raptor_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri, raptor_uri *base_uri);
 
 /* Utility functions */
@@ -153,7 +153,7 @@ RAPTOR_API void raptor_set_feature(raptor_parser *parser, raptor_feature feature
 RAPTOR_API raptor_uri* raptor_new_uri(const char *uri_string);
 RAPTOR_API raptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name);
 RAPTOR_API raptor_uri* raptor_new_uri_relative_to_base(raptor_uri *base_uri, const char *uri_string);
-RAPTOR_API raptor_uri* raptor_new_uri_from_id(raptor_uri *base_uri, const char *id);
+RAPTOR_API raptor_uri* raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API raptor_uri* raptor_new_uri_for_rdf_concept(const char *name);
 RAPTOR_API void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
@@ -163,7 +163,7 @@ RAPTOR_API char* raptor_uri_as_string(raptor_uri *uri);
 
 /* Identifier functions */
 RAPTOR_API raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
-RAPTOR_API void raptor_init_identifier(raptor_identifier *identifier, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
+RAPTOR_API void raptor_init_identifier(raptor_identifier *identifier, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, unsigned char *id);
 RAPTOR_API int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 
