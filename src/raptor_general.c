@@ -56,6 +56,7 @@ static void raptor_print_statement_part_as_ntriples(FILE* stream, const void *te
 
 
 /* statics */
+static int raptor_initialised;
 
 /* list of parser factories */
 static raptor_parser_factory* parsers=NULL;
@@ -84,8 +85,9 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 void
 raptor_init(void) 
 {
-  if(parsers)
+  if(raptor_initialised)
     return;
+
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
 #endif
@@ -101,6 +103,8 @@ raptor_init(void)
 
   raptor_uri_init();
   raptor_www_init();
+
+  raptor_initialised=1;
 }
 
 
@@ -112,8 +116,13 @@ raptor_init(void)
 void
 raptor_finish(void) 
 {
+  if(!raptor_initialised)
+    return;
+
   raptor_www_finish();
   raptor_delete_parser_factories();
+
+  raptor_initialised=0;
 }
 
 
