@@ -25,6 +25,8 @@ AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(raptor_parse.c)
 AC_REVISION($Revision$)
 
+libxml_min_version=2.4.0
+
 AM_INIT_AUTOMAKE(1.6)
 AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
@@ -353,16 +355,18 @@ if test "X$XML_CONFIG" != X; then
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
     LIBXML_VERSION=`$XML_CONFIG --version`
     libxml_version_dec=`echo $LIBXML_VERSION | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libxml_min_version_dec=`echo $libxml_min_version | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     AC_MSG_RESULT(yes - version $LIBXML_VERSION)
-    if test $libxml_version_dec -lt 20000; then
-       AC_MSG_WARN(Using libxml $LIBXML_VERSION - an old and unsupported library.)
-       AC_MSG_WARN(libxml version 2 is recommended - preferably 2.4.x or newer.)
+    if test $libxml_version_dec -lt $libxml_min_version_dec; then
+       AC_MSG_WARN(Using libxml $LIBXML_VERSION is unsupported - $libxml_min_version or newer required.)
+       have_libxml_lib=0
+       have_libxml=0
     fi
   else
     AC_MSG_RESULT(no)
   fi
 
-  AC_CHECK_HEADERS(libxml/parser.h libxml/hash.h gnome-xml/parser.h)
+  AC_CHECK_HEADERS(libxml/parser.h libxml/hash.h)
 
   if test "$ac_cv_header_libxml_parser.h" = no -a "$ac_cv_header_gnome_xml_parser.h" = no; then
     AC_MSG_WARN(libxml library found but not headers - disabling)
