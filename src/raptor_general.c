@@ -553,15 +553,13 @@ raptor_statement_part_as_counted_string(const void *term,
       break;
       
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      /* FIXME - 46 for "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_>" */
-      len=46 + 13; 
+      len=raptor_rdf_namespace_uri_len + 13; 
       buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
         return NULL;
 
-      sprintf((char*)buffer,
-              "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
-              *((int*)term));
+      sprintf((char*)buffer, "<%s_%d>",
+              raptor_rdf_namespace_uri, *((int*)term));
       break;
   
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
@@ -658,8 +656,8 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
       break;
       
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
-              *((int*)term));
+      fprintf(stream, "<%s_%d>",
+              raptor_rdf_namespace_uri, *((int*)term));
       break;
   
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:

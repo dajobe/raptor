@@ -1106,7 +1106,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
       if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-        subject_uri_string=RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+20);
+        subject_uri_string=RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
         sprintf(subject_uri_string, "%s_%d", 
                 raptor_rdf_namespace_uri, *((int*)statement->subject));
       } else {
@@ -1205,7 +1205,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
 
       if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-        object_uri_string=RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+20);
+        object_uri_string=RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
         sprintf(object_uri_string, "%s_%d",
                 raptor_rdf_namespace_uri, *((int*)statement->object));
       } else {
@@ -1460,7 +1460,10 @@ raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
       break;
       
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      raptor_iostream_write_counted_string(iostr, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 45);
+      raptor_iostream_write_counted_string(iostr, "<_", 1);
+      raptor_iostream_write_counted_string(iostr, raptor_rdf_namespace_uri,
+                                           raptor_rdf_namespace_uri_len);
+      raptor_iostream_write_counted_string(iostr, "_", 1);
       raptor_iostream_write_decimal(iostr, *((int*)term));
       raptor_iostream_write_byte(iostr, '>');
       break;
