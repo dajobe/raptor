@@ -33,6 +33,8 @@ my $progname = basename $0;
 
 my $offline=0;
 
+my $global_verbose=0;
+
 my $manifest_URL='http://www.w3.org/2000/10/rdf-tests/rdfcore/Manifest.rdf';
 my $local_tests_url='http://www.w3.org/2000/10/rdf-tests/rdfcore/';
 
@@ -64,8 +66,9 @@ sub get_test_content($$) {
 }
 
 
-sub run_test($$$$$) {
-  my($test_url, $is_positive, $is_verbose, $rdfxml_url, $ntriples_url)=@_;
+sub run_test($$$$$$) {
+  my($test_url, $test_status,
+     $is_positive, $is_verbose, $rdfxml_url, $ntriples_url)=@_;
 
   my $rdfxml_file=get_test_content($rdfxml_url, 'test.rdf');
   my $ntriples_file=$is_positive ? get_test_content($ntriples_url, 'test.nt') : undef;
@@ -77,7 +80,7 @@ sub run_test($$$$$) {
   my $plabel=($is_positive) ? 'Positive' : 'Negative';
 
   if($is_verbose) {
-    print "$progname: $plabel Test $test_url\n";
+    print "$progname: $plabel Test $test_url ($test_status)\n";
     print "  Input RDF/XML $rdfxml_url - $rdfxml_file \n";
     print "  Output N-Triples $ntriples_url - $ntriples_file\n"
       if $ntriples_url;
@@ -140,8 +143,8 @@ sub read_err($) {
   return $err;
 }
 
-sub run_tests($$$$@) {
-  my($tests,$is_verbose,$results,$totals,@test_urls)=@_;
+sub run_tests($$$$$@) {
+  my($tests,$test_statuses,$is_verbose,$results,$totals,@test_urls)=@_;
 
   for my $test (@test_urls) {
 
@@ -170,7 +173,8 @@ sub run_tests($$$$@) {
     my $input_rdfxml=$inputs->{'test:RDF-XML-Document'}->[0];
     my $output_ntriples=$is_positive ? $outputs->{'test:NT-Document'}->[0] : undef;
 
-    my($result,$msg)=run_test($test, $is_positive, $is_verbose, 
+    my($result,$msg)=run_test($test, $test_statuses->{$test}, 
+			      $is_positive, $is_verbose, 
 			      $input_rdfxml, $output_ntriples);
 
     if($result eq 'SYSTEM') {
@@ -223,6 +227,7 @@ sub summarize_results($$$$;$) {
 
 
 my(%tests);
+my(%test_statuses);
 
 my(@positive_test_urls);
 my(@negative_test_urls);
@@ -282,6 +287,9 @@ while(length $content) {
     }
 
     my $test_status=$tests{$url}->{'test:status'} || '';
+
+    $test_statuses{$url}=$test_status;
+
     if ($test_status =~ /^OBSOLETE/) {
       print "$progname: Ignoring Obsolete Test URL $url\n";
       next;
@@ -374,31 +382,31 @@ my(%results);
 if(@ARGV) {
   my(%totals);
   print "$progname: Running user parser tests:\n";
-  run_tests(\%tests, 1, \%results, \%totals, @ARGV);
+  run_tests(\%tests, \%test_statuses, 1, \%results, \%totals, @ARGV);
 
   summarize_results("User Parser Tests", \%results, \%totals, scalar(@ARGV));
   exit 0;
 }
 
 
-my(%positive_totals)=();
-run_tests(\%tests, 0, \%results, \%positive_totals, @positive_test_urls);
-summarize_results("Positive Parser Tests", \%results, \%positive_totals, scalar(@positive_test_urls));
+my(%approved_positive_totals)=();
+run_tests(\%tests, \%test_statuses, $global_verbose, \%results, \%approved_positive_totals, @approved_positive_test_urls);
+summarize_results("Positive Approved Parser Tests", \%results, \%approved_positive_totals, scalar(@approved_positive_test_urls));
 
 print "\n\n";
 
-my(%negative_totals)=();
-run_tests(\%tests, 0, \%results, \%negative_totals, @negative_test_urls);
-summarize_results("Negative Parser Tests", \%results, \%negative_totals, scalar(@negative_test_urls));
+my(%approved_negative_totals)=();
+run_tests(\%tests, \%test_statuses, $global_verbose, \%results, \%approved_negative_totals, @approved_negative_test_urls);
+summarize_results("Negative Approved Parser Tests", \%results, \%approved_negative_totals, scalar(@approved_negative_test_urls));
 
 print "\n\n";
 
 my(%unapproved_positive_totals)=();
-run_tests(\%tests, 0, \%results, \%unapproved_positive_totals, @unapproved_positive_test_urls);
+run_tests(\%tests, \%test_statuses, $global_verbose, \%results, \%unapproved_positive_totals, @unapproved_positive_test_urls);
 summarize_results("Not APPROVED Positive Parser Tests", \%results, \%unapproved_positive_totals, scalar(@unapproved_positive_test_urls),1);
 
 print "\n\n";
 
 my(%unapproved_negative_totals)=();
-run_tests(\%tests, 0, \%results, \%unapproved_negative_totals, @unapproved_negative_test_urls);
+run_tests(\%tests, \%test_statuses, $global_verbose, \%results, \%unapproved_negative_totals, @unapproved_negative_test_urls);
 summarize_results("Not APPROVED Negative Parser Tests", \%results, \%unapproved_negative_totals, scalar(@unapproved_negative_test_urls),1);
