@@ -63,7 +63,7 @@ FLEX_MIN_VERSION=2.5.19
 FLEX_REC_VERSION=2.5.31
 AC_MSG_CHECKING(flex version)
 if test "X$LEX" != "X"; then
-  FLEX_VERSION=`$LEX -V 2>&1 | awk '{print $2}'`
+  FLEX_VERSION=`$LEX -V 2>&1 | awk '{print $NF}'`
   FLEX_VERSION_DEC=`echo $FLEX_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 
   FLEX_MIN_VERSION_DEC=`echo $FLEX_MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
