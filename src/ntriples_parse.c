@@ -472,12 +472,16 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
   unsigned char *p;
   unsigned char *dest;
   unsigned char *terms[3];
+  int terms_allocated[3];
   size_t term_lengths[3];
   raptor_ntriples_term_type term_types[3];
   size_t term_length= 0;
   unsigned char *object_literal_language=NULL;
   unsigned char *object_literal_datatype=NULL;
-
+  int rc=0;
+  
+  for(i=0; i<3; i++)
+    terms_allocated[i]=0;
 
   /* ASSERTION:
    * p always points to first char we are considering
@@ -537,25 +541,25 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
   for(i=0; i<3; i++) {
     if(!len) {
       raptor_parser_error(rdf_parser, "Unexpected end of line");
-      return 0;
+      goto cleanup;
     }
     
     /* Expect either <URI> or _:name */
     if(i == 2) {
       if(*p != '<' && *p != '_' && *p != '"' && *p != 'x') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
-        return 0;
+        goto cleanup;
       }
       if(*p == 'x') {
         if(len < 4 || strncmp((const char*)p, "xml\"", 4)) {
           raptor_parser_error(rdf_parser, "Saw '%c', expected xml\"...\")", *p);
-          return 0;
+          goto cleanup;
         }
       }
     } else {
       if(*p != '<' && *p != '_') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
-        return 0;
+        goto cleanup;
       }
     }
 
@@ -572,8 +576,10 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length, 
-                                '>', RAPTOR_TERM_CLASS_URI, 0))
-          return 1;
+                                '>', RAPTOR_TERM_CLASS_URI, 0)) {
+          rc=1;
+          goto cleanup;
+        }
         break;
 
       case '"':
@@ -588,8 +594,10 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length,
-                                '"', RAPTOR_TERM_CLASS_STRING, 0))
-          return 1;
+                                '"', RAPTOR_TERM_CLASS_STRING, 0)) {
+          rc=1;
+          goto cleanup;
+        }
         
         if(len && (*p == '-' || *p == '@')) {
           if(*p == '-')
@@ -605,15 +613,17 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
           if(!len) {
             raptor_parser_error(rdf_parser, "Missing language after \"string\"-");
-            return 0;
+            goto cleanup;
           }
           
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_language,
                                   &len, NULL,
-                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE, 0))
-            return 1;
+                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE, 0)) {
+            rc=1;
+            goto cleanup;
+          }
         }
 
         if(len >1 && *p == '^' && p[1] == '^') {
@@ -628,7 +638,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
           if(!len || (len && *p != '<')) {
             raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
-            return 0;
+            goto cleanup;
           }
 
           p++;
@@ -638,8 +648,10 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_datatype, &len, NULL,
-                                  '>', RAPTOR_TERM_CLASS_URI, 0))
-            return 1;
+                                  '>', RAPTOR_TERM_CLASS_URI, 0)) {
+            rc=1;
+            goto cleanup;
+          }
           
         }
 
@@ -665,7 +677,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
         if(!len || (len > 0 && *p != ':')) {
           raptor_parser_error(rdf_parser, "Illegal bNodeID - _ not followed by :");
-          return 0;
+          goto cleanup;
         }
 
         /* Found ':' - move on */
@@ -677,13 +689,26 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length,
-                                '\0', RAPTOR_TERM_CLASS_BNODEID, 0))
-          return 1;
+                                '\0', RAPTOR_TERM_CLASS_BNODEID, 0)) {
+          rc=1;
+          goto cleanup;
+        }
 
         if(!term_length) {
           raptor_parser_error(rdf_parser, "Bad or missing bNodeID after _:");
-          return 0;
+          goto cleanup;
+        } else {
+          char *blank=(char*)RAPTOR_MALLOC(cstring, term_length+1);
+          if(!blank) {
+            raptor_parser_fatal_error(rdf_parser, "Out of memory");
+            rc=1;
+            goto cleanup;
+          }
+          strcpy(blank, dest);
+          dest=(char*)raptor_generate_id(rdf_parser, 0, blank);
+          terms_allocated[i]=1;
         }
+
         break;
 
       case 'x':
@@ -706,8 +731,10 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
         if(raptor_ntriples_term(rdf_parser,
                                 &p, dest, &len, &term_length, 
-                                '"', RAPTOR_TERM_CLASS_STRING, 0))
-          return 1;
+                                '"', RAPTOR_TERM_CLASS_STRING, 0)) {
+          rc=1;
+          goto cleanup;
+        }
 
         /* got XML literal string */
         object_literal_datatype=(unsigned char*)raptor_xml_literal_datatype_uri_string;
@@ -726,14 +753,16 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
           if(!len) {
             raptor_parser_error(rdf_parser, "Missing language in xml\"string\"-language after -");
-            return 0;
+            goto cleanup;
           }
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_language,
                                   &len, NULL,
-                                  '"', RAPTOR_TERM_CLASS_STRING, 0))
-            return 1;
+                                  '"', RAPTOR_TERM_CLASS_STRING, 0)) {
+            rc=1;
+            goto cleanup;
+          }
           
         }
 
@@ -749,7 +778,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
           if(!len || (len && *p != '<')) {
             raptor_parser_error(rdf_parser, "Missing datatype URI-ref in xml\"string\"^^<URI-ref> after ^^");
-            return 0;
+            goto cleanup;
           }
 
           p++;
@@ -759,8 +788,10 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
           if(raptor_ntriples_term(rdf_parser,
                                   &p, object_literal_datatype, &len, NULL,
-                                  '>', RAPTOR_TERM_CLASS_URI, 0))
-            return 1;
+                                  '>', RAPTOR_TERM_CLASS_URI, 0)) {
+            rc=1;
+            goto cleanup;
+          }
           
         }
 
@@ -781,7 +812,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
       default:
         raptor_parser_fatal_error(rdf_parser, "Unknown term type");
-        return 1;
+        rc=1;
+        goto cleanup;
     }
 
 
@@ -791,7 +823,8 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
     /* Whitespace must separate the terms */
     if(i<2 && !isspace((int)*p)) {
       raptor_parser_error(rdf_parser, "Missing whitespace after term '%s'", terms[i]);
-      return 1;
+      rc=1;
+      goto cleanup;
     }
 
     /* Skip whitespace after terms */
@@ -835,7 +868,12 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
 
   rdf_parser->locator.byte += len;
 
-  return 0;
+ cleanup:
+  for(i=0; i<3; i++)
+    if(terms_allocated[i])
+      RAPTOR_FREE(cstring, terms[i]);
+
+  return rc;
 }
 
 
