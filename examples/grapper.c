@@ -70,6 +70,8 @@ typedef struct
   GtkWidget *triples;
   GtkListStore *triples_store;
   GtkWidget *file_selection;
+  GtkWidget *status;
+  GtkWidget *triples_frame;
 } grapper_state;
 
 
@@ -112,6 +114,19 @@ grapper_view_ntriples_changed(grapper_state *state)
 }
 
 static void
+grapper_view_set_triples_count(grapper_state *state, int count)
+{
+#define TC_BUF_LEN 18
+  char buf[TC_BUF_LEN+1];
+  if(count>0)
+    snprintf(buf, TC_BUF_LEN, "Triples: %d", count);
+  else
+    strcpy(buf, "Triples");
+  
+  gtk_frame_set_label(GTK_FRAME(state->triples_frame), buf);
+}
+
+static void
 grapper_view_add_triple(grapper_state *state, char* nodes[3], int i)  
 {
   GtkListStore *store=state->triples_store;
@@ -123,8 +138,6 @@ grapper_view_add_triple(grapper_state *state, char* nodes[3], int i)
                      PREDICATE_COLUMN, nodes[1],
                      OBJECT_COLUMN,    nodes[2],
                      -1);  
-
-  g_print("Added triple %d\n", i);
 }
 
 static void
@@ -132,7 +145,6 @@ grapper_view_empty_triples(grapper_state *state)
 {
   gtk_list_store_clear(state->triples_store);
 }
-
 
 static void
 grapper_view_reset_status(grapper_state *state) {
@@ -158,6 +170,7 @@ grapper_model_add_triple(grapper_state *state, char *nodes[3])
   state->triples_count++;
 
   grapper_view_add_triple(state, nodes, state->triples_count-1);
+  grapper_view_set_triples_count(state, state->triples_count);
 }
 
 
@@ -303,7 +316,9 @@ void grapper_model_statements_handler(void *data,
                                            statement->object_literal_datatype,
                                            statement->object_literal_language);
   grapper_model_add_triple(state, nodes);
-  
+  free(nodes[0]);
+  free(nodes[1]);
+  free(nodes[2]);
 }
 
 
@@ -468,12 +483,40 @@ quit_menu_callback(gpointer data, guint action, GtkWidget *widget)
 }
 
 
+static void
+about_menu_callback(gpointer data, guint action, GtkWidget *widget)
+{
+  grapper_state* state=(grapper_state*)data;
+  GtkWidget *about;
+  GtkWidget *label;
+  
+  about=gtk_dialog_new_with_buttons("About grapper", 
+                                    GTK_WINDOW(state->window), 
+                                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                                    GTK_STOCK_OK,
+                                    GTK_RESPONSE_NONE,
+                                    NULL);
+  label = gtk_label_new ("Grapper (C) 2003 Dave Beckett");
+
+  /* Connect the dialog response to about_response_callback */
+  g_signal_connect_swapped (G_OBJECT (about), "response",
+                    G_CALLBACK(gtk_widget_destroy), GTK_OBJECT(about));
+
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(about)->vbox), label);
+
+  gtk_widget_show_all(about);
+}
+
+
 static GtkItemFactoryEntry menu_item_factory_entries[] = {
   { "/_File",         NULL,      NULL,         0, "<Branch>" },
   { "/File/tear1",    NULL,      NULL,         0, "<Tearoff>" },
   { "/File/_Open...", "<CTRL>O", (GtkItemFactoryCallback)open_menu_callback, 1, "<StockItem>", GTK_STOCK_OPEN },
   { "/File/sep1",     NULL,      NULL,         0, "<Separator>" },
-  { "/File/_Quit",    "<CTRL>Q", (GtkItemFactoryCallback)quit_menu_callback, 1, "<StockItem>", GTK_STOCK_QUIT } };
+  { "/File/_Quit",    "<CTRL>Q", (GtkItemFactoryCallback)quit_menu_callback, 1, "<StockItem>", GTK_STOCK_QUIT },
+  { "/_Help",         NULL,      NULL,         0, "<LastBranch>" },
+  { "/Help/About",    NULL,     (GtkItemFactoryCallback)about_menu_callback, 1, "<Item>" } 
+};
 
 static gint menu_item_factory_nentries = sizeof(menu_item_factory_entries) / sizeof(menu_item_factory_entries[0]);
 
@@ -579,7 +622,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   /* frame in vertical box */
   triples_frame=gtk_frame_new("Triples");
-
+  state->triples_frame=triples_frame;
+  
   gtk_box_pack_start (GTK_BOX (v_box), triples_frame, TRUE, TRUE, 0);
 
   gtk_widget_show(triples_frame);
@@ -732,6 +776,8 @@ main(int argc, char *argv[])
   gtk_window_set_title (GTK_WINDOW (window), "GNOME Rapper Example");
 
   init_grapper_window(window, &state);
+
+  gtk_widget_set_size_request(window, 400, 300);
 
   /* finally make it all visible */
   gtk_widget_show (window);
