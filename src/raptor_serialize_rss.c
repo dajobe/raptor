@@ -583,13 +583,10 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         for(i=0; i<RAPTOR_RSS_FIELDS_SIZE; i++)
           if(!strcmp((const char*)name, raptor_rss_fields_info[i].name)) {
             const xmlChar *nspace_URI=xmlTextReaderConstNamespaceUri(reader);
-            if(nspace_URI &&
-               raptor_rss_fields_info[i].nspace != RSS_NO_NS) {
-              raptor_uri *nspace_URI_uri=raptor_new_uri(nspace_URI);
-              raptor_uri *field_nspace_URI=rss_parser->namespace_uris[raptor_rss_fields_info[i].nspace];
+            if(nspace_URI && raptor_rss_fields_info[i].nspace != RSS_NO_NS) {
+              const char *field_nspace_URI=rss_namespace_uri_strings[raptor_rss_fields_info[i].nspace];
             
-              if(raptor_uri_equals(nspace_URI_uri, field_nspace_URI)) {
-                raptor_free_uri(nspace_URI_uri);
+              if(!strcmp((const char*)nspace_URI, field_nspace_URI)) {
                 rss_parser->current_field=(raptor_rss_fields_type)i;
                 break;
               }
