@@ -669,36 +669,33 @@ should be copied if needed.
 Return the length of the stringbuffer.
 .SH API CHANGES
 .SS 1.3.0
-Added:
+Added the following parser methods, utility methods and helper functions:
 .br
-  \fBraptor_syntax_name_check\fR
-  \fBraptor_guess_parser_name\fR
-  \fBraptor_new_parser_for_content (Parser class constructor)\fR
-  \fBraptor_get_mime_type\fR
-  \fBraptor_features_enumerate\fR
-  \fBraptor_get_feature\fR
-  \fBraptor_feature_from_uri\fR
-  \fBraptor_free_memory\fR
-  \fBraptor_www_set_http_accept (WWW class)\fR
+  \fBraptor_new_parser_for_content (Parser class constructor)\fR,
+  \fBraptor_get_mime_type\fR,
+  \fBraptor_get_feature\fR,
+  \fBraptor_syntax_name_check\fR,
+  \fBraptor_guess_parser_name\fR,
+  \fBraptor_features_enumerate\fR,
+  \fBraptor_feature_from_uri\fR,
+  \fBraptor_www_set_http_accept (WWW class)\fR.
 .LP
-Made public the Sequence class (raptor_sequence) and many methods,
-helper functions.
+Changed \fBraptor_set_feature\fP to now return an int success or failure.
 .LP
-Made public the following functions:
+Added the following functions:
 .br
-  \fBraptor_unicode_char_to_utf8\fR
-  \fBraptor_utf8_to_unicode_char\fR
-  \fBraptor_vsnprintf\fR
+  \fBraptor_free_memory\fR,
+  \fBraptor_unicode_char_to_utf8\fR,
+  \fBraptor_utf8_to_unicode_char\fR and
+  \fBraptor_vsnprintf\fR.
 .LP
-Added the Stringbuffer class (raptor_stringbuffer) and many methods
+Added the raptor_sequence class, its constructor, destructor, methods
+and helper functions.
 .LP
-Changes:
-.br
-raptor_set_feature now returns an int success or failure.
+Added the raptor_stringbuffer class and constructor, destructor and methods.
 .LP
-Deprecated:
-.br
-  \fBraptor_print_statement_detailed\fR
+Deprecated \fBraptor_print_statement_detailed\fR always intended to
+be internal.
 .SS 1.2.0
 Added \fBraptor_syntaxes_enumerate\fR to get full information
 on syntax mime type and URIs as well as name and label.
@@ -711,28 +708,28 @@ Made URI class constructors, methods and factory methods as
 well as some other utility functions using or returning URIs or
 literals take unsigned char* rather than char*.  The affected calls are:
 .br
-  \fBraptor_new_uri_func\fR
-  \fBraptor_new_uri_from_local_name_func\fR
-  \fBraptor_new_uri_relative_to_base_func\fR
-  \fBraptor_uri_as_string_func\fR
-  \fBraptor_uri_as_counted_string_func\fR
+  \fBraptor_new_uri_func\fR,
+  \fBraptor_new_uri_from_local_name_func\fR,
+  \fBraptor_new_uri_relative_to_base_func\fR,
+  \fBraptor_uri_as_string_func\fR,
+  \fBraptor_uri_as_counted_string_func\fR :
     URI factory methods changed to all take/return unsigned char* for URI strings.
-  \fBraptor_statement_part_as_counted_string\fR
-  \fBraptor_statement_part_as_string\fR
-  \fBraptor_new_uri\fR
-  \fBraptor_new_uri_from_uri_local_name\fR
-  \fBraptor_new_uri_relative_to_base\fR
-  \fBraptor_uri_as_string\fR
-  \fBraptor_uri_as_counted_string\fR
-  \fBraptor_print_ntriples_string\fR
+  \fBraptor_statement_part_as_counted_string\fR,
+  \fBraptor_statement_part_as_string\fR,
+  \fBraptor_new_uri\fR,
+  \fBraptor_new_uri_from_uri_local_name\fR,
+  \fBraptor_new_uri_relative_to_base\fR,
+  \fBraptor_uri_as_string\fR,
+  \fBraptor_uri_as_counted_string\fR,
+  \fBraptor_print_ntriples_string\fR :
     Constructors and methods changed to take/return unsigned char* for URI strings.
-  \fBraptor_uri_resolve_uri_reference\fR
-  \fBraptor_uri_filename_to_uri_string\fR
-  \fBraptor_uri_uri_string_to_filename\fR
-  \fBraptor_uri_uri_string_to_filename_fragment\fR
-  \fBraptor_uri_is_file_uri\fR
-    Changed to use unsigned char* for URI strings, char* for filenames.
-  \fBraptor_ntriples_string_as_utf8_string\fR
+  \fBraptor_uri_resolve_uri_reference\fR,
+  \fBraptor_uri_filename_to_uri_string\fR,
+  \fBraptor_uri_uri_string_to_filename\fR,
+  \fBraptor_uri_uri_string_to_filename_fragment\fR,
+  \fBraptor_uri_is_file_uri\fR :
+    Changed to use unsigned char* for URI strings, char* for filenames,
+  \fBraptor_ntriples_string_as_utf8_string\fR :
     Changed to return unsigned char* for UTF8 string.
 .br
 Added \fBraptor_parsers_enumerate\fR to discover supported parsers.
