@@ -1,3 +1,18 @@
+2004-10-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize.c:
+	(raptor_serialize_start, raptor_serialize_start_to_filename,
+	raptor_serialize_start_to_string,
+	raptor_serialize_start_to_file_handle,
+	raptor_serialize_statement, raptor_serialize_end):
+	Fail if no iostream is made or available.
+
+	* raptor_iostream.c (raptor_new_iostream_to_string):
+	Docs, zap string and length before starting.
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement):
+	Print datatype URIs correctly.
+
 2004-10-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* configure.ac, win32_raptor_config.h: 1.4.0
