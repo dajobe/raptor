@@ -77,9 +77,9 @@ sub run_test($$$$$) {
   my $plabel=($is_positive) ? 'Positive' : 'Negative';
 
   if($is_verbose) {
-    warn "$progname: $plabel Test $test_url\n";
-    warn "  Input RDF/XML $rdfxml_url - $rdfxml_file \n";
-    warn "  Output N-Triples $ntriples_url - $ntriples_file\n"
+    print "$progname: $plabel Test $test_url\n";
+    print "  Input RDF/XML $rdfxml_url - $rdfxml_file \n";
+    print "  Output N-Triples $ntriples_url - $ntriples_file\n"
       if $ntriples_url;
   }
 
@@ -125,7 +125,7 @@ sub run_test($$$$$) {
   }
 
   if($status == 2) {
-    return ('WARNING', "N-Triples matched with warnings\n");
+    return ('PRINTING', "N-Triples matched with printings\n");
   }
 
   return ('OK', "N-Triples matched");
@@ -146,7 +146,7 @@ sub run_tests($$$$@) {
   for my $test (@test_urls) {
 
     if(!$tests->{$test}) {
-      warn "$progname: No such test $test, skipping\n";
+      print "$progname: No such test $test, skipping\n";
       next;
     }
        
@@ -176,7 +176,7 @@ sub run_tests($$$$@) {
     if($result eq 'SYSTEM') {
       my $err=read_err('test.err');
       $msg .= "\n".$err;
-      warn "Test $test SYSTEM ERROR: $msg\n";
+      print "Test $test SYSTEM ERROR: $msg\n";
       push(@{$totals->{SYSTEM}}, $test);
     } elsif($result eq 'OK') {
       if($is_positive) {
@@ -186,14 +186,14 @@ sub run_tests($$$$@) {
 	my $out=join("\n  ", <TOUT>);
 	close(TOUT);
 	$msg= "  ".$out;
-	warn "$plabel Test $test SUCCEEDED, should have failed - returned: \n$msg\n";
+	print "$plabel Test $test SUCCEEDED, should have failed - returned: \n$msg\n";
 	push(@{$totals->{BAD}}, $test);
       }
     } else {
       if($is_positive) {
 	my $err=read_err('test.err');
 	$msg .= "\n".$err;
-	warn "$plabel Test $test FAILED - $msg\n";
+	print "$plabel Test $test FAILED - $msg\n";
 	push(@{$totals->{BAD}}, $test);
       } else {
 	push(@{$totals->{OK}}, $test);
@@ -209,7 +209,7 @@ sub run_tests($$$$@) {
 sub summarize_results($$$$;$) {
   my($title, $results, $totals, $total, $verbose)=@_;
 
-  warn "Results for $title\n";
+  print "Results for $title\n";
   for my $type (sort keys %$totals) {
     my(@rt)=@{$totals->{$type}};
     my(@short_rt)=map {s/^$local_tests_url//; $_} @rt;
@@ -232,13 +232,13 @@ my(@unapproved_positive_test_urls);
 my(@unapproved_negative_test_urls);
 
 if($offline) {
-  warn "$progname: OFFLINE - using stored manifest URL $manifest_URL\n";
+  print "$progname: OFFLINE - using stored manifest URL $manifest_URL\n";
 } else {
-  warn "$progname: Checking mirrored manifest URL $manifest_URL\n";
+  print "$progname: Checking mirrored manifest URL $manifest_URL\n";
   if(mirror($manifest_URL, $local_manifest_file ) == RC_NOT_MODIFIED) {
-    warn "$progname: OK, not modified\n";
+    print "$progname: OK, not modified\n";
   } else {
-    warn "$progname: Unknown error\n";
+    print "$progname: Unknown error\n";
   }
 }
 
@@ -283,7 +283,7 @@ while(length $content) {
 
     my $test_status=$tests{$url}->{'test:status'} || '';
     if ($test_status =~ /^OBSOLETE/) {
-      warn "$progname: Ignoring Obsolete Test URL $url\n";
+      print "$progname: Ignoring Obsolete Test URL $url\n";
       next;
     }
  
@@ -307,7 +307,7 @@ while(length $content) {
 	push(@unapproved_negative_test_urls, $url);
       }
     } else { 
-      warn "$progname: Ignoring test with unknown test:status $test_status\n";
+      print "$progname: Ignoring test with unknown test:status $test_status\n";
       next;
     }
 
@@ -329,7 +329,7 @@ while(length $content) {
     }
 
     my $test_status=$tests{$url}->{'test:status'} || 'not APPROVED';
-    warn "$progname: Ignoring $type Entailment Test URL $url ($test_status)\n";
+    print "$progname: Ignoring $type Entailment Test URL $url ($test_status)\n";
   } elsif($content =~ s%^<test:MiscellaneousTest rdf:about="([^"]+)">(.+?)</test:MiscellaneousTest>%%) { # "
     my($url,$test_content)=($1,$2);
     while(length $test_content) {
@@ -347,32 +347,33 @@ while(length $content) {
       }
     }
     my $test_status=$tests{$url}->{'test:status'} || 'not APPROVED';
-    warn "$progname: Ignoring Miscellaneous Test URL $url ($test_status)\n";
+    print "$progname: Ignoring Miscellaneous Test URL $url ($test_status)\n";
   } else {
     die "I'm stumped 4 at content >>$content<<\n";
   }
 }
 
 
-warn "$progname: Parser tests found:\n";
-warn "$progname:   Positive: ",scalar(@positive_test_urls),"\n";
-warn "$progname:   Negative: ",scalar(@negative_test_urls),"\n";
+print "$progname: Parser tests found:\n";
+print "$progname:   Positive: ",scalar(@positive_test_urls),"\n";
+print "$progname:   Negative: ",scalar(@negative_test_urls),"\n";
 
-warn "$progname: APPROVED parser tests found:\n";
-warn "$progname:   Positive: ",scalar(@approved_positive_test_urls),"\n";
-warn "$progname:   Negative: ",scalar(@approved_negative_test_urls),"\n";
+print "$progname: APPROVED parser tests found:\n";
+print "$progname:   Positive: ",scalar(@approved_positive_test_urls),"\n";
+print "$progname:   Negative: ",scalar(@approved_negative_test_urls),"\n";
 
-warn "$progname: not APPROVED parser tests found:\n";
-warn "$progname:   Positive: ",scalar(@unapproved_positive_test_urls),"\n";
-warn "$progname:   Negative: ",scalar(@unapproved_negative_test_urls),"\n";
+print "$progname: not APPROVED parser tests found:\n";
+print "$progname:   Positive: ",scalar(@unapproved_positive_test_urls),"\n";
+print "$progname:   Negative: ",scalar(@unapproved_negative_test_urls),"\n";
 
+print "\n\n";
 
 
 my(%results);
 
 if(@ARGV) {
   my(%totals);
-  warn "$progname: Running user parser tests:\n";
+  print "$progname: Running user parser tests:\n";
   run_tests(\%tests, 1, \%results, \%totals, @ARGV);
 
   summarize_results("User Parser Tests", \%results, \%totals, scalar(@ARGV));
