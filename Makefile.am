@@ -96,8 +96,8 @@ README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
 autogen.sh \
-$(RDF_TEST_FILES)
-
+$(RDF_TEST_FILES) \
+rapier.spec.in
 
 # Why is this not in the default makefile?
 CC=@CC@
