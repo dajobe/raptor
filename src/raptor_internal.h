@@ -317,7 +317,7 @@ extern void raptor_xml_cdata_handler(void *user_data, const unsigned char *s, in
 
 /* raptor_general.c */
 extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
-
+extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
 
 /* raptor_locator.c */
 extern void raptor_update_document_locator (raptor_parser *rdf_parser);
@@ -392,6 +392,17 @@ void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 
 void raptor_terminate_parser_rdfxml (void);
+
+/* raptor_utf8.c */
+int raptor_unicode_char_to_utf8(unsigned long c, char *output);
+int raptor_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
+int raptor_unicode_is_basechar(long c);
+int raptor_unicode_is_ideographic(long c);
+int raptor_unicode_is_letter(long c);
+int raptor_unicode_is_digit(long c);
+int raptor_unicode_is_combining(long c);
+int raptor_unicode_is_extender(long c);
+
 
 /* end of RAPTOR_INTERNAL */
 #endif
