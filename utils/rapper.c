@@ -90,19 +90,17 @@
 #include <rapier.h>
 
 
-static void print_triples(void *user_data, const char *subject, rapier_subject_type subject_type, const char *predicate, rapier_predicate_type predicate_type, const char *object, rapier_object_type object_type);
+static void print_statements(void *user_data, const rapier_statement *statement);
 int main(int argc, char *argv[]);
 
 
 
 static
-void print_triples(void *user_data,
-                   const char *subject, rapier_subject_type subject_type,
-                   const char *predicate, rapier_predicate_type predicate_type,
-                   const char *object, rapier_object_type object_type) 
+void print_statements(void *user_data, const rapier_statement *statement) 
 {
-  fprintf(stderr, "subject: %s predicate: %s object: %s\n",
-          subject, predicate, object);
+  fputs("rdfdump: Statement: ", stdout);
+  rapier_print_statement(statement, stdout);
+  fputc('\n', stdout);
 }
 
 
@@ -136,6 +134,11 @@ main(int argc, char *argv[])
   int rc;
   int scanning=0;
   int usage=0;
+#ifdef LIBRDF_INTERNAL
+  librdf_uri *base_uri;
+#else
+  const char *base_uri;
+#endif
 
 #ifdef LIBRDF_INTERNAL
   librdf_init_world(NULL, NULL);
@@ -191,7 +194,17 @@ main(int argc, char *argv[])
 
   uri=argv[optind];
 
-  parser=rapier_new();
+#ifdef LIBRDF_INTERNAL
+  base_uri=librdf_new_uri(uri);
+  if(!base_uri) {
+    fprintf(stderr, "%s: Failed to create librdf_uri for %s\n", uri);
+    return(1);
+  }
+#else
+  base_uri=uri;
+#endif
+  
+  parser=rapier_new(base_uri);
   if(!parser) {
     fprintf(stderr, "%s: Failed to create rapier parser\n", program);
     return(1);
@@ -205,7 +218,7 @@ main(int argc, char *argv[])
   /* PARSE the URI as RDF/XML*/
   fprintf(stdout, "%s: Parsing URI %s\n", program, uri);
 
-  rapier_set_triple_handler(parser, NULL, print_triples);
+  rapier_set_statement_handler(parser, NULL, print_statements);
 
   if(rapier_parse_file(parser, uri, uri)) {
     fprintf(stderr, "%s: Failed to parse RDF into model\n", program);
@@ -215,6 +228,8 @@ main(int argc, char *argv[])
   rapier_free(parser);
 
 #ifdef LIBRDF_INTERNAL
+  librdf_free_uri(base_uri);
+
   librdf_destroy_world();
 #endif
 

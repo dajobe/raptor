@@ -99,6 +99,8 @@ extern int errno;
 #include <rdf_stream.h>
 #include <rdf_statement.h>
 
+typedef librdf_uri rapier_uri;
+
 #else
 /* else standalone */
 
@@ -123,6 +125,8 @@ extern int errno;
 #define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3)
 
 #endif
+
+typedef const char rapier_uri;
 
 #endif
 
@@ -175,9 +179,13 @@ typedef enum {
   RAPIER_STATE_UNKNOWN = 0,
 
   /* Met production 6.1 (RDF) <rdf:RDF> element seen and can now
-   * expect  <rdf:Description> (goto 6.3), <rdf:Seq> (goto 6.25)
-   * <rdf:Bag> (goto 6.26) or <rdf:Alt> (goto 6.27) OR from 6.3 can
-   * have ANY other element matching typedNode (6.13) - goto 6.3
+   * expect:
+   *    <rdf:Description> (goto 6.3)
+   *    <rdf:Seq> (goto 6.25) (or typedNode CHOICE)
+   *    <rdf:Bag> (goto 6.26) (or typedNode CHOICE)
+   *    <rdf:Alt> (goto 6.27) (or typedNode CHOICE)
+   * OR from 6.3 can have ANY other element matching
+   * typedNode (6.13) - goto 6.3
    */
   RAPIER_STATE_IN_RDF   = 6010,
 
@@ -191,22 +199,15 @@ typedef enum {
    */
   RAPIER_STATE_DESCRIPTION = 6030,
 
-  /* Matching part of 6.3 (description) inside a <Description> 
-   * where either a list of propertyElt elements is expected or 
-   * an empty element 
-   */
-  RAPIER_STATE_IN_DESCRIPTION = 6031,
-
-
 
   /* met production 6.12 (propertyElt)
    */
   RAPIER_STATE_PROPERTYELT = 6120,
-  
+
   /* met production 6.13 (typedNode)
    */
   RAPIER_STATE_TYPED_NODE = 6130,
-  
+
 
 
   /* Met production 6.25 (sequence) <rdf:Seq> element seen. Goto 6.28  */
@@ -217,7 +218,7 @@ typedef enum {
 
   /* Met production 6.27 (alternative) <rdf:Alt> element seen. Goto 6.28 */
   RAPIER_STATE_ALT = 6270,
-  
+
   /* Met production 6.28 (member) 
    * Now expect <rdf:li> element and if it empty, with resource attribute
    * goto 6.29 otherwise goto 6.30
@@ -225,19 +226,33 @@ typedef enum {
    */
   RAPIER_STATE_MEMBER = 6280,
 
-  /* met production 6.29 (referencedItem)
+  /* met production 6.29 (referencedItem) after 
    * Found a container item with reference - <rdf:li (rdf:)resource=".."/> */
   RAPIER_STATE_REFERENCEDITEM = 6290,
 
-  /* met production 6.30 (inlineItem)
-   * Found a container item with content - <rdf:li> */
+
+  /* met production 6.30 (inlineItem) part 1 - plain container item */
   RAPIER_STATE_INLINEITEM = 6300,
+
+  /* met production 6.30 (inlineItem) part 2 - container item with
+   * rdf:parseType="literal" */
+  RAPIER_STATE_PARSETYPE_LITERAL = 6301,
+
+  /* met production 6.30 (inlineItem) part 3 - container item with 
+   * rdf:parseType="literal" */
+  RAPIER_STATE_PARSETYPE_RESOURCE = 6302,
+
+
 
   /* ******************************************************************* */
   /* Additional non-M&S states */
 
   /* Another kind of container, not Seq, Bag or Alt */
   RAPIER_STATE_CONTAINER = 7000,
+
+  /* met production 6.30 (inlineItem) - container item 
+   * with other rdf:parseType value */
+  RAPIER_STATE_PARSETYPE_OTHER = 7010,
 
 } rapier_state;
 
@@ -251,18 +266,18 @@ struct rapier_ns_map_s {
   struct rapier_ns_map_s* next; /* next down the stack, NULL at bottom */
   const char *prefix;           /* NULL means is the default namespace */
   int prefix_length;            /* needed to safely compare prefixed-names */
-#ifdef LIBRDF_INTERNAL
-  librdf_uri *uri;
-#else  
-  const char *uri;
+  rapier_uri *uri;              /* URI of namespace or NULL for default */
+#ifndef LIBRDF_INTERNAL
   int uri_length;
 #endif
   int depth;             /* parsing depth that this ns was added.  It will
                             be deleted when the parser leaves this depth */
+
+  int is_xml;            /* Non 0 if is xml: prefixed name */
   int is_rdf_ms;         /* Non 0 if is RDF M&S Namespace */
   int is_rdf_schema;     /* Non 0 if is RDF Schema Namespace */
 };
- 
+
 
 /* 
  * Rapier XML-namespaced name, for elements or attributes 
@@ -276,22 +291,21 @@ struct rapier_ns_map_s {
 typedef struct {
   const rapier_ns_map *namespace;
   const char *qname;
-#ifdef LIBRDF_INTERNAL
-  librdf_uri *uri;
-#else  
-  const char *uri;   /* URI of namespace+qname or NULL if not defined */
-#endif
+  rapier_uri *uri;   /* URI of namespace+qname or NULL if not defined */
   const char *value; /* optional value - used when name is an attribute */
 } rapier_ns_name;
 
 
+/* These are only used in the RDF/XML syntax and as attributes,
+ * never as elements and are not in the RDF model
+ */
 typedef enum {
   RDF_ATTR_about           = 0, /* value of rdf:about attribute */
   RDF_ATTR_aboutEach       = 1, /* " rdf:aboutEach       */
   RDF_ATTR_aboutEachPrefix = 2, /* " rdf:aboutEachPrefix */
   RDF_ATTR_ID              = 3, /* " rdf:ID */
   RDF_ATTR_bagID           = 4, /* " rdf:bagID */
-  RDF_ATTR_reference       = 5, /* " rdf:reference */
+  RDF_ATTR_resource        = 5, /* " rdf:resource */
   RDF_ATTR_type            = 6, /* " rdf:type */
   RDF_ATTR_parseType       = 7, /* " rdf:parseType */
 
@@ -304,10 +318,35 @@ static const char * const rdf_attr_names[]={
   "aboutEachPrefix",
   "ID",
   "bagID",
-  "reference",
+  "resource",
   "type",
   "parseType",
 };
+
+
+/* For a typedNode production, what is the real production of the
+ * block?  This can be typedNode (the default), sequence, bag, alternative
+ * or (invented) container for other container types.
+ */
+typedef enum {
+  RAPIER_TYPED_NODE_BLOCK_TYPE_TYPED_NODE, /* default */
+  RAPIER_TYPED_NODE_BLOCK_TYPE_SEQ,
+  RAPIER_TYPED_NODE_BLOCK_TYPE_BAG,
+  RAPIER_TYPED_NODE_BLOCK_TYPE_ALT,
+  RAPIER_TYPED_NODE_BLOCK_TYPE_CONTAINER
+} rapier_typed_node_block_type;
+
+
+typedef enum {
+  /* undetermined yet - whitespace is stored */
+  RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN,
+  /* cdata / literal content - whitespace is significant*/
+  RAPIER_ELEMENT_CONTENT_TYPE_CDATA,
+  /* elements, whitespace is ignored, any non-whitespace is error */
+  RAPIER_ELEMENT_CONTENT_TYPE_ELEMENTS,
+  /* all content is preserved */
+  RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED
+} rapier_element_content_type;
 
 
 /*
@@ -317,18 +356,41 @@ struct rapier_element_s {
   struct rapier_element_s *parent;  /* NULL at bottom of stack */
   rapier_ns_name *name;
   rapier_ns_name **attributes;
-  int attribute_count;
-  const char * rdf_attr[RDF_ATTR_LAST+1];     /* attributes declared in M&S */
-  int rdf_attr_count;                         /* how many of above seen */
+  unsigned int attribute_count;
+  const char * rdf_attr[RDF_ATTR_LAST+1]; /* attributes declared in M&S */
+  unsigned int rdf_attr_count;            /* how many of above seen */
 
   rapier_state state; /* state that this production matches */
 
+  /* XML elements in RDF can contain EITHER cdata OR just sub-elements
+   * Mixed content is not allowed 
+   */
+
+  rapier_element_content_type content_type;
+
   /* CDATA content of element and checks for mixed content */
   char *content_cdata;
-  int content_element_seen;
-  int content_cdata_seen;
-  int content_cdata_length;
+  unsigned int content_cdata_length;
+  unsigned int content_cdata_seen; /* how many cdata blocks seen */
+  unsigned int content_cdata_all_whitespace; /* all cdata so far is whitespace */
+  unsigned int content_element_seen; /* how many contained elements seen */
 
+  /* Identifies for the resource described by this element ID and/or URI */
+  const char *id;
+  int id_is_generated;
+  rapier_uri *uri;
+  /* Type of uri */
+  rapier_subject_type subject_type;
+
+  /* ID of Bag */
+  const char *bag_id;
+  int bagid_is_generated;
+  rapier_uri *bag_uri;
+
+  /* URI of a contained object */
+  rapier_uri *object_uri;
+
+  int last_ordinal; /* last ordinal, so initialising to 0 works */
 };
 
 typedef struct rapier_element_s rapier_element;
@@ -361,17 +423,42 @@ struct rapier_parser_s {
   /* stack of elements - elements add after current_element */
   rapier_element *root_element;
   rapier_element *current_element;
-  
+
   /* non 0 if parser had fatal error and cannot continue */
   int failed;
 
-  /* non 0 if scanning for <rdf:RDF> element, else assume doc is RDF */
-  int scanning_for_rdf_RDF;
-  
-  /* non 0 to forbid non-namespaced resource, ID etc attributes
+  /* typedNode block type */
+  rapier_typed_node_block_type typed_node_block_type;
+
+  /* generated ID counter */
+  int genid;
+
+  /* base URI of RDF/XML */
+  rapier_uri *base_uri;
+
+
+  /* FEATURE: 
+   * non 0 if scanning for <rdf:RDF> element, else assume doc is RDF */
+  int feature_scanning_for_rdf_RDF;
+
+  /* FEATURE:
+   * non 0 to allow non-namespaced resource, ID etc attributes
    * on RDF namespaced-elements
    */
-  int forbid_rdf_non_ns_attributes; /* negative logic - FIXME */
+  int feature_allow_non_ns_attributes;
+
+  /* FEATURE:
+   * non 0 to interpret Seq, Bag, Alt, other containers using the
+   * typedNode production
+   */
+  int feature_interpret_containers_as_typedNode;
+
+  /* FEATURE:
+   * non 0 to handle other rdf:parseType values that are not
+   * literal or resource
+   */
+  int feature_allow_other_parseTypes;
+
 
   /* stuff for our user */
   void *user_data;
@@ -387,7 +474,7 @@ struct rapier_parser_s {
   rapier_container_test_handler container_test_handler;
 
   /* parser callbacks */
-  rapier_triple_handler triple_handler;
+  rapier_statement_handler statement_handler;
 };
 
 
@@ -395,9 +482,22 @@ struct rapier_parser_s {
 
 /* static variables */
 
-#ifndef LIBRDF_INTERNAL
+#ifdef LIBRDF_INTERNAL
+#define RAPIER_RDF_type_URI LIBRDF_MS_type_URI
+#define RAPIER_RDF_Seq_URI LIBRDF_MS_Seq_URI
+#define RAPIER_RDF_Bag_URI LIBRDF_MS_Bag_URI
+#define RAPIER_RDF_Alt_URI LIBRDF_MS_alt_URI
+#else
 static const char * const rapier_rdf_ms_uri=RAPIER_RDF_MS_URI;
 static const char * const rapier_rdf_schema_uri=RAPIER_RDF_SCHEMA_URI;
+static const char * const rapier_rdf_type_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+static const char * const rapier_rdf_Seq_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq";
+static const char * const rapier_rdf_Bag_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag";
+static const char * const rapier_rdf_Alt_uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt";
+#define RAPIER_RDF_type_URI rapier_rdf_type_uri
+#define RAPIER_RDF_Seq_URI rapier_rdf_Seq_uri
+#define RAPIER_RDF_Bag_URI rapier_rdf_Bag_uri
+#define RAPIER_RDF_Alt_URI rapier_rdf_Alt_uri
 #endif
 static const char * const rapier_xml_uri="http://www.w3.org/XML/1998/namespace";
 
@@ -456,10 +556,19 @@ static void rapier_start_element_grammar(rapier_parser *parser, rapier_element *
 static void rapier_end_element_grammar(rapier_parser *parser, rapier_element *element);
 
 
+/* prototype for statement related functions */
+static void rapier_generate_statement(rapier_parser *rdf_parser, const void *subject, const rapier_subject_type subject_type, const void *predicate, const rapier_predicate_type predicate_type, const void *object, const rapier_object_type object_type);
+static void rapier_print_statement_detailed(const rapier_statement *statement, int detailed, FILE *stream);
+
+
 #ifdef LIBRDF_INTERNAL
 #define IS_RDF_MS_CONCEPT(name, uri, qname) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##qname])
+#define RAPIER_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
+#define RAPIER_FREE_URI(uri) librdf_free_uri(uri)
 #else
 #define IS_RDF_MS_CONCEPT(name, uri, qname) !strcmp(name, #qname)
+#define RAPIER_URI_AS_STRING(uri) (uri)
+#define RAPIER_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
 #endif
 
 
@@ -498,7 +607,7 @@ rapier_start_namespace(rapier_parser *rdf_parser,
   int len;
   rapier_ns_map *map;
   void *p;
-  
+
   LIBRDF_DEBUG4(rapier_start_namespace,
                 "namespace prefix %s uri %s depth %d\n",
                 prefix ? prefix : "(default)", namespace, depth);
@@ -506,7 +615,7 @@ rapier_start_namespace(rapier_parser *rdf_parser,
   /* Convert an empty namespace string "" to a NULL pointer */
   if(!*namespace)
     namespace=NULL;
-  
+
   len=sizeof(rapier_ns_map);
 #ifndef LIBRDF_INTERNAL
   if(namespace) {
@@ -518,14 +627,14 @@ rapier_start_namespace(rapier_parser *rdf_parser,
     prefix_length=strlen(prefix);
     len+=prefix_length+1;
   }
-  
+
   /* Just one malloc for map structure + namespace (maybe) + prefix (maybe)*/
   map=(rapier_ns_map*)LIBRDF_CALLOC(rapier_ns_map, len, 1);
   if(!map) {
     rapier_parser_fatal_error(rdf_parser, "Out of memory");
     return;
   }
-  
+
   p=(void*)map+sizeof(rapier_ns_map);
 #ifndef LIBRDF_INTERNAL
   if(namespace) {
@@ -544,6 +653,9 @@ rapier_start_namespace(rapier_parser *rdf_parser,
   if(prefix) {
     map->prefix=strcpy((char*)p, prefix);
     map->prefix_length=prefix_length;
+
+    if(!strcmp(map->prefix, "xml"))
+      map->is_xml=1;
   }
   map->depth=depth;
 
@@ -561,7 +673,7 @@ rapier_start_namespace(rapier_parser *rdf_parser,
       map->is_rdf_schema=1;
 #endif
   }
-  
+
   if(rdf_parser->namespaces)
     map->next=rdf_parser->namespaces;
   rdf_parser->namespaces=map;
@@ -655,7 +767,7 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
   char* new_name;
   int prefix_length;
   int qname_length=0;
-  
+
 #if RAPIER_DEBUG > 1
   LIBRDF_DEBUG2(rapier_make_namespaced_name,
                 "name %s\n", name);
@@ -683,8 +795,10 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
     ;
 
   if(!*p) {
+    qname_length=p-name;
+
     /* No : - pick up default namespace, if there is one */
-    new_name=(char*)LIBRDF_MALLOC(cstring, strlen(name)+1);
+    new_name=(char*)LIBRDF_MALLOC(cstring, qname_length+1);
     if(!new_name) {
       rapier_parser_fatal_error(rdf_parser, "Out of memory");
       rapier_free_ns_name(ns_name);
@@ -770,12 +884,12 @@ rapier_make_namespaced_name(rapier_parser *rdf_parser, const char *name,
       return NULL;
     }
     strcpy(uri_string, ns_name->namespace->uri);
-    strncpy(uri_string+ns_name->namespace->uri_length, new_name, qname_length);
+    strcpy(uri_string+ns_name->namespace->uri_length, new_name);
     ns_name->uri=uri_string;
 #endif
   }
 
-  
+
   return ns_name;
 }
 
@@ -800,14 +914,9 @@ rapier_free_ns_name(rapier_ns_name* name)
   if(name->qname)
     LIBRDF_FREE(cstring, (void*)name->qname);
 
-#ifdef LIBRDF_INTERNAL
   if(name->uri)
-    librdf_free_uri(name->uri);
-#else
-  if(name->uri)
-    LIBRDF_FREE(cstring, name->uri);
-#endif
-  
+    RAPIER_FREE_URI(name->uri);
+
   if(name->value)
     LIBRDF_FREE(cstring, (void*)name->value);
   LIBRDF_FREE(rapier_ns_name, name);
@@ -837,14 +946,14 @@ rapier_element_pop(rapier_parser *rdf_parser)
 
   if(!element)
     return NULL;
-  
+
   rdf_parser->current_element=element->parent;
   if(rdf_parser->root_element == element) /* just deleted root */
     rdf_parser->root_element=NULL;
-    
+
   return element;
 }
- 
+
 
 static void
 rapier_element_push(rapier_parser *rdf_parser, rapier_element* element) 
@@ -854,13 +963,13 @@ rapier_element_push(rapier_parser *rdf_parser, rapier_element* element)
   if(!rdf_parser->root_element)
     rdf_parser->root_element=element;
 }
- 
+
 
 static void
 rapier_free_element(rapier_element *element)
 {
   int i;
-  
+
   for (i=0; i < element->attribute_count; i++)
     if(element->attributes[i])
       rapier_free_ns_name(element->attributes[i]);
@@ -872,9 +981,21 @@ rapier_free_element(rapier_element *element)
   for(i=0; i<= RDF_ATTR_LAST; i++) 
     if(element->rdf_attr[i])
       LIBRDF_FREE(cstring, (void*)element->rdf_attr[i]);
-  
+
   if(element->content_cdata_length)
     LIBRDF_FREE(rapier_ns_name_array, element->content_cdata);
+
+  if(element->id_is_generated)
+    LIBRDF_FREE(cstring, element->id);
+
+  if(element->uri)
+    RAPIER_FREE_URI(element->uri);
+
+  if(element->bag_uri)
+    RAPIER_FREE_URI(element->bag_uri);
+
+  if(element->object_uri)
+    RAPIER_FREE_URI(element->object_uri);
 
   rapier_free_ns_name(element->name);
   LIBRDF_FREE(rapier_element, element);
@@ -887,7 +1008,7 @@ static void
 rapier_print_element(rapier_element *element, FILE* stream)
 {
   int i;
-  
+
   rapier_print_ns_name(stream, element->name);
   fputc('\n', stream);
 
@@ -903,7 +1024,7 @@ rapier_print_element(rapier_element *element, FILE* stream)
   }
 }
 #endif
- 
+
 
 static void
 rapier_xml_start_element_handler(void *user_data,
@@ -924,7 +1045,7 @@ rapier_xml_start_element_handler(void *user_data,
   locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
   locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
   locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
-#endif    
+#endif
 
   rdf_parser->depth++;
 
@@ -947,7 +1068,7 @@ rapier_xml_start_element_handler(void *user_data,
       ns_attributes_count++;
     }
   }
-  
+
 
   /* Now can recode element name with a namespace */
 
@@ -957,7 +1078,7 @@ rapier_xml_start_element_handler(void *user_data,
     return;
   }
 
-  
+
   /* Create new element structure */
   element=(rapier_element*)LIBRDF_CALLOC(rapier_element, 
                                          sizeof(rapier_element), 1);
@@ -974,15 +1095,15 @@ rapier_xml_start_element_handler(void *user_data,
   element->content_element_seen=0;
   element->content_cdata_seen=0;
   element->content_cdata_length=0;
-  
+
 
 
 
   if(ns_attributes_count) {
     int offset = 0;
-    
+
     /* Round 2 - turn attributes into namespaced-attributes */
-    
+
     /* Allocate new array to hold namespaced-attributes */
     named_attrs=(rapier_ns_name**)LIBRDF_CALLOC(rapier_ns_name-array, sizeof(rapier_ns_name*), ns_attributes_count);
     if(!named_attrs) {
@@ -991,20 +1112,20 @@ rapier_xml_start_element_handler(void *user_data,
       rapier_free_ns_name(element_name);
       return;
     }
-    
+
     for (i = 0; i < all_atts_count; i++) {
       rapier_ns_name* attribute;
-      
+
       /* Skip previously processed attributes */
       if(!atts[i<<1])
         continue;
-      
+
       /* namespace-name[i] stored in named_attrs[i] */
       attribute=rapier_make_namespaced_name(rdf_parser, atts[i<<1],
                                             atts[(i<<1)+1], 0);
       if(!attribute) { /* failed - tidy up and return */
         int j;
-        
+
         for (j=0; j < i; j++)
           LIBRDF_FREE(rapier_ns_name, named_attrs[j]);
         LIBRDF_FREE(rapier_ns_name_array, named_attrs);
@@ -1012,18 +1133,18 @@ rapier_xml_start_element_handler(void *user_data,
         rapier_free_ns_name(element_name);
         return;
       }
-      
+
       /* Save pointers to some RDF M&S attributes */
 
       /* If RDF M&S namespace-prefixed attributes */
       if(attribute->namespace && attribute->namespace->is_rdf_ms) {
         const char *attr_name=attribute->qname;
         int j;
-        
+
         for(j=0; j<= RDF_ATTR_LAST; j++)
           if(!strcmp(attr_name, rdf_attr_names[j])) {
             element->rdf_attr[j]=attribute->value;
-            element->rdf_attr_count++;            
+            element->rdf_attr_count++;
             /* Delete it if it was stored elsewhere */
 #if RAPIER_DEBUG
             LIBRDF_DEBUG3(rapier_xml_start_element_handler,
@@ -1041,12 +1162,12 @@ rapier_xml_start_element_handler(void *user_data,
       /* If non namespace-prefixed RDF M&S attributes found on
        * rdf namespace-prefixed element
        */
-      if(!rdf_parser->forbid_rdf_non_ns_attributes &&
+      if(rdf_parser->feature_allow_non_ns_attributes &&
          attribute && !attribute->namespace &&
          element_name->namespace && element_name->namespace->is_rdf_ms) {
         const char *attr_name=attribute->qname;
         int j;
-        
+
         for(j=0; j<= RDF_ATTR_LAST; j++)
           if(!strcmp(attr_name, rdf_attr_names[j])) {
             element->rdf_attr[j]=attribute->value;
@@ -1062,12 +1183,12 @@ rapier_xml_start_element_handler(void *user_data,
             attribute=NULL;
         }
       } /* end if non-namespace prefixed RDF M&S attributes */
-      
+
 
       if(attribute)
         named_attrs[offset++]=attribute;
     }
-    
+
     /* set actual count from attributes that haven't been skipped */
     ns_attributes_count=offset;
     if(!offset && named_attrs) {
@@ -1076,35 +1197,51 @@ rapier_xml_start_element_handler(void *user_data,
       LIBRDF_FREE(rapier_ns_name_array, named_attrs);
       named_attrs=NULL;
     }
-      
+
   } /* end if ns_attributes_count */
 
   element->attributes=named_attrs;
   element->attribute_count=ns_attributes_count;
 
-  
+
   rapier_element_push(rdf_parser, element);
 
 
   if(element->parent) {
-    if(++element->parent->content_element_seen == 1 &&
-       element->parent->content_cdata_seen == 1) {
-      /* Uh oh - mixed content, the parent element has cdata too */
-      rapier_parser_warning(rdf_parser, "element %s has mixed content.", 
-                            element->parent->name->qname);
+    element->parent->content_element_seen++;
+    if(element->parent->content_type == RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN) {
+      LIBRDF_DEBUG2(rapier_xml_start_element_handler, "Set element %s content type to elements\n", element->name->qname);
+      element->parent->content_type=RAPIER_ELEMENT_CONTENT_TYPE_ELEMENTS;
+    
+      if(element->parent->content_element_seen == 1 &&
+         element->parent->content_cdata_seen == 1) {
+        /* Uh oh - mixed content, the parent element has cdata too */
+        rapier_parser_warning(rdf_parser, "element %s has mixed content.", 
+                              element->parent->name->qname);
+      }
+
+      /* If there is some existing all-whitespace content cdata
+       * (which is probably before the first element) delete it
+       */
+      if(element->parent->content_element_seen &&
+         element->parent->content_cdata_all_whitespace) {
+        LIBRDF_FREE(rapier_ns_name_array, element->content_cdata);
+        element->content_cdata=NULL;
+        element->content_cdata_length=0;
+      }
     }
   }
-  
+
 
 #ifdef RAPIER_DEBUG
-  fprintf(stderr, "rapier_xml_start_element_handler: Start of namespaced-element: ");
+  fprintf(stderr, "rapier_xml_start_element_handler: Start ns-element: ");
   rapier_print_element(element, stderr);
 #endif
 
 
   /* Right, now ready to enter the grammar */
   rapier_start_element_grammar(rdf_parser, element);
-  
+
 }
 
 
@@ -1123,7 +1260,7 @@ rapier_xml_end_element_handler(void *user_data, const XML_Char *name)
   locator->line=XML_GetCurrentLineNumber(rdf_parser->xp);
   locator->column=XML_GetCurrentColumnNumber(rdf_parser->xp);
   locator->byte=XML_GetCurrentByteIndex(rdf_parser->xp);
-#endif    
+#endif
 
   /* recode element name */
 
@@ -1133,9 +1270,9 @@ rapier_xml_end_element_handler(void *user_data, const XML_Char *name)
     return;
   }
 
-  
+
 #ifdef RAPIER_DEBUG
-  fprintf(stderr, "rapier_xml_end_element_handler: End of namespaced-element: ");
+  fprintf(stderr, "rapier_xml_end_element_handler: End ns-element: ");
   rapier_print_ns_name(stderr, element_name);
   fputc('\n', stderr);
 #endif
@@ -1143,7 +1280,9 @@ rapier_xml_end_element_handler(void *user_data, const XML_Char *name)
   element=rapier_element_pop(rdf_parser);
   if(!rapier_ns_names_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
-    rapier_parser_warning(rdf_parser, "Element %s ended, expected end of element %s\n", name, element->name->qname);
+    rapier_parser_warning(rdf_parser, 
+                          "Element %s ended, expected end of element %s\n",
+                          name, element->name->qname);
     return;
   }
 
@@ -1173,22 +1312,23 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   int all_whitespace=1;
   int ignore_all_whitespace=0;
   int i;
-  
+
   for(i=0; i<len; i++)
     if(!isspace(s[i])) {
       all_whitespace=0;
       break;
     }
-  
+
   element=rdf_parser->current_element;
 
   /* cdata never changes the parser state */
-  
+
   state=element->state;
+  LIBRDF_DEBUG2(rapier_xml_cdata_handler, "in state %d\n", state);
   switch(state) {
     case RAPIER_STATE_UNKNOWN:
       /* Ignore all cdata if still looking for RDF */
-      if(rdf_parser->scanning_for_rdf_RDF)
+      if(rdf_parser->feature_scanning_for_rdf_RDF)
         return;
 
       /* Ignore all whitespace cdata before first element */
@@ -1201,38 +1341,38 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
       rapier_parser_warning(rdf_parser, "Found cdata before RDF element.");
       break;
 
-    case RAPIER_STATE_IN_RDF:
-    case RAPIER_STATE_IN_DESCRIPTION:
-      /* Ignore all whitespace cdata inside <RDF> or <Description> 
-       * when it occurs although note it was seen
-       */
-      ignore_all_whitespace=1;
+    case RAPIER_STATE_PARSETYPE_LITERAL:
+      /* FIXME */
       break;
 
-    case RAPIER_STATE_DESCRIPTION:
-      /* Never reached in any code outside start element 
-       * since immediately moves on to RAPIER_STATE_IN_DESCRIPTION
-       * or RAPIER_STATE_TYPED_NODE
-       */
-      abort();
+    case RAPIER_STATE_PARSETYPE_RESOURCE:
+      /* FIXME */
       break;
 
-    case RAPIER_STATE_TYPED_NODE:
-    case RAPIER_STATE_SEQ:
-    case RAPIER_STATE_BAG:
-    case RAPIER_STATE_ALT:
-    case RAPIER_STATE_MEMBER:
-    case RAPIER_STATE_REFERENCEDITEM:
-    case RAPIER_STATE_INLINEITEM:
-    case RAPIER_STATE_PROPERTYELT:
+    case RAPIER_STATE_PARSETYPE_OTHER:
+      /* FIXME */
       break;
 
     default:
-      rapier_parser_fatal_error(rdf_parser, "Unexpected parser state %d.", 
-                                state);
-      return;
+      break;
     } /* end switch */
 
+
+  /* See if we can determine content rules yet */
+  if(element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_UNKNOWN) {
+    if(!all_whitespace) {
+      LIBRDF_DEBUG2(rapier_xml_end_element_handler, "Set element %s content type to cdata\n", element->name->qname);
+      element->content_type=RAPIER_ELEMENT_CONTENT_TYPE_CDATA;
+    }
+  }
+
+  if(all_whitespace && 
+     (ignore_all_whitespace ||
+      element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_ELEMENTS)) {
+    
+    LIBRDF_DEBUG2(rapier_xml_end_element_handler, "Ignoring whitespace cdata inside element %s\n", element->name->qname);
+    return;
+  }
 
 
   if(++element->content_cdata_seen == 1 &&
@@ -1242,11 +1382,7 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
                           element->name->qname);
   }
 
-  if(all_whitespace && ignore_all_whitespace) {
-    LIBRDF_DEBUG2(rapier_xml_end_element_handler, "Ignoring whitespace cdata inside element %s\n", element->name->qname);
-    return;
-  }
-  
+
   buffer=(char*)LIBRDF_MALLOC(cstring, element->content_cdata_length + len + 1);
   if(!buffer) {
     rapier_parser_fatal_error(rdf_parser, "Out of memory");
@@ -1256,7 +1392,10 @@ rapier_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   if(element->content_cdata_length) {
     strncpy(buffer, element->content_cdata, element->content_cdata_length);
     LIBRDF_FREE(cstring, element->content_cdata);
-  }
+    element->content_cdata_all_whitespace &= all_whitespace;
+  } else
+    element->content_cdata_all_whitespace = all_whitespace;
+
   element->content_cdata=buffer;
 
   ptr=buffer+element->content_cdata_length; /* append */
@@ -1316,7 +1455,7 @@ rapier_xml_unparsed_entity_decl_handler(void *user_data,
           systemId, (publicId ? publicId: "(None)"),
           notationName);
 }
-  
+
 
 static int 
 rapier_xml_external_entity_ref_handler(XML_Parser parser,
@@ -1429,16 +1568,16 @@ rapier_file_uri_to_filename(const char *uri)
 {
   int length;
   char *filename;
-  
+
   if (strncmp(uri, "file:", 5))
     return NULL;
-  
+
   /* FIXME: unix version of URI -> filename conversion */
   length=strlen(uri) -5 +1;
   filename=LIBRDF_MALLOC(cstring, length);
   if(!filename)
     return NULL;
-  
+
   strcpy(filename, uri+5);
   return filename;
 }
@@ -1453,7 +1592,7 @@ rapier_parser_fatal_error(rapier_parser* parser, const char *message, ...)
   va_list arguments;
 
   parser->failed=1;
-  
+
   if(parser->fatal_error_handler) {
     parser->fatal_error_handler(parser->fatal_error_user_data, 
                                 &parser->locator, message);
@@ -1486,7 +1625,7 @@ rapier_parser_error(rapier_parser* parser, const char *message, ...)
                           &parser->locator, message);
     return;
   }
-  
+
   va_start(arguments, message);
 
   rapier_print_locator(stderr, &parser->locator);
@@ -1511,7 +1650,7 @@ rapier_parser_warning(rapier_parser* parser, const char *message, ...)
                             &parser->locator, message);
     return;
   }
-  
+
   va_start(arguments, message);
 
   rapier_print_locator(stderr, &parser->locator);
@@ -1534,14 +1673,14 @@ myXmlSAXParseFile(xmlSAXHandlerPtr sax, void *user_data, const char *filename)
 {
   int ret = 0;
   xmlParserCtxtPtr ctxt;
-  
+
   ctxt = xmlCreateFileParserCtxt(filename);
   if (ctxt == NULL) return -1;
   ctxt->sax = sax;
   ctxt->userData = user_data;
-  
+
   xmlParseDocument(ctxt);
-  
+
   if (ctxt->wellFormed)
     ret = 0;
   else
@@ -1549,7 +1688,7 @@ myXmlSAXParseFile(xmlSAXHandlerPtr sax, void *user_data, const char *filename)
   if (sax)
     ctxt->sax = NULL;
   xmlFreeParserCtxt(ctxt);
-  
+
   return ret;
 }
 #endif
@@ -1565,7 +1704,7 @@ myXmlSAXParseFile(xmlSAXHandlerPtr sax, void *user_data, const char *filename)
  * Return value: non 0 on failure
  **/
 rapier_parser*
-rapier_new(void) 
+rapier_new(rapier_uri *base_uri)
 {
   rapier_parser* rdf_parser;
 #ifdef NEED_EXPAT
@@ -1576,7 +1715,13 @@ rapier_new(void)
 
   if(!rdf_parser)
     return NULL;
-  
+
+  /* Initialise default feature values */
+  rdf_parser->feature_scanning_for_rdf_RDF=0;
+  rdf_parser->feature_allow_non_ns_attributes=1;
+  rdf_parser->feature_interpret_containers_as_typedNode=0;
+
+
 #ifdef NEED_EXPAT
   xp=XML_ParserCreate(NULL);
 
@@ -1619,6 +1764,8 @@ rapier_new(void)
   /* xmlInitParserCtxt(&rdf_parser->xc); */
 #endif
 
+  rdf_parser->base_uri=base_uri;
+
   rapier_init_namespaces(rdf_parser);
 
   return rdf_parser;
@@ -1637,7 +1784,7 @@ rapier_free(rapier_parser *rdf_parser)
 {
   rapier_element* element;
   rapier_ns_map* ns;
-  
+
   ns=rdf_parser->namespaces;
   while(ns) {
     rapier_ns_map* next_ns=ns->next;
@@ -1709,18 +1856,18 @@ rapier_set_warning_handler(rapier_parser* parser, void *user_data,
 
 
 void
-rapier_set_triple_handler(rapier_parser* parser,
+rapier_set_statement_handler(rapier_parser* parser,
                           void *user_data, 
-                          rapier_triple_handler handler)
+                          rapier_statement_handler handler)
 {
   parser->user_data=user_data;
-  parser->triple_handler=handler;
+  parser->statement_handler=handler;
 }
 
 
 
 
-  
+
 /**
  * rapier_parse_file - Retrieve the RDF/XML content at URI
  * @rdf_parser: parser
@@ -1752,9 +1899,9 @@ rapier_parse_file(rapier_parser* rdf_parser,  const char *uri,
   rdf_parser->depth=0;
   rdf_parser->root_element= rdf_parser->current_element=NULL;
   rdf_parser->failed=0;
-  
 
- 
+
+
 #ifdef NEED_EXPAT
   xp=rdf_parser->xp;
 
@@ -1768,7 +1915,7 @@ rapier_parse_file(rapier_parser* rdf_parser,  const char *uri,
 
   locator->file=filename;
   locator->uri=base_uri;
-  
+
   fh=fopen(filename, "r");
   if(!fh) {
     rapier_parser_error(rdf_parser, "file open failed - %s", strerror(errno));
@@ -1778,7 +1925,7 @@ rapier_parse_file(rapier_parser* rdf_parser,  const char *uri,
     LIBRDF_FREE(cstring, (void*)filename);
     return 1;
   }
-  
+
 #ifdef NEED_LIBXML
   /* libxml needs at least 4 bytes from the XML content to allow
    * content encoding detection to work */
@@ -1790,7 +1937,7 @@ rapier_parse_file(rapier_parser* rdf_parser,  const char *uri,
     fclose(fh);
     fh=NULL;
   }
-  
+
 #endif
 
   while(fh && !feof(fh)) {
@@ -1853,7 +2000,7 @@ rapier_print_locator(FILE *stream, rapier_locator* locator)
 {
   if(!locator)
     return;
-  
+
   if(locator->uri)
     fprintf(stream, "URI %s", locator->uri);
   else if (locator->file)
@@ -1866,18 +2013,26 @@ rapier_print_locator(FILE *stream, rapier_locator* locator)
       fprintf(stream, " column %d", locator->column);
   }
 }
- 
+
 
 
 void
 rapier_set_feature(rapier_parser *parser, rapier_feature feature, int value) {
   switch(feature) {
     case RAPIER_FEATURE_SCANNING:
-      parser->scanning_for_rdf_RDF=value;
+      parser->feature_scanning_for_rdf_RDF=value;
       break;
 
-    case RAPIER_FEATURE_RDF_NON_NS_ATTRIBUTES:
-      parser->forbid_rdf_non_ns_attributes=!value; /* negative logic - FIXME */
+    case RAPIER_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+      parser->feature_allow_non_ns_attributes=value;
+      break;
+
+    case RAPIER_FEATURE_INTERPRET_CONTAINERS_AS_TYPEDNODE:
+      parser->feature_interpret_containers_as_typedNode=value;
+      break;
+
+    case RAPIER_FEATURE_ALLOW_OTHER_PARSETYPES:
+      parser->feature_allow_other_parseTypes=value;
       break;
 
     default:
@@ -1886,6 +2041,287 @@ rapier_set_feature(rapier_parser *parser, rapier_feature feature, int value) {
 }
 
 
+static void
+rapier_generate_statement(rapier_parser *rdf_parser, 
+                          const void *subject,
+                          const rapier_subject_type subject_type,
+                          const void *predicate,
+                          const rapier_predicate_type predicate_type,
+                          const void *object,
+                          const rapier_object_type object_type)
+{
+  rapier_statement statement;
+
+  statement.subject=subject;
+  statement.subject_type=subject_type;
+  statement.predicate=predicate;
+  statement.predicate_type=predicate_type;
+  statement.object=object;
+  statement.object_type=object_type;
+
+#ifdef RAPIER_DEBUG
+  fprintf(stderr, "rapier_generate_statement: Generating statement: ");
+  rapier_print_statement_detailed(&statement, 1, stderr);
+  fputc('\n', stderr);
+#endif
+
+  if(rdf_parser->statement_handler)
+    (*rdf_parser->statement_handler)(rdf_parser->user_data, &statement);
+}
+
+
+static void
+rapier_print_statement_detailed(const rapier_statement * const statement,
+                                int detailed, FILE *stream) 
+{
+  const char *q;
+
+  fprintf(stream, "[%s, ", (const char*)statement->subject);
+
+  if(statement->predicate_type == RAPIER_PREDICATE_TYPE_ORDINAL)
+    fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate));
+  else
+    fputs(((char*)statement->predicate), stream);
+
+  q=(statement->object_type == RAPIER_OBJECT_TYPE_LITERAL || 
+     statement->object_type == RAPIER_OBJECT_TYPE_XML_LITERAL) ? "\"" : "";
+  fprintf(stream, ", %s%s%s]", q, (const char*)statement->object, q);
+}
+
+
+void
+rapier_print_statement(const rapier_statement * const statement, FILE *stream) 
+{
+  rapier_print_statement_detailed(statement, 0, stream);
+}
+
+
+
+static void
+rapier_generate_property(rapier_parser *rdf_parser,
+                         rapier_element *element,
+                         void *predicate,
+                         rapier_predicate_type predicate_type,
+                         void *value, 
+                         int value_is_literal) {
+#ifdef RAPIER_DEBUG
+  const char *predicate_string=(predicate_type == RAPIER_PREDICATE_TYPE_PREDICATE) ? RAPIER_URI_AS_STRING((rapier_uri*)predicate) : (const char*)predicate;
+
+  if(value_is_literal)
+    LIBRDF_DEBUG4(rapier_generate_property, 
+                  "Found property %s on element %s with literal value '%s'\n",
+                  predicate_string,
+                  element->name->qname,
+                  (char*)value);
+
+  else
+    LIBRDF_DEBUG4(rapier_generate_property,
+                  "Found property %s on element %s with resource URI %s\n",
+                  predicate_string,
+                  element->name->qname,
+                  RAPIER_URI_AS_STRING((rapier_uri*)value));
+#endif
+
+    rapier_generate_statement(rdf_parser, 
+                              element->uri, /* subject - node URI */
+                              RAPIER_SUBJECT_TYPE_RESOURCE,
+                              predicate,
+                              predicate_type,
+                              value,
+                              (value_is_literal) ? RAPIER_OBJECT_TYPE_LITERAL
+                                                 : RAPIER_OBJECT_TYPE_RESOURCE);
+}
+
+
+static void
+rapier_generate_ordinal_property(rapier_parser *rdf_parser,
+                                 rapier_element *element,
+                                 int ordinal,
+                                 void *value, 
+                                 rapier_object_type object_type) 
+{
+#ifdef RAPIER_DEBUG
+  if(object_type == RAPIER_OBJECT_TYPE_LITERAL ||
+     object_type == RAPIER_OBJECT_TYPE_XML_LITERAL)
+    LIBRDF_DEBUG4(rapier_generate_ordinal_property, "Found ordinal property rdf:_%d on element %s with literal value '%s'\n", ordinal, element->name->qname,
+                  (char*)value);
+  else
+    LIBRDF_DEBUG4(rapier_generate_ordinal_property, "Found ordinal property rdf:_%d on element %s with resource URI %s\n", ordinal, element->name->qname,
+                  (char*)value);
+#endif
+
+  rapier_generate_statement(rdf_parser, 
+                            element->uri, /* subject - noed URI */
+                            RAPIER_SUBJECT_TYPE_RESOURCE,
+                            &ordinal, /* predicate is pointer to ordinal */
+                            RAPIER_PREDICATE_TYPE_ORDINAL,
+                            value, /* object */
+                            object_type);
+}
+
+
+static const char *
+rapier_generate_id(rapier_parser *rdf_parser, const int id_for_bag)
+{
+  char *buffer;
+  int length=7; /* "genid" + min length 1 + \0 */
+  int id=++rdf_parser->genid;
+  int tmpid=id;
+
+  while(tmpid/10)
+    length++;
+  buffer=(char*)LIBRDF_MALLOC(cstring, length);
+  if(!buffer)
+    return NULL;
+  sprintf(buffer, "genid%d", id);
+
+  return (const char*)buffer;
+}
+
+
+static rapier_uri*
+rapier_make_uri_from_id(rapier_uri *base_uri, const char *id) 
+{
+#ifdef LIBRDF_INTERNAL
+#else
+  char *new_uri;
+  int len;
+  LIBRDF_DEBUG3(rapier_make_uri_from_id, 
+                "Using base URI %s and ID %s\n", 
+                base_uri, id);
+#endif
+
+#ifdef LIBRDF_INTERNAL
+  FIXME;
+#else
+  len=strlen(base_uri)+1+strlen(id)+1;
+
+  new_uri=LIBRDF_MALLOC(cstring, len);
+  if(!new_uri)
+    return NULL;
+  sprintf(new_uri, "%s#%s", base_uri, id);
+  return new_uri;
+#endif
+}
+
+
+static rapier_uri*
+rapier_make_uri(rapier_uri *base_uri, const char *uri_string) 
+{
+#ifdef LIBRDF_INTERNAL
+#else
+  char *new_uri;
+  const char *p;
+  int base_uri_len=strlen(base_uri);
+
+  LIBRDF_DEBUG3(rapier_make_uri, 
+                "Using base URI %s and URI string '%s'\n", 
+                base_uri, uri_string);
+#endif
+#ifdef LIBRDF_INTERNAL
+  FIXME;
+#else
+  /* If URI string is empty, just copy base URI */
+  if(!*uri_string) {
+    new_uri=LIBRDF_MALLOC(cstring, base_uri_len+1);
+    if(!new_uri)
+      return NULL;
+    strcpy(new_uri, base_uri);
+    return new_uri;
+  }
+
+  /* If URI string is a fragment #foo, append to base URI */
+  if(*uri_string == '#') {
+    new_uri=LIBRDF_MALLOC(cstring, base_uri_len+1+strlen(uri_string)+1);
+    if(!new_uri)
+      return NULL;
+    strncpy(new_uri, base_uri, base_uri_len);
+    strcpy(new_uri+base_uri_len, uri_string);
+    return new_uri;
+  }
+
+  /* If URI string is an absolute URI, just copy it */
+  for(p=uri_string;*p; p++)
+    if(!isalnum(*p))
+       break;
+  /* If first non-alphanumeric char is a ':' then probably a absolute URI
+   * FIXME what a crock
+   */
+  if(*p && *p == ':') {
+    new_uri=LIBRDF_MALLOC(cstring, strlen(uri_string)+1);
+    if(!new_uri)
+      return NULL;
+    strcpy(new_uri, uri_string);
+    return new_uri;
+  }
+
+  /* Otherwise is a general URI relative to base URI */
+
+  /* FIXME do this properly */
+
+  /* Move p to the last / or : char in the base URI */
+  for(p=base_uri+base_uri_len-1; p > base_uri && *p != '/' && *p != ':'; p--)
+    ;
+
+  new_uri=LIBRDF_MALLOC(cstring, (p-base_uri)+1+strlen(uri_string)+1);
+  if(!new_uri)
+    return NULL;
+  strncpy(new_uri, base_uri, p-base_uri+1);
+  strcpy(new_uri+(p-base_uri)+1, uri_string);
+  return new_uri;
+#endif
+
+}
+
+
+static rapier_uri*
+rapier_copy_uri(rapier_uri *uri) 
+{
+#ifdef LIBRDF_INTERNAL
+  return librdf_new_uri_from_uri(uri);
+#else
+  char *new_uri;
+  new_uri=(char*)LIBRDF_MALLOC(cstring, strlen(uri)+1);
+  if(!new_uri)
+    return NULL;
+  strcpy(new_uri, uri);
+  return new_uri;
+#endif
+}
+
+
+static void 
+rapier_process_property_attributes(rapier_parser *rdf_parser, 
+                                   rapier_element *element)
+{
+  int i;
+
+  /* Process remaining attributes as propAttr* =
+   * (propName="string")*
+   */
+  for(i=0; i<element->attribute_count; i++) {
+    rapier_ns_name* attribute=element->attributes[i];
+    const char *value = attribute->value;
+
+    /* Generate the property - either with a namespaced predicate
+     * (attribute has a URI) or non-namespaced predicate (attribute
+     * is just the XML name)
+     */
+    if(attribute->uri)
+      rapier_generate_property(rdf_parser, 
+                               element,          /* subject: element */
+                               (void*)attribute->uri, /* predicate: URI */
+                               RAPIER_PREDICATE_TYPE_PREDICATE,
+                               (void*)value, 1); /* object: literal */
+    else
+      rapier_generate_property(rdf_parser, 
+                               element,          /* subject: element */
+                               (void*)attribute->qname, /* predicate: qname */
+                               RAPIER_PREDICATE_TYPE_XML_NAME,
+                               (void*)value, 1); /* object: literal */
+  } /* end for ... attributes */
+}
+
 
 static void
 rapier_start_element_grammar(rapier_parser *rdf_parser,
@@ -1893,7 +2329,8 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 {
   int finished;
   rapier_state state;
-  
+  int i;
+
   finished= 0;
   if(element->parent)
     state=element->parent->state;
@@ -1904,58 +2341,86 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
     const char *el_name=element->name->qname;
     int element_in_rdf_ns=(element->name->namespace && 
                            element->name->namespace->is_rdf_ms);
-    
+
     switch(state) {
       case RAPIER_STATE_UNKNOWN:
+        /* found <rdf:RDF> ? */
         if(element_in_rdf_ns && 
-          IS_RDF_MS_CONCEPT(el_name, element->name->uri,RDF)) {
+          IS_RDF_MS_CONCEPT(el_name, element->name->uri, RDF)) {
           state=RAPIER_STATE_IN_RDF;
-          /* need more content before can continue */
+          /* Yes - need more content before can continue,
+           * so wait for another element
+           */
           finished=1;
           break;
         }
-        /* If scanning for element, can continue */
-        if(rdf_parser->scanning_for_rdf_RDF) {
-          finished=1;
-          break;
-        }
-        /* Otherwise choice of next state can be made from the current
-         * element by IN_RDF state */
 
+        /* If scanning for element, can continue */
+        if(rdf_parser->feature_scanning_for_rdf_RDF) {
+          finished=1;
+          break;
+        }
+
+        /* Otherwise the choice of the next state can be made
+         * from the current element by the IN_RDF state
+         */
         state=RAPIER_STATE_IN_RDF;
         break;
 
+
       case RAPIER_STATE_IN_RDF:
         if(element_in_rdf_ns) {
-          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri,Description)) {
+          if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description)) {
             state=RAPIER_STATE_DESCRIPTION;
             break;
-          } else if(IS_RDF_MS_CONCEPT(el_name, element->name->uri,Seq)) {
-            state=RAPIER_STATE_SEQ;
+          } else if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Seq)) {
+            /* CHOICE - can choose either sequence or typedNode productions */
+            if(rdf_parser->feature_interpret_containers_as_typedNode) {
+              rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_SEQ;
+              state=RAPIER_STATE_TYPED_NODE;
+            } else
+              state=RAPIER_STATE_SEQ;
+
             break;
-          } else if(IS_RDF_MS_CONCEPT(el_name, element->name->uri,Bag)) {
-            state=RAPIER_STATE_BAG;
+          } else if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Bag)) {
+            /* CHOICE - can choose either sequence or typedNode productions */
+            if(rdf_parser->feature_interpret_containers_as_typedNode) {
+              rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_BAG;
+              state=RAPIER_STATE_TYPED_NODE;
+            } else
+              state=RAPIER_STATE_BAG;
+
             break;
-          } else if(IS_RDF_MS_CONCEPT(el_name, element->name->uri,Alt)) {
-            state=RAPIER_STATE_ALT;
+          } else if(IS_RDF_MS_CONCEPT(el_name, element->name->uri, Alt)) {
+            /* CHOICE - can choose either sequence or typedNode productions */
+            if(rdf_parser->feature_interpret_containers_as_typedNode) {
+              rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_ALT;
+              state=RAPIER_STATE_TYPED_NODE;
+            } else
+              state=RAPIER_STATE_ALT;
+
             break;
           } else if(rdf_parser->container_test_handler) {
             if(rdf_parser->container_test_handler(element->name->uri)) {
-              state=RAPIER_STATE_CONTAINER;
+              /* CHOICE - can choose either 'container' or typedNode productions */
+              if(rdf_parser->feature_interpret_containers_as_typedNode) {
+                rdf_parser->typed_node_block_type=RAPIER_TYPED_NODE_BLOCK_TYPE_CONTAINER;
+                state=RAPIER_STATE_TYPED_NODE;
+              } else {
+                state=RAPIER_STATE_CONTAINER;
+              }
+
               break;
             }
           }
 
-
-          /* Unexpected rdf: element at outer layer */
-          rapier_parser_error(rdf_parser, "Unexpected RDF M&S element %s in <rdf:RDF> - from productions 6.2, 6.3 and 6.4 expected rdf:Description, rdf:Seq, rdf:Bag or rdf:Alt only.", el_name);
-          finished=1;
+          /* Other rdf: elements at this layer are taken as matching
+           * the typedNode production - just fallthrough
+           */
         }
-        
-        /* Hmm, must be a typedNode, handled by the description state 
-         * so that ID, BagID are handled in one place.
-         */
-        state=RAPIER_STATE_DESCRIPTION;          
+
+        /* Default to typedNode */
+        state=RAPIER_STATE_TYPED_NODE;
         break;
 
 
@@ -1963,12 +2428,25 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
 
 
       case RAPIER_STATE_DESCRIPTION:
-        /* choices here from production 6.3 (description)
+      case RAPIER_STATE_TYPED_NODE:
+        /* Handling either 6.3 (description) or 6.13 (typedNode)
+         *
+         * 6.3 (description):
          * <rdf:Description idAboutAttr? bagIdAttr? propAttr* >
          *   Attributes: (ID|about|aboutEach|aboutEachPrefix)? bagID? propAttr*
-         * <typeName idAboutAttr? bagIdAttr? propAttr*>
+         * (may have no content, that is tested in the end element code)
+         *
+         * 6.13 (typedNode):
+         * haved fallen through and not chosen other productions -
+         * 6.3, 6.25, 6.26, 6.27.  OR when 
+         * feature_interpret_containers_as_typedNode is set,
+         * we can be handling rdf:Seq, rdf:Bag, rdf:Alt or other container
+         * and this can be determined from the value of 
+         * rdf_parser->typed_node_block_type
+         *
+         * Expect here from production 6.13 (typedNode)
+         * <typeName idAboutAttr? bagIdAttr? propAttr* />
          *   Attributes: (ID|about|aboutEach|aboutEachPrefix)? bagID? propAttr*
-         * (either may have no content, that is tested in the end element code)
          */
 
         /* lets add booleans - isn't C wonderful! */
@@ -1978,41 +2456,70 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
            (element->rdf_attr[RDF_ATTR_aboutEachPrefix] != NULL) > 1) {
           rapier_parser_warning(rdf_parser, "More than one of RDF ID, about, aboutEach or aboutEachPrefix attributes on element %s - from productions 6.5, 6.6, 6.7 and 6.8 expect at most one.", el_name);
         }
-        
 
-        /* has to be rdf:Description OR typedNode - checked above */
-        if(element_in_rdf_ns)
-          state=RAPIER_STATE_IN_DESCRIPTION;
-        else
-          /* otherwise must match the typedNode production - checked below */
-          state=RAPIER_STATE_TYPED_NODE;
+        if(element->rdf_attr[RDF_ATTR_ID]) {
+          element->id=element->rdf_attr[RDF_ATTR_ID];
+          element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
+        } else if (element->rdf_attr[RDF_ATTR_about]) {
+          element->uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_about]);
+          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE;
+        } else if (element->rdf_attr[RDF_ATTR_aboutEach]) {
+          element->uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEach]);
+          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE_EACH;
+        } else if (element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
+          element->uri=rapier_make_uri(rdf_parser->base_uri, element->rdf_attr[RDF_ATTR_aboutEachPrefix]);
+          element->subject_type=RAPIER_SUBJECT_TYPE_RESOURCE_EACH_PREFIX;
+        } else {
+          element->id=rapier_generate_id(rdf_parser, 0);
+          element->id_is_generated=1;
+          element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+        }
 
-        finished=1;
-        break;
+
+        if(element->rdf_attr[RDF_ATTR_bagID]) {
+          element->bag_id=element->rdf_attr[RDF_ATTR_bagID];
+          element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+        }
+
+        /* Store our URI in our parent (if we have one) */
+        if(element->parent) {
+          /* Free any existing object URI still around */
+          if(element->parent->object_uri)
+            RAPIER_FREE_URI(element->parent->object_uri);
+
+          element->parent->object_uri=rapier_copy_uri(element->uri);
+        }
 
 
-      /* Inside a <rdf:Description> so expecting a list of
-       * propertyElt elements
-       */
-      case RAPIER_STATE_IN_DESCRIPTION:
+
+        /* Extra work for typedNode - generate the typedNode
+         * type statement about resource / XML name
+         */
+        if(state == RAPIER_STATE_TYPED_NODE) {
+          rapier_object_type object_type=(element->name->uri) ? RAPIER_OBJECT_TYPE_RESOURCE : RAPIER_OBJECT_TYPE_XML_NAME;
+          void *object=(element->name->uri) ? (void*)element->name->uri : (void*)element->name->qname;
+
+          rapier_generate_statement(rdf_parser, 
+                                    element->uri, /* subject - node URI */
+                                    RAPIER_SUBJECT_TYPE_RESOURCE,
+                                    RAPIER_RDF_type_URI, /* predicate - rdf:type */
+                                    RAPIER_PREDICATE_TYPE_PREDICATE,
+                                    object,
+                                    object_type);
+        }
+
+
+        rapier_process_property_attributes(rdf_parser, element);
+
+        /* for both productions now need some more content or
+         * property elements before can do any more work.
+         */
+
         state=RAPIER_STATE_PROPERTYELT;
         finished=1;
         break;
 
-
-      /* Expect to meet the typedNode production having 
-       * fallen through and not met other productions -
-       * 6.3, 6.25, 6.26, 6.27.  This is the last choice.
-       *
-       * choices here from production 6.13 (typedNode)
-       * <typeName idAboutAttr? bagIdAttr? propAttr* />
-       *   Attributes: (ID|about|aboutEach|aboutEachPrefix)? bagID?
-       * <typeName idAboutAttr? bagIdAttr? propAttr* > propertyElt* </typeName>
-       *   Attributes: (ID|about|aboutEach|aboutEachPrefix)? bagID? propAttr*
-       */
-      case RAPIER_STATE_TYPED_NODE:
-        finished=1;
-        break;
 
       case RAPIER_STATE_SEQ:
       case RAPIER_STATE_BAG:
@@ -2028,25 +2535,189 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          * Note: The second case implies the element must have no content.
          */
 
-        /* Enforce allowed rdf: attributes - i.e. ID only (optional) */
-        if ((element->rdf_attr - (element->rdf_attr[RDF_ATTR_ID] != NULL))) {
-          rapier_parser_warning(rdf_parser, "Illegal rdf: attribute(s) seen on container element %s - from production 6.25, 6.26 and 6.27 expected rdf:ID only.", el_name);
+        /* Find the ID for this container from the rdf:ID attribute
+         * or generate an ID
+         */
+        if(element->rdf_attr[RDF_ATTR_ID]) {
+          element->id=element->rdf_attr[RDF_ATTR_ID];
+        } else {
+          element->id=rapier_generate_id(rdf_parser, 0);
+          element->id_is_generated=1;
         }
 
+        element->uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->id);
+
+        /* Store URI of new thing in our parent */
+        if(element->parent)
+          element->parent->object_uri=rapier_copy_uri(element->uri);
+
+
+        /* Generate container type statement if we can */
+        if(state == RAPIER_STATE_CONTAINER) {
+          /* FIXME - generate something here with rdfs:Container ? */
+        } else {
+          rapier_uri* object_uri;
+          switch(state) {
+            case RAPIER_STATE_SEQ:
+              object_uri=RAPIER_RDF_Seq_URI;
+              break;
+            case RAPIER_STATE_BAG:
+              object_uri=RAPIER_RDF_Bag_URI;
+              break;
+            case RAPIER_STATE_ALT:
+              object_uri=RAPIER_RDF_Alt_URI;
+              break;
+            default:
+              rapier_parser_fatal_error(rdf_parser,
+                                        "Unexpected container type %d", 
+                                        state);
+              abort();
+          }
+          rapier_generate_statement(rdf_parser, 
+                                    element->uri, /* subject - node URI */
+                                    RAPIER_SUBJECT_TYPE_RESOURCE,
+                                    RAPIER_RDF_type_URI,
+                                    RAPIER_PREDICATE_TYPE_PREDICATE,
+                                    object_uri,
+                                    RAPIER_OBJECT_TYPE_RESOURCE);
+        }
+
+
+        /* Process container member attributes which match:
+         * 6.31 (memberAttr) = member* = (rdf:_n="string")*
+         */
+        for(i=0; i<element->attribute_count; i++) {
+          rapier_ns_name* attribute=element->attributes[i];
+          const char *name=attribute->qname;
+          const char *value = attribute->value;
+          int ordinal = 0;
+          int attribute_problems=0;
+
+          if(!attribute->namespace || !attribute->namespace->is_rdf_ms) {
+            /* No namespace or not rdf: namespace */
+            attribute_problems++;
+          } else if (*name != '_') {
+            /* not rdf:_ */
+            attribute_problems++;
+          } else {
+            /* rdf:_ something */
+
+            name++;
+            while(*name >= '0' && *name <= '9') {
+              ordinal *= 10;
+              ordinal += (*name++ - '0');
+            }
+
+            if(ordinal < 1) {
+              rapier_parser_warning(rdf_parser, "Illegal ordinal attribute %s seen on container element %s.", attribute->qname, el_name);
+              attribute_problems+=2;
+            }
+          }
+
+          if(attribute->namespace && attribute->namespace->is_rdf_ms &&
+             attribute_problems == 1)
+            /* Warn if unexpected or bad rdf: attributes seen and not
+             * already warned
+             */
+            rapier_parser_warning(rdf_parser, "Unexpected rdf: attribute %s seen on container element %s - from production 6.25, 6.26 and 6.27 expected rdf:ID or rdf:_n only.", name, el_name);
+
+
+          /* Always generate a property - either an ordinal,
+           * attribute with a namespaced predicate (attribute has a URI) or
+           * non-namespaced predicate (attribute just the XML name)
+           */
+          if(!attribute_problems) {
+            rapier_generate_ordinal_property(rdf_parser, 
+                                             element, /* subject: element */
+                                             ordinal, /* predicate: ordinal */
+                                             (void*)value,
+                                             RAPIER_OBJECT_TYPE_LITERAL);
+          } else {
+            if(attribute->uri)
+              rapier_generate_property(rdf_parser, 
+                                       element,          /* subject: element */
+                                       (void*)attribute->uri, /* predicate: URI */
+                                       RAPIER_PREDICATE_TYPE_PREDICATE,
+                                       (void*)value, 1); /* object: literal */
+            else
+              rapier_generate_property(rdf_parser, 
+                                       element,          /* subject: element */
+                                       (void*)attribute->qname, /* predicate: qname */
+                                       RAPIER_PREDICATE_TYPE_XML_NAME,
+                                       (void*)value, 1); /* object: literal */
+          }
+
+        } /* end for ... attributes */
+
+
+        state=RAPIER_STATE_MEMBER;
         finished=1;
         break;
 
+        /* Expect to meet the production member - 
+         * referencedItem (6.29) | inlineItem (6.30) =
+         *   '<rdf:li' resourceAttr '/>'  | 
+         *   '<rdf:li' '>' value </rdf:li>' |
+         *   '<rdf:li' parseLiteral '>' literal </rdf:li>' |
+         *   '<rdf:li' parseResource '>' propertyElt* </rdf:li>' 
+         * 
+         * Taking just the start element work:
+         *   1) <rdf:li rdf:resource="..."/>
+         *   2) <rdf:li>
+         *   3) <rdf:li rdf:parseType="literal">
+         *   4) <rdf:li rdf:parseType="resource">
+         *
+         * 1) moves to RAPIER_STATE_REFERENCEDITEM
+         * 2) moves to RAPIER_STATE_INLINEITEM to handle contents of rdf:li
+         * 3) moves to RAPIER_STATE_PARSETYPE_LITERAL
+         * 4) moves to RAPIER_STATE_PARSETYPE_RESOURCE
+         * Other parseType content moves to RAPIER_STATE_PARSETYPE_OTHER
+         */
       case RAPIER_STATE_MEMBER:
+        if(element->rdf_attr[RDF_ATTR_resource]) {
+          element->uri=rapier_make_uri(rdf_parser->base_uri,
+                                       element->rdf_attr[RDF_ATTR_resource]);
+          state=RAPIER_STATE_REFERENCEDITEM;
+        } else if (element->rdf_attr[RDF_ATTR_parseType]) {
+          const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
+
+          if(!strcasecmp(parse_type, "literal")) {
+            state=RAPIER_STATE_PARSETYPE_LITERAL;
+          } else if (!strcasecmp(parse_type, "resource")) {
+            state=RAPIER_STATE_PARSETYPE_LITERAL;
+          } else {
+            if(rdf_parser->feature_allow_other_parseTypes)
+              state=RAPIER_STATE_PARSETYPE_OTHER;
+            else
+              state=RAPIER_STATE_PARSETYPE_LITERAL;
+          }
+        } else
+          state=RAPIER_STATE_INLINEITEM;
+
         finished=1;
         break;
 
       case RAPIER_STATE_REFERENCEDITEM:
+        /* FIXME - need to generate warning for unexpected content */
         finished=1;
         break;
 
       case RAPIER_STATE_INLINEITEM:
         finished=1;
         break;
+
+      case RAPIER_STATE_PARSETYPE_LITERAL:
+        finished=1;
+        break;
+
+      case RAPIER_STATE_PARSETYPE_RESOURCE:
+        finished=1;
+        break;
+
+      case RAPIER_STATE_PARSETYPE_OTHER:
+        finished=1;
+        break;
+
 
         /* choices here from production 6.12 (propertyElt)
          *   <propName idAttr?> value </propName>
@@ -2057,23 +2728,62 @@ rapier_start_element_grammar(rapier_parser *rdf_parser,
          *     Attributes: ID? parseType="resource"
          *   <propName idRefAttr? bagIdAttr? propAttr* />
          *     Attributes: (ID|resource)? bagIdAttr? propAttr*
+         *
+         * The only one that must be handled here is the last one which
+         * uses only attributes and no content.
          */
       case RAPIER_STATE_PROPERTYELT:
+        element->id=element->rdf_attr[RDF_ATTR_ID];
+
+        if(element->rdf_attr[RDF_ATTR_resource]) {
+          /* Handle last case */
+          element->uri=rapier_make_uri(rdf_parser->base_uri,
+                                       element->rdf_attr[RDF_ATTR_resource]);
+
+          if(element->rdf_attr[RDF_ATTR_bagID]) {
+            element->bag_id=element->rdf_attr[RDF_ATTR_bagID];
+            element->bag_uri=rapier_make_uri_from_id(rdf_parser->base_uri, element->bag_id);
+          }
+
+          rapier_process_property_attributes(rdf_parser, element);
+        }
+
+        if (element->rdf_attr[RDF_ATTR_parseType]) {
+          const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
+
+          if(!strcasecmp(parse_type, "literal")) {
+            state=RAPIER_STATE_PARSETYPE_LITERAL;
+            LIBRDF_DEBUG2(rapier_start_element_grammar, "Set element %s content type to preserved\n", element->name->qname);
+            element->content_type=RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED;
+          } else if (!strcasecmp(parse_type, "resource")) {
+            state=RAPIER_STATE_PARSETYPE_RESOURCE;
+          } else {
+            if(rdf_parser->feature_allow_other_parseTypes)
+              state=RAPIER_STATE_PARSETYPE_OTHER;
+            else {
+              state=RAPIER_STATE_PARSETYPE_LITERAL;
+              element->content_type=RAPIER_ELEMENT_CONTENT_TYPE_PRESERVED;
+            }
+          }
+        }
+        /* else state remains state=RAPIER_STATE_PROPERTYELT 
+         * to handle literal string content
+         */
+
         finished=1;
         break;
 
       default:
-        rapier_parser_fatal_error(rdf_parser, "Unexpected parser state %d.", 
-                                  state);
+        rapier_parser_fatal_error(rdf_parser, "rapier_start_element_grammar - unexpected parser state %d.", state);
         finished=1;
-        
+
     } /* end switch */
 
     if(state != element->state) {
       element->state=state;
       LIBRDF_DEBUG2(rapier_start_element_grammar, "moved to state %d\n", state);
     }
-  
+
   } /* end while */
 }
 
@@ -2086,12 +2796,13 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
   int finished;
 
   state=element->state;
+  LIBRDF_DEBUG2(rapier_end_element_grammar, "in state %d\n", state);
   finished= 0;
   while(!finished) {
     const char *el_name=element->name->qname;
     int element_in_rdf_ns=(element->name->namespace && 
                            element->name->namespace->is_rdf_ms);
-    
+
     switch(state) {
       case RAPIER_STATE_UNKNOWN:
         finished=1;
@@ -2108,7 +2819,7 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         /* When scanning, another element ending is outside the RDF
          * world so this can happen without further work
          */
-        if(rdf_parser->scanning_for_rdf_RDF) {
+        if(rdf_parser->feature_scanning_for_rdf_RDF) {
           state=RAPIER_STATE_UNKNOWN;
           finished=1;
           break;
@@ -2125,22 +2836,19 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
       /* No need for 6.2 - already chose 6.3, 6.25, 6.26 or 6.27 */
 
       case RAPIER_STATE_DESCRIPTION:
-        /* Never reached in any code outside start element 
-         * since immediately moves on to RAPIER_STATE_IN_DESCRIPTION
-         * or RAPIER_STATE_TYPED_NODE
-         */
-        abort();
-        break;
-
-      case RAPIER_STATE_IN_DESCRIPTION:
-        /* Must be end of description production </rdf:Description> */
-        state=RAPIER_STATE_IN_RDF;
-        finished=1;
-        break;
-
       case RAPIER_STATE_TYPED_NODE:
-        /* Must be end of typedNode production element <typeName> */
-        state=RAPIER_STATE_IN_RDF;
+
+        if(state == RAPIER_STATE_TYPED_NODE &&
+           element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_ELEMENTS) {
+          rapier_generate_statement(rdf_parser,
+                                    element->parent->uri, /* subject - parent URI */
+                                    RAPIER_SUBJECT_TYPE_RESOURCE,
+                                    element->uri, /* predicate - our URI */
+                                    RAPIER_PREDICATE_TYPE_PREDICATE,
+                                    element->object_uri, /* object - contents URI */
+                                    RAPIER_OBJECT_TYPE_RESOURCE);
+        }
+
         finished=1;
         break;
 
@@ -2157,29 +2865,87 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
         break;
 
       case RAPIER_STATE_REFERENCEDITEM:
+        if((element->content_element_seen + element->content_cdata_seen))
+          rapier_parser_warning(rdf_parser, "Unexpected content in %s with resource attribute - from production 6.29 expected an empty element.", el_name);
+
+        element->parent->last_ordinal++;
+        rapier_generate_ordinal_property(rdf_parser, 
+                                         element->parent, /* subject: element */
+                                         element->parent->last_ordinal, /* predicate: ordinal */
+                                         (void*)element->uri,
+                                         RAPIER_OBJECT_TYPE_RESOURCE);
+
         finished=1;
         break;
 
       case RAPIER_STATE_INLINEITEM:
+        element->parent->last_ordinal++;
+        rapier_generate_ordinal_property(rdf_parser, 
+                                         element->parent, /* subject: element */
+                                         element->parent->last_ordinal, /* predicate: ordinal */
+                                         (void*)element->content_cdata,
+                                         RAPIER_OBJECT_TYPE_LITERAL);
         finished=1;
         break;
 
+      case RAPIER_STATE_PARSETYPE_LITERAL:
+        element->parent->last_ordinal++;
+        rapier_generate_ordinal_property(rdf_parser, 
+                                         element->parent, /* subject: element */
+                                         element->parent->last_ordinal, /* predicate: ordinal */
+                                         (void*)element->content_cdata,
+                                         RAPIER_OBJECT_TYPE_XML_LITERAL);
+
+        finished=1;
+        break;
+
+      case RAPIER_STATE_PARSETYPE_RESOURCE:
+        /* FIXME */
+        finished=1;
+        break;
+
+      case RAPIER_STATE_PARSETYPE_OTHER:
+        /* FIXME */
+        finished=1;
+        break;
+
+
       case RAPIER_STATE_PROPERTYELT:
+        /* This is used inside these: productions
+         *   6.3 (description), 6.12 (propertyElt),
+         *   6.13 (typedNode),  6.30 (inlineItem)
+         */
+
+        if(element->content_cdata &&
+           element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_CDATA)
+          rapier_generate_property(rdf_parser, 
+                                   element->parent, /* subject - node URI */
+                                   (void*)element->name->uri, /* predicate - element URI */
+                                   RAPIER_PREDICATE_TYPE_PREDICATE,
+                                   (void*)element->content_cdata, 1);
+
+        if(element->content_type == RAPIER_ELEMENT_CONTENT_TYPE_ELEMENTS) {
+          rapier_generate_property(rdf_parser, 
+                                   element->parent, /* subject - parent URI */
+                                   (void*)element->name->uri, /* predicate - element URI */
+                                   RAPIER_PREDICATE_TYPE_PREDICATE,
+                                   (void*)element->object_uri, 0);
+        }
+        
         finished=1;
         break;
 
       default:
-        rapier_parser_fatal_error(rdf_parser, "Unexpected parser state %d.", 
-                                  state);
+        rapier_parser_fatal_error(rdf_parser, "rapier_end_element_grammar - unexpected parser state %d.", state);
         finished=1;
-        
+
     } /* end switch */
 
     if(state != element->state) {
       element->state=state;
       LIBRDF_DEBUG2(rapier_end_element_grammar, "moved to state %d\n", state);
     }
-  
+
   } /* end while */
 
 }
