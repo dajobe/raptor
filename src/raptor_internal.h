@@ -50,30 +50,30 @@ extern "C" {
 
 #ifdef RAPTOR_DEBUG
 /* Debugging messages */
-#define RAPTOR_DEBUG1(function, msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function); } while(0)
-#define RAPTOR_DEBUG2(function, msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1);} while(0)
-#define RAPTOR_DEBUG3(function, msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2);} while(0)
-#define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
-#define RAPTOR_DEBUG5(function, msg, arg1, arg2, arg3, arg4) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4);} while(0)
-#define RAPTOR_DEBUG6(function, msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3, arg4, arg5);} while(0)
+#define RAPTOR_DEBUG1(msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__); } while(0)
+#define RAPTOR_DEBUG2(msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1);} while(0)
+#define RAPTOR_DEBUG3(msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2);} while(0)
+#define RAPTOR_DEBUG4(msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3);} while(0)
+#define RAPTOR_DEBUG5(msg, arg1, arg2, arg3, arg4) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4);} while(0)
+#define RAPTOR_DEBUG6(msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4, arg5);} while(0)
 
 #else
 /* DEBUGGING TURNED OFF */
 
 /* No debugging messages */
-#define RAPTOR_DEBUG1(function, msg)
-#define RAPTOR_DEBUG2(function, msg, arg1)
-#define RAPTOR_DEBUG3(function, msg, arg1, arg2)
-#define RAPTOR_DEBUG4(function, msg, arg1, arg2, arg3)
-#define RAPTOR_DEBUG5(function, msg, arg1, arg2, arg3, arg4)
-#define RAPTOR_DEBUG6(function, msg, arg1, arg2, arg3, arg4, arg5)
+#define RAPTOR_DEBUG1(msg)
+#define RAPTOR_DEBUG2(msg, arg1)
+#define RAPTOR_DEBUG3(msg, arg1, arg2)
+#define RAPTOR_DEBUG4(msg, arg1, arg2, arg3)
+#define RAPTOR_DEBUG5(msg, arg1, arg2, arg3, arg4)
+#define RAPTOR_DEBUG6(msg, arg1, arg2, arg3, arg4, arg5)
 
 #endif
 
 
 /* Fatal errors - always happen */
-#define RAPTOR_FATAL1(function, msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function); abort();} while(0)
-#define RAPTOR_FATAL2(function, msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function, arg); abort();} while(0)
+#define RAPTOR_FATAL1(msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__); abort();} while(0)
+#define RAPTOR_FATAL2(msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg); abort();} while(0)
 
 
 

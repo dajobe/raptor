@@ -200,9 +200,7 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
     raptor_namespace* next=ns->next;
 
 #ifndef STANDALONE
-    RAPTOR_DEBUG3(raptor_namespaces_end_for_depth,
-                  "namespace prefix %s depth %d\n",
-                  ns->prefix ? (char*)ns->prefix : "(default)", depth);
+    RAPTOR_DEBUG3("namespace prefix %s depth %d\n", ns->prefix ? (char*)ns->prefix : "(default)", depth);
 #endif
     raptor_free_namespace(ns);
 
@@ -265,11 +263,7 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
     ns_uri_string=NULL;
 
 #ifndef STANDALONE
-  RAPTOR_DEBUG4(raptor_namespaces_start_namespace,
-                "namespace prefix %s uri %s depth %d\n",
-                prefix ? (char*)prefix : "(default)", 
-                ns_uri_string ? (char*)ns_uri_string : "(none)",
-                depth);
+  RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n", prefix ? (char*)prefix : "(default)", ns_uri_string ? (char*)ns_uri_string : "(none)", depth);
 #endif
 
   if(prefix && !ns_uri_string) {

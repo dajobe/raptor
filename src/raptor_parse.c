@@ -872,9 +872,7 @@ raptor_xml_start_element_handler(void *user_data,
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
 #if RAPTOR_DEBUG
-              RAPTOR_DEBUG3(raptor_xml_start_element_handler,
-                            "Found RDF namespace attribute '%s' URI %s\n",
-                            (char*)attr_name, attr->value);
+              RAPTOR_DEBUG3("Found RDF namespace attribute '%s' URI %s\n", (char*)attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from qname structure */
               attr->value=NULL;
@@ -998,8 +996,7 @@ raptor_xml_start_element_handler(void *user_data,
 
 
 #ifdef RAPTOR_DEBUG
-  RAPTOR_DEBUG2(raptor_xml_start_element_handler, "Using content type %s\n",
-                rdf_content_type_info[element->content_type].name);
+  RAPTOR_DEBUG2("Using content type %s\n", rdf_content_type_info[element->content_type].name);
 
   fprintf(stderr, "raptor_xml_start_element_handler: Start ns-element: ");
   raptor_print_sax2_element(sax2_element, stderr);
@@ -1198,7 +1195,7 @@ raptor_xml_comment_handler(void *user_data, const unsigned char *s)
   }
   
 
-  RAPTOR_DEBUG2(raptor_xml_comment_handler, "XML Comment '%s'\n", s);
+  RAPTOR_DEBUG2("XML Comment '%s'\n", s);
 }
 
 
@@ -1597,13 +1594,13 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   fputc('\n', stderr);
 
   if(!(subject_uri||subject_id))
-    RAPTOR_FATAL1(raptor_generate_statement, "Statement has no subject\n");
+    RAPTOR_FATAL1("Statement has no subject\n");
   
   if(!(predicate_uri||predicate_id))
-    RAPTOR_FATAL1(raptor_generate_statement, "Statement has no predicate\n");
+    RAPTOR_FATAL1("Statement has no predicate\n");
   
   if(!(object_uri||object_id))
-    RAPTOR_FATAL1(raptor_generate_statement, "Statement has no object\n");
+    RAPTOR_FATAL1("Statement has no object\n");
   
 #endif
 
@@ -1915,8 +1912,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
 
   state=element->state;
-  RAPTOR_DEBUG2(raptor_start_element_grammar, "Starting in state %s\n",
-                raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Starting in state %s\n", raptor_state_as_string(state));
 
   finished= 0;
   while(!finished) {
@@ -2570,16 +2566,12 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
-      RAPTOR_DEBUG3(raptor_start_element_grammar, 
-                    "Moved to state %d - %s\n",
-                    state, raptor_state_as_string(state));
+      RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
-  RAPTOR_DEBUG2(raptor_start_element_grammar, 
-                "Ending in state %s\n",
-                raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
 }
 
 
@@ -2597,8 +2589,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
-  RAPTOR_DEBUG2(raptor_end_element_grammar, "Starting in state %s\n",
-                raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Starting in state %s\n", raptor_state_as_string(state));
 
   finished= 0;
   while(!finished) {
@@ -2800,8 +2791,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         } /* end rdf:parseType="Collection" termination */
         
 
-        RAPTOR_DEBUG3(raptor_end_element_grammar,
-                      "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+        RAPTOR_DEBUG3("Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
 
         switch(element->content_type) {
           case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
@@ -3077,14 +3067,12 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
-      RAPTOR_DEBUG3(raptor_end_element_grammar, "Moved to state %d - %s\n",
-                    state, raptor_state_as_string(state));
+      RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_state_as_string(state));
     }
 
   } /* end while */
 
-  RAPTOR_DEBUG2(raptor_end_element_grammar, 
-                "Ending in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
 
 }
 
@@ -3115,7 +3103,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 #endif
 
 #ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG2(raptor_cdata_grammar, "Adding characters (is_cdata=%d): '", is_cdata);
+  RAPTOR_DEBUG2("Adding characters (is_cdata=%d): '", is_cdata);
   fwrite(s, 1, len, stderr);
   fprintf(stderr, "' (%d bytes)\n", len);
 #endif
@@ -3140,12 +3128,10 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
    * Use the child_state first if there is one, since that applies
    */
   state=element->child_state;
-  RAPTOR_DEBUG2(raptor_cdata_grammar, "Working in state %s\n",
-                raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Working in state %s\n", raptor_state_as_string(state));
 
 
-  RAPTOR_DEBUG3(raptor_cdata_grammar,
-                "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+  RAPTOR_DEBUG3("Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
   
 
 
@@ -3180,7 +3166,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
 #ifdef RAPTOR_DEBUG_CDATA
-      RAPTOR_DEBUG2(raptor_cdata_grammar, "Ignoring whitespace cdata inside element '%s'\n", element->sax2->name->local_name);
+      RAPTOR_DEBUG2("Ignoring whitespace cdata inside element '%s'\n", element->sax2->name->local_name);
 #endif
       return;
     }
@@ -3196,8 +3182,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
   if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
-    RAPTOR_DEBUG3(raptor_xml_cdata_handler,
-                  "Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+    RAPTOR_DEBUG3("Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
   }
 
   if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
@@ -3231,13 +3216,9 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
 
 #ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG3(raptor_cdata_grammar, 
-                "Content cdata now: '%s' (%d bytes)\n", 
-                sax2_element->content_cdata,
-                sax2_element->content_cdata_length);
+  RAPTOR_DEBUG3("Content cdata now: '%s' (%d bytes)\n", sax2_element->content_cdata, sax2_element->content_cdata_length);
 #endif
-  RAPTOR_DEBUG2(raptor_cdata_grammar, 
-                "Ending in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
 }
 
 

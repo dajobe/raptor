@@ -493,9 +493,7 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
     return 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3(raptor_ntriples_parse_line,
-                "handling line '%s' (%d bytes)\n", 
-                buffer, (unsigned int)len);
+  RAPTOR_DEBUG3("handling line '%s' (%d bytes)\n", buffer, (unsigned int)len);
 #endif
   
   p=buffer;
@@ -893,8 +891,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_ntriples_parse_chunk, "adding %d bytes to buffer\n",
-                (unsigned int)len);
+  RAPTOR_DEBUG2("adding %d bytes to buffer\n", (unsigned int)len);
 #endif
 
   /* No data?  It's the end */
@@ -926,8 +923,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_ntriples_parse_chunk,
-                "buffer now %d bytes\n", ntriples_parser->line_length);
+  RAPTOR_DEBUG2("buffer now %d bytes\n", ntriples_parser->line_length);
 #endif
 
   ptr=buffer+ntriples_parser->offset;
@@ -935,13 +931,13 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     unsigned char *line_start=ptr;
     
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3(raptor_ntriples_parse_chunk, "line buffer now '%s' (offset %d)\n", ptr, ptr-(buffer+ntriples_parser->offset));
+  RAPTOR_DEBUG3("line buffer now '%s' (offset %d)\n", ptr, ptr-(buffer+ntriples_parser->offset));
 #endif
 
     /* skip \n when just seen \r - i.e. \r\n or CR LF */
     if(ntriples_parser->last_char == '\r' && *ptr == '\n') {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-      RAPTOR_DEBUG1(raptor_ntriples_parse_chunk, "skipping a \\n\n");
+      RAPTOR_DEBUG1("skipping a \\n\n");
 #endif
       ptr++;
       rdf_parser->locator.byte++;
@@ -956,8 +952,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 
     if(*ptr) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-      RAPTOR_DEBUG3(raptor_ntriples_parse_chunk,
-                    "found newline \\x%02x at offset %d\n", *ptr,
+      RAPTOR_DEBUG3("found newline \\x%02x at offset %d\n", *ptr,
                     ptr-line_start);
 #endif
       ntriples_parser->last_char=*ptr;
@@ -979,9 +974,9 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     /* Do not peek if too far */
     if(ptr-buffer < ntriples_parser->line_length)
-      RAPTOR_DEBUG2(raptor_ntriples_parse_chunk, "next char is \\x%02x\n", *ptr);
+      RAPTOR_DEBUG2("next char is \\x%02x\n", *ptr);
     else
-      RAPTOR_DEBUG1(raptor_ntriples_parse_chunk, "next char unknown - end of buffer\n");
+      RAPTOR_DEBUG1("next char unknown - end of buffer\n");
 #endif
   }
 
@@ -1000,9 +995,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     /* collapse buffer */
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3(raptor_ntriples_parse_chunk,
-                  "collapsing buffer from %d to %d bytes\n", 
-                  ntriples_parser->line_length, (unsigned int)len);
+    RAPTOR_DEBUG3("collapsing buffer from %d to %d bytes\n", ntriples_parser->line_length, (unsigned int)len);
 #endif
     buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
     if(!buffer) {
@@ -1022,9 +1015,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     ntriples_parser->offset=0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3(raptor_ntriples_parse_chunk,
-                  "buffer now '%s' (%d bytes)\n", 
-                  ntriples_parser->line, ntriples_parser->line_length);
+    RAPTOR_DEBUG3("buffer now '%s' (%d bytes)\n", ntriples_parser->line, ntriples_parser->line_length);
 #endif    
   }
   

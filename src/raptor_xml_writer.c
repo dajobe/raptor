@@ -132,9 +132,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
   if(fmt_buffer && fmt_length) {
     raptor_stringbuffer_append_counted_string(xml_writer->sb, fmt_buffer, fmt_length, 0);
 #ifdef RAPTOR_DEBUG_CDATA
-    RAPTOR_DEBUG2(raptor_xml_writer_start_element,
-                  "content cdata appended, now %d bytes\n", 
-                  (int)raptor_stringbuffer_length(xml_writer->sb));
+    RAPTOR_DEBUG2("content cdata appended, now %d bytes\n", (int)raptor_stringbuffer_length(xml_writer->sb));
 #endif
   }
 
@@ -168,9 +166,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                                   xml_writer->depth);
 
 #ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG2(raptor_xml_writer_end_element,
-                "content cdata now %d bytes\n", 
-                (int)raptor_stringbuffer_length(xml_writer->sb));
+  RAPTOR_DEBUG2("content cdata now %d bytes\n", (int)raptor_stringbuffer_length(xml_writer->sb));
 #endif
 
   if(xml_writer->current_element)

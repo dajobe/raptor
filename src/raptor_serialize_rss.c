@@ -411,7 +411,7 @@ raptor_rss_item_add(raptor_rss_parser_context *rss_parser) {
   rss_parser->last=item;
   rss_parser->items_count++;
 
-  RAPTOR_DEBUG2(raptor_rss_item_add, "Added item %d\n", rss_parser->items_count);
+  RAPTOR_DEBUG2("Added item %d\n", rss_parser->items_count);
 }
 
 
@@ -449,12 +449,9 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         }
         
         if(rss_parser->current_type==RAPTOR_RSS_UNKNOWN) {
-          RAPTOR_DEBUG2(raptor_rss_parser_processNode,
-                        "Unknown start element named %s\n", name);
+          RAPTOR_DEBUG2("Unknown start element named %s\n", name);
         } else {
-          RAPTOR_DEBUG3(raptor_rss_parser_processNode,
-                        "FOUND type %d - %s\n", rss_parser->current_type,
-                        raptor_rss_types_info[rss_parser->current_type].name);
+          RAPTOR_DEBUG3("FOUND type %d - %s\n", rss_parser->current_type, raptor_rss_types_info[rss_parser->current_type].name);
         }
       } else { /* have current_type, this is an element inside */
         int i;
@@ -473,12 +470,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         }
         
         if(rss_parser->current_type != old_type) {
-          RAPTOR_DEBUG6(raptor_rss_parser_processNode,
-                        "FOUND element %s for type %d - %s INSIDE current type %d - %s\n", 
-                        name,
-                        rss_parser->current_type,
-                        raptor_rss_types_info[rss_parser->current_type].name,
-                        old_type, raptor_rss_types_info[old_type].name);
+          RAPTOR_DEBUG6("FOUND element %s for type %d - %s INSIDE current type %d - %s\n", name, rss_parser->current_type, raptor_rss_types_info[rss_parser->current_type].name, old_type, raptor_rss_types_info[old_type].name);
           rss_parser->prev_type=old_type;
           break;
         }
@@ -491,15 +483,9 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           }
         
         if(rss_parser->current_field==RAPTOR_RSS_FIELD_UNKNOWN) {
-          RAPTOR_DEBUG3(raptor_rss_parser_processNode,
-                        "Unknown field element named %s inside type %s\n", name,
-                        raptor_rss_types_info[rss_parser->current_type].name);
+          RAPTOR_DEBUG3("Unknown field element named %s inside type %s\n", name, raptor_rss_types_info[rss_parser->current_type].name);
         } else {
-          RAPTOR_DEBUG4(raptor_rss_parser_processNode,
-                        "FOUND field %d - %s inside type %s\n",
-                        rss_parser->current_field,
-                        raptor_rss_fields_info[rss_parser->current_field].name,
-                        raptor_rss_types_info[rss_parser->current_type].name);
+          RAPTOR_DEBUG4("FOUND field %d - %s inside type %s\n", rss_parser->current_field, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
         }
       }
 
@@ -507,8 +493,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
       while((xmlTextReaderMoveToNextAttribute(reader))) {
         xmlChar *attrName = xmlTextReaderName(reader);
         xmlChar *attrValue = xmlTextReaderValue(reader);
-        RAPTOR_DEBUG3(raptor_rss_parser_processNode, "  attribute %s=%s\n", 
-                      attrName, attrValue);
+        RAPTOR_DEBUG3("  attribute %s=%s\n", attrName, attrValue);
 
         /* Pick a few attributes to care about */
         if(!strcmp((const char*)attrName, "isPermaLink")) {
@@ -552,21 +537,14 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
     case 15: /* end element */
       if(rss_parser->current_type != RAPTOR_RSS_NONE) {
         if(rss_parser->current_field != RAPTOR_RSS_FIELD_NONE) {
-          RAPTOR_DEBUG3(raptor_rss_parser_processNode,
-                        "Ending element %s field %s\n", 
-                 name, raptor_rss_fields_info[rss_parser->current_field].name);
+          RAPTOR_DEBUG3("Ending element %s field %s\n", name, raptor_rss_fields_info[rss_parser->current_field].name);
           rss_parser->current_field= RAPTOR_RSS_FIELD_NONE;
         } else {
-          RAPTOR_DEBUG3(raptor_rss_parser_processNode,
-                        "Ending element %s type %s\n", name,
-                        raptor_rss_types_info[rss_parser->current_type].name);
+          RAPTOR_DEBUG3("Ending element %s type %s\n", name, raptor_rss_types_info[rss_parser->current_type].name);
           if(rss_parser->prev_type != RAPTOR_RSS_NONE) {
             rss_parser->current_type=rss_parser->prev_type;
             rss_parser->prev_type=RAPTOR_RSS_NONE;
-            RAPTOR_DEBUG3(raptor_rss_parser_processNode,
-                          "Returning to type %d - %s\n", 
-                          rss_parser->current_type,
-                          raptor_rss_types_info[rss_parser->current_type].name);
+            RAPTOR_DEBUG3("Returning to type %d - %s\n", rss_parser->current_type, raptor_rss_types_info[rss_parser->current_type].name);
           } else
             rss_parser->current_type= RAPTOR_RSS_NONE;
         }
@@ -586,8 +564,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           p++;
         }
         if(*p)
-          RAPTOR_DEBUG2(raptor_rss_parser_processNode,
-                       "IGNORING non-whitespace text node '%s'\n", value);
+          RAPTOR_DEBUG2("IGNORING non-whitespace text node '%s'\n", value);
         break;
       }
 
@@ -602,10 +579,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         else
           update_item=&rss_parser->common[rss_parser->current_type];
         
-        RAPTOR_DEBUG4(raptor_rss_parser_processNode,
-                      "Added text '%s' to field %s of type %s\n", value,
-                      raptor_rss_fields_info[rss_parser->current_field].name,
-                      raptor_rss_types_info[rss_parser->current_type].name);
+        RAPTOR_DEBUG4("Added text '%s' to field %s of type %s\n", value, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
         if(!update_item->fields[rss_parser->current_field])
           update_item->fields_count++;
         update_item->fields[rss_parser->current_field]=(char*)value;
@@ -627,8 +601,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
     
     default:
 #if defined(RAPTOR_DEBUG)
-      RAPTOR_DEBUG3(raptor_rss_parser_processNode, "depth %d type %d",
-                    xmlTextReaderDepth(reader), type);
+      RAPTOR_DEBUG3("depth %d type %d", xmlTextReaderDepth(reader), type);
       fprintf(stderr," name %s %s", name,
               xmlTextReaderIsEmptyElement(reader) ? "Empty" : "");
       if (value == NULL)
@@ -637,7 +610,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         fprintf(stderr, " '%s'\n", value);
       }
 #endif
-      RAPTOR_DEBUG2(raptor_rss_parser_processNode, "Ignoring type %d\n", type);
+      RAPTOR_DEBUG2("Ignoring type %d\n", type);
   }
     
   xmlFree(name);
@@ -805,8 +778,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     if(!rss_parser->common[i].fields_count)
       continue;
 
-    RAPTOR_DEBUG3(raptor_rss_emit, "Emitting type %i - %s\n", i,
-                  raptor_rss_types_info[i].name);
+    RAPTOR_DEBUG3("Emitting type %i - %s\n", i, raptor_rss_types_info[i].name);
 
     raptor_rss_emit_item(rdf_parser, &rss_parser->common[i]);
 

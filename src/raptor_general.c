@@ -169,12 +169,12 @@ raptor_parser_register_factory(const char *name, const char *label,
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
                                                sizeof(raptor_parser_factory));
   if(!parser)
-    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    RAPTOR_FATAL1("Out of memory\n");
 
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy) {
     RAPTOR_FREE(raptor_parser, parser);
-    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    RAPTOR_FATAL1("Out of memory\n");
   }
   strcpy(name_copy, name);
   parser->name=name_copy;
@@ -182,7 +182,7 @@ raptor_parser_register_factory(const char *name, const char *label,
   label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
   if(!label_copy) {
     RAPTOR_FREE(raptor_parser, parser);
-    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    RAPTOR_FATAL1("Out of memory\n");
   }
   strcpy(label_copy, label);
   parser->label=label_copy;
@@ -191,7 +191,7 @@ raptor_parser_register_factory(const char *name, const char *label,
     mime_type_copy=(char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
     if(!mime_type_copy) {
       RAPTOR_FREE(raptor_parser, parser);
-      RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+      RAPTOR_FATAL1("Out of memory\n");
     }
     strcpy(mime_type_copy, mime_type);
     parser->mime_type=mime_type_copy;
@@ -201,7 +201,7 @@ raptor_parser_register_factory(const char *name, const char *label,
     uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
     if(!uri_string_copy) {
     RAPTOR_FREE(raptor_parser, parser);
-    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    RAPTOR_FATAL1("Out of memory\n");
     }
     strcpy((char*)uri_string_copy, (const char*)uri_string);
     parser->uri_string=uri_string_copy;
@@ -209,8 +209,7 @@ raptor_parser_register_factory(const char *name, const char *label,
         
   for(h = parsers; h; h = h->next ) {
     if(!strcmp(h->name, name_copy)) {
-      RAPTOR_FATAL2(raptor_parser_register_factory,
-                    "parser %s already registered\n", h->name);
+      RAPTOR_FATAL2("parser %s already registered\n", h->name);
     }
   }
   
@@ -218,8 +217,7 @@ raptor_parser_register_factory(const char *name, const char *label,
   (*factory)(parser);
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3(raptor_parser_register_factory, "%s has context size %d\n",
-                name, parser->context_length);
+  RAPTOR_DEBUG3("%s has context size %d\n", name, parser->context_length);
 #endif
   
   parser->next = parsers;
@@ -242,8 +240,7 @@ raptor_get_parser_factory (const char *name)
   if(!name) {
     factory=parsers;
     if(!factory) {
-      RAPTOR_DEBUG1(raptor_get_parser_factory, 
-                    "No (default) parsers registered\n");
+      RAPTOR_DEBUG1("No (default) parsers registered\n");
       return NULL;
     }
   } else {
@@ -254,9 +251,7 @@ raptor_get_parser_factory (const char *name)
     }
     /* else FACTORY name not found */
     if(!factory) {
-      RAPTOR_DEBUG2(raptor_get_parser_factory,
-                    "No parser with name %s found\n",
-                    name);
+      RAPTOR_DEBUG2("No parser with name %s found\n", name);
       return NULL;
     }
   }
@@ -1104,7 +1099,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   } else {
 #ifdef RAPTOR_DEBUG
     if(!statement->subject)
-      RAPTOR_FATAL1(raptor_print_statement_detailed, "Statement has NULL subject URI\n");
+      RAPTOR_FATAL1("Statement has NULL subject URI\n");
 #endif
     fputs((const char*)raptor_uri_as_string((raptor_uri*)statement->subject), stream);
   }
@@ -1116,7 +1111,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->predicate)
-      RAPTOR_FATAL1(raptor_print_statement_detailed, "Statement has NULL predicate URI\n");
+      RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
     fputs((const char*)raptor_uri_as_string((raptor_uri*)statement->predicate), stream);
   }
@@ -1144,7 +1139,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->object)
-      RAPTOR_FATAL1(raptor_print_statement_detailed, "Statement has NULL object URI\n");
+      RAPTOR_FATAL1("Statement has NULL object URI\n");
 #endif
     fputs((const char*)raptor_uri_as_string((raptor_uri*)statement->object), stream);
   }
@@ -1356,7 +1351,7 @@ raptor_statement_part_as_counted_string(const void *term,
       break;
       
     default:
-      RAPTOR_FATAL2(raptor_statement_part_as_string, "Unknown type %d", type);
+      RAPTOR_FATAL2("Unknown type %d", type);
   }
 
   if(len_p)
@@ -1444,7 +1439,7 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
       break;
       
     default:
-      RAPTOR_FATAL2(raptor_statement_part_as_string, "Unknown type %d", type);
+      RAPTOR_FATAL2("Unknown type %d", type);
   }
 }
 

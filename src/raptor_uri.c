@@ -193,7 +193,7 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id)
   int len;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_new_uri_from_id, "Using ID %s\n", id);
+  RAPTOR_DEBUG2("Using ID %s\n", id);
 #endif
 
   /* "#id\0" */
