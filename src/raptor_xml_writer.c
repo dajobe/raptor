@@ -53,10 +53,6 @@ struct raptor_xml_writer_s {
 
   int depth;
   
-  /* CDATA content of element and checks for mixed content */
-  unsigned char *content_cdata;
-  unsigned int content_cdata_length;
-
   /* namespaces stack when canonicalizing */
   raptor_namespace_stack content_cdata_namespaces;
   int content_cdata_namespaces_depth;
@@ -68,6 +64,8 @@ struct raptor_xml_writer_s {
   void *error_data;
 
   raptor_sax2_element* current_element;
+
+  raptor_stringbuffer *sb;
 };
 
 
@@ -85,9 +83,6 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
     return NULL;
 
   /* Initialise to the empty string */
-  xml_writer->content_cdata=(unsigned char*)RAPTOR_MALLOC(cstring, 1);
-  *xml_writer->content_cdata='\0';
-  
   xml_writer->content_cdata_namespaces_depth=0;
 
   xml_writer->uri_handler=uri_handler;
@@ -101,6 +96,8 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
                          error_handler, error_data,
                          0);
 
+  xml_writer->sb=raptor_new_stringbuffer();
+  
   return xml_writer;
 }
 
@@ -114,8 +111,8 @@ void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
   raptor_namespaces_clear(&xml_writer->content_cdata_namespaces);
-  if(xml_writer->content_cdata)
-    RAPTOR_FREE(cstring, xml_writer->content_cdata);
+  if(xml_writer->sb)
+    raptor_free_stringbuffer(xml_writer->sb);
 
   RAPTOR_FREE(raptor_xml_writer, xml_writer);
 }
@@ -133,25 +130,11 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                               xml_writer->error_data,
                                               xml_writer->depth);
   if(fmt_buffer && fmt_length) {
-    /* Append to xml_writer->content_cdata  */
-    unsigned char *new_cdata=(unsigned char*)RAPTOR_MALLOC(cstring, xml_writer->content_cdata_length + fmt_length + 1);
-    if(new_cdata) {
-      if(xml_writer->content_cdata_length) /* Can be zero, save a copy */
-        strncpy((char*)new_cdata, (const char*)xml_writer->content_cdata,
-                xml_writer->content_cdata_length);
-      strcpy((char*)new_cdata+xml_writer->content_cdata_length,
-             (const char*)fmt_buffer);
-      RAPTOR_FREE(cstring, xml_writer->content_cdata);
-      xml_writer->content_cdata=new_cdata;
-      xml_writer->content_cdata_length+=fmt_length;
-    }
-    RAPTOR_FREE(cstring, fmt_buffer);
-      
+    raptor_stringbuffer_append_counted_string(xml_writer->sb, fmt_buffer, fmt_length, 0);
 #ifdef RAPTOR_DEBUG_CDATA
-    RAPTOR_DEBUG3(raptor_xml_writer_start_element,
-                  "content cdata appended, now: '%s' (%d bytes)\n", 
-                  xml_writer->content_cdata,
-                  xml_writer->content_cdata_length);
+    RAPTOR_DEBUG2(raptor_xml_writer_start_element,
+                  "content cdata appended, now %d bytes\n", 
+                  (int)raptor_stringbuffer_length(xml_writer->sb));
 #endif
   }
 
@@ -177,31 +160,17 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                                         xml_writer->error_data,
                                         xml_writer->depth);
 
-  if(fmt_buffer && fmt_length) {
-    /* Append cdata content content */
-    unsigned char *new_cdata=(unsigned char*)RAPTOR_MALLOC(cstring, xml_writer->content_cdata_length + fmt_length + 1);
-    if(new_cdata) {
-      if(xml_writer->content_cdata_length) /* Can be zero, save a copy */
-        strncpy((char*)new_cdata, (const char*)xml_writer->content_cdata,
-                xml_writer->content_cdata_length);
-      strcpy((char*)new_cdata+xml_writer->content_cdata_length, 
-             (const char*)fmt_buffer);
-      RAPTOR_FREE(cstring, xml_writer->content_cdata);
-      xml_writer->content_cdata=new_cdata;
-      xml_writer->content_cdata_length += fmt_length;
-    }
-    RAPTOR_FREE(cstring, fmt_buffer);
-  }
-
+  if(fmt_buffer && fmt_length)
+    raptor_stringbuffer_append_counted_string(xml_writer->sb, fmt_buffer, fmt_length, 0);
   xml_writer->depth--;
 
   raptor_namespaces_end_for_depth(&xml_writer->content_cdata_namespaces, 
                                   xml_writer->depth);
 
 #ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG3(raptor_xml_writer_end_element,
-                "content cdata now: '%s' (%d bytes)\n", 
-                xml_writer->content_cdata, xml_writer->content_cdata_length);
+  RAPTOR_DEBUG2(raptor_xml_writer_end_element,
+                "content cdata now %d bytes\n", 
+                (int)raptor_stringbuffer_length(xml_writer->sb));
 #endif
 
   if(xml_writer->current_element)
@@ -213,55 +182,24 @@ void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                         const unsigned char *s, unsigned int len)
 {
-  unsigned char *escaped_buffer=NULL;
-  unsigned char *buffer;
-  size_t escaped_buffer_len=raptor_xml_escape_string(s, len,
-                                                     NULL, 0, '\0',
-                                                     xml_writer->error_handler,
-                                                     xml_writer->error_data);
-  unsigned char *ptr;
-
-  /* save a malloc/free when there is no escaping */
-  if(escaped_buffer_len != len) {
-    escaped_buffer=(unsigned char*)RAPTOR_MALLOC(cstring, escaped_buffer_len+1);
-    if(!escaped_buffer)
-      return;
-
-    raptor_xml_escape_string(s, len,
-                             escaped_buffer, escaped_buffer_len, '\0',
-                             xml_writer->error_handler,
-                             xml_writer->error_data);
-    len=escaped_buffer_len;
-  }
-
-  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, xml_writer->content_cdata_length + len + 1);
+  size_t buffer_len=raptor_xml_escape_string(s, len,
+                                             NULL, 0, '\0',
+                                             xml_writer->error_handler,
+                                             xml_writer->error_data);
+  unsigned char *buffer=(unsigned char*)RAPTOR_MALLOC(cstring, buffer_len+1);
+  
   if(!buffer)
     return;
 
-  if(xml_writer->content_cdata) {
-    if(xml_writer->content_cdata_length) /* Can be zero, save a copy */
-      strncpy((char*)buffer, (const char*)xml_writer->content_cdata, 
-              xml_writer->content_cdata_length);
-    RAPTOR_FREE(cstring, xml_writer->content_cdata);
-  }
+  if(buffer_len != len)
+    raptor_xml_escape_string(s, len,
+                             buffer, buffer_len, '\0',
+                             xml_writer->error_handler,
+                             xml_writer->error_data);
+  else
+    strncpy((char*)buffer, (const char*)s, buffer_len+1);
 
-  xml_writer->content_cdata=buffer;
-
-  /* move pointer to end of cdata buffer */
-  ptr=buffer+xml_writer->content_cdata_length;
-
-  /* adjust stored length */
-  xml_writer->content_cdata_length += len;
-
-  /* now write new stuff at end of cdata buffer */
-  if(escaped_buffer) {
-    strncpy((char*)ptr, (const char*)escaped_buffer, len);
-    RAPTOR_FREE(cstring, escaped_buffer);
-  } else
-    strncpy((char*)ptr, (const char*)s, len);
-  ptr += len;
-  *ptr = '\0';
-
+  raptor_stringbuffer_append_counted_string(xml_writer->sb, buffer, buffer_len, 0);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen=1;
@@ -281,7 +219,7 @@ raptor_xml_writer_as_string(raptor_xml_writer* xml_writer,
                             unsigned int *length_p)
 {
   if(length_p)
-    *length_p=xml_writer->content_cdata_length;
+    *length_p=raptor_stringbuffer_length(xml_writer->sb);
 
-  return xml_writer->content_cdata;
+  return raptor_stringbuffer_as_string(xml_writer->sb);
 }
