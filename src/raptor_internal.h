@@ -417,6 +417,9 @@ int raptor_unicode_is_namechar(long c);
 #include <curl/easy.h>
 #endif
 
+/* Size of buffer used in various raptor_www places for I/O  */
+#define RAPTOR_WWW_BUFFER_SIZE 256
+
 /* WWW library state */
 struct  raptor_www_s {
   char *type;
@@ -436,9 +439,7 @@ struct  raptor_www_s {
 #ifdef RAPTOR_WWW_LIBXML
   void *ctxt;
   xmlGenericErrorFunc old_handler;
-/* FIXME */
-#define BUFFER_SIZE 256
-  char buffer[BUFFER_SIZE];
+  char buffer[RAPTOR_WWW_BUFFER_SIZE];
   int is_end;
 #endif
 
