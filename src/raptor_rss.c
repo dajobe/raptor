@@ -2040,7 +2040,7 @@ raptor_init_serializer_rss10(void) {
   raptor_serializer_register_factory("rss-1.0",  "RSS 1.0",
                                      NULL, 
                                      NULL,
-                                     NULL,
+                                     (const unsigned char*)"http://purl.org/rss/1.0/spec",
                                      &raptor_rss10_serializer_register_factory);
 }
 
