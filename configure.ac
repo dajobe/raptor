@@ -98,7 +98,7 @@ AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(getopt getopt_long stricmp strcasecmp)
+AC_CHECK_FUNCS(getopt getopt_long stricmp strcasecmp vsnprintf)
 
 # was AC_REPLACE_FUNCS(strcasecmp) but strcasecmp has two alternatives:
 # the other non-standard function stricmp or a local alternative
@@ -119,6 +119,29 @@ AC_TRY_LINK([#ifdef HAVE_GETOPT_H
             AC_MSG_RESULT(no),
             AC_DEFINE(NEED_OPTIND_DECLARATION, 1, [need 'extern int optind' declaration?])
             AC_MSG_RESULT(yes))
+
+
+
+if test $ac_cv_func_vsnprintf = yes; then
+  AC_MSG_CHECKING(vsnprintf has C99 compatible return value)
+  AC_TRY_RUN([#include <stdarg.h>
+int is_c99(char *s, ...) {
+  char buffer[32];
+  va_list args;
+  int r;
+  va_start(args, s);
+  r = vsnprintf(buffer, 5, s, args);
+  va_end(args);
+
+  return (r == 7);
+}
+
+int main(int argc, char* argv) {
+  return is_c99("1234567");
+}], AC_MSG_RESULT(no),
+    AC_DEFINE(HAVE_C99_VSNPRINTF, 1, [vsnprint has C99 compatible return value])
+    AC_MSG_RESULT(yes))
+fi
 
 
 AC_MSG_CHECKING(for redland sources in parent directory)
