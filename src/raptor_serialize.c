@@ -855,7 +855,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       rc=raptor_rdfxml_serialize_write_xml_attribute(serializer,
                                                      (unsigned char*)"rdf:about", 
-                                                     (unsigned char*)statement->subject,
+                                                     (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->subject),
                                                      iostr);
       break;
       
@@ -1006,7 +1006,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       /* must be URI */
       if(raptor_rdfxml_serialize_write_xml_attribute(serializer,
                                                      (unsigned char*)"rdf:resource",
-                                                     (unsigned char*)statement->object,
+                                                     (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->object),
                                                      iostr))
         return 1;
       raptor_iostream_write_string(iostr, "/>");
