@@ -99,7 +99,7 @@ static void raptor_triple_print(raptor_triple *data, FILE *fh);
 
 
 /* Prototypes for local functions */
-static raptor_uri* n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string);
+static raptor_uri* n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
 
 static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *triple);
 
@@ -487,7 +487,7 @@ predicate: URI_LITERAL
   printf("predicate qname=\"%s\"\n", $1);
 #endif
 
-  uri=n3_qname_to_uri(rdf_parser, $1);
+  uri=n3_qname_to_uri(rdf_parser, $1, strlen($1));
   if(uri)
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
   else
@@ -553,7 +553,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language=\"%s\" datatype string=\"%s\" qname=\"%s\"\n", $1, $3, $5);
 #endif
 
-  uri=n3_qname_to_uri(rdf_parser, $5);
+  uri=n3_qname_to_uri(rdf_parser, $5, strlen($5));
   if(uri) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, $3);
   } else
@@ -585,7 +585,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + datatype string=\"%s\" qname=\"%s\"\n", $1, $3);
 #endif
 
-  uri=n3_qname_to_uri(rdf_parser, $3);
+  uri=n3_qname_to_uri(rdf_parser, $3, strlen($3));
   if(uri) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
   } else
@@ -629,7 +629,7 @@ URI_LITERAL
   printf("resource qname=\"%s\"\n", $1);
 #endif
 
-  uri=n3_qname_to_uri(rdf_parser, $1);
+  uri=n3_qname_to_uri(rdf_parser, $1, strlen($1));
   if(uri)
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
   else
@@ -773,43 +773,19 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 
 
 static raptor_uri*
-n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string) 
+n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
 {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
   yyscan_t yyscanner=n3_parser->scanner;
-  raptor_uri* uri=NULL;
-  raptor_qname *name;
-
-  if(!qname_string) {
-    raptor_namespace *ns=raptor_namespaces_get_default_namespace(&n3_parser->namespaces);
-    if(ns && (uri=raptor_namespace_get_uri(ns)))
-      uri=raptor_uri_copy(uri);
-    return uri;
-  }
-  
-  if(*qname_string == ':')
-    qname_string++;
-  else {
-    int len=strlen(qname_string);
-    if(qname_string[len-1] == ':')
-      qname_string[len-1]='\0';
-  }
 
   rdf_parser->locator.line=n3_lexer_get_lineno(yyscanner);
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
   rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
 #endif
 
-  name=raptor_new_qname(&n3_parser->namespaces, qname_string, NULL,
-                        raptor_parser_simple_error, rdf_parser);
-  if(!name)
-    return NULL;
-  if(name->uri)
-    uri=raptor_uri_copy(name->uri);
-  else
-    uri=NULL;
-  raptor_free_qname(name);
-  return uri;
+  return raptor_qname_string_to_uri(&n3_parser->namespaces,
+                                    name, name_len,
+                                    raptor_parser_simple_error, rdf_parser);
 }
 
 
