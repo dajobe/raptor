@@ -206,14 +206,17 @@ sub run_tests($$$$@) {
 }
 
 
-sub summarize_results($$$$) {
-  my($title, $results, $totals, $total)=@_;
+sub summarize_results($$$$;$) {
+  my($title, $results, $totals, $total, $verbose)=@_;
 
   warn "Results for $title\n";
   for my $type (sort keys %$totals) {
     my(@rt)=@{$totals->{$type}};
     my(@short_rt)=map {s/^$local_tests_url//; $_} @rt;
     print sprintf($format,$type, scalar(@rt), (int(scalar(@rt)/$total*10000))/100);
+    if($verbose) {
+      print "  ",join("\n  ",@rt),"\n";
+    }
   }
   print sprintf($format, 'TOTAL', $total, '100');
 }
@@ -225,6 +228,8 @@ my(@positive_test_urls);
 my(@negative_test_urls);
 my(@approved_positive_test_urls);
 my(@approved_negative_test_urls);
+my(@unapproved_positive_test_urls);
+my(@unapproved_negative_test_urls);
 
 if($offline) {
   warn "$progname: OFFLINE - using stored manifest URL $manifest_URL\n";
@@ -276,7 +281,7 @@ while(length $content) {
     }
 
     my $test_status=$tests{$url}->{'test:status'} || '';
-    if ($test_status eq 'OBSOLETED') {
+    if ($test_status =~ /^OBSOLETE/) {
       warn "$progname: Ignoring Obsolete Test URL $url\n";
       next;
     }
@@ -294,6 +299,15 @@ while(length $content) {
       } else {
 	push(@approved_negative_test_urls, $url);
       }
+    } elsif ($test_status eq 'NOT_APPROVED' || $test_status eq 'PENDING') {
+      if ($type eq 'Positive') {
+	push(@unapproved_positive_test_urls, $url);
+      } else {
+	push(@unapproved_negative_test_urls, $url);
+      }
+    } else { 
+      warn "$progname: Ignoring test with unknown test:status $test_status\n";
+      next;
     }
 
   } elsif($content =~ s%^<test:(Positive|Negative)EntailmentTest rdf:about="([^"]+)">(.+?)</test:(Positive|Negative)EntailmentTest>%%) { # "
@@ -313,6 +327,10 @@ warn "$progname: APPROVED parser tests found:\n";
 warn "$progname:   Positive: ",scalar(@approved_positive_test_urls),"\n";
 warn "$progname:   Negative: ",scalar(@approved_negative_test_urls),"\n";
 
+warn "$progname: not APPROVED parser tests found:\n";
+warn "$progname:   Positive: ",scalar(@unapproved_positive_test_urls),"\n";
+warn "$progname:   Negative: ",scalar(@unapproved_negative_test_urls),"\n";
+
 
 
 my(%results);
@@ -326,6 +344,7 @@ if(@ARGV) {
   exit 0;
 }
 
+
 my(%positive_totals)=();
 run_tests(\%tests, 0, \%results, \%positive_totals, @positive_test_urls);
 summarize_results("Positive Parser Tests", \%results, \%positive_totals, scalar(@positive_test_urls));
@@ -335,3 +354,13 @@ print "\n\n";
 my(%negative_totals)=();
 run_tests(\%tests, 0, \%results, \%negative_totals, @negative_test_urls);
 summarize_results("Negative Parser Tests", \%results, \%negative_totals, scalar(@negative_test_urls));
+
+my(%unapproved_positive_totals)=();
+run_tests(\%tests, 0, \%results, \%unapproved_positive_totals, @unapproved_positive_test_urls);
+summarize_results("Not APPROVED Positive Parser Tests", \%results, \%unapproved_positive_totals, scalar(@unapproved_positive_test_urls),1);
+
+print "\n\n";
+
+my(%unapproved_negative_totals)=();
+run_tests(\%tests, 0, \%results, \%unapproved_negative_totals, @unapproved_negative_test_urls);
+summarize_results("Not APPROVED Negative Parser Tests", \%results, \%unapproved_negative_totals, scalar(@unapproved_negative_test_urls),1);
