@@ -1047,6 +1047,8 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 /**
  * raptor_xml_escape_string - return an XML-escaped version of the current string
  * @string: string to XML escape
+ * @len: length of string
+ * @new_len_p: pointer to store new string length
  * @quote: optional quote character to escape, or 0
  * 
  * Replaces each &, < and > with &amp; &lt; &gt; respectively
@@ -1061,10 +1063,11 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  **/
 char*
 raptor_xml_escape_string(raptor_parser *rdf_parser, 
-                         const unsigned char *string, char quote)
+                         const unsigned char *string, size_t len,
+                         size_t* new_len_p,
+                         char quote)
 {
-  int string_len=strlen((const char*)string);
-  int len;
+  int l;
   int new_len=0;
   char *new_string;
   const unsigned char *p;
@@ -1075,9 +1078,9 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
   if(quote != '\"' && quote != '\'')
     quote='\0';
 
-  for(len=string_len, p=string; *p; p++, len--) {
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, p, len);
-    if(unichar_len < 0 || unichar_len > len) {
+  for(l=len, p=string; l; p++, l--) {
+    unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+    if(unichar_len < 0 || unichar_len > l) {
       raptor_parser_error(rdf_parser, "Bad UTF-8 encoding missing.");
       return 0;
     }
@@ -1107,15 +1110,18 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
       new_len++;
 
     unichar_len--; /* since loop does len-- */
-    p += unichar_len; len -= unichar_len;
+    p += unichar_len; l -= unichar_len;
   }
 
   new_string=RAPTOR_MALLOC(cstring, new_len+1);
   if(!new_string)
     return NULL;
+
+  if(new_len_p)
+    *new_len_p=new_len;
   
-  for(len=string_len, p=string, q=new_string; *p; p++, len--) {
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, p, len);
+  for(l=len, p=string, q=new_string; l; p++, l--) {
+    unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
 
     if(unichar == '&') {
       strncpy(q, "&amp;", 5);
@@ -1153,7 +1159,7 @@ raptor_xml_escape_string(raptor_parser *rdf_parser,
       *q++ = unichar;
 
     unichar_len--; /* since loop does len-- */
-    p += unichar_len; len -= unichar_len;
+    p += unichar_len; l -= unichar_len;
   }
 
   return new_string;
@@ -1231,8 +1237,11 @@ main(int argc, char *argv[])
   for(i=0; (t=&test_values[i]) && t->string; i++) {
     const unsigned char *utf8_string=t->string;
     int quote=t->quote;
-    unsigned char *xml_string=raptor_xml_escape_string(NULL, utf8_string, quote);
+    size_t utf8_string_len=strlen(utf8_string);
+    unsigned char *xml_string;
 
+    xml_string=raptor_xml_escape_string(NULL, utf8_string, utf8_string_len,
+                                        NULL, quote);
     if(!xml_string) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
               program);
