@@ -34,12 +34,6 @@
 #include <stdlib.h>
 #endif
 
-#ifdef RAPTOR_NFC_CHECK
-#ifdef HAVE_G_UTF8_NORMALIZE
-#include <glib.h>
-#endif
-#endif
-
 /* Raptor includes */
 #include "raptor.h"
 #include "raptor_internal.h"
@@ -684,9 +678,6 @@ raptor_utf8_is_nfc(const unsigned char *input, size_t length)
 {
   unsigned int i;
   int plain=1;
-#if defined(RAPTOR_NFC_CHECK) && defined (HAVE_G_UTF8_NORMALIZE)
-  unsigned char *norm;
-#endif
   
   for(i=0; i<length; i++)
     if(input[i]>0x7f) {
@@ -697,16 +688,5 @@ raptor_utf8_is_nfc(const unsigned char *input, size_t length)
   if(plain)
     return 1;
   
-#if defined(RAPTOR_NFC_CHECK) && defined(HAVE_G_UTF8_NORMALIZE)
-  norm=(unsigned char*)g_utf8_normalize((const gchar*)input, length, G_NORMALIZE_NFKC);
-  for(i=0; i<length; i++)
-    if(input[i] != norm[i]) {
-      SYSTEM_FREE(norm);
-      return 0;
-    }
-  
-  SYSTEM_FREE(norm);
-#endif
-
   return 1;
 }
