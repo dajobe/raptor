@@ -555,6 +555,7 @@ static int raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element, 
 /* prototypes for grammar functions */
 static void raptor_start_element_grammar(raptor_parser *parser, raptor_element *element);
 static void raptor_end_element_grammar(raptor_parser *parser, raptor_element *element);
+static void raptor_cdata_grammar(raptor_parser *parser, const unsigned char *s, int len);
 
 
 /* prototype for statement related functions */
@@ -1106,20 +1107,6 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 
 }
 
-static void
-raptor_xml_parser_simple_error_handler(void *user_data, const char *message, ...) 
-{
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
-  va_list arguments;
-
-  va_start(arguments, message);
-
-  raptor_parser_error((raptor_parser*)rdf_parser, message);
-  
-  va_end(arguments);
-}
-
-
 
 /* cdata (and ignorable whitespace for libxml). 
  * s is not 0 terminated for expat, is for libxml - grrrr.
@@ -1127,166 +1114,9 @@ raptor_xml_parser_simple_error_handler(void *user_data, const char *message, ...
 void
 raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
 {
-  raptor_parser* rdf_parser;
-  raptor_xml_parser* rdf_xml_parser;
-  raptor_element* element;
-  raptor_sax2_element* sax2_element;
-  raptor_state state;
-  char *buffer;
-  char *ptr;
-  char *escaped_buffer=NULL;
-  int all_whitespace=1;
-  int i;
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
-  rdf_parser=(raptor_parser*)user_data;
-  rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
-
-  if(rdf_parser->failed)
-    return;
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
-
-  for(i=0; i<len; i++)
-    if(!isspace(s[i])) {
-      all_whitespace=0;
-      break;
-    }
-
-  element=rdf_xml_parser->current_element;
-  sax2_element=element->sax2;
-
-  /* this file is very broke - probably not XML, whatever */
-  if(!element)
-    return;
-  
-  raptor_update_document_locator(rdf_parser);
-
-  /* cdata never changes the parser state 
-   * and the containing element state always determines what to do.
-   * Use the child_state first if there is one, since that applies
-   */
-  state=element->child_state;
-  RAPTOR_DEBUG2(raptor_xml_cdata_handler, "Working in state %s\n",
-                raptor_state_as_string(state));
-
-
-  RAPTOR_DEBUG3(raptor_xml_cdata_handler,
-                "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
-  
-
-
-  if(state == RAPTOR_STATE_SKIPPING)
-    return;
-
-  if(state == RAPTOR_STATE_UNKNOWN) {
-    /* Ignore all cdata if still looking for RDF */
-    if(rdf_parser->feature_scanning_for_rdf_RDF)
-      return;
-
-    /* Ignore all whitespace cdata before first element */
-    if(all_whitespace)
-      return;
-    
-    /* This probably will never happen since that would make the
-     * XML not be well-formed
-     */
-    raptor_parser_warning(rdf_parser, "Character data before RDF element.");
-  }
-
-
-  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES) {
-    /* If found non-whitespace content, move to literal content */
-    if(!all_whitespace)
-      element->child_content_type = RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL; 
-  }
-
-
-  if(!rdf_content_type_info[element->child_content_type].whitespace_significant) {
-
-    /* Whitespace is ignored except for literal or preserved content types */
-    if(all_whitespace) {
-#ifdef RAPTOR_DEBUG_CDATA
-      RAPTOR_DEBUG2(raptor_xml_cdata_handler, "Ignoring whitespace cdata inside element %s\n", element->sax2->name->local_name);
-#endif
-      return;
-    }
-
-    if(++element->content_cdata_seen == 1 &&
-       element->content_element_seen == 1) {
-      /* Uh oh - mixed content, this element has elements too */
-      raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
-                            element->sax2->name->local_name);
-    }
-  }
-
-
-  if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
-    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
-    RAPTOR_DEBUG3(raptor_xml_cdata_handler,
-                  "Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
-  }
-
-  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL) {
-    size_t escaped_buffer_len=raptor_xml_escape_string(s, len,
-                                                       NULL, 0, '\0',
-                                                       raptor_xml_parser_simple_error_handler, rdf_parser);
-    /* save a malloc/free when there is no escaping */
-    if(escaped_buffer_len != len) {
-      escaped_buffer=(char*)RAPTOR_MALLOC(cstring, escaped_buffer_len+1);
-      if(!escaped_buffer) {
-        raptor_parser_fatal_error(rdf_parser, "Out of memory");
-        return;
-      }
-      raptor_xml_escape_string(s, len,
-                               escaped_buffer, escaped_buffer_len, '\0',
-                               raptor_xml_parser_simple_error_handler, rdf_parser);
-      len=escaped_buffer_len;
-    }
-  }
-
-  buffer=(char*)RAPTOR_MALLOC(cstring, sax2_element->content_cdata_length + len + 1);
-  if(!buffer) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return;
-  }
-
-  if(sax2_element->content_cdata_length) {
-    strncpy(buffer, sax2_element->content_cdata, sax2_element->content_cdata_length);
-    RAPTOR_FREE(cstring, sax2_element->content_cdata);
-    element->content_cdata_all_whitespace &= all_whitespace;
-  } else
-    element->content_cdata_all_whitespace = all_whitespace;
-
-  sax2_element->content_cdata=buffer;
-
-  /* move pointer to end of cdata buffer */
-  ptr=buffer+sax2_element->content_cdata_length;
-
-  /* adjust stored length */
-  sax2_element->content_cdata_length += len;
-
-  /* now write new stuff at end of cdata buffer */
-  if((element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
-     && escaped_buffer) {
-    strncpy(ptr, escaped_buffer, len);
-    RAPTOR_FREE(cstring, escaped_buffer);
-  } else
-    strncpy(ptr, (char*)s, len);
-  ptr += len;
-  *ptr = '\0';
-
-#ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG3(raptor_xml_cdata_handler, 
-                "Content cdata now: '%s' (%d bytes)\n", 
-                buffer, sax2_element->content_cdata_length);
-#endif
-  RAPTOR_DEBUG2(raptor_xml_cdata_handler, 
-                "Ending in state %s\n", raptor_state_as_string(state));
-
+  raptor_cdata_grammar(rdf_parser, s, len);
 }
 
 
@@ -2457,49 +2287,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         /* FALLTHROUGH */
 
       case RAPTOR_STATE_PARSETYPE_LITERAL:
-        {
-          char *fmt_buffer;
-          int fmt_length;
-          fmt_buffer=raptor_format_sax2_element(sax2_element, &fmt_length, 0, raptor_xml_parser_simple_error_handler, rdf_parser);
-          if(fmt_buffer && fmt_length) {
-            /* Append cdata content content */
-            if(sax2_element->content_cdata) {
-              /* Append */
-              char *new_cdata=(char*)RAPTOR_MALLOC(cstring, sax2_element->content_cdata_length + fmt_length + 1);
-              if(new_cdata) {
-                strncpy(new_cdata, sax2_element->content_cdata,
-                        sax2_element->content_cdata_length);
-                strcpy(new_cdata+sax2_element->content_cdata_length, fmt_buffer);
-                RAPTOR_FREE(cstring, sax2_element->content_cdata);
-                sax2_element->content_cdata=new_cdata;
-              }
-              RAPTOR_FREE(cstring, fmt_buffer);
-
-#ifdef RAPTOR_DEBUG_CDATA
-              RAPTOR_DEBUG3(raptor_start_element_grammar,
-                            "content cdata appended, now: '%s' (%d bytes)\n", 
-                            sax2_element->content_cdata,
-                            sax2_element->content_cdata_length);
-#endif
-
-            } else {
-              /* Copy - is empty */
-              sax2_element->content_cdata       =fmt_buffer;
-              sax2_element->content_cdata_length=fmt_length;
-
-#ifdef RAPTOR_DEBUG_CDATA
-              RAPTOR_DEBUG3(raptor_start_element_grammar,
-                            "content cdata copied, now: '%s' (%d bytes)\n", 
-                            sax2_element->content_cdata,
-                            sax2_element->content_cdata_length);
-#endif
-
-            }
-          }
-
-          element->child_state = RAPTOR_STATE_PARSETYPE_LITERAL;
-          element->child_content_type = RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
-        }
+        raptor_xml_writer_start_element(rdf_xml_parser->xml_writer, sax2_element);
+        element->child_state = RAPTOR_STATE_PARSETYPE_LITERAL;
+        element->child_content_type = RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
         
         finished=1;
         break;
@@ -2889,71 +2679,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_PARSETYPE_LITERAL:
         element->parent->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
 
-
-        /* Append closing element */
-        {
-          char *fmt_buffer;
-          int fmt_length;
-          fmt_buffer=raptor_format_sax2_element(sax2_element, &fmt_length,1, raptor_xml_parser_simple_error_handler, rdf_parser);
-          if(fmt_buffer && fmt_length) {
-            /* Append cdata content content */
-            char *new_cdata=(char*)RAPTOR_MALLOC(cstring, sax2_element->content_cdata_length + fmt_length + 1);
-            if(new_cdata) {
-              strncpy(new_cdata, sax2_element->content_cdata,
-                      sax2_element->content_cdata_length);
-              strcpy(new_cdata+sax2_element->content_cdata_length, fmt_buffer);
-              RAPTOR_FREE(cstring, sax2_element->content_cdata);
-              sax2_element->content_cdata=new_cdata;
-              sax2_element->content_cdata_length += fmt_length;
-            }
-            RAPTOR_FREE(cstring, fmt_buffer);
-          }
-        }
-        
-#ifdef RAPTOR_DEBUG_CDATA
-        RAPTOR_DEBUG3(raptor_end_element_grammar,
-                      "content cdata now: '%s' (%d bytes)\n", 
-                       sax2_element->content_cdata, sax2_element->content_cdata_length);
-#endif
-         
-        /* Append this cdata content to parent element cdata content */
-        if(element->parent->sax2->content_cdata) {
-          /* Append */
-          char *new_cdata=(char*)RAPTOR_MALLOC(cstring, element->parent->sax2->content_cdata_length + sax2_element->content_cdata_length + 1);
-          if(new_cdata) {
-            strncpy(new_cdata, element->parent->sax2->content_cdata,
-                    element->parent->sax2->content_cdata_length);
-            strncpy(new_cdata+element->parent->sax2->content_cdata_length, 
-                    sax2_element->content_cdata, sax2_element->content_cdata_length+1);
-            RAPTOR_FREE(cstring, element->parent->sax2->content_cdata);
-            element->parent->sax2->content_cdata=new_cdata;
-            element->parent->sax2->content_cdata_length += sax2_element->content_cdata_length;
-            /* Done with our cdata - free it before pointer is zapped */
-            RAPTOR_FREE(cstring, sax2_element->content_cdata);
-          }
-
-#ifdef RAPTOR_DEBUG_CDATA
-          RAPTOR_DEBUG3(raptor_end_element_grammar,
-                        "content cdata appended to parent, now: '%s' (%d bytes)\n", 
-                        element->parent->sax2->content_cdata,
-                        element->parent->sax2->content_cdata_length);
-#endif
-
-        } else {
-          /* Copy - parent is empty */
-          element->parent->sax2->content_cdata       =sax2_element->content_cdata;
-          element->parent->sax2->content_cdata_length=sax2_element->content_cdata_length+1;
-#ifdef RAPTOR_DEBUG_CDATA
-          RAPTOR_DEBUG3(raptor_end_element_grammar,
-                        "content cdata copied to parent, now: '%s' (%d bytes)\n",
-                        element->parent->sax2->content_cdata,
-                        element->parent->sax2->content_cdata_length);
-#endif
-
-        }
-
-        sax2_element->content_cdata=NULL;
-        sax2_element->content_cdata_length=0;
+        raptor_xml_writer_end_element(rdf_xml_parser->xml_writer, sax2_element);
 
         finished=1;
         break;
@@ -3199,58 +2925,71 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
         case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
         case RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL:
-            if(!raptor_utf8_is_nfc(sax2_element->content_cdata, sax2_element->content_cdata_length)) {
-              raptor_update_document_locator(rdf_parser);
-              raptor_parser_error(rdf_parser, "Property element %s has XML literal content not in Unicode Normal Form C: %s", el_name, sax2_element->content_cdata);
+            {
+              unsigned char *buffer;
+              int length;
+              
+              if(rdf_xml_parser->xml_writer)
+                buffer=raptor_xml_writer_as_string(rdf_xml_parser->xml_writer, &length);
+              else {
+                buffer=sax2_element->content_cdata;
+                length=sax2_element->content_cdata_length;
+              }
+
+              if(!raptor_utf8_is_nfc(buffer, length)) {
+                raptor_update_document_locator(rdf_parser);
+                raptor_parser_error(rdf_parser, "Property element %s has XML literal content not in Unicode Normal Form C: %s", el_name, buffer);
+              }
+              
+
+              if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
+                element->parent->last_ordinal++;
+                raptor_generate_statement(rdf_parser, 
+                                          element->parent->subject.uri,
+                                          element->parent->subject.id,
+                                          element->parent->subject.type,
+                                          element->parent->subject.uri_source,
+                                          
+                                          (raptor_uri*)&element->parent->last_ordinal,
+                                          NULL,
+                                          RAPTOR_IDENTIFIER_TYPE_ORDINAL,
+                                          RAPTOR_URI_SOURCE_NOT_URI,
+                                          
+                                          (raptor_uri*)buffer,
+                                          NULL,
+                                          RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
+                                          RAPTOR_URI_SOURCE_NOT_URI,
+                                          NULL,
+                                          
+                                          &element->reified,
+                                          element->parent);
+              } else {
+                raptor_generate_statement(rdf_parser, 
+                                          element->parent->subject.uri,
+                                          element->parent->subject.id,
+                                          element->parent->subject.type,
+                                          element->parent->subject.uri_source,
+                                          
+                                          sax2_element->name->uri,
+                                          NULL,
+                                          RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                          RAPTOR_URI_SOURCE_ELEMENT,
+                                          
+                                          (raptor_uri*)buffer,
+                                          NULL,
+                                          RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
+                                          RAPTOR_URI_SOURCE_NOT_URI,
+                                          NULL,
+                                          
+                                          &element->reified,
+                                          element->parent);
+              }
+              
+              /* Finish the xml writer for parseType="Literal" */
+              if(rdf_xml_parser->xml_writer)
+                raptor_free_xml_writer(rdf_xml_parser->xml_writer);
             }
-
-            if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
-              element->parent->last_ordinal++;
-              raptor_generate_statement(rdf_parser, 
-                                        element->parent->subject.uri,
-                                        element->parent->subject.id,
-                                        element->parent->subject.type,
-                                        element->parent->subject.uri_source,
-
-                                        (raptor_uri*)&element->parent->last_ordinal,
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                        RAPTOR_URI_SOURCE_NOT_URI,
-
-                                        (raptor_uri*)sax2_element->content_cdata,
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
-                                        RAPTOR_URI_SOURCE_NOT_URI,
-                                        NULL,
-
-                                        &element->reified,
-                                        element->parent);
-            } else {
-              raptor_generate_statement(rdf_parser, 
-                                        element->parent->subject.uri,
-                                        element->parent->subject.id,
-                                        element->parent->subject.type,
-                                        element->parent->subject.uri_source,
-
-                                        sax2_element->name->uri,
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                        RAPTOR_URI_SOURCE_ELEMENT,
-
-                                        (raptor_uri*)sax2_element->content_cdata,
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
-                                        RAPTOR_URI_SOURCE_NOT_URI,
-                                        NULL,
-
-                                        &element->reified,
-                                        element->parent);
-            }
-
-            /* Finish the xml writer for parseType="Literal" */
-            if(rdf_xml_parser->xml_writer)
-              raptor_free_xml_writer(rdf_xml_parser->xml_writer);
-        
+            
           break;
 
           case RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION:
@@ -3285,6 +3024,157 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 "Ending in state %s\n", raptor_state_as_string(state));
 
 }
+
+
+
+static void
+raptor_cdata_grammar(raptor_parser *rdf_parser,
+                     const unsigned char *s, int len)
+{
+  raptor_xml_parser* rdf_xml_parser;
+  raptor_element* element;
+  raptor_sax2_element* sax2_element;
+  raptor_state state;
+#ifdef RAPTOR_DEBUG_CDATA
+  unsigned char *buffer;
+  int length;
+#endif
+  char *ptr;
+  int all_whitespace=1;
+  int i;
+
+  rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+
+  if(rdf_parser->failed)
+    return;
+
+#ifdef RAPTOR_XML_EXPAT
+#ifdef EXPAT_UTF8_BOM_CRASH
+  sax2->tokens_count++;
+#endif
+#endif
+
+  for(i=0; i<len; i++)
+    if(!isspace(s[i])) {
+      all_whitespace=0;
+      break;
+    }
+
+  element=rdf_xml_parser->current_element;
+  sax2_element=element->sax2;
+
+  /* this file is very broke - probably not XML, whatever */
+  if(!element)
+    return;
+  
+  raptor_update_document_locator(rdf_parser);
+
+  /* cdata never changes the parser state 
+   * and the containing element state always determines what to do.
+   * Use the child_state first if there is one, since that applies
+   */
+  state=element->child_state;
+  RAPTOR_DEBUG2(raptor_cdata_grammar, "Working in state %s\n",
+                raptor_state_as_string(state));
+
+
+  RAPTOR_DEBUG3(raptor_cdata_grammar,
+                "Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+  
+
+
+  if(state == RAPTOR_STATE_SKIPPING)
+    return;
+
+  if(state == RAPTOR_STATE_UNKNOWN) {
+    /* Ignore all cdata if still looking for RDF */
+    if(rdf_parser->feature_scanning_for_rdf_RDF)
+      return;
+
+    /* Ignore all whitespace cdata before first element */
+    if(all_whitespace)
+      return;
+    
+    /* This probably will never happen since that would make the
+     * XML not be well-formed
+     */
+    raptor_parser_warning(rdf_parser, "Character data before RDF element.");
+  }
+
+
+  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES) {
+    /* If found non-whitespace content, move to literal content */
+    if(!all_whitespace)
+      element->child_content_type = RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL; 
+  }
+
+
+  if(!rdf_content_type_info[element->child_content_type].whitespace_significant) {
+
+    /* Whitespace is ignored except for literal or preserved content types */
+    if(all_whitespace) {
+#ifdef RAPTOR_DEBUG_CDATA
+      RAPTOR_DEBUG2(raptor_cdata_grammar, "Ignoring whitespace cdata inside element %s\n", element->sax2->name->local_name);
+#endif
+      return;
+    }
+
+    if(++element->content_cdata_seen == 1 &&
+       element->content_element_seen == 1) {
+      /* Uh oh - mixed content, this element has elements too */
+      raptor_parser_warning(rdf_parser, "element %s has mixed content.", 
+                            element->sax2->name->local_name);
+    }
+  }
+
+
+  if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
+    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
+    RAPTOR_DEBUG3(raptor_xml_cdata_handler,
+                  "Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+  }
+
+  if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
+    raptor_xml_writer_cdata(rdf_xml_parser->xml_writer, s, len);
+  else {
+    unsigned char *buffer=(unsigned char*)RAPTOR_MALLOC(cstring, sax2_element->content_cdata_length + len + 1);
+    if(!buffer) {
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      return;
+    }
+    
+    if(sax2_element->content_cdata_length) {
+      strncpy(buffer, sax2_element->content_cdata, sax2_element->content_cdata_length);
+      RAPTOR_FREE(cstring, sax2_element->content_cdata);
+      element->content_cdata_all_whitespace &= all_whitespace;
+    } else
+      element->content_cdata_all_whitespace = all_whitespace;
+    
+    sax2_element->content_cdata=buffer;
+    
+    /* move pointer to end of cdata buffer */
+    ptr=buffer+sax2_element->content_cdata_length;
+    
+    /* adjust stored length */
+    sax2_element->content_cdata_length += len;
+    
+    strncpy(ptr, (char*)s, len);
+    ptr += len;
+    *ptr = '\0';
+  }
+
+
+#ifdef RAPTOR_DEBUG_CDATA
+  buffer=raptor_xml_writer_as_string(rdf_xml-parser->xml_writer, &length);
+  
+  RAPTOR_DEBUG3(raptor_cdata_grammar, 
+                "Content cdata now: '%s' (%d bytes)\n", 
+                buffer, length);
+#endif
+  RAPTOR_DEBUG2(raptor_cdata_grammar, 
+                "Ending in state %s\n", raptor_state_as_string(state));
+}
+
 
 
 /**
