@@ -226,6 +226,7 @@ int raptor_xml_external_entity_ref_handler(void *user_data, const XML_Char *cont
 
 
 typedef struct raptor_parser_factory_s raptor_parser_factory;
+typedef struct raptor_serializer_factory_s raptor_serializer_factory;
 typedef struct raptor_id_set_s raptor_id_set;
 typedef struct raptor_uri_detail_s raptor_uri_detail;
 
@@ -429,6 +430,71 @@ struct raptor_parser_factory_s {
 };
 
 
+/*
+ * Raptor serializer object
+ */
+struct raptor_serializer_s {
+  /* non 0 if serializer had fatal error and cannot continue */
+  int failed;
+
+  /* base URI of RDF/XML */
+  raptor_uri *base_uri;
+
+  /* serializer specific stuff */
+  void *context;
+
+  /* destination stream for the serialization */
+  raptor_iostream *iostream;
+  
+  struct raptor_serializer_factory_s* factory;
+};
+
+
+/** A Serializer Factory for a syntax */
+struct raptor_serializer_factory_s {
+  struct raptor_serializer_factory_s* next;
+
+  /* syntax name */
+  const char* name;
+  /* alternate syntax name; not mentioned in enumerations */
+  const char* alias;
+
+  /* syntax readable label */
+  const char* label;
+  /* syntax MIME type (or NULL) */
+  const char* mime_type;
+  /* syntax URI (or NULL) */
+  const unsigned char* uri_string;
+  
+  /* the rest of this structure is populated by the
+     serializer-specific register function */
+  size_t context_length;
+  
+  /* create a new serializer */
+  int (*init)(raptor_serializer* serializer, const char *name);
+  
+  /* destroy a serializer */
+  void (*terminate)(raptor_serializer* serializer);
+  
+  /* add a namespace */
+  int (*declare_namespace)(raptor_serializer* serializer, const unsigned char *prefix, raptor_uri *uri);
+  
+  /* start a serialization */
+  int (*serialize_start)(raptor_serializer* serializer);
+  
+  /* serialize a statement */
+  int (*serialize_statement)(raptor_serializer* serializer, const raptor_statement *statment);
+
+  /* end a serialization */
+  int (*serialize_end)(raptor_serializer* serializer);
+  
+  /* finish the serializer factory */
+  void (*finish_factory)(raptor_serializer_factory* factory);
+};
+
+
+/* raptor_serialize.c */
+void raptor_serializer_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, void (*factory) (raptor_serializer_factory*));
 
 
 /* raptor_general.c */
@@ -548,6 +614,11 @@ void raptor_init_parser_rss(void);
 raptor_uri_detail* raptor_new_uri_detail(const unsigned char *uri_string);
 void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
 unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p);
+
+/* raptor_serializer.c */
+void raptor_init_serializer_ntriples(void);
+void raptor_init_serializer_simple(void);
+void raptor_delete_serializer_factories(void);
 
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(long c);
