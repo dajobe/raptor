@@ -15,7 +15,7 @@
 # Try 'locate autogen.sh' on your system and see what you get.
 #
 
-PACKAGE=rapier
+PACKAGE=raptor
 DIE=
 
 if test "X$DRYRUN" != X; then

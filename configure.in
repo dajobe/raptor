@@ -1,6 +1,6 @@
 dnl -*- Mode: sh -*-
 dnl
-dnl configure.in - autoconf file for Rapier
+dnl configure.in - autoconf file for Raptor
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
 dnl $Id$
@@ -23,10 +23,10 @@ dnl
 AC_REVISION($Revision$)dnl
 
 AC_PREREQ(2.13)
-AC_INIT(rapier_parse.c)
+AC_INIT(raptor_parse.c)
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(rapier, 0.9.2)
+AM_INIT_AUTOMAKE(raptor, 0.9.2)
 
 AM_MAINTAINER_MODE
 
@@ -75,9 +75,9 @@ version_minor=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\2/'`
 version_release=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\3/'`
 changequote([, ])dnl
 
-AC_DEFINE_UNQUOTED(RAPIER_VERSION_MAJOR, $version_major)
-AC_DEFINE_UNQUOTED(RAPIER_VERSION_MINOR, $version_minor)
-AC_DEFINE_UNQUOTED(RAPIER_VERSION_RELEASE, $version_release)
+AC_DEFINE_UNQUOTED(RAPTOR_VERSION_MAJOR, $version_major)
+AC_DEFINE_UNQUOTED(RAPTOR_VERSION_MINOR, $version_minor)
+AC_DEFINE_UNQUOTED(RAPTOR_VERSION_RELEASE, $version_release)
 
 
 dnl Checks for library functions.
@@ -110,7 +110,7 @@ fi
 oLIBS="$LIBS"
 AC_CHECK_LIB(xmltok, main, xmlt=1, xmlt=0)
 
-# Rapier needs XML_ParserCreate expat function (not namespace one)
+# Raptor needs XML_ParserCreate expat function (not namespace one)
 AC_CHECK_LIB(xmlparse, XML_ParserCreate, xmlp=1, xmlp=0, -lxmltok)
 
 LIBS="$oLIBS"
@@ -310,13 +310,13 @@ fi
 
 
 # Make final changes to cflags
-CPPFLAGS="-DRAPIER_INTERNAL=1 $CPPFLAGS"
+CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
 MEM=
 MEM_LIBS=
 if test "$USE_MAINTAINER_MODE" = yes; then
-  MEM=-DRAPIER_MEMORY_DEBUG_DMALLOC=1
+  MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
   MEM_LIBS=-ldmalloc
-  CPPFLAGS="-DRAPIER_DEBUG=1 $CPPFLAGS"
+  CPPFLAGS="-DRAPTOR_DEBUG=1 $CPPFLAGS"
 fi
 STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
 if test "$USE_MAINTAINER_MODE" = yes; then
@@ -327,11 +327,11 @@ AC_SUBST(MEM_LIBS)
 AC_SUBST(STANDARD_CFLAGS)
 
 
-AC_OUTPUT(Makefile rapier.spec)
+AC_OUTPUT(Makefile raptor.spec)
 
 
 AC_MSG_RESULT([
-Rapier build summary:
+Raptor build summary:
   XML parser: $xml_parsers_available
 
 ])

@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * rdfdump.c - Rapier RDF Parser example code 
+ * rdfdump.c - Raptor RDF Parser example code 
  *
  * $Id$
  *
@@ -34,13 +34,13 @@
 #include <librdf.h>
 #endif
 
-#include <rapier.h>
+#include <raptor.h>
 
 #ifdef NEED_OPTIND_DECLARATION
 extern int optind;
 #endif
 
-static void print_statements(void *user_data, const rapier_statement *statement);
+static void print_statements(void *user_data, const raptor_statement *statement);
 int main(int argc, char *argv[]);
 
 
@@ -54,20 +54,20 @@ static int statement_count=0;
 
 
 static
-void print_statements(void *user_data, const rapier_statement *statement) 
+void print_statements(void *user_data, const raptor_statement *statement) 
 {
   fputs("rdfdump: Statement: ", stdout);
 
   /* replace newlines with spaces if object is a literal string */
   if(replace_newlines && 
-     statement->object_type == RAPIER_OBJECT_TYPE_LITERAL) {
+     statement->object_type == RAPTOR_OBJECT_TYPE_LITERAL) {
     char *s;
     for(s=(char*)statement->object; *s; s++)
       if(*s == '\n')
         *s=' ';
   }
 
-  rapier_print_statement(statement, stdout);
+  raptor_print_statement(statement, stdout);
   fputc('\n', stdout);
 
   statement_count++;
@@ -100,7 +100,7 @@ static struct option long_options[] =
 int
 main(int argc, char *argv[]) 
 {
-  rapier_parser* parser;
+  raptor_parser* parser;
   char *uri_string;
   char *base_uri_string;
   char *program=argv[0];
@@ -169,7 +169,7 @@ main(int argc, char *argv[])
 
   if(usage) {
     fprintf(stderr, "Usage: %s [OPTIONS] <source file: URI> [base URI]\n", program);
-    fprintf(stderr, "Parse the given file as RDF using Rapier\n");
+    fprintf(stderr, "Parse the given file as RDF using Raptor\n");
     fprintf(stderr, HELP_TEXT(h, help, "This message"));
     fprintf(stderr, HELP_TEXT(s, scan, "Scan for <rdf:RDF> element in source"));
     fprintf(stderr, HELP_TEXT(r, replace-newlines, "Replace newlines with spaces in literals"));
@@ -204,15 +204,15 @@ main(int argc, char *argv[])
   base_uri=base_uri_string;
 #endif
   
-  parser=rapier_new();
+  parser=raptor_new();
   if(!parser) {
-    fprintf(stderr, "%s: Failed to create rapier parser\n", program);
+    fprintf(stderr, "%s: Failed to create raptor parser\n", program);
     return(1);
   }
 
 
   if(scanning)
-    rapier_set_feature(parser, RAPIER_FEATURE_SCANNING, 1);
+    raptor_set_feature(parser, RAPTOR_FEATURE_SCANNING, 1);
   
 
   /* PARSE the URI as RDF/XML */
@@ -224,15 +224,15 @@ main(int argc, char *argv[])
       fprintf(stdout, "%s: Parsing URI %s\n", program, uri_string);
   }
   
-  rapier_set_statement_handler(parser, NULL, print_statements);
+  raptor_set_statement_handler(parser, NULL, print_statements);
 
 
-  if(rapier_parse_file(parser, uri, base_uri)) {
+  if(raptor_parse_file(parser, uri, base_uri)) {
     fprintf(stderr, "%s: Failed to parse RDF into model\n", program);
     rc=1;
   } else
     rc=0;
-  rapier_free(parser);
+  raptor_free(parser);
 
   fprintf(stdout, "%s: Parsing returned %d statements\n", program,
           statement_count);

@@ -1,6 +1,6 @@
 # -*- Mode: Makefile -*-
 #
-# Makefile.am - automake file for Rapier
+# Makefile.am - automake file for Raptor
 #
 # $Id$
 #
@@ -20,18 +20,18 @@
 
 
 bin_PROGRAMS = rdfdump
-lib_LIBRARIES = librapier.a
+lib_LIBRARIES = libraptor.a
 
-include_HEADERS = rapier.h
+include_HEADERS = raptor.h
 
-rdfdump_LDADD = librapier.a
+rdfdump_LDADD = libraptor.a
 
-librapier_a_SOURCES = rapier_parse.c
+libraptor_a_SOURCES = raptor_parse.c
 
-librapier_a_LIBADD = @XML_OBJS@
-librapier_a_DEPENDENCIES = @XML_OBJS@
+libraptor_a_LIBADD = @XML_OBJS@
+libraptor_a_DEPENDENCIES = @XML_OBJS@
 
-EXTRA_librapier_a_SOURCES = rdfdump.c
+EXTRA_libraptor_a_SOURCES = rdfdump.c
 
 RDF_TEST_FILES=ex-00.rdf ex-01.rdf ex-02.rdf ex-03.rdf ex-04.rdf ex-05.rdf \
 ex-06.rdf ex-07.rdf ex-08.rdf ex-09.rdf ex-10.rdf
@@ -42,7 +42,7 @@ README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
 autogen.sh \
 $(RDF_TEST_FILES) \
-rapier.spec.in
+raptor.spec.in
 
 # Why is this not in the default makefile?
 CC=@CC@
@@ -56,7 +56,7 @@ MEM_LIBS=@MEM_LIBS@
 #MEM_LIBS=
 
 # 2) Use dmalloc library
-#MEM=-DRAPIER_MEMORY_DEBUG_DMALLOC=1
+#MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
 #MEM_LIBS=-ldmalloc
 
 

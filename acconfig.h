@@ -4,9 +4,9 @@
 /* package version */
 #define VERSION
 
-#undef RAPIER_VERSION_MAJOR
-#undef RAPIER_VERSION_MINOR
-#undef RAPIER_VERSION_RELEASE
+#undef RAPTOR_VERSION_MAJOR
+#undef RAPTOR_VERSION_MINOR
+#undef RAPTOR_VERSION_RELEASE
 
 /* XML parsers */
 #undef NEED_EXPAT
