@@ -37,11 +37,11 @@
 #include "raptor_internal.h"
 
 
-static size_t
+static void
 write_bytes_fh(raptor_www* www,
                void *userdata, const void *ptr, size_t size, size_t nmemb) 
 {
-  return fwrite(ptr, size, nmemb, (FILE*)userdata);
+  fwrite(ptr, size, nmemb, (FILE*)userdata);
 }
 
 
@@ -68,7 +68,7 @@ int main (int argc, char *argv[])
   raptor_uri_init();
   raptor_www_init();
 
-  uri=raptor_new_uri(uri_string);
+  uri=raptor_new_uri((const unsigned char*)uri_string);
   if(!uri) {
     fprintf(stderr, "Failed to create Raptor URI for %s\n", uri_string);
     exit(1);
@@ -77,9 +77,9 @@ int main (int argc, char *argv[])
   www=raptor_www_new();
 
   if(1) {
-    raptor_www_set_content_type_handler(www, NULL, write_content_type);
+    raptor_www_set_content_type_handler(www, write_content_type, (void*)stderr);
   } else {
-    raptor_www_set_write_bytes_handler(www, NULL, write_bytes_fh);
+    raptor_www_set_write_bytes_handler(www, write_bytes_fh, NULL);
   }
 
   raptor_www_set_user_agent(www, user_agent);
