@@ -260,6 +260,9 @@ raptor_iostream_test: $(srcdir)/raptor_iostream.c libraptor.la
 raptor_xml_writer_test: $(srcdir)/raptor_xml_writer.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml_writer.c libraptor.la $(LIBS)
 
+raptor_xslt_test: $(srcdir)/raptor_xslt.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. `xslt-config --cflags` -DSTANDALONE $(srcdir)/raptor_xslt.c libraptor.la $(LIBS) `xslt-config --libs`
+
 
 
 deb: distcheck
