@@ -2715,8 +2715,6 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         break;
 
       case RAPTOR_STATE_PARSETYPE_OTHER:
-        /* FIXME */
-
         /* FALLTHROUGH */
 
       case RAPTOR_STATE_PARSETYPE_LITERAL:
