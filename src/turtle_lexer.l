@@ -157,10 +157,10 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 ")"       { return RIGHT_ROUND; }
 
 
-'([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-1, '\"'); /* ' */
+'([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-1, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
 _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
