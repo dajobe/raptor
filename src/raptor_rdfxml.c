@@ -1462,6 +1462,8 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
   }
 #endif
 
+  RAPTOR_FREE(raptor_sax2, rdf_xml_parser->sax2);
+
   if(rdf_parser->fh) {
     fclose(rdf_parser->fh);
     rdf_parser->fh=NULL;
