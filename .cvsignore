@@ -39,8 +39,8 @@ mkinstalldirs
 turtle_lexer.c
 turtle_lexer.h
 turtle_parser.output
-turtle_parser.tab.c
-turtle_parser.tab.h
+turtle_parser.c
+turtle_parser.h
 not-used
 old
 rapper
