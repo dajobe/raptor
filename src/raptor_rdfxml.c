@@ -3253,6 +3253,19 @@ raptor_free_identifier(raptor_identifier *identifier)
 }
 
 
+/**
+ * raptor_element_has_property_attributes: Return true if the element has at least one property attribute
+ * @rdf_parser: Raptor parser object
+ * @element: element with the property attributes 
+ * 
+ **/
+static int
+raptor_element_has_property_attributes(raptor_parser *rdf_parser, 
+                                       raptor_element *element) 
+{
+  return element->attribute_count >0;
+}
+
 
 /**
  * raptor_process_property_attributes: Process the property attributes for an element for a given resource
@@ -3853,17 +3866,6 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           }
 #endif
           
-          /* Assign the properties on this (property) element to the
-           * resource URI held in our parent element 
-           */
-          if(!element->rdf_attr[RDF_ATTR_resource])
-            raptor_process_property_attributes(rdf_parser, element, 
-                                               element->parent, NULL);
-
-          /* when rdf:resource is given, do this when the empty element
-           * is closed, and we have worked out the resource node URI
-           */
-          
           /*
            * Assign bag URI here so we don't reify property attributes using 
            * this bagID 
@@ -4166,6 +4168,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
                 element->object.uri_source=RAPTOR_URI_SOURCE_GENERATED;
                 element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+
+                raptor_process_property_attributes(rdf_parser, element, 
+                                                   element->parent, NULL);
+
+
               }
             }
 
@@ -4180,6 +4187,24 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
             /* FALLTHROUGH */
           case RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL:
+
+            if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL) {
+              /* If there is empty literal content with properties
+               * generate a node to hang properties off 
+               */
+              if(element->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL &&
+                 raptor_element_has_property_attributes(rdf_parser, element) &&
+                 !element->object.uri) {
+                element->object.id=raptor_generate_id(rdf_parser, 0);
+                element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+                element->object.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+                element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+              }
+              
+              raptor_process_property_attributes(rdf_parser, element, 
+                                                 element, &element->object);
+            }
+            
 
             if(state == RAPTOR_STATE_MEMBER) {
               int object_is_literal=(element->content_cdata != NULL); /* FIXME */
