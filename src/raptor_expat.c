@@ -54,7 +54,7 @@
 
 
 XML_Parser
-raptor_expat_init(raptor_parser *rdf_parser) {
+raptor_expat_init(void *rdf_parser) {
   XML_Parser xp=XML_ParserCreate(NULL);
 
   /* create a new parser in the specified encoding */
