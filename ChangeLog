@@ -1,3 +1,20 @@
+2004-11-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_sequence.c (raptor_sequence_join): Copy pointers correctly
+
+	* raptor_sequence.c (raptor_sequence_join): Added, to move all
+	items between two sequences leaving one empty.
+
+	* raptor.h: Added raptor_sequence_join
+
+	* raptor.h: Added raptor_serialize_set_namespace
+
+	* raptor_serialize.c (raptor_serialize_set_namespace):
+	Added, not implemented.
+
+	* raptor_rss.c (raptor_rss_parse_recognise_syntax):
+	Boost in recognising xml rss
+
 2004-11-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* rdfdump.c: allow -f to set serializer features
