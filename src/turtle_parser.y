@@ -689,7 +689,7 @@ n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string)
       qname_string[len-1]='\0';
   }
   name=raptor_new_qname(&n3_parser->namespaces, qname_string, NULL,
-                        raptor_parser_simple_error, n3_parser);
+                        raptor_parser_simple_error, rdf_parser);
   if(!name)
     return NULL;
   if(name->uri)
