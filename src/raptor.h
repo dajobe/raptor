@@ -460,6 +460,7 @@ RAPTOR_API int raptor_unicode_is_xml11_namestartchar(long c);
 RAPTOR_API int raptor_unicode_is_xml10_namestartchar(long c);
 RAPTOR_API int raptor_unicode_is_xml11_namechar(long c);
 RAPTOR_API int raptor_unicode_is_xml10_namechar(long c);
+RAPTOR_API int raptor_utf8_check(const unsigned char *string, size_t length);
   
 /* raptor_stringbuffer */
 RAPTOR_API raptor_stringbuffer* raptor_new_stringbuffer(void);
