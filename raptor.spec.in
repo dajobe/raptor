@@ -8,7 +8,7 @@ Name:      %{name}
 Version:   %{version}
 Release:   %{release}
 Prefix:    %{_prefix}
-Copyright: LGPL/MPL
+Copyright: LGPL/Apache 2
 Group:     Development/Libraries
 Source:    http://www.redland.opensource.ac.uk/dist/source/%{name}-%{version}.tar.gz
 URL:       http://www.redland.opensource.ac.uk/raptor/
@@ -91,7 +91,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 %defattr(-, root, root)
 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
-%doc MPL.html
+%doc LICENSE-2.0.txt
 %doc %{_mandir}/man1/raptor-config.1*
 
 %{prefix}/bin/raptor-config
@@ -104,7 +104,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 
 %changelog
-* Tue May 11 2004  Dave Beckett <Dave.Beckett@bristol.ac.uk>
+* Thu Sep 9 BST 2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
+- License now LGPL/Apache 2
+
+* Tue May 11 2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
 - Added RELEASE.html
 
 * Thu Apr 17 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
