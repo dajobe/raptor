@@ -119,7 +119,9 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                 raptor_sax2_element *element)
 {
   int fmt_length;
-  char *fmt_buffer=raptor_format_sax2_element(element, &fmt_length, 0, 
+  char *fmt_buffer=raptor_format_sax2_element(element, 
+                                              &xml_writer->content_cdata_namespaces,
+                                              &fmt_length, 0, 
                                               xml_writer->error_handler,
                                               xml_writer->error_data);
   if(fmt_buffer && fmt_length) {
@@ -167,7 +169,9 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                               raptor_sax2_element* element)
 {
   int fmt_length;
-  char *fmt_buffer=raptor_format_sax2_element(element, &fmt_length, 1,
+  char *fmt_buffer=raptor_format_sax2_element(element, 
+                                              &xml_writer->content_cdata_namespaces,
+                                              &fmt_length, 1,
                                               xml_writer->error_handler,
                                               xml_writer->error_data);
 
