@@ -493,13 +493,12 @@ raptor_free_rss_item(raptor_rss_item* item) {
 }
 
 static void
-raptor_free_rss_items(raptor_rss_parser_context *rss_parser) {
+raptor_clear_rss_items(raptor_rss_parser_context *rss_parser) {
   raptor_rss_item* item=rss_parser->items;
   while(item) {
     raptor_rss_item *next=item->next;
 
-    raptor_clear_rss_item(item);
-    RAPTOR_FREE(raptor_rss_item, item);
+    raptor_free_rss_item(item);
     item=next;
   }
   rss_parser->last=rss_parser->items=NULL;
@@ -516,7 +515,7 @@ raptor_rss_context_terminate(raptor_rss_parser_context* rss_parser) {
   if(rss_parser->input)
     xmlFreeParserInputBuffer(rss_parser->input);
 
-  raptor_free_rss_items(rss_parser);
+  raptor_clear_rss_items(rss_parser);
 
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++)
     raptor_clear_rss_item(&rss_parser->common[i]);
