@@ -1,0 +1,1 @@
+<http://example.org/resource> <http://example.org/property> xml("\n        <em>some markup</em>\n        <a href=\"http://example.org/somewhere/else\">blah</a>\n      ") .
