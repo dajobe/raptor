@@ -495,6 +495,7 @@ struct raptor_xml_parser_s {
   
 };
 
+typedef struct raptor_xml_parser_s raptor_xml_parser;
 
 
 
