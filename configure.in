@@ -433,7 +433,12 @@ AC_SUBST(MEM_LIBS)
 AC_SUBST(STANDARD_CFLAGS)
 
 
-AC_OUTPUT(Makefile raptor.spec tests/Makefile win32/Makefile)
+AC_OUTPUT(Makefile
+raptor.spec
+raptor-config
+tests/Makefile
+win32/Makefile,
+[chmod +x raptor-config])
 
 
 AC_MSG_RESULT([
