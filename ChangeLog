@@ -1,5 +1,17 @@
 2004-08-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_parse.c (raptor_record_ID):
+	Use feature_check_rdf_id to always return
+	no rdf:ID check failure when feature is disabled.
+
+	* raptor_general.c (raptor_set_feature, raptor_get_feature):
+	Added RAPTOR_FEATURE_CHECK_RDF_ID
+	(raptor_set_parser_strict): Set feature_check_rdf_id default true.
+
+	* raptor.h: Added RAPTOR_FEATURE_CHECK_RDF_ID
+
+	* raptor_internal.h: Added feature_check_rdf_id
+
 	* ntriples_parse.c (raptor_ntriples_parse_chunk):
 	Move "junk at end of input" test
 	to the end of the function, giving the error only if the current
