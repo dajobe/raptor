@@ -346,6 +346,18 @@ if test "X$XML_CONFIG" != X; then
                 AC_MSG_RESULT(yes)
 		AC_DEFINE(RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED),
 		AC_MSG_RESULT(no))
+
+    AC_MSG_CHECKING(if libxml xmlSAXHandler has externalSubset field)
+    AC_TRY_LINK([
+#ifdef HAVE_LIBXML_PARSER_H
+#include <libxml/parser.h>
+#else
+#include <gnome-xml/parser.h>
+#endif
+], [xmlSAXHandler foo; foo.externalSubset=NULL],
+                AC_MSG_RESULT(yes)
+		AC_DEFINE(RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET),
+		AC_MSG_RESULT(no))
   fi
 
 fi
