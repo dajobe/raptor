@@ -1083,7 +1083,7 @@ main(int argc, char *argv[])
   locator->line= locator->column = -1;
   locator->file= filename;
 
-  turtle_parser.line= 1;
+  turtle_parser.lineno= 1;
 
   rdf_parser.context=&turtle_parser;
   rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");
