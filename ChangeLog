@@ -45,7 +45,7 @@
 	(raptor_rss10_serialize_statement): If type is enclosure, walk the
 	list of enclosures and add a new one if not seen already.
 	(raptor_rss10_emit_item): Add indent arg as this is called recursively.
-	Use it to print spaces from teh raptor_rss10_spaces constant.
+	Use it to print spaces from the raptor_rss10_spaces constant.
 	Only serialize an rdf:about if the item has a URI.
 	If field is enc:enclosure, find the enclosure item and write it
 	indented further recursively calling raptor_rss10_emit_item.
