@@ -158,6 +158,8 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 #endif
 
 
+typedef void (*raptor_internal_message_handler)(raptor_parser* parser, const char *message, ...);
+
 extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
 extern void raptor_parser_error(raptor_parser* parser, const char *message, ...);
 extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
@@ -190,6 +192,106 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 #define raptor_strncasecmp strnicmp
 #endif
 #endif
+
+
+/* namespace stack node */
+typedef struct raptor_namespace_s raptor_namespace;
+
+typedef struct {
+  raptor_namespace* top;
+#ifdef RAPTOR_IN_REDLAND
+  librdf_world* world;
+#endif
+} raptor_namespace_stack;
+
+/* Forms:
+ * 1) prefix=NULL uri=<URI>      - default namespace defined
+ * 2) prefix=NULL, uri=NULL      - no default namespace
+ * 3) prefix=<prefix>, uri=<URI> - regular pair defined <prefix>:<URI>
+ */
+struct raptor_namespace_s {
+  /* next down the stack, NULL at bottom */
+  struct raptor_namespace_s* next;
+  /* NULL means is the default namespace */
+  const char *prefix;
+  /* needed to safely compare prefixed-names */
+  int prefix_length;
+  /* URI of namespace or NULL for default */
+  raptor_uri *uri;
+#ifdef RAPTOR_IN_REDLAND
+#else
+  /* When implementing URIs as char*, need this for efficiency */
+  int uri_length;
+#endif
+  /* parsing depth that this ns was added.  It will
+   * be deleted when the parser leaves this depth 
+   */
+  int depth;
+  /* Non 0 if is xml: prefixed name */
+  int is_xml;
+  /* Non 0 if is RDF M&S Namespace */
+  int is_rdf_ms;
+  /* Non 0 if is RDF Schema Namespace */
+  int is_rdf_schema;
+};
+
+/* raptor_nspace.c */
+#ifdef RAPTOR_IN_REDLAND
+void raptor_namespaces_init(raptor_namespace_stack *nstack, librdf_world *world);
+#else
+void raptor_namespaces_init(raptor_namespace_stack *nstack);
+#endif
+void raptor_namespaces_free(raptor_namespace_stack *nstack);
+int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const char *prefix, const char *nspace, int depth);
+void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
+void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
+raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
+raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const char *prefix, int prefix_length);
+
+#ifdef RAPTOR_IN_REDLAND
+raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth, librdf_world *world);
+#else
+raptor_namespace* raptor_namespace_new(const char *prefix, const char *ns_uri_string, int depth);
+#endif
+void raptor_namespace_free(raptor_namespace *ns);
+raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
+const char* raptor_namespace_get_prefix(const raptor_namespace *ns);
+raptor_uri* raptor_namespace_local_name_to_uri(const raptor_namespace *ns, const char *local_name);
+
+#ifdef RAPTOR_DEBUG
+void raptor_namespace_print(FILE *stream, raptor_namespace* ns);
+#endif
+
+
+/* 
+ * Raptor XML-namespace qualified name (qname), for elements or attributes 
+ *
+ * namespace is only defined when the XML name has a namespace and
+ * only then is uri also given.
+ */
+typedef struct {
+  /* Name - always present */
+  const char *local_name;
+  int local_name_length;
+  /* Namespace or NULL if not in a namespace */
+  const raptor_namespace *nspace;
+  /* URI of namespace+local_name or NULL if not defined */
+  raptor_uri *uri;
+  /* optional value - used when name is an attribute */
+  const char *value;
+  int value_length;
+} raptor_qname;
+
+
+
+/* raptor_qname.c */
+raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const char *name, const char *value, raptor_internal_message_handler error_handler, void *error_data);
+#ifdef RAPTOR_DEBUG
+void raptor_qname_print(FILE *stream, raptor_qname* name);
+#endif
+void raptor_free_qname(raptor_qname* name);
+int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
+
 
 
 /* end of RAPTOR_INTERNAL */
