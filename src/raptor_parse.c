@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2002 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -829,6 +829,9 @@ raptor_xml_start_element_handler(void *user_data,
 #endif
 #endif
 
+  if(rdf_parser->failed)
+    return;
+
   raptor_update_document_locator(rdf_parser);
 
   rdf_xml_parser->depth++;
@@ -1159,6 +1162,9 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
 
+  if(rdf_parser->failed)
+    return;
+
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_xml_parser->tokens_count++;
@@ -1231,6 +1237,9 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
 
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+
+  if(rdf_parser->failed)
+    return;
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
@@ -1400,6 +1409,11 @@ raptor_xml_external_entity_ref_handler(void *user_data,
 void
 raptor_xml_comment_handler(void *user_data, const unsigned char *s)
 {
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+
+  if(rdf_parser->failed)
+    return;
+
   /* nop */
   RAPTOR_DEBUG2(raptor_xml_comment_handler, "XML Comment '%s'\n", s);
 }
@@ -1708,7 +1722,11 @@ static int
 raptor_xml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer,
                        size_t len, int is_end) 
 {
-  int rc=raptor_xml_parse_chunk_(rdf_parser, buffer, len, is_end);
+  int rc=0;
+  if(rdf_parser->failed)
+    return 1;
+
+  rc=raptor_xml_parse_chunk_(rdf_parser, buffer, len, is_end);
   if(rc)    
     raptor_xml_parse_handle_errors(rdf_parser);
   return rc;
@@ -1738,6 +1756,9 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   static const char empty_literal[1]="";
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   char *reified_id=NULL;
+
+  if(rdf_parser->failed)
+    return;
 
   if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
      object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
