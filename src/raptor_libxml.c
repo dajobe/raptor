@@ -69,7 +69,7 @@ static void
 raptor_libxml_internalSubset(void *ctx, const xmlChar *name,
                              const xmlChar *ExternalID, const xmlChar *SystemID) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return internalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
+  internalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
 }
 
 
@@ -78,7 +78,7 @@ raptor_libxml_externalSubset(void *ctx, const xmlChar *name,
                              const xmlChar *ExternalID, const xmlChar *SystemID)
 {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return externalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
+  externalSubset(raptor_get_libxml_context(rdf_parser), name, ExternalID, SystemID);
 }
 
 
