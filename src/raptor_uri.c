@@ -848,10 +848,6 @@ raptor_uri_filename_to_uri_string(const char *filename)
 #else
 /* others - unix: turn spaces into %20, '%' into %25 */
 
-/*
- * "file://"
- */
-  len+=2; /* // */
   if(*filename != '/') {
     if(!getcwd(path, PATH_MAX))
       return NULL;
