@@ -990,12 +990,12 @@ raptor_features_enumerate(const raptor_feature feature,
         *name=raptor_features_list[i].name;
       
       if(uri) {
-        raptor_uri *base_uri=raptor_new_uri(raptor_feature_uri_prefix);
+        raptor_uri *base_uri=raptor_new_uri((const unsigned char*)raptor_feature_uri_prefix);
         if(!base_uri)
           return 1;
         
         *uri=raptor_new_uri_from_uri_local_name(base_uri,
-                                                raptor_features_list[i].name);
+                                                (const unsigned char*)raptor_features_list[i].name);
         raptor_free_uri(base_uri);
       }
       if(label)
@@ -1133,23 +1133,23 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 raptor_feature
 raptor_feature_from_uri(raptor_uri *uri)
 {
-  char *uri_string;
+  unsigned char *uri_string;
   int i;
-  raptor_feature feature= -1;
+  raptor_feature feature= (raptor_feature)-1;
   
   if(!uri)
-    return -1;
+    return feature;
   
   uri_string=raptor_uri_as_string(uri);
-  if(strncmp(uri_string, raptor_feature_uri_prefix,
+  if(strncmp((const char*)uri_string, raptor_feature_uri_prefix,
              RAPTOR_FEATURE_URI_PREFIX_LEN))
-    return -1;
+    return feature;
 
   uri_string += RAPTOR_FEATURE_URI_PREFIX_LEN;
 
   for(i=0; i <= RAPTOR_FEATURE_LAST; i++)
-    if(!strcmp(raptor_features_list[i].name, uri_string)) {
-      feature=i;
+    if(!strcmp(raptor_features_list[i].name, (const char*)uri_string)) {
+      feature=(raptor_feature)i;
       break;
     }
 

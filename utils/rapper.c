@@ -233,7 +233,7 @@ main(int argc, char *argv[])
             for(i=0; 1; i++) {
               const char *feature_name;
               const char *feature_label;
-              if(raptor_features_enumerate(i, &feature_name, NULL, &feature_label))
+              if(raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label))
                 break;
               printf("  %-20s  %s\n", feature_name, feature_label);
             }
@@ -247,11 +247,11 @@ main(int argc, char *argv[])
               const char *feature_name;
               size_t len;
               
-              if(raptor_features_enumerate(i, &feature_name, NULL, NULL))
+              if(raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, NULL))
                 break;
               len=strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
-                feature=i;
+                feature=(raptor_feature)i;
                 if(len < arg_len && optarg[len] == '=')
                   feature_value=atoi(&optarg[len+1]);
                 else if(len == arg_len)

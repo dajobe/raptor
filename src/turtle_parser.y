@@ -627,8 +627,8 @@ URI_LITERAL
   printf("resource integer=%d\n", $1);
 #endif
   string=(unsigned char*)malloc(32); /* FIXME */
-  sprintf((unsigned char*)string, "%d", $1);
-  uri=raptor_new_uri("http://www.w3.org/2001/XMLSchema#integer");
+  sprintf((char*)string, "%d", $1);
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
 }
 
