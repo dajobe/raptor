@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-12-30"
+.TH libraptor 3 "2005-01-01"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -962,10 +962,12 @@ This class provides the functionality to generate simple XML documents
 consisting of elements with attributes, character data and
 comments. The documents can be written to an iostream.
 .SH "XML WRITER CONSTRUCTOR"
-.IP "\fBraptor_xml_writer* raptor_new_xml_writer(raptor_uri_handler* \fIuri_handler\fP, void* \fIuri_context\fP, raptor_iostream* \fIiostr\fP, raptor_simple_message_handler \fIerror_handler\fP, void *\fIerror_data\fP, int \fIcanonicalize\fP)\fR"
+.IP "\fBraptor_xml_writer* raptor_new_xml_writer(raptor_namespace_stack* \fInstack\fP, raptor_uri_handler* \fIuri_handler\fP, void* \fIuri_context\fP, raptor_iostream* \fIiostr\fP, raptor_simple_message_handler \fIerror_handler\fP, void *\fIerror_data\fP, int \fIcanonicalize\fP)\fR"
 Create a new XML Writer writing to iostream \fIiostr\fP.
 The \fIerror_handler\fR method along
 with \fIerror_data\fR allow error reporting to be given.
+\fInstack\fP is either an existing namespace stack to be used or if
+NULL, a new one with only the XML namespace defined is created.
 Note that \fBraptor_uri_get_handler\fR can be useful to return the
 current raptor URI handler/context.  \fIcanonicalize\fP is currently
 unused and should be set to 1 but may allow non-canonical XML writing
@@ -974,9 +976,6 @@ to be allowed in future.
 .IP "\fBvoid raptor_free_xml_writer(raptor_xml_writer* \fIxml_writer\fP)\fR"
 Destroy a XML Writer object.
 .SH "XML WRITER METHODS"
-.IP "\fBraptor_namespace* raptor_xml_writer_start_namespace_full(raptor_xml_writer* \fIxml_writer\fP, const unsigned char* \fIprefix\fP, const unsigned char* \fIns_uri_string\fP, int \fIdepth\fP)\fR"
-Start a new XML namespace with XML prefix \fIprefix\P and URI string
-\fIns_uri_string\fP in the XML writer at namespace stack place \fIdepth\fP.
 .IP "\fBvoid raptor_xml_writer_empty_element(raptor_xml_writer* \fIxml_writer\fP, raptor_xml_element *\fIelement\fP)\fR"
 Write xml element \fIelement\fP as an empty element (no element
 content) to the XML Writer \fIxml_writer\fP.
