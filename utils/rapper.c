@@ -24,6 +24,10 @@
 #include <config.h>
 #endif
 
+#ifdef WIN32
+#include <win32_config.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #ifdef HAVE_GETOPT_H
@@ -34,6 +38,11 @@
 #endif
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+
+/* for the memory allocation functions */
+#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
+#include <dmalloc.h>
 #endif
 
 /* Raptor includes */
