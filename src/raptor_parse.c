@@ -1519,16 +1519,16 @@ raptor_xml_start_element_handler(void *user_data,
     }
 
     for (i = 0; i < all_atts_count; i++) {
-      raptor_ns_name* attribute;
+      raptor_ns_name* attr;
 
       /* Skip previously processed attributes */
       if(!atts[i<<1])
         continue;
 
       /* namespace-name[i] stored in named_attrs[i] */
-      attribute=raptor_make_namespaced_name(rdf_parser, atts[i<<1],
+      attr=raptor_make_namespaced_name(rdf_parser, atts[i<<1],
                                             atts[(i<<1)+1], 0);
-      if(!attribute) { /* failed - tidy up and return */
+      if(!attr) { /* failed - tidy up and return */
         int j;
 
         for (j=0; j < i; j++)
@@ -1556,64 +1556,64 @@ raptor_xml_start_element_handler(void *user_data,
         /* Save pointers to some RDF M&S attributes */
 
         /* If RDF M&S namespace-prefixed attributes */
-        if(attribute->nspace && attribute->nspace->is_rdf_ms) {
-          const char *attr_name=attribute->local_name;
+        if(attr->nspace && attr->nspace->is_rdf_ms) {
+          const char *attr_name=attr->local_name;
           int j;
 
           for(j=0; j<= RDF_ATTR_LAST; j++)
             if(!strcmp(attr_name, rdf_attr_info[j].name)) {
-              element->rdf_attr[j]=attribute->value;
+              element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
 #if RAPTOR_DEBUG
               LIBRDF_DEBUG3(raptor_xml_start_element_handler,
                             "Found RDF M&S attribute %s URI %s\n",
-                            attr_name, attribute->value);
+                            attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from ns_name structure */
-              attribute->value=NULL;
-              raptor_free_ns_name(attribute);
-              attribute=NULL;
+              attr->value=NULL;
+              raptor_free_ns_name(attr);
+              attr=NULL;
             }
         } /* end if RDF M&S namespaced-prefixed attributes */
 
-        if(!attribute)
+        if(!attr)
           continue;
 
         /* If non namespace-prefixed RDF M&S attributes found on an element */
         if(rdf_parser->feature_allow_non_ns_attributes &&
-           !attribute->nspace) {
-          const char *attr_name=attribute->local_name;
+           !attr->nspace) {
+          const char *attr_name=attr->local_name;
           int j;
 
           for(j=0; j<= RDF_ATTR_LAST; j++)
             if(!strcmp(attr_name, rdf_attr_info[j].name)) {
-              element->rdf_attr[j]=attribute->value;
+              element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
 #if RAPTOR_DEBUG
               LIBRDF_DEBUG3(raptor_xml_start_element_handler,
                             "Found non-namespaced RDF M&S attribute %s URI %s\n",
-                            attr_name, attribute->value);
+                            attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from ns_name structure */
-              attribute->value=NULL;
-              raptor_free_ns_name(attribute);
-              attribute=NULL;
+              attr->value=NULL;
+              raptor_free_ns_name(attr);
+              attr=NULL;
               break;
             }
         } /* end if non-namespace prefixed RDF M&S attributes */
 
-        if(!attribute)
+        if(!attr)
           continue;
 
-        if(!attribute->nspace)
+        if(!attr->nspace)
           non_nspaced_count++;
 
       } /* end if leave literal XML alone */
 
-      if(attribute)
-        named_attrs[offset++]=attribute;
+      if(attr)
+        named_attrs[offset++]=attr;
     }
 
     /* set actual count from attributes that haven't been skipped */
@@ -3340,20 +3340,20 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
   /* Process attributes as propAttr* = * (propName="string")*
    */
   for(i=0; i<attributes_element->attribute_count; i++) {
-    raptor_ns_name* attribute=attributes_element->attributes[i];
-    const char *name=attribute->local_name;
-    const char *value = attribute->value;
+    raptor_ns_name* attr=attributes_element->attributes[i];
+    const char *name=attr->local_name;
+    const char *value = attr->value;
     
     /* Generate the property statement using one of these properties:
      * 1) rdf:li -> rdf:_n
      * 2) rdf:_n
      * 3) the URI from the attribute
      */
-    if(attribute->nspace && attribute->nspace->is_rdf_ms) {
+    if(attr->nspace && attr->nspace->is_rdf_ms) {
       /* is rdf: namespace */
       int ordinal=0;
         
-      if(IS_RDF_MS_CONCEPT(attribute->local_name, attribute->uri, li)) {
+      if(IS_RDF_MS_CONCEPT(attr->local_name, attr->uri, li)) {
         /* recognise rdf:li attribute */
         ordinal=++resource_element->last_ordinal;
       } else if(*name == '_') {
@@ -3365,7 +3365,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         }
         
         if(ordinal < 1) {
-          raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attribute->local_name, name);
+          raptor_parser_warning(rdf_parser, "Illegal ordinal value %d in attribute %s seen on container element %s.", ordinal, attr->local_name, name);
         }
       }
 
@@ -3396,7 +3396,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                                 resource_element->subject.type,
                                 resource_element->subject.uri_source,
 
-                                attribute->uri,
+                                attr->uri,
                                 NULL,
                                 RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                 RAPTOR_URI_SOURCE_ATTRIBUTE,
@@ -3567,7 +3567,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         if(element->rdf_attr[RDF_ATTR_ID] &&
            element->rdf_attr[RDF_ATTR_about]) {
-          raptor_parser_warning(rdf_parser, "Found rdf:ID and rdf:about attributes on element %s - expected only one.", el_name);
+          raptor_parser_warning(rdf_parser, "Found rdf:ID and rdf:about attrs on element %s - expected only one.", el_name);
         }
 
         if(element->rdf_attr[RDF_ATTR_ID]) {
