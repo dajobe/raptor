@@ -3277,8 +3277,6 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * haved fallen through and not chosen other productions -
          * 6.3, 6.25, 6.26, 6.27.
          * and handling rdf:Seq, rdf:Bag, rdf:Alt or other container
-         * and this can be determined from the value of 
-         * rdf_parser->typed_node_block_type
          *
          * Expect here from production 6.13 (typedNode)
          * <typeName idAboutAttr? bagIdAttr? propAttr* />
