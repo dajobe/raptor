@@ -11,6 +11,11 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>Ensure there is support to allow
+<a href="http://www.redland.opensource.ac.uk/rasqal/">Rasqal</a>
+to register a parser outside raptor that provides RDF query results as
+triples.  Alternatively, provide a skeleton wrapper parser that
+allows the same by delegating all triple generation to callbacks. (FEATURE)</li>
 <li>Add a guessing parser that sends an Accept: HTTP header for all
 supported mime types and uses the returned headers to select a
 parser. (FEATURE)</li>
