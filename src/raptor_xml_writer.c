@@ -50,6 +50,8 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
+#ifndef STANDALONE
+
 
 /* Define this for far too much output */
 #undef RAPTOR_DEBUG_CDATA
@@ -72,17 +74,18 @@ struct raptor_xml_writer_s {
 
   raptor_sax2_element* current_element;
 
-  raptor_stringbuffer *sb;
+  /* outputting to this iostream */
+  raptor_iostream *iostr;
 };
 
 
 raptor_xml_writer*
 raptor_new_xml_writer(raptor_uri_handler *uri_handler,
                       void *uri_context,
+                      raptor_iostream* iostr,
                       raptor_simple_message_handler error_handler,
                       void *error_data,
-                      int canonicalize)
-{
+                      int canonicalize) {
   raptor_xml_writer* xml_writer;
   
   xml_writer=(raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1, sizeof(raptor_xml_writer)+1);
@@ -103,7 +106,7 @@ raptor_new_xml_writer(raptor_uri_handler *uri_handler,
                          error_handler, error_data,
                          0);
 
-  xml_writer->sb=raptor_new_stringbuffer();
+  xml_writer->iostr=iostr;
   
   return xml_writer;
 }
@@ -118,8 +121,6 @@ void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
   raptor_namespaces_clear(&xml_writer->content_cdata_namespaces);
-  if(xml_writer->sb)
-    raptor_free_stringbuffer(xml_writer->sb);
 
   RAPTOR_FREE(raptor_xml_writer, xml_writer);
 }
@@ -129,19 +130,13 @@ void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                 raptor_sax2_element *element)
 {
-  size_t fmt_length;
-  unsigned char *fmt_buffer=raptor_format_sax2_element(element, 
-                                              &xml_writer->content_cdata_namespaces,
-                                              &fmt_length, 0, 
-                                              xml_writer->error_handler,
-                                              xml_writer->error_data,
-                                              xml_writer->depth);
-  if(fmt_buffer && fmt_length) {
-    raptor_stringbuffer_append_counted_string(xml_writer->sb, fmt_buffer, fmt_length, 0);
-#ifdef RAPTOR_DEBUG_CDATA
-    RAPTOR_DEBUG2("content cdata appended, now %d bytes\n", (int)raptor_stringbuffer_length(xml_writer->sb));
-#endif
-  }
+  raptor_iostream_write_sax2_element(xml_writer->iostr,
+                                     element, 
+                                     &xml_writer->content_cdata_namespaces,
+                                     0,
+                                     xml_writer->error_handler,
+                                     xml_writer->error_data,
+                                     xml_writer->depth);
 
   xml_writer->depth++;
 
@@ -155,26 +150,18 @@ void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
                               raptor_sax2_element* element)
 {
-  size_t fmt_length;
-  unsigned char *fmt_buffer;
-
-  fmt_buffer=raptor_format_sax2_element(element, 
-                                        &xml_writer->content_cdata_namespaces,
-                                        &fmt_length, 1,
-                                        xml_writer->error_handler,
-                                        xml_writer->error_data,
-                                        xml_writer->depth);
-
-  if(fmt_buffer && fmt_length)
-    raptor_stringbuffer_append_counted_string(xml_writer->sb, fmt_buffer, fmt_length, 0);
+  raptor_iostream_write_sax2_element(xml_writer->iostr, 
+                                     element, 
+                                     &xml_writer->content_cdata_namespaces,
+                                     1,
+                                     xml_writer->error_handler,
+                                     xml_writer->error_data,
+                                     xml_writer->depth);
+  
   xml_writer->depth--;
 
   raptor_namespaces_end_for_depth(&xml_writer->content_cdata_namespaces, 
                                   xml_writer->depth);
-
-#ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG2("content cdata now %d bytes\n", (int)raptor_stringbuffer_length(xml_writer->sb));
-#endif
 
   if(xml_writer->current_element)
     xml_writer->current_element = xml_writer->current_element->parent;
@@ -185,30 +172,22 @@ void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                         const unsigned char *s, unsigned int len)
 {
-  unsigned char *buffer;
-  int buffer_len=raptor_xml_escape_string(s, len,
-                                          NULL, 0, '\0',
-                                          xml_writer->error_handler,
-                                          xml_writer->error_data);
+  raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
+                                           s, len,
+                                           '\0',
+                                           xml_writer->error_handler,
+                                           xml_writer->error_data);
 
-  if(buffer_len < 0)
-    return;
-  
-  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, buffer_len+1);
-  if(!buffer)
-    return;
+  if(xml_writer->current_element)
+    xml_writer->current_element->content_cdata_seen=1;
+}
 
-  if(buffer_len != (int)len)
-    raptor_xml_escape_string(s, len,
-                             buffer, buffer_len, '\0',
-                             xml_writer->error_handler,
-                             xml_writer->error_data);
-  else {
-    strncpy((char*)buffer, (const char*)s, buffer_len);
-    buffer[buffer_len]='\0';
-  }
 
-  raptor_stringbuffer_append_counted_string(xml_writer->sb, buffer, buffer_len, 0);
+static void
+raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
+                      const unsigned char *s, unsigned int len)
+{
+  raptor_iostream_write_counted_string(xml_writer->iostr, s, len);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen=1;
@@ -217,26 +196,126 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 
 void
 raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
-                        const unsigned char *s, unsigned int len)
+                          const unsigned char *s, unsigned int len)
 {
+  raptor_xml_writer_raw(xml_writer, "<!-- ", 5);
   raptor_xml_writer_cdata(xml_writer, s, len);
+  raptor_xml_writer_raw(xml_writer, " -->", 4);
 }
 
 
-unsigned char*
-raptor_xml_writer_as_string(raptor_xml_writer* xml_writer,
-                            unsigned int *length_p)
-{
-  if(length_p)
-    *length_p=raptor_stringbuffer_length(xml_writer->sb);
+#endif
 
-  return raptor_stringbuffer_as_string(xml_writer->sb);
-}
 
+
+#ifdef STANDALONE
+
+/* one more prototype */
+int main(int argc, char *argv[]);
+
+
+const char *base_uri_string="http://example.org/base#";
+
+#define OUT_BYTES_COUNT 79
 
 int
-raptor_xml_writer_write_to_iostream(raptor_xml_writer* xml_writer,
-                                    raptor_iostream *iostr)
+main(int argc, char *argv[]) 
 {
-  return raptor_iostream_write_stringbuffer(iostr, xml_writer->sb);
+  const char *program=raptor_basename(argv[0]);
+  raptor_uri_handler *uri_handler;
+  void *uri_context;
+  raptor_iostream *iostr;
+  raptor_namespace_stack *nstack;
+  raptor_xml_writer* xml_writer;
+  raptor_uri* base_uri;
+  raptor_qname* el_name;
+  raptor_sax2_element *element;
+  size_t count;
+
+  /* for raptor_new_iostream_to_string */
+  char *string=NULL;
+  size_t string_len=0;
+
+  raptor_init();
+  
+  iostr=raptor_new_iostream_to_string((void**)&string, &string_len, NULL);
+  if(!iostr) {
+    fprintf(stderr, "%s: Failed to create iostream to string\n", program);
+    exit(1);
+  }
+
+  raptor_uri_get_handler(&uri_handler, &uri_context);
+
+  xml_writer=raptor_new_xml_writer(uri_handler, uri_context,
+                                   iostr,
+                                   NULL, NULL, /* errors */
+                                   1);
+  if(!xml_writer) {
+    fprintf(stderr, "%s: Failed to create xml_writer to iostream\n", program);
+    exit(1);
+  }
+
+  nstack=raptor_new_namespaces(uri_handler, uri_context,
+                               NULL, NULL, /* errors */
+                               1);
+
+  base_uri=raptor_new_uri(base_uri_string);
+
+  raptor_namespaces_start_namespace_full(nstack,
+                                         "foo",
+                                         "http://example.org/foo-ns#",
+                                         0);
+
+
+  el_name=raptor_new_qname(nstack, "foo:bar", 
+                           NULL, /* no attribute value - element */
+                           NULL, NULL); /* errors */
+  element=raptor_new_sax2_element(el_name,
+                                  NULL, /* language */
+                                  base_uri);
+
+  raptor_xml_writer_start_element(xml_writer, element);
+  raptor_xml_writer_cdata(xml_writer, "hello", 5);
+  raptor_xml_writer_comment(xml_writer, "comment", 7);
+  raptor_xml_writer_end_element(xml_writer, element);
+
+  raptor_free_xml_writer(xml_writer);
+
+  raptor_free_sax2_element(element);
+  raptor_free_namespaces(nstack);
+  
+  count=raptor_iostream_get_bytes_written_count(iostr);
+  if(count != OUT_BYTES_COUNT) {
+    fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
+            (int)count, (int)OUT_BYTES_COUNT);
+    return 1;
+  }
+  
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "%s: Freeing iostream\n", program);
+#endif
+  raptor_free_iostream(iostr);
+
+  if(!string) {
+    fprintf(stderr, "%s: I/O stream failed to create a string\n", program);
+    return 1;
+  }
+  string_len=strlen(string);
+  if(string_len != count) {
+    fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
+    return 1;
+  }
+
+  fprintf(stderr, "%s: Made string '%s' (%d bytes)\n", program, 
+          string, (int)string_len);
+
+  raptor_free_memory(string);
+  
+
+  raptor_finish();
+  
+  /* keep gcc -Wall happy */
+  return(0);
 }
+
+#endif
