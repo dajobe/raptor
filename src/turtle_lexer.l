@@ -105,10 +105,8 @@
 #include <turtle_common.h>
 
 
-static unsigned char *copy_token(unsigned char *text, size_t len);
-unsigned char *copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
-
-char *filename=NULL;
+static unsigned char *turtle_copy_token(unsigned char *text, size_t len);
+static unsigned char *turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
 
 #ifdef RAPTOR_DEBUG
 const char * turtle_token_print(int token, YYSTYPE *lval);
@@ -159,13 +157,13 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 ")"       { return RIGHT_ROUND; }
 
 
-'([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
+'([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-_:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext+2, yyleng-2);
+_:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
 [A-Za-z][-A-Za-z0-9_]*:[A-Za-z_][-A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
@@ -184,7 +182,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>(:|[A-Za-z][-A-Za-z0-9_]*:)	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
+<PREF>(:|[A-Za-z][-A-Za-z0-9_]*:)	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>.|\r|\n	{ BEGIN(INITIAL);
@@ -203,7 +201,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*
               }
               return URI_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*)yytext, yyleng);
+[A-Za-z][-A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                           return IDENTIFIER; }
 
 \#              { while((c=INPUT_FN(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
@@ -229,8 +227,8 @@ yywrap (yyscan_t yyscanner) {
 }
 
 
-unsigned char *
-copy_token(unsigned char *text, size_t len) {
+static unsigned char *
+turtle_copy_token(unsigned char *text, size_t len) {
   unsigned char *s;
   if(!len)
     len=strlen((const char*)text);
@@ -242,8 +240,8 @@ copy_token(unsigned char *text, size_t len) {
 }
 
 
-unsigned char *
-copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim) {
+static unsigned char *
+turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim) {
   size_t i;
   unsigned char *s, *d;
   unsigned char *string=(unsigned char *)malloc(len+1);
@@ -412,6 +410,7 @@ main(int argc, char *argv[])
   FILE *fh;
   YYSTYPE lval;
   const char *uri_string;
+  char *filename=NULL;
   
   raptor_init();
   
