@@ -162,6 +162,9 @@ RAPTOR_API void raptor_print_ntriples_string(FILE *stream, const char *string, c
 
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
+RAPTOR_API char *raptor_uri_filename_to_uri_string(const char *filename);
+RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string);
+
 
 #ifndef RAPTOR_IN_REDLAND
 
