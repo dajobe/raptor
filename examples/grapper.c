@@ -230,7 +230,6 @@ grapper_model_set_ntriples (grapper_state *state, int ntriples) {
   }
   
   grapper_view_ntriples_changed(state);
-  grapper_model_parse(state);
 }
 
 static void
@@ -293,9 +292,16 @@ void grapper_model_statements_handler(void *data,
   grapper_state* state=(grapper_state*)data;
   char* nodes[3];
   
-  nodes[0]=(char*)statement->subject;
-  nodes[1]=(char*)statement->predicate;
-  nodes[2]=(char*)statement->object;
+  nodes[0]=raptor_statement_part_as_string(statement->subject,
+                                           statement->subject_type,
+                                           NULL, NULL);
+  nodes[1]=raptor_statement_part_as_string(statement->predicate,
+                                           statement->predicate_type,
+                                           NULL, NULL);
+  nodes[2]=raptor_statement_part_as_string(statement->object,
+                                           statement->object_type,
+                                           statement->object_literal_datatype,
+                                           statement->object_literal_language);
   grapper_model_add_triple(state, nodes);
   
 }
@@ -729,6 +735,11 @@ main(int argc, char *argv[])
 
   /* finally make it all visible */
   gtk_widget_show (window);
+
+  if(argc>1) {
+    grapper_model_set_url(&state, argv[1]);
+    grapper_model_parse(&state);
+  }
 
   /* main loop, exited when gtk_main_quit() is called */
   gtk_main ();
