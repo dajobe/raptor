@@ -169,7 +169,7 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext+2, yyleng-2);
 .         	{ if (*yytext == EOF)
                     return EOF;
 
-                    n3_syntax_error(*yytext);
+                  n3_syntax_error("Syntax error at '%c'", *yytext);
                   return ERROR;
 		}
 
@@ -200,15 +200,40 @@ unsigned char *copy_string_token(unsigned char *text, size_t len, int delim) {
   unsigned char *string;
   string=(unsigned char *)malloc(len+1);
   for(s=text, d=string, i=0; i<len; s++, i++) {
-    if(*s == '\\' ) {
+    unsigned char c=*s;
+
+    if(c == '\\' ) {
       s++; i++;
-      if(*s == '\n' || *s == '\r' || *s == '\\' || *s == delim)
-        *d++=*s;
-      else {
+      c=*s;
+      if(c == 'n' || c == 'r' || c == 't' || c == '\\' || c == delim)
+        *d++=c;
+      else if (c == 'u' || c == 'U') {
+        int ulen=(c == 'u') ? 4 : 8;
+        unsigned long unichar=0;
+        
+        s++; i++;
+        if(i+ulen > len) {
+          n3_syntax_error("\\%c over end of line", c);
+          return 0;
+        }
+        
+        sscanf(s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+        s+= ulen-1;
+        i+= ulen-1;
+        
+        if(unichar < 0 || unichar > 0x10ffff) {
+          n3_syntax_error("Illegal Unicode character with code point #x%lX.", unichar);
+          break;
+        }
+          
+        d+=raptor_unicode_char_to_utf8(unichar, d);
+
+      } else {
         /* don't handle \x where x isn't one of: \n \r \\ (delim) */
+        n3_syntax_error("Illegal string escape \\%c in \"%s\"", c, text);
       }
     } else
-      *d++=*s;
+      *d++=c;
   }
   *d='\0';
   return string;
@@ -295,9 +320,17 @@ n3_token_print(int token)
 #ifdef STANDALONE
 
 int
-n3_syntax_error(const char c)
+n3_syntax_error(const char *message, ...)
 {
-  printf("%d: Syntax error at '%c'\n", lineno, c);
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  vfprintf(stderr, message, arguments);
+
+  va_end(arguments);
+
+  fputc('\n', stderr);
   return 0;
 }
 
