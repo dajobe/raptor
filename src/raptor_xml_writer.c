@@ -51,7 +51,8 @@
 #include "raptor_internal.h"
 
 
-#define RAPTOR_DEBUG_CDATA 0
+/* Define this for far too much output */
+#undef RAPTOR_DEBUG_CDATA
 
 
 struct raptor_xml_writer_s {
