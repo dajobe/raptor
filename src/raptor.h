@@ -395,6 +395,7 @@ RAPTOR_API raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack
 
 /* raptor_namespace_stack - stack of XML namespaces */
 RAPTOR_API raptor_namespace_stack* raptor_new_namespaces(raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
+
 RAPTOR_API void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
 RAPTOR_API void raptor_namespaces_clear(raptor_namespace_stack *nstack);
 RAPTOR_API void raptor_free_namespaces(raptor_namespace_stack *nstack);
@@ -442,6 +443,7 @@ RAPTOR_API void raptor_sequence_print_string(char *data, FILE *fh);
 RAPTOR_API void raptor_sequence_print_uri(char *data, FILE *fh);
 RAPTOR_API void raptor_sequence_set_print_handler(raptor_sequence *seq, raptor_sequence_print_handler *print_handler);
 RAPTOR_API void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
+RAPTOR_API int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
 
 /* raptor_utf8.c */
 RAPTOR_API int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
