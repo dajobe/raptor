@@ -739,9 +739,16 @@ static raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string) 
 {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
-  raptor_uri* uri;
+  raptor_uri* uri=NULL;
   raptor_qname *name;
 
+  if(!qname_string) {
+    raptor_namespace *ns=raptor_namespaces_get_default_namespace(&n3_parser->namespaces);
+    if(ns && (uri=raptor_namespace_get_uri(ns)))
+      uri=raptor_uri_copy(uri);
+    return uri;
+  }
+  
   if(*qname_string == ':')
     qname_string++;
   else {
