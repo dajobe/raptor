@@ -1725,7 +1725,7 @@ raptor_start_namespace_decl_handler(void *user_data,
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
 #ifdef RAPTOR_DEBUG
-  fprintf(rdf_parser->locator, "saw namespace %s URI %s\n", prefix, uri);
+  fprintf(stderr, "saw namespace %s URI %s\n", prefix, uri);
 #endif
 }
 
@@ -1736,7 +1736,7 @@ raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix)
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
 #ifdef RAPTOR_DEBUG
-  fprintf(rdf_parser->locator, "saw end namespace prefix %s\n", prefix);
+  fprintf(stderr, "saw end namespace prefix %s\n", prefix);
 #endif
 }
 #endif
