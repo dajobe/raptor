@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-07-21"
+.TH libraptor 3 "2004-08-10"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -166,6 +166,7 @@ The current defined features are:
   \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fR  Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fR       Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NON_NFC_FATAL\fR            Boolean (non 0 true)
+  \fbRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
 If the \fIscanning\fR
 feature is true (default false), then the RDF/XML parser will look for embedded
 rdf:RDF elements inside the XML content, and not require that the
@@ -205,6 +206,10 @@ such as from xml:lang will be normalized to lowercase.
 If the \fInon_nfc_fatal\fR
 feature is true (default false) then illegal Unicode Normal Form C
 in literals will give a fatal error, otherwise it gives a warning.
+.P
+If the \fIcheck_rdf_id\fR
+feature is true (default true) then rdf:ID values will be
+checked for duplicates and cause an error if found.
 .IP "\fBint raptor_get_feature(raptor_parser* \fIparser\fB, raptor_feature \fIfeature\fB)\fR"
 Get parser features, the allowed \fIfeature\fP values are available
 via \fBraptor_features_enumerate\fP.
@@ -710,6 +715,8 @@ should be copied if needed.
 .IP "\fBsize_t raptor_stringbuffer_length(raptor_stringbuffer* \fIstringbuffer\fP)\fR"
 Return the length of the stringbuffer.
 .SH API CHANGES
+.SS 1.3.3
+Added feature check_rdf_id (see raptor_set_feature documentation).
 .SS 1.3.2
 Added \fBraptor_alloc_memory\fR to allocate memory inside raptor.
 .LP
