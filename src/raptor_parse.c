@@ -746,7 +746,7 @@ void
 raptor_parser_error_varargs(raptor_parser* parser, const char *message, 
                             va_list arguments)
 {
-  if(parser->error_handler) {
+  if(parser && parser->error_handler) {
     char *buffer=raptor_vsnprintf(message, arguments);
     size_t length;
     if(!buffer) {
@@ -762,7 +762,8 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
     return;
   }
 
-  raptor_print_locator(stderr, &parser->locator);
+  if(parser)
+    raptor_print_locator(stderr, &parser->locator);
   fprintf(stderr, " raptor error - ");
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
