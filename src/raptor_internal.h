@@ -139,7 +139,6 @@ typedef struct raptor_namespace_s raptor_namespace;
 typedef struct raptor_set_s raptor_set;
 
 
-
 /* Raptor Namespace Stack node */
 typedef struct {
   raptor_namespace* top;
@@ -498,6 +497,79 @@ int raptor_set_add(raptor_set* set, char *item, size_t item_len);
 void raptor_set_stats_print(raptor_set* set, FILE *stream);
 #endif
 
+/* raptor_sax2.c */
+typedef struct raptor_sax2_element_s raptor_sax2_element;
+typedef struct raptor_sax2_s raptor_sax2;
+/*
+ * SAX2 elements/attributes on stack 
+ */
+struct raptor_sax2_element_s {
+  /* NULL at bottom of stack */
+  struct raptor_sax2_element_s *parent;
+  raptor_qname *name;
+  raptor_qname **attributes;
+  int attribute_count;
+
+  /* value of xml:lang attribute on this element or NULL */
+  const unsigned char *xml_language;
+
+  /* URI of xml:base attribute value on this element or NULL */
+  raptor_uri *base_uri;
+
+  /* CDATA content of element and checks for mixed content */
+  char *content_cdata;
+  unsigned int content_cdata_length;
+  /* how many cdata blocks seen */
+  unsigned int content_cdata_seen;
+  /* all cdata so far is whitespace */
+  unsigned int content_cdata_all_whitespace;
+  /* how many contained elements seen */
+  unsigned int content_element_seen;
+};
+
+
+struct raptor_sax2_s {
+#ifdef RAPTOR_XML_EXPAT
+  XML_Parser xp;
+#ifdef EXPAT_UTF8_BOM_CRASH
+  int tokens_count; /* used to see if trying to get location info is safe */
+#endif
+#endif
+#ifdef RAPTOR_XML_LIBXML
+  /* structure holding sax event handlers */
+  xmlSAXHandler sax;
+  /* parser context */
+  xmlParserCtxtPtr xc;
+  /* pointer to SAX document locator */
+  xmlSAXLocatorPtr loc;
+
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
+  /* for xml entity resolution */
+  raptor_xml_entity* entities;
+#endif
+
+#endif  
+
+  /* element depth */
+  int depth;
+
+  /* stack of elements - elements add after current_element */
+  raptor_sax2_element *root_element;
+  raptor_sax2_element *current_element;
+
+#ifdef RAPTOR_XML_LIBXML
+  /* flag for some libxml eversions*/
+  int first_read;
+#endif
+};
+
+raptor_sax2_element* raptor_sax2_element_pop(raptor_sax2 *sax2);
+void raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element);
+void raptor_free_sax2_element(raptor_sax2_element *element);
+#ifdef RAPTOR_DEBUG
+void raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream);
+#endif
+char *raptor_format_sax2_element(raptor_sax2_element *element, int *length_p, int is_end, raptor_message_handler error_handler, void *error_data);
 
 /* end of RAPTOR_INTERNAL */
 #endif
