@@ -392,9 +392,11 @@ typedef enum {
   /* parseType Collection - all content preserved
    * Parsing of this determined by RDF/XML (Revised) closed collection rules
    * <propElement rdf:parseType="Collection">...</propElement>
-   * Also handles "daml:collection"
    */
   RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION,
+
+  /* Like above but handles "daml:collection" */
+  RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION,
 
   /* dummy for use in strings below */
   RAPTOR_ELEMENT_CONTENT_TYPE_LAST,
@@ -640,6 +642,11 @@ struct raptor_parser_s {
 #define RAPTOR_RDF_Bag_URI LIBRDF_MS_Bag_URI
 #define RAPTOR_RDF_Alt_URI LIBRDF_MS_Alt_URI
 
+#define RAPTOR_RDF_List_URI LIBRDF_MS_List_URI
+#define RAPTOR_RDF_first_URI LIBRDF_MS_First_URI
+#define RAPTOR_RDF_rest_URI LIBRDF_MS_Rest_URI
+#define RAPTOR_RDF_nil_URI LIBRDF_MS_nil_URI
+
 #define RAPTOR_DAML_LIST_URI(rdf_parser) rdf_parser->raptor_daml_List_uri
 #define RAPTOR_DAML_FIRST_URI(rdf_parser) rdf_parser->raptor_daml_first_uri
 #define RAPTOR_DAML_REST_URI(rdf_parser) rdf_parser->raptor_daml_rest_uri
@@ -665,6 +672,11 @@ static const char * const raptor_daml_first_uri=RAPTOR_DAML_OIL_URI "first";
 static const char * const raptor_daml_rest_uri=RAPTOR_DAML_OIL_URI "rest";
 static const char * const raptor_daml_nil_uri=RAPTOR_DAML_OIL_URI "nil";
 
+static const char * const raptor_rdf_List_uri=RAPTOR_RDF_MS_URI "List";
+static const char * const raptor_rdf_first_uri=RAPTOR_RDF_MS_URI "first";
+static const char * const raptor_rdf_rest_uri=RAPTOR_RDF_MS_URI "rest";
+static const char * const raptor_rdf_nil_uri=RAPTOR_RDF_MS_URI "nil";
+
 
 #define RAPTOR_RDF_type_URI raptor_rdf_type_uri
 #define RAPTOR_RDF_value_URI raptor_rdf_value_uri
@@ -676,6 +688,11 @@ static const char * const raptor_daml_nil_uri=RAPTOR_DAML_OIL_URI "nil";
 #define RAPTOR_RDF_Seq_URI raptor_rdf_Seq_uri
 #define RAPTOR_RDF_Bag_URI raptor_rdf_Bag_uri
 #define RAPTOR_RDF_Alt_URI raptor_rdf_Alt_uri
+
+#define RAPTOR_RDF_List_URI raptor_rdf_List_uri
+#define RAPTOR_RDF_first_URI raptor_rdf_first_uri
+#define RAPTOR_RDF_rest_URI raptor_rdf_rest_uri
+#define RAPTOR_RDF_nil_URI raptor_rdf_nil_uri
 
 #define RAPTOR_DAML_LIST_URI(rdf_parser) raptor_daml_List_uri
 #define RAPTOR_DAML_FIRST_URI(rdf_parser) raptor_daml_first_uri
@@ -1542,7 +1559,8 @@ raptor_xml_start_element_handler(void *user_data,
     element->content_type=element->parent->child_content_type;
       
     if(element->parent->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE &&
-       element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION) {
+       element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
+       element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
       raptor_parser_warning(rdf_parser, "element %s found inside property element with rdf:resource, skipping.", 
                             element->name->local_name);
@@ -3157,7 +3175,8 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * Only create a bag if bagID given
          */
 
-        if(element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION && 
+        if(element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
+           element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION && 
            element->parent && 
            (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
             element->parent->state == RAPTOR_STATE_MEMBER) &&
@@ -3205,6 +3224,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
         } else if (element->parent && 
                    element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION &&
+                   element->parent->child_content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION &&
                    (element->parent->object.uri || element->parent->object.id)) {
           /* copy from parent (property element), it has a URI for us */
           raptor_copy_identifier(&element->subject, &element->parent->object);
@@ -3229,10 +3249,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           /* In a rdf:parseType="Collection" the resources are appended
            * to the list at the genid element->parent->tail_id
            */
-          if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION) {
+          if (element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION ||
+              element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
             const char * idList = raptor_generate_id(rdf_parser, 0);
             
             /* <idList> rdf:type rdf:List */
+            raptor_uri *collection_uri=(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_LIST_URI(rdf_parser) : RAPTOR_RDF_List_URI;
+
             raptor_generate_statement(rdf_parser, 
                                       NULL,
                                       idList,
@@ -3244,11 +3267,13 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                       RAPTOR_URI_SOURCE_URI,
 
-                                      RAPTOR_DAML_LIST_URI(rdf_parser),
+                                      collection_uri,
                                       NULL,
                                       RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                       RAPTOR_URI_SOURCE_URI,
                                       NULL);
+
+            collection_uri=(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_FIRST_URI(rdf_parser) : RAPTOR_RDF_first_URI;
 
             /* <idList> rdf:first <element->uri> */
             raptor_generate_statement(rdf_parser, 
@@ -3257,7 +3282,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                       RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
                                       RAPTOR_URI_SOURCE_ID,
 
-                                      RAPTOR_DAML_FIRST_URI(rdf_parser),
+                                      collection_uri,
                                       NULL,
                                       RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                       RAPTOR_URI_SOURCE_URI,
@@ -3294,6 +3319,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               element->parent->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
               element->parent->object.uri_source=RAPTOR_URI_SOURCE_ID;
             } else {
+              collection_uri=(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_REST_URI(rdf_parser) : RAPTOR_RDF_rest_URI;
               /* _:tail_id rdf:rest _:listRest */
               raptor_generate_statement(rdf_parser, 
                                         NULL,
@@ -3301,7 +3327,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                         RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
                                         RAPTOR_URI_SOURCE_ID,
 
-                                        RAPTOR_DAML_REST_URI(rdf_parser),
+                                        collection_uri,
                                         NULL,
                                         RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                         RAPTOR_URI_SOURCE_URI,
@@ -3481,13 +3507,18 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             element->subject.id=raptor_generate_id(rdf_parser, 0);
             element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
             element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
+          } else if(!strcmp(parse_type, "Collection")) {
+            /* An rdf:parseType="Collection" appears as a single node */
+            element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
+            element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
+            element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION;
           } else {
             if(rdf_parser->feature_allow_other_parseTypes) {
               if(!raptor_strcasecmp(parse_type, "daml:collection")) {
                 /* A DAML collection appears as a single node */
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
                 element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
-                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION;
+                element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
               } else {
                 element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
                 element->child_state=RAPTOR_STATE_PARSETYPE_OTHER;
@@ -3788,14 +3819,17 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
         /* Handle terminating a rdf:parseType="Collection" list */
-        if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION) {
+        if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION ||
+           element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
+          raptor_uri* nil_uri=(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_NIL_URI(rdf_parser) : RAPTOR_RDF_nil_URI;
           if (!element->tail_id) {
             /* If No List: set object of statement to rdf:nil */
-            element->object.uri= raptor_copy_uri(RAPTOR_DAML_NIL_URI(rdf_parser));
+            element->object.uri= raptor_copy_uri(nil_uri);
             element->object.id= NULL;
             element->object.type= RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->object.uri_source= RAPTOR_URI_SOURCE_URI;
           } else {
+            raptor_uri* rest_uri=(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_REST_URI(rdf_parser) : RAPTOR_RDF_rest_URI;
             /* terminate the list */
             raptor_generate_statement(rdf_parser, 
                                       NULL,
@@ -3803,12 +3837,12 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                       RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
                                       RAPTOR_URI_SOURCE_ID,
                                       
-                                      RAPTOR_DAML_REST_URI(rdf_parser),
+                                      rest_uri,
                                       NULL,
                                       RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                       RAPTOR_URI_SOURCE_URI,
                                       
-                                      RAPTOR_DAML_NIL_URI(rdf_parser),
+                                      nil_uri,
                                       NULL,
                                       RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                       RAPTOR_URI_SOURCE_URI,
@@ -3974,6 +4008,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           break;
 
           case RAPTOR_ELEMENT_CONTENT_TYPE_COLLECTION:
+          case RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION:
             abort();
             
             break;
