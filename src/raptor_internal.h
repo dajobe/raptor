@@ -39,7 +39,6 @@ extern "C" {
 #define RAPTOR_DEBUG 1
 #endif
 
-#define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
 #define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
 #else
 /* else standalone */
@@ -48,7 +47,6 @@ extern "C" {
 #define LIBRDF_CALLOC(type, size, count) calloc(size, count)
 #define LIBRDF_FREE(type, ptr)   free((void*)ptr)
 
-#define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
 #define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
 
 #ifdef RAPTOR_DEBUG
