@@ -72,8 +72,10 @@ n3_parser_lex(void) {
 
 static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object, const char *object_literal_language, raptor_uri *object_literal_datatype);
 static void raptor_free_triple(raptor_triple *triple);
-static void raptor_print_triple(raptor_triple *data, FILE *fh);
 
+#ifdef RAPTOR_DEBUG
+static void raptor_print_triple(raptor_triple *data, FILE *fh);
+#endif
 
 
 /* Prototypes for local functions */
@@ -208,8 +210,12 @@ objectList: object COMMA objectList
 #endif
 
   triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
+#ifdef RAPTOR_DEBUG
   $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
                          (raptor_print_handler*)raptor_print_triple);
+#else
+  $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple, NULL);
+#endif
   raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
   printf(" objectList is now ");
@@ -540,7 +546,7 @@ void raptor_free_triple(raptor_triple *t) {
     RAPTOR_FREE(cstring, t->object_literal_language);
 }
  
-
+#ifdef RAPTOR_DEBUG
 static
 void raptor_print_triple(raptor_triple *t, FILE *fh) 
 {
@@ -552,7 +558,7 @@ void raptor_print_triple(raptor_triple *t, FILE *fh)
   raptor_identifier_print(fh, t->object);
   fputc(')', fh);
 }
-
+#endif
 
 static raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string) 
