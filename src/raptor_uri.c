@@ -73,6 +73,15 @@ raptor_uri_set_handler(raptor_uri_handler *handler, void *context)
   raptor_uri_current_uri_context=context;
 }
 
+void
+raptor_uri_get_handler(raptor_uri_handler **handler, void **context) 
+{
+  if(handler)
+    *handler=raptor_uri_current_uri_handler;
+  if(context)
+    *context=raptor_uri_current_uri_context;
+}
+
 
 static raptor_uri*
 raptor_default_new_uri(void *context, const char *uri_string) 
