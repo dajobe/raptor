@@ -157,7 +157,9 @@ RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
 int raptor_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API int raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
-RAPTOR_API void raptor_parser_abort(raptor_parser* rdf_parser, const char *reason);
+RAPTOR_API int raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
+RAPTOR_API void raptor_parse_abort(raptor_parser* rdf_parser);
+RAPTOR_API RAPTOR_DEPRECATED void raptor_parser_abort(raptor_parser* rdf_parser, char *reason);
 
 /* Utility functions */
 RAPTOR_API void raptor_print_locator(FILE *stream, raptor_locator* locator);
