@@ -279,7 +279,6 @@ RAPTOR_API const char* raptor_get_mime_type(raptor_parser *rdf_parser);
 RAPTOR_API int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API int raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 RAPTOR_API int raptor_get_feature(raptor_parser *parser, raptor_feature feature);
-RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
 RAPTOR_API void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 
 /* Get serializer names */
@@ -492,6 +491,9 @@ RAPTOR_API int raptor_iostream_write_counted_string(raptor_iostream *iostr, cons
 RAPTOR_API size_t raptor_iostream_get_bytes_written_count(raptor_iostream *iostr);
 RAPTOR_API int raptor_iostream_write_decimal(raptor_iostream* iostr, int integer);
 RAPTOR_API int raptor_iostream_format_hexadecimal(raptor_iostream* iostr, unsigned int integer, int width);
+
+/* Parser and Serializer features */
+RAPTOR_API raptor_feature raptor_feature_from_uri(raptor_uri *uri);
 
 #ifdef __cplusplus
 }
