@@ -124,9 +124,9 @@ raptor_nfc_get_code_flag (unsigned long c)
   if(c < 0x10900)  {
     /* U+0 to U+108FF - from flags table (first 0x10900 entries) */
     if(c & 1)
-      return raptor_nfc_flags[c>>1] & 0xF;
+      return (raptor_nfc_code_flag)(raptor_nfc_flags[c>>1] & 0xF);
     else
-      return raptor_nfc_flags[c>>1] >>4;
+      return (raptor_nfc_code_flag)(raptor_nfc_flags[c>>1] >>4);
   } else if(c < 0x1D000)
     /* U+10900 to U+1CFFF - codes do not exist */
     return NoNo;
@@ -134,9 +134,9 @@ raptor_nfc_get_code_flag (unsigned long c)
     /* U+1D000 to U+1D7FF - from flags table (after first 0x10900) */
     c -= (0x1D000-0x10900);
     if(c & 1)
-      return raptor_nfc_flags[c>>1] & 0xF;
+      return (raptor_nfc_code_flag)(raptor_nfc_flags[c>>1] & 0xF);
     else
-      return raptor_nfc_flags[c>>1] >>4;
+      return (raptor_nfc_code_flag)(raptor_nfc_flags[c>>1] >>4);
   } else if(c < 0x20000)
     /* U+1D800 to U+1FFFF - codes do not exist */
     return NoNo;
@@ -195,7 +195,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
 {
   const unsigned char* start;
   int is_start;
-  int offset;
+  size_t offset;
   
   raptor_nfc_code_flag prev_char_flag;
   unsigned long prev_char;

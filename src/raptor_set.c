@@ -111,7 +111,7 @@ static const int raptor_id_set_initial_capacity=8;
 
 
 /* prototypes for local functions */
-static raptor_id_set_node* raptor_base_id_set_find_node(raptor_base_id_set* set, char *item, size_t item_len, unsigned long hash);
+static raptor_id_set_node* raptor_base_id_set_find_node(raptor_base_id_set* set, unsigned char *item, size_t item_len, unsigned long hash);
 static void raptor_free_id_set_node(raptor_id_set_node* node);
 static int raptor_base_id_set_expand_size(raptor_base_id_set* set);
 
@@ -159,7 +159,7 @@ static int raptor_base_id_set_expand_size(raptor_base_id_set* set);
  **/
 static raptor_id_set_node*
 raptor_base_id_set_find_node(raptor_base_id_set* base, 
-                             char *item, size_t item_len,
+                             unsigned char *item, size_t item_len,
                              unsigned long hash) 
 {
   raptor_id_set_node* node;
@@ -422,9 +422,9 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
   if(!item)
     return 1;
 
-  strcpy(item, (const char*)id);
+  strcpy((char*)item, (const char*)id);
   item[id_len]=' ';
-  strcpy(item+id_len+1, (const char*)base_uri_string); /* strcpy for end '\0' */
+  strcpy((char*)item+id_len+1, (const char*)base_uri_string); /* strcpy for end '\0' */
   
 
   ONE_AT_A_TIME_SET(hash, (unsigned char*)item, item_len);
@@ -508,7 +508,7 @@ main(int argc, char *argv[])
   
   raptor_init();
   
-  base_uri=raptor_new_uri("http://example.org/base#");
+  base_uri=raptor_new_uri((const unsigned char*)"http://example.org/base#");
 
   fprintf(stderr, "%s: Creating set\n", program);
 
@@ -524,7 +524,7 @@ main(int argc, char *argv[])
 
     fprintf(stderr, "%s: Adding set item '%s'\n", program, items[i]);
   
-    rc=raptor_id_set_add(set, base_uri, items[i], len);
+    rc=raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
 if(rc) {
       fprintf(stderr, "%s: Adding set item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
@@ -538,7 +538,7 @@ if(rc) {
 
     fprintf(stderr, "%s: Adding duplicate set item '%s'\n", program, items[i]);
 
-    rc=raptor_id_set_add(set, base_uri, items[i], len);
+    rc=raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
     if(rc <= 0) {
       fprintf(stderr, "%s: Adding duplicate set item %d '%s' succeeded, should have failed, returning error %d\n",
               program, i, items[i], rc);
