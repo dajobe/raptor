@@ -349,11 +349,56 @@ raptor_free_parser(raptor_parser* rdf_parser)
 /* Size of XML buffer to use when reading from a file */
 #define RAPTOR_READ_BUFFER_SIZE 1024
 
+
 /**
- * raptor_parse_file - Retrieve the RDF/XML content at URI
+ * raptor_parse_file_stream - Retrieve the RDF/XML content from a FILE*
  * @rdf_parser: parser
- * @uri: URI of RDF content
+ * @stream: FILE* of RDF content
+ * @filename: filename of content or NULL if it has no name
+ * @base_uri: the base URI to use
+ *
+ * After draining the stream, fclose is not called on it internally.
+ *
+ * Return value: non 0 on failure
+ **/
+int
+raptor_parse_file_stream(raptor_parser* rdf_parser,
+                         FILE *stream, const char* filename,
+                         raptor_uri *base_uri)
+{
+  /* Read buffer */
+  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE];
+  int rc=0;
+  raptor_locator *locator=&rdf_parser->locator;
+
+  if(!stream || !base_uri)
+    return 1;
+
+  locator->line= locator->column = -1;
+  locator->file= filename;
+
+  if(raptor_start_parse(rdf_parser, base_uri))
+    return 1;
+  
+  while(!feof(stream)) {
+    int len=fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, stream);
+    int is_end=(len < RAPTOR_READ_BUFFER_SIZE);
+    rc=raptor_parse_chunk(rdf_parser, buffer, len, is_end);
+    if(rc || is_end)
+      break;
+  }
+
+  return (rc != 0);
+}
+
+
+/**
+ * raptor_parse_file - Retrieve the RDF/XML content at a file URI
+ * @rdf_parser: parser
+ * @uri: URI of RDF content or NULL to read from standard input
  * @base_uri: the base URI to use (or NULL if the same)
+ *
+ * If uri is NULL (source is stdin), then the base_uri is required.
  * 
  * Return value: non 0 on failure
  **/
@@ -361,46 +406,36 @@ int
 raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
                   raptor_uri *base_uri) 
 {
-  /* Read buffer */
-  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE];
   int rc=0;
-  const char *filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
-  raptor_locator *locator=&rdf_parser->locator;
+  const char *filename=NULL;
+  FILE *fh;
 
-  if(!filename)
-    return 1;
+  if(uri) {
+    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
+    if(!filename)
+      return 1;
 
-  locator->file=filename;
-  locator->line= locator->column = -1;
-
-  if(!strcmp(filename, "-"))
-    rdf_parser->fh=stdin;
-  else {
-    rdf_parser->fh=fopen(filename, "r");
-    if(!rdf_parser->fh) {
+    fh=fopen(filename, "r");
+    if(!fh) {
       raptor_parser_error(rdf_parser, "file '%s' open failed - %s",
                           filename, strerror(errno));
-      RAPTOR_FREE(cstring, (void*)filename);
-      return 1;
+      goto cleanup;
     }
+  } else {
+    if(!base_uri)
+      return 1;
+    fh=stdin;
   }
 
-  if(raptor_start_parse(rdf_parser, base_uri)) {
+  rc=raptor_parse_file_stream(rdf_parser, fh, filename, base_uri);
+
+  cleanup:
+  if(uri) {
+    fclose(fh);
     RAPTOR_FREE(cstring, (void*)filename);
-    return 1;
-  }
-  
-  while(rdf_parser->fh && !feof(rdf_parser->fh)) {
-    int len=fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, rdf_parser->fh);
-    int is_end=(len < RAPTOR_READ_BUFFER_SIZE);
-    rc=raptor_parse_chunk(rdf_parser, buffer, len, is_end);
-    if(rc || is_end)
-      break;
   }
 
-  RAPTOR_FREE(cstring, (void*)filename);
-
-  return (rc != 0);
+  return rc;
 }
 
 
