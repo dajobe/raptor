@@ -301,11 +301,7 @@ main(int argc, char *argv[])
 
   parser_name=rdfxml ? "rdfxml" : "ntriples";
 
-#ifdef RAPTOR_IN_REDLAND
-  rdf_parser=raptor_new_parser(world, parser_name);
-#else
   rdf_parser=raptor_new_parser(parser_name);
-#endif
   if(!rdf_parser) {
     fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
             parser_name);
