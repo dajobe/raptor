@@ -11,6 +11,9 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>rdf:parseType="Literal" content with &amp;, &lt;, &gt; etc.
+in them do not get re-escaped in the encoded string.  May also
+be a problem with character entities. (BUG)</li>
 <li>Unicode character normalization checks not implemented (CONFORMANCE)</li>
 <li>XML (Exclusive) Canonicalization for XML Literals not implemented (CONFORMANCE)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
