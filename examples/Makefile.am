@@ -29,14 +29,14 @@ LIBS=@LIBS@ $(MEM_LIBS)
 AM_CPPFLAGS=-I$(top_srcdir)
 
 raptor_abort_SOURCES = raptor_abort.c
-raptor_abort_LDADD=$(top_builddir)/libraptor.la @REDLAND_LIBS@
-raptor_abort_DEPENDENCIES = $(top_builddir)/libraptor.la @REDLAND_LIBS@
+raptor_abort_LDADD=$(top_builddir)/libraptor.la
+raptor_abort_DEPENDENCIES = $(top_builddir)/libraptor.la
 
 grapper_SOURCES = grapper.c
-grapper_LDADD=$(top_builddir)/libraptor.la @REDLAND_LIBS@
+grapper_LDADD=$(top_builddir)/libraptor.la
 grapper_CFLAGS=$(shell pkg-config --cflags gtk+-2.0)
 grapper_LDFLAGS=$(shell pkg-config --libs gtk+-2.0)
-grapper_DEPENDENCIES = $(top_builddir)/libraptor.la @REDLAND_LIBS@
+grapper_DEPENDENCIES = $(top_builddir)/libraptor.la
 
 
 
