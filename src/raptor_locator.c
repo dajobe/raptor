@@ -108,7 +108,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
   else
     return -1;
 
-  if(locator->line) {
+  if(locator->line > 0) {
     bufsize += snprintf(NULL, 0, ":%d", locator->line);
     if(locator->column >= 0)
       bufsize += snprintf(NULL, 0, " column %d", locator->column);
@@ -127,7 +127,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
 
   buffer+= count;
   
-  if(locator->line) {
+  if(locator->line > 0) {
     count=sprintf(buffer, ":%d", locator->line);
     if(locator->column >= 0)
       sprintf(buffer+count, " column %d", locator->column);
