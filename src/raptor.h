@@ -169,7 +169,7 @@ typedef struct {
 typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...);
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
-typedef const unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_genid_type type);
+typedef const unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_genid_type type, const unsigned char* user_bnodeid);
 typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
 typedef void (*raptor_www_write_bytes_handler)(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata, const char *content_type);
