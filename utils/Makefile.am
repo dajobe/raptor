@@ -109,7 +109,8 @@ pkgconfig_DATA = raptor.pc
 EXTRA_DIST=ChangeLog ChangeLog.1 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
-MPL.html libraptor.html rapper.html RELEASE.html \
+libraptor.html rapper.html RELEASE.html \
+LICENSE-2.0.txt \
 raptor.rdf.in \
 raptor-config.in raptor-src-config.in \
 autogen.sh \
