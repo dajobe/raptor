@@ -1034,6 +1034,9 @@ raptor_uri_init(void)
 #ifdef STANDALONE
 
 #include <stdio.h>
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 /* one more prototype */
 int main(int argc, char *argv[]);
@@ -1104,6 +1107,11 @@ int
 main(int argc, char *argv[]) 
 {
   const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr";
+  const char* dirs[6] = { "/etc", "/bin", "/tmp", "/lib", "/var", NULL };
+  char uri_buffer[16]; /* strlen("file:///DIR/foo")+1 */  
+  int i;
+  const char *dir;
+  
   int failures=0;
   
   fprintf(stderr, "raptor_uri_resolve_uri_reference: Testing with base URI %s\n", base_uri);
@@ -1178,16 +1186,29 @@ main(int argc, char *argv[])
   failures += assert_filename_to_uri ("/path/to/file", "file:///path/to/file");
   failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
 
+#if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   /* Need to test this with a real dir (preferably not /)
-   * so go with assuming /etc exists on all unixen.  This is just a
-   * test so pretty likely to work on all development systems that
-   * are not WIN32
+   * This is just a test so pretty likely to work on all development systems
+   * that are not WIN32
    */
-  if(chdir("/etc"))
-    fprintf(stderr, "WARNING: %s: chdir(\"/etc\"/) failed - not testing relative files\n",
+
+  for(i=0; (dir=dirs[i]); i++) {
+    struct stat buf;
+    if(!lstat(dir, &buf) && S_ISDIR(buf.st_mode) && !S_ISLNK(buf.st_mode)) {
+      if(!chdir(dir))
+        break;
+    }
+  }
+  if(!dir)
+    fprintf(stderr, "WARNING: %s: Found no convenient directory - not testing relative files\n",
             argv[0]);
-  else
-    failures += assert_filename_to_uri ("foo", "file:///etc/foo");
+  else {
+    sprintf(uri_buffer, "file://%s/foo", dir);
+    fprintf(stderr, "%s: Checking relative file name 'foo' in dir %s expecting URI %s\n",
+            argv[0], dir, uri_buffer);
+    failures += assert_filename_to_uri ("foo", uri_buffer);
+  }
+#endif
  
 #endif
 
