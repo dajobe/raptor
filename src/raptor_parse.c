@@ -3548,6 +3548,18 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * Only create a bag if bagID given
          */
 
+        if(element->content_type !=RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION && 
+           element->parent && 
+           (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
+            element->parent->state == RAPTOR_STATE_MEMBER) &&
+           element->parent->content_element_seen > 1) {
+          raptor_parser_error(rdf_parser, "The enclosing property already has an object");
+          state=RAPTOR_STATE_SKIPPING;
+          element->child_state=RAPTOR_STATE_SKIPPING;
+          finished=1;
+          break;
+        }
+
         if(state == RAPTOR_STATE_TYPED_NODE || 
            state == RAPTOR_STATE_DESCRIPTION || 
            state == RAPTOR_STATE_PARSETYPE_DAML_COLLECTION) {
