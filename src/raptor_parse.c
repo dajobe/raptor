@@ -54,6 +54,7 @@ DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 #endif
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#undef HAVE_STDLIB_H
 #endif
 
 #ifndef WIN32
@@ -64,12 +65,6 @@ extern int errno;
 #include "raptor.h"
 #include "raptor_internal.h"
 
-
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#undef HAVE_STDLIB_H
-#endif
 
 /* for the memory allocation functions */
 #if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
@@ -269,7 +264,7 @@ struct raptor_ns_map_s {
   int prefix_length;
   /* URI of namespace or NULL for default */
   raptor_uri *uri;
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 #else
   /* When implementing URIs as char*, need this for efficiency */
   int uri_length;
@@ -582,7 +577,7 @@ typedef struct raptor_xml_entity_t raptor_xml_entity;
  */
 struct raptor_parser_s {
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   librdf_world *world;
 
   /* DAML collection URIs */
@@ -680,7 +675,7 @@ struct raptor_parser_s {
 
 /* static variables */
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 #define RAPTOR_RDF_type_URI LIBRDF_MS_type_URI
 #define RAPTOR_RDF_value_URI LIBRDF_MS_value_URI
 #define RAPTOR_RDF_subject_URI LIBRDF_MS_subject_URI
@@ -765,7 +760,7 @@ static void raptor_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc);
 
 
 /* Prototypes for local functions */
-#ifndef LIBRDF_INTERNAL
+#ifndef RAPTOR_IN_REDLAND
 static char * raptor_file_uri_to_filename(const char *uri);
 #endif
 static void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
@@ -837,7 +832,7 @@ raptor_start_namespace(raptor_parser *rdf_parser,
                        const char *prefix, const char *nspace, int depth)
 {
   int prefix_length=0;
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 #else
   int uri_length=0;
 #endif
@@ -854,7 +849,7 @@ raptor_start_namespace(raptor_parser *rdf_parser,
     nspace=NULL;
 
   len=sizeof(raptor_ns_map);
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 #else
   if(nspace) {
     uri_length=strlen(nspace);
@@ -874,7 +869,7 @@ raptor_start_namespace(raptor_parser *rdf_parser,
   }
 
   p=(char*)map+sizeof(raptor_ns_map);
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   map->uri=librdf_new_uri(rdf_parser->world, nspace);
   if(!map->uri) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -899,7 +894,7 @@ raptor_start_namespace(raptor_parser *rdf_parser,
 
   /* set convienience flags when there is a defined namespace URI */
   if(nspace) {
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
     if(librdf_uri_equals(map->uri, librdf_concept_ms_namespace_uri))
       map->is_rdf_ms=1;
     else if(librdf_uri_equals(map->uri, librdf_concept_schema_namespace_uri))
@@ -921,7 +916,7 @@ raptor_start_namespace(raptor_parser *rdf_parser,
 static void 
 raptor_free_namespace(raptor_parser *rdf_parser,  raptor_ns_map* nspace)
 {
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   if(nspace->uri)
     librdf_free_uri(nspace->uri);
 #endif
@@ -946,7 +941,7 @@ raptor_end_namespaces_for_depth(raptor_parser *rdf_parser)
     raptor_ns_map* ns=rdf_parser->namespaces;
     raptor_ns_map* next=ns->next;
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
     raptor_end_namespace(rdf_parser, ns->prefix, 
                          librdf_uri_as_string(ns->uri));
 #else  
@@ -1112,7 +1107,7 @@ raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
    * for this element 
    */
   if(ns_name->nspace && ns_name->nspace->uri && local_name_length) {
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
     librdf_uri* uri=librdf_new_uri_from_uri_local_name(ns_name->nspace->uri,
                                                        new_name);
     if(!uri) {
@@ -1171,7 +1166,7 @@ raptor_free_ns_name(raptor_ns_name* name)
 static int
 raptor_ns_names_equal(raptor_ns_name *name1, raptor_ns_name *name2)
 {
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   if(name1->uri && name2->uri)
     return librdf_uri_equals(name1->uri, name2->uri);
 #else
@@ -2241,7 +2236,7 @@ raptor_xml_get_entity(void *ctx, const xmlChar *name) {
 #endif
 
 
-#ifndef LIBRDF_INTERNAL
+#ifndef RAPTOR_IN_REDLAND
 /**
  * raptor_file_uri_to_filename - Convert a URI representing a file (starting file:) to a filename
  * @uri: URI of string
@@ -2367,7 +2362,7 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
  **/
 raptor_parser*
 raptor_new(
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   librdf_world *world
 #else
   void
@@ -2434,7 +2429,7 @@ raptor_new(
 
 #endif
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   rdf_parser->world=world;
 
   rdf_parser->raptor_daml_oil_uri=librdf_new_uri(world, "http://www.daml.org/2001/03/daml+oil#");
@@ -2476,7 +2471,7 @@ raptor_free(raptor_parser *rdf_parser)
     raptor_free_element(element);
   }
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   if(rdf_parser->raptor_daml_oil_uri)
     librdf_free_uri(rdf_parser->raptor_daml_oil_uri);
   if(rdf_parser->raptor_daml_List_uri)
@@ -3009,7 +3004,7 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag)
 raptor_uri*
 raptor_make_uri(raptor_uri *base_uri, const char *reference_uri_string) 
 {
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
 #else
   char *new_uri;
   int new_uri_len;
@@ -3021,7 +3016,7 @@ raptor_make_uri(raptor_uri *base_uri, const char *reference_uri_string)
                 base_uri, reference_uri);
 #endif
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   return librdf_new_uri_relative_to_base(base_uri, reference_uri_string);
 #else
   new_uri_len=strlen(base_uri)+strlen(reference_uri_string)+1;
@@ -3067,7 +3062,7 @@ raptor_make_uri_from_id(raptor_parser *rdf_parser, const char *id)
 }
 
 
-#ifndef LIBRDF_INTERNAL
+#ifndef RAPTOR_IN_REDLAND
 static raptor_uri*
 raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name) 
 {
@@ -3090,7 +3085,7 @@ raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name)
 raptor_uri*
 raptor_copy_uri(raptor_uri *uri) 
 {
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
   return librdf_new_uri_from_uri(uri);
 #else
   char *new_uri;
@@ -3372,7 +3367,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     if(!value || rdf_attr_info[i].type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
       continue;
 
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
     librdf_get_concept_by_name(rdf_parser->world, 1, rdf_attr_info[i].name,
                                &property_uri, NULL);
 #else    
@@ -3402,7 +3397,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
                               resource_element->bag.uri);
     if(!object_is_literal)
       RAPTOR_FREE_URI(object_uri);
-#ifdef LIBRDF_INTERNAL
+#ifdef RAPTOR_IN_REDLAND
     /* noop */
 #else    
     RAPTOR_FREE_URI(property_uri);
