@@ -6,13 +6,12 @@
 <body bgcolor="#ffffff" text="#000085">
 
 <h1 align="center">Rapier RDF Parser</h1>
-<h2 align="center"><a href="http://purl.org/net/dajobe/">Dave Beckett</a><br />
-<a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a><br /><a href="http://www.bristol.ac.uk/">University of Bristol</a></h2>
+<h2 align="center"><a href="http://purl.org/net/dajobe/">Dave Beckett</a><br /><a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a><br /><a href="http://www.bristol.ac.uk/">University of Bristol</a></h2>
   
 
 <h2>OVERVIEW</h2>
 
-<p>Rapier is the RDF parser for
+<p><a href="http://www.redland.opensource.ac.uk/rapier/">Rapier</a> is the RDF parser for
 <a href="http://www.redland.opensource.ac.uk/">Redland</a>
 (<b>R</b>DF <b>P</b>arser for <b>R</b>edland - R<em>a</em>P<em>ie</em>R)
 and is designed to integrate with it closely, using its concepts (mostly
@@ -23,25 +22,32 @@ use simple internal routines to perform the functions.
 
 <p>Features</p>
 <ul>
-<li>RDF/XML Parser integrating well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
-<li>Can be called from C and via Redland - Perl and Python</li>
-<li>Can extract RDF content embedded in XML</li>
+<li>An RDF/XML Parser written in C designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
+<li>Can extract RDF content embedded in XML (such as XHTML)</li>
 <li>Handles rdf:resource / resource attributes</li>
-<li>Optionally can interpret container elements as typedNode</li>
-<li>Parsing tracks the grammar productions closely - this can be followed
-when debugging.</li>
-<li>Uses expat and/or libxml XML parsers as available / required</li>
-<li>Fast</li>
+<li>Optionally can interpret container elements (only) as typedNode after
+the <a href="http://www-uk.hpl.hp.com/people/bwm/rdf/issues/containersyntax/
+">proposed interpretation</a> by Brian McBride and <a href="http://purl.org/net/dajobe/">myself</a>.</li>
+<li>Parsing tracks the formal grammar productions closely - this can
+be followed when debugging.</li>
+<li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
+<li>Has hooks for new <em>parseType</em>-s and container types</li>
+<li>Provides features to select options at run time.</li>
+<li>(Perl and Python interfaces when used via Redland)</li>
 <li>No memory leaks</li>
+<li>Fast</li>
 </ul>
 
-<p><B>DANGER</B> This is an alpha release and needs lots of testing</p>
+<p><b>WARNING</b> This is alpha quality software - the APIs will
+change, it is not feature complete and it needs lots of testing and
+conformance checking.</p>
 
 
 <h2>DOCUMENTATION</h2>
 
-<p>There is no user documentation yet; just read the
-<a href="rdfdump.c">rdfdump.c</a> source to see how to call the parser.</p>
+<p>There is no documentation at present, only the
+<a href="rdfdump.c">rdfdump.c</a>
+example program source to see how to call the parser.</p>
 
 <p>To install see the <a href="INSTALL.html">Installation document</a></p>
 
@@ -49,12 +55,13 @@ when debugging.</li>
 <h2>TODO / BUGS</h2>
 
 <ul>
-<li>URI resolving is ad-hoc</li>
-<li>Reification of statements when BagID etc. seen is not done yet</li>
-<li>parseType=literal not properly supported</li>
-<li>General parseType support not completed</li>
-<li>General container support not completed</li>
-<li>rdf:li used as a propertyElt does not work</li>
+<li>URI resolving is ad-hoc (BUG)</li>
+<li>Reification of statements (bagID etc.) implemented but not tested (TODO)</li>
+<li>parseType literal implemented, full parseType support not done (TODO)</li>
+<li>Full flexible container support not done (TODO)</li>
+<li>rdf:li used as a propertyElt does not work (BUG)</li>
+<li>aboutEach or aboutEachPrefix support not complete (TODO)</li>
+<li>need to make tracking of user IDs/generated IDs to user code (TODO)</li>
 </ul>
 
 <hr />
