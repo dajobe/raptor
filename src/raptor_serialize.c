@@ -579,13 +579,60 @@ raptor_serializer_error_varargs(raptor_serializer* serializer,
     if(buffer[length-1]=='\n')
       buffer[length-1]='\0';
     serializer->error_handler(serializer->error_user_data, 
-                          &serializer->locator, buffer);
+                              &serializer->locator, buffer);
     RAPTOR_FREE(cstring, buffer);
     return;
   }
 
   raptor_print_locator(stderr, &serializer->locator);
   fprintf(stderr, " raptor error - ");
+  vfprintf(stderr, message, arguments);
+  fputc('\n', stderr);
+}
+
+
+/*
+ * raptor_serializer_warning - Warning from a serializer - Internal
+ */
+void
+raptor_serializer_warning(raptor_serializer* serializer, const char *message, ...)
+{
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  raptor_serializer_warning_varargs(serializer, message, arguments);
+
+  va_end(arguments);
+}
+
+
+/*
+ * raptor_serializer_warning - Warning from a serializer - Internal
+ */
+void
+raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, 
+                                  va_list arguments)
+{
+
+  if(serializer->warning_handler) {
+    char *buffer=raptor_vsnprintf(message, arguments);
+    size_t length;
+    if(!buffer) {
+      fprintf(stderr, "raptor_serializer_warning_varargs: Out of memory\n");
+      return;
+    }
+    length=strlen(buffer);
+    if(buffer[length-1]=='\n')
+      buffer[length-1]='\0';
+    serializer->warning_handler(serializer->warning_user_data,
+                                &serializer->locator, buffer);
+    RAPTOR_FREE(cstring, buffer);
+    return;
+  }
+
+  raptor_print_locator(stderr, &serializer->locator);
+  fprintf(stderr, " raptor warning - ");
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
 }
@@ -607,6 +654,25 @@ raptor_serializer_set_error_handler(raptor_serializer* serializer,
 {
   serializer->error_user_data=user_data;
   serializer->error_handler=handler;
+}
+
+
+/**
+ * raptor_serializer_set_warning_handler - Set the serializer warning handling function
+ * @serializer: the serializer
+ * @user_data: user data to pass to function
+ * @handler: pointer to the function
+ * 
+ * The function will receive callbacks when the serializer fails.
+ * 
+ **/
+void
+raptor_serializer_set_warning_handler(raptor_serializer* serializer, 
+                                      void *user_data,
+                                      raptor_message_handler handler)
+{
+  serializer->warning_user_data=user_data;
+  serializer->warning_handler=handler;
 }
 
 
