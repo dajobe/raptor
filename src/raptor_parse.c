@@ -2990,8 +2990,12 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               }
 
               if(!raptor_utf8_is_nfc(buffer, length)) {
+                const char *message="Property element '%s' has XML literal content not in Unicode Normal Form C: %s";
                 raptor_update_document_locator(rdf_parser);
-                raptor_parser_error(rdf_parser, "Property element '%s' has XML literal content not in Unicode Normal Form C: %s", el_name, buffer);
+                if(rdf_parser->feature_non_nfc_fatal)
+                  raptor_parser_error(rdf_parser, message, el_name, buffer);
+                else
+                  raptor_parser_warning(rdf_parser, message, el_name, buffer);
               }
               
 
