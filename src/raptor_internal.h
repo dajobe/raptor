@@ -434,6 +434,13 @@ struct raptor_parser_factory_s {
  * Raptor serializer object
  */
 struct raptor_serializer_s {
+  /* can be filled with error location information */
+  raptor_locator locator;
+
+  void *error_user_data;
+
+  raptor_message_handler error_handler;
+
   /* non 0 if serializer had fatal error and cannot continue */
   int failed;
 
@@ -616,9 +623,13 @@ void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
 unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p);
 
 /* raptor_serializer.c */
+void raptor_init_serializer_rdfxml(void);
 void raptor_init_serializer_ntriples(void);
 void raptor_init_serializer_simple(void);
 void raptor_delete_serializer_factories(void);
+void raptor_serializer_error(raptor_serializer* serializer, const char *message, ...);
+void raptor_serializer_simple_error(void* serializer, const char *message, ...);
+void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *message,  va_list arguments);
 
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(long c);
