@@ -166,7 +166,7 @@ struct raptor_namespace_s {
   raptor_namespace_stack *nstack;
 
   /* NULL means is the default namespace */
-  const char *prefix;
+  const unsigned char *prefix;
   /* needed to safely compare prefixed-names */
   int prefix_length;
   /* URI of namespace or NULL for default */
@@ -279,7 +279,7 @@ struct raptor_parser_factory_s {
   int (*start)(raptor_parser* parser, raptor_uri *uri);
   
   /* parse a chunk of memory */
-  int (*chunk)(raptor_parser* parser, const char *buffer, size_t len, int is_end);
+  int (*chunk)(raptor_parser* parser, const unsigned char *buffer, size_t len, int is_end);
 
 };
 
@@ -290,8 +290,8 @@ struct raptor_parser_factory_s {
 
 void raptor_parser_register_factory(const char *name, void (*factory) (raptor_parser_factory*));
 
-const char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
-const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
+const unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag);
+const unsigned char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
 raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 
 
@@ -337,17 +337,17 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 /* raptor_nspace.c */
 void raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context);
 void raptor_namespaces_free(raptor_namespace_stack *nstack);
-int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const char *prefix, const char *nspace, int depth);
+int raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth);
 void raptor_namespaces_end_namespace(raptor_namespace_stack *nstack);
 void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
-raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const char *prefix, int prefix_length);
+raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
 
-raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const char *prefix, const char *ns_uri_string, int depth);
+raptor_namespace* raptor_namespace_new(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
 void raptor_namespace_free(raptor_namespace *ns);
 raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
-const char* raptor_namespace_get_prefix(const raptor_namespace *ns);
-raptor_uri* raptor_namespace_local_name_to_uri(const raptor_namespace *ns, const char *local_name);
+const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
+raptor_uri* raptor_namespace_local_name_to_uri(const raptor_namespace *ns, const unsigned char *local_name);
 
 #ifdef RAPTOR_DEBUG
 void raptor_namespace_print(FILE *stream, raptor_namespace* ns);
@@ -362,21 +362,21 @@ void raptor_namespace_print(FILE *stream, raptor_namespace* ns);
  */
 typedef struct {
   /* Name - always present */
-  const char *local_name;
+  const unsigned char *local_name;
   int local_name_length;
   /* Namespace or NULL if not in a namespace */
   const raptor_namespace *nspace;
   /* URI of namespace+local_name or NULL if not defined */
   raptor_uri *uri;
   /* optional value - used when name is an attribute */
-  const char *value;
+  const unsigned char *value;
   int value_length;
 } raptor_qname;
 
 
 
 /* raptor_qname.c */
-raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const char *name, const char *value, raptor_internal_message_handler error_handler, void *error_data);
+raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value, raptor_internal_message_handler error_handler, void *error_data);
 #ifdef RAPTOR_DEBUG
 void raptor_qname_print(FILE *stream, raptor_qname* name);
 #endif

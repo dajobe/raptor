@@ -110,8 +110,8 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
 
 int
 raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
-                                  const char *prefix, 
-                                  const char *ns_uri_string, int depth)
+                                  const unsigned char *prefix, 
+                                  const unsigned char *ns_uri_string, int depth)
 {
   raptor_namespace *ns;
 
@@ -157,7 +157,7 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
 
     RAPTOR_DEBUG3(raptor_namespaces_end_for_depth,
                   "namespace prefix %s depth %d\n",
-                  ns->prefix ? ns->prefix : "(default)", depth);
+                  ns->prefix ? (char*)ns->prefix : "(default)", depth);
 
     raptor_namespace_free(ns);
 
@@ -180,13 +180,13 @@ raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)
 
 raptor_namespace*
 raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, 
-                                 const char *prefix, int prefix_length)
+                                 const unsigned char *prefix, int prefix_length)
 {
   raptor_namespace* ns;
   
   for(ns=nstack->top; ns ; ns=ns->next)
     if(ns->prefix && prefix_length == ns->prefix_length && 
-       !strncmp(prefix, ns->prefix, prefix_length))
+       !strncmp((char*)prefix, (char*)ns->prefix, prefix_length))
       break;
   return ns;
 }
@@ -194,13 +194,13 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 
 raptor_namespace*
 raptor_namespace_new(raptor_namespace_stack *nstack,
-                     const char *prefix, 
-                     const char *ns_uri_string, int depth)
+                     const unsigned char *prefix, 
+                     const unsigned char *ns_uri_string, int depth)
 {
   int prefix_length=0;
   int len;
   raptor_namespace *ns;
-  char *p;
+  unsigned char *p;
 
   /* Convert an empty namespace string "" to a NULL pointer */
   if(ns_uri_string && !*ns_uri_string)
@@ -208,8 +208,8 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
 
   RAPTOR_DEBUG4(raptor_namespaces_start_namespace,
                 "namespace prefix %s uri %s depth %d\n",
-                prefix ? prefix : "(default)", 
-                ns_uri_string ? ns_uri_string : "(none)",
+                prefix ? (char*)prefix : "(default)", 
+                ns_uri_string ? (char*)ns_uri_string : "(none)",
                 depth);
 
   len=sizeof(raptor_namespace);
@@ -235,7 +235,7 @@ raptor_namespace_new(raptor_namespace_stack *nstack,
     ns->prefix=strcpy((char*)p, prefix);
     ns->prefix_length=prefix_length;
 
-    if(!strcmp(ns->prefix, "xml"))
+    if(!strcmp((char*)ns->prefix, "xml"))
       ns->is_xml=1;
   }
   ns->depth=depth;
@@ -271,16 +271,16 @@ raptor_namespace_get_uri(const raptor_namespace *ns)
 }
 
 
-const char*
+const unsigned char*
 raptor_namespace_get_prefix(const raptor_namespace *ns)
 {
-  return (const char*)ns->prefix;
+  return (const unsigned char*)ns->prefix;
 }
 
 
 raptor_uri*
 raptor_namespace_local_name_to_uri(const raptor_namespace *ns,
-                                   const char *local_name)
+                                   const unsigned char *local_name)
 {
   return ns->nstack->uri_handler->new_uri_from_uri_local_name(ns->nstack->uri_context, ns->uri, local_name);
 }

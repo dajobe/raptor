@@ -99,15 +99,16 @@
  * Return value: 
  **/
 raptor_qname*
-raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
-                 const char *value,
+raptor_new_qname(raptor_namespace_stack *nstack, 
+                 const unsigned char *name,
+                 const unsigned char *value,
                  raptor_internal_message_handler error_handler,
                  void *error_data)
 {
   raptor_qname* qname;
-  const char *p;
+  const unsigned char *p;
   raptor_namespace* ns;
-  char* new_name;
+  unsigned char* new_name;
   int prefix_length;
   int local_name_length=0;
 
@@ -143,7 +144,7 @@ raptor_new_qname(raptor_namespace_stack *nstack, const char *name,
     local_name_length=p-name;
 
     /* No : in the name */
-    new_name=(char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+    new_name=(unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;

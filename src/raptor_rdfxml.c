@@ -565,7 +565,7 @@ static void raptor_generate_statement(raptor_parser *rdf_parser, raptor_uri *sub
 static int raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name);
 static void raptor_xml_parse_terminate(raptor_parser *rdf_parser);
 static int raptor_xml_parse_start(raptor_parser* rdf_parser, raptor_uri *uri);
-static int raptor_xml_parse_chunk(raptor_parser* rdf_parser, const char *buffer, size_t len, int is_end);
+static int raptor_xml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 
 
 
@@ -755,7 +755,8 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
 
 void
 raptor_xml_start_element_handler(void *user_data,
-                                 const unsigned char *name, const unsigned char **atts)
+                                 const unsigned char *name, 
+                                 const unsigned char **atts)
 {
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
@@ -765,7 +766,7 @@ raptor_xml_start_element_handler(void *user_data,
   int i;
   raptor_element* element=NULL;
   int non_nspaced_count=0;
-  char *xml_language=NULL;
+  unsigned char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
   
   rdf_parser=(raptor_parser*)user_data;
@@ -791,9 +792,9 @@ raptor_xml_start_element_handler(void *user_data,
       all_atts_count++;
 
       /* synthesise the XML namespace events */
-      if(!strncmp(atts[i], "xmlns", 5)) {
+      if(!memcmp((const char*)atts[i], "xmlns", 5)) {
         /* there is more i.e. xmlns:foo */
-        const char *prefix=atts[i][5] ? &atts[i][6] : NULL;
+        const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
 
         if(raptor_namespaces_start_namespace(&rdf_parser->namespaces,
                                              prefix, atts[i+1],
@@ -807,8 +808,8 @@ raptor_xml_start_element_handler(void *user_data,
         continue;
       }
 
-      if(!strcmp(atts[i], "xml:lang")) {
-        xml_language=(char*)RAPTOR_MALLOC(cstring, strlen(atts[i+1])+1);
+      if(!strcmp((char*)atts[i], "xml:lang")) {
+        xml_language=(unsigned char*)RAPTOR_MALLOC(cstring, strlen(atts[i+1])+1);
         if(!xml_language) {
           raptor_parser_fatal_error(rdf_parser, "Out of memory");
           return;
@@ -817,14 +818,14 @@ raptor_xml_start_element_handler(void *user_data,
         continue;
       }
       
-      if(!strcmp(atts[i], "xml:base")) {
+      if(!strcmp((char*)atts[i], "xml:base")) {
         xml_base=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), atts[i+1]);
         atts[i]=NULL; 
         continue;
       }
 
       /* delete other xml attributes - not used */
-      if(!strncmp(atts[i], "xml", 3)) {
+      if(!strncmp((char*)atts[i], "xml", 3)) {
         atts[i]=NULL; 
         continue;
       }
@@ -920,18 +921,18 @@ raptor_xml_start_element_handler(void *user_data,
 
         /* If RDF namespace-prefixed attributes */
         if(attr->nspace && attr->nspace->is_rdf_ms) {
-          const char *attr_name=attr->local_name;
+          const unsigned char *attr_name=attr->local_name;
           int j;
 
           for(j=0; j<= RDF_ATTR_LAST; j++)
-            if(!strcmp(attr_name, rdf_attr_info[j].name)) {
+            if(!strcmp((char*)attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
 #if RAPTOR_DEBUG
               RAPTOR_DEBUG3(raptor_xml_start_element_handler,
                             "Found RDF namespace attribute %s URI %s\n",
-                            attr_name, attr->value);
+                            (char*)attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from qname structure */
               attr->value=NULL;
@@ -946,11 +947,11 @@ raptor_xml_start_element_handler(void *user_data,
         /* If non namespace-prefixed RDF attributes found on an element */
         if(rdf_parser->feature_allow_non_ns_attributes &&
            !attr->nspace) {
-          const char *attr_name=attr->local_name;
+          const unsigned char *attr_name=attr->local_name;
           int j;
 
           for(j=0; j<= RDF_ATTR_LAST; j++)
-            if(!strcmp(attr_name, rdf_attr_info[j].name)) {
+            if(!strcmp((char*)attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               if(!rdf_attr_info[i].allowed_unprefixed_on_attribute)
@@ -1625,7 +1626,7 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
  * Return value: Non zero on failure.
  **/
 static int
-raptor_xml_parse_chunk(raptor_parser* rdf_parser, const char *buffer,
+raptor_xml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer,
                        size_t len, int is_end) 
 {
   int rc=raptor_xml_parse_chunk_(rdf_parser, buffer, len, is_end);
@@ -2355,7 +2356,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
 
         if (element->rdf_attr[RDF_ATTR_parseType]) {
-          const char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
+          const unsigned char *parse_type=element->rdf_attr[RDF_ATTR_parseType];
 
           if(!raptor_strcasecmp(parse_type, "literal")) {
             element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
@@ -2370,7 +2371,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             element->subject.id=raptor_generate_id(rdf_parser, 0);
             element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
             element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
-          } else if(!strcmp(parse_type, "Collection")) {
+          } else if(!strcmp((char*)parse_type, "Collection")) {
             /* An rdf:parseType="Collection" appears as a single node */
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
             element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
@@ -2927,7 +2928,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
  * 
  * Return value: The xml:lang value or NULL if none is in scope. 
  **/
-const char*
+const unsigned char*
 raptor_inscope_xml_language(raptor_parser *rdf_parser)
 {
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
