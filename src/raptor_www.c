@@ -163,7 +163,7 @@ raptor_www_error(raptor_www *www, const char *message, ...)
       return;
     }
     www->error_handler(www->error_data, &www->locator, buffer);
-    free(buffer);
+    RAPTOR_FREE(cstring, buffer);
   } else {
     raptor_print_locator(stderr, &www->locator);
     fprintf(stderr, " raptor www error - ");
