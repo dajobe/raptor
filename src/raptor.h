@@ -218,6 +218,8 @@ typedef struct {
 } raptor_uri_handler;
 
 
+RAPTOR_API void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
+
 #ifndef RAPTOR_IN_REDLAND
 
 #define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
