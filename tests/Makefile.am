@@ -45,7 +45,7 @@ BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/
 # for 22-rdf-syntax-ns.rdf
 RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
 # for rdfs-namespace.rdf (2002-04-30) and rdf-schema.rdf (2000-03-27)
-RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema#
+RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
@@ -64,7 +64,7 @@ check-local: $(top_builddir)/rdfdump $(RDF_TEST_FILES) $(NT_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
 	    baseuri=$(RDF_NS_URI); \
-	  elif test $$name = rdfs-namespace.rdf -o $$name = rdf-schema.rdf; then \
+	  elif test $$name = rdfs-namespace -o $$name = rdf-schema; then \
 	    baseuri=$(RDFS_NS_URI); \
 	  else \
 	    baseuri=$(BASE_URI)$$test; \
