@@ -132,21 +132,30 @@ raptor_delete_parser_factories(void)
 /* class methods */
 
 /*
- * raptor_parser_register_factory - Register a parser factory
- * @name: the parser factory name
+ * raptor_parser_register_factory - Register a syntax handled by a parser factory
+ * @name: the short syntax name
+ * @label: readable label for syntax
+ * @mime_type: MIME type of the syntax handled by the parser (or NULL)
+ * @uri_string: URI string of the syntax (or NULL)
  * @factory: pointer to function to call to register the factory
  * 
  **/
 void
 raptor_parser_register_factory(const char *name, const char *label,
+                               const char *mime_type,
+                               const unsigned char *uri_string,
                                void (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser, *h;
-  char *name_copy, *label_copy;
+  char *name_copy, *label_copy, *mime_type_copy;
+  unsigned char *uri_string_copy;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3(raptor_parser_register_factory,
-                "Received registration for parser %s '%s'\n", name. label);
+  RAPTOR_DEBUG5(raptor_parser_register_factory,
+                "Received registration for syntax %s '%s' (MIME type %s, URI %s)\n", 
+                name. label, 
+                (mime_type ? mime_type : "none"),
+                (uri_string ? uri_string : "none"));
 #endif
   
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
@@ -169,6 +178,26 @@ raptor_parser_register_factory(const char *name, const char *label,
   }
   strcpy(label_copy, label);
   parser->label=label_copy;
+
+  if(mime_type) {
+    mime_type_copy=(char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
+    if(!mime_type_copy) {
+      RAPTOR_FREE(raptor_parser, parser);
+      RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    }
+    strcpy(mime_type_copy, mime_type);
+    parser->mime_type=mime_type_copy;
+  }
+
+  if(uri_string) {
+    uri_string_copy=(char*)RAPTOR_CALLOC(cstring, strlen(uri_string)+1, 1);
+    if(!uri_string_copy) {
+    RAPTOR_FREE(raptor_parser, parser);
+    RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
+    }
+    strcpy(uri_string_copy, uri_string);
+    parser->uri_string=uri_string_copy;
+  }
         
   for(h = parsers; h; h = h->next ) {
     if(!strcmp(h->name, name_copy)) {
@@ -229,16 +258,20 @@ raptor_get_parser_factory (const char *name)
 
 
 /**
- * raptor_parsers_enumerate - Get list of parsers
- * @counter: index to list of parsers
- * @name: pointer to store parser name
- * @label: pointer to store parser label
+ * raptor_syntaxes_enumerate - Get information on syntaxes
+ * @counter: index into the list of syntaxes
+ * @name: pointer to store the name of the syntax (or NULL)
+ * @label: pointer to store syntax readable label (or NULL)
+ * @mime_type: pointer to store syntax MIME Type (or NULL)
+ * @uri_string: pointer to store syntax URI string (or NULL)
  * 
  * Return value: non 0 on failure of if counter is out of range
  **/
 int
-raptor_parsers_enumerate(const unsigned int counter,
-                         const char **name, const char **label)
+raptor_syntaxes_enumerate(const unsigned int counter,
+                          const char **name, const char **label,
+                          const char **mime_type,
+                          const unsigned char **uri_string)
 {
   unsigned int i;
   raptor_parser_factory *factory=parsers;
@@ -252,12 +285,33 @@ raptor_parsers_enumerate(const unsigned int counter,
         *name=factory->name;
       if(label)
         *label=factory->label;
+      if(mime_type)
+        *mime_type=factory->mime_type;
+      if(uri_string)
+        *uri_string=factory->uri_string;
       return 0;
     }
   }
         
   return 1;
 }
+
+
+/**
+ * raptor_parsers_enumerate - Get list of syntax parsers
+ * @counter: index to list of parsers
+ * @name: pointer to store syntax name (or NULL)
+ * @label: pointer to store syntax label (or NULL)
+ * 
+ * Return value: non 0 on failure of if counter is out of range
+ **/
+int
+raptor_parsers_enumerate(const unsigned int counter,
+                         const char **name, const char **label)
+{
+  return raptor_syntaxes_enumerate(counter, name, label, NULL, NULL);
+}
+
 
 
 /*
