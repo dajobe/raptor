@@ -260,7 +260,8 @@ RAPTOR_API size_t raptor_xml_escape_string(const unsigned char *string, size_t l
 /* raptor_uri.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
 RAPTOR_API char *raptor_uri_filename_to_uri_string(const char *filename);
-RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string, char **fragment_p);
+RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string);
+RAPTOR_API char *raptor_uri_uri_string_to_filename_fragment(const char *uri_string, char **fragment_p);
 RAPTOR_API int raptor_uri_is_file_uri(const char* uri_string);
 RAPTOR_API void raptor_uri_init(void);
 

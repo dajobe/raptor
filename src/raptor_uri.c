@@ -88,7 +88,7 @@ raptor_default_new_uri(void *context, const char *uri_string)
     char *filename;
     raptor_uri* uri=NULL;
 
-    filename=raptor_uri_uri_string_to_filename(uri_string, &fragment);
+    filename=raptor_uri_uri_string_to_filename_fragment(uri_string, &fragment);
     if(!access(filename, R_OK)) {
       uri=(raptor_uri*)raptor_uri_filename_to_uri_string(filename);
       /* If there was a fragment, reattach it to the new URI */
@@ -882,7 +882,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
 
 
 /**
- * raptor_uri_uri_string_to_filename - Convert a file: URI to a filename
+ * raptor_uri_uri_string_to_filename_fragment - Convert a file: URI to a filename and fragment
  * @uri_string: The file: URI to convert
  * @fragment_p: Address of pointer to store any URI fragment or NULL
  * 
@@ -895,8 +895,8 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
-raptor_uri_uri_string_to_filename(const char *uri_string,
-                                  char **fragment_p) 
+raptor_uri_uri_string_to_filename_fragment(const char *uri_string,
+                                           char **fragment_p) 
 {
   char *buffer;
   char *filename;
@@ -1004,6 +1004,22 @@ raptor_uri_uri_string_to_filename(const char *uri_string,
   RAPTOR_FREE(cstring, buffer);
 
   return filename;
+}
+
+
+/**
+ * raptor_uri_uri_string_to_filename - Convert a file: URI to a filename
+ * @uri_string: The file: URI to convert
+ * 
+ * Handles the OS-specific file: URIs to filename mappings.  Returns
+ * a new buffer containing the filename that the caller must free.
+ *
+ * Return value: A newly allocated string with the filename or NULL on failure
+ **/
+char *
+raptor_uri_uri_string_to_filename(const char *uri_string) 
+{
+  return raptor_uri_uri_string_to_filename_fragment(uri_string, NULL);
 }
 
 
@@ -1208,7 +1224,7 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 {
   char *filename;
 
-  filename=raptor_uri_uri_string_to_filename(uri, NULL);
+  filename=raptor_uri_uri_string_to_filename(uri);
 
   if (!filename || strcmp (filename, reference_filename))
     {
