@@ -1,4 +1,22 @@
+2004-08-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* ntriples_parse.c (raptor_ntriples_parse_chunk):
+	Move "junk at end of input" test
+	to the end of the function, giving the error only if the current
+	offset isn't at the end of the current line.
+
+2004-07-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h:
+	Switch to WWW read buffer size of 4096 (from 256 bytes!)
+
+	* raptor_general.c: Switch to read buffer size of 4096
+
 2004-07-28  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* autogen.sh: move 'rm's inside configure.ac loop
+
+	* autogen.sh: Ensure subdirs get config.guess, config.sub
 
 	* win32/raptortest.cpp: Added raptor_init, raptor_finish (untested).
 
