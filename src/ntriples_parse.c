@@ -56,11 +56,6 @@
 /* Prototypes for local functions */
 static void raptor_ntriples_generate_statement(raptor_parser *parser, const char *subject, const raptor_ntriples_term_type subject_type, const char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, char *object_literal_language, char *object_literal_datatype);
 
-static int raptor_ntriples_unicode_char_to_utf8(unsigned long c, char *output);
-static int raptor_ntriples_utf8_to_unicode_char(long *output, const unsigned char *input, int length);
-
-
-
 /*
  * NTriples parser object
  */
@@ -272,151 +267,6 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
 }
 
 
-/*
- * Based on librdf_unicode_char_to_utf8
- * with no need to calculate length since the encoded character is
- * always copied into a buffer with sufficient size.
- * 
- * Return value: bytes encoded to output buffer or <0 on failure
- **/
-static int
-raptor_ntriples_unicode_char_to_utf8(unsigned long c, char *output)
-{
-  int size=0;
-  
-  if      (c < 0x00000080)
-    size=1;
-  else if (c < 0x00000800)
-    size=2;
-  else if (c < 0x00010000)
-    size=3;
-  else if (c < 0x00200000)
-    size=4;
-  else if (c < 0x04000000)
-    size=5;
-  else if (c < 0x80000000)
-    size=6;
-  else
-    return -1;
-
-  switch(size) {
-    case 6:
-      output[5]=0x80 | (c & 0x3F);
-      c= c >> 6;
-       /* set bit 2 (bits 7,6,5,4,3,2 less 7,6,5,4,3 set below) on last byte */
-      c |= 0x4000000; /* 0x10000 = 0x04 << 24 */
-      /* FALLTHROUGH */
-    case 5:
-      output[4]=0x80 | (c & 0x3F);
-      c= c >> 6;
-       /* set bit 3 (bits 7,6,5,4,3 less 7,6,5,4 set below) on last byte */
-      c |= 0x200000; /* 0x10000 = 0x08 << 18 */
-      /* FALLTHROUGH */
-    case 4:
-      output[3]=0x80 | (c & 0x3F);
-      c= c >> 6;
-       /* set bit 4 (bits 7,6,5,4 less 7,6,5 set below) on last byte */
-      c |= 0x10000; /* 0x10000 = 0x10 << 12 */
-      /* FALLTHROUGH */
-    case 3:
-      output[2]=0x80 | (c & 0x3F);
-      c= c >> 6;
-      /* set bit 5 (bits 7,6,5 less 7,6 set below) on last byte */
-      c |= 0x800; /* 0x800 = 0x20 << 6 */
-      /* FALLTHROUGH */
-    case 2:
-      output[1]=0x80 | (c & 0x3F);
-      c= c >> 6;
-      /* set bits 7,6 on last byte */
-      c |= 0xc0; 
-      /* FALLTHROUGH */
-    case 1:
-      output[0]=c;
-  }
-
-  return size;
-}
-
-/*
- * Based on librdf_utf8_to_unicode_char
- * replacing librdf_unicode_char with long
- *
- * Return value: number of bytes used or <0 on failure
- */
-
-static int
-raptor_ntriples_utf8_to_unicode_char(long *output,
-                                     const unsigned char *input, int length)
-{
-  unsigned char in;
-  int size;
-  long c=0;
-  
-  if(length < 1)
-    return -1;
-
-  in=*input++;
-  if((in & 0x80) == 0) {
-    size=1;
-    c= in & 0x7f;
-  } else if((in & 0xe0) == 0xc0) {
-    size=2;
-    c= in & 0x1f;
-  } else if((in & 0xf0) == 0xe0) {
-    size=3;
-    c= in & 0x0f;
-  } else if((in & 0xf8) == 0xf0) {
-    size=4;
-    c = in & 0x07;
-  } else if((in & 0xfc) == 0xf8) {
-    size=5;
-    c = in & 0x03;
-  } else if((in & 0xfe) == 0xfc) {
-    size=6;
-    c = in & 0x01;
-  } else
-    return -1;
-
-
-  if(!output)
-    return size;
-
-  if(length < size)
-    return -1;
-
-  switch(size) {
-    case 6:
-      in=*input++ & 0x3f;
-      c= c << 6;
-      c |= in;
-      /* FALLTHROUGH */
-    case 5:
-      in=*input++ & 0x3f;
-      c= c << 6;
-      c |= in;
-      /* FALLTHROUGH */
-    case 4:
-      in=*input++ & 0x3f;
-      c= c << 6;
-      c |= in;
-      /* FALLTHROUGH */
-    case 3:
-      in=*input++ & 0x3f;
-      c= c << 6;
-      c |= in;
-      /* FALLTHROUGH */
-    case 2:
-      in=*input++ & 0x3f;
-      c= c << 6;
-      c |= in;
-      /* FALLTHROUGH */
-    default:
-      *output=c;
-  }
-
-  return size;
-}
-
 /* These are for 7-bit ASCII and not locale-specific */
 #define IS_ASCII_ALPHA(c) (((c)>0x40 && (c)<0x5B) || ((c)>0x60 && (c)<0x7B))
 #define IS_ASCII_DIGIT(c) ((c)>0x30 && (c)<0x3A)
@@ -521,7 +371,7 @@ raptor_ntriples_string(raptor_parser* rdf_parser,
         rdf_parser->locator.column+=ulen;
         rdf_parser->locator.byte+=ulen;
         
-        dest+=raptor_ntriples_unicode_char_to_utf8(unichar, dest);
+        dest+=raptor_unicode_char_to_utf8(unichar, dest);
         break;
 
       default:
@@ -1071,7 +921,8 @@ raptor_ntriples_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
  * raptor_print_ntriples_string - Print an UTF-8 string using N-Triples escapes
  * @stream: FILE* stream to print to
  * @string: UTF-8 string to print
- * @delim: Delimiter character for string (such as ")
+ * @delim: Delimiter character for string (such as ") or \0 for no delim
+ * escaping.
  * 
  * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/
@@ -1086,7 +937,7 @@ raptor_print_ntriples_string(FILE *stream,
   long unichar;
   
   for(; (c=*string); string++, len--) {
-    if(c == delim || c == '\\') {
+    if((delim && c == delim) || c == '\\') {
       fprintf(stream, "\\%c", c);
       continue;
     }
@@ -1111,13 +962,13 @@ raptor_print_ntriples_string(FILE *stream,
     
     /* It is unicode */
     
-    unichar_len=raptor_ntriples_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
+    unichar_len=raptor_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
     if(unichar_len < 0 || unichar_len > len)
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
 
-    unichar_len=raptor_ntriples_utf8_to_unicode_char(&unichar,
-                                                     (const unsigned char *)string, len);
+    unichar_len=raptor_utf8_to_unicode_char(&unichar,
+                                            (const unsigned char *)string, len);
     
     if(unichar < 0x10000)
       fprintf(stream, "\\u%04lX", unichar);
