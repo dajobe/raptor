@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: Raptor
 Description: RDF Parser Toolkit Library
 Version: @VERSION@
-Libs: -L${libdir} -lraptor
+Libs: -L${libdir} -lraptor @LDFLAGS@ @LIBS@
 Cflags: -I${includedir}
 
