@@ -79,6 +79,7 @@ CPPFLAGS=@CPPFLAGS@ $(MEM)
 STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
+LOCAL_LIB_DIR=lib
 
 # Create some text files from HTML sources
 LYNX=lynx
@@ -109,9 +110,9 @@ raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(CCFLAGS) -I$(srcdir) -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 finish: libraptor.la
-	rm -rf $(top_builddir)/lib
-	mkdir $(top_builddir)/lib
-	lib=`cd $(top_builddir)/lib; pwd`; \
+	rm -rf $(LOCAL_LIB_DIR)
+	mkdir $(LOCAL_LIB_DIR)
+	lib=`cd $(LOCAL_LIB_DIR); pwd`; \
 	$(LIBTOOL) --mode=install install libraptor.la $$lib; \
 	$(LIBTOOL) --mode=finish $$lib
 
