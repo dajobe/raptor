@@ -104,7 +104,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 
 %changelog
-* Thu Sep 9 BST 2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
+* Thu Sep 9 2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
 - License now LGPL/Apache 2
 
 * Tue May 11 2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
