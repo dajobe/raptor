@@ -659,10 +659,10 @@ URI_LITERAL
 /* Support functions */
 
 /* helper - everything passed in is now owned by triple */
-static
-raptor_triple* raptor_new_triple(raptor_identifier *subject,
-                                 raptor_identifier *predicate,
-                                 raptor_identifier *object) 
+static raptor_triple*
+raptor_new_triple(raptor_identifier *subject,
+                  raptor_identifier *predicate,
+                  raptor_identifier *object) 
 {
   raptor_triple* t;
   
@@ -677,8 +677,8 @@ raptor_triple* raptor_new_triple(raptor_identifier *subject,
   return t;
 }
 
-static
-void raptor_free_triple(raptor_triple *t) {
+static void
+raptor_free_triple(raptor_triple *t) {
   if(t->subject)
     raptor_free_identifier(t->subject);
   if(t->predicate)
@@ -689,8 +689,8 @@ void raptor_free_triple(raptor_triple *t) {
 }
  
 #ifdef RAPTOR_DEBUG
-static
-void raptor_triple_print(raptor_triple *t, FILE *fh) 
+static void
+raptor_triple_print(raptor_triple *t, FILE *fh) 
 {
   fputs("triple(", fh);
   raptor_identifier_print(fh, t->subject);
