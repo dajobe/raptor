@@ -1040,11 +1040,68 @@ raptor_uri_to_relative_uri_string(raptor_uri *base_uri,
 }
 
 
+/**
+ * raptor_uri_print - Print a URI to a file handle
+ * @uri: URI to print
+ * @stream: The file handle to print to
+ **/
 void
 raptor_uri_print(const raptor_uri* uri, FILE *stream) {
   size_t len;
   unsigned char *string=raptor_uri_as_counted_string((raptor_uri*)uri, &len);
   fwrite(string, len, 1, stream);
+}
+
+
+/**
+ * raptor_uri_to_counted_string - Get a new counted string for a URI
+ * @uri: &raptor_uri object
+ * @len_p: Pointer to length (or NULL)
+ *
+ * If len_p is not NULL, the length of the string is stored in it.
+ *
+ * The memory allocated must be freed by the caller and
+ * raptor_free_memory should be used for best portability.
+ *
+ * Return value: new string or NULL on failure
+ **/
+unsigned char*
+raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
+{
+  size_t len;
+  unsigned char *string;
+  unsigned char *new_string;
+
+  string=raptor_uri_as_counted_string(uri, &len);
+  if(!string)
+    return NULL;
+  
+  new_string=RAPTOR_MALLOC(cstring, len+1);
+  if(!new_string)
+    return NULL;
+  
+  memcpy(new_string, uri, len+1);
+
+  if(len_p)
+    *len_p=len;
+  return new_string;
+}
+
+
+/**
+ * raptor_uri_to_string - Get a new string for a URI
+ * @uri: &raptor_uri object
+ * @len_p: Pointer to length (or NULL)
+ *
+ * The memory allocated must be freed by the caller and
+ * raptor_free_memory should be used for best portability.
+ *
+ * Return value: new string or NULL on failure
+ **/
+unsigned char*
+raptor_uri_to_string(raptor_uri *uri)
+{
+  return raptor_uri_to_counted_string(uri, NULL);
 }
 
 
