@@ -69,6 +69,99 @@ static int raptor_uri_is_absolute (const char *uri);
 static void raptor_uri_parse (const char *uri, char *buffer, size_t len, char **scheme, char **authority, char **path, char **query, char **fragment);
 
 
+static raptor_uri*
+raptor_default_new_uri(void *context, const char *uri_string) 
+{
+  int len=strlen(uri_string);
+  char *p=(char*)LIBRDF_MALLOC(raptor_uri, len+1);
+  if(!p)
+    return NULL;
+  strcpy((char*)p, uri_string);
+  return (raptor_uri*)p;
+}
+
+
+raptor_uri*
+raptor_new_uri(const char *uri_string) 
+{
+  void *context=NULL;
+#ifdef RAPTOR_IN_REDLAND
+  context=world;
+  return librdf_new_uri(context, uri_string);
+#else
+  return raptor_default_new_uri(context, uri_string);
+#endif
+}
+
+
+static raptor_uri*
+raptor_default_new_uri_from_uri_local_name(void *context,
+                                           raptor_uri *uri,
+                                           const char *local_name)
+{
+  int uri_length=strlen((char*)uri);
+  char *p=(char*)LIBRDF_MALLOC(cstring, 
+                               uri_length + strlen(local_name) + 1);
+  if(!p)
+    return NULL;
+  
+  strcpy(p, uri);
+  strcpy(p + uri_length, local_name);
+  
+  return (raptor_uri*)p;
+}
+
+
+raptor_uri*
+raptor_new_uri_from_uri_local_name(raptor_uri *uri, const char *local_name)
+{
+  void *context=NULL;
+#ifdef RAPTOR_IN_REDLAND
+  return librdf_new_uri_from_uri_local_name(context, uri, local_name);
+#else
+  return raptor_default_new_uri_from_uri_local_name(context, uri, local_name);
+#endif
+}
+
+
+static void
+raptor_default_free_uri(void *context, raptor_uri *uri) 
+{
+  LIBRDF_FREE(raptor_uri, uri);
+}
+
+
+void
+raptor_free_uri(raptor_uri *uri)
+{
+  void *context=NULL;
+#ifdef RAPTOR_IN_REDLAND
+  return librdf_free_uri(context, uri);
+#else
+  return raptor_default_free_uri(context, uri);
+#endif
+}
+
+
+static int
+raptor_default_uri_equals(void *context, raptor_uri* uri1, raptor_uri* uri2)
+{
+  return strcmp((char*)uri1, (char*)uri2)==0;
+}
+
+
+int
+raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
+{
+  void *context=NULL;
+#ifdef RAPTOR_IN_REDLAND
+  context=world;
+  return librdf_uri_equals(context, uri1, uri2);
+#else
+  return raptor_default_uri_equals(context, uri1, uri2);
+#endif
+}
+
 
 static int
 raptor_uri_is_absolute (const char *uri)
@@ -91,6 +184,103 @@ raptor_uri_is_absolute (const char *uri)
   }
 
   return result;
+}
+
+
+raptor_uri*
+raptor_make_uri(raptor_uri *base_uri, const char *reference_uri_string) 
+{
+#ifdef RAPTOR_IN_REDLAND
+#else
+  char *new_uri;
+  int new_uri_len;
+#endif
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG3(raptor_make_uri, 
+                "Using base URI %s and URI '%s'\n", 
+                base_uri, reference_uri);
+#endif
+
+#ifdef RAPTOR_IN_REDLAND
+  return librdf_new_uri_relative_to_base(base_uri, reference_uri_string);
+#else
+  new_uri_len=strlen(base_uri)+strlen(reference_uri_string)+1;
+  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len+1);
+  if(!new_uri)
+    return NULL;
+  
+  /* If URI string is empty, just copy base URI */
+  if(!*reference_uri_string) {
+    strcpy(new_uri, base_uri);
+    return new_uri;
+  }
+
+  raptor_uri_resolve_uri_reference(base_uri, reference_uri_string,
+                                   new_uri, new_uri_len);
+  return new_uri;
+#endif
+}
+
+
+raptor_uri*
+raptor_make_uri_from_id(raptor_parser *rdf_parser,
+                        raptor_uri *base_uri, const char *id) 
+{
+  raptor_uri *new_uri;
+  char *local_name;
+  int len;
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  LIBRDF_DEBUG2(raptor_make_uri_from_id, "Using ID %s\n", id);
+#endif
+
+  /* "#id\0" */
+  len=1+strlen(id)+1;
+  local_name=(char*)LIBRDF_MALLOC(cstring, len);
+  if(!local_name)
+    return NULL;
+  *local_name='#';
+  strcpy(local_name+1, id);
+  new_uri=raptor_make_uri(base_uri, local_name);
+  LIBRDF_FREE(cstring, local_name);
+  return new_uri;
+}
+
+
+#ifndef RAPTOR_IN_REDLAND
+raptor_uri*
+raptor_make_uri_from_base_name(raptor_uri *base_uri, const char *name) 
+{
+  raptor_uri *new_uri;
+  int base_uri_len=strlen(base_uri);
+  int new_uri_len;
+
+  base_uri_len=strlen(base_uri);
+  new_uri_len=base_uri_len+strlen(name)+1;
+  new_uri=(char*)LIBRDF_MALLOC(cstring, new_uri_len);
+  if(!new_uri)
+    return NULL;
+  strcpy((char*)new_uri, base_uri);
+  strcpy((char*)new_uri+base_uri_len, name);
+  return new_uri;
+}
+#endif
+
+
+raptor_uri*
+raptor_copy_uri(raptor_uri *uri) 
+{
+#ifdef RAPTOR_IN_REDLAND
+  return librdf_new_uri_from_uri(uri);
+#else
+  char *new_uri;
+  new_uri=(char*)LIBRDF_MALLOC(cstring, strlen(uri)+1);
+  if(!new_uri)
+    return NULL;
+  strcpy(new_uri, uri);
+  return new_uri;
+#endif
 }
 
 
