@@ -972,7 +972,7 @@ raptor_ntriples_parser_fatal_error(raptor_ntriples_parser* parser,
 
   if(parser->fatal_error_handler) {
     parser->fatal_error_handler(parser->fatal_error_user_data, 
-                                &parser->locator, message);
+                                &parser->locator, message, arguments);
     abort();
   }
 
