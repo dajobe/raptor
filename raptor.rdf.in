@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:doap="http://usefulinc.com/ns/doap#">
+
+  <foaf:Person rdf:nodeID="dave">
+    <foaf:name>Dave Beckett</foaf:name>
+    <foaf:homepage rdf:resource="http://purl.org/net/dajobe/"/>
+  </foaf:Person>
+
+  <doap:Project>
+    <doap:name>Raptor</doap:name>
+    <doap:summary xml:lang="en">RDF Parser Toolkit Library.</doap:summary>
+    <doap:description xml:lang="en">Library for parsing RDF syntaxes
+    such as RDF/XML, N-Triples and Turtle into RDF triples.</doap:description>
+    <doap:homepage rdf:resource="http://www.redland.opensource.ac.uk/raptor/"/>
+
+    <doap:maintainer rdf:nodeID="dave"/>
+
+    <doap:download rdf:resource="http://www.redland.opensource.ac.uk/dist/sources/"/>
+
+    <doap:license rdf:resource="http://www.gnu.org/licenses/gpl.html"/>
+    <doap:license rdf:resource="http://www.gnu.org/licenses/lgpl.html"/>
+    <doap:license rdf:resource="http://www.mozilla.org/MPL/MPL-1.1.html"/>
+
+    <doap:mailingList rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-dev"/>
+
+    <doap:version>
+      <rdf:Description>
+	<doap:versionNumber>@VERSION@</doap:versionNumber>
+      </rdf:Description>
+    </doap:version>
+
+    <doap:repository>
+      <doap:CVSRepository>
+	<doap:anonCVS>:pserver:anonymous@cvs.ilrg.org:/cvs/redland raptor</doap:anonCVS>
+	<doap:repositoryWebView rdf:resource="http://cvs.ilrt.org/cvsweb/redland/raptor/"/>
+      </doap:CVSRepository>
+    </doap:repository>
+  </doap:Project>
+
+</rdf:RDF>
