@@ -59,11 +59,7 @@ versions.</p>
 <p>Raptor uses the GNU automake and autoconf to handle system
 dependency checking.  It requires an XML parser - either libxml2
 (2.4.0 or newer, 2.6.0 or later highly recommended) or expat.  It will
-optionally use libcurl, libxml2 for retrieving URIs.  If GNOME glib
-2.0 is present, it will be used for Unicode Normal Form C (NFC)
-checking unless <tt>--disable-nfc-check</tt> is used.  If glib
-is missing, some of the RDF/XML tests will note the failure
-but continue.</p>
+optionally use libcurl, libxml2 for retrieving URIs.</p>
 
 <p>Raptor is developed and built on x86 GNU/Linux
 (Redhat Fedora Core 2, Debian unstable) but is also regularly tested on
@@ -109,13 +105,9 @@ libtool 1.5.</p>
 
 <dl>
 <dt><tt>--disable-nfc-check</tt><br /></dt>
-<dd><p>Disable Unicode Normal Form C (NFC) checking code.  This
-is usually enabled and at present, requires the GNOME glib library
-to provide this check for the RDF/XML parser.  The check may result
-in a run time warning when non-normalised Unicode literals are
-seen in the RDF/XML.  If the GNOME glib library is not available,
-a configure time warning may be given printed unless this option
-is used.</p></dd>
+<dd><p>Disable Unicode Normal Form C (NFC) checking code.
+(Does nothing in 1.3.2 or later while new NFC code is developed).
+</p></dd>
 
 <dt><tt>--with-expat-source=DIR</tt><br /></dt>
 <dd><p>Build against a statically compiled expat source tree in
@@ -163,9 +155,6 @@ libxml 2.6.9 (FreeBSD 4.10-STABLE)
 <dt><tt>--with-curl-config=NAME</tt><br /></dt>
 <dd><p>Set the path to the <a href="http://curl.haxx.se/libcurl/">libcurl</a> curl-config program</p></dd>
 
-<dt><tt>--with-pkg-config=NAME</tt><br /></dt>
-<dd><p>Set the path to the GNOME pkg-config program</p></dd>
-
 <dt><tt>--with-libwww-config=NAME</tt><br /></dt>
 <dd><p>Set the path to the W3C <a href="http://www.w3.org/Library/">WWW library</a> libwww-config program</p></dd>
 
@@ -204,10 +193,9 @@ gmake or gnumake if your system has a different make available too.</p>
 <p>which should emit lots of exciting test messages to the screen but
 conclude with something like:<br />
   <tt>All </tt><em>n</em><tt> tests passed</tt><br />
-if everything works correctly. There might be some Unicode NFC
-tests that fail if either GNOME glib2.0 was not available when raptor was
-compiled or NFC support was disabled with the
-the <tt>--disable-nfc-check</tt> option to configure</p>
+if everything works correctly. There will be some Unicode NFC
+checking tests that give ignored failures in 1.3.2 or later as NFC
+checking has been temporarily removed.</p>
 
 <p>Raptor builds a utility RDF parsing program <em>rapper</em> can
 be tried with RDF/XML content like this:</p>
