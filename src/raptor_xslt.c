@@ -226,27 +226,6 @@ main(int argc, char* argv[])
           xml_filename, raptor_uri_as_string(base_uri));
   
 
-/*
-  xslt_filename=argv[i++];
-  
-  if(xslt_filename) {
-    xslt_buffer=RAPTOR_MALLOC(cstring, XSLT_BUFFER_SIZE);
-    *xslt_buffer='\0';
-
-    fh=fopen(xslt_filename, "r");
-    if(!fh) {
-      fprintf(stderr, "%s: XSLT file '%s' open failed - %s",
-              program, xslt_filename, strerror(errno));
-      goto cleanup;
-    }
-    fread(xslt_buffer, 1, XSLT_BUFFER_SIZE, fh);
-    fclose(fh);
-    fh=NULL;
-    
-    xslt_buffer_len=strlen(xslt_buffer);
-  }
-*/  
-
   xmlParserCtxtPtr ctxt=NULL; /* an XML parser context */
 
   #define RAPTOR_XML_BUFFER_SIZE 2048
