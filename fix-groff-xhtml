@@ -39,6 +39,8 @@ while(<IN>) {
 
   s%(name|id)="([^"]+)"%my($at,$val)=($1,$2); $val =~ s/ /_/g; qq{$at="$val"};%eg;
 
+  s%(Dave Beckett|Institute for Learning and Research Technology .ILRT.|University of Bristol) (?:- |)(http://[^<]+)%<a href="$2">$1</a>%;
+
   my $year=1900+(localtime)[5];
   print OUT <<"EOT" if m%^</body>%;
 
