@@ -42,7 +42,7 @@ TEST_WARN_OUT_FILES=
 # Used to make N-triples output consistent
 BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/turtle/
 
-ALL_TEST_FILES= \
+ALL_TEST_FILES= README.txt \
 	$(TEST_FILES) \
 	$(TEST_BAD_FILES) \
 	$(TEST_WARN_FILES) \
