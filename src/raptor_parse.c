@@ -1316,7 +1316,18 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
   }
 
   if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL) {
-    escaped_buffer=raptor_xml_escape_string(rdf_parser, s, len, (size_t*)&len, '\0');
+    size_t escaped_buffer_len=raptor_xml_escape_string(rdf_parser,
+                                                s, len,
+                                                NULL, 0, '\0');
+    escaped_buffer=(char*)RAPTOR_MALLOC(cstring, escaped_buffer_len+1);
+    if(!escaped_buffer) {
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      return;
+    }
+    raptor_xml_escape_string(rdf_parser,
+                             s, len,
+                             escaped_buffer, escaped_buffer_len, '\0');
+    len=escaped_buffer_len;
   }
 
   buffer=(char*)RAPTOR_MALLOC(cstring, element->content_cdata_length + len + 1);
