@@ -46,8 +46,6 @@ typedef struct raptor_parser_s raptor_parser;
 typedef enum {
   RAPTOR_IDENTIFIER_TYPE_UNKNOWN,             /* Unknown type - illegal */
   RAPTOR_IDENTIFIER_TYPE_RESOURCE,            /* Resource URI (e.g. rdf:about) */
-  RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH,       /* URI from rdf:aboutEach */
-  RAPTOR_IDENTIFIER_TYPE_RESOURCE_EACH_PREFIX,/* URI from rdf:aboutEachprefix */
   RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,           /* _:foo N-Triples, or generated */
   RAPTOR_IDENTIFIER_TYPE_PREDICATE,           /* Predicate URI */
   RAPTOR_IDENTIFIER_TYPE_ORDINAL,             /* rdf:li, rdf:_<n> etc. */
