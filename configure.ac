@@ -648,14 +648,13 @@ else
 fi
 
 for parser in $parsers; do
+  p=$parser
   if test $p = rss-tag-soup; then
     if test $rss_parser_ok != yes; then
       AC_MSG_WARN(RSS tag soup parser is not available)
       continue
     fi
     p=rss
-  else
-    p=$parser;
   fi
 
   eval $p'_parser=yes'
