@@ -35,7 +35,7 @@ while(<IN>) {
   s%^<body>%<body bgcolor="#ffffff" text="#000085">%;
 
   # This is not xhtml
-  s% cols="2" % %;
+  s% cols="\d+" % %;
 
   s%(name|id)="([^"]+)"%my($at,$val)=($1,$2); $val =~ s/ /_/g; qq{$at="$val"};%eg;
 
