@@ -895,7 +895,7 @@ left-padded with '0's to \fIwidth\fR columns.
 .IP "\fBint raptor_iostream_write_stringbuffer(raptor_iostream* \fIiostr\fB, raptor_stringbuffer *\fIsb\fB)\fR"
 Write the stringbuffer to an iostream \fIiostr\fP.
 .SH API CHANGES
-.SS 1.4.2
+.SS 1.4.3
 Added \fBraptor_serializer_set_namespace\fP,
 \fBraptor_serializer_set_feature\fP and
 \fBraptor_serializer_get_feature\fP.
@@ -918,6 +918,8 @@ stringbuffer to an iostream.
 .P
 Added \fBraptor_iostream_write_xml_escaped_string\fP to write
 an XML-escaped string to an iostream.
+.SS 1.4.2
+No changes.
 .SS 1.4.1
 The \fBraptor_xml_escape_string\fR now returns <0 on failure rather
 than 0, so that if an empty string is escaped, 0 bytes required is
