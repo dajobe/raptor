@@ -29,10 +29,6 @@
 extern "C" {
 #endif
 
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
-
 #ifdef WIN32
   #ifdef RAPTOR_INTERNAL
     #define RAPTOR_API _declspec(dllexport)
@@ -42,6 +38,13 @@ extern "C" {
 #else
   #define RAPTOR_API
 #endif
+
+#ifdef RAPTOR_IN_REDLAND
+typedef librdf_uri raptor_uri;
+#else
+typedef const char raptor_uri;
+#endif
+
 
 
 /* Public structure */
@@ -58,25 +61,6 @@ typedef enum {
 } raptor_identifier_type;
 
 typedef enum { RAPTOR_URI_SOURCE_UNKNOWN, RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED } raptor_uri_source;
-  
-#ifdef LIBRDF_INTERNAL
-/* if inside Redland */
-typedef librdf_uri raptor_uri;
-
-#define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
-#define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
-#define RAPTOR_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
-#undef RAPTOR_URI_TO_FILENAME
-#define RAPTOR_FREE_URI(uri) librdf_free_uri(uri)
-#else
-typedef const char raptor_uri;
-
-#define IS_RDF_MS_CONCEPT(name, uri, local_name) !strcmp(name, #local_name)
-#define RAPTOR_URI_AS_STRING(uri) ((const char*)uri)
-#undef RAPTOR_URI_AS_FILENAME
-#define RAPTOR_URI_TO_FILENAME(uri) (raptor_file_uri_to_filename(uri))
-#define RAPTOR_FREE_URI(uri) LIBRDF_FREE(cstring, uri)
-#endif
 
 
 typedef struct {
