@@ -121,10 +121,10 @@ NEWS: NEWS.html
 
 
 if MAINTAINER_MODE
-libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/fix-groff-xhtml $@
+libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/fix-groff-xhtml
 	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
-rapper.html: $(srcdir)/rapper.1 $(srcdir)/fix-groff-xhtml $@
+rapper.html: $(srcdir)/rapper.1 $(srcdir)/fix-groff-xhtml
 	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
 
 
