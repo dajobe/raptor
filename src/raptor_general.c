@@ -39,6 +39,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 /* Raptor includes */
 #include "raptor.h"
@@ -541,11 +544,22 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   int free_base_uri=0;
   const char *filename=NULL;
   FILE *fh=NULL;
+#if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
+  struct stat buf;
+#endif
 
   if(uri) {
     filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
     if(!filename)
       return 1;
+
+#if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
+    if(!stat(filename, &buf) && S_ISDIR(buf.st_mode)) {
+      raptor_parser_error(rdf_parser, "Cannot read from a directory '%s'",
+                          filename);
+      goto cleanup;
+    }
+#endif
 
     fh=fopen(filename, "r");
     if(!fh) {
