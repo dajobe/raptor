@@ -11,20 +11,20 @@
 <h2>Bugs and Features</h2>
 
 <ul>
-<li>CDATA sections do not count line numbers at all (seen with libxml) (BUG)</li>
+<li>CDATA sections do not increase the line numbers with libxml2 (BUG)</li>
 <li>Add <code>--with-xml11-names</code> configure option (FEATURE)</li>
-<li>Update the XML1.1 name checking for ranges in latest document (FEATURE)</li>
+<li>Update the <a href="http://www.w3.org/TR/xml11/">XML 1.1</a> name checking for ranges in latest drafts (FEATURE)</li>
 <li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work (FEATURE)</li>
-<li>Report that the WIN32 uri code is not correct for <code>file://C|/foo</code> (BUG)</li>
-<li>Add a way to disable the gnome glib NFC linking/checking (FEATURE)</li>
-<li>N-Triples+ parser: the lexer lval-&gt;string values get overwritten on errors (BUG)</li>
-<li>N-Triples+ parser: use <code>raptor_generate_id</code> for blank node identifiers (BUG)</li>
+<li>WIN32 uri code may not be correct for <code>file://C|/foo</code> (BUG)</li>
+<li>Add <code>--disable-nfc-check</code> to disable the NFC linking/checking with GNOME glib, even if that library is present (FEATURE)</li>
+<li>N-Triples Plus parser: the lexer <code>lval-&gt;string</code> values get overwritten on errors (BUG)</li>
+<li>N-Triples Plus parser: use <code>raptor_generate_id</code> for blank node identifiers (BUG)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Add a N3 parser (FEATURE)</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a> (FEATURE)</li>
 <li>Provide a perl interface (FEATURE)</li>
 <li>Add namespace/prefix declaration user level callback (FEATURE)</li>
-<li>Other non-resource, literal, (daml:)collection parseType support (FEATURE)</li>
+<li>Other <code>rdf:parseType</code> support (FEATURE)</li>
 <li>Add a PNG parser, like
 <a href="http://pmt.sourceforge.net/pngmeta/">pngmeta</a> and parse
 the embedded RDF/XML into triples (FEATURE)</li>
