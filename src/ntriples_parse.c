@@ -223,11 +223,11 @@ typedef enum {
 static int 
 raptor_ntriples_term_valid(raptor_parser* rdf_parser, 
                            unsigned char c, int position, 
-                           raptor_ntriples_term_class class) 
+                           raptor_ntriples_term_class term_class) 
 {
   int result=0;
 
-  switch(class) {
+  switch(term_class) {
     case RAPTOR_TERM_CLASS_URI:
       /* ends on > */
       result=(c!= '>');
@@ -256,7 +256,7 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
       break;
       
     default:
-      raptor_parser_fatal_error(rdf_parser, "Unknown ntriples term %d", class);
+      raptor_parser_fatal_error(rdf_parser, "Unknown ntriples term %d", term_class);
   }
 
   return result;
@@ -291,7 +291,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
                      char **start, char *dest, 
                      size_t *lenp, size_t *dest_lenp,
                      char end_char,
-                     raptor_ntriples_term_class class,
+                     raptor_ntriples_term_class term_class,
                      int allow_utf8)
 {
   char *p=*start;
@@ -301,7 +301,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
   unsigned int position=0;
   int end_char_seen=0;
 
-  if(class == RAPTOR_TERM_CLASS_FULL)
+  if(term_class == RAPTOR_TERM_CLASS_FULL)
     end_char='\0';
   
   /* find end of string, fixing backslashed characters on the way */
@@ -345,7 +345,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         break;
       }
 
-      if(!raptor_ntriples_term_valid(rdf_parser, c, position, class)) {
+      if(!raptor_ntriples_term_valid(rdf_parser, c, position, term_class)) {
         if(end_char) {
           /* end char was expected, so finding an invalid thing is an error */
           raptor_parser_error(rdf_parser, "Missing terminating '%c' (found '%c')", end_char, c);
@@ -367,7 +367,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     }
 
     if(!*lenp) {
-      if(class != RAPTOR_TERM_CLASS_FULL)
+      if(term_class != RAPTOR_TERM_CLASS_FULL)
         raptor_parser_error(rdf_parser, "\\ at end of line");
       return 0;
     }
