@@ -27,7 +27,7 @@ ex-13.rdf ex-14.rdf ex-15.rdf ex-16.rdf ex-17.rdf ex-18.rdf \
 ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf ex-32.rdf ex-33.rdf \
 ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
-ex-41.rdf ex-46.rdf ex-47.rdf ex-48.rdf ex-49.rdf ex-50.rdf \
+ex-41.rdf ex-46.rdf ex-47.rdf ex-48.rdf ex-49.rdf ex-50.rdf ex-51.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
 owl-schema.rdf daml-oil.rdf
 
@@ -49,7 +49,7 @@ ex-20.out ex-21.out ex-22.out ex-23.out ex-24.out ex-25.out ex-26.out \
 ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out ex-32.out ex-33.out \
 ex-34.out ex-35.out ex-36.out ex-37.out ex-38.out ex-39.out ex-40.out \
 ex-41.out ex-42.out ex-43.out ex-44.out ex-45.out ex-46.out ex-47.out \
-ex-48.out ex-49.out ex-50.out \
+ex-48.out ex-49.out ex-50.out ex-51.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out daml-oil.out
 
@@ -73,7 +73,7 @@ RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
 OWL_DOC_URI="http://www.w3.org/2002/07/owl"
 
-DAML_DOC_URI="http://www.daml.org/2001/03/daml+oil"
+DAML_OIL_DOC_URI="http://www.daml.org/2001/03/daml+oil"
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
@@ -112,7 +112,7 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(ECHO) FAILED returned status $$status; result=1; \
