@@ -114,21 +114,37 @@ typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
 
 /* Public functions */
 
+RAPTOR_API void raptor_init(void);
+RAPTOR_API void raptor_finish(void);
+
 /* Create */
+/* OLD API */
 #ifdef RAPTOR_IN_REDLAND
 RAPTOR_API raptor_parser* raptor_new(librdf_world *world);
 #else
 RAPTOR_API raptor_parser* raptor_new(void);
 #endif
+/* NEW API */
+RAPTOR_API raptor_parser* raptor_new_parser(char *name);
+
+RAPTOR_API int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);
+RAPTOR_API int raptor_start_parse_file(raptor_parser *rdf_parser, const char *filename, raptor_uri *uri);
+
 
 /* Destroy */
+/* OLD API */
 RAPTOR_API void raptor_free(raptor_parser *rdf_parser);
+/* NEW API */
+void raptor_free_parser(raptor_parser* parser);
 
 /* Handlers */
 RAPTOR_API void raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
+#ifdef RAPTOR_IN_REDLAND
+RAPTOR_API void raptor_set_redland_world(raptor_parser* parser, librdf_world *world);
+#endif
 
 RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
 RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
@@ -138,6 +154,7 @@ RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
 
 
 /* Parsing functions */
+int raptor_parse_chunk(raptor_parser* rdf_parser, const char *buffer, size_t len, int is_end);
 #ifdef RAPTOR_IN_REDLAND
 RAPTOR_API int raptor_parse_file(raptor_parser* rdf_parser,  librdf_uri *uri, librdf_uri *base_uri);
 #else
@@ -168,6 +185,8 @@ RAPTOR_API char *raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API char *raptor_uri_uri_string_to_filename(const char *uri_string);
 RAPTOR_API int raptor_uri_is_file_uri(const char* uri_string);
 
+/* FIXME temporary redland stuff */
+void raptor_set_world(raptor_parser *rdf_parser, void *world);
 
 #ifndef RAPTOR_IN_REDLAND
 
