@@ -197,3 +197,9 @@ dist-hook: README NEWS
 	    cp -p $(srcdir)/$$file $(distdir)/$$file; \
 	  fi; \
 	done
+
+# The default target insanely deletes *.tab.c - i.e.
+# turtle_parser.tab.c which was NOT built by configure
+# and should not be deleted when cleaning the distribution.
+distclean-compile:
+	exit 0
