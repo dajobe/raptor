@@ -45,9 +45,12 @@
 /**
  * raptor_new_identifier - Constructor - create a raptor_identifier
  * @type: raptor_identifier_type of identifier
- * @uri: URI of identifier (if relevant)
+ * @uri: &raptor_uri of identifier (if relevant)
  * @uri_source: raptor_uri_source of URI (if relevnant)
  * @id: string for ID or genid (if relevant)
+ * @literal: string for literal
+ * @literal_datatype: &raptor_uri of identifier
+ * @literal_language: literal language
  * 
  * Constructs a new identifier copying the URI, ID fields.
  * 
@@ -57,20 +60,24 @@ raptor_identifier*
 raptor_new_identifier(raptor_identifier_type type,
                       raptor_uri *uri,
                       raptor_uri_source uri_source,
-                      unsigned char *id)
+                      const unsigned char *id,
+                      const unsigned char *literal,
+                      raptor_uri *literal_datatype,
+                      const unsigned char *literal_language)
 {
   raptor_identifier *identifier;
-  raptor_uri *new_uri=NULL;
-  unsigned char *new_id=NULL;
 
   identifier=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1,
-                                                sizeof(raptor_identifier));
+                                               sizeof(raptor_identifier));
   if(!identifier)
     return NULL;
 
+  identifier->type=type;
+  identifier->is_malloced=1;
+
   if(uri) {
-    new_uri=raptor_uri_copy(uri);
-    if(!new_uri) {
+    identifier->uri=raptor_uri_copy(uri);
+    if(!identifier->uri) {
       RAPTOR_FREE(raptor_identifier, identifier);
       return NULL;
     }
@@ -79,46 +86,46 @@ raptor_new_identifier(raptor_identifier_type type,
   if(id) {
     int len=strlen((char*)id);
     
-    new_id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-    if(!len) {
-      if(new_uri)
-        RAPTOR_FREE(cstring, new_uri);
-      RAPTOR_FREE(raptor_identifier, identifier);
+    identifier->id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    if(!identifier->id) {
+      raptor_free_identifier(identifier);
       return NULL;
     }
-    strncpy((char*)new_id, (char*)id, len+1);
+    strncpy((char*)identifier->id, (char*)id, len+1);
+  }
+  
+  if(literal) {
+    int len=strlen(literal);
+    
+    identifier->literal=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    if(!identifier->literal) {
+      raptor_free_identifier(identifier);
+      return NULL;
+    }
+    strncpy((char*)identifier->literal, (char*)literal, len+1);
   }
   
 
-  identifier->is_malloced=1;
-  raptor_init_identifier(identifier, type, new_uri, uri_source, new_id);
+  if(literal_datatype) {
+    identifier->literal_datatype=raptor_uri_copy(literal_datatype);
+    if(!identifier->literal_datatype) {
+      raptor_free_identifier(identifier);
+      return NULL;
+    }
+  }
+
+  if(literal_language) {
+    int len=strlen(literal_language);
+    
+    identifier->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    if(!len) {
+      raptor_free_identifier(identifier);
+      return NULL;
+    }
+    strncpy((char*)identifier->literal_language, (char*)literal_language, len+1);
+  }
+  
   return identifier;
-}
-
-
-/**
- * raptor_init_identifier - Initialise a pre-allocated raptor_identifier object
- * @identifier: Existing object
- * @type: raptor_identifier_type of identifier
- * @uri: URI of identifier (if relevant)
- * @uri_source: raptor_uri_source of URI (if relevnant)
- * @id: string for ID or genid (if relevant)
- * 
- * Fills in the fields of an existing allocated raptor_identifier object.
- * DOES NOT copy any of the option arguments.
- **/
-void
-raptor_init_identifier(raptor_identifier *identifier,
-                       raptor_identifier_type type,
-                       raptor_uri *uri,
-                       raptor_uri_source uri_source,
-                       unsigned char *id) 
-{
-  identifier->is_malloced=0;
-  identifier->type=type;
-  identifier->uri=uri;
-  identifier->uri_source=uri_source;
-  identifier->id=id;
 }
 
 
@@ -132,35 +139,58 @@ raptor_init_identifier(raptor_identifier *identifier,
 int
 raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 {
-  raptor_uri *new_uri=NULL;
-  unsigned char *new_id=NULL;
-  
   raptor_free_identifier(dest);
-  raptor_init_identifier(dest, src->type, new_uri, src->uri_source, new_id);
+
+  dest->type=src->type;
+  dest->uri_source=src->uri_source;
+  dest->ordinal=src->ordinal;
 
   if(src->uri) {
-    new_uri=raptor_uri_copy(src->uri);
-    if(!new_uri)
+    dest->uri=raptor_uri_copy(src->uri);
+    if(!dest->uri)
       return 0;
   }
 
   if(src->id) {
     int len=strlen((char*)src->id);
     
-    new_id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-    if(!len) {
-      if(new_uri)
-        RAPTOR_FREE(cstring, new_uri);
+    dest->id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    if(!dest->id) {
+      raptor_free_identifier(dest);
       return 0;
     }
-    strncpy((char*)new_id, (char*)src->id, len+1);
+    strncpy((char*)dest->id, (char*)src->id, len+1);
   }
-  dest->uri=new_uri;
-  dest->id=new_id;
 
-  dest->type=src->type;
-  dest->uri_source=src->uri_source;
-  dest->ordinal=src->ordinal;
+  if(src->literal) {
+    int len=strlen((char*)src->literal);
+    
+    dest->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    if(!dest->literal_language) {
+      raptor_free_identifier(dest);
+      return 0;
+    }
+    strncpy((char*)dest->literal_language, (char*)src->literal_language, len+1);
+  }
+
+  if(src->literal_datatype) {
+    dest->literal_datatype=raptor_uri_copy(src->literal_datatype);
+    if(!dest->literal_datatype) {
+      raptor_free_identifier(dest);
+      return 0;
+    }
+  }
+
+  if(src->literal_language) {
+    int len=strlen((char*)src->literal_language);
+    
+    dest->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    if(!dest->literal_language) {
+      raptor_free_identifier(dest);
+      return 0;
+    }
+    strncpy((char*)dest->literal_language, (char*)src->literal_language, len+1);
+  }
 
   return 0;
 }
@@ -169,17 +199,35 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 /**
  * raptor_free_identifier - Destructor - destroy a raptor_identifier object
  * @identifier: &raptor_identifier object
- * 
- * Does not free an object initialised by raptor_init_identifier()
+ *
  **/
 void
 raptor_free_identifier(raptor_identifier *identifier) 
 {
-  if(identifier->uri)
+  if(identifier->uri) {
     raptor_free_uri(identifier->uri);
+    identifier->uri=NULL;
+  }
 
-  if(identifier->id)
+  if(identifier->id) {
     RAPTOR_FREE(cstring, (void*)identifier->id);
+    identifier->id=NULL;
+  }
+
+  if(identifier->literal) {
+    RAPTOR_FREE(cstring, identifier->literal);
+    identifier->literal=NULL;
+  }
+
+  if(identifier->literal_datatype) {
+    raptor_free_uri(identifier->literal_datatype);
+    identifier->literal_datatype=NULL;
+  }
+
+  if(identifier->literal_language) {
+    RAPTOR_FREE(cstring, identifier->literal_language);
+    identifier->literal_language=NULL;
+  }
 
   if(identifier->is_malloced)
     RAPTOR_FREE(identifier, (void*)identifier);
