@@ -45,7 +45,7 @@ raptor_sequence.c raptor_stringbuffer.c
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
-EXTRA_DIST=ChangeLog \
+EXTRA_DIST=ChangeLog ChangeLog.1 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 MPL.html libraptor.html \
