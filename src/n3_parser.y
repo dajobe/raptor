@@ -188,7 +188,7 @@ statement: directive
 #endif
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_n3_generate_statement(rdf_parser, t2);
+      raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 
     raptor_free_sequence($2);
@@ -397,15 +397,15 @@ propertyList: verb objectList SEMICOLON propertyList
 
 directive : PREFIX IDENTIFIER URI_LITERAL DOT
 {
-  char *prefix=$2;
-  raptor_n3_parser* n3_parser=((raptor_parser*)rdf_parser)->context;
+  unsigned char *prefix=$2;
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
 
 #if RAPTOR_DEBUG > 1  
   printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string($3));
 #endif
 
   if(prefix) {
-    int len=strlen(prefix);
+    size_t len=strlen((const char*)prefix);
     if(prefix[len-1] == ':') {
       if(len == 1)
          /* declaring default namespace prefix @prefix : ... */
@@ -416,7 +416,8 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
   }
 
   raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
-                                         prefix, raptor_uri_as_string($3), 0);
+                                         prefix, 
+                                         (const unsigned char*)raptor_uri_as_string($3), 0);
   if($2)
     free($2);
   raptor_free_uri($3);
@@ -576,7 +577,7 @@ URI_LITERAL
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
   int i;
-  const unsigned char *id=raptor_generate_id(rdf_parser, 0, NULL);
+  const unsigned char *id=raptor_generate_id((raptor_parser*)rdf_parser, 0, NULL);
   
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
 
@@ -600,7 +601,7 @@ URI_LITERAL
       raptor_copy_identifier(i2, $$);
       t2->subject=i2;
       t2->subject->is_malloced=1;
-      raptor_n3_generate_statement(rdf_parser, t2);
+      raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 
 #if RAPTOR_DEBUG > 1  
