@@ -479,6 +479,31 @@ raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
 
 
 /**
+ * raptor_iostream_write_stringbuffer - Write a stringbuffer to an iostream
+ * @iostr: raptor iostream
+ * @sb: &raptor_stringbuffer to write
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_iostream_write_stringbuffer(raptor_iostream* iostr,
+                                   raptor_stringbuffer *sb)
+{
+  size_t length;
+  if(!sb)
+    return 1;
+  
+  length=raptor_stringbuffer_length(sb);
+  if(length)
+    return (raptor_iostream_write_bytes(iostr, 
+                                        raptor_stringbuffer_as_string(sb), 1, length)
+            != length);
+  else
+    return 0;
+}
+
+
+/**
  * raptor_iostream_write_decimal - Write an integer in decimal to the iostream
  * @iostr: raptor iostream
  * @integer: integer to format as decimal
