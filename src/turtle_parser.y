@@ -963,7 +963,7 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
 static void
 raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
 {
-  raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)parser->context;
+  /* raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)parser->context; */
   raptor_statement *statement=&parser->statement;
   int predicate_ordinal=0;
 
@@ -1030,7 +1030,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
   raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2(raptor_turtle_parse_chunk, "adding %d bytes to line buffer\n", len);
+  RAPTOR_DEBUG2("adding %d bytes to line buffer\n", (int)len);
 #endif
 
   if(len) {
@@ -1059,8 +1059,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3(raptor_turtle_parse_chunk,
-                  "buffer buffer now '%s' (%d bytes)\n", 
+    RAPTOR_DEBUG3("buffer buffer now '%s' (%d bytes)\n", 
                   turtle_parser->buffer, turtle_parser->buffer_length);
 #endif
   }
