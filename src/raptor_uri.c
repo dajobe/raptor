@@ -762,12 +762,12 @@ raptor_uri_init(void)
  **/
 
 static int 
-raptor_uri_path_common_base_length(unsigned char const *first_path, size_t first_path_len,
-                                   unsigned char const *second_path, size_t second_path_len)
+raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first_path_len,
+                                   const unsigned char *second_path, size_t second_path_len)
 {
   int common_len=0;
-  unsigned char const *cur_ptr=first_path;
-  unsigned char const *prev_ptr=first_path;
+  const unsigned char *cur_ptr=first_path;
+  const unsigned char *prev_ptr=first_path;
   
   /* Compare each path component of first_path and second_path until there is
      a mismatch. Then return the length from the start of the path to the last
@@ -798,13 +798,13 @@ raptor_uri_path_common_base_length(unsigned char const *first_path, size_t first
  **/
 
 static unsigned char *
-raptor_uri_path_make_relative_path(unsigned char const *from_path, size_t from_path_len,
-                                   unsigned char const *to_path, size_t to_path_len,
-                                   unsigned char const *suffix, size_t suffix_len,
+raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_path_len,
+                                   const unsigned char *to_path, size_t to_path_len,
+                                   const unsigned char *suffix, size_t suffix_len,
                                    size_t *result_length_p)
 {
   int common_len, cur_len, final_len, up_dirs = 0, to_dir_len = 0;
-  unsigned char const *cur_ptr, *prev_ptr;
+  const unsigned char *cur_ptr, *prev_ptr;
   unsigned char *final_path, *final_path_cur;
 
   common_len=raptor_uri_path_common_base_length(from_path, from_path_len, to_path, to_path_len);
@@ -1094,11 +1094,11 @@ assert_uri_to_relative(const char *base, const char *uri, const char *relative)
   unsigned char *output;
   int result;
   raptor_uri* base_uri=NULL;
-  raptor_uri* reference_uri=raptor_new_uri((unsigned const char*)uri);
+  raptor_uri* reference_uri=raptor_new_uri((const unsigned char*)uri);
   size_t length=0;
 
   if(base)
-    base_uri=raptor_new_uri((unsigned const char*)base);
+    base_uri=raptor_new_uri((const unsigned char*)base);
   
   output=raptor_uri_to_relative_counted_uri_string(base_uri, reference_uri, 
                                                    &length);
