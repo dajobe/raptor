@@ -38,7 +38,6 @@ EXTRA_rapper_SOURCES = getopt.c raptor_getopt.h
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c
-EXTRA_libraptor_la_SOURCES = strcasecmp.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
