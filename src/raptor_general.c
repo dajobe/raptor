@@ -428,6 +428,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
                   raptor_uri *base_uri) 
 {
   int rc=0;
+  int free_base_uri=0;
   const char *filename=NULL;
   FILE *fh=NULL;
 
@@ -441,6 +442,10 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
       raptor_parser_error(rdf_parser, "file '%s' open failed - %s",
                           filename, strerror(errno));
       goto cleanup;
+    }
+    if(!base_uri) {
+      base_uri=raptor_uri_copy(uri);
+      free_base_uri=1;
     }
   } else {
     if(!base_uri)
@@ -456,6 +461,8 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
       fclose(fh);
     RAPTOR_FREE(cstring, (void*)filename);
   }
+  if(free_base_uri)
+    raptor_free_uri(base_uri);
 
   return rc;
 }
