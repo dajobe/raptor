@@ -88,11 +88,12 @@
  *
  */
 
-static const unsigned char * const raptor_xml_uri=(const unsigned char *)"http://www.w3.org/XML/1998/namespace";
-static const unsigned char * const raptor_rdf_ms_uri=(const unsigned char *)RAPTOR_RDF_MS_URI;
-static const unsigned char * const raptor_rdf_schema_uri=(const unsigned char *)RAPTOR_RDF_SCHEMA_URI;
-static const unsigned char * const raptor_xmlschema_datatypes_uri=(const unsigned char *)RAPTOR_XMLSCHEMA_DATATYPES_URI;
-static const unsigned char * const raptor_owl_uri=(const unsigned char *)RAPTOR_OWL_URI;
+const char * const raptor_xml_namespace_uri=(const char *)"http://www.w3.org/XML/1998/namespace";
+const char * const raptor_rdf_namespace_ms_uri=(const char *)RAPTOR_RDF_MS_URI;
+const unsigned int raptor_rdf_namespace_ms_uri_len=43;
+const char * const raptor_rdf_namespace_schema_uri=(const char *)RAPTOR_RDF_SCHEMA_URI;
+const char * const raptor_xmlschema_datatypes_namespace_uri=(const char *)RAPTOR_XMLSCHEMA_DATATYPES_URI;
+const char * const raptor_owl_namespace_uri=(const char *)RAPTOR_OWL_URI;
 
 
 /**
@@ -120,26 +121,26 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
   nstack->error_handler=error_handler;
   nstack->error_data=error_data;
 
-  nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, raptor_rdf_ms_uri);
-  nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, raptor_rdf_schema_uri);
+  nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, raptor_rdf_ms_namespace_uri);
+  nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, raptor_rdf_schema_namespace_uri);
 
   if(defaults) {
     /* defined at level -1 since always 'present' when inside the XML world */
     raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
-                                           (unsigned char*)raptor_xml_uri, -1);
+                                           (unsigned char*)raptor_xml_namespace_uri, -1);
     if(defaults >= 2) {
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"rdf",
-                                             (unsigned char*)raptor_rdf_ms_uri, 0);
+                                             (unsigned char*)raptor_rdf_ms_namespace_uri, 0);
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"rdfs",
-                                             (unsigned char*)raptor_rdf_schema_uri, 0);
+                                             (unsigned char*)raptor_rdf_schema_namespace_uri, 0);
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"xsd",
-                                             (unsigned char*)raptor_xmlschema_datatypes_uri, 0);
+                                             (unsigned char*)raptor_xmlschema_namespace_datatypes_uri, 0);
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"owl",
-                                             (unsigned char*)raptor_owl_uri, 0);
+                                             (unsigned char*)raptor_owl_namespace_uri, 0);
     }
   }
 }
