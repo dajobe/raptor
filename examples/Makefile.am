@@ -31,7 +31,7 @@ AM_CPPFLAGS=-I$(top_srcdir)
 
 raptor_abort_SOURCES = raptor_abort.c
 raptor_abort_LDADD=$(top_builddir)/libraptor.la @REDLAND_LIBS@
-raptor_abort_DEPENDENCIES = @REDLAND_LIBS@
+raptor_abort_DEPENDENCIES = $(top_builddir)/libraptor.la @REDLAND_LIBS@
 
 
 $(top_builddir)/libraptor.la:
