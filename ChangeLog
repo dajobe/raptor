@@ -1,5 +1,7 @@
 2004-10-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Snapshotted raptor_1_4_0 for 1.4.0 release
+
 	* raptor_rss.c: Added generation of triples for RSS enclosures
 	based on a patch from Suzan Foster.  Changes made include
 	correcting the enclosures namespace, tidying some memory leaks and
