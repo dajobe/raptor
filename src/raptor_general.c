@@ -991,7 +991,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
     } else if(statement->object_literal_datatype) {
       fputc('<', stream);
       fputs(raptor_uri_as_string((raptor_uri*)statement->object_literal_datatype), stream);
-      fputc('<', stream);
+      fputc('>', stream);
     }
     fputc('"', stream);
     fputs((const char*)statement->object, stream);
