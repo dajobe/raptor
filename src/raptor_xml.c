@@ -135,7 +135,7 @@ size_t
 raptor_xml_escape_string(const unsigned char *string, size_t len,
                          unsigned char *buffer, size_t length,
                          char quote,
-                         raptor_message_handler error_handler,
+                         raptor_simple_message_handler error_handler,
                          void *error_data)
 {
   int l;
