@@ -18,10 +18,12 @@
 # full license terms.
 # 
 
-EXAMPLES=raptor_abort grapper
+EXAMPLES=raptor_abort
+GUI_EXAMPLES=grapper
 
 # Need this so that automake doesn't moan
 noinst_PROGRAMS = $(EXAMPLES)
+EXTRA_PROGRAMS = $(GUI_EXAMPLES)
 
 CLEANFILES=$(EXAMPLES)
 
