@@ -209,10 +209,6 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     if(uri)
       uri=raptor_new_uri_from_uri_local_name(uri, new_name);
 
-    if(!uri) {
-      raptor_free_qname(qname);
-      return NULL;
-    }
     qname->uri=uri;
   }
 
@@ -238,7 +234,6 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
                                            const unsigned char *value)
 {
   raptor_qname* qname;
-  const unsigned char *p;
   unsigned char* new_name;
   int local_name_length=strlen((char*)local_name);
 
@@ -277,11 +272,6 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
   if(qname->uri)
     qname->uri=raptor_new_uri_from_uri_local_name(qname->uri, new_name);
   
-  if(!qname->uri) {
-    raptor_free_qname(qname);
-    return NULL;
-  }
-
   return qname;
 }
 
