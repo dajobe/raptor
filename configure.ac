@@ -120,7 +120,7 @@ fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h expat.h xmlparse.h sys/stat.h curl/curl.h libxml/nanohttp.h sys/param.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h sys/stat.h curl/curl.h libxml/nanohttp.h sys/param.h)
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
   [#include <stdio.h>
@@ -239,16 +239,41 @@ need_expat=0
 need_expat_source=0
 expat_source_dir=
 expat_obj_dir=
+
+AC_ARG_WITH(expat-source, [  --with-expat-source=PATH Location of expat source tree (default=auto)], expat_source="$withval", expat_source="auto")
+
+
 AC_MSG_CHECKING(for expat sources)
-if test -d $srcdir/expat; then
+if test "$expat_source" != "auto"; then
+  have_expat_source=1
+  have_expat=1
+  expat_source_dir=$expat_source
+  expat_obj_dir=$expat_source
+  AC_MSG_RESULT(yes - $expat_source)
+elif test -d $srcdir/expat; then
+  expat_source=local
   have_expat_source=1
   have_expat=1
   expat_source_dir="\$(top_srcdir)/expat"
   expat_obj_dir="\$(top_builddir)/expat"
-  AC_MSG_RESULT(yes - expat)
+  AC_MSG_RESULT(yes - local source)
 else
+  expat_source=
   AC_MSG_RESULT(no)
 fi
+
+if test "X$expat_source" != X; then
+  if test -d "$expat_source_dir/xmlparse"; then
+    # old expat
+    CPPFLAGS="-I$expat_source_dir/xmlparse $CPPFLAGS"
+  else
+    # new expat
+    CPPFLAGS="-I$expat_source_dir/lib $CPPFLAGS"
+  fi
+fi
+
+AC_CHECK_HEADERS(expat.h xmlparse.h)
+
 
 oLIBS="$LIBS"
 AC_CHECK_LIB(xmltok, main, xmlt=1, xmlt=0)
@@ -416,7 +441,7 @@ fi
 
 
 need_glib2=0
-AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check     turn off Unicode NFC checking (default auto).  ], nfc_check="$enableval", nfc_check="auto")	
+AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check     turn off Unicode NFC checking (default=auto).  ], nfc_check="$enableval", nfc_check="auto")	
 AC_MSG_CHECKING(using Unicode NFC checking)
 if test "X$ac_cv_func_g_utf8_normalize" = Xyes; then
   if test "X$nfc_check" = Xauto; then
@@ -559,13 +584,16 @@ AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - libxml (defa
 for xml_parser_name in $xml_parser libxml expat; do
   case $xml_parser_name in
     expat)
-      if test $have_expat_lib = 1; then
+      if test "$expat_source" != "auto"; then
 	need_expat=1
-	AC_DEFINE(RAPTOR_XML_EXPAT, 1, [Use expat XML parser])
-        break
+	need_expat_source=1
+      elif test $have_expat_lib = 1; then
+	need_expat=1
       elif test $have_expat_source = 1; then
 	need_expat=1
 	need_expat_source=1
+      fi
+      if test $need_expat; then
 	AC_DEFINE(RAPTOR_XML_EXPAT, 1, [Use expat XML parser])
         break
       fi
@@ -574,11 +602,11 @@ for xml_parser_name in $xml_parser libxml expat; do
     libxml)
       if test $have_libxml_lib = 1; then
 	need_libxml=1
-	AC_DEFINE(RAPTOR_XML_LIBXML, 1, [Use libxml XML parser])
-        break
       elif test $have_libxml_source = 1; then
 	need_libxml=1
 	need_libxml_source=1
+      fi
+      if test $need_libxml; then
 	AC_DEFINE(RAPTOR_XML_LIBXML, 1, [Use libxml XML parser])
         break
       fi
@@ -601,7 +629,7 @@ if test $need_libxml = 1; then
   fi
 elif test $need_expat = 1; then
   if test $need_expat_source = 1; then
-    result="$result expat(source)"
+    result="$result expat(source in $expat_source_dir)"
   else
     result="$result expat(system)"
   fi
@@ -620,7 +648,7 @@ else
 fi
 
 AC_MSG_CHECKING(XML names version)
-AC_ARG_WITH(xml-names, [  --with-xml-names=1.1|1.0  Select XML version name checking (default 1.0)], xml_names="$withval", xml_names="1.0")
+AC_ARG_WITH(xml-names, [  --with-xml-names=1.1|1.0  Select XML version name checking (default=1.0)], xml_names="$withval", xml_names="1.0")
 if test $xml_names = 1.1; then
   AC_DEFINE(RAPTOR_XML_1_1, 1, [Check XML 1.1 Names])
 fi
@@ -806,11 +834,18 @@ fi
 
 
 if test $need_expat = 1; then
-  # Only build local copy if it is needed
   if test $need_expat_source = 1; then
-    SD="$SD expat"
-    CPPFLAGS="-I$expat_source_dir/xmlparse $CPPFLAGS"
-    LIBS="$LIBS $expat_obj_dir/xmlparse/xmlparse.o $expat_obj_dir/xmlparse/hashtable.o $expat_obj_dir/xmltok/xmlrole.o $expat_obj_dir/xmltok/xmltok.o"
+    # Only build local copy if it is needed
+    if test "X$expat_source" = local; then
+      SD="$SD expat"
+    fi
+    if test -d "$expat_source_dir/xmlparse"; then
+      # old expat
+      LIBS="$LIBS $expat_obj_dir/xmlparse/xmlparse.o $expat_obj_dir/xmlparse/hashtable.o $expat_obj_dir/xmltok/xmlrole.o $expat_obj_dir/xmltok/xmltok.o"
+    else
+      # new expat
+      LIBS="$LIBS $expat_obj_dir/lib/xmlparse.o $expat_obj_dir/lib/xmlrole.o $expat_obj_dir/lib/xmltok.o"
+    fi
   else
     LIBS="$LIBS $expat_libs"
   fi
@@ -835,7 +870,7 @@ if test $need_libxml = 1; then
 fi
 if test $need_expat = 1; then
   if test $need_expat_source = 1; then
-    xml_parsers_available="$xml_parsers_available expat(source)"
+    xml_parsers_available="$xml_parsers_available expat(source in $expat_source_dir)"
   else
     if test $libexpat = 1; then
       xml_parsers_available="$xml_parsers_available expat(system libexpat)"
