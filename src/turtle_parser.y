@@ -176,7 +176,7 @@ statement: directive
     /* non-empty property list, handle it  */
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      raptor_identifier *i2=(raptort_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $1);
       t2->subject=i2;
       t2->subject->is_malloced=1;
@@ -314,7 +314,7 @@ propertyList: verb objectList SEMICOLON propertyList
     /* non-empty property list, handle it  */
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      raptor_identifier *i2=(raptort_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $1);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
@@ -368,7 +368,7 @@ propertyList: verb objectList SEMICOLON propertyList
   if($1 && $2) {
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      raptor_identifier *i2=(raptort_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $1);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
@@ -596,7 +596,7 @@ URI_LITERAL
 
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_identifier *i2=RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      raptor_identifier *i2=(raptort_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       raptor_copy_identifier(i2, $$);
       t2->subject=i2;
       t2->subject->is_malloced=1;
