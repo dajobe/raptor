@@ -556,7 +556,12 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser,
           goto cleanup;
         }
       }
-    } else {
+    } else if(i == 1) {
+      if(*p != '<') {
+        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>", *p);
+        goto cleanup;
+      }
+    } else /* i==0 */ {
       if(*p != '<' && *p != '_') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
         goto cleanup;
