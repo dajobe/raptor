@@ -1196,6 +1196,8 @@ int
 main(int argc, char *argv[]) 
 {
   const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr#frag";
+  const char *base_uri_xmlbase = "http://example.org/bpath/cpath/d;p";
+  const char *base_uri_retrievable = "http://example.org/bpath/cpath/d;p?querystr";
   const char* dirs[6] = { "/etc", "/bin", "/tmp", "/lib", "/var", NULL };
   char uri_buffer[16]; /* strlen("file:///DIR/foo")+1 */  
   int i;
@@ -1308,20 +1310,32 @@ main(int argc, char *argv[])
   uri1=raptor_new_uri(base_uri);
 
   str=raptor_uri_as_string(uri1);
-  fprintf(stderr, "%s: URI is %s\n", argv[0], str);
-  if(!strcmp(str, base_uri)) {
+  if(strcmp(str, base_uri)) {
+    fprintf(stderr, "FAIL raptor_uri_as_string URI %s gave %s != %s\n",
+            base_uri, str, base_uri);
     failures++;
-  }
+  } else
+    fprintf(stderr, "%s: URI is %s\n", argv[0], str);
   
   uri2=raptor_new_uri_for_xmlbase(uri1);
-
   str=raptor_uri_as_string(uri2);
-  fprintf(stderr, "%s: xml base URI is %s\n", argv[0], str);
+  if(strcmp(str, base_uri_xmlbase)) {
+    fprintf(stderr, "FAIL raptor_new_uri_for_xmlbase URI %s gave %s != %s\n",
+            base_uri, str, base_uri_xmlbase);
+    failures++;
+  } else
+    fprintf(stderr, "%s: XML Base URI is %s\n", argv[0], str);
+
   
   uri3=raptor_new_uri_for_retrieval(uri1);
 
   str=raptor_uri_as_string(uri3);
-  fprintf(stderr, "%s: retrievable URI is %s\n", argv[0], str);
+  if(strcmp(str, base_uri_retrievable)) {
+    fprintf(stderr, "FAIL raptor_new_uri_for_retrievable URI %s gave %s != %s\n",
+            base_uri, str, base_uri_retrievable);
+    failures++;
+  } else
+    fprintf(stderr, "%s: Retrievable URI is %s\n", argv[0], str);
   
   raptor_free_uri(uri3);
   raptor_free_uri(uri2);
