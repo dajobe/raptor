@@ -370,6 +370,7 @@ have_libxml_lib=0
 have_libxml_source=0
 need_libxml=0
 need_libxml_source=0
+have_libxml2_xmlParserSeverities=no
 AC_MSG_CHECKING(for libxml sources)
 if test -d $srcdir/libxml -a -r $srcdir/libxml/libxml.spec ; then
   have_libxml_source=1
@@ -451,6 +452,14 @@ if test "X$XML_CONFIG" != X; then
     AC_CHECK_FUNC(xmlUseNewParser, AC_DEFINE(RAPTOR_LIBXML_XMLUSENEWPARSER, 1, [does libxml have xmlUseNewParser]))
   fi
 
+  if test "$ac_cv_header_libxml_xmlreader_h" = yes; then
+    AC_MSG_CHECKING(libxml xmlReader API has xmlParserSeverities)
+    AC_TRY_COMPILE([#include <libxml/xmlreader.h>], [xmlParserSeverities foo;],
+	have_libxml2_xmlParserSeverities=yes
+	AC_MSG_RESULT(yes),
+	AC_MSG_RESULT(no))
+  fi
+
 fi
 CPPFLAGS="$oCPPFLAGS"
 LIBS="$oLIBS"
@@ -512,9 +521,8 @@ else
 fi
 AC_MSG_RESULT($result)
 
-
 AC_MSG_CHECKING(RSS Tag Soup parser requirements)
-if test $need_libxml = 1 -a "$ac_cv_header_libxml_xmlreader_h" = yes; then
+if test $need_libxml = 1 -a "$ac_cv_header_libxml_xmlreader_h" = yes -a "$have_libxml2_xmlParserSeverities" = yes ; then
   AC_MSG_RESULT(met)
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
   AC_LIBOBJ(raptor_rss)
