@@ -3500,11 +3500,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_MEMBER:
       case RAPTOR_STATE_PROPERTYELT:
 
-        /* Handle rdf:li as a property in member state above */ 
+        /* Handling rdf:li as a property, noting special processing */ 
         if(element_in_rdf_ns && 
            IS_RDF_MS_CONCEPT(el_name, element->name->uri, li)) {
           state=RAPTOR_STATE_MEMBER;
-          break;
         }
 
 
