@@ -43,7 +43,9 @@ else
     DIE="yes"
 fi
 
-
+# Ensure that these are created by the versions on this system
+# (indirectly via automake)
+rm -f libtool ltmain.sh
 if (automake --version) < /dev/null > /dev/null 2>&1 ; then
   if (automake --version | awk 'NR==1 { if( $4 >= '$automake_vers') \
 			     exit 1; exit 0; }');
