@@ -292,7 +292,7 @@ fi
 CPPFLAGS="$oCPPFLAGS"
 
 
-AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="expat") 
+AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - expat, libxml [expat]], xml_parser="$withval", xml_parser="libxml") 
 
 for xml_parser_name in $xml_parser libxml expat; do
   case $xml_parser_name in
