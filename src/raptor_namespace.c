@@ -88,9 +88,10 @@
  */
 
 static const char * const raptor_xml_uri="http://www.w3.org/XML/1998/namespace";
+#ifndef RAPTOR_IN_REDLAND
 static const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
 static const char * const raptor_rdf_schema_uri=RAPTOR_RDF_SCHEMA_URI;
-
+#endif
 
 void
 raptor_namespaces_init(raptor_namespace_stack *nstack
@@ -98,13 +99,12 @@ raptor_namespaces_init(raptor_namespace_stack *nstack
                        ,librdf_world *world
 #endif
 ) {
-  /* defined at level -1 since always 'present' when inside the XML world */
-  raptor_namespaces_start_namespace(nstack, "xml", raptor_xml_uri, -1);
-
   nstack->top=NULL;
 #ifdef RAPTOR_IN_REDLAND
   nstack->world=world;
 #endif
+  /* defined at level -1 since always 'present' when inside the XML world */
+  raptor_namespaces_start_namespace(nstack, "xml", raptor_xml_uri, -1);
 }
 
 
@@ -257,9 +257,9 @@ raptor_namespace_new(const char *prefix,
   /* set convienience flags when there is a defined namespace URI */
   if(ns_uri_string) {
 #ifdef RAPTOR_IN_REDLAND
-    if(librdf_uri_equals(map->uri, librdf_concept_ms_namespace_uri))
+    if(librdf_uri_equals(ns->uri, librdf_concept_ms_namespace_uri))
       ns->is_rdf_ms=1;
-    else if(librdf_uri_equals(map->uri, librdf_concept_schema_namespace_uri))
+    else if(librdf_uri_equals(ns->uri, librdf_concept_schema_namespace_uri))
       ns->is_rdf_schema=1;
 #else
     if(!strcmp(ns_uri_string, raptor_rdf_ms_uri))
@@ -339,12 +339,25 @@ raptor_namespace_print(FILE *stream, raptor_namespace* ns)
 int main(int argc, char *argv[]);
 
 
+#ifdef RAPTOR_IN_REDLAND
+#include <librdf.h>
+#endif
+
 int
 main(int argc, char *argv[]) 
 {
   raptor_namespace_stack namespaces;
+
+#ifdef RAPTOR_IN_REDLAND
+  librdf_world *world=librdf_new_world();
+  librdf_world_open(world);
+#endif
   
-  raptor_namespaces_init(&namespaces);
+  raptor_namespaces_init(&namespaces
+#ifdef RAPTOR_IN_REDLAND
+                         ,world
+#endif
+  );
   
   raptor_namespaces_start_namespace(&namespaces,
                                     "ex1",
@@ -362,6 +375,10 @@ main(int argc, char *argv[])
 
   raptor_namespaces_free(&namespaces);
 
+#ifdef RAPTOR_IN_REDLAND
+  librdf_free_world(world);
+#endif
+  
   /* keep gcc -Wall happy */
   return(0);
 }
