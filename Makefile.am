@@ -99,9 +99,9 @@ raptor_cc.c : raptor_cc.gperf
 test: check
 
 raptor_cc_test: raptor_cc.c libraptor.la
-	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
+	$(LINK) $(DEFS) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_cc.c libraptor.la $(LIBS)
 
 raptor_uri_test: raptor_uri.c libraptor.la
-	$(LINK) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+	$(LINK) $(DEFS) -static -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 @SET_MAKE@
