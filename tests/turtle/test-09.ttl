@@ -1,0 +1,4 @@
+# Test optional , in list entries in a collection
+@prefix : <http://example.org/stuff/1.0/> .
+:a :b ( "v1" "v2" ) .
+
