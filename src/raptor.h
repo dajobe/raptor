@@ -133,11 +133,7 @@ typedef const char* (*rapier_container_test_handler)(const char *element_uri);
 /* Public functions */
 
 /* Create */
-#ifdef LIBRDF_INTERNAL
-rapier_parser* rapier_new(librdf_uri *base_uri);
-#else
-rapier_parser* rapier_new(const char *base_uri);
-#endif
+rapier_parser* rapier_new(void);
 /* Destroy */
 void rapier_free(rapier_parser *rdf_parser);
 
@@ -150,7 +146,11 @@ void rapier_set_statement_handler(rapier_parser* parser, void *user_data, rapier
 void rapier_print_statement(const rapier_statement * const statement, FILE *stream);
 
 /* Parsing functions */
+#ifdef LIBRDF_INTERNAL
+int rapier_parse_file(rapier_parser* rdf_parser,  const char *filename, librdf_uri *base_uri);
+#else
 int rapier_parse_file(rapier_parser* rdf_parser,  const char *filename, const char *base_uri);
+#endif
 
 /* Utility functions */
 void rapier_print_locator(FILE *stream, rapier_locator* locator);
