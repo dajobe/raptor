@@ -944,25 +944,82 @@ raptor_set_generate_id_handler(raptor_parser* parser,
 }
 
 
+static struct
+{
+  int feature;
+  const char *name;
+  const char *label;
+} raptor_features_list [RAPTOR_FEATURE_LAST+1]= {
+  { RAPTOR_FEATURE_SCANNING                ,"scanForRDF", "Scan for rdf:RDF in XML" },
+  { RAPTOR_FEATURE_ASSUME_IS_RDF           ,"assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
+  { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES ,"allowNonNsAttributes", "Allow bare 'ID' rather than 'rdf:ID'" },
+  { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  ,"allowOtherParsetypes", "Allow user defined rdf:parseType values" },
+  { RAPTOR_FEATURE_ALLOW_BAGID             ,"allowBagID", "Allow deprecated rdf:bagID" },
+  { RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST ,"allowRDFtypeRDFlist", "Generate the collection rdf:type rdf:List triple" },
+  { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      ,"normalizeLanguage", "Normalize xml:lang values to lowercase" },
+  { RAPTOR_FEATURE_NON_NFC_FATAL           ,"nonNFCfatal", "Make non-NFC literals cause a fatal error" }
+};
+
+
+/**
+ * raptor_features_enumerate - Get list of syntax features
+ * @counter: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ * 
+ * If uri is not NULL, a pointer toa new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: non 0 on failure or the feature is unknown
+ **/
+int
+raptor_features_enumerate(const unsigned int feature,
+                          const char **name, 
+                          raptor_uri **uri, const char **label)
+{
+  int i;
+
+  for(i=0; i <= RAPTOR_FEATURE_LAST; i++)
+    if(raptor_features_list[i].feature == feature) {
+      if(name)
+        *name=raptor_features_list[i].name;
+      
+      if(uri) {
+        raptor_uri *base_uri=raptor_new_uri("http://feature.librdf.org/raptor-");
+        if(!base_uri)
+          return 1;
+        
+        *uri=raptor_new_uri_from_uri_local_name(base_uri,
+                                                raptor_features_list[i].name);
+        raptor_free_uri(base_uri);
+      }
+      if(label)
+        *label=raptor_features_list[i].label;
+      return 0;
+    }
+
+  return 1;
+}
+
+
+
 /**
  * raptor_set_feature - Set various parser features
  * @parser: &raptor_parser parser object
  * @feature: feature to set from enumerated &raptor_feature values
- * @value: integer feature value
+ * @value: integer feature value (0 or larger)
  * 
- * feature can be one of:
- *   RAPTOR_FEATURE_SCANNING                - scan for rdf:RDF in the XML
- *   RAPTOR_FEATURE_ASSUME_IS_RDF           - assume this is rdf, don't require rdf:RDF
- *   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES - allow bare 'ID' rather than 'rdf:ID'
- *   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  - allow user defined rdf:parseType values
- *   RAPTOR_FEATURE_ALLOW_BAGID             - allow deprecated rdf:bagID
- *   RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST - generate the rdf:type rdf:List triple for rdf:parseType="Collection"
- *   RAPTOR_FEATURE_NORMALIZE_LANGUAGE      - normalize xml:lang values to lowercase
- *   RAPTOR_FEATURE_NON_NFC_FATAL           - non NFC literals cause a fatal error
+ * The allow features are returned via raptor_features_enumerate().
+ *
+ * Return value: non 0 on failure or the feature is unknown
  **/
-void
+int
 raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
 {
+  if(value < 0)
+    return -1;
+  
   switch(feature) {
     case RAPTOR_FEATURE_SCANNING:
       parser->feature_scanning_for_rdf_RDF=value;
@@ -996,8 +1053,67 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
       break;
       
     default:
+      return -1;
       break;
   }
+
+  return 0;
+}
+
+
+/**
+ * raptor_get_feature - Get various parser features
+ * @parser: &raptor_parser parser object
+ * 
+ * The allow features are returned via raptor_features_enumerate().
+ *
+ * Note: no feature value is negative
+ *
+ * Return value: feature value or < 0 for an illegal feature
+ **/
+int
+raptor_get_feature(raptor_parser *parser, raptor_feature feature)
+{
+  int result= -1;
+  
+  switch(feature) {
+    case RAPTOR_FEATURE_SCANNING:
+      result=(parser->feature_scanning_for_rdf_RDF != 0);
+      break;
+
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+      result=0;
+      break;
+
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+      result=(parser->feature_allow_non_ns_attributes != 0);
+      break;
+
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+      result=(parser->feature_allow_other_parseTypes != 0);
+      break;
+
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+      result=(parser->feature_allow_bagID != 0);
+      break;
+
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+      result=(parser->feature_allow_rdf_type_rdf_List != 0);
+      break;
+
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+      result=(parser->feature_normalize_language != 0);
+      break;
+
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+      result=(parser->feature_non_nfc_fatal != 0);
+      break;
+      
+    default:
+      break;
+  }
+  
+  return result;
 }
 
 
