@@ -364,7 +364,7 @@ extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
 char* raptor_vsnprintf(const char *message, va_list arguments);
 void raptor_print_statement_part_as_ntriples(FILE* stream, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);
-int raptor_check_ordinal(const char *name);
+int raptor_check_ordinal(const unsigned char *name);
 
 /* raptor_identifier.c */
 #ifdef RAPTOR_DEBUG
@@ -541,7 +541,7 @@ struct raptor_sax2_element_s {
   raptor_uri *base_uri;
 
   /* CDATA content of element and checks for mixed content */
-  char *content_cdata;
+  unsigned char *content_cdata;
   unsigned int content_cdata_length;
   /* how many cdata blocks seen */
   unsigned int content_cdata_seen;
