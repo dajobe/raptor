@@ -849,6 +849,7 @@ AC_CONFIG_FILES([Makefile
 raptor.spec
 examples/Makefile
 tests/Makefile
+tests/ntriplesplus/Makefile
 win32/Makefile
 raptor.pc])
 AC_CONFIG_FILES([raptor-config], [chmod +x raptor-config])
