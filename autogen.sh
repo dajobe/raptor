@@ -198,10 +198,7 @@ rm -f ltconfig ltmain.sh libtool
 # Made by automake
 rm -f missing depcomp
 # automake junk
-rm -rf autom4te.cache
-
-echo "$program: Running libtoolize --copy --automake"
-$DRYRUN libtoolize --copy --automake
+rm -rf autom4te*.cache
 
 if test -d $CONFIG_DIR; then
   for file in config.guess config.sub; do
@@ -221,6 +218,9 @@ do
   else
     echo $program: Processing directory $dir
     ( cd $dir
+      echo "$program: Running libtoolize --copy --automake"
+      $DRYRUN libtoolize --copy --automake
+
       echo "$program: Running $aclocal $aclocal_args"
       $DRYRUN $aclocal $aclocal_args
       if grep "^AM_CONFIG_HEADER" configure.ac >/dev/null; then
@@ -231,15 +231,18 @@ do
       $DRYRUN $automake $automake_args $am_opt
       echo "$program: Running $autoconf"
       $DRYRUN $autoconf $autoconf_args
-
-      # Remove autoconf 2.5x's cache directory
-      rm -rf autom4te*.cache
-
     )
   fi
 done
 
+rm -f config.cache
+
 conf_flags=
+
+AUTOMAKE=$automake
+AUTOCONF=$autoconf
+ACLOCAL=$aclocal
+export AUTOMAKE AUTOCONF ACLOCAL
 
 echo "$program: Running ./configure $conf_flags $@"
 if test "X$DRYRUN" = X; then
