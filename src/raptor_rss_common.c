@@ -678,7 +678,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
       if(rss_parser->current_type >= RAPTOR_RSS_COMMON_IGNORED) {
         /* skipHours, skipDays common but IGNORED */ 
         RAPTOR_DEBUG3("Ignoring empty element %s for type %s\n", name, raptor_rss_types_info[rss_parser->current_type].name);
-      } else if(uri && rel && !strcmp(rel, "alternate")) {
+      } else if(uri && rel && !strcmp((const char*)rel, "alternate")) {
         raptor_rss_item* update_item;
 
         if(rss_parser->current_type == RAPTOR_RSS_ITEM)

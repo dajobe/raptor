@@ -66,7 +66,7 @@ raptor_new_uri_detail(const unsigned char *uri_string)
                                        sizeof(raptor_uri_detail)+uri_len+5+1,
                                        1);
   ud->uri_len=uri_len;
-  ud->buffer=(unsigned char*)((void*)ud + sizeof(raptor_uri_detail));
+  ud->buffer=(unsigned char*)((unsigned char*)ud + sizeof(raptor_uri_detail));
   
   s=uri_string;
   b=ud->buffer;
@@ -393,8 +393,8 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
 
   
 #if defined(RAPTOR_DEBUG)
-  if(result.path_len != strlen(path_buffer))
-    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen(path_buffer), (long)result.path_len);
+  if(result.path_len != strlen((const char*)path_buffer))
+    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)result.path_len);
 #endif
     
   /* Remove all "<component>/../" path components */
@@ -431,8 +431,8 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
       continue;
 
 #if defined(RAPTOR_DEBUG)
-    if(result.path_len != strlen(path_buffer))
-      RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen(path_buffer), (long)result.path_len);
+    if(result.path_len != strlen((const char*)path_buffer))
+      RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)result.path_len);
 #endif
     
     /* If the current one is '..' */
@@ -498,8 +498,8 @@ raptor_uri_resolve_uri_reference (const unsigned char *base_uri,
 
 
 #if defined(RAPTOR_DEBUG)
-  if(result.path_len != strlen(path_buffer))
-    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen(path_buffer), (long)result.path_len);
+  if(result.path_len != strlen((const char*)path_buffer))
+    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)result.path_len);
 #endif
 
   resolve_end:
@@ -598,7 +598,7 @@ check_resolve(const char *base_uri, const char *reference_uri,
 static int
 check_parses(const char *uri_string) {
   raptor_uri_detail* ud;
-  ud=raptor_new_uri_detail(uri_string);
+  ud=raptor_new_uri_detail((unsigned const char*)uri_string);
   if(!ud) {
       fprintf(stderr, "%s: raptor_new_uri_detail(%s) FAILED to parse\n",
               program, uri_string);
