@@ -145,15 +145,6 @@ DIE
 #endif
 #endif
 
-#ifdef HAVE_LIBXML_HASH_H
-#include <libxml/hash.h>
-#endif
-
-#ifdef HAVE_GNOME_XML_XMLMEMORY_H
-#include <gnome-xml/xmlmemory.h>
-#endif
-
-/* translate names from expat to libxml */
 #define XML_Char xmlChar
 #endif
 
@@ -583,6 +574,30 @@ typedef struct raptor_element_s raptor_element;
 
 
 /*
+ * Raptor entity expansion list
+ * (libxml only)
+ */
+#ifdef RAPTOR_XML_LIBXML
+struct raptor_xml_entity_t {
+  xmlEntity entity;
+#ifndef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
+  int name_length;
+#endif
+
+  struct raptor_xml_entity_t *next;
+};
+typedef struct raptor_xml_entity_t raptor_xml_entity;
+
+#ifdef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
+#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->entity.name_length
+#else
+#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->name_length
+#endif
+
+#endif
+
+
+/*
  * Raptor parser object
  */
 struct raptor_parser_s {
@@ -614,7 +629,7 @@ struct raptor_parser_s {
   xmlSAXLocatorPtr loc;
 
   /* for xml entity resolution */
-  xmlEntitiesTablePtr entities;
+  raptor_xml_entity* entities;
 #endif  
 
   /* element depth */
@@ -1772,8 +1787,10 @@ raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
   int all_whitespace=1;
   int i;
 
+#ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   rdf_parser->tokens_count++;
+#endif
 #endif
 
   for(i=0; i<len; i++)
@@ -2114,151 +2131,93 @@ raptor_xml_validation_warning(void *ctx, const char *msg, ...)
 }
 
 
-#ifdef XML_ENTITY_DECL
-/* libxml v2 only */
 
-/*
- * raptor_xml_free_entity : clean-up an entity record.
- * a copy of xmlFreeEntity which is libxml-private.  Grrr.
- */
-static void
-raptor_xml_free_entity(raptor_parser *rdf_parser, xmlEntityPtr entity) {
-  if (entity == NULL)
-    return;
-  
-  if ((entity->children) &&
-      (entity == (xmlEntityPtr) entity->children->parent))
-    xmlFreeNodeList(entity->children);
-  if (entity->name != NULL)
-    xmlFree((char *) entity->name);
-  if (entity->ExternalID != NULL)
-    xmlFree((char *) entity->ExternalID);
-  if (entity->SystemID != NULL)
-    xmlFree((char *) entity->SystemID);
-  if (entity->URI != NULL)
-    xmlFree((char *) entity->URI);
-  if (entity->content != NULL)
-    xmlFree((char *) entity->content);
-  if (entity->orig != NULL)
-    xmlFree((char *) entity->orig);
-
-  LIBRDF_FREE(xmlEntity, entity);
-}
-#endif
-
-
-#ifndef XML_ENTITY_DECL
-/* libxml1 only */
-static void
-raptor_xml_libxml1_add_entry(xmlEntitiesTablePtr table, 
-                             const xmlChar *name, int type,
-                             const xmlChar *ExternalID,
-                             const xmlChar *SystemID, const xmlChar *content)
+static raptor_xml_entity*
+raptor_xml_new_entity(raptor_parser* rdf_parser,
+                     const xmlChar *name, int type,
+                     const xmlChar *ExternalID,
+                     const xmlChar *SystemID, const xmlChar *content)
 {
-    xmlEntityPtr cur;
-    int len;
-
-    if (table->nb_entities >= table->max_entities) {
-        /*
-	 * need more elements.
-	 */
-	table->max_entities *= 2;
-	table->table = (xmlEntityPtr) 
-	    xmlRealloc(table->table, table->max_entities * sizeof(xmlEntity));
-	if (table->table == NULL) {
-	    perror("realloc failed");
-	    return;
-	}
-    }
-    cur = &table->table[table->nb_entities];
-    cur->name = xmlStrdup(name);
-    for (len = 0;name[0] != 0;name++)len++;
-    cur->len = len;
-    cur->type = type;
-    if (ExternalID != NULL)
-	cur->ExternalID = xmlStrdup(ExternalID);
-    else
-        cur->ExternalID = NULL;
-    if (SystemID != NULL)
-	cur->SystemID = xmlStrdup(SystemID);
-    else
-        cur->SystemID = NULL;
-    if (content != NULL) {
-        cur->length = xmlStrlen(content);
-	cur->content = xmlStrndup(content, cur->length);
-     } else {
-        cur->length = 0;
-        cur->content = NULL;
-    }
-    cur->orig = NULL;
-    table->nb_entities++;
-}
-#endif
-
-
-/*
- * raptor_xml_add_entity : register a new entity for an entities table.
- * derived from xmlAddEntity which is libxml-private.  Grrr.
- */
-
-static void
-raptor_xml_add_entity(raptor_parser *rdf_parser,
-                      const xmlChar *name, int type,
-                      const xmlChar *publicId, const xmlChar *systemId,
-                      const xmlChar *content)
-{
-  xmlEntitiesTablePtr table;
-  #ifdef XML_ENTITY_DECL
-  /* libxml2 */
-
-  xmlEntityPtr ret;
-
-  table=rdf_parser->entities;
+  raptor_xml_entity *ent;
   
-
-  ret = (xmlEntityPtr) LIBRDF_MALLOC(xmlEntity, (sizeof(xmlEntity)));
-  if (ret == NULL) {
+  ent=(raptor_xml_entity*)LIBRDF_CALLOC(raptor_xml_entity, 
+                                        sizeof(raptor_xml_entity), 1);
+  if(!ent) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return;
+    return NULL;
   }
-  memset(ret, 0, sizeof(xmlEntity));
-
-  /*
-   * fill the structure.
-   */
-  ret->name = xmlStrdup(name);
-
-  ret->type = XML_ENTITY_DECL;
-  ret->etype = (xmlEntityType) type;
-
-  if (publicId != NULL)
-    ret->ExternalID = xmlStrdup(publicId);
-  if (systemId != NULL)
-    ret->SystemID = xmlStrdup(systemId);
-  if (content != NULL) {
-    ret->length = xmlStrlen(content);
-    ret->content = xmlStrndup(content, ret->length);
+  
+  RAPTOR_ENTITY_NAME_LENGTH(ent)=strlen(name);
+  ent->entity.name = LIBRDF_MALLOC(cstring, RAPTOR_ENTITY_NAME_LENGTH(ent)+1);
+  if(!ent->entity.name) {
+    LIBRDF_FREE(raptor_xml_entity, ent);
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    return NULL;
+  }
+  
+  strncpy((char*)ent->entity.name, name, RAPTOR_ENTITY_NAME_LENGTH(ent) +1); /* +1 for \0 */
+  
+#ifdef RAPTOR_LIBXML_ENTITY_ETYPE
+  ent->entity.type = XML_ENTITY_DECL;
+  ent->entity.etype = type;
+#else
+  ent->entity.type = type;
+#endif
+  
+  if (ExternalID)
+    ent->entity.ExternalID = xmlStrdup(ExternalID);
+  else
+    ent->entity.ExternalID = NULL;
+  
+  if (SystemID)
+    ent->entity.SystemID = xmlStrdup(SystemID);
+  else
+    ent->entity.SystemID = NULL;
+  
+  if (content) {
+    ent->entity.length = xmlStrlen(content);
+    ent->entity.content = xmlStrndup(content, ent->entity.length);
   } else {
-    ret->length = 0;
-    ret->content = NULL;
+    ent->entity.length = 0;
+    ent->entity.content = NULL;
   }
-  ret->URI = NULL; /* to be computed by the layer knowing
-                      the defining entity */
-  ret->orig = NULL;
   
-  if (xmlHashAddEntry(table, name, ret)) {
-    /*
-     * entity was already defined at another level.
-     */
-    raptor_xml_free_entity(rdf_parser, ret);
-  }
+  return ent;
+}
 
-  #else
-  /* libxml v1 */
-  table=rdf_parser->entities;
-  raptor_xml_libxml1_add_entry(table, name, type, publicId, systemId, content);
+
+
+/*
+ * raptor_free_xml_entity : free an entity record.
+ */
+static void
+raptor_xml_free_entity(raptor_xml_entity *ent) {
+  if (!ent)
+    return;
   
-  #endif
+  if (ent->entity.name)
+    LIBRDF_FREE(cstring,  ent->entity.name);
+  if (ent->entity.ExternalID)
+    LIBRDF_FREE(cstring,  ent->entity.ExternalID);
+  if (ent->entity.SystemID)
+    LIBRDF_FREE(cstring,  ent->entity.SystemID);
+  if (ent->entity.content)
+    LIBRDF_FREE(cstring,  ent->entity.content);
+
+  LIBRDF_FREE(raptor_xml_entity, ent);
+}
+
+
+static void
+raptor_xml_free_entities(raptor_parser *rdf_parser) 
+{
+  raptor_xml_entity *cur, *next;
+  cur=rdf_parser->entities;
+  while(cur) {
+    next=cur->next;
+    raptor_xml_free_entity(cur);
+    cur=next;
+  }
 }
 
 
@@ -2269,41 +2228,33 @@ raptor_xml_entity_decl(void *ctx,
                        xmlChar *content)
 {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
+  raptor_xml_entity *ent;
 
-  raptor_xml_add_entity(rdf_parser, name, type,
-                        publicId, systemId, content);
+  ent=raptor_xml_new_entity(rdf_parser, 
+                            name, type, publicId, systemId, content);
+  if(!ent)
+    return;
+  
+  ent->next=rdf_parser->entities;
+  rdf_parser->entities=ent;
 }
-
-
-#ifndef XML_ENTITY_DECL
-static xmlEntityPtr
-xmlHashLookup(xmlEntitiesTablePtr table, const xmlChar *name) {
-  int i;
-  xmlEntityPtr cur;
-  for (i = 0;i < table->nb_entities;i++) {
-    cur = &table->table[i];
-    if (!xmlStrcmp(cur->name, name)) 
-      return(cur);
-  }
-  return NULL;
-}
-#endif
 
 
 static xmlEntityPtr
 raptor_xml_get_entity(void *ctx, const xmlChar *name) {
   raptor_parser* rdf_parser=(raptor_parser*)ctx;
 
-  xmlEntityPtr p=((xmlEntityPtr) xmlHashLookup(rdf_parser->entities, name));
-  if(p)
-    return p;
+  raptor_xml_entity *ent;
+  ent=rdf_parser->entities;
+  while(ent) {
+    if (!xmlStrcmp(ent->entity.name, name)) 
+      return &ent->entity;
+    ent=ent->next;
+  }
 
   return xmlGetPredefinedEntity(name);
 }
- 
-
 #endif
-
 
 
 #ifndef LIBRDF_INTERNAL
@@ -2497,11 +2448,6 @@ raptor_new(
   rdf_parser->sax.getEntity=raptor_xml_get_entity;
   rdf_parser->sax.entityDecl=raptor_xml_entity_decl;
 
-  rdf_parser->entities = xmlCreateEntitiesTable();
-#ifndef XML_ENTITY_DECL
-  rdf_parser->entities->nb_entities=0;
-#endif
-
 #endif
 
 #ifdef LIBRDF_INTERNAL
@@ -2557,6 +2503,10 @@ raptor_free(raptor_parser *rdf_parser)
     librdf_free_uri(rdf_parser->raptor_daml_rest_uri);
   if(rdf_parser->raptor_daml_nil_uri)
     librdf_free_uri(rdf_parser->raptor_daml_nil_uri);
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+  raptor_xml_free_entities(rdf_parser);
 #endif
 
   LIBRDF_FREE(raptor_parser, rdf_parser);
@@ -2744,7 +2694,7 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
       break;
 #endif
 #ifdef RAPTOR_XML_LIBXML
-    rc=xmlParseChunk(xc, buffer, len, 0);
+    rc=xmlParseChunk(xc, buffer, len, (len < RBS));
     if(len < RBS)
       break;
     if(rc) /* libxml: non 0 is failure */
@@ -2785,8 +2735,6 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
     raptor_parser_error(rdf_parser, "XML Parsing failed");
 
   xmlFreeParserCtxt(xc);
-
-  xmlFreeEntitiesTable(rdf_parser->entities);
 
 #endif
 
@@ -3700,7 +3648,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
             /* update new tail */
             if(element->parent->tail_id)
-              LIBRDF_FREE(element->parent->tail_id);
+              LIBRDF_FREE(cstring, element->parent->tail_id);
 
             element->parent->tail_id=idList;
             
