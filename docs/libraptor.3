@@ -335,7 +335,7 @@ according to N-Triples escaping rules, expecting to be delimited
 by the character \fIdelim\fR which is usually either \(dq or <
 .IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type term)\fR"
 .SH "XML UTILITY FUNCTIONS"
-.IP "\fBsize_t raptor_xml_escape_string(const unsigned char *\fIstring\fB, size_t \fIlen\fB, unsigned char *\fIbuffer\fB, size_t \fIlength\fB, char \fIquote\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
+.IP "\fBint raptor_xml_escape_string(const unsigned char *\fIstring\fB, size_t \fIlen\fB, unsigned char *\fIbuffer\fB, size_t \fIlength\fB, char \fIquote\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Apply the XML escaping rules to the string given in (string, len)
 into the buffer of size length.  If quote
 is given, the escaped content is for an XML attribute and the
