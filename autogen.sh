@@ -224,7 +224,7 @@ do
 
       # Ensure that these are created by the versions on this system
       # (indirectly via automake)
-      rm -f ltconfig ltmain.sh libtool
+      rm -f ltconfig ltmain.sh libtool stamp-h*
       # Made by automake
       rm -f missing depcomp
       # automake junk
