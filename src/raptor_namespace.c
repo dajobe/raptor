@@ -438,6 +438,31 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 }
 
 
+int
+raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
+{
+  size_t uri_length;
+  const unsigned char *uri_string;
+  
+  if(!ns || !iostr)
+    return 1;
+  
+  uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
+  
+  raptor_iostream_write_counted_string(iostr, "xmlns", 5);
+  if(ns->prefix) {
+    raptor_iostream_write_byte(iostr, ':');
+    raptor_iostream_write_string(iostr, ns->prefix);
+  }
+  raptor_iostream_write_counted_string(iostr, "=\"", 2);
+  if(uri_length)
+    raptor_iostream_write_counted_string(iostr, uri_string, uri_length);
+  raptor_iostream_write_byte(iostr, '"');
+
+  return 0;
+}
+
+
 #ifdef RAPTOR_DEBUG
 void
 raptor_namespace_print(FILE *stream, raptor_namespace* ns) 
