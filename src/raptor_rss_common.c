@@ -205,7 +205,7 @@ typedef enum {
 } raptor_rss_fields_type;
 
 
-raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE]={
+raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+1]={
   { "title",          RSS1_0_NS },
   { "link",           RSS1_0_NS },
   { "description",    RSS1_0_NS },
@@ -268,6 +268,7 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE]={
   { "rights",         DC_NS },
 
   { "<unknown>",      RSS_UNKNOWN_NS },
+  { "<none>",         RSS_UNKNOWN_NS }
 };
 
 
@@ -558,22 +559,56 @@ raptor_rss_item_add(raptor_rss_parser_context *rss_parser) {
   RAPTOR_DEBUG2("Added item %d\n", rss_parser->items_count);
 }
 
+#if LIBXML_VERSION < 20509
+
+#define XML_READER_TYPE_ELEMENT 1
+#define XML_READER_TYPE_TEXT 3
+#define XML_READER_TYPE_CDATA 4
+#define XML_READER_TYPE_ENTITY_REFERENCE 5
+#define XML_READER_TYPE_ENTITY 6
+#define XML_READER_TYPE_PROCESSING_INSTRUCTION 7
+#define XML_READER_TYPE_COMMENT 8
+#define XML_READER_TYPE_DOCUMENT 9
+#define XML_READER_TYPE_DOCUMENT_TYPE 10
+#define XML_READER_TYPE_DOCUMENT_FRAGMENT 11
+#define XML_READER_TYPE_NOTATION 12
+#define XML_READER_TYPE_WHITESPACE 13
+#define XML_READER_TYPE_SIGNIFICANT_WHITESPACE 14
+#define XML_READER_TYPE_END_ELEMENT 15
+#define XML_READER_TYPE_END_ENTITY 16
+#define XML_READER_TYPE_XML_DECLARATION 17
+
+#endif
+
+
 
 static void
 raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
   raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
   xmlTextReaderPtr reader=rss_parser->reader;
+#if LIBXML_VERSION > 20511
   const xmlChar *name;
+#else
+  xmlChar *name;
+#endif
+  int free_name=0;
   xmlChar *value;
   int type;
   int is_empty;
   raptor_uri *uri=NULL;
   xmlChar *rel=NULL;
   raptor_rss_enclosure *enclosure=NULL;
-  
+
+#if LIBXML_VERSION > 20511
   name = xmlTextReaderConstLocalName(reader);
-  if (name == NULL)
+#else
+  name = xmlTextReaderLocalName(reader);
+  free_name = 1;
+#endif
+  if (name == NULL) {
     name = xmlStrdup(BAD_CAST "--");
+    free_name = 1;
+  }
   value = xmlTextReaderValue(reader);
   
   type=xmlTextReaderNodeType(reader);
@@ -636,16 +671,30 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         rss_parser->current_field=RAPTOR_RSS_FIELD_UNKNOWN;
         for(i=0; i<RAPTOR_RSS_FIELDS_SIZE; i++)
           if(!strcmp((const char*)name, raptor_rss_fields_info[i].name)) {
+#if LIBXML_VERSION > 20511
             const xmlChar *nspace_URI=xmlTextReaderConstNamespaceUri(reader);
+#else
+            xmlChar *nspace_URI=xmlTextReaderNamespaceUri(reader);
+#endif
             if(nspace_URI && raptor_rss_fields_info[i].nspace != RSS_NO_NS) {
               const char *field_nspace_URI=rss_namespace_uri_strings[raptor_rss_fields_info[i].nspace];
             
               if(!strcmp((const char*)nspace_URI, field_nspace_URI)) {
                 rss_parser->current_field=(raptor_rss_fields_type)i;
+#if LIBXML_VERSION > 20511
+                /* nop */
+#else
+                xmlFree(nspace_URI);
+#endif
                 break;
               }
             } else {
               rss_parser->current_field=(raptor_rss_fields_type)i;
+#if LIBXML_VERSION > 20511
+              /* nop */
+#else
+              xmlFree(nspace_URI);
+#endif
               break;
             }
           }
@@ -680,7 +729,11 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
 
       /* Now check for attributes */
       while((xmlTextReaderMoveToNextAttribute(reader))) {
+#if LIBXML_VERSION > 20511
         const xmlChar *attrName = xmlTextReaderConstLocalName(reader);
+#else
+        xmlChar *attrName = xmlTextReaderLocalName(reader);
+#endif
         xmlChar *attrValue = xmlTextReaderValue(reader);
         RAPTOR_DEBUG3("  attribute %s=%s\n", attrName, attrValue);
 
@@ -743,6 +796,11 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
 
         if(attrValue)
           xmlFree(attrValue);
+#if LIBXML_VERSION > 20511
+        /* nop */
+#else
+        xmlFree(attrName);
+#endif
       }
       
       if(!is_empty) {
@@ -871,6 +929,9 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
     
   if(value)
     xmlFree(value);
+
+  if(free_name)
+    xmlFree(name);
 
 }
 
