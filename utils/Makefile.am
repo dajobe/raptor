@@ -20,15 +20,19 @@
 
 
 bin_PROGRAMS = rdfdump
+bin_SCRIPTS = raptor-config
 lib_LTLIBRARIES = libraptor.la
 
 include_HEADERS = raptor.h ntriples.h
 
-# Create the test program, statically linked (easier to debug)
+man_MANS = rdfdump.1 libraptor.3
+
 rdfdump_SOURCES = rdfdump.c
 rdfdump_LDADD = libraptor.la
+if MAINTAINER_MODE
+# easier to debug static
 rdfdump_LDFLAGS = -static
-
+endif
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c
 
@@ -39,11 +43,13 @@ EXTRA_DIST=ChangeLog \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html \
 INSTALL.html MPL.html \
+raptor-config.in \
 autogen.sh \
 raptor.spec.in \
 dc.rdf \
 raptor_cc.gperf \
-raptor_cc.c
+raptor_cc.c \
+$(man_MANS)
 
 
 SUBDIRS= \
