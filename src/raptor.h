@@ -132,6 +132,8 @@ RAPTOR_API void raptor_set_statement_handler(raptor_parser* parser, void *user_d
 RAPTOR_API void raptor_print_statement(const raptor_statement * const statement, FILE *stream);
 RAPTOR_API void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
 
+RAPTOR_API raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
+
 
 /* Parsing functions */
 #ifdef RAPTOR_IN_REDLAND
