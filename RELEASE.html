@@ -10,19 +10,30 @@
 
 <h2 id="rel1_4_5"><a name="rel1_4_5">Raptor 1.4.5 Changes</a></h2>
 
-<p>Not yet released.</p>
+<p>Added a new <em>RDF/XML with abbreviations</em> serializer
+<code>rdfxml-abbrev</code> written by Steve Shepard which handles
+several of the abbreviations specified by the
+<a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML Syntax Specification (Revised)</a>
+W3C Recommendation.  It is suitable for writing small documents as
+there are known scaling issues.
+</p>
+
+<p>The RSS tag soup parser was updated to work better when there is
+no base URI given.  It also now supports reading the 
+<a href="http://inamidst.com/rss1.1/">RSS 1.1</a> format and
+turning it into RSS 1.0 model triples.</p>
 
 <p>Deprecated <code>raptor_ntriples_string_as_utf8_string</code> as
 rather too internal to be useful, since it only works with a parser.
 </p>
 
-<p>Experimental and incomplete Notation 3 parser - updated to match
-changes to Turtle.</p>
+<p>More fixes to work around the broken libxml2 on Apple OSX 10.3.x
+with inconsistent shared libraries / headers.</p>
 
-<p>RSS tag soup parser updated to work better when there is no base
-URI given.  Supports reading RSS1.1 format turning it into RSS 1.0
-model triples.
+<p>Experimental and incomplete Notation 3 parser - updated to match
+changes to Turtle.  CVS changes only, not enabled in standard builds.
 </p>
+
 
 
 <h2 id="rel1_4_4"><a name="rel1_4_4">Raptor 1.4.4 Changes</a></h2>
