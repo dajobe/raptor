@@ -76,9 +76,6 @@ int n3_lexer_get_column(yyscan_t yyscanner);
 
 /* What the lexer wants */
 extern int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t scanner);
-
-inline int n3_parser_lex(YYSTYPE *n3_parser_lval, yyscan_t scanner);
-
 #define YYLEX_PARAM ((raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context))->scanner
 
 /* Pure parser argument (a void*) */
@@ -88,12 +85,10 @@ inline int n3_parser_lex(YYSTYPE *n3_parser_lval, yyscan_t scanner);
 #undef yyerror
 #define yyerror(message) n3_parser_error(rdf_parser, message)
 
-
 /* Make lex/yacc interface as small as possible */
-inline int
-n3_parser_lex(YYSTYPE *lval, yyscan_t scanner) {
-  return n3_lexer_lex(lval, scanner);
-}
+#undef yylex
+#define yylex n3_lexer_lex
+
 
 static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object);
 static void raptor_free_triple(raptor_triple *triple);
