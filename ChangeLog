@@ -1,3 +1,86 @@
+2004-10-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdump.c: Remove ad-hoc serializing code and use raptor_serializer.
+	Update help and usage messages to use raptor_serializers_enumerate
+
+	* raptor_internal.h:
+	Added raptor_serializer_factory and declarations for factories
+	raptor_init_serializer_ntriples, raptor_init_serializer_simple and
+	raptor_delete_serializer_factories
+
+	* raptor_general.c (raptor_init):
+	Call raptor_init_serializer_ntriples and
+	raptor_init_serializer_simple
+
+	* raptor.h: Added raptor_serializer class and methods:
+	raptor_serializers_enumerate, raptor_serializer_syntax_name_check,
+	raptor_new_serializer, raptor_free_serializer,
+	raptor_serialize_start, raptor_serialize_start_to_filename,
+	raptor_serialize_start_to_string,
+	raptor_serialize_start_to_file_handle, raptor_serialize_statement,
+	raptor_serialize_end, raptor_serializer_get_iostream.  Added new
+	raptor_iostream class constructor raptor_new_iostream_to_sink and
+	methods: raptor_iostream_write_end, raptor_iostream_write_string,
+	raptor_iostream_write_counted_string,
+	raptor_iostream_get_bytes_written_count,
+	raptor_iostream_write_decimal, raptor_iostream_format_hexadecimal
+
+	* Makefile.am: Added raptor_serialize.c
+	Added $(LIBS) to rfc2396 tests for -ldmalloc when present
+
+	* raptor_serialize.c: Serializers
+
+	* raptor_iostream.c (raptor_iostream_write_counted_string):
+	Added as a wrapper.
+
+	* raptor_iostream.c (raptor_iostream_format_hexadecimal):
+	Added for writing
+	field-formatted hex.
+
+	* raptor_iostream.c (raptor_iostream_get_bytes_written_count):
+	Renamed from
+	raptor_get_bytes_written_count
+	(raptor_iostream_write_decimal): Added to print a decimal to the
+	iostream.
+
+	* raptor_iostream.c (raptor_new_iostream_to_file_handle):
+	Do not fclose at end.
+	(raptor_string_iostream_finish): Free malloced context.
+	(raptor_iostream_write_string): Helper to write C string.
+
+	* raptor_iostream.c: Added sink iostream
+	(raptor_sink_iostream_write_byte, raptor_sink_iostream_write_bytes):
+	Added.
+	(raptor_new_iostream_to_sink): Added to create a throwaway data
+	iostream.
+	(raptor_free_iostream): Ensure write_end is always called once only.
+	(main): Test sink.
+
+	* raptor_iostream.c:
+	Added ended flag, once write_end is done, all further calls fail.
+	(raptor_filename_iostream_finish): Removed; write_end does this.
+	(raptor_filename_iostream_write_end): Added to fclose() on end
+	(raptor_string_iostream_finish): More checks when stringbuffer is
+	empty.
+	(raptor_new_iostream_to_string): Handle error tidy up better.
+	(raptor_iostream_write_end): Added.
+	(main): Code tidy.
+
+	* raptor_iostream.c: casts for c++
+
+	* raptor.h: Added raptor_iostream class and methods.
+
+	* Makefile.am: Added raptor_iostream.c and raptor_iostream_test
+
+	* raptor_iostream.c: Raptor I/O stream class
+
+	* turtle_parser.y, turtle_lexer.l, n3_parser.y, n3_lexer.l:
+	Rename rather generic define ERROR to ERROR_TOKEN to help win32.
+
+2004-10-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rapper.1: die .UE
+
 2004-10-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_xml.c (raptor_xml_escape_string):
