@@ -23,7 +23,9 @@ bin_PROGRAMS = rdfdump
 bin_SCRIPTS = raptor-config
 lib_LTLIBRARIES = libraptor.la
 
-include_HEADERS = raptor.h raptor_internal.h ntriples.h
+include_HEADERS = raptor.h ntriples.h
+
+noinst_HEADERS = raptor_internal.h win32_config.h
 
 man_MANS = rdfdump.1 libraptor.3
 
@@ -31,7 +33,7 @@ rdfdump_SOURCES = rdfdump.c
 rdfdump_LDADD = libraptor.la @REDLAND_LIBS@
 rdfdump_DEPENDENCIES = @REDLAND_LIBS@
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
-raptor_uri.c raptor_libxml.c
+raptor_uri.c raptor_libxml.c raptor_win32.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 
