@@ -589,6 +589,18 @@ raptor_libxml_init(xmlSAXHandler *sax) {
 
 
 void
+raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
+  sax->warning=raptor_libxml_warning;
+  sax->error=raptor_libxml_error;
+  sax->fatalError=raptor_libxml_fatal_error;
+
+#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
+  sax->initialized = 1;
+#endif
+}
+
+
+void
 raptor_libxml_free(xmlParserCtxtPtr xc) {
   libxml2_endDocument(xc);
   xmlFreeParserCtxt(xc);
