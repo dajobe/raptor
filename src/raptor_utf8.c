@@ -717,3 +717,30 @@ raptor_utf8_is_nfc(const unsigned char *input, size_t length)
   return 1;
 #endif
 }
+
+
+/**
+ * raptor_utf8_check - Check a string is UTF-8
+ * @string: UTF-8 string
+ * @length: length of string
+ * 
+ * Return value: Non 0 if the string is UTF-8
+ **/
+int
+raptor_utf8_check(const unsigned char *string, size_t length)
+{
+  while(length > 0) {
+    unsigned long unichar=0;
+
+    int unichar_len=raptor_utf8_to_unicode_char(&unichar, string, length);
+    if(unichar_len < 0 || unichar_len > length)
+      return 0;
+
+    if(unichar < 0 || unichar > 0x10ffff)
+      return 0;
+  
+    string += unichar_len;
+    length -= unichar_len;
+  }
+  return 1;
+}
