@@ -5,7 +5,7 @@
  * $Id$
  *
  * Copyright (C) 2000-2004 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.bristol.ac.uk/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -108,7 +108,7 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #endif
 
 
-#define GETOPT_STRING "nsaf:hrqo:wecm:i:v"
+#define GETOPT_STRING "nsaf:ghrqo:wecm:i:v"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
@@ -116,7 +116,8 @@ static struct option long_options[] =
   /* name, has_arg, flag, val */
   {"count", 0, 0, 'c'},
   {"ignore-errors", 0, 0, 'e'},
-  {"feature", 0, 0, 'f'},
+  {"feature", 1, 0, 'f'},
+  {"guess", 0, 0, 'g'},
   {"help", 0, 0, 'h'},
   {"input", 1, 0, 'i'},
   {"mode", 1, 0, 'm'},
@@ -184,6 +185,7 @@ main(int argc, char *argv[])
   int strict_mode=0;
   int usage=0;
   int help=0;
+  int guess=0;
   raptor_uri *base_uri;
   raptor_uri *uri;
   char *p;
@@ -269,6 +271,10 @@ main(int argc, char *argv[])
             }
           }
         }
+        break;
+
+      case 'g':
+        guess=1;
         break;
 
       case 'h':
@@ -405,6 +411,7 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("c", "count           ", "Count triples - no output"));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
     puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser feature - use `help' for a list"));
+    puts(HELP_TEXT("g", "guess           ", "Guess input syntax"));
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
@@ -459,13 +466,25 @@ main(int argc, char *argv[])
     }
   }
 
-  rdf_parser=raptor_new_parser(syntax_name);
-  if(!rdf_parser) {
-    fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
-            syntax_name);
-    return(1);
+  if(guess) {
+    rdf_parser=raptor_new_parser_for_content(NULL, NULL, NULL, 0, 
+                                             uri_string);
+    if(!rdf_parser) {
+      fprintf(stderr, "%s: Failed to create guessed raptor parser\n", program);
+      return(1);
+    }
+    if(!quiet)
+      fprintf(stdout, "%s: Guessed parser name '%s'\n", program,
+              raptor_get_name(rdf_parser));
+  } else {
+    rdf_parser=raptor_new_parser(syntax_name);
+    if(!rdf_parser) {
+      fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
+              syntax_name);
+      return(1);
+    }
   }
-  
+
   raptor_set_error_handler(rdf_parser, rdf_parser, rdfdump_error_handler);
   raptor_set_warning_handler(rdf_parser, rdf_parser, rdfdump_warning_handler);
   
