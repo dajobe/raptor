@@ -351,6 +351,7 @@ typedef struct raptor_xml_parser_s raptor_xml_parser;
 extern void raptor_xml_start_element_handler(void *user_data, const unsigned char *name, const unsigned char **atts);
 extern void raptor_xml_end_element_handler(void *user_data, const unsigned char *name);
 /* s is not 0 terminated. */
+extern void raptor_xml_characters_handler(void *user_data, const unsigned char *s, int len);
 extern void raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len);
 void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
 
