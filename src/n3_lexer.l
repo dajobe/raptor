@@ -150,8 +150,11 @@ _:[A-Za-z0-9]+	{ n3_parser_lval.string=copy_token(yytext, yyleng);
 :	{ n3_parser_lval.string=NULL;
                           return QNAME_LITERAL; }
 
-\<[^>]+\>   { n3_parser_lval.string=copy_token(yytext+1, yyleng-2);
-                      return URI_LITERAL; }
+\<[^>]*\>   { if(yyleng == 2) 
+                n3_parser_lval.string=NULL;
+              else
+                n3_parser_lval.string=copy_token(yytext+1, yyleng-2);
+              return URI_LITERAL; }
 
 [A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval.string=copy_token(yytext, yyleng);
                           return IDENTIFIER; }
@@ -259,7 +262,8 @@ n3_token_print(int token)
       return buffer;
 
     case URI_LITERAL:
-      sprintf(buffer, "URI_LITERAL(%s)", n3_parser_lval.string);
+      sprintf(buffer, "URI_LITERAL(%s)", 
+        (n3_parser_lval.string ? (char*)n3_parser_lval.string : ""));
       return buffer;
 
     case BLANK_LITERAL:
@@ -289,6 +293,14 @@ n3_token_print(int token)
 
 
 #ifdef STANDALONE
+
+int
+n3_syntax_error(const char c)
+{
+  printf("%d: Syntax error at '%c'\n", lineno, c);
+  return 0;
+}
+
 
 int
 main(int argc, char *argv[]) 
