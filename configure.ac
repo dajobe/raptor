@@ -82,10 +82,12 @@ if test "$USE_MAINTAINER_MODE" = yes; then
     else
       AC_MSG_WARN(Please get flex from http://lex.sourceforge.net/)
       AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
-      AC_MSG_FAILURE(Flex version $FLEX_VERSION is too old)
+      AC_MSG_FAILURE(flex version $FLEX_VERSION is too old)
     fi
   else
-    AC_MSG_RESULT(not present - using pre-generated Turtle lexer)
+    AC_MSG_WARN(Please get flex from http://lex.sourceforge.net/)
+    AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+    AC_MSG_FAILURE(flex not present)
   fi
 fi
 
