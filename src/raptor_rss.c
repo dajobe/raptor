@@ -842,7 +842,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
                                  &item->identifier);
     }
 
-    RAPTOR_FREE(cstring, items.id);
+    raptor_free_identifier(&items);
   }
   
 }
