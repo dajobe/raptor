@@ -2788,6 +2788,9 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
       fprintf(stream, "-%s",  (const char*)statement->object_literal_language);
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fprintf(stream, "_:%s", (const char*)statement->object);
+  else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    fprintf(stream, "<http://www.w3.org/1999/02/22-rdf-syntax-ns#_%d>",
+            *((int*)statement->object));
   else /* must be URI */
     fprintf(stream, "<%s>", 
             RAPTOR_URI_AS_STRING((raptor_uri*)statement->object));
