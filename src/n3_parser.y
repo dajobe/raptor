@@ -945,6 +945,8 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
 void
 raptor_init_parser_n3 (void) {
   raptor_parser_register_factory("ntriples-plus",  "N-Triples Plus",
+                                 NULL,
+                                 (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/",
                                  &raptor_n3_parser_register_factory);
 }
 

@@ -1063,5 +1063,7 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
 void
 raptor_init_parser_ntriples (void) {
   raptor_parser_register_factory("ntriples",  "N-Triples",
+                                 "text/plain",
+                                 (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples",
                                  &raptor_ntriples_parser_register_factory);
 }

@@ -3400,6 +3400,8 @@ raptor_init_parser_rdfxml (void) {
   xmlInitParser();
 #endif
   raptor_parser_register_factory("rdfxml", "RDF/XML",
+                                 "application/rdf+xml",
+                                 (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
                                  &raptor_xml_parser_register_factory);
 }
 
