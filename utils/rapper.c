@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -214,10 +214,12 @@ main(int argc, char *argv[])
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
-  raptor_feature feature;
-  int feature_value= -1;
+  raptor_feature parser_feature;
+  int parser_feature_value= -1;
+  unsigned char* parser_feature_string_value=NULL;
   raptor_feature serializer_feature;
   int serializer_feature_value= -1;
+  unsigned char* serializer_feature_string_value=NULL;
   raptor_sequence *namespace_declarations=NULL;
 
   program=argv[0];
@@ -264,17 +266,24 @@ main(int argc, char *argv[])
             for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
               const char *feature_name;
               const char *feature_label;
-              if(!raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label))
-                printf("  %-20s  %s\n", feature_name, feature_label);
+              if(!raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
+                const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
+                printf("  %-20s  %s%s\n", feature_name, feature_label, 
+                       feature_type);
+              }
             }
             fprintf(stderr, "%s: Valid serializer features are:\n", program);
             for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
               const char *feature_name;
               const char *feature_label;
-              if(!raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label))
-                printf("  %-20s  %s\n", feature_name, feature_label);
+              if(!raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
+                const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
+                printf("  %-20s  %s%s\n", feature_name, feature_label, 
+                       feature_type);
+              }
             }
-            fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE=VALUE or `-f FEATURE'\nwhere VALUE is a decimal integer 0 or larger, defaulting to 1 if omitted.\n", stderr);
+            fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE=VALUE or `-f FEATURE'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
+            fputs("\nA feature of the form xmlns:PREFIX=\"URI\" can be used to declare output\nnamespace prefixes and names for serializing using an XML-style syntax\nEither or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\nThis form can be repeated for multiple declarations.\n", stderr);
             exit(0);
           } else if(!strncmp(optarg, "xmlns", 5)) {
             struct namespace_decl *nd;
@@ -304,11 +313,18 @@ main(int argc, char *argv[])
                 continue;
               len=strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
-                feature=(raptor_feature)i;
-                if(len < arg_len && optarg[len] == '=')
-                  feature_value=atoi(&optarg[len+1]);
-                else if(len == arg_len)
-                  feature_value=1;
+                parser_feature=(raptor_feature)i;
+                if(raptor_feature_value_type(parser_feature) == 0) {
+                  if(len < arg_len && optarg[len] == '=')
+                    parser_feature_value=atoi(&optarg[len+1]);
+                  else if(len == arg_len)
+                    parser_feature_value=1;
+                } else {
+                  if(len < arg_len && optarg[len] == '=')
+                    parser_feature_string_value=&optarg[len+1];
+                  else if(len == arg_len)
+                    parser_feature_string_value="";
+                }
                 break;
               }
             }
@@ -322,15 +338,23 @@ main(int argc, char *argv[])
               len=strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
                 serializer_feature=(raptor_feature)i;
-                if(len < arg_len && optarg[len] == '=')
-                  serializer_feature_value=atoi(&optarg[len+1]);
-                else if(len == arg_len)
-                  serializer_feature_value=1;
+                if(raptor_feature_value_type(serializer_feature) == 0) {
+                  if(len < arg_len && optarg[len] == '=')
+                    serializer_feature_value=atoi(&optarg[len+1]);
+                  else if(len == arg_len)
+                    serializer_feature_value=1;
+                } else {
+                  if(len < arg_len && optarg[len] == '=')
+                    serializer_feature_string_value=&optarg[len+1];
+                  else if(len == arg_len)
+                    serializer_feature_string_value="";
+                }
                 break;
               }
             }
             
-            if(feature_value < 0 && serializer_feature_value < 0) {
+            if(parser_feature_value < 0 && !parser_feature_string_value &&
+               serializer_feature_value < 0 && !serializer_feature_string_value) {
               fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s " HELP_ARG(f, feature) " help' for a list of valid features\n",
                       program, optarg, program);
               usage=1;
@@ -583,6 +607,15 @@ main(int argc, char *argv[])
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
 
+  if(parser_feature_value >= 0)
+    raptor_set_feature(rdf_parser, 
+                       parser_feature, parser_feature_value);
+  if(parser_feature_string_value)
+    raptor_parser_set_feature_string(rdf_parser, 
+                                     parser_feature,
+                                     parser_feature_string_value);
+
+
   if(!quiet) {
     if (filename) {
       if(base_uri_string)
@@ -632,6 +665,10 @@ main(int argc, char *argv[])
     if(serializer_feature_value >= 0)
       raptor_serializer_set_feature(serializer, 
                                     serializer_feature, serializer_feature_value);
+    if(serializer_feature_string_value)
+      raptor_serializer_set_feature_string(serializer, 
+                                           serializer_feature,
+                                           serializer_feature_string_value);
 
   }
   
