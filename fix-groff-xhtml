@@ -6,7 +6,7 @@
 #
 # Usage: groff -Thtml -P-l something.man | tidy -asxml ... | fix-groff-xhtml OUTPUT-FILE
 #
-# (C) Copyright 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
+# (C) Copyright 2003-2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
 # University of Bristol
 #
 
@@ -15,7 +15,8 @@ use File::Basename;
 
 my $progname=basename $0;
 
-my $main_title="Raptor RDF Parser Toolkit";
+my $raptor_title="Raptor RDF Parser Toolkit";
+my $redland_title="Redland RDF Library";
 
 die "USAGE: $progname OUTPUT-FILE\n" if @ARGV < 1;
 
@@ -27,8 +28,14 @@ open(OUT, ">$file") or die "$progname: Cannot create $file - $!\n";
 open(IN, "-");
 while(<IN>) {
 
-  s%<title>libraptor</title>%<title>$main_title - Raptor API</title>%;
-  s%<h1 align="center">libraptor</h1>%<h1 align="center">$main_title - Raptor API</h1>%;
+  s%<title>libraptor</title>%<title>$raptor_title - Raptor API</title>%;
+  s%<h1 align="center">libraptor</h1>%<h1>$raptor_title - Raptor API</h1>%;
+
+  s%<title>rapper</title>%<title>$raptor_title - Raptor RDF parser utility</title>%;
+  s%<h1 align="center">rapper</h1>%<h1>$raptor_title - Raptor RDF parser utility</h1>%;
+
+  s%<title>rdfproc</title>%<title>$redland_title - Redland RDF parser utility</title>%;
+  s%<h1 align="center">rdfproc</h1>%<h1>$redland_title - Redland RDF parser utility</h1>%;
 
   next if /^<link|meta/i;
 
