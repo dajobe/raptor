@@ -1,3 +1,29 @@
+2004-12-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_internal.h: Added feature_start_uri to raptor_serializer
+
+	* raptor_serialize.c (raptor_free_serializer):
+	Tidy up any feature_start_uri set.
+	(raptor_serializer_set_feature_string): Added, handling
+	feature_start_uri created from a passed in string.
+	(raptor_serializer_get_feature_string): Added, handling
+	feature_start_uri as a returned shared string.
+
+	* raptor_parse.c (raptor_parser_set_feature_string):
+	Added, always failing.
+	(raptor_parser_get_feature_string): Added, always failing.
+
+	* raptor.h: Added feature RAPTOR_FEATURE_START_URI
+	Added prototypes for raptor_parser_set_feature_string,
+	raptor_parser_get_feature_string,
+	raptor_serializer_set_feature_string,
+	raptor_serializer_get_feature_string and
+	raptor_feature_value_type
+
+	* raptor_feature.c: Added flag bits for string valued features.
+	Added startUri (RAPTOR_FEATURE_START_URI) with a string value.
+	(raptor_feature_value_type): Added, to return value of a feature.
+
 2004-12-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* libraptor.3: Added SAX2 XML Element and XML Writer classes.
