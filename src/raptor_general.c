@@ -331,6 +331,17 @@ raptor_parsers_enumerate(const unsigned int counter,
 }
 
 
+/*
+ * raptor_syntax_name_check -  Check name of a parser
+ * @name: the syntax name
+ *
+ * Return value: non 0 if name is a known syntax name
+ */
+int
+raptor_syntax_name_check(const char *name) {
+  return (raptor_get_parser_factory(name) != NULL);
+}
+
 
 /*
  * raptor_new_parser - Constructor - create a new raptor_parser object
