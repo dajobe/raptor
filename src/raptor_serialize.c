@@ -887,7 +887,6 @@ typedef struct {
 
 
 /* local prototypes */
-static int raptor_rdfxml_serialize_ok_xml_name(unsigned char *name);
 
 /* create a new serializer */
 static int
@@ -986,29 +985,6 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
 
 
 /**
- * raptor_rdfxml_serialize_ok_xml_name - check name is OK XML Name
- * @name: XML name to check
- * 
- * An XML name starts with alpha or _, continues with alnum or _ - .
- * 
- * Return value: non-zero if is a legal XML name
- **/
-static int
-raptor_rdfxml_serialize_ok_xml_name(unsigned char *name) 
-{
-  if(!isalpha(*name) && *name != '_')
-    return 0;
-  name++;
-  while(*name) {
-    if(!isalnum(*name)  && *name != '_' && *name != '-'  && *name != '.')
-      return 0;
-    name++;
-  }
-  return 1;
-}
-
-
-/**
  * raptor_rdfxml_serialize_write_xml_attribute - Write the attribute/value as an XML attribute, XML escaped to an iostream
  * @world: &librdf_world world
  * @attr: attribute name
@@ -1096,16 +1072,17 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       name_is_rdf_ns=1;
       nsprefix="rdf";
     } else {
-      /* FIXME: this does too much work, it should end on the first
-       * illegal XML name character - requires a raptor check */
-      p= uri_string + uri_len-1;
+      size_t name_len=1;
+      
+      p= uri_string + uri_len-name_len;
       while(p >= uri_string) {
-        if(raptor_rdfxml_serialize_ok_xml_name(p))
+        if(raptor_xml_name_check(p, name_len, 10))
           name=p;
-        else if(name && p>uri_string && !raptor_rdfxml_serialize_ok_xml_name(p-1))
+        else if(name && p>uri_string &&
+                !raptor_xml_name_check(p-1, name_len+1, 10))
           /* if next char would make name invalid, stop */
           break;
-        p--;
+        p--; name_len++;
       }
       
       if(!name) {
