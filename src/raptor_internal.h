@@ -643,6 +643,15 @@ RAPTOR_API void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const v
 RAPTOR_API void raptor_sequence_print_string(char *data, FILE *fh);
 RAPTOR_API void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 
+/* raptor_stringbuffer.c - NOT PUBLIC */
+raptor_stringbuffer* raptor_new_stringbuffer(void);
+void raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer);
+int raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, size_t length, int do_copy);
+int raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, int do_copy);
+int raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer, int integer);
+unsigned char * raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer);
+size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
