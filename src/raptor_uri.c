@@ -707,8 +707,8 @@ raptor_uri_filename_to_uri_string(const char *filename)
 #else
   char path[PATH_MAX];
 #endif
-  /*     file: (filename) \0 */
-  int len=5+strlen(filename)+1;
+  /*     "file:" ... \0 */
+  int len=5+1;
   
 #ifdef WIN32
 /*
@@ -728,7 +728,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * that turn into file:///server/share/blah
  * using the above algorithm.
  */
-  len+=2; /* // */
+  len+=strlen(filename)+2; /* filename + // */
   if(*filename != '\\')
     len+=2; /* relative filename - add ./ */
 
@@ -746,6 +746,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
     strcat(path, filename);
     filename=(const char*)path;
   }
+  len+=strlen(filename);
 #endif
 
   buffer=(char*)RAPTOR_MALLOC(cstring, len);
