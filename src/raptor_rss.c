@@ -1282,12 +1282,16 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
   if(suffix) {
     if(!strcmp((const char*)suffix, "rss"))
       score=7;
+    if(!strcmp((const char*)suffix, "xml"))
+      score=4;
   }
   
   if(identifier) {
     if(strstr((const char*)identifier, "rss2"))
       score+=5;
     else if(!suffix && strstr((const char*)identifier, "rss"))
+      score+=4;
+    else if(strstr((const char*)identifier, "rss.xml"))
       score+=4;
   }
   
