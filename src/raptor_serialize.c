@@ -331,15 +331,15 @@ int
 raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri,
                        raptor_iostream *iostream) 
 {
-  if(!rdf_serializer->factory->serialize_end)
-    return 0;
+  if(rdf_serializer->base_uri)
+    raptor_free_uri(rdf_serializer->base_uri);
+
+  if(!iostream)
+    return 1;
   
   if(uri)
     uri=raptor_uri_copy(uri);
   
-  if(rdf_serializer->base_uri)
-    raptor_free_uri(rdf_serializer->base_uri);
-
   rdf_serializer->base_uri=uri;
   rdf_serializer->locator.uri=uri;
   rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
@@ -377,6 +377,8 @@ raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
   RAPTOR_FREE(cstring, uri_string);
 
   rdf_serializer->iostream=raptor_new_iostream_to_filename(filename);
+  if(!rdf_serializer->iostream)
+    return 1;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -412,6 +414,8 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
 
   rdf_serializer->iostream=raptor_new_iostream_to_string(string_p, length_p, 
                                                          NULL);
+  if(!rdf_serializer->iostream)
+    return 1;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -444,6 +448,8 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
   rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
 
   rdf_serializer->iostream=raptor_new_iostream_to_file_handle(fh);
+  if(!rdf_serializer->iostream)
+    return 1;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -461,6 +467,8 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
 int
 raptor_serialize_statement(raptor_serializer* rdf_serializer,
                            const raptor_statement *statement) {
+  if(!rdf_serializer->iostream)
+    return 1;
   return rdf_serializer->factory->serialize_statement(rdf_serializer, statement);
 }
 
@@ -476,6 +484,9 @@ raptor_serialize_end(raptor_serializer *rdf_serializer)
 {
   int rc;
   
+  if(!rdf_serializer->iostream)
+    return 1;
+
   if(rdf_serializer->factory->serialize_end)
     rc=rdf_serializer->factory->serialize_end(rdf_serializer);
   else
