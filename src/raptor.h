@@ -80,15 +80,15 @@ RAPTOR_API extern const unsigned int raptor_version_minor;
 RAPTOR_API extern const unsigned int raptor_version_release;
 RAPTOR_API extern const unsigned int raptor_version_decimal;
 
-RAPTOR_API extern const char * const raptor_xml_namespace_uri;
-RAPTOR_API extern const char * const raptor_rdf_namespace_uri;
-RAPTOR_API extern const char * const raptor_rdf_schema_namespace_uri;
-RAPTOR_API extern const char * const raptor_xmlschema_datatypes_namespace_uri;
-RAPTOR_API extern const char * const raptor_owl_namespace_uri;
+RAPTOR_API extern const unsigned char * const raptor_xml_namespace_uri;
+RAPTOR_API extern const unsigned char * const raptor_rdf_namespace_uri;
+RAPTOR_API extern const unsigned char * const raptor_rdf_schema_namespace_uri;
+RAPTOR_API extern const unsigned char * const raptor_xmlschema_datatypes_namespace_uri;
+RAPTOR_API extern const unsigned char * const raptor_owl_namespace_uri;
 
 RAPTOR_API extern const unsigned int raptor_rdf_namespace_uri_len;
 
-RAPTOR_API extern const char * const raptor_xml_literal_datatype_uri_string;
+RAPTOR_API extern const unsigned char * const raptor_xml_literal_datatype_uri_string;
 RAPTOR_API extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
 
 
@@ -368,11 +368,11 @@ RAPTOR_API void raptor_uri_init(void);
 RAPTOR_API void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
 RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
 
-#define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-#define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
+#define RAPTOR_RDF_MS_URI raptor_rdf_namespace_uri
+#define RAPTOR_RDF_SCHEMA_URI raptor_rdf_schema_namespace_uri
 
-#define RAPTOR_XMLSCHEMA_DATATYPES_URI "http://www.w3.org/2001/XMLSchema#"
-#define RAPTOR_OWL_URI "http://www.w3.org/2002/07/owl#"
+#define RAPTOR_XMLSCHEMA_DATATYPES_URI raptor_xmlschema_datatypes_namespace_uri
+#define RAPTOR_OWL_URI raptor_owl_namespace_uri
 
 
 /* raptor_www */
