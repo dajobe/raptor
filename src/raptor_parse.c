@@ -1063,7 +1063,7 @@ raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
   if(!*p) {
     local_name_length=p-name;
 
-    /* No : - pick up default namespace, if there is one */
+    /* No : in the name */
     new_name=(char*)LIBRDF_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -1073,25 +1073,28 @@ raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
     strcpy(new_name, name);
     ns_name->local_name=new_name;
     ns_name->local_name_length=local_name_length;
-    
-    /* Find a default namespace */
-    for(ns=rdf_parser->namespaces; ns && ns->prefix; ns=ns->next)
-      ;
 
-    if(ns) {
-      ns_name->nspace=ns;
+    /* For elements only, pick up the default namespace if there is one */
+    if(is_element) {
+      /* Find a default namespace */
+      for(ns=rdf_parser->namespaces; ns && ns->prefix; ns=ns->next)
+        ;
+      
+      if(ns) {
+        ns_name->nspace=ns;
 #if RAPTOR_DEBUG > 1
-    LIBRDF_DEBUG2(raptor_make_namespaced_name,
-                  "Found default namespace %s\n", ns->uri);
+        LIBRDF_DEBUG2(raptor_make_namespaced_name,
+                      "Found default namespace %s\n", ns->uri);
 #endif
-    } else {
-      /* failed to find namespace - now what? FIXME */
-      /* raptor_parser_warning(rdf_parser, "No default namespace defined - cannot expand %s", name); */
+      } else {
+        /* failed to find namespace - now what? FIXME */
+        /* raptor_parser_warning(rdf_parser, "No default namespace defined - cannot expand %s", name); */
 #if RAPTOR_DEBUG > 1
-      LIBRDF_DEBUG1(raptor_make_namespaced_name,
-                    "No default namespace defined\n");
+        LIBRDF_DEBUG1(raptor_make_namespaced_name,
+                      "No default namespace defined\n");
 #endif
-    }
+      }
+    } /* if is_element */
 
   } else {
     /* There is a namespace prefix */
