@@ -293,6 +293,7 @@ RAPTOR_API int raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_
 RAPTOR_API int raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer, const char *filename);
 RAPTOR_API int raptor_serialize_start_to_string(raptor_serializer *rdf_serializer, raptor_uri *uri, void **string_p, size_t *length_p);
 RAPTOR_API int raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer, raptor_uri *uri, FILE *fh);
+RAPTOR_API int raptor_serialize_set_namespace(raptor_serializer* rdf_serializer, raptor_uri *uri, const char *prefix);
 RAPTOR_API int raptor_serialize_statement(raptor_serializer* rdf_serializer, const raptor_statement *statement);
 RAPTOR_API int raptor_serialize_end(raptor_serializer *rdf_serializer);
 RAPTOR_API raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
