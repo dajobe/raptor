@@ -33,7 +33,7 @@ RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
 bad-10.rdf bad-11.rdf
 
-RDF_WARN_TEST_FILES=warn-00.rdf
+RDF_WARN_TEST_FILES=warn-00.rdf warn-01.rdf
 
 RDF_ASSUME_TEST_FILES=ex-19.rdf
 
@@ -48,7 +48,7 @@ ex-48.out ex-49.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out
 
-RDF_WARN_OUT_FILES=warn-00.out
+RDF_WARN_OUT_FILES=warn-00.out warn-01.out
 
 RDF_ASSUME_OUT_FILES=ex-19.out
 
