@@ -28,6 +28,8 @@
 #include <win32_raptor_config.h>
 #endif
 
+#ifdef RAPTOR_WWW_LIBCURL
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -157,3 +159,5 @@ raptor_www_curl_fetch(raptor_www *www)
   }
   return 0;
 }
+
+#endif /* RAPTOR_WWW_LIBCURL */
