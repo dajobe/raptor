@@ -137,6 +137,8 @@ raptor_www_libxml_fetch(raptor_www *www)
         return 1;
       }
     }
+    xmlFree(www->type);
+    www->type=NULL;
   }
 
   www->status_code=xmlNanoHTTPReturnCode(www->ctxt);
