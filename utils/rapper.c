@@ -411,7 +411,8 @@ main(int argc, char *argv[])
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
   if(assume)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_ASSUME_IS_RDF, 1);
-  
+
+  raptor_set_parser_strict(rdf_parser, strict_mode);
   
   if(!quiet) {
     if(base_uri_string)
