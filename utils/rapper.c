@@ -186,12 +186,10 @@ main(int argc, char *argv[])
   int rc;
   int scanning=0;
   int assume=0;
-  int rdfxml=1;
-  int rss_tag_soup=0;
+  const char *syntax_name="rdfxml";
   int strict_mode=0;
   int usage=0;
   int help=0;
-  const char *parser_name="rdfxml";
   raptor_uri *base_uri;
   raptor_uri *uri;
   char *p;
@@ -246,7 +244,7 @@ main(int argc, char *argv[])
         break;
 
       case 'n':
-        rdfxml=0; rss_tag_soup=0;
+        syntax_name="ntriples";
         break;
 
       case 's':
@@ -293,12 +291,10 @@ main(int argc, char *argv[])
 
       case 'i':
         if(optarg) {
-          if(!strcmp(optarg, "rdfxml")) {
-            rdfxml=1; rss_tag_soup=0;
-          } else if (!strcmp(optarg, "ntriples")) {
-            rdfxml=0; rss_tag_soup=0;
-          } else if (!strcmp(optarg, "rss-tag-soup")) {
-            rdfxml=0; rss_tag_soup=1;
+          if(!strcmp(optarg, "rdfxml") || !strcmp(optarg, "ntriples")
+             || !strcmp(optarg, "n3") || !strcmp(optarg, "rss-tag-soup")
+            ) {
+            syntax_name=optarg;
           } else {
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
                     program, optarg);
@@ -411,12 +407,10 @@ main(int argc, char *argv[])
     }
   }
 
-  parser_name=rdfxml ? "rdfxml" : (rss_tag_soup ? "rss-tag-soup" : "ntriples");
-
-  rdf_parser=raptor_new_parser(parser_name);
+  rdf_parser=raptor_new_parser(syntax_name);
   if(!rdf_parser) {
     fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
-            parser_name);
+            syntax_name);
     return(1);
   }
   
@@ -454,13 +448,13 @@ main(int argc, char *argv[])
   if(!uri || filename) {
     if(raptor_parse_file(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse file %s %s content\n", program, 
-              filename, parser_name);
+              filename, syntax_name);
       rc=1;
     }
   } else {
     if(raptor_parse_uri(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse URI %s %s content\n", program, 
-              uri_string, parser_name);
+              uri_string, syntax_name);
       rc=1;
     }
   }
