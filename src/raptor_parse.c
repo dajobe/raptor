@@ -637,7 +637,6 @@ raptor_xml_start_element_handler(void *user_data,
   int i;
   raptor_element* element=NULL;
   raptor_sax2_element* sax2_element=NULL;
-  int non_nspaced_count=0;
   unsigned char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
   int count_bumped=0;
@@ -804,13 +803,6 @@ raptor_xml_start_element_handler(void *user_data,
 
   element->sax2=sax2_element;
   
-  /* If has no namespace or the namespace has no name (xmlns="") */
-  if(!sax2_element->name->nspace ||
-     (sax2_element->name->nspace &&
-      !raptor_namespace_get_uri(sax2_element->name->nspace)))
-    non_nspaced_count++;
-
-
   if(ns_attributes_count) {
     int offset = 0;
 
@@ -910,11 +902,6 @@ raptor_xml_start_element_handler(void *user_data,
         if(!attr)
           continue;
 
-        /* If has no namespace or the namespace has no name (xmlns="") */
-        if(!attr->nspace ||
-           (attr->nspace && !raptor_namespace_get_uri(attr->nspace)))
-          non_nspaced_count++;
-
       } /* end if leave literal XML alone */
 
       if(attr)
@@ -1004,18 +991,37 @@ raptor_xml_start_element_handler(void *user_data,
 #endif
 
   
-  /* Check for non namespaced stuff when not in a
-   * parseType literal, other
-   */
-  if (rdf_content_type_info[element->content_type].rdf_processing &&
-      non_nspaced_count) {
-    raptor_parser_error(rdf_parser, "Using an element '%s' without a namespace is forbidden.", 
-                        element->sax2->name->local_name);
-    element->state=RAPTOR_STATE_SKIPPING;
-    /* Remove count above so that parent thinks this is empty */
-    if(count_bumped)
-      element->parent->sax2->content_element_seen--;
-    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
+  /* Check for non namespaced stuff when not in a parseType literal, other */
+  if (rdf_content_type_info[element->content_type].rdf_processing) {
+
+    /* The element */
+    /* If has no namespace or the namespace has no name (xmlns="") */
+    if(!sax2_element->name->nspace ||
+       (sax2_element->name->nspace &&
+        !raptor_namespace_get_uri(sax2_element->name->nspace))) {
+      raptor_parser_error(rdf_parser, "Using an element '%s' without a namespace is forbidden.", 
+                          element->sax2->name->local_name);
+      element->state=RAPTOR_STATE_SKIPPING;
+      /* Remove count above so that parent thinks this is empty */
+      if(count_bumped)
+        element->parent->sax2->content_element_seen--;
+      element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
+    }
+
+
+    /* Check for any remaining non-namespaced attributes */
+    if (named_attrs) {
+      for(i=0; i < ns_attributes_count; i++) {
+        raptor_qname *attr=named_attrs[i];
+        /* Check if any attributes are non-namespaced */
+        if(!attr->nspace ||
+           (attr->nspace && !raptor_namespace_get_uri(attr->nspace))) {
+          raptor_parser_error(rdf_parser, "Using an attribute '%s' without a namespace is forbidden.", attr->local_name);
+          raptor_free_qname(attr);
+          named_attrs[i]=NULL;
+        }
+      }
+    }
   }
   
 
@@ -1730,10 +1736,16 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
    */
   for(i=0; i<attributes_element->sax2->attribute_count; i++) {
     raptor_qname* attr=attributes_element->sax2->attributes[i];
-    const unsigned char *name=attr->local_name;
-    const unsigned char *value = attr->value;
+    const unsigned char *name;
+    const unsigned char *value;
     int handled=0;
+
+    if(!attr)
+      continue;
     
+    name=attr->local_name;
+    value = attr->value;
+
     if(!attr->nspace) {
       raptor_update_document_locator(rdf_parser);
       raptor_parser_error(rdf_parser, "Using property attribute '%s' without a namespace is forbidden.", name);
