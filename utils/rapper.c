@@ -201,7 +201,7 @@ main(int argc, char *argv[])
     fprintf(stderr, HELP_TEXT(s, "scan            ", "Scan for <rdf:RDF> element in source"));
     fprintf(stderr, HELP_TEXT(r, "replace-newlines", "Replace newlines with spaces in literals"));
     fprintf(stderr, HELP_TEXT(q, "quiet           ", "No extra information messages"));
-    fprintf(stderr, HELP_TEXT(o, "output=FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
+    fprintf(stderr, HELP_TEXT(o, "output FORMAT   ", "Set output to 'simple'' or 'ntriples'"));
     return(usage>1);
   }
 
