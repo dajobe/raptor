@@ -159,7 +159,6 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 
 
 
-typedef struct raptor_xml_parser_s raptor_xml_parser;
 typedef struct raptor_parser_factory_s raptor_parser_factory;
 typedef struct raptor_namespace_s raptor_namespace;
 
