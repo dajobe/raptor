@@ -60,8 +60,6 @@ struct raptor_turtle_parser_s {
   raptor_uri* nil_uri;
   raptor_uri* first_uri;
   raptor_uri* rest_uri;
-
-  raptor_uri* xml_literal_datatype_uri;
 };
 
 

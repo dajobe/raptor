@@ -928,8 +928,6 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   turtle_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
   turtle_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
 
-  turtle_parser->xml_literal_datatype_uri=raptor_new_uri((const unsigned char*)raptor_xml_literal_datatype_uri_string);
-
   return 0;
 }
 
@@ -959,8 +957,6 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
 
   if(turtle_parser->buffer_length)
     RAPTOR_FREE(cdata, turtle_parser->buffer);
-
-  raptor_free_uri(turtle_parser->xml_literal_datatype_uri);
 }
 
 
@@ -1011,11 +1007,8 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
     statement->object_literal_language=t->object->literal_language;
     statement->object_literal_datatype=t->object->literal_datatype;
 
-    if(statement->object_literal_datatype) {
-      if(!raptor_uri_equals(statement->object_literal_datatype,
-                            turtle_parser->xml_literal_datatype_uri))
-        statement->object_literal_language=NULL;
-    }
+    if(statement->object_literal_datatype)
+      statement->object_literal_language=NULL;
   }
 
   if(!parser->statement_handler)

@@ -70,8 +70,6 @@ struct raptor_ntriples_parser_context_s {
   
   /* static statement for use in passing to user code */
   raptor_statement statement;
-
-  raptor_uri* xml_literal_datatype_uri;
 };
 
 
@@ -87,8 +85,7 @@ typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
 
 static int
 raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
-  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
-  ntriples_parser->xml_literal_datatype_uri=raptor_new_uri((const unsigned char*)raptor_xml_literal_datatype_uri_string);
+  /*raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context; */
   return 0;
 }
 
@@ -106,7 +103,6 @@ raptor_ntriples_parse_terminate(raptor_parser *rdf_parser) {
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   if(ntriples_parser->line_length)
     RAPTOR_FREE(cdata, ntriples_parser->line);
-  raptor_free_uri(ntriples_parser->xml_literal_datatype_uri);
 }
 
 
@@ -153,11 +149,10 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
 
-  if(object_literal_datatype) {
-    datatype_uri=raptor_new_uri_relative_to_base(parser->base_uri, object_literal_datatype);
-    if(!raptor_uri_equals(datatype_uri, ntriples_parser->xml_literal_datatype_uri))
-      object_literal_language=NULL;
-  }
+ if(object_literal_datatype) {
+   datatype_uri=raptor_new_uri_relative_to_base(parser->base_uri, object_literal_datatype);
+   object_literal_language=NULL;
+ }
 
   /* Predicates in N-Triples are URIs or ordinals */
   if(!strncmp((const char*)predicate, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
