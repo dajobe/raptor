@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-06-24"
+.TH libraptor 3 "2004-07-21"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -300,6 +300,19 @@ it will return in \fIlength\fR the size of a buffer that can be allocated for
 This method takes a \fIraptor_locator\fR object as passed to an
 error, warning or other handler callback, formats and prints it to
 the given stdio \fIstream\fR.
+.IP "\fBint raptor_locator_line(raptor_locator *locator)\fR"
+Returns the line number in a locator structure or <0 if not available.
+.IP "\fBint raptor_locator_column(raptor_locator *locator)\fR"
+Returns the column number in a locator structure or <0 if not available.
+.IP "\fBint raptor_locator_byte(raptor_locator *locator)\fR"
+Returns the byte offset in a locator structure or <0 if not available.
+.IP "\fBconst char * raptor_locator_file(raptor_locator *locator)\fR"
+Returns the filename in a locator structure or NULL if not available.
+Note the returned pointer is to a shared string that must be copied if needed.
+.IP "\fBconst char * raptor_locator_uri(raptor_locator *locator)\fR"
+Returns the URI string in a locator structure or NULL if not
+available.  Note this does not return a raptor_uri* pointer and
+the returned pointer is to a shared string that must be copied if needed.
 .SH "N-TRIPLES UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_ntriples_string(FILE* \fIstream\fB, const char* \fIstring\fB, const char \fIdelim\fB)\fR"
 This is a standalone function that prints the given string
@@ -698,30 +711,52 @@ should be copied if needed.
 Return the length of the stringbuffer.
 .SH API CHANGES
 .SS 1.3.2
-Added raptor_alloc_memory to allocate memory inside the library.
+Added \fBraptor_alloc_memory\fR to allocate memory inside raptor.
+.LP
+Added accessor functions for the public raptor_locator structure:
+.LP
+\fBraptor_locator_line\fR
+.br
+\fBraptor_locator_column\fR
+.br
+\fBraptor_locator_byte\fR
+.br
+\fBraptor_locator_file\fR
+.br
+\fBraptor_locator_uri\fR
 .SS 1.3.1
 Correct raptor_print_statement declaration argument statement to have
 one less 'const', to match the code.
 .SS 1.3.0
 Added the following parser methods, utility methods and helper functions:
+.LP
+\fBraptor_new_parser_for_content (Parser class constructor)\fR
 .br
-  \fBraptor_new_parser_for_content (Parser class constructor)\fR,
-  \fBraptor_get_mime_type\fR,
-  \fBraptor_get_feature\fR,
-  \fBraptor_syntax_name_check\fR,
-  \fBraptor_guess_parser_name\fR,
-  \fBraptor_features_enumerate\fR,
-  \fBraptor_feature_from_uri\fR,
-  \fBraptor_www_set_http_accept (WWW class)\fR.
+\fBraptor_get_mime_type\fR
+.br
+\fBraptor_get_feature\fR
+.br
+\fBraptor_syntax_name_check\fR
+.br
+\fBraptor_guess_parser_name\fR
+.br
+\fBraptor_features_enumerate\fR
+.br
+\fBraptor_feature_from_uri\fR
+.br
+\fBraptor_www_set_http_accept (WWW class)\fR
 .LP
 Changed \fBraptor_set_feature\fP to now return an int success or failure.
 .LP
 Added the following functions:
 .br
-  \fBraptor_free_memory\fR,
-  \fBraptor_unicode_char_to_utf8\fR,
-  \fBraptor_utf8_to_unicode_char\fR and
-  \fBraptor_vsnprintf\fR.
+\fBraptor_free_memory\fR
+.br
+\fBraptor_unicode_char_to_utf8\fR
+.br
+\fBraptor_utf8_to_unicode_char\fR
+.br
+\fBraptor_vsnprintf\fR
 .LP
 Added the raptor_sequence class, its constructor, destructor, methods
 and helper functions.
@@ -733,47 +768,71 @@ be internal.
 .SS 1.2.0
 Added \fBraptor_syntaxes_enumerate\fR to get full information
 on syntax mime type and URIs as well as name and label.
-.br
+.LP
 N-Triples Plus parser renamed to Turtle (name turtle)
 .SS 1.1.0
 Added N-Triples Plus parser (name ntriples-plus)
-.br
+.LP
 Made URI class constructors, methods and factory methods as
 well as some other utility functions using or returning URIs or
 literals take unsigned char* rather than char*.  The affected calls are:
+.LP
+URI factory methods changed to all take/return unsigned char* for URI
+strings:
 .br
-  \fBraptor_new_uri_func\fR,
-  \fBraptor_new_uri_from_local_name_func\fR,
-  \fBraptor_new_uri_relative_to_base_func\fR,
-  \fBraptor_uri_as_string_func\fR,
-  \fBraptor_uri_as_counted_string_func\fR :
-    URI factory methods changed to all take/return unsigned char* for URI strings.
-  \fBraptor_statement_part_as_counted_string\fR,
-  \fBraptor_statement_part_as_string\fR,
-  \fBraptor_new_uri\fR,
-  \fBraptor_new_uri_from_uri_local_name\fR,
-  \fBraptor_new_uri_relative_to_base\fR,
-  \fBraptor_uri_as_string\fR,
-  \fBraptor_uri_as_counted_string\fR,
-  \fBraptor_print_ntriples_string\fR :
-    Constructors and methods changed to take/return unsigned char* for URI strings.
-  \fBraptor_uri_resolve_uri_reference\fR,
-  \fBraptor_uri_filename_to_uri_string\fR,
-  \fBraptor_uri_uri_string_to_filename\fR,
-  \fBraptor_uri_uri_string_to_filename_fragment\fR,
-  \fBraptor_uri_is_file_uri\fR :
-    Changed to use unsigned char* for URI strings, char* for filenames,
-  \fBraptor_ntriples_string_as_utf8_string\fR :
-    Changed to return unsigned char* for UTF8 string.
+\fBraptor_new_uri_func\fR
 .br
+\fBraptor_new_uri_from_local_name_func\fR
+.br
+\fBraptor_new_uri_relative_to_base_func\fR
+.br
+\fBraptor_uri_as_string_func\fR
+.br
+\fBraptor_uri_as_counted_string_func\fR
+.LP
+Constructors and methods changed to take/return unsigned char* for
+URI strings:
+.br
+\fBraptor_statement_part_as_counted_string\fR
+.br
+\fBraptor_statement_part_as_string\fR
+.br
+\fBraptor_new_uri\fR
+.br
+\fBraptor_new_uri_from_uri_local_name\fR
+.br
+\fBraptor_new_uri_relative_to_base\fR
+.br
+\fBraptor_uri_as_string\fR
+.br
+\fBraptor_uri_as_counted_string\fR
+.br
+\fBraptor_print_ntriples_string\fR
+.LP
+Changed to use unsigned char* for URI strings, char* for filenames:
+.br
+\fBraptor_uri_resolve_uri_reference\fR
+.br
+\fBraptor_uri_filename_to_uri_string\fR
+.br
+\fBraptor_uri_uri_string_to_filename\fR
+.br
+\fBraptor_uri_uri_string_to_filename_fragment\fR
+.br
+\fBraptor_uri_is_file_uri\fR
+.LP
+Changed to return unsigned char* for UTF8 string:
+.br
+\fBraptor_ntriples_string_as_utf8_string\fR
+.LP
 Added \fBraptor_parsers_enumerate\fR to discover supported parsers.
-.br
+.LP
 Added \fBraptor_uri_uri_string_to_filename_fragment\fR with fragment arg to
 return the URI fragment.
-.br
+.LP
 Made the raptor_namespace, raptor_namespace_stack and raptor_qname
 class and APIs public.
-.br
+.LP
 Added feature non_nfc_fatal (see raptor_set_feature documentation).
 .SS 1.0.0
 Removed the following deprecated methods and functions (see 0.9.6
@@ -784,7 +843,7 @@ changes for the new names):
 \fBraptor_ntriples_set_error_handler\fR,
 \fBraptor_ntriples_set_fatal_error_handler\fR,
 \fBraptor_ntriples_set_statement_handler\fR and \fBraptor_parser_abort\fR.
-.br
+.LP
 Added \fBraptor_parse_file_stream\fR
 for reading FILE* streams without necessarily having a file.
 .SS 0.9.12
@@ -792,30 +851,30 @@ Added \fBraptor_new_uri_for_retrieval\fR
 to turn URI references into URIs suitable for retrieval (no fragments).
 .SS 0.9.11
 Added \fBraptor_get_name\fR and \fBraptor_get_label\fR.
-.br
+.LP
 \fBraptor_xml_escape_string\fR now takes error message handler, data
 pointer, loses parser argument.
-.br
+.LP
 Added \fBraptor_set_default_generate_id_parameters\fR and
 \fBraptor_set_generate_id_handler\fR to control the default
 generation of IDs, allow full customisation.
 .SS 0.9.10
 Added \fBraptor_set_parser_strict\fR
 and \fBraptor_www_no_www_library_init_finish\fR.
-.br
+.LP
 \fBraptor_xml_escape_string\fR now takes an output string length pointer.
-.br
+.LP
 Added \fBraptor_statement_part_as_counted_string\fR,
 \fBraptor_statement_part_as_string and \fBraptor_parse_abort\fR.
-.br
+.LP
 Deprecated \fBraptor_parser_abort\fR.
 .SS 0.9.9
 Added raptor_www class and all its constructors, destructor, methods, calls.
-.br
+.LP
 Added \fBraptor_parse_uri\fR, \fBraptor_parser_abort\fR, \fBraptor_ntriples_term_as_string\fR and \fBraptor_xml_escape_string\fR.
 .SS 0.9.7
 \fBraptor_parse_chunk, \fBraptor_new_uri_from_id\fR, arguments are now unsigned char.
-.br
+.LP
 Added \fBraptor_new_uri_for_xmlbase\fR.
 .SS 0.9.6
 In this version, the raptor/ntriples parser calling APIs were

@@ -8,7 +8,42 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
-<h2 id="rel1_3_1"><a name="rel1_3_1">Raptor 1.3.1 Changes</a><a name="rel1_3_3"></a></h2>
+<h2 id="rel1_3_2"><a name="rel1_3_2">Raptor 1.3.2 Changes</a></h2>
+
+<p>A release with some minor fixes.</p>
+
+<p>Added a new configure option
+<code>--with-expat-source=</code><em>DIR</em>
+to allow the use of external expat source trees in either the old or
+newer directory structure style. (Patch from Jose Kahan).</p>
+
+<p>Added <code>raptor_alloc_memory</code> for handlers that need to
+allocate memory in the same heap as raptor uses for
+<code>raptor_free_memory</code>. This is mostly useful for allocating
+memory that is freed by raptor in error, ID and statement handlers
+on win32 which has separate heaps for different DLLs.</p>
+
+<p>A bug was fixed where errors which happened when fetching WWW
+content were always printed to stderr.  They are now passed to the
+main error routines which allows applications to retrieve them.</p>
+
+<p>Accessor functions were added for parts of the public
+<code>raptor_locator</code> structure which makes it possible to get
+structured error information from language bindings via Redland
+(Patch from Edd Dumbill).  The new functions are:</p>
+
+<ul>
+<li><code>int raptor_locator_line(raptor_locator *locator);</code></li>
+<li><code>int raptor_locator_column(raptor_locator *locator);</code></li>
+<li><code>int raptor_locator_byte(raptor_locator *locator);</code></li>
+<li><code>const char * raptor_locator_file(raptor_locator *locator);</code></li>
+<li><code>const char * raptor_locator_uri(raptor_locator *locator);</code></li>
+</ul>
+
+
+
+
+<h2 id="rel1_3_1"><a name="rel1_3_1">Raptor 1.3.1 Changes</a></h2>
 
 <p>A release primarily to fix some win32 and portability issues.</p>
 
