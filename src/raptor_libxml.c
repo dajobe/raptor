@@ -507,8 +507,9 @@ raptor_libxml_init(xmlSAXHandler *sax) {
   sax->error=raptor_libxml_error;
   sax->fatalError=raptor_libxml_fatal_error;
 
+#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
   sax->initialized = 1;
-
+#endif
 
 #ifdef RAPTOR_LIBXML_MY_ENTITIES
   sax->getEntity=raptor_libxml_get_entity;
