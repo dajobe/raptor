@@ -88,10 +88,14 @@ typedef enum {
 #define ATOM0_3_NAMESPACE_URI "http://purl.org/atom/ns#"
 #define DC_NAMESPACE_URI      "http://purl.org/dc/elements/1.1/"
 
+/* Old netscape namespace, turn into RSS 1.0 */
+#define RSS0_9_NAMESPACE_URI  "http://my.netscape.com/rdf/simple/0.9/"
+
 typedef enum {
   RSS_UNKNOWN_NS = 0,
   RSS_NO_NS      = 1,
   RSS0_91_NS     = 2,
+  RSS0_9_NS      = 3,
   RSS0_92_NS     = RSS_NO_NS,
   RSS2_0_NS      = RSS_NO_NS,
   RSS1_0_NS      = 4,
@@ -115,7 +119,7 @@ static raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACE
   { NULL,                     NULL,  },
   { NULL,                     NULL,  },
   { RSS0_91_NAMESPACE_URI,    "rss091", },
-  { NULL,                     NULL,   },
+  { RSS0_9_NAMESPACE_URI,     NULL,   },
   { RSS1_0_NAMESPACE_URI,     NULL,   }, /* default namespace on writing */
   { ATOM0_3_NAMESPACE_URI,    "atom", },
   { DC_NAMESPACE_URI,         "dc",   },
@@ -723,7 +727,16 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
             const xmlChar *nspace_URI=xmlTextReaderConstNamespaceUri(reader);
 #else
             xmlChar *nspace_URI=xmlTextReaderNamespaceUri(reader);
+            int free_nspace_URI=1;
 #endif
+            if(nspace_URI &&
+               !strcmp((const char*)nspace_URI, (const char*)raptor_rss_namespaces_info[RSS0_9_NS].uri_string)) {
+              nspace_URI=(xmlChar*)raptor_rss_namespaces_info[RSS1_0_NS].uri_string;
+#if LIBXML_VERSION > 20511
+#else
+              free_nspace_URI=0;
+#endif
+            }
             if(nspace_URI && raptor_rss_fields_info[i].nspace != RSS_NO_NS) {
               const unsigned char *field_nspace_URI=(const unsigned char*)raptor_rss_namespaces_info[raptor_rss_fields_info[i].nspace].uri_string;
             
@@ -732,7 +745,8 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
 #if LIBXML_VERSION > 20511
                 /* nop */
 #else
-                xmlFree(nspace_URI);
+                if(free_nspace_URI)
+                  xmlFree(nspace_URI);
 #endif
                 break;
               }
