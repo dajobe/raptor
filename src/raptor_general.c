@@ -78,6 +78,7 @@ raptor_init(void)
   raptor_init_parser_ntriples();
 
   raptor_uri_init();
+  raptor_www_init();
 }
 
 
@@ -89,6 +90,7 @@ raptor_init(void)
 void
 raptor_finish(void) 
 {
+  raptor_www_finish();
   raptor_terminate_parser_rdfxml();
   raptor_delete_parser_factories();
 }
@@ -415,8 +417,10 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
                                      rdf_parser);
 
-  if(raptor_start_parse(rdf_parser, base_uri))
+  if(raptor_start_parse(rdf_parser, base_uri)) {
+    raptor_www_free(www);
     return 1;
+  }
 
   raptor_www_fetch(www, uri);
 
