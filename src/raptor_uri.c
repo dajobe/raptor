@@ -278,6 +278,20 @@ raptor_uri_copy(raptor_uri *uri)
 }
 
 
+static char*
+raptor_default_uri_as_string(void *context, raptor_uri *uri)
+{
+  return (char*)uri;
+}
+
+
+char*
+raptor_uri_as_string(raptor_uri *uri) 
+{
+  return (*raptor_uri_current_uri_handler->uri_as_string)(raptor_uri_current_uri_context, uri);
+}
+
+
 
 /*
  * raptor_uri_parse() and raptor_uri_resolve_uri_reference()
@@ -904,7 +918,8 @@ raptor_uri_init_default_handler(raptor_uri_handler *handler)
   handler->free_uri=raptor_default_free_uri;
   handler->uri_equals=raptor_default_uri_equals;
   handler->uri_copy=raptor_default_uri_copy;
-
+  handler->uri_as_string=raptor_default_uri_as_string;
+  
   handler->initialised=1;
 }
 
@@ -916,6 +931,7 @@ static raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_free_uri,
   raptor_default_uri_equals,
   raptor_default_uri_copy,
+  raptor_default_uri_as_string,
   1
 };
 
