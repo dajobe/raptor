@@ -3200,7 +3200,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
 
         /* Otherwise the choice of the next state can be made
-         * from the current element by the IN_RDF state
+         * from the current element by the OBJ state
          */
         state=RAPTOR_STATE_OBJ;
         element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
