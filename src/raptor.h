@@ -107,6 +107,16 @@ typedef enum {
 } rapier_feature;
 
 
+typedef void (*rapier_message_handler)(void *user_data, rapier_locator* locator, const char *msg, ...);
+typedef void (*rapier_triple_handler)(void *user_data, const char *subject, rapier_subject_type subject_type, const char *predicate, rapier_predicate_type predicate_type, const char *object, rapier_object_type object_type);
+#ifdef LIBRDF_INTERNAL
+typedef int (*rapier_container_test_handler)(librdf_uri *element_uri);
+#else
+typedef int (*rapier_container_test_handler)(const char *element_uri);
+#endif
+
+
+
 /* Public functions */
 
 /* Create */
@@ -114,18 +124,27 @@ rapier_parser* rapier_new(void);
 /* Destroy */
 void rapier_free(rapier_parser *rdf_parser);
 
-void rapier_parser_set_fatal_error(rapier_parser* parser, void *user_data, void (*fatal_error_fn)(void *user_data, rapier_locator *locator, const char *msg, ...));
-void rapier_parser_set_error(rapier_parser* parser, void *user_data, void (*error_fn)(void *user_data, rapier_locator *locator, const char *msg, ...));
-void rapier_parser_set_warning(rapier_parser* parser, void *user_data, void (*warning_fn)(void *user_data, rapier_locator *locator, const char *msg, ...));
-  
-void rapier_set_triple_handler(rapier_parser* parser, void *userData, void (*triple_handler)(void *userData, const char *subject, rapier_subject_type subject_type, const char *predicate, rapier_predicate_type predicate_type, const char *object, rapier_object_type object_type));
-int rapier_parse_file(rapier_parser* rdf_parser,  const char *uri, const char *base_uri);
+/* Handlers */
+void rapier_set_fatal_error_handler(rapier_parser* parser, void *user_data, rapier_message_handler handler);
+void rapier_set_error_handler(rapier_parser* parser, void *user_data, rapier_message_handler handler);
+void rapier_set_warning_handler(rapier_parser* parser, void *user_data, rapier_message_handler handler);
+void rapier_set_triple_handler(rapier_parser* parser, void *user_data, rapier_triple_handler handler);
+
+/* Parsing functions */
+int rapier_parse_file(rapier_parser* rdf_parser,  const char *filename, const char *base_uri);
+
+/* Utility functions */
 void rapier_print_locator(FILE *stream, rapier_locator* locator);
 
 void rapier_set_feature(rapier_parser *parser, rapier_feature feature, int value);
 
+
+#ifndef LIBRDF_INTERNAL
+
 #define RAPIER_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define RAPIER_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
+
+#endif
 
 #ifdef __cplusplus
 }
