@@ -97,7 +97,7 @@ static const char* const rss_namespace_uri_strings[RSS_NAMESPACES_SIZE]={
 
 typedef struct {
   const char* name;
-  rss_info_namespace namespace;
+  rss_info_namespace nspace;
   raptor_uri* uri;
 } raptor_rss_info;
 
@@ -257,14 +257,14 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name) {
   }
 
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-    raptor_uri *namespace_uri=rss_parser->namespace_uris[raptor_rss_types_info[i].namespace];
+    raptor_uri *namespace_uri=rss_parser->namespace_uris[raptor_rss_types_info[i].nspace];
     if(namespace_uri)
       raptor_rss_types_info[i].uri=raptor_new_uri_from_uri_local_name(namespace_uri,
                                                                      raptor_rss_types_info[i].name);
   }
 
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
-    raptor_uri *namespace_uri=rss_parser->namespace_uris[raptor_rss_fields_info[i].namespace];
+    raptor_uri *namespace_uri=rss_parser->namespace_uris[raptor_rss_fields_info[i].nspace];
     if(namespace_uri)
       raptor_rss_fields_info[i].uri=raptor_new_uri_from_uri_local_name(namespace_uri,
                                                                      raptor_rss_fields_info[i].name);
