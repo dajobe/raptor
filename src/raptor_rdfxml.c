@@ -60,46 +60,15 @@ DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 #undef HAVE_STDLIB_H
 #endif
 
-#ifndef WIN32
-extern int errno;
-#endif
-
-/* Raptor includes */
-#include "raptor.h"
-#include "raptor_internal.h"
-
-
 /* for the memory allocation functions */
 #if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
 #include <dmalloc.h>
 #undef HAVE_STDLIB_H
 #endif
 
-
-/* XML parser includes */
-#ifdef RAPTOR_XML_EXPAT
-#ifdef HAVE_EXPAT_H
-#include <expat.h>
-#endif
-#ifdef HAVE_XMLPARSE_H
-#include <xmlparse.h>
-#endif
-#endif
-
-#ifdef RAPTOR_XML_LIBXML
-
-#ifdef HAVE_LIBXML_PARSER_H
-#include <libxml/parser.h>
-#else
-#ifdef HAVE_GNOME_XML_PARSER_H
-#include <gnome-xml/parser.h>
-#else
-DIE
-#endif
-#endif
-
-#define XML_Char xmlChar
-#endif
+/* Raptor includes */
+#include "raptor.h"
+#include "raptor_internal.h"
 
 
 /* Size of XML buffer to use when reading from a file */
@@ -563,30 +532,6 @@ typedef struct raptor_element_s raptor_element;
 
 
 /*
- * Raptor entity expansion list
- * (libxml only)
- */
-#ifdef RAPTOR_XML_LIBXML
-struct raptor_xml_entity_t {
-  xmlEntity entity;
-#ifndef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
-  int name_length;
-#endif
-
-  struct raptor_xml_entity_t *next;
-};
-typedef struct raptor_xml_entity_t raptor_xml_entity;
-
-#ifdef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
-#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->entity.name_length
-#else
-#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->name_length
-#endif
-
-#endif
-
-
-/*
  * Raptor parser object
  */
 struct raptor_parser_s {
@@ -617,8 +562,11 @@ struct raptor_parser_s {
   /* pointer to SAX document locator */
   xmlSAXLocatorPtr loc;
 
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
   /* for xml entity resolution */
   raptor_xml_entity* entities;
+#endif
+
 #endif  
 
   /* element depth */
@@ -750,11 +698,6 @@ static const char * const raptor_xml_uri="http://www.w3.org/XML/1998/namespace";
 
 
 
-/* Prototypes for common expat/libxml parsing event-handling functions */
-static void raptor_xml_start_element_handler(void *user_data, const XML_Char *name, const XML_Char **atts);
-static void raptor_xml_end_element_handler(void *user_data, const XML_Char *name);
-/* s is not 0 terminated. */
-static void raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len);
 
 #ifdef HAVE_XML_SetNamespaceDeclHandler
 static void raptor_start_namespace_decl_handler(void *user_data, const XML_Char *prefix, const XML_Char *uri);
@@ -762,27 +705,11 @@ static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *p
 #endif
 
 
-/* libxml-only prototypes */
-#ifdef RAPTOR_XML_LIBXML
-static void raptor_xml_warning(void *context, const char *msg, ...);
-static void raptor_xml_error(void *context, const char *msg, ...);
-static void raptor_xml_fatal_error(void *context, const char *msg, ...);
-static void raptor_xml_validation_error(void *context, const char *msg, ...);
-static void raptor_xml_validation_warning(void *context, const char *msg, ...);
-static void raptor_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc);
-#endif
-
 
 /* Prototypes for local functions */
 #ifndef RAPTOR_IN_REDLAND
 static char * raptor_file_uri_to_filename(const char *uri);
 #endif
-static void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
-static void raptor_parser_error(raptor_parser* parser, const char *message, ...);
-static void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
-static void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
-static void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
-static void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments);
 
 
 
@@ -1374,7 +1301,7 @@ raptor_format_element(raptor_element *element, int *length_p, int is_end)
 
 
 
-static void
+void
 raptor_xml_start_element_handler(void *user_data,
                                  const XML_Char *name, const XML_Char **atts)
 {
@@ -1697,7 +1624,7 @@ raptor_xml_start_element_handler(void *user_data,
 }
 
 
-static void
+void
 raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
@@ -1772,7 +1699,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 /* cdata (and ignorable whitespace for libxml). 
  * s is not 0 terminated for expat, is for libxml - grrrr.
  */
-static void
+void
 raptor_xml_cdata_handler(void *user_data, const XML_Char *s, int len)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
@@ -1960,409 +1887,6 @@ raptor_xml_external_entity_ref_handler(void *user_data,
 #endif
 
 
-#ifdef RAPTOR_XML_LIBXML
-#include <stdarg.h>
-
-static const char* xml_warning_prefix="XML parser warning - ";
-static const char* xml_error_prefix="XML parser error - ";
-static const char* xml_fatal_error_prefix="XML parser fatal error - ";
-static const char* xml_validation_error_prefix="XML parser validation error - ";
-static const char* xml_validation_warning_prefix="XML parser validation warning - ";
-
-
-static void
-raptor_xml_internalSubset(void *ctx, const xmlChar *name,
-                          const xmlChar *ExternalID, const xmlChar *SystemID) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return internalSubset(rdf_parser->xc, name, ExternalID, SystemID);
-}
-
-
-static void
-raptor_xml_externalSubset(void *ctx, const xmlChar *name,
-                          const xmlChar *ExternalID, const xmlChar *SystemID)
-{
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return externalSubset(rdf_parser->xc, name, ExternalID, SystemID);
-}
-
-
-static int
-raptor_xml_isStandalone (void *ctx) 
-{
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return isStandalone(rdf_parser->xc);
-}
-
-
-static int
-raptor_xml_hasInternalSubset (void *ctx) 
-{
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return hasInternalSubset(rdf_parser->xc);
-}
-
-
-static int
-raptor_xml_hasExternalSubset (void *ctx) 
-{
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return hasExternalSubset(rdf_parser->xc);
-}
-
-
-static xmlParserInputPtr
-raptor_xml_resolveEntity(void *ctx, 
-                         const xmlChar *publicId, const xmlChar *systemId) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return resolveEntity(rdf_parser->xc, publicId, systemId);
-}
-
-
-static xmlEntityPtr
-raptor_xml_getEntity(void *ctx, const xmlChar *name) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return getEntity(rdf_parser->xc, name);
-}
-
-
-static xmlEntityPtr
-raptor_xml_getParameterEntity(void *ctx, const xmlChar *name) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  return getParameterEntity(rdf_parser->xc, name);
-}
-
-
-static void
-raptor_xml_entityDecl(void *ctx, const xmlChar *name, int type,
-                      const xmlChar *publicId, const xmlChar *systemId, 
-                      xmlChar *content) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  entityDecl(rdf_parser->xc, name, type, publicId, systemId, content);
-}
-
-
-static void
-raptor_xml_unparsedEntityDecl(void *ctx, const xmlChar *name,
-                              const xmlChar *publicId, const xmlChar *systemId,
-                              const xmlChar *notationName) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  unparsedEntityDecl(rdf_parser->xc, name, publicId, systemId, notationName);
-}
-
-
-static void
-raptor_xml_startDocument(void *ctx) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  startDocument(rdf_parser->xc);
-}
-
-
-static void
-raptor_xml_endDocument(void *ctx) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  endDocument(rdf_parser->xc);
-}
-
-
-
-static void
-raptor_xml_set_document_locator (void *ctx, xmlSAXLocatorPtr loc) 
-{
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  rdf_parser->loc=loc;
-}
-
-static void
-raptor_xml_update_document_locator (raptor_parser *rdf_parser) {
-  /* for storing error info */
-  raptor_locator *locator=&rdf_parser->locator;
-
-  if(rdf_parser->xc->inSubset)
-    return;
-  
-  locator->line=rdf_parser->loc->getLineNumber(rdf_parser->xc);
-  locator->column=rdf_parser->loc->getColumnNumber(rdf_parser->xc);
-}
-  
-
-static void
-raptor_xml_warning(void *ctx, const char *msg, ...) 
-{
-  va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  int length;
-  char *nmsg;
-
-  va_start(args, msg);
-
-  raptor_xml_update_document_locator(rdf_parser);
-  
-  length=strlen(xml_warning_prefix)+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!nmsg) {
-    /* just pass on, might be out of memory error */
-    raptor_parser_warning_varargs(rdf_parser, msg, args);
-  } else {
-    strcpy(nmsg, xml_warning_prefix);
-    strcat(nmsg, msg);
-    raptor_parser_warning_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
-  }
-  va_end(args);
-}
-
-
-static void
-raptor_xml_error(void *ctx, const char *msg, ...) 
-{
-  va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  int length;
-  char *nmsg;
-
-  va_start(args, msg);
-
-  raptor_xml_update_document_locator(rdf_parser);
-
-  length=strlen(xml_error_prefix)+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!nmsg) {
-    /* just pass on, might be out of memory error */
-    raptor_parser_error_varargs(rdf_parser, nmsg, args);
-  } else {
-    strcpy(nmsg, xml_error_prefix);
-    strcat(nmsg, msg);
-    raptor_parser_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
-  }
-  va_end(args);
-}
-
-
-static void
-raptor_xml_fatal_error(void *ctx, const char *msg, ...) 
-{
-  va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  int length;
-  char *nmsg;
-
-  va_start(args, msg);
-
-  raptor_xml_update_document_locator(rdf_parser);
-
-  length=strlen(xml_fatal_error_prefix)+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!nmsg) {
-    /* just pass on, might be out of memory error */
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-  } else {
-    strcpy(nmsg, xml_error_prefix);
-    strcat(nmsg, msg);
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
-  }
-  va_end(args);
-}
-
-
-static void
-raptor_xml_validation_error(void *ctx, const char *msg, ...) 
-{
-  va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  int length;
-  char *nmsg;
-
-  va_start(args, msg);
-
-  raptor_xml_update_document_locator(rdf_parser);
-
-  length=strlen(xml_validation_error_prefix)+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!nmsg) {
-    /* just pass on, might be out of memory error */
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-  } else {
-    strcpy(nmsg, xml_validation_error_prefix);
-    strcat(nmsg, msg);
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
-  }
-  va_end(args);
-}
-
-
-static void
-raptor_xml_validation_warning(void *ctx, const char *msg, ...) 
-{
-  va_list args;
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  int length;
-  char *nmsg;
-
-  va_start(args, msg);
-
-  raptor_xml_update_document_locator(rdf_parser);
-
-  length=strlen(xml_validation_warning_prefix)+strlen(msg)+1;
-  nmsg=(char*)LIBRDF_MALLOC(cstring, length);
-  if(!nmsg) {
-    /* just pass on, might be out of memory error */
-    raptor_parser_warning_varargs(rdf_parser, nmsg, args);
-  } else {
-    strcpy(nmsg, xml_validation_warning_prefix);
-    strcat(nmsg, msg);
-    raptor_parser_fatal_error_varargs(rdf_parser, nmsg, args);
-    LIBRDF_FREE(cstring,nmsg);
-  }
-  va_end(args);
-}
-
-
-
-/*
- * raptor_free_xml_entity : free an entity record.
- */
-static void
-raptor_xml_free_entity(raptor_xml_entity *ent) {
-  if (!ent)
-    return;
-  
-  if (ent->entity.name)
-    LIBRDF_FREE(cstring,  (char*)ent->entity.name);
-  if (ent->entity.ExternalID)
-    LIBRDF_FREE(cstring,  (char*)ent->entity.ExternalID);
-  if (ent->entity.SystemID)
-    LIBRDF_FREE(cstring,  (char*)ent->entity.SystemID);
-  if (ent->entity.content)
-    LIBRDF_FREE(cstring,  ent->entity.content);
-
-  LIBRDF_FREE(raptor_xml_entity, ent);
-}
-
-
-static raptor_xml_entity*
-raptor_xml_new_entity(raptor_parser* rdf_parser,
-                     const xmlChar *name, int type,
-                     const xmlChar *ExternalID,
-                     const xmlChar *SystemID, const xmlChar *content)
-{
-  raptor_xml_entity *ent;
-  
-  ent=(raptor_xml_entity*)LIBRDF_CALLOC(raptor_xml_entity, 
-                                        sizeof(raptor_xml_entity), 1);
-  if(!ent) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return NULL;
-  }
-  
-  RAPTOR_ENTITY_NAME_LENGTH(ent)=strlen(name);
-  ent->entity.name = LIBRDF_MALLOC(cstring, RAPTOR_ENTITY_NAME_LENGTH(ent)+1);
-  if(!ent->entity.name) {
-    raptor_xml_free_entity(ent);
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return NULL;
-  }
-  
-  strncpy((char*)ent->entity.name, name, RAPTOR_ENTITY_NAME_LENGTH(ent) +1); /* +1 for \0 */
-  
-#ifdef RAPTOR_LIBXML_ENTITY_ETYPE
-  ent->entity.type = XML_ENTITY_DECL;
-  ent->entity.etype = type;
-#else
-  ent->entity.type = type;
-#endif
-  
-  if (ExternalID) {
-    ent->entity.ExternalID = LIBRDF_MALLOC(cstring, strlen(ExternalID)+1);
-    if(!ent->entity.ExternalID) {
-      raptor_xml_free_entity(ent);
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      return NULL;
-    }
-    strcpy((char*)ent->entity.ExternalID, ExternalID);
-  } else
-    ent->entity.ExternalID = NULL;
-  
-  if (SystemID) {
-    ent->entity.SystemID = LIBRDF_MALLOC(cstring, strlen(SystemID)+1);
-    if(!ent->entity.SystemID) {
-      raptor_xml_free_entity(ent);
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      return NULL;
-    }
-    strcpy((char*)ent->entity.SystemID, SystemID);
-  } else
-    ent->entity.SystemID = NULL;
-  
-  if (content) {
-    ent->entity.length = strlen(content);
-    ent->entity.content = LIBRDF_MALLOC(cstring, ent->entity.length+1);
-    if(!ent->entity.content) {
-      raptor_xml_free_entity(ent);
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      return NULL;
-    }
-    strncpy(ent->entity.content, content, ent->entity.length+1);
-  } else {
-    ent->entity.length = 0;
-    ent->entity.content = NULL;
-  }
-  
-  return ent;
-}
-
-
-
-static void
-raptor_xml_free_entities(raptor_parser *rdf_parser) 
-{
-  raptor_xml_entity *cur, *next;
-  cur=rdf_parser->entities;
-  while(cur) {
-    next=cur->next;
-    raptor_xml_free_entity(cur);
-    cur=next;
-  }
-}
-
-
-static void
-raptor_xml_entity_decl(void *ctx, 
-                       const xmlChar *name, int type,
-                       const xmlChar *publicId, const xmlChar *systemId, 
-                       xmlChar *content)
-{
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-  raptor_xml_entity *ent;
-
-  ent=raptor_xml_new_entity(rdf_parser, 
-                            name, type, publicId, systemId, content);
-  if(!ent)
-    return;
-  
-  ent->next=rdf_parser->entities;
-  rdf_parser->entities=ent;
-}
-
-
-static xmlEntityPtr
-raptor_xml_get_entity(void *ctx, const xmlChar *name) {
-  raptor_parser* rdf_parser=(raptor_parser*)ctx;
-
-  raptor_xml_entity *ent;
-  ent=rdf_parser->entities;
-  while(ent) {
-    if (!xmlStrcmp(ent->entity.name, name)) 
-      return &ent->entity;
-    ent=ent->next;
-  }
-
-  return xmlGetPredefinedEntity(name);
-}
-#endif
 
 
 #ifndef RAPTOR_IN_REDLAND
@@ -2405,7 +1929,7 @@ raptor_file_uri_to_filename(const char *uri)
 /*
  * raptor_parser_fatal_error - Error from a parser - Internal
  **/
-static void
+void
 raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
@@ -2417,7 +1941,8 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
   va_end(arguments);
 }
 
-static void
+
+void
 raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
                                   va_list arguments)
 {
@@ -2441,7 +1966,7 @@ raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
 /*
  * raptor_parser_error - Error from a parser - Internal
  **/
-static void
+void
 raptor_parser_error(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
@@ -2457,7 +1982,7 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
 /*
  * raptor_parser_error_varargs - Error from a parser - Internal
  **/
-static void
+void
 raptor_parser_error_varargs(raptor_parser* parser, const char *message, 
                             va_list arguments)
 {
@@ -2477,7 +2002,7 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
 /*
  * raptor_parser_warning - Warning from a parser - Internal
  **/
-static void
+void
 raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
@@ -2493,7 +2018,7 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 /*
  * raptor_parser_warning - Warning from a parser - Internal
  **/
-static void
+void
 raptor_parser_warning_varargs(raptor_parser* parser, const char *message, 
                               va_list arguments)
 {
@@ -2571,43 +2096,7 @@ raptor_new(
 #endif
 
 #ifdef RAPTOR_XML_LIBXML
-
-  rdf_parser->sax.internalSubset = raptor_xml_internalSubset;
-  rdf_parser->sax.externalSubset = raptor_xml_externalSubset;
-  rdf_parser->sax.isStandalone = raptor_xml_isStandalone;
-  rdf_parser->sax.hasInternalSubset = raptor_xml_hasInternalSubset;
-  rdf_parser->sax.hasExternalSubset = raptor_xml_hasExternalSubset;
-  rdf_parser->sax.resolveEntity = raptor_xml_resolveEntity;
-  rdf_parser->sax.getEntity = raptor_xml_getEntity;
-  rdf_parser->sax.getParameterEntity = raptor_xml_getParameterEntity;
-  rdf_parser->sax.entityDecl = raptor_xml_entityDecl;
-  rdf_parser->sax.attributeDecl = NULL; /* attributeDecl */
-  rdf_parser->sax.elementDecl = NULL; /* elementDecl */
-  rdf_parser->sax.notationDecl = NULL; /* notationDecl */
-  rdf_parser->sax.unparsedEntityDecl = raptor_xml_unparsedEntityDecl;
-  rdf_parser->sax.setDocumentLocator=raptor_xml_set_document_locator;
-  rdf_parser->sax.startDocument = raptor_xml_startDocument;
-  rdf_parser->sax.endDocument = raptor_xml_endDocument;
-  rdf_parser->sax.startElement=raptor_xml_start_element_handler;
-  rdf_parser->sax.endElement=raptor_xml_end_element_handler;
-  rdf_parser->sax.reference = NULL;     /* reference */
-  rdf_parser->sax.characters=raptor_xml_cdata_handler;
-  rdf_parser->sax.cdataBlock = NULL;    /* cdataBlock */
-  rdf_parser->sax.ignorableWhitespace=raptor_xml_cdata_handler;
-  rdf_parser->sax.processingInstruction = NULL; /* processingInstruction */
-  rdf_parser->sax.comment = NULL;      /* comment */
-  rdf_parser->sax.warning=raptor_xml_warning;
-  rdf_parser->sax.error=raptor_xml_error;
-  rdf_parser->sax.fatalError=raptor_xml_fatal_error;
-
-  rdf_parser->sax.initialized = 1;
-
-
-#if 0
-  rdf_parser->sax.getEntity=raptor_xml_get_entity;
-  rdf_parser->sax.entityDecl=raptor_xml_entity_decl;
-#endif
-
+  raptor_libxml_init(&rdf_parser->sax);
 #endif
 
 #ifdef RAPTOR_IN_REDLAND
@@ -2666,7 +2155,9 @@ raptor_free(raptor_parser *rdf_parser)
 #endif
 
 #ifdef RAPTOR_XML_LIBXML
-  raptor_xml_free_entities(rdf_parser);
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
+  raptor_xml_libxml_free_entities(rdf_parser);
+#endif
 #endif
 
   LIBRDF_FREE(raptor_parser, rdf_parser);
@@ -2822,8 +2313,8 @@ raptor_parse_file(raptor_parser* rdf_parser,  raptor_uri *uri,
     }
     xc->userData = rdf_parser;
     xc->vctxt.userData = rdf_parser;
-    xc->vctxt.error=raptor_xml_validation_error;
-    xc->vctxt.warning=raptor_xml_validation_warning;
+    xc->vctxt.error=raptor_libxml_validation_error;
+    xc->vctxt.warning=raptor_libxml_validation_warning;
     xc->replaceEntities = 1;
     
     rdf_parser->xc = xc;
@@ -4603,3 +4094,43 @@ raptor_inscope_base_uri(raptor_parser *rdf_parser)
     
   return rdf_parser->base_uri;
 }
+
+
+#ifdef RAPTOR_XML_LIBXML
+xmlParserCtxtPtr
+raptor_get_libxml_context(raptor_parser *rdf_parser) {
+  return rdf_parser->xc;
+}
+
+void
+raptor_set_libxml_document_locator(raptor_parser *rdf_parser,
+                                   xmlSAXLocatorPtr loc) {
+  rdf_parser->loc=loc;
+}
+
+xmlSAXLocatorPtr
+raptor_get_libxml_document_locator(raptor_parser *rdf_parser) {
+  return rdf_parser->loc;
+}
+
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
+raptor_xml_entity*
+raptor_get_libxml_entities(raptor_parser *rdf_parser) {
+  return rdf_parser->entities;
+}
+
+void
+raptor_set_libxml_entities(raptor_parser *rdf_parser, 
+                           raptor_xml_entity* entities) {
+  rdf_parser->entities=entities;
+}
+#endif
+
+#endif
+
+raptor_locator*
+raptor_get_locator(raptor_parser *rdf_parser) 
+{
+  return &rdf_parser->locator;
+}
+
