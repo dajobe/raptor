@@ -3646,17 +3646,16 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
         if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_EMPTY) {
           if(element->rdf_attr[RDF_ATTR_resource]) {
-            element->subject_uri=raptor_make_uri(rdf_parser->base_uri,
+            element->object_uri=raptor_make_uri(rdf_parser->base_uri,
                                                  element->rdf_attr[RDF_ATTR_resource]);
-            element->subject_uri_source=RAPTOR_URI_SOURCE_URI;
-            element->rdf_attr[RDF_ATTR_resource]=NULL;
+            element->object_uri_source=RAPTOR_URI_SOURCE_URI;
             element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
           } else {
-            char *subject_id=(char*)raptor_generate_id(rdf_parser, 0);
-            if(subject_id) {
-              element->subject_uri=raptor_make_uri_from_id(rdf_parser->base_uri, 
-                                                          (const char*)subject_id);
-              element->subject_uri_source=RAPTOR_URI_SOURCE_GENERATED;
+            char *object_id=(char*)raptor_generate_id(rdf_parser, 0);
+            if(object_id) {
+              element->object_uri=raptor_make_uri_from_id(rdf_parser->base_uri, 
+                                                          (const char*)object_id);
+              element->object_uri_source=RAPTOR_URI_SOURCE_GENERATED;
               element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
             }
           }
