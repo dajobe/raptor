@@ -410,7 +410,6 @@ int raptor_unicode_is_namechar(long c);
 #include <curl/easy.h>
 #endif
 
-
 /* WWW library state */
 struct  raptor_www_s {
   char *type;
@@ -422,7 +421,7 @@ struct  raptor_www_s {
   raptor_uri *uri;
 
 #ifdef RAPTOR_WWW_LIBCURL
-  CURL *curl_handle;
+  CURL* curl_handle;
   CURLcode status;
   char error_buffer[CURL_ERROR_SIZE];
 #endif
@@ -474,6 +473,10 @@ int raptor_www_ghttp_fetch(raptor_www *www);
 void raptor_www_curl_init(raptor_www *www);
 void raptor_www_curl_free(raptor_www *www);
 int raptor_www_curl_fetch(raptor_www *www);
+
+void raptor_www_libwww_init(raptor_www *www);
+void raptor_www_libwww_free(raptor_www *www);
+int raptor_www_libwww_fetch(raptor_www *www);
 
 
 /* end of RAPTOR_INTERNAL */
