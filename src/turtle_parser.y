@@ -133,6 +133,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token WS A AT HAT
 %token DOT COMMA SEMICOLON
 %token LEFT_SQUARE RIGHT_SQUARE
+%token LEFT_ROUND RIGHT_ROUND
 
 /* literals */
 %token <string> STRING_LITERAL
@@ -145,7 +146,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 /* syntax error */
 %token ERROR
 
-%type <identifier> subject predicate object verb literal resource
+%type <identifier> subject predicate object verb literal resource blank collection
 %type <sequence> objectList propertyList
 
 %%
@@ -429,41 +430,23 @@ subject: resource
 {
   $$=$1;
 }
-| BLANK_LITERAL
+| blank
 {
-#if RAPTOR_DEBUG > 1  
-  printf("subject blank=\"%s\"\n", $1);
-#endif
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, $1, NULL, NULL, NULL);
+  $$=$1;
 }
 ;
 
-predicate: URI_LITERAL
+predicate: resource
 {
-#if RAPTOR_DEBUG > 1  
-  printf("predicate URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
-
-}
-| QNAME_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("predicate qname URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
+  $$=$1;
 }
 ;
 
 object: resource
+{
+  $$=$1;
+}
+| blank
 {
   $$=$1;
 }
@@ -476,14 +459,6 @@ object: resource
 #endif
 
   $$=$1;
-}
-| BLANK_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("object blank=\"%s\"\n", $1);
-#endif
-
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, $1, NULL, NULL, NULL);
 }
 ;
 
@@ -575,6 +550,15 @@ URI_LITERAL
   else
     $$=NULL;
 }
+
+
+blank: BLANK_LITERAL
+{
+#if RAPTOR_DEBUG > 1  
+  printf("subject blank=\"%s\"\n", $1);
+#endif
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, $1, NULL, NULL, NULL);
+}
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
   int i;
@@ -616,8 +600,41 @@ URI_LITERAL
   }
   
 }
+| collection
+{
+  $$=$1;
+}
 ;
 
+
+collection: LEFT_ROUND objectList RIGHT_ROUND
+{
+  raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, 0);
+  raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+
+#if RAPTOR_DEBUG > 1  
+  printf("collection\n objectList=");
+  raptor_sequence_print($2, stdout);
+  printf("\n");
+#endif
+
+  i2=t2->object;
+  t2->object=NULL;
+  
+  raptor_free_sequence($2);
+  $$=i2;
+}
+|  LEFT_ROUND RIGHT_ROUND 
+{
+  raptor_uri* uri;
+
+#if RAPTOR_DEBUG > 1  
+  printf("collection\n empty\n");
+#endif
+
+  uri=raptor_new_uri_for_rdf_concept("nil");
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+}
 
 %%
 
