@@ -1,4 +1,47 @@
+2004-10-28  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: 1.4.1 raptor_xml_escape_string return value now
+	int, <0 on failure.
+
+	* raptor_xml_writer.c (raptor_xml_writer_cdata):
+	Use int for raptor_xml_escape_string
+	return variables and use error return <0
+
+	* raptor_serialize.c: (raptor_rdfxml_serialize_write_xml_attribute,
+	raptor_rdfxml_serialize_statement) Use int for
+	raptor_xml_escape_string return variables.  Handle empty string
+	attribute when len=0.
+
+	* raptor_sax2.c (raptor_format_sax2_element):
+	Use int for raptor_xml_escape_string return.
+
+	* raptor.h: raptor_xml_escape_string changed return value to int
+
+	* raptor_xml.c (raptor_xml_escape_string):
+	Return value now int, <0 on failure to
+	allow escaping an empty string to return 0 bytes required.
+	(main): Add empty string escaping test.  Check for failure of first
+	raptor_xml_escape_string call.
+
+	* raptor_rss.c (raptor_rss_parser_processNode):
+	Fix url attribute failing for
+	non-enclosure.
+
+2004-10-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rfc2396.c (raptor_new_uri_detail): Do not add schema_len
+	twice to dest pointer; stop buffer overrun
+
+2004-10-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_locator.c (raptor_format_locator): Only print line if > 0
+
+	* raptor-config.1: Fix --libtool-libs desc
+
 2004-10-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* win32_raptor_config.h, configure.ac, NEWS.html:
+	Bumped version to 1.4.1
 
 	* Snapshotted raptor_1_4_0 for 1.4.0 release
 
