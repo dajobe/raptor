@@ -212,9 +212,7 @@ if test $libexpat = 1 -a $ac_cv_header_expat_h = yes ; then
     AC_TRY_RUN([
 #include <stdio.h>
 #include <string.h>
-#ifdef HAVE_STDARG_H
 #include <stdarg.h>
-#endif
 
 #ifdef HAVE_EXPAT_H
 #include <expat.h>

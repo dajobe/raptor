@@ -30,7 +30,6 @@ extern "C" {
 
 #define WIN32_LEAD_AND_MEAN 1
 #define HAVE_STDLIB_H 1
-#define HAVE_STDARG_H 1
 
 /* use expat on win32 */
 #define RAPTOR_XML_EXPAT 1
