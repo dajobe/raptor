@@ -51,7 +51,6 @@
 
 
 
-
 raptor_sax2_element*
 raptor_sax2_element_pop(raptor_sax2 *sax2) 
 {
@@ -75,6 +74,26 @@ raptor_sax2_element_push(raptor_sax2 *sax2, raptor_sax2_element* element)
   sax2->current_element=element;
   if(!sax2->root_element)
     sax2->root_element=element;
+}
+
+
+raptor_sax2_element*
+raptor_new_sax2_element(raptor_qname *name,
+                        const unsigned char *xml_language, 
+                        raptor_uri *xml_base) {
+  raptor_sax2_element* sax2_element;
+
+  sax2_element=(raptor_sax2_element*)RAPTOR_CALLOC(raptor_sax2_element, 
+                                                   sizeof(raptor_sax2_element), 1);
+  if(!sax2_element)
+    return NULL;
+
+  /* Element name */
+  sax2_element->name=name;
+  sax2_element->xml_language=xml_language;
+  sax2_element->base_uri=xml_base;
+
+  return sax2_element;
 }
 
 
