@@ -633,8 +633,6 @@ typedef struct {
   raptor_identifier *subject;
   raptor_identifier *predicate;
   raptor_identifier *object;
-  raptor_uri *object_literal_datatype;
-  const unsigned char *object_literal_language;
 } raptor_triple;
 
 

@@ -70,7 +70,7 @@ n3_parser_lex(void) {
   return n3_lexer_lex();
 }
 
-static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object, const char *object_literal_language, raptor_uri *object_literal_datatype);
+static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object);
 static void raptor_free_triple(raptor_triple *triple);
 
 #ifdef RAPTOR_DEBUG
@@ -213,7 +213,7 @@ objectList: object COMMA objectList
   if(!$1)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
+    triple=raptor_new_triple(NULL, NULL, $1);
     $$=$3;
     raptor_sequence_shift($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -240,7 +240,7 @@ objectList: object COMMA objectList
   if(!$1)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $1, NULL, NULL);
+    triple=raptor_new_triple(NULL, NULL, $1);
 #ifdef RAPTOR_DEBUG
     $$=raptor_new_sequence((raptor_free_handler*)raptor_free_triple,
                            (raptor_print_handler*)raptor_triple_print);
@@ -602,9 +602,7 @@ URI_LITERAL
 static
 raptor_triple* raptor_new_triple(raptor_identifier *subject,
                                  raptor_identifier *predicate,
-                                 raptor_identifier *object,
-                                 const char *object_literal_language,
-                                 raptor_uri *object_literal_datatype) 
+                                 raptor_identifier *object) 
 {
   raptor_triple* t;
   
@@ -615,8 +613,6 @@ raptor_triple* raptor_new_triple(raptor_identifier *subject,
   t->subject=subject;
   t->predicate=predicate;
   t->object=object;
-  t->object_literal_language=object_literal_language;
-  t->object_literal_datatype=object_literal_datatype;
 
   return t;
 }
@@ -629,10 +625,6 @@ void raptor_free_triple(raptor_triple *t) {
     raptor_free_identifier(t->predicate);
   if(t->object)
     raptor_free_identifier(t->object);
-  if(t->object_literal_datatype)
-    raptor_free_uri(t->object_literal_datatype);
-  if(t->object_literal_language)
-    RAPTOR_FREE(cstring, t->object_literal_language);
 }
  
 #ifdef RAPTOR_DEBUG
