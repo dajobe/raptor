@@ -45,11 +45,6 @@
 #include <limits.h>
 #endif
 
-/* for the memory allocation functions */
-#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-#include <dmalloc.h>
-#endif
-
 /* Raptor includes */
 #include "raptor.h"
 #include "raptor_internal.h"

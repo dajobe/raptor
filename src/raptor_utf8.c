@@ -34,11 +34,6 @@
 #include <stdlib.h>
 #endif
 
-/* for the memory allocation functions */
-#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-#include <dmalloc.h>
-#endif
-
 #ifdef HAVE_G_UTF8_NORMALIZE
 #include <glib.h>
 #endif

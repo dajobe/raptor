@@ -32,7 +32,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-
 /* Raptor includes */
 #include "raptor.h"
 #include "raptor_internal.h"
