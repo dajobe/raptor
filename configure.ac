@@ -80,21 +80,9 @@ if test "$USE_MAINTAINER_MODE" = yes; then
     if test $FLEX_VERSION_DEC -ge $FLEX_MIN_VERSION_DEC; then
       AC_MSG_RESULT($FLEX_VERSION - OK)
     else
-      AC_MSG_RESULT($FLEX_VERSION - too old to generate Turtle lexer)
-      if test -r $srcdir/turtle_lexer.c -a -r $srcdir/turtle_lexer.h ; then
-	  AC_MSG_WARN(The generated Turtle lexer files are present.)
-	  AC_MSG_WARN(If you want to change the lexer you will need)
-	  AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
-	  AC_MSG_WARN(available from http://lex.sourceforge.net/)
-      else
-	  AC_MSG_WARN(There are no generated Turtle lexer files present.)
-	  AC_MSG_WARN(Raptor CANNOT build these.  Please get)
-	  AC_MSG_WARN(flex version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
-	  AC_MSG_WARN(available from http://lex.sourceforge.net/)
-	  AC_MSG_WARN(Alternatively copy the generated Turtle lexer)
-	  AC_MSG_WARN(files turtle_lexer.c and turtle_lexer.h from a released version.)
-	  AC_MSG_FAILURE(Flex version $FLEX_VERSION is too old)
-      fi
+      AC_MSG_WARN(Please get flex from http://lex.sourceforge.net/)
+      AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+      AC_MSG_FAILURE(Flex version $FLEX_VERSION is too old)
     fi
   else
     AC_MSG_RESULT(not present - using pre-generated Turtle lexer)
@@ -102,6 +90,16 @@ if test "$USE_MAINTAINER_MODE" = yes; then
 fi
 
 AC_PROG_YACC
+if test "$USE_MAINTAINER_MODE" = yes; then
+  AC_MSG_CHECKING(for GNU bison)
+  YACC_VERSION=`$YACC --version 2>&1 | sed -ne 's/^.*GNU Bison. //p'`
+  if test "X$YACC_VERSION" != X; then
+    AC_MSG_RESULT($YACC_VERSION - OK)
+  else
+    AC_MSG_FAILURE($YACC is not GNU bison)
+  fi
+fi
+
 
 # Find a tar command for 'make dist'
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
