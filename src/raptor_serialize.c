@@ -1015,7 +1015,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         if(statement->object_literal_datatype) {
           if(raptor_rdfxml_serialize_write_xml_attribute(serializer, 
                                                          (unsigned char*)"rdf:datatype",
-                                                         (unsigned char*)statement->object_literal_datatype,
+                                                         (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->object_literal_datatype),
                                                          iostr))
             return 1;
         }
