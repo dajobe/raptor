@@ -390,6 +390,15 @@ raptor_sax2_element_get_element(raptor_sax2_element *sax2_element) {
 }
 
 
+void
+raptor_sax2_element_set_attributes(raptor_sax2_element* sax2_element,
+                                   raptor_qname **attributes, int count)
+{
+  sax2_element->attributes=attributes;
+  sax2_element->attribute_count=count;
+}
+
+
 #ifdef RAPTOR_DEBUG
 void
 raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream)
@@ -399,13 +408,17 @@ raptor_print_sax2_element(raptor_sax2_element *element, FILE* stream)
 
   if(element->attribute_count) {
     unsigned int i;
+    int printed=0;
 
     fputs(" attributes: ", stream);
     for (i = 0; i < element->attribute_count; i++) {
-      if(i)
-        fputc(' ', stream);
-      raptor_qname_print(stream, element->attributes[i]);
-      fprintf(stream, "='%s'", element->attributes[i]->value);
+      if(element->attributes[i]) {
+        if(printed)
+          fputc(' ', stream);
+        raptor_qname_print(stream, element->attributes[i]);
+        fprintf(stream, "='%s'", element->attributes[i]->value);
+        printed=1;
+      }
     }
     fputc('\n', stream);
   }
@@ -434,6 +447,7 @@ int
 raptor_iostream_write_sax2_element(raptor_iostream* iostr,
                                    raptor_sax2_element *element,
                                    raptor_namespace_stack *nstack,
+                                   int is_empty,
                                    int is_end,
                                    raptor_simple_message_handler error_handler,
                                    void *error_data,
@@ -553,6 +567,9 @@ raptor_iostream_write_sax2_element(raptor_iostream* iostr,
     }
   }
   
+  if(is_empty)
+    raptor_iostream_write_byte(iostr, '/');
+
   raptor_iostream_write_byte(iostr, '>');
 
   if(nstack)
