@@ -496,10 +496,8 @@ AC_MSG_RESULT($result)
 
 
 have_libcurl=0
-have_libghttp=0
 have_libwww=0
 need_libcurl=0
-need_libghttp=0
 need_libxml_www=0
 need_libwww=0
 
@@ -514,21 +512,6 @@ if test "X$CURL_CONFIG" != X; then
     have_libcurl=1
     LIBCURL_VERSION=`$CURL_CONFIG --version | sed -e 's/^libcurl *//'`
     AC_MSG_RESULT(yes - version $LIBCURL_VERSION)
-  else
-    AC_MSG_RESULT(no)
-  fi
-fi
-
-if test "X$PKG_CONFIG" != X; then
-  oLIBS="$LIBS"
-  LIBS="$LIBS `$PKG_CONFIG ghttp --libs`"
-  AC_CHECK_FUNC(ghttp_request_new, have_ghttp_request_new=yes, have_ghttp_request_new=no)
-  LIBS="$oLIBS"
-  AC_MSG_CHECKING(for libghttp library)
-  if test $have_ghttp_request_new = yes; then
-    have_libghttp=1
-    LIBGHTTP_VERSION=`$PKG_CONFIG ghttp --version`
-    AC_MSG_RESULT(yes - version $LIBGHTTP_VERSION)
   else
     AC_MSG_RESULT(no)
   fi
@@ -551,9 +534,9 @@ if test "X$LIBWWW_CONFIG" != X; then
 fi
 
 
-AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, libwww, ghttp, none], www="$withval", www="curl") 
+AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, libwww, none], www="$withval", www="curl") 
 
-for www_name in $www curl xml libwww ghttp none; do
+for www_name in $www curl xml libwww none; do
   case $www_name in
     curl)
       if test $have_libcurl = 1; then
@@ -580,18 +563,10 @@ for www_name in $www curl xml libwww ghttp none; do
       fi
       ;;
 
-    ghttp)
-      if test $have_libghttp = 1; then
-        need_libghttp=1
-	AC_DEFINE([RAPTOR_WWW_LIBGHTTP], 1, [Have libghttp WWW library])
-        break
-      fi
-      ;;
-
     none)
       need_libcurl=0
       need_libxml_www=0
-      need_libghttp=0
+      need_libwww=0
       AC_DEFINE([RAPTOR_WWW_NONE], 1, [No WWW library])
       break
       ;;
@@ -617,9 +592,6 @@ fi
 if test $have_libwww = 1; then
   www_libraries_available="$www_libraries_available libwww $LIBWWW_VERSION"
 fi
-if test $have_libghttp = 1; then
-  www_libraries_available="$www_libraries_available libghttp $LIBGHTTP_VERSION"
-fi
 AC_MSG_RESULT($www_libraries_available)
 
 
@@ -635,15 +607,13 @@ elif test $need_libxml_www = 1; then
   fi
 elif test $need_libwww = 1; then
   www_library="libwww $LIBWWW_VERSION"
-elif test $need_libghttp = 1; then
-  www_library="libghttp $LIBGHTTP_VERSION"
 else
   www_library=none
 fi
 AC_MSG_RESULT($www_library)
 if test "X$www_library" = Xnone; then
   AC_MSG_WARN([No WWW library in use - only file: URLs will work])
-  AC_MSG_WARN([Install libcurl, libxml2, W3C libwww or libghttp to provide WWW access])
+  AC_MSG_WARN([Install libcurl, libxml2, W3C libwww to provide WWW access])
 fi
 
 
@@ -657,12 +627,6 @@ if test $need_libwww = 1; then
   CPPFLAGS="$CPPFLAGS `$LIBWWW_CONFIG --cflags`"
   LIBS="$LIBS `$LIBWWW_CONFIG --libs`"
   AC_LIBOBJ(raptor_www_libwww)
-fi
-
-if test $need_libghttp = 1; then
-  CPPFLAGS="$CPPFLAGS `$PKG_CONFIG ghttp --cflags`"
-  LIBS="$LIBS `$PKG_CONFIG ghttp --libs`"
-  AC_LIBOBJ(raptor_www_ghttp)
 fi
 
 

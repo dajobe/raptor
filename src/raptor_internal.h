@@ -400,10 +400,6 @@ int raptor_unicode_is_namechar(long c);
 #include <libxml/nanohttp.h>
 #endif
 
-#ifdef RAPTOR_WWW_LIBGHTTP
-#include <ghttp.h>
-#endif
-
 #ifdef RAPTOR_WWW_LIBCURL
 #include <curl/curl.h>
 #include <curl/types.h>
@@ -424,11 +420,6 @@ struct  raptor_www_s {
   CURL* curl_handle;
   CURLcode status;
   char error_buffer[CURL_ERROR_SIZE];
-#endif
-
-#ifdef RAPTOR_WWW_LIBGHTTP
-  ghttp_request *request;
-  ghttp_status status;
 #endif
 
 #ifdef RAPTOR_WWW_LIBXML
@@ -465,10 +456,6 @@ void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www);
 
 void raptor_www_error(raptor_www *www, const char *message, ...);
-
-void raptor_www_ghttp_init(raptor_www *www);
-void raptor_www_ghttp_free(raptor_www *www);
-int raptor_www_ghttp_fetch(raptor_www *www);
 
 void raptor_www_curl_init(raptor_www *www);
 void raptor_www_curl_free(raptor_www *www);
