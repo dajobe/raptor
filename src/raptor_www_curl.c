@@ -42,6 +42,12 @@ raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userd
 {
   raptor_www* www=(raptor_www*)userdata;
   int bytes=size*nmemb;
+
+  /* If WWW has been aborted, return nothing so that
+   * libcurl will abort the transfer
+   */
+  if(www->failed)
+    return -1;
   
   if(www->write_bytes)
     www->write_bytes(www, www->write_bytes_userdata, ptr, size, nmemb);
@@ -56,6 +62,12 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
   raptor_www* www=(raptor_www*)userdata;
   int bytes=size*nmemb;
 
+  /* If WWW has been aborted, return nothing so that
+   * libcurl will abort the transfer
+   */
+  if(www->failed)
+    return -1;
+  
   if(!strncmp(ptr, "Content-Type: ", 14)) {
     int len=bytes-16;
     char *type_buffer=(char*)malloc(len+1);
@@ -73,9 +85,8 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
 void
 raptor_www_curl_init(raptor_www *www)
 {
-  www->status=curl_global_init(CURL_GLOBAL_ALL);
-
-  www->curl_handle=curl_easy_init();
+  if(!www->curl_handle)
+    www->curl_handle=curl_easy_init();
 
   /* send all data to this function  */
   curl_easy_setopt(www->curl_handle, CURLOPT_WRITEFUNCTION, 
