@@ -19,6 +19,7 @@
 #
 
 prefix=@prefix@
+exec_prefix=@exec_prefix@
 
 if test "@includedir@" != /usr/include ; then
   includes="-I@includedir@"
@@ -36,7 +37,8 @@ known values for OPTION are:
 
   --prefix[=DIR]        change raptor prefix [default $prefix]
   --libs                print library linking information
-  --cflags              print pre-processor and compiler flags
+  --libtool-libs        print linking information for use with libtool
+  --cflags		print pre-processor and compiler flags
   --help                display this help and exit
   --version             output version information
 EOF
@@ -72,6 +74,9 @@ while test $# -gt 0; do
     --libs)
       echo_libs=yes
       ;;
+    --libtool-libs)
+      echo_libtool_libs=yes
+      ;;
     --usage)
       usage 0 1>&2
       ;;
@@ -92,4 +97,7 @@ if test "$echo_cflags" = "yes"; then
 fi
 if test "$echo_libs" = "yes"; then
   echo -L@libdir@ @LDFLAGS@ @LIBS@
+fi
+if test "$echo_libtool_libs" = "yes"; then
+  echo @libdir@/@RAPTOR_LIBTOOLLIBS@
 fi
