@@ -1,5 +1,34 @@
 2005-01-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_serialize.c (raptor_serializer_set_feature_string): Docs,
+	and return values for integer value features
+	(raptor_serializer_get_feature_string): Return a new string for
+	the start uri if set.
+
+	* raptor_parse.c (raptor_parser_set_feature_string): Docs, and
+	return values for integer value features
+
+	* libraptor.3, raptor.h:
+	Added raptor_uri_to_counted_string and raptor_uri_to_string
+
+	* raptor_uri.c (raptor_uri_to_counted_string,raptor_uri_to_string):
+	Added.
+
+	* libraptor.3: changelog edit - cluster 1.4.3 entries by class
+
+	* libraptor.3: Added raptor_parser_get_feature_string,
+	raptor_parser_set_feature_string,
+	raptor_serializer_set_feature_string,
+	raptor_serializer_get_feature_string, raptor_feature_value_type,
+	raptor_namespaces_find_namespace_by_uri
+
+	* raptor_serialize.c, raptor_general.c:
+	Use raptor_rdf_namespace_uri and raptor_rdf_namespace_uri_len to
+	replace some constants.
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement):
+	Handle ordinal subject and objects.
+
 	* raptor_serialize.c:
 	Add XML Writer to raptor_rdfxml_serializer_context, delete depth.
 	(raptor_rdfxml_serialize_init): Delete depth stuff.
