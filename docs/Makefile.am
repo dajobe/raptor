@@ -4,8 +4,8 @@
 #
 # $Id$
 #
-# Copyright (C) 2000-2003 David Beckett - http://purl.org/net/dajobe/
-# Institute for Learning and Research Technology - http://www.ilrt.org/
+# Copyright (C) 2000-2004 David Beckett - http://purl.org/net/dajobe/
+# Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 # University of Bristol - http://www.bristol.ac.uk/
 # 
 # This package is Free Software or Open Source available under the
@@ -36,7 +36,7 @@ rapper_DEPENDENCIES = libraptor.la @RAPPER_EXTRA_OBJS@
 EXTRA_rapper_SOURCES = getopt.c
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
-raptor_uri.c raptor_libxml.c raptor_win32.c raptor_locator.c \
+raptor_uri.c raptor_expat.c raptor_libxml.c raptor_win32.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
 raptor_identifier.c raptor_xml_writer.c \
