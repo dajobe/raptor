@@ -669,7 +669,7 @@ collection: LEFT_ROUND objectList RIGHT_ROUND
   raptor_free_sequence($2);
 
   raptor_free_identifier(first_identifier);
-  raptor_free_identifier(first_identifier);
+  raptor_free_identifier(rest_identifier);
 
   $$=object;
 }
