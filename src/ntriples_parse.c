@@ -242,20 +242,20 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
     statement->subject=subject;
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else {
-    subject_uri=raptor_make_uri(parser->base_uri, subject);
+    subject_uri=raptor_new_uri_relative_to_base(parser->base_uri, subject);
     statement->subject=subject_uri;
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
 
 
   /* One choice for predicate from N-Triples */
-  predicate_uri=raptor_make_uri(parser->base_uri, predicate);
+  predicate_uri=raptor_new_uri_relative_to_base(parser->base_uri, predicate);
   statement->predicate=predicate_uri;
   statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
 
   /* Three choices for object from N-Triples */
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
-    object_uri=raptor_make_uri(parser->base_uri, (const char*)object);
+    object_uri=raptor_new_uri_relative_to_base(parser->base_uri, (const char*)object);
     statement->object=object_uri;
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
