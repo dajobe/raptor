@@ -106,13 +106,6 @@ raptor_cc_test: $(srcdir)/raptor_cc.c libraptor.la
 raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -DSTANDALONE -static $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
-finish: libraptor.la
-	rm -rf $(LOCAL_LIB_DIR)
-	mkdir $(LOCAL_LIB_DIR)
-	lib=`cd $(LOCAL_LIB_DIR); pwd`; \
-	$(LIBTOOL) --mode=install install libraptor.la $$lib; \
-	$(LIBTOOL) --mode=finish $$lib
-
 deb: distcheck
 	rm -rf $(distdir)
 	tar xfz $(distdir).tar.gz
