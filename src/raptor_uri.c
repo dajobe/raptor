@@ -79,16 +79,35 @@ raptor_uri_get_handler(raptor_uri_handler **handler, void **context)
 static raptor_uri*
 raptor_default_new_uri(void *context, const char *uri_string) 
 {
-  int len;
   char *p;
+  size_t len;
   
   /* If uri_string is "file:path-to-file", turn it into a correct file:URI */
   if(raptor_uri_is_file_uri(uri_string)) {
-    char *filename=raptor_uri_uri_string_to_filename(uri_string);
+    char *fragment;
+    char *filename;
     raptor_uri* uri=NULL;
-    if(!access(filename, R_OK))
+
+    filename=raptor_uri_uri_string_to_filename(uri_string, &fragment);
+    if(!access(filename, R_OK)) {
       uri=(raptor_uri*)raptor_uri_filename_to_uri_string(filename);
+      /* If there was a fragment, reattach it to the new URI */
+      if(fragment) {
+        char *new_fragment;
+        raptor_uri* new_uri;
+
+        new_fragment=RAPTOR_MALLOC(cstring, strlen(fragment)+2);
+        *new_fragment='#';
+        strcpy(new_fragment+1, fragment);
+        new_uri=raptor_new_uri_relative_to_base(uri, new_fragment);
+        RAPTOR_FREE(cstring, new_fragment);
+        raptor_free_uri(uri);
+        uri=new_uri;
+      }
+    }
     RAPTOR_FREE(cstring, filename);
+    if(fragment)
+      RAPTOR_FREE(cstring, fragment);
     if(uri)
       return uri;
   }
@@ -865,19 +884,24 @@ raptor_uri_filename_to_uri_string(const char *filename)
 /**
  * raptor_uri_uri_string_to_filename - Convert a file: URI to a filename
  * @uri_string: The file: URI to convert
+ * @fragment_p: Address of pointer to store any URI fragment or NULL
  * 
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
+ *
+ * If fragment_p is given, a new string containing the URI fragment
+ * is returned, or NULL if none is present
  * 
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
-raptor_uri_uri_string_to_filename(const char *uri_string) 
+raptor_uri_uri_string_to_filename(const char *uri_string,
+                                  char **fragment_p) 
 {
   char *buffer;
   char *filename;
   int uri_string_len=strlen(uri_string);
-  int len=0;
+  size_t len=0;
   char *scheme, *authority, *path, *query, *fragment;
 #ifdef WIN32
   char *p, *from, *to;
@@ -968,6 +992,14 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
   strcpy(filename, path);
 #endif
 
+  if(fragment_p) {
+    if(fragment) {
+      len=strlen(fragment);
+      *fragment_p=(char*)RAPTOR_MALLOC(cstring, len+1);
+      strcpy(*fragment_p, fragment);
+    } else
+      *fragment_p=NULL;
+  }
 
   RAPTOR_FREE(cstring, buffer);
 
@@ -1176,7 +1208,7 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 {
   char *filename;
 
-  filename=raptor_uri_uri_string_to_filename(uri);
+  filename=raptor_uri_uri_string_to_filename(uri, NULL);
 
   if (!filename || strcmp (filename, reference_filename))
     {
