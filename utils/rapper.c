@@ -237,6 +237,7 @@ main(int argc, char *argv[])
                 break;
               printf("  %-20s  %s\n", feature_name, feature_label);
             }
+            fputs("\nFeature values are decimal integers 0 or larger, defaulting to 1 if omitted.\n", stderr);
             exit(0);
           } else {
             int i;
