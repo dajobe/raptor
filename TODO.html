@@ -11,7 +11,6 @@
 <h2>Bugs and Features</h2>
 
 <ul>
-<li>Empty files make rdf/xml parser crash with libxml2 and expat (BUG)</li>
 <li>Crash with hybrid.rdf reported by JimL (BUG)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Try to fix usage like rdf:about="http://example.org/foo " with
@@ -30,6 +29,8 @@ a trailing space?  Warn, fix and continue?  In lax/default mode?</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Empty files made rdf/xml parser crash with libxml2 and expat; now both
+return failure since an empty doc is not allowed (0.9.8)</li>
 <li><tt>rdf:bagID</tt> handling added (0.9.7)</li>
 <li>Can now configure on system which has expat alone using
 <tt>./configure --with-xml-parser=expat</tt> (0.9.7)</li>
