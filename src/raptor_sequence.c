@@ -48,8 +48,8 @@ struct raptor_sequence_s {
   int size;
   int capacity;
   void **sequence;
-  raptor_free_handler *free_handler;
-  raptor_print_handler *print_handler;
+  raptor_sequence_free_handler *free_handler;
+  raptor_sequence_print_handler *print_handler;
 };
 
 
@@ -58,8 +58,8 @@ static int raptor_sequence_grow(raptor_sequence *seq);
 
 /* Constructor */
 raptor_sequence*
-raptor_new_sequence(raptor_free_handler *free_handler,
-                    raptor_print_handler *print_handler) {
+raptor_new_sequence(raptor_sequence_free_handler *free_handler,
+                    raptor_sequence_print_handler *print_handler) {
   raptor_sequence* seq=(raptor_sequence*)RAPTOR_MALLOC(raptor_sequence, sizeof(raptor_sequence));
   if(!seq)
     return NULL;
@@ -248,6 +248,23 @@ raptor_sequence_print_string(char *data, FILE *fh)
 }
 
 
+void
+raptor_sequence_print_uri(char *data, FILE *fh) 
+{
+  raptor_uri* uri=(raptor_uri*)data;
+  fputs(raptor_uri_as_string(uri), fh);
+}
+
+
+void
+raptor_sequence_set_print_handler(raptor_sequence *seq,
+                                  raptor_sequence_print_handler *print_handler) {
+  if(!seq)
+    return;
+  seq->print_handler=print_handler;
+}
+
+
 /* print sequence */
 void
 raptor_sequence_print(raptor_sequence* seq, FILE* fh)
@@ -283,7 +300,7 @@ char *program;
 int
 main(int argc, char *argv[]) 
 {
-  raptor_sequence* seq=raptor_new_sequence(NULL, (raptor_print_handler*)raptor_sequence_print_string);
+  raptor_sequence* seq=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
   char *s;
 
   program=argv[0];
