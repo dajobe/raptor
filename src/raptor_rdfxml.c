@@ -2078,7 +2078,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
         } else if (element->rdf_attr[RDF_ATTR_nodeID]) {
-          element->subject.id=raptor_generate_id(rdf_parser, 0, element->rdf_attr[RDF_ATTR_nodeID]);
+          element->subject.id=raptor_generate_id(rdf_parser, 0, (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
           element->rdf_attr[RDF_ATTR_nodeID]=NULL;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
           element->subject.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
@@ -2816,7 +2816,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 element->object.uri_source=RAPTOR_URI_SOURCE_URI;
                 element->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
               } else if(element->rdf_attr[RDF_ATTR_nodeID]) {
-                element->object.id=raptor_generate_id(rdf_parser, 0, element->rdf_attr[RDF_ATTR_nodeID]);
+                element->object.id=raptor_generate_id(rdf_parser, 0, (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
                 element->rdf_attr[RDF_ATTR_nodeID]=NULL;
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
                 element->object.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
