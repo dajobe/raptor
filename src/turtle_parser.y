@@ -157,7 +157,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 Document : statementList
 ;
 
-statementList: statement statementList 
+statementList: statement
+| statementList statement
 | /* empty line */
 ;
 
@@ -170,7 +171,7 @@ statement: directive
   printf("statement 2\n subject=");
   raptor_identifier_print(stdout, $1);
   if($2) {
-    printf("\n propertyList=");
+    printf("\n propertyList (reverse order to syntax)=");
     raptor_sequence_print($2, stdout);
     printf("\n");
   } else     
@@ -206,32 +207,32 @@ statement: directive
 ;
 
 
-objectList: object COMMA objectList
+objectList: objectList COMMA object
 {
   raptor_triple *triple;
 
 #if RAPTOR_DEBUG > 1  
   printf("objectList 1\n");
-  if($1) {
+  if($3) {
     printf(" object=\n");
-    raptor_identifier_print(stdout, $1);
+    raptor_identifier_print(stdout, $3);
     printf("\n");
   } else  
     printf(" and empty object\n");
-  if($3) {
+  if($1) {
     printf(" objectList=");
-    raptor_sequence_print($3, stdout);
+    raptor_sequence_print($1, stdout);
     printf("\n");
   } else
     printf(" and empty objectList\n");
 #endif
 
-  if(!$1)
+  if(!$3)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $1);
-    $$=$3;
-    raptor_sequence_shift($$, triple);
+    triple=raptor_new_triple(NULL, NULL, $3);
+    $$=$1;
+    raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
@@ -273,32 +274,32 @@ objectList: object COMMA objectList
 }
 ;
 
-itemList: object itemList
+itemList: itemList object
 {
   raptor_triple *triple;
 
 #if RAPTOR_DEBUG > 1  
   printf("objectList 1\n");
-  if($1) {
+  if($2) {
     printf(" object=\n");
-    raptor_identifier_print(stdout, $1);
+    raptor_identifier_print(stdout, $2);
     printf("\n");
   } else  
     printf(" and empty object\n");
-  if($2) {
+  if($1) {
     printf(" objectList=");
-    raptor_sequence_print($2, stdout);
+    raptor_sequence_print($1, stdout);
     printf("\n");
   } else
     printf(" and empty objectList\n");
 #endif
 
-  if(!$1)
+  if(!$2)
     $$=NULL;
   else {
-    triple=raptor_new_triple(NULL, NULL, $1);
-    $$=$2;
-    raptor_sequence_shift($$, triple);
+    triple=raptor_new_triple(NULL, NULL, $2);
+    $$=$1;
+    raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
