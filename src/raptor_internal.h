@@ -326,7 +326,7 @@ extern const char *raptor_xml_literal_datatype_uri_string;
 
 void raptor_parser_register_factory(const char *name, const char *label, void (*factory) (raptor_parser_factory*));
 
-unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, const unsigned char* user_bnodeid);
+unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
 const unsigned char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
 raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 #ifdef RAPTOR_DEBUG
