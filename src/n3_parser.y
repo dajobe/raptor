@@ -63,14 +63,20 @@
 /* Prototypes */ 
 int n3_parser_error(const char *msg);
 
+#if 0
 /* Not in generated header files */
 void  n3_lexer_lex_destroy(void);
+#endif
+
+inline int n3_parser_lex(yyscan_t* scanner);
+
+#define YYLEX_PARAM ((raptor_n3_parser*)(N3_Parser->context))->scanner
 
 
 /* Make lex/yacc interface as small as possible */
 inline int
-n3_parser_lex(void) {
-  return n3_lexer_lex();
+n3_parser_lex(yyscan_t* scanner) {
+  return n3_lexer_lex(scanner);
 }
 
 static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_identifier *predicate, raptor_identifier *object);
@@ -100,6 +106,11 @@ struct raptor_n3_parser_s {
   raptor_statement statement;
 
   raptor_namespace_stack namespaces;
+
+  /* STATIC lexer */
+  yyscan_t scanner;
+
+  int scanner_set;
 };
 
 
@@ -710,24 +721,23 @@ int
 n3_parser_error(const char *msg)
 {
   raptor_parser* rdf_parser=N3_Parser;
-  
+
   rdf_parser->locator.line=lineno;
-  raptor_parser_simple_error(N3_Parser, msg);
+  raptor_parser_simple_error(rdf_parser, msg);
   return (0);
 }
 
 
 int
-n3_syntax_error(const char *message, ...)
+n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
-  raptor_parser* rdf_parser=N3_Parser;
   va_list arguments;
 
   rdf_parser->locator.line=lineno;
 
   va_start(arguments, message);
   
-  raptor_parser_error_varargs(N3_Parser, message, arguments);
+  raptor_parser_error_varargs(rdf_parser, message, arguments);
 
   va_end(arguments);
 
@@ -775,8 +785,9 @@ n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string)
 
 static int
 n3_parse(raptor_parser *rdf_parser, const char *string) {
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
   void *buffer;
-
+  
   if(!string || !*string)
     return 0;
   
@@ -784,11 +795,17 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
 
   N3_Parser=rdf_parser;
 
-  buffer= n3_lexer__scan_string(string);
+  n3_lexer_lex_init(&n3_parser->scanner);
+  n3_parser->scanner_set=1;
+
+  n3_lexer_set_extra(rdf_parser, n3_parser->scanner);
+  buffer= n3_lexer__scan_string(string, n3_parser->scanner);
+
   n3_parser_parse();
-  n3_lexer__delete_buffer(buffer);
-  n3_lexer_pop_buffer_state();
-  
+
+  n3_lexer__delete_buffer(buffer, n3_parser->scanner);
+  n3_lexer_pop_buffer_state(n3_parser->scanner);
+
   N3_Parser=NULL;
 
   /* FIXME UNLOCKING or re-entrant parser/lexer */
@@ -815,6 +832,7 @@ raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
                          uri_handler, uri_context,
                          raptor_parser_simple_error, rdf_parser, 
                          0);
+
   return 0;
 }
 
@@ -833,7 +851,10 @@ raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
 
   raptor_namespaces_free(&n3_parser->namespaces);
 
-  n3_lexer_lex_destroy();
+  if(n3_parser->scanner_set) {
+    n3_lexer_lex_destroy(&n3_parser->scanner);
+    n3_parser->scanner_set=0;
+  }
 
   if(n3_parser->buffer_length)
     RAPTOR_FREE(cdata, n3_parser->buffer);
@@ -1018,7 +1039,12 @@ main(int argc, char *argv[])
 
   if(argc > 1) {
     filename=argv[1];
-    fh = fopen(argv[1], "r");
+    fh = fopen(filename, "r");
+    if(!fh) {
+      fprintf(stderr, "%s: Cannot open file %s - %s\n", argv[0], filename,
+              strerror(errno));
+      exit(1);
+    }
   } else {
     filename="<stdin>";
     fh = stdin;
