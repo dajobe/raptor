@@ -473,6 +473,200 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
 }
 
 
+
+/**
+ * raptor_uri_filename_to_uri_string - Converts a filename to a file: URI
+ * @filename: The filename to convert
+ * 
+ * Handles the OS-specific escaping on turning filenames into URIs
+ * and returns a new buffer that the caller must free().
+ *
+ * Return value: A newly allocated string with the URI or NULL on failure
+ **/
+char *
+raptor_uri_filename_to_uri_string(const char *filename) 
+{
+  char *buffer;
+#ifdef WIN32
+  char *from, *to;
+#endif
+  /*     file:// (filename) \0 */
+  int len=7+strlen(filename)+1;
+  
+#ifdef WIN32
+/*
+ * On WIN32, filenames turn into
+ *   "file://" + translated filename
+ * where the translation is \\ turns into /
+ * and if the filename does not start with '\', it is relative
+ * in which case, a . is appended to the authority
+ *
+ * e.g
+ *  FILENAME              URI
+ *  c:\windows\system     file://c:/windows/system
+ *  \\server\dir\file.doc file://server/dir/file.doc
+ *  a:foo                 file://a:./foo
+ *
+ * There are also UNC names \\server\share\blah
+ * that turn into file:///server/share/blah
+ * using the above algorithm.
+ */
+  len++;
+  if(*filename != '\\')
+    len+=2; /* relative filename - add ./ */
+
+#else
+/* others - unix ... ? */
+
+/*
+ * "file://" + filename
+ */
+#endif
+
+  buffer=(char*)LIBRDF_MALLOC(cstring, len);
+  if(!buffer)
+    return NULL;
+
+#ifdef WIN32
+  strcpy(buffer, "file://");
+  from=filename;
+  to=buffer+7;
+  if(*from == '\\' && from[1] == '\\')
+    from+=2;
+  while(*from) {
+    char c=*from++;
+    if (c == '\\')
+      *to++='/';
+    else if(c == ':') {
+      *to++=c;
+      if(*from != '\\') {
+        *to++='.';
+        *to++='/';
+      }
+    } else
+      *to++=c;
+  }
+  *to='\0';
+#else
+  strcpy(buffer, "file://");
+  strcpy(buffer+7, filename);
+#endif
+  
+  return buffer;
+}
+
+
+/**
+ * raptor_uri_uri_string_to_filename - Convert a file: URI to a filename
+ * @uri_string: The file: URI to convert
+ * 
+ * Handles the OS-specific file: URIs to filename mappings.  Returns
+ * a new buffer containing the filename that the caller must free.
+ * 
+ * Return value: A newly allocated string with the filename or NULL on failure
+ **/
+char *
+raptor_uri_uri_string_to_filename(const char *uri_string) 
+{
+  char *buffer;
+  char *filename;
+  int uri_string_len=strlen(uri_string);
+  int len=0;
+  char *scheme, *authority, *path, *query, *fragment;
+#ifdef WIN32
+  char *p;
+  int is_relative_path=0;
+#endif
+
+  buffer=(char*)LIBRDF_MALLOC(cstring, uri_string_len+1);
+  if(!buffer)
+    return NULL;
+  
+  raptor_uri_parse (uri_string, buffer, uri_string_len,
+                    &scheme, &authority, &path, &query, &fragment);
+
+  LIBRDF_FREE(cstring, query);
+  LIBRDF_FREE(cstring, fragment);
+
+  if(strcasecmp(scheme, "file")) {
+    LIBRDF_FREE(cstring, scheme);
+    LIBRDF_FREE(cstring, authority);
+    LIBRDF_FREE(cstring, path);
+    LIBRDF_FREE(cstring, buffer);
+    return NULL;
+  }
+  LIBRDF_FREE(cstring, scheme);
+
+  if(strcasecmp(authority, "localhost")) {
+    LIBRDF_FREE(cstring,authority);
+    authority=NULL;
+  }
+
+  /* See raptor_uri_filename_to_uri_string for details of the mapping */
+#ifdef WIN32
+  if(authority) {
+    len+=strlen(authority);
+    p=strchr(authority, ':');
+    if(p) {
+      /* Either 
+       *   "a:" like in file://a:/... 
+       * or
+       *   "a:." like in file://a:./foo
+       * giving device-relative path a:foo
+       */
+      if(p[1]=='.') {
+        p[1]='\0';
+        is_relative_path=1;
+      }
+    } else {
+      /* Otherwise UNC like "server" in file://server//share */
+      len+=2; /* \\ between "server" and "share" */
+    }
+  } /* end if authority */
+  if(!is_relative_path)
+    len++;/* for \ between authority and path */
+#endif
+  len+=strlen(path);
+
+
+  filename=(char*)LIBRDF_MALLOC(cstring, len+1);
+  if(!filename) {
+    if(authority)
+      LIBRDF_FREE(cstring, authority);
+    LIBRDF_FREE(cstring, path);
+    LIBRDF_FREE(cstring, buffer);
+    return NULL;
+  }
+
+
+#ifdef WIN32
+  if(authority) {
+    /* p was set above to ':' in authority */
+    if(!p)
+      filename[1]=filename[0]='\\';
+    strcat(filename, authority);
+  } else 
+   *filename='\0';
+
+  if(!is_relative_path)
+    strcat(filename,"\\");
+#else
+  *filename='\0';
+#endif
+  strcat(filename, path);
+
+
+  if(authority)
+    LIBRDF_FREE(cstring, authority);
+  LIBRDF_FREE(cstring, path);
+  LIBRDF_FREE(cstring, buffer);
+
+  return filename;
+}
+
+
+
+
 #ifdef STANDALONE
 
 #include <stdio.h>
@@ -496,6 +690,48 @@ assert_resolve_uri (const char *base_uri,
               reference_uri, buffer, absolute_uri);
       return 1;
     }
+  return 0;
+}
+
+
+static int
+assert_filename_to_uri (const char *filename, const char *reference_uri)
+{
+  char *uri;
+
+  uri=raptor_uri_filename_to_uri_string(filename);
+
+  if (!uri || strcmp (uri, reference_uri))
+    {
+      fprintf(stderr, "FAIL raptor_uri_filename_to_uri_string filename %s gave URI %s != %s\n",
+              filename, uri, reference_uri);
+      if(uri)
+        LIBRDF_FREE(cstring, uri);
+      return 1;
+    }
+
+  LIBRDF_FREE(cstring, uri);
+  return 0;
+}
+
+
+static int
+assert_uri_to_filename (const char *uri, const char *reference_filename)
+{
+  char *filename;
+
+  filename=raptor_uri_uri_string_to_filename(uri);
+
+  if (!filename || strcmp (filename, reference_filename))
+    {
+      fprintf(stderr, "FAIL raptor_uri_uri_string_to_filename URI %s gave filename %s != %s\n",
+              uri, filename, reference_filename);
+      if(filename)
+        LIBRDF_FREE(cstring, filename);
+      return 1;
+    }
+
+  LIBRDF_FREE(cstring, filename);
   return 0;
 }
 
@@ -559,6 +795,23 @@ main(int argc, char *argv[])
   failures += assert_resolve_uri (base_uri, "http:g", "http:g");
 
   failures += assert_resolve_uri (base_uri, "g/../../../h", "http://a/h");
+
+
+#ifdef WIN32
+  failures += assert_filename_to_uri ("c:\\windows\\system", "file://c:/windows/system");
+  failures += assert_filename_to_uri ("\\\\server\\dir\\file.doc", "file://server/dir/file.doc");
+  failures += assert_filename_to_uri ("a:foo", "file://a:./foo");
+
+
+  failures += assert_uri_to_filename ("file://c:/windows/system", "c:\\windows\\system");
+  failures += assert_uri_to_filename ("file://server/dir/file.doc", "\\\\server\\dir\\file.doc");
+  failures += assert_uri_to_filename ("file://a:./foo", "a:foo");
+#else
+
+  failures += assert_filename_to_uri ("/path/to/file", "file:///path/to/file");
+  failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
+
+#endif
 
   return failures ;
 }
