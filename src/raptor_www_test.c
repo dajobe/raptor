@@ -44,14 +44,6 @@
 
 
 static void
-write_bytes_fh(raptor_www* www,
-               void *userdata, const void *ptr, size_t size, size_t nmemb) 
-{
-  fwrite(ptr, size, nmemb, (FILE*)userdata);
-}
-
-
-static void
 write_content_type(raptor_www* www,
                    void *userdata, const char *content_type) 
 {
@@ -65,6 +57,8 @@ int main (int argc, char *argv[])
   raptor_www *www;
   const char *user_agent="raptor-www-test";
   raptor_uri *uri;
+  unsigned char *string=NULL;
+  size_t string_length=0;
   
   if(argc>1)
     uri_string=argv[1];
@@ -82,23 +76,21 @@ int main (int argc, char *argv[])
   
   www=raptor_www_new();
 
-  if(1) {
-    raptor_www_set_content_type_handler(www, write_content_type, (void*)stderr);
-  } else {
-    raptor_www_set_write_bytes_handler(www, write_bytes_fh, NULL);
-  }
-
+  raptor_www_set_content_type_handler(www, write_content_type, (void*)stderr);
   raptor_www_set_user_agent(www, user_agent);
 
   /* start retrieval (always a GET) */
   
-  if(raptor_www_fetch(www, uri)) {
-    printf("Fetch failed\n");
+  if(raptor_www_fetch_to_string(www, uri,
+                                (void**)&string, &string_length, malloc)) {
+    printf("WWW fetch failed\n");
   } else {
     printf("HTTP response status %d\n", www->status_code);
     
-    printf("Returned %d bytes in body\n", www->total_bytes);
+    printf("Returned %d bytes of content\n", string_length);
   }
+  if(string)
+    free(string);
   
   raptor_www_free(www);
 
