@@ -96,7 +96,7 @@ if test "$echo_cflags" = "yes"; then
   echo $includes
 fi
 if test "$echo_libs" = "yes"; then
-  echo -L@libdir@ @LDFLAGS@ @LIBS@
+  echo -L@libdir@ -lraptor @LDFLAGS@ @LIBS@
 fi
 if test "$echo_libtool_libs" = "yes"; then
   echo @libdir@/@RAPTOR_LIBTOOLLIBS@
