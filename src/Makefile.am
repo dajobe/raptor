@@ -68,7 +68,7 @@ STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
-libraptor_la_SOURCES = raptor_parse.c \
+libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c \
 raptor_rfc2396.c raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c \
@@ -197,10 +197,10 @@ raptor_rfc2396_test: $(srcdir)/raptor_rfc2396.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_rfc2396.c libraptor.la $(LIBS)
 
 raptor_uri_test: $(srcdir)/raptor_uri.c raptor_rfc2396.lo
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c raptor_rfc2396.lo
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c raptor_rfc2396.lo $(LIBS)
 
 raptor_uri_win32_test: $(srcdir)/raptor_uri.c raptor_rfc2396.lo
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -DWIN32_URI_TEST $(srcdir)/raptor_uri.c raptor_rfc2396.lo
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -DWIN32_URI_TEST $(srcdir)/raptor_uri.c raptor_rfc2396.lo $(LIBS)
 
 raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor.la $(LIBS)
