@@ -50,6 +50,7 @@ struct raptor_iostream_s
   void *context;
   raptor_iostream_handler* handler;
   size_t bytes;
+  int ended;
 };
 
 
@@ -85,12 +86,11 @@ raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler
 
 /* Local handlers for writing to a filename */
 
-static void
-raptor_filename_iostream_finish(void *context) 
+static int
+raptor_filename_iostream_write_byte(void *context, const int byte)
 {
   FILE* fh=(FILE*)context;
-  fclose(fh);
-  return;
+  return (fputc(byte, fh) == byte);
 }
 
 static int
@@ -101,19 +101,20 @@ raptor_filename_iostream_write_bytes(void *context,
   return (fwrite(ptr, size, nmemb, fh) == nmemb);
 }
 
-static int
-raptor_filename_iostream_write_byte(void *context, const int byte)
+static void
+raptor_filename_iostream_write_end(void *context)
 {
   FILE* fh=(FILE*)context;
-  return (fputc(byte, fh) == byte);
+  fclose(fh);
 }
 
 
 static raptor_iostream_handler raptor_iostream_filename_handler={
   NULL, /* init */
-  raptor_filename_iostream_finish,
+  NULL, /* finish */
+  raptor_filename_iostream_write_byte,
   raptor_filename_iostream_write_bytes,
-  raptor_filename_iostream_write_byte
+  raptor_filename_iostream_write_end
 };
 
 
@@ -151,8 +152,9 @@ raptor_new_iostream_to_filename(const char *filename)
 static raptor_iostream_handler raptor_iostream_file_handler={
   NULL, /* init */
   NULL, /* finish */
+  raptor_filename_iostream_write_byte,
   raptor_filename_iostream_write_bytes,
-  raptor_filename_iostream_write_byte
+  raptor_filename_iostream_write_end
 };
 
 
@@ -205,32 +207,26 @@ raptor_string_iostream_finish(void *context)
 {
   struct raptor_string_iostream_context* con=(struct raptor_string_iostream_context*)context;
   size_t len=raptor_stringbuffer_length(con->sb);
-  void *str;
-  
+  void *str=NULL;
+
+  *con->string_p=NULL;
   if(con->length_p)
     *con->length_p=len;
   
-  str=(void*)RAPTOR_MALLOC(memory, len+1);
-  if(str) {
-    memcpy(str, raptor_stringbuffer_as_string(con->sb), len+1);
-    *con->string_p=str;
-  } else {
-    *con->string_p=NULL;
+  if(len) {
+    str=(void*)RAPTOR_MALLOC(memory, len+1);
+    if(str) {
+      memcpy(str, raptor_stringbuffer_as_string(con->sb), len+1);
+      *con->string_p=str;
+    }
+  }
+  if(!str) {
     if(con->length_p)
       *con->length_p=0;
   }
   
   raptor_free_stringbuffer(con->sb);
   return;
-}
-
-static int
-raptor_string_iostream_write_bytes(void *context,
-                                   const void *ptr, size_t size, size_t nmemb)
-{
-  struct raptor_string_iostream_context* con=(struct raptor_string_iostream_context*)context;
-
-  return raptor_stringbuffer_append_counted_string(con->sb, (const unsigned char*)ptr, size * nmemb, 1);
 }
 
 static int
@@ -242,11 +238,21 @@ raptor_string_iostream_write_byte(void *context, const int byte)
 }
 
 
+static int
+raptor_string_iostream_write_bytes(void *context,
+                                   const void *ptr, size_t size, size_t nmemb)
+{
+  struct raptor_string_iostream_context* con=(struct raptor_string_iostream_context*)context;
+
+  return raptor_stringbuffer_append_counted_string(con->sb, (const unsigned char*)ptr, size * nmemb, 1);
+}
+
 static raptor_iostream_handler raptor_iostream_string_handler={
   raptor_string_iostream_init,
   raptor_string_iostream_finish,
+  raptor_string_iostream_write_byte,
   raptor_string_iostream_write_bytes,
-  raptor_string_iostream_write_byte
+  NULL /* write_end */
 };
 
 
@@ -286,7 +292,7 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p)
   iostr->context=(void*)con;
 
   if(iostr->handler->init && iostr->handler->init(iostr->context)) {
-    iostr->handler->finish(iostr->context);
+    raptor_free_iostream(iostr);
     return NULL;
   }
   return iostr;
@@ -309,6 +315,27 @@ raptor_free_iostream(raptor_iostream *iostr)
 
 
 /**
+ * raptor_iostream_write_byte - Write a byte to the iostream
+ * @iostr: raptor iostream
+ * @byte: byte to write
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_iostream_write_byte(raptor_iostream *iostr, 
+                           const int byte)
+{
+  iostr->bytes++;
+
+  if(iostr->ended)
+    return 1;
+  if(!iostr->handler->write_byte)
+    return 1;
+  return iostr->handler->write_byte(iostr->context, byte);
+}
+
+
+/**
  * raptor_iostream_write_bytes - Write bytes to the iostream
  * @iostr: raptor iostream
  * @ptr: start of objects to write
@@ -323,27 +350,25 @@ raptor_iostream_write_bytes(raptor_iostream *iostr,
 {
   iostr->bytes += (size*nmemb);
   
+  if(iostr->ended)
+    return 1;
   if(!iostr->handler->write_bytes)
     return 0;
   return iostr->handler->write_bytes(iostr->context, ptr, size, nmemb);
 }
 
 /**
- * raptor_iostream_write_byte - Write a byte to the iostream
+ * raptor_iostream_write_end - End writing to the iostream
  * @iostr: raptor iostream
- * @byte: byte to write
- *
- * Return value: non-0 on failure
  **/
-int
-raptor_iostream_write_byte(raptor_iostream *iostr, 
-                           const int byte)
+void
+raptor_iostream_write_end(raptor_iostream *iostr)
 {
-  iostr->bytes++;
-
-  if(!iostr->handler->write_byte)
-    return 1;
-  return iostr->handler->write_byte(iostr->context, byte);
+  if(iostr->ended)
+    return;
+  if(iostr->handler->write_end)
+    iostr->handler->write_end(iostr->context);
+  iostr->ended=1;
 }
 
 
@@ -377,17 +402,17 @@ main(int argc, char *argv[])
 {
   const char *program=raptor_basename(argv[0]);
 #define TEST_ITEMS_COUNT 9
-  raptor_iostream *iostr;
   int i;
-  size_t count;
-
-  /* for _to_file */
-  FILE *fh;
-  /* for _to_string */
-  void *string;
-  size_t string_len;
 
   for(i=0; i<3; i++) {
+    raptor_iostream *iostr;
+    size_t count;
+
+    /* for _to_file */
+    FILE *fh;
+    /* for _to_string */
+    void *string;
+    size_t string_len;
 
     switch(i) {
       case 0:
