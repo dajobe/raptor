@@ -34,8 +34,8 @@ raptor_abort_DEPENDENCIES = $(top_builddir)/libraptor.la
 
 grapper_SOURCES = grapper.c
 grapper_LDADD=$(top_builddir)/libraptor.la
-grapper_CFLAGS=$(shell pkg-config --cflags gtk+-2.0)
-grapper_LDFLAGS=$(shell pkg-config --libs gtk+-2.0)
+grapper_CFLAGS=`pkg-config --cflags gtk+-2.0`
+grapper_LDFLAGS=`pkg-config --libs gtk+-2.0`
 grapper_DEPENDENCIES = $(top_builddir)/libraptor.la
 
 
