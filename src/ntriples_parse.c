@@ -204,7 +204,7 @@ raptor_ntriples_set_statement_handler(raptor_ntriples_parser* parser,
 
 static const char *term_type_strings[]={
   "URIref",
-  "AnonNode",
+  "bnodeID",
   "Literal"
 };
 
@@ -233,7 +233,7 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
   raptor_uri *object_uri=NULL;
 
   /* Two choices for subject from N-Triples */
-  if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE) {
+  if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
     statement->subject=subject;
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else {
@@ -253,7 +253,7 @@ raptor_ntriples_generate_statement(raptor_ntriples_parser *parser,
     object_uri=raptor_make_uri(parser->base_uri, (const char*)object);
     statement->object=object_uri;
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE) {
+  } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
     statement->object=object;
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else { 
@@ -423,6 +423,10 @@ raptor_ntriples_utf8_to_unicode_char(long *output,
   return size;
 }
 
+/* These are for 7-bit ASCII and not locale-specific */
+#define IS_ASCII_ALPHA(c) (((c)>0x40 && (c)<0x5B) || ((c)>0x60 && (c)<0x7B))
+#define IS_ASCII_DIGIT(c) ((c)>0x30 && (c)<0x3A)
+#define IS_ASCII_PRINT(c) ((c)>0x1F && (c)<0x7F)
 
 /**
  * raptor_ntriples_string - Parse an N-Triples string/URI with escapes
@@ -434,6 +438,10 @@ raptor_ntriples_utf8_to_unicode_char(long *output,
  * @end_char: string ending character
  * @is_uri: string is a URI
  * 
+ * N-Triples strings/URIs are written in ASCII at present; characters
+ * outside the printable ASCII range are discarded with a warning.
+ * See the grammar for full details of the allowed ranges.
+ *
  * Return value: Non 0 on failure
  **/
 static int
@@ -443,7 +451,7 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
                        char end_char, int is_uri)
 {
   char *p=*start;
-  char c='\0';
+  unsigned char c='\0';
   int ulen=0;
   unsigned long unichar=0;
   
@@ -456,6 +464,14 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
     parser->locator.column++;
     parser->locator.byte++;
 
+    /* This is an ASCII check, not a printable character check 
+     * so isprint() is not appropriate, since that is a locale check.
+     */
+    if(!IS_ASCII_PRINT(c)) {
+      raptor_ntriples_parser_error(parser, "Non-printable ASCII character %d (0x%02X) found.", c, c);
+      continue;
+    }
+    
     if(c != '\\') {
       /* finish at non-backslashed end_char */
       if(c == end_char) {
@@ -591,6 +607,9 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
   
   /* Check for terminating '.' */
   if(p[len-1] != '.') {
+    /* Move current location to point to problem */
+    parser->locator.column += len-2;
+    parser->locator.byte += len-2;
     raptor_ntriples_parser_error(parser, "Missing . at end of line");
     return 0;
   }
@@ -607,10 +626,10 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
       return 0;
     }
     
-    /* Expect either <anonURI> or _:name */
+    /* Expect either <URI> or _:name */
     if(i == 2) {
       if(*p != '<' && *p != '_' && *p != '"' && *p != 'x') {
-        raptor_ntriples_parser_error(parser, "Saw '%c', expected <URIref>, _:anonNode or \"literal\"", *p);
+        raptor_ntriples_parser_error(parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
         return 0;
       }
       if(*p == 'x') {
@@ -621,7 +640,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
       }
     } else {
       if(*p != '<' && *p != '_') {
-        raptor_ntriples_parser_error(parser, "Saw '%c', expected <URIref> or _:anonNode", *p);
+        raptor_ntriples_parser_error(parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
         return 0;
       }
     }
@@ -682,7 +701,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
 
       case '_':
-        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_ANON_NODE;
+        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE;
 
         p++;
         len--;
@@ -690,7 +709,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         parser->locator.byte++;
 
         if(!len || (len > 0 && *p != ':')) {
-          raptor_ntriples_parser_error(parser, "Illegal anonNode _ not followed by :");
+          raptor_ntriples_parser_error(parser, "Illegal bNodeID - _ not followed by :");
           return 0;
         }
         /* Found ':' - move on */
@@ -700,10 +719,15 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
         parser->locator.column++;
         parser->locator.byte++;
 
+        if(len>0 && !IS_ASCII_ALPHA(*p)) {
+          raptor_ntriples_parser_error(parser, "Illegal bnodeID - does not start with an ASCII alphabetic character.");
+          return 0;
+        }
+
         /* start after _: */
         dest=p;
 
-        while(len>0 && isalnum(*p)) {
+        while(len>0 && (IS_ASCII_ALPHA(*p) || IS_ASCII_DIGIT(*p))) {
           p++;
           len--;
           parser->locator.column++;
@@ -783,7 +807,7 @@ raptor_ntriples_parse_line (raptor_ntriples_parser* parser, char *buffer,
 
     /* Replace
      *   end '>' for <URIref>
-     *   whitespace after _:anonNode
+     *   whitespace after _:bnodeID
      * with '\0' to terminate string
      * and move to char after delimiter
      */
@@ -1095,10 +1119,9 @@ raptor_ntriples_parse_file(raptor_ntriples_parser* parser, raptor_uri *uri,
  * @string: UTF-8 string to print
  * @delim: Delimiter character for string (such as ")
  * 
- * Will silently stop printing on bad UTF-8 encoding such as string
- * ending early.
+ * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/
-void
+int
 raptor_print_ntriples_string(FILE *stream,
                              const char *string,
                              const char delim) 
@@ -1135,12 +1158,9 @@ raptor_print_ntriples_string(FILE *stream,
     /* It is unicode */
     
     unichar_len=raptor_ntriples_utf8_to_unicode_char(NULL, (const unsigned char *)string, len);
-    if(unichar_len > len) {
-      /* UTF-8 encoding ended in the middle of a string
-       * but no way to report an error
-       */
-      return;
-    }
+    if(unichar_len < 0 || unichar_len > len)
+      /* UTF-8 encoding had an error or ended in the middle of a string */
+      return 1;
 
     unichar_len=raptor_ntriples_utf8_to_unicode_char(&unichar,
                                                      (const unsigned char *)string, len);
@@ -1154,6 +1174,7 @@ raptor_print_ntriples_string(FILE *stream,
     string += unichar_len; len -= unichar_len;
 
   }
-  
+
+  return 0;
 }
 
