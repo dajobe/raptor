@@ -1,3 +1,11 @@
+2005-03-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize_rdfxmla.c (raptor_new_qname_from_resource):
+	Use maximal xml name length for	splitting predicate.
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement):
+	Use maximal xml name length for	splitting predicate.
+
 2005-02-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* examples/Makefile.am: Add gconf-2.0 to grapper args
