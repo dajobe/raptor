@@ -86,12 +86,17 @@ static const char * const raptor_xml_uri="http://www.w3.org/XML/1998/namespace";
 static const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
 static const char * const raptor_rdf_schema_uri=RAPTOR_RDF_SCHEMA_URI;
 
+
+/*
+ * defaults is 0 for none, 1 for just XML, 2 for handy things (RDF, RDFS, DC, OWL)
+ */
 void
 raptor_namespaces_init(raptor_namespace_stack *nstack,
                        raptor_uri_handler *uri_handler,
                        void *uri_context,
                        raptor_simple_message_handler error_handler,
-                       void *error_data)
+                       void *error_data,
+                       int defaults)
 {
   nstack->top=NULL;
   nstack->uri_handler=uri_handler;
@@ -103,9 +108,11 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
   nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, raptor_rdf_ms_uri);
   nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, raptor_rdf_schema_uri);
 
-  /* defined at level -1 since always 'present' when inside the XML world */
-  raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
-                                         (unsigned char*)raptor_xml_uri, -1);
+  if(defaults) {
+    /* defined at level -1 since always 'present' when inside the XML world */
+    raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
+                                           (unsigned char*)raptor_xml_uri, -1);
+  }
 }
 
 
@@ -414,7 +421,7 @@ main(int argc, char *argv[])
   /* Use whatever the raptor_uri class has */
   raptor_uri_get_handler(&handler, &context);
 
-  raptor_namespaces_init(&namespaces, handler, context, NULL, NULL);
+  raptor_namespaces_init(&namespaces, handler, context, NULL, NULL, 1);
   
   raptor_namespaces_start_namespace_full(&namespaces,
                                          (const unsigned char*)"ex1",
