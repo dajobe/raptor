@@ -2499,8 +2499,11 @@ static void
 raptor_print_statement_detailed(const raptor_statement * statement,
                                 int detailed, FILE *stream) 
 {
-  fprintf(stream, "[%s, ",
-          RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
+  if(statement->subject_type == RAPTOR_SUBJECT_TYPE_ANONYMOUS)
+    fprintf(stream, "[%s, ", (const char*)statement->subject);
+  else
+    fprintf(stream, "[%s, ",
+            RAPTOR_URI_AS_STRING((raptor_uri*)statement->subject));
 
   if(statement->predicate_type == RAPTOR_PREDICATE_TYPE_ORDINAL)
     fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate));
@@ -2512,7 +2515,8 @@ raptor_print_statement_detailed(const raptor_statement * statement,
   if(statement->object_type == RAPTOR_OBJECT_TYPE_LITERAL || 
      statement->object_type == RAPTOR_OBJECT_TYPE_XML_LITERAL)
     fprintf(stream, ", \"%s\"]",  (const char*)statement->object);
-  else if(statement->object_type == RAPTOR_OBJECT_TYPE_XML_NAME)
+  else if(statement->object_type == RAPTOR_OBJECT_TYPE_XML_NAME ||
+          statement->object_type == RAPTOR_OBJECT_TYPE_ANONYMOUS)
     fprintf(stream, ", %s]", (const char*)statement->object);
   else
     fprintf(stream, ", %s]", 
