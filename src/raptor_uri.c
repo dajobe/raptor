@@ -62,14 +62,14 @@ extern int errno;
 #endif
 
 
-/* for the memory allocation functions */
-#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-#include <dmalloc.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
 #undef HAVE_STDLIB_H
 #endif
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+/* for the memory allocation functions */
+#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
+#include <dmalloc.h>
 #undef HAVE_STDLIB_H
 #endif
 
@@ -159,7 +159,7 @@ raptor_uri_parse (const char *uri, char *buffer, size_t len,
   }
 
 
-  /* Extract the authority (e.g. hostname in http, ftp etc.) */
+  /* Extract the authority (e.g. [user:pass@]hostname[:port] in http, etc.) */
   if (*s && *(s + 1) && *s == '/' && *(s + 1) == '/') {
     *authority = d;
 
@@ -224,10 +224,12 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
                                   const char *reference_uri,
                                   char *buffer, size_t length)
 {
-  char base_buffer[256];
-  char reference_buffer[256];
-  char path_buffer[256];
-
+  char *base_buffer=NULL;
+  char *reference_buffer=NULL;
+  char *path_buffer=NULL;
+  int reference_buffer_len;
+  int base_uri_len;
+  
   char *base_scheme;
   char *base_authority;
   char *base_path;
@@ -246,10 +248,16 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
 
   *buffer = '\0';
 
-  raptor_uri_parse (reference_uri, reference_buffer, sizeof (reference_buffer),
+  reference_buffer_len=strlen(reference_uri)+1;
+  reference_buffer=(char*)LIBRDF_MALLOC(cstring, reference_buffer_len);
+  if(!reference_buffer)
+    goto resolve_tidy;
+  
+  raptor_uri_parse (reference_uri, reference_buffer, reference_buffer_len,
                     &reference_scheme, &reference_authority,
                     &reference_path, &reference_query, &reference_fragment);
 
+  /* is reference URI "" or "#frag"? */
   if (!reference_scheme && !reference_authority
       && !reference_path && !reference_query) {
     strcpy (buffer, base_uri);
@@ -258,196 +266,228 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
       strcat (buffer, "#");
       strcat (buffer, reference_fragment);
     }
-  } else if (reference_scheme) {
+    goto resolve_tidy;
+  }
+  
+  /* reference has a scheme - is an absolute URI */
+  if (reference_scheme) {
     strcpy (buffer, reference_uri);
-  } else { /* ZZ -- FIXME */
-    raptor_uri_parse (base_uri, base_buffer, sizeof (base_buffer),
-                      &base_scheme, &base_authority,
-                      &base_path, &base_query, &base_fragment);
+    goto resolve_tidy;
+  }
+  
+
+  /* now the reference URI must be schemeless, i.e. relative */
+  base_uri_len=strlen(base_uri);
+  base_buffer=(char*)LIBRDF_MALLOC(cstring, base_uri_len+1);
+  if(!base_buffer)
+    goto resolve_tidy;
+
+  raptor_uri_parse (base_uri, base_buffer, base_uri_len,
+                    &base_scheme, &base_authority,
+                    &base_path, &base_query, &base_fragment);
+  
+  result_scheme = base_scheme;
+  
+  /* an authority is given ( [user:pass@]hostname[:port] for http)
+   * so the reference URI is like //authority
+   */
+  if (reference_authority) {
+    result_authority = reference_authority;
+    goto resolve_end;
+  }
+
+  /* no - so now we have path (maybe with query, fragment) relative to base */
+  result_authority = base_authority;
     
-    result_scheme = base_scheme;
+
+  if (reference_path && reference_path[0] == '/') {
+    /* reference path is absolute */
+    result_path = reference_path;
+  } else {
+    /* need to resolve relative path */
+    char *p = NULL;
+
+    /* Make result path be path buffer; initialise it to empty */
+    int path_buffer_len=strlen(base_path)+1;
+
+    if(reference_path)
+      path_buffer_len +=strlen(reference_path);
+
+    path_buffer=(char*)LIBRDF_MALLOC(cstring, path_buffer_len);
+    if(!path_buffer)
+      goto resolve_tidy;
+    result_path = path_buffer;
+    path_buffer[0] = '\0';
     
-    if (reference_authority) {
-      result_authority = reference_authority;
-    } else { /* YY */
-      result_authority = base_authority;
+    p = strrchr (base_path, '/');
+    if (p) {
+      /* Found a /, copy everything before that to path_buffer */
+      char *s = base_path;
+      char *d = path_buffer;
       
-      if (reference_path && reference_path[0] == '/') {
-        /* reference path is absolute */
-        result_path = reference_path;
+      while (s <= p)
+        *d++ = *s++;
+      
+      *d++ = '\0';
+    }
 
-      } else { /* XX -  need to resolve relative path */
-        char *p = NULL;
-
-        /* Make result path be path buffer; initialise it to empty */
-
-        result_path = path_buffer;
-        path_buffer[0] = '\0';
-        
-        p = strrchr (base_path, '/');
-        if (p) {
-          /* Found a /, copy everything before that to path_buffer */
-          char *s = base_path;
-          char *d = path_buffer;
-          
-          while (s <= p)
-            *d++ = *s++;
-          
-          *d++ = '\0';
-        }
-
-        if (reference_path)
-          strcat (path_buffer, reference_path);
+    if (reference_path)
+      strcat (path_buffer, reference_path);
 
 
-        /* NEW BLOCK - only ANSI C allows this - FIXME */
-        {
-          /* remove all occurrences of "./" */
-          
-          char *p2 = path_buffer;
-          char *s = path_buffer;
-          
-          while (*s) {
-            if (*s == '/') {
+    /* NEW BLOCK - only ANSI C allows this */
+    {
+      /* remove all occurrences of "./" */
+      
+      char *p2 = path_buffer;
+      char *s = path_buffer;
+      
+      while (*s) {
+        if (*s == '/') {
 
-              if (p2 == (s - 1) && *p2 == '.') {
-                char *d = p2;
-                
-                ++s;
-                
-                while (*s)
-                  *d++ = *s++;
-                
-                *d = '\0';
-
-                s = p2;
-              } else {
-                p2 = s + 1;
-              }
-            }
+          if (p2 == (s - 1) && *p2 == '.') {
+            char *d = p2;
             
             ++s;
+            
+            while (*s)
+              *d++ = *s++;
+            
+            *d = '\0';
+
+            s = p2;
+          } else {
+            p2 = s + 1;
           }
-          
-          /* if the path ends with ".", remove it */
-          
-          if (p2 == (s - 1) && *p2 == '.')
-            *p2 = '\0';
-
-        } /* end BLOCK */
-
+        }
         
+        ++s;
+      }
+      
+      /* if the path ends with ".", remove it */
+      
+      if (p2 == (s - 1) && *p2 == '.')
+        *p2 = '\0';
 
-        /* NEW BLOCK - only ANSI C allows this - FIXME */
-        {
-          /* remove all occurrences of "<segment>/../" */
-          
-          char *s = path_buffer;
-          /* These form a small stack of path components */
-          char *p3 = NULL; /* current component */
-          char *p2 = NULL; /* previous component */
-          char *p0 = NULL; /* before p2 */
-          
-          for (;*s; ++s) {
+    } /* end BLOCK */
 
-            if (*s != '/') {
-              if (!p3) {
-                /* Empty stack; initialise */
-                p3 = s;
-              } else if (!p2) {
-                /* Add 2nd component */
-                p2 = s;
-              }
-              continue;
-            }
+    
 
+    /* NEW BLOCK - only ANSI C allows this */
+    {
+      /* remove all occurrences of "<segment>/../" */
+      
+      char *s = path_buffer;
+      /* These form a small stack of path components */
+      char *p3 = NULL; /* current component */
+      char *p2 = NULL; /* previous component */
+      char *p0 = NULL; /* before p2 */
+      
+      for (;*s; ++s) {
 
-            /* Found a '/' */
-
-            /* Wait till there are two components */
-            if (!p3 || !p2)
-              continue;
-            
-            /* Two components have been seen */
-              
-            /* If the previous one was '..' */
-            if (p2 == (s - 2) && *p2 == '.' && *(p2 + 1) == '.') {
-                
-              /* If the current one isn't '..' */
-              if (*p3 != '.' && *(p3 + 1) != '.') {
-                char *d = p3;
-                
-                ++s;
-                
-                while (*s)
-                  *d++ = *s++;
-                
-                *d = '\0';
-                
-                if (p0 < p3) {
-                  s = p3 - 1;
-                  
-                  p3 = p0;
-                  p2 = NULL;
-                } else {
-                  s = path_buffer;
-                  p3 = NULL;
-                  p2 = NULL;
-                  p0 = NULL;
-                }
-                
-              } /* end if !.. */
-              
-            } else {
-              /* shift the path components stack */
-              p0 = p3;
-              p3 = p2;
-              p2 = NULL;
-            }
-              
-            
-          } /* end for */
-
-          
-          /* if the path ends with "<segment>/..", remove it */
-          
-          if (p2 == (s - 2) && *p2 == '.' && *(p2 + 1) == '.') {
-            if (p3)
-              *p3 = '\0';
+        if (*s != '/') {
+          if (!p3) {
+            /* Empty stack; initialise */
+            p3 = s;
+          } else if (!p2) {
+            /* Add 2nd component */
+            p2 = s;
           }
+          continue;
+        }
 
-        } /* end BLOCK */
 
-      } /* end if (XX) */
+        /* Found a '/' */
 
-    } /* end if (YY) */
+        /* Wait till there are two components */
+        if (!p3 || !p2)
+          continue;
+        
+        /* Two components have been seen */
+          
+        /* If the previous one was '..' */
+        if (p2 == (s - 2) && *p2 == '.' && *(p2 + 1) == '.') {
+            
+          /* If the current one isn't '..' */
+          if (*p3 != '.' && *(p3 + 1) != '.') {
+            char *d = p3;
+            
+            ++s;
+            
+            while (*s)
+              *d++ = *s++;
+            
+            *d = '\0';
+            
+            if (p0 < p3) {
+              s = p3 - 1;
+              
+              p3 = p0;
+              p2 = NULL;
+            } else {
+              s = path_buffer;
+              p3 = NULL;
+              p2 = NULL;
+              p0 = NULL;
+            }
+            
+          } /* end if !.. */
+          
+        } else {
+          /* shift the path components stack */
+          p0 = p3;
+          p3 = p2;
+          p2 = NULL;
+        }
+          
+        
+      } /* end for */
 
-    
-    if (result_scheme) {
-      strcpy (buffer, result_scheme);
-      strcat (buffer, ":");
-    }
-    
-    if (result_authority) {
-      strcat (buffer, "//");
-      strcat (buffer, result_authority);
-    }
-    
-    if (result_path)
-      strcat (buffer, result_path);
-    
-    if (reference_query) {
-      strcat (buffer, "?");
-      strcat (buffer, reference_query);
-    }
-    
-    if (reference_fragment) {
-      strcat (buffer, "#");
-      strcat (buffer, reference_fragment);
-    }
+      
+      /* if the path ends with "<segment>/..", remove it */
+      
+      if (p2 == (s - 2) && *p2 == '.' && *(p2 + 1) == '.') {
+        if (p3)
+          *p3 = '\0';
+      }
 
-  } /* end if (ZZ) */
+    } /* end BLOCK */
 
+  } /* end if (XX) */
+
+
+  resolve_end:
+  
+  if (result_scheme) {
+    strcpy (buffer, result_scheme);
+    strcat (buffer, ":");
+  }
+  
+  if (result_authority) {
+    strcat (buffer, "//");
+    strcat (buffer, result_authority);
+  }
+  
+  if (result_path)
+    strcat (buffer, result_path);
+  
+  if (reference_query) {
+    strcat (buffer, "?");
+    strcat (buffer, reference_query);
+  }
+  
+  if (reference_fragment) {
+    strcat (buffer, "#");
+    strcat (buffer, reference_fragment);
+  }
+
+  resolve_tidy:
+  if(path_buffer)
+    LIBRDF_FREE(cstring, path_buffer);
+  if(base_buffer)
+    LIBRDF_FREE(cstring, base_buffer);
+  if(reference_buffer)
+    LIBRDF_FREE(cstring, reference_buffer);
 }
 
 
