@@ -104,8 +104,8 @@ raptor_www_new_with_connection(void *connection)
 #ifdef RAPTOR_WWW_LIBXML
   raptor_www_libxml_init(www);
 #endif
-#ifdef RAPTOR_WWW_LIBGHTTP
-  raptor_www_ghttp_init(www);
+#ifdef RAPTOR_WWW_LIBWWW
+  raptor_www_libwww_init(www);
 #endif
 
   return www;
@@ -144,8 +144,8 @@ raptor_www_free(raptor_www *www)
 #ifdef RAPTOR_WWW_LIBXML
   raptor_www_libxml_free(www);
 #endif
-#ifdef RAPTOR_WWW_LIBGHTTP
-  raptor_www_ghttp_free(www);
+#ifdef RAPTOR_WWW_LIBWWW
+  raptor_www_libwww_free(www);
 #endif
 
   if(www->uri)
@@ -229,8 +229,8 @@ raptor_www_get_connection(raptor_www *www)
   return www->ctxt;
 #endif
 
-#ifdef RAPTOR_WWW_LIBGHTTP
-  return www->request;
+#ifdef RAPTOR_WWW_LIBWWW
+  return NULL;
 #endif
 }
 
@@ -337,8 +337,8 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   return raptor_www_libxml_fetch(www);
 #endif
 
-#ifdef RAPTOR_WWW_LIBGHTTP
-  return raptor_www_ghttp_fetch(www);
+#ifdef RAPTOR_WWW_LIBWWW
+  return raptor_www_libwww_fetch(www);
 #endif
 
 #endif
