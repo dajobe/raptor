@@ -10,15 +10,15 @@
 <h2>Bugs and Features</h2>
 
 <ul>
+<li>Handle &lt;prop:Elt rdf:ID="id" rdf:resource="http://example.org/obj"/&gt; (RDF Core WG syntax change)</li>
+<li>Scanning for embedded rdf:RDF in XHTML broken (BUG)</li>
+<li>Find out why compiling with libxml 2.3.5 and nearby versions fails on FreeBSD, OSX (BUG)</li>
+<li>Check compiling with latest expat, libxml sources works</li>
 <li>Provide a perl interface (FEATURE)</li>
-<li>Perform xml:lang processing and pass to application (FEATURE)</li>
 <li>Add namespace/prefix declaration user level callback (FEATURE)</li>
-<li>regression tests (FEATURE)</li>
 <li>URI resolving is very ad-hoc (BUG)</li>
 <li>Reification of statements (bagID etc.) implemented but not tested (FEATURE)</li>
 <li>Other (non resource, literal, daml:collection) parseType support (FEATURE)</li>
-<li>No aboutEach support (BUG)</li>
-
 </ul>
 
 <h2>Done</h2>
@@ -27,6 +27,9 @@
 release version where appropriate.</p>
 
 <ul>
+<li>Add xml:base support - RDF Core WG syntax change (0.9.4)</li>
+<li>Perform xml:lang processing and pass to application (0.9.4)</li>
+<li>parseType literal broken (0.9.4)</li>
 <li>Tracking of user IDs/generated IDs available to user code (0.9.3)</li>
 <li>daml:collection parseType support (0.9.3)</li>
 <li>rdf:li used as a propertyElt does not work (0.9.3)</li>
@@ -45,15 +48,14 @@ area of the
 <a href="http://www.w3.org/2000/03/rdf-tracking/#attention-developers">RDF Issue Tracking document</a>.</p>
 
 <ul>
+<li>aboutEach support - removed from syntax</li>
 <li>aboutEachPrefix support - removed from syntax</li>
-<li>Special Container support - not special anymore, just typed nodes</li>
+<li>Special container support - not special anymore, just typed nodes</li>
 </ul>
 
 <hr />
 
 <p>Copyright 2001 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
-
-<p><a href="http://www.mirror.ac.uk/services/validator/check/referer">Validate me</a></p>
 
 </body>
 </html>
