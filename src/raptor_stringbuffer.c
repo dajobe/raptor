@@ -103,12 +103,12 @@ raptor_new_stringbuffer_node(raptor_stringbuffer* sb,
                              const char *string, size_t length) 
 {
   raptor_stringbuffer_node* node;
-  node=RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
+  node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
   if(!node)
     return NULL;
 
   /* Note these do not include the cstring NULL character */
-  node->string=RAPTOR_MALLOC(bytes, length);
+  node->string=(char*)RAPTOR_MALLOC(bytes, length);
   if(!node->string) {
     RAPTOR_FREE(raptor_stringbuffer_node, node);
     return NULL;
@@ -295,7 +295,7 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
   if(stringbuffer->string)
     return stringbuffer->string;
 
-  stringbuffer->string=RAPTOR_MALLOC(cstring, stringbuffer->length+1);
+  stringbuffer->string=(char*)RAPTOR_MALLOC(cstring, stringbuffer->length+1);
   if(!stringbuffer->string)
     return NULL;
 
