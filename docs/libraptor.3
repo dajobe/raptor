@@ -220,9 +220,21 @@ in literals will give a fatal error, otherwise it gives a warning.
 If the \fIcheck_rdf_id\fR
 feature is true (default true) then rdf:ID values will be
 checked for duplicates and cause an error if found.
+.IP "\fBraptor_parser_set_feature_string(raptor_parser *\fIparser\fP, raptor_feature \fIfeature\fP, const unsigned char *\fIvalue\fP)\fR"
+Set a parser feature \fIfeature\fR to a particular string \fIvalue\fR.
+Returns non 0 on failure or if the feature is unknown.
+The current defined parser features are given in
+\fBraptor_set_feature\fP and at present only take integer values. If
+an integer value feature is set with this function, \fIvalue\fP is
+interpreted as an integer and then that value is used.
 .IP "\fBint raptor_get_feature(raptor_parser* \fIparser\fB, raptor_feature \fIfeature\fB)\fR"
-Get parser features, the allowed \fIfeature\fP values are available
-via \fBraptor_features_enumerate\fP.
+Get parser feature integer values.  The allowed \fIfeature\fP values
+and types are given under \fBraptor_features_enumerate\fP.
+.IP "\fBconst unsigned char* raptor_parser_get_feature_string(raptor_parser *\fIparser\fP, raptor_feature \fIfeature\fP)\fR"
+Get parser feature string values. The allowed \fIfeature\fP values
+and types are given under \fBraptor_features_enumerate\fP.
+.IP "\fBint raptor_feature_value_type(const raptor_feature feature)\fR"
+
 .IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
 Return the current raptor_locator object for the parser.
 This is a public structure defined in raptor.h that can be
@@ -487,10 +499,14 @@ Returns non 0 on failure or if the feature is unknown.
 The current defined serializer features are:
   \fIFeature                                 Values\fR
   \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_START_URI\fR            URI String
 .P
 If the \fIrelative_uris\fR
 feature is true (default false) then when serialising, preference
 is given to generating relative URIs where possible. 
+.P
+If the \fIstart_uri\fR
+A string encoding the URI to start serializing from.
 .IP "\fBint raptor_serializer_get_feature(raptor_serializer* \fIserializer\fB, raptor_feature \fIfeature\fB)\fR"
 Get serializer features, the allowed \fIfeature\fP values are available
 .SH "SERIALIZER UTILITY FUNCTIONS"
@@ -789,7 +805,10 @@ End (and free) all namespaces on the stack at the given \fIdepth\fR.
 .IP "\fBraptor_namespace* raptor_namespaces_get_default_namespace (raptor_namespace_stack *nstack)\fR"
 Return the current default raptor_namespace of the namespace stack
 or NULL if there is none.
-.IP "\fBraptor_namespace *raptor_namespaces_find_namespace (raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length)\fR"
+.IP "\fBraptor_namespace* raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *\fInstack\fP, raptor_uri *\fIns_uri\fP)\fR"
+Find the first namespace on the stack with the given uri \fIns_uri\fR
+or NULL if there is none.
+.IP "\fBraptor_namespace *raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length)\fR"
 Find the first namespace on the stack with the given namespace \fIprefix\fR
 or NULL if there is none.
 .IP "\fBint raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace)\fR"
@@ -1008,9 +1027,17 @@ Writer \fIxml_writer\fP.
 Added XML Writer class (\fBraptor_xml_writer\fP)
 and XML Element class (\fBraptor_xml_element\fP)
 .P
+Added \fBraptor_namespaces_find_namespace_by_uri\fP.
+.P
 Added \fBraptor_serializer_set_namespace\fP,
 \fBraptor_serializer_set_feature\fP and
 \fBraptor_serializer_get_feature\fP.
+.P
+Added \fBraptor_parser_get_feature_string\fP,
+\fBraptor_parser_set_feature_string\fP,
+\fBraptor_serializer_set_feature_string\fP,
+\fBraptor_serializer_get_feature_string\fP and
+\fBraptor_feature_value_type\fP.
 .P
 Added \fBraptor_iostream_write_qname\fP to write a qname to an iostream.
 .P
