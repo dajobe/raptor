@@ -1585,8 +1585,13 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const unsigned char *buffer,
   
 #ifdef RAPTOR_XML_LIBXML
   if(!xc) {
-    if(!len) /* no data given at all */
-      return 0;
+    if(!len) {
+      /* no data given at all - emit a similar message to expat */
+      raptor_update_document_locator(rdf_parser);
+      raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
+                          "no element found");
+      return 1;
+    }
 
     xc = xmlCreatePushParserCtxt(&rdf_xml_parser->sax, rdf_parser,
                                  (char*)buffer, len, 
