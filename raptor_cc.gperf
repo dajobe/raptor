@@ -300,13 +300,12 @@ struct country_code { const char * const name; const char * const country_name; 
 const int
 raptor_country_code_is_valid(const char *code) 
 {
-  int len;
   char code_buffer[3]; /* long enough for 2-letter codes \0 */
   
   if(!code)
     return 0;
-  len=strlen(code);
-  if(!len || len != 2)
+  /* probably faster than if(strlen(code)==2) */
+  if(!code[0] || !code[1] || code[2])
     return 0;
   
   code_buffer[0]=islower(code[0]) ? toupper(code[0]) : code[0];
@@ -329,14 +328,13 @@ raptor_country_code_is_valid(const char *code)
 const char * const
 raptor_get_country_name_by_code(const char *code) 
 {
-  int len;
   char code_buffer[3]; /* long enough for 2-letter codes \0 */
   const struct country_code *country;
   
   if(!code)
     return NULL;
-  len=strlen(code);
-  if(!len || len != 2)
+  /* probably faster than if(strlen(code)==2) */
+  if(!code[0] || !code[1] || code[2])
     return NULL;
 
   code_buffer[0]=islower(code[0]) ? toupper(code[0]) : code[0];
@@ -370,9 +368,13 @@ main(int argc, char *argv[])
   struct tv test_good_values[]={
     {"FR", "FRANCE"},
     {"fr", "FRANCE"},
+    {"Fr", "FRANCE"},
+    {"fR", "FRANCE"},
     {NULL, NULL}
   };
   struct tv test_bad_values[]={
+    {"FR  ", NULL},
+    {"FR ", NULL},
     {"F R", NULL},
     {" ", NULL},
     {"", NULL},
