@@ -1003,7 +1003,9 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
   
   qname=raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                    (const unsigned char*)"RDF",  NULL);
-  element=raptor_new_xml_element(qname, NULL, raptor_uri_copy(base_uri));
+  if(base_uri)
+    base_uri=raptor_uri_copy(base_uri);
+  element=raptor_new_xml_element(qname, NULL, base_uri);
   context->rdf_RDF_element=element;
   for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
     raptor_namespace* ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
@@ -1045,6 +1047,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   raptor_xml_element* predicate_element=NULL;
   raptor_qname **attrs;
   int attrs_count=0;
+  raptor_uri* base_uri=NULL;
 
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     predicate_ns=context->rdf_nspace;
@@ -1093,8 +1096,10 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   
   rdf_Description_qname=raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                                    (unsigned const char*)"Description",  NULL);
+  if(serializer->base_uri)
+    base_uri=raptor_uri_copy(serializer->base_uri);
   rdf_Description_element=raptor_new_xml_element(rdf_Description_qname, NULL,
-                                                 raptor_uri_copy(serializer->base_uri));
+                                                 base_uri);
 
   attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
   attrs_count=0;
@@ -1143,8 +1148,9 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   /* predicate */
   predicate_qname=raptor_new_qname_from_namespace_local_name(predicate_ns,
                                                              name,  NULL);
-  predicate_element=raptor_new_xml_element(predicate_qname, NULL,
-                                           raptor_uri_copy(serializer->base_uri));
+  if(serializer->base_uri)
+    base_uri=raptor_uri_copy(serializer->base_uri);
+  predicate_element=raptor_new_xml_element(predicate_qname, NULL, base_uri);
 
 
   /* object */
