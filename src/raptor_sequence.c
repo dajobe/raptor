@@ -43,6 +43,11 @@
 #include <raptor.h>
 #include <raptor_internal.h>
 
+/*
+ * These sequences are:
+ *   cheap to push/pop from the end of the sequence.
+ *   expensive to shift/unshift from the start.
+ */
 
 struct raptor_sequence_s {
   int size;
