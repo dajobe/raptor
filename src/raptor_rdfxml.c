@@ -275,7 +275,7 @@ static const struct {
   { "nodeID",          1, 1, 1 },
   { "datatype",        1, 1, 1 },
   { "Description",     0, 1, 1 },
-  { "li",              1, 0, 0 },
+  { "li",              1, 0, 1 },
   { "aboutEach",       1, 1, 1 },
   { "aboutEachPrefix", 1, 1, 1 },
   /* Other names are allowed anywhere */
