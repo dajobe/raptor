@@ -41,7 +41,7 @@ SUBDIRS= tests win32 examples
 TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
-raptor_uri_win32_test
+raptor_uri_win32_test raptor_iostream_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
@@ -73,7 +73,7 @@ raptor_rfc2396.c raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c \
 raptor_identifier.c \
-raptor_sequence.c raptor_stringbuffer.c
+raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c
 if RAPTOR_PARSER_RDFXML
 libraptor_la_SOURCES += raptor_rdfxml.c raptor_xml.c raptor_xml_writer.c \
 raptor_sax2.c raptor_set.c
@@ -225,6 +225,9 @@ raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c libraptor.la
 
 raptor_nfc_test: $(srcdir)/raptor_nfc_test.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_nfc_test.c libraptor.la $(LIBS)
+
+raptor_iostream_test: $(srcdir)/raptor_iostream.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_iostream.c libraptor.la $(LIBS)
 
 
 
