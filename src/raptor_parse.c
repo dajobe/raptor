@@ -3537,13 +3537,18 @@ rapier_end_element_grammar(rapier_parser *rdf_parser,
           }
         }
 
-        if(element->parent->state == RAPIER_STATE_DESCRIPTION) {
+
+        /* If there is a parent resource node (Description,
+         * typedNode or parseTypeResource)
+         */
+        if(element->parent->state == RAPIER_STATE_DESCRIPTION ||
+           element->parent->state == RAPIER_STATE_TYPED_NODE ||
+           element->parent->state == RAPIER_STATE_PARSETYPE_RESOURCE) {
           int object_is_literal=(element->content_cdata != NULL);
           rapier_object_type object_type=object_is_literal ? RAPIER_OBJECT_TYPE_LITERAL : RAPIER_OBJECT_TYPE_RESOURCE;
           void *object=object_is_literal ? (void*)element->content_cdata : (void*)element->object_uri;
 
-          /* If there is a parent Description element (node), generate
-           * the statement:
+          /* then generate the statement:
            *   subject  : parent
            *   predicate: ordinal / this property
            *   object   : child object (node)
