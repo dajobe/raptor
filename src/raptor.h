@@ -236,7 +236,8 @@ RAPTOR_API char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p);
 
 /* Make an xml:base-compatible URI from an existing one */
 RAPTOR_API raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
-
+/* Make a URI suitable for retrieval (no fragment, has path) from an existing one */
+RAPTOR_API raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
 
 /* Identifier functions */
 RAPTOR_API raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, unsigned char *id);
