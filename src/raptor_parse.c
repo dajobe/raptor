@@ -1496,7 +1496,8 @@ raptor_xml_start_element_handler(void *user_data,
           continue;
 
         /* If non namespace-prefixed RDF M&S attributes found on an element */
-        if(rdf_parser->feature_allow_non_ns_attributes) {
+        if(rdf_parser->feature_allow_non_ns_attributes &&
+           !attribute->nspace) {
           const char *attr_name=attribute->local_name;
           int j;
 
@@ -1514,6 +1515,7 @@ raptor_xml_start_element_handler(void *user_data,
               attribute->value=NULL;
               raptor_free_ns_name(attribute);
               attribute=NULL;
+              break;
             }
         } /* end if non-namespace prefixed RDF M&S attributes */
 
@@ -3226,11 +3228,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * Everything goes to typedNode (6.13) now
          */
 
-        if(element_in_rdf_ns &&
-           IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description))
-          state=RAPTOR_STATE_DESCRIPTION;
-        else
-          state=RAPTOR_STATE_TYPED_NODE;
+        state=RAPTOR_STATE_TYPED_NODE;
 
         element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
 
@@ -3265,6 +3263,15 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * no bagId given?) FIXME - not decided / implemented yet.
          */
 
+        if(state == RAPTOR_STATE_TYPED_NODE || 
+           state == RAPTOR_STATE_DESCRIPTION) {
+          if(element_in_rdf_ns &&
+             IS_RDF_MS_CONCEPT(el_name, element->name->uri, Description))
+            state=RAPTOR_STATE_DESCRIPTION;
+          else
+            state=RAPTOR_STATE_TYPED_NODE;
+        }
+        
 
         if(element->rdf_attr[RDF_ATTR_ID] &&
            element->rdf_attr[RDF_ATTR_about]) {
