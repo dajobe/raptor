@@ -984,7 +984,7 @@ raptor_statement_part_as_counted_string(const void *term,
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       term_len=strlen(term);
-      len+=2;
+      len=2;
       if(literal_language) {
         language_len=strlen(literal_language);
         len+= language_len+1;
