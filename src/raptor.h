@@ -375,6 +375,11 @@ RAPTOR_API void raptor_sequence_print_uri(char *data, FILE *fh);
 RAPTOR_API void raptor_sequence_set_print_handler(raptor_sequence *seq, raptor_sequence_print_handler *print_handler);
 RAPTOR_API void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 
+/* raptor_utf8.c */
+int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
+int raptor_utf8_to_unicode_char(unsigned long *output, const unsigned char *input, int length);
+
+
 #ifdef __cplusplus
 }
 #endif

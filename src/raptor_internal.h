@@ -462,8 +462,6 @@ void raptor_init_parser_rss(void);
 
 
 /* raptor_utf8.c */
-int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
-int raptor_utf8_to_unicode_char(unsigned long *output, const unsigned char *input, int length);
 int raptor_unicode_is_namestartchar(long c);
 int raptor_unicode_is_namechar(long c);
 int raptor_utf8_is_nfc(const unsigned char *input, size_t length);
