@@ -942,7 +942,7 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
 
 void
 raptor_init_parser_n3 (void) {
-  raptor_parser_register_factory("n3",  "N-Triples Plus",
+  raptor_parser_register_factory("ntriplesplus",  "N-Triples Plus",
                                  &raptor_n3_parser_register_factory);
 }
 
@@ -1008,7 +1008,7 @@ main(int argc, char *argv[])
   rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");
 
   raptor_set_statement_handler(&rdf_parser, stdout, n3_parser_print_statement);
-  raptor_n3_parse_init(&rdf_parser, "n3");
+  raptor_n3_parse_init(&rdf_parser, "ntriplesplus");
   
   n3_parse(&rdf_parser, string);
 
