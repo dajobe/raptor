@@ -165,7 +165,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=copy_token((unsigned char*
 [A-Za-z][-A-Za-z0-9_]*:	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-:	{ turtle_parser_lval->string=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+:	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
 [0-9]+        { turtle_parser_lval->integer=atoi(yytext);
