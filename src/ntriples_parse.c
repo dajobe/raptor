@@ -754,7 +754,10 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
         /* got XML literal string */
         object_literal_is_XML=1;
 
-        if(len && *p == '-') {
+        if(len && (*p == '-' || *p == '@')) {
+          if(*p == '-')
+            raptor_parser_error(rdf_parser, "Old N-Triples language syntax using xml\"string\"-lang rather than xml\"string\"@lang.");
+
           object_literal_language=p;
 
           /* Skip - */
