@@ -1575,13 +1575,13 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
     rdf_xml_parser->xc = xc;
 
     if(is_end)
-      len= -1;
+      len=0;
     else
       return 0;
   }
 #endif
 
-  if(len <= 0) {
+  if(!len) {
 #ifdef RAPTOR_XML_EXPAT
     rc=XML_Parse(xp, buffer, 0, 1);
     if(!rc) /* expat: 0 is failure */
@@ -1625,7 +1625,6 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const char *buffer,
     if(rc)
       return 1;
     /* end */
-    len= -1; /* pretend to be EOF */
     xmlParseChunk(xc, buffer, 0, 1);
     return 0;
   }
