@@ -329,6 +329,7 @@ main(int argc, char *argv[])
     if(usage>1) {
       fprintf(stderr, title_format_string, raptor_version_string);
       fputs(raptor_short_copyright_string, stderr);
+      fputc('\n', stderr);
     }
     fprintf(stderr, "Try `%s " HELP_ARG(h, help) "' for more information.\n",
                     program);
