@@ -118,10 +118,10 @@ raptor_www_curl_init(raptor_www *www)
 void
 raptor_www_curl_free(raptor_www *www)
 {
-  if(www->curl_init_here) {
     /* only tidy up if we did all the work */
-    if(www->curl_handle)
-      curl_easy_cleanup(www->curl_handle);
+  if(www->curl_init_here && www->curl_handle) {
+    curl_easy_cleanup(www->curl_handle);
+    www->curl_handle=NULL;
   }
 }
 
