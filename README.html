@@ -16,41 +16,46 @@
 is the
 <b>R</b>DF <b>P</b>arser <b>T</b>oolkit f<b>o</b>r
 <a href="http://www.redland.opensource.ac.uk/"><b>R</b>edland</a>
-and currently consists of two parsers: RDF/XML and N-Triples.
-Raptor is designed to work efficiently when used with Redland
-but is entirely separate.
+written in C consisting of two parsers for the RDF/XML and N-Triples
+syntaxes for RDF. Raptor is designed to work efficiently when used
+with Redland but is entirely separate.
 </p>
 
-<p>This library is mature and <b>Beta</b> quality - most things work
-but there are known problems.  See
-the <a href="TODO.html">todo list</a> for more information.  Changes
+<p>This library is mature and <b>Beta</b> quality - there are some
+known conformance issues and the APIs are unlikely to change.  See
+the <a href="TODO.html">to do list</a> for more information.  Changes
 can be found in the <a href="NEWS.html">NEWS</a> file or more
 detailed changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 
-<h2>RAPTOR RDF/XML PARSER</h2>
+<h2>PARSERS</h2>
+
+<h3>RDF/XML Parser</h3>
+
+<p>A Parser for the <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</a> as updated by the <a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>.</p>
 
 <ul>
-<li>An RDF/XML Parser written in C designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
-<li>Handles RDF Core WG syntax updates for XML Base, xml:lang, datatyping.</li>
-<li>Generates N-Triples supporting XML literals, language tagging and datatypes</li>
-<li>Handles rdf:resource / resource attributes</li>
+<li>Designed to integrate well with <a href="http://www.redland.opensource.ac.uk/">Redland</a></li>
+<li>Handles <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax updates</a> for <a href="http://www.w3.org/TR/xmlbase/">XML Base</a>, <code>xml:lang</code> and RDF datatyping.</li>
+<li>Generates <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> supporting XML literals, language tagging and datatypes</li>
+<li>Handles <code>rdf:resource</code> / <code>resource</code> attributes</li>
 <li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or (GNOME) <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
-<li>Provides features to select options at run time.</li>
+<li>Optional features can be selected at run time.</li>
 <li>(Perl, Python, Java, Tcl, Ruby, PHP interfaces when used via Redland)</li>
 <li>No memory leaks</li>
 <li>Fast</li>
 </ul>
 
-<p>This is stable software - the APIs are unlikely to change and it
-is nearly feature complete (as an RDF/XML parser).</p>
+<p>The remaining issues are recorded in the
+<a href="TODO.html">to do list</a>.</p>
 
 
-<h2>RAPTOR NTRIPLES PARSER</h2>
+<h3>NTRIPLES PARSER</h3>
 
 <p>A parser for the
 <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
-format which emits RDF statements and is used by the RDF Core
-working group for test cases.
+syntax as used by the 
+<a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>
+for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 </p>
 
 
@@ -58,22 +63,44 @@ working group for test cases.
 
 <p>The API is described in the <em>libraptor.3</em> UNIX manual page.
 It is demonstrated in the <em>rapper.1</em> utility program which
-shows how to call the parser and get back the triples.  When raptor
+shows how to call the parser and get back the triples.  When Raptor
 is used inside
 <a href="http://www.redland.opensource.ac.uk/">Redland</a>,
 the Redland documentation explains
 how to call the parser and contains several example programs.</p>
 
-<p>To install see the <a href="INSTALL.html">Installation document</a></p>
+<p>To install Raptor see the
+<a href="INSTALL.html">Installation document</a>.  Other material
 
 
-<h2>TODO / BUGS</h2>
+<h2>SOURCES</h2>
 
-<p>See the <a href="TODO.html">TODO</a> page for the current status.</p>
+<p>The packaged sources are available from
+<a href="http://www.redland.opensource.ac.uk/dist/source/">http://www.redland.opensource.ac.uk/dist/source/</a> (master site) and also from the
+<a href="http://sourceforge.net/projects/librdf/">SourceForge site</a>.
+There are 
+<a href="http://www.redland.opensource.ac.uk/dist/snapshots/source/">nightly snapshots</a> of the development version which is can also be browsed via
+<a href="http://cvs.ilrt.org/cvsweb/redland/raptor/">CVSweb</a>.
+</p>
+
+
+<h2>LICENSE</h2>
+
+<p>This library is free software / open source software released
+under the LGPL or MPL licenses.  See 
+<a href="LICENSE.html">LICENSE.html</a> for full details.</p>
+
+
+<h2>MAILING LISTS</h2>
+
+<p>The
+<a href="http://www.redland.opensource.ac.uk/lists/">Redland mailing lists</a>
+discusses the development and use of Raptor and Redland as well as
+future plans and announcement of releases.</p>
 
 <hr />
 
-<p>Copyright 2001-2002 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2001-2003 <a href="http://purl.org/net/dajobe/">Dave Beckett</a>, <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
