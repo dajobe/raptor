@@ -51,7 +51,8 @@
 #include "raptor_internal.h"
 
 
-/* Define this for far too much output */
+/* Define these for far too much output */
+#undef RAPTOR_DEBUG_VERBOSE
 #undef RAPTOR_DEBUG_CDATA
 
 
@@ -871,7 +872,7 @@ raptor_xml_start_element_handler(void *user_data,
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
-#if RAPTOR_DEBUG
+#if RAPTOR_DEBUG_VERBOSE
               RAPTOR_DEBUG3("Found RDF namespace attribute '%s' URI %s\n", (char*)attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from qname structure */
@@ -990,7 +991,7 @@ raptor_xml_start_element_handler(void *user_data,
   } /* end if element->parent */
 
 
-#ifdef RAPTOR_DEBUG
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Using content type %s\n", rdf_content_type_info[element->content_type].name);
 
   fprintf(stderr, "raptor_xml_start_element_handler: Start ns-element: ");
@@ -1062,7 +1063,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   raptor_xml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_sax2_element* sax2_element;
-#ifdef RAPTOR_DEBUG
+#ifdef RAPTOR_DEBUG_VERBOSE
   raptor_qname *element_name;
 #endif
 
@@ -1078,7 +1079,7 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
   if(!rdf_parser->failed) {
     raptor_update_document_locator(rdf_parser);
 
-#ifdef RAPTOR_DEBUG
+#ifdef RAPTOR_DEBUG_VERBOSE
     element_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
                                   raptor_parser_simple_error, rdf_parser);
     if(!element_name) {
@@ -1209,7 +1210,9 @@ raptor_xml_comment_handler(void *user_data, const unsigned char *s)
   }
   
 
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("XML Comment '%s'\n", s);
+#endif
 }
 
 
@@ -1619,7 +1622,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   statement->object_literal_datatype=literal_datatype;
 
 
-#ifdef RAPTOR_DEBUG
+#ifdef RAPTOR_DEBUG_VERBOSE
   fprintf(stderr, "raptor_generate_statement: Generating statement: ");
   raptor_print_statement(statement, stderr);
   fputc('\n', stderr);
@@ -1948,7 +1951,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
   int rc=0;
   
   state=element->state;
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Starting in state %s\n", raptor_state_as_string(state));
+#endif
 
   finished= 0;
   while(!finished) {
@@ -2617,12 +2622,16 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
+#ifdef RAPTOR_DEBUG_VERBOSE
       RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_state_as_string(state));
+#endif
     }
 
   } /* end while */
 
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
+#endif
 }
 
 
@@ -2640,7 +2649,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
 
   state=element->state;
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Starting in state %s\n", raptor_state_as_string(state));
+#endif
 
   finished= 0;
   while(!finished) {
@@ -2840,7 +2851,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
         } /* end rdf:parseType="Collection" termination */
         
 
+#ifdef RAPTOR_DEBUG_VERBOSE
         RAPTOR_DEBUG3("Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+#endif
 
         switch(element->content_type) {
           case RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE:
@@ -3129,12 +3142,16 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
     if(state != element->state) {
       element->state=state;
+#ifdef RAPTOR_DEBUG_VERBOSE
       RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_state_as_string(state));
+#endif
     }
 
   } /* end while */
 
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
+#endif
 
 }
 
@@ -3190,10 +3207,14 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
    * Use the child_state first if there is one, since that applies
    */
   state=element->child_state;
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Working in state %s\n", raptor_state_as_string(state));
+#endif
 
 
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG3("Content type %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+#endif
   
 
 
@@ -3244,7 +3265,9 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
   if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL;
+#ifdef RAPTOR_DEBUG_VERBOSE
     RAPTOR_DEBUG3("Content type changed to %s (%d)\n", raptor_element_content_type_as_string(element->content_type), element->content_type);
+#endif
   }
 
   if(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL)
@@ -3280,7 +3303,9 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 #ifdef RAPTOR_DEBUG_CDATA
   RAPTOR_DEBUG3("Content cdata now: '%s' (%d bytes)\n", sax2_element->content_cdata, sax2_element->content_cdata_length);
 #endif
+#ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
+#endif
 }
 
 
