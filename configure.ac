@@ -397,7 +397,7 @@ fi
 oLIBS="$LIBS"
 if test "X$PKG_CONFIG" != X; then
   AC_MSG_CHECKING(for gnome glib 2.0 library)
-  if `$PKG_CONFIG glib-2.0 --exists`; then
+  if `$PKG_CONFIG glib-2.0 --exists 2>/dev/null`; then
     AC_MSG_RESULT(yes)
     LIBS="$LIBS `$PKG_CONFIG glib-2.0 --libs`"
     AC_CHECK_FUNC(g_utf8_normalize)
