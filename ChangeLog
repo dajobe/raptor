@@ -1,4 +1,11 @@
+2004-09-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor-config.1: Restore deleted content
+
 2004-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* win32_raptor_config.h, configure.ac, NEWS.html:
+	Bumped version to 1.3.4
 
 	* Snapshotted raptor_1_3_3 for 1.3.3 release
 
