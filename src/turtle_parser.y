@@ -683,6 +683,31 @@ void raptor_triple_print(raptor_triple *t, FILE *fh)
 #endif
 
 
+extern char *filename;
+extern int lineno;
+ 
+int
+n3_parser_error(const char *msg)
+{
+  raptor_parser* rdf_parser=N3_Parser;
+  
+  rdf_parser->locator.line=lineno;
+  raptor_parser_simple_error(N3_Parser, msg);
+  return (0);
+}
+
+
+int
+n3_syntax_error(const char c)
+{
+  raptor_parser* rdf_parser=N3_Parser;
+  
+  rdf_parser->locator.line=lineno;
+  raptor_parser_error(N3_Parser, "Syntax error at '%c'", c);
+  return (0);
+}
+
+
 static raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string) 
 {
@@ -697,6 +722,9 @@ n3_qname_to_uri(raptor_parser *rdf_parser, char *qname_string)
     if(qname_string[len-1] == ':')
       qname_string[len-1]='\0';
   }
+
+  rdf_parser->locator.line=lineno;
+
   name=raptor_new_qname(&n3_parser->namespaces, qname_string, NULL,
                         raptor_parser_simple_error, rdf_parser);
   if(!name)
@@ -733,18 +761,6 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   
   return 0;
 }
-
-
-extern char *filename;
-extern int lineno;
- 
-int
-n3_parser_error(const char *msg)
-{
-  fprintf(stderr, "%s:%d: %s\n", filename, lineno, msg);
-  return (0);
-}
-
 
 
 /**
