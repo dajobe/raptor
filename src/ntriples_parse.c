@@ -376,7 +376,6 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
 {
   char *p=start;
   char c='\0';
-  int backslash=0;
   
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
@@ -387,47 +386,52 @@ raptor_ntriples_string(raptor_ntriples_parser* parser,
     parser->locator.column++;
     parser->locator.byte++;
 
-    if(c == '\\') {
-      if(backslash) {
-        *dest++='\\';
-        backslash=0;
-      } else
-        backslash=1;
+    if(c != '\\') {
+      /* finish at non-backslashed end_char */
+      if(c == end_char) {
+        /* terminate dest, can be shorter than source */
+        *dest='\0';
+        break;
+      }
+      
+      /* otherwise store and move on */
+      *dest++=c;
       continue;
     }
 
-    if(backslash) {
-      switch(c) {
-        case '"':
-          *dest++='"';
-          break;
-        case 'n':
-          *dest++='\n';
-          break;
-        case 'r':
-          *dest++='\r';
-          break;
-        case 't':
-          *dest++='\t';
-          break;
-        default:
-          raptor_ntriples_parser_fatal_error(parser, "Illegal string escape \\%c in \"%s\"", c, start);
-          break;
-      }
-      backslash=0;
-      continue;
+    if(!*lenp)
+      raptor_ntriples_parser_fatal_error(parser, "\\ at end of line");
+
+    c = *p;
+
+    p++;
+    (*lenp)--;
+    parser->locator.column++;
+    parser->locator.byte++;
+
+    switch(c) {
+      case '"':
+        *dest++='"';
+        break;
+      case 'n':
+        *dest++='\n';
+        break;
+      case 'r':
+        *dest++='\r';
+        break;
+      case 't':
+        *dest++='\t';
+        break;
+      case '\\':
+        *dest++='\\';
+        break;
+      default:
+        raptor_ntriples_parser_fatal_error(parser, "Illegal string escape \\%c in \"%s\"", c, start);
+        break;
     }
     
-    /* finish at non-backslashed end_char */
-    if(c == end_char) {
-      /* terminate dest, can be shorter than source */
-      *dest='\0';
-      break;
-    }
-
-    /* otherwise store and move on */
-    *dest++=c;
   } /* end while */
+
 
   if(c != end_char)
     raptor_ntriples_parser_fatal_error(parser, "Missing terminating '%c'", 
