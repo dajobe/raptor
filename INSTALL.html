@@ -28,7 +28,9 @@ such as <tt>--prefix</tt> etc.</p>
 <dl>
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd>Pick an XML parser to use - either <tt>expat</tt> (default)
-or <tt>libxml</tt>.  At present these must be installed system libraries.
+or <tt>libxml</tt> otherwise either will be used, with expat preferred
+at present.   These can either be installed system libraries or source
+trees in subdirectories of these sources named libxml, expat.
 </dd>
 
 </dl>
@@ -38,7 +40,7 @@ or <tt>libxml</tt>.  At present these must be installed system libraries.
    ./configure
 </pre>
 
-<p>More commonly you will be doing something like this:</p>
+<p>The most common configuration you will be doing something like this:</p>
 <pre>
    ./configure --with-xml-parser=expat
 </pre>
@@ -47,12 +49,14 @@ or <tt>libxml</tt>.  At present these must be installed system libraries.
 <pre>
    make
 </pre>
+<p>Note: GNU make is probably required so it may be gmake or gnumake
+on your system</p>
 
 <p>This test program can then be used with local RDF/XML content
 files like this:</p>
 
 <pre>
-  rdfdump file:/path/to/test/file.rdf
+  rdfdump file:dc.rdf
 </pre>
 
 <p>It can also extract RDF content inside general XML when the
@@ -60,7 +64,19 @@ files like this:</p>
 inside some XHTML, it could be extracted with:</p>
 
 <pre>
-  rdfdump --scan file:/path/to/test/doc.xhtml
+  rdfdump -s file:/path/to/test/doc.xhtml
+</pre>
+
+<p>You can also run it on <a href="http://www.w3.org/2001/sw/RDFCore/ntriples/">N-Triples</a> files like this:</p>
+
+<pre>
+  rdfdump -n file:test.nt
+</pre>
+
+<p>These example files are part of the Raptor test files which you
+can invoke with:</p>
+<pre>
+  make check
 </pre>
 
 <hr />
