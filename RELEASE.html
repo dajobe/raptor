@@ -8,6 +8,26 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
+<h2 id="rel1_4_1"><a name="rel1_4_1">Raptor 1.4.1 Changes</a></h2>
+
+<p>
+FIXME - DRAFT - NOT RELEASED YET<br />
+</p>
+
+<p>Fixed buffer overrun in decoding a URI scheme in
+<code>raptor_uri</code> constructors such as
+<code>raptor_new_uri</code>.</p>
+
+<p>Fixed RSS enclosure cod crash when the <code>url</code> attribute
+seen on a non-<code>&lt;enclosure&gt;</code> element</p>
+
+<p><code>raptor_xml_escape_string</code> return value has changed to
+be an int, returning &lt;0 on failure.  This allows the (correct)
+empty string encoding an empty string case to work and be
+distinguished from an error.
+</p>
+
+
 <h2 id="rel1_4_0"><a name="rel1_4_0">Raptor 1.4.0 Changes</a></h2>
 
 <p>A release with the major new feature of providing serializing of
