@@ -655,8 +655,8 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
   raptor_rss_item* item;
   
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-    raptor_identifier* identifier=&item->identifier;
     item=&rss_parser->common[i];
+    raptor_identifier* identifier=&item->identifier;
     
     if(!item->fields_count)
       continue;
@@ -802,6 +802,9 @@ raptor_rss_emit(raptor_parser* rdf_parser)
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
     if(!rss_parser->common[i].fields_count)
       continue;
+
+    RAPTOR_DEBUG3(raptor_rss_emit, "Emitting type %i - %s\n", i,
+                  raptor_rss_types_info[i].name);
 
     raptor_rss_emit_item(rdf_parser, &rss_parser->common[i]);
 
