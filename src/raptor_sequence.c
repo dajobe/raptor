@@ -60,7 +60,7 @@ static int raptor_sequence_grow(raptor_sequence *seq);
 raptor_sequence*
 raptor_new_sequence(raptor_free_handler *free_handler,
                     raptor_print_handler *print_handler) {
-  raptor_sequence* seq=(raptor_sequence*)malloc(sizeof(raptor_sequence));
+  raptor_sequence* seq=(raptor_sequence*)RAPTOR_MALLOC(raptor_sequence, sizeof(raptor_sequence));
   if(!seq)
     return NULL;
   seq->size=0;
@@ -84,6 +84,8 @@ raptor_free_sequence(raptor_sequence* seq) {
 
   if(seq->sequence)
     free(seq->sequence);
+
+  RAPTOR_FREE(raptor_sequence, seq);
 }
 
 
