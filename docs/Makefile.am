@@ -144,6 +144,7 @@ turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
 turtle_parser_test: $(srcdir)/turtle_parser.tab.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.tab.c libraptor.la $(LIBS)
 
+check-local: rapper
 
 # Some people need a little help ;-)
 test: check

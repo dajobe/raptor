@@ -104,7 +104,8 @@ SUBDIRS = turtle
 $(top_builddir)/rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
 
-check-local: check-rdf check-assume-rdf check-scan-rdf \
+check-local: $(top_builddir)/rapper \
+check-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
 check-nt check-bad-nt check-turtle
 
