@@ -85,8 +85,10 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
 void
 raptor_www_curl_init(raptor_www *www)
 {
-  if(!www->curl_handle)
+  if(!www->curl_handle) {
     www->curl_handle=curl_easy_init();
+    www->curl_init_here=1;
+  }
 
   /* send all data to this function  */
   curl_easy_setopt(www->curl_handle, CURLOPT_WRITEFUNCTION, 
@@ -116,9 +118,11 @@ raptor_www_curl_init(raptor_www *www)
 void
 raptor_www_curl_free(raptor_www *www)
 {
-  if(www->curl_handle)
-    curl_easy_cleanup(www->curl_handle);
-  curl_global_cleanup();
+  if(www->curl_init_here) {
+    /* only tidy up if we did all the work */
+    if(www->curl_handle)
+      curl_easy_cleanup(www->curl_handle);
+  }
 }
 
 
