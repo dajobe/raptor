@@ -891,6 +891,7 @@ AC_SUBST(abs_top_builddir)
 
 AC_CONFIG_FILES([Makefile
 raptor.spec
+raptor.rdf
 examples/Makefile
 tests/Makefile
 tests/turtle/Makefile
