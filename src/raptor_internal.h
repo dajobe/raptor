@@ -605,9 +605,6 @@ typedef struct {
   raptor_identifier *object;
 } raptor_triple;
 
-/* n3_parser.y */
-int n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...);
-
 
 /* Sequence class */
 typedef struct raptor_sequence_s raptor_sequence;
