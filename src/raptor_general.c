@@ -1346,7 +1346,7 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       fputc('"', stream);
-      raptor_print_ntriples_string(stream, (const char*)term, '"');
+      raptor_print_ntriples_string(stream, (const unsigned char*)term, '"');
       fputc('"', stream);
       if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
         fputc('@', stream);
@@ -1377,7 +1377,7 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       fputc('<', stream);
-      raptor_print_ntriples_string(stream, (const char*)raptor_uri_as_string((raptor_uri*)term), '\0');
+      raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)term), '\0');
       fputc('>', stream);
       break;
       
