@@ -822,7 +822,7 @@ raptor_xml_start_element_handler(void *user_data,
 {
   raptor_parser* rdf_parser;
   raptor_xml_parser* rdf_xml_parser;
-  unsigned char **xml_atts_copy;
+  unsigned char **xml_atts_copy=NULL;
   size_t xml_atts_size;
   int all_atts_count=0;
   int ns_attributes_count=0;
@@ -887,8 +887,10 @@ raptor_xml_start_element_handler(void *user_data,
      */
     for (i = 0; atts[i]; i++);
     xml_atts_size=sizeof(unsigned char*) * i;
-    xml_atts_copy=(unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
-    memcpy(xml_atts_copy, atts, xml_atts_size);
+    if(xml_atts_size) {
+      xml_atts_copy=(unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
+      memcpy(xml_atts_copy, atts, xml_atts_size);
+    }
 
     /* Round 1 - process XML attributes */
     for (i = 0; atts[i]; i+=2) {
@@ -1193,7 +1195,7 @@ raptor_xml_start_element_handler(void *user_data,
   /* Right, now ready to enter the grammar */
   raptor_start_element_grammar(rdf_parser, element);
 
-  if(atts) {
+  if(xml_atts_copy) {
     /* Restore passed in XML attributes, free the copy */
     memcpy(atts, xml_atts_copy, xml_atts_size);
     RAPTOR_FREE(cstringpointer, xml_atts_copy);
