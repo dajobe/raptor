@@ -1142,7 +1142,7 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
 
 #ifdef RAPTOR_XML_EXPAT
 /* This is called for a declaration of an unparsed (NDATA) entity */
-static void
+void
 raptor_xml_unparsed_entity_decl_handler(void *user_data,
                                         const XML_Char *entityName,
                                         const XML_Char *base,
@@ -1159,7 +1159,7 @@ raptor_xml_unparsed_entity_decl_handler(void *user_data,
 }
 
 
-static int 
+int 
 raptor_xml_external_entity_ref_handler(void *user_data,
                                        const XML_Char *context,
                                        const XML_Char *base,
@@ -1210,9 +1210,6 @@ raptor_xml_comment_handler(void *user_data, const unsigned char *s)
 static int
 raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp;
-#endif
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   raptor_sax2* sax2;
   sax2=(raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, sizeof(raptor_sax2), 1);
@@ -1246,31 +1243,6 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
   RAPTOR_RDF_Description_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("Description");
   RAPTOR_RDF_li_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("li");
 
-#ifdef RAPTOR_XML_EXPAT
-  xp=XML_ParserCreate(NULL);
-
-  /* create a new parser in the specified encoding */
-  XML_SetUserData(xp, rdf_parser);
-
-  /* XML_SetEncoding(xp, "..."); */
-
-  XML_SetElementHandler(xp, 
-                        (XML_StartElementHandler)raptor_xml_start_element_handler,
-                        (XML_EndElementHandler)raptor_xml_end_element_handler);
-  XML_SetCharacterDataHandler(xp, 
-                              (XML_CharacterDataHandler)raptor_xml_characters_handler);
-
-  XML_SetCommentHandler(xp,
-                        (XML_CommentHandler)raptor_xml_comment_handler);
-
-
-  XML_SetUnparsedEntityDeclHandler(xp, raptor_xml_unparsed_entity_decl_handler);
-
-  XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)raptor_xml_external_entity_ref_handler);
-
-  rdf_xml_parser->sax2->xp=xp;
-#endif
-
   rdf_xml_parser->id_set=raptor_new_set();
 
   return 0;
@@ -1297,8 +1269,12 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
   rdf_xml_parser->sax2->root_element= rdf_xml_parser->sax2->current_element=NULL;
 
 #ifdef RAPTOR_XML_EXPAT
-  xp=rdf_xml_parser->sax2->xp;
+  if(rdf_xml_parser->sax2->xp) {
+    XML_ParserFree(rdf_xml_parser->sax2->xp);
+    rdf_xml_parser->sax2->xp=NULL;
+  }
 
+  xp=rdf_xml_parser->sax2->xp=raptor_expat_init(rdf_parser);
   XML_SetBase(xp, raptor_uri_as_string(uri));
 #endif
 
@@ -1309,16 +1285,6 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
   rdf_xml_parser->sax2->first_read=1;
 #endif
 
-#endif
-
-#ifdef RAPTOR_XML_EXPAT
-  if(rdf_xml_parser->sax2->xp) {
-    XML_ParserFree(rdf_xml_parser->sax2->xp);
-    rdf_xml_parser->sax2->xp=NULL;
-  }
-#endif
-
-#ifdef RAPTOR_XML_LIBXML
   if(rdf_xml_parser->sax2->xc) {
     xmlFreeParserCtxt(rdf_xml_parser->sax2->xc);
     rdf_xml_parser->sax2->xc=NULL;
