@@ -39,6 +39,15 @@ extern "C" {
 #  define RAPTOR_API
 #endif
 
+/* Use gcc 3.1+ feature to allow marking of deprecated API calls.
+ * This gives a warning during compiling.
+ */
+#if ( __GNUC__ == 3 && __GNUC_MINOR__ > 0 ) || __GNUC__ > 3
+#define RAPTOR_DEPRECATED __attribute__((deprecated))
+#else
+#define RAPTOR_DEPRECATED
+#endif
+
 typedef void* raptor_uri;
 
 
@@ -112,7 +121,7 @@ RAPTOR_API void raptor_finish(void);
 
 /* Create */
 /* OLD API */
-RAPTOR_API raptor_parser* raptor_new(void);
+RAPTOR_API raptor_parser* RAPTOR_DEPRECATED raptor_new(void);
 
 /* NEW API */
 RAPTOR_API raptor_parser* raptor_new_parser(const char *name);
@@ -122,7 +131,7 @@ RAPTOR_API int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);
 
 /* Destroy */
 /* OLD API */
-RAPTOR_API void raptor_free(raptor_parser *rdf_parser);
+RAPTOR_API void RAPTOR_DEPRECATED raptor_free(raptor_parser *rdf_parser);
 /* NEW API */
 void raptor_free_parser(raptor_parser* parser);
 
@@ -209,6 +218,36 @@ RAPTOR_API void raptor_uri_get_handler(raptor_uri_handler **handler, void **cont
 
 #define RAPTOR_RDF_MS_URI "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define RAPTOR_RDF_SCHEMA_URI "http://www.w3.org/2000/01/rdf-schema#"
+
+
+/* Public structure */
+typedef raptor_parser raptor_ntriples_parser;
+
+typedef enum { 
+  RAPTOR_NTRIPLES_TERM_TYPE_URI_REF,
+  RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE, 
+  RAPTOR_NTRIPLES_TERM_TYPE_LITERAL
+} raptor_ntriples_term_type;
+
+
+/* OLD N-Triples Public functions */
+
+/* Create OLD API */
+RAPTOR_API raptor_parser* RAPTOR_DEPRECATED raptor_ntriples_new(void);
+
+/* Destroy */
+RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_free(raptor_parser *parser);
+
+/* Handlers */
+RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
+RAPTOR_API void RAPTOR_DEPRECATED raptor_ntriples_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
+
+/* Parsing functions */
+RAPTOR_API int RAPTOR_DEPRECATED raptor_ntriples_parse_file(raptor_parser* parser, raptor_uri *uri, raptor_uri *base_uri);
+
+/* Utility functions */
+RAPTOR_API const char* RAPTOR_DEPRECATED raptor_ntriples_term_as_string (raptor_ntriples_term_type term);
 
 #ifdef __cplusplus
 }
