@@ -159,15 +159,15 @@ RAPTOR_API raptor_uri* raptor_make_uri(raptor_uri *base_uri, const char *uri_str
 RAPTOR_API raptor_uri* raptor_copy_uri(raptor_uri *uri);
 
 /* Identifier functions */
-raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
-void raptor_init_identifier(raptor_identifier *identifier, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
-int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
-void raptor_free_identifier(raptor_identifier *identifier);
+RAPTOR_API raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
+RAPTOR_API void raptor_init_identifier(raptor_identifier *identifier, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, char *id);
+RAPTOR_API int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
+RAPTOR_API void raptor_free_identifier(raptor_identifier *identifier);
 
-void raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
+RAPTOR_API void raptor_print_ntriples_string(FILE *stream, const char *string, const char delim);
 
 /* raptor_uri.c */
-void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
+RAPTOR_API void raptor_uri_resolve_uri_reference (const char *base_uri, const char *reference_uri, char *buffer, size_t length);
 
 #ifndef LIBRDF_INTERNAL
 
