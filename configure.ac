@@ -27,7 +27,7 @@ AC_REVISION($Revision$)
 
 libxml_min_version=2.4.0
 
-AM_INIT_AUTOMAKE(1.6)
+AM_INIT_AUTOMAKE([1.7 check-news std-options -Wall])
 AM_CONFIG_HEADER(raptor_config.h)
 AM_MAINTAINER_MODE
 

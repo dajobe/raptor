@@ -31,11 +31,11 @@ if test "X$DRYRUN" != X; then
   DRYRUN=echo
 fi
 
+# automake 1.8 requires autoconf 2.58
 # automake 1.7 requires autoconf 2.54
-# automake 1.6 requires autoconf 2.52
-automake_min_vers=1.6
+automake_min_vers=1.7
 aclocal_min_vers=$automake_min_vers
-autoconf_min_vers=2.52
+autoconf_min_vers=2.54
 libtoolize_min_vers=1.4
 
 automake_args=--add-missing
