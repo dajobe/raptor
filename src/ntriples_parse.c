@@ -282,8 +282,10 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
 
 /* These are for 7-bit ASCII and not locale-specific */
 #define IS_ASCII_ALPHA(c) (((c)>0x40 && (c)<0x5B) || ((c)>0x60 && (c)<0x7B))
+#define IS_ASCII_UPPER(c) ((c)>0x40 && (c)<0x5B)
 #define IS_ASCII_DIGIT(c) ((c)>0x2F && (c)<0x3A)
 #define IS_ASCII_PRINT(c) ((c)>0x1F && (c)<0x7F)
+#define TO_ASCII_LOWER(c) ((c)+0x20)
 
 typedef enum {
   RAPTOR_TERM_CLASS_URI,      /* ends on > */
@@ -829,6 +831,16 @@ raptor_ntriples_parse_line (raptor_parser* rdf_parser, char *buffer, int len)
     return 0;
   }
   
+
+  if(object_literal_language) {
+    /* Normalize language to lowercase
+     * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+     */
+    for(p=object_literal_language; *p; p++) {
+      if(IS_ASCII_UPPER(*p))
+        *p=TO_ASCII_LOWER(*p);
+    }
+  }
 
   raptor_ntriples_generate_statement(rdf_parser, 
                                      terms[0], term_types[0],
