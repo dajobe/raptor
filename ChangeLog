@@ -3,7 +3,7 @@
 	* raptor_uri.c (main): Use program and raptor_basename in messages
 
 	* raptor_xml.c, raptor_stringbuffer.c, raptor_sequence.c,
-	raptor_rfc2396.c: Wrap functions with
+	raptor_rfc2396.c, raptor_uri.c: Wrap functions with
 	#ifndef STANDALONE ... #endif
 	to prevent multiple link warnings on OSX with tests.
 
