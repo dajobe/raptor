@@ -311,8 +311,8 @@ RAPTOR_API raptor_www *raptor_www_new_with_connection(void* connection);
 RAPTOR_API void raptor_www_free(raptor_www *www);
 RAPTOR_API void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API void raptor_www_set_proxy(raptor_www *www, const char *proxy);
-void
-RAPTOR_API raptor_www_set_write_bytes_handler(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data);
+RAPTOR_API void raptor_www_set_http_accept(raptor_www *www, const char *value);
+RAPTOR_API void raptor_www_set_write_bytes_handler(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data);
 RAPTOR_API void raptor_www_set_content_type_handler(raptor_www *www, raptor_www_content_type_handler handler, void *user_data);
 RAPTOR_API void raptor_www_set_error_handler(raptor_www *www, raptor_message_handler error_handler, void *error_data);
 RAPTOR_API int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
