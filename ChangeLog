@@ -1,5 +1,9 @@
 2004-12-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* tests/turtle/test-13.ttl, tests/turtle/test-13.out: Use a
+	namespace URI that gives a predicate which could be serialized to
+	rdf/xml.
+
 	* raptor_rss.c (raptor_rss_insert_identifiers): For channel type,
 	check both the link field and the atom:id field.
 
