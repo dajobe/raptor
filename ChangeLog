@@ -1,5 +1,11 @@
 2004-09-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rfc2396.c (raptor_new_uri_detail):
+	Handle NULL string - failure.
+	Increase alloced size to compensate for possibly 5 extra \0s
+	for each URI component.
+	(main): Check "" URI parses and NULL doesn't crash it.
+
 	* raptor_internal.h: Added raptor_uri_detail.
 	Added internal raptor_basename.
 
