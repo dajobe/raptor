@@ -13,16 +13,6 @@
 
 	* raptor_xml.c: docs
 
-2004-11-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
-
-	* raptor_xml_writer.c (raptor_xml_writer_cdata):
-	Return when raptor_xml_escape_string fails.
-
-	* raptor_xml.c (raptor_xml_escape_string):
-	Return -1 on UTF-8 encoding failure
-
-	* raptor_xml.c: docs
-
 2004-10-28  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* Snapshotted raptor_1_4_1 for 1.4.1 release
