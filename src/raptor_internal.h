@@ -30,6 +30,16 @@ extern "C" {
 
 #ifdef RAPTOR_INTERNAL
 
+/* for the memory allocation functions */
+#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#undef HAVE_STDLIB_H
+#endif
+#include <dmalloc.h>
+#endif
+
+
 #ifdef LIBRDF_DEBUG
 #define RAPTOR_DEBUG 1
 #endif
