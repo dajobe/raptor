@@ -79,7 +79,7 @@ static int count=0;
 
 static int statement_count=0;
 
-static enum { OUTPUT_FORMAT_SIMPLE, OUTPUT_FORMAT_NTRIPLES } output_format = OUTPUT_FORMAT_SIMPLE;
+static raptor_serializer* serializer=NULL;
 
 
 static
@@ -88,9 +88,6 @@ void print_statements(void *user_data, const raptor_statement *statement)
   statement_count++;
   if(count)
     return;
-  
-  if(output_format == OUTPUT_FORMAT_SIMPLE)
-    fprintf(stdout, "%s: Statement: ", program);
 
   /* replace newlines with spaces if object is a literal string */
   if(replace_newlines && 
@@ -101,11 +98,8 @@ void print_statements(void *user_data, const raptor_statement *statement)
         *s=' ';
   }
 
-  if(output_format == OUTPUT_FORMAT_SIMPLE)
-    raptor_print_statement(statement, stdout);
-  else
-    raptor_print_statement_as_ntriples(statement, stdout);
-  fputc('\n', stdout);
+  raptor_serialize_statement(serializer, statement);
+  return;
 }
 
 
@@ -194,6 +188,7 @@ main(int argc, char *argv[])
   int rc;
   int scanning=0;
   const char *syntax_name="rdfxml";
+  const char *serializer_syntax_name="simple";
   int strict_mode=0;
   int usage=0;
   int help=0;
@@ -326,15 +321,24 @@ main(int argc, char *argv[])
 
       case 'o':
         if(optarg) {
-          if(!strcmp(optarg, "simple"))
-            output_format=OUTPUT_FORMAT_SIMPLE;
-          else if (!strcmp(optarg, "ntriples"))
-            output_format=OUTPUT_FORMAT_NTRIPLES;
+          if(raptor_serializer_syntax_name_check(optarg))
+            serializer_syntax_name=optarg;
           else {
+            int i;
+            
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(o, output) "'\n",
                     program, optarg);
-            fprintf(stderr, "Valid arguments are:\n  `simple'   for a simple format (default)\n  `ntriples' for N-Triples\n");
+            fprintf(stderr, "Valid arguments are:\n");
+            for(i=0; 1; i++) {
+              const char *help_name;
+              const char *help_label;
+              if(raptor_serializers_enumerate(i, &help_name, &help_label, NULL, NULL))
+                break;
+              printf("  %-12s for %s\n", help_name, help_label);
+            }
             usage=1;
+            break;
+            
           }
         }
         break;
@@ -417,7 +421,17 @@ main(int argc, char *argv[])
         putchar('\n');
     }
     puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set output format to one of:"));
-    puts("    'simple'                A simple format (default)\n    'ntriples'              N-Triples");
+    for(i=0; 1; i++) {
+      const char *help_name;
+      const char *help_label;
+      if(raptor_serializers_enumerate(i, &help_name, &help_label, NULL, NULL))
+        break;
+      printf("    %-12s            %s", help_name, help_label);
+      if(!i)
+        puts(" (default)");
+      else
+        putchar('\n');
+    }
     puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
     puts("\nAdditional options:");
     puts(HELP_TEXT("c", "count           ", "Count triples - no output"));
@@ -532,6 +546,18 @@ main(int argc, char *argv[])
   raptor_set_statement_handler(rdf_parser, NULL, print_statements);
 
 
+  if(serializer_syntax_name) {    
+    serializer=raptor_new_serializer(serializer_syntax_name);
+    if(!serializer) {
+      fprintf(stderr, 
+              "%s: Failed to create raptor serializer type %s\n", program,
+              serializer_syntax_name);
+      return(1);
+    }
+    raptor_serialize_start_to_file_handle(serializer, base_uri, stdout);
+  }
+  
+
   /* PARSE the URI as RDF/XML */
   rc=0;
   if(!uri || filename) {
@@ -549,6 +575,12 @@ main(int argc, char *argv[])
   }
 
   raptor_free_parser(rdf_parser);
+
+  if(serializer) {
+    raptor_serialize_end(serializer);
+    raptor_free_serializer(serializer);
+  }
+  
 
   if(!quiet)
     fprintf(stdout, "%s: Parsing returned %d statements\n", program,
