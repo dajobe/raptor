@@ -60,54 +60,10 @@ DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 extern int errno;
 #endif
 
-#ifdef LIBRDF_INTERNAL
-/* if inside Redland */
+/* Raptor includes */
+#include "raptor.h"
+#include "raptor_internal.h"
 
-#ifdef LIBRDF_DEBUG
-#define RAPTOR_DEBUG 1
-#endif
-
-#include <librdf.h>
-
-#include <rdf_parser.h>
-#include <rdf_node.h>
-#include <rdf_stream.h>
-#include <rdf_statement.h>
-#include <rdf_uri.h>
-
-#else
-/* else standalone */
-
-#define LIBRDF_MALLOC(type, size) malloc(size)
-#define LIBRDF_CALLOC(type, size, count) calloc(size, count)
-#define LIBRDF_FREE(type, ptr)   free((void*)ptr)
-
-#ifdef RAPTOR_DEBUG
-/* Debugging messages */
-#define LIBRDF_DEBUG1(function, msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function); } while(0)
-#define LIBRDF_DEBUG2(function, msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1);} while(0)
-#define LIBRDF_DEBUG3(function, msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2);} while(0)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, #function, arg1, arg2, arg3);} while(0)
-
-#else
-/* DEBUGGING TURNED OFF */
-
-/* No debugging messages */
-#define LIBRDF_DEBUG1(function, msg)
-#define LIBRDF_DEBUG2(function, msg, arg1)
-#define LIBRDF_DEBUG3(function, msg, arg1, arg2)
-#define LIBRDF_DEBUG4(function, msg, arg1, arg2, arg3)
-
-#endif
-
-/* Fatal errors - always happen */
-#define LIBRDF_FATAL1(function, msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function); abort();} while(0)
-#define LIBRDF_FATAL2(function, msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , #function, arg); abort();} while(0)
-
-
-
-#endif
 
 
 #ifdef HAVE_STDLIB_H
@@ -150,9 +106,6 @@ DIE
 
 /* Size of XML buffer to use when reading from a file */
 #define RAPTOR_XML_READ_BUFFER_SIZE 1024
-
-/* Raptor includes */
-#include "raptor.h"
 
 /* Raptor structures */
 /* namespace stack node */
