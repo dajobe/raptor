@@ -396,10 +396,6 @@ raptor_set_stats_print(raptor_set* set, FILE *stream) {
 int main(int argc, char *argv[]);
 
 
-#ifdef RAPTOR_IN_REDLAND
-#include <librdf.h>
-#endif
-
 int
 main(int argc, char *argv[]) 
 {

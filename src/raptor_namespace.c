@@ -420,10 +420,6 @@ raptor_namespace_print(FILE *stream, raptor_namespace* ns)
 int main(int argc, char *argv[]);
 
 
-#ifdef RAPTOR_IN_REDLAND
-#include <librdf.h>
-#endif
-
 int
 main(int argc, char *argv[]) 
 {
@@ -431,13 +427,7 @@ main(int argc, char *argv[])
   raptor_uri_handler *handler;
   void *context;
 
-#ifdef RAPTOR_IN_REDLAND
-  /* Redland initialises the raptor URI class during these calls: */
-  librdf_world *world=librdf_new_world();
-  librdf_world_open(world);
-#else
   raptor_uri_init();
-#endif
 
   /* Use whatever the raptor_uri class has */
   raptor_uri_get_handler(&handler, &context);
@@ -460,10 +450,6 @@ main(int argc, char *argv[])
 
   raptor_namespaces_clear(&namespaces);
 
-#ifdef RAPTOR_IN_REDLAND
-  librdf_free_world(world);
-#endif
-  
   /* keep gcc -Wall happy */
   return(0);
 }

@@ -31,8 +31,8 @@ noinst_HEADERS = raptor_internal.h win32_config.h
 man_MANS = rapper.1 libraptor.3 raptor-config.1
 
 rapper_SOURCES = rdfdump.c raptor_getopt.h
-rapper_LDADD = libraptor.la @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
-rapper_DEPENDENCIES = libraptor.la @RAPPER_EXTRA_OBJS@ @REDLAND_LIBS@
+rapper_LDADD = libraptor.la @RAPPER_EXTRA_OBJS@
+rapper_DEPENDENCIES = libraptor.la @RAPPER_EXTRA_OBJS@
 EXTRA_rapper_SOURCES = getopt.c
 
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
@@ -93,7 +93,7 @@ MEM_LIBS=@MEM_LIBS@
 LEX=@LEX@
 YACC=@YACC@
 
-AM_CFLAGS=@CFLAGS@ @REDLAND_CFLAGS@ $(MEM)
+AM_CFLAGS=@CFLAGS@ $(MEM)
 STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
@@ -136,10 +136,10 @@ n3_parser.tab.c: $(srcdir)/n3_parser.y
 
 # Actually it needs n3_parser.h but nevermind
 n3_lexer_test: $(srcdir)/n3_lexer.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c libraptor.la $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c libraptor.la $(LIBS)
 
 n3_parser_test: $(srcdir)/n3_parser.tab.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_parser.tab.c libraptor.la $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_parser.tab.c libraptor.la $(LIBS)
 
 
 # Some people need a little help ;-)
@@ -149,25 +149,25 @@ raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
 
 raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor.la $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor.la $(LIBS)
 
 strcasecmp_test: $(srcdir)/strcasecmp.c
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/strcasecmp.c
 
 raptor_www_test: $(srcdir)/raptor_www_test.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_www_test.c libraptor.la $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_www_test.c libraptor.la $(LIBS)
 
 raptor_set_test: $(srcdir)/raptor_set.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_set.c libraptor.la $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_set.c libraptor.la $(LIBS)
 
 raptor_xml_test: $(srcdir)/raptor_xml.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml.c libraptor.la $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml.c libraptor.la $(LIBS)
 
 raptor_sequence_test: $(srcdir)/raptor_sequence.c
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_sequence.c $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_sequence.c $(LIBS)
 
 raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c $(LIBS) @REDLAND_LIBS@
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c $(LIBS)
 
 
 

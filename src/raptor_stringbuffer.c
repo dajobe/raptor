@@ -318,10 +318,6 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
 int main(int argc, char *argv[]);
 
 
-#ifdef RAPTOR_IN_REDLAND
-#include <librdf.h>
-#endif
-
 int
 main(int argc, char *argv[]) 
 {

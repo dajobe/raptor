@@ -44,9 +44,6 @@
 /* Raptor includes */
 #include <raptor.h>
 
-#ifdef RAPTOR_IN_REDLAND
-#include <librdf.h>
-#endif
 
 
 #ifdef NEED_OPTIND_DECLARATION
@@ -188,9 +185,6 @@ main(int argc, char *argv[])
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
-#ifdef RAPTOR_IN_REDLAND
-  librdf_world *world;
-#endif
 
   program=argv[0];
   if((p=strrchr(program, '/')))
@@ -199,12 +193,7 @@ main(int argc, char *argv[])
     program=p+1;
   argv[0]=program;
 
-#ifdef RAPTOR_IN_REDLAND
-  world=librdf_new_world();
-  librdf_world_open(world);
-#else
   raptor_init();
-#endif
   
   while (!usage && !help)
   {
@@ -464,11 +453,7 @@ main(int argc, char *argv[])
   if(free_uri_string)
     free(uri_string);
 
-#ifdef RAPTOR_IN_REDLAND
-  librdf_free_world(world);
-#else
   raptor_finish();
-#endif
 
   if(error_count && !ignore_errors)
     return 1;
