@@ -135,7 +135,7 @@ RAPTOR_API raptor_parser* raptor_new_parser(const char *name);
 RAPTOR_API int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);
 
 /* Destroy */
-void raptor_free_parser(raptor_parser* parser);
+RAPTOR_API void raptor_free_parser(raptor_parser* parser);
 
 /* Handlers */
 RAPTOR_API void raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
