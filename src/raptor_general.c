@@ -1952,7 +1952,9 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
  * memory allocated by raptor to be freed.
  *
  * Examples include the result of the '_to_' methods that returns
- * allocated memory such as raptor_uri_to_filename()
+ * allocated memory such as raptor_uri_filename_to_uri_string,
+ * raptor_uri_filename_to_uri_string
+ * and raptor_uri_uri_string_to_filename_fragment
  *
  **/
 void
