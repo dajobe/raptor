@@ -1585,6 +1585,9 @@ raptor_xml_parse_chunk_(raptor_parser* rdf_parser, const unsigned char *buffer,
   
 #ifdef RAPTOR_XML_LIBXML
   if(!xc) {
+    if(!len) /* no data given at all */
+      return 0;
+
     xc = xmlCreatePushParserCtxt(&rdf_xml_parser->sax, rdf_parser,
                                  (char*)buffer, len, 
                                  NULL);
