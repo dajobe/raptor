@@ -79,6 +79,8 @@ raptor_init(void)
   /* FIXME */
   raptor_init_parser_rdfxml();
   raptor_init_parser_ntriples();
+
+  raptor_init_uri_class();
 }
 
 
@@ -799,7 +801,7 @@ raptor_new_identifier(raptor_identifier_type type,
     return NULL;
 
   if(uri) {
-    new_uri=raptor_copy_uri(uri);
+    new_uri=raptor_uri_copy(uri);
     if(!new_uri) {
       LIBRDF_FREE(raptor_identifier, identifier);
       return NULL;
@@ -869,7 +871,7 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
   raptor_init_identifier(dest, src->type, new_uri, src->uri_source, new_id);
 
   if(src->uri) {
-    new_uri=raptor_copy_uri(src->uri);
+    new_uri=raptor_uri_copy(src->uri);
     if(!new_uri)
       return 0;
   }

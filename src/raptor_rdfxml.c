@@ -2730,7 +2730,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
           raptor_uri* nil_uri=(element->child_content_type == RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_NIL_URI(rdf_parser) : RAPTOR_RDF_nil_URI;
           if (!element->tail_id) {
             /* If No List: set object of statement to rdf:nil */
-            element->object.uri= raptor_copy_uri(nil_uri);
+            element->object.uri= raptor_uri_copy(nil_uri);
             element->object.id= NULL;
             element->object.type= RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->object.uri_source= RAPTOR_URI_SOURCE_URI;
