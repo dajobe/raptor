@@ -167,13 +167,10 @@ main(int argc, char *argv[])
   int rdfxml=1;
   int usage=0;
   const char *parser_name="rdfxml";
+  raptor_uri *base_uri;
+  raptor_uri *uri;
 #ifdef RAPTOR_IN_REDLAND
   librdf_world *world;
-  librdf_uri *base_uri;
-  librdf_uri *uri;
-#else
-  const char *base_uri;
-  const char *uri;
 #endif
 
   program=argv[0];
@@ -183,7 +180,7 @@ main(int argc, char *argv[])
   librdf_world_open(world);
 #endif
 
-
+  raptor_init();
   
   while (!usage)
   {
@@ -268,7 +265,7 @@ main(int argc, char *argv[])
 
 
   if(optind == argc-1)
-    uri_string=base_uri_string=argv[optind];
+    uri_string=argv[optind];
   else {
     uri_string=argv[optind++];
     base_uri_string=argv[optind];
@@ -281,23 +278,23 @@ main(int argc, char *argv[])
   }
   
 
-#ifdef RAPTOR_IN_REDLAND
-  base_uri=librdf_new_uri(world, base_uri_string);
-  if(!base_uri) {
-    fprintf(stderr, "%s: Failed to create librdf_uri for %s\n",
-            program, base_uri_string);
-    return(1);
-  }
-  uri=librdf_new_uri(world, uri_string);
+  uri=raptor_new_uri(uri_string);
   if(!uri) {
-    fprintf(stderr, "%s: Failed to create librdf_uri for %s\n",
+    fprintf(stderr, "%s: Failed to create URI for %s\n",
             program, uri_string);
     return(1);
   }
-#else
-  uri=uri_string;
-  base_uri=base_uri_string;
-#endif
+
+  if(!base_uri_string) {
+    base_uri=raptor_uri_copy(uri);
+  } else {
+    base_uri=raptor_new_uri(base_uri_string);
+    if(!base_uri) {
+      fprintf(stderr, "%s: Failed to create URI for %s\n",
+              program, base_uri_string);
+      return(1);
+    }
+  }
 
   parser_name=rdfxml ? "rdfxml" : "ntriples";
 
@@ -342,11 +339,14 @@ main(int argc, char *argv[])
     fprintf(stdout, "%s: Parsing returned %d statements\n", program,
             statement_count);
 
-#ifdef RAPTOR_IN_REDLAND
-  librdf_free_uri(base_uri);
+  raptor_free_uri(base_uri);
+  raptor_free_uri(uri);
 
+#ifdef RAPTOR_IN_REDLAND
   librdf_free_world(world);
 #endif
+
+  raptor_finish();
 
   if(error_count)
     return error_count;
