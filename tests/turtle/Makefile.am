@@ -38,13 +38,14 @@ TEST_WARN_OUT_FILES=
 # Used to make N-triples output consistent
 BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/turtle/
 
-
-EXTRA_DIST = \
+ALL_TEST_FILES= \
 	$(TEST_FILES) \
 	$(TEST_BAD_FILES) \
 	$(TEST_WARN_FILES) \
 	$(TEST_OUT_FILES) \
 	$(TEST_WARN_OUT_FILES)
+
+EXTRA_DIST = $(ALL_TEST_FILES)
 
 $(top_builddir)/rapper:
 	@(cd $(top_builddir) ; $(MAKE) rapper)
@@ -123,3 +124,12 @@ check-warn-rdf: $(top_builddir)/rapper $(TEST_WARN_FILES)
 	  rm -f $$name.res $$name.err ; \
 	done; \
 	set -e; exit $$result
+
+if MAINTAINER_MODE
+zip: tests.zip
+
+tests.zip: $(ALL_TEST_FILES)
+	rm -f $@
+	zip $@ $(ALL_TEST_FILES)
+
+endif
