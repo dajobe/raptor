@@ -1,3 +1,11 @@
+2004-12-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_namespace.c (raptor_iostream_write_namespace): Handle
+	ns->uri is NULL and no prefix, i.e. emitting xmlns=""
+
+	* raptor_namespace.c (raptor_namespaces_format):
+	Handle ns->uri is NULL and no prefix, i.e. emitting xmlns=""
+
 2004-12-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_uri.c (raptor_default_new_uri_relative_to_base): Ask for
