@@ -60,6 +60,8 @@ struct raptor_ntriples_parser_context_s {
   int line_length;
   /* current char in line buffer */
   int offset;
+
+  char last_nl;
   
   /* static statement for use in passing to user code */
   raptor_statement statement;
@@ -837,7 +839,6 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   char *buffer;
   char *ptr;
   char *start;
-  char last_nl;
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -878,13 +879,11 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
                 ntriples_parser->line, ntriples_parser->line_length);
 #endif
 
-  last_nl='\n';  /* last newline character - \r triggers check */
-
   ptr=buffer+ntriples_parser->offset;
   start=ptr;
   while(*ptr) {
     /* skip \n when just seen \r - i.e. \r\n or CR LF */
-    if(last_nl == '\r' && *ptr == '\n') {
+    if(ntriples_parser->last_nl == '\r' && *ptr == '\n') {
       ptr++;
       rdf_parser->locator.byte++;
     }
@@ -896,7 +895,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     if(!*ptr && !is_end)
       break;
 
-    last_nl=*ptr;
+    ntriples_parser->last_nl=*ptr;
 
     len=ptr-start;
     rdf_parser->locator.column=0;
@@ -960,10 +959,13 @@ static int
 raptor_ntriples_parse_start(raptor_parser *rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
+  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
 
   locator->line=1;
   locator->column=0;
   locator->byte=0;
+
+  ntriples_parser->last_nl='\n';  /* last newline character - \r triggers check */
 
   return 0;
 }
