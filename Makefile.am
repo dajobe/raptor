@@ -29,6 +29,7 @@ man_MANS = rdfdump.1 libraptor.3
 
 rdfdump_SOURCES = rdfdump.c
 rdfdump_LDADD = libraptor.la @REDLAND_LIBS@
+rdfdump_DEPENDENCIES = @REDLAND_LIBS@
 libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
 raptor_uri.c
 
@@ -118,3 +119,6 @@ deb: distcheck
 	cd $distdir && dpkg-buildpackage -rfakeroot
 
 @SET_MAKE@
+
+../librdf/librdf.la:
+	cd ../librdf && $(MAKE) librdf.la
