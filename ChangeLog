@@ -1,4 +1,16 @@
+2005-02-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* autogen.sh: Add autoheader and libtoolize to the path search.
+
+	* configure.ac: AM_PROG_LIBTOOL to AC_PROG_LIBTOOL seems to make
+	things happier
+
 2005-02-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: In maintainer mode, stop if there is no flex.
+
+	* configure.ac:
+	In maintainer mode, stop if flex is too old or YACC is not GNU bison.
 
 	* raptor_libxml.c:
 	Use RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET test for a function rather
