@@ -452,6 +452,11 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         rdf_parser->locator.column+=ulen;
         rdf_parser->locator.byte+=ulen;
         
+        if(unichar < 0 || unichar > 0x10ffff) {
+          raptor_parser_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
+          break;
+        }
+          
         dest+=raptor_unicode_char_to_utf8(unichar, dest);
         break;
 
