@@ -76,7 +76,7 @@ raptor_init(void)
   /* FIXME */
   raptor_init_parser_rdfxml();
   raptor_init_parser_ntriples();
-#ifdef HAVE_LIBXML_XMLREADER_H
+#ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
 #endif
 
