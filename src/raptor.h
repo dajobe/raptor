@@ -297,6 +297,7 @@ RAPTOR_API int raptor_serialize_statement(raptor_serializer* rdf_serializer, con
 RAPTOR_API int raptor_serialize_end(raptor_serializer *rdf_serializer);
 RAPTOR_API raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
 RAPTOR_API void raptor_serializer_set_error_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
+RAPTOR_API void raptor_serializer_set_warning_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
 RAPTOR_API raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 
 /* memory functions */
