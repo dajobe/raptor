@@ -63,6 +63,9 @@
 /* Prototypes */ 
 int n3_parser_error(const char *msg);
 
+/* Not in generated header files */
+void  n3_lexer_lex_destroy(void);
+
 
 /* Make lex/yacc interface as small as possible */
 inline int
@@ -715,9 +718,9 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   N3_Parser=rdf_parser;
 
   buffer= n3_lexer__scan_string(string);
-  n3_lexer__switch_to_buffer(buffer);
   n3_parser_parse();
   n3_lexer__delete_buffer(buffer);
+  n3_lexer_pop_buffer_state();
   
   N3_Parser=NULL;
 
@@ -774,6 +777,8 @@ raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
   raptor_namespaces_free(&n3_parser->namespaces);
+
+  n3_lexer_lex_destroy();
 
   if(n3_parser->buffer_length)
     RAPTOR_FREE(cdata, n3_parser->buffer);
