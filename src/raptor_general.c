@@ -103,7 +103,6 @@ void
 raptor_finish(void) 
 {
   raptor_www_finish();
-  raptor_terminate_parser_rdfxml();
   raptor_delete_parser_factories();
 }
 
