@@ -369,7 +369,7 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
       ;
     
     /* If ends with :, it is the URI of a namespace */
-    if(p-name == name_len-1) {
+    if(p-name == (int)(name_len-1)) {
       ns=raptor_namespaces_find_namespace(nstack, name, name_len-1);
     } else {
       if(!*p) {
