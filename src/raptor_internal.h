@@ -343,6 +343,11 @@ struct raptor_parser_s {
    */
   int feature_warn_other_parseTypes;
 
+  /* FEATURE:
+   * non 0 to check rdf:ID values for duplicates
+   */
+  int feature_check_rdf_id;
+
   /* stuff for our user */
   void *user_data;
 
