@@ -190,12 +190,12 @@ raptor_parser_register_factory(const char *name, const char *label,
   }
 
   if(uri_string) {
-    uri_string_copy=(char*)RAPTOR_CALLOC(cstring, strlen(uri_string)+1, 1);
+    uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
     if(!uri_string_copy) {
     RAPTOR_FREE(raptor_parser, parser);
     RAPTOR_FATAL1(raptor_parser_register_factory, "Out of memory\n");
     }
-    strcpy(uri_string_copy, uri_string);
+    strcpy((char*)uri_string_copy, (const char*)uri_string);
     parser->uri_string=uri_string_copy;
   }
         
