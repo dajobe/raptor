@@ -91,6 +91,9 @@
 
 #include <rapier.h>
 
+#ifdef NEED_OPTIND_DECLARATION
+extern int optind;
+#endif
 
 static void print_statements(void *user_data, const rapier_statement *statement);
 int main(int argc, char *argv[]);

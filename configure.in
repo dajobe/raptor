@@ -138,6 +138,14 @@ AC_DEFINE_UNQUOTED(RAPIER_VERSION_RELEASE, $version_release)
 dnl Checks for library functions.
 AC_CHECK_FUNCS(getopt_long)
 
+AC_MSG_CHECKING(whether need to declare optind)
+AC_TRY_LINK([#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif], [int x=optind;],
+            AC_MSG_RESULT(no),
+            AC_DEFINE(NEED_OPTIND_DECLARATION)
+            AC_MSG_RESULT(yes))
+
 dnl Checks for XML parsers
 have_expat=0
 have_expat_lib=0

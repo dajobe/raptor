@@ -14,3 +14,6 @@
 
 /* expat compiled with namespaces? */
 #undef HAVE_XML_SetNamespaceDeclHandler
+
+/* need 'extern int optind' declaration? */
+#undef NEED_OPTIND_DECLARATION
