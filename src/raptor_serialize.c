@@ -826,19 +826,21 @@ raptor_rdfxml_serialize_write_xml_attribute(raptor_serializer *serializer,
 {
   size_t attr_len;
   size_t len;
-  size_t escaped_len;
+  int escaped_len=0;
   unsigned char *buffer;
   unsigned char *p;
   
   attr_len=strlen((const char*)attr);
   len=strlen((const char*)value);
 
-  escaped_len=raptor_xml_escape_string(value, len,
-                                       NULL, 0, '"', 
-                                       NULL, NULL);
-  if(!escaped_len) {
-    raptor_serializer_error(serializer, "Bad UTF-8 encoding found while XML escaping attribute '%s' value '%s'", attr, value);
-    return 1;
+  if(len) {
+    escaped_len=raptor_xml_escape_string(value, len,
+                                         NULL, 0, '"', 
+                                         NULL, NULL);
+    if(escaped_len < 0) {
+      raptor_serializer_error(serializer, "Bad UTF-8 encoding found while XML escaping attribute '%s' value '%s'", attr, value);
+      return 1;
+    }
   }
 
   buffer=(unsigned char*)RAPTOR_MALLOC(cstring, 1 + attr_len + 2 + escaped_len + 1 +1);
@@ -851,10 +853,12 @@ raptor_rdfxml_serialize_write_xml_attribute(raptor_serializer *serializer,
   p+= attr_len;
   *p++='=';
   *p++='"';
-  raptor_xml_escape_string(value, len, 
-                           p, escaped_len, '"', 
-                           NULL, NULL);
-  p+= escaped_len;
+  if(escaped_len) {
+    raptor_xml_escape_string(value, len, 
+                             p, escaped_len, '"', 
+                             NULL, NULL);
+    p+= escaped_len;
+  }
   *p++='"';
   *p='\0';
   
@@ -962,7 +966,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     raptor_iostream_write_string(iostr, (const char*)name);
 
     if(!name_is_rdf_ns) {
-      size_t escaped_len;
+      int escaped_len=0;
       unsigned char *buffer;
       unsigned char *p;
 
@@ -972,13 +976,15 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       raptor_iostream_write_string(iostr, nsprefix);
       raptor_iostream_write_byte(iostr, '=');
 
-      escaped_len=raptor_xml_escape_string(uri_string, len,
-                                           NULL, 0, '"',
-                                           NULL, NULL);
-      if(!escaped_len) {
-        raptor_serializer_error(serializer, 
-                                "Bad UTF-8 encoding found while XML escaping namespace URI '%s'", uri_string);
-        return 1;
+      if(len) {
+        escaped_len=raptor_xml_escape_string(uri_string, len,
+                                             NULL, 0, '"',
+                                             NULL, NULL);
+        if(escaped_len < 0) {
+          raptor_serializer_error(serializer, 
+                                  "Bad UTF-8 encoding found while XML escaping namespace URI '%s'", uri_string);
+          return 1;
+        }
       }
 
       /* " + string + " + \0 */
@@ -988,10 +994,12 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
       p=buffer;
       *p++='"';
-      raptor_xml_escape_string(uri_string, len,
-                               p, escaped_len, '"',
-                               NULL, NULL);
-      p+= escaped_len;
+      if(escaped_len) {
+        raptor_xml_escape_string(uri_string, len,
+                                 p, escaped_len, '"',
+                                 NULL, NULL);
+        p+= escaped_len;
+      }
       *p++='"';
       *p='\0';
 
@@ -1037,7 +1045,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
           xml_string_len=raptor_xml_escape_string((const unsigned char*)statement->object, len,
                                                   NULL, 0, 0, 
                                                   NULL, NULL);
-          if(!xml_string_len) {
+          if(xml_string_len < 0) {
             raptor_serializer_error(serializer,
                                     "Bad UTF-8 encoding found while XML escaping element content '%s'", statement->object);
             return 1;
