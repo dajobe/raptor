@@ -171,7 +171,8 @@ _:[A-Za-z0-9]+	{ n3_parser_lval->string=copy_token(yytext+2, yyleng-2);
 <PREF>(:|[A-Za-z][A-Za-z0-9_]*:)	{ n3_parser_lval->string=copy_token(yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
-<PREF>.		{ if (*yytext == EOF)
+<PREF>.		{ BEGIN(INITIAL);
+		  if (*yytext == EOF)
                     return EOF;
 
                   n3_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
@@ -359,25 +360,6 @@ n3_token_print(int token, YYSTYPE *lval)
 
 #ifdef STANDALONE
 
-int
-n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
-{
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
-  yyscan_t yyscanner=n3_parser->scanner;
-  va_list arguments;
-
-  fprintf(stderr, "%s:%d: ", filename, n3_parser->lineno);
-
-  va_start(arguments, message);
-  vfprintf(stderr, message, arguments);
-  va_end(arguments);
-
-  fputc('\n', stderr);
-
-  return 0;
-}
-
-
 static void
 n3_token_free(int token, YYSTYPE *lval)
 {
@@ -445,13 +427,16 @@ main(int argc, char *argv[])
   n3_lexer_set_in(fh, scanner);
   n3_lexer_set_extra(&rdf_parser, scanner);
 
+  /* Initialise enough of the parser and locator to get error messages */
   rdf_parser.context=&n3_parser;
   n3_parser.scanner=&scanner;
   n3_parser.lineno=1;
+  rdf_parser.locator.file=filename;
+  rdf_parser.locator.column= -1;
 
   uri_string=raptor_uri_filename_to_uri_string(filename);
   rdf_parser.base_uri=raptor_new_uri(uri_string);
-#if defined (RASQAL_DEBUG) && defined(HAVE_DMALLOC_H) && defined(RASQAL_MEMORY_DEBUG_DMALLOC)
+#if defined (RAPTOR_DEBUG) && defined(HAVE_DMALLOC_H)
 #undef free
 #endif
   free((void*)uri_string);
