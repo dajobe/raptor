@@ -303,8 +303,10 @@ RAPTOR_API char* raptor_vsnprintf(const char *message, va_list arguments);
 /* raptor_xml_writer.c */
 /* NOT PUBLIC YET - SEE raptor_internal.h */
 
-/* raptor_uri.c */
+/* raptor_rfc2396.c */
 RAPTOR_API void raptor_uri_resolve_uri_reference (const unsigned char *base_uri, const unsigned char *reference_uri, char unsigned *buffer, size_t length);
+
+/* raptor_uri.c */
 RAPTOR_API unsigned char *raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API char *raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
