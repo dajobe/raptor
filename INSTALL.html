@@ -53,15 +53,17 @@ by using the <tt>autogen.sh</tt> script.</p>
 
 <p>Raptor uses the GNU automake and autoconf to handle system
 dependency checking.  It requires an XML parser - either libxml2
-(2.4.0 or newer) or expat.  It will optionally use libcurl, libxml2
-for retrieving URIs.  It will also use the GNOME glib 2.0 for Unicode
-Normal Form C (NFC) checking (if missing, some of the tests will fail).</p>
+(2.4.0 or newer, 2.5.0 or later recommended) or expat.  It will
+optionally use libcurl, libxml2 for retrieving URIs.  If GNOME glib
+2.0 is present, it will be used for Unicode Normal Form C (NFC)
+checking.  If it is missing, some of the tests will note failure.</p>
 
 <p>Raptor is developed and built on x86 GNU/Linux
 (Redhat 9, Debian unstable) but is also regularly tested on
 sparc Sun Solaris 2.x, x86 FreeBSD 4.8, ppc Apple OSX 10.2 
 and as part of Redland on several other systems via the 
-<a href="http://sourceforge.net/">SourceForge</a> compile farm.</p>
+<a href="http://sourceforge.net/">SourceForge</a> compile farm
+(IA64 SuSE Linux).</p>
 
 <h3>2.1. Create <tt>configure</tt> program</h3>
 
@@ -104,9 +106,10 @@ libxml 2.4.17 (on FreeBSD 4.5-RELEASE-p2),
 libxml 2.4.19 (on RedHat 7.2),
 libxml 2.4.23 (on Debian 3.0),
 libxml 2.4.24 (on FreeBSD 4.7-STABLE),
-libxml 2.4.25, 2.4.28, 2.4.30 (Debian unstable)
-libxml 2.5.3, 2.5.4 (Redhat 9, Debian unstable)
-libxml 2.5.7 (Redhat 9, Debian unstable)
+libxml 2.4.25, 2.4.28, 2.4.30 (Debian unstable),
+libxml 2.5.3-2.5.4 (Redhat 9, Debian unstable),
+libxml 2.5.7 (Redhat 9, Debian unstable),
+libxml 2.5.8-2.5.9 (Debian unstable)
 </p>
 <p>libxml1 is not supported.</p>
 </dd>
@@ -149,13 +152,26 @@ libxml 2.5.7 (Redhat 9, Debian unstable)
 <pre>
    make
 </pre>
-<p>Note: GNU make is probably required so it may be gmake or gnumake
-on your system</p>
+<p>Note: GNU make is probably required which may be called
+gmake or gnumake if your system has a different make available too.</p>
+
 
 <h3>2.5 Testing</h3>
 
-<p>This test program can then be used with local RDF/XML content
-files like this:</p>
+<p>Raptor has a built-in test suite that can be invoked with:</p>
+<pre>
+  make check
+</pre>
+
+<p>which should emit lots of exciting test messages to the screen but
+conclude with something like:<br />
+  <tt>All </tt><em>n</em><tt> tests passed</tt><br />
+if everything works correctly. There might be some Unicode NFC
+tests that fail if GNOME glib2.0 was not available when raptor was
+compiled.</p>
+
+<p>Raptor builds a utility RDF parsing program <em>rapper</em> can
+be tried with RDF/XML content like this:</p>
 
 <pre>
   rapper dc.rdf
@@ -184,15 +200,6 @@ be changed to emit <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Trip
   rapper -o ntriples dc.rdf
 </pre>
 
-<p>You can build and run the built-in test suite with:</p>
-<pre>
-  make check
-</pre>
-
-<p>which should emit lots of exciting test messages to the screen but
-conclude with something like:<br />
-  <tt>All </tt><em>n</em><tt> tests passed</tt><br />
-if everything works correctly.</p>
 
 
 <h2>3. Using the library</h2>
