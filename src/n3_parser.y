@@ -74,7 +74,6 @@ static raptor_triple* raptor_new_triple(raptor_identifier *subject, raptor_ident
 static void raptor_free_triple(raptor_triple *triple);
 static void raptor_print_triple(raptor_triple *data, FILE *fh);
 
-static void raptor_print_identifier(FILE *stream, raptor_identifier *identifier);
 
 
 /* Prototypes for local functions */
@@ -158,7 +157,7 @@ statement: directive
 
 #if RAPTOR_DEBUG > 1  
   printf("statement 2\n subject=");
-  raptor_print_identifier(stdout, $1);
+  raptor_identifier_print(stdout, $1);
   printf("\n propertyList=");
   raptor_sequence_print($2, stdout);
   printf("\n");
@@ -224,7 +223,7 @@ verb: predicate
 {
 #if RAPTOR_DEBUG > 1  
   printf("verb predicate=");
-  raptor_print_identifier(stdout, $1);
+  raptor_identifier_print(stdout, $1);
   printf("\n");
 #endif
 
@@ -248,7 +247,7 @@ propertyList: verb objectList SEMICOLON propertyList
 {
 #if RAPTOR_DEBUG > 1  
   printf("propertyList 1\n verb=");
-  raptor_print_identifier(stdout, $1);
+  raptor_identifier_print(stdout, $1);
   printf("\n objectList=");
   raptor_sequence_print($2, stdout);
   printf("\n propertyList=");
@@ -263,7 +262,7 @@ propertyList: verb objectList SEMICOLON propertyList
   int i;
 #if RAPTOR_DEBUG > 1  
   printf("propertyList 2\n verb=");
-  raptor_print_identifier(stdout, $1);
+  raptor_identifier_print(stdout, $1);
   printf("\n objectList=");
   raptor_sequence_print($2, stdout);
   printf("\n");
@@ -355,7 +354,7 @@ object: resource
 {
 #if RAPTOR_DEBUG > 1  
   printf("object literal=");
-  raptor_print_identifier(stdout, $1);
+  raptor_identifier_print(stdout, $1);
   printf("\n");
 #endif
 
@@ -546,11 +545,11 @@ static
 void raptor_print_triple(raptor_triple *t, FILE *fh) 
 {
   fputs("triple(", fh);
-  raptor_print_identifier(fh, t->subject);
+  raptor_identifier_print(fh, t->subject);
   fputs(", ", fh);
-  raptor_print_identifier(fh, t->predicate);
+  raptor_identifier_print(fh, t->predicate);
   fputs(", ", fh);
-  raptor_print_identifier(fh, t->object);
+  raptor_identifier_print(fh, t->object);
   fputc(')', fh);
 }
 

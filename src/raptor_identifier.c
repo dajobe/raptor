@@ -236,7 +236,7 @@ raptor_free_identifier(raptor_identifier *identifier)
 
 #ifdef RAPTOR_DEBUG
 void
-raptor_print_identifier(FILE *stream, raptor_identifier *identifier)
+raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
 {
   if(!identifier) {
     fputs("-", stream);
