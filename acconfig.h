@@ -27,3 +27,5 @@
 /* does libxml struct xmlEntity have a field etype */
 #undef RAPTOR_LIBXML_ENTITY_ETYPE
 
+/* is this being built inside redland? */
+#undef RAPTOR_IN_REDLAND
