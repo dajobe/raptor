@@ -417,7 +417,10 @@ typedef enum {
   /* all content is preserved */
   RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED,
   /* a daml:collection */
-  RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION
+  RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION,
+
+  /* dummy for use in strings below */
+  RAPTOR_ELEMENT_CONTENT_TYPE_LAST,
 } raptor_element_content_type;
 
 
