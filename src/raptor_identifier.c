@@ -208,13 +208,12 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
     fputc('"', stream);
     if(identifier->literal_language)
       fprintf(stream, "@%s", identifier->literal_language);
-    if(identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-      fputs("<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>", stream);
-    } else if(identifier->literal_datatype) {
-      fputc('<', stream);
+    fputc('<', stream);
+    if(identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
+      fputs(raptor_xml_literal_datatype_uri_string, stream);
+    else if(identifier->literal_datatype)
       fputs((const char*)raptor_uri_as_string(identifier->literal_datatype), stream);
-      fputc('>', stream);
-    }
+    fputc('>', stream);
   } else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fputs((const char*)identifier->id, stream);
   else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
