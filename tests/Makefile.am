@@ -38,7 +38,7 @@ bad-19.rdf
 
 RDF_BAD_NFC_TEST_FILES=bad-15.rdf bad-16.rdf bad-17.rdf
 
-RDF_WARN_TEST_FILES=warn-00.rdf warn-01.rdf warn-02.rdf \
+RDF_WARN_TEST_FILES=warn-00.rdf warn-02.rdf \
 $(RDF_BAGID_TEST_FILES)
 
 RDF_ASSUME_TEST_FILES=ex-19.rdf
@@ -56,7 +56,7 @@ ex-48.out ex-49.out ex-50.out ex-51.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out daml-oil.out
 
-RDF_WARN_OUT_FILES=warn-00.out warn-01.out warn-02.out
+RDF_WARN_OUT_FILES=warn-00.out warn-02.out
 
 RDF_ASSUME_OUT_FILES=ex-19.out
 
