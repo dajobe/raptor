@@ -1147,16 +1147,14 @@ raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
 
     if(!ns) {
       /* failed to find namespace - now what? */
-      raptor_parser_error(rdf_parser, "Failed to find namespace in %s", name);
-      raptor_free_ns_name(ns_name);
-      return NULL;
-    }
-
+      raptor_parser_error(rdf_parser, "The namespace prefix in \"%s\" was not declared", name);
+    } else {
 #if RAPTOR_DEBUG > 1
-    LIBRDF_DEBUG3(raptor_make_namespaced_name,
-                  "Found namespace prefix %s URI %s\n", ns->prefix, ns->uri);
+      LIBRDF_DEBUG3(raptor_make_namespaced_name,
+                    "Found namespace prefix %s URI %s\n", ns->prefix, ns->uri);
 #endif
-    ns_name->nspace=ns;
+      ns_name->nspace=ns;
+    }
   }
 
 
@@ -1423,7 +1421,6 @@ raptor_xml_start_element_handler(void *user_data,
   int ns_attributes_count=0;
   raptor_ns_name** named_attrs=NULL;
   int i;
-  raptor_ns_name* element_name;
   raptor_element* element=NULL;
 #ifdef RAPTOR_XML_EXPAT
   /* for storing error info */
@@ -1499,26 +1496,14 @@ raptor_xml_start_element_handler(void *user_data,
   }
 
 
-  /* Now can recode element name with a namespace */
-
-  element_name=raptor_make_namespaced_name(rdf_parser, name, NULL, 1);
-  if(!element_name) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return;
-  }
-
-
   /* Create new element structure */
   element=(raptor_element*)LIBRDF_CALLOC(raptor_element, 
                                          sizeof(raptor_element), 1);
   if(!element) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    raptor_free_ns_name(element_name);
     return;
   } 
 
-
-  element->name=element_name;
 
   /* Prepare for possible element content */
   element->content_element_seen=0;
@@ -1528,7 +1513,11 @@ raptor_xml_start_element_handler(void *user_data,
   element->xml_language=xml_language;
   element->base_uri=xml_base;
 
-  if(!element_name->nspace)
+
+  /* Now can recode element name with a namespace */
+  element->name=raptor_make_namespaced_name(rdf_parser, name, NULL, 1);
+
+  if(!element->name->nspace)
     non_nspaced_count++;
 
 
@@ -1542,7 +1531,7 @@ raptor_xml_start_element_handler(void *user_data,
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       LIBRDF_FREE(raptor_element, element);
-      raptor_free_ns_name(element_name);
+      raptor_free_ns_name(element->name);
       return;
     }
 
@@ -1562,8 +1551,8 @@ raptor_xml_start_element_handler(void *user_data,
         for (j=0; j < i; j++)
           LIBRDF_FREE(raptor_ns_name, named_attrs[j]);
         LIBRDF_FREE(raptor_ns_name_array, named_attrs);
+        raptor_free_ns_name(element->name);
         LIBRDF_FREE(raptor_element, element);
-        raptor_free_ns_name(element_name);
         return;
       }
 
@@ -1718,7 +1707,7 @@ raptor_xml_start_element_handler(void *user_data,
    */
   if (rdf_content_type_info[element->content_type].rdf_processing &&
       non_nspaced_count) {
-    raptor_parser_warning(rdf_parser, "element %s has non-namspaced parts, skipping.", 
+    raptor_parser_warning(rdf_parser, "element %s has non-namespaced parts, skipping.", 
                           element->name->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
@@ -1733,7 +1722,6 @@ raptor_xml_start_element_handler(void *user_data,
     element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
   }
   
-
   /* Right, now ready to enter the grammar */
   raptor_start_element_grammar(rdf_parser, element);
 
@@ -1763,11 +1751,6 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
   /* recode element name */
 
   element_name=raptor_make_namespaced_name(rdf_parser, name, NULL, 1);
-  if(!element_name) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return;
-  }
-
 
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "\nraptor_xml_end_element_handler: End ns-element: ");
@@ -2401,8 +2384,6 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
   fputc('\n', stderr);
 
   va_end(arguments);
-
-  exit(1);
 }
 
 
