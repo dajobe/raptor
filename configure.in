@@ -116,7 +116,7 @@ fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(stdlib.h unistd.h string.h stdarg.h dmalloc.h)
+AC_CHECK_HEADERS(stdlib.h unistd.h string.h stdarg.h dmalloc.h getopt.h)
 
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -282,6 +282,8 @@ if test $need_expat = 1; then
   fi
 fi
 AC_SUBST(XML_OBJS)
+
+AC_CHECK_HEADERS(expat.h xmlparse.h)
 
 # Make final changes to cflags
 MEM=
