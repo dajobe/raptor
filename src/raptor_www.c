@@ -34,6 +34,9 @@
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 /* Raptor includes */
 #include "raptor.h"
@@ -360,12 +363,24 @@ raptor_www_file_fetch(raptor_www *www)
   FILE *fh;
   unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE];
   unsigned char *uri_string=raptor_uri_as_string(www->uri);
+#if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
+  struct stat buf;
+#endif
   
   filename=raptor_uri_uri_string_to_filename(uri_string);
   if(!filename) {
     raptor_www_error(www, "Not a file: URI");
     return 1;
   }
+
+#if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
+  if(!stat(filename, &buf) && S_ISDIR(buf.st_mode)) {
+    raptor_www_error(www, "Cannot read from a directory '%s'", filename);
+    RAPTOR_FREE(cstring, filename);
+    www->status_code=404;
+    return 1;
+  }
+#endif
 
   fh=fopen(filename, "rb");
   if(!fh) {
