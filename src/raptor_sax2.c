@@ -391,7 +391,7 @@ raptor_free_xml_element(raptor_xml_element *element)
 
 
 raptor_qname*
-raptor_xml_element_get_element(raptor_xml_element *xml_element) {
+raptor_xml_element_get_name(raptor_xml_element *xml_element) {
   return xml_element->name;
 }
 

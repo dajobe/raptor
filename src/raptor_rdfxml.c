@@ -826,7 +826,7 @@ raptor_xml_start_element_handler(void *user_data,
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       RAPTOR_FREE(raptor_xml_element, xml_element);
-      raptor_free_qname(raptor_xml_element_get_element(xml_element));
+      raptor_free_qname(raptor_xml_element_get_name(xml_element));
       return;
     }
 
@@ -952,7 +952,7 @@ raptor_xml_start_element_handler(void *user_data,
        element->content_type != RAPTOR_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
       /* If parent has an rdf:resource, this element should not be here */
       raptor_parser_error(rdf_parser, "property element '%s' has multiple object node elements, skipping.", 
-                            raptor_xml_element_get_element(element->parent->sax2)->local_name);
+                            raptor_xml_element_get_name(element->parent->sax2)->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
       element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED;
 
@@ -970,7 +970,7 @@ raptor_xml_start_element_handler(void *user_data,
            element->parent->sax2->content_cdata_seen == 1) {
           /* Uh oh - mixed content, the parent element has cdata too */
           raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
-                                raptor_xml_element_get_element(element->parent->sax2)->local_name);
+                                raptor_xml_element_get_name(element->parent->sax2)->local_name);
         }
         
         /* If there is some existing all-whitespace content cdata
@@ -1008,11 +1008,11 @@ raptor_xml_start_element_handler(void *user_data,
 
     /* The element */
     /* If has no namespace or the namespace has no name (xmlns="") */
-    if(!raptor_xml_element_get_element(xml_element)->nspace ||
-       (raptor_xml_element_get_element(xml_element)->nspace &&
-        !raptor_namespace_get_uri(raptor_xml_element_get_element(xml_element)->nspace))) {
+    if(!raptor_xml_element_get_name(xml_element)->nspace ||
+       (raptor_xml_element_get_name(xml_element)->nspace &&
+        !raptor_namespace_get_uri(raptor_xml_element_get_name(xml_element)->nspace))) {
       raptor_parser_error(rdf_parser, "Using an element '%s' without a namespace is forbidden.", 
-                          raptor_xml_element_get_element(element->parent->sax2)->local_name);
+                          raptor_xml_element_get_name(element->parent->sax2)->local_name);
       element->state=RAPTOR_STATE_SKIPPING;
       /* Remove count above so that parent thinks this is empty */
       if(count_bumped)
@@ -1040,7 +1040,7 @@ raptor_xml_start_element_handler(void *user_data,
   if (element->rdf_attr[RDF_ATTR_aboutEach] || 
       element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
     raptor_parser_warning(rdf_parser, "element '%s' has aboutEach / aboutEachPrefix, skipping.", 
-                          raptor_xml_element_get_element(xml_element)->local_name);
+                          raptor_xml_element_get_name(xml_element)->local_name);
     element->state=RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
     if(count_bumped)
@@ -1754,9 +1754,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
   int finished;
   raptor_state state;
   raptor_xml_element* xml_element=element->sax2;
-  const unsigned char *el_name=raptor_xml_element_get_element(xml_element)->local_name;
-  int element_in_rdf_ns=(raptor_xml_element_get_element(xml_element)->nspace && 
-                         raptor_xml_element_get_element(xml_element)->nspace->is_rdf_ms);
+  const unsigned char *el_name=raptor_xml_element_get_name(xml_element)->local_name;
+  int element_in_rdf_ns=(raptor_xml_element_get_name(xml_element)->nspace && 
+                         raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
   int rc=0;
   
@@ -1778,7 +1778,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         /* found <rdf:RDF> ? */
 
         if(element_in_rdf_ns) {
-          if(raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
+          if(raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
             element->child_state=RAPTOR_STATE_NODE_ELEMENT_LIST;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_NODES;
             /* Yes - need more content before can continue,
@@ -1787,7 +1787,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             finished=1;
             break;
           }
-          if(raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
+          if(raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
 	    state=RAPTOR_STATE_DESCRIPTION;
 	    element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_PROPERTIES;
             /* Yes - found something so move immediately to description */
@@ -1851,10 +1851,10 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          * Only create a bag if bagID given
          */
 
-        if(!raptor_xml_element_get_element(xml_element)->uri) {
+        if(!raptor_xml_element_get_name(xml_element)->uri) {
           /* We cannot handle this */
           raptor_parser_warning(rdf_parser, "Using node element '%s' without a namespace is forbidden.", 
-                                raptor_xml_element_get_element(xml_element)->local_name);
+                                raptor_xml_element_get_name(xml_element)->local_name);
           raptor_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -1893,7 +1893,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            state == RAPTOR_STATE_DESCRIPTION || 
            state == RAPTOR_STATE_PARSETYPE_COLLECTION) {
           if(element_in_rdf_ns &&
-             raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser)))
+             raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser)))
             state=RAPTOR_STATE_DESCRIPTION;
           else
             state=RAPTOR_STATE_NODE_ELEMENT;
@@ -2159,7 +2159,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                     RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                     RAPTOR_URI_SOURCE_URI,
 
-                                    raptor_xml_element_get_element(xml_element)->uri,
+                                    raptor_xml_element_get_name(xml_element)->uri,
                                     NULL,
                                     RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                     element->object.uri_source,
@@ -2202,9 +2202,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_MEMBER_PROPERTYELT:
       case RAPTOR_STATE_PROPERTYELT:
 
-        if(!raptor_xml_element_get_element(xml_element)->uri) {
+        if(!raptor_xml_element_get_name(xml_element)->uri) {
           raptor_parser_error(rdf_parser, "Using property element '%s' without a namespace is forbidden.", 
-                              raptor_xml_element_get_element(element->parent->sax2)->local_name);
+                              raptor_xml_element_get_name(element->parent->sax2)->local_name);
           raptor_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2214,7 +2214,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
         /* Handling rdf:li as a property, noting special processing */ 
         if(element_in_rdf_ns && 
-           raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
+           raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
           state=RAPTOR_STATE_MEMBER_PROPERTYELT;
         }
 
@@ -2457,9 +2457,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
   raptor_state state;
   int finished;
   raptor_xml_element* xml_element=element->sax2;
-  const unsigned char *el_name=raptor_xml_element_get_element(xml_element)->local_name;
-  int element_in_rdf_ns=(raptor_xml_element_get_element(xml_element)->nspace && 
-                         raptor_xml_element_get_element(xml_element)->nspace->is_rdf_ms);
+  const unsigned char *el_name=raptor_xml_element_get_name(xml_element)->local_name;
+  int element_in_rdf_ns=(raptor_xml_element_get_name(xml_element)->nspace && 
+                         raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
   raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
 
 
@@ -2481,7 +2481,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_NODE_ELEMENT_LIST:
         if(element_in_rdf_ns && 
-           raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
+           raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
           /* end of RDF - boo hoo */
           state=RAPTOR_STATE_UNKNOWN;
           finished=1;
@@ -2525,7 +2525,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                     element->parent->subject.type,
                                     element->parent->subject.uri_source,
 
-                                    raptor_xml_element_get_element(element->parent->sax2)->uri,
+                                    raptor_xml_element_get_name(element->parent->sax2)->uri,
                                     NULL,
                                     RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                     RAPTOR_URI_SOURCE_ELEMENT,
@@ -2543,7 +2543,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 (element->parent->subject.uri || element->parent->subject.id)) {
           /* Handle rdf:li as the rdf:parseType="resource" property */
           if(element_in_rdf_ns && 
-             raptor_uri_equals(raptor_xml_element_get_element(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
+             raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
             element->parent->last_ordinal++;
             raptor_generate_statement(rdf_parser, 
                                       element->parent->subject.uri,
@@ -2571,7 +2571,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                       element->parent->subject.type,
                                       element->parent->subject.uri_source,
                                       
-                                      raptor_xml_element_get_element(xml_element)->uri,
+                                      raptor_xml_element_get_name(xml_element)->uri,
                                       NULL,
                                       RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                       RAPTOR_URI_SOURCE_ELEMENT,
@@ -2845,7 +2845,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                         element->parent->subject.type,
                                         RAPTOR_URI_SOURCE_ELEMENT,
 
-                                        raptor_xml_element_get_element(xml_element)->uri,
+                                        raptor_xml_element_get_name(xml_element)->uri,
                                         NULL,
                                         RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                         RAPTOR_URI_SOURCE_NOT_URI,
@@ -2917,7 +2917,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                           element->parent->subject.type,
                                           element->parent->subject.uri_source,
                                           
-                                          raptor_xml_element_get_element(xml_element)->uri,
+                                          raptor_xml_element_get_name(xml_element)->uri,
                                           NULL,
                                           RAPTOR_IDENTIFIER_TYPE_PREDICATE,
                                           RAPTOR_URI_SOURCE_ELEMENT,
@@ -3072,7 +3072,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
 #ifdef RAPTOR_DEBUG_CDATA
-      RAPTOR_DEBUG2("Ignoring whitespace cdata inside element '%s'\n", raptor_xml_element_get_element(element->parent->sax2)->local_name);
+      RAPTOR_DEBUG2("Ignoring whitespace cdata inside element '%s'\n", raptor_xml_element_get_name(element->parent->sax2)->local_name);
 #endif
       return;
     }
@@ -3081,7 +3081,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
        xml_element->content_element_seen == 1) {
       /* Uh oh - mixed content, this element has elements too */
       raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
-                            raptor_xml_element_get_element(element->parent->sax2)->local_name);
+                            raptor_xml_element_get_name(element->parent->sax2)->local_name);
     }
   }
 
