@@ -1,3 +1,20 @@
+2004-12-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize.c (raptor_serialize_set_namespace): Call
+	factory method declare_namespace.
+	(raptor_rdfxml_serialize_declare_namespace): Copy the passed in
+	namespace prefix, URI before storing the namespace.
+	(raptor_rdfxml_serialize_start): Delete the namespace sequence
+	contents as the namespaces are declared on the namespace stack,
+	which is the new owner of the namespaces.
+
+	* raptor_namespace.c (raptor_new_namespace_parts_from_string):
+	Added, to decode things like "xmlns:foo='bar'" into prefix, uri
+	strings.
+
+	* raptor.h: Added prototype for raptor_new_namespace_parts_from_string.
+	raptor_sequence_free_handler prototype changed to return void
+
 2004-11-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_serialize.c (raptor_rdfxml_serialize_init):
