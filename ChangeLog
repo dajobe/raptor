@@ -1,4 +1,27 @@
+2004-12-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rdfxml.c (raptor_xml_start_element_handler):
+	Use raptor_sax2_element_set_attributes.
+
+	* raptor_xml_writer.c (raptor_xml_writer_empty_element): Added.
+	(raptor_xml_writer_start_element, raptor_xml_writer_end_element):
+	Updated raptor_iostream_write_sax2_element calls
+	(main): Add attributes and test writing empty element.
+
+	* raptor_internal.h: Added raptor_sax2_element_set_attributes
+	Added is_empty arg to raptor_iostream_write_sax2_element
+	Added raptor_xml_writer_empty_element
+
+	* raptor_sax2.c (raptor_sax2_element_set_attributes): Added.
+	(raptor_print_sax2_element): tidy
+	(raptor_iostream_write_sax2_element): Added is_empty arg
+	and use it for <foo... /> form.
+
 2004-12-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* libraptor.3: Actaully updated for 1.4.3 so far
+
+	* libraptor.3: Updated for 1.4.2 so far.
 
 	* tests/turtle/README.txt, tests/turtle/rdfq-results.out,
 	tests/turtle/test-00.out, tests/turtle/Makefile.am: Switch to base
