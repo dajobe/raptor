@@ -82,12 +82,12 @@ raptor_init(void)
   if(parsers)
     return;
   /* FIXME */
-  raptor_init_parser_rdfxml();
-  raptor_init_parser_ntriples();
-  raptor_init_parser_n3();
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
 #endif
+  raptor_init_parser_n3();
+  raptor_init_parser_ntriples();
+  raptor_init_parser_rdfxml();
 
   raptor_uri_init();
   raptor_www_init();
@@ -225,6 +225,38 @@ raptor_get_parser_factory (const char *name)
   }
         
   return factory;
+}
+
+
+/**
+ * raptor_parsers_enumerate - Get list of parsers
+ * @counter: index to list of parsers
+ * @name: pointer to store parser name
+ * @label: pointer to store parser label
+ * 
+ * Return value: non 0 on failure of if counter is out of range
+ **/
+int
+raptor_parsers_enumerate(const unsigned int counter,
+                         const char **name, const char **label)
+{
+  int i;
+  raptor_parser_factory *factory=parsers;
+
+  if(!factory || counter < 0)
+    return 1;
+
+  for(i=0; factory && i<=counter ; i++, factory=factory->next) {
+    if(i == counter) {
+      if(name)
+        *name=factory->name;
+      if(label)
+        *label=factory->label;
+      return 0;
+    }
+  }
+        
+  return 1;
 }
 
 
