@@ -33,7 +33,8 @@ rdfs-namespace.ttl \
 rdfq-results.ttl
 
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl \
-bad-04.ttl
+bad-04.ttl bad-05.ttl bad-06.ttl bad-07.ttl bad-08.ttl bad-09.ttl \
+bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl
 
 TEST_WARN_FILES=
 
@@ -46,6 +47,8 @@ rdfs-namespace.out \
 rdfq-results.out
 
 TEST_WARN_OUT_FILES=
+
+TEST_MANIFEST_FILES=manifest.ttl manifest-bad.ttl
 
 # Used to make N-triples output consistent
 BASE_URI=http://librdf.org/raptor/tests/turtle/
