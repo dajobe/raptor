@@ -1,3 +1,35 @@
+2004-07-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* ChangeLog: ChangeLog in CVS now
+
+2004-07-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_parse_uri_with_connection):
+	Pass up WWW errors to the parser error handler.
+
+2004-06-30  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Added RAPTOR_PARSER_TURTLE, RAPTOR_PARSER_NTRIPLES
+	and RAPTOR_PARSER_RDFXML all set to 1
+
+	* raptor_general.c (raptor_init):
+	Added RAPTOR_PARSER_TURTLE, RAPTOR_PARSER_NTRIPLES and
+	RAPTOR_PARSER_RDFXML
+
+	* win32_raptor_config.h: 1.3.2
+
+	* turtle_parser.y, turtle_lexer.l, strcasecmp.c, rdfdump.c,
+	raptor_xml_writer.c, raptor_xml.c, raptor_www_test.c,
+	raptor_www_libxml.c, raptor_www_libwww.c, raptor_www_libfetch.c,
+	raptor_www_curl.c, raptor_www.c, raptor_win32.c, raptor_utf8.c,
+	raptor_uri.c, raptor_stringbuffer.c, raptor_set.c,
+	raptor_sequence.c, raptor_sax2.c, raptor_rss.c, raptor_qname.c,
+	raptor_parse.c, raptor_namespace.c, raptor_locator.c,
+	raptor_libxml.c, raptor_identifier.c, raptor_general.c,
+	raptor_expat.c, ntriples_parse.c, Makefile.am,
+	win32_raptor_config.h, win32_config.h: Renamed win32_config.h to
+	win32_raptor_config.h
+
 2004-06-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* ntriples_parse.c (raptor_ntriples_parse_line):
