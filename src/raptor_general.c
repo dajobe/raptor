@@ -1007,7 +1007,8 @@ static struct
   { RAPTOR_FEATURE_ALLOW_BAGID             ,"allowBagID", "Allow rdf:bagID" },
   { RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST ,"allowRDFtypeRDFlist", "Generate the collection rdf:type rdf:List triple" },
   { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      ,"normalizeLanguage", "Normalize xml:lang values to lowercase" },
-  { RAPTOR_FEATURE_NON_NFC_FATAL           ,"nonNFCfatal", "Make non-NFC literals cause a fatal error" }
+  { RAPTOR_FEATURE_NON_NFC_FATAL           ,"nonNFCfatal", "Make non-NFC literals cause a fatal error" },
+  { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   ,"warnOtherParseTypes", "Warn about unknown rdf:parseType values" }
 };
 
 
@@ -1105,7 +1106,11 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_NON_NFC_FATAL:
       parser->feature_non_nfc_fatal=value;
       break;
-      
+
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+      parser->feature_warn_other_parseTypes=value;
+      break;
+
     default:
       return -1;
       break;
@@ -1163,6 +1168,10 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
       result=(parser->feature_non_nfc_fatal != 0);
       break;
       
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+      result=(parser->feature_warn_other_parseTypes != 0);
+      break;
+
     default:
       break;
   }
@@ -1227,6 +1236,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->feature_allow_rdf_type_rdf_List=0;
   rdf_parser->feature_normalize_language=1;
   rdf_parser->feature_non_nfc_fatal=is_strict;
+  rdf_parser->feature_warn_other_parseTypes=!is_strict;
 }
 
 
