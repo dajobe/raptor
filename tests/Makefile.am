@@ -25,7 +25,8 @@ ex-20.rdf ex-21.rdf ex-22.rdf ex-23.rdf ex-24.rdf ex-25.rdf ex-26.rdf \
 ex-27.rdf ex-28.rdf ex-29.rdf ex-30.rdf ex-31.rdf ex-32.rdf ex-33.rdf \
 ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
 ex-41.rdf ex-42.rdf ex-43.rdf ex-44.rdf ex-45.rdf ex-46.rdf ex-47.rdf \
-22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf
+22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
+owl-schema.rdf
 
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
 bad-04.rdf bad-05.rdf bad-06.rdf bad-07.rdf bad-08.rdf bad-09.rdf \
@@ -40,7 +41,8 @@ ex-20.out ex-21.out ex-22.out ex-23.out ex-24.out ex-25.out ex-26.out \
 ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out ex-32.out ex-33.out \
 ex-34.out ex-35.out ex-36.out ex-37.out ex-38.out ex-39.out ex-40.out \
 ex-41.out ex-42.out ex-43.out ex-44.out ex-45.out ex-46.out ex-47.out \
-22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out
+22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
+owl-schema.out
 
 RDF_ASSUME_OUT_FILES=ex-19.out
 
@@ -54,6 +56,8 @@ BASE_URI=http://www.redland.opensource.ac.uk/raptor/tests/
 RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
 # for rdfs-namespace.rdf (2002-04-30) and rdf-schema.rdf (2000-03-27)
 RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
+
+OWL_DOC_URI="http://www.w3.org/2002/07/owl"
 
 EXTRA_DIST = \
 	$(RDF_TEST_FILES) \
@@ -79,6 +83,8 @@ check-rdf: $(top_builddir)/rapper $(RDF_TEST_FILES)
 	    baseuri=$(RDF_NS_URI); \
 	  elif test $$name = rdfs-namespace -o $$name = rdf-schema; then \
 	    baseuri=$(RDFS_NS_URI); \
+	  elif test $$name = owl-schema; then \
+	    baseuri=$(OWL_DOC_URI); \
 	  else \
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
