@@ -517,11 +517,17 @@ raptor_uri_resolve_uri_reference (const char *base_uri,
   /* is reference URI "" or "#frag"? */
   if (!reference_scheme && !reference_authority
       && !reference_path && !reference_query) {
-    strcpy (buffer, base_uri);
+    char *p;
+    char c;
 
+    /* Copy up to '\0' or '#' */
+    for(p=buffer; (c= *base_uri) && c != '#'; p++, base_uri++)
+      *p = c;
+    *p='\0';
+    
     if (reference_fragment) {
-      strcat (buffer, "#");
-      strcat (buffer, reference_fragment);
+      *p++='#';
+      strcpy(p, reference_fragment);
     }
     goto resolve_tidy;
   }
@@ -1189,12 +1195,14 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 int
 main(int argc, char *argv[]) 
 {
-  const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr";
+  const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr#frag";
   const char* dirs[6] = { "/etc", "/bin", "/tmp", "/lib", "/var", NULL };
   char uri_buffer[16]; /* strlen("file:///DIR/foo")+1 */  
   int i;
   const char *dir;
-  
+  char *str;
+  raptor_uri *uri1, *uri2, *uri3;
+
   int failures=0;
   
   fprintf(stderr, "raptor_uri_resolve_uri_reference: Testing with base URI %s\n", base_uri);
@@ -1294,6 +1302,30 @@ main(int argc, char *argv[])
 #endif
  
 #endif
+
+  raptor_uri_init();
+  
+  uri1=raptor_new_uri(base_uri);
+
+  str=raptor_uri_as_string(uri1);
+  fprintf(stderr, "%s: URI is %s\n", argv[0], str);
+  if(!strcmp(str, base_uri)) {
+    failures++;
+  }
+  
+  uri2=raptor_new_uri_for_xmlbase(uri1);
+
+  str=raptor_uri_as_string(uri2);
+  fprintf(stderr, "%s: xml base URI is %s\n", argv[0], str);
+  
+  uri3=raptor_new_uri_for_retrieval(uri1);
+
+  str=raptor_uri_as_string(uri3);
+  fprintf(stderr, "%s: retrievable URI is %s\n", argv[0], str);
+  
+  raptor_free_uri(uri3);
+  raptor_free_uri(uri2);
+  raptor_free_uri(uri1);
 
   return failures ;
 }
