@@ -12,18 +12,23 @@
 
 <p>A release primarily to fix some win32 and portability issues.</p>
 
-<p>Corrected the raptor_print_statement declaration in raptor.h
-for the argument statement to have one less 'const' which matches the
-actual code.</p>
+<p>Corrected the <code>raptor_print_statement</code> declaration in
+raptor.h for the argument statement to have one less 'const' which
+matches the actual code.</p>
 
 <p>Made several portability fixes for compiling natively on win32
 which doesn't quite do POSIX or C99.</p>
 
 <p>Changed the support for file: URIs and converting to and from
 filenames.  It now %-escapes spaces and % characters on conversion
-to and from filenames.  For Win32, more tests were added and the
-format of URIs supported corrected to use the file:///c: form
-rather than file://c|/</p>
+to and from filenames with
+<code>raptor_uri_uri_string_to_filename</code>,
+<code>raptor_uri_uri_string_to_filename_fragment</code>
+and
+<code>raptor_uri_filename_to_uri_string</code>.
+For Win32, more tests were added and the
+format of URIs supported corrected to use the <code>file:///c:</code>
+form rather than <code>file://c|/</code></p>
 
 
 <h3>Parser Changes</h3>
