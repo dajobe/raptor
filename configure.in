@@ -437,8 +437,8 @@ AC_OUTPUT(Makefile
 raptor.spec
 raptor-config
 tests/Makefile
-win32/Makefile,
-debian/Makefile
+win32/Makefile
+debian/Makefile,
 [chmod +x raptor-config])
 
 
