@@ -327,7 +327,7 @@ AC_SUBST(MEM_LIBS)
 AC_SUBST(STANDARD_CFLAGS)
 
 
-AC_OUTPUT(Makefile raptor.spec)
+AC_OUTPUT(Makefile raptor.spec win32/Makefile)
 
 
 AC_MSG_RESULT([

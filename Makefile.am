@@ -49,6 +49,8 @@ $(RDF_TEST_FILES) \
 $(NT_TEST_FILES) \
 raptor.spec.in
 
+SUBDIRS=win32
+
 # Why is this not in the default makefile?
 CC=@CC@
 
