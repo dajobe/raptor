@@ -3297,7 +3297,7 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
   char *item;
   char *base_uri_string;
   size_t base_uri_string_len;
-  size_t id_len;;
+  size_t id_len;
   size_t len;
   int rc;
   
