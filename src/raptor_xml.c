@@ -132,9 +132,9 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * If buffer is NULL, no work is done but the size of buffer
  * required is returned.  The output in buffer remains in UTF-8.
  *
- * Return value: the number of bytes required / used or 0 on failure.
+ * Return value: the number of bytes required / used or <0 on failure.
  **/
-size_t
+int
 raptor_xml_escape_string(const unsigned char *string, size_t len,
                          unsigned char *buffer, size_t length,
                          char quote,
@@ -147,6 +147,9 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
   unsigned char *q;
   int unichar_len;
   unsigned long unichar;
+
+  if(!len)
+    return 0;
 
   if(quote != '\"' && quote != '\'')
     quote='\0';
@@ -275,6 +278,8 @@ main(int argc, char *argv[])
   };
   struct tv *t;
   struct tv test_values[]={
+    {"", 0, ""},
+
     {"&", 0, "&amp;"},
     {"<", 0, "&lt;"},
     {">", 0, "&gt;"},
@@ -326,12 +331,21 @@ main(int argc, char *argv[])
 
     xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
                                             NULL, 0, quote, NULL, NULL);
+    if(xml_string_len < 0) {
+      fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
+              program);
+      raptor_bad_string_print(utf8_string, stderr);
+      fputs("'\n", stderr);
+      failures++;
+      continue;
+    }
+      
     xml_string=(unsigned char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
     
     xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
                                             xml_string, xml_string_len, quote,
                                             NULL, NULL);
-    if(!xml_string) {
+    if(xml_string_len < 0) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
               program);
       raptor_bad_string_print(utf8_string, stderr);
