@@ -768,7 +768,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
  *
  * e.g
  *  FILENAME              URI
- *  c:\windows\system     file://c:/windows/system
+ *  c:\windows\system     file://c|/windows/system
  *  \\server\dir\file.doc file://server/dir/file.doc
  *  a:foo                 file://a:./foo
  *
@@ -812,7 +812,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
     if (c == '\\')
       *to++='/';
     else if(c == ':') {
-      *to++=c;
+      *to++='|';
       if(*from != '\\') {
         *to++='.';
         *to++='/';
@@ -872,7 +872,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
 #ifdef WIN32
   if(authority) {
     len+=strlen(authority);
-    p=strchr(authority, ':');
+    p=strchr(authority, '|');
     if(p) {
       /* Either 
        *   "a:" like in file://a:/... 
@@ -884,6 +884,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
         p[1]='\0';
         is_relative_path=1;
       }
+      *p=':';
     } else {
       /* Otherwise UNC like "server" in file://server//share */
       len+=2; /* \\ between "server" and "share" */
@@ -906,7 +907,7 @@ raptor_uri_uri_string_to_filename(const char *uri_string)
 #ifdef WIN32
   *filename='\0';
   if(authority) {
-    /* p was set above to ':' in authority */
+    /* p was set above to point to ':' (was '|') in authority */
     if(!p)
       strcpy(filename, "\\\\");
     strcat(filename, authority);
@@ -1173,14 +1174,14 @@ main(int argc, char *argv[])
 
 
 #ifdef WIN32
-  failures += assert_filename_to_uri ("c:\\windows\\system", "file://c:/windows/system");
-  failures += assert_filename_to_uri ("\\\\server\\dir\\file.doc", "file://server/dir/file.doc");
-  failures += assert_filename_to_uri ("a:foo", "file://a:./foo");
+  failures += assert_filename_to_uri ("c:\\windows\\system", "file://c|/windows/system");
+  failures += assert_filename_to_uri ("\\\\server\\share\\file.doc", "file://server/share/file.doc");
+  failures += assert_filename_to_uri ("a:foo", "file://a|./foo");
 
 
-  failures += assert_uri_to_filename ("file://c:/windows/system", "c:\\windows\\system");
-  failures += assert_uri_to_filename ("file://server/dir/file.doc", "\\\\server\\dir\\file.doc");
-  failures += assert_uri_to_filename ("file://a:./foo", "a:foo");
+  failures += assert_uri_to_filename ("file://c|/windows/system", "c:\\windows\\system");
+  failures += assert_uri_to_filename ("file://server/share/file.doc", "\\\\server\\share\\file.doc");
+  failures += assert_uri_to_filename ("file://a|./foo", "a:foo");
 #else
 
   failures += assert_filename_to_uri ("/path/to/file", "file:///path/to/file");
