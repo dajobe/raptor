@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -129,8 +129,17 @@ raptor_www_curl_free(raptor_www *www)
 int
 raptor_www_curl_fetch(raptor_www *www) 
 {
+  struct curl_slist *slist=NULL;
+    
   if(www->user_agent)
     curl_easy_setopt(www->curl_handle, CURLOPT_USERAGENT, www->user_agent);
+
+  /* Insert HTTP Accept: header only */
+  if(www->http_accept) {
+    curl_slist_append(slist, (const char*)www->http_accept);
+    curl_easy_setopt(www->curl_handle, CURLOPT_HTTPHEADER, slist);
+  }
+  
 
   /* specify URL to get */
   curl_easy_setopt(www->curl_handle, CURLOPT_URL, 
@@ -138,6 +147,9 @@ raptor_www_curl_fetch(raptor_www *www)
 
   www->status=curl_easy_perform(www->curl_handle);
   curl_easy_getinfo(www->curl_handle, CURLINFO_HTTP_CODE, &www->status_code);
+
+  if(slist)
+    curl_slist_free_all(slist);
 
   if(www->status) {
     raptor_www_error(www, www->error_buffer);

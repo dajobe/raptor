@@ -1,11 +1,11 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_www_libghttp.c - Raptor WWW retrieval via libghttp
+ * raptor_www_libxml.c - Raptor WWW retrieval via libxml2
  *
  * $Id$
  *
- * Copyright (C) 2003 David Beckett - http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology - http://www.ilrt.org/
+ * Copyright (C) 2003-2004 David Beckett - http://purl.org/net/dajobe/
+ * Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
  * This package is Free Software or Open Source available under the
@@ -73,10 +73,59 @@ raptor_www_libxml_free(raptor_www *www)
 int
 raptor_www_libxml_fetch(raptor_www *www) 
 {
+  char* headers=NULL;
+  
   if(www->proxy)
     xmlNanoHTTPScanProxy(www->proxy);
 
-  www->ctxt=xmlNanoHTTPOpen((const char*)raptor_uri_as_string(www->uri), &www->type);
+  if(www->http_accept || www->user_agent) {
+    size_t accept_len=0;
+    size_t ua_len=0;
+    size_t len=0;
+    char *p;
+    
+    if(www->http_accept) {
+      accept_len=strlen(www->http_accept);
+      len+=accept_len+2; /* \r\n */
+    }
+    
+    if(www->user_agent) {
+      ua_len=strlen(www->user_agent);
+      len+=12+ua_len+2; /* strlen("User-Agent: ") + \r\n */
+    }
+
+    headers=RAPTOR_MALLOC(cstring, len+1);
+    if(!headers)
+      return 1;
+    
+    p=headers;
+    if(www->http_accept) {
+      strncpy(p, www->http_accept, accept_len);
+      p+= accept_len;
+      *p++='\r';
+      *p++='\n';
+    }
+    if(www->user_agent) {
+      strncpy(p, "User-Agent: ", 12);
+      p+=12;
+      strncpy(p, www->user_agent, ua_len);
+      p+= ua_len;
+      *p++='\r';
+      *p++='\n';
+    }
+    *p='\0';
+  }
+
+  www->ctxt=xmlNanoHTTPMethod((const char*)raptor_uri_as_string(www->uri),
+                              NULL, /* HTTP method (default GET) */
+                              NULL, /* input string */
+                              &www->type,
+                              headers,
+                              0); /* input length - ilen */
+
+  if(headers)
+    RAPTOR_FREE(cstring, headers);
+
   if(!www->ctxt)
     return 1;
   
