@@ -29,8 +29,7 @@ rdfdump_SOURCES = rdfdump.c
 rdfdump_LDADD = libraptor.la
 rdfdump_LDFLAGS = -static
 
-libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c \
-raptor_cc.c raptor_uri.c
+libraptor_la_SOURCES = raptor_parse.c ntriples_parse.c
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 
@@ -42,7 +41,8 @@ INSTALL.html MPL.html \
 autogen.sh \
 raptor.spec.in \
 dc.rdf \
-raptor_cc.gperf
+raptor_cc.gperf \
+raptor_cc.c raptor_uri.c
 
 SUBDIRS= \
 	tests \
