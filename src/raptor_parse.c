@@ -1332,11 +1332,13 @@ raptor_get_locator(raptor_parser *rdf_parser)
 void
 raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 {
+#ifdef RAPTOR_PARSER_RDFXML
   if(!strcmp(rdf_parser->factory->name, "rdfxml")) {
     raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
     fputs("raptor parser stats\n  ", stream);
     raptor_xml_parser_stats_print(rdf_xml_parser, stream);
   }
+#endif
 }
 #endif
 
