@@ -165,11 +165,11 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 \"\"\"				{ BEGIN(LITERAL); }
 
-<LITERAL>(.|\ |\|t|\|v|\|r|\n)*\"\"\"	{ turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext, yyleng-3, '"'); /* ' */
+<LITERAL>(.|\n)*\"\"\"	{ turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext, yyleng-3, '"'); /* ' */
                           BEGIN(INITIAL);
                           return STRING_LITERAL; }
 
-<LITERAL>.|\r|\n	{ BEGIN(INITIAL);
+<LITERAL>(.|\n)	{ BEGIN(INITIAL);
 		  if (*yytext == EOF)
                     return EOF;
 
@@ -199,7 +199,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigne
 <PREF>(:|[A-Za-z][-A-Za-z0-9_]*:)	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
-<PREF>.|\r|\n	{ BEGIN(INITIAL);
+<PREF>(.|\n)	{ BEGIN(INITIAL);
 		  if (*yytext == EOF)
                     return EOF;
 
