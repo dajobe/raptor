@@ -341,8 +341,10 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
     }
   }
 
-  if(raptor_start_parse(rdf_parser, base_uri))
+  if(raptor_start_parse(rdf_parser, base_uri)) {
+    RAPTOR_FREE(cstring, (void*)filename);
     return 1;
+  }
   
   while(rdf_parser->fh && !feof(rdf_parser->fh)) {
     int len=fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, rdf_parser->fh);
