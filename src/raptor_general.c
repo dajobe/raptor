@@ -780,6 +780,7 @@ raptor_set_generate_id_handler(raptor_parser* parser,
  *   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES - allow bare 'ID' rather than 'rdf:ID'
  *   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  - allow user defined rdf:parseType values
  *   RAPTOR_FEATURE_ALLOW_BAGID             - allow deprecated rdf:bagID
+ *   RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST - generate the rdf:type rdf:List triple for rdf:parseType="Collection"
  **/
 void
 raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
@@ -803,6 +804,10 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
 
     case RAPTOR_FEATURE_ALLOW_BAGID:
       parser->feature_allow_bagID=value;
+      break;
+
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+      parser->feature_allow_rdf_type_rdf_List=value;
       break;
 
     default:
@@ -829,7 +834,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->feature_allow_non_ns_attributes=!is_strict;
   rdf_parser->feature_allow_other_parseTypes=!is_strict;
   rdf_parser->feature_allow_bagID=!is_strict;
-
+  rdf_parser->feature_allow_rdf_type_rdf_List=0;
 }
 
 
