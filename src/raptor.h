@@ -88,6 +88,7 @@ RAPTOR_API extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
 typedef struct raptor_parser_s raptor_parser;
 
 typedef struct raptor_www_s raptor_www;
+typedef struct raptor_iostream_s raptor_iostream;
 
 typedef struct raptor_sax2_element_s raptor_sax2_element;
 typedef struct raptor_xml_writer_s raptor_xml_writer;
@@ -424,6 +425,28 @@ RAPTOR_API int raptor_stringbuffer_prepend_string(raptor_stringbuffer* stringbuf
 RAPTOR_API unsigned char * raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer);
 RAPTOR_API size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
 
+typedef int (*raptor_iostream_init_func) (void *context);
+typedef void (*raptor_iostream_finish_func) (void *context);
+typedef int (*raptor_iostream_write_bytes_func) (void *context, const void *ptr, size_t size, size_t nmemb);
+typedef int (*raptor_iostream_write_byte_func) (void *context, const int byte);
+
+typedef struct {
+  raptor_iostream_init_func         init;
+  raptor_iostream_finish_func       finish;
+  /* methods */
+  raptor_iostream_write_bytes_func  write_bytes;
+  raptor_iostream_write_byte_func   write_byte;
+} raptor_iostream_handler;
+
+
+RAPTOR_API raptor_iostream* raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler);
+RAPTOR_API raptor_iostream* raptor_new_iostream_to_filename(const char *filename);
+RAPTOR_API raptor_iostream* raptor_new_iostream_to_file_handle(FILE *fh);
+RAPTOR_API raptor_iostream* raptor_new_iostream_to_string(void **string, size_t *length_p);
+RAPTOR_API void raptor_free_iostream(raptor_iostream *iostr);
+RAPTOR_API int raptor_iostream_write_bytes(raptor_iostream *iostr, const void *ptr, size_t size, size_t nmemb);
+RAPTOR_API int raptor_iostream_write_byte(raptor_iostream *iostr, const int byte);
+RAPTOR_API size_t raptor_get_bytes_written_count(raptor_iostream *iostr);
 
 #ifdef __cplusplus
 }
