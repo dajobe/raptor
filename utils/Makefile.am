@@ -41,7 +41,7 @@ raptor_namespace.c raptor_qname.c raptor_general.c raptor_utf8.c \
 raptor_www.c raptor_set.c raptor_xml.c raptor_sax2.c \
 raptor_identifier.c raptor_xml_writer.c \
 n3_lexer.c n3_lexer.h n3_parser.tab.c n3_parser.tab.h n3_common.h \
-raptor_sequence.c raptor_stringbuffer.c
+raptor_sequence.c
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
@@ -65,7 +65,7 @@ SUBDIRS= tests win32 examples
 
 TESTS=raptor_uri_test raptor_namespace_test strcasecmp_test \
 raptor_www_test raptor_set_test raptor_xml_test \
-raptor_sequence_test raptor_stringbuffer_test
+raptor_sequence_test
 
 CLEANFILES=$(TESTS) n3_lexer_test n3_parser_test
 
