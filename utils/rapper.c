@@ -163,8 +163,8 @@ int
 main(int argc, char *argv[]) 
 {
   raptor_parser* rdf_parser=NULL;
-  char *uri_string;
-  char *base_uri_string;
+  char *uri_string=NULL;
+  char *base_uri_string=NULL;
   int rc;
   int scanning=0;
   int assume=0;
