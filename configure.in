@@ -30,6 +30,18 @@ AM_INIT_AUTOMAKE(raptor, 0.9.4)
 
 AM_MAINTAINER_MODE
 
+release_version=no
+AC_ARG_ENABLE(release, [  --enable-release        Turn on optimizations.  ], \
+ if test "$enableval" = "yes"; then \
+	release_version=yes
+fi;)	
+
+if test $release_version = no; then 
+  CFLAGS=`echo $CFLAGS | sed s/-O2//`
+  CXXFLAGS=`echo $CXXFLAGS | sed s/-O2//`
+  CPPFLAGS=`echo $CPPFLAGS | sed s/-O2//`
+fi
+
 dnl Checks for programs.
 AC_CANONICAL_HOST
 AC_ARG_PROGRAM
@@ -329,13 +341,11 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   MEM_LIBS=-ldmalloc
   CPPFLAGS="-DRAPTOR_DEBUG=1 $CPPFLAGS"
 fi
+STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
 if test "$USE_MAINTAINER_MODE" = yes; then
-  CFLAGS=`echo $CFLAGS | sed -e 's/ -O2//'`
-  STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
   CFLAGS="$MAINTAINER_CFLAGS $CFLAGS"
-else
-  STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
 fi
+
 AC_SUBST(MEM)
 AC_SUBST(MEM_LIBS)
 AC_SUBST(STANDARD_CFLAGS)
