@@ -1607,12 +1607,8 @@ raptor_xml_start_element_handler(void *user_data,
             if(!strcmp(attr_name, rdf_attr_info[j].name)) {
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
+              raptor_parser_warning(rdf_parser, "Unqualified use of rdf:%s has been deprecated.", attr_name);
               /* Delete it if it was stored elsewhere */
-#if RAPTOR_DEBUG
-              LIBRDF_DEBUG3(raptor_xml_start_element_handler,
-                            "Found non-namespaced RDF M&S attribute %s URI %s\n",
-                            attr_name, attr->value);
-#endif
               /* make sure value isn't deleted from ns_name structure */
               attr->value=NULL;
               raptor_free_ns_name(attr);
