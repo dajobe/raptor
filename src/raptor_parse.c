@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2000-2001 David Beckett - http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2002 David Beckett - http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology - http://www.ilrt.org/
  * University of Bristol - http://www.bristol.ac.uk/
  * 
@@ -56,8 +56,6 @@
 #define RAPTOR_XML_READ_BUFFER_SIZE 1024
 
 /* Raptor structures */
-/* namespace stack node */
-typedef struct raptor_ns_map_s raptor_ns_map;
 
 typedef enum {
   RAPTOR_STATE_INVALID = 0,
@@ -201,61 +199,6 @@ static const char * raptor_state_as_string(raptor_state state)
     return "NOT-USED";
   return raptor_state_names[offset];
 }
-
-
-/* Forms:
- * 1) prefix=NULL uri=<URI>      - default namespace defined
- * 2) prefix=NULL, uri=NULL      - no default namespace
- * 3) prefix=<prefix>, uri=<URI> - regular pair defined <prefix>:<URI>
- */
-struct raptor_ns_map_s {
-  /* next down the stack, NULL at bottom */
-  struct raptor_ns_map_s* next;
-  /* NULL means is the default namespace */
-  const char *prefix;
-  /* needed to safely compare prefixed-names */
-  int prefix_length;
-  /* URI of namespace or NULL for default */
-  raptor_uri *uri;
-#ifdef RAPTOR_IN_REDLAND
-#else
-  /* When implementing URIs as char*, need this for efficiency */
-  int uri_length;
-#endif
-  /* parsing depth that this ns was added.  It will
-   * be deleted when the parser leaves this depth 
-   */
-  int depth;
-  /* Non 0 if is xml: prefixed name */
-  int is_xml;
-  /* Non 0 if is RDF M&S Namespace */
-  int is_rdf_ms;
-  /* Non 0 if is RDF Schema Namespace */
-  int is_rdf_schema;
-};
-
-
-/* 
- * Raptor XML-namespaced name, for elements or attributes 
- */
-
-/* There are three forms
- * namespace=NULL                                - un-namespaced name
- * namespace=defined, namespace->prefix=NULL     - (default ns) name
- * namespace=defined, namespace->prefix=defined  - ns:name
- */
-typedef struct {
-  /* Name - always present */
-  const char *local_name;
-  int local_name_length;
-  /* Namespace or NULL if not in a namespace */
-  const raptor_ns_map *nspace;
-  /* URI of namespace+local_name or NULL if not defined */
-  raptor_uri *uri;
-  /* optional value - used when name is an attribute */
-  const char *value;
-  int value_length;
-} raptor_ns_name;
 
 
 /* These are used in the RDF/XML syntax as attributes, not
@@ -441,8 +384,8 @@ static const char * raptor_element_content_type_as_string(raptor_element_content
 struct raptor_element_s {
   /* NULL at bottom of stack */
   struct raptor_element_s *parent;
-  raptor_ns_name *name;
-  raptor_ns_name **attributes;
+  raptor_qname *name;
+  raptor_qname **attributes;
   int attribute_count;
   /* attributes declared in M&S */
   const char * rdf_attr[RDF_ATTR_LAST+1];
@@ -566,7 +509,7 @@ struct raptor_parser_s {
   int depth;
 
   /* stack of namespaces, most recently added at top */
-  raptor_ns_map *namespaces;
+  raptor_namespace_stack namespaces;
 
   /* can be filled with error location information */
   raptor_locator locator;
@@ -654,8 +597,6 @@ struct raptor_parser_s {
 
 #else
 
-static const char * const raptor_rdf_ms_uri=RAPTOR_RDF_MS_URI;
-static const char * const raptor_rdf_schema_uri=RAPTOR_RDF_SCHEMA_URI;
 static const char * const raptor_rdf_type_uri=RAPTOR_RDF_MS_URI "type";
 static const char * const raptor_rdf_value_uri=RAPTOR_RDF_MS_URI "value";
 static const char * const raptor_rdf_subject_uri=RAPTOR_RDF_MS_URI "subject";
@@ -702,11 +643,6 @@ static const char * const raptor_rdf_nil_uri=RAPTOR_RDF_MS_URI "nil";
 #endif
 
 
-static const char * const raptor_xml_uri="http://www.w3.org/XML/1998/namespace";
-
-
-
-
 #ifdef HAVE_XML_SetNamespaceDeclHandler
 static void raptor_start_namespace_decl_handler(void *user_data, const XML_Char *prefix, const XML_Char *uri);
 static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *prefix);
@@ -714,19 +650,7 @@ static void raptor_end_namespace_decl_handler(void *user_data, const XML_Char *p
 
 
 
-/* prototypes for namespace and name/local_name functions */
-static void raptor_init_namespaces(raptor_parser *rdf_parser);
-static void raptor_start_namespace(raptor_parser *rdf_parser, const char *prefix, const char *nspace, int depth);
-static void raptor_free_namespace(raptor_parser *rdf_parser,  raptor_ns_map *nspace);
-static void raptor_end_namespace(raptor_parser *rdf_parser, const char *prefix, const char *nspace);
-static void raptor_end_namespaces_for_depth(raptor_parser *rdf_parser);
-static raptor_ns_name* raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name, const char *value, int is_element);
-#ifdef RAPTOR_DEBUG
-static void raptor_print_ns_name(FILE *stream, raptor_ns_name* name);
-#endif
-static void raptor_free_ns_name(raptor_ns_name* name);
-static int raptor_ns_names_equal(raptor_ns_name *name1, raptor_ns_name *name2);
-
+/* prototypes for in-scope XML language and XML Base */
 static const char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
 static raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 
@@ -750,403 +674,6 @@ static void raptor_generate_statement(raptor_parser *rdf_parser, raptor_uri *sub
 static void raptor_print_statement_detailed(const raptor_statement *statement, int detailed, FILE *stream);
 
 
-/*
- * Namespaces in XML
- * http://www.w3.org/TR/1999/REC-xml-names-19990114/#nsc-NSDeclared
- * (section 4) says:
- *
- * --------------------------------------------------------------------
- *   The prefix xml is by definition bound to the namespace name 
- *   http://www.w3.org/XML/1998/namespace
- * --------------------------------------------------------------------
- *
- * Errata NE05
- * http://www.w3.org/XML/xml-names-19990114-errata#NE05
- * changes that to read:
- *
- * --------------------------------------------------------------------
- * The prefix xml is by definition bound to the namespace name
- * http://www.w3.org/XML/1998/namespace. It may, but need not, be
- * declared, and must not be bound to any other namespace name. No
- * other prefix may be bound to this namespace name.
- *
- * The prefix xmlns is used only to declare namespace bindings and is
- * by definition bound to the namespace name
- * http://www.w3.org/2000/xmlns/. It must not be declared. No other
- * prefix may be bound to this namespace name.
- *
- * All other prefixes beginning with the three-letter sequence x, m, l,
- * in any case combination, are reserved. This means that
- *  * users should not use them except as defined by later specifications
- *  * processors must not treat them as fatal errors.
- * --------------------------------------------------------------------
- *
- * Thus should define it in the table of namespaces before we start.
- *
- * We *can* also define others, but let's not.
- *
- */
-static void
-raptor_init_namespaces(raptor_parser *rdf_parser) {
-  /* defined at level -1 since always 'present' when inside the XML world */
-  raptor_start_namespace(rdf_parser, "xml", raptor_xml_uri, -1);
-}
-
-
-static void
-raptor_start_namespace(raptor_parser *rdf_parser, 
-                       const char *prefix, const char *nspace, int depth)
-{
-  int prefix_length=0;
-#ifdef RAPTOR_IN_REDLAND
-#else
-  int uri_length=0;
-#endif
-  int len;
-  raptor_ns_map *map;
-  char *p;
-
-  LIBRDF_DEBUG4(raptor_start_namespace,
-                "namespace prefix %s uri %s depth %d\n",
-                prefix ? prefix : "(default)", nspace, depth);
-
-  /* Convert an empty namespace string "" to a NULL pointer */
-  if(!*nspace)
-    nspace=NULL;
-
-  len=sizeof(raptor_ns_map);
-#ifdef RAPTOR_IN_REDLAND
-#else
-  if(nspace) {
-    uri_length=strlen(nspace);
-    len+=uri_length+1;
-  }
-#endif
-  if(prefix) {
-    prefix_length=strlen(prefix);
-    len+=prefix_length+1;
-  }
-
-  /* Just one malloc for map structure + namespace (maybe) + prefix (maybe)*/
-  map=(raptor_ns_map*)LIBRDF_CALLOC(raptor_ns_map, len, 1);
-  if(!map) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return;
-  }
-
-  p=(char*)map+sizeof(raptor_ns_map);
-#ifdef RAPTOR_IN_REDLAND
-  map->uri=librdf_new_uri(rdf_parser->world, nspace);
-  if(!map->uri) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    LIBRDF_FREE(raptor_ns_map, map);
-    return;
-  }
-#else
-  if(nspace) {
-    map->uri=strcpy((char*)p, nspace);
-    map->uri_length=uri_length;
-    p+= uri_length+1;
-  }
-#endif
-  if(prefix) {
-    map->prefix=strcpy((char*)p, prefix);
-    map->prefix_length=prefix_length;
-
-    if(!strcmp(map->prefix, "xml"))
-      map->is_xml=1;
-  }
-  map->depth=depth;
-
-  /* set convienience flags when there is a defined namespace URI */
-  if(nspace) {
-#ifdef RAPTOR_IN_REDLAND
-    if(librdf_uri_equals(map->uri, librdf_concept_ms_namespace_uri))
-      map->is_rdf_ms=1;
-    else if(librdf_uri_equals(map->uri, librdf_concept_schema_namespace_uri))
-      map->is_rdf_schema=1;
-#else
-    if(!strcmp(nspace, raptor_rdf_ms_uri))
-      map->is_rdf_ms=1;
-    else if(!strcmp(nspace, raptor_rdf_schema_uri))
-      map->is_rdf_schema=1;
-#endif
-  }
-
-  if(rdf_parser->namespaces)
-    map->next=rdf_parser->namespaces;
-  rdf_parser->namespaces=map;
-}
-
-
-static void 
-raptor_free_namespace(raptor_parser *rdf_parser,  raptor_ns_map* nspace)
-{
-#ifdef RAPTOR_IN_REDLAND
-  if(nspace->uri)
-    librdf_free_uri(nspace->uri);
-#endif
-  LIBRDF_FREE(raptor_ns_map, nspace);
-}
-
-
-static void 
-raptor_end_namespace(raptor_parser *rdf_parser, 
-                     const char *prefix, const char *nspace)
-{
-  LIBRDF_DEBUG3(raptor_end_namespace, "prefix %s uri \"%s\"\n", 
-                prefix ? prefix : "(default)", nspace);
-}
-
-
-static void 
-raptor_end_namespaces_for_depth(raptor_parser *rdf_parser) 
-{
-  while(rdf_parser->namespaces &&
-        rdf_parser->namespaces->depth == rdf_parser->depth) {
-    raptor_ns_map* ns=rdf_parser->namespaces;
-    raptor_ns_map* next=ns->next;
-
-#ifdef RAPTOR_IN_REDLAND
-    raptor_end_namespace(rdf_parser, ns->prefix, 
-                         librdf_uri_as_string(ns->uri));
-#else  
-    raptor_end_namespace(rdf_parser, ns->prefix, ns->uri);
-#endif
-    raptor_free_namespace(rdf_parser, ns);
-
-    rdf_parser->namespaces=next;
-  }
-
-}
-
-
-
-/*
- * Namespaces in XML
- * http://www.w3.org/TR/1999/REC-xml-names-19990114/#defaulting
- * says:
- *
- * --------------------------------------------------------------------
- *  5.2 Namespace Defaulting
- *
- *  A default namespace is considered to apply to the element where it
- *  is declared (if that element has no namespace prefix), and to all
- *  elements with no prefix within the content of that element. 
- *
- *  If the URI reference in a default namespace declaration is empty,
- *  then unprefixed elements in the scope of the declaration are not
- *  considered to be in any namespace.
- *
- *  Note that default namespaces do not apply directly to attributes.
- *
- * [...]
- *
- *  5.3 Uniqueness of Attributes
- *
- *  In XML documents conforming to this specification, no tag may
- *  contain two attributes which:
- *
- *    1. have identical names, or 
- *
- *    2. have qualified names with the same local part and with
- *    prefixes which have been bound to namespace names that are
- *    identical.
- * --------------------------------------------------------------------
- */
-
-static raptor_ns_name*
-raptor_make_namespaced_name(raptor_parser *rdf_parser, const char *name,
-                            const char *value, int is_element) 
-{
-  raptor_ns_name* ns_name;
-  const char *p;
-  raptor_ns_map* ns;
-  char* new_name;
-  int prefix_length;
-  int local_name_length=0;
-
-#if RAPTOR_DEBUG > 1
-  LIBRDF_DEBUG2(raptor_make_namespaced_name,
-                "name %s\n", name);
-#endif  
-
-  raptor_update_document_locator(rdf_parser);
-
-  ns_name=(raptor_ns_name*)LIBRDF_CALLOC(raptor_ns_name, sizeof(raptor_ns_name), 1);
-  if(!ns_name) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return NULL;
-  }
-
-  if(value) {
-    int value_length=strlen(value);
-    char* new_value=(char*)LIBRDF_MALLOC(cstring, value_length+1);
-
-    if(!new_value) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      LIBRDF_FREE(raptor_ns_name, ns_name);
-      return NULL;
-    } 
-    strcpy(new_value, value);
-    ns_name->value=new_value;
-    ns_name->value_length=value_length;
-  }
-
-  /* Find : */
-  for(p=name; *p && *p != ':'; p++)
-    ;
-
-  if(!*p) {
-    local_name_length=p-name;
-
-    /* No : in the name */
-    new_name=(char*)LIBRDF_MALLOC(cstring, local_name_length+1);
-    if(!new_name) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      raptor_free_ns_name(ns_name);
-      return NULL;
-    }
-    strcpy(new_name, name);
-    ns_name->local_name=new_name;
-    ns_name->local_name_length=local_name_length;
-
-    /* For elements only, pick up the default namespace if there is one */
-    if(is_element) {
-      /* Find a default namespace */
-      for(ns=rdf_parser->namespaces; ns && ns->prefix; ns=ns->next)
-        ;
-      
-      if(ns) {
-        ns_name->nspace=ns;
-#if RAPTOR_DEBUG > 1
-        LIBRDF_DEBUG2(raptor_make_namespaced_name,
-                      "Found default namespace %s\n", ns->uri);
-#endif
-      } else {
-        /* failed to find namespace - now what? FIXME */
-        /* raptor_parser_warning(rdf_parser, "No default namespace defined - cannot expand %s", name); */
-#if RAPTOR_DEBUG > 1
-        LIBRDF_DEBUG1(raptor_make_namespaced_name,
-                      "No default namespace defined\n");
-#endif
-      }
-    } /* if is_element */
-
-  } else {
-    /* There is a namespace prefix */
-
-    prefix_length=p-name;
-    p++; 
-
-    /* p now is at start of local_name */
-    local_name_length=strlen(p);
-    new_name=(char*)LIBRDF_MALLOC(cstring, local_name_length+1);
-    if(!new_name) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      raptor_free_ns_name(ns_name);
-      return NULL;
-    }
-    strcpy(new_name, p);
-    ns_name->local_name=new_name;
-    ns_name->local_name_length=local_name_length;
-
-    /* Find the namespace */
-    for(ns=rdf_parser->namespaces; ns ; ns=ns->next)
-      if(ns->prefix && prefix_length == ns->prefix_length && 
-         !strncmp(name, ns->prefix, prefix_length))
-        break;
-
-    if(!ns) {
-      /* failed to find namespace - now what? */
-      raptor_parser_error(rdf_parser, "The namespace prefix in \"%s\" was not declared", name);
-    } else {
-#if RAPTOR_DEBUG > 1
-      LIBRDF_DEBUG3(raptor_make_namespaced_name,
-                    "Found namespace prefix %s URI %s\n", ns->prefix, ns->uri);
-#endif
-      ns_name->nspace=ns;
-    }
-  }
-
-
-
-  /* If namespace has a URI and a local_name is defined, create the URI
-   * for this element 
-   */
-  if(ns_name->nspace && ns_name->nspace->uri && local_name_length) {
-#ifdef RAPTOR_IN_REDLAND
-    librdf_uri* uri=librdf_new_uri_from_uri_local_name(ns_name->nspace->uri,
-                                                       new_name);
-    if(!uri) {
-      raptor_free_ns_name(ns_name);
-      return NULL;
-    }
-    ns_name->uri=uri;
-#else
-    char *uri_string=(char*)LIBRDF_MALLOC(cstring, 
-                                          ns_name->nspace->uri_length + 
-                                          local_name_length + 1);
-    if(!uri_string) {
-      raptor_free_ns_name(ns_name);
-      return NULL;
-    }
-    strcpy(uri_string, ns_name->nspace->uri);
-    strcpy(uri_string + ns_name->nspace->uri_length, new_name);
-    ns_name->uri=uri_string;
-#endif
-  }
-
-
-  return ns_name;
-}
-
-
-#ifdef RAPTOR_DEBUG
-static void
-raptor_print_ns_name(FILE *stream, raptor_ns_name* name) 
-{
-  if(name->nspace) {
-    if(name->nspace->prefix)
-      fprintf(stream, "%s:%s", name->nspace->prefix, name->local_name);
-    else
-      fprintf(stream, "(default):%s", name->local_name);
-  } else
-    fputs(name->local_name, stream);
-}
-#endif
-
-static void
-raptor_free_ns_name(raptor_ns_name* name) 
-{
-  if(name->local_name)
-    LIBRDF_FREE(cstring, (void*)name->local_name);
-
-  if(name->uri)
-    RAPTOR_FREE_URI(name->uri);
-
-  if(name->value)
-    LIBRDF_FREE(cstring, (void*)name->value);
-  LIBRDF_FREE(raptor_ns_name, name);
-}
-
-
-static int
-raptor_ns_names_equal(raptor_ns_name *name1, raptor_ns_name *name2)
-{
-#ifdef RAPTOR_IN_REDLAND
-  if(name1->uri && name2->uri)
-    return librdf_uri_equals(name1->uri, name2->uri);
-#else
-  if(name1->nspace != name2->nspace)
-    return 0;
-#endif
-  if(name1->local_name_length != name2->local_name_length)
-    return 0;
-  if(strcmp(name1->local_name, name2->local_name))
-    return 0;
-  return 1;
-}
 
 
 static raptor_element*
@@ -1182,10 +709,10 @@ raptor_free_element(raptor_element *element)
 
   for (i=0; i < element->attribute_count; i++)
     if(element->attributes[i])
-      raptor_free_ns_name(element->attributes[i]);
+      raptor_free_qname(element->attributes[i]);
 
   if(element->attributes)
-    LIBRDF_FREE(raptor_ns_name_array, element->attributes);
+    LIBRDF_FREE(raptor_qname_array, element->attributes);
 
   /* Free special RDF M&S attributes */
   for(i=0; i<= RDF_ATTR_LAST; i++) 
@@ -1193,7 +720,7 @@ raptor_free_element(raptor_element *element)
       LIBRDF_FREE(cstring, (void*)element->rdf_attr[i]);
 
   if(element->content_cdata_length)
-    LIBRDF_FREE(raptor_ns_name_array, element->content_cdata);
+    LIBRDF_FREE(raptor_qname_array, element->content_cdata);
 
   raptor_free_identifier(&element->subject);
   raptor_free_identifier(&element->predicate);
@@ -1207,7 +734,7 @@ raptor_free_element(raptor_element *element)
   if(element->base_uri)
     RAPTOR_FREE_URI(element->base_uri);
 
-  raptor_free_ns_name(element->name);
+  raptor_free_qname(element->name);
   LIBRDF_FREE(raptor_element, element);
 }
 
@@ -1217,7 +744,7 @@ raptor_free_element(raptor_element *element)
 static void
 raptor_print_element(raptor_element *element, FILE* stream)
 {
-  raptor_print_ns_name(stream, element->name);
+  raptor_qname_print(stream, element->name);
   fputc('\n', stream);
 
   if(element->attribute_count) {
@@ -1227,7 +754,7 @@ raptor_print_element(raptor_element *element, FILE* stream)
     for (i = 0; i < element->attribute_count; i++) {
       if(i)
         fputc(' ', stream);
-      raptor_print_ns_name(stream, element->attributes[i]);
+      raptor_qname_print(stream, element->attributes[i]);
       fprintf(stream, "='%s'", element->attributes[i]->value);
     }
     fputc('\n', stream);
@@ -1332,7 +859,7 @@ raptor_xml_start_element_handler(void *user_data,
   raptor_parser* rdf_parser;
   int all_atts_count=0;
   int ns_attributes_count=0;
-  raptor_ns_name** named_attrs=NULL;
+  raptor_qname** named_attrs=NULL;
   int i;
   raptor_element* element=NULL;
   int non_nspaced_count=0;
@@ -1365,8 +892,13 @@ raptor_xml_start_element_handler(void *user_data,
         /* there is more i.e. xmlns:foo */
         const char *prefix=atts[i][5] ? &atts[i][6] : NULL;
 
-        raptor_start_namespace(rdf_parser, prefix, atts[i+1],
-                               rdf_parser->depth);
+        if(raptor_namespaces_start_namespace(&rdf_parser->namespaces,
+                                             prefix, atts[i+1],
+                                             rdf_parser->depth)) {
+          raptor_parser_fatal_error(rdf_parser, "Out of memory");
+          return;
+        }
+        
         /* Is it ok to zap XML parser array things? */
         atts[i]=NULL; 
         continue;
@@ -1419,7 +951,13 @@ raptor_xml_start_element_handler(void *user_data,
 
 
   /* Now can recode element name with a namespace */
-  element->name=raptor_make_namespaced_name(rdf_parser, name, NULL, 1);
+  element->name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
+                                 raptor_parser_error, rdf_parser);
+  if(!element->name) {
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    LIBRDF_FREE(raptor_element, element);
+    return;
+  } 
 
   if(!element->name->nspace)
     non_nspaced_count++;
@@ -1431,31 +969,32 @@ raptor_xml_start_element_handler(void *user_data,
     /* Round 2 - turn string attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
-    named_attrs=(raptor_ns_name**)LIBRDF_CALLOC(raptor_ns_name-array, sizeof(raptor_ns_name*), ns_attributes_count);
+    named_attrs=(raptor_qname**)LIBRDF_CALLOC(raptor_qname-array, sizeof(raptor_qname*), ns_attributes_count);
     if(!named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       LIBRDF_FREE(raptor_element, element);
-      raptor_free_ns_name(element->name);
+      raptor_free_qname(element->name);
       return;
     }
 
     for (i = 0; i < all_atts_count; i++) {
-      raptor_ns_name* attr;
+      raptor_qname* attr;
 
       /* Skip previously processed attributes */
       if(!atts[i<<1])
         continue;
 
       /* namespace-name[i] stored in named_attrs[i] */
-      attr=raptor_make_namespaced_name(rdf_parser, atts[i<<1],
-                                            atts[(i<<1)+1], 0);
+      attr=raptor_new_qname(&rdf_parser->namespaces,
+                            atts[i<<1], atts[(i<<1)+1],
+                            raptor_parser_error, rdf_parser);
       if(!attr) { /* failed - tidy up and return */
         int j;
 
         for (j=0; j < i; j++)
-          LIBRDF_FREE(raptor_ns_name, named_attrs[j]);
-        LIBRDF_FREE(raptor_ns_name_array, named_attrs);
-        raptor_free_ns_name(element->name);
+          LIBRDF_FREE(raptor_qname, named_attrs[j]);
+        LIBRDF_FREE(raptor_qname_array, named_attrs);
+        raptor_free_qname(element->name);
         LIBRDF_FREE(raptor_element, element);
         return;
       }
@@ -1491,9 +1030,9 @@ raptor_xml_start_element_handler(void *user_data,
                             "Found RDF M&S attribute %s URI %s\n",
                             attr_name, attr->value);
 #endif
-              /* make sure value isn't deleted from ns_name structure */
+              /* make sure value isn't deleted from qname structure */
               attr->value=NULL;
-              raptor_free_ns_name(attr);
+              raptor_free_qname(attr);
               attr=NULL;
             }
         } /* end if RDF M&S namespaced-prefixed attributes */
@@ -1513,9 +1052,9 @@ raptor_xml_start_element_handler(void *user_data,
               element->rdf_attr_count++;
               raptor_parser_warning(rdf_parser, "Unqualified use of rdf:%s has been deprecated.", attr_name);
               /* Delete it if it was stored elsewhere */
-              /* make sure value isn't deleted from ns_name structure */
+              /* make sure value isn't deleted from qname structure */
               attr->value=NULL;
-              raptor_free_ns_name(attr);
+              raptor_free_qname(attr);
               attr=NULL;
               break;
             }
@@ -1538,7 +1077,7 @@ raptor_xml_start_element_handler(void *user_data,
     if(!offset && named_attrs) {
       /* all attributes were RDF M&S or other specials and deleted
        * so delete array and don't store pointer */
-      LIBRDF_FREE(raptor_ns_name_array, named_attrs);
+      LIBRDF_FREE(raptor_qname_array, named_attrs);
       named_attrs=NULL;
     }
 
@@ -1593,7 +1132,7 @@ raptor_xml_start_element_handler(void *user_data,
           
           element->parent->content_type = RAPTOR_ELEMENT_CONTENT_TYPE_RESOURCE;
           
-          LIBRDF_FREE(raptor_ns_name_array, element->parent->content_cdata);
+          LIBRDF_FREE(raptor_qname_array, element->parent->content_cdata);
           element->parent->content_cdata=NULL;
           element->parent->content_cdata_length=0;
         }
@@ -1645,7 +1184,7 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
   raptor_element* element;
-  raptor_ns_name *element_name;
+  raptor_qname *element_name;
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
@@ -1657,16 +1196,22 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 
   /* recode element name */
 
-  element_name=raptor_make_namespaced_name(rdf_parser, name, NULL, 1);
+  element_name=raptor_new_qname(&rdf_parser->namespaces, name, NULL,
+                                raptor_parser_error, rdf_parser);
+  if(!element_name) {
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    return;
+  }
+
 
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "\nraptor_xml_end_element_handler: End ns-element: ");
-  raptor_print_ns_name(stderr, element_name);
+  raptor_qname_print(stderr, element_name);
   fputc('\n', stderr);
 #endif
 
   element=rdf_parser->current_element;
-  if(!raptor_ns_names_equal(element->name, element_name)) {
+  if(!raptor_qname_equal(element->name, element_name)) {
     /* Hmm, unexpected name - FIXME, should do something! */
     raptor_parser_warning(rdf_parser, 
                           "Element %s ended, expected end of element %s",
@@ -1678,9 +1223,9 @@ raptor_xml_end_element_handler(void *user_data, const XML_Char *name)
 
   element=raptor_element_pop(rdf_parser);
 
-  raptor_free_ns_name(element_name);
+  raptor_free_qname(element_name);
 
-  raptor_end_namespaces_for_depth(rdf_parser);
+  raptor_namespaces_end_for_depth(&rdf_parser->namespaces, rdf_parser->depth);
 
   if(element->parent) {
     /* Do not change this; PROPERTYELT will turn into MEMBER if necessary
@@ -2110,11 +1655,13 @@ raptor_new(
   rdf_parser->raptor_daml_rest_uri=librdf_new_uri_from_uri_local_name(rdf_parser->raptor_daml_oil_uri, "rest");
   rdf_parser->raptor_daml_nil_uri=librdf_new_uri_from_uri_local_name(rdf_parser->raptor_daml_oil_uri, "nil");
 
+  raptor_namespaces_init(&rdf_parser->namespaces, world);
+#else
+  raptor_namespaces_init(&rdf_parser->namespaces);
 #endif
 
-  raptor_init_namespaces(rdf_parser);
 
-  return rdf_parser;
+return rdf_parser;
 }
 
 
@@ -2129,16 +1676,9 @@ void
 raptor_free(raptor_parser *rdf_parser) 
 {
   raptor_element* element;
-  raptor_ns_map* ns;
 
-  ns=rdf_parser->namespaces;
-  while(ns) {
-    raptor_ns_map* next_ns=ns->next;
-
-    raptor_free_namespace(rdf_parser, ns);
-    ns=next_ns;
-  }
-
+  raptor_namespaces_free(&rdf_parser->namespaces);
+  
   while((element=raptor_element_pop(rdf_parser))) {
     raptor_free_element(element);
   }
@@ -2943,7 +2483,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
   /* Process attributes as propAttr* = * (propName="string")*
    */
   for(i=0; i<attributes_element->attribute_count; i++) {
-    raptor_ns_name* attr=attributes_element->attributes[i];
+    raptor_qname* attr=attributes_element->attributes[i];
     const char *name=attr->local_name;
     const char *value = attr->value;
     int handled=0;
@@ -3889,7 +3429,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
              * whitespace so that FALLTHROUGH code below finds the object.
              */
             if(element->content_cdata) {
-              LIBRDF_FREE(raptor_ns_name_array, element->content_cdata);
+              LIBRDF_FREE(raptor_qname_array, element->content_cdata);
               element->content_cdata=NULL;
               element->content_cdata_length=0;
             }
