@@ -1,17 +1,17 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
 .\"
-.\" rapper.1 - Raptor RDF parser utility manual page
+.\" rapper.1 - Raptor RDF parser and serializer utility manual page
 .\"
 .\" $Id$
 .\"
-.\" Copyright (C) 2002-2004 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2002-2005 David Beckett - http://purl.org/net/dajobe/
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2004-11-12"
+.TH rapper 1 "2005-01-01"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
-rapper \- Raptor RDF parser utility
+rapper \- Raptor RDF parser and serializer utility
 .SH SYNOPSIS
 .B rapper
 .RB [ OPTIONS ]
@@ -21,10 +21,9 @@ rapper \- Raptor RDF parser utility
 .nf
 .B rapper -o ntriples http://www.ilrt.bris.ac.uk/discovery/rdf/resources/rss.rdf
 .br
-.B rapper -i rss-tag-soup pile-of-rss.xml http://example.org/base/
+.B rapper -i rss-tag-soup -o rss-1.0 pile-of-rss.xml http://example.org/base/
 .br
 .B rapper --count http://example.org/index.rdf
-.br
 .SH DESCRIPTION
 The
 .B rapper
@@ -47,14 +46,21 @@ Set the input
 .I FORMAT
 to one of 'rdfxml' (RDF/XML, default), 'ntriples'
 (N-Triples, see below), 'turtle' (Turtle, see below)
-or 'rss-tag-soup' (RSS tag soup).  The list of
+or 'rss-tag-soup' (RSS tag soup).
+.IP
+The list of
 parsers depends on how libraptor(3) was built.  The list of
 supported parsers is given in the help summary given by \-h.
 .TP
 .B \-o, \-\-output FORMAT
 Set the output
 .I FORMAT
-to 'simple' (default) or 'ntriples' (N-Triples, see below)
+to 'simple' (default), 'ntriples' (N-Triples, see below), 'rdfxml'
+(RDF/XML) or 'rss-1.0' (RSS 1.0, also an RDF/XML syntax).
+.IP
+The list of
+serializers depends on how libraptor(3) was built.  The list of
+supported serializers is given in the help summary given by \-h.
 .TP
 .B \-c, \-\-count
 Only count the triples and produce no other output.
@@ -69,6 +75,11 @@ to a value, or to 1 if
 .I VALUE
 is omitted,
 Use \-f help to get lists of valid parser and serializer features.
+.IP
+If the form \-f 'xmlns:\fIprefix\fP=\(dq\fIuri\fP\(dq' is used,
+the prefix and namespace uri given will be set for serializing.
+The syntax matches XML in that either or both of \fIprefix\fP
+or \fIuri\fP can be omitted.
 .TP
 .B \-g, \-\-guess
 Guess the parser to use from the source-URI rather than use
@@ -88,6 +99,11 @@ Ignore warnings, do not emit the messages.
 .TP
 .B \-v, \-\-version
 Print the raptor version and exit.
+.SH "EXAMPLES"
+.br
+.B rapper -q -i ntriples -o rdfxml -f 'xmlns:rss="http://purl.org/rss/1.0/"' -f 'xmlns:ex="http://example.org/"' tests/test.nt
+.br
+.B rapper -q -o rdfxml -f 'xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"' tests/rdf-schema.rdf 'http://www.w3.org/2000/01/rdf-schema#'
 .SH "CONFORMING TO"
 \fIRDF/XML Syntax (Revised)\fR,
 W3C Recommendation,
@@ -108,6 +124,9 @@ http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
 .SH SEE ALSO
 .BR libraptor(3), raptor-config(1)
 .SH CHANGES
+.SS 1.4.3
+Updated potential parser and serializers and described -f for
+defining namespaces.
 .SS 1.3.0
 Added \-f for features.
 .br
