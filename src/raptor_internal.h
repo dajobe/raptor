@@ -39,14 +39,6 @@ extern "C" {
 #define RAPTOR_DEBUG 1
 #endif
 
-#include <librdf.h>
-
-#include <rdf_parser.h>
-#include <rdf_node.h>
-#include <rdf_stream.h>
-#include <rdf_statement.h>
-#include <rdf_uri.h>
-
 #define IS_RDF_MS_CONCEPT(name, uri, local_name) librdf_uri_equals(uri, librdf_concept_uris[LIBRDF_CONCEPT_MS_##local_name])
 #define RAPTOR_URI_AS_STRING(uri) (librdf_uri_as_string(uri))
 #define RAPTOR_URI_AS_FILENAME(uri) (librdf_uri_as_filename(uri))
