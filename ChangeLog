@@ -1,3 +1,7 @@
+2005-02-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Snapshotted raptor_1_4_5 for 1.4.5 release
+
 2005-02-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* autogen.sh: Add autoheader and libtoolize to the path search.
