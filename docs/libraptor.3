@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2004-10-23"
+.TH libraptor 3 "2004-10-28"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser toolkit library
@@ -343,7 +343,7 @@ appropriate quote character \" or \' is used, otherwise it is
 XML element content (CDATA).   The \fIerror_handler\fR method along
 with \fIerror_data\fR allow error reporting to be given.
 If buffer is NULL, returns the size of the buffer required to escape.
-Otherwise the return value is the number of bytes used or 0 on failure.
+Otherwise the return value is the number of bytes used or <0 on failure.
 .SH "MEMORY UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_free_memory(void *\fIptr\fP)\fR"
 Free memory allocated inside raptor.  Some systems require
@@ -841,6 +841,10 @@ Write a decimal formatted integer \fIinteger\fP to the iostream.
 Write a hexadecimal formatted unsigned \fIinteger\fP to the iostream,
 left-padded with '0's to \fIwidth\fR columns.
 .SH API CHANGES
+.SS 1.4.1
+The \fBraptor_xml_escape_string\fR now returns <0 on failure rather
+than 0, so that if an empty string is escaped, 0 bytes required is
+returned.
 .SS 1.4.0
 Added new \fBraptor_serializer\fR class supporting RDF/XML (name
 \fBrdfxml\fP) and N-Triples (name \fBntriples\fP).
