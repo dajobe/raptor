@@ -4028,26 +4028,49 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
                                     NULL);
         else if(state == RAPTOR_STATE_PARSETYPE_RESOURCE && 
-           element->parent &&
-           (element->parent->subject.uri || element->parent->subject.id))
-          raptor_generate_statement(rdf_parser, 
-                                    element->parent->subject.uri,
-                                    element->parent->subject.id,
-                                    element->parent->subject.type,
-                                    element->parent->subject.uri_source,
-
-                                    element->name->uri,
-                                    NULL,
-                                    RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                    RAPTOR_URI_SOURCE_ELEMENT,
-
-                                    element->subject.uri,
-                                    element->subject.id,
-                                    element->subject.type,
-                                    element->subject.uri_source,
-
-                                    NULL);
-
+                element->parent &&
+                (element->parent->subject.uri || element->parent->subject.id)) {
+          /* Handle rdf:li as the rdf:parseType="resource" property */
+          if(element_in_rdf_ns && 
+             IS_RDF_MS_CONCEPT(el_name, element->name->uri, li)) {
+            element->parent->last_ordinal++;
+            raptor_generate_statement(rdf_parser, 
+                                      element->parent->subject.uri,
+                                      element->parent->subject.id,
+                                      element->parent->subject.type,
+                                      element->parent->subject.uri_source,
+                                      
+                                      (raptor_uri*)&element->parent->last_ordinal,
+                                      NULL,
+                                      RAPTOR_IDENTIFIER_TYPE_ORDINAL,
+                                      RAPTOR_URI_SOURCE_NOT_URI,
+                                      
+                                      element->subject.uri,
+                                      element->subject.id,
+                                      element->subject.type,
+                                      element->subject.uri_source,
+                                      
+                                      NULL);
+          } else {
+            raptor_generate_statement(rdf_parser, 
+                                      element->parent->subject.uri,
+                                      element->parent->subject.id,
+                                      element->parent->subject.type,
+                                      element->parent->subject.uri_source,
+                                      
+                                      element->name->uri,
+                                      NULL,
+                                      RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+                                      RAPTOR_URI_SOURCE_ELEMENT,
+                                      
+                                      element->subject.uri,
+                                      element->subject.id,
+                                      element->subject.type,
+                                      element->subject.uri_source,
+                                      
+                                      NULL);
+          }
+        }
         finished=1;
         break;
 
