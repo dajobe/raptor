@@ -477,7 +477,7 @@ raptor_xslt_parser_register_factory(raptor_parser_factory *factory)
 void
 raptor_init_parser_grddl(void)
 {
-  raptor_parser_register_factory("grddl",  "GRDDL over XHTML using XSLT",
+  raptor_parser_register_factory("grddl",  "GRDDL over XHTML/XML using XSLT",
                                  NULL, NULL,
                                  NULL,
                                  &raptor_xslt_parser_register_factory);
