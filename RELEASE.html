@@ -13,10 +13,38 @@
 <p>Not yet released.
 </p>
 
+<p>Added <code>--with-xslt-config</code> configure option</p>
+
+<p>New GRDDL parser</p>
+
+<p>Turtle parser now accepts """long literals"""</p> 
+
+<p>XML writer feature support were added in 1.4.5 and not documented.
+The new functions are:
+<code>raptor_xml_writer_features_enumerate</code>,
+<code>raptor_xml_writer_set_feature</code>,
+<code>raptor_xml_writer_set_feature_string</code>,
+<code>raptor_xml_writer_get_feature</code> and
+<code>raptor_xml_writer_get_feature_string</code>.
+The three XML writer features added are
+\fBRAPTOR_FEATURE_WRITER_AUTO_INDENT\fR with boolean value (default true)
+to auto-indent the XML,
+\fBRAPTOR_FEATURE_WRITER_AUTO_EMPTY\fR with boolean value (default true)
+to automatically generate empty elements if a start/end element sequence
+has no content and
+\fBRAPTOR_FEATURE_WRITER_INDENT_WIDTH\fR with an integer value (default 2)
+to set the indenting level for the XML.
+</p>
+
 <p>Portability fixes for win32 (Dave Viner)</p>
+
+<p>RDF/XML serializer:
+Use the maximal name when splitting a predicate.
+</p>
 
 <p>RDF/XML abbreviated serializer:
 Fix a crash when there is a NULL base URI.
+Use the maximal name when splitting a predicate.
 </p>
 
 <p>RSS tag soup parser:
