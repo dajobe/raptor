@@ -1,3 +1,15 @@
+2005-04-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xslt.c (raptor_init_parser_grddl): Expand grddl parser
+	description.
+
+	* libraptor.3:
+	Added missing 1.4.5 API changes, adding XML writer features and
+	support functions as used by the rdf/xml-abbrev serializer.
+
+	* tests/Makefile.am:
+	test should use = not == for string compare portability
+
 2005-04-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_xslt.c:
