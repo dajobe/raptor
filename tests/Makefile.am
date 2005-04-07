@@ -382,7 +382,7 @@ check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/rdfdiff $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
 	  status=$$?; \
-	  if test $$status == 0; then \
+	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
@@ -400,7 +400,7 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	  $(top_builddir)/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $(srcdir)/$$test > $$name-rdfxmla.rdf 2> $$name.err; \
 	  $(top_builddir)/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
 	  status=$$?; \
-	  if test $$status == 0; then \
+	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
