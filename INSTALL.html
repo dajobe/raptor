@@ -54,7 +54,9 @@ versions.</p>
 <p>Raptor uses the GNU automake and autoconf to handle system
 dependency checking.  It requires an XML parser - either libxml2
 (2.4.0 or newer, 2.6.0 or later highly recommended) or expat.  It will
-optionally use libcurl, libxml2 for retrieving URIs.</p>
+optionally use libcurl, libxml2 for retrieving URIs.  It will
+optionally use libxslt (requiring libxml2 also) to provide the XSLT
+functionality for the GRDDL parser.</p>
 
 <p>Raptor is developed and built on x86 GNU/Linux
 (Redhat Fedora Core 3, Debian unstable) but is also regularly tested on
@@ -175,6 +177,9 @@ coherent.</p>
 
 <dt><tt>--with-xml2-config=NAME</tt><br /></dt>
 <dd><p>Set the path to the libxml xml2-config program</p></dd>
+
+<dt><tt>--with-xslt-config=NAME</tt><br /></dt>
+<dd><p>Set the path to the libxslt xslt-config program</p></dd>
 
 <dt><tt>--with-curl-config=NAME</tt><br /></dt>
 <dd><p>Set the path to the <a href="http://curl.haxx.se/libcurl/">libcurl</a> curl-config program</p></dd>
