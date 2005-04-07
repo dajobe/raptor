@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2005-01-21"
+.TH libraptor 3 "2005-04-07"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -177,6 +177,11 @@ The current defined parser features are:
   \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fR       Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NON_NFC_FATAL\fR            Boolean (non 0 true)
   \fBRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WARN_OTHER_PARSETYPES\fR    Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_START_URI\fR                Boolean (non 0 true)
+.P
 If the \fIscanning\fR
 feature is true (default false), then the RDF/XML parser will look for embedded
 rdf:RDF elements inside the XML content, and not require that the
@@ -234,7 +239,7 @@ and types are given under \fBraptor_features_enumerate\fP.
 Get parser feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_features_enumerate\fP.
 .IP "\fBint raptor_feature_value_type(const raptor_feature feature)\fR"
-
+Get a raptor feature value tyype - integer or string.
 .IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
 Return the current raptor_locator object for the parser.
 This is a public structure defined in raptor.h that can be
@@ -271,6 +276,11 @@ until the function returns non-zero.
 .IP "\fBint raptor_features_enumerate(const raptor_feature \fIfeature\fP, const char **\fIname\fP, raptor_uri **\fIuri\fP, const char **\fIlabel\fP)\fR"
 Return the name, URI, string label (all optional)
 for a parser \fIfeature\fP, returning non-zero if no such feature exists.
+.P
+Raptor features have URIs that are constructed from the URI
+\fIhttp://feature.librdf.org/raptor-\fP and the \fIname\fP
+so for example feature \fIscanForRDF\fP
+has URI \fIhttp://feature.librdf.org/raptor-scanForRDF\fP
 .IP "\fBint raptor_syntax_name_check(const char *\fIname\fP)\fR"
 Check \fIname\fP is a known syntax name.
 .IP "\fBconst char* raptor_guess_parser_name(raptor_uri *\fIuri\fP, const char *\fImime_type\fP, const unsigned char *\fIbuffer\fP, size_t \fIlen\fP, const unsigned char *\fIidentifier\fP)\fR"
@@ -281,7 +291,7 @@ parameters are optional and only used if not NULL.  The parser is
 chosen by scoring the hints that are given.
 .IP "\fBraptor_feature raptor_feature_from_uri(raptor_uri *\fIuri\fP)\fR"
 Turn a URI \fIuri\fR into a raptor feature identifier, or <0 if the
-feature is unknown.
+feature is unknown.  The URIs are described below raptor_set_feature.
 .SH "STATEMENT UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging only.
@@ -499,14 +509,14 @@ Returns non 0 on failure or if the feature is unknown.
 The current defined serializer features are:
   \fIFeature                                 Values\fR
   \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_START_URI\fR            URI String
+  \fBRAPTOR_FEATURE_START_URI\fR                URI String
 .P
 If the \fIrelative_uris\fR
 feature is true (default false) then when serialising, preference
 is given to generating relative URIs where possible. 
 .P
 If the \fIstart_uri\fR
-A string encoding the URI to start serializing from.
+feature is set to a URI it is used by the serializer to start serializing from.
 .IP "\fBint raptor_serializer_get_feature(raptor_serializer* \fIserializer\fB, raptor_feature \fIfeature\fB)\fR"
 Get serializer features, the allowed \fIfeature\fP values are available
 .SH "SERIALIZER UTILITY FUNCTIONS"
@@ -1030,11 +1040,59 @@ Write an XML comment in \fIstr\fP to the XML Writer \fIxml_writer\fP.
 .IP "\fBvoid raptor_xml_writer_comment_counted(raptor_xml_writer* \fIxml_writer\fP, const unsigned char* \fIstr\fP, unsigned int \fIlength\fP)\fR"
 Write an XML comment in \fIstr\fP of length \fIlength\fP to the XML
 Writer \fIxml_writer\fP.
+.IP "\fBint raptor_xml_writer_features_enumerate(const raptor_feature \fIfeature\fP, const char **\fIname\fP, raptor_uri **\fIuri\fP, const char **\fIlabel\fP)\fR"
+Return the name, URI, string label (all optional)
+for an XML write \fIfeature\fP, returning non-zero if no such feature exists.
+.P
+Raptor features have URIs that are constructed from the URI
+\fIhttp://feature.librdf.org/raptor-\fP and the \fIname\fP
+so for example feature \fIscanForRDF\fP
+has URI \fIhttp://feature.librdf.org/raptor-scanForRDF\fP
+.IP "\fBint raptor_xml_writer_set_feature(raptor_xml_writer* \fIxml_writer\fP, raptor_feature \fIfeature\fP, int \fIvalue\fP)\fR"
+Set an XML writer feature \fIfeature\fR to a particular \fIvalue\fR.
+Returns non 0 on failure or if the feature is unknown.
+The current defined writer features are:
+  \fIFeature                                 Values\fR
+  \fBRAPTOR_FEATURE_WRITER_AUTO_INDENT\fR       Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WRITER_AUTO_EMPTY\fR        Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WRITER_INDENT_WIDTH\fR      Integer
+.P
+If the \fIwriter_auto_indent\fR
+feature is set (default true), the XML writer will automatically
+indent the output.
+.P
+If the \fIwriter_auto_empty\fR
+feature is set (default true), the XML writer will automatically
+indent the output.
+.P
+If the \fIwriter_indent_width\fR
+feature is set (default 2) if the XML writer is outputing indented
+XML, it will use that many spaces.
+.IP "\fBint raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char *value)\fR"
+Set an XML writer feature \fIfeature\fR to a particular string \fIvalue\fR.
+Returns non 0 on failure or if the feature is unknown.
+The current defined XML writer features are given in
+\fBraptor_xml_writer_set_feature\fP and at present only take integer values. If
+an integer value feature is set with this function, \fIvalue\fP is
+interpreted as an integer and then that value is used.
+.IP "\fBint raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature feature)\fR"
+Get XML writer feature integer values.  The allowed \fIfeature\fP values
+and types are given under \fBraptor_xml_writer_features_enumerate\fP.
+.IP "\fBconst unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature)\fR"
+Get XML writer feature string values. The allowed \fIfeature\fP values
+and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
 .SS 1.4.5
 Deprecated \fBraptor_ntriples_string_as_utf8_string\fP (never
 documented above) since it can only work with a raptor_parser object
 which makes it rather unusable alone.
+.P
+Added XML writer features and support functions
+\fBraptor_xml_writer_features_enumerate\fP,
+\fBraptor_xml_writer_set_feature\fP,
+\fBraptor_xml_writer_set_feature_string\fP,
+\fBraptor_xml_writer_get_feature\fP and
+\fBraptor_xml_writer_get_feature_string\fP
 .SS 1.4.3
 Added XML Writer class (\fBraptor_xml_writer\fP)
 and XML Element class (\fBraptor_xml_element\fP)
