@@ -606,6 +606,27 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
       serializer->feature_relative_uris=value;
       break;
 
+    case RAPTOR_FEATURE_START_URI:
+      return -1;
+      break;
+
+    /* parser features */
+    case RAPTOR_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+
+    /* XML writer features */
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+
     default:
       return -1;
       break;
@@ -644,6 +665,28 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
         return -1;
       break;
 
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+      /* actually handled above because value_is_string is false */
+      return -1;
+      break;
+
+    /* parser features */
+    case RAPTOR_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+
+    /* XML writer features */
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+
     default:
       return -1;
       break;
@@ -675,6 +718,27 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
       result=(serializer->feature_relative_uris != 0);
       break;
 
+    case RAPTOR_FEATURE_START_URI:
+      result= -1;
+      break;
+
+    /* parser features */
+    case RAPTOR_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+
+    /* XML writer features */
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+
     default:
       break;
   }
@@ -705,6 +769,28 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
       if(serializer->feature_start_uri)
         return raptor_uri_to_string(serializer->feature_start_uri);
       break;
+
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+      /* actually handled above because value_is_string is false */
+      return NULL;
+      break;
+      
+    /* parser features */
+    case RAPTOR_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+
+    /* XML writer features */
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
 
     default:
       return NULL;
@@ -1132,6 +1218,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
+
+    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", statement->subject_type);
   }
@@ -1240,6 +1328,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
+    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", statement->object_type);
   }
@@ -1489,6 +1578,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
       raptor_iostream_write_byte(iostr, '>');
       break;
       
+    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
   }

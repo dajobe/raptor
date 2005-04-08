@@ -996,6 +996,11 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
       parser->feature_check_rdf_id=value;
       break;
 
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+    case RAPTOR_FEATURE_START_URI:
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
     default:
       return -1;
       break;
@@ -1085,6 +1090,15 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
     case RAPTOR_FEATURE_CHECK_RDF_ID:
       result=(parser->feature_check_rdf_id != 0);
       break;
+
+    /* serializing features */
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+    case RAPTOR_FEATURE_START_URI:
+
+    /* XML writer features */
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
 
     default:
       break;

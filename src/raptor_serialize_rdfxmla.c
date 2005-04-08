@@ -503,6 +503,11 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
         rv = raptor_rdfxmla_emit_blank(serializer, element, object);
         break;
 
+      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+        /* ordinals should never appear as an object with current parsers */
+      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
+        /* predicates should never appear as an object */
+      case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
         break;
@@ -576,6 +581,11 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
         rv = raptor_rdfxmla_emit_xml_literal(serializer, element, object);
         break;
 
+      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+        /* ordinals should never appear as an object with current parsers */
+      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
+        /* predicates should never appear as an object */
+      case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
         break;

@@ -590,6 +590,7 @@ raptor_statement_part_as_counted_string(const void *term,
       *s++ ='\0';
       break;
       
+    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
   }
@@ -678,6 +679,7 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
       fputc('>', stream);
       break;
       
+    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
   }
