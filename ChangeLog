@@ -1,3 +1,14 @@
+2005-04-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xml_writer.c, raptor_serialize_rdfxmla.c,
+	raptor_serialize.c, raptor_rdfxml.c, raptor_parse.c,
+	raptor_general.c: Add missing switch cases to make -Wswitch-enum
+	happy.
+
+	* configure.ac: More gcc -W flags in maintainer mode.
+
+	* raptor_xslt.c: Casts for C++
+
 2005-04-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_xslt.c (raptor_init_parser_grddl): Expand grddl parser
