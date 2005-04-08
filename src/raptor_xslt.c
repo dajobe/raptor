@@ -218,8 +218,8 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
     xmlParserCtxtPtr xc;
     
     xc = xmlCreatePushParserCtxt(NULL, NULL,
-                                 ptr, len, 
-                                 raptor_uri_as_string(www->uri));
+                                 (const char*)ptr, len, 
+                                 (const char*)raptor_uri_as_string(www->uri));
     if(!xc)
       rc=1;
     else {
@@ -228,7 +228,7 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
     }
     *ctxt_ptr=xc;
   } else
-    rc=xmlParseChunk(*ctxt_ptr, ptr, len, 0);
+    rc=xmlParseChunk(*ctxt_ptr, (const char*)ptr, len, 0);
 
   if(rc)
     raptor_www_abort(www, "Parsing failed");
@@ -255,7 +255,8 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
 
     /* first time, so init context with first read bytes */
     xslt_parser->ctxt = xmlCreatePushParserCtxt(NULL, NULL,
-                                                s, len, uri_string);
+                                                (const char*)s, len,
+                                                (const char*)uri_string);
     if(!xslt_parser->ctxt) {
       raptor_parser_error(rdf_parser, "Failed to create XML parser");
       return 1;
@@ -291,9 +292,11 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
   }
 
   xmlXPathRegisterNs(xslt_parser->xpathCtx,
-                     "html", "http://www.w3.org/1999/xhtml");
+                     (const xmlChar*)"html", 
+                     (const xmlChar*)"http://www.w3.org/1999/xhtml");
   xmlXPathRegisterNs(xslt_parser->xpathCtx,
-                     "dataview", "http://www.w3.org/2003/g/data-view#");
+                     (const xmlChar*)"dataview",
+                     (const xmlChar*)"http://www.w3.org/2003/g/data-view#");
 
   /* Try all XPaths */
   for(expri=0; xpathExpressions[expri]; expri++) {
