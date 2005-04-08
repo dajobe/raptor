@@ -18,7 +18,8 @@ a set of parsers and serializers that
 generate Resource Description Framework (RDF) triples
 by parsing syntaxes or serialize the triples into a syntax.
 The supported parsing syntaxes are RDF/XML,
-N-Triples, Turtle, RSS tag soup including Atom 0.3 and the
+N-Triples, Turtle, RSS tag soup including Atom 0.3,
+GRDDL for XHTML and XML and the
 serializing syntaxes are RDF/XML, N-Triples and RSS 1.0.</p>
 
 <p>Raptor was designed to work closely with the
@@ -99,6 +100,14 @@ currently being standardised by the
 <a href="http://www.ietf.org/html.charters/atompub-charter.html">IETF Atom Publishing Format and Protocol</a>
 working group.
 </p>
+
+<h3>GRDDL parser</h3>
+
+<p>A parser for
+<a href="http://www.w3.org/2004/01/rdxh/spec">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
+which allows reading XHTML and XML as RDF triples by using
+profiles in the document that declare XSLT transforms from the XHTML/XML
+content into RDF/XML which is the RDF content.</p>
 
 
 <h2>Serializers</h2>
