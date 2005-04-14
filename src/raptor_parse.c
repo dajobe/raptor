@@ -1161,7 +1161,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
  * @prefix: prefix string
  * @base: integer base identifier
  *
- * Sets the parameters for the default algoriothm used to generate IDs.
+ * Sets the parameters for the default algorithm used to generate IDs.
  * The default algorithm uses both @prefix and @base to generate a new
  * identifier.   The exact identifier generated is not guaranteed to
  * be a strict concatenation of @prefix and @base but will use both
