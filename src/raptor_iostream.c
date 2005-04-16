@@ -259,6 +259,8 @@ raptor_string_iostream_finish(void *context)
   if(str) {
     if(len)
       raptor_stringbuffer_copy_to_string(con->sb, (unsigned char*)str, len+1);
+    else
+      *(char*)str='\0';
     *con->string_p=str;
   }
 
