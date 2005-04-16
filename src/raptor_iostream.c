@@ -255,12 +255,11 @@ raptor_string_iostream_finish(void *context)
   if(con->length_p)
     *con->length_p=len;
   
-  if(len) {
-    str=(void*)con->malloc_handler(len+1);
-    if(str) {
+  str=(void*)con->malloc_handler(len+1);
+  if(str) {
+    if(len)
       raptor_stringbuffer_copy_to_string(con->sb, (unsigned char*)str, len+1);
-      *con->string_p=str;
-    }
+    *con->string_p=str;
   }
 
   if(!str && con->length_p)
