@@ -31,6 +31,7 @@ if test "X$DRYRUN" != X; then
   DRYRUN=echo
 fi
 
+# automake 1.9 requires autoconf 2.58
 # automake 1.8 requires autoconf 2.58
 # automake 1.7 requires autoconf 2.54
 automake_min_vers=1.7
@@ -52,15 +53,15 @@ IFS=":"
 set - $PATH
 IFS="$save_ifs"
 
-autoconf=autoconf
+autoconf=${AUTOCONF-autoconf}
 autoconf_vers=0
-automake=automake
+automake=${AUTOMAKE-automake}
 automake_vers=0
-aclocal=aclocal
+aclocal=${ACLOCAL-aclocal}
 aclocal_vers=0
-autoheader=autoheader
+autoheader=${AUTOHEADER-autoheader}
 autoheader_vers=0
-libtoolize=libtoolize
+libtoolize=${LIBTOOLIZE-libtoolize}
 libtoolize_vers=0
 
 here=`pwd`
