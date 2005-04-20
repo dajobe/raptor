@@ -1,3 +1,27 @@
+2005-04-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* autogen.sh: allow envariables to override the programs
+
+2005-04-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_iostream.c (raptor_string_iostream_finish):
+	Fixes bug 0000021: the output of to_string for an empty model should
+	always be parsable and result in an empty model
+	http://bugs.librdf.org/mantis/view.php?id=21
+
+	* raptor_iostream.c (raptor_string_iostream_finish):
+	Return an empty string "" (aka 1
+	byte, \0) when the stringbuffer is NULL, do not return the NULL.
+
+2005-04-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_parse.c: docs typo
+
+2005-04-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am, tests/ex-56.out, tests/ex-56.rdf:
+	Added ex-56 test that relative URIs in datatypes work (Graham Klyne)
+
 2005-04-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_xml_writer.c, raptor_serialize_rdfxmla.c,
