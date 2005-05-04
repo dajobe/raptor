@@ -116,6 +116,9 @@ extern "C" {
 /* The size of a `unsigned char', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_CHAR 1
 
+/* The size of a `unsigned short', as computed by sizeof. */
+#define SIZEOF_UNSIGNED_SHORT 2
+
 /* The size of a `unsigned int', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_INT 4
 
