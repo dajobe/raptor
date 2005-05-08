@@ -1,3 +1,47 @@
+2005-05-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c:
+	Update from Suzan Foster to reflect the latest status of the
+	enclosure vocabulary and allow multiple common items and fields.
+	Fields in items are now a linked list of raptor_rss_field items.
+	(raptor_rss_context_init): Empty common area.
+	(raptor_enclosure_free): Use raptor_enclosure_free to empty enclosure
+	list.
+	(raptor_rss_field_free): Added to free a list of rss fields.
+	(raptor_clear_rss_item): Use raptor_rss_field_free for freeing
+	duplicate fields.
+	(raptor_clear_rss_common_items): added to empty common item field
+	lists.
+	(raptor_rss_context_terminate): Empty common item fields with
+	raptor_clear_rss_common_items.
+	(raptor_rss_new_field): Added.
+	(raptor_rss_enclosure_add): Added.
+	(raptor_rss_field_add): Added to add a new field value to the list of
+	values for one field item.
+	(raptor_rss_common_add): Added to add a new common item to the list
+	of common items for the current type.
+	(raptor_rss_common_get): Added to get the last common item for the
+	current type.
+	(raptor_rss_parser_processNode): Updates for new fields structure.
+	(raptor_rss_insert_enclosure_identifiers): Update for handling uris
+	and bnodes.
+	(raptor_rss_insert_identifiers): Update for lists for common items
+	and lists of ields.
+	(raptor_rss_emit_enclosure): Update for handling uris and bnodes.
+	(raptor_rss_emit_item, raptor_rss_emit, raptor_rss10_move_statements,
+	raptor_rss10_store_statement, raptor_rss10_serialize_statement,
+	raptor_rss10_build_xml_names): Updates for lists of common items and
+	lists of fields.
+	(raptor_rss10_emit_item): Added fix for moving fields to the item
+	when they got stuck on the enclosure when the enclosure uri = the guid.
+	Updates for lists of common items and lists of fields.
+	(raptor_rss10_serialize_end): Updates for lists of common items and
+	lists of fields.
+
+2005-05-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* win32_raptor_config.h: Added SIZEOF_UNSIGNED_SHORT
+
 2005-04-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* autogen.sh: allow envariables to override the programs
