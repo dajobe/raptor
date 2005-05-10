@@ -97,7 +97,10 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   # Match these styles of versions
   # GNU Bison version 1.28
   # bison (GNU Bison) 1.875
+dnl need to change quotes to allow square brackets
+changequote(<<, >>)dnl
   YACC_VERSION=`$YACC --version 2>&1 | sed -ne 's/^.*GNU Bison[^0-9]*//p'`
+changequote([, ])dnl
   if test "X$YACC_VERSION" != X; then
     AC_MSG_RESULT($YACC_VERSION - OK)
   else
