@@ -94,7 +94,10 @@ fi
 AC_PROG_YACC
 if test "$USE_MAINTAINER_MODE" = yes; then
   AC_MSG_CHECKING(for GNU bison)
-  YACC_VERSION=`$YACC --version 2>&1 | sed -ne 's/^.*GNU Bison. //p'`
+  # Match these styles of versions
+  # GNU Bison version 1.28
+  # bison (GNU Bison) 1.875
+  YACC_VERSION=`$YACC --version 2>&1 | sed -ne 's/^.*GNU Bison[^0-9]*//p'`
   if test "X$YACC_VERSION" != X; then
     AC_MSG_RESULT($YACC_VERSION - OK)
   else
