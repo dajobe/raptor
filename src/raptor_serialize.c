@@ -986,6 +986,9 @@ typedef struct {
 
   /* User declared namespaces */
   raptor_sequence *namespaces;
+
+  /* URI of rdf:XMLLiteral */
+  raptor_uri* rdf_xml_literal_uri;
 } raptor_rdfxml_serializer_context;
 
 
@@ -1011,6 +1014,8 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->namespaces=raptor_new_sequence(NULL, NULL);
 
+  context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+  
   return 0;
 }
   
@@ -1029,6 +1034,9 @@ raptor_rdfxml_serialize_terminate(raptor_serializer* serializer)
 
   if(context->rdf_nspace)
     raptor_free_namespace(context->rdf_nspace);
+
+  if(context->rdf_xml_literal_uri)
+    raptor_free_uri(context->rdf_xml_literal_uri);
 
   if(context->namespaces) {
     int i;
@@ -1134,7 +1142,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   raptor_qname **attrs;
   int attrs_count=0;
   raptor_uri* base_uri=NULL;
-
+  raptor_identifier_type object_type;
+  
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     predicate_ns=context->rdf_nspace;
     sprintf((char*)ordinal_name, "_%d", *((int*)statement->predicate));
@@ -1244,8 +1253,15 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
   attrs_count=0;
 
-  switch(statement->object_type) {
+  object_type=statement->object_type;
+  switch(object_type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+      if(statement->object_literal_datatype &&
+         raptor_uri_equals(statement->object_literal_datatype, 
+                           context->rdf_xml_literal_uri))
+        object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
+      
+      /* FALLTHROUGH */
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
 
       if(statement->object_literal_language)
@@ -1256,8 +1272,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                               serializer);
 
       len=strlen((const char*)statement->object);
-      
-      if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+
+      if(object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
         attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
         raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
 
@@ -1303,7 +1319,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
 
-      if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+      if(object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
         object_uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
         sprintf((char*)object_uri_string, "%s_%d",
                 raptor_rdf_namespace_uri, *((int*)statement->object));
@@ -1330,7 +1346,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
-      raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", statement->object_type);
+      raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", object_type);
   }
 
   raptor_free_xml_element(predicate_element);
