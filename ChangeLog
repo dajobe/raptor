@@ -1,3 +1,25 @@
+2005-05-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize_rdfxmla.c (raptor_rdfxmla_serialize_init,
+	raptor_rdfxmla_serialize_terminate): Init/free rdf_xml_literal_uri
+	for the rdf:XMLLiteral URI.
+	(raptor_rdfxmla_serialize_statement): Turn datatyped literals that
+	are rdf:XMLLiteral into inline XML, not escaped.
+
+2005-05-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_init,
+	raptor_rdfxml_serialize_terminate): Init/free rdf_xml_literal_uri
+	for the rdf:XMLLiteral URI.
+	(raptor_rdfxml_serialize_statement): Turn datatyped literals that
+	are rdf:XMLLiteral into inline XML, not escaped.
+
+2005-05-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Change quotes around bison test
+
+	* configure.ac: Try to work for older bison version styles
+
 2005-05-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rss.c:
