@@ -2188,11 +2188,11 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
             attrs[attr_count]=raptor_new_qname_from_namespace_local_name(rss_serializer->rdf_nspace, (const unsigned char*)"resource",  raptor_uri_as_string(field->uri));
             attr_count++;
             if (enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE] && enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE]->value) {
-              attrs[attr_count]=raptor_new_qname_from_namespace_local_name(raptor_rss_namespaces_info[RSS2_0_ENC_NS].nspace, raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_TYPE].name, enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE]->value);
+              attrs[attr_count]=raptor_new_qname_from_namespace_local_name(raptor_rss_namespaces_info[RSS2_0_ENC_NS].nspace, (const unsigned char*)raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_TYPE].name, (const unsigned char*)enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE]->value);
               attr_count++;
             }
             if (enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH] && enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH]->value) {
-              attrs[attr_count]=raptor_new_qname_from_namespace_local_name(raptor_rss_namespaces_info[RSS2_0_ENC_NS].nspace, raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH].name, enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH]->value);
+              attrs[attr_count]=raptor_new_qname_from_namespace_local_name(raptor_rss_namespaces_info[RSS2_0_ENC_NS].nspace, (const unsigned char*)raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH].name, (const unsigned char*)enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH]->value);
               attr_count++;
             }
             raptor_xml_element_set_attributes(predicate, attrs, attr_count);
