@@ -112,6 +112,9 @@ typedef struct {
   raptor_sequence *blanks;              /* blank subject items */
   raptor_sequence *nodes;               /* nodes */
   raptor_node *rdf_type;                /* rdf:type uri */
+
+  /* URI of rdf:XMLLiteral */
+  raptor_uri* rdf_xml_literal_uri;
 } raptor_rdfxmla_context;
 
 
@@ -1305,7 +1308,9 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
     raptor_rdfxmla_serialize_terminate(serializer);
     return 1;
   }
-  
+
+  context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+
   return 0;
 }
   
@@ -1352,6 +1357,9 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
   if(context->rdf_type)
     raptor_free_node(context->rdf_type);
   
+  if(context->rdf_xml_literal_uri)
+    raptor_free_uri(context->rdf_xml_literal_uri);
+
 }
   
 
@@ -1436,6 +1444,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   raptor_node *predicate = 0;
   raptor_node *object = 0;
   int rv;
+  raptor_identifier_type object_type;
   
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
       statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
@@ -1451,13 +1460,21 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     return 1;
   }  
   
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-      statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-      statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
-      statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
-      statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+  object_type=statement->object_type;
+  if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+    if(statement->object_literal_datatype &&
+       raptor_uri_equals(statement->object_literal_datatype, 
+                         context->rdf_xml_literal_uri))
+      object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
+  }
 
-    object = raptor_rdfxmla_lookup_node(context, statement->object_type,
+  if(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+     object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
+     object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
+     object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
+     object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+
+    object = raptor_rdfxmla_lookup_node(context, object_type,
                                         statement->object,
                                         statement->object_literal_datatype,
                                         statement->object_literal_language);
@@ -1465,7 +1482,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       return 1;          
     
   } else {
-    raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", statement->object_type);
+    raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", object_type);
     return 1;
   }
 
@@ -1482,7 +1499,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
        * multiple type definitions.  All definitions after the
        * first go in the property list */
       subject->node_type = raptor_rdfxmla_lookup_node(context,
-                                                      statement->object_type,
+                                                      object_type,
                                                       statement->object, NULL,
                                                       NULL);
       subject->node_type->ref_count++;
@@ -1548,6 +1565,8 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
   raptor_free_xml_element(context->rdf_RDF_element);
   context->rdf_RDF_element=NULL;
 
+  context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+  
   return 0;
 }
 
