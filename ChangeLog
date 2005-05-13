@@ -1,5 +1,7 @@
 2005-05-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rss.c: Casts for C++
+
 	* raptor_serialize_rdfxmla.c (raptor_rdfxmla_serialize_init,
 	raptor_rdfxmla_serialize_terminate): Init/free rdf_xml_literal_uri
 	for the rdf:XMLLiteral URI.
