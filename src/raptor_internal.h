@@ -55,10 +55,25 @@ extern "C" {
 #define RAPTOR_DEBUG 1
 #endif
 
+#if defined(RAPTOR_MEMORY_SIGN)
+#define RAPTOR_SIGN_KEY 0x08A61080
+void* raptor_sign_malloc(size_t size);
+void* raptor_sign_calloc(size_t nmemb, size_t size);
+void* raptor_sign_realloc(void *ptr, size_t size);
+void raptor_sign_free(void *ptr);
+  
+#define RAPTOR_MALLOC(type, size)   raptor_sign_malloc(size)
+#define RAPTOR_CALLOC(type, nmemb, size) raptor_sign_calloc(nmemb, size)
+#define RAPTOR_REALLOC(type, ptr, size) raptor_sign_realloc(ptr, size)
+#define RAPTOR_FREE(type, ptr)   raptor_sign_free(ptr)
+
+#else
 #define RAPTOR_MALLOC(type, size) malloc(size)
 #define RAPTOR_CALLOC(type, nmemb, size) calloc(nmemb, size)
 #define RAPTOR_REALLOC(type, ptr, size) realloc(ptr, size)
 #define RAPTOR_FREE(type, ptr)   free((void*)ptr)
+
+#endif
 
 #ifdef RAPTOR_DEBUG
 /* Debugging messages */
