@@ -262,7 +262,7 @@ need_expat_source=0
 expat_source_dir=
 expat_obj_dir=
 
-AC_ARG_WITH(expat-source, [  --with-expat-source=PATH Location of expat source tree (default=auto)], expat_source="$withval", expat_source="auto")
+AC_ARG_WITH(expat-source, [  --with-expat-source=PATH  Location of expat source tree (default=auto)], expat_source="$withval", expat_source="auto")
 
 
 AC_MSG_CHECKING(for expat sources)
@@ -394,7 +394,7 @@ fi
 
 LIBS="$oLIBS"
 
-AC_ARG_WITH(xml2-config, [  --with-xml2-config=PATH Location of libxml xml2-config []], xml2_config="$withval", xml2_config="")
+AC_ARG_WITH(xml2-config, [  --with-xml2-config=PATH   Location of libxml xml2-config []], xml2_config="$withval", xml2_config="")
 
 if test "X$xml2_config" != "X" ; then
   AC_MSG_CHECKING(for $xml2_config)
@@ -410,7 +410,7 @@ if test "X$XML_CONFIG" = "X"; then
   AC_CHECK_PROGS(XML_CONFIG, xml2-config)
 fi
 
-AC_ARG_WITH(xslt-config, [  --with-xslt-config=PATH Location of libxslt xslt-config []], xslt_config="$withval", xslt_config="")
+AC_ARG_WITH(xslt-config, [  --with-xslt-config=PATH   Location of libxslt xslt-config []], xslt_config="$withval", xslt_config="")
 
 if test "X$xslt_config" != "X" ; then
   AC_MSG_CHECKING(for $xslt_config)
@@ -426,7 +426,7 @@ if test "X$XSLT_CONFIG" = "X"; then
   AC_CHECK_PROGS(XSLT_CONFIG, xslt-config)
 fi
 
-AC_ARG_WITH(curl-config, [  --with-curl-config=PATH Location of libcurl curl-config []], curl_config="$withval", curl_config="")
+AC_ARG_WITH(curl-config, [  --with-curl-config=PATH   Location of libcurl curl-config []], curl_config="$withval", curl_config="")
 
 if test "X$curl_config" != "X" ; then
   AC_MSG_CHECKING(for $curl_config)
