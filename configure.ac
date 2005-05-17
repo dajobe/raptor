@@ -571,7 +571,7 @@ if test "X$XSLT_CONFIG" != X; then
 fi
 
 
-AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME  Use XML parser - libxml (default), expat], xml_parser="$withval", xml_parser="libxml") 
+AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME    Use XML parser - libxml (default), expat], xml_parser="$withval", xml_parser="libxml") 
 
 for xml_parser_name in $xml_parser libxml expat; do
   case $xml_parser_name in
@@ -803,7 +803,7 @@ if test $ac_cv_header_fetch_h = yes; then
 fi
 
 
-AC_ARG_WITH(www, [  --with-www=NAME         Use WWW library - curl (default), xml, libwww, libfetch, none], www="$withval", www="curl") 
+AC_ARG_WITH(www, [  --with-www=NAME           Use WWW library - curl (default), xml, libwww, libfetch, none], www="$withval", www="curl") 
 
 for www_name in $www curl xml libwww libfetch none; do
   case $www_name in
@@ -986,7 +986,7 @@ fi
 MEM=
 MEM_LIBS=
 CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
-AC_ARG_WITH(dmalloc, [  --with-dmalloc          Use dmalloc debugging library (default=no)], use_dmalloc="$withval", use_dmalloc="no") 
+AC_ARG_WITH(dmalloc, [  --with-dmalloc            Use dmalloc debugging library (default=no)], use_dmalloc="$withval", use_dmalloc="no") 
 AC_MSG_CHECKING(using dmalloc library)
 if test "$USE_MAINTAINER_MODE" = yes; then
   if test "$ac_cv_header_dmalloc_h" = yes; then
@@ -1004,6 +1004,16 @@ AC_MSG_RESULT($use_dmalloc);
 if test $use_dmalloc = yes; then
   MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
   MEM_LIBS=-ldmalloc
+fi
+AC_ARG_WITH(memory-sign, [  --with-memory-signing     Sign allocated memory (default=auto)], use_memory_signing="$withval", use_memory_signing="auto") 
+AC_MSG_CHECKING(using memory signing)
+if test "$USE_MAINTAINER_MODE" = yes -a "X$use_memory_signing" = Xauto; then
+  use_memory_signing=yes
+fi
+AC_MSG_RESULT($use_memory_signing);
+if test $use_memory_signing = yes; then
+  MEM=-DRAPTOR_MEMORY_SIGN=1
+  MEM_LIBS=
 fi
 
 STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
