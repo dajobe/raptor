@@ -1,3 +1,28 @@
+2005-05-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_general.c (raptor_sign_malloc, raptor_sign_calloc,
+	raptor_sign_realloc, raptor_sign_free): Added raptor signing
+	memory debugging trigged by RAPTOR_MEMORY_SIGN.
+
+	* raptor_internal.h: Added raptor signing memory debugging trigged
+	by RAPTOR_MEMORY_SIGN
+
+	* n3_lexer.l: Use RAPTOR_MALLOC, RAPTOR_FREE
+
+	* n3_parser.y, turtle_parser.y (directive, resource): Use
+	RAPTOR_MALLOC, RAPTOR_FREE
+
+	* turtle_lexer.l: Use RAPTOR_MALLOC, RAPTOR_FREE
+
+	* rdfdiff.c:
+	(rdfdiff_new_file, rdfdiff_new_blank) Use RAPTOR_MALLOC rather
+	than strdup.
+
+	* raptor_www_curl.c (raptor_www_curl_header_callback): Use
+	RAPTOR_MALLOC on type field data.
+
+	* rdfdump.c: Add raptor_finish() before usage exit
+
 2005-05-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rss.c: Casts for C++
