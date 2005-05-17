@@ -78,7 +78,7 @@ raptor_www_curl_header_callback(void  *ptr,  size_t  size, size_t nmemb, void *u
   
   if(!strncmp((char*)ptr, "Content-Type: ", 14)) {
     int len=bytes-16;
-    char *type_buffer=(char*)malloc(len+1);
+    char *type_buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
     strncpy(type_buffer, (char*)ptr+14, len);
     type_buffer[len]='\0';
     www->type=type_buffer;
