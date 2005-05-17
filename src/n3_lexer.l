@@ -246,7 +246,7 @@ n3_copy_token(unsigned char *text, size_t len) {
   unsigned char *s;
   if(!len)
     len=strlen((const char*)text);
-  s=(unsigned char *)malloc(len+1);
+  s=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
 
   strncpy((char*)s, (const char*)text, len);
   s[len] = '\0';
@@ -259,7 +259,7 @@ n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text,
                      size_t len, int delim) {
   size_t i;
   unsigned char *s, *d;
-  unsigned char *string=(unsigned char *)malloc(len+1);
+  unsigned char *string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
 
   for(s=text, d=string, i=0; i<len; s++, i++) {
     unsigned char c=*s;
@@ -282,7 +282,7 @@ n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text,
         s++; i++;
         if(i+ulen > len) {
           n3_syntax_error(rdf_parser, "\\%c over end of line", c);
-          free(string);
+          RAPTOR_FREE(cstring, string);
           return NULL;
         }
         
@@ -292,7 +292,7 @@ n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text,
         
         if(unichar < 0 || unichar > 0x10ffff) {
           n3_syntax_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
-          free(string);
+          RAPTOR_FREE(cstring, string);
           return NULL;
         }
           
@@ -401,7 +401,7 @@ n3_token_free(int token, YYSTYPE *lval)
     case BLANK_LITERAL:
     case IDENTIFIER:
       if(lval->string)
-        free(lval->string);
+        RAPTOR_FREE(cstring, lval->string);
       break;
 
     case URI_LITERAL:
@@ -458,10 +458,7 @@ main(int argc, char *argv[])
 
   uri_string=raptor_uri_filename_to_uri_string(filename);
   rdf_parser.base_uri=raptor_new_uri(uri_string);
-#if defined (RAPTOR_DEBUG) && defined(HAVE_DMALLOC_H)
-#undef free
-#endif
-  free((void*)uri_string);
+  RAPTOR_FREE(cstring, (void*)uri_string);
   
   while(1) {
     memset(&lval, 0, sizeof(YYSTYPE));
