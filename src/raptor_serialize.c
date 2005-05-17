@@ -77,14 +77,14 @@ raptor_delete_serializer_factories(void)
     if(factory->finish_factory)
       factory->finish_factory(factory);
 
-    RAPTOR_FREE(raptor_serializer_factory, factory->name);
-    RAPTOR_FREE(raptor_serializer_factory, factory->label);
+    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->name);
+    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->label);
     if(factory->alias)
-      RAPTOR_FREE(raptor_serializer_factory, factory->alias);
+      RAPTOR_FREE(raptor_serializer_factory, (void*)factory->alias);
     if(factory->mime_type)
-      RAPTOR_FREE(raptor_serializer_factory, factory->mime_type);
+      RAPTOR_FREE(raptor_serializer_factory, (void*)factory->mime_type);
     if(factory->uri_string)
-      RAPTOR_FREE(raptor_serializer_factory, factory->uri_string);
+      RAPTOR_FREE(raptor_serializer_factory, (void*)factory->uri_string);
 
     RAPTOR_FREE(raptor_serializer_factory, factory);
   }

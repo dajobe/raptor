@@ -179,7 +179,7 @@ raptor_free_identifier(raptor_identifier *identifier)
   }
 
   if(identifier->literal) {
-    RAPTOR_FREE(cstring, identifier->literal);
+    RAPTOR_FREE(cstring, (void*)identifier->literal);
     identifier->literal=NULL;
   }
 
@@ -189,7 +189,7 @@ raptor_free_identifier(raptor_identifier *identifier)
   }
 
   if(identifier->literal_language) {
-    RAPTOR_FREE(cstring, identifier->literal_language);
+    RAPTOR_FREE(cstring, (void*)identifier->literal_language);
     identifier->literal_language=NULL;
   }
 

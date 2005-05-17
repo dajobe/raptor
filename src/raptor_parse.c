@@ -84,14 +84,14 @@ raptor_delete_parser_factories(void)
     if(factory->finish_factory)
       factory->finish_factory(factory);
 
-    RAPTOR_FREE(raptor_parser_factory, factory->name);
-    RAPTOR_FREE(raptor_parser_factory, factory->label);
+    RAPTOR_FREE(raptor_parser_factory, (void*)factory->name);
+    RAPTOR_FREE(raptor_parser_factory, (void*)factory->label);
     if(factory->alias)
-      RAPTOR_FREE(raptor_parser_factory, factory->alias);
+      RAPTOR_FREE(raptor_parser_factory, (void*)factory->alias);
     if(factory->mime_type)
-      RAPTOR_FREE(raptor_parser_factory, factory->mime_type);
+      RAPTOR_FREE(raptor_parser_factory, (void*)factory->mime_type);
     if(factory->uri_string)
-      RAPTOR_FREE(raptor_parser_factory, factory->uri_string);
+      RAPTOR_FREE(raptor_parser_factory, (void*)factory->uri_string);
 
     RAPTOR_FREE(raptor_parser_factory, factory);
   }

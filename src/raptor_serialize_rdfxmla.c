@@ -1083,16 +1083,12 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
   if(!node) {
     /* If there isn't already an entry */
     rv = raptor_sequence_set_at(subject->list_items, ordinal, object);
-
     if(!rv)
       object->ref_count++;
 
-  } else {
-    fprintf(stderr, "Object already exists in elements array at %d\n", ordinal);
   }
   
   return rv;
-  
 }
 
 
@@ -1518,7 +1514,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   } else if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     int idx = *(int*)statement->predicate;
     rv = raptor_subject_add_list_element(subject, idx, object);
-    if(rv != 0) {
+    if(rv) {
       /* An ordinal might already exist at that location, the fallback
        * is to just put in the properties list */
       predicate = raptor_rdfxmla_lookup_node(context, statement->predicate_type,

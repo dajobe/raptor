@@ -1931,7 +1931,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           }
         } else if (element->rdf_attr[RDF_ATTR_about]) {
           element->subject.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (const unsigned char*)element->rdf_attr[RDF_ATTR_about]);
-          RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_about]);
+          RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_about]);
           element->rdf_attr[RDF_ATTR_about]=NULL;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_URI;
@@ -2266,7 +2266,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          */
         if (element->rdf_attr[RDF_ATTR_datatype]) {
           element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (const unsigned char*)element->rdf_attr[RDF_ATTR_datatype]);
-          RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_datatype]); 
+          RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_datatype]); 
           element->rdf_attr[RDF_ATTR_datatype]=NULL; 
         }
 
@@ -2689,7 +2689,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
               if(element->rdf_attr[RDF_ATTR_resource]) {
                 element->object.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser),
                                                     (const unsigned char*)element->rdf_attr[RDF_ATTR_resource]);
-                RAPTOR_FREE(cstring, element->rdf_attr[RDF_ATTR_resource]);
+                RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_resource]);
                 element->rdf_attr[RDF_ATTR_resource]=NULL;
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
                 element->object.uri_source=RAPTOR_URI_SOURCE_URI;

@@ -379,7 +379,7 @@ raptor_free_xml_element(raptor_xml_element *element)
     raptor_free_uri(element->base_uri);
 
   if(element->xml_language)
-    RAPTOR_FREE(cstring, element->xml_language);
+    RAPTOR_FREE(cstring, (void*)element->xml_language);
 
   raptor_free_qname(element->name);
 
