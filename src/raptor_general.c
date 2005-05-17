@@ -803,6 +803,72 @@ raptor_calloc_memory(size_t nmemb, size_t size)
 }
 
 
+#if defined (RAPTOR_DEBUG) && defined(RAPTOR_MEMORY_SIGN)
+void*
+raptor_sign_malloc(size_t size)
+{
+  int *p;
+  
+  size += sizeof(int);
+  
+  p=(int*)malloc(size);
+  *p++ = RAPTOR_SIGN_KEY;
+  return p;
+}
+
+void*
+raptor_sign_calloc(size_t nmemb, size_t size)
+{
+  int *p;
+  
+  /* turn into bytes */
+  size = nmemb*size + sizeof(int);
+  
+  p=(int*)calloc(1, size);
+  *p++ = RAPTOR_SIGN_KEY;
+  return p;
+}
+
+void*
+raptor_sign_realloc(void *ptr, size_t size)
+{
+  int *p;
+
+  if(!ptr)
+    return raptor_sign_malloc(size);
+  
+  p=(int*)ptr;
+  p--;
+
+  if(*p != RAPTOR_SIGN_KEY)
+    RAPTOR_FATAL1("memory signature failed");
+
+  size += sizeof(int);
+  
+  p=(int*)realloc(p, size);
+  *p++= RAPTOR_SIGN_KEY;
+  return p;
+}
+
+void
+raptor_sign_free(void *ptr)
+{
+  int *p;
+
+  if(!ptr)
+    return;
+  
+  p=(int*)ptr;
+  p--;
+
+  if(*p != RAPTOR_SIGN_KEY)
+    RAPTOR_FATAL1("memory signature failed");
+
+  free(p);
+}
+#endif
+
+
 #if defined (RAPTOR_DEBUG) && defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
 
 #undef malloc
