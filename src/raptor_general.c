@@ -301,7 +301,7 @@ raptor_free_statement(raptor_statement *statement) {
     if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
       raptor_free_uri((raptor_uri*)statement->subject);
     else
-      RAPTOR_FREE(cstring, statement->subject);
+      RAPTOR_FREE(cstring, (void*)statement->subject);
   }
 
   if(statement->predicate) {
@@ -309,7 +309,7 @@ raptor_free_statement(raptor_statement *statement) {
        statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
       raptor_free_uri((raptor_uri*)statement->predicate);
     else
-      RAPTOR_FREE(cstring, statement->predicate);
+      RAPTOR_FREE(cstring, (void*)statement->predicate);
   }
 
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
@@ -317,10 +317,10 @@ raptor_free_statement(raptor_statement *statement) {
       raptor_free_uri((raptor_uri*)statement->object);
   } else {
     if(statement->object)
-      RAPTOR_FREE(cstring, statement->object);
+      RAPTOR_FREE(cstring, (void*)statement->object);
 
     if(statement->object_literal_language)
-      RAPTOR_FREE(cstring, statement->object_literal_language);
+      RAPTOR_FREE(cstring, (void*)statement->object_literal_language);
     if(statement->object_literal_datatype)
       raptor_free_uri((raptor_uri*)statement->object_literal_datatype);
   }
@@ -841,7 +841,7 @@ raptor_sign_realloc(void *ptr, size_t size)
   p--;
 
   if(*p != RAPTOR_SIGN_KEY)
-    RAPTOR_FATAL1("memory signature failed");
+    RAPTOR_FATAL3("memory signature %08X != %08X", *p, RAPTOR_SIGN_KEY);
 
   size += sizeof(int);
   
@@ -862,7 +862,7 @@ raptor_sign_free(void *ptr)
   p--;
 
   if(*p != RAPTOR_SIGN_KEY)
-    RAPTOR_FATAL1("memory signature failed");
+    RAPTOR_FATAL3("memory signature %08X != %08X", *p, RAPTOR_SIGN_KEY);
 
   free(p);
 }
