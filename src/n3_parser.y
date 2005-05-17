@@ -508,7 +508,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
                                          prefix, 
                                          (const unsigned char*)raptor_uri_as_string($3), 0);
   if($2)
-    free($2);
+    RAPTOR_FREE(cstring, $2);
   raptor_free_uri($3);
 }
 ;
@@ -644,7 +644,7 @@ URI_LITERAL
 #if RAPTOR_DEBUG > 1  
   printf("resource integer=%d\n", $1);
 #endif
-  string=(unsigned char*)malloc(32); /* FIXME */
+  string=(unsigned char*)RAPTOR_MALLOC(cstring, 32); /* FIXME */
   sprintf((char*)string, "%d", $1);
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
