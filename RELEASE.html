@@ -40,19 +40,33 @@ has no content and
 to set the indenting level for the XML.
 </p>
 
-<p>Portability fixes for win32 (Dave Viner)</p>
+<p>Portability fixes for win32 - added
+<code>SIZEOF_UNSIGNED_SHORT</code> (Dave Viner, others)</p>
+
+<p>Added a signing memory debugging system to aid checking when
+raptor-allocated memory is freed in another library or
+vice-versa.</p>
+
+<p>Fixed a few internal malloc/frees to use RAPTOR_MALLOC / RAPTOR_FREE
+so that the above signed memory system worked.</p>
 
 <p>RDF/XML serializer:
-Use the maximal name when splitting a predicate.
+Use the maximal name when splitting a predicate.<br />
+Turn datatyped literals that are rdf:XMLLiteral into inline XML with
+<code>rdf:parseType="Literal"</code> rather than XML-escaped.
 </p>
 
 <p>RDF/XML abbreviated serializer:
 Fix a crash when there is a NULL base URI.
-Use the maximal name when splitting a predicate.
+Use the maximal name when splitting a predicate.<br />
+Turn datatyped literals that are rdf:XMLLiteral into inline XML with
+<code>rdf:parseType="Literal"</code> rather than XML-escaped.
 </p>
 
 <p>RSS tag soup parser:
-Fix crash with unexpected use of <code>alternate</code> attribute.
+Fix crash with unexpected use of <code>alternate</code> attribute.<br />
+Update from Suzan Foster to reflect the latest status of the
+enclosure vocabulary and allow multiple common items and fields.
 </p>
 
 <p>RSS 1.0 serializer:
