@@ -1,5 +1,7 @@
 2005-05-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* configure.ac: Add proper check for libxslt
+
 	* configure.ac: default memory-signing no
 
 	* configure.ac, rdfdump.c: Bugs to http://bugs.librdf.org/
