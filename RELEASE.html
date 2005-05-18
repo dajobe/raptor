@@ -44,8 +44,9 @@ to set the indenting level for the XML.
 <code>SIZEOF_UNSIGNED_SHORT</code> (Dave Viner, others)</p>
 
 <p>Added a signing memory debugging system to aid checking when
-raptor-allocated memory is freed in another library or
-vice-versa.</p>
+raptor-allocated memory is freed in another library or vice-versa
+enabled by <code>--with-memory-signing</code> configure option
+(defaults to on in maintainer mode).</p>
 
 <p>Fixed a few internal malloc/frees to use RAPTOR_MALLOC / RAPTOR_FREE
 so that the above signed memory system worked.</p>
