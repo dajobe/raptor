@@ -843,8 +843,6 @@ raptor_triple_print(raptor_triple *t, FILE *fh)
 #endif
 
 
-extern char *filename;
- 
 int
 turtle_parser_error(void* ctx, const char *msg)
 {
@@ -1184,6 +1182,7 @@ main(int argc, char *argv[])
   raptor_turtle_parser turtle_parser; /* static */
   raptor_locator *locator=&rdf_parser.locator;
   FILE *fh;
+  char *filename;
 
 #if RAPTOR_DEBUG > 2
   turtle_parser_debug=1;
