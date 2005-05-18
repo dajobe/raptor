@@ -1005,11 +1005,8 @@ if test $use_dmalloc = yes; then
   MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
   MEM_LIBS=-ldmalloc
 fi
-AC_ARG_WITH(memory-sign, [  --with-memory-signing     Sign allocated memory (default=auto)], use_memory_signing="$withval", use_memory_signing="auto") 
+AC_ARG_WITH(memory-signing, [  --with-memory-signing     Sign allocated memory (default=no)], use_memory_signing="$withval", use_memory_signing="no") 
 AC_MSG_CHECKING(using memory signing)
-if test "$USE_MAINTAINER_MODE" = yes -a "X$use_memory_signing" = Xauto; then
-  use_memory_signing=yes
-fi
 AC_MSG_RESULT($use_memory_signing);
 if test $use_memory_signing = yes; then
   MEM=-DRAPTOR_MEMORY_SIGN=1
