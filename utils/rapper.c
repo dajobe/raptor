@@ -526,7 +526,7 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
     puts(HELP_TEXT("w", "ignore-warnings ", "Ignore warning messages"));
     puts(HELP_TEXT("v", "version         ", "Print the Raptor version"));
-    puts("\nReport bugs to <redland-dev@lists.librdf.org>.");
+    puts("\nReport bugs to http://bugs.librdf.org/");
     puts("Raptor home page: http://librdf.org/raptor/");
 
     raptor_finish();
