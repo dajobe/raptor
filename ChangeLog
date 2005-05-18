@@ -1,4 +1,21 @@
+2005-05-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: default memory-signing no
+
+	* configure.ac, rdfdump.c: Bugs to http://bugs.librdf.org/
+
 2005-05-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_identifier.c, raptor_parse.c, raptor_serialize.c,
+	raptor_serialize_rdfxmla.c, raptor_sax2.c, raptor_rdfxml.c: Casts
+	for RAPTOR_FREE
+
+	* configure.ac: usage message formatting
+
+	* raptor_general.c (raptor_free_statement): Casts for RAPTOR_FREE
+
+	* configure.ac: Added --with-memory-signing raptor signing memory
+	debugging Reformatted some other --with help messages.
 
 	* raptor_general.c (raptor_sign_malloc, raptor_sign_calloc,
 	raptor_sign_realloc, raptor_sign_free): Added raptor signing
