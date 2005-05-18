@@ -35,6 +35,8 @@ libxml_min_version=2.4.0
 # Need XML Reader and node type enums for RSS Tag Soup parser
 libxml_rss_min_version=2.5.10
 
+libxslt_min_version=1.0.18
+
 AM_INIT_AUTOMAKE([1.7 check-news std-options -Wall])
 AM_CONFIG_HEADER(raptor_config.h)
 AM_MAINTAINER_MODE
@@ -565,10 +567,30 @@ LIBS="$oLIBS"
 
 
 have_libxslt=0
+
+oCPPFLAGS="$CPPFLAGS"
+oLIBS="$LIBS"
 if test "X$XSLT_CONFIG" != X; then
-  # FIXME
-  have_libxslt=1
+  LIBS="$LIBS `$XSLT_CONFIG --libs`"
+  AC_CHECK_FUNC(xsltSaveResultToString, have_xsltSaveResultToString=yes, have_xsltSaveResultToString=no)
+  AC_MSG_CHECKING(for system libxslt library)
+  if test $have_xsltSaveResultToString = yes; then
+    have_libxslt=1
+    CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
+    LIBXSLT_VERSION=`$XSLT_CONFIG --version`
+    libxslt_version_dec=`echo $LIBXSLT_VERSION | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libxslt_min_version_dec=`echo $libxslt_min_version | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    AC_MSG_RESULT(yes - version $LIBXSLT_VERSION)
+    if test $libxslt_version_dec -lt $libxslt_min_version_dec; then
+       AC_MSG_WARN(Using libxslt $LIBXSLT_VERSION is unsupported - $libxslt_min_version or newer required.)
+       have_libxslt=0
+    fi
+  else
+    AC_MSG_RESULT(no)
+  fi
 fi
+CPPFLAGS="$oCPPFLAGS"
+LIBS="$oLIBS"
 
 
 AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME    Use XML parser - libxml (default), expat], xml_parser="$withval", xml_parser="libxml") 
