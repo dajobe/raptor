@@ -41,9 +41,16 @@ extern "C" {
 
 #define HAVE_STDLIB_H 1
 
+#if 0
 /* For using expat on win32 */
 #define RAPTOR_XML_EXPAT 1
 #define HAVE_EXPAT_H 1
+
+#else
+/* For using libxml2 on win32 */
+#define RAPTOR_XML_LIBXML
+#define HAVE_LIBXML_XMLREADER_H
+#endif
 
 #define HAVE_STRICMP 1
 
