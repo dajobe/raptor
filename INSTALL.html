@@ -147,6 +147,11 @@ API level using functions such as
 <code>raptor_serializers_enumerate</code> or from the
 <code>rapper</code> utility in the help message.</p></dd>
 
+<dt><tt>--with-memory-signing</tt><br /></dt>
+<dd><p>Enable signing of memory allocations so that when memory is
+allocated with malloc() and released free(), a check is made that the
+memory was allocated in the same library.</p></dd>
+
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
 minimum version 2.4.0 (2.6.0 or newer prefered)
