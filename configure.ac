@@ -447,7 +447,7 @@ fi
 
 oLIBS="$LIBS"
 
-AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check     turn off Unicode NFC checking (default enabled).  ], nfc_check="no", nfc_check="yes")	
+AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check        Turn off Unicode NFC checking (default enabled).  ], nfc_check="no", nfc_check="yes")	
 AC_MSG_CHECKING(using Unicode NFC checking)
 AC_MSG_RESULT($nfc_check);
 
@@ -708,7 +708,7 @@ if test "x" = "y"; then
 fi
 
 AC_MSG_CHECKING(RDF parsers required)
-AC_ARG_ENABLE(parsers, [  --enable-parsers=LIST   Use RDF parsers (default=all)], parsers="$enableval") 
+AC_ARG_ENABLE(parsers, [  --enable-parsers=LIST      Use RDF parsers (default=all)], parsers="$enableval") 
 if test "X$parsers" = Xall -o "X$parsers" = X; then
   parsers="$rdf_parsers_available"
   AC_MSG_RESULT(all)
@@ -756,6 +756,45 @@ AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_N3, test $n3_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes)
+
+
+dnl RDF Serializers
+rdfxml_serializer=no
+ntriples_serializer=no
+rdfxml_abbrev_serializer=no
+
+rdf_serializers_available="rdfxml rdfxml-abbrev ntriples"
+
+# This is needed because autoheader can't work out which computed
+# symbols must be pulled from acconfig.h into config.h.in
+if test "x" = "y"; then
+  AC_DEFINE(RAPTOR_SERIALIZER_RDFXML, 1, [Building RDF/XML serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_NTRIPLES, 1, [Building N-Triples serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_RDFXML_ABBREV, 1, [Building RDF/XML-abbreviated serializer])
+fi
+
+AC_MSG_CHECKING(RDF serializers required)
+AC_ARG_ENABLE(serializers, [  --enable-serializers=LIST  Use RDF serializers (default=all)], serializers="$enableval") 
+if test "X$serializers" = Xall -o "X$serializers" = X; then
+  serializers="$rdf_serializers_available"
+  AC_MSG_RESULT(all)
+else
+  AC_MSG_RESULT($serializers)
+fi
+
+for serializer in $serializers; do
+  s=`echo $serializer | tr '-' '_'`
+
+  eval $s'_serializer=yes'
+  NAME=`echo $s | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+  n=RAPTOR_SERIALIZER_${NAME}
+  AC_DEFINE_UNQUOTED($n)
+  rdf_serializers_enabled="$rdf_serializers_enabled $serializer"
+done
+
+AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML, test $rdfxml_serializer = yes)
+AM_CONDITIONAL(RAPTOR_SERIALIZER_NTRIPLES, test $ntriples_serializer = yes)
+AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML_ABBREV, test $rdfxml_abbrev_serializer = yes)
 
 
 dnl Enable NFC code only if needed and the check is enabled
@@ -1069,8 +1108,10 @@ AC_OUTPUT
 
 AC_MSG_RESULT([
 Raptor build summary:
-  RDF parsers available : $rdf_parsers_available
-  RDF parsers enabled   :$rdf_parsers_enabled
-  XML parser            :$xml_parsers_available
-  WWW library           : $www_library
+  RDF parsers available     : $rdf_parsers_available
+  RDF parsers enabled       :$rdf_parsers_enabled
+  RDF serializers available : $rdf_serializers_available
+  RDF serializers enabled   :$rdf_serializers_enabled
+  XML parser                :$xml_parsers_available
+  WWW library               : $www_library
 ])
