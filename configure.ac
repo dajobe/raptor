@@ -26,7 +26,7 @@ dnl
 dnl 
 
 
-AC_INIT(Raptor RDF Parser, 1.4.6, http://bugs.librdf.org/, raptor)
+AC_INIT(Raptor RDF Parser, 1.4.7, http://bugs.librdf.org/, raptor)
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(raptor_parse.c)
 AC_REVISION($Revision$)
