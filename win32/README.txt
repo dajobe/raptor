@@ -1,23 +1,30 @@
-This is contributed win32 configuration but I cannot test it since I
-don't use Windows.  Please send me patches to fix things that are
-wrong here.
+This is user contributed win32 configuration for building raptor
+using MS Windows development environments.
 
-raptor.dsp assumes that expat and curl has been installed or compiled
-in sibling top level directories.  The versions used here look for:
+The latest files are the *.vcproj and *.sln files for MS Visual
+Studio 8, provided by John Barstow.
 
-  ..\..\curl-7.12.1\lib\curllib.dsp
-  ..\..\expat-1.95.8\lib\expat.dsp
+The *.dsp *.dsw files are older and from MS Developer Studio provided
+by several prople.
+
+The various project files assume that (iconv, libxml, libxml2) or
+expat are available as well as curl have been installed or compiled
+in sibling top level directories. See the raptor.vcproj (newest) or
+raptor.dsp (older) files for the exact paths used, which are
+version-number dependant.
+
+It should be relatively easy to change raptor between using libxml2
+and expat.  See ..\win32_raptor_config.h near:
+/* For using expat on win32 */
+...
+#else
+/* For using libxml2 on win32 */
+
+and pick one path.
 
 
-It should be relatively easy to change it to use libxml2 with some
-edits to ..\win32_config.h - remove the expat references and add:
-  #define RAPTOR_XML_LIBXML 1
-  #define HAVE_LIBXML_PARSER_H 1
-  #define HAVE_LIBXML_HASH_H 1
-  #define RAPTOR_LIBXML_ENTITY_ETYPE 1
-  #define RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET 1
-  #define RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED 1
-(these will vary a lot depending on the libxml2 version).
-and the corresponding library changes to raptor.dsp
+I do not test this configuration since I don't use Windows.  I am
+happy to receive patches to fix things though.
 
 Dave
+2005-05-19
