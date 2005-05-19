@@ -1,4 +1,21 @@
+2005-05-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* win32_raptor_config.h: Switch to libxml
+
+	* win32_raptor_config.h: Spelling: RAPTOR_INLINE
+
+	* raptor_general.c (raptor_init): Added conditionals around
+	serializers: RAPTOR_SERIALIZER_RDFXML/NTRIPLES/RDFXML_ABBREV
+
+	* Makefile.am: Added conditionally included
+	RAPTOR_SERIALIZER_RDFXML_ABBREV
+
+	* configure.ac: Added --enable-serializers=LIST and serializers to
+	summary.  Reformat other help messages to match.
+
 2005-05-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* turtle_parser.y: (main) Move filename here
 
 	* configure.ac: Add proper check for libxslt
 
