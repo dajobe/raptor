@@ -135,6 +135,18 @@ API level using functions such as
 <code>raptor_syntaxes_enumerate</code> or from the
 <code>rapper</code> utility in the help message.</p></dd>
 
+<dt><tt>--enable-serializers=SERIALIZERS</tt><br /></dt>
+<dd><p>Pick the RDF serializers to build from the list:<br />
+<code>rdfxml ntriples rdfxml-abbrev</code><br />
+The default when this option is omitted is to enable all serializers.
+If all serializers are not enabled, parts of the test suite will
+likely fail.</p>
+
+<p>The serializers that a built library supports can be found from the
+API level using functions such as
+<code>raptor_serializers_enumerate</code> or from the
+<code>rapper</code> utility in the help message.</p></dd>
+
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
 minimum version 2.4.0 (2.6.0 or newer prefered)
