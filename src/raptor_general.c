@@ -106,10 +106,15 @@ raptor_init(void)
   raptor_init_parser_rdfxml();
 #endif
 
+#ifdef RAPTOR_SERIALIZER_RDFXML
   raptor_init_serializer_rdfxml();
+#endif
+#ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
   raptor_init_serializer_rdfxmla();
-  
+#endif
+#ifdef RAPTOR_SERIALIZER_NTRIPLES
   raptor_init_serializer_ntriples();
+#endif
   /* raptor_init_serializer_simple(); */
 
   raptor_uri_init();
