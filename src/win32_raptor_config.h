@@ -110,8 +110,8 @@ extern "C" {
 /* flex: const is available */
 #define YY_USE_CONST
 
-#undef RASQAL_INLINE
-#define RASQAL_INLINE __inline
+#undef RAPTOR_INLINE
+#define RAPTOR_INLINE __inline
 
 /* The size of a `unsigned char', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_CHAR 1
@@ -127,9 +127,6 @@ extern "C" {
 
 /* The size of a `unsigned long long', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_LONG_LONG 8
-
-
-#define inline __inline
 
 
 #ifdef __cplusplus
