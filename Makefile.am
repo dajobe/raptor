@@ -71,7 +71,7 @@ STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
-libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c raptor_serialize_rdfxmla.c\
+libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c \
 raptor_rfc2396.c raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c \
 raptor_feature.c raptor_general.c raptor_utf8.c \
@@ -102,6 +102,11 @@ libraptor_la_SOURCES += raptor_rss.c
 endif
 if RAPTOR_PARSER_GRDDL
 libraptor_la_SOURCES += raptor_xslt.c
+endif
+# Note other serializers are currently implemented in raptor_serialize.c
+# and cannot be conditionally compiled away as separate files
+if RAPTOR_SERIALIZER_RDFXML_ABBREV
+libraptor_la_SOURCES += raptor_serialize_rdfxmla.c
 endif
 if RAPTOR_NFC_CHECK
 libraptor_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
