@@ -512,7 +512,7 @@ if test "X$XML_CONFIG" != X; then
 #endif
 ])
 
-  if test "$ac_cv_header_libxml_parser.h" = no -a "$ac_cv_header_gnome_xml_parser.h" = no; then
+  if test "$ac_cv_header_libxml_parser_h" = no -a "$ac_cv_header_gnome_xml_parser_h" = no; then
     AC_MSG_WARN(libxml library found but not headers - disabling)
     have_libxml_lib=0
     have_libxml=0
@@ -587,6 +587,13 @@ if test "X$XSLT_CONFIG" != X; then
     fi
   else
     AC_MSG_RESULT(no)
+  fi
+
+  AC_CHECK_HEADERS(libxslt/xslt.h)
+  if test "$ac_cv_header_libxslt_xslt_h" = no ; then
+    AC_MSG_WARN(libxslt library found but not headers - disabling)
+    have_libxslt_lib=0
+    have_libxslt=0
   fi
 fi
 CPPFLAGS="$oCPPFLAGS"
