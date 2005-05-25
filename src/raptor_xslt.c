@@ -192,7 +192,7 @@ raptor_xslt_parse_start(raptor_parser *rdf_parser)
 
 static const xmlChar* xpathExpressions[4]={
   /* XHTML document where the GRDDL profile is in
-   * <link ref='transform'>  inside the html <head>
+   * <link ref='transform' href='url'>  inside the html <head>
    */
   (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/html:link[@rel=\"transformation\"]/@href",
   /* XHTML document where the GRDDL profile is in
