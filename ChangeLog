@@ -1,3 +1,12 @@
+2005-05-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_xslt.c: docs
+
+2005-05-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Test for libxslt/xslt.h as well as library, and
+	disable if missing.
+
 2005-05-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* Snapshotted raptor_1_4_6 for 1.4.6 release
