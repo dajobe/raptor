@@ -910,8 +910,10 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
                 RAPTOR_DEBUG2("    setting guid to URI '%s'\n", attrValue);
                 field->uri=raptor_new_uri((const unsigned char*)attrValue);
               } else {
+                size_t len=strlen((const char*)attrValue);
                 RAPTOR_DEBUG2("    setting guid to string '%s'\n", attrValue);
-                field->value=(char*)attrValue;
+                field->value=(char*)RAPTOR_MALLOC(cstring, len+1);
+                strncpy(field->value, (char*)attrValue, len+1);
               }
             }
           }
