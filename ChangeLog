@@ -1,3 +1,8 @@
+2005-06-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_parser_processNode): Copy attribute
+	value before storing in the item field.
+
 2005-05-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_xslt.c: docs
