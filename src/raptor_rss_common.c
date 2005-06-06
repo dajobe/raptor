@@ -1411,6 +1411,11 @@ raptor_rss_emit(raptor_parser* rdf_parser)
   int i;
   raptor_rss_item* item;
 
+  if (!rss_parser->common[RAPTOR_RSS_CHANNEL]) {
+    raptor_parser_error(rdf_parser, "No RSS channel item present");
+    return 1;
+  }
+  
   if(!rss_parser->common[RAPTOR_RSS_CHANNEL]->identifier.uri &&
      !rss_parser->common[RAPTOR_RSS_CHANNEL]->identifier.id) {
     raptor_parser_error(rdf_parser, "RSS channel has no identifier");
