@@ -284,6 +284,9 @@ raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack,
                                         raptor_uri *ns_uri)
 {
   raptor_namespace* ns;
+
+  if(!ns_uri)
+    return NULL;
   
   for(ns=nstack->top; ns ; ns=ns->next)
     if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, ns_uri))
