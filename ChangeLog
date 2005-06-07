@@ -1,5 +1,9 @@
 2005-06-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_serialize_rdfxmla.c (raptor_new_qname_from_resource):
+	Fail to split predicate if entire uri is an XML name - it's
+	probably not an absolute URI.
+
 	* raptor_serialize.c (raptor_rdfxml_serialize_statement): Fail to
 	split predicate if entire uri is an XML name - it's probably not
 	an absolute URI.
