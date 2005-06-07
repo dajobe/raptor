@@ -256,9 +256,8 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
     p++; name_len--;
   }
       
-  if(!name) {
+  if(!name || (name == uri_string))
     return NULL;
-  }
 
   c=*name; *name='\0';
   ns_uri=raptor_new_uri(uri_string);
