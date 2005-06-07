@@ -1,4 +1,22 @@
+2005-06-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_serialize.c (raptor_rdfxml_serialize_statement): Fail to
+	split predicate if entire uri is an XML name - it's probably not
+	an absolute URI.
+
+	* raptor_namespace.c (raptor_namespaces_find_namespace_by_uri):
+	Return NULL if ns_uri is NULL.
+
+2005-06-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_emit):
+	Fix crash when no RSS channel is present (Suzan Foster)
+
 2005-06-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am: Added ChangeLog.[2-5]
+
+	* ChangeLog: 2004 to ChangeLog.5
 
 	* raptor_rss.c (raptor_rss_parser_processNode): Copy attribute
 	value before storing in the item field.
@@ -14,7 +32,15 @@
 
 2005-05-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.7
+
 	* Snapshotted raptor_1_4_6 for 1.4.6 release
+
+	* win32/Makefile.am, win32/rapper.vcproj, win32/raptor.sln,
+	win32/raptor.vcproj, win32/raptortest.vcproj: Import configuration
+	from John Barstow
+
+	* win32/README.txt: updates
 
 	* win32_raptor_config.h: Switch to libxml
 
