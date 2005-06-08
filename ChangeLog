@@ -1,3 +1,9 @@
+2005-06-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Snapshotted raptor_1_4_7 for 1.4.7 release
+
+	* libraptor.3: Note no changes in 1.4.6 and 1.4.7
+
 2005-06-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_serialize_rdfxmla.c (raptor_new_qname_from_resource):

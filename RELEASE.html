@@ -8,6 +8,23 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
+<h2 id="rel1_4_7"><a name="rel1_4_7">Raptor 1.4.7 Changes</a></h2>
+
+<p>Fix a couple of crashes in the RSS tag soup parser / serializer
+(Dave Beckett, Suzan Foster).</p>
+
+<p><code>configure</code> now looks for the
+<code>libxslt/xslt.h</code> header as well as the
+<code>libxslt</code> library and disables XSLT and GRDDL support it
+if is missing.  This catches systems with the libraries without
+headers as has happened on some OSX versions.
+</p>
+
+<p>In serializers rdfxml and rdfxml-abbrev, report failure to
+serialize to RDF/XML if the predicate URI is not absolute.
+</p>
+
+
 <h2 id="rel1_4_6"><a name="rel1_4_6">Raptor 1.4.6 Changes</a></h2>
 
 <p>Added <code>--with-xslt-config</code> configure option</p>
