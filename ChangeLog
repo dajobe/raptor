@@ -1,5 +1,7 @@
 2005-06-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* win32_raptor_config.h, configure.ac: Bumped version to 1.4.8
+
 	* Snapshotted raptor_1_4_7 for 1.4.7 release
 
 	* libraptor.3: Note no changes in 1.4.6 and 1.4.7
