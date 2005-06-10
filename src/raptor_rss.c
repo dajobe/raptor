@@ -8,6 +8,9 @@
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
+ * Contributions:
+ *   Copyright (C) 2004-2005, Suzan Foster <su@islief.nl>
+ *
  * This package is Free Software and part of Redland http://librdf.org/
  * 
  * It is licensed under the following three licenses as alternatives:
