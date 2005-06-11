@@ -114,6 +114,9 @@ endif
 if STRCASECMP
 libraptor_la_SOURCES += strcasecmp.c
 endif
+if PARSEDATE
+libraptor_la_SOURCES += parsedate.c
+endif
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
@@ -221,6 +224,15 @@ turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
 
 turtle_parser_test: $(srcdir)/turtle_parser.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor.la $(LIBS)
+
+
+parsedate.c: $(srcdir)/parsedate.y
+	$(YACC) -b parsedate -p raptor_parsedate_ -d -v $(srcdir)/parsedate.y
+	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/parsedate.tab.c/$@/" parsedate.tab.c > $@
+	mv parsedate.tab.h parsedate.h
+	rm -f parsedate.tab.c
+
+
 
 check-local: rapper rdfdiff
 
