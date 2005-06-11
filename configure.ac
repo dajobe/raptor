@@ -136,7 +136,8 @@ fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h sys/stat.h curl/curl.h libxml/nanohttp.h sys/param.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h sys/stat.h curl/curl.h libxml/nanohttp.h sys/param.h sys/time.h)
+AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
   [#include <stdio.h>
@@ -976,7 +977,7 @@ fi
 
 AC_CHECK_FUNCS(parsedate)
 
-AC_MSG_CHECKING(date parsing function)
+AC_MSG_CHECKING(date parsing source)
 raptor_parsedate_needed=no
 if test $ac_cv_func_parsedate = yes; then
   AC_MSG_RESULT(parsedate)
