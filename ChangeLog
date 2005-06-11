@@ -1,4 +1,27 @@
+2005-06-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Turn rss091:date into dc:date using a date parsing
+	function PARSEDATE_FUNCTION to decode it and strftiem to make the
+	new ISO format.
+
+	* configure.ac: Get date parsing code from parsedate, curl
+	curl_getdate or raptor parsedate if neither is available.
+
+	* Makefile.am: Add parsedate.c if PARSEDATE defined Build
+	parsedate.c from parsedate.y
+
+	* parsedate.y: Fixes to build in raptor
+
+	* parsedate.y: Imported public domain date parsing code from
+	http://cvs.php.net/php-src/ext/standard/parsedate.y
+
+2005-06-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Added Suzan Foster to copyright
+
 2005-06-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* rdfdiff.c: Casts for c++
 
 	* win32_raptor_config.h, configure.ac: Bumped version to 1.4.8
 
