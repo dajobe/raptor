@@ -1,5 +1,14 @@
 %{
 /*
+ * Imported from
+ *  PHP CVS 1.56.2.2
+ *  Fri May 20 07:14:01 2005
+ *  http://cvs.php.net/php-src/ext/standard/parsedate.y
+ *  
+ * and patched from there
+ */
+
+/*
 **  Originally written by Steven M. Bellovin <smb@research.att.com> while
 **  at the University of North Carolina at Chapel Hill.  Later tweaked by
 **  a couple of people on Usenet.  Completely overhauled by Rich $alz
@@ -10,10 +19,13 @@
 
 /* $Id$ */
 
-#include "php.h"
 
-#ifdef PHP_WIN32
-#include <malloc.h>
+#ifdef HAVE_CONFIG_H
+#include <raptor_config.h>
+#endif
+
+#ifdef WIN32
+#include <win32_raptor_config.h>
 #endif
 
 #include <stdio.h>
@@ -24,14 +36,9 @@
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
 #endif
-#ifdef PHP_WIN32
-# include "win32/time.h"
-#endif
-
-#include "php_parsedate.h"
 
 #if HAVE_STDLIB_H
-# include <stdlib.h> /* for `free'; used by Bison 1.27 */
+#include <stdlib.h>
 #endif
 
 #if defined(_HPUX_SOURCE)
@@ -78,18 +85,9 @@
 # define bcopy(from, to, len) memcpy ((to), (from), (len))
 #endif
 
-/* Remap normal yacc parser interface names (yyparse, yylex, yyerror, etc),
-   as well as gratuitiously global symbol names, so we can have multiple
-   yacc generated parsers in the same program.  Note that these are only
-   the variables produced by yacc.  If other parser generators (bison,
-   byacc, etc) produce additional global names that conflict at link time,
-   then those parser generators need to be fixed instead of adding those
-   names to this list. */
+/* Prototypes */ 
+static int raptor_parsedate_error(char *msg);
 
-#define yyparse php_gd_parse
-#define yylex   php_gd_lex
-
-static int yyerror ();
 
 #define EPOCH		1970
 #define HOUR(x)		((x) * 60)
@@ -149,6 +147,11 @@ typedef union _date_ll {
 #define YYLTYPE void
 
 static int yylex (YYSTYPE *lvalp, void *parm);
+
+static int ToHour (int Hours, MERIDIAN Meridian);
+static int ToYear (int Year);
+static int LookupWord (YYSTYPE *lvalp, char *buff);
+
 %}
 
 /* This grammar has 56 shift/reduce conflicts. */
@@ -576,12 +579,6 @@ o_merid : tMERIDIAN
 %%
 
 time_t get_date (char *p, time_t *now);
-
-#ifndef PHP_WIN32
-extern struct tm	*gmtime();
-extern struct tm	*localtime();
-extern time_t		mktime();
-#endif
 
 /* Month and day table. */
 static TABLE const MonthDayTable[] = {
@@ -1040,7 +1037,7 @@ difftm (struct tm *a, struct tm *b)
 	  + (a->tm_sec - b->tm_sec));
 }
 
-time_t php_parse_date(char *p, time_t *now)
+time_t raptor_parse_date(char *p, time_t *now)
 {
   struct tm tm, tm0, *tmp;
   time_t Start;
