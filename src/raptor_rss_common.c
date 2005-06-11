@@ -49,6 +49,17 @@
 #include "raptor_internal.h"
 
 
+#ifdef HAVE_RAPTOR_PARSE_DATE
+time_t raptor_parse_date(char *p, time_t *now);
+#define PARSEDATE_FUNCTION raptor_parse_date
+#else
+#ifdef HAVE_CURL_CURL_H
+#include <curl/curl.h>
+#define PARSEDATE_FUNCTION curl_getdate
+#endif
+#endif
+
+
 #ifdef HAVE_LIBXML_XMLREADER_H
 #include <libxml/xmlreader.h>
 
@@ -2164,6 +2175,35 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   raptor_xml_writer_raw_counted(xml_writer, raptor_rss10_spaces, indent);
   raptor_xml_writer_start_element(xml_writer, element);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
+
+
+#ifdef PARSEDATE_FUNCTION
+  /* Get rid of date soup too */
+  if(item->fields[RAPTOR_RSS_FIELD_PUBDATE] &&
+     item->fields[RAPTOR_RSS_FIELD_PUBDATE]->value &&
+     !(item->fields[RAPTOR_RSS_FIELD_DC_DATE] && 
+       item->fields[RAPTOR_RSS_FIELD_DC_DATE]->value)) {
+    time_t unix_time;
+    raptor_rss_field* field;
+    struct tm* structured_time;
+#define ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
+#define ISO_DATE_LEN 20
+    static char date_buffer[ISO_DATE_LEN + 1];
+    
+    unix_time=PARSEDATE_FUNCTION(item->fields[RAPTOR_RSS_FIELD_PUBDATE]->value, 
+                                 NULL);
+
+    structured_time=gmtime(&unix_time);
+    strftime(date_buffer, ISO_DATE_LEN+1, ISO_DATE_FORMAT, structured_time);
+
+    field=raptor_rss_new_field();
+    field->value=(char*)RAPTOR_MALLOC(cstring, ISO_DATE_LEN + 1);
+    strncpy(field->value, date_buffer, ISO_DATE_LEN + 1);
+
+    raptor_rss_field_add(item, RAPTOR_RSS_FIELD_DC_DATE, field);
+  }
+#endif
+
 
   for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
     raptor_rss_field* field;
