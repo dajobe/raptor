@@ -839,7 +839,7 @@ if test "X$CURL_CONFIG" != X; then
   AC_CHECK_FUNC(curl_easy_init, have_curl_easy_init=yes, have_curl_easy_init=no)
   LIBS="$oLIBS"
   AC_MSG_CHECKING(for libcurl library)
-  if test $have_curl_easy_init = yes; then
+  if test $have_curl_easy_init = yes -a "$ac_cv_header_curl_curl_h" = yes; then
     have_libcurl=1
     LIBCURL_VERSION=`$CURL_CONFIG --version | sed -e 's/^libcurl *//'`
     AC_MSG_RESULT(yes - version $LIBCURL_VERSION)
@@ -966,12 +966,34 @@ if test "X$www_library" = Xnone; then
   AC_MSG_WARN([Install libcurl, libxml2, W3C libwww or libfetch for WWW access])
 fi
 
-
 if test $need_libcurl = 1; then
   CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
   LIBS="$LIBS `$CURL_CONFIG --libs`"
   AC_LIBOBJ(raptor_www_curl)
+
 fi
+
+
+AC_CHECK_FUNCS(parsedate)
+
+AC_MSG_CHECKING(date parsing function)
+raptor_parsedate_needed=no
+if test $ac_cv_func_parsedate = yes; then
+  AC_MSG_RESULT(parsedate)
+else
+  if test $need_libcurl = 1; then
+    AC_MSG_RESULT(libcurl curl_getdate)
+  else
+    raptor_parsedate_needed=yes
+    AC_MSG_RESULT(raptor parsedate)
+  fi
+fi
+
+AM_CONDITIONAL(PARSEDATE, test $raptor_parsedate_needed = yes)
+if test $raptor_parsedate_needed = yes; then
+  AC_DEFINE([HAVE_RAPTOR_PARSE_DATE], 1, [Raptor raptor_parse_date available])
+fi
+
 
 if test $need_libwww = 1; then
   CPPFLAGS="$CPPFLAGS `$LIBWWW_CONFIG --cflags`"
