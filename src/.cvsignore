@@ -43,6 +43,9 @@ n3_parser.h
 n3_parser.output
 not-used
 old
+parsedate.c
+parsedate.h
+parsedate.output
 rapper
 rapper.html
 raptor-config
