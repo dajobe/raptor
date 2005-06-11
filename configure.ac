@@ -975,11 +975,29 @@ if test $need_libcurl = 1; then
 fi
 
 
-AC_CHECK_FUNCS(parsedate)
+AC_MSG_CHECKING(parsedate)
+have_parsedate=no
+AC_TRY_LINK([
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+], [ parsedate("Sun Jun 12 00:04:09 BST 2005", NULL) ],
+  AC_DEFINE(HAVE_PARSEDATE, 1, [parsedate function present])
+  have_parsedate=yes
+  AC_MSG_RESULT(yes),
+  AC_MSG_RESULT(no))
+
 
 AC_MSG_CHECKING(date parsing source)
 raptor_parsedate_needed=no
-if test $ac_cv_func_parsedate = yes; then
+if test $have_parsedate = yes; then
   AC_MSG_RESULT(parsedate)
 else
   if test $need_libcurl = 1; then
