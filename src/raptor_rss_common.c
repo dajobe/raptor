@@ -60,6 +60,10 @@
 #include "raptor_internal.h"
 
 
+#ifdef HAVE_INN_PARSEDATE
+#include <libinn.h>
+#define PARSEDATE_FUNCTION parsedate
+#else
 #ifdef HAVE_RAPTOR_PARSE_DATE
 time_t raptor_parse_date(char *p, time_t *now);
 #define PARSEDATE_FUNCTION raptor_parse_date
@@ -67,6 +71,7 @@ time_t raptor_parse_date(char *p, time_t *now);
 #ifdef HAVE_CURL_CURL_H
 #include <curl/curl.h>
 #define PARSEDATE_FUNCTION curl_getdate
+#endif
 #endif
 #endif
 
