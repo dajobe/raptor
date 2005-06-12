@@ -55,6 +55,7 @@ raptor.spec
 raptor_cc.c
 raptor_config.h
 raptor_config.h.in
+rdfdiff
 run*
 stamp-h*
 test*
