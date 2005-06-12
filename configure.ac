@@ -975,9 +975,25 @@ if test $need_libcurl = 1; then
 fi
 
 
-AC_MSG_CHECKING(parsedate)
-have_parsedate=no
-AC_TRY_LINK([
+have_lininn=no
+have_inn_parsedate=no
+
+oCPPFLAGS="$CPPFLAGS"
+if test -d /usr/include/inn; then
+  CPPFLAGS="$CPPFLAGS -I/usr/include/inn"
+fi
+AC_CHECK_HEADER(libinn.h)
+CPPFLAGS="$oCPPFLAGS"
+
+oCPPFLAGS="$CPPFLAGS"
+oLIBS="$LIBS"
+if test $ac_cv_header_libinn_h = yes; then
+  CPPFLAGS="$CPPFLAGS -I/usr/include/inn"
+  LIBS="$LIBS -L/usr/lib/news -linn"
+  AC_CHECK_LIB(inn, HashMessageID, have_libinn=yes)
+
+  AC_MSG_CHECKING(parsedate in libinn)
+  AC_TRY_LINK([
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -988,17 +1004,23 @@ AC_TRY_LINK([
 #  include <time.h>
 # endif
 #endif
+#include <libinn.h>
 ], [ parsedate("Sun Jun 12 00:04:09 BST 2005", NULL) ],
-  AC_DEFINE(HAVE_PARSEDATE, 1, [parsedate function present])
-  have_parsedate=yes
-  AC_MSG_RESULT(yes),
-  AC_MSG_RESULT(no))
+    AC_DEFINE(HAVE_INN_PARSEDATE, 1, [INN parsedate function present])
+    have_inn_parsedate=yes
+    AC_MSG_RESULT(yes),
+    AC_MSG_RESULT(no))
+fi
+CPPFLAGS="$oCPPFLAGS"
+LIBS="$oLIBS"
 
 
 AC_MSG_CHECKING(date parsing source)
 raptor_parsedate_needed=no
-if test $have_parsedate = yes; then
-  AC_MSG_RESULT(parsedate)
+if test $have_inn_parsedate = yes; then
+  CPPFLAGS="$CPPFLAGS -I/usr/include/inn"
+  LIBS="$LIBS -L/usr/lib/news -linn"
+  AC_MSG_RESULT(INN parsedate)
 else
   if test $need_libcurl = 1; then
     AC_MSG_RESULT(libcurl curl_getdate)
