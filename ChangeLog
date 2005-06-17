@@ -1,4 +1,18 @@
+2005-06-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: update for INN parsedate
+
+	* configure.ac: Look for parsedate in libINN
+
 2005-06-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am: Add parsedate.y to EXTRA_DIST
+
+	* configure.ac: Better check for parsedate function
+
+	* raptor_rss.c: Add the time includes for AC_HEADER_TIME
+
+	* configure.ac: Add the standard AC_HEADER_TIME checks.
 
 	* raptor_rss.c: Turn rss091:date into dc:date using a date parsing
 	function PARSEDATE_FUNCTION to decode it and strftiem to make the
