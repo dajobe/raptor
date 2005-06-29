@@ -1162,6 +1162,7 @@ raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser,
   enclosure->node_type=raptor_rss_types_info[RAPTOR_RSS_ENCLOSURE].uri;
 }
 
+
 static void
 raptor_rss_insert_identifiers(raptor_parser* rdf_parser) 
 {
@@ -1521,6 +1522,79 @@ raptor_rss_emit(raptor_parser* rdf_parser)
 }
 
 
+static raptor_field_pair raptor_rss_uplift_map[]={
+  /* from */                  /* to */
+#ifdef PARSEDATE_FUNCTION
+  { RAPTOR_RSS_FIELD_PUBDATE, RAPTOR_RSS_FIELD_DC_DATE },
+/*{ RAPTOR_RSS_FIELD_LASTBUILDDATE, ?????              }, */
+#endif
+  { RAPTOR_RSS_FIELD_UNKNOWN, RAPTOR_RSS_FIELD_UNKNOWN }
+};
+
+
+static void
+raptor_rss_uplift_fields(raptor_rss_item* item) 
+{
+  int i;
+  
+  for(i=0; raptor_rss_uplift_map[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
+    raptor_rss_fields_type from_field=raptor_rss_uplift_map[i].from;
+    raptor_rss_fields_type to_field=raptor_rss_uplift_map[i].to;
+
+    if(!item->fields[from_field] || item->fields[from_field]->value ||
+       item->fields[to_field] || item->fields[to_field]->value)
+       continue;
+
+#ifdef PARSEDATE_FUNCTION
+    /* Get rid of date soup */
+    if(from_field == RAPTOR_RSS_FIELD_PUBDATE 
+       /* || RAPTOR_RSS_FIELD_LASTBUILDDATE */
+       ) {
+      time_t unix_time;
+      raptor_rss_field* field;
+      struct tm* structured_time;
+#define ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
+#define ISO_DATE_LEN 20
+      static char date_buffer[ISO_DATE_LEN + 1];
+      
+      unix_time=PARSEDATE_FUNCTION(item->fields[from_field]->value, NULL);
+      
+      structured_time=gmtime(&unix_time);
+      strftime(date_buffer, ISO_DATE_LEN+1, ISO_DATE_FORMAT, structured_time);
+      
+      field=raptor_rss_new_field();
+      field->value=(char*)RAPTOR_MALLOC(cstring, ISO_DATE_LEN + 1);
+      strncpy(field->value, date_buffer, ISO_DATE_LEN + 1);
+      
+      raptor_rss_field_add(item, to_field, field);
+      continue;
+    }
+#endif
+
+  }
+}
+
+
+static void
+raptor_rss_uplift_items(raptor_parser* rdf_parser) 
+{
+  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  int i;
+  raptor_rss_item* item;
+  
+  for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    for(item=rss_parser->common[i]; item; item=item->next) {
+      raptor_rss_uplift_fields(item);
+    }
+  }
+
+  for(item=rss_parser->items; item; item=item->next) {
+    raptor_rss_uplift_fields(item);
+  }
+  
+}
+
+
 static int
 raptor_rss_parse_chunk(raptor_parser* rdf_parser, 
                        const unsigned char *s, size_t len,
@@ -1565,6 +1639,9 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
 
   /* turn strings into URIs, move things around if needed */
   raptor_rss_insert_identifiers(rdf_parser);
+
+  /* add some new fields  */
+  raptor_rss_uplift_items(rdf_parser);
   
   /* generate the triples */
   ret=raptor_rss_emit(rdf_parser);
@@ -2191,34 +2268,6 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   raptor_xml_writer_raw_counted(xml_writer, raptor_rss10_spaces, indent);
   raptor_xml_writer_start_element(xml_writer, element);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
-
-
-#ifdef PARSEDATE_FUNCTION
-  /* Get rid of date soup too */
-  if(item->fields[RAPTOR_RSS_FIELD_PUBDATE] &&
-     item->fields[RAPTOR_RSS_FIELD_PUBDATE]->value &&
-     !(item->fields[RAPTOR_RSS_FIELD_DC_DATE] && 
-       item->fields[RAPTOR_RSS_FIELD_DC_DATE]->value)) {
-    time_t unix_time;
-    raptor_rss_field* field;
-    struct tm* structured_time;
-#define ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
-#define ISO_DATE_LEN 20
-    static char date_buffer[ISO_DATE_LEN + 1];
-    
-    unix_time=PARSEDATE_FUNCTION(item->fields[RAPTOR_RSS_FIELD_PUBDATE]->value, 
-                                 NULL);
-
-    structured_time=gmtime(&unix_time);
-    strftime(date_buffer, ISO_DATE_LEN+1, ISO_DATE_FORMAT, structured_time);
-
-    field=raptor_rss_new_field();
-    field->value=(char*)RAPTOR_MALLOC(cstring, ISO_DATE_LEN + 1);
-    strncpy(field->value, date_buffer, ISO_DATE_LEN + 1);
-
-    raptor_rss_field_add(item, RAPTOR_RSS_FIELD_DC_DATE, field);
-  }
-#endif
 
 
   for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
