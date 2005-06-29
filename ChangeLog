@@ -1,3 +1,21 @@
+2005-06-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: raptor_rss_uplift_map - added, rss091:pubDate ->
+	dc:date in ISO format
+	(raptor_rss_uplift_fields): Added, to search for fields to uplift.
+	(raptor_rss_uplift_items): Added, to scan items to uplift.
+	(raptor_rss_parse_chunk): Call raptor_rss_uplift_items.
+
+2005-06-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.spec.in: License not Copyright header
+
+2005-06-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: update for INN parsedate
+
+	* configure.ac: Look for parsedate in libINN
+
 2005-06-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rss.c: update for INN parsedate
