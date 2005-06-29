@@ -1,5 +1,7 @@
 2005-06-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rss.c (raptor_rss_uplift_fields): Fix valid condition.
+
 	* raptor_rss.c: raptor_rss_uplift_map - added, rss091:pubDate ->
 	dc:date in ISO format
 	(raptor_rss_uplift_fields): Added, to search for fields to uplift.
