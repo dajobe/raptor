@@ -1541,8 +1541,8 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
     raptor_rss_fields_type from_field=raptor_rss_uplift_map[i].from;
     raptor_rss_fields_type to_field=raptor_rss_uplift_map[i].to;
 
-    if(!item->fields[from_field] || item->fields[from_field]->value ||
-       item->fields[to_field] || item->fields[to_field]->value)
+    if(!(item->fields[from_field] && item->fields[from_field]->value) ||
+       (item->fields[to_field] && item->fields[to_field]->value))
        continue;
 
 #ifdef PARSEDATE_FUNCTION
