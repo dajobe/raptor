@@ -1,3 +1,9 @@
+2005-07-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* configure.ac: Check for isascii, for parsedate.y
+
+	* parsedate.y: Update source links
+
 2005-06-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rss.c (raptor_rss_uplift_fields): Fix valid condition.
