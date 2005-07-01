@@ -7,10 +7,10 @@
  *
  * and patched from there
  *
- * 1.59 removed this from PHP CVS and replaced with an version that
- * under the PHP license:
+ * 1.59 removed this from PHP CVS and replaced it with entirely new
+ * code written under the PHP license:
  *   http://viewcvs.php.net/viewcvs.cgi/php-src/ext/date/lib/
- * That version is not and cannot be used.
+ * That code is not used here and cannot be used.
  *
  * The old version is now in the CVS Attic:
  *   http://viewcvs.php.net/viewcvs.cgi/php-src/ext/standard/Attic/parsedate.y
