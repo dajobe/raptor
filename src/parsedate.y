@@ -1,12 +1,21 @@
 %{
 /*
  * Imported from
- *  PHP CVS 1.56.2.2
- *  Fri May 20 07:14:01 2005
- *  http://cvs.php.net/php-src/ext/standard/parsedate.y
- *  
+ *   PHP CVS 1.56.2.2
+ *   Fri May 20 07:14:01 2005
+ *   http://cvs.php.net/php-src/ext/standard/parsedate.y
+ *
  * and patched from there
+ *
+ * 1.59 removed this from PHP CVS and replaced with an version that
+ * under the PHP license:
+ *   http://viewcvs.php.net/viewcvs.cgi/php-src/ext/date/lib/
+ * That version is not and cannot be used.
+ *
+ * The old version is now in the CVS Attic:
+ *   http://viewcvs.php.net/viewcvs.cgi/php-src/ext/standard/Attic/parsedate.y
  */
+
 
 /*
 **  Originally written by Steven M. Bellovin <smb@research.att.com> while
