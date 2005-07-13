@@ -268,7 +268,7 @@ raptor_unicode_is_xml11_namechar(long c) {
    *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
    * excluding the ':'
    */
-  return (raptor_unicode_is_namestartchar(c) ||
+  return (raptor_unicode_is_xml11_namestartchar(c) ||
           (c == 0x002D) || /* '-' */
           (c == 0x002E) || /* '.' */
           (c >= 0x0030 && c <= 0x0039) || /* 0-9 */
