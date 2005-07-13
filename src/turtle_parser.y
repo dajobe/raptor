@@ -1218,7 +1218,7 @@ main(int argc, char *argv[])
   turtle_parser.lineno= 1;
 
   rdf_parser.context=&turtle_parser;
-  rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");
+  rdf_parser.base_uri=raptor_new_uri((const unsigned char*)"http://example.org/fake-base-uri/");
 
   raptor_set_statement_handler(&rdf_parser, stdout, turtle_parser_print_statement);
   raptor_turtle_parse_init(&rdf_parser, "turtle");
