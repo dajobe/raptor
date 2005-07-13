@@ -1,3 +1,8 @@
+2005-07-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_utf8.c (raptor_unicode_is_xml11_namechar):
+	Call raptor_unicode_is_xml11_namestartchar.
+
 2005-07-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* configure.ac: Check for isascii, for parsedate.y
