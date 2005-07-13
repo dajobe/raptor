@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2003-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -128,13 +128,25 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 %}
 
+/* from SPARQL */
+LANGUAGETOKEN [A-Za-z][-A-Z_a-z0-9]*
+NCCHAR1 [A-Za-z\\\x80-\xff]
+NCCHAR {NCCHAR1}|"-"|"_"|[0-9]
+NCNAME_PREFIX {NCCHAR1}(({NCCHAR}|".")*{NCCHAR})?
+NCNAME ("_"|{NCCHAR1})(({NCCHAR}|".")*{NCCHAR})?
+QNAME {NCNAME_PREFIX}?":"{NCNAME}?
+BNAME "_:"{NCNAME}
+
+/* similar to SPARQL but no need for <= check here */
+QUOTEDURI \<[^\>]*\>
+
+
 %x PREF LITERAL
 
 
 %%
   /* rules */
 
-  int c;
   raptor_parser *rdf_parser=(raptor_parser*)yyextra;
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
 
@@ -177,37 +189,32 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
                   yyterminate();  }
 
 
-_:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
+{BNAME}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*:[A-Za-z_][-A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                          return QNAME_LITERAL; }
-
-:[A-Za-z_][-A-Za-z0-9_]*	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                          return QNAME_LITERAL; }
-
-[A-Za-z][-A-Za-z0-9_]*:	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                          return QNAME_LITERAL; }
-
-:	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+{QNAME}	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
 [0-9]+        { turtle_parser_lval->integer=atoi(yytext);
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>(:|[A-Za-z][-A-Za-z0-9_]*:)	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+<PREF>{NCNAME_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
+<PREF>":"	{ BEGIN(INITIAL);
+		  turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, 0);
+                  return IDENTIFIER; }
+
 <PREF>(.|\n)	{ BEGIN(INITIAL);
 		  if (*yytext == EOF)
                     return EOF;
 
-                  turtle_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
+                  turtle_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
                   yyterminate();  }
 
 
-\<[^>]*\>   { if(yyleng == 2) 
+{QUOTEDURI}   { if(yyleng == 2) 
                 turtle_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
               else {
                 yytext[yyleng-1]='\0';
@@ -215,14 +222,11 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigne
               }
               return URI_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+{LANGUAGETOKEN}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                           return IDENTIFIER; }
 
-\#              { while((c=INPUT_FN(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
-                    ;
-                  turtle_parser->lineno++;
-                  if(c == EOF)
-                    return EOF;
+\#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
+		turtle_parser->lineno++;
                 }
 
 .         	{ if (*yytext == EOF)
@@ -423,7 +427,7 @@ main(int argc, char *argv[])
   int token=EOF;
   FILE *fh;
   YYSTYPE lval;
-  const char *uri_string;
+  const unsigned char *uri_string;
   char *filename=NULL;
   
   raptor_init();
