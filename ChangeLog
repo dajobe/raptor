@@ -1,10 +1,16 @@
 2005-07-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* tests/ex-58.rdf, tests/ex-58.out, tests/Makefile.am: Added ex-58.
+	See http://lists.w3.org/Archives/Public/www-archive/2005Jul/0017.html
+	for discussion.
+
 	* raptor_rdfxml.c (raptor_end_element_grammar): When emitting
 	literals, handle a datatyped empty literal.  Merge the property
 	element/member property element code.
 
-	* tests/ex-57.rdf, tests/ex-57.out, tests/Makefile.am: Added ex-57
+	* tests/ex-57.rdf, tests/ex-57.out, tests/Makefile.am: Added ex-57.
+	See http://lists.w3.org/Archives/Public/www-rdf-comments/2005AprJun/0000.html
+	for discussion.
 
 2005-07-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
