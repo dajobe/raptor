@@ -49,12 +49,6 @@
 
 	* configure.ac: Look for parsedate in libINN
 
-2005-06-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
-
-	* raptor_rss.c: update for INN parsedate
-
-	* configure.ac: Look for parsedate in libINN
-
 2005-06-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* Makefile.am: Add parsedate.y to EXTRA_DIST
