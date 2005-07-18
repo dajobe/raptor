@@ -1,5 +1,19 @@
 2005-07-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_guess.c (raptor_guess_parse_start): Added.
+	(raptor_guess_parse_chunk): Pass in buffer to
+	raptor_guess_parser_name since we have it.  Work with no
+	content_type such as when using a filename alone.
+
+	* ntriples_parse.c (raptor_ntriples_parse_chunk): Handle ending on
+	\r\n by updating 'start' by 1 position.
+
+	* ntriples_parse.c (raptor_ntriples_term): Check sscanf return to
+	catch bad \u or \U hex escape.
+
+	* turtle_lexer.l (turtle_copy_string_token): Check sscanf return
+	to catch bad \u or \U hex escape.
+
 	* raptor_general.c (raptor_init): Added guessing parser
 
 	* configure.ac, Makefile.am: Added raptor_guess.c
