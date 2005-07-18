@@ -450,6 +450,10 @@ struct raptor_parser_factory_s {
    *  (different from the factory-registered one)
    */
   int (*recognise_syntax)(raptor_parser_factory* factory, const unsigned char *buffer, size_t len, const unsigned char *identifier, const unsigned char *suffix, const char *mime_type);
+
+  /* get the Content-Type value of a URI request */
+  void (*content_type_handler)(raptor_parser* rdf_parser, const char* content_type);
+
 };
 
 
@@ -658,6 +662,7 @@ void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
 void raptor_init_parser_n3(void);
 void raptor_init_parser_grddl(void);
+void raptor_init_parser_guess(void);
 
 /* raptor_rss.c */
 void raptor_init_parser_rss(void);
