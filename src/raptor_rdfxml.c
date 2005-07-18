@@ -2790,32 +2790,61 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
             }
             
 
-            if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
-              int object_is_literal=(xml_element->content_cdata != NULL); /* FIXME */
-              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)xml_element->content_cdata : element->object.uri;
-              raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
-              raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
+            /* just be friendly to older compilers and don't declare
+             * variables in the middle of a block
+             */
+            if(1) {
+              raptor_uri *predicate_uri=NULL;
+              raptor_identifier_type predicate_type;
+              raptor_uri *object_uri;
+              raptor_identifier_type object_type;
+              raptor_uri *literal_datatype=NULL;
+              const unsigned char* empty_literal=(const unsigned char*)"";
 
-              if(object_is_literal && !literal_datatype &&
-                 !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
-                const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
-                raptor_update_document_locator(rdf_parser);
-                if(rdf_parser->feature_non_nfc_fatal)
-                  raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
-                else
-                  raptor_parser_warning(rdf_parser, message, el_name, xml_element->content_cdata);
+              if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
+                predicate_uri=(raptor_uri*)&element->parent->last_ordinal;
+                predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
+
+                element->parent->last_ordinal++;
+              } else {
+                predicate_uri=raptor_xml_element_get_name(xml_element)->uri;
+                predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
               }
 
-              element->parent->last_ordinal++;
+
+              if(element->content_type == RAPTOR_ELEMENT_CONTENT_TYPE_LITERAL) {
+                object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
+                object_uri=(raptor_uri*)xml_element->content_cdata;
+                literal_datatype=element->object_literal_datatype;
+
+                if(!literal_datatype && xml_element->content_cdata &&
+                   !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
+                  const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
+                  raptor_update_document_locator(rdf_parser);
+                  if(rdf_parser->feature_non_nfc_fatal)
+                    raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
+                  else
+                    raptor_parser_warning(rdf_parser, message, el_name, xml_element->content_cdata);
+                }
+
+                if(!object_uri)
+                  /* empty literal */
+                  object_uri=(raptor_uri*)empty_literal;
+
+              } else { 
+                object_type=element->object.type;
+                object_uri=element->object.uri;
+              }
+
               raptor_generate_statement(rdf_parser, 
                                         element->parent->subject.uri,
                                         element->parent->subject.id,
                                         element->parent->subject.type,
                                         RAPTOR_URI_SOURCE_ELEMENT,
 
-                                        (raptor_uri*)&element->parent->last_ordinal,
+                                        predicate_uri,
                                         NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_ORDINAL,
+                                        predicate_type,
                                         RAPTOR_URI_SOURCE_NOT_URI,
 
                                         object_uri,
@@ -2826,43 +2855,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
                                         &element->reified,
                                         element->parent);
-            } else {
-              int object_is_literal=(xml_element->content_cdata != NULL); /* FIXME */
-              raptor_uri *object_uri=object_is_literal ? (raptor_uri*)xml_element->content_cdata : element->object.uri;
-              raptor_identifier_type object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : element->object.type;
-              raptor_uri *literal_datatype=object_is_literal ? element->object_literal_datatype: NULL;
               
-              if(object_is_literal && !literal_datatype && 
-                 !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
-                const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
-                raptor_update_document_locator(rdf_parser);
-                if(rdf_parser->feature_non_nfc_fatal)
-                  raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
-                else
-                  raptor_parser_warning(rdf_parser, message, el_name, xml_element->content_cdata);
-              }
-
-              raptor_generate_statement(rdf_parser, 
-                                        element->parent->subject.uri,
-                                        element->parent->subject.id,
-                                        element->parent->subject.type,
-                                        RAPTOR_URI_SOURCE_ELEMENT,
-
-                                        raptor_xml_element_get_name(xml_element)->uri,
-                                        NULL,
-                                        RAPTOR_IDENTIFIER_TYPE_PREDICATE,
-                                        RAPTOR_URI_SOURCE_NOT_URI,
-
-                                        object_uri,
-                                        element->object.id,
-                                        object_type,
-                                        element->object.uri_source,
-                                        literal_datatype,
-
-                                        &element->reified,
-                                        element->parent);
             }
-          
+            
             break;
 
         case RAPTOR_ELEMENT_CONTENT_TYPE_PRESERVED:
