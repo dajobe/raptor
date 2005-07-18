@@ -1,5 +1,18 @@
 2005-07-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_guess.c: Slim down, to use raptor_parser_exec.
+	(raptor_guess_parse_start): Deleted again.
+	(raptor_guess_parse_chunk): Use guessing and raptor_parser_exec to
+	switch to the right parser.
+
+	* raptor_internal.h: Added prototype to raptor_parser_exec
+
+	* raptor_parse.c (raptor_parser_exec): Added to turn one parser
+	type into another in-situ.
+
+	* rdfdump.c: make -g invoke the guess parser and report the
+	resulting parser at the first triple returned
+
 	* raptor_guess.c (raptor_guess_parse_start): Added.
 	(raptor_guess_parse_chunk): Pass in buffer to
 	raptor_guess_parser_name since we have it.  Work with no
