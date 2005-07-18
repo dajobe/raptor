@@ -412,8 +412,16 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
           raptor_parser_error(rdf_parser, "%c over end of line", c);
           return 0;
         }
-        
-        sscanf((const char*)p, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+
+        if(1) {
+          int n;
+
+          n=sscanf((const char*)p, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+          if(n != 1) {
+            raptor_parser_error(rdf_parser, "Illegal Uncode escape '%c%s...'", c, p);
+            break;
+          }
+        }
 
         p+=ulen;
         (*lenp)-=ulen;
