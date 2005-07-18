@@ -103,6 +103,9 @@ endif
 if RAPTOR_PARSER_GRDDL
 libraptor_la_SOURCES += raptor_xslt.c
 endif
+if RAPTOR_PARSER_GUESS
+libraptor_la_SOURCES += raptor_guess.c
+endif
 # Note other serializers are currently implemented in raptor_serialize.c
 # and cannot be conditionally compiled away as separate files
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
