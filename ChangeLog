@@ -1,5 +1,39 @@
 2005-07-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_general.c (raptor_init): Added guessing parser
+
+	* configure.ac, Makefile.am: Added raptor_guess.c
+
+	* raptor_guess.c: guessing parser using content type and an
+	internal parser
+
+	* raptor_xslt.c (raptor_xslt_parse_start): No need to init column,
+	byte locator.
+
+	* raptor_rdfxml.c (raptor_xml_parse_recognise_syntax): Guess that
+	application/xml is likely RDF/XML
+
+	* raptor_internal.h: raptor_parser_factory_s gains a
+	content_type_handler field.
+
+	* raptor_parse.c (raptor_start_parse): Init locator line, column,
+	byte to -1 (unknown)
+	(raptor_parse_uri_content_type_handler): Added to handle
+	raptor_www content type field return.  Pass on to factory method
+	content_type_handler if present.
+	(raptor_parse_uri_with_connection): Init
+	raptor_parse_uri_content_type_handler to receive raptor_www
+	callbacks using raptor_www_set_content_type_handler.
+	(raptor_guess_parser_name): Check static buffer size for overflow.
+	Add some comments.
+
+	* raptor_xslt.c (raptor_xslt_parse_start): Use
+	raptor_parser_copy_user_state
+
+	* raptor_parse.c (raptor_parser_copy_user_state): Added.
+
+	* raptor_internal.h: Added prototype for raptor_parser_copy_user_state
+
 	* tests/ex-58.rdf, tests/ex-58.out, tests/Makefile.am: Added ex-58.
 	See http://lists.w3.org/Archives/Public/www-archive/2005Jul/0017.html
 	for discussion.
