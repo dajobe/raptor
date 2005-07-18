@@ -172,19 +172,7 @@ raptor_xslt_parse_start(raptor_parser *rdf_parser)
   locator->byte= -1;
 
   /* copy any user data to the internal parser */
-  p->user_data=rdf_parser->user_data;
-  p->fatal_error_user_data=rdf_parser->fatal_error_user_data;
-  p->error_user_data=rdf_parser->error_user_data;
-  p->warning_user_data=rdf_parser->warning_user_data;
-  p->fatal_error_handler=rdf_parser->fatal_error_handler;
-  p->error_handler=rdf_parser->error_handler;
-  p->warning_handler=rdf_parser->warning_handler;
-  p->statement_handler=rdf_parser->statement_handler;
-  p->generate_id_handler_user_data=rdf_parser->generate_id_handler_user_data;
-  p->generate_id_handler=rdf_parser->generate_id_handler;
-  p->default_generate_id_handler_base=rdf_parser->default_generate_id_handler_base;
-  p->default_generate_id_handler_prefix=rdf_parser->default_generate_id_handler_prefix;
-  p->default_generate_id_handler_prefix_length=rdf_parser->default_generate_id_handler_prefix_length;
+  raptor_parser_copy_user_state(p, rdf_parser);
 
   return 0;
 }
