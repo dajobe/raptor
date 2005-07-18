@@ -281,6 +281,7 @@ turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t 
       else if (c == 'u' || c == 'U') {
         size_t ulen=(c == 'u') ? 4 : 8;
         unsigned long unichar=0;
+        int n;
         
         s++; i++;
         if(i+ulen > len) {
@@ -289,7 +290,13 @@ turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t 
           return NULL;
         }
         
-        sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+        n=sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+        if(n != 1) {
+          turtle_syntax_error(rdf_parser, "Illegal Uncode escape '%c%s...'", c, s);
+          RAPTOR_FREE(cstring, string);
+          return NULL;
+        }
+
         s+= ulen-1;
         i+= ulen-1;
         
