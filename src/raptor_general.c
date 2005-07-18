@@ -86,6 +86,9 @@ raptor_init(void)
   if(raptor_initialised)
     return;
 
+#ifdef RAPTOR_PARSER_GUESS
+  raptor_init_parser_guess();
+#endif
 #ifdef RAPTOR_PARSER_GRDDL
   raptor_init_parser_grddl();
 #endif
