@@ -1432,11 +1432,16 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
 }
 
 
+/*
+ * raptor_parser_copy_user_state - copy user state between parsers - internal
+ * @to_parser: destination parser
+ * @from_parser: source parser
+ * 
+ **/
 void
 raptor_parser_copy_user_state(raptor_parser *to_parser, 
                               raptor_parser *from_parser)
 {
-  /* copy any user data to the internal parser */
   to_parser->user_data= from_parser->user_data;
   to_parser->fatal_error_user_data= from_parser->fatal_error_user_data;
   to_parser->error_user_data= from_parser->error_user_data;
