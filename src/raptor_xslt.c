@@ -168,8 +168,6 @@ raptor_xslt_parse_start(raptor_parser *rdf_parser)
   raptor_parser *p=xslt_parser->rdfxml;
   
   locator->line=1;
-  locator->column= -1;
-  locator->byte= -1;
 
   /* copy any user data to the internal parser */
   raptor_parser_copy_user_state(p, rdf_parser);
