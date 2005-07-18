@@ -395,10 +395,16 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
     raptor_free_uri(rdf_parser->base_uri);
 
   rdf_parser->base_uri=uri;
-  rdf_parser->locator.uri=uri;
-  rdf_parser->locator.line= rdf_parser->locator.column = 0;
 
-  return rdf_parser->factory->start(rdf_parser);
+  rdf_parser->locator.uri    = uri;
+  rdf_parser->locator.line   = -1;
+  rdf_parser->locator.column = -1;
+  rdf_parser->locator.byte   = -1;
+
+  if(rdf_parser->factory->start)
+    return rdf_parser->factory->start(rdf_parser);
+  else
+    return 0;
 }
 
 
@@ -572,6 +578,16 @@ raptor_parse_uri_write_bytes(raptor_www* www,
 }
 
 
+static void
+raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata, 
+                                      const char* content_type)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)userdata;
+  if(rdf_parser->factory->content_type_handler)
+    rdf_parser->factory->content_type_handler(rdf_parser, content_type);
+}
+
+
 /**
  * raptor_parse_uri - Retrieve the RDF/XML content at URI
  * @rdf_parser: parser
@@ -638,6 +654,10 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                rdf_parser->error_user_data);
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
                                      rdf_parser);
+
+  raptor_www_set_content_type_handler(www,
+                                      raptor_parse_uri_content_type_handler,
+                                      rdf_parser);
 
   if(raptor_start_parse(rdf_parser, base_uri)) {
     raptor_www_free(www);
@@ -1377,7 +1397,9 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
   unsigned int i;
   raptor_parser_factory *factory=parsers;
   unsigned char *suffix=NULL;
-  struct syntax_score scores[10]; /* FIXME - up to 10 parsers :) */
+/* FIXME - up to 10 parsers :) */
+#define MAX_PARSERS 10
+  struct syntax_score scores[MAX_PARSERS];
 
   if(identifier) {
     unsigned char *p=(unsigned char*)strrchr((const char*)identifier, '.');
@@ -1400,17 +1422,23 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
     
     if(mime_type && factory->mime_type &&
        !strcmp(mime_type, factory->mime_type))
+      /* got an exact match mime type - return result */
       break;
     
     if(uri && factory->uri_string &&
        !strcmp((const char*)raptor_uri_as_string(uri), 
                (const char*)factory->uri_string))
+      /* got an exact match syntax for URI - return result */
       break;
 
     if(factory->recognise_syntax)
       score=factory->recognise_syntax(factory, buffer, len, 
                                       identifier, suffix, 
                                       mime_type);
+
+    if(i > MAX_PARSERS)
+      RAPTOR_FATAL2("Number of parsers greater than static buffer size %d\n",
+                    MAX_PARSERS);
 
     scores[i].score=score < 10 ? score : 10; scores[i].factory=factory;
 #if RAPTOR_DEBUG > 2
