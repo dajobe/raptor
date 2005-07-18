@@ -93,6 +93,16 @@ raptor_guess_parse_terminate(raptor_parser *rdf_parser)
 }
 
 
+static int
+raptor_guess_parse_start(raptor_parser *rdf_parser) 
+{
+  raptor_guess_parser_context* guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
+  guess_parser->started=0;
+
+  return 0;
+}
+
+
 static void
 raptor_guess_parse_content_type_handler(raptor_parser* rdf_parser, 
                                         const char* content_type)
@@ -101,25 +111,11 @@ raptor_guess_parse_content_type_handler(raptor_parser* rdf_parser,
 
   if(content_type) {
     size_t len=strlen(content_type);
-    const unsigned char *identifier;
     
     guess_parser->content_type=RAPTOR_MALLOC(cstring, len+1);
     strncpy(guess_parser->content_type, content_type, len+1);
 
     RAPTOR_DEBUG2("Got content type '%s'\n", content_type);
-
-    identifier=raptor_uri_as_string(rdf_parser->base_uri);
-    guess_parser->name=raptor_guess_parser_name(NULL, content_type, NULL, 0,
-                                                identifier);
-    if(!guess_parser->name) {
-      raptor_parser_error(rdf_parser, 
-                          "Failed to guess parser from content type '%s'",
-                          content_type);
-    } else {
-      RAPTOR_DEBUG2("Guessed parser name  '%s'\n", guess_parser->name);
-      guess_parser->parser=raptor_new_parser(guess_parser->name);
-      raptor_parser_copy_user_state(guess_parser->parser, rdf_parser);
-    }
   }
 }
 
@@ -132,12 +128,35 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
   raptor_guess_parser_context* guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
   raptor_parser* iparser=guess_parser->parser;
   
-  if(!guess_parser->content_type || !iparser) {
-    raptor_parse_abort(rdf_parser);
-    return 1;
+  if(!iparser) {
+    const unsigned char *identifier=NULL;
+
+    if(rdf_parser->base_uri)
+      identifier=raptor_uri_as_string(rdf_parser->base_uri);
+    guess_parser->name=raptor_guess_parser_name(NULL, 
+                                                guess_parser->content_type,
+                                                buffer, len,
+                                                identifier);
+    if(!guess_parser->name) {
+      raptor_parser_error(rdf_parser, 
+                          "Failed to guess parser from content type '%s'",
+                          guess_parser->content_type ? 
+                          guess_parser->content_type : "(none)");
+      raptor_parse_abort(rdf_parser);
+      return 1;
+    }
+
+    RAPTOR_DEBUG2("Guessed parser name '%s'\n", guess_parser->name);
+    iparser= guess_parser->parser= raptor_new_parser(guess_parser->name);
   }
 
   if(!guess_parser->started) {
+    raptor_locator *locator=&rdf_parser->locator;
+    
+    locator->line=1;
+
+    raptor_parser_copy_user_state(guess_parser->parser, rdf_parser);
+
     guess_parser->started=1;
     if(raptor_start_parse(iparser, rdf_parser->base_uri))
       return 1;
@@ -154,6 +173,7 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
   
   factory->init      = raptor_guess_parse_init;
   factory->terminate = raptor_guess_parse_terminate;
+  factory->start     = raptor_guess_parse_start;
   factory->chunk     = raptor_guess_parse_chunk;
   factory->content_type_handler = raptor_guess_parse_content_type_handler;
 }
