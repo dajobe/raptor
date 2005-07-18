@@ -572,6 +572,8 @@ extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *mes
 
 /* raptor_parse.c */
 
+int raptor_parser_exec(raptor_parser* rdf_parser, const char *name);
+
 typedef struct raptor_xml_parser_s raptor_xml_parser;
 
 /* Prototypes for common expat/libxml parsing event-handling functions */
