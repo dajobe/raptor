@@ -963,7 +963,8 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #endif
       ptr++;
       rdf_parser->locator.byte++;
-      line_start=ptr;
+      rdf_parser->locator.column=0;
+      start=line_start=ptr;
     }
 
     while(*ptr && *ptr != '\n' && *ptr != '\r')
