@@ -1356,6 +1356,10 @@ raptor_xml_parse_recognise_syntax(raptor_parser_factory* factory,
      (!strcmp((const char*)mime_type, "text/rdf")))
     score+=7;
   
+  if(mime_type &&
+     (!strcmp((const char*)mime_type, "application/xml")))
+    score+=5;
+  
   return score;
 }
 
