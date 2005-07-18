@@ -1432,6 +1432,28 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
 }
 
 
+void
+raptor_parser_copy_user_state(raptor_parser *to_parser, 
+                              raptor_parser *from_parser)
+{
+  /* copy any user data to the internal parser */
+  to_parser->user_data= from_parser->user_data;
+  to_parser->fatal_error_user_data= from_parser->fatal_error_user_data;
+  to_parser->error_user_data= from_parser->error_user_data;
+  to_parser->warning_user_data= from_parser->warning_user_data;
+  to_parser->fatal_error_handler= from_parser->fatal_error_handler;
+  to_parser->error_handler= from_parser->error_handler;
+  to_parser->warning_handler= from_parser->warning_handler;
+  to_parser->statement_handler= from_parser->statement_handler;
+  to_parser->generate_id_handler_user_data= from_parser->generate_id_handler_user_data;
+  to_parser->generate_id_handler= from_parser->generate_id_handler;
+  to_parser->default_generate_id_handler_base= from_parser->default_generate_id_handler_base;
+  to_parser->default_generate_id_handler_prefix= from_parser->default_generate_id_handler_prefix;
+  to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
+
+}
+
+
 
 /* end not STANDALONE */
 #endif
