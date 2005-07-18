@@ -81,11 +81,24 @@ static int statement_count=0;
 
 static raptor_serializer* serializer=NULL;
 
+static int guess=0;
+
+static int reported_guess=0;
+
 
 static
 void print_statements(void *user_data, const raptor_statement *statement) 
 {
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
   statement_count++;
+
+  if(guess && !quiet && !reported_guess) {
+     fprintf(stdout, "%s: Guessed parser name '%s'\n", program,
+             raptor_get_name(rdf_parser));
+     reported_guess=1;
+  }
+
+
   if(count)
     return;
 
@@ -209,7 +222,6 @@ main(int argc, char *argv[])
   int strict_mode=0;
   int usage=0;
   int help=0;
-  int guess=0;
   raptor_uri *base_uri;
   raptor_uri *uri;
   char *p;
@@ -520,7 +532,7 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("c", "count           ", "Count triples only - do not print them."));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
     puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser or serializer features" HELP_PAD "Use `-f help' for a list of valid features"));
-    puts(HELP_TEXT("g", "guess           ", "Guess the input syntax"));
+    puts(HELP_TEXT("g", "guess           ", "Guess the input syntax (same as -i guess)"));
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
@@ -583,23 +595,14 @@ main(int argc, char *argv[])
     }
   }
 
-  if(guess) {
-    rdf_parser=raptor_new_parser_for_content(NULL, NULL, NULL, 0, 
-                                             uri_string);
-    if(!rdf_parser) {
-      fprintf(stderr, "%s: Failed to create guessed raptor parser\n", program);
-      return(1);
-    }
-    if(!quiet)
-      fprintf(stdout, "%s: Guessed parser name '%s'\n", program,
-              raptor_get_name(rdf_parser));
-  } else {
-    rdf_parser=raptor_new_parser(syntax_name);
-    if(!rdf_parser) {
-      fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
-              syntax_name);
-      return(1);
-    }
+  if(guess)
+    syntax_name="guess";
+
+  rdf_parser=raptor_new_parser(syntax_name);
+  if(!rdf_parser) {
+    fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
+            syntax_name);
+    return(1);
   }
 
   raptor_set_error_handler(rdf_parser, rdf_parser, rdfdump_error_handler);
@@ -635,7 +638,7 @@ main(int argc, char *argv[])
     }
   }
   
-  raptor_set_statement_handler(rdf_parser, NULL, print_statements);
+  raptor_set_statement_handler(rdf_parser, rdf_parser, print_statements);
 
 
   if(serializer_syntax_name) {    
