@@ -107,7 +107,6 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
 {
   raptor_guess_parser_context* guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
   const unsigned char *identifier=NULL;
-  raptor_parser* parser;
   const char *name;
   
   if(rdf_parser->base_uri)
