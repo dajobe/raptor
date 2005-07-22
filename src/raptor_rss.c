@@ -374,8 +374,12 @@ typedef struct {
 } raptor_field_pair;
 
 static raptor_field_pair raptor_atom_to_rss[]={
-  { RAPTOR_RSS_FIELD_ATOM_CONTENT,  RAPTOR_RSS_FIELD_DESCRIPTION },
-  { RAPTOR_RSS_FIELD_ATOM_TITLE,    RAPTOR_RSS_FIELD_TITLE },
+  /* atom clone of rss fields */
+  { RAPTOR_RSS_FIELD_ATOM_CONTENT,   RAPTOR_RSS_FIELD_DESCRIPTION },
+  { RAPTOR_RSS_FIELD_ATOM_ID,        RAPTOR_RSS_FIELD_LINK },
+  { RAPTOR_RSS_FIELD_ATOM_PUBLISHED, RAPTOR_RSS_FIELD_DC_DATE },
+  { RAPTOR_RSS_FIELD_ATOM_RIGHTS,    RAPTOR_RSS_FIELD_DC_RIGHTS },
+  { RAPTOR_RSS_FIELD_ATOM_TITLE,     RAPTOR_RSS_FIELD_TITLE },
 
   /* atom 0.3 to atom 1.0 */
   { RAPTOR_RSS_FIELD_ATOM_COPYRIGHT, RAPTOR_RSS_FIELD_ATOM_RIGHTS },
@@ -1592,10 +1596,8 @@ static raptor_field_pair raptor_rss_uplift_map[]={
   { RAPTOR_RSS_FIELD_PUBDATE, RAPTOR_RSS_FIELD_DC_DATE },
 #endif
 
-  /* just copy these fields */
-  { RAPTOR_RSS_FIELD_DESCRIPTION, RAPTOR_RSS_FIELD_CONTENT_ENCODED },
-  { RAPTOR_RSS_FIELD_ATOM_PUBLISHED, RAPTOR_RSS_FIELD_DC_DATE },
-  { RAPTOR_RSS_FIELD_ATOM_RIGHTS, RAPTOR_RSS_FIELD_DC_RIGHTS },
+  /* default actions: copy fields */
+  { RAPTOR_RSS_FIELD_DESCRIPTION,    RAPTOR_RSS_FIELD_CONTENT_ENCODED },
 
   { RAPTOR_RSS_FIELD_UNKNOWN, RAPTOR_RSS_FIELD_UNKNOWN }
 };
@@ -1609,16 +1611,19 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
   for(i=0; raptor_rss_uplift_map[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
     raptor_rss_fields_type from_field=raptor_rss_uplift_map[i].from;
     raptor_rss_fields_type to_field=raptor_rss_uplift_map[i].to;
-
+    raptor_rss_field* field;
+    size_t len;
+    
     if(!(item->fields[from_field] && item->fields[from_field]->value) ||
        (item->fields[to_field] && item->fields[to_field]->value))
        continue;
+
+    field=raptor_rss_new_field();
 
 #ifdef PARSEDATE_FUNCTION
     /* Get rid of date soup */
     if(from_field == RAPTOR_RSS_FIELD_PUBDATE) {
       time_t unix_time;
-      raptor_rss_field* field;
       struct tm* structured_time;
 #define ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
 #define ISO_DATE_LEN 20
@@ -1627,32 +1632,23 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
       unix_time=PARSEDATE_FUNCTION(item->fields[from_field]->value, NULL);
       
       structured_time=gmtime(&unix_time);
-      strftime(date_buffer, ISO_DATE_LEN+1, ISO_DATE_FORMAT, structured_time);
+      len=ISO_DATE_LEN;
+      strftime(date_buffer, len+1, ISO_DATE_FORMAT, structured_time);
       
-      field=raptor_rss_new_field();
-      field->value=(char*)RAPTOR_MALLOC(cstring, ISO_DATE_LEN + 1);
-      strncpy(field->value, date_buffer, ISO_DATE_LEN + 1);
-      
-      raptor_rss_field_add(item, to_field, field);
-      continue;
+      field->value=(char*)RAPTOR_MALLOC(cstring, len + 1);
+      strncpy(field->value, date_buffer, len+1);
     }
 #endif
 
-    /* Copy field */
-    if(from_field == RAPTOR_RSS_FIELD_DESCRIPTION  ||
-       from_field == RAPTOR_RSS_FIELD_ATOM_PUBLISHED ||
-       from_field == RAPTOR_RSS_FIELD_ATOM_RIGHTS) {
-      size_t len=strlen(item->fields[from_field]->value);
-      raptor_rss_field* field;
-
-      field=raptor_rss_new_field();
+    if(!field->value) {
+      /* Otherwise default action is to copy from_field value */
+      len=strlen(item->fields[from_field]->value);
+      
       field->value=(char*)RAPTOR_MALLOC(cstring, len + 1);
       strncpy(field->value, item->fields[from_field]->value, len + 1);
-      
-      raptor_rss_field_add(item, to_field, field);
-      continue;
     }
-
+    
+    raptor_rss_field_add(item, to_field, field);
   }
 }
 
@@ -2359,6 +2355,9 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       /* Done after loop */
       continue;
 
+    if(f == RAPTOR_RSS_FIELD_ATOM_AUTHOR)
+      continue;
+    
     if(!raptor_rss_fields_info[f].uri)
       continue;
     
@@ -2550,6 +2549,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   }
 
   for(i=RAPTOR_RSS_CHANNEL+1; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    if(i == RAPTOR_ATOM_AUTHOR)
+      continue;
+
     raptor_rss_item* item;
     for (item=rss_parser->common[i]; item; item=item->next) {
       RAPTOR_DEBUG3("Emitting type %i - %s\n", i, raptor_rss_types_info[i].name);
