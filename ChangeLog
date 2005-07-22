@@ -1,8 +1,18 @@
 2005-07-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_rss.c: Added atom 1.0 namespace (ATOM1_0_NAMESPACE_URI,
+	ASTOM1_0_NS) and terms.  Turn old atom 0.3 terms into 1.0 versions
+	where known using raptor_atom_to_rss.
+	(raptor_rss_parser_processNode): Handle atom feed element
+	properly, make a new channel item.  Convert atom 0.3 namespaced
+	elements to atom 1.0 Use atom:id to get a URI for the feed/entry
+	Copy atom:published to dc:date and atom:rights to dc:rights via
+	raptor_rss_uplift_map.
+	(raptor_rss_uplift_fields): Copy dc:date and atom:rights
+
 	* raptor_rss.c: Added content: namespace CONTENT_NAMESPACE_URI,
-	prefix "content:" Added content:encoded field
-	RAPTOR_RSS_FIELD_CONTENT_ENCODED
+	prefix "content:"
+	Added content:encoded field RAPTOR_RSS_FIELD_CONTENT_ENCODED
 	(raptor_rss_uplift_fields): Added an uplift from description to
 	content:encoded
 	(raptor_rss10_emit_item): Write content:encoded using
