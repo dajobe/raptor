@@ -1,3 +1,20 @@
+2005-07-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: Added content: namespace CONTENT_NAMESPACE_URI,
+	prefix "content:" Added content:encoded field
+	RAPTOR_RSS_FIELD_CONTENT_ENCODED
+	(raptor_rss_uplift_fields): Added an uplift from description to
+	content:encoded
+	(raptor_rss10_emit_item): Write content:encoded using
+	<![CDATA[...]]>
+
+2005-07-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_guess.c (raptor_guess_parse_chunk): unused var parser
+
+	* ntriples_parse.c (raptor_init_parser_ntriples): Do not register
+	interest in text/plain -- too general.
+
 2005-07-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_guess.c: Slim down, to use raptor_parser_exec.
