@@ -1,4 +1,41 @@
+2005-07-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: More base URIs on base URIs fixes.
+	(raptor_rss_parser_processNode): Ensure base URI is always copied
+	at start element, always freed at end element.  Make sure xml:base
+	processing is done for all elements including document and
+	typed-node ones.
+	(raptor_rss_parse_chunk): Remove duplicate document base URI
+	setting.
+
 2005-07-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c: raptor_rss_info gains flags field to store
+	RAPTOR_RSS_INFO_FLAG_URI_VALUE where the value of the element
+	<foo>value</foo> is always a URI.  Apply that to atom:id,
+	atom:icon and atom:logo.  struct raptor_rss_parser_context_s gains
+	a sequence of base URIs per-element.
+	(raptor_rss_context_init, raptor_rss_context_terminate): Init and
+	free sequence of base URIs.
+	(raptor_rss_parse_start): Start base URI sequence with parser base
+	URI.
+	(raptor_rss_parser_processNode): Init base_uri from top of stack
+	of base URIs.  Update base_uri from an xml:base arg, relative to
+	the current base URI.  Use the base URI for all URi constructions.
+	Push the new base URI after an element has been found.  Pop the
+	base URI at the end of an element.  At the end of an element, if
+	the field always has a URI value, convert it.
+	(raptor_rss_parse_chunk): Init the URI sequence with the parser
+	base URI.
+
+	* raptor_rss.c: map raptor_atom_to_rss: turn more atom cloned rss
+	fields into rss fields.
+	(raptor_rss_uplift_fields): Change default action to copy
+	(duplicate) fields.
+	(raptor_rss10_emit_item): Do not emit link to atom:author types in
+	rss1.0
+	(raptor_rss10_serialize_end): Do not emit atom:author type in
+	rss1.0
 
 	* raptor_rss.c: Added atom 1.0 namespace (ATOM1_0_NAMESPACE_URI,
 	ASTOM1_0_NS) and terms.  Turn old atom 0.3 terms into 1.0 versions
