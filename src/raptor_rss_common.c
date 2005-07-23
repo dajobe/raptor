@@ -711,6 +711,9 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
 
   raptor_rss_context_init(rss_parser);
 
+  raptor_sequence_push(rss_parser->base_uris,
+                       raptor_uri_copy(rdf_parser->base_uri));
+
   return 0;
 }
 
@@ -861,13 +864,16 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
   type=xmlTextReaderNodeType(reader);
 
   depth=raptor_sequence_size(rss_parser->base_uris);
-  if(depth > 0)
-    base_uri=raptor_uri_copy((raptor_uri*)raptor_sequence_get_at(rss_parser->base_uris,
-                                                                 depth-1));
-      
+  base_uri=(raptor_uri*)raptor_sequence_get_at(rss_parser->base_uris,
+                                               depth-1);
+  RAPTOR_DEBUG3("base URI at depth %d is %s\n", depth, 
+                base_uri ? (const char*)raptor_uri_as_string(base_uri) : "NULL");
+  
   
   switch(type) {
     case XML_READER_TYPE_ELEMENT: /* start element */
+
+      base_uri=raptor_uri_copy(base_uri);
 
       /* Must be checked before moving on to attributes */
       is_empty=xmlTextReaderIsEmptyElement(reader);
@@ -877,7 +883,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
            !strcmp((const char*)name, "rdf") || 
            !strcmp((const char*)name, "RDF")) {
           /* rss */
-          break;
+          goto check_attributes;
         } else if(!strcmp((const char*)name, "feed") ||
                   !strcmp((const char*)name, "Channel")) {
           /* atom feed or rss Channel */
@@ -924,7 +930,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           RAPTOR_DEBUG6("FOUND element %s for type %d - %s INSIDE current type %d - %s\n", name, rss_parser->current_type, raptor_rss_types_info[rss_parser->current_type].name, old_type, raptor_rss_types_info[old_type].name);
           raptor_rss_common_add(rss_parser);
           rss_parser->prev_type=old_type;
-          break;
+          goto check_attributes;
         }
         
         rss_parser->current_field=RAPTOR_RSS_FIELD_UNKNOWN;
@@ -1008,6 +1014,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         }
       }
 
+  check_attributes:
       /* Now check for attributes */
       while((xmlTextReaderMoveToNextAttribute(reader))) {
 #if LIBXML_VERSION > 20511
@@ -1021,12 +1028,16 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
         /* Pick a few attributes to care about */
         if(!strcmp((const char*)attrName, "base")) {
           raptor_uri* new_base_uri;
+          
           /* pretend it is xml:base */
           new_base_uri=raptor_new_uri_relative_to_base(base_uri,
                                                        (const unsigned char*)attrValue);
-          if(base_uri)
-            raptor_free_uri(base_uri);
+          raptor_free_uri(base_uri);
           base_uri=new_base_uri;
+
+          RAPTOR_DEBUG2("base URI set to %s\n",
+                base_uri ? (const char*)raptor_uri_as_string(base_uri) : "NULL");
+
         } else if(!strcmp((const char*)attrName, "isPermaLink")) {
           raptor_rss_item* update_item=rss_parser->last;
           if(!strcmp((const char*)name, "guid")) {
@@ -1748,9 +1759,6 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
 
   if(!is_end)
     return 0;
-  
-  raptor_sequence_push(rss_parser->base_uris,
-                       raptor_uri_copy(rdf_parser->base_uri));
 
   ret = xmlTextReaderRead(rss_parser->reader);
   while (ret == 1) {
