@@ -774,8 +774,12 @@ rdfxml_serializer=no
 ntriples_serializer=no
 rdfxml_abbrev_serializer=no
 rss_1_0_serializer=no
+atom_serializer=no
 
 rdf_serializers_available="rdfxml rdfxml-abbrev ntriples rss-1.0"
+if test "$USE_MAINTAINER_MODE" = yes; then
+  rdf_serializers_available="$rdf_serializers_available atom"
+fi
 
 # This is needed because autoheader can't work out which computed
 # symbols must be pulled from acconfig.h into config.h.in
@@ -784,6 +788,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_SERIALIZER_NTRIPLES, 1, [Building N-Triples serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML_ABBREV, 1, [Building RDF/XML-abbreviated serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RSS_1_0, 1, [Building RSS 1.0 serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_ATOM, 1, [Building Atom 1.0 serializer])
 fi
 
 AC_MSG_CHECKING(RDF serializers required)
