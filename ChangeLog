@@ -1,5 +1,8 @@
 2005-07-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_serialize_rss.c (raptor_rss10_serialize_end): End with an
+	error if no rss channel was found.
+
 	* Makefile.am: Use RAPTOR_SERIALIZER_RSS_1_0 for new separate rss
 	serializer.  Use RAPTOR_RSS_COMMON when either rss parser or
 	serializer is needed.
