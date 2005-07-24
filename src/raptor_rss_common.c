@@ -62,17 +62,17 @@
 
 
 raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE]={
-  { NULL,                     NULL,  },
-  { NULL,                     NULL,  },
-  { RSS0_91_NAMESPACE_URI,    "rss091", },
-  { RSS0_9_NAMESPACE_URI,     NULL,   },
-  { RSS1_0_NAMESPACE_URI,     NULL,   }, /* default namespace on writing */
-  { ATOM0_3_NAMESPACE_URI,    NULL,   },
-  { DC_NAMESPACE_URI,         "dc",   },
-  { RSS2_0_ENC_NAMESPACE_URI, "enc",  },
-  { RSS1_1_NAMESPACE_URI,     NULL,   },
+  { NULL,                     NULL,      },
+  { NULL,                     NULL,      },
+  { RSS0_91_NAMESPACE_URI,    "rss091",  },
+  { RSS0_9_NAMESPACE_URI,     NULL,      },
+  { RSS1_0_NAMESPACE_URI,     "rss",     },
+  { ATOM0_3_NAMESPACE_URI,    NULL,      },
+  { DC_NAMESPACE_URI,         "dc",      },
+  { RSS2_0_ENC_NAMESPACE_URI, "enc",     },
+  { RSS1_1_NAMESPACE_URI,     NULL,      },
   { CONTENT_NAMESPACE_URI,    "content", },
-  { ATOM1_0_NAMESPACE_URI,    "atom", },
+  { ATOM1_0_NAMESPACE_URI,    "atom",    },
 };
 
 
@@ -85,6 +85,8 @@ raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
   { "skipHours",  RSS0_91_NS },
   { "skipDays",   RSS0_91_NS },
   { "Enclosure",  RSS2_0_ENC_NS }, /* Enclosure class in RDF output */
+  { "feed",       ATOM1_0_NS },
+  { "entry",      ATOM1_0_NS },
   { "<unknown>",  RSS_UNKNOWN_NS },
 };
 
@@ -178,7 +180,7 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
 
 
 /* Crude and unofficial mappings from atom fields to RSS */
-raptor_field_pair raptor_atom_to_rss[]={
+const raptor_field_pair raptor_atom_to_rss[]={
   /* atom clone of rss fields */
   { RAPTOR_RSS_FIELD_ATOM_CONTENT,   RAPTOR_RSS_FIELD_DESCRIPTION },
   { RAPTOR_RSS_FIELD_ATOM_ID,        RAPTOR_RSS_FIELD_LINK },
@@ -199,6 +201,8 @@ raptor_field_pair raptor_atom_to_rss[]={
   { RAPTOR_RSS_FIELD_UNKNOWN,       RAPTOR_RSS_FIELD_UNKNOWN }
 };
   
+
+const unsigned char * const raptor_atom_namespace_uri=(const unsigned char *)"http://www.w3.org/2005/Atom";
 
 static int raptor_rss_common_initialised=0;
 
