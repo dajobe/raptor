@@ -108,6 +108,9 @@ raptor_init(void)
   raptor_init_parser_rdfxml();
 #endif
 
+#ifdef RAPTOR_SERIALIZER_ATOM
+  raptor_init_serializer_atom();
+#endif
 #ifdef RAPTOR_SERIALIZER_RSS_1_0
   raptor_init_serializer_rss10();
 #endif
