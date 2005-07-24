@@ -773,8 +773,9 @@ dnl RDF Serializers
 rdfxml_serializer=no
 ntriples_serializer=no
 rdfxml_abbrev_serializer=no
+rss_1_0_serializer=no
 
-rdf_serializers_available="rdfxml rdfxml-abbrev ntriples"
+rdf_serializers_available="rdfxml rdfxml-abbrev ntriples rss-1.0"
 
 # This is needed because autoheader can't work out which computed
 # symbols must be pulled from acconfig.h into config.h.in
@@ -782,6 +783,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML, 1, [Building RDF/XML serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_NTRIPLES, 1, [Building N-Triples serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML_ABBREV, 1, [Building RDF/XML-abbreviated serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_RSS_1_0, 1, [Building RSS 1.0 serializer])
 fi
 
 AC_MSG_CHECKING(RDF serializers required)
@@ -794,8 +796,7 @@ else
 fi
 
 for serializer in $serializers; do
-  s=`echo $serializer | tr '-' '_'`
-
+  s=`echo $serializer | tr '.-' '__'`
   eval $s'_serializer=yes'
   NAME=`echo $s | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
   n=RAPTOR_SERIALIZER_${NAME}
@@ -806,7 +807,10 @@ done
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML, test $rdfxml_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_NTRIPLES, test $ntriples_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML_ABBREV, test $rdfxml_abbrev_serializer = yes)
+AM_CONDITIONAL(RAPTOR_SERIALIZER_RSS_1_0, test $rss_1_0_serializer = yes)
 
+
+AM_CONDITIONAL(RAPTOR_RSS_COMMON, test $rss_1_0_serializer = yes -o $rss_parser = yes)
 
 dnl Enable NFC code only if needed and the check is enabled
 if test $nfc_needed = yes; then
