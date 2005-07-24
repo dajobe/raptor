@@ -1,3 +1,34 @@
+2005-07-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Makefile.am: Use RAPTOR_SERIALIZER_RSS_1_0 for new separate rss
+	serializer.  Use RAPTOR_RSS_COMMON when either rss parser or
+	serializer is needed.
+
+	* configure.ac: RSS 1.0 serializer is always available and does
+	not need the libxml requirements of the RSS tag soup parser.
+	Added RAPTOR_SERIALIZER_RSS_1_0 define and makefile conditional.
+	Added RAPTOR_RSS_COMMON when any rss code is needed.
+
+	* raptor_rss.c, raptor_rss_common.c, raptor_serialize_rss.c: Moved
+	common code between parser and serializer from raptor_rss.c into
+	new raptor_rss_common.c as new class raptor_rss_model.  Moved
+	rss-1.0 serializer into new raptor_serialize_rss.c.  Both can be
+	compiled independent of the other.
+
+	* raptor_rss.h: Redland Parser Toolkit Internal RSS Model and API
+
+	* raptor_internal.h: Add RAPTOR_PARSEDATE_FUNCTION macro for
+	parsedate.c
+
+	* raptor_general.c (raptor_init): Use define
+	RAPTOR_SERIALIZER_RSS_1_0 to call raptor_init_serializer_rss10
+
+	* raptor_xml.c, raptor_sax2.c: Moved raptor_new_xml_element,
+	raptor_free_xml_element, raptor_xml_element_set_attributes,
+	raptor_xml_element_declare_namespace, raptor_print_xml_element,
+	raptor_iostream_write_xml_element from raptor_sax2.c to
+	raptor_xml.c
+
 2005-07-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* raptor_rss.c: More base URIs on base URIs fixes.
