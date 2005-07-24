@@ -52,6 +52,9 @@ typedef enum {
   RAPTOR_RSS_SKIPDAYS,
   RAPTOR_RSS_ENCLOSURE,
 
+  RAPTOR_ATOM_FEED,
+  RAPTOR_ATOM_ENTRY,
+
   /* unknown name found */
   RAPTOR_RSS_UNKNOWN,
 
@@ -59,8 +62,8 @@ typedef enum {
   RAPTOR_RSS_NONE,
 
   /* deliberately not counting NONE */
-  RAPTOR_RSS_COMMON_SIZE=RAPTOR_RSS_NONE-RAPTOR_RSS_CHANNEL,
-  RAPTOR_RSS_COMMON_IGNORED=RAPTOR_RSS_SKIPHOURS
+  RAPTOR_RSS_COMMON_SIZE    = RAPTOR_RSS_NONE - RAPTOR_RSS_CHANNEL,
+  RAPTOR_RSS_COMMON_IGNORED = RAPTOR_RSS_SKIPHOURS
 } raptor_rss_type;
 
 
@@ -92,7 +95,7 @@ typedef enum {
   CONTENT_NS     = 9,
   ATOM1_0_NS     = 10,
 
-  RAPTOR_RSS_NAMESPACES_SIZE = ATOM1_0_NS+1
+  RAPTOR_RSS_NAMESPACES_SIZE = ATOM1_0_NS + 1
 } rss_info_namespace;
 
 
@@ -218,7 +221,7 @@ typedef struct {
   raptor_rss_fields_type to;
 } raptor_field_pair;
 
-extern raptor_field_pair raptor_atom_to_rss[];
+extern const raptor_field_pair raptor_atom_to_rss[];
 
 /* RSS enclosure support */
 struct raptor_rss_enclosure_s
