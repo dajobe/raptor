@@ -77,16 +77,16 @@ raptor_namespace.c raptor_qname.c \
 raptor_feature.c raptor_general.c raptor_utf8.c \
 raptor_www.c \
 raptor_identifier.c \
-raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c
+raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \
+raptor_xml.c raptor_xml_writer.c raptor_set.c
 if RAPTOR_PARSER_RDFXML
-libraptor_la_SOURCES += raptor_rdfxml.c raptor_xml.c raptor_xml_writer.c \
-raptor_sax2.c raptor_set.c
 if RAPTOR_XML_LIBXML
 libraptor_la_SOURCES += raptor_libxml.c
 endif
 if RAPTOR_XML_EXPAT
 libraptor_la_SOURCES += raptor_expat.c
 endif
+libraptor_la_SOURCES += raptor_rdfxml.c raptor_sax2.c
 endif
 if RAPTOR_PARSER_TURTLE
 libraptor_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
@@ -97,6 +97,9 @@ endif
 if RAPTOR_PARSER_NTRIPLES
 libraptor_la_SOURCES += ntriples_parse.c
 endif
+if RAPTOR_RSS_COMMON
+libraptor_la_SOURCES += raptor_rss_common.c raptor_rss.h
+endif
 if RAPTOR_PARSER_RSS
 libraptor_la_SOURCES += raptor_rss.c
 endif
@@ -106,10 +109,13 @@ endif
 if RAPTOR_PARSER_GUESS
 libraptor_la_SOURCES += raptor_guess.c
 endif
-# Note other serializers are currently implemented in raptor_serialize.c
+# Note 3 serializers are currently implemented in raptor_serialize.c
 # and cannot be conditionally compiled away as separate files
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
 libraptor_la_SOURCES += raptor_serialize_rdfxmla.c
+endif
+if RAPTOR_SERIALIZER_RSS_1_0
+libraptor_la_SOURCES += raptor_serialize_rss.c
 endif
 if RAPTOR_NFC_CHECK
 libraptor_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
