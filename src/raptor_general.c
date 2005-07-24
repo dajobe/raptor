@@ -94,7 +94,6 @@ raptor_init(void)
 #endif
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
-  raptor_init_serializer_rss10();
 #endif
 #ifdef RAPTOR_PARSER_TURTLE
   raptor_init_parser_turtle();
@@ -109,6 +108,9 @@ raptor_init(void)
   raptor_init_parser_rdfxml();
 #endif
 
+#ifdef RAPTOR_SERIALIZER_RSS_1_0
+  raptor_init_serializer_rss10();
+#endif
 #ifdef RAPTOR_SERIALIZER_RDFXML
   raptor_init_serializer_rdfxml();
 #endif
