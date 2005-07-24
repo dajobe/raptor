@@ -1,5 +1,34 @@
 2005-07-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* raptor_serialize_rss.c: Add atom 1.0 serializing by generalising
+	rss 1.0 serializing.  Change field names to reflect this
+	rdf_nspace -> default_nspace, rdf_RDF_element -> root_element.
+	Add is_atom flag.
+	(raptor_rss10_serialize_init): Init is_atom flag.
+	(raptor_rss10_move_statements, raptor_rss10_store_statement):
+	Rename back fields translated to rss: namespace.
+	(raptor_rss10_build_xml_names): Init namespace qname for rss/atom.
+	Declare the default namespace to rss/atom.  Ignore all item types
+	but rss:item for atom; all but atom:author for rss.  For item node
+	type use atom:entry / rss:item.
+	(raptor_rss10_emit_item): Add emit_container flag to prevent
+	generating the containing elements.  For atom:author, generate it
+	inline for atom, ignore it for rss.  When generating URI-valued
+	fields for atom, make them element content.  For atom, do not
+	generate rdf:Seq block.
+	(raptor_rss10_serialize_end): Only emit node type rss:item (aka
+	atom:entry) for atom.
+	(raptor_init_serializer_atom): Added.
+
+	* configure.ac: Added atom serializer, enabled for maintainer
+	only.
+
+	* raptor_general.c (raptor_init): Add call to
+	raptor_init_serializer_atom if enabled
+
+	* raptor_internal.h: Added prototype for
+	raptor_init_serializer_atom Added raptor_atom_namespace_uri
+
 	* raptor_serialize_rss.c (raptor_rss10_serialize_end): End with an
 	error if no rss channel was found.
 
