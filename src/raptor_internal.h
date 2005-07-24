@@ -669,6 +669,9 @@ void raptor_init_parser_guess(void);
 /* raptor_rss.c */
 void raptor_init_parser_rss(void);
 void raptor_init_serializer_rss10(void);
+void raptor_init_serializer_atom(void);
+
+extern const unsigned char * const raptor_atom_namespace_uri;
 
 /* raptor_rfc2396.c */
 raptor_uri_detail* raptor_new_uri_detail(const unsigned char *uri_string);
