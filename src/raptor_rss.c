@@ -471,7 +471,8 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           rel=attrValue;
           attrValue=NULL;
         } else if(!strcmp((const char*)attrName, "href")) {
-          if(!strcmp((const char*)name, "link")) {
+          if(rss_parser->current_field == RAPTOR_RSS_FIELD_LINK ||
+             rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
             RAPTOR_DEBUG2("  setting href as URI string for type %s\n", raptor_rss_types_info[rss_parser->current_type].name);
             if(uri)
               raptor_free_uri(uri);
@@ -519,7 +520,7 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
       if(rss_parser->current_type >= RAPTOR_RSS_COMMON_IGNORED) {
         /* skipHours, skipDays common but IGNORED */ 
         RAPTOR_DEBUG3("Ignoring empty element %s for type %s\n", name, raptor_rss_types_info[rss_parser->current_type].name);
-      } else if(uri && rel && !strcmp((const char*)rel, "alternate")) {
+      } else if(uri) {
         raptor_rss_item* update_item;
         raptor_rss_field* field=raptor_rss_new_field();
 
@@ -529,7 +530,10 @@ raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
           update_item=raptor_rss_model_get_common(&rss_parser->model,
                                                   rss_parser->current_type);
         
-        if(rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN) {
+        if(rss_parser->current_field == RAPTOR_RSS_FIELD_LINK &&
+           rel && !strcmp((const char*)rel, "alternate")) {
+          /* RSS with rel != alternate ignored FIXME */
+        } else if(rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN) {
           RAPTOR_DEBUG2("Cannot add URI from alternate attribute to type %s unknown field\n", raptor_rss_types_info[rss_parser->current_type].name);
           raptor_rss_field_free(field);
         } else {
