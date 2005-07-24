@@ -906,7 +906,24 @@ struct raptor_uri_detail_s
   size_t query_len;
   size_t fragment_len;
 };
-  
+
+
+/* parsedate.c */
+#ifdef HAVE_INN_PARSEDATE
+#include <libinn.h>
+#define RAPTOR_PARSEDATE_FUNCTION parsedate
+#else
+#ifdef HAVE_RAPTOR_PARSE_DATE
+time_t raptor_parse_date(char *p, time_t *now);
+#define RAPTOR_PARSEDATE_FUNCTION raptor_parse_date
+#else
+#ifdef HAVE_CURL_CURL_H
+#include <curl/curl.h>
+#define RAPTOR_PARSEDATE_FUNCTION curl_getdate
+#endif
+#endif
+#endif
+
 
 /* end of RAPTOR_INTERNAL */
 #endif
