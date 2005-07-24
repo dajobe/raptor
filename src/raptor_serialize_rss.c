@@ -778,6 +778,12 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   RAPTOR_DEBUG2("Starting with %d stored triples\n", triple_count);
 #endif
 
+  if(!rss_model->common[RAPTOR_RSS_CHANNEL]) {
+    raptor_serializer_error(serializer, "No RSS channel found");
+    return 1;
+  }
+  
+  
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
   rss_serializer->nstack=raptor_new_namespaces(uri_handler, uri_context,
