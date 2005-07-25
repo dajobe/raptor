@@ -463,6 +463,8 @@ url_entry_callback(GtkWidget *widget, gpointer data)
   grapper_model_parse(state);
 }
 
+#if GTK_CHECK_VERSION(2,4,0)
+#else
 /* file selection OK button clicked callback */
 static void
 fs_ok_button_callback(GtkWidget *widget, gpointer data)
@@ -483,6 +485,7 @@ fs_ok_button_callback(GtkWidget *widget, gpointer data)
 
   grapper_model_parse(state);
 }
+#endif
 
 /* open button clicked callback */
 static void
@@ -504,7 +507,7 @@ open_button_callback(GtkWidget *widget, gpointer data)
 
   if (gtk_dialog_run(GTK_DIALOG (files)) == GTK_RESPONSE_ACCEPT) {
     state->filename=gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(files));
-    uri_string=gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(files));
+    uri_string=(unsigned char*)gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(files));
     grapper_model_set_url(state, uri_string);
     g_free(uri_string);
 
