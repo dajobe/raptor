@@ -236,6 +236,15 @@ turtle_parser_test: $(srcdir)/turtle_parser.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor.la $(LIBS)
 
 
+if MAINTAINER_MODE
+n3_lexer_test: $(srcdir)/n3_lexer.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c libraptor.la $(LIBS)
+
+n3_parser_test: $(srcdir)/n3_parser.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_parser.c libraptor.la $(LIBS)
+endif
+
+
 parsedate.c: $(srcdir)/parsedate.y
 	$(YACC) -b parsedate -p raptor_parsedate_ -d -v $(srcdir)/parsedate.y
 	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/parsedate.tab.c/$@/" parsedate.tab.c > $@
