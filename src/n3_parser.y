@@ -842,8 +842,6 @@ raptor_triple_print(raptor_triple *t, FILE *fh)
 #endif
 
 
-extern char *filename;
- 
 int
 n3_parser_error(void* ctx, const char *msg)
 {
@@ -1181,6 +1179,7 @@ main(int argc, char *argv[])
   raptor_n3_parser n3_parser; /* static */
   raptor_locator *locator=&rdf_parser.locator;
   FILE *fh;
+  char *filename;
 
 #if RAPTOR_DEBUG > 2
   n3_parser_debug=1;
@@ -1200,7 +1199,15 @@ main(int argc, char *argv[])
   }
 
   memset(string, 0, N3_FILE_BUF_SIZE);
-  fread(string, N3_FILE_BUF_SIZE, 1, fh);
+  rc=fread(query_string, N3_FILE_BUF_SIZE, 1, fh);
+  if(rc < N3_FILE_BUF_SIZE) {
+    if(ferror(fh)) {
+      fprintf(stderr, "%s: file '%s' read failed - %s\n",
+              program, filename, strerror(errno));
+      fclose(fh);
+      return(1);
+    }
+  }
   
   if(argc>1)
     fclose(fh);
@@ -1216,7 +1223,7 @@ main(int argc, char *argv[])
   n3_parser.lineno= 1;
 
   rdf_parser.context=&n3_parser;
-  rdf_parser.base_uri=raptor_new_uri("http://example.org/fake-base-uri/");
+  rdf_parser.base_uri=raptor_new_uri((const unsigned char*)"http://example.org/fake-base-uri/");
 
   raptor_set_statement_handler(&rdf_parser, stdout, n3_parser_print_statement);
   raptor_n3_parse_init(&rdf_parser, "n3");
