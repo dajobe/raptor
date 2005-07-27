@@ -464,3 +464,31 @@ raptor_rss_field_free(raptor_rss_field* field)
     raptor_rss_field_free(field->next);
   RAPTOR_FREE(raptor_rss_field, field);
 }
+
+
+int
+raptor_rss_date_uplift(raptor_rss_field* to_field, const char *date_string)
+{
+#ifdef RAPTOR_PARSEDATE_FUNCTION
+  time_t unix_time;
+  struct tm* structured_time;
+#define ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
+#define ISO_DATE_LEN 20
+  static char date_buffer[ISO_DATE_LEN + 1];
+  size_t len;
+  
+  unix_time=RAPTOR_PARSEDATE_FUNCTION(date_string, NULL);
+  
+  structured_time=gmtime(&unix_time);
+  len=ISO_DATE_LEN;
+  strftime(date_buffer, len+1, ISO_DATE_FORMAT, structured_time);
+  
+  if(to_field->value)
+    RAPTOR_FREE(cstring, to_field->value);
+  to_field->value=(char*)RAPTOR_MALLOC(cstring, len + 1);
+  strncpy(to_field->value, date_buffer, len+1);
+  return 0;
+#else
+  return 1;
+#endif
+}
