@@ -478,6 +478,8 @@ raptor_rss_date_uplift(raptor_rss_field* to_field, const char *date_string)
   size_t len;
   
   unix_time=RAPTOR_PARSEDATE_FUNCTION(date_string, NULL);
+  if(unix_time < 0)
+    return 1;
   
   structured_time=gmtime(&unix_time);
   len=ISO_DATE_LEN;
