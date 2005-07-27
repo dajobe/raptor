@@ -1202,7 +1202,15 @@ main(int argc, char *argv[])
   }
 
   memset(string, 0, TURTLE_FILE_BUF_SIZE);
-  fread(string, TURTLE_FILE_BUF_SIZE, 1, fh);
+  rc=fread(query_string, TURTLE_FILE_BUF_SIZE, 1, fh);
+  if(rc < TURTLE_FILE_BUF_SIZE) {
+    if(ferror(fh)) {
+      fprintf(stderr, "%s: file '%s' read failed - %s\n",
+              program, filename, strerror(errno));
+      fclose(fh);
+      return(1);
+    }
+  }
   
   if(argc>1)
     fclose(fh);
