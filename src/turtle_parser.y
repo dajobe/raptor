@@ -1183,7 +1183,8 @@ main(int argc, char *argv[])
   raptor_locator *locator=&rdf_parser.locator;
   FILE *fh;
   char *filename;
-
+  int rc;
+  
 #if RAPTOR_DEBUG > 2
   turtle_parser_debug=1;
 #endif
@@ -1202,11 +1203,11 @@ main(int argc, char *argv[])
   }
 
   memset(string, 0, TURTLE_FILE_BUF_SIZE);
-  rc=fread(query_string, TURTLE_FILE_BUF_SIZE, 1, fh);
+  rc=fread(string, TURTLE_FILE_BUF_SIZE, 1, fh);
   if(rc < TURTLE_FILE_BUF_SIZE) {
     if(ferror(fh)) {
       fprintf(stderr, "%s: file '%s' read failed - %s\n",
-              program, filename, strerror(errno));
+              argv[0], filename, strerror(errno));
       fclose(fh);
       return(1);
     }
