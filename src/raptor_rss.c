@@ -1078,23 +1078,10 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
 #ifdef RAPTOR_PARSEDATE_FUNCTION
     /* Get rid of date soup */
     if(from_field == RAPTOR_RSS_FIELD_PUBDATE) {
-      time_t unix_time;
-      struct tm* structured_time;
-#define ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
-#define ISO_DATE_LEN 20
-      static char date_buffer[ISO_DATE_LEN + 1];
-      
-      unix_time=RAPTOR_PARSEDATE_FUNCTION(item->fields[from_field]->value, NULL);
-      
-      structured_time=gmtime(&unix_time);
-      len=ISO_DATE_LEN;
-      strftime(date_buffer, len+1, ISO_DATE_FORMAT, structured_time);
-      
-      field->value=(char*)RAPTOR_MALLOC(cstring, len + 1);
-      strncpy(field->value, date_buffer, len+1);
+      raptor_rss_date_uplift(field, item->fields[from_field]->value);
     }
 #endif
-
+    
     if(!field->value) {
       /* Otherwise default action is to copy from_field value */
       len=strlen(item->fields[from_field]->value);
