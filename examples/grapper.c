@@ -626,7 +626,7 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 
 #if GTK_CHECK_VERSION(2,5,0)
   /* 2.5.x about widget */
-  const gchar* authors[2]= { "Dave Beckett", NULL };
+  const gchar* authors[2]= { "Dave Beckett http://purl.org/net/dajobe/", NULL };
 
 #if 1
   /* using 2.5.x stock about */
