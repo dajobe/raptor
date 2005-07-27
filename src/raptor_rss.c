@@ -1049,6 +1049,11 @@ static raptor_field_pair raptor_rss_uplift_map[]={
 #ifdef RAPTOR_PARSEDATE_FUNCTION
   /* convert to ISO date */
   { RAPTOR_RSS_FIELD_PUBDATE, RAPTOR_RSS_FIELD_DC_DATE },
+#if 0
+  /* FIXME - could normalize to UTC */
+  { RAPTOR_RSS_FIELD_ATOM_PUBLISHED, RAPTOR_RSS_FIELD_ATOM_PUBLISHED },
+  { RAPTOR_RSS_FIELD_ATOM_UPDATED,   RAPTOR_RSS_FIELD_ATOM_UPDATED },
+#endif
 #endif
 
   /* default actions: copy fields */
@@ -1066,20 +1071,32 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
   for(i=0; raptor_rss_uplift_map[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
     raptor_rss_fields_type from_field=raptor_rss_uplift_map[i].from;
     raptor_rss_fields_type to_field=raptor_rss_uplift_map[i].to;
-    raptor_rss_field* field;
+    raptor_rss_field* field=NULL;
     size_t len;
     
-    if(!(item->fields[from_field] && item->fields[from_field]->value) ||
-       (item->fields[to_field] && item->fields[to_field]->value))
-       continue;
-
-    field=raptor_rss_new_field();
+    if(!(item->fields[from_field] && item->fields[from_field]->value))
+      continue;
+  
+    if(from_field == to_field) {
+      field=item->fields[from_field];
+    } else {
+      if(item->fields[to_field] && item->fields[to_field]->value)
+        continue;
+      field=raptor_rss_new_field();
+      raptor_rss_item_add_field(item, to_field, field);
+    }
 
 #ifdef RAPTOR_PARSEDATE_FUNCTION
     /* Get rid of date soup */
-    if(from_field == RAPTOR_RSS_FIELD_PUBDATE) {
+    if(from_field == RAPTOR_RSS_FIELD_PUBDATE
+#if 0
+       /* or normalize to UTC */
+       ||
+       from_field == RAPTOR_RSS_FIELD_ATOM_PUBLISHED ||
+       from_field == RAPTOR_RSS_FIELD_ATOM_UPDATED
+#endif
+       )
       raptor_rss_date_uplift(field, item->fields[from_field]->value);
-    }
 #endif
     
     if(!field->value) {
@@ -1090,7 +1107,6 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
       strncpy(field->value, item->fields[from_field]->value, len + 1);
     }
     
-    raptor_rss_item_add_field(item, to_field, field);
   }
 }
 
