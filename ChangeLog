@@ -1,4 +1,41 @@
+2005-07-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* examples/grapper.c: Add author url
+
+	* raptor_rss.c (raptor_rss_uplift_fields): Add possibility of
+	normalizing fields, but no code to do it yet.
+
+	* raptor_rss_common.c (raptor_rss_date_uplift): fail and do
+	nothing if function returns <0
+
+	* raptor_rss.c (raptor_rss_uplift_fields): Moved date code into
+	raptor_rss_date_uplift and call it.
+
+	* raptor_rss.h: Added raptor_rss_date_uplift prototype
+
+	* raptor_rss_common.c (raptor_rss_date_uplift): Added, pulled out
+	of raptor_rss.c
+
+	* turtle_parser.y: gcc4 ignored return warning fixes:
+	(main): Check fread() return value and throw a user error.
+
+2005-07-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* examples/grapper.c (fs_ok_button_callback): Protect from
+	defining when when not used as a callback.
+	(open_button_callback): cast for gcc4
+
 2005-07-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor_rss.c (raptor_rss_parser_processNode): for rss:link and
+	atom:link with href, allow multiple link for atom, and continue to
+	ignore all but <link rel="altenrate"> for rss.
+
+	* raptor_rss_common.c: Tidying.
+	Added atom:feed and atom:entry to raptor_rss_types_info.
+	Declare atom namespace URI string raptor_atom_namespace_uri
+
+	* raptor_rss.h: Added RAPTOR_ATOM_FEED, RAPTOR_ATOM_ENTRY.
 
 	* raptor_serialize_rss.c: Add atom 1.0 serializing by generalising
 	rss 1.0 serializing.  Change field names to reflect this
