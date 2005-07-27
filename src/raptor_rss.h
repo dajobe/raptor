@@ -303,7 +303,7 @@ void raptor_enclosure_free(raptor_rss_enclosure* enclosure);
 raptor_rss_field* raptor_rss_new_field(void);
 void raptor_rss_field_free(raptor_rss_field* field);
 
-
+int raptor_rss_date_uplift(raptor_rss_field* to_field, const char *date_string);
 
 #ifdef __cplusplus
 }
