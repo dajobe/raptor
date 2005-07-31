@@ -63,7 +63,7 @@ ALL_TEST_FILES= README.txt \
 EXTRA_DIST = $(ALL_TEST_FILES)
 
 build-rapper:
-	@(cd $(top_builddir) ; $(MAKE) rapper)
+	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
 
 check-local: check-rdf check-bad-rdf
 # check-warn-rdf
@@ -75,7 +75,7 @@ check-rdf: build-rapper $(TEST_FILES)
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(ECHO) FAILED returned status $$status; result=1; \
@@ -100,7 +100,7 @@ check-bad-rdf: build-rapper $(TEST_BAD_FILES)
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "ok"; \
@@ -125,7 +125,7 @@ check-warn-rdf: build-rapper $(TEST_WARN_FILES)
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "FAILED - parsing failed when should have warned"; \

@@ -27,8 +27,8 @@
 TESTS=raptor_empty_test
 
 AM_CPPFLAGS=-I$(top_srcdir)
-AM_CFLAGS=@CFLAGS@ $(MEM)
-AM_LDFLAGS=$(top_builddir)/libraptor.la $(MEM_LIBS)
+AM_CFLAGS= -I$(top_builddir)/src @CFLAGS@ $(MEM)
+AM_LDFLAGS=$(top_builddir)/src/libraptor.la $(MEM_LIBS)
 
 EXTRA_PROGRAMS=$(TESTS)
 
@@ -131,10 +131,10 @@ SUBDIRS = turtle
 
 
 build-rapper:
-	@(cd $(top_builddir) ; $(MAKE) rapper)
+	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
 
 build-rdfdiff:
-	@(cd $(top_builddir) ; $(MAKE) rdfdiff)
+	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff)
 
 check-local: build-rapper \
 check-rdf check-mayfail-xml-rdf check-assume-rdf check-scan-rdf \
@@ -160,7 +160,7 @@ check-rdf: build-rapper $(RDF_TEST_FILES)
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(ECHO) FAILED returned status $$status; result=1; \
@@ -185,7 +185,7 @@ check-assume-rdf: build-rapper $(RDF_ASSUME_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/utils/rapper -q -a -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -203,7 +203,7 @@ check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
 	  name=`echo $$test | sed -e 's/\..*//'` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -s -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/utils/rapper -q -s -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -221,7 +221,7 @@ check-mayfail-xml-rdf: build-rapper $(RDF_MAYFAIL_XML_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(ECHO) FAILED returned status $$status; \
@@ -246,7 +246,7 @@ check-bad-rdf: build-rapper $(RDF_BAD_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "ok"; \
@@ -271,7 +271,7 @@ check-bad-nfc-rdf: build-rapper $(RDF_BAD_NFC_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "ok"; \
@@ -296,7 +296,7 @@ check-warn-rdf: build-rapper $(RDF_WARN_TEST_FILES)
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "FAILED - parsing failed when should have warned"; \
@@ -322,7 +322,7 @@ check-nt: build-rapper $(NT_TEST_FILES)
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(top_builddir)/utils/rapper -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -340,7 +340,7 @@ check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 	  name=`basename $$test .nt` ; \
 	  baseuri=$(BASE_URI)$$name.nt; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o ntriples -n file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o ntriples -n file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(ECHO) "ok"; \
@@ -364,7 +364,7 @@ check-turtle: build-rapper $(NT_TEST_FILES)
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -381,7 +381,7 @@ check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rdfdiff $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
@@ -398,8 +398,8 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $(srcdir)/$$test > $$name-rdfxmla.rdf 2> $$name.err; \
-	  $(top_builddir)/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $(srcdir)/$$test > $$name-rdfxmla.rdf 2> $$name.err; \
+	  $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
@@ -410,5 +410,5 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-$(top_builddir)/raptor/libraptor.la:
-	cd $(top_builddir)/raptor && $(MAKE) $(AM_MAKEFLAGS) libraptor.la
+$(top_builddir)/src/libraptor.la:
+	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libraptor.la

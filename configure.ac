@@ -28,7 +28,7 @@ dnl
 
 AC_INIT(Raptor RDF Parser, 1.4.8, http://bugs.librdf.org/, raptor)
 AC_PREREQ(2.50)
-AC_CONFIG_SRCDIR(raptor_parse.c)
+AC_CONFIG_SRCDIR(src/raptor_general.c)
 AC_REVISION($Revision$)
 
 libxml_min_version=2.4.0
@@ -38,7 +38,7 @@ libxml_rss_min_version=2.5.10
 libxslt_min_version=1.0.18
 
 AM_INIT_AUTOMAKE([1.7 check-news std-options -Wall])
-AM_CONFIG_HEADER(raptor_config.h)
+AM_CONFIG_HEADER(src/raptor_config.h)
 AM_MAINTAINER_MODE
 
 release_version=no
@@ -1178,12 +1178,16 @@ AC_SUBST(abs_top_builddir)
 AC_CONFIG_FILES([Makefile
 raptor.spec
 raptor.rdf
+data/Makefile
+docs/Makefile
 examples/Makefile
+src/Makefile
 tests/Makefile
 tests/turtle/Makefile
+utils/Makefile
 win32/Makefile
 raptor.pc])
-AC_CONFIG_FILES([raptor-config], [chmod +x raptor-config])
+AC_CONFIG_FILES([src/raptor-config], [chmod +x src/raptor-config])
 AC_CONFIG_FILES([raptor-src-config], [chmod +x raptor-src-config])
 
 AC_OUTPUT

@@ -1,10 +1,10 @@
 # -*- Mode: Makefile -*-
 #
-# Makefile.am - automake file for Raptor
+# Makefile.am - automake file for Raptor libraptor
 #
 # $Id$
 #
-# Copyright (C) 2000-2004, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2000-2005, David Beckett http://purl.org/net/dajobe/
 # Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
 # University of Bristol, UK http://www.bristol.ac.uk/
 # 
@@ -25,11 +25,7 @@
 # 
 
 
-bin_PROGRAMS = rapper
-EXTRA_PROGRAMS = rdfdiff
-
 bin_SCRIPTS = raptor-config
-noinst_SCRIPTS = raptor-src-config
 
 lib_LTLIBRARIES = libraptor.la
 
@@ -37,9 +33,7 @@ include_HEADERS = raptor.h
 
 noinst_HEADERS = raptor_internal.h win32_raptor_config.h
 
-man_MANS = rapper.1 libraptor.3 raptor-config.1
-
-SUBDIRS= tests win32 examples
+man_MANS = raptor-config.1
 
 TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
@@ -131,40 +125,12 @@ libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
 libraptor_la_LIBADD = @LTLIBOBJS@
 
 
-rapper_SOURCES = rdfdump.c
-if GETOPT
-rapper_SOURCES += getopt.c raptor_getopt.h
-endif
-rapper_LDADD=libraptor.la
-
-rdfdiff_SOURCES = rdfdiff.c
-if GETOPT
-rdfdiff_SOURCES += getopt.c raptor_getopt.h
-endif
-rdfdiff_LDADD=libraptor.la
-
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = raptor.pc
-
-
 EXTRA_DIST=\
-ChangeLog ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 ChangeLog.5 \
-README      NEWS      LICENSE.txt \
-README.html NEWS.html LICENSE.html INSTALL.html \
-libraptor.html rapper.html RELEASE.html \
-LICENSE-2.0.txt NOTICE \
-raptor.rdf.in \
-raptor-config.in raptor-src-config.in \
-autogen.sh \
-raptor.spec.in \
-dc.rdf \
+raptor-config.in \
 raptor_www_test.c \
 raptor_nfc_test.c \
 raptor_win32.c \
-fix-groff-xhtml \
 $(man_MANS) \
-raptor.pc.in \
 turtle_lexer.l turtle_parser.y \
 n3_lexer.l n3_parser.y \
 parsedate.y \
@@ -174,30 +140,7 @@ fix-flex
 LEX=@LEX@
 YACC=@YACC@
 
-# Create some text files from HTML sources
-LYNX=lynx
-HTML_TO_TEXT=TERM=vt100 $(LYNX) -dump -nolist
-
-SUFFIXES = .html .txt
-
-.html.txt:
-	$(HTML_TO_TEXT) $< > $@
-
-README: README.html
-	$(HTML_TO_TEXT) $< > $@
-
-NEWS: NEWS.html
-	$(HTML_TO_TEXT) $< > $@
-
-
 if MAINTAINER_MODE
-libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/fix-groff-xhtml
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
-
-rapper.html: $(srcdir)/rapper.1 $(srcdir)/fix-groff-xhtml
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/fix-groff-xhtml $@
-
-
 # Actually it needs turtle_parser.h but nevermind
 turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
@@ -253,8 +196,6 @@ parsedate.c: $(srcdir)/parsedate.y
 
 
 
-check-local: rapper rdfdiff
-
 # Some people need a little help ;-)
 test: check
 
@@ -299,17 +240,3 @@ raptor_iostream_test: $(srcdir)/raptor_iostream.c libraptor.la
 
 raptor_xml_writer_test: $(srcdir)/raptor_xml_writer.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml_writer.c libraptor.la $(LIBS)
-
-
-deb: distcheck
-	rm -rf $(distdir)
-	tar xfz $(distdir).tar.gz
-	cd $distdir && dpkg-buildpackage -rfakeroot
-
-dist-hook: README NEWS
-	@for file in README NEWS; do \
-          if test -r $(srcdir)/$$file; then \
-	    rm -f $(distdir)/$$file; \
-	    cp -p $(srcdir)/$$file $(distdir)/$$file; \
-	  fi; \
-	done
