@@ -28,6 +28,8 @@
 bin_PROGRAMS = rapper
 EXTRA_PROGRAMS = rdfdiff
 
+man_MANS = rapper.1
+
 CLEANFILES=rdfdiff
 
 # Memory debugging alternatives
