@@ -3014,7 +3014,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
 #ifdef RAPTOR_DEBUG_CDATA
   RAPTOR_DEBUG2("Adding characters (is_cdata=%d): '", is_cdata);
-  fwrite(s, 1, len, stderr);
+  (void)fwrite(s, 1, len, stderr);
   fprintf(stderr, "' (%d bytes)\n", len);
 #endif
 

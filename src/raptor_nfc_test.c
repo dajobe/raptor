@@ -65,7 +65,7 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
   
 #ifdef RAPTOR_NFC_DECODE_DEBUG
   fputs("decode_to_utf8: string '", stderr);
-  fwrite(unicode_string, sizeof(char), (end-unicode_string)+1, stderr);
+  (void)fwrite(unicode_string, sizeof(char), (end-unicode_string)+1, stderr);
   fputs("' converts to:\n  ", stderr);
 #endif
 

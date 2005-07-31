@@ -956,7 +956,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
             (int)count, (int)OUT_BYTES_COUNT);
     fputs("[[", stderr);
-    fwrite(string, 1, string_len, stderr);
+    (fwrite)fwrite(string, 1, string_len, stderr);
     fputs("]]\n", stderr);
     return 1;
   }
@@ -973,7 +973,7 @@ main(int argc, char *argv[])
 
   fprintf(stderr, "%s: Made XML string of %d bytes\n", program, (int)string_len);
   fputs("[[", stderr);
-  fwrite(string, 1, string_len, stderr);
+  (void)fwrite(string, 1, string_len, stderr);
   fputs("]]\n", stderr);
 
   raptor_free_memory(string);
