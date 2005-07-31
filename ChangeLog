@@ -1,3 +1,9 @@
+2005-07-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* Source re-organisation - libraptor code moved to new src/ dir.
+	rapper and rdfdif moved to new utils/ dir.  Other manual pages to
+	docs/.
+
 2005-07-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* Makefile.am: Add n3_lexer_test, n3_parser_test for maintainer
