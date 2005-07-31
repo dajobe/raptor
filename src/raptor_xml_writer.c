@@ -956,7 +956,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
             (int)count, (int)OUT_BYTES_COUNT);
     fputs("[[", stderr);
-    (fwrite)fwrite(string, 1, string_len, stderr);
+    (void)fwrite(string, 1, string_len, stderr);
     fputs("]]\n", stderr);
     return 1;
   }
