@@ -23,6 +23,7 @@ n3_parser.output
 parsedate.c
 parsedate.h
 parsedate.output
+raptor-config
 raptor_config.h
 raptor_config.h.in
 stamp-h*

@@ -1,6 +1,2 @@
-*.lo
 Makefile
 Makefile.in
-rapper
-rdfdiff
-
