@@ -1,4 +1,21 @@
+2005-08-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_rss_common.c, src/raptor_rss.c,
+	src/raptor_internal.h: Move time.h and sys/time.h #ifdef and
+	includes to raptor_internal.h since time_t is mentioned there and
+	visible to all files.
+
+	* tests/Makefile.am: adjust -I to point to srcdir for
+	raptor_empty_test
+
 2005-07-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_xml_writer.c (main): syntax
+
+	* src/raptor_uri.c: Add (void) casts for fwrite debug messages
+
+	* src/raptor_xml_writer.c, src/raptor_rdfxml.c, src/raptor_nfc_test.c:
+	Add (void) casts for fwrite debug messages
 
 	* Source re-organisation - libraptor code moved to new src/ dir.
 	rapper and rdfdif moved to new utils/ dir.  Other manual pages to
