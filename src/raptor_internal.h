@@ -911,6 +911,18 @@ struct raptor_uri_detail_s
 };
 
 
+/* for time_t */
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 /* parsedate.c */
 #ifdef HAVE_INN_PARSEDATE
 #include <libinn.h>
