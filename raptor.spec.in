@@ -38,26 +38,10 @@ serializer library.
 %setup -q
 
 %build
-# Needed for snapshot releases.
-if [ ! -f configure ]; then
-%ifarch alpha
-  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --host=alpha-redhat-linux --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
-%else
-  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
-%endif
-else
-%ifarch alpha
-  CFLAGS="$RPM_OPT_FLAGS" ./configure --host=alpha-redhat-linux --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
-%else
-  CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir} --libdir=%{_libdir}
-%endif
-fi
 
-if [ "$SMP" != "" ]; then
-  (make "MAKE=make -k -j $SMP"; exit 0)
-else
-  make
-fi
+%configure --enable-release
+
+%{__make} OPTIMIZE="$RPM_OPT_FLAGS"
 
 %install
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
@@ -105,6 +89,9 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 
 %changelog
+* Wed Aug 20 2005  Dave Beckett <dave.beckett@bristol.ac.uk>
+- Use %configure and %{_make}
+
 * Thu Sep 9 2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
 - License now LGPL/Apache 2
 - Added LICENSE-2.0.txt and NOTICE
