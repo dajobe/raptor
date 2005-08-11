@@ -46,7 +46,13 @@ CONFIG_DIR=${CONFIG_DIR-../config}
 # in the current PATH.
 # Set an envariable of the same name in uppercase, to override scan
 #
-programs="automake aclocal autoconf autoheader libtoolize gtkdocize"
+programs="automake aclocal autoconf autoheader libtoolize"
+if grep "^GTK_DOC_CHECK" configure.ac >/dev/null; then
+  program="$programs gtkdocize"
+fi
+if grep "^AC_CHECK_PROGS.SWIG" configure.ac >/dev/null; then
+  programs="$programs swig"
+fi
 
 # Some dependencies for autotools:
 # automake 1.9 requires autoconf 2.58
@@ -58,6 +64,7 @@ autoconf_min_vers=2.54
 autoheader_min_vers=$autoconf_min_vers
 libtoolize_min_vers=1.4
 gtkdocize_min_vers=1.3
+swig_min_vers=1.3.24
 
 # Default program arguments
 automake_args="--add-missing"
@@ -108,9 +115,12 @@ update_prog_version() {
   names=`ls $prog* 2>/dev/null`
   if [ "X$names" != "X" ]; then
     for name in $names; do
-      vers=`$name --version 2>&1 | head -n 1 | awk '{print $NF}'`
+      vers=`$name --version 2>&1 | grep -v Unable | head -n 1 | awk '{print $NF}'`
       if [ "X$vers" = "X" ]; then
-        continue
+        vers=`$name -version 2>&1 | grep Version | awk '{print $NF}'`
+        if [ "X$vers" = "X" ]; then
+          continue
+        fi
       fi
       if expr $vers '>' $prog_vers >/dev/null; then
         prog_name=$name
@@ -133,7 +143,7 @@ check_prog_version() {
   eval prog_name=\$${prog}_name
   eval prog_vers=\$${prog}_vers
 
-  echo "$program: Found $prog $prog_name version $prog_vers (min $min)" 1>&2
+  echo "$program: Found $prog program '$prog_name' version $prog_vers (min $min)" 1>&2
 
   rc=1
   if test $prog_vers != 0; then
@@ -162,6 +172,8 @@ IFS=":"
 set - $PATH
 IFS="$save_ifs"
 
+echo "$program: Looking for programs: $programs"
+
 here=`pwd`
 while [ $# -ne 0 ] ; do
   dir=$1
@@ -189,7 +201,7 @@ for prog in $programs; do
 done
 
 echo "$program: Dependencies satisfied"
-echo " "
+
 
 config_dir=
 if test -d $CONFIG_DIR; then
