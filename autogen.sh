@@ -191,13 +191,6 @@ done
 echo "$program: Dependencies satisfied"
 echo " "
 
-if test -z "$*"; then
-  echo "$program: WARNING: Running \`configure' with no arguments."
-  echo "If you wish to pass any to it, please specify them on the"
-  echo "\`$0' command line."
-fi
-
-
 config_dir=
 if test -d $CONFIG_DIR; then
   config_dir=`cd $CONFIG_DIR; pwd`
@@ -258,6 +251,7 @@ do
   fi
 done
 
+
 rm -f config.cache
 
 AUTOMAKE=$automake
@@ -266,6 +260,12 @@ ACLOCAL=$aclocal
 export AUTOMAKE AUTOCONF ACLOCAL
 
 echo " "
+if test -z "$*"; then
+  echo "$program: WARNING: Running \`configure' with no arguments."
+  echo "If you wish to pass any to it, please specify them on the"
+  echo "\`$program' command line."
+fi
+
 echo "$program: Running ./configure $configure_args $@"
 if test "X$DRYRUN" = X; then
   $DRYRUN ./configure $configure_args "$@" \
