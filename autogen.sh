@@ -1,14 +1,33 @@
 #!/bin/sh
 #
-# autogen.sh - Generates the initial makefiles from a pristine CVS tree
+# autogen.sh - Generates initial makefiles from a pristine CVS tree
 #
 # $Id$
 #
-# USAGE: autogen.sh [configure options]
+# USAGE:
+#   autogen.sh [configure options]
 #
-# If environment variable DRYRUN is set, no configuring will be done -
-# (e.g. in bash)  DRYRUN=1 ./autogen.sh
-# will not do any configuring but will emit the programs that would be run.
+# Configuration is affected by environment variables as follows:
+#
+# DRYRUN
+#  If set to any value it will do no configuring but  will emit the
+#  programs that would be run.
+#   e.g. DRYRUN=1 ./autogen.sh
+#
+# AUTOMAKE ACLOCAL AUTOCONF AUTOHEADER LIBTOOLIZE GTKDOCIZE
+#  If set (named after program) then this overrides any searching for
+#  the programs on the current PATH.
+#   e.g. AUTOMAKE=automake-1.7 ACLOCAL=aclocal-1.7 ./autogen.sh
+#
+# CONFIG_DIR (default ../config)
+#  The directory where fresh GNU config.guess and config.sub can be
+#  found for automatic copying in-place.
+#
+# PATH
+#  Where the programs are searched for
+#
+# SRCDIR (default .)
+#  Source directory
 #
 # This script is based on similar scripts used in various tools
 # commonly made available via CVS and used with GNU automake.
@@ -17,52 +36,131 @@
 # This script is in the public domain
 #
 
-PACKAGE=raptor
-
-SRCDIR=.
+# Directory for the sources
+SRCDIR=${SRCDIR-.}
 
 # Where the GNU config.sub, config.guess might be found
-CONFIG_DIR=../config
+CONFIG_DIR=${CONFIG_DIR-../config}
 
+# The programs required for configuring which will be searched for
+# in the current PATH.
+# Set an envariable of the same name in uppercase, to override scan
+#
+programs="automake aclocal autoconf autoheader libtoolize gtkdocize"
 
-DIE=
-
-if test "X$DRYRUN" != X; then
-  DRYRUN=echo
-fi
-
+# Some dependencies for autotools:
 # automake 1.9 requires autoconf 2.58
 # automake 1.8 requires autoconf 2.58
 # automake 1.7 requires autoconf 2.54
 automake_min_vers=1.7
 aclocal_min_vers=$automake_min_vers
 autoconf_min_vers=2.54
+autoheader_min_vers=$autoconf_min_vers
 libtoolize_min_vers=1.4
+gtkdocize_min_vers=1.3
 
-automake_args=--add-missing
+# Default program arguments
+automake_args="--add-missing"
 autoconf_args=
+libtoolize_args="--force --copy --automake"
+gtkdocize_args="--copy"
 aclocal_args=
+automake_args="--gnu --add-missing --force --copy"
+# --enable-gtk-doc does no harm if it's not available
+configure_args="--enable-maintainer-mode --enable-gtk-doc"
+
+
+# You should not need to edit below here
+######################################################################
+
+
+# number comparisons may need a C locale
+LANG=C
+LC_NUMERIC=C
 
 
 program=`basename $0`
 
-# START Find autoconf and automake
+if test "X$DRYRUN" != X; then
+  DRYRUN=echo
+fi
+
+update_prog_version() {
+  prog=$1
+
+  # If there exists an envariable PROG in uppercase, use that and do not scan
+  ucprog=`echo $prog | tr 'a-z' 'A-Z' `
+  eval env=\$${ucprog}
+  if test X$env != X; then
+    prog_name=$env
+    prog_vers=`$prog_name --version 2>&1 | head -n 1 | awk '{print $NF}'`
+    eval ${prog}_name=${prog_name}
+    eval ${prog}_vers=${prog_vers}
+    return
+  fi
+
+  eval prog_name=\$${prog}_name
+  eval prog_vers=\$${prog}_vers
+  if test X$prog_vers = X; then
+    prog_vers=0
+  fi
+
+  names=`ls $prog* 2>/dev/null`
+  if [ "X$names" != "X" ]; then
+    for name in $names; do
+      vers=`$name --version 2>&1 | head -n 1 | awk '{print $NF}'`
+      if [ "X$vers" = "X" ]; then
+        continue
+      fi
+      if expr $vers '>' $prog_vers >/dev/null; then
+        prog_name=$name
+        prog_vers=$vers
+      fi
+    done
+  fi
+
+  eval ${prog}_name=${prog_name}
+  eval ${prog}_vers=${prog_vers}
+
+}
+
+
+check_prog_version() {
+  prog=$1
+
+  eval min=\$${prog}_min_vers
+
+  eval prog_name=\$${prog}_name
+  eval prog_vers=\$${prog}_vers
+
+  echo "$program: Found $prog $prog_name version $prog_vers (min $min)" 1>&2
+
+  rc=1
+  if test $prog_vers != 0; then
+    if expr $prog_vers '<' $min >/dev/null; then
+       echo "$program: ERROR: \`$prog' version $prog_vers is too old."
+       echo "    (version $min or newer is required)"
+       rc=0
+    else
+      # Things are ok, so set the ${prog} name
+      eval ${prog}=${prog_name}
+    fi 
+  else
+    echo "$program: ERROR: You must have \`$prog' installed to compile this package."
+    echo "     (version $min or newer is required)"
+    rc=0
+  fi
+
+  return $rc
+}
+
+
+# Find newest version of programs in the current PATH
 save_args=${1+"$*"}
 save_ifs="$IFS"
 IFS=":"
 set - $PATH
 IFS="$save_ifs"
-
-autoconf=${AUTOCONF-autoconf}
-autoconf_vers=0
-automake=${AUTOMAKE-automake}
-automake_vers=0
-aclocal=${ACLOCAL-aclocal}
-aclocal_vers=0
-autoheader=${AUTOHEADER-autoheader}
-autoheader_vers=0
-libtoolize=${LIBTOOLIZE-libtoolize}
-libtoolize_vers=0
 
 here=`pwd`
 while [ $# -ne 0 ] ; do
@@ -73,149 +171,25 @@ while [ $# -ne 0 ] ; do
   fi
   cd $dir
 
-  # This should really be a shell function called 3 times
-  progs=`ls autoconf* 2>/dev/null`
-  if [ "X$progs" != "X" ]; then
-    for prog in $progs; do
-      vers=`$prog --version | sed -ne '1s/^.* //p'`
-      if [ "X$vers" = "X" ]; then
-        continue
-      fi
-      if expr $vers '>' $autoconf_vers >/dev/null; then
-        autoconf=$prog
-        autoconf_vers=$vers
-      fi
-    done
-  fi
-  progs=`ls automake* 2>/dev/null`
-  if [ "X$progs" != "X" ]; then
-    for prog in $progs; do
-      vers=`$prog --version | sed -ne '1s/^.* //p'`
-      if [ "X$vers" = "X" ]; then
-        continue
-      fi
-      if expr $vers '>' $automake_vers >/dev/null; then
-        automake=$prog
-        automake_vers=$vers
-      fi
-    done
-  fi
-  progs=`ls aclocal* 2>/dev/null`
-  if [ "X$progs" != "X" ]; then
-    for prog in $progs; do
-      vers=`$prog --version | sed -ne '1s/^.* //p'`
-      if [ "X$vers" = "X" ]; then
-        continue
-      fi
-      if expr $vers '>' $aclocal_vers >/dev/null; then
-        aclocal=$prog
-        aclocal_vers=$vers
-      fi
-    done
-  fi
-  progs=`ls libtoolize* 2>/dev/null`
-  if [ "X$progs" != "X" ]; then
-    for prog in $progs; do
-      vers=`$prog --version | sed -ne '1s/^.* //p'`
-      if [ "X$vers" = "X" ]; then
-        continue
-      fi
-      if expr $vers '>' $libtoolize_vers >/dev/null; then
-        libtoolize=$prog
-        libtoolize_vers=$vers
-      fi
-    done
-  fi
-  progs=`ls autoheader* 2>/dev/null`
-  if [ "X$progs" != "X" ]; then
-    for prog in $progs; do
-      vers=`$prog --version | sed -ne '1s/^.* //p'`
-      if [ "X$vers" = "X" ]; then
-        continue
-      fi
-      if expr $vers '>' $autoheader_vers >/dev/null; then
-        autoheader=$prog
-        autoheader_vers=$vers
-      fi
-    done
-  fi
+  for prog in $programs; do
+    update_prog_version $prog
+  done
 done
 cd $here
 
 set - $save_args
-# END Find autoconf and automake
+# END Find programs
 
 
-echo "$program: Found autoconf $autoconf version $autoconf_vers" 1>&2
-echo "$program: Found automake $automake version $automake_vers" 1>&2
-echo "$program: Found aclocal $aclocal version $aclocal_vers" 1>&2
-echo "$program: Found autoheader $autoheader version $autoheader_vers" 1>&2
-echo "$program: Found libtoolize $libtoolize version $libtoolize_vers" 1>&2
-
-
-if ($autoconf --version) < /dev/null > /dev/null 2>&1 ; then
-    if ($autoconf --version | awk 'NR==1 { if( $3 >= '$autoconf_min_vers') \
-			       exit 1; exit 0; }');
-    then
-       echo "$program: ERROR: \`$autoconf' is too old."
-       echo "           (version $autoconf_min_vers or newer is required)"
-       DIE="yes"
-    fi
-else
-    echo
-    echo "$program: ERROR: You must have \`$autoconf' installed to compile $PACKAGE."
-    echo "           (version $autoconf_min_vers or newer is required)"
-    DIE="yes"
-fi
-
-if ($automake --version) < /dev/null > /dev/null 2>&1 ; then
-  if ($automake --version | awk 'NR==1 { if( $4 >= '$automake_min_vers') \
-			     exit 1; exit 0; }');
-     then
-     echo "$program: ERROR: \`$automake' is too old."
-     echo "           (version $automake_min_vers or newer is required)"
-     DIE="yes"
+# Check the versions meet the requirements
+for prog in $programs; do
+  if check_prog_version $prog; then
+    exit 1
   fi
-  if ($aclocal --version) < /dev/null > /dev/null 2>&1; then
-    if ($aclocal --version | awk 'NR==1 { if( $4 >= '$aclocal_min_vers' ) \
-						exit 1; exit 0; }' );
-    then
-      echo "$program: ERROR: \`$aclocal' is too old."
-      echo "           (version $aclocal_min_vers or newer is required)"
-      DIE="yes"
-    fi
-  else
-    echo
-    echo "$program: ERROR: Missing \`$aclocal'"
-    echo "           The version of $automake installed doesn't appear recent enough."
-    DIE="yes"
-  fi
-else
-    echo
-    echo "$program: ERROR: You must have \`$automake' installed to compile $PACKAGE."
-    echo "           (version $automake_min_vers or newer is required)"
-    DIE="yes"
-fi
+done
 
-if ($libtoolize --version) < /dev/null > /dev/null 2>&1 ; then
-    if ($libtoolize --version | awk 'NR==1 { if( $4 >= '$libtoolize_min_vers') \
-			       exit 1; exit 0; }');
-    then
-       echo "$program: ERROR: \`$libtoolize' is too old."
-       echo "           (version $libtoolize_min_vers or newer is required)"
-       DIE="yes"
-    fi
-else
-    echo
-    echo "$program: ERROR: You must have \`libtoolize' installed to compile $PACKAGE."
-    echo "           (version $libtoolize_min_vers or newer is required)"
-    DIE="yes"
-fi
-
-
-if test "X$DIE" != X; then
-  exit 1
-fi
+echo "$program: Dependencies satisfied"
+echo " "
 
 if test -z "$*"; then
   echo "$program: WARNING: Running \`configure' with no arguments."
@@ -223,12 +197,12 @@ if test -z "$*"; then
   echo "\`$0' command line."
 fi
 
-am_opt=
 
 config_dir=
 if test -d $CONFIG_DIR; then
   config_dir=`cd $CONFIG_DIR; pwd`
 fi
+
 
 for coin in `find $SRCDIR -name configure.ac -print`
 do 
@@ -236,16 +210,17 @@ do
   if test -f $dir/NO-AUTO-GEN; then
     echo $program: Skipping $dir -- flagged as no auto-gen
   else
+    echo " "
     echo $program: Processing directory $dir
     ( cd $dir
 
       # Ensure that these are created by the versions on this system
       # (indirectly via automake)
-      rm -f ltconfig ltmain.sh libtool stamp-h*
+      $DRYRUN rm -f ltconfig ltmain.sh libtool stamp-h*
       # Made by automake
-      rm -f missing depcomp
+      $DRYRUN rm -f missing depcomp
       # automake junk
-      rm -rf autom4te*.cache
+      $DRYRUN rm -rf autom4te*.cache
 
       if test "X$config_dir" != X; then
         echo "$program: Updating config.guess and config.sub"
@@ -258,9 +233,16 @@ do
 	done
       fi
 
-      echo "$program: Running $libtoolize --copy --automake"
+      echo "$program: Running $libtoolize $libtoolize_args"
       $DRYRUN rm -f ltmain.sh libtool
-      $DRYRUN $libtoolize --copy --automake
+      eval $DRYRUN $libtoolize $libtoolize_args
+
+      if grep "^GTK_DOC_CHECK" configure.ac >/dev/null; then
+        # gtkdocize junk
+        $DRYRUN rm -rf gtk-doc.make
+        echo "$program: Running $gtkdocize $gtkdocize_args"
+        $DRYRUN $gtkdocize $gtkdocize_args
+      fi
 
       echo "$program: Running $aclocal $aclocal_args"
       $DRYRUN $aclocal $aclocal_args
@@ -268,8 +250,8 @@ do
 	echo "$program: Running $autoheader"
 	$DRYRUN $autoheader
       fi
-      echo "$program: Running $automake $am_opt"
-      $DRYRUN $automake $automake_args $am_opt
+      echo "$program: Running $automake $automake_args"
+      $DRYRUN $automake $automake_args $automake_args
       echo "$program: Running $autoconf"
       $DRYRUN $autoconf $autoconf_args
     )
@@ -278,17 +260,16 @@ done
 
 rm -f config.cache
 
-conf_flags="--enable-maintainer-mode"
-
 AUTOMAKE=$automake
 AUTOCONF=$autoconf
 ACLOCAL=$aclocal
 export AUTOMAKE AUTOCONF ACLOCAL
 
-echo "$program: Running ./configure $conf_flags $@"
+echo " "
+echo "$program: Running ./configure $configure_args $@"
 if test "X$DRYRUN" = X; then
-  $DRYRUN ./configure $conf_flags "$@" \
-  && echo "$program: Now type \`make' to compile $PACKAGE" || exit 1
+  $DRYRUN ./configure $configure_args "$@" \
+  && echo "$program: Now type \`make' to compile this package" || exit 1
 else
-  $DRYRUN ./configure $conf_flags "$@"
+  $DRYRUN ./configure $configure_args "$@"
 fi
