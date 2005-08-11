@@ -10,7 +10,7 @@ Release:   %{release}
 Prefix:    %{_prefix}
 License:   LGPL/Apache 2
 Group:     Development/Libraries
-Source:    http://librdf.org/dist/source/%{name}-%{version}.tar.gz
+Source:    http://download.librdf.org/source/%{name}-%{version}.tar.gz
 URL:       http://librdf.org/raptor/
 BuildRoot: /tmp/%{name}-%{version}
 BuildRequires: libxml2 libxml2-devel curl curl-devel
@@ -49,7 +49,7 @@ serializer library.
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
-make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RPM_BUILD_ROOT%{_mandir} install
+%makeinstall
 
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
@@ -89,7 +89,11 @@ make prefix=$RPM_BUILD_ROOT%{prefix} libdir=$RPM_BUILD_ROOT%{_libdir} mandir=$RP
 
 
 %changelog
-* Wed Aug 20 2005  Dave Beckett <dave.beckett@bristol.ac.uk>
+* Wed Aug 11 2005  Dave Beckett <dave.beckett@bristol.ac.uk>
+- Update Source:
+- Use %makeinstall
+
+* Wed Aug 10 2005  Dave Beckett <dave.beckett@bristol.ac.uk>
 - Use %configure and %{_make}
 
 * Thu Sep 9 2004 Dave Beckett <Dave.Beckett@bristol.ac.uk>
