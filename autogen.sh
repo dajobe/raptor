@@ -48,7 +48,7 @@ CONFIG_DIR=${CONFIG_DIR-../config}
 #
 programs="automake aclocal autoconf autoheader libtoolize"
 if grep "^GTK_DOC_CHECK" configure.ac >/dev/null; then
-  program="$programs gtkdocize"
+  programs="$programs gtkdocize"
 fi
 if grep "^AC_CHECK_PROGS.SWIG" configure.ac >/dev/null; then
   programs="$programs swig"
