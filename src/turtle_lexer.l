@@ -105,8 +105,10 @@
 #include <turtle_common.h>
 
 
+/* Prototypes */ 
 static unsigned char *turtle_copy_token(unsigned char *text, size_t len);
 static unsigned char *turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
+void turtle_lexer_syntax_error(void* rdf_parser, const char *msg, ...);
 
 #ifdef RAPTOR_DEBUG
 const char * turtle_token_print(int token, YYSTYPE *lval);
@@ -175,19 +177,39 @@ QUOTEDURI \<[^\>]*\>
 \"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-\"\"\"				{ BEGIN(LITERAL); }
+\"\"\"				{ BEGIN(LITERAL); 
+                                  turtle_parser->sb=raptor_new_stringbuffer();
+                          }
 
-<LITERAL>(.|\n)*\"\"\"	{ turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext, yyleng-3, '"'); /* ' */
-                          BEGIN(INITIAL);
-                          return STRING_LITERAL; }
+<LITERAL>\"\"\"			{
+		  size_t len;
+     
+		  BEGIN(INITIAL);
+                  len=raptor_stringbuffer_length(turtle_parser->sb);
+                  turtle_parser_lval->string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len+1);
 
-<LITERAL>(.|\n)	{ BEGIN(INITIAL);
-		  if (*yytext == EOF)
+                  raptor_free_stringbuffer(turtle_parser->sb);
+                  turtle_parser->sb=NULL;
+                  return STRING_LITERAL; }
+
+<LITERAL>\"|(([^\"]|\n)*)		{
+		  if (*yytext == EOF) {
+                    BEGIN(INITIAL);
+                    turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb=NULL;
                     return EOF;
+                  }
 
-                  turtle_syntax_error(rdf_parser, "syntax error at %c - \"\"\"string was not terminated", *yytext);
-                  yyterminate();  }
-
+                  if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', turtle_lexer_syntax_error, rdf_parser)) { /* " */
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb=NULL;
+                    yyterminate();
+                  }
+                  
+   }
 
 {BNAME}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
@@ -246,7 +268,8 @@ yywrap (yyscan_t yyscanner) {
 
 
 static unsigned char *
-turtle_copy_token(unsigned char *text, size_t len) {
+turtle_copy_token(unsigned char *text, size_t len)
+{
   unsigned char *s;
   if(!len)
     len=strlen((const char*)text);
@@ -259,66 +282,51 @@ turtle_copy_token(unsigned char *text, size_t len) {
 
 
 static unsigned char *
-turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim) {
-  size_t i;
-  unsigned char *s, *d;
-  unsigned char *string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
-
-  for(s=text, d=string, i=0; i<len; s++, i++) {
-    unsigned char c=*s;
-
-    if(c == '\\' ) {
-      s++; i++;
-      c=*s;
-      if(c == 'n')
-        *d++= '\n';
-      else if(c == 'r')
-        *d++= '\r';
-      else if(c == 't')
-        *d++= '\t';
-      else if(c == '\\' || c == delim)
-        *d++=c;
-      else if (c == 'u' || c == 'U') {
-        size_t ulen=(c == 'u') ? 4 : 8;
-        unsigned long unichar=0;
-        int n;
-        
-        s++; i++;
-        if(i+ulen > len) {
-          turtle_syntax_error(rdf_parser, "\\%c over end of line", c);
-          RAPTOR_FREE(cstring, string);
-          return NULL;
-        }
-        
-        n=sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
-        if(n != 1) {
-          turtle_syntax_error(rdf_parser, "Illegal Uncode escape '%c%s...'", c, s);
-          RAPTOR_FREE(cstring, string);
-          return NULL;
-        }
-
-        s+= ulen-1;
-        i+= ulen-1;
-        
-        if(unichar < 0 || unichar > 0x10ffff) {
-          turtle_syntax_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
-          RAPTOR_FREE(cstring, string);
-          return NULL;
-        }
-          
-        d+=raptor_unicode_char_to_utf8(unichar, d);
-
-      } else {
-        /* don't handle \x where x isn't one of: \n \r \\ (delim) */
-        turtle_syntax_error(rdf_parser, "Illegal string escape \\%c in \"%s\"", c, text);
-      }
-    } else
-      *d++=c;
+turtle_copy_string_token(raptor_parser* rdf_parser, 
+                         unsigned char *string, size_t len, int delim)
+{
+  raptor_stringbuffer* sb;
+  int rc;
+  
+  sb=raptor_new_stringbuffer();
+  if(!sb)
+    return NULL;
+  
+  rc=raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
+                                              turtle_lexer_syntax_error,
+                                              rdf_parser);
+  if(rc) {
+    raptor_free_stringbuffer(sb);
+    return NULL;
   }
-  *d='\0';
+  
+  len=raptor_stringbuffer_length(sb);
+  string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  raptor_stringbuffer_copy_to_string(sb, string, len+1);
+  
+  raptor_free_stringbuffer(sb);
+  
   return string;
 }
 
+
+void
+turtle_lexer_syntax_error(void* ctx, const char *message, ...)
+{
+  raptor_parser* rdf_parser=(raptor_parser *)ctx;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
+  va_list arguments;
+  
+  rdf_parser->locator.line=turtle_parser->lineno;
+#ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=turtle_lexer_get_column(yyscanner);
+#endif
+
+  va_start(arguments, message);
+  raptor_parser_error_varargs(((raptor_parser*)rdf_parser), message, arguments);
+
+  va_end(arguments);
+}
 
 
 #ifdef RAPTOR_DEBUG
