@@ -1,3 +1,25 @@
+2005-08-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_serialize_rss.c (raptor_rss10_emit_item): Die in
+	debug mode with NULL item - all calls to this are currently
+	wrapped with a check.
+	(raptor_rss10_emit_item): Do not emit atom author when no such
+	item exists.
+
+	* manifest.pl: typo
+
+2005-08-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* autogen.sh: Rewrite with functions, generalize to any redland
+	package.  Add docs.
+
+	* raptor.spec.in: - Update Source:
+	- Use %makeinstall
+
+2005-08-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* raptor.spec.in: Use %configure and %{_make}
+
 2005-08-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* src/raptor_rss_common.c, src/raptor_rss.c,
