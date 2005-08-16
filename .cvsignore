@@ -6,8 +6,10 @@
 *.rdf
 *.rdfs
 *.rss
+.gdbinit
 COPYING.LIB
 ChangeLog*
+INSTALL
 LICENSE.txt
 Makefile
 Makefile.in
