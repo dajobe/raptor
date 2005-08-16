@@ -939,6 +939,9 @@ time_t raptor_parse_date(char *p, time_t *now);
 #endif
 #endif
 
+/* turtle_common.c */
+int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
+
 
 /* end of RAPTOR_INTERNAL */
 #endif
