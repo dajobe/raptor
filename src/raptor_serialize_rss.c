@@ -640,6 +640,13 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   int f;
   int is_atom;
 
+#ifdef RAPTOR_DEBUG
+  if(!item) {
+    RAPTOR_FATAL3("Tried to emit NULL item of type %d - %s\n", item_type,
+                  raptor_rss_types_info[item_type].name);
+  }
+#endif
+
   xml_writer=rss_serializer->xml_writer;
   is_atom=rss_serializer->is_atom;
   rss_model=&rss_serializer->model;
@@ -711,6 +718,9 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         continue;
       
       typei=RAPTOR_ATOM_AUTHOR;
+      if(!rss_model->common[typei])
+        continue;
+      
       RAPTOR_DEBUG3("Emitting type %i - %s\n", typei, 
                     raptor_rss_types_info[typei].name);
       raptor_rss10_emit_item(serializer, rss_model->common[typei], typei, 
