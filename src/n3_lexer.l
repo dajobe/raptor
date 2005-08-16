@@ -192,6 +192,19 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)
 :	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
+[0-9]+"."[0-9]*[eE][+-]?[0-9]+[fFdD]?|"."[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+"."[0-9]*  { 
+                        double d;
+                        int n;
+                        
+                        n=sscanf((const char*)yytext, "%lf", &d);
+                        if(n != 1) {
+                          n3_syntax_error(rdf_parser, "N3 syntax error - Illegal floating point constant %s", yytext);
+                          yyterminate();
+                        }
+                        n3_parser_lval->floating=d;
+                        return FLOATING_LITERAL;
+}
+
 [0-9]+        { n3_parser_lval->integer=atoi(yytext);
                           return INTEGER_LITERAL; }
 
@@ -369,6 +382,10 @@ n3_token_print(int token, YYSTYPE *lval)
 
     case INTEGER_LITERAL:
       sprintf(buffer, "INTEGER_LITERAL(%d)", lval->integer);
+      return buffer;
+
+    case FLOATING_LITERAL:
+      sprintf(buffer, "FLOATING_LITERAL(%1g)", lval->floating);
       return buffer;
 
     case IDENTIFIER:
