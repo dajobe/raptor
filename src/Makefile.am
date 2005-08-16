@@ -72,7 +72,7 @@ raptor_feature.c raptor_general.c raptor_utf8.c \
 raptor_www.c \
 raptor_identifier.c \
 raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \
-raptor_xml.c raptor_xml_writer.c raptor_set.c
+raptor_xml.c raptor_xml_writer.c raptor_set.c turtle_common.c
 if RAPTOR_PARSER_RDFXML
 if RAPTOR_XML_LIBXML
 libraptor_la_SOURCES += raptor_libxml.c
