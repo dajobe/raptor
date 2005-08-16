@@ -943,6 +943,9 @@ time_t raptor_parse_date(char *p, time_t *now);
 int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
 
 
+/* raptor_xsd.c */
+raptor_identifier* raptor_new_identifier_from_double(double d);
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
