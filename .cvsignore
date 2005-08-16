@@ -24,6 +24,7 @@ config.log
 config.status
 config.sub
 configure
+depcomp
 dmalloc*
 example?
 install-sh
@@ -35,8 +36,8 @@ not-used
 old
 raptor-src-config
 raptor.pc
+raptor.rdf
 raptor.spec
-raptor_cc.c
 release
 run*
 
