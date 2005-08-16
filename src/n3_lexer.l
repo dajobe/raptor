@@ -424,7 +424,7 @@ main(int argc, char *argv[])
   int token=EOF;
   FILE *fh;
   YYSTYPE lval;
-  const char *uri_string;
+  const unsigned char *uri_string;
   char *filename=NULL;
   
   raptor_init();
