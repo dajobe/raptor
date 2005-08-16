@@ -52,8 +52,8 @@ my $results_rdf_file="results.rdf";
 #  Header info
 my $system_name="Raptor RDF Parser";
 my $system_desc=<<"EOT";
-Raptor RDF Parser ToolkitV1.1.0+ (CVS) as of 2003-10-31
-passes all RDF Test Cases Postive and Negative Parser test cases.
+Raptor RDF Parser Toolkit V1.1.0+ (CVS) as of 2003-10-31
+passes all RDF Test Cases Positive and Negative Parser test cases.
 EOT
 
 # System URL for r:system
