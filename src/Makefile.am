@@ -43,7 +43,10 @@ if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
 
-CLEANFILES=$(TESTS) turtle_lexer_test turtle_parser_test rdfdiff
+CLEANFILES=$(TESTS) \
+turtle_lexer_test turtle_parser_test \
+n3_lexer_test n3_parser_test \
+rdfdiff
 
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
 turtle_parser.c turtle_parser.h turtle_parser.output
