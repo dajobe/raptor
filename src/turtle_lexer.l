@@ -187,7 +187,8 @@ QUOTEDURI \<[^\>]*\>
 		  BEGIN(INITIAL);
                   len=raptor_stringbuffer_length(turtle_parser->sb);
                   turtle_parser_lval->string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
-                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len+1);
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len);
+                  turtle_parser_lval->string[len]='\0';
 
                   raptor_free_stringbuffer(turtle_parser->sb);
                   turtle_parser->sb=NULL;
@@ -216,6 +217,19 @@ QUOTEDURI \<[^\>]*\>
 
 {QNAME}	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
+
+[0-9]+"."[0-9]*[eE][+-]?[0-9]+[fFdD]?|"."[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+"."[0-9]*  { 
+                        double d;
+                        int n;
+                        
+                        n=sscanf((const char*)yytext, "%lf", &d);
+                        if(n != 1) {
+                          turtle_syntax_error(rdf_parser, "TURTLE syntax error - Illegal floating point constant %s", yytext);
+                          yyterminate();
+                        }
+                        turtle_parser_lval->floating=d;
+                        return FLOATING_LITERAL;
+}
 
 [0-9]+        { turtle_parser_lval->integer=atoi(yytext);
                           return INTEGER_LITERAL; }
@@ -285,26 +299,32 @@ static unsigned char *
 turtle_copy_string_token(raptor_parser* rdf_parser, 
                          unsigned char *string, size_t len, int delim)
 {
-  raptor_stringbuffer* sb;
+  raptor_stringbuffer* sb=NULL;
   int rc;
   
-  sb=raptor_new_stringbuffer();
-  if(!sb)
-    return NULL;
-  
-  rc=raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
-                                              turtle_lexer_syntax_error,
-                                              rdf_parser);
-  if(rc) {
-    raptor_free_stringbuffer(sb);
-    return NULL;
+  if(len) {
+    sb=raptor_new_stringbuffer();
+    if(!sb)
+      return NULL;
+    
+    rc=raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
+                                                turtle_lexer_syntax_error,
+                                                rdf_parser);
+    if(rc) {
+      raptor_free_stringbuffer(sb);
+      return NULL;
+    }
+
+    len=raptor_stringbuffer_length(sb);
   }
   
-  len=raptor_stringbuffer_length(sb);
   string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
-  raptor_stringbuffer_copy_to_string(sb, string, len+1);
-  
-  raptor_free_stringbuffer(sb);
+
+  if(sb) {
+    raptor_stringbuffer_copy_to_string(sb, string, len+1);
+    raptor_free_stringbuffer(sb);
+  }
+  string[len]='\0';
   
   return string;
 }
@@ -387,6 +407,10 @@ turtle_token_print(int token, YYSTYPE *lval)
 
     case INTEGER_LITERAL:
       sprintf(buffer, "INTEGER_LITERAL(%d)", lval->integer);
+      return buffer;
+
+    case FLOATING_LITERAL:
+      sprintf(buffer, "FLOATING_LITERAL(%1g)", lval->floating);
       return buffer;
 
     case IDENTIFIER:
