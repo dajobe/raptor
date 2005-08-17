@@ -1,4 +1,68 @@
+2005-08-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/turtle_parser.y: Expect 9 conflicts.  Added FLOATING_LITERAL
+	(FLOATING_LITERAL): Use raptor_new_identifier_from_double common
+	with n3.
+
+	* src/n3_parser.y (FLOATING_LITERAL): Use
+	raptor_new_identifier_from_double common with turtle.
+
+	* src/turtle_lexer.l (<LITERAL>\"\"\"): Copy just the len and
+	 always terminate the string.  Added doubles to Turtle.
+	(turtle_copy_string_token): Handle empty strings without
+	stringbuffer.  Ensure string is always termianted.
+	(turtle_token_print): Print FLOATING_LITERAL
+
+	* tests/turtle/test-20.ttl, tests/turtle/test-20.out,
+	tests/turtle/Makefile.am: Add test-20 for empty literals
+
+	* tests/turtle/Makefile.am: re-add test-19
+
 2005-08-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_internal.h: Added raptor_new_identifier_from_double
+	pointer
+
+	* src/raptor_xsd.c: raptor_xsd.c
+
+	* src/Makefile.am: Added raptor_xsd.c
+
+	* src/n3_parser.y, src/n3_lexer.l: Add double constants to N3
+	parser
+
+	* src/n3_lexer.l (main): Make uri_string an unsigned char*
+
+	* tests/turtle/Makefile.am: remove test-19 for now, no double
+	constants
+
+	* tests/turtle/Makefile.am, tests/turtle/test-19.out,
+	tests/turtle/test-19.ttl: added test-19 for 1.0 as a double
+
+	* src/Makefile.am: Add turtle_common.c
+
+	* tests/turtle/test-18.out: Remove header/footer
+
+	* src/turtle_parser.y: 2005
+
+	* src/turtle_lexer.l: Added turtle_lexer_syntax_error Build up
+	long strings inside a stringbuffer with
+	raptor_stringbuffer_append_turtle_string and avoid greedy match of
+	"""s
+	(turtle_copy_string_token): Use
+	raptor_stringbuffer_append_turtle_string
+	(turtle_lexer_syntax_error): Added.
+
+	* src/raptor_internal.h: Added
+	raptor_stringbuffer_append_turtle_string prototype
+
+	* src/turtle_common.h: Added raptor_stringbuffer* field sb
+
+	* src/turtle_common.c: Raptor Turtle common code with
+	raptor_stringbuffer_append_turtle_string from raptor_turtle.l
+
+	* tests/turtle/Makefile.am, tests/turtle/test-18.out,
+	tests/turtle/test-18.ttl: Added test-18 for multiple long literals
+	with escapes
 
 	* src/raptor_serialize_rss.c (raptor_rss10_emit_item): Die in
 	debug mode with NULL item - all calls to this are currently
