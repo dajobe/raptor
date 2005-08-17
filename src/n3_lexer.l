@@ -327,6 +327,25 @@ n3_copy_string_token(raptor_parser* rdf_parser,
 
 
 
+void
+n3_lexer_syntax_error(void* ctx, const char *message, ...)
+{
+  raptor_parser* rdf_parser=(raptor_parser *)ctx;
+  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  va_list arguments;
+  
+  rdf_parser->locator.line=n3_parser->lineno;
+#ifdef RAPTOR_N3_USE_ERROR_COLUMNS
+  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+#endif
+
+  va_start(arguments, message);
+  raptor_parser_error_varargs(((raptor_parser*)rdf_parser), message, arguments);
+
+  va_end(arguments);
+}
+
+
 #ifdef RAPTOR_DEBUG
 
 const char *
