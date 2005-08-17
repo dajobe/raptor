@@ -105,8 +105,10 @@
 #include <n3_common.h>
 
 
+/* Prototypes */ 
 static unsigned char *n3_copy_token(unsigned char *text, size_t len);
 static unsigned char *n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
+void n3_lexer_syntax_error(void* rdf_parser, const char *msg, ...);
 
 #ifdef RAPTOR_DEBUG
 const char * n3_token_print(int token, YYSTYPE *lval);
@@ -163,19 +165,40 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 \"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 return STRING_LITERAL; }
 
-\"\"\"				{ BEGIN(LITERAL); }
+\"\"\"				{ BEGIN(LITERAL); 
+                                  n3_parser->sb=raptor_new_stringbuffer();
+                          }
 
-<LITERAL>(.|\n)*\"\"\"	{ n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext, yyleng-3, '"'); /* ' */
-                          BEGIN(INITIAL);
-                          return STRING_LITERAL; }
+<LITERAL>\"\"\"			{
+		  size_t len;
+     
+		  BEGIN(INITIAL);
+                  len=raptor_stringbuffer_length(n3_parser->sb);
+                  n3_parser_lval->string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+                  raptor_stringbuffer_copy_to_string(n3_parser->sb, (unsigned char*)n3_parser_lval->string, len);
+                  n3_parser_lval->string[len]='\0';
 
-<LITERAL>(.|\n)	{ BEGIN(INITIAL);
-		  if (*yytext == EOF)
+                  raptor_free_stringbuffer(n3_parser->sb);
+                  n3_parser->sb=NULL;
+                  return STRING_LITERAL; }
+
+<LITERAL>\"|(([^\"]|\n)*)		{
+		  if (*yytext == EOF) {
+                    BEGIN(INITIAL);
+                    n3_syntax_error(rdf_parser, "End of file in middle of literal");
+                    raptor_free_stringbuffer(n3_parser->sb);
+                    n3_parser->sb=NULL;
                     return EOF;
+                  }
 
-                  n3_syntax_error(rdf_parser, "syntax error at %c - \"\"\"string was not terminated", *yytext);
-                  yyterminate();  }
-
+                  if(raptor_stringbuffer_append_turtle_string(n3_parser->sb, (unsigned char*)yytext, yyleng, '"', n3_lexer_syntax_error, rdf_parser)) { /* " */
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(n3_parser->sb);
+                    n3_parser->sb=NULL;
+                    yyterminate();
+                  }
+                  
+   }
 
 _:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
@@ -255,7 +278,8 @@ yywrap (yyscan_t yyscanner) {
 
 
 static unsigned char *
-n3_copy_token(unsigned char *text, size_t len) {
+n3_copy_token(unsigned char *text, size_t len)
+{
   unsigned char *s;
   if(!len)
     len=strlen((const char*)text);
@@ -268,57 +292,36 @@ n3_copy_token(unsigned char *text, size_t len) {
 
 
 static unsigned char *
-n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text,
-                     size_t len, int delim) {
-  size_t i;
-  unsigned char *s, *d;
-  unsigned char *string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+n3_copy_string_token(raptor_parser* rdf_parser, 
+                     unsigned char *string, size_t len, int delim)
+{
+  raptor_stringbuffer* sb=NULL;
+  int rc;
+  
+  if(len) {
+    sb=raptor_new_stringbuffer();
+    if(!sb)
+      return NULL;
+    
+    rc=raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
+                                                n3_lexer_syntax_error,
+                                                rdf_parser);
+    if(rc) {
+      raptor_free_stringbuffer(sb);
+      return NULL;
+    }
 
-  for(s=text, d=string, i=0; i<len; s++, i++) {
-    unsigned char c=*s;
-
-    if(c == '\\' ) {
-      s++; i++;
-      c=*s;
-      if(c == 'n')
-        *d++= '\n';
-      else if(c == 'r')
-        *d++= '\r';
-      else if(c == 't')
-        *d++= '\t';
-      else if(c == '\\' || c == delim)
-        *d++=c;
-      else if (c == 'u' || c == 'U') {
-        size_t ulen=(c == 'u') ? 4 : 8;
-        unsigned long unichar=0;
-        
-        s++; i++;
-        if(i+ulen > len) {
-          n3_syntax_error(rdf_parser, "\\%c over end of line", c);
-          RAPTOR_FREE(cstring, string);
-          return NULL;
-        }
-        
-        sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
-        s+= ulen-1;
-        i+= ulen-1;
-        
-        if(unichar < 0 || unichar > 0x10ffff) {
-          n3_syntax_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
-          RAPTOR_FREE(cstring, string);
-          return NULL;
-        }
-          
-        d+=raptor_unicode_char_to_utf8(unichar, d);
-
-      } else {
-        /* don't handle \x where x isn't one of: \n \r \\ (delim) */
-        n3_syntax_error(rdf_parser, "Illegal string escape \\%c in \"%s\"", c, text);
-      }
-    } else
-      *d++=c;
+    len=raptor_stringbuffer_length(sb);
   }
-  *d='\0';
+  
+  string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+
+  if(sb) {
+    raptor_stringbuffer_copy_to_string(sb, string, len+1);
+    raptor_free_stringbuffer(sb);
+  }
+  string[len]='\0';
+  
   return string;
 }
 
