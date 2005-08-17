@@ -656,15 +656,10 @@ URI_LITERAL
 }
 | FLOATING_LITERAL
 {
-  unsigned char *string;
-  raptor_uri *uri;
 #if RAPTOR_DEBUG > 1  
   printf("resource double=%1g\n", $1);
 #endif
-  string=(unsigned char*)RAPTOR_MALLOC(cstring, 32); /* FIXME */
-  sprintf((char*)string, "%1g", $1);
-  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+  $$=raptor_new_identifier_from_double($1);
 }
 
 
