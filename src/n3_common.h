@@ -66,6 +66,9 @@ struct raptor_n3_parser_s {
   raptor_uri* nil_uri;
   raptor_uri* first_uri;
   raptor_uri* rest_uri;
+
+  /* for creating long literals */
+  raptor_stringbuffer* sb;
 };
 
 
