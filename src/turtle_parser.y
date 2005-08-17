@@ -128,9 +128,13 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
   raptor_sequence *sequence;
   raptor_uri *uri;
   int integer; /* 0+ for a xsd:integer datatyped RDF literal */
+  double floating;
 }
 
-
+/*
+ * FIXME: Document these
+ */
+%expect 9
 
 
 /* word symbols */
@@ -151,6 +155,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token <string> PREFIX
 %token <string> IDENTIFIER
 %token <integer> INTEGER_LITERAL
+%token <floating> FLOATING_LITERAL
 
 /* syntax error */
 %token ERROR_TOKEN
@@ -649,6 +654,13 @@ URI_LITERAL
   sprintf((char*)string, "%d", $1);
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+}
+| FLOATING_LITERAL
+{
+#if RAPTOR_DEBUG > 1  
+  printf("resource double=%1g\n", $1);
+#endif
+  $$=raptor_new_identifier_from_double($1);
 }
 
 
