@@ -545,7 +545,8 @@ void raptor_serializer_register_factory(const char *name, const char *label, con
 
 /* raptor_general.c */
 
-void raptor_parser_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
+raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, const char *mime_type, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
+void raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
 
 unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
 const unsigned char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
