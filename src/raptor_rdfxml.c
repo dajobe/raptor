@@ -1159,11 +1159,11 @@ raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
 /* This is called for a declaration of an unparsed (NDATA) entity */
 void
 raptor_xml_unparsed_entity_decl_handler(void *user_data,
-                                        const XML_Char *entityName,
-                                        const XML_Char *base,
-                                        const XML_Char *systemId,
-                                        const XML_Char *publicId,
-                                        const XML_Char *notationName) 
+                                        const unsigned char* entityName,
+                                        const unsigned char* base,
+                                        const unsigned char* systemId,
+                                        const unsigned char* publicId,
+                                        const unsigned char* notationName) 
 {
 /*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
   fprintf(stderr,
@@ -1176,10 +1176,10 @@ raptor_xml_unparsed_entity_decl_handler(void *user_data,
 
 int 
 raptor_xml_external_entity_ref_handler(void *user_data,
-                                       const XML_Char *context,
-                                       const XML_Char *base,
-                                       const XML_Char *systemId,
-                                       const XML_Char *publicId)
+                                       const unsigned char* context,
+                                       const unsigned char* base,
+                                       const unsigned char* systemId,
+                                       const unsigned char* publicId)
 {
 /*  raptor_xml_parser* rdf_parser=(raptor_xml_parser*)user_data; */
   fprintf(stderr,
@@ -1228,9 +1228,21 @@ static int
 raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 {
   raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_sax2* sax2;
+  
+  sax2=raptor_new_sax2(rdf_parser);
+  rdf_xml_parser->sax2=sax2;
 
-  rdf_xml_parser->sax2=raptor_new_sax2(rdf_parser);
-
+  sax2->start_element_handler=raptor_xml_start_element_handler;
+  sax2->end_element_handler=raptor_xml_end_element_handler;
+  sax2->characters_handler=raptor_xml_characters_handler;
+  sax2->cdata_handler=raptor_xml_cdata_handler;
+  sax2->comment_handler=raptor_xml_comment_handler;
+#ifdef RAPTOR_XML_EXPAT
+  sax2->unparsed_entity_decl_handler=raptor_xml_unparsed_entity_decl_handler;
+  sax2->external_entity_ref_handler=raptor_xml_external_entity_ref_handler;
+#endif
+  
   RAPTOR_RDF_type_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("type");
   RAPTOR_RDF_value_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("value");
   RAPTOR_RDF_subject_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("subject");
