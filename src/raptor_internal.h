@@ -857,6 +857,21 @@ struct raptor_sax2_s {
   /* stack of elements - elements add after current_element */
   raptor_xml_element *root_element;
   raptor_xml_element *current_element;
+
+  /* start of an element */
+  void (*start_element_handler)(void *user_data, const unsigned char *name,  const unsigned char **atts);
+  /* end of an element */
+  void (*end_element_handler)(void *user_data, const unsigned char *name);
+  /* characters */
+  void (*characters_handler)(void *user_data, const unsigned char *s, int len);
+  /* like <![CDATA[...]> */
+  void (*cdata_handler)(void *user_data, const unsigned char *s, int len);
+  /* comment */
+  void (*comment_handler)(void *user_data, const unsigned char *s);
+  /* unparsed (NDATA) entity */
+  void (*unparsed_entity_decl_handler)(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
+  /* external entity reference */
+  int (*external_entity_ref_handler)(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
 };
 
 raptor_sax2* raptor_new_sax2(void *user_data);
