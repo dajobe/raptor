@@ -203,12 +203,14 @@ typedef struct raptor_xml_entity_t raptor_xml_entity;
 
 #endif
 
+typedef struct raptor_sax2_s raptor_sax2;
+
 
 /* libxml-only prototypes */
 
 
 /* raptor_libxml.c exports */
-extern void raptor_libxml_init(xmlSAXHandler *sax);
+extern void raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri);
 extern void raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax);
 extern void raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser);
 
@@ -238,7 +240,7 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 
 #ifdef RAPTOR_XML_EXPAT
 /* raptor_expat.c exports */
-extern XML_Parser raptor_expat_init(void *rdf_parser);
+extern void raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri);
 
 /* raptor_parse.c */
 void raptor_xml_unparsed_entity_decl_handler(void *user_data, const XML_Char *entityName, const XML_Char *base, const XML_Char *systemId, const XML_Char *publicId, const XML_Char *notationName);
@@ -792,7 +794,6 @@ void raptor_id_set_stats_print(raptor_id_set* set, FILE *stream);
 #endif
 
 /* raptor_sax2.c */
-typedef struct raptor_sax2_s raptor_sax2;
 /*
  * SAX2 elements/attributes on stack 
  */
