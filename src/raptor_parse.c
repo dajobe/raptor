@@ -112,20 +112,18 @@ raptor_delete_parser_factories(void)
  * INTERNAL
  *
  **/
-void
+raptor_parser_factory*
 raptor_parser_register_factory(const char *name, const char *label,
                                const char *mime_type,
-                               const char *alias,
                                const unsigned char *uri_string,
                                void (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser, *h;
-  char *name_copy, *label_copy, *mime_type_copy, *alias_copy;
+  char *name_copy, *label_copy, *mime_type_copy;
   unsigned char *uri_string_copy;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG4("Received registration for syntax %s '%s' with alias '%s'\n", 
-                name, label, (alias ? alias : "none"));
+  RAPTOR_DEBUG3("Received registration for syntax %s '%s'\n", name, label);
   RAPTOR_DEBUG4(raptor_parser_register_factory,
                 "MIME type %s, URI %s\n", 
                 (mime_type ? mime_type : "none"),
@@ -138,10 +136,8 @@ raptor_parser_register_factory(const char *name, const char *label,
     RAPTOR_FATAL1("Out of memory\n");
 
   for(h = parsers; h; h = h->next ) {
-    if(!strcmp(h->name, name) ||
-       (alias && !strcmp(h->name, alias))) {
+    if(!strcmp(h->name, name))
       RAPTOR_FATAL2("parser %s already registered\n", h->name);
-    }
   }
   
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
@@ -180,16 +176,6 @@ raptor_parser_register_factory(const char *name, const char *label,
     parser->uri_string=uri_string_copy;
   }
         
-  if(alias) {
-    alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
-    if(!alias_copy) {
-      RAPTOR_FREE(raptor_parser, parser);
-      RAPTOR_FATAL1("Out of memory\n");
-    }
-    strcpy(alias_copy, alias);
-    parser->alias=alias_copy;
-  }
-
   /* Call the parser registration function on the new object */
   (*factory)(parser);
   
@@ -199,6 +185,29 @@ raptor_parser_register_factory(const char *name, const char *label,
   
   parser->next = parsers;
   parsers = parser;
+
+  return parser;
+}
+
+
+void
+raptor_parser_factory_add_alias(raptor_parser_factory* factory,
+                                const char *alias)
+{
+  raptor_parser_factory *p;
+  char *alias_copy;
+
+  for(p = parsers; p; p = p->next ) {
+    if(!strcmp(p->name, alias))
+      RAPTOR_FATAL2("parser %s already registered\n", p->name);
+  }
+  
+  alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
+  if(!alias_copy) {
+    RAPTOR_FATAL1("Out of memory\n");
+  }
+  strcpy(alias_copy, alias);
+  factory->alias=alias_copy;
 }
 
 
