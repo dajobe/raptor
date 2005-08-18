@@ -175,6 +175,8 @@ void raptor_system_free(void *ptr);
 #endif
 
 
+typedef struct raptor_sax2_s raptor_sax2;
+
 #ifdef RAPTOR_XML_LIBXML
 
 #include <libxml/parser.h>
@@ -202,8 +204,6 @@ typedef struct raptor_xml_entity_t raptor_xml_entity;
 #endif
 
 #endif
-
-typedef struct raptor_sax2_s raptor_sax2;
 
 
 /* libxml-only prototypes */
@@ -243,8 +243,8 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 extern void raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri);
 
 /* raptor_parse.c */
-void raptor_xml_unparsed_entity_decl_handler(void *user_data, const XML_Char *entityName, const XML_Char *base, const XML_Char *systemId, const XML_Char *publicId, const XML_Char *notationName);
-int raptor_xml_external_entity_ref_handler(void *user_data, const XML_Char *context, const XML_Char *base, const XML_Char *systemId, const XML_Char *publicId);
+void raptor_xml_unparsed_entity_decl_handler(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
+int raptor_xml_external_entity_ref_handler(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
 
 /* end of expat-only */
 #endif
