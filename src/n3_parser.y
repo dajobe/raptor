@@ -1161,7 +1161,6 @@ raptor_init_parser_n3 (void) {
   raptor_parser_register_factory("n3",  "Notation 3",
                                  NULL,
                                  NULL,
-                                 (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2003/11/ntriplesplus/",
                                  &raptor_n3_parser_register_factory);
 }
 

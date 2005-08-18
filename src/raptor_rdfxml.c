@@ -3282,14 +3282,15 @@ raptor_xml_parser_register_factory(raptor_parser_factory *factory)
 
 void
 raptor_init_parser_rdfxml (void) {
+  raptor_parser_factory* factory;
 #ifdef RAPTOR_XML_LIBXML
   xmlInitParser();
 #endif
-  raptor_parser_register_factory("rdfxml", "RDF/XML",
-                                 "application/rdf+xml",
-                                 "raptor",
-                                 (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
-                                 &raptor_xml_parser_register_factory);
+  factory=raptor_parser_register_factory("rdfxml", "RDF/XML",
+                                         "application/rdf+xml",
+                                         (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
+                                         &raptor_xml_parser_register_factory);
+  raptor_parser_factory_add_alias(factory, "raptor");
 }
 
 #ifdef RAPTOR_DEBUG
