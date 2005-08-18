@@ -66,18 +66,16 @@ raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
   /* XML_SetEncoding(xp, "..."); */
 
   XML_SetElementHandler(xp, 
-                        (XML_StartElementHandler)raptor_xml_start_element_handler,
-                        (XML_EndElementHandler)raptor_xml_end_element_handler);
+                        (XML_StartElementHandler)sax2->start_element_handler,
+                        (XML_EndElementHandler)sax2->end_element_handler);
   XML_SetCharacterDataHandler(xp, 
-                              (XML_CharacterDataHandler)raptor_xml_characters_handler);
+                              (XML_CharacterDataHandler)sax2->characters_handler);
 
-  XML_SetCommentHandler(xp,
-                        (XML_CommentHandler)raptor_xml_comment_handler);
+  XML_SetCommentHandler(xp, (XML_CommentHandler)sax2->comment_handler);
 
+  XML_SetUnparsedEntityDeclHandler(xp, sax2->unparsed_entity_decl_handler);
 
-  XML_SetUnparsedEntityDeclHandler(xp, raptor_xml_unparsed_entity_decl_handler);
-
-  XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)raptor_xml_external_entity_ref_handler);
+  XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)sax2->external_entity_ref_handler);
 
   sax2->xp=xp;
 }
