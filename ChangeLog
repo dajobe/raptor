@@ -1,4 +1,67 @@
+2005-08-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_sax2.c (raptor_sax2_parse_start): Fix for expat
+
+	* src/raptor_rdfxml.c (raptor_xml_unparsed_entity_decl_handler,
+	raptor_xml_external_entity_ref_handler): Casts for gcc4
+
+	* src/raptor_expat.c (raptor_expat_init): Casts for expat to use
+	sax2 handlers.
+
+	* src/raptor_internal.h: Move raptor_sax2 declaration outside
+	libxml-only block Fixup general arguments for
+	raptor_xml_unparsed_entity_decl_handler and
+	raptor_xml_external_entity_ref_handler.
+
+	* src/raptor_rdfxml.c (raptor_xml_unparsed_entity_decl_handler,
+	raptor_xml_external_entity_ref_handler): Generalise args from
+	expat-specific.
+	(raptor_xml_parse_init): Init sax2 handler fields
+
+	* src/raptor_libxml.c (raptor_libxml_init): Use sax2 structure
+	handlers
+
+	* src/raptor_expat.c (raptor_expat_init): Use sax2 structure
+	handlers
+
+	* src/raptor_internal.h: raptor_sax2 gains handlers for start/end
+	element, characters, cdata, comment, unparsed entity declaration,
+	extenal entity reference.
+
+	* src/raptor_sax2.c (raptor_sax2_parse_start): Init expat and
+	libxml the same
+
+	* src/raptor_libxml.c (raptor_libxml_init): Take raptor_sax2* and
+	raptor_uri* args
+
+	* src/raptor_expat.c (raptor_expat_init): Take raptor_sax2* and
+	raptor_uri* args
+
+	* src/raptor_internal.h: raptor_libxml_init and raptor_expat_init
+	take same args
+
+	* src/turtle_parser.y, src/raptor_xslt.c, src/raptor_rss.c,
+	src/raptor_rdfxml.c, src/raptor_guess.c, src/ntriples_parse.c,
+	src/n3_parser.y: Update uses of raptor_parser_register_factory to
+	remove alias argument and add calls to
+	raptor_parser_factory_add_alias for raptor
+	(rdfxml) and ntriplesplus (turtle)
+
+	* src/raptor_internal.h: Update raptor_parser_register_factory
+	prototype to return the registered factory and remvoe the alias
+	arg.  Added prototype for raptor_parser_factory_add_alias
+
+	* src/raptor_parse.c (raptor_parser_register_factory): Now returns
+	the registered factory.  Removed alias arg into new function:
+	(raptor_parser_factory_add_alias): Added.
+
 2005-08-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/Makefile.am: maintainer clean n3 files
+
+	* src/Makefile.am: clean n3 tests
+
+	* src/n3_lexer.l (n3_lexer_syntax_error): Added, from turtle.
 
 	* src/n3_lexer.l: Added n3_lexer_syntax_error
 	(<LITERAL>\"\"\"): Copy just the len and always terminate the
