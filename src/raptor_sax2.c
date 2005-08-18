@@ -165,10 +165,6 @@ raptor_sax2_dec_depth(raptor_sax2 *sax2) {
 
 void
 raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri) {
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp;
-#endif
-
   sax2->depth=0;
   sax2->root_element=NULL;
   sax2->current_element=NULL;
@@ -179,7 +175,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri) {
     sax2->xp=NULL;
   }
 
-  raptor_expat_init(sax2, base_uri)
+  raptor_expat_init(sax2, base_uri);
 #endif
 
 #ifdef RAPTOR_XML_LIBXML
