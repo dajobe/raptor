@@ -61,7 +61,7 @@ raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
   /* create a new parser in the specified encoding */
   XML_SetUserData(xp, sax2->user_data);
 
-  XML_SetBase(xp, raptor_uri_as_string(base_uri));
+  XML_SetBase(xp, (XML_Char*)raptor_uri_as_string(base_uri));
 
   /* XML_SetEncoding(xp, "..."); */
 
@@ -73,7 +73,8 @@ raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
 
   XML_SetCommentHandler(xp, (XML_CommentHandler)sax2->comment_handler);
 
-  XML_SetUnparsedEntityDeclHandler(xp, sax2->unparsed_entity_decl_handler);
+  XML_SetUnparsedEntityDeclHandler(xp, 
+                                   (XML_UnparsedEntityDeclHandler)sax2->unparsed_entity_decl_handler);
 
   XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)sax2->external_entity_ref_handler);
 
