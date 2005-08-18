@@ -1168,9 +1168,9 @@ raptor_xml_unparsed_entity_decl_handler(void *user_data,
 /*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
   fprintf(stderr,
           "raptor_xml_unparsed_entity_decl_handler: entityName %s base %s systemId %s publicId %s notationName %s\n",
-          entityName, (base ? base : "(None)"), 
-          systemId, (publicId ? publicId: "(None)"),
-          notationName);
+          entityName, (base ? (const char*)base : "(None)"), 
+          systemId, (publicId ?  (const char*)publicId: "(None)"),
+          (const char*)notationName);
 }
 
 
@@ -1184,8 +1184,8 @@ raptor_xml_external_entity_ref_handler(void *user_data,
 /*  raptor_xml_parser* rdf_parser=(raptor_xml_parser*)user_data; */
   fprintf(stderr,
           "raptor_xml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
-          (base ? base : "(None)"), 
-          systemId, (publicId ? publicId: "(None)"));
+          (base ?  (const char*)base : "(None)"), 
+          systemId, (publicId ?  (const char*)publicId: "(None)"));
 
   /* "The handler should return 0 if processing should not continue
    * because of a fatal error in the handling of the external entity."
