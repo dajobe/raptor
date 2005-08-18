@@ -179,12 +179,11 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri) {
     sax2->xp=NULL;
   }
 
-  xp=sax2->xp=raptor_expat_init(sax2->user_data);
-  XML_SetBase(xp, raptor_uri_as_string(base_uri));
+  raptor_expat_init(sax2, base_uri)
 #endif
 
 #ifdef RAPTOR_XML_LIBXML
-  raptor_libxml_init(&sax2->sax);
+  raptor_libxml_init(sax2, base_uri);
 
 #if LIBXML_VERSION < 20425
   sax2->first_read=1;
