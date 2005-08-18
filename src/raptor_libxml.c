@@ -537,7 +537,10 @@ raptor_libxml_get_entity(void *ctx, const xmlChar *name) {
 
 
 void
-raptor_libxml_init(xmlSAXHandler *sax) {
+raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
+{
+  xmlSAXHandler *sax=&sax2->sax;
+  
   sax->internalSubset = raptor_libxml_internalSubset;
   sax->isStandalone = raptor_libxml_isStandalone;
   sax->hasInternalSubset = raptor_libxml_hasInternalSubset;
