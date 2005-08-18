@@ -53,12 +53,15 @@
 #ifdef RAPTOR_XML_EXPAT
 
 
-XML_Parser
-raptor_expat_init(void *rdf_parser) {
+void
+raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
+{
   XML_Parser xp=XML_ParserCreate(NULL);
 
   /* create a new parser in the specified encoding */
-  XML_SetUserData(xp, rdf_parser);
+  XML_SetUserData(xp, sax2->user_data);
+
+  XML_SetBase(xp, raptor_uri_as_string(base_uri));
 
   /* XML_SetEncoding(xp, "..."); */
 
@@ -76,7 +79,7 @@ raptor_expat_init(void *rdf_parser) {
 
   XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)raptor_xml_external_entity_ref_handler);
 
-  return xp;
+  sax2->xp=xp;
 }
 
 /* end if RAPTOR_XML_EXPAT */
