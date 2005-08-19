@@ -78,9 +78,7 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
  *
  * Initialise the raptor library.
  * 
- * Initialises the library.
- *
- * MUST be called before using any of the raptor APIs.
+ * This function MUST be called before using any of the raptor APIs.
  **/
 void
 raptor_init(void) 
@@ -139,7 +137,8 @@ raptor_init(void)
  *
  * Terminate the raptor library.
  *
- * Cleans up state of the library.
+ * Cleans up state of the library.  If called, must be used after
+ * all other objects are destroyed with their destructor.
  **/
 void
 raptor_finish(void) 
@@ -174,7 +173,18 @@ raptor_finish(void)
 #endif
 #endif
 
-/* Compatiblity wrapper */
+/**
+ * raptor_vsnprintf:
+ * @message: printf-style format string
+ * @arguments: variable arguments list
+ * 
+ * Format output for a variable arguments list.
+ *
+ * This is a wrapper around system versions of vsnprintf with
+ * different call and return conventions.
+ * 
+ * Return value: a newly allocated string as the format result or NULL on failure
+ **/
 char*
 raptor_vsnprintf(const char *message, va_list arguments) 
 {
@@ -224,7 +234,14 @@ raptor_vsnprintf(const char *message, va_list arguments)
 }
 
 
-/* wrapper */
+/**
+ * raptor_basename:
+ * @name: path
+ * 
+ * Get the basename of a path
+ * 
+ * Return value: filename part of a pathname
+ **/
 const char*
 raptor_basename(const char *name)
 {
@@ -241,7 +258,14 @@ raptor_basename(const char *name)
 const unsigned char * const raptor_xml_literal_datatype_uri_string=(const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 const unsigned int raptor_xml_literal_datatype_uri_string_len=53;
 
-
+/**
+ * raptor_statement_copy:
+ * @statement: statement to copy
+ *
+ * Copy a raptor_statemnt
+ * 
+ * Return value: a new #raptor_statement or NULL on error
+ */
 raptor_statement*
 raptor_statement_copy(const raptor_statement *statement) {
   raptor_statement *s;
@@ -312,6 +336,12 @@ raptor_statement_copy(const raptor_statement *statement) {
 }
 
 
+/**
+ * raptor_free_statement:
+ * @statement: statement
+ *
+ * Destructor
+ */
 void
 raptor_free_statement(raptor_statement *statement) {
   if(statement->subject) {
@@ -413,6 +443,17 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 }
 
 
+/**
+ * raptor_print_statement_detailed:
+ * @statement: #raptor_statement object to print
+ * @detailed: unused
+ * @stream: #FILE* stream
+ *
+ * Print a raptor_statement to a stream in a detailed fashion.
+ *
+ * No current difference from calling raptor_print_statement().
+ *
+ **/
 void
 raptor_print_statement_detailed(const raptor_statement * statement, 
                                 int detailed, FILE *stream) 
@@ -743,6 +784,14 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 
 
 
+/**
+ * raptor_check_ordinal:
+ * @name: ordinal string
+ *
+ * Check an RDF property ordinal, the n in rdf:_n
+ *
+ * Return value: ordinal integer or <0 if string is not a valid ordinal
+ */
 int
 raptor_check_ordinal(const unsigned char *name) {
   int ordinal= -1;

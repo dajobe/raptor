@@ -351,7 +351,7 @@ raptor_sequence_unshift(raptor_sequence* seq)
  * 
  * Utility function for raptor_sequence_sort() to compare a sequence of strings.
  *
- * Return value: 
+ * Return value: comparison of @a to @b as strings
  **/
 int
 raptor_compare_strings(const void *a, const void *b) 
