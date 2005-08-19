@@ -420,6 +420,12 @@ raptor_namespace_copy(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_free_namespace:
+ * @ns: namespace object
+ * 
+ * Destructor - destroy a namespace.
+ **/
 void 
 raptor_free_namespace(raptor_namespace *ns)
 {
@@ -430,6 +436,14 @@ raptor_free_namespace(raptor_namespace *ns)
 }
 
 
+/**
+ * raptor_namespace_get_uri:
+ * @ns: namespace object
+ * 
+ * Get the namespace URI.
+ *
+ * Return value: namespace URI or NULL
+ **/
 raptor_uri*
 raptor_namespace_get_uri(const raptor_namespace *ns) 
 {
@@ -437,6 +451,14 @@ raptor_namespace_get_uri(const raptor_namespace *ns)
 }
 
 
+/**
+ * raptor_namespace_get_prefix:
+ * @ns: namespace object
+ * 
+ * Get the namespace prefix.
+ * 
+ * Return value: prefix string or NULL
+ **/
 const unsigned char*
 raptor_namespace_get_prefix(const raptor_namespace *ns)
 {
@@ -444,6 +466,24 @@ raptor_namespace_get_prefix(const raptor_namespace *ns)
 }
 
 
+/**
+ * raptor_namespaces_format:
+ * @ns: namespace object
+ * @length_p: pointer to length (or NULL)
+ * 
+ * Format a namespace in an XML style into a newly allocated string.
+ *
+ * Generates a string of the form xmlns:prefix="uri",
+ * xmlns="uri", xmlns:prefix="" or xmlns="" depending on the
+ * namespace's prefix or URI.  Double quotes are always used.
+ *
+ * If @length_p is not NULL, the length of the string is
+ * stored in the address it points to.
+ * 
+ * See also raptor_new_namespace_parts_from_string()
+ *
+ * Return value: namespace formatted as newly allocated string or NULL on failure
+ **/
 unsigned char *
 raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 {
@@ -517,6 +557,26 @@ raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
 }
 
 
+/**
+ * raptor_new_namespace_parts_from_string:
+ * @string: string to parse
+ * @prefix: pointer to location to store namespace prefix
+ * @uri_string: pointer to location to store namespace URI
+ * 
+ * Parse a string containin an XML style namespace declaration
+ * into a namespace prefix and URI.
+ * 
+ * The string is of the form xmlns:prefix="uri",
+ * xmlns="uri", xmlns:prefix="" or xmlns="".
+ * The quotes can be single or double quotes.
+ *
+ * Two values are returned from this function into *@prefix and
+ * *@uri_string neither of which may be NULL.
+ *
+ * See also raptor_namespaces_format()
+ *
+ * Return value: non-0 on failure.
+ **/
 int
 raptor_new_namespace_parts_from_string(const unsigned char *string,
                                        unsigned char **prefix,
