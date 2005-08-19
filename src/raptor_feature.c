@@ -82,14 +82,16 @@ static const char *raptor_feature_uri_prefix="http://feature.librdf.org/raptor-"
 
 
 /*
- * raptor_features_enumerate_common - Get list of syntax features INTERNAL
- * @counter: feature enumeration (0+)
+ * raptor_features_enumerate_common:
+ * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
  * @uri: pointer to store feature URI (or NULL)
  * @label: pointer to feature label (or NULL)
  * @flags: flags to match
  * 
- * If uri is not NULL, a pointer toa new raptor_uri is returned
+ * Internal: Get list of syntax features.
+ *
+ * If @uri is not NULL, a pointer toa new raptor_uri is returned
  * that must be freed by the caller with raptor_free_uri().
  *
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
@@ -127,20 +129,23 @@ raptor_features_enumerate_common(const raptor_feature feature,
 
 
 
-/*
- * raptor_feature_value_type - Get the type of a features
+/**
+ * raptor_feature_value_type
  * @feature: raptor serializer or parser feature
  *
- * The type of the feature is 0=integer , 1=string.  Other values are
+ * Get the type of a features.
+ *
+ * The type of the @feature is 0=integer , 1=string.  Other values are
  * undefined.  Most features are integer values and use
- * raptor_set_feature and raptor_get_feature 
- * ( raptor_serializer_set_feature raptor_serializer_get_feature)
+ * raptor_set_feature and raptor_get_feature()
+ * ( raptor_serializer_set_feature raptor_serializer_get_feature() )
  *
- * String value features use raptor_parser_set_feature_string and
- * raptor_parser_get_feature_string ( raptor_serializer_set_feature_string
- * and raptor_serializer_get_feature_string )
+ * String value features use raptor_parser_set_feature_string() and
+ * raptor_parser_get_feature_string()
+ * ( raptor_serializer_set_feature_string()
+ * and raptor_serializer_get_feature_string() )
  *
- * Return value: the type of the feature or <0 if feature is unknown
+ * Return value: the type of the feature or <0 if @feature is unknown
  */
 int
 raptor_feature_value_type(const raptor_feature feature) {

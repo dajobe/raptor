@@ -207,9 +207,10 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data) {
  * 
  * Add an item to the end of the sequence.
  *
- * This is efficient to perform.
+ * This is efficient to perform. #raptor_sequence is optimised
+ * to append/remove from the end of the sequence.
  *
- * Return value: 
+ * Return value: non-0 on failure
  **/
 int
 raptor_sequence_push(raptor_sequence* seq, void *data)
@@ -227,9 +228,21 @@ raptor_sequence_push(raptor_sequence* seq, void *data)
 }
 
 
-/* add to start of sequence */
+/**
+ * raptor_sequence_shift:
+ * @seq: sequence to add to
+ * @data: item to add
+ * 
+ * Add an item to the start of the sequence.
+ *
+ * This is in-efficient to perform.  #raptor_sequence is optimised
+ * to append to the end of the sequence.
+ *
+ * Return value: non-0 on failure
+ **/
 int
-raptor_sequence_shift(raptor_sequence* seq, void *data) {
+raptor_sequence_shift(raptor_sequence* seq, void *data)
+{
   int i;
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
@@ -248,9 +261,21 @@ raptor_sequence_shift(raptor_sequence* seq, void *data) {
 }
 
 
-/* Retrieval methods */
+/**
+ * raptor_sequence_get_at:
+ * @seq: sequence to use
+ * @idx: index of item to get
+ * 
+ * Retrieve an item at offset @index in the sequence.
+ *
+ * This is efficient to perform. #raptor_sequence is optimised
+ * to append/remove from the end of the sequence.
+ *
+ * Return value: the object or NULL if @index is out of range (0... sequence size-1)
+ **/
 void*
-raptor_sequence_get_at(raptor_sequence* seq, int idx) {
+raptor_sequence_get_at(raptor_sequence* seq, int idx)
+{
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
 
   if(idx < 0 || idx > seq->size-1)
@@ -258,9 +283,20 @@ raptor_sequence_get_at(raptor_sequence* seq, int idx) {
   return seq->sequence[idx];
 }
 
-/* remove from end of sequence */
+
+/**
+ * raptor_sequence_pop:
+ * @seq: sequence to use
+ * 
+ * Retrieve the item at the end of the sequence.
+ *
+ * This is efficient to perform.
+ *
+ * Return value: the object or NULL if the sequence is empty
+ **/
 void*
-raptor_sequence_pop(raptor_sequence* seq) {
+raptor_sequence_pop(raptor_sequence* seq)
+{
   void *data;
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
@@ -275,9 +311,21 @@ raptor_sequence_pop(raptor_sequence* seq) {
   return data;
 }
 
-/* remove from start of sequence */
+
+/**
+ * raptor_sequence_unshift:
+ * @seq: sequence to use
+ * 
+ * Retrieve the item at the start of the sequence.
+ *
+ * This is in-efficient to perform. #raptor_sequence is optimised
+ * to append/remove from the end of the sequence.
+ *
+ * Return value: the object or NULL if the sequence is empty
+ **/
 void*
-raptor_sequence_unshift(raptor_sequence* seq) {
+raptor_sequence_unshift(raptor_sequence* seq)
+{
   void *data;
   int i;
 
@@ -335,6 +383,16 @@ raptor_sequence_sort(raptor_sequence* seq,
 
 
 
+/**
+ * raptor_sequence_print_string:
+ * @data: data item (a char*)
+ * @fh: file handle to print to
+ *
+ * Helper function for printing a sequence of strings.
+ *
+ * Intended for use as a #raptor_sequence_print_handler passed into
+ * raptor_new_sequence().
+ */
 void
 raptor_sequence_print_string(char *data, FILE *fh) 
 {
@@ -342,6 +400,16 @@ raptor_sequence_print_string(char *data, FILE *fh)
 }
 
 
+/**
+ * raptor_sequence_print_uri:
+ * @data: data item (a #raptor_uri)
+ * @fh: file handle to print to
+ *
+ * Helper function for printing a sequence of URIs.
+ *
+ * Intended for use as a #raptor_sequence_print_handler passed into
+ * raptor_new_sequence().
+ */
 void
 raptor_sequence_print_uri(char *data, FILE *fh) 
 {
@@ -350,6 +418,16 @@ raptor_sequence_print_uri(char *data, FILE *fh)
 }
 
 
+/**
+ * raptor_sequence_set_print_handler:
+ * @seq: sequence
+ * @print_handler: print handler
+ *
+ * Set the print handler for the sequence.
+ *
+ * This is set in the raptor_new_sequence() constructor and can be
+ * overridden here.
+ */
 void
 raptor_sequence_set_print_handler(raptor_sequence *seq,
                                   raptor_sequence_print_handler *print_handler) {
@@ -359,7 +437,13 @@ raptor_sequence_set_print_handler(raptor_sequence *seq,
 }
 
 
-/* print sequence */
+/**
+ * raptor_sequence_print:
+ * @seq: sequence to sort
+ * @fh: file handle
+ *
+ * Print the sequence contents using the print_handler to print the data items.
+ */
 void
 raptor_sequence_print(raptor_sequence* seq, FILE* fh)
 {
