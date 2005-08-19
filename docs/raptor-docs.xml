@@ -4,7 +4,7 @@
 <!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
-  <bookinfo>f
+  <bookinfo>
     <title>Raptor RDF Parsing Library Manual</title>
     <releaseinfo>for Raptor &version;</releaseinfo>
   </bookinfo>
