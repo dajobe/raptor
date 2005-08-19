@@ -70,10 +70,19 @@ struct raptor_sequence_s {
 static int raptor_sequence_ensure(raptor_sequence *seq, int capacity);
 static int raptor_sequence_grow(raptor_sequence *seq);
 
-/* Constructor */
+/**
+ * raptor_new_sequence:
+ * @free_handler: handler to free a sequence item
+ * @print_handler: handler to print a sequence item to a FILE*
+ * 
+ * Constructor - create a new sequence with the given handlers.
+ * 
+ * Return value: a new #raptor_sequence or NULL on failure 
+ **/
 raptor_sequence*
 raptor_new_sequence(raptor_sequence_free_handler *free_handler,
-                    raptor_sequence_print_handler *print_handler) {
+                    raptor_sequence_print_handler *print_handler)
+{
   raptor_sequence* seq=(raptor_sequence*)RAPTOR_MALLOC(raptor_sequence, sizeof(raptor_sequence));
   if(!seq)
     return NULL;
@@ -86,10 +95,16 @@ raptor_new_sequence(raptor_sequence_free_handler *free_handler,
   return seq;
 }
 
-/* Destructor*/
 
+/**
+ * raptor_free_sequence:
+ * @seq: sequence to destroy
+ * 
+ * Destructor - free a #raptor_sequence
+ **/
 void
-raptor_free_sequence(raptor_sequence* seq) {
+raptor_free_sequence(raptor_sequence* seq)
+{
   int i;
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
@@ -107,7 +122,8 @@ raptor_free_sequence(raptor_sequence* seq) {
 
 
 static int
-raptor_sequence_ensure(raptor_sequence *seq, int capacity) {
+raptor_sequence_ensure(raptor_sequence *seq, int capacity)
+{
   void **new_sequence;
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
@@ -144,9 +160,17 @@ raptor_sequence_grow(raptor_sequence *seq)
 
 
 
-/* Methods */
+/**
+ * raptor_sequence_size:
+ * @seq: 
+ * 
+ * Get the size of a sequence.
+ * 
+ * Return value: the sequence size (>=0)
+ **/
 int
-raptor_sequence_size(raptor_sequence* seq) {
+raptor_sequence_size(raptor_sequence* seq)
+{
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, -1);
 
   return seq->size;
@@ -176,9 +200,20 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data) {
 }
 
 
-/* add to end of sequence */
+/**
+ * raptor_sequence_push:
+ * @seq: sequence to add to
+ * @data: item to add
+ * 
+ * Add an item to the end of the sequence.
+ *
+ * This is efficient to perform.
+ *
+ * Return value: 
+ **/
 int
-raptor_sequence_push(raptor_sequence* seq, void *data) {
+raptor_sequence_push(raptor_sequence* seq, void *data)
+{
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(seq->size == seq->capacity) {
@@ -261,6 +296,15 @@ raptor_sequence_unshift(raptor_sequence* seq) {
 }
 
 
+/**
+ * raptor_compare_strings:
+ * @a: pointer first string
+ * @b: pointer to second string
+ * 
+ * Utility function for raptor_sequence_sort() to compare a sequence of strings.
+ *
+ * Return value: 
+ **/
 int
 raptor_compare_strings(const void *a, const void *b) 
 {
@@ -269,7 +313,16 @@ raptor_compare_strings(const void *a, const void *b)
 
 
 
-/* sort sequence */
+/**
+ * raptor_sequence_sort:
+ * @seq: sequence to sort
+ * @compare: comparison function
+ * 
+ * The comparison function is compatible with that used for qsort()
+ * and provides the addresses of pointers to the data that
+ * must be dereferenced to get to the stored sequence data.
+ * 
+ **/
 void
 raptor_sequence_sort(raptor_sequence* seq, 
                      int(*compare)(const void *, const void *))
