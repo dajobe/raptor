@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
+  <bookinfo>f
+    <title>Raptor RDF Parsing Library Manual</title>
+    <releaseinfo>for Raptor &version;</releaseinfo>
+  </bookinfo>
+
+  <chapter id="raptor">
+    <title>Raptor Overview</title>
+    <para>
+Raptor is an RDF syntax parsing and serializing library providing
+APIs to turn syntaxes to and from RDF triples as well a supporting
+features such as Unicode, URIs, WWW retrieval and XML writing.
+    </para>
+
+  </chapter>
+
+  <part>
+    <title>Reference Manual</title>
+
+    <xi:include href="xml/section-general.xml"/>
+    <xi:include href="xml/section-memory.xml"/>
+    <xi:include href="xml/section-constants.xml"/>
+    <xi:include href="xml/section-feature.xml"/>
+    <xi:include href="xml/section-iostream.xml"/>
+    <xi:include href="xml/section-locator.xml"/>
+    <xi:include href="xml/section-parser.xml"/>
+    <xi:include href="xml/section-sequence.xml"/>
+    <xi:include href="xml/section-serializer.xml"/>
+    <xi:include href="xml/section-stringbuffer.xml"/>
+    <xi:include href="xml/section-triples.xml"/>
+    <xi:include href="xml/section-unicode.xml"/>
+    <xi:include href="xml/section-uri-factory.xml"/>
+    <xi:include href="xml/section-uri.xml"/>
+    <xi:include href="xml/section-www.xml"/>
+    <xi:include href="xml/section-xml-namespace.xml"/>
+    <xi:include href="xml/section-xml-qname.xml"/>
+    <xi:include href="xml/section-xml.xml"/>
+
+    <!-- <xi:include href="xml/section-unused.xml"/> -->
+  </part>
+  <index>
+    <title>Index</title>
+  </index>
+</book>
