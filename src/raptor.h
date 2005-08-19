@@ -200,7 +200,6 @@ typedef struct {
 
 /**
  * raptor_feature:
-
  * @RAPTOR_FEATURE_SCANNING: If true (default false), the RDF/XML
  *   parser will look for embedded rdf:RDF elements inside the XML
  *   content, and not require that the XML start with an rdf:RDF root

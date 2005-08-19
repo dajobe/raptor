@@ -1323,8 +1323,7 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
  * raptor_get_name:
  * @rdf_parser: #raptor_parser parser object
  *
- * Return the short name for the parser.
- *
+ * Return value: the short name for the parser.
  **/
 const char*
 raptor_get_name(raptor_parser *rdf_parser) 
@@ -1337,8 +1336,7 @@ raptor_get_name(raptor_parser *rdf_parser)
  * raptor_get_label:
  * @rdf_parser: #raptor_parser parser object
  *
- * Return a readable label for the parser.
- *
+ * Return value: a readable label for the parser.
  **/
 const char*
 raptor_get_label(raptor_parser *rdf_parser) 

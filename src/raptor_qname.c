@@ -472,6 +472,15 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_iostream_write_qname:
+ * @iostr: raptor iosteram
+ * @qname: QName to write
+ * 
+ * Write a formatted qname to an iostream
+ * 
+ * Return value: non-0 on failure
+ **/
 int
 raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname)
 {

@@ -162,7 +162,7 @@ static raptor_iostream_handler raptor_iostream_filename_handler={
 /**
  * raptor_new_iostream_to_filename:
  *
- * Create a new iostream to a filename.
+ * Constructor - create a new iostream writing to a filename.
  * 
  * Return value: new #raptor_iostream object or NULL on failure
  **/
@@ -205,10 +205,10 @@ static raptor_iostream_handler raptor_iostream_file_handler={
  * raptor_new_iostream_to_file_handle:
  * @handle: FILE* handle to write to
  *
- * Create a new iostream to a FILE*.
+ * Constructor - create a new iostream writing to a FILE*.
  * 
- * The handle must already be open for writing.
- * NOTE: This does not fclose the handle when it is finished.
+ * The @handle must already be open for writing.
+ * NOTE: This does not fclose the @handle when it is finished.
  *
  * Return value: new #raptor_iostream object or NULL on failure
  **/
@@ -313,11 +313,11 @@ static raptor_iostream_handler raptor_iostream_string_handler={
  * @length_p: pointer to location to hold length of string (or NULL)
  * @malloc_handler: pointer to malloc to use to make string (or NULL)
  *
- * Create a new iostream to a string.
+ * Constructor - create a new iostream writing to a string.
  *
- * If malloc_handler is null, raptor will allocate it using it's
- * own memory allocator.  *string_p is set to NULL on failure (and
- * *length_p to 0 if length_p is not NULL).
+ * If @malloc_handler is null, raptor will allocate it using it's
+ * own memory allocator.  *@string_p is set to NULL on failure (and
+ * *@length_p to 0 if @length_p is not NULL).
  * 
  * Return value: new #raptor_iostream object or NULL on failure
  **/
@@ -370,9 +370,9 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
 
 /**
  * raptor_free_iostream:
+ * @iostr: iostream object
  *
- * Destroy a iostream.
- * 
+ * Destructor - destroy an iostream.
  **/
 void
 raptor_free_iostream(raptor_iostream *iostr)
@@ -473,10 +473,9 @@ raptor_iostream_write_counted_string(raptor_iostream *iostr,
 
 /**
  * raptor_iostream_write_end:
+ * @iostr: raptor iostream
  *
  * End writing to the iostream.
- *
- * @iostr: raptor iostream
  **/
 void
 raptor_iostream_write_end(raptor_iostream *iostr)

@@ -173,6 +173,21 @@ raptor_nsd_compare(const void *a, const void *b)
 }
 
 
+/**
+ * raptor_iostream_write_xml_element:
+ * @iostr: iostream object
+ * @element: XML element to format
+ * @nstack: Namespace stack context to use in formatting
+ * @is_empty: non-0 if element is empty
+ * @is_end: non-0 if this is an end element (else is a start element)
+ * @error_handler: error handler function
+ * @error_data: error handler function data
+ * @depth: XML element depth
+ *
+ * Write a formatted XML element to a #raptor_iostream
+ *
+ * Return value: non-0 on failure
+*/
 int
 raptor_iostream_write_xml_element(raptor_iostream* iostr,
                                   raptor_xml_element *element,

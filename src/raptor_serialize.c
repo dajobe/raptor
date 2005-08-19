@@ -1641,6 +1641,14 @@ raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
 }
 
 
+/**
+ * raptor_iostream_write_statement_ntriples:
+ * @iostr: raptor iosteram
+ * @statement: statement to write
+ * 
+ * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
+ * 
+ **/
 void
 raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
                                          const raptor_statement *statement)
