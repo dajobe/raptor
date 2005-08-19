@@ -154,6 +154,20 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_new_namespaces:
+ * @uri_handler: URI handler function
+ * @uri_context: URI handler context data
+ * @error_handler: error handler function
+ * @error_data: erorr handler data
+ * @defaults: namespaces to initialise
+ * 
+ * Constructor - create a new #raptor_namespace_stack.
+ *
+ * See raptor_namespaces_init() fo the values of @defaults.
+ * 
+ * Return value: a new namespace stack or NULL on failure
+ **/
 raptor_namespace_stack *
 raptor_new_namespaces(raptor_uri_handler *uri_handler,
                       void *uri_context,
@@ -173,6 +187,13 @@ raptor_new_namespaces(raptor_uri_handler *uri_handler,
 }
  
 
+/**
+ * raptor_namespaces_start_namespace:
+ * @nstack: namespace stack
+ * @nspace: namespace to start
+ * 
+ * Start a namespace on a stack of namespaces.
+ **/
 void
 raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
                                   raptor_namespace *nspace)
@@ -190,6 +211,20 @@ raptor_namespaces_start_namespace(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_namespaces_start_namespace_full - 
+ * @nstack: namespace stack
+ * @prefix: new namespace prefix (or NULL)
+ * @ns_uri_string: new namespace URI (or NULL)
+ * @depth: new namespacae depth
+ * 
+ * Create a new namespace and start it on a stack of namespaces.
+ * 
+ * See raptor_new_namespace() for the meanings of @prefix,
+ * @ns_uri_string and @depth for namespaces.
+ *
+ * Return value: non-0 on failure
+ **/
 int
 raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, 
                                        const unsigned char *prefix, 
@@ -207,6 +242,12 @@ raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_namespaces_clear:
+ * @nstack: namespace stack
+ * 
+ * Empty a namespace stack of namespaces and any other resources.
+ **/
 void
 raptor_namespaces_clear(raptor_namespace_stack *nstack)
 {
@@ -229,6 +270,12 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack)
 }
 
 
+/**
+ * raptor_free_namespaces:
+ * @nstack: namespace stack
+ * 
+ * Destructor - destroy a namespace stack
+ **/
 void
 raptor_free_namespaces(raptor_namespace_stack *nstack)
 {
@@ -237,6 +284,13 @@ raptor_free_namespaces(raptor_namespace_stack *nstack)
 }
 
 
+/**
+ * raptor_namespaces_end_for_depth:
+ * @nstack: namespace stack
+ * @depth: depth
+ * 
+ * End all namespaces at the given depth in the namespace stack.
+ **/
 void 
 raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
 {
@@ -258,6 +312,14 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
 }
 
 
+/**
+ * raptor_namespaces_get_default_namespace:
+ * @nstack: namespace stack
+ * 
+ * Get the current default namespace in-scope in a stack.
+ * 
+ * Return value: #raptor_namespace or NULL if no default namespace is in scope
+ **/
 raptor_namespace*
 raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)
 {
@@ -269,6 +331,19 @@ raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)
 }
 
 
+/**
+ * raptor_namespaces_find_namespace:
+ * @nstack: namespace stack
+ * @prefix: namespace prefix to find
+ * @prefix_length: length of prefix.
+ * 
+ * Find a namespace in a namespace stack by prefix.
+ *
+ * Note that this uses the @length so that the prefix may be a prefix (sic)
+ * of a longer string.
+ * 
+ * Return value: #raptor_namespace for the prefix or NULL on failure
+ **/
 raptor_namespace*
 raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, 
                                  const unsigned char *prefix, int prefix_length)
@@ -283,6 +358,15 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_namespaces_find_namespace_by_uri:
+ * @nstack: namespace stack
+ * @ns_uri: namespace URI to find
+ * 
+ * Find a namespace in a namespace stack by namespace URI.
+ * 
+ * Return value: #raptor_namespace for the URI or NULL on failure
+ **/
 raptor_namespace*
 raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, 
                                         raptor_uri *ns_uri)
@@ -300,6 +384,15 @@ raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_namespaces_namespace_in_scope:
+ * @nstack: namespace stack
+ * @nspace: namespace
+ * 
+ * Test if a given namespace is in-scope in the namespace stack.
+ * 
+ * Return value: non-0 if the namespace is in scope.
+ **/
 int
 raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, 
                                      const raptor_namespace *nspace)
@@ -313,6 +406,17 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_new_namespace_from_uri:
+ * @nstack: namespace stack
+ * @prefix: namespace prefix string
+ * @ns_uri: namespace URI
+ * @depth: depth of namespace in the stack
+ * 
+ * Constructor - create a new namespace from a prefix and URI object.
+ * 
+ * Return value: a new #raptor_namespace or NULL on failure
+ **/
 raptor_namespace*
 raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
                               const unsigned char *prefix, 
@@ -379,6 +483,17 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * raptor_new_namespace:
+ * @nstack: namespace stack
+ * @prefix: namespace prefix string
+ * @ns_uri_string: namespace URI string
+ * @depth: depth of namespace in the stack
+ * 
+ * Constructor - create a new namespace from a prefix and URI string.
+ * 
+ * Return value: a new #raptor_namespace or NULL on failure
+ **/
 raptor_namespace*
 raptor_new_namespace(raptor_namespace_stack *nstack,
                      const unsigned char *prefix, 
@@ -401,13 +516,20 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
 }
 
 
-
-/* copy to a new stack with a new depth */
+/**
+ * raptor_namespace_copy:
+ * @nstack: namespace stack
+ * @ns: namespace
+ * @new_depth: new depth
+ * 
+ * Copy a namespace to a new namespace stack with a new depth.
+ * 
+ * Return value: non-0 on failure
+ **/
 int
 raptor_namespace_copy(raptor_namespace_stack *nstack,
                       raptor_namespace *ns,
                       int new_depth)
-     
 {
   raptor_namespace *new_ns;
 

@@ -692,7 +692,7 @@ void raptor_free_namespaces(raptor_namespace_stack *nstack);
 RAPTOR_API
 void raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *nspace);
 RAPTOR_API
-int raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth);
+int raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
 RAPTOR_API
 void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 RAPTOR_API
