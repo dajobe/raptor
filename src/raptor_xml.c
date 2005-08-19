@@ -383,19 +383,19 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  *
  * Both:
  *   Replaces <literal>&amp;</literal> and <literal>&lt;</literal>
- *   with <literal>&amp;amp;</literal> and <literal>&lt;lt;</literal>
+ *   with <literal>&amp;amp;</literal> and <literal>&amp;lt;</literal>
  * respectively, preserving other characters.
  * 
  * Text Nodes:
  *   <literal>&gt;</literal> is turned into <literal>&amp;gt;</literal>
- *   #D is turned into <literal>&amp;#xD;</literal>
+ *   ##xD is turned into <literal>&amp;##xD;</literal>
  *
  * Attribute Nodes:
  *   <literal>&gt;</literal> is generated not <literal>&amp;gt</literal>.
- *   #9, #A and #D are turned into
- *   <literal>&amp;#9;</literal>,
- *   <literal>&amp;#A;</literal> and
- *   <literal>&amp;#D;</literal>
+ *   ##x9, ##xA and ##xD are turned into
+ *   <literal>&amp;##x9;</literal>,
+ *   <literal>&amp;##xA;</literal> and
+ *   <literal>&amp;##xD;</literal>
  *   entities.
  *
  * If @quote is given it can be either of '\'' or '\"'
