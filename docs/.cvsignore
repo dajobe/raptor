@@ -1,3 +1,8 @@
+*.stamp
+.cvsignore
 Makefile
 Makefile.in
-libraptor.html
+html
+xml
+tmpl
+version.xml

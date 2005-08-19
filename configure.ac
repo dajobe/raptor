@@ -1198,6 +1198,7 @@ raptor.spec
 raptor.rdf
 data/Makefile
 docs/Makefile
+docs/version.xml
 examples/Makefile
 src/Makefile
 tests/Makefile
