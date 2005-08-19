@@ -45,6 +45,7 @@ known values for OPTION are:
   --libs                print library linking information
   --libtool-libs        print linking information for use with libtool
   --cflags		print pre-processor and compiler flags
+  --features		print raptor compiled features
   --help                display this help and exit
   --version             output version information
   --version-decimal     output version as a decimal integer
@@ -82,6 +83,9 @@ while test $# -gt 0; do
     --cflags)
       echo_cflags=yes
       ;;
+    --features)
+      echo_features=yes
+      ;;
     --libs)
       echo_libs=yes
       ;;
@@ -105,6 +109,24 @@ if test "$echo_prefix" = "yes"; then
 fi
 if test "$echo_cflags" = "yes"; then
   echo $includes
+fi
+if test "$echo_features" = "yes"; then
+  if test @RAPTOR_WWW_LIBRARY@ != none; then
+    echo "www-library: @RAPTOR_WWW_LIBRARY@"
+  fi
+  if test @RAPTOR_XML_PARSER@ != none; then
+    echo "xml-parser: @RAPTOR_XML_PARSER@"
+  fi
+  for parser in @RAPTOR_PARSERS@ none; do
+    if test $parser != none; then
+      echo "parser: $parser"
+    fi
+  done
+  for serializer in @RAPTOR_SERIALIZERS@ none; do
+    if test $serializer != none; then
+      echo "serializer: $serializer"
+    fi
+  done
 fi
 if test "$echo_libs" = "yes"; then
   echo -L@libdir@ -lraptor @LDFLAGS@ @LIBS@
