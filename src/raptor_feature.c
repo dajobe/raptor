@@ -151,9 +151,10 @@ raptor_feature_value_type(const raptor_feature feature) {
 
 
 /**
- * raptor_feature_from_uri - Turn a feature URI into an feature enum
+ * raptor_feature_from_uri:
  * @uri: feature URI
- * @flags: flags to match
+ *
+ * Turn a feature URI into an feature enum.
  * 
  * The allowed feature URIs are available via raptor_features_enumerate().
  *

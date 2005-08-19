@@ -320,8 +320,10 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
 
 
 /**
- * raptor_uri_filename_to_uri_string - Converts a filename to a file: URI
+ * raptor_uri_filename_to_uri_string:
  * @filename: The filename to convert
+ *
+ * Converts a filename to a file: URI.
  * 
  * Handles the OS-specific escaping on turning filenames into URIs
  * and returns a new buffer that the caller must free().  Turns
@@ -441,9 +443,11 @@ raptor_uri_filename_to_uri_string(const char *filename)
 
 
 /**
- * raptor_uri_uri_string_to_filename_fragment - Convert a file: URI to a filename and fragment
+ * raptor_uri_uri_string_to_filename_fragment:
  * @uri_string: The file: URI to convert
  * @fragment_p: Address of pointer to store any URI fragment or NULL
+ *
+ * Convert a file: URI to a filename and fragment.
  * 
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
@@ -609,8 +613,10 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
 
 
 /**
- * raptor_uri_uri_string_to_filename - Convert a file: URI to a filename
+ * raptor_uri_uri_string_to_filename:
  * @uri_string: The file: URI to convert
+ *
+ * Convert a file: URI to a filename.
  * 
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
@@ -625,8 +631,10 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
 
 
 /**
- * raptor_uri_is_file_uri - Check if a URI string is a a file: URI
+ * raptor_uri_is_file_uri:
  * @uri_string: The URI string to check
+ *
+ * Check if a URI string is a a file: URI.
  * 
  * Return value: Non zero if URI string is a file: URI
  **/
@@ -637,8 +645,10 @@ raptor_uri_is_file_uri(const unsigned char* uri_string) {
 
 
 /**
- * raptor_new_uri_for_xmlbase - Turn a URI into one suitable for XML base
+ * raptor_new_uri_for_xmlbase:
  * @old_uri: URI to transform
+ *
+ * Turn a URI into one suitable for XML base.
  * 
  * Takes an existing URI and ensures it has a path (default /) and has
  * no fragment or query arguments - XML base does not use these.
@@ -675,8 +685,10 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 
 
 /**
- * raptor_new_uri_for_retrieval - Turn a URI into one suitable for retrieval
+ * raptor_new_uri_for_retrieval:
  * @old_uri: URI to transform
+ *
+ * Turn a URI into one suitable for retrieval.
  * 
  * Takes an existing URI and ensures it has a path (default /) and has
  * no fragment - URI retrieval does not use the fragment part.
@@ -754,11 +766,13 @@ raptor_uri_init(void)
 
 
 /**
- * raptor_uri_path_common_base_length - Find the common base length of two URI path components
+ * raptor_uri_path_common_base_length:
  * @first_path: The first path (path only, not a full URI)
  * @first_path_len: Length of first_path
  * @second_path: The second path (path only, not a full URI)
  * @second_path_len: Length of second_path
+ *
+ * Find the common base length of two URI path components.
  * 
  * Return value: Length of the common base path
  **/
@@ -789,7 +803,7 @@ raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first
 
 
 /**
- * raptor_uri_path_make_relative_path - Make a relative URI path
+ * raptor_uri_path_make_relative_path:
  * @from_path: The base path (path only, not a full URI)
  * @from_path_len: Length of the base path
  * @to_path: The reference path (path only, not a full URI)
@@ -797,6 +811,8 @@ raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first
  * @suffix: String to be appended to the final relative path
  * @suffix_len: Length of the suffix
  * @result_length_p: Location to store the length of the string or NULL
+ *
+ * Make a relative URI path.
  *
  * Return value: A newly allocated relative path string
  **/
@@ -887,10 +903,12 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
 
 
 /**
- * raptor_uri_to_relative_counted_uri_string - Get the counted relative URI string of a URI against a base URI
+ * raptor_uri_to_relative_counted_uri_string:
  * @base_uri: The base absolute URI to resolve against
  * @reference_uri: The reference absolute URI to use
  * @length_p: Location to store the length of the relative URI string or NULL
+ *
+ * Get the counted relative URI string of a URI against a base URI.
  * 
  * Return value: A newly allocated relative URI string or NULL on failure
  **/
@@ -1031,9 +1049,11 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
 
 
 /**
- * raptor_uri_to_relative_uri_string - Get the relative URI string of a URI against a base URI
+ * raptor_uri_to_relative_uri_string:
  * @base_uri: The base absolute URI to resolve against
  * @reference_uri: The reference absolute URI to use
+ *
+ * Get the relative URI string of a URI against a base URI.
  * 
  * Return value: A newly allocated relative URI string or NULL on failure
  **/
@@ -1046,9 +1066,12 @@ raptor_uri_to_relative_uri_string(raptor_uri *base_uri,
 
 
 /**
- * raptor_uri_print - Print a URI to a file handle
+ * raptor_uri_print:
  * @uri: URI to print
  * @stream: The file handle to print to
+ *
+ * Print a URI to a file handle.
+ *
  **/
 void
 raptor_uri_print(const raptor_uri* uri, FILE *stream) {
@@ -1059,9 +1082,11 @@ raptor_uri_print(const raptor_uri* uri, FILE *stream) {
 
 
 /**
- * raptor_uri_to_counted_string - Get a new counted string for a URI
- * @uri: &raptor_uri object
+ * raptor_uri_to_counted_string:
+ * @uri: #raptor_uri object
  * @len_p: Pointer to length (or NULL)
+ *
+ * Get a new counted string for a URI.
  *
  * If len_p is not NULL, the length of the string is stored in it.
  *
@@ -1094,9 +1119,10 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
 
 
 /**
- * raptor_uri_to_string - Get a new string for a URI
- * @uri: &raptor_uri object
- * @len_p: Pointer to length (or NULL)
+ * raptor_uri_to_string:
+ * @uri: #raptor_uri object
+ *
+ * Get a new string for a URI.
  *
  * The memory allocated must be freed by the caller and
  * raptor_free_memory should be used for best portability.

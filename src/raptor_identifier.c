@@ -49,14 +49,16 @@
 
 
 /**
- * raptor_new_identifier - Constructor - create a raptor_identifier
+ * raptor_new_identifier:
  * @type: raptor_identifier_type of identifier
- * @uri: &raptor_uri of identifier (if relevant) (SHARED)
+ * @uri: #raptor_uri of identifier (if relevant) (SHARED)
  * @uri_source: raptor_uri_source of URI (if relevant)
  * @id: string for ID or genid (if relevant) (SHARED)
  * @literal: string for literal (SHARED)
- * @literal_datatype: &raptor_uri of identifier (SHARED)
+ * @literal_datatype: #raptor_uri of identifier (SHARED)
  * @literal_language: literal language (SHARED)
+ *
+ * Constructor - create a raptor_identifier.
  * 
  * Constructs a new identifier copying the URI, ID fields.
  * SHARED means raptor_new_identifier owns this argument after calling.
@@ -94,9 +96,11 @@ raptor_new_identifier(raptor_identifier_type type,
 
 
 /**
- * raptor_copy_identifier - Copy raptor_identifiers
- * @dest: destination &raptor_identifier (previously created)
- * @src:  source &raptor_identifier
+ * raptor_copy_identifier:
+ * @dest: destination #raptor_identifier (previously created)
+ * @src:  source #raptor_identifier
+ *
+ * Copy raptor_identifiers.
  * 
  * Return value: Non 0 on failure
  **/
@@ -161,8 +165,10 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 
 
 /**
- * raptor_free_identifier - Destructor - destroy a raptor_identifier object
- * @identifier: &raptor_identifier object
+ * raptor_free_identifier:
+ * @identifier: #raptor_identifier object
+ *
+ * Destructor - destroy a raptor_identifier object.
  *
  **/
 void

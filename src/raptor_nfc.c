@@ -186,10 +186,12 @@ raptor_nfc_get_code_flag (unsigned long c)
 
 
 /**
- * raptor_nfc_check - Unicode Normal Form C (NFC) check function
+ * raptor_nfc_check:
  * @input: UTF-8 string
  * @length: length of string
  * @errorp: pointer to store offset of character in error (or NULL)
+ *
+ * Unicode Normal Form C (NFC) check function.
  *
  * If errorp is not NULL, it is set to the offset of the character
  * in error in the buffer, or <0 if there is no error.

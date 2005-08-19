@@ -244,8 +244,10 @@ raptor_unicode_is_xml10_namestartchar(long c) {
 
 
 /**
- * raptor_unicode_is_namestartchar - Check if Unicode character is legal to start an XML Namespace Name 
+ * raptor_unicode_is_namestartchar:
  * @c: Unicode character to check
+ *
+ * Check if Unicode character is legal to start an XML Namespace Name .
  * 
  * Return value: non-0 if the character is legal
  **/
@@ -298,8 +300,10 @@ raptor_unicode_is_xml10_namechar(long c) {
  
 
 /**
- * raptor_unicode_is_namechar - Check if Unicode character is legal to continue an XML Namespace Name 
+ * raptor_unicode_is_namechar:
  * @c: Unicode character to check
+ *
+ * Check if Unicode character is legal to continue an XML Namespace Name .
  * 
  * Return value: non-0 if the character is legal
  **/
@@ -690,9 +694,11 @@ raptor_unicode_is_extender(long c)
 
 
 /**
- * raptor_utf8_is_nfc - Check a string is in Unicode Normal Form C
+ * raptor_utf8_is_nfc:
  * @input: UTF-8 string
  * @length: length of string
+ *
+ * Check a string is in Unicode Normal Form C.
  * 
  * Return value: Non 0 if the string is NFC
  **/
@@ -720,9 +726,11 @@ raptor_utf8_is_nfc(const unsigned char *input, size_t length)
 
 
 /**
- * raptor_utf8_check - Check a string is UTF-8
+ * raptor_utf8_check:
  * @string: UTF-8 string
  * @length: length of string
+ *
+ * Check a string is UTF-8.
  * 
  * Return value: Non 0 if the string is UTF-8
  **/

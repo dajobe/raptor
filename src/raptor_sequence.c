@@ -328,9 +328,11 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
 
 
 /**
- * raptor_sequence_join: Join two sequences moving all items from one sequence to the end of another
- * @param dest: &raptor_sequence destination sequence
- * @param src: &raptor_sequence source sequence
+ * raptor_sequence_join:
+ * @dest: #raptor_sequence destination sequence
+ * @src: #raptor_sequence source sequence
+ *
+ * Join two sequences moving all items from one sequence to the end of another.
  *
  * After this operation, sequence src will be empty (zero size) but
  * will have the same item capacity as before.

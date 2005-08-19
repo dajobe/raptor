@@ -1378,11 +1378,13 @@ raptor_xml_parse_recognise_syntax(raptor_parser_factory* factory,
 
 
 /**
- * raptor_xml_parse_chunk - Parse a chunk of memory
+ * raptor_xml_parse_chunk:
  * @rdf_parser: RDF Parser object
  * @buffer: memory to parse
  * @len: size of memory
  * @is_end: non-zero if this is the last chunk to parse
+ *
+ * Parse a chunk of memory.
  * 
  * Parse the content in the given buffer, emitting RDF statements
  * as a side-effect, to the registered statement handler if they
@@ -1543,8 +1545,10 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
 
 /**
- * raptor_element_has_property_attributes: Return true if the element has at least one property attribute
+ * raptor_element_has_property_attributes:
  * @element: element with the property attributes 
+ *
+ * Return true if the element has at least one property attribute.
  * 
  **/
 static int
@@ -1566,13 +1570,15 @@ raptor_element_has_property_attributes(raptor_element *element)
 
 
 /**
- * raptor_process_property_attributes: Process the property attributes for an element for a given resource
+ * raptor_process_property_attributes:
  * @rdf_parser: Raptor parser object
  * @attributes_element: element with the property attributes 
  * @resource_element: element that defines the resource URI 
  *                    subject_uri, subject_uri_source etc.
  * @property_node_identifier: Use this identifier for the resource URI
  *   and count any ordinals for it locally
+ *
+ * Process the property attributes for an element for a given resource.
  * 
  **/
 static void 
@@ -3154,8 +3160,10 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
 
 /**
- * raptor_inscope_xml_language - Return the in-scope xml:lang
+ * raptor_inscope_xml_language:
  * @rdf_parser: Raptor parser object
+ *
+ * Return the in-scope xml:lang.
  * 
  * Looks for the innermost xml:lang on an element
  * 
@@ -3170,8 +3178,10 @@ raptor_inscope_xml_language(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_inscope_base_uri - Return the in-scope base URI
+ * raptor_inscope_base_uri:
  * @rdf_parser: Raptor parser object
+ *
+ * Return the in-scope base URI.
  * 
  * Looks for the innermost xml:base on an element or document URI
  * 
@@ -3190,10 +3200,12 @@ raptor_inscope_base_uri(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_record_ID - Record an rdf:ID / rdf:bagID value (with xml base) and check it hasn't been seen already
+ * raptor_record_ID:
  * @rdf_parser: Raptor parser object
  * @element: Current element
  * @id: ID string
+ *
+ * Record an rdf:ID / rdf:bagID value (with xml base) and check it hasn't been seen already.
  * 
  * Record and check the ID values, if they have been seen already.
  * per in-scope-base URI.

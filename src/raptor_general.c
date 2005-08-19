@@ -74,7 +74,9 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 
 
 /**
- * raptor_init - Initialise the raptor library
+ * raptor_init:
+ *
+ * Initialise the raptor library.
  * 
  * Initialises the library.
  *
@@ -133,7 +135,9 @@ raptor_init(void)
 
 
 /**
- * raptor_finish - Terminate the raptor library
+ * raptor_finish:
+ *
+ * Terminate the raptor library.
  *
  * Cleans up state of the library.
  **/
@@ -343,9 +347,11 @@ raptor_free_statement(raptor_statement *statement) {
 
 
 /**
- * raptor_print_statement - Print a raptor_statement to a stream
- * @statement: &raptor_statement object to print
- * @stream: &FILE* stream
+ * raptor_print_statement:
+ * @statement: #raptor_statement object to print
+ * @stream: #FILE* stream
+ *
+ * Print a raptor_statement to a stream.
  *
  **/
 void
@@ -416,11 +422,13 @@ raptor_print_statement_detailed(const raptor_statement * statement,
 
 
 /**
- * raptor_print_ntriples_string - Print an UTF-8 string using N-Triples escapes
+ * raptor_print_ntriples_string:
  * @stream: FILE* stream to print to
  * @string: UTF-8 string to print
  * @delim: Delimiter character for string (such as ") or \0 for no delim
  * escaping.
+ *
+ * Print an UTF-8 string using N-Triples escapes.
  * 
  * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/
@@ -482,12 +490,14 @@ raptor_print_ntriples_string(FILE *stream,
 
 
 /**
- * raptor_statement_part_as_counted_string - Turns part of raptor statement into a N-Triples format counted string
- * @term: &raptor_statement part (subject, predicate, object)
- * @type: &raptor_statement part type
- * @literal_datatype: &raptor_statement part datatype
- * @literal_language: &raptor_statement part language
+ * raptor_statement_part_as_counted_string:
+ * @term: #raptor_statement part (subject, predicate, object)
+ * @type: #raptor_statement part type
+ * @literal_datatype: #raptor_statement part datatype
+ * @literal_language: #raptor_statement part language
  * @len_p: Pointer to location to store length of new string (if not NULL)
+ *
+ * Turns part of raptor statement into a N-Triples format counted string.
  * 
  * Turns the given @term into an N-Triples escaped string using all the
  * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
@@ -500,7 +510,7 @@ raptor_print_ntriples_string(FILE *stream,
  * object_literal_language).
  *
  * Return value: the new string or NULL on failure.  The length of
- * the new string is returned in *&len_p if len_p is not NULL.
+ * the new string is returned in *@len_p if len_p is not NULL.
  **/
 unsigned char*
 raptor_statement_part_as_counted_string(const void *term, 
@@ -616,11 +626,13 @@ raptor_statement_part_as_counted_string(const void *term,
 
 
 /**
- * raptor_statement_part_as_string - Turns part of raptor statement into a N-Triples format string
- * @term: &raptor_statement part (subject, predicate, object)
- * @type: &raptor_statement part type
- * @literal_datatype: &raptor_statement part datatype
- * @literal_language: &raptor_statement part language
+ * raptor_statement_part_as_string:
+ * @term: #raptor_statement part (subject, predicate, object)
+ * @type: #raptor_statement part type
+ * @literal_datatype: #raptor_statement part datatype
+ * @literal_language: #raptor_statement part language
+ *
+ * Turns part of raptor statement into a N-Triples format string.
  * 
  * Turns the given @term into an N-Triples escaped string using all the
  * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
@@ -700,9 +712,11 @@ raptor_print_statement_part_as_ntriples(FILE* stream,
 
 
 /**
- * raptor_print_statement_as_ntriples - Print a raptor_statement in N-Triples form
- * @statement: &raptor_statement to print
- * @stream: &FILE* stream
+ * raptor_print_statement_as_ntriples:
+ * @statement: #raptor_statement to print
+ * @stream: #FILE* stream
+ *
+ * Print a raptor_statement in N-Triples form.
  * 
  **/
 void
@@ -747,8 +761,10 @@ raptor_check_ordinal(const unsigned char *name) {
 
 
 /**
- * raptor_free_memory - Free memory allocated inside raptor.
+ * raptor_free_memory:
  * @ptr: memory pointer
+ *
+ * Free memory allocated inside raptor.
  * 
  * Some systems require memory allocated in a library to
  * be deallocated in that library.  This function allows
@@ -768,8 +784,10 @@ raptor_free_memory(void *ptr)
 
 
 /**
- * raptor_alloc_memory - Allocate memory inside raptor.
+ * raptor_alloc_memory:
  * @size: size of memory to allocate
+ *
+ * Allocate memory inside raptor.
  * 
  * Some systems require memory allocated in a library to
  * be deallocated in that library.  This function allows
@@ -792,9 +810,11 @@ raptor_alloc_memory(size_t size)
 
 
 /**
- * raptor_calloc_memory - Allocate zeroed array of items inside raptor.
+ * raptor_calloc_memory:
  * @nmemb: number of members
  * @size: size of item
+ *
+ * Allocate zeroed array of items inside raptor.
  * 
  * Some systems require memory allocated in a library to
  * be deallocated in that library.  This function allows

@@ -101,14 +101,18 @@ const unsigned char * const raptor_owl_namespace_uri=(const unsigned char *)"htt
 
 
 /**
- * raptor_namespaces_init: Initialise a raptor namespaces stack
- * @nstack: &raptor_namespace_stack to initialise
+ * raptor_namespaces_init:
+ * @nstack: #raptor_namespace_stack to initialise
  * @uri_handler: URI handler function
  * @uri_context: context for URI handler
  * @error_handler: error handler function
  * @error_data: context for error handler
- * @defaults: namespaces to initialise.  0 for none, 1 for just XML,
- *   2 for RDF, RDFS, OWL and XSD (RDQL uses this), 3+ undefined
+ * @defaults: namespaces to initialise.
+ *
+ * Initialise a namespaces stack some optional common namespaces.
+ *
+ * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL
+ * and XSD (RDQL uses this) or 3+ undefined.
  */
 void
 raptor_namespaces_init(raptor_namespace_stack *nstack,

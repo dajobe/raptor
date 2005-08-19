@@ -59,11 +59,13 @@ struct raptor_iostream_s
 
 
 /**
- * raptor_new_iostream_from_handler - Create a new iostream over a user-defined handler
+ * raptor_new_iostream_from_handler:
  * @context: pointer to context information to pass in to calls
  * @handler: pointer to handler methods
  *
- * Return value: new &raptor_iostream object or NULL on failure
+ * Create a new iostream over a user-defined handler.
+ *
+ * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
 raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler) {
@@ -110,9 +112,11 @@ static raptor_iostream_handler raptor_iostream_sink_handler={
 
 
 /**
- * raptor_new_iostream_to_sink - Create a new iostream to a sink
+ * raptor_new_iostream_to_sink:
+ *
+ * Create a new iostream to a sink.
  * 
- * Return value: new &raptor_iostream object or NULL on failure
+ * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
 raptor_new_iostream_to_sink(void)
@@ -156,9 +160,11 @@ static raptor_iostream_handler raptor_iostream_filename_handler={
 
 
 /**
- * raptor_new_iostream_to_filename - Create a new iostream to a filename
+ * raptor_new_iostream_to_filename:
+ *
+ * Create a new iostream to a filename.
  * 
- * Return value: new &raptor_iostream object or NULL on failure
+ * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
 raptor_new_iostream_to_filename(const char *filename)
@@ -196,13 +202,15 @@ static raptor_iostream_handler raptor_iostream_file_handler={
 
 
 /**
- * raptor_new_iostream_to_file_handle - Create a new iostream to a FILE*
+ * raptor_new_iostream_to_file_handle:
  * @handle: FILE* handle to write to
+ *
+ * Create a new iostream to a FILE*.
  * 
  * The handle must already be open for writing.
  * NOTE: This does not fclose the handle when it is finished.
  *
- * Return value: new &raptor_iostream object or NULL on failure
+ * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
 raptor_new_iostream_to_file_handle(FILE *handle)
@@ -300,16 +308,18 @@ static raptor_iostream_handler raptor_iostream_string_handler={
 
 
 /**
- * raptor_new_iostream_to_string - Create a new iostream to a string
+ * raptor_new_iostream_to_string:
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
  * @malloc_handler: pointer to malloc to use to make string (or NULL)
+ *
+ * Create a new iostream to a string.
  *
  * If malloc_handler is null, raptor will allocate it using it's
  * own memory allocator.  *string_p is set to NULL on failure (and
  * *length_p to 0 if length_p is not NULL).
  * 
- * Return value: new &raptor_iostream object or NULL on failure
+ * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
 raptor_new_iostream_to_string(void **string_p, size_t *length_p,
@@ -359,7 +369,9 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
 
 
 /**
- * raptor_free_iostream - Destroy a iostream
+ * raptor_free_iostream:
+ *
+ * Destroy a iostream.
  * 
  **/
 void
@@ -377,9 +389,11 @@ raptor_free_iostream(raptor_iostream *iostr)
 
 
 /**
- * raptor_iostream_write_byte - Write a byte to the iostream
+ * raptor_iostream_write_byte:
  * @iostr: raptor iostream
  * @byte: byte to write
+ *
+ * Write a byte to the iostream.
  *
  * Return value: non-0 on failure
  **/
@@ -398,11 +412,13 @@ raptor_iostream_write_byte(raptor_iostream *iostr,
 
 
 /**
- * raptor_iostream_write_bytes - Write bytes to the iostream
+ * raptor_iostream_write_bytes:
  * @iostr: raptor iostream
  * @ptr: start of objects to write
  * @size: size of object
  * @nmemb: number of objects
+ *
+ * Write bytes to the iostream.
  *
  * Return value: number of objects written or less than nmemb or 0 on failure
  **/
@@ -421,9 +437,11 @@ raptor_iostream_write_bytes(raptor_iostream *iostr,
 
 
 /**
- * raptor_iostream_write_string - Write a NUL-terminated string to the iostream
+ * raptor_iostream_write_string:
  * @iostr: raptor iostream
- * @str: string
+ * @string: string
+ *
+ * Write a NULL-terminated string to the iostream.
  *
  * Return value: non-0 on failure
  **/
@@ -436,22 +454,27 @@ raptor_iostream_write_string(raptor_iostream *iostr, const void *string)
 
 
 /**
- * raptor_iostream_write_counted_string - Write a counted string to the iostream
+ * raptor_iostream_write_counted_string:
  * @iostr: raptor iostream
  * @string: string
- * @length: string length
+ * @len: string length
+ *
+ * Write a counted string to the iostream.
  *
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *string, size_t length) 
+raptor_iostream_write_counted_string(raptor_iostream *iostr, 
+                                     const void *string, size_t len) 
 {
-  return (raptor_iostream_write_bytes(iostr, string, 1, length) != (int)length);
+  return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
 }
 
 
 /**
- * raptor_iostream_write_end - End writing to the iostream
+ * raptor_iostream_write_end:
+ *
+ * End writing to the iostream.
  *
  * @iostr: raptor iostream
  **/
@@ -467,8 +490,10 @@ raptor_iostream_write_end(raptor_iostream *iostr)
 
 
 /**
- * raptor_iostream_get_bytes_written_count - Get the number of bytes written to the iostream
+ * raptor_iostream_get_bytes_written_count:
  * @iostr: raptor iostream
+ *
+ * Get the number of bytes written to the iostream.
  *
  * Return value: number of bytes written or 0 if non written so far
  **/
@@ -480,9 +505,11 @@ raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
 
 
 /**
- * raptor_iostream_write_stringbuffer - Write a stringbuffer to an iostream
+ * raptor_iostream_write_stringbuffer:
  * @iostr: raptor iostream
- * @sb: &raptor_stringbuffer to write
+ * @sb: #raptor_stringbuffer to write
+ *
+ * Write a stringbuffer to an iostream.
  * 
  * Return value: non-0 on failure
  **/
@@ -505,9 +532,11 @@ raptor_iostream_write_stringbuffer(raptor_iostream* iostr,
 
 
 /**
- * raptor_iostream_write_decimal - Write an integer in decimal to the iostream
+ * raptor_iostream_write_decimal:
  * @iostr: raptor iostream
  * @integer: integer to format as decimal
+ *
+ * Write an integer in decimal to the iostream.
  * 
  * Return value: non-0 on failure
  **/
@@ -544,10 +573,12 @@ raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
 
 
 /**
- * raptor_iostream_format_hexadecimal - Write an integer in hexadecimal to the iostream
+ * raptor_iostream_format_hexadecimal:
  * @iostr: raptor iostream
  * @integer: unsigned integer to format as hexadecimal
  * @width: field width
+ *
+ * Write an integer in hexadecimal to the iostream.
  *
  * Always 0-fills the entire field and writes in uppercase A-F
  * 

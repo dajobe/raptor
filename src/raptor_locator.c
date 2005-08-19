@@ -52,9 +52,11 @@
 
 
 /**
- * raptor_print_locator - Print a raptor locator to a stream
+ * raptor_print_locator:
  * @stream: stream to print to
- * @locator: &raptor_locator to print
+ * @locator: #raptor_locator to print
+ *
+ * Print a raptor locator to a stream.
  * 
  **/
 void
@@ -79,10 +81,12 @@ raptor_print_locator(FILE *stream, raptor_locator* locator)
 
 
 /**
- * raptor_format_locator - Format a raptor locator as a string
+ * raptor_format_locator:
  * @buffer: buffer to store format
  * @length: size of buffer
- * @locator: &raptor_locator to format
+ * @locator: #raptor_locator to format
+ *
+ * Format a raptor locator as a string.
  * 
  * If buffer is NULL or length is insufficient for the size of
  * the locator, returns the number of additional bytes required
@@ -150,8 +154,10 @@ raptor_update_document_locator (raptor_parser *rdf_parser) {
 }
 
 /**
- * raptor_locator_line: get line number from locator
+ * raptor_locator_line:
  * @locator: locator
+ *
+ * Get line number from locator.
  *
  * Return value: integer line number, or -1 if there is no line number available
  **/
@@ -164,8 +170,10 @@ raptor_locator_line(raptor_locator *locator)
 }
 
 /**
- * raptor_locator_column: get column number from locator
+ * raptor_locator_column:
  * @locator: locator
+ *
+ * Get column number from locator.
  *
  * Return value: integer column number, or -1 if there is no column number available
  **/
@@ -178,8 +186,10 @@ raptor_locator_column(raptor_locator *locator)
 }
 
 /**
- * raptor_locator_byte: get the locator byte offset from locator
+ * raptor_locator_byte:
  * @locator: locator
+ *
+ * Get the locator byte offset from locator.
  *
  * Return value: integer byte number, or -1 if there is no byte offset available
  **/
@@ -192,8 +202,10 @@ raptor_locator_byte(raptor_locator *locator)
 }
 
 /**
- * raptor_locator_file: get file name from locator
+ * raptor_locator_file:
  * @locator: locator
+ *
+ * Get file name from locator.
  *
  * Return value: string file name, or NULL if there is no filename available
  **/
@@ -206,8 +218,10 @@ raptor_locator_file(raptor_locator *locator)
 }
 
 /**
- * raptor_locator_uri: get URI from locator
+ * raptor_locator_uri:
  * @locator: locator
+ *
+ * Get URI from locator.
  *
  * Returns a pointer to a shared string version of the URI in
  * the locator.  This must be copied if it is needed.

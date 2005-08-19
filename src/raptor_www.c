@@ -85,7 +85,9 @@ raptor_www_init(void)
 
 
 /**
- * raptor_www_no_www_library_init_finish - Do not initialise or finish the lower level WWW library
+ * raptor_www_no_www_library_init_finish:
+ *
+ * Do not initialise or finish the lower level WWW library.
  *
  * If this is called then the raptor_www library will neither
  * initialise or terminate the lower level WWW library.  Usually in
@@ -266,9 +268,11 @@ raptor_www_set_proxy(raptor_www *www, const char *proxy)
 
 
 /**
- * raptor_www_set_http_accept - Set HTTP Accept header
- * @www: &raptor_www class
+ * raptor_www_set_http_accept:
+ * @www: #raptor_www class
  * @value: Accept: header value or NULL to have an empty one.
+ *
+ * Set HTTP Accept header.
  * 
  **/
 void
@@ -295,8 +299,10 @@ raptor_www_set_http_accept(raptor_www *www, const char *value)
 
 
 /**
- * raptor_www_get_connection - Get internal WWW library connection object
- * @www: &raptor_www object 
+ * raptor_www_get_connection:
+ * @www: #raptor_www object 
+ *
+ * Get internal WWW library connection object.
  * 
  * Return value: connection object or NULL
  **/
@@ -471,12 +477,14 @@ raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
 
 
 /**
- * raptor_www_fetch_to_string - Fetch WWW content to a new string
+ * raptor_www_fetch_to_string:
  * @www: raptor_www object
  * @uri: raptor_uri to retrieve
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
  * @malloc_handler: pointer to malloc to use to make string (or NULL)
+ *
+ * Fetch WWW content to a new string.
  *
  * If malloc_handler is null, raptor will allocate it using it's
  * own memory allocator.  *string_p is set to NULL on failure (and

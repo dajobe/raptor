@@ -212,8 +212,10 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
 
 
 /**
- * raptor_get_parser_factory - Get a parser factory by name
+ * raptor_get_parser_factory:
  * @name: the factory name or NULL for the default factory
+ *
+ * Get a parser factory by name.
  * 
  * Return value: the factory object or NULL if there is no such factory
  **/
@@ -247,12 +249,14 @@ raptor_get_parser_factory (const char *name)
 
 
 /**
- * raptor_syntaxes_enumerate - Get information on syntaxes
+ * raptor_syntaxes_enumerate:
  * @counter: index into the list of syntaxes
  * @name: pointer to store the name of the syntax (or NULL)
  * @label: pointer to store syntax readable label (or NULL)
  * @mime_type: pointer to store syntax MIME Type (or NULL)
  * @uri_string: pointer to store syntax URI string (or NULL)
+ *
+ * Get information on syntaxes.
  * 
  * Return value: non 0 on failure of if counter is out of range
  **/
@@ -287,10 +291,12 @@ raptor_syntaxes_enumerate(const unsigned int counter,
 
 
 /**
- * raptor_parsers_enumerate - Get list of syntax parsers
+ * raptor_parsers_enumerate:
  * @counter: index to list of parsers
  * @name: pointer to store syntax name (or NULL)
  * @label: pointer to store syntax label (or NULL)
+ *
+ * Get list of syntax parsers.
  * 
  * Return value: non 0 on failure of if counter is out of range
  **/
@@ -303,8 +309,10 @@ raptor_parsers_enumerate(const unsigned int counter,
 
 
 /**
- * raptor_syntax_name_check -  Check name of a parser
+ * raptor_syntax_name_check:
  * @name: the syntax name
+ *
+ * Check name of a parser.
  *
  * Return value: non 0 if name is a known syntax name
  */
@@ -318,7 +326,7 @@ raptor_syntax_name_check(const char *name) {
  * raptor_new_parser - Constructor - create a new raptor_parser object
  * @name: the parser name
  *
- * Return value: a new &raptor_parser object or NULL on failure
+ * Return value: a new #raptor_parser object or NULL on failure
  */
 raptor_parser*
 raptor_new_parser(const char *name) {
@@ -368,12 +376,12 @@ raptor_new_parser(const char *name) {
  * @len: length of buffer
  * @identifier: identifier of content (or NULL)
  * 
- * Users &raptor_guess_parser_name to find a parser by scoring
+ * Uses raptor_guess_parser_name() to find a parser by scoring
  * recognition of the syntax by a block of characters, the content
  * identifier or a mime type.  The content identifier is typically a
  * filename or URI or some other identifier.
  * 
- * Return value: a new &raptor_parser object or NULL on failure
+ * Return value: a new #raptor_parser object or NULL on failure
  **/
 raptor_parser*
 raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
@@ -428,9 +436,11 @@ raptor_parser_exec(raptor_parser* rdf_parser, const char *name)
 
 
 /**
- * raptor_start_parse: Start a parse of content with base URI
+ * raptor_start_parse:
  * @rdf_parser: RDF parser
  * @uri: base URI or NULL if no base URI is required
+ *
+ * Start a parse of content with base URI.
  * 
  * Only the N-Triples parser has an optional base URI.
  * 
@@ -462,11 +472,13 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
 
 
 /**
- * raptor_parse_chunk - Parse a block of content into triples
+ * raptor_parse_chunk:
  * @rdf_parser: RDF parser
  * @buffer: content to parse
  * @len: length of buffer
  * @is_end: non-0 if this is the end of the content (such as EOF)
+ *
+ * Parse a block of content into triples.
  * 
  * This method can only be called after raptor_start_parse has
  * initialised the parser.
@@ -482,8 +494,10 @@ raptor_parse_chunk(raptor_parser* rdf_parser,
 
 
 /**
- * raptor_free_parser - Destructor - destroy a raptor_parser object
- * @parser: &raptor_parser object
+ * raptor_free_parser:
+ * @parser: #raptor_parser object
+ *
+ * Destructor - destroy a raptor_parser object.
  * 
  **/
 void
@@ -510,11 +524,13 @@ raptor_free_parser(raptor_parser* rdf_parser)
 
 
 /**
- * raptor_parse_file_stream - Retrieve the RDF/XML content from a FILE*
+ * raptor_parse_file_stream:
  * @rdf_parser: parser
  * @stream: FILE* of RDF content
  * @filename: filename of content or NULL if it has no name
  * @base_uri: the base URI to use
+ *
+ * Retrieve the RDF/XML content from a FILE*.
  *
  * After draining the stream, fclose is not called on it internally.
  *
@@ -552,10 +568,12 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
 
 
 /**
- * raptor_parse_file - Retrieve the RDF/XML content at a file URI
+ * raptor_parse_file:
  * @rdf_parser: parser
  * @uri: URI of RDF content or NULL to read from standard input
  * @base_uri: the base URI to use (or NULL if the same)
+ *
+ * Retrieve the RDF/XML content at a file URI.
  *
  * If uri is NULL (source is stdin), then the base_uri is required.
  * 
@@ -640,10 +658,12 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
 
 
 /**
- * raptor_parse_uri - Retrieve the RDF/XML content at URI
+ * raptor_parse_uri:
  * @rdf_parser: parser
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
+ *
+ * Retrieve the RDF/XML content at URI.
  * 
  * Sends an HTTP Accept: header whent the URI is of the HTTP protocol,
  * see raptor_parse_uri_with_connection for details.
@@ -659,11 +679,13 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
 
 
 /**
- * raptor_parse_uri_with_connection - Retrieve the RDF/XML content at URI using existing WWW connection
+ * raptor_parse_uri_with_connection:
  * @rdf_parser: parser
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
  * @connection: connection object pointer or NULL to create a new one
+ *
+ * Retrieve the RDF/XML content at URI using existing WWW connection.
  * 
  * When @connection is NULL and a MIME Type exists for the parser
  * type - such as returned by raptor_get_mime_type(parser) - this
@@ -892,10 +914,12 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
 /* PUBLIC FUNCTIONS */
 
 /**
- * raptor_set_fatal_error_handler - Set the parser error handling function
+ * raptor_set_fatal_error_handler:
  * @parser: the parser
  * @user_data: user data to pass to function
  * @handler: pointer to the function
+ *
+ * Set the parser error handling function.
  * 
  * The function will receive callbacks when the parser fails.
  * 
@@ -910,10 +934,12 @@ raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data,
 
 
 /**
- * raptor_set_error_handler - Set the parser error handling function
+ * raptor_set_error_handler:
  * @parser: the parser
  * @user_data: user data to pass to function
  * @handler: pointer to the function
+ *
+ * Set the parser error handling function.
  * 
  * The function will receive callbacks when the parser fails.
  * 
@@ -928,10 +954,12 @@ raptor_set_error_handler(raptor_parser* parser, void *user_data,
 
 
 /**
- * raptor_set_warning_handler - Set the parser warning handling function
+ * raptor_set_warning_handler:
  * @parser: the parser
  * @user_data: user data to pass to function
  * @handler: pointer to the function
+ *
+ * Set the parser warning handling function.
  * 
  * The function will receive callbacks when the parser gives a warning.
  * 
@@ -946,10 +974,12 @@ raptor_set_warning_handler(raptor_parser* parser, void *user_data,
 
 
 /**
- * raptor_set_statement_handler - Set the statement handler function for the parser
- * @parser: &raptor_parser parser object
+ * raptor_set_statement_handler:
+ * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
  * @handler: new statement callback function
+ *
+ * Set the statement handler function for the parser.
  * 
  **/
 void
@@ -963,10 +993,12 @@ raptor_set_statement_handler(raptor_parser* parser,
 
 
 /**
- * raptor_set_generate_id_handler - Set the generate ID handler function for the parser
- * @parser: &raptor_parser parser object
+ * raptor_set_generate_id_handler:
+ * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
  * @handler: generate ID callback function
+ *
+ * Set the generate ID handler function for the parser.
  *
  * Sets the function to generate IDs for the parser.  The handler is
  * called with the @user_data parameter and an ID type of either
@@ -991,11 +1023,13 @@ raptor_set_generate_id_handler(raptor_parser* parser,
 
 
 /**
- * raptor_features_enumerate - Get list of syntax features
- * @counter: feature enumeration (0+)
+ * raptor_features_enumerate:
+ * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
  * @uri: pointer to store feature URI (or NULL)
  * @label: pointer to feature label (or NULL)
+ *
+ * Get list of syntax features.
  * 
  * If uri is not NULL, a pointer toa new raptor_uri is returned
  * that must be freed by the caller with raptor_free_uri().
@@ -1012,10 +1046,12 @@ raptor_features_enumerate(const raptor_feature feature,
 
 
 /**
- * raptor_set_feature - Set various parser features
- * @parser: &raptor_parser parser object
- * @feature: feature to set from enumerated &raptor_feature values
+ * raptor_set_feature:
+ * @parser: #raptor_parser parser object
+ * @feature: feature to set from enumerated #raptor_feature values
  * @value: integer feature value (0 or larger)
+ *
+ * Set various parser features.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -1082,10 +1118,12 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
 
 
 /**
- * raptor_parser_set_feature_string - Set parser features with string values
- * @parser: &raptor_parser parser object
- * @feature: feature to set from enumerated &raptor_feature values
+ * raptor_parser_set_feature_string:
+ * @parser: #raptor_parser parser object
+ * @feature: feature to set from enumerated #raptor_feature values
  * @value: feature value
+ *
+ * Set parser features with string values.
  * 
  * The allowed features are available via raptor_features_enumerate().
  * If the feature type is integer, the value is interpreted as an integer.
@@ -1106,9 +1144,11 @@ raptor_parser_set_feature_string(raptor_parser *parser,
 
 
 /**
- * raptor_get_feature - Get various parser features
- * @parser: &raptor_parser parser object
+ * raptor_get_feature:
+ * @parser: #raptor_parser parser object
  * @feature: feature to get value
+ *
+ * Get various parser features.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -1180,9 +1220,11 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 
 
 /**
- * raptor_parser_get_feature_string - Get parser features with string values
- * @parser: &raptor_parser parser object
+ * raptor_parser_get_feature_string:
+ * @parser: #raptor_parser parser object
  * @feature: feature to get value
+ *
+ * Get parser features with string values.
  * 
  * The allowed features are available via raptor_features_enumerate().
  * If a string is returned, it must be freed by the caller.
@@ -1202,9 +1244,11 @@ raptor_parser_get_feature_string(raptor_parser *parser,
 
 
 /**
- * raptor_set_parser_strict - Set parser to strict / lax mode
- * @rdf_parser: &raptor_parse object
+ * raptor_set_parser_strict:
+ * @rdf_parser: #raptor_parser object
  * @is_strict: Non 0 for strict parsing
+ *
+ * Set parser to strict / lax mode.
  * 
  **/
 void
@@ -1227,10 +1271,12 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
 
 
 /**
- * raptor_set_default_generate_id_parameters - Set default ID generation parameters
- * @rdf_parser: &raptor_parse object
+ * raptor_set_default_generate_id_parameters:
+ * @rdf_parser: #raptor_parser object
  * @prefix: prefix string
  * @base: integer base identifier
+ *
+ * Set default ID generation parameters.
  *
  * Sets the parameters for the default algorithm used to generate IDs.
  * The default algorithm uses both @prefix and @base to generate a new
@@ -1239,7 +1285,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
  * parts.
  *
  * For finer control of the generated identifiers, use
- * &raptor_set_default_generate_id_handler.
+ * raptor_set_default_generate_id_handler().
  *
  * If prefix is NULL, the default prefix is used (currently "genid")
  * If base is less than 1, it is initialised to 1.
@@ -1274,8 +1320,11 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
 
 
 /**
- * raptor_get_name: Return the short name for the parser
- * @parser: &raptor_parser parser object
+ * raptor_get_name:
+ * @rdf_parser: #raptor_parser parser object
+ *
+ * Return the short name for the parser.
+ *
  **/
 const char*
 raptor_get_name(raptor_parser *rdf_parser) 
@@ -1285,8 +1334,11 @@ raptor_get_name(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_get_label: Return a readable label for the parser
- * @parser: &raptor_parser parser object
+ * raptor_get_label:
+ * @rdf_parser: #raptor_parser parser object
+ *
+ * Return a readable label for the parser.
+ *
  **/
 const char*
 raptor_get_label(raptor_parser *rdf_parser) 
@@ -1296,8 +1348,10 @@ raptor_get_label(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_get_mime_type: Return MIME type for the parser
- * @parser: &raptor_parser parser object
+ * raptor_get_mime_type:
+ * @rdf_parser: #raptor_parser parser object
+ *
+ * Return MIME type for the parser.
  *
  * Return value: MIME type or NULL if none available
  **/
@@ -1309,8 +1363,10 @@ raptor_get_mime_type(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_parse_abort - Abort an ongoing parse
- * @parser: &raptor_parser parser object
+ * raptor_parse_abort:
+ * @rdf_parser: #raptor_parser parser object
+ *
+ * Abort an ongoing parse.
  * 
  * Causes any ongoing generation of statements by a parser to be
  * terminated and the parser to return controlto the application
@@ -1322,9 +1378,9 @@ raptor_get_mime_type(raptor_parser *rdf_parser)
  * requires to return to the main application code.
  **/
 void
-raptor_parse_abort(raptor_parser *parser)
+raptor_parse_abort(raptor_parser *rdf_parser)
 {
-  parser->failed=1;
+  rdf_parser->failed=1;
 }
 
 
@@ -1386,8 +1442,10 @@ raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag,
 
 
 /**
- * raptor_get_locator: Get the current raptor locator object
+ * raptor_get_locator:
  * @rdf_parser: raptor parser
+ *
+ * Get the current raptor locator object.
  * 
  * Return value: raptor locator
  **/
@@ -1427,12 +1485,14 @@ compare_syntax_score(const void *a, const void *b) {
   
 
 /**
- * raptor_guess_parser_name - guess a parser name for content
+ * raptor_guess_parser_name:
  * @uri: URI identifying the syntax (or NULL)
  * @mime_type: mime type identifying the content (or NULL)
  * @buffer: buffer of content to guess (or NULL)
  * @len: length of buffer
  * @identifier: identifier of content (or NULL)
+ *
+ * Guess a parser name for content.
  * 
  * Find a parser by scoring recognition of the syntax by a block of
  * characters, the content identifier or a mime type.  The content

@@ -94,7 +94,7 @@ raptor_www_libwww_fetch(raptor_www *www)
   HTChunk_delete(chunk);
   HTRequest_delete(request);
 
-  if(0) { /**/
+  if(0) { /* FIXME */
     raptor_www_error(www, "Failed");
     return 1;
   }

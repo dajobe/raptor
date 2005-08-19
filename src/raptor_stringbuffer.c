@@ -83,7 +83,9 @@ static int raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringb
 /* functions implementing the stringbuffer api */
 
 /**
- * raptor_new_stringbuffer - Create a new stringbuffer
+ * raptor_new_stringbuffer:
+ *
+ * Create a new stringbuffer.
  * 
  * Return value: non 0 on failure
  **/
@@ -99,7 +101,9 @@ raptor_new_stringbuffer(void)
 
 
 /**
- * raptor_free_stringbuffer - Destroy a stringbuffer
+ * raptor_free_stringbuffer:
+ *
+ * Destroy a stringbuffer.
  * 
  **/
 void
@@ -127,11 +131,13 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
 
 
 /**
- * raptor_stringbuffer_append_string_common - Add a string to the stringbuffer
+ * raptor_stringbuffer_append_string_common:
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
  * @do_copy: non-0 to copy the string
+ *
+ * Add a string to the stringbuffer.
  *
  * INTERNAL
  *
@@ -185,7 +191,7 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_append_counted_string - Add a string to the stringbuffer
+ * raptor_stringbuffer_append_counted_string:
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
@@ -194,6 +200,8 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
  * If do_copy is non-0, the passed-in string is copied into new memory
  * otherwise the stringbuffer becomes the owner of the string pointer
  * and will free it when the stringbuffer is destroyed.
+ *
+ * Add a string to the stringbuffer.
  *
  * Return value: non-0 on failure
  **/
@@ -207,10 +215,12 @@ raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer,
   
 
 /**
- * raptor_stringbuffer_append_string - Add a string to the stringbuffer
+ * raptor_stringbuffer_append_string:
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @do_copy: non-0 to copy the string
+ *
+ * Add a string to the stringbuffer.
  * 
  * If do_copy is non-0, the passed-in string is copied into new memory
  * otherwise the stringbuffer becomes the owner of the string pointer
@@ -227,9 +237,11 @@ raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_append_decimal - Add an integer in decimal to the stringbuffer
+ * raptor_stringbuffer_append_decimal:
  * @stringbuffer: raptor stringbuffer
  * @integer: integer to format as decimal and add
+ *
+ * Add an integer in decimal to the stringbuffer.
  * 
  * Return value: non-0 on failure
  **/
@@ -267,9 +279,11 @@ raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_append_stringbuffer - Add a stringbuffer to the stringbuffer
- * @stringbuffer: &raptor_stringbuffer
- * @append: &raptor_stringbuffer to append
+ * raptor_stringbuffer_append_stringbuffer:
+ * @stringbuffer: #raptor_stringbuffer
+ * @append: #raptor_stringbuffer to append
+ *
+ * Add a stringbuffer to the stringbuffer.
  *
  * This function removes the content from the appending stringbuffer,
  * making it empty and appends it to the supplied stringbuffer.
@@ -315,11 +329,13 @@ raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_prepend_string_common - Add a string to the start of a stringbuffer
+ * raptor_stringbuffer_prepend_string_common:
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
  * @do_copy: non-0 to copy the string
+ *
+ * Add a string to the start of a stringbuffer.
  *
  * INTERNAL
  *
@@ -372,7 +388,7 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_prepend_counted_string - Add a string to the start of the stringbuffer
+ * raptor_stringbuffer_prepend_counted_string:
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @length: length of string
@@ -381,6 +397,8 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
  * If do_copy is non-0, the passed-in string is copied into new memory
  * otherwise the stringbuffer becomes the owner of the string pointer
  * and will free it when the stringbuffer is destroyed.
+ *
+ * Add a string to the start of the stringbuffer.
  *
  * Return value: non-0 on failure
  **/
@@ -394,10 +412,12 @@ raptor_stringbuffer_prepend_counted_string(raptor_stringbuffer* stringbuffer,
   
 
 /**
- * raptor_stringbuffer_prepend_string - Add a string to the start of the stringbuffer
+ * raptor_stringbuffer_prepend_string:
  * @stringbuffer: raptor stringbuffer
  * @string: string
  * @do_copy: non-0 to copy the string
+ *
+ * Add a string to the start of the stringbuffer.
  * 
  * If do_copy is non-0, the passed-in string is copied into new memory
  * otherwise the stringbuffer becomes the owner of the string pointer
@@ -414,8 +434,10 @@ raptor_stringbuffer_prepend_string(raptor_stringbuffer* stringbuffer,
 
 
 /**
- * raptor_stringbuffer_length - Return the stringbuffer length
+ * raptor_stringbuffer_length:
  * @stringbuffer: raptor stringbuffer
+ *
+ * Return the stringbuffer length.
  * 
  * Return value: size of stringbuffer
  **/
@@ -428,8 +450,10 @@ raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer)
 
 
 /**
- * raptor_stringbuffer_as_string - Return the stringbuffer as a C string
+ * raptor_stringbuffer_as_string:
  * @stringbuffer: raptor stringbuffer
+ *
+ * Return the stringbuffer as a C string.
  * 
  * Note: the return value is a to a shared string that the stringbuffer
  * allocates and manages.
@@ -465,10 +489,12 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
 
 
 /**
- * raptor_stringbuffer_copy_to_string - Copy the stringbuffer into a string
+ * raptor_stringbuffer_copy_to_string:
  * @stringbuffer: raptor stringbuffer
  * @string: output string
  * @length: size of output string
+ *
+ * Copy the stringbuffer into a string.
  * 
  * Copies the underlying string to a pre-allocated buffer.  The
  * output string is always '\0' terminated.

@@ -50,8 +50,10 @@
 #ifndef STANDALONE
 
 /**
- * raptor_new_uri_detail - Create a URI detailed structure from a URI string
+ * raptor_new_uri_detail:
  * @uri_string: The URI string to split
+ *
+ * Create a URI detailed structure from a URI string.
  * 
  **/
 raptor_uri_detail*
@@ -245,11 +247,13 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
 
 
 /**
- * raptor_uri_resolve_uri_reference - Resolve a URI to a base URI
+ * raptor_uri_resolve_uri_reference:
  * @base_uri: Base URI string
  * @reference_uri: Reference URI string
  * @buffer: Destination buffer URI
  * @length: Length of destination buffer
+ *
+ * Resolve a URI to a base URI.
  * 
  **/
 void

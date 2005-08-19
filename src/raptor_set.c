@@ -156,13 +156,15 @@ static int raptor_base_id_set_expand_size(raptor_base_id_set* set);
 
 
 /**
- * raptor_id_set_find_node - Find the node for the given item with optional hash
+ * raptor_id_set_find_node:
  * @set: the memory set context
  * @item: item string
  * @item_len: item string length
  * @hash: hash value or 0 if it should be computed here
+ *
+ * Find the node for the given item with optional hash.
  * 
- * Return value: &raptor_id_set_node of content or NULL on failure
+ * Return value: #raptor_id_set_node of content or NULL on failure
  **/
 static raptor_id_set_node*
 raptor_base_id_set_find_node(raptor_base_id_set* base, 
@@ -274,7 +276,9 @@ raptor_base_id_set_expand_size(raptor_base_id_set* base) {
 /* functions implementing the ID set api */
 
 /**
- * raptor_new_id_set - Create a new ID set
+ * raptor_new_id_set:
+ *
+ * Constructor - create a new ID set.
  * 
  * Return value: non 0 on failure
  **/
@@ -291,8 +295,11 @@ raptor_new_id_set(void)
 
 
 /**
- * raptor_free_base_id_set - Destroy raptor_base_id_set
- * @set: &raptor_id_set
+ * raptor_free_base_id_set:
+ * @set: #raptor_base_id_set
+ *
+ * Destructor - destroy an raptor_base_id_set.
+ *
  **/
 static void
 raptor_free_base_id_set(raptor_base_id_set *base) 
@@ -328,8 +335,10 @@ raptor_free_base_id_set(raptor_base_id_set *base)
 
 
 /**
- * raptor_free_id_set - Destroy a set
- * @set: &raptor_id_set
+ * raptor_free_id_set:
+ * @set: #raptor_id_set
+ *
+ * Destroy a set.
  *
  **/
 void
@@ -347,11 +356,13 @@ raptor_free_id_set(raptor_id_set *set)
 
 
 /**
- * raptor_id_set_add: - Add an item to the set
- * @set: &raptor_id_set
- * @base_uri: base &raptor_uri of identifier
+ * raptor_id_set_add:
+ * @set: #raptor_id_set
+ * @base_uri: base #raptor_uri of identifier
  * @id: identifier name
  * @id_len: length of identifier
+ *
+ * Add an item to the set.
  * 
  * Return value: <0 on failure, 0 on success, 1 if already present
  **/

@@ -341,9 +341,11 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
 
 
 /**
- * raptor_valid_xml_ID - check the string matches the xml:ID value constraints
+ * raptor_valid_xml_ID:
  * @rdf_parser: RDF parser
  * @string: The string to check.
+ *
+ * Check the string matches the xml:ID value constraints.
  *
  * This checks the syntax part of the xml:ID validity constraint,
  * that it matches [ VC: Name Token ] as amended by XML Namespaces:
@@ -367,35 +369,44 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 
 
 /**
- * raptor_xml_escape_string - return an XML-escaped version a string
+ * raptor_xml_escape_string:
  * @string: string to XML escape (UTF-8)
  * @len: length of string
  * @buffer: the buffer to use for new string (UTF-8)
  * @length: buffer size
  * @quote: optional quote character to escape for attribute content, or 0
+ *
+ * Return an XML-escaped version a string.
  * 
  * Follows Canonical XML rules on Text Nodes and Attribute Nodes
  *   http://www.w3.org/TR/xml-c14n#ProcessingModel
  *
  * Both:
- *   Replaces & and < with &amp; and &lt; respectively, preserving other
- *   characters.
+ *   Replaces <literal>&amp;</literal> and <literal>&lt;</literal>
+ *   with <literal>&amp;amp;</literal> and <literal>&lt;lt;</literal>
+ * respectively, preserving other characters.
  * 
  * Text Nodes:
- *   > is turned into &gt; #xD is turned into &#xD;
+ *   <literal>&gt;</literal> is turned into <literal>&amp;gt;</literal>
+ *   #D is turned into <literal>&amp;#xD;</literal>
  *
  * Attribute Nodes:
- *   > is generated not &gt.  #x9, #xA and #xD are turned into
- *   &#x9; &#xA; and &#xD; entities.
+ *   <literal>&gt;</literal> is generated not <literal>&amp;gt</literal>.
+ *   #9, #A and #D are turned into
+ *   <literal>&amp;#9;</literal>,
+ *   <literal>&amp;#A;</literal> and
+ *   <literal>&amp;#D;</literal>
+ *   entities.
  *
- * If quote is given it can be either of '\'' or '\"'
- * which will be turned into &apos; or &quot; respectively.
+ * If @quote is given it can be either of '\'' or '\"'
+ * which will be turned into <literal>&amp;apos;</literal> or
+ * <literal>&amp;quot;</literal> respectively.
  * ASCII NUL ('\0') or any other character will not be escaped.
  * 
- * If buffer is NULL, no work is done but the size of buffer
+ * If @buffer is NULL, no work is done but the size of buffer
  * required is returned.  The output in buffer remains in UTF-8.
  *
- * If the input string is empty, a single NUL will be written to the
+ * If the input @string is empty, a single NUL will be written to the
  * buffer.
  *
  * Return value: the number of bytes required / used or <0 on failure.
@@ -507,32 +518,19 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
 
 
 /**
- * raptor_iostream_write_xml_escaped_string - write an XML-escaped version of a string to an iostream
+ * raptor_iostream_write_xml_escaped_string:
  * @string: string to XML escape (UTF-8)
  * @len: length of string
  * @quote: optional quote character to escape for attribute content, or 0
- * @iostr: the &raptor_iostream to write to
+ * @iostr: the #raptor_iostream to write to
  * @error_handler: error handler function
  * @error_data: error handler data
- * 
- * Follows Canonical XML rules on Text Nodes and Attribute Nodes
- *   http://www.w3.org/TR/xml-c14n#ProcessingModel
  *
- * Both:
- *   Replaces & and < with &amp; and &lt; respectively, preserving other
- *   characters.
+ * Write an XML-escaped version of a string to an iostream.
  * 
- * Text Nodes:
- *   > is turned into &gt; #xD is turned into &#xD;
+ * See raptor_xml_escape_string() for the escapes performed and
+ * the conditions on @quote and @string.
  *
- * Attribute Nodes:
- *   > is generated not &gt.  #x9, #xA and #xD are turned into
- *   &#x9; &#xA; and &#xD; entities.
- *
- * If quote is given it can be either of '\'' or '\"'
- * which will be turned into &apos; or &quot; respectively.
- * ASCII NUL ('\0') or any other character will not be escaped.
- * 
  * Return value: non 0 on failure
  **/
 int
@@ -594,10 +592,12 @@ raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
 
 
 /**
- * raptor_xml_name_check - Check a string is a legal XML name (and legal UTF8)
+ * raptor_xml_name_check:
  * @string: UTF-8 name string
  * @length: length of string
  * @xml_version: XML version
+ *
+ * Check a string is a legal XML name (and legal UTF8).
  * 
  * xml_version is either 10 (for XML 1.0) or 11 for (XML 1.1). Any
  * other version fails.

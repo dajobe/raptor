@@ -84,7 +84,9 @@ typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
 
 
 /**
- * raptor_ntriples_parse_init - Initialise the Raptor NTriples parser
+ * raptor_ntriples_parse_init:
+ *
+ * Initialise the Raptor NTriples parser.
  *
  * Return value: non 0 on failure
  **/

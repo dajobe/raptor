@@ -724,9 +724,10 @@ raptor_rdfxmla_emit(raptor_serializer *serializer)
 }
 
 
-/*****************************************************************************
- * raptor_node implementation                                                *
- *****************************************************************************/
+/*
+ * raptor_node implementation
+ *
+ **/
 
 static raptor_node *
 raptor_new_node(raptor_identifier_type node_type, const void *node_data,
@@ -978,9 +979,9 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
 }
 
 
-/*****************************************************************************
- * raptor_subject implementation                                             *
- *****************************************************************************/
+/*
+ * raptor_subject implementation
+ **/
 
 static raptor_subject *
 raptor_new_subject(raptor_node *node)
@@ -1157,9 +1158,9 @@ raptor_print_subject(raptor_subject *subject)
 }
 #endif
 
-/******************************************************************************
- * raptor rdfxml-abbrev implementation                                        *
- ******************************************************************************/
+/*
+ * raptor rdfxml-abbrev implementation
+ */
 
 static raptor_node *
 raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,

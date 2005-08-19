@@ -85,19 +85,21 @@
  */
 
 /**
- * raptor_new_qname - Create a new XML qname
+ * raptor_new_qname:
  * @nstack: namespace stack to look up for namespaces
  * @name: element or attribute name
  * @value: attribute value (else is an element)
  * @error_handler: function to call on an error
  * @error_data: user data for error function
+ *
+ * Create a new XML qname.
  * 
  * Create a new qname from the local element/attribute name,
  * with optional (attribute) value.  The namespace stack is used
  * to look up the name and find the namespace and generate the
  * URI of the qname.
  * 
- * Return value: a new &raptor_qname object or NULL on failure
+ * Return value: a new #raptor_qname object or NULL on failure
  **/
 raptor_qname*
 raptor_new_qname(raptor_namespace_stack *nstack, 
@@ -221,15 +223,17 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
 
 /**
- * raptor_new_qname_from_namespace_local_name - Create a new XML qname
+ * raptor_new_qname_from_namespace_local_name:
  * @ns: namespace of qname
  * @local_name: element or attribute name
  * @value: attribute value (else is an element)
+ *
+ * Create a new XML qname.
  * 
  * Create a new qname from the namespace and local element/attribute name,
  * with optional (attribute) value.
  * 
- * Return value: a new &raptor_qname object or NULL on failure
+ * Return value: a new #raptor_qname object or NULL on failure
  **/
 raptor_qname*
 raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, 
@@ -280,11 +284,13 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
 
 
 /**
- * raptor_qname_copy - Copy an new XML qname
+ * raptor_qname_copy:
  * @qname: existing qname
+ *
+ * Copy an new XML qname.
  * 
  *
- * Return value: a new &raptor_qname object or NULL on failure
+ * Return value: a new #raptor_qname object or NULL on failure
  **/
 raptor_qname*
 raptor_qname_copy(raptor_qname *qname) {
@@ -372,12 +378,14 @@ raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
 
 
 /**
- * raptor_qname_string_to_uri - get the URI for a qname
- * @nstack: &raptor_namespace_stack to decode the namespace
+ * raptor_qname_string_to_uri:
+ * @nstack: #raptor_namespace_stack to decode the namespace
  * @name: QName string or NULL
  * @name_len: QName string length
  * @error_handler: function to call on an error
  * @error_data: user data for error function
+ *
+ * Get the URI for a qname.
  * 
  * Utility function to turn a string representing a QName in the
  * N3 style, into a new URI representing it.  A NULL name or name ":"
@@ -391,7 +399,7 @@ raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
  * but without making the qname, and it also handles the NULL and
  * ":" name cases as well as error checking.
  *
- * Return value: new &raptor_uri object or NULL on failure
+ * Return value: new #raptor_uri object or NULL on failure
  **/
 raptor_uri*
 raptor_qname_string_to_uri(raptor_namespace_stack *nstack, 

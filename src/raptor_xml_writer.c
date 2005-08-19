@@ -394,8 +394,10 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
 
 
 /**
- * raptor_free_xml_writer: Free XML writer content
+ * raptor_free_xml_writer:
  * @xml_writer: XML writer object
+ *
+ * Free XML writer content.
  * 
  **/
 void
@@ -409,9 +411,11 @@ raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 
 
 /**
- * raptor_xml_writer_empty_element - Write an empty XML element to the XML writer
+ * raptor_xml_writer_empty_element:
  * @xml_writer: XML writer object
  * @element: XML element object
+ *
+ * Write an empty XML element to the XML writer.
  * 
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -437,9 +441,11 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_start_element - Write a start XML element to the XML writer
+ * raptor_xml_writer_start_element:
  * @xml_writer: XML writer object
  * @element: XML element object
+ *
+ * Write a start XML element to the XML writer.
  *
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -482,9 +488,11 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_end_element - Write an end XML element to the XML writer
+ * raptor_xml_writer_end_element:
  * @xml_writer: XML writer object
  * @element: XML element object
+ *
+ * Write an end XML element to the XML writer.
  *
  * Indents the end element if XML writer feature AUTO_INDENT is enabled.
  **/
@@ -512,9 +520,11 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_cdata - Write CDATA XML-escaped to the XML writer
+ * raptor_xml_writer_cdata:
  * @xml_writer: XML writer object
  * @s: string to XML escape and write
+ *
+ * Write CDATA XML-escaped to the XML writer.
  *
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -538,10 +548,12 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_cdata_counted - Write counted CDATA XML-escaped to the XML writer
+ * raptor_xml_writer_cdata_counted:
  * @xml_writer: XML writer object
  * @s: string to XML escape and write
  * @len: length of string
+ *
+ * Write counted CDATA XML-escaped to the XML writer.
  *
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -565,9 +577,11 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_raw - Write a string raw to the XML writer
+ * raptor_xml_writer_raw:
  * @xml_writer: XML writer object
  * @s: string to write
+ *
+ * Write a string raw to the XML writer.
  *
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -587,10 +601,12 @@ raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_raw_counted - Write a counted string raw to the XML writer
+ * raptor_xml_writer_raw_counted:
  * @xml_writer: XML writer object
  * @s: string to write
  * @len: length of string
+ *
+ * Write a counted string raw to the XML writer.
  *
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -610,9 +626,11 @@ raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_comment - Write an XML comment to the XML writer
+ * raptor_xml_writer_comment:
  * @xml_writer: XML writer object
  * @s: comment string to write
+ *
+ * Write an XML comment to the XML writer.
  *
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -631,10 +649,12 @@ raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_comment - Write a counted XML comment to the XML writer
+ * raptor_xml_writer_comment_counted:
  * @xml_writer: XML writer object
  * @s: comment string to write
  * @len: length of string
+ *
+ * Write a counted XML comment to the XML writer.
  *
  * Closes any previous empty element if XML writer feature AUTO_EMPTY
  * is enabled.
@@ -653,11 +673,13 @@ raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_features_enumerate - Get list of xml_writer features
- * @counter: feature enumeration (0+)
+ * raptor_xml_writer_features_enumerate:
+ * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
  * @uri: pointer to store feature URI (or NULL)
  * @label: pointer to feature label (or NULL)
+ *
+ * Get list of xml_writer features.
  * 
  * If uri is not NULL, a pointer toa new raptor_uri is returned
  * that must be freed by the caller with raptor_free_uri().
@@ -674,10 +696,12 @@ raptor_xml_writer_features_enumerate(const raptor_feature feature,
 
 
 /**
- * raptor_set_xml_writer_feature - Set xml_writer features with integer values
- * @xml_writer: &raptor_xml_writer xml_writer object
- * @feature: feature to set from enumerated &raptor_feature values
+ * raptor_set_xml_writer_feature:
+ * @xml_writer: #raptor_xml_writer xml_writer object
+ * @feature: feature to set from enumerated #raptor_feature values
  * @value: integer feature value (0 or larger)
+ *
+ * Set xml_writer features with integer values.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -735,10 +759,12 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
 
 
 /**
- * raptor_xml_writer_set_feature_string - Set xml_writer features with string values
- * @xml_writer: &raptor_xml_writer xml_writer object
- * @feature: feature to set from enumerated &raptor_feature values
+ * raptor_xml_writer_set_feature_string:
+ * @xml_writer: #raptor_xml_writer xml_writer object
+ * @feature: feature to set from enumerated #raptor_feature values
  * @value: feature value
+ *
+ * Set xml_writer features with string values.
  * 
  * The allowed features are available via raptor_xml_writer_features_enumerate().
  * If the feature type is integer, the value is interpreted as an integer.
@@ -760,9 +786,11 @@ raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer,
 
 
 /**
- * raptor_xml_writer_get_feature - Get various xml_writer features
- * @xml_writer: &raptor_xml_writer serializer object
+ * raptor_xml_writer_get_feature:
+ * @xml_writer: #raptor_xml_writer serializer object
  * @feature: feature to get value
+ *
+ * Get various xml_writer features.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -814,9 +842,11 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
 
 
 /**
- * raptor_xml_writer_get_feature_string - Get xml_writer features with string values
- * @xml_writer: &raptor_xml_writer serializer object
+ * raptor_xml_writer_get_feature_string:
+ * @xml_writer: #raptor_xml_writer serializer object
  * @feature: feature to get value
+ *
+ * Get xml_writer features with string values.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *

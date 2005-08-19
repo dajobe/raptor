@@ -196,8 +196,10 @@ raptor_serializer_register_factory(const char *name, const char *label,
 
 
 /**
- * raptor_get_serializer_factory - Get a serializer factory by name
+ * raptor_get_serializer_factory:
  * @name: the factory name or NULL for the default factory
+ *
+ * Get a serializer factory by name.
  * 
  * Return value: the factory object or NULL if there is no such factory
  **/
@@ -231,12 +233,14 @@ raptor_get_serializer_factory (const char *name)
 
 
 /**
- * raptor_serializers_enumerate - Get information on syntax serializers
+ * raptor_serializers_enumerate:
  * @counter: index into the list of syntaxes
  * @name: pointer to store the name of the syntax (or NULL)
  * @label: pointer to store syntax readable label (or NULL)
  * @mime_type: pointer to store syntax MIME Type (or NULL)
  * @uri_string: pointer to store syntax URI string (or NULL)
+ *
+ * Get information on syntax serializers.
  * 
  * Return value: non 0 on failure of if counter is out of range
  **/
@@ -270,8 +274,10 @@ raptor_serializers_enumerate(const unsigned int counter,
 }
 
 /**
- * raptor_serializer_syntax_name_check -  Check name of a serializer
+ * raptor_serializer_syntax_name_check:
  * @name: the syntax name
+ *
+ * Check name of a serializer.
  *
  * Return value: non 0 if name is a known syntax name
  */
@@ -285,7 +291,7 @@ raptor_serializer_syntax_name_check(const char *name) {
  * raptor_new_serializer - Constructor - create a new raptor_serializer object
  * @name: the serializer name
  *
- * Return value: a new &raptor_serializer object or NULL on failure
+ * Return value: a new #raptor_serializer object or NULL on failure
  */
 raptor_serializer*
 raptor_new_serializer(const char *name) {
@@ -325,9 +331,9 @@ raptor_new_serializer(const char *name) {
 
 /**
  * raptor_serialize_start: Start serialization with given base URI
- * @rdf_serializer:  the &raptor_serializer
+ * @rdf_serializer:  the #raptor_serializer
  * @uri: base URI or NULL if no base URI is required
- * @iostream: &raptor_iostream to write serialization to
+ * @iostream: #raptor_iostream to write serialization to
  * 
  * Return value: non-0 on failure.
  **/
@@ -357,9 +363,11 @@ raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri,
 
 
 /**
- * raptor_serialize_start_to_filename: Start serializing to a filename
- * @rdf_serializer:  the &raptor_serializer
+ * raptor_serialize_start_to_filename:
+ * @rdf_serializer:  the #raptor_serializer
  * @filename:  filename to serialize to
+ *
+ * Start serializing to a filename.
  * 
  * Return value: non-0 on failure.
  **/
@@ -392,11 +400,13 @@ raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
 
 
 /**
- * raptor_serialize_start_to_string: Start serializing to a string
- * @rdf_serializer:  the &raptor_serializer
+ * raptor_serialize_start_to_string:
+ * @rdf_serializer:  the #raptor_serializer
  * @uri: base URI or NULL if no base URI is required
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
+ *
+ * Start serializing to a string.
  * 
  * Return value: non-0 on failure.
  **/
@@ -428,10 +438,12 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
 
 
 /**
- * raptor_serialize_start_to_file_handle: Start serializing to a FILE*
- * @rdf_serializer:  the &raptor_serializer
+ * raptor_serialize_start_to_file_handle:
+ * @rdf_serializer:  the #raptor_serializer
  * @uri: base URI or NULL if no base URI is required
  * @fh:  FILE* to serialize to
+ *
+ * Start serializing to a FILE*.
  * 
  * NOTE: This does not fclose the handle when it is finished.
 8
@@ -462,10 +474,12 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
 
 
 /**
- * raptor_serialize_set_namespace: Set a namespace URI/prefix mapping
- * @rdf_serializer: the &raptor_serializer
- * @uri: &raptor_uri of namespace
+ * raptor_serialize_set_namespace:
+ * @rdf_serializer: the #raptor_serializer
+ * @uri: #raptor_uri of namespace
  * @prefix: prefix to use
+ *
+ * Set a namespace URI/prefix mapping.
  * 
  * Return value: non-0 on failure.
  **/
@@ -482,9 +496,11 @@ raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
 
 
 /**
- * raptor_start_serialize: Serialize a statement
- * @rdf_serializer: the &raptor_serializer
- * @statement: &raptor_statement to serialize to a syntax
+ * raptor_start_serialize:
+ * @rdf_serializer: the #raptor_serializer
+ * @statement: #raptor_statement to serialize to a syntax
+ *
+ * Serialize a statement.
  * 
  * Return value: non-0 on failure.
  **/
@@ -498,8 +514,10 @@ raptor_serialize_statement(raptor_serializer* rdf_serializer,
 
 
 /**
- * raptor_serialize_end: End a serialization
- * @rdf_serializer:  the &raptor_serializer
+ * raptor_serialize_end:
+ * @rdf_serializer:  the #raptor_serializer
+ *
+ * End a serialization.
  * 
  * Return value: non-0 on failure.
  **/
@@ -526,8 +544,10 @@ raptor_serialize_end(raptor_serializer *rdf_serializer)
 
 
 /**
- * raptor_free_serializer - Destructor - destroy a raptor_serializer object
- * @serializer: &raptor_serializer object
+ * raptor_free_serializer:
+ * @rdf_serializer: #raptor_serializer object
+ *
+ * Destructor - destroy a raptor_serializer object.
  * 
  **/
 void
@@ -550,8 +570,10 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
 
 
 /**
- * raptor_serializer_get_iostream - Get the current serializer iostream
- * @serializer: &raptor_serializer object
+ * raptor_serializer_get_iostream:
+ * @serializer: #raptor_serializer object
+ *
+ * Get the current serializer iostream.
  *
  * Return value: the serializer's current iostream or NULL if 
  **/
@@ -564,11 +586,13 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
 
 
 /**
- * raptor_serializer_features_enumerate - Get list of serializer features
- * @counter: feature enumeration (0+)
+ * raptor_serializer_features_enumerate:
+ * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
  * @uri: pointer to store feature URI (or NULL)
  * @label: pointer to feature label (or NULL)
+ *
+ * Get list of serializer features.
  * 
  * If uri is not NULL, a pointer toa new raptor_uri is returned
  * that must be freed by the caller with raptor_free_uri().
@@ -585,10 +609,12 @@ raptor_serializer_features_enumerate(const raptor_feature feature,
 
 
 /**
- * raptor_set_serializer_feature - Set serializer features with integer values
- * @serializer: &raptor_serializer serializer object
- * @feature: feature to set from enumerated &raptor_feature values
+ * raptor_set_serializer_feature:
+ * @serializer: #raptor_serializer serializer object
+ * @feature: feature to set from enumerated #raptor_feature values
  * @value: integer feature value (0 or larger)
+ *
+ * Set serializer features with integer values.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -637,10 +663,12 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
 
 
 /**
- * raptor_serializer_set_feature_string - Set serializer features with string values
- * @serializer: &raptor_serializer serializer object
- * @feature: feature to set from enumerated &raptor_feature values
+ * raptor_serializer_set_feature_string:
+ * @serializer: #raptor_serializer serializer object
+ * @feature: feature to set from enumerated #raptor_feature values
  * @value: feature value
+ *
+ * Set serializer features with string values.
  * 
  * The allowed features are available via raptor_serializer_features_enumerate().
  * If the feature type is integer, the value is interpreted as an integer.
@@ -697,9 +725,11 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
 
 
 /**
- * raptor_serializer_get_feature - Get various serializer features
- * @serializer: &raptor_serializer serializer object
+ * raptor_serializer_get_feature:
+ * @serializer: #raptor_serializer serializer object
  * @feature: feature to get value
+ *
+ * Get various serializer features.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -748,9 +778,11 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
 
 
 /**
- * raptor_serializer_get_feature_string - Get serializer features with string values
- * @serializer: &raptor_serializer serializer object
+ * raptor_serializer_get_feature_string:
+ * @serializer: #raptor_serializer serializer object
  * @feature: feature to get value
+ *
+ * Get serializer features with string values.
  * 
  * The allowed features are available via raptor_features_enumerate().
  *
@@ -915,10 +947,12 @@ raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *mes
 
 
 /**
- * raptor_serializer_set_error_handler - Set the serializer error handling function
+ * raptor_serializer_set_error_handler:
  * @serializer: the serializer
  * @user_data: user data to pass to function
  * @handler: pointer to the function
+ *
+ * Set the serializer error handling function.
  * 
  * The function will receive callbacks when the serializer fails.
  * 
@@ -934,10 +968,12 @@ raptor_serializer_set_error_handler(raptor_serializer* serializer,
 
 
 /**
- * raptor_serializer_set_warning_handler - Set the serializer warning handling function
+ * raptor_serializer_set_warning_handler:
  * @serializer: the serializer
  * @user_data: user data to pass to function
  * @handler: pointer to the function
+ *
+ * Set the serializer warning handling function.
  * 
  * The function will receive callbacks when the serializer fails.
  * 
@@ -953,8 +989,10 @@ raptor_serializer_set_warning_handler(raptor_serializer* serializer,
 
 
 /**
- * raptor_serializer_get_locator: Get the serializer raptor locator object
+ * raptor_serializer_get_locator:
  * @rdf_serializer: raptor serializer
+ *
+ * Get the serializer raptor locator object.
  * 
  * Return value: raptor locator
  **/
@@ -1464,12 +1502,14 @@ raptor_ntriples_serialize_start(raptor_serializer* serializer)
 
 
 /**
- * raptor_iostream_write_string_ntriples - Write an UTF-8 string using N-Triples escapes to an iostream
- * @iostr: &raptor_iostream to write to
+ * raptor_iostream_write_string_ntriples:
+ * @iostr: #raptor_iostream to write to
  * @string: UTF-8 string to write
  * @len: length of UTF-8 string
  * @delim: Terminating delimiter character for string (such as " or >)
  * or \0 for no escaping.
+ *
+ * Write an UTF-8 string using N-Triples escapes to an iostream.
  * 
  * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/

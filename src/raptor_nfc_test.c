@@ -51,10 +51,11 @@
 #undef RAPTOR_NFC_DECODE_DEBUG
 
 
-/**
- * utf8_string: destination utf8 buffer (FIXME big enough!)
- * unicode_string: first char of string
- * end: last char of unicode_string
+/*
+ * decode_to_utf8:
+ * @utf8_string: destination utf8 buffer (FIXME big enough!)
+ * @unicode_string: first char of string
+ * @end: last char of unicode_string
  */
 static int
 decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,

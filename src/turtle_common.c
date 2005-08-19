@@ -57,7 +57,7 @@
  * @delim: delimiter for string - only ' or " allowed
  * @error_handler: error handling function
  * @error_data: error handler data
- * 
+ *
  * Append to a stringbuffer a Turtle-escaped string.
  *
  * The passed in string is handled according to the Turtle string
