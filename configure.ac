@@ -958,18 +958,23 @@ AC_MSG_RESULT($www_libraries_available)
 
 AC_MSG_CHECKING(WWW library to use)
 www_library=
+RAPTOR_WWW_LIBRARY=none
 if test $need_libcurl = 1; then
   www_library="libcurl $LIBCURL_VERSION"
+  RAPTOR_WWW_LIBRARY=libcurl
 elif test $need_libxml_www = 1; then
   if test $need_libxml_source = 1; then
     www_library="libxml(source)"
   else
     www_library="libxml(system $LIBXML_VERSION)"
   fi
+  RAPTOR_WWW_LIBRARY=libxml
 elif test $need_libwww = 1; then
   www_library="libwww $LIBWWW_VERSION"
+  RAPTOR_WWW_LIBRARY=libwww
 elif test $need_libfetch = 1; then
   www_library="libfetch"
+  RAPTOR_WWW_LIBRARY=libfetch
 else
   www_library=none
 fi
@@ -1060,6 +1065,7 @@ if test $need_libfetch = 1; then
 fi
 
 
+RAPTOR_XML_PARSER=none
 if test $need_libxml = 1; then
 
   if test $need_libxml_www = 1; then
@@ -1074,6 +1080,7 @@ if test $need_libxml = 1; then
     LIBS="$LIBS `$XML_CONFIG --libs`"
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
   fi
+  RAPTOR_XML_PARSER=libxml
 fi
 
 
@@ -1093,6 +1100,7 @@ if test $need_expat = 1; then
   else
     LIBS="$LIBS $expat_libs"
   fi
+  RAPTOR_XML_PARSER=expat
 fi
 
 if test $need_libxslt = 1; then
@@ -1169,6 +1177,16 @@ ECHO_N="$ECHO_N"
 ECHO_C="$ECHO_C"
 AC_SUBST(ECHO_N)
 AC_SUBST(ECHO_C)
+
+# Features
+# lists
+RAPTOR_PARSERS=$rdf_parsers_enabled
+AC_SUBST(RAPTOR_PARSERS)
+RAPTOR_SERIALIZERS=$rdf_serializers_enabled
+AC_SUBST(RAPTOR_SERIALIZERS)
+# single values or nonoe
+AC_SUBST(RAPTOR_WWW_LIBRARY)
+AC_SUBST(RAPTOR_XML_PARSER)
 
 abs_top_srcdir=`cd $srcdir; pwd`
 AC_SUBST(abs_top_srcdir)
