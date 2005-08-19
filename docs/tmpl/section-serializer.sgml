@@ -4,7 +4,6 @@ Serializer
 <!-- ##### SECTION Short_Description ##### -->
 RDF serializers - from RDF triples to a syntax
 
-
 <!-- ##### SECTION Long_Description ##### -->
 <para>
 The serializing class that allows creating a serializer for
