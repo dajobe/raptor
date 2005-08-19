@@ -124,8 +124,21 @@ typedef struct raptor_namespace_stack_s raptor_namespace_stack;
 /* OLD structure - can't deprecate a typedef */
 typedef raptor_parser raptor_ntriples_parser;
 
+/*
+ * raptor_identifier_type:
+ * @RAPTOR_IDENTIFIER_TYPE_RESOURCE:    Resource URI (e.g. rdf:about)
+ * @RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:   _:foo N-Triples, or generated
+ * @RAPTOR_IDENTIFIER_TYPE_LITERAL:     regular literal
+ * @RAPTOR_IDENTIFIER_TYPE_XML_LITERAL: rdf:parseType="Literal"
+ * @RAPTOR_IDENTIFIER_TYPE_PREDICATE:   predicate URI
+ * @RAPTOR_IDENTIFIER_TYPE_ORDINAL:     rdf:li, rdf:_<n>
+ * @RAPTOR_IDENTIFIER_TYPE_UNKNOWN:     Internal
+ *
+ * Type of identifier in a #raptor_statement
+ *
+ */
 typedef enum {
-  RAPTOR_IDENTIFIER_TYPE_UNKNOWN,             /* Unknown type - illegal */
+  RAPTOR_IDENTIFIER_TYPE_UNKNOWN,
   RAPTOR_IDENTIFIER_TYPE_RESOURCE,            /* Resource URI (e.g. rdf:about) */
   RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,           /* _:foo N-Triples, or generated */
   RAPTOR_IDENTIFIER_TYPE_PREDICATE,           /* Predicate URI */
@@ -134,11 +147,49 @@ typedef enum {
   RAPTOR_IDENTIFIER_TYPE_XML_LITERAL          /* rdf:parseType="Literal" */
 } raptor_identifier_type;
 
+
+/*
+ * raptor_uri_source:
+ * RAPTOR_URI_SOURCE_UNKNOWN: Internal
+ * @RAPTOR_URI_SOURCE_NOT_URI: Internal
+ * @RAPTOR_URI_SOURCE_ELEMENT: Internal
+ * @RAPTOR_URI_SOURCE_ATTRIBUTE: Internal
+ * @RAPTOR_URI_SOURCE_ID: Internal
+ * @RAPTOR_URI_SOURCE_URI: Internal
+ * @RAPTOR_URI_SOURCE_GENERATED: Internal
+ * @RAPTOR_URI_SOURCE_BLANK_ID: Internal
+ *
+ * Internal: Where a URI or identifier was derived from
+ *
+ * Likely to be deprecated in future releases.
+ */
+
 typedef enum { RAPTOR_URI_SOURCE_UNKNOWN, RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED, RAPTOR_URI_SOURCE_BLANK_ID } raptor_uri_source;
 
+/**
+ * raptor_ntriples_term_type:
+ * @RAPTOR_NTRIPLES_TERM_TYPE_URI_REF: Internal
+ * @RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE: Internal
+ * @RAPTOR_NTRIPLES_TERM_TYPE_LITERAL: I
+ *
+ * N-Triples term types
+ * 
+ * Used for the deprecated function raptor_ntriples_term_as_string() only.
+ *
+ */
 typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE, RAPTOR_NTRIPLES_TERM_TYPE_LITERAL } raptor_ntriples_term_type;
 
 
+/**
+ * raptor_locator:
+ * @uri: URI of location (or NULL)
+ * @file: Filename of location (or NULL)
+ * @line: Line number of location (or <0 for no line)
+ * @column: Column number of location (or <0 for line)
+ * @byte: Byte number of location (or <0 for line)
+ *
+ * Location information for an error, warning or information message.
+ */
 typedef struct {
   raptor_uri *uri;
   const char *file;
@@ -147,7 +198,59 @@ typedef struct {
   int byte;  
 } raptor_locator;
 
+/**
+ * raptor_feature:
 
+ * @RAPTOR_FEATURE_SCANNING: If true (default false), the RDF/XML
+ *   parser will look for embedded rdf:RDF elements inside the XML
+ *   content, and not require that the XML start with an rdf:RDF root
+ *   element.
+ * @RAPTOR_FEATURE_ASSUME_IS_RDF: If true (default false) then the
+ *   RDF/XML parser will assume the content is RDF/XML, not require
+ *   that rdf:RDF root element, and immediately interpret the content
+ *   as RDF/XML.
+ * @RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES: If true (default true)
+ *   then the RDF/XML parser will allow non-XML namespaced attributes
+ *   to be accepted as well as rdf: namespaced ones.  For example,
+ *   'about' and 'ID' will be interpreted as if they were rdf:about
+ *   and rdf:ID respectively.
+ * @RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES: If true (default true)
+ *   then the RDF/XML parser will allow unknown parsetypes to be
+ *   present and will pass them on to the user.  Unimplemented at
+ *   present.
+ * @RAPTOR_FEATURE_ALLOW_BAGID: If true (default true) then the
+ *   RDF/XML parser will support the rdf:bagID attribute that was
+ *   removed from the RDF/XML language when it was revised.  This
+ *   support may be removed in future.
+ * @RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST: If true (default false)
+ *   then the RDF/XML parser will generate the idList rdf:type
+ *   rdf:List triple in the handling of rdf:parseType="Collection".
+ *   This triple was removed during the revising of RDF/XML after
+ *   collections were initially added.
+ * @RAPTOR_FEATURE_NORMALIZE_LANGUAGE: If true (default true) then
+ *   XML language values such as from xml:lang will be normalized to
+ *   lowercase.
+ * @RAPTOR_FEATURE_NON_NFC_FATAL: If true (default false) then
+ *  illegal Unicode Normal Form C in literals will give a fatal
+ *  error, otherwise just a warning.
+ * @RAPTOR_FEATURE_WARN_OTHER_PARSETYPES: If true (default true) then 
+ *   the RDF/XML parser will warn about unknown rdf:parseType values.
+ * @RAPTOR_FEATURE_CHECK_RDF_ID: If true (default true) then the
+ *   RDF/XML will check rdf:ID attribute values for duplicates and
+ *   cause an error if any are found.
+ * @RAPTOR_FEATURE_RELATIVE_URIS: If true (default true) then
+ *   relative URIs will be used wherever possible when serializing.
+ * @RAPTOR_FEATURE_START_URI: Set the start URI for serlalizing to use.
+ * @RAPTOR_FEATURE_WRITER_AUTO_INDENT: Automatically indent elements when
+ *   seriailizing.
+ * @RAPTOR_FEATURE_WRITER_AUTO_EMPTY: Automatically detect and
+ *   abbreviate empty elements when serializing.
+ * @RAPTOR_FEATURE_WRITER_INDENT_WIDTH: Integer number of spaces to use
+ *   for each indent level when serializing with auto indent.
+ * @RAPTOR_FEATURE_LAST: Internal
+ *
+
+ */
 typedef enum {
   RAPTOR_FEATURE_SCANNING,
   RAPTOR_FEATURE_ASSUME_IS_RDF,
@@ -168,12 +271,36 @@ typedef enum {
 } raptor_feature;
 
 
+/**
+ * raptor_genid_type:
+ * @RAPTOR_GENID_TYPE_BNODEID: Generated ID is for a blank node
+ * @RAPTOR_GENID_TYPE_BAGID: Generated ID is for rdf:bagID
+ *
+ * Intended type for a generated identifier asked for by the handler
+ * registered with raptor_set_generate_id_handler().
+ */
 typedef enum {
   RAPTOR_GENID_TYPE_BNODEID,
   RAPTOR_GENID_TYPE_BAGID
 } raptor_genid_type;
 
 
+/**
+ * raptor_identifier:
+ * @type: Type of identifier
+ * @uri: URI of identifier for types %RAPTOR_IDENTIFIER_TYPE_RESOURCE and
+ *   %RAPTOR_IDENTIFIER_TYPE_PREDICATE
+ * @uri_source: where the identifier (URI or blank node) came from
+ * @id: blank node identifier for type %RAPTOR_IDENTIFIER_TYPE_ANONYMOUS
+ * @ordinal: integer ordinal for type %RAPTOR_IDENTIFIER_TYPE_ORDINAL
+ * @is_malloced: internal
+ * @literal: literal string for types %RAPTOR_IDENTIFIER_TYPE_LITERAL and
+ *    %RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
+ * @literal_datatype: RDF literal datatype URI for types
+ *   %RAPTOR_IDENTIFIER_TYPE_LITERAL and %RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
+ * @literal_language: RDF literal language for type
+ *   %RAPTOR_IDENTIFIER_TYPE_LITERAL
+*/
 typedef struct {
   raptor_identifier_type type;
   raptor_uri *uri;
