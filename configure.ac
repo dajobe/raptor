@@ -1208,6 +1208,9 @@ raptor.pc])
 AC_CONFIG_FILES([src/raptor-config], [chmod +x src/raptor-config])
 AC_CONFIG_FILES([raptor-src-config], [chmod +x raptor-src-config])
 
+dnl Check for gtk-doc and docbook
+GTK_DOC_CHECK([1.3])
+
 AC_OUTPUT
 
 AC_MSG_RESULT([
