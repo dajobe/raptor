@@ -1,5 +1,59 @@
 2005-08-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* Makefile.am: Enable gtk doc with make distcheck
+
+	* docs/tmpl/section-xml-namespace.sgml: args
+
+	* src/raptor_namespace.c, src/raptor.h, src/raptor_xml.c,
+	src/raptor_serialize.c, src/raptor_qname.c, src/raptor_parse.c,
+	src/raptor_iostream.c, src/raptor_sequence.c,
+	src/raptor_general.c, src/raptor_feature.c: autodocs
+
+	* docs/version.xml.in: version.xml.in
+
+	* docs/tmpl/section-serializer.sgml: whitespace
+
+	* src/raptor_sequence.c: autodocs
+
+	* src/raptor_xml.c (raptor_xml_escape_string): autodocs escapes
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_feature.c,
+	src/raptor_general.c, src/raptor_identifier.c,
+	src/raptor_iostream.c, src/raptor_locator.c,
+	src/raptor_namespace.c, src/raptor_nfc.c, src/raptor_nfc_test.c,
+	src/raptor_parse.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rfc2396.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_set.c, src/raptor_stringbuffer.c, src/raptor_uri.c,
+	src/raptor_utf8.c, src/raptor_www.c, src/raptor_www_libwww.c,
+	src/raptor_xml.c, src/raptor_xml_writer.c, src/turtle_common.c:
+	autodocs reformatted for gtk-doc
+
+	* docs/tmpl/section-constants.sgml,
+	docs/tmpl/section-feature.sgml, docs/tmpl/section-general.sgml,
+	docs/tmpl/section-iostream.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-memory.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-serializer.sgml,
+	docs/tmpl/section-stringbuffer.sgml,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-unicode.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-uri-factory.sgml,
+	docs/tmpl/section-uri.sgml, docs/tmpl/section-www.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	initial templates
+
+	* docs/raptor-docs.xml: fix
+
+	* docs/raptor-docs.xml, docs/raptor-overrides.txt,
+	docs/raptor-sections.txt: gtk-doc files
+
+	* docs/Makefile.am, configure.ac: Enable gtk-doc
+
+	* configure.ac: check for gtk-doc
+
+2005-08-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
 	* src/raptor-config.1: Document --features and --help.  Order
 	flags alphabetically in summary and body.
 
