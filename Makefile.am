@@ -46,6 +46,8 @@ raptor.spec.in \
 fix-groff-xhtml \
 raptor.pc.in
 
+DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
+
 # Create some text files from HTML sources
 LYNX=lynx
 HTML_TO_TEXT=TERM=vt100 $(LYNX) -dump -nolist
