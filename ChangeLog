@@ -1,3 +1,15 @@
+2005-08-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor-config.1: Document --features and --help.  Order
+	flags alphabetically in summary and body.
+
+	* src/raptor-config.in: Add --features argument to list configured
+	or discovered features of the raptor library
+
+	* configure.ac: Add AC_SUBSTs for recording discovered features:
+	RAPTOR_WWW_LIBRARY (or none), RAPTOR_XML_PARSER (or none),
+	RAPTOR_PARSERS (list) and RAPTOR_SERIALIZERS (list).
+
 2005-08-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* src/raptor_sax2.c (raptor_sax2_parse_start): Fix for expat
