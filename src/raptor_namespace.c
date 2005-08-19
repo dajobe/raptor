@@ -216,7 +216,7 @@ raptor_namespaces_start_namespace(raptor_namespace_stack *nstack,
  * @nstack: namespace stack
  * @prefix: new namespace prefix (or NULL)
  * @ns_uri_string: new namespace URI (or NULL)
- * @depth: new namespacae depth
+ * @depth: new namespace depth
  * 
  * Create a new namespace and start it on a stack of namespaces.
  * 
