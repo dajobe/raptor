@@ -1,3 +1,29 @@
+2005-08-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor.h: autodocs
+
+	* docs/raptor-sections.txt: raptor_uri_init now internal
+
+	* src/raptor_parse.c: autodocs
+
+	* docs/tmpl/section-unused.sgml: raptor_uri_init now internal
+
+	* docs/tmpl/section-general.sgml, src/raptor_internal.h: Remove
+	unused container_test_handler function.
+
+	* src/raptor.h, src/raptor_xml.c, src/raptor_sequence.c,
+	src/raptor_iostream.c, src/raptor_stringbuffer.c: autodocs
+
+	* docs/raptor-sections.txt: No raptor_container_test_handler
+
+	* src/raptor.h: raptor_uri_init was internal
+
+	* src/raptor_uri.c: autodocs
+
+	* src/raptor_internal.h: raptor_uri_init was internal
+
+	* src/raptor_uri.c: autodocs
+
 2005-08-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* Makefile.am: Enable gtk doc with make distcheck
