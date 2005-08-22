@@ -326,16 +326,115 @@ typedef struct {
 } raptor_statement;
 
 
+/**
+  * raptor_new_uri_func:
+  * @context: URI context data
+  * @uri_string: URI string
+  *
+  * Handler function for implementing raptor_new_uri().
+  *
+  * Return value: new URI object or NULL on failure
+  */
 typedef raptor_uri* (*raptor_new_uri_func) (void *context, const unsigned char *uri_string);
+/**
+  * raptor_new_uri_from_uri_local_name_func:
+  * @context: URI context data
+  * @uri: URI object
+  * @local_name: local name string
+  *
+  * Handler function for implementing raptor_new_uri_from_uri_local_name().
+  *
+  * Return value: new URI object or NULL on failure
+  */
 typedef raptor_uri* (*raptor_new_uri_from_uri_local_name_func) (void *context, raptor_uri *uri, const unsigned char *local_name);
+/**
+  * raptor_new_uri_relative_to_base_func:
+  * @context: URI context data
+  * @base_uri: base URI object
+  * @uri_string: relative URI string
+  *
+  * Handler function for implementing raptor_new_uri_relative_to_base().
+  *
+  * Return value: new URI object or NULL on failure
+  */
 typedef raptor_uri* (*raptor_new_uri_relative_to_base_func) (void *context, raptor_uri *base_uri, const unsigned char *uri_string);
+/**
+  * raptor_new_uri_for_rdf_concept_func:
+  * @context: URI context data
+  * @name: RDF term
+  *
+  * Handler function for implementing raptor_new_uri_for_rdf_concept().
+  *
+  * Return value: new URI object or NULL on failure
+  */
 typedef raptor_uri* (*raptor_new_uri_for_rdf_concept_func) (void *context, const char *name);
+/**
+  * raptor_free_uri_func:
+  * @context: URI context data
+  * @uri: URI object
+  *
+  * Handler function for implementing raptor_free_uri().
+  */
 typedef void (*raptor_free_uri_func) (void *context, raptor_uri *uri);
+/**
+  * raptor_uri_equals_func:
+  * @context: URI context data
+  * @uri1: URI object 1
+  * @uri2: URI object 2
+  *
+  * Handler function for implementing raptor_uri_equals().
+  *
+  * Return value: non-0 if the URIs are equal
+  */
 typedef int (*raptor_uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
+/**
+  * raptor_uri_copy_func:
+  * @context: URI context data
+  * @uri: URI object
+  *
+  * Handler function for implementing raptor_uri_copy().
+  *
+  * Return value: new URI object or NULL on failure
+  */
 typedef raptor_uri* (*raptor_uri_copy_func) (void *context, raptor_uri *uri);
+/**
+  * raptor_uri_as_string_func:
+  * @context: URI context data
+  * @uri: URI object
+  *
+  * Handler function for implementing raptor_uri_as_string().
+  *
+  * Return value: shared string representation of the URI
+  */
 typedef unsigned char* (*raptor_uri_as_string_func)(void *context, raptor_uri *uri);
+/**
+  * raptor_uri_as_counted_string_func:
+  * @context: URI context data
+  * @uri: URI object
+  * @len_p: length
+  *
+  * Handler function for implementing raptor_uri_as_counted_string().
+  *
+  * Return value: shared string representation of the URI
+  */
 typedef unsigned char* (*raptor_uri_as_counted_string_func)(void *context, raptor_uri *uri, size_t* len_p);
 
+
+/**
+ * raptor_uri_handler:
+ * @new_uri: function for raptor_new_uri()
+ * @new_uri_from_uri_local_name: function for raptor_new_uri_from_uri_local_name()
+ * @new_uri_relative_to_base: function for raptor_new_uri_relative_to_base()
+ * @new_uri_for_rdf_concept: function for raptor_new_uri_for_rdf_concept()
+ * @free_uri: function for raptor_free_uri()
+ * @uri_equals: function for raptor_uri_equals()
+ * @uri_copy: function for raptor_uri_copy()
+ * @uri_as_string: function for raptor_uri_as_string()
+ * @uri_as_counted_string: function for raptor_uri_as_counted_string()
+ * @initialised: Internal
+ *
+ * URI implementation handler structure.
+ */
 typedef struct {
   /* constructors */
   raptor_new_uri_func                     new_uri;
@@ -353,12 +452,82 @@ typedef struct {
 } raptor_uri_handler;
 
 
+/**
+ * raptor_simple_message_handler:
+ * @user_data: user data
+ * @message: message to report
+ * @...: arguments for message
+ *
+ * Simple message handler function.
+ *
+ * Used by multiple functions including raptor_xml_escape_string(),
+ * raptor_iostream_write_xml_escaped_string(), raptor_new_qname(),
+ * raptor_qname_string_to_uri(), raptor_new_namespaces(),
+ * raptor_namespaces_init(), raptor_iostream_write_xml_element(),
+ * raptor_new_xml_writer().
+ */
 typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...);
+/**
+ * raptor_message_handler:
+ * @user_data: user data
+ * @locator: location associated with message or NULL
+ * @message: message to report
+ *
+ * Message with location handler function.
+ *
+ * Used during parsing and serializing for errors and warnings that
+ * may include location information. Multiple handlers may be set for
+ * parsers and serializers by raptor_set_fatal_error_handler(),
+ * raptor_set_error_handler(), raptor_set_warning_handler(),
+ * raptor_serializer_set_error_handler() and
+ * raptor_serializer_set_warning_handler().
+ *
+ * Also used by raptor_www_set_error_handler() for location-based errors
+ * in WWW retrieval.
+ */
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
+/**
+ * raptor_statement_handler:
+ * @user_data: user data
+ * @statement: statemetn to report
+ *
+ * Statement (triple) reporting handler function.
+ */
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
+/**
+ * raptor_generate_id_handler:
+ * @user_data: user data
+ * @type: type of ID to create
+ * @user_bnodeid: a user-specified ID or NULL if none available.
+ *
+ * Generate an identifier handler function.
+ *
+ * Return value: new ID to use
+ */
 typedef unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_genid_type type, unsigned char* user_bnodeid);
-typedef raptor_uri* (*raptor_container_test_handler)(raptor_uri *element_uri);
+/**
+ * raptor_www_write_bytes_handler:
+ * @www: WWW object
+ * @userdata: user data
+ * @ptr: data pointer
+ * @size: size of individual item
+ * @nmemb: number of items
+ *
+ * Receiving bytes of data from WWW retrieval handler.
+ *
+ * Set by raptor_www_set_write_bytes_handler().
+ */
 typedef void (*raptor_www_write_bytes_handler)(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
+/**
+ * raptor_www_content_type_handler:
+ * @www: WWW object
+ * @userdata: user data
+ * @content_type: content type seen
+ *
+ * Receiving Content-Type: header from WWW retrieval handler.
+ *
+ * Set by raptor_www_set_content_type_handler().
+ */
 typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata, const char *content_type);
 
 

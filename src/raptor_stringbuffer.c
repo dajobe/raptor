@@ -102,6 +102,7 @@ raptor_new_stringbuffer(void)
 
 /**
  * raptor_free_stringbuffer:
+ * @stringbuffer: stringbuffer object to destroy.
  *
  * Destroy a stringbuffer.
  * 

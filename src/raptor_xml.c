@@ -390,6 +390,8 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * @buffer: the buffer to use for new string (UTF-8)
  * @length: buffer size
  * @quote: optional quote character to escape for attribute content, or 0
+ * @error_handler: error handler function
+ * @error_data: error handler user data
  *
  * Return an XML-escaped version a string.
  * 

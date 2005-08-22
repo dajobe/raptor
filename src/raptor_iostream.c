@@ -161,6 +161,7 @@ static raptor_iostream_handler raptor_iostream_filename_handler={
 
 /**
  * raptor_new_iostream_to_filename:
+ * @filename: Output filename to open and write to
  *
  * Constructor - create a new iostream writing to a filename.
  * 

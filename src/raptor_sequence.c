@@ -162,7 +162,7 @@ raptor_sequence_grow(raptor_sequence *seq)
 
 /**
  * raptor_sequence_size:
- * @seq: 
+ * @seq: sequence object
  * 
  * Get the size of a sequence.
  * 
