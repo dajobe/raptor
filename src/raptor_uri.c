@@ -64,6 +64,14 @@
 static raptor_uri_handler *raptor_uri_current_uri_handler;
 static void *raptor_uri_current_uri_context;
 
+/**
+ * raptor_uri_set_handler:
+ * @handler: URI handler structure
+ * @context: URI handler context
+ * 
+ * Change the URI class implementation to the functions provided by the
+ * @handler URI implementation.
+ **/
 void
 raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
 {
@@ -71,6 +79,13 @@ raptor_uri_set_handler(raptor_uri_handler *handler, void *context)
   raptor_uri_current_uri_context=context;
 }
 
+/**
+ * raptor_uri_get_handler:
+ * @handler: URI handler to return
+ * @context: URI context to return
+ * 
+ * Return the current raptor URI class implementation @handler and @context
+ **/
 void
 raptor_uri_get_handler(raptor_uri_handler **handler, void **context) 
 {
@@ -127,6 +142,14 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
 }
 
 
+/**
+ * raptor_new_uri:
+ * @uri_string: URI string.
+ * 
+ * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
 raptor_uri*
 raptor_new_uri(const unsigned char *uri_string) 
 {
@@ -152,6 +175,19 @@ raptor_default_new_uri_from_uri_local_name(void *context,
 }
 
 
+/**
+ * raptor_new_uri_from_uri_local_name:
+ * @uri: existing #raptor_uri
+ * @local_name: local name
+ * 
+ * Constructor - create a raptor URI from an existing URI and a local name.
+ *
+ * Creates a new URI from the concatenation of the @local_name to the
+ * @uri.  This is NOT relative URI resolution, which is done by the
+ * raptor_new_uri_relative_to_base() constructor.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
 raptor_uri*
 raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_name)
 {
@@ -184,6 +220,15 @@ raptor_default_new_uri_relative_to_base(void *context,
 }
 
 
+/**
+ * raptor_new_uri_relative_to_base:
+ * @base_uri: existing base URI
+ * @uri_string: relative URI string
+ * 
+ * Constructor - create a raptor URI from a base URI and a relative URI string.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
 raptor_uri*
 raptor_new_uri_relative_to_base(raptor_uri *base_uri, 
                                 const unsigned char *uri_string) 
@@ -192,6 +237,18 @@ raptor_new_uri_relative_to_base(raptor_uri *base_uri,
 }
 
 
+/**
+ * raptor_new_uri_from_id:
+ * @base_uri: existing base URI
+ * @id: RDF ID
+ * 
+ * Constructor - create a new URI from a base URI and RDF ID.
+ *
+ * This creates a URI equivalent to concatenating @base_uri with
+ * ## and @id.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
 raptor_uri*
 raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id) 
 {
@@ -234,6 +291,17 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
 }
 
 
+/**
+ * raptor_new_uri_for_rdf_concept:
+ * @name: RDF namespace concept
+ * 
+ * Constructor - create a raptor URI for the RDF namespace concept name.
+ *
+ * Example: u=raptor_new_uri_for_rdf_concept("value") creates a new
+ * URI for the rdf:value term.
+ * 
+ * Return value: 
+ **/
 raptor_uri*
 raptor_new_uri_for_rdf_concept(const char *name) 
 {
@@ -248,6 +316,12 @@ raptor_default_free_uri(void *context, raptor_uri *uri)
 }
 
 
+/**
+ * raptor_free_uri:
+ * @uri: URI to destroy
+ * 
+ * Destructor - destroy a #raptor_uri object
+ **/
 void
 raptor_free_uri(raptor_uri *uri)
 {
@@ -262,6 +336,15 @@ raptor_default_uri_equals(void *context, raptor_uri* uri1, raptor_uri* uri2)
 }
 
 
+/**
+ * raptor_uri_equals:
+ * @uri1: URI 1
+ * @uri2: URI 2
+ * 
+ * Check if two URIs are equal.
+ * 
+ * Return value: non-0 if the URIs are equal
+ **/
 int
 raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 {
@@ -280,6 +363,15 @@ raptor_default_uri_copy(void *context, raptor_uri *uri)
 }
 
 
+/**
+ * raptor_uri_copy:
+ * @uri: URI object
+ * 
+ * Constructor - get a copy of a URI.
+ * 
+ *
+ * Return value: a new #raptor_uri object or NULL on failure
+ **/
 raptor_uri*
 raptor_uri_copy(raptor_uri *uri) 
 {
@@ -294,6 +386,18 @@ raptor_default_uri_as_string(void *context, raptor_uri *uri)
 }
 
 
+/**
+ * raptor_uri_as_string:
+ * @uri: 
+ * 
+ * Get a string representation of a URI.
+ *
+ * Returns a shared pointer to a string representation of @uri.  This
+ * string is shared and must not be freed, otherwise see use the
+ * raptor_uri_to_string() or raptor_uri_to_counted_string() methods.
+ * 
+ * Return value: shared string representation of URI
+ **/
 unsigned char*
 raptor_uri_as_string(raptor_uri *uri) 
 {
@@ -311,6 +415,20 @@ raptor_default_uri_as_counted_string(void *context, raptor_uri *uri,
 }
 
 
+/**
+ * raptor_uri_as_counted_string:
+ * @uri: URI object
+ * @len_p: address of length variable or NULL
+ * 
+ * Get a string representation of a URI with count.
+ *
+ * Returns a shared pointer to a string representation of @uri along
+ * with the length of the string in @len_p, if not NULL.  This
+ * string is shared and must not be freed, otherwise see use the
+ * raptor_uri_to_string() or raptor_uri_to_counted_string() methods.
+ * 
+ * Return value: shared string representation of URI
+ **/
 unsigned char*
 raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p) 
 {
@@ -452,7 +570,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
  *
- * If fragment_p is given, a new string containing the URI fragment
+ * If @fragment_p is given, a new string containing the URI fragment
  * is returned, or NULL if none is present
  * 
  * Return value: A newly allocated string with the filename or NULL on failure
@@ -648,12 +766,12 @@ raptor_uri_is_file_uri(const unsigned char* uri_string) {
  * raptor_new_uri_for_xmlbase:
  * @old_uri: URI to transform
  *
- * Turn a URI into one suitable for XML base.
+ * Constructor - create a URI suitable for use as an XML Base.
  * 
  * Takes an existing URI and ensures it has a path (default /) and has
  * no fragment or query arguments - XML base does not use these.
  * 
- * Return value: new URI object or NULL on failure.
+ * Return value: new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
@@ -688,12 +806,12 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
  * raptor_new_uri_for_retrieval:
  * @old_uri: URI to transform
  *
- * Turn a URI into one suitable for retrieval.
+ * Constructor - create a URI suitable for retrieval.
  * 
  * Takes an existing URI and ensures it has a path (default /) and has
  * no fragment - URI retrieval does not use the fragment part.
  * 
- * Return value: new URI object or NULL on failure.
+ * Return value: new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri_for_retrieval(raptor_uri* old_uri)
@@ -765,7 +883,7 @@ raptor_uri_init(void)
 }
 
 
-/**
+/*
  * raptor_uri_path_common_base_length:
  * @first_path: The first path (path only, not a full URI)
  * @first_path_len: Length of first_path
@@ -802,7 +920,7 @@ raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first
 }
 
 
-/**
+/*
  * raptor_uri_path_make_relative_path:
  * @from_path: The base path (path only, not a full URI)
  * @from_path_len: Length of the base path
@@ -1088,10 +1206,10 @@ raptor_uri_print(const raptor_uri* uri, FILE *stream) {
  *
  * Get a new counted string for a URI.
  *
- * If len_p is not NULL, the length of the string is stored in it.
+ * If @len_p is not NULL, the length of the string is stored in it.
  *
  * The memory allocated must be freed by the caller and
- * raptor_free_memory should be used for best portability.
+ * raptor_free_memory() should be used for best portability.
  *
  * Return value: new string or NULL on failure
  **/
@@ -1125,7 +1243,7 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
  * Get a new string for a URI.
  *
  * The memory allocated must be freed by the caller and
- * raptor_free_memory should be used for best portability.
+ * raptor_free_memory() should be used for best portability.
  *
  * Return value: new string or NULL on failure
  **/
