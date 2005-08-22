@@ -156,7 +156,7 @@ typedef enum {
 
 /**
  * raptor_uri_source:
- * RAPTOR_URI_SOURCE_UNKNOWN: Internal
+ * @RAPTOR_URI_SOURCE_UNKNOWN: Internal
  * @RAPTOR_URI_SOURCE_NOT_URI: Internal
  * @RAPTOR_URI_SOURCE_ELEMENT: Internal
  * @RAPTOR_URI_SOURCE_ATTRIBUTE: Internal
