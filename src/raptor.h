@@ -132,12 +132,12 @@ typedef raptor_parser raptor_ntriples_parser;
 
 /**
  * raptor_identifier_type:
- * @RAPTOR_IDENTIFIER_TYPE_RESOURCE:    Resource URI (e.g. rdf:about)
- * @RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:   _:foo N-Triples, or generated
- * @RAPTOR_IDENTIFIER_TYPE_LITERAL:     regular literal
- * @RAPTOR_IDENTIFIER_TYPE_XML_LITERAL: rdf:parseType="Literal"
+ * @RAPTOR_IDENTIFIER_TYPE_RESOURCE:    Resource URI (e.g. <literal>rdf:about</literal>)
+ * @RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:   <literal>_:foo</literal> N-Triples, or generated
  * @RAPTOR_IDENTIFIER_TYPE_PREDICATE:   predicate URI
- * @RAPTOR_IDENTIFIER_TYPE_ORDINAL:     rdf:li, rdf:_<n>
+ * @RAPTOR_IDENTIFIER_TYPE_ORDINAL:     <literal>rdf:li</literal>, <literal>rdf:_</literal><emphasis>n</emphasis>
+ * @RAPTOR_IDENTIFIER_TYPE_LITERAL:     regular literal
+ * @RAPTOR_IDENTIFIER_TYPE_XML_LITERAL: <literal>rdf:parseType="Literal"</literal>
  * @RAPTOR_IDENTIFIER_TYPE_UNKNOWN:     Internal
  *
  * Type of identifier in a #raptor_statement
@@ -145,12 +145,12 @@ typedef raptor_parser raptor_ntriples_parser;
  */
 typedef enum {
   RAPTOR_IDENTIFIER_TYPE_UNKNOWN,
-  RAPTOR_IDENTIFIER_TYPE_RESOURCE,            /* Resource URI (e.g. rdf:about) */
-  RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,           /* _:foo N-Triples, or generated */
-  RAPTOR_IDENTIFIER_TYPE_PREDICATE,           /* Predicate URI */
-  RAPTOR_IDENTIFIER_TYPE_ORDINAL,             /* rdf:li, rdf:_<n> etc. */
-  RAPTOR_IDENTIFIER_TYPE_LITERAL,             /* regular literal */
-  RAPTOR_IDENTIFIER_TYPE_XML_LITERAL          /* rdf:parseType="Literal" */
+  RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+  RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+  RAPTOR_IDENTIFIER_TYPE_PREDICATE,
+  RAPTOR_IDENTIFIER_TYPE_ORDINAL,
+  RAPTOR_IDENTIFIER_TYPE_LITERAL,
+  RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
 } raptor_identifier_type;
 
 
