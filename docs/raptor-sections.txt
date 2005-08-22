@@ -344,5 +344,4 @@ RAPTOR_DEPRECATED
 raptor_ntriples_parser
 raptor_uri_source
 raptor_ntriples_term_type
-raptor_uri_init
 </SECTION>
