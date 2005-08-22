@@ -121,10 +121,16 @@ typedef struct raptor_qname_s raptor_qname;
 typedef struct raptor_namespace_s raptor_namespace;
 typedef struct raptor_namespace_stack_s raptor_namespace_stack;
 
-/* OLD structure - can't deprecate a typedef */
+/**
+ * raptor_ntriples_parser:
+ *
+ * @Deprecated: use #raptor_parser.
+ *
+ * old structure - use #raptor_parser instead.
+*/
 typedef raptor_parser raptor_ntriples_parser;
 
-/*
+/**
  * raptor_identifier_type:
  * @RAPTOR_IDENTIFIER_TYPE_RESOURCE:    Resource URI (e.g. rdf:about)
  * @RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:   _:foo N-Triples, or generated
@@ -148,7 +154,7 @@ typedef enum {
 } raptor_identifier_type;
 
 
-/*
+/**
  * raptor_uri_source:
  * RAPTOR_URI_SOURCE_UNKNOWN: Internal
  * @RAPTOR_URI_SOURCE_NOT_URI: Internal
@@ -185,8 +191,8 @@ typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_BLAN
  * @uri: URI of location (or NULL)
  * @file: Filename of location (or NULL)
  * @line: Line number of location (or <0 for no line)
- * @column: Column number of location (or <0 for line)
- * @byte: Byte number of location (or <0 for line)
+ * @column: Column number of location (or <0 for no column)
+ * @byte: Byte number of location (or <0 for no byte)
  *
  * Location information for an error, warning or information message.
  */
@@ -329,96 +335,104 @@ typedef struct {
 
 
 /**
-  * raptor_new_uri_func:
-  * @context: URI context data
-  * @uri_string: URI string
-  *
-  * Handler function for implementing raptor_new_uri().
-  *
-  * Return value: new URI object or NULL on failure
-  */
+ * raptor_new_uri_func:
+ * @context: URI context data
+ * @uri_string: URI string
+ *
+ * Handler function for implementing raptor_new_uri().
+ *
+ * Return value: new URI object or NULL on failure
+ */
 typedef raptor_uri* (*raptor_new_uri_func) (void *context, const unsigned char *uri_string);
+
 /**
-  * raptor_new_uri_from_uri_local_name_func:
-  * @context: URI context data
-  * @uri: URI object
-  * @local_name: local name string
-  *
-  * Handler function for implementing raptor_new_uri_from_uri_local_name().
-  *
-  * Return value: new URI object or NULL on failure
-  */
+ * raptor_new_uri_from_uri_local_name_func:
+ * @context: URI context data
+ * @uri: URI object
+ * @local_name: local name string
+ *
+ * Handler function for implementing raptor_new_uri_from_uri_local_name().
+ *
+ * Return value: new URI object or NULL on failure
+ */
 typedef raptor_uri* (*raptor_new_uri_from_uri_local_name_func) (void *context, raptor_uri *uri, const unsigned char *local_name);
+
 /**
-  * raptor_new_uri_relative_to_base_func:
-  * @context: URI context data
-  * @base_uri: base URI object
-  * @uri_string: relative URI string
-  *
-  * Handler function for implementing raptor_new_uri_relative_to_base().
-  *
-  * Return value: new URI object or NULL on failure
-  */
+ * raptor_new_uri_relative_to_base_func:
+ * @context: URI context data
+ * @base_uri: base URI object
+ * @uri_string: relative URI string
+ *
+ * Handler function for implementing raptor_new_uri_relative_to_base().
+ *
+ * Return value: new URI object or NULL on failure
+ */
 typedef raptor_uri* (*raptor_new_uri_relative_to_base_func) (void *context, raptor_uri *base_uri, const unsigned char *uri_string);
+
 /**
-  * raptor_new_uri_for_rdf_concept_func:
-  * @context: URI context data
-  * @name: RDF term
-  *
-  * Handler function for implementing raptor_new_uri_for_rdf_concept().
-  *
-  * Return value: new URI object or NULL on failure
-  */
+ * raptor_new_uri_for_rdf_concept_func:
+ * @context: URI context data
+ * @name: RDF term
+ *
+ * Handler function for implementing raptor_new_uri_for_rdf_concept().
+ *
+ * Return value: new URI object or NULL on failure
+ */
 typedef raptor_uri* (*raptor_new_uri_for_rdf_concept_func) (void *context, const char *name);
+
 /**
-  * raptor_free_uri_func:
-  * @context: URI context data
-  * @uri: URI object
-  *
-  * Handler function for implementing raptor_free_uri().
-  */
+ * raptor_free_uri_func:
+ * @context: URI context data
+ * @uri: URI object
+ *
+ * Handler function for implementing raptor_free_uri().
+ */
 typedef void (*raptor_free_uri_func) (void *context, raptor_uri *uri);
+
 /**
-  * raptor_uri_equals_func:
-  * @context: URI context data
-  * @uri1: URI object 1
-  * @uri2: URI object 2
-  *
-  * Handler function for implementing raptor_uri_equals().
-  *
-  * Return value: non-0 if the URIs are equal
-  */
+ * raptor_uri_equals_func:
+ * @context: URI context data
+ * @uri1: URI object 1
+ * @uri2: URI object 2
+ *
+ * Handler function for implementing raptor_uri_equals().
+ *
+ * Return value: non-0 if the URIs are equal
+ */
 typedef int (*raptor_uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
+
 /**
-  * raptor_uri_copy_func:
-  * @context: URI context data
-  * @uri: URI object
-  *
-  * Handler function for implementing raptor_uri_copy().
-  *
-  * Return value: new URI object or NULL on failure
-  */
+ * raptor_uri_copy_func:
+ * @context: URI context data
+ * @uri: URI object
+ *
+ * Handler function for implementing raptor_uri_copy().
+ *
+ * Return value: new URI object or NULL on failure
+ */
 typedef raptor_uri* (*raptor_uri_copy_func) (void *context, raptor_uri *uri);
+
 /**
-  * raptor_uri_as_string_func:
-  * @context: URI context data
-  * @uri: URI object
-  *
-  * Handler function for implementing raptor_uri_as_string().
-  *
-  * Return value: shared string representation of the URI
-  */
+ * raptor_uri_as_string_func:
+ * @context: URI context data
+ * @uri: URI object
+ *
+ * Handler function for implementing raptor_uri_as_string().
+ *
+ * Return value: shared string representation of the URI
+ */
 typedef unsigned char* (*raptor_uri_as_string_func)(void *context, raptor_uri *uri);
+
 /**
-  * raptor_uri_as_counted_string_func:
-  * @context: URI context data
-  * @uri: URI object
-  * @len_p: length
-  *
-  * Handler function for implementing raptor_uri_as_counted_string().
-  *
-  * Return value: shared string representation of the URI
-  */
+ * raptor_uri_as_counted_string_func:
+ * @context: URI context data
+ * @uri: URI object
+ * @len_p: length
+ *
+ * Handler function for implementing raptor_uri_as_counted_string().
+ *
+ * Return value: shared string representation of the URI
+ */
 typedef unsigned char* (*raptor_uri_as_counted_string_func)(void *context, raptor_uri *uri, size_t* len_p);
 
 
