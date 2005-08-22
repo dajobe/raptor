@@ -248,7 +248,7 @@ typedef struct {
  *   for each indent level when serializing with auto indent.
  * @RAPTOR_FEATURE_LAST: Internal
  *
-
+ * Raptor parser, serializer or XML writer features.
  */
 typedef enum {
   RAPTOR_FEATURE_SCANNING,
@@ -299,6 +299,8 @@ typedef enum {
  *   %RAPTOR_IDENTIFIER_TYPE_LITERAL and %RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
  * @literal_language: RDF literal language for type
  *   %RAPTOR_IDENTIFIER_TYPE_LITERAL
+ *
+ * Raptor RDF term identifier.
 */
 typedef struct {
   raptor_identifier_type type;
@@ -922,7 +924,25 @@ typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 
 /* Sequence class */
 typedef struct raptor_sequence_s raptor_sequence;
-typedef void (raptor_sequence_free_handler(void*));
+
+/**
+ * raptor_sequence_free_handler:
+ * @object: object to free
+ *
+ * Handler function for freeing a sequence item.
+ *
+ * Set by raptor_new_sequence().
+*/
+typedef void (raptor_sequence_free_handler(void* object));
+/**
+ * raptor_sequence_print_handler:
+ * @object: object to print
+ * @fh: FILE* to print to
+ *
+ * Handler function for printing a sequence item.
+ *
+ * Set by raptor_new_sequence() or raptor_sequence_set_print_handler().
+ */
 typedef void (raptor_sequence_print_handler(void *object, FILE *fh));
 
 /* Create */
@@ -1005,21 +1025,74 @@ size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
 RAPTOR_API
 int raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer, unsigned char *string, size_t length);
 
+/**
+ * raptor_iostream_init_func:
+ * @context: stream context data
+ *
+ * Handler function for #raptor_iostream initialising.
+ *
+ * Return value: non-0 on failure.
+ */
 typedef int (*raptor_iostream_init_func) (void *context);
+
+/**
+ * raptor_iostream_finish_func:
+ * @context: stream context data
+ *
+ * Handler function for #raptor_iostream terminating.
+ *
+ */
 typedef void (*raptor_iostream_finish_func) (void *context);
+
+/**
+ * raptor_iostream_write_byte_func
+ * @context: stream context data
+ * @byte: byte to write
+ *
+ * Handler function for implementing raptor_iostream_write_byte().
+ *
+ * Return value: non-0 on failure.
+ */
 typedef int (*raptor_iostream_write_byte_func) (void *context, const int byte);
+
+/**
+ * raptor_iostream_write_bytes_func:
+ * @context: stream context data
+ * @ptr: pointer to bytes to write
+ * @size: size of item
+ * @nmemb: number of items
+ *
+ * Handler function for implementing raptor_iostream_write_bytes().
+ *
+ * Return value: non-0 on failure.
+ */
 typedef int (*raptor_iostream_write_bytes_func) (void *context, const void *ptr, size_t size, size_t nmemb);
+
+/**
+ * raptor_iostream_write_end_func:
+ * @context: stream context data
+ *
+ * Handler function for implementing raptor_iostream_write_end().
+ *
+ */
 typedef void (*raptor_iostream_write_end_func) (void *context);
 
+/**
+ * raptor_iostream_handler:
+ * @init:  initialisation handler - optional, called at most once
+ * @finish: finishing handler -  optional, called at most once
+ * @write_byte: write byte handler - required
+ * @write_bytes: write bytes handler - required
+ * @write_end: write end handler - optional, called at most once
+ *
+ * I/O stream implementation handler structure.
+ * 
+ */
 typedef struct {
-  /* optional, called at most once */
   raptor_iostream_init_func         init;
-  /* optional, called at most once */
   raptor_iostream_finish_func       finish;
-  /* methods */
   raptor_iostream_write_byte_func   write_byte;
   raptor_iostream_write_bytes_func  write_bytes;
-   /* optional, called at most once */
   raptor_iostream_write_end_func    write_end;
 } raptor_iostream_handler;
 
