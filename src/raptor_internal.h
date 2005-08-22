@@ -659,6 +659,8 @@ void raptor_qname_print(FILE *stream, raptor_qname* name);
 
 
 /* raptor_uri.c */
+void raptor_uri_init(void);
+
 void raptor_uri_init_default_handler(raptor_uri_handler *handler);
 
 /* raptor_parse.c */

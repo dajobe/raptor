@@ -609,9 +609,6 @@ RAPTOR_API
 unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
 RAPTOR_API
-void raptor_uri_init(void);
-
-RAPTOR_API
 void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
 RAPTOR_API
 void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
