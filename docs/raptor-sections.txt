@@ -9,7 +9,6 @@ raptor_finish
 raptor_simple_message_handler
 raptor_message_handler
 raptor_statement_handler
-raptor_container_test_handler
 raptor_parsers_enumerate
 raptor_syntaxes_enumerate
 raptor_syntax_name_check
