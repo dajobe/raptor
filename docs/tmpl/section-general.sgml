@@ -87,15 +87,6 @@ and various other utility functions.
 @statement: 
 
 
-<!-- ##### USER_FUNCTION raptor_container_test_handler ##### -->
-<para>
-
-</para>
-
-@element_uri: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_parsers_enumerate ##### -->
 <para>
 

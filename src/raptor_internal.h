@@ -393,8 +393,6 @@ struct raptor_parser_s {
   raptor_message_handler error_handler;
   raptor_message_handler warning_handler;
 
-  raptor_container_test_handler container_test_handler;
-
   /* parser callbacks */
   raptor_statement_handler statement_handler;
 
