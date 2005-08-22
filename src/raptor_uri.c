@@ -300,7 +300,7 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
  * Example: u=raptor_new_uri_for_rdf_concept("value") creates a new
  * URI for the rdf:value term.
  * 
- * Return value: 
+ * Return value: a new #raptor_uri object or NULL on failure
  **/
 raptor_uri*
 raptor_new_uri_for_rdf_concept(const char *name) 
@@ -388,7 +388,7 @@ raptor_default_uri_as_string(void *context, raptor_uri *uri)
 
 /**
  * raptor_uri_as_string:
- * @uri: 
+ * @uri: #raptor_uri object
  * 
  * Get a string representation of a URI.
  *
