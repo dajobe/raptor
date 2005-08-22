@@ -102,13 +102,15 @@ raptor_delete_parser_factories(void)
 /* class methods */
 
 /*
- * raptor_parser_register_factory - Register a syntax handled by a parser factory
+ * raptor_parser_register_factory:
  * @name: the short syntax name
  * @label: readable label for syntax
  * @mime_type: MIME type of the syntax handled by the parser (or NULL)
  * @uri_string: URI string of the syntax (or NULL)
  * @factory: pointer to function to call to register the factory
  * 
+ * Register a syntax handled by a parser factory.
+ *
  * INTERNAL
  *
  **/
@@ -323,8 +325,10 @@ raptor_syntax_name_check(const char *name) {
 
 
 /**
- * raptor_new_parser - Constructor - create a new raptor_parser object
+ * raptor_new_parser:
  * @name: the parser name
+ *
+ * Constructor - create a new raptor_parser object.
  *
  * Return value: a new #raptor_parser object or NULL on failure
  */
@@ -369,13 +373,15 @@ raptor_new_parser(const char *name) {
 
 
 /**
- * raptor_new_parser_for_content - Constructor - create a new raptor_parser
+ * raptor_new_parser_for_content:
  * @uri: URI identifying the syntax (or NULL)
  * @mime_type: mime type identifying the content (or NULL)
  * @buffer: buffer of content to guess (or NULL)
  * @len: length of buffer
  * @identifier: identifier of content (or NULL)
  * 
+ * Constructor - create a new raptor_parser.
+ *
  * Uses raptor_guess_parser_name() to find a parser by scoring
  * recognition of the syntax by a block of characters, the content
  * identifier or a mime type.  The content identifier is typically a
@@ -394,9 +400,11 @@ raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
 
 
 /*
- * raptor_parser_exec - Overwriting Constructor - turn one parser into another type - internal
+ * raptor_parser_exec:
  * @parser: old parser to change
  * @name: the parser name
+ *
+ * Overwriting Constructor - turn one parser into another type - internal
  *
  * Return value: non-0 on failure
  */
@@ -1323,6 +1331,8 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
  * raptor_get_name:
  * @rdf_parser: #raptor_parser parser object
  *
+ * Get the name of a parser.
+ *
  * Return value: the short name for the parser.
  **/
 const char*
@@ -1335,6 +1345,8 @@ raptor_get_name(raptor_parser *rdf_parser)
 /**
  * raptor_get_label:
  * @rdf_parser: #raptor_parser parser object
+ *
+ * Get a descriptive label of a parser.
  *
  * Return value: a readable label for the parser.
  **/
@@ -1570,10 +1582,12 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
 
 
 /*
- * raptor_parser_copy_user_state - copy user state between parsers - internal
+ * raptor_parser_copy_user_state:
  * @to_parser: destination parser
  * @from_parser: source parser
  * 
+ * Copy user state between parsers - INTERNAL.
+ *
  **/
 void
 raptor_parser_copy_user_state(raptor_parser *to_parser, 

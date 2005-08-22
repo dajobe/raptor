@@ -782,10 +782,40 @@ void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
 RAPTOR_API
 void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
 
+/**
+ * RAPTOR_RDF_MS_URI:
+ *
+ * RDF Namespace URI (rdf:).
+ *
+ * Copy with raptor_uri_copy() to use.
+ */
 #define RAPTOR_RDF_MS_URI raptor_rdf_namespace_uri
+
+/**
+ * RAPTOR_RDF_sCHEMA_URI:
+ *
+ * RDF Schema Namespace URI (rdfs:).
+ *
+ * Copy with raptor_uri_copy() to use.
+ */
 #define RAPTOR_RDF_SCHEMA_URI raptor_rdf_schema_namespace_uri
 
+/**
+ * RAPTOR_XML_sCHEMA_DATATYPES_URI:
+ *
+ * XML Schema Datatypes URI (xsd:).
+ *
+ * Copy with raptor_uri_copy() to use.
+ */
 #define RAPTOR_XMLSCHEMA_DATATYPES_URI raptor_xmlschema_datatypes_namespace_uri
+
+/**
+ * RAPTOR_OWL_URI:
+ *
+ * OWL Namespace URI (owl:).
+ *
+ * Copy with raptor_uri_copy() to use.
+ */
 #define RAPTOR_OWL_URI raptor_owl_namespace_uri
 
 
