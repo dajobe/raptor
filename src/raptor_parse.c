@@ -1031,6 +1031,32 @@ raptor_set_generate_id_handler(raptor_parser* parser,
 
 
 /**
+ * raptor_set_namespace_handler:
+ * @parser: #raptor_parser parser object
+ * @user_data: user data pointer for callback
+ * @handler: new namespace callback function
+ *
+ * Set the namespace handler function for the parser.
+ *
+ * When a prefix/namespace is seen in a parser, call the given
+ * @handler with the prefix string and the #raptor_uri namespace URI.
+ * Either can be NULL for the default prefix or default namespace.
+ *
+ * The handler function does not deal with duplicates so any
+ * namespace may be declared multiple times.
+ * 
+ **/
+void
+raptor_set_namespace_handler(raptor_parser* parser,
+                             void *user_data,
+                             raptor_namespace_handler handler)
+{
+  parser->namespace_handler=handler;
+  parser->namespace_handler_user_data=user_data;
+}
+
+
+/**
  * raptor_features_enumerate:
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
@@ -1606,9 +1632,29 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->default_generate_id_handler_base= from_parser->default_generate_id_handler_base;
   to_parser->default_generate_id_handler_prefix= from_parser->default_generate_id_handler_prefix;
   to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
+  to_parser->namespace_handler= from_parser->namespace_handler;
+  to_parser->namespace_handler_user_data= from_parser->namespace_handler_user_data;
 
 }
 
+
+/*
+ * raptor_parser_start_namespace:
+ * @rdf_parser: parser
+ * @nspace: namespace starting
+ * 
+ * Internal - Invoke start namespace handler
+ **/
+void
+raptor_parser_start_namespace(raptor_parser* rdf_parser, 
+                              raptor_namespace* nspace)
+{
+  if(!rdf_parser->namespace_handler)
+    return;
+
+  (*rdf_parser->namespace_handler)(rdf_parser->namespace_handler_user_data, 
+                                   nspace);
+}
 
 
 /* end not STANDALONE */
