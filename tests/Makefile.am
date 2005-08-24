@@ -51,6 +51,8 @@ ex-53.rdf ex-54.rdf ex-56.rdf ex-57.rdf ex-58.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
 owl-schema.rdf daml-oil.rdf wine.rdf
 
+# ex-55 fails with libxml2
+#   libxml2 bug report: http://bugs.gnome.org/show_bug.cgi?id=159219
 RDF_MAYFAIL_XML_TEST_FILES=ex-55.rdf
 
 RDF_BAD_TEST_FILES=bad-00.rdf bad-01.rdf bad-02.rdf bad-03.rdf \
