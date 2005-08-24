@@ -996,11 +996,15 @@ raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
   if(!t->subject || !t->predicate || !t->object)
     return;
 
-  /* Two choices for subject from N-Triples */
+  /* Two choices for subject for N3 */
   statement->subject_type=t->subject->type;
   if(t->subject->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     statement->subject=t->subject->id;
-  } else { /* URI */
+  } else {
+    /* RAPTOR_IDENTIFIER_TYPE_RESOURCE */
+    RAPTOR_ASSERT_RETURN(t->subject->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                         "subject type is not resource",
+                         );
     statement->subject=t->subject->uri;
   }
 
@@ -1022,13 +1026,20 @@ raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
   }
   
 
-  /* Three choices for object from N-Triples */
+  /* Three choices for object for N3 */
   statement->object_type=t->object->type;
+  statement->object_literal_language=NULL;
+  statement->object_literal_datatype=NULL;
+
   if(t->object->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
     statement->object=t->object->uri;
   } else if(t->object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     statement->object=t->object->id;
-  } else {  /* literal */
+  } else {
+    /* RAPTOR_IDENTIFIER_TYPE_LITERAL */
+    RAPTOR_ASSERT_RETURN(t->object->type != RAPTOR_IDENTIFIER_TYPE_LITERAL,
+                         "object type is not literal",
+                         );
     statement->object=t->object->literal;
     statement->object_literal_language=t->object->literal_language;
     statement->object_literal_datatype=t->object->literal_datatype;
