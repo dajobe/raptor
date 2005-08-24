@@ -182,6 +182,8 @@ raptor_ntriples_generate_statement(raptor_parser *parser,
   
 
   /* Three choices for object from N-Triples */
+  statement->object_literal_language=NULL;
+  statement->object_literal_datatype=NULL;
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
     object_uri=raptor_new_uri_relative_to_base(parser->base_uri, 
                                                (const unsigned char*)object);
