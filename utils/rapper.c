@@ -567,7 +567,7 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
 #ifdef SHOW_NAMESPACES_FLAG
-    puts(HELP_TEXT("s", "show-namespaces ", "Show namespaces as they are declared"));
+    puts(HELP_TEXT(" ", "show-namespaces ", "Show namespaces as they are declared"));
 #endif
     puts(HELP_TEXT("w", "ignore-warnings ", "Ignore warning messages"));
     puts(HELP_TEXT("v", "version         ", "Print the Raptor version"));
