@@ -64,6 +64,7 @@ extern char *optarg;
 #endif
 
 static void print_statements(void *user_data, const raptor_statement *statement);
+static void print_namespaces(void* user_data, raptor_namespace *nspace);
 int main(int argc, char *argv[]);
 
 
@@ -85,6 +86,7 @@ static int guess=0;
 
 static int reported_guess=0;
 
+static int report_namespace=0;
 
 static
 void print_statements(void *user_data, const raptor_statement *statement) 
@@ -116,6 +118,24 @@ void print_statements(void *user_data, const raptor_statement *statement)
 }
 
 
+static void
+print_namespaces(void* user_data, raptor_namespace *nspace)
+{
+  /* raptor_parser* rdf_parser=(raptor_parser*)user_data; */
+  unsigned char *s;
+  
+  if(!report_namespace)
+    return;
+
+  s=raptor_namespaces_format(nspace, NULL);
+  fprintf(stderr, "%s: Namespace declared: %s\n", program, s);
+  raptor_free_memory(s);
+  
+  return;
+}
+
+
+
 #ifdef HAVE_GETOPT_LONG
 #define HELP_TEXT(short, long, description) "  -" short ", --" long "  " description
 #define HELP_ARG(short, long) "--" #long
@@ -130,6 +150,8 @@ void print_statements(void *user_data, const raptor_statement *statement)
 #define GETOPT_STRING "nsaf:ghrqo:wecm:i:v"
 
 #ifdef HAVE_GETOPT_LONG
+#define SHOW_NAMESPACES_FLAG 0x100
+
 static struct option long_options[] =
 {
   /* name, has_arg, flag, val */
@@ -145,6 +167,7 @@ static struct option long_options[] =
   {"quiet", 0, 0, 'q'},
   {"replace-newlines", 0, 0, 'r'},
   {"scan", 0, 0, 's'},
+  {"show-namespaces", 0, 0, SHOW_NAMESPACES_FLAG},
   {"ignore-warnings", 0, 0, 'w'},
   {"version", 0, 0, 'v'},
   {NULL, 0, 0, 0}
@@ -474,6 +497,13 @@ main(int argc, char *argv[])
         fputs(raptor_version_string, stdout);
         fputc('\n', stdout);
         exit(0);
+
+#ifdef SHOW_NAMESPACES_FLAG 0x100
+      case SHOW_NAMESPACES_FLAG:
+        report_namespace=1;
+        break;
+#endif
+
     }
     
   }
@@ -536,6 +566,9 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
+#ifdef SHOW_NAMESPACES_FLAG
+    puts(HELP_TEXT("s", "show-namespaces ", "Show namespaces as they are declared"));
+#endif
     puts(HELP_TEXT("w", "ignore-warnings ", "Ignore warning messages"));
     puts(HELP_TEXT("v", "version         ", "Print the Raptor version"));
     puts("\nReport bugs to http://bugs.librdf.org/");
@@ -639,6 +672,8 @@ main(int argc, char *argv[])
   }
   
   raptor_set_statement_handler(rdf_parser, rdf_parser, print_statements);
+
+  raptor_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
 
 
   if(serializer_syntax_name) {    
