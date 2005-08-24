@@ -483,6 +483,7 @@ typedef struct {
  * raptor_new_xml_writer().
  */
 typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...);
+
 /**
  * raptor_message_handler:
  * @user_data: user data
@@ -502,14 +503,16 @@ typedef void (*raptor_simple_message_handler)(void *user_data, const char *messa
  * in WWW retrieval.
  */
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
+
 /**
  * raptor_statement_handler:
  * @user_data: user data
- * @statement: statemetn to report
+ * @statement: statement to report
  *
  * Statement (triple) reporting handler function.
  */
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
+
 /**
  * raptor_generate_id_handler:
  * @user_data: user data
@@ -521,6 +524,17 @@ typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement
  * Return value: new ID to use
  */
 typedef unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_genid_type type, unsigned char* user_bnodeid);
+
+/**
+ * raptor_namespace_handler:
+ * @user_data: user data
+ * @nspace: #raptor_namespace declared
+ *
+ * XML Namespace declaration reporting handler set by 
+ * raptor_set_namespace_handler().
+ */
+typedef void (*raptor_namespace_handler)(void* user_data, raptor_namespace *nspace);
+
 /**
  * raptor_www_write_bytes_handler:
  * @www: WWW object
@@ -534,6 +548,7 @@ typedef unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_gen
  * Set by raptor_www_set_write_bytes_handler().
  */
 typedef void (*raptor_www_write_bytes_handler)(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
+
 /**
  * raptor_www_content_type_handler:
  * @www: WWW object
@@ -588,6 +603,8 @@ RAPTOR_API
 void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 RAPTOR_API
 void raptor_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
+RAPTOR_API
+void raptor_set_namespace_handler(raptor_parser* parser, void *user_data, raptor_namespace_handler handler);
 
 RAPTOR_API
 void raptor_print_statement(const raptor_statement * statement, FILE *stream);
