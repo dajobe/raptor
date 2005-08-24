@@ -134,7 +134,7 @@ void raptor_system_free(void *ptr);
   if(condition) { \
     RAPTOR_ASSERT_REPORT(msg) \
     RAPTOR_ASSERT_DIE \
-    return(ret); \
+    return ret; \
   } \
 } while(0)
 
@@ -150,7 +150,7 @@ void raptor_system_free(void *ptr);
   if(!pointer) { \
     RAPTOR_ASSERT_REPORT("object pointer of type " #type " is NULL.") \
     RAPTOR_ASSERT_DIE \
-    return(ret); \
+    return ret; \
   } \
 } while(0)
 
