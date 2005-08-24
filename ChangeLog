@@ -1,4 +1,62 @@
+2005-08-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor-config.in, src/raptor-config.1:
+	s/features/options/ so not to confuse with raptor_feature
+
+	* utils/rapper.c:
+	Add HELP_TEXT_LONG to deal with help that has no short option.
+
+	* utils/rapper.c: fix --show-namespaces help
+
+	* utils/rapper.1: Added --show-namespaces
+
+	* utils/rapper.c: (print_namespaces) Added
+	Added --show-namespaces option - long options only.
+
+	* src/turtle_parser.y, src/raptor_rdfxml.c, src/n3_parser.y:
+	Handle raptor_new_namespace failing.
+
+	* src/turtle_parser.y, src/raptor_rdfxml.c, src/n3_parser.y:
+	Remove calls to raptor_namespaces_start_namespace_full and use the
+	three functions raptor_new_namespace,
+	raptor_namespaces_start_namespace and
+	raptor_parser_start_namespace instead.
+
+	* src/raptor_parse.c (raptor_set_namespace_handler): Added.  New
+	user method.
+	(raptor_parser_start_namespace): Added.  Internal function to
+	operate when namespaces are declared.
+
+	* src/raptor.h: Added raptor_namespace_handler typedef.  Added
+	raptor_set_namespace_handler prototype.
+
+	* src/raptor_internal.h: raptor_parser_s gains namespace_handler
+	and namespace_handler_user_data fields.  Added
+	raptor_parser_start_namespace prototype.
+
+2005-08-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* tests/Makefile.am: link to libxml2 bug report
+
+	* src/raptor_rss.c (raptor_rss_emit_type_triple,
+	raptor_rss_emit_enclosure, raptor_rss_emit_connection): Zap
+	literal language and datatype before setting up statement objects.
+
+	* src/ntriples_parse.c (raptor_ntriples_generate_statement): Zap
+	literal language and datatype before setting up statement objects.
+
+	* src/n3_parser.y (raptor_n3_generate_statement): Zap literal
+	language and datatype for !literals.  Add assertion.
+
+	* src/raptor_internal.h (RAPTOR_ASSERT_RETURN): Remove ()s around
+	return to allow no-value.
+
+	* src/turtle_parser.y (raptor_turtle_generate_statement): Zap
+	literal language and datatype for !literals.  Add assertion.
+
 2005-08-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor.h: autodocs fixes
 
 	* src/raptor.h: autodocs
 
