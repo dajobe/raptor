@@ -138,10 +138,12 @@ print_namespaces(void* user_data, raptor_namespace *nspace)
 
 #ifdef HAVE_GETOPT_LONG
 #define HELP_TEXT(short, long, description) "  -" short ", --" long "  " description
+#define HELP_TEXT_LONG(long, description) "      --" long "  " description
 #define HELP_ARG(short, long) "--" #long
 #define HELP_PAD "\n                          "
 #else
 #define HELP_TEXT(short, long, description) "  -" short "  " description
+#define HELP_TEXT_LONG(long, description)
 #define HELP_ARG(short, long) "-" #short
 #define HELP_PAD "\n      "
 #endif
@@ -567,7 +569,7 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
 #ifdef SHOW_NAMESPACES_FLAG
-    puts(HELP_TEXT(" ", "show-namespaces ", "Show namespaces as they are declared"));
+    puts(HELP_TEXT_LONG("show-namespaces ", "Show namespaces as they are declared"));
 #endif
     puts(HELP_TEXT("w", "ignore-warnings ", "Ignore warning messages"));
     puts(HELP_TEXT("v", "version         ", "Print the Raptor version"));
