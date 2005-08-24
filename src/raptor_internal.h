@@ -403,6 +403,10 @@ struct raptor_parser_s {
   char *default_generate_id_handler_prefix;
   size_t default_generate_id_handler_prefix_length;
 
+  /* namespace callback */
+  raptor_namespace_handler namespace_handler;
+  void* namespace_handler_user_data;
+
   /* parser specific stuff */
   void *context;
 
@@ -622,11 +626,14 @@ extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 /* raptor_nfc.c */
 int raptor_nfc_check (const unsigned char* string, size_t len, int *error);
 
-/* raptor_nspace.c */
+
+/* raptor_namespace.c */
 
 #ifdef RAPTOR_DEBUG
 void raptor_namespace_print(FILE *stream, raptor_namespace* ns);
 #endif
+
+void raptor_parser_start_namespace(raptor_parser* rdf_parser, raptor_namespace* nspace);
 
 
 /* 
