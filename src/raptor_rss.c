@@ -802,6 +802,8 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
   
   rss_parser->statement.object=(void*)type_uri;
   rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.object_literal_language=NULL;
+  rss_parser->statement.object_literal_datatype=NULL;
   
   /* Generate the statement */
   (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
@@ -832,6 +834,8 @@ raptor_rss_emit_enclosure(raptor_parser* rdf_parser,
     rss_parser->statement.object=identifier->id;
     rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   }
+  rss_parser->statement.object_literal_language=NULL;
+  rss_parser->statement.object_literal_datatype=NULL;
 
   (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
 
@@ -890,9 +894,12 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
       continue;
     
     for (field=item->fields[f]; field; field=field->next) {
+      rss_parser->statement.object_literal_language=NULL;
+      rss_parser->statement.object_literal_datatype=NULL;
       if(field->value) {
         rss_parser->statement.object=field->value;
         rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
+        /* FIXME - should store and emit languages */
       } else {
         rss_parser->statement.object=field->uri;
         rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -938,6 +945,8 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
   
   rss_parser->statement.object=object_identifier->uri ? (void*)object_identifier->uri : (void*)object_identifier->id;
   rss_parser->statement.object_type=object_identifier->type;
+  rss_parser->statement.object_literal_language=NULL;
+  rss_parser->statement.object_literal_datatype=NULL;
   
   /* Generate the statement */
   (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
