@@ -493,6 +493,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
 {
   unsigned char *prefix=$2;
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_namespace *ns;
 
 #if RAPTOR_DEBUG > 1  
   printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string($3));
@@ -509,9 +510,12 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
     }
   }
 
-  raptor_namespaces_start_namespace_full(&n3_parser->namespaces,
-                                         prefix, 
-                                         (const unsigned char*)raptor_uri_as_string($3), 0);
+  ns=raptor_new_namespace(&n3_parser->namespaces,
+                          prefix, 
+                          (const unsigned char*)raptor_uri_as_string($3), 0);
+  raptor_namespaces_start_namespace(&n3_parser->namespaces, ns);
+  raptor_parser_start_namespace(rdf_parser, ns);
+
   if($2)
     RAPTOR_FREE(cstring, $2);
   raptor_free_uri($3);

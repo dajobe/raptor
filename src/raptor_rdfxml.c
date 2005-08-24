@@ -735,9 +735,14 @@ raptor_xml_start_element_handler(void *user_data,
                     raptor_rdf_namespace_uri_len)) {
           raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
         } else {
-          raptor_namespaces_start_namespace_full(&rdf_xml_parser->namespaces,
-                                                 prefix, namespace_name,
-                                                 raptor_sax2_get_depth(sax2));
+          raptor_namespace *ns;
+          
+          ns=raptor_new_namespace(&rdf_xml_parser->namespaces,
+                                  prefix, namespace_name,
+                                  raptor_sax2_get_depth(sax2));
+
+          raptor_namespaces_start_namespace(&rdf_xml_parser->namespaces, ns);
+          raptor_parser_start_namespace(rdf_parser, ns);
         }
         
         atts[i]=NULL; 
