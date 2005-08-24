@@ -513,8 +513,10 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
   ns=raptor_new_namespace(&n3_parser->namespaces,
                           prefix, 
                           (const unsigned char*)raptor_uri_as_string($3), 0);
-  raptor_namespaces_start_namespace(&n3_parser->namespaces, ns);
-  raptor_parser_start_namespace(rdf_parser, ns);
+  if(ns) {
+    raptor_namespaces_start_namespace(&n3_parser->namespaces, ns);
+    raptor_parser_start_namespace(rdf_parser, ns);
+  }
 
   if($2)
     RAPTOR_FREE(cstring, $2);

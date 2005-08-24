@@ -741,8 +741,10 @@ raptor_xml_start_element_handler(void *user_data,
                                   prefix, namespace_name,
                                   raptor_sax2_get_depth(sax2));
 
-          raptor_namespaces_start_namespace(&rdf_xml_parser->namespaces, ns);
-          raptor_parser_start_namespace(rdf_parser, ns);
+          if(ns) {
+            raptor_namespaces_start_namespace(&rdf_xml_parser->namespaces, ns);
+            raptor_parser_start_namespace(rdf_parser, ns);
+          }
         }
         
         atts[i]=NULL; 
