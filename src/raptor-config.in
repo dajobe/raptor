@@ -45,7 +45,7 @@ known values for OPTION are:
   --libs                print library linking information
   --libtool-libs        print linking information for use with libtool
   --cflags		print pre-processor and compiler flags
-  --features		print raptor compiled features
+  --options		print raptor library compiled options
   --help                display this help and exit
   --version             output version information
   --version-decimal     output version as a decimal integer
@@ -83,8 +83,8 @@ while test $# -gt 0; do
     --cflags)
       echo_cflags=yes
       ;;
-    --features)
-      echo_features=yes
+    --options)
+      echo_options=yes
       ;;
     --libs)
       echo_libs=yes
@@ -110,7 +110,7 @@ fi
 if test "$echo_cflags" = "yes"; then
   echo $includes
 fi
-if test "$echo_features" = "yes"; then
+if test "$echo_options" = "yes"; then
   if test @RAPTOR_WWW_LIBRARY@ != none; then
     echo "www-library: @RAPTOR_WWW_LIBRARY@"
   fi
