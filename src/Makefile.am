@@ -109,9 +109,14 @@ endif
 if RAPTOR_PARSER_GUESS
 libraptor_la_SOURCES += raptor_guess.c
 endif
-# FIXME: the following 3 serializers cannot be conditionally compiled away
-libraptor_la_SOURCES += raptor_serialize_rdfxml.c \
-raptor_serialize_ntriples.c raptor_serialize_simple.c
+# Always available
+libraptor_la_SOURCES += raptor_serialize_simple.c
+if RAPTOR_SERIALIZER_RDFXML
+libraptor_la_SOURCES += raptor_serialize_rdfxml.c
+endif
+if RAPTOR_SERIALIZER_NTRIPLES
+libraptor_la_SOURCES += raptor_serialize_ntriples.c
+endif
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
 libraptor_la_SOURCES += raptor_serialize_rdfxmla.c
 endif
