@@ -118,7 +118,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         s+= ulen-1;
         i+= ulen-1;
         
-        if(unichar < 0 || unichar > 0x10ffff) {
+        if(unichar > 0x10ffff) {
           error_handler(error_data,
                         "Turtle string error - illegal Unicode character with code point #x%lX.", 
                         unichar);
