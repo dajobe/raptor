@@ -149,7 +149,7 @@ raptor_features_enumerate_common(const raptor_feature feature,
  */
 int
 raptor_feature_value_type(const raptor_feature feature) {
-  if (feature  < 0 || feature > RAPTOR_FEATURE_LAST)
+  if(feature > RAPTOR_FEATURE_LAST)
     return -1;
   return (raptor_features_list[feature].flags & 4) ? 1 : 0;
 }
