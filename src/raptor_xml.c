@@ -637,7 +637,7 @@ raptor_xml_name_check(const unsigned char *string, size_t length,
     if(unichar_len < 0 || unichar_len > (int)length)
       return 0;
 
-    if(unichar < 0 || unichar > 0x10ffff)
+    if(unichar > 0x10ffff)
       return 0;
   
     if(!pos) {
