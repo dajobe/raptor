@@ -1,4 +1,43 @@
+2005-09-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/turtle_common.c (raptor_stringbuffer_append_turtle_string):
+	Do not check unsigned for <0
+
+	* src/raptor_xml.c (raptor_xml_name_check):
+	Do not check unsigned for <0
+
+	* src/raptor_utf8.c (raptor_utf8_check): Do not check unsigned for <0
+
+	* src/raptor_serialize.c (raptor_serializers_enumerate):
+	counter can never be <0
+
+	* src/raptor_rdfxml.c (raptor_element_content_type_as_string):
+	Do not check unsigned for <0
+
+	* src/raptor_feature.c (raptor_feature_value_type):
+	Do not check unsigned for <0
+
+	* src/ntriples_parse.c (raptor_ntriples_term):
+	Do not check unsigned for <0
+
+	* src/raptor_parse.c (raptor_syntaxes_enumerate):
+	counter can never be <0
+
 2005-08-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/Makefile.am: Add more conditional compiles for serializers
+
+	* src/Makefile.am: Added raptor_serialize_rdfxml.c
+	raptor_serialize_ntriples.c raptor_serialize_simple.c
+
+	* src/raptor_serialize.c: Moved specific serializers into separate
+	files - rdfxml, ntriples, simple
+
+	* src/raptor_serialize_rdfxml.c: RDF/XML serializer
+
+	* src/raptor_serialize_ntriples.c: N-Triples serializer
+
+	* src/raptor_serialize_simple.c: Simple serializer
 
 	* src/raptor-config.in, src/raptor-config.1:
 	s/features/options/ so not to confuse with raptor_feature
