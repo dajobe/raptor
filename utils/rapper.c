@@ -500,7 +500,7 @@ main(int argc, char *argv[])
         fputc('\n', stdout);
         exit(0);
 
-#ifdef SHOW_NAMESPACES_FLAG 0x100
+#ifdef SHOW_NAMESPACES_FLAG
       case SHOW_NAMESPACES_FLAG:
         report_namespace=1;
         break;
