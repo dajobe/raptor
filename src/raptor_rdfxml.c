@@ -403,9 +403,10 @@ static const struct {
 
 
 
-static const char * raptor_element_content_type_as_string(raptor_element_content_type type) 
+static const char *
+raptor_element_content_type_as_string(raptor_element_content_type type) 
 {
-  if(type<0 || type > RAPTOR_ELEMENT_CONTENT_TYPE_LAST)
+  if(type > RAPTOR_ELEMENT_CONTENT_TYPE_LAST)
     return "INVALID";
   return rdf_content_type_info[type].name;
 }
