@@ -253,7 +253,7 @@ raptor_serializers_enumerate(const unsigned int counter,
   unsigned int i;
   raptor_serializer_factory *factory=serializers;
 
-  if(!factory || counter < 0)
+  if(!factory)
     return 1;
 
   for(i=0; factory && i<=counter ; i++, factory=factory->next) {
