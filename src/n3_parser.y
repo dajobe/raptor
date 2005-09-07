@@ -179,7 +179,10 @@ statement: directive
 
 #if RAPTOR_DEBUG > 1  
   printf("statement 2\n subject=");
-  raptor_identifier_print(stdout, $1);
+  if($1)
+    raptor_identifier_print(stdout, $1);
+  else
+    fputs("NULL", stdout);
   if($2) {
     printf("\n propertyList (reverse order to syntax)=");
     raptor_sequence_print($2, stdout);
@@ -188,8 +191,8 @@ statement: directive
     printf("\n and empty propertyList\n");
 #endif
 
-  if($2) {
-    /* non-empty property list, handle it  */
+  if($1 && $2) {
+    /* have subject and non-empty property list, handle it  */
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
@@ -206,9 +209,10 @@ statement: directive
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
     }
-
-    raptor_free_sequence($2);
   }
+
+  if($2)
+    raptor_free_sequence($2);
 
   if($1)
     raptor_free_identifier($1);
