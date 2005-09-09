@@ -135,20 +135,20 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
   if(defaults) {
     /* defined at level -1 since always 'present' when inside the XML world */
     raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
-                                           (unsigned char*)raptor_xml_namespace_uri, -1);
+                                           raptor_xml_namespace_uri, -1);
     if(defaults >= 2) {
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"rdf",
-                                             (unsigned char*)raptor_rdf_namespace_uri, 0);
+                                             raptor_rdf_namespace_uri, 0);
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"rdfs",
-                                             (unsigned char*)raptor_rdf_schema_namespace_uri, 0);
+                                             raptor_rdf_schema_namespace_uri, 0);
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"xsd",
-                                             (unsigned char*)raptor_xmlschema_datatypes_namespace_uri, 0);
+                                             raptor_xmlschema_datatypes_namespace_uri, 0);
       raptor_namespaces_start_namespace_full(nstack,
                                              (const unsigned char*)"owl",
-                                             (unsigned char*)raptor_owl_namespace_uri, 0);
+                                             raptor_owl_namespace_uri, 0);
     }
   }
 }
