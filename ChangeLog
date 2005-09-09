@@ -1,8 +1,19 @@
 2005-09-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
-	* src/raptor_xslt.c (raptor_xslt_parse_chunk):
-	If the content is in one chunk and is_end
-	is true, call xmlParseChunk with the is_end flag.  (René Puls)
+	* src/raptor_internal.h (raptor_parser_s): Add new fields to the
+	end of the struct; add unused1 to try to make old offsets work
+
+	* src/raptor_namespace.c (raptor_namespaces_init): Remove
+	un-necessary casts for constant namespace names.
+
+	* src/raptor_uri.c (raptor_uri_uri_string_to_filename_fragment):
+	For win32, only remove leading / if there is one present. (patch
+	from John C. Barstow)
+	(main): Correct test case result to match above.
+
+	* src/raptor_xslt.c (raptor_xslt_parse_chunk): If the content is
+	in one chunk and is_end is true, call xmlParseChunk with the
+	is_end flag.  (patch from René Puls)
 
 2005-09-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
