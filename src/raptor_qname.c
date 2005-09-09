@@ -92,7 +92,7 @@
  * @error_handler: function to call on an error
  * @error_data: user data for error function
  *
- * Create a new XML qname.
+ * Constructor - create a new XML qname.
  * 
  * Create a new qname from the local element/attribute name,
  * with optional (attribute) value.  The namespace stack is used
@@ -228,7 +228,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
  * @local_name: element or attribute name
  * @value: attribute value (else is an element)
  *
- * Create a new XML qname.
+ * Constructor - create a new XML qname.
  * 
  * Create a new qname from the namespace and local element/attribute name,
  * with optional (attribute) value.
@@ -287,8 +287,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
  * raptor_qname_copy:
  * @qname: existing qname
  *
- * Copy an new XML qname.
- * 
+ * Copy constructor - copy an existing XML qname.
  *
  * Return value: a new #raptor_qname object or NULL on failure
  **/
@@ -348,6 +347,13 @@ raptor_qname_print(FILE *stream, raptor_qname* name)
 }
 #endif
 
+
+/**
+ * raptor_free_qname:
+ * @name: #raptor_qname object
+ * 
+ * Destructor - destroy a raptor_qname object.
+ **/
 void
 raptor_free_qname(raptor_qname* name) 
 {
@@ -363,6 +369,15 @@ raptor_free_qname(raptor_qname* name)
 }
 
 
+/**
+ * raptor_qname_equal:
+ * @name1: first #raptor_qname
+ * @name2: second #raptor_name
+ * 
+ * Compare two XML Qnames for equality.
+ * 
+ * Return value: non-0 if the qnames are equal.
+ **/
 int
 raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
 {
