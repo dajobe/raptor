@@ -393,6 +393,8 @@ struct raptor_parser_s {
   raptor_message_handler error_handler;
   raptor_message_handler warning_handler;
 
+  void* unused1; /* UNUSED - re-use struct slot later needed */
+
   /* parser callbacks */
   raptor_statement_handler statement_handler;
 
@@ -403,14 +405,15 @@ struct raptor_parser_s {
   char *default_generate_id_handler_prefix;
   size_t default_generate_id_handler_prefix_length;
 
-  /* namespace callback */
-  raptor_namespace_handler namespace_handler;
-  void* namespace_handler_user_data;
-
   /* parser specific stuff */
   void *context;
 
   struct raptor_parser_factory_s* factory;
+
+  /* namespace callback */
+  raptor_namespace_handler namespace_handler;
+
+  void* namespace_handler_user_data;
 };
 
 
