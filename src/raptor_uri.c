@@ -616,7 +616,13 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   if(ud->authority)
     len+=ud->authority_len+3;
 
-  p=ud->path+1;
+  p=ud->path;
+  /* remove leading slash from path if there is one */
+  if(*p && p[0] == '/') {
+	  p++;
+	  len--;
+  }
+  /* handle case where path starts with drive letter */
   if(*p && (p[1] == '|' || p[1] == ':')) {
     /* Either 
      *   "a:" like in file://a|/... or file://a:/... 
@@ -632,7 +638,6 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
     } else
       p[1]=':';
   }
-  len--; /* for removing leading / off path */
 #endif
 
 
@@ -1387,7 +1392,7 @@ main(int argc, char *argv[])
   failures += assert_uri_to_filename ("file:///C:/My%20Documents/%25age.txt", "C:\\My Documents\\%age.txt");
 
 
-  failures += assert_uri_to_filename ("file:c:\\thing",     ":\\thing");
+  failures += assert_uri_to_filename ("file:c:\\thing",     "c:\\thing");
   failures += assert_uri_to_filename ("file:/c:\\thing",    "c:\\thing");
   failures += assert_uri_to_filename ("file://c:\\thing",   NULL);
   failures += assert_uri_to_filename ("file:///c:\\thing",  "c:\\thing");
