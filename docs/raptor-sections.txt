@@ -74,6 +74,8 @@ raptor_set_error_handler
 raptor_set_warning_handler
 raptor_set_statement_handler
 raptor_set_generate_id_handler
+raptor_namespace_handler
+raptor_set_namespace_handler
 raptor_get_locator
 raptor_set_default_generate_id_parameters
 raptor_parse_chunk
