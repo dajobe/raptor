@@ -254,6 +254,8 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
     xslt_parser->ctxt->replaceEntities = 1;
     xslt_parser->ctxt->loadsubset = 1;
 
+    if(is_end)
+      xmlParseChunk(xslt_parser->ctxt, (const char*)s, 0, is_end);
   } else if((s && len) || is_end)
     xmlParseChunk(xslt_parser->ctxt, (const char*)s, len, is_end);
 
