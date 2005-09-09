@@ -1,3 +1,9 @@
+2005-09-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_xslt.c (raptor_xslt_parse_chunk):
+	If the content is in one chunk and is_end
+	is true, call xmlParseChunk with the is_end flag.  (René Puls)
+
 2005-09-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* src/n3_parser.y, src/turtle_parser.y (statement):
