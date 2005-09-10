@@ -222,11 +222,7 @@ extern void raptor_libxml_validation_warning(void *context, const char *msg, ...
 void raptor_libxml_free(xmlParserCtxtPtr xc);
 
 /* raptor_parse.c - exported to libxml part */
-extern void raptor_libxml_update_document_locator (raptor_parser *rdf_parser);
-
-extern xmlParserCtxtPtr raptor_get_libxml_context(raptor_parser *rdf_parser);
-extern void raptor_set_libxml_document_locator(raptor_parser *rdf_parser, xmlSAXLocatorPtr loc);
-extern xmlSAXLocatorPtr raptor_get_libxml_document_locator(raptor_parser *rdf_parser);
+extern void raptor_libxml_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
 
 #ifdef RAPTOR_LIBXML_MY_ENTITIES
 extern raptor_xml_entity* raptor_get_libxml_entities(raptor_parser *rdf_parser);
@@ -241,6 +237,7 @@ extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_ent
 #ifdef RAPTOR_XML_EXPAT
 /* raptor_expat.c exports */
 extern void raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri);
+extern void raptor_expat_update_document_locator(raptor_sax2* sax2, raptor_locator *locator);
 
 /* raptor_parse.c */
 void raptor_xml_unparsed_entity_decl_handler(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
@@ -572,17 +569,20 @@ void raptor_delete_parser_factories(void);
 extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
 extern void raptor_parser_error(raptor_parser* parser, const char *message, ...);
 extern void raptor_parser_simple_error(void* parser, const char *message, ...);
+extern void raptor_parser_error_message_handler(void *user_data, raptor_locator* locator, const char *message);
 extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
 extern void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
+extern void raptor_parser_fatal_error_message_handler(void *user_data, raptor_locator* locator, const char *message);
 extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
 extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments);
+void raptor_parser_warning_message_handler(void *user_data, raptor_locator* locator, const char *message);
 
 
 /* raptor_parse.c */
 
 int raptor_parser_exec(raptor_parser* rdf_parser, const char *name);
 
-typedef struct raptor_xml_parser_s raptor_xml_parser;
+typedef struct raptor_rdfxml_parser_s raptor_rdfxml_parser;
 
 /* Prototypes for common expat/libxml parsing event-handling functions */
 extern void raptor_xml_start_element_handler(void *user_data, const unsigned char *name, const unsigned char **atts);
@@ -593,7 +593,7 @@ extern void raptor_xml_cdata_handler(void *user_data, const unsigned char *s, in
 void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
 
 #ifdef RAPTOR_DEBUG
-void raptor_xml_parser_stats_print(raptor_xml_parser* rdf_xml_parser, FILE *stream);
+void raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, FILE *stream);
 #endif
 
 void raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_parser);
@@ -602,7 +602,6 @@ void raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from
 int raptor_features_enumerate_common(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, int flags);
 
 /* raptor_general.c */
-extern void raptor_expat_update_document_locator (raptor_parser *rdf_parser);
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
 int raptor_check_ordinal(const unsigned char *name);
 
@@ -612,7 +611,6 @@ void raptor_identifier_print(FILE *stream, raptor_identifier* identifier);
 #endif
   
 /* raptor_locator.c */
-extern void raptor_update_document_locator (raptor_parser *rdf_parser);
 
 
 #ifdef HAVE_STRCASECMP
@@ -832,7 +830,25 @@ struct raptor_xml_element_s {
 };
 
 
+/* start of an element */
+typedef void (*raptor_sax2_start_element_handler)(void *user_data, const unsigned char *name,  const unsigned char **atts);
+/* end of an element */
+typedef void (*raptor_sax2_end_element_handler)(void *user_data, const unsigned char *name);
+/* characters */
+typedef void (*raptor_sax2_characters_handler)(void *user_data, const unsigned char *s, int len);
+/* like <![CDATA[...]> */
+typedef void (*raptor_sax2_cdata_handler)(void *user_data, const unsigned char *s, int len);
+/* comment */
+typedef void (*raptor_sax2_comment_handler)(void *user_data, const unsigned char *s);
+/* unparsed (NDATA) entity */
+typedef void (*raptor_sax2_unparsed_entity_decl_handler)(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
+/* external entity reference */
+typedef int (*raptor_sax2_external_entity_ref_handler)(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
+
 struct raptor_sax2_s {
+#ifdef RAPTOR_XML_LIBXML
+  int magic;
+#endif
   void* user_data;
   
 #ifdef RAPTOR_XML_EXPAT
@@ -869,38 +885,71 @@ struct raptor_sax2_s {
   raptor_xml_element *current_element;
 
   /* start of an element */
-  void (*start_element_handler)(void *user_data, const unsigned char *name,  const unsigned char **atts);
+  raptor_sax2_start_element_handler start_element_handler;
   /* end of an element */
-  void (*end_element_handler)(void *user_data, const unsigned char *name);
+  raptor_sax2_end_element_handler end_element_handler;
   /* characters */
-  void (*characters_handler)(void *user_data, const unsigned char *s, int len);
+  raptor_sax2_characters_handler characters_handler;
   /* like <![CDATA[...]> */
-  void (*cdata_handler)(void *user_data, const unsigned char *s, int len);
+  raptor_sax2_cdata_handler cdata_handler;
   /* comment */
-  void (*comment_handler)(void *user_data, const unsigned char *s);
+  raptor_sax2_comment_handler comment_handler;
   /* unparsed (NDATA) entity */
-  void (*unparsed_entity_decl_handler)(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
+  raptor_sax2_unparsed_entity_decl_handler unparsed_entity_decl_handler;
   /* external entity reference */
-  int (*external_entity_ref_handler)(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
+  raptor_sax2_external_entity_ref_handler external_entity_ref_handler;
+
+  raptor_locator *locator;
+
+  void *error_data;
+  raptor_message_handler error_handler;
+
+  void *fatal_error_data;
+  raptor_message_handler fatal_error_handler;
+
+  void *warning_data;
+  raptor_message_handler warning_handler;
 };
 
-raptor_sax2* raptor_new_sax2(void *user_data);
+void raptor_init_sax2(void);
+void raptor_finish_sax2(void);
+
+raptor_sax2* raptor_new_sax2(void *user_data, void *error_data, raptor_message_handler error_handler, void *fatal_error_data, raptor_message_handler fatal_error_handler, void *warning_data, raptor_message_handler warning_handler);
 void raptor_free_sax2(raptor_sax2 *sax2);
+
+void raptor_sax2_set_start_element_handler(raptor_sax2* sax2, raptor_sax2_start_element_handler handler);
+void raptor_sax2_set_end_element_handler(raptor_sax2* sax2, raptor_sax2_end_element_handler handler);
+void raptor_sax2_set_characters_handler(raptor_sax2* sax2, raptor_sax2_characters_handler handler);
+void raptor_sax2_set_cdata_handler(raptor_sax2* sax2, raptor_sax2_cdata_handler handler);
+void raptor_sax2_set_comment_handler(raptor_sax2* sax2, raptor_sax2_comment_handler handler);
+void raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler);
+void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler);
+void raptor_sax2_set_locator(raptor_sax2* sax2, raptor_locator* locator);
 void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
 void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
 
-raptor_xml_element* raptor_xml_element_pop(raptor_sax2 *sax2);
-void raptor_xml_element_push(raptor_sax2 *sax2, raptor_xml_element* element);
-int raptor_sax2_get_depth(raptor_sax2 *sax2);
-void raptor_sax2_inc_depth(raptor_sax2 *sax2);
-void raptor_sax2_dec_depth(raptor_sax2 *sax2);
-const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2 *sax2);
-raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2 *sax2);
-
+raptor_xml_element* raptor_xml_element_pop(raptor_sax2* sax2);
+void raptor_xml_element_push(raptor_sax2* sax2, raptor_xml_element* element);
+int raptor_sax2_get_depth(raptor_sax2* sax2);
+void raptor_sax2_inc_depth(raptor_sax2* sax2);
+void raptor_sax2_dec_depth(raptor_sax2* sax2);
+const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2* sax2);
+raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
+void raptor_sax2_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
+  
 #ifdef RAPTOR_DEBUG
 void raptor_print_xml_element(raptor_xml_element *element, FILE* stream);
 #endif
+
+void raptor_sax2_start_element(void* user_data, const unsigned char *name, const unsigned char **atts);
+void raptor_sax2_end_element(void* user_data, const unsigned char *name);
+void raptor_sax2_characters(void* user_data, const unsigned char *s, int len);
+void raptor_sax2_cdata(void* user_data, const unsigned char *s, int len);
+void raptor_sax2_comment(void* user_data, const unsigned char *s);
+void raptor_sax2_unparsed_entity_decl(void* user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
+int raptor_sax2_external_entity_ref(void* user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
+
 
 /* turtle_parser.y and turtle_lexer.l */
 typedef struct raptor_turtle_parser_s raptor_turtle_parser;
