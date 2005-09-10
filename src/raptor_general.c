@@ -86,6 +86,8 @@ raptor_init(void)
   if(raptor_initialised)
     return;
 
+  raptor_init_sax2();
+  
 #ifdef RAPTOR_PARSER_GUESS
   raptor_init_parser_guess();
 #endif
@@ -150,6 +152,8 @@ raptor_finish(void)
   raptor_delete_parser_factories();
   raptor_delete_serializer_factories();
 
+  raptor_finish_sax2();
+  
   raptor_initialised=0;
 }
 
