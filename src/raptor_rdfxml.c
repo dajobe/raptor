@@ -496,7 +496,7 @@ typedef struct raptor_element_s raptor_element;
 /*
  * Raptor parser object
  */
-struct raptor_xml_parser_s {
+struct raptor_rdfxml_parser_s {
   raptor_sax2 *sax2;
   
   /* stack of elements - elements add after current_element */
@@ -555,8 +555,8 @@ struct raptor_xml_parser_s {
 
 
 /* prototypes for element functions */
-static raptor_element* raptor_element_pop(raptor_xml_parser *rdf_parser);
-static void raptor_element_push(raptor_xml_parser *rdf_parser, raptor_element* element);
+static raptor_element* raptor_element_pop(raptor_rdfxml_parser *rdf_parser);
+static void raptor_element_push(raptor_rdfxml_parser *rdf_parser, raptor_element* element);
 
 static int raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element, const unsigned char *id);
 
@@ -572,17 +572,17 @@ static void raptor_generate_statement(raptor_parser *rdf_parser, raptor_uri *sub
 
 
 /* Prototypes for parsing data functions */
-static int raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name);
-static void raptor_xml_parse_terminate(raptor_parser *rdf_parser);
-static int raptor_xml_parse_start(raptor_parser* rdf_parser);
-static int raptor_xml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
-
+static int raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name);
+static void raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser);
+static int raptor_rdfxml_parse_start(raptor_parser* rdf_parser);
+static int raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
+static void raptor_rdfxml_update_document_locator(raptor_parser *rdf_parser);
 
 
 
 
 static raptor_element*
-raptor_element_pop(raptor_xml_parser *rdf_xml_parser) 
+raptor_element_pop(raptor_rdfxml_parser *rdf_xml_parser) 
 {
   raptor_element *element=rdf_xml_parser->current_element;
 
@@ -598,7 +598,7 @@ raptor_element_pop(raptor_xml_parser *rdf_xml_parser)
 
 
 static void
-raptor_element_push(raptor_xml_parser *rdf_xml_parser, raptor_element* element) 
+raptor_element_push(raptor_rdfxml_parser *rdf_xml_parser, raptor_element* element) 
 {
   element->parent=rdf_xml_parser->current_element;
   rdf_xml_parser->current_element=element;
@@ -632,13 +632,13 @@ raptor_free_element(raptor_element *element)
 }
 
 
-void
-raptor_xml_start_element_handler(void *user_data,
-                                 const unsigned char *name, 
-                                 const unsigned char **atts)
+static void
+raptor_rdfxml_start_element_handler(void *user_data,
+                                    const unsigned char *name, 
+                                    const unsigned char **atts)
 {
   raptor_parser* rdf_parser;
-  raptor_xml_parser* rdf_xml_parser;
+  raptor_rdfxml_parser* rdf_xml_parser;
   raptor_qname* el_name;
   raptor_sax2* sax2;
   unsigned char **xml_atts_copy=NULL;
@@ -654,54 +654,17 @@ raptor_xml_start_element_handler(void *user_data,
   int count_bumped=0;
   
   rdf_parser=(raptor_parser*)user_data;
-  rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   sax2=rdf_xml_parser->sax2;
   
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
-
   if(rdf_parser->failed)
     return;
 
-  raptor_update_document_locator(rdf_parser);
+  raptor_rdfxml_update_document_locator(rdf_parser);
 
   raptor_sax2_inc_depth(sax2);
 
   if(atts) {
-#ifdef RAPTOR_XML_LIBXML
-    /* Round 0 - do XML attribute value normalization */
-    for (i = 0; atts[i]; i+=2) {
-      unsigned char *value=(unsigned char*)atts[i+1];
-      unsigned char *src = value;
-      unsigned char *dst = xmlStrdup(value);
-
-      if (!dst) {
-        raptor_parser_fatal_error(rdf_parser, "Out of memory");
-	return;
-      }
-
-      atts[i+1]=dst;
-
-      while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) 
-        src++;
-      while (*src) {
-	if (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) {
-          while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09)
-            src++;
-          if (*src)
-            *dst++ = 0x20;
-	} else {
-          *dst++ = *src++;
-	}
-      }
-      *dst = '\0';
-      xmlFree(value);
-    }
-#endif
-
     /* Save passed in XML attributes pointers so we can 
      * NULL the pointers when they get handled below (various atts[i]=NULL)
      */
@@ -1070,11 +1033,11 @@ raptor_xml_start_element_handler(void *user_data,
 }
 
 
-void
-raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
+static void
+raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
 {
   raptor_parser* rdf_parser;
-  raptor_xml_parser* rdf_xml_parser;
+  raptor_rdfxml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_xml_element* xml_element;
 #ifdef RAPTOR_DEBUG_VERBOSE
@@ -1082,16 +1045,10 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 #endif
 
   rdf_parser=(raptor_parser*)user_data;
-  rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  rdf_xml_parser->sax2->tokens_count++;
-#endif
-#endif
+  rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
 
   if(!rdf_parser->failed) {
-    raptor_update_document_locator(rdf_parser);
+    raptor_rdfxml_update_document_locator(rdf_parser);
 
 #ifdef RAPTOR_DEBUG_VERBOSE
     element_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
@@ -1143,8 +1100,9 @@ raptor_xml_end_element_handler(void *user_data, const unsigned char *name)
 /* cdata (and ignorable whitespace for libxml). 
  * s is not 0 terminated for expat, is for libxml - grrrr.
  */
-void
-raptor_xml_characters_handler(void *user_data, const unsigned char *s, int len)
+static void
+raptor_rdfxml_characters_handler(void *user_data, 
+                                 const unsigned char *s, int len)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
@@ -1155,23 +1113,22 @@ raptor_xml_characters_handler(void *user_data, const unsigned char *s, int len)
 /* cdata (and ignorable whitespace for libxml). 
  * s is not 0 terminated for expat, is for libxml - grrrr.
  */
-void
-raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len)
+static void
+raptor_rdfxml_cdata_handler(void *user_data, const unsigned char *s, int len)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
   raptor_cdata_grammar(rdf_parser, s, len, 1);
 }
 
-#ifdef RAPTOR_XML_EXPAT
 /* This is called for a declaration of an unparsed (NDATA) entity */
-void
-raptor_xml_unparsed_entity_decl_handler(void *user_data,
-                                        const unsigned char* entityName,
-                                        const unsigned char* base,
-                                        const unsigned char* systemId,
-                                        const unsigned char* publicId,
-                                        const unsigned char* notationName) 
+static void
+raptor_rdfxml_unparsed_entity_decl_handler(void *user_data,
+                                           const unsigned char* entityName,
+                                           const unsigned char* base,
+                                           const unsigned char* systemId,
+                                           const unsigned char* publicId,
+                                           const unsigned char* notationName) 
 {
 /*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
   fprintf(stderr,
@@ -1182,14 +1139,14 @@ raptor_xml_unparsed_entity_decl_handler(void *user_data,
 }
 
 
-int 
-raptor_xml_external_entity_ref_handler(void *user_data,
-                                       const unsigned char* context,
-                                       const unsigned char* base,
-                                       const unsigned char* systemId,
-                                       const unsigned char* publicId)
+static int 
+raptor_rdfxml_external_entity_ref_handler(void *user_data,
+                                          const unsigned char* context,
+                                          const unsigned char* base,
+                                          const unsigned char* systemId,
+                                          const unsigned char* publicId)
 {
-/*  raptor_xml_parser* rdf_parser=(raptor_xml_parser*)user_data; */
+/*  raptor_rdfxml_parser* rdf_parser=(raptor_rdfxml_parser*)user_data; */
   fprintf(stderr,
           "raptor_xml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
           (base ?  (const char*)base : "(None)"), 
@@ -1200,23 +1157,22 @@ raptor_xml_external_entity_ref_handler(void *user_data,
    */
   return 1;
 }
-#endif
 
 
 /* comment handler
  * s is 0 terminated
  */
-void
-raptor_xml_comment_handler(void *user_data, const unsigned char *s)
+static void
+raptor_rdfxml_comment_handler(void *user_data, const unsigned char *s)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
-  raptor_xml_parser* rdf_xml_parser;
+  raptor_rdfxml_parser* rdf_xml_parser;
   raptor_element* element;
 
   if(rdf_parser->failed)
     return;
 
-  rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   element=rdf_xml_parser->current_element;
 
   if(element) {
@@ -1233,23 +1189,26 @@ raptor_xml_comment_handler(void *user_data, const unsigned char *s)
 
 
 static int
-raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
+raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser* rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   raptor_sax2* sax2;
   
-  sax2=raptor_new_sax2(rdf_parser);
+  sax2=raptor_new_sax2(rdf_parser, 
+                       rdf_parser, raptor_parser_error_message_handler,
+                       rdf_parser, raptor_parser_fatal_error_message_handler,
+                       rdf_parser, raptor_parser_warning_message_handler);
   rdf_xml_parser->sax2=sax2;
 
-  sax2->start_element_handler=raptor_xml_start_element_handler;
-  sax2->end_element_handler=raptor_xml_end_element_handler;
-  sax2->characters_handler=raptor_xml_characters_handler;
-  sax2->cdata_handler=raptor_xml_cdata_handler;
-  sax2->comment_handler=raptor_xml_comment_handler;
-#ifdef RAPTOR_XML_EXPAT
-  sax2->unparsed_entity_decl_handler=raptor_xml_unparsed_entity_decl_handler;
-  sax2->external_entity_ref_handler=raptor_xml_external_entity_ref_handler;
-#endif
+  raptor_sax2_set_start_element_handler(sax2, raptor_rdfxml_start_element_handler);
+  raptor_sax2_set_end_element_handler(sax2, raptor_rdfxml_end_element_handler);
+  raptor_sax2_set_characters_handler(sax2, raptor_rdfxml_characters_handler);
+  raptor_sax2_set_cdata_handler(sax2, raptor_rdfxml_cdata_handler);
+  raptor_sax2_set_comment_handler(sax2, raptor_rdfxml_comment_handler);
+  raptor_sax2_set_unparsed_entity_decl_handler(sax2, raptor_rdfxml_unparsed_entity_decl_handler);
+  raptor_sax2_set_external_entity_ref_handler(sax2, raptor_rdfxml_external_entity_ref_handler);
+
+  raptor_sax2_set_locator(sax2, &rdf_parser->locator);
   
   RAPTOR_RDF_type_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("type");
   RAPTOR_RDF_value_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("value");
@@ -1285,12 +1244,12 @@ raptor_xml_parse_init(raptor_parser* rdf_parser, const char *name)
 
 
 static int
-raptor_xml_parse_start(raptor_parser* rdf_parser)
+raptor_rdfxml_parse_start(raptor_parser* rdf_parser)
 {
   raptor_uri_handler *uri_handler;
   void *uri_context;
   raptor_uri *uri=rdf_parser->base_uri;
-  raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser* rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
 
   /* base URI required for RDF/XML */
   if(!uri)
@@ -1313,9 +1272,9 @@ raptor_xml_parse_start(raptor_parser* rdf_parser)
 
 
 static void
-raptor_xml_parse_terminate(raptor_parser *rdf_parser) 
+raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser) 
 {
-  raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser* rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   raptor_element* element;
   int i;
 
@@ -1334,12 +1293,6 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
   }
   
 
-#ifdef RAPTOR_XML_LIBXML
-#ifdef RAPTOR_LIBXML_MY_ENTITIES
-  raptor_xml_libxml_free_entities(rdf_parser);
-#endif
-#endif
-
   raptor_free_id_set(rdf_xml_parser->id_set);
 
   raptor_namespaces_clear(&rdf_xml_parser->namespaces);
@@ -1348,7 +1301,7 @@ raptor_xml_parse_terminate(raptor_parser *rdf_parser)
 
 
 static int
-raptor_xml_parse_recognise_syntax(raptor_parser_factory* factory, 
+raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory, 
                                   const unsigned char *buffer, size_t len,
                                   const unsigned char *identifier, 
                                   const unsigned char *suffix, 
@@ -1401,10 +1354,10 @@ raptor_xml_parse_recognise_syntax(raptor_parser_factory* factory,
  * Return value: Non zero on failure.
  **/
 static int
-raptor_xml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer,
+raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer,
                        size_t len, int is_end) 
 {
-  raptor_xml_parser* rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser* rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   if(rdf_parser->failed)
     return 1;
 
@@ -1433,7 +1386,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   raptor_statement *statement=&rdf_parser->statement;
   const unsigned char *language=NULL;
   static const char empty_literal[1]="";
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   char *reified_id=NULL;
 
   if(rdf_parser->failed)
@@ -1616,7 +1569,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     value = attr->value;
 
     if(!attr->nspace) {
-      raptor_update_document_locator(rdf_parser);
+      raptor_rdfxml_update_document_locator(rdf_parser);
       raptor_parser_error(rdf_parser, "Using property attribute '%s' without a namespace is forbidden.", name);
       continue;
     }
@@ -1624,7 +1577,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
 
     if(!raptor_utf8_is_nfc(value, strlen((const char*)value))) {
       const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
-      raptor_update_document_locator(rdf_parser);
+      raptor_rdfxml_update_document_locator(rdf_parser);
       if(rdf_parser->feature_non_nfc_fatal)
         raptor_parser_error(rdf_parser, message, name, value);
       else
@@ -1647,12 +1600,12 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
         name++;
         ordinal=raptor_check_ordinal(name);
         if(ordinal < 1) {
-          raptor_update_document_locator(rdf_parser);
+          raptor_rdfxml_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property attribute '%s' seen on containing element '%s'.", ordinal, attr->local_name, name);
           ordinal=1;
         }
       } else {
-        raptor_update_document_locator(rdf_parser);
+        raptor_rdfxml_update_document_locator(rdf_parser);
         if(raptor_forbidden_propertyAttribute_name((const char*)name) > 0)
           raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
         else
@@ -1729,7 +1682,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
     if(rdf_syntax_terms_info[i].type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
       const char *name=rdf_syntax_terms_info[i].name;
       if(raptor_forbidden_propertyAttribute_name(name)) {
-        raptor_update_document_locator(rdf_parser);
+        raptor_rdfxml_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
           continue;
       }
@@ -1737,7 +1690,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
 
     if(object_is_literal && !raptor_utf8_is_nfc(value, strlen((const char*)value))) {
       const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
-      raptor_update_document_locator(rdf_parser);
+      raptor_rdfxml_update_document_locator(rdf_parser);
       if(rdf_parser->feature_non_nfc_fatal)
         raptor_parser_error(rdf_parser, message, rdf_syntax_terms_info[i].name, value);
       else
@@ -1789,7 +1742,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
   const unsigned char *el_name=raptor_xml_element_get_name(xml_element)->local_name;
   int element_in_rdf_ns=(raptor_xml_element_get_name(xml_element)->nspace && 
                          raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   int rc=0;
   
   state=element->state;
@@ -1887,7 +1840,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           /* We cannot handle this */
           raptor_parser_warning(rdf_parser, "Using node element '%s' without a namespace is forbidden.", 
                                 raptor_xml_element_get_name(xml_element)->local_name);
-          raptor_update_document_locator(rdf_parser);
+          raptor_rdfxml_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
           finished=1;
@@ -1913,7 +1866,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            (element->parent->state == RAPTOR_STATE_PROPERTYELT ||
             element->parent->state == RAPTOR_STATE_MEMBER_PROPERTYELT) &&
            element->parent->sax2->content_element_seen > 1) {
-          raptor_update_document_locator(rdf_parser);
+          raptor_rdfxml_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "The enclosing property already has an object");
           state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
@@ -1935,7 +1888,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if((element->rdf_attr[RDF_ATTR_ID]!=NULL) +
            (element->rdf_attr[RDF_ATTR_about]!=NULL) +
            (element->rdf_attr[RDF_ATTR_nodeID]!=NULL)>1) {
-          raptor_update_document_locator(rdf_parser);
+          raptor_rdfxml_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "Multiple attributes of rdf:ID, rdf:about and rdf:nodeID on element '%s' - only one allowed.", el_name);
         }
 
@@ -2164,7 +2117,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
              */
             
             if(element->parent->object.uri) {
-              raptor_update_document_locator(rdf_parser);
+              raptor_rdfxml_update_document_locator(rdf_parser);
               raptor_parser_error(rdf_parser, "Tried to set multiple objects of a statement");
             } else {
               /* Store URI of this node in our parent as the property object */
@@ -2237,7 +2190,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(!raptor_xml_element_get_name(xml_element)->uri) {
           raptor_parser_error(rdf_parser, "Using property element '%s' without a namespace is forbidden.", 
                               raptor_xml_element_get_name(element->parent->sax2)->local_name);
-          raptor_update_document_locator(rdf_parser);
+          raptor_rdfxml_update_document_locator(rdf_parser);
           element->state=RAPTOR_STATE_SKIPPING;
           element->child_state=RAPTOR_STATE_SKIPPING;
           finished=1;
@@ -2493,7 +2446,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
   const unsigned char *el_name=raptor_xml_element_get_name(xml_element)->local_name;
   int element_in_rdf_ns=(raptor_xml_element_get_name(xml_element)->nspace && 
                          raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
 
 
   state=element->state;
@@ -2532,7 +2485,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
          * document (probably never get here since this would be
          * a mismatched XML tag and cause an error earlier)
          */
-        raptor_update_document_locator(rdf_parser);
+        raptor_rdfxml_update_document_locator(rdf_parser);
         raptor_parser_warning(rdf_parser, "Element '%s' ended, expected end of RDF element", el_name);
         state=RAPTOR_STATE_UNKNOWN;
         finished=1;
@@ -2850,7 +2803,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 if(!literal_datatype && xml_element->content_cdata &&
                    !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
                   const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
-                  raptor_update_document_locator(rdf_parser);
+                  raptor_rdfxml_update_document_locator(rdf_parser);
                   if(rdf_parser->feature_non_nfc_fatal)
                     raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
                   else
@@ -2909,7 +2862,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
               if(!raptor_utf8_is_nfc(buffer, length)) {
                 const char *message="Property element '%s' has XML literal content not in Unicode Normal Form C: %s";
-                raptor_update_document_locator(rdf_parser);
+                raptor_rdfxml_update_document_locator(rdf_parser);
                 if(rdf_parser->feature_non_nfc_fatal)
                   raptor_parser_error(rdf_parser, message, el_name, buffer);
                 else
@@ -3019,7 +2972,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
                      const unsigned char *s, int len,
                      int is_cdata)
 {
-  raptor_xml_parser* rdf_xml_parser;
+  raptor_rdfxml_parser* rdf_xml_parser;
   raptor_element* element;
   raptor_xml_element* xml_element;
   raptor_state state;
@@ -3027,16 +2980,10 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
   int all_whitespace=1;
   int i;
 
-  rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
 
   if(rdf_parser->failed)
     return;
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  rdf_xml_parser->sax2->tokens_count++;
-#endif
-#endif
 
 #ifdef RAPTOR_DEBUG_CDATA
   RAPTOR_DEBUG2("Adding characters (is_cdata=%d): '", is_cdata);
@@ -3057,7 +3004,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
   if(!element)
     return;
   
-  raptor_update_document_locator(rdf_parser);
+  raptor_rdfxml_update_document_locator(rdf_parser);
 
   /* cdata never changes the parser state 
    * and the containing element state always determines what to do.
@@ -3180,7 +3127,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 const unsigned char*
 raptor_inscope_xml_language(raptor_parser *rdf_parser)
 {
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   return raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
 }
 
@@ -3198,7 +3145,7 @@ raptor_inscope_xml_language(raptor_parser *rdf_parser)
 raptor_uri*
 raptor_inscope_base_uri(raptor_parser *rdf_parser)
 {
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   raptor_uri* base_uri=raptor_sax2_inscope_base_uri(rdf_xml_parser->sax2);
 
   if(!base_uri)
@@ -3224,7 +3171,7 @@ static int
 raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
                  const unsigned char *id)
 {
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   raptor_uri* base_uri=raptor_inscope_base_uri(rdf_parser);
   size_t id_len=strlen((const char*)id);
   int rc;
@@ -3239,95 +3186,53 @@ raptor_record_ID(raptor_parser *rdf_parser, raptor_element *element,
 
 
 
-
-#ifdef RAPTOR_XML_LIBXML
-xmlParserCtxtPtr
-raptor_get_libxml_context(raptor_parser *rdf_parser) {
-  raptor_xml_parser* rdfxml=(raptor_xml_parser*)rdf_parser->context;
-  return rdfxml->sax2 ? rdfxml->sax2->xc : NULL;
-}
-
-void
-raptor_set_libxml_document_locator(raptor_parser *rdf_parser,
-                                   xmlSAXLocatorPtr loc) {
-  raptor_xml_parser* rdfxml=(raptor_xml_parser*)rdf_parser->context;
-
-  if(rdfxml->sax2)
-     rdfxml->sax2->loc=loc;
-}
-
-xmlSAXLocatorPtr
-raptor_get_libxml_document_locator(raptor_parser *rdf_parser) {
-  raptor_xml_parser* rdfxml=(raptor_xml_parser*)rdf_parser->context;
-  return rdfxml->sax2 ? rdfxml->sax2->loc : NULL;
-}
-
-#ifdef RAPTOR_LIBXML_MY_ENTITIES
-raptor_xml_entity*
-raptor_get_libxml_entities(raptor_parser *rdf_parser) {
-  return ((raptor_xml_parser*)rdf_parser->context)->entities;
-}
-
-void
-raptor_set_libxml_entities(raptor_parser *rdf_parser, 
-                           raptor_xml_entity* entities) {
-  ((raptor_xml_parser*)rdf_parser->context)->entities=entities;
-}
-#endif
-
-#endif
-
-
-#ifdef RAPTOR_XML_EXPAT
-void
-raptor_expat_update_document_locator (raptor_parser *rdf_parser) {
-  raptor_locator *locator=&rdf_parser->locator;
-  raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
-
-  locator->line=XML_GetCurrentLineNumber(rdf_xml_parser->sax2->xp);
-  locator->column=XML_GetCurrentColumnNumber(rdf_xml_parser->sax2->xp);
-  locator->byte=XML_GetCurrentByteIndex(rdf_xml_parser->sax2->xp);
-}
-#endif
-
-
 static void
-raptor_xml_parse_finish_factory (raptor_parser_factory* factory) {
-#ifdef RAPTOR_XML_LIBXML
-  xmlCleanupParser();
-#endif
-}
-
-static void
-raptor_xml_parser_register_factory(raptor_parser_factory *factory) 
+raptor_rdfxml_update_document_locator(raptor_parser *rdf_parser)
 {
-  factory->context_length     = sizeof(raptor_xml_parser);
+  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
+  raptor_sax2_update_document_locator(rdf_xml_parser->sax2,
+                                      &rdf_parser->locator);
+}
+
+
+
+static void
+raptor_rdfxml_parse_finish_factory(raptor_parser_factory* factory)
+{
+}
+
+
+static void
+raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory) 
+{
+  factory->context_length     = sizeof(raptor_rdfxml_parser);
   
-  factory->init      = raptor_xml_parse_init;
-  factory->terminate = raptor_xml_parse_terminate;
-  factory->start     = raptor_xml_parse_start;
-  factory->chunk     = raptor_xml_parse_chunk;
-  factory->finish_factory = raptor_xml_parse_finish_factory;
-  factory->recognise_syntax = raptor_xml_parse_recognise_syntax;
+  factory->init      = raptor_rdfxml_parse_init;
+  factory->terminate = raptor_rdfxml_parse_terminate;
+  factory->start     = raptor_rdfxml_parse_start;
+  factory->chunk     = raptor_rdfxml_parse_chunk;
+  factory->finish_factory = raptor_rdfxml_parse_finish_factory;
+  factory->recognise_syntax = raptor_rdfxml_parse_recognise_syntax;
 }
 
 
 void
-raptor_init_parser_rdfxml (void) {
+raptor_init_parser_rdfxml(void)
+{
   raptor_parser_factory* factory;
-#ifdef RAPTOR_XML_LIBXML
-  xmlInitParser();
-#endif
   factory=raptor_parser_register_factory("rdfxml", "RDF/XML",
                                          "application/rdf+xml",
                                          (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
-                                         &raptor_xml_parser_register_factory);
+                                         &raptor_rdfxml_parser_register_factory);
   raptor_parser_factory_add_alias(factory, "raptor");
 }
 
+
 #ifdef RAPTOR_DEBUG
 void
-raptor_xml_parser_stats_print(raptor_xml_parser* rdf_xml_parser, FILE *stream) {
+raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, 
+                                 FILE *stream)
+{
   fputs("rdf:ID set ", stream);
   raptor_id_set_stats_print(rdf_xml_parser->id_set, stream);
 }
