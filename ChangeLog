@@ -1,4 +1,107 @@
+2005-09-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_expat.c: Updates to use new raptor_sax2 handler
+	style.  The user data now points at the raptor_sax2* object, not
+	the parser.
+	(raptor_expat_init): send SAX2 events to core raptor_sax2_EVENT
+	routines.
+	(raptor_expat_update_document_locator): Moved from raptor_parser.c
+
+	* src/raptor_libxml.c: Updates to use new raptor_sax2 handler
+	style.  The user data now points at the raptor_sax2* object, not
+	the parser.  All raptor_parser* references are gone and
+	error/fatal error/warnings are returned via handler/data pairs.
+	(raptor_libxml_call_handler): Added to aid returning messages.
+	Deleted old and unused internal entity resolution code.
+	(raptor_libxml_init): send SAX2 events to core raptor_sax2_EVENT
+	routines.
+
+	* src/raptor_internal.h: Removed old and hardly tested internal
+	handling of libxml entities
+
+	* src/raptor_rdfxml.c: Rename raptor_xml_* to raptor_rdfxml_* in
+	structs and functions.
+	(raptor_rdfxml_start_element_handler,
+	raptor_rdfxml_end_element_handler, raptor_cdata_grammar): Move
+	expat BOM fixes to raptor_sax2.c
+	(raptor_rdfxml_parse_init): Use new raptor_sax2_set_EVENT_handler
+	methods. Use raptor_sax2_set_locator.
+	(raptor_get_libxml_context, raptor_set_libxml_document_locator,
+	raptor_get_libxml_document_locator, raptor_get_libxml_entities,
+	raptor_set_libxml_entities, raptor_expat_update_document_locator):
+	Deleted or merged into raptor_sax2.c
+
+	* src/raptor_parse.c (raptor_parser_fatal_error_message_handler,
+	raptor_parser_error_message_handler,
+	raptor_parser_warning_message_handler): Added handlers that take
+	location in same style as user message handler callbacks.
+	(raptor_stats_print): Update for raptor_rdfxml_parser
+
+	* src/raptor_locator.c (raptor_update_document_locator): Moved to
+	raptor_sax2.c
+
+	* src/raptor_general.c (raptor_init, raptor_finish): Call
+	raptor_init_sax2 and raptor_finish_sax2 respectively.
+
+	* src/raptor_internal.h: Removed several libxml/expat/rdxml
+	functions used to be too friendly with internals of other classes.
+	Renamed raptor_xml_parser to raptor_rdfxml_parser.  Updated
+	prototype of raptor_libxml_update_document_locator.  Added new
+	parser handler prototypes raptor_parser_error_message_handler,
+	raptor_parser_fatal_error_message_handler and
+	raptor_parser_warning_message_handler Added handlers for SAX2
+	events - start element, end element, characters, cdata, comment,
+	unparsed_entity_decl, external_entity_ref named as
+	raptor_sax2_EVENT_handler.  raptor_sax2 gains a magic field as
+	this is used as the user data for libxml.  raptor_sax2 uses the
+	handler typedefs for the event handlers.  raptor_sax2 gains erorr,
+	fatal and warning handler and data fields.  Added prototypes for
+	raptor_init_sax2 and raptor_finish_sax2.  Updated prototype for
+	raptor_new_sax2.  Added prototypes for
+	raptor_sax2_set_start_element_handler,
+	raptor_sax2_set_end_element_handler,
+	raptor_sax2_set_characters_handler, raptor_sax2_set_cdata_handler,
+	raptor_sax2_set_comment_handler,
+	raptor_sax2_set_unparsed_entity_decl_handler and
+	raptor_sax2_set_external_entity_ref_handler Added prototype for
+	raptor_sax2_set_locator.  Added prototypes for:
+	raptor_sax2_start_element raptor_sax2_end_element,
+	raptor_sax2_characters, raptor_sax2_cdata, raptor_sax2_comment,
+	raptor_sax2_unparsed_entity_decl and
+	raptor_sax2_external_entity_ref.
+
+	* src/raptor_sax2.c: Now a more complete class
+	(raptor_init_sax2, raptor_finish_sax2): Added, calling any static
+	initialising/finishing.
+	(raptor_new_sax2): Added error, fatal_error and warning data and
+	handler registers.  Register magic for libxml2 user_data fixups
+	(raptor_sax2_set_start_element_handler,
+	raptor_sax2_set_end_element_handler,
+	raptor_sax2_set_characters_handler, raptor_sax2_set_cdata_handler,
+	raptor_sax2_set_comment_handler,
+	raptor_sax2_set_unparsed_entity_decl_handler,
+	raptor_sax2_set_external_entity_ref_handler): Added for setting
+	SAX2 callback handlers.
+	(raptor_sax2_set_locator): Added, to set SAX2 file locator.
+	(raptor_sax2_parse_chunk): Update for new handlers, remove all
+	mention of raptor_parser.  Use this object (raptor_sax2*) as the
+	user data now, not an external raptor_parser*.
+	(raptor_sax2_update_document_locator): Added, updating the current
+	location for the internal parser.
+	(raptor_sax2_start_element): Added, internal function calling the
+	start element handler, adding various workarounds needed.
+	(raptor_sax2_end_element): Added, internal function calling the
+	end element handler, adding various workarounds needed.
+	(raptor_sax2_characters, raptor_sax2_cdata, raptor_sax2_comment,
+	raptor_sax2_unparsed_entity_decl,
+	raptor_sax2_external_entity_ref): Added, internal functions
+	calling the same-named handler.
+
 2005-09-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_qname.c: autodocs
+
+	* docs/raptor-sections.txt: Added new functions.
 
 	* src/raptor_internal.h (raptor_parser_s): Add new fields to the
 	end of the struct; add unused1 to try to make old offsets work
