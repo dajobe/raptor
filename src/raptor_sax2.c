@@ -55,14 +55,47 @@
 #undef RAPTOR_DEBUG_CDATA
 
 
+void
+raptor_init_sax2(void)
+{
+#ifdef RAPTOR_XML_LIBXML
+  xmlInitParser();
+#endif
+}
+
+
+void
+raptor_finish_sax2(void)
+{
+#ifdef RAPTOR_XML_LIBXML
+  xmlCleanupParser();
+#endif
+}
+
+
 raptor_sax2*
-raptor_new_sax2(void *user_data) {
+raptor_new_sax2(void* user_data,
+                void *error_data, raptor_message_handler error_handler,
+                void *fatal_error_data, raptor_message_handler fatal_error_handler,
+                void *warning_data, raptor_message_handler warning_handler)
+{
   raptor_sax2* sax2;
   sax2=(raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(raptor_sax2));
   if(!sax2)
     return NULL;
+
+#ifdef RAPTOR_XML_LIBXML
+  sax2->magic=RAPTOR_LIBXML_MAGIC;
+#endif
   
   sax2->user_data=user_data;
+  sax2->error_data=error_data;
+  sax2->error_handler=error_handler;
+  sax2->fatal_error_data=fatal_error_data;
+  sax2->fatal_error_handler=fatal_error_handler;
+  sax2->warning_data=warning_data;
+  sax2->warning_handler=warning_handler;
+  
   return sax2;
 }
 
@@ -83,6 +116,11 @@ raptor_free_sax2(raptor_sax2 *sax2) {
     raptor_libxml_free(sax2->xc);
     sax2->xc=NULL;
   }
+
+#ifdef RAPTOR_LIBXML_MY_ENTITIES
+  raptor_libxml_libxml_free_entities(rdf_parser);
+#endif
+
 #endif
 
   while( (xml_element=raptor_xml_element_pop(sax2)) )
@@ -91,6 +129,69 @@ raptor_free_sax2(raptor_sax2 *sax2) {
   RAPTOR_FREE(raptor_sax2, sax2);
 }
 
+
+
+void
+raptor_sax2_set_start_element_handler(raptor_sax2* sax2,
+                                      raptor_sax2_start_element_handler handler)
+{
+  sax2->start_element_handler=handler;
+}
+
+
+void
+raptor_sax2_set_end_element_handler(raptor_sax2* sax2,
+                                    raptor_sax2_end_element_handler handler)
+{
+  sax2->end_element_handler=handler;
+}
+
+
+void
+raptor_sax2_set_characters_handler(raptor_sax2* sax2,
+                                   raptor_sax2_characters_handler handler)
+{
+  sax2->characters_handler=handler;
+}
+
+
+void
+raptor_sax2_set_cdata_handler(raptor_sax2* sax2,
+                              raptor_sax2_cdata_handler handler)
+{
+  sax2->cdata_handler=handler;
+}
+
+
+void
+raptor_sax2_set_comment_handler(raptor_sax2* sax2,
+                                raptor_sax2_comment_handler handler)
+{
+  sax2->comment_handler=handler;
+}
+
+
+void
+raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2,
+                                             raptor_sax2_unparsed_entity_decl_handler handler)
+{
+  sax2->unparsed_entity_decl_handler=handler;
+}
+
+
+void
+raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2,
+                                            raptor_sax2_external_entity_ref_handler handler)
+{
+  sax2->external_entity_ref_handler=handler;
+}
+
+
+void
+raptor_sax2_set_locator(raptor_sax2* sax2, raptor_locator* locator)
+{
+  sax2->locator=locator;
+}
 
 
 raptor_xml_element*
@@ -197,9 +298,7 @@ int
 raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
                         size_t len, int is_end) 
 {
-  raptor_parser* rdf_parser=(raptor_parser*)sax2->user_data;
 #ifdef RAPTOR_XML_EXPAT
-  raptor_locator *locator=&rdf_parser->locator;
   XML_Parser xp=sax2->xp;
 #endif
 #ifdef RAPTOR_XML_LIBXML
@@ -212,19 +311,20 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
   if(!xc) {
     if(!len) {
       /* no data given at all - emit a similar message to expat */
-      raptor_update_document_locator(rdf_parser);
-      raptor_parser_error(rdf_parser, "XML Parsing failed - no element found");
+      raptor_sax2_update_document_locator(sax2, sax2->locator);
+      sax2->error_handler(sax2->error_data, sax2->locator,
+                          "XML Parsing failed - no element found");
       return 1;
     }
 
-    xc = xmlCreatePushParserCtxt(&sax2->sax, sax2->user_data,
+    xc = xmlCreatePushParserCtxt(&sax2->sax, sax2, /* user data */
                                  (char*)buffer, len, 
                                  NULL);
     if(!xc)
       goto handle_error;
     
-    xc->userData = sax2->user_data;
-    xc->vctxt.userData = sax2->user_data;
+    xc->userData = sax2; /* user data */
+    xc->vctxt.userData = sax2; /* user data */
     xc->vctxt.error=raptor_libxml_validation_error;
     xc->vctxt.warning=raptor_libxml_validation_warning;
     xc->replaceEntities = 1;
@@ -310,24 +410,172 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
      * which dies here if the error is before <?xml?...
      * The expat 1.95.1 source release version works fine.
      */
-    locator->line=XML_GetCurrentLineNumber(xp);
-    locator->column=XML_GetCurrentColumnNumber(xp);
-    locator->byte=XML_GetCurrentByteIndex(xp);
+    if(sax2->locator)
+      raptor_sax2_update_document_locator(sax2, sax2->locator);
 #ifdef EXPAT_UTF8_BOM_CRASH
   }
 #endif
 #endif /* EXPAT */
-      
-  raptor_update_document_locator(rdf_parser);
 
 #if RAPTOR_XML_EXPAT
-  raptor_parser_error(rdf_parser, "XML Parsing failed - %s",
+  sax2->error_handler(sax2->error_data, sax2->locator,
+                      "XML Parsing failed - %s",
                       XML_ErrorString(XML_GetErrorCode(xp)));
-#endif /* EXPAT */
-
+#endif
 #ifdef RAPTOR_XML_LIBXML
-  raptor_parser_error(rdf_parser, "XML Parsing failed");
+  sax2->error_handler(sax2->error_data, sax2->locator, "XML Parsing failed");
 #endif
 
   return 1;
+}
+
+
+void
+raptor_sax2_update_document_locator(raptor_sax2* sax2, 
+                                    raptor_locator* locator)
+{
+#ifdef RAPTOR_XML_EXPAT
+  raptor_expat_update_document_locator(sax2, locator);
+#endif
+#ifdef RAPTOR_XML_LIBXML
+  raptor_libxml_update_document_locator(sax2, locator);
+#endif
+}
+
+
+/* start of an element */
+void 
+raptor_sax2_start_element(void* user_data, const unsigned char *name,
+                          const unsigned char **atts)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  
+#ifdef RAPTOR_XML_EXPAT
+#ifdef EXPAT_UTF8_BOM_CRASH
+  sax2->tokens_count++;
+#endif
+#endif
+
+#ifdef RAPTOR_XML_LIBXML
+  if(atts) {
+    int i;
+    
+    /* Do XML attribute value normalization */
+    for (i = 0; atts[i]; i+=2) {
+      unsigned char *value=(unsigned char*)atts[i+1];
+      unsigned char *src = value;
+      unsigned char *dst = xmlStrdup(value);
+
+      if (!dst) {
+        sax2->error_handler(sax2->error_data, sax2->locator, "Out of memory");
+	return;
+      }
+
+      atts[i+1]=dst;
+
+      while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) 
+        src++;
+      while (*src) {
+	if (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) {
+          while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09)
+            src++;
+          if (*src)
+            *dst++ = 0x20;
+	} else {
+          *dst++ = *src++;
+	}
+      }
+      *dst = '\0';
+      xmlFree(value);
+    }
+  }
+#endif
+
+  if(sax2->start_element_handler)
+    sax2->start_element_handler(sax2->user_data, name, atts);
+}
+
+
+/* end of an element */
+void
+raptor_sax2_end_element(void* user_data, const unsigned char *name)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+#ifdef RAPTOR_XML_EXPAT
+#ifdef EXPAT_UTF8_BOM_CRASH
+  sax2->tokens_count++;
+#endif
+#endif
+
+  if(sax2->end_element_handler)
+    sax2->end_element_handler(sax2->user_data, name);
+}
+
+
+/* characters */
+void
+raptor_sax2_characters(void* user_data, const unsigned char *s, int len)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  if(sax2->characters_handler)
+    sax2->characters_handler(sax2->user_data, s, len);
+}
+
+
+/* like <![CDATA[...]> */
+void
+raptor_sax2_cdata(void* user_data, const unsigned char *s, int len)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+#ifdef RAPTOR_XML_EXPAT
+#ifdef EXPAT_UTF8_BOM_CRASH
+  sax2->tokens_count++;
+#endif
+#endif
+
+  if(sax2->cdata_handler)
+    sax2->cdata_handler(sax2->user_data, s, len);
+}
+
+
+/* comment */
+void
+raptor_sax2_comment(void* user_data, const unsigned char *s)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  if(sax2->comment_handler)
+    sax2->comment_handler(sax2->user_data, s);
+}
+
+
+/* unparsed (NDATA) entity */
+void
+raptor_sax2_unparsed_entity_decl(void* user_data, 
+                                 const unsigned char* entityName, 
+                                 const unsigned char* base, 
+                                 const unsigned char* systemId, 
+                                 const unsigned char* publicId, 
+                                 const unsigned char* notationName)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  if(sax2->unparsed_entity_decl_handler)
+    sax2->unparsed_entity_decl_handler(sax2->user_data,
+                                       entityName, base, systemId, 
+                                       publicId, notationName);
+}
+
+
+/* external entity reference */
+int
+raptor_sax2_external_entity_ref(void* user_data, 
+                                const unsigned char* context, 
+                                const unsigned char* base, 
+                                const unsigned char* systemId, 
+                                const unsigned char* publicId)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  if(sax2->external_entity_ref_handler)
+    return sax2->external_entity_ref_handler(sax2->user_data,
+                                             context, base, systemId, publicId);
+  return 0;
 }
