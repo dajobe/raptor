@@ -806,6 +806,33 @@ raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
 
 
 /*
+ * raptor_parser_fatal_error_message_handler - Error from a parser - Internal
+ */
+void
+raptor_parser_fatal_error_message_handler(void *user_data,
+                                          raptor_locator* locator,
+                                          const char *message)
+{
+  raptor_parser* parser=(raptor_parser*)user_data;
+
+  parser->failed=1;
+
+  if(parser && parser->error_handler) {
+    parser->fatal_error_handler(parser->fatal_error_user_data, locator, message);
+    abort();
+  }
+
+  if(parser)
+    raptor_print_locator(stderr, locator);
+  fprintf(stderr, " raptor fatal error - ");
+  fputs(message, stderr);
+  fputc('\n', stderr);
+
+  abort();
+}
+
+
+/*
  * raptor_parser_error - Error from a parser - Internal
  */
 void
@@ -872,6 +899,29 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
 
 
 /*
+ * raptor_parser_error_message_handler - Error from a parser - Internal
+ */
+void
+raptor_parser_error_message_handler(void *user_data,
+                                    raptor_locator* locator,
+                                    const char *message)
+{
+  raptor_parser* parser=(raptor_parser*)user_data;
+
+  if(parser && parser->error_handler) {
+    parser->error_handler(parser->error_user_data, locator, message);
+    return;
+  }
+
+  if(parser)
+    raptor_print_locator(stderr, locator);
+  fprintf(stderr, " raptor error - ");
+  fputs(message, stderr);
+  fputc('\n', stderr);
+}
+
+
+/*
  * raptor_parser_warning - Warning from a parser - Internal
  */
 void
@@ -914,6 +964,29 @@ raptor_parser_warning_varargs(raptor_parser* parser, const char *message,
   raptor_print_locator(stderr, &parser->locator);
   fprintf(stderr, " raptor warning - ");
   vfprintf(stderr, message, arguments);
+  fputc('\n', stderr);
+}
+
+
+/*
+ * raptor_parser_warning_message_handler - Warning from a parser - Internal
+ */
+void
+raptor_parser_warning_message_handler(void *user_data,
+                                      raptor_locator* locator,
+                                      const char *message) 
+{
+  raptor_parser* parser=(raptor_parser*)user_data;
+
+  if(parser && parser->warning_handler) {
+    parser->warning_handler(parser->warning_user_data, locator, message);
+    return;
+  }
+
+  if(parser)
+    raptor_print_locator(stderr, locator);
+  fprintf(stderr, " raptor warning - ");
+  fputs(message, stderr);
   fputc('\n', stderr);
 }
 
@@ -1498,9 +1571,9 @@ raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 {
 #ifdef RAPTOR_PARSER_RDFXML
   if(!strcmp(rdf_parser->factory->name, "rdfxml")) {
-    raptor_xml_parser *rdf_xml_parser=(raptor_xml_parser*)rdf_parser->context;
+    raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
     fputs("raptor parser stats\n  ", stream);
-    raptor_xml_parser_stats_print(rdf_xml_parser, stream);
+    raptor_rdfxml_parser_stats_print(rdf_xml_parser, stream);
   }
 #endif
 }
