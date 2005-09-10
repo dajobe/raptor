@@ -182,30 +182,6 @@ typedef struct raptor_sax2_s raptor_sax2;
 #include <libxml/parser.h>
 
 
-/*
- * Raptor entity expansion list
- * (libxml only)
- */
-#ifdef RAPTOR_LIBXML_MY_ENTITIES
-
-struct raptor_xml_entity_t {
-  xmlEntity entity;
-#ifndef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
-  int name_length;
-#endif
-
-  struct raptor_xml_entity_t *next;
-};
-typedef struct raptor_xml_entity_t raptor_xml_entity;
-#ifdef RAPTOR_LIBXML_ENTITY_NAME_LENGTH
-#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->entity.name_length
-#else
-#define RAPTOR_ENTITY_NAME_LENGTH(ent) ent->name_length
-#endif
-
-#endif
-
-
 /* libxml-only prototypes */
 
 
@@ -214,9 +190,6 @@ extern void raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri);
 extern void raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax);
 extern void raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser);
 
-#ifdef RAPTOR_LIBXML_MY_ENTITIES
-extern void raptor_libxml_free_entities(raptor_parser *rdf_parser);
-#endif
 extern void raptor_libxml_validation_error(void *context, const char *msg, ...);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...);
 void raptor_libxml_free(xmlParserCtxtPtr xc);
@@ -224,10 +197,6 @@ void raptor_libxml_free(xmlParserCtxtPtr xc);
 /* raptor_parse.c - exported to libxml part */
 extern void raptor_libxml_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
 
-#ifdef RAPTOR_LIBXML_MY_ENTITIES
-extern raptor_xml_entity* raptor_get_libxml_entities(raptor_parser *rdf_parser);
-extern void raptor_set_libxml_entities(raptor_parser *rdf_parser, raptor_xml_entity* entities);
-#endif
 /* end of libxml-only */
 #endif
 
@@ -864,11 +833,6 @@ struct raptor_sax2_s {
   xmlParserCtxtPtr xc;
   /* pointer to SAX document locator */
   xmlSAXLocatorPtr loc;
-
-#ifdef RAPTOR_LIBXML_MY_ENTITIES
-  /* for xml entity resolution */
-  raptor_xml_entity* entities;
-#endif
 
 #if LIBXML_VERSION < 20425
   /* flag for some libxml eversions*/
