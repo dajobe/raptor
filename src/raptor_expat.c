@@ -59,26 +59,36 @@ raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
   XML_Parser xp=XML_ParserCreate(NULL);
 
   /* create a new parser in the specified encoding */
-  XML_SetUserData(xp, sax2->user_data);
+  XML_SetUserData(xp, sax2);
 
   XML_SetBase(xp, (XML_Char*)raptor_uri_as_string(base_uri));
 
   /* XML_SetEncoding(xp, "..."); */
 
   XML_SetElementHandler(xp, 
-                        (XML_StartElementHandler)sax2->start_element_handler,
-                        (XML_EndElementHandler)sax2->end_element_handler);
+                        (XML_StartElementHandler)raptor_sax2_start_element,
+                        (XML_EndElementHandler)raptor_sax2_end_element);
   XML_SetCharacterDataHandler(xp, 
-                              (XML_CharacterDataHandler)sax2->characters_handler);
+                              (XML_CharacterDataHandler)raptor_sax2_characters);
 
-  XML_SetCommentHandler(xp, (XML_CommentHandler)sax2->comment_handler);
+  XML_SetCommentHandler(xp, (XML_CommentHandler)raptor_sax2_comment);
 
   XML_SetUnparsedEntityDeclHandler(xp, 
-                                   (XML_UnparsedEntityDeclHandler)sax2->unparsed_entity_decl_handler);
+                                   (XML_UnparsedEntityDeclHandler)raptor_sax2_unparsed_entity_decl);
 
-  XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)sax2->external_entity_ref_handler);
+  XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)raptor_sax2_external_entity_ref);
 
   sax2->xp=xp;
+}
+
+
+void
+raptor_expat_update_document_locator(raptor_sax2* sax2,
+                                     raptor_locator* locator)
+{
+  locator->line=XML_GetCurrentLineNumber(sax2->xp);
+  locator->column=XML_GetCurrentColumnNumber(sax2->xp);
+  locator->byte=XML_GetCurrentByteIndex(sax2->xp);
 }
 
 /* end if RAPTOR_XML_EXPAT */
