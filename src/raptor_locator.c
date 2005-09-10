@@ -141,18 +141,6 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
 }
 
 
-void
-raptor_update_document_locator (raptor_parser *rdf_parser) {
-#ifdef RAPTOR_PARSER_RDFXML
-#ifdef RAPTOR_XML_EXPAT
-  raptor_expat_update_document_locator (rdf_parser);
-#endif
-#ifdef RAPTOR_XML_LIBXML
-  raptor_libxml_update_document_locator (rdf_parser);
-#endif
-#endif
-}
-
 /**
  * raptor_locator_line:
  * @locator: locator
