@@ -123,6 +123,25 @@ adjust how parsing is performed.
 @handler: 
 
 
+<!-- ##### USER_FUNCTION raptor_namespace_handler ##### -->
+<para>
+
+</para>
+
+@user_data: 
+@nspace: 
+
+
+<!-- ##### FUNCTION raptor_set_namespace_handler ##### -->
+<para>
+
+</para>
+
+@parser: 
+@user_data: 
+@handler: 
+
+
 <!-- ##### FUNCTION raptor_get_locator ##### -->
 <para>
 
