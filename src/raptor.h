@@ -897,8 +897,6 @@ int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API
 int raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
 RAPTOR_API
-int raptor_www_fetch_from_file_handle(FILE* handle, raptor_uri* base_uri);
-RAPTOR_API
 void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API
 void raptor_www_abort(raptor_www *www, const char *reason);
