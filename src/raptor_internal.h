@@ -738,6 +738,8 @@ struct  raptor_www_s {
   raptor_locator locator;
 
   char *http_accept;
+
+  FILE* handle;
 };
 
 
