@@ -538,7 +538,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
  * @filename: filename of content or NULL if it has no name
  * @base_uri: the base URI to use
  *
- * Retrieve the RDF/XML content from a FILE*.
+ * Parse RDF content from a FILE*.
  *
  * After draining the stream, fclose is not called on it internally.
  *
@@ -581,7 +581,7 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
  * @uri: URI of RDF content or NULL to read from standard input
  * @base_uri: the base URI to use (or NULL if the same)
  *
- * Retrieve the RDF/XML content at a file URI.
+ * Parse RDF content at a file URI.
  *
  * If uri is NULL (source is stdin), then the base_uri is required.
  * 
@@ -671,7 +671,7 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
  *
- * Retrieve the RDF/XML content at URI.
+ * Parse the RDF content at URI.
  * 
  * Sends an HTTP Accept: header whent the URI is of the HTTP protocol,
  * see raptor_parse_uri_with_connection for details.
@@ -693,7 +693,7 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  * @base_uri: the base URI to use (or NULL if the same)
  * @connection: connection object pointer or NULL to create a new one
  *
- * Retrieve the RDF/XML content at URI using existing WWW connection.
+ * Parse RDF content at URI using existing WWW connection.
  * 
  * When @connection is NULL and a MIME Type exists for the parser
  * type - such as returned by raptor_get_mime_type(parser) - this
