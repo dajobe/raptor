@@ -59,7 +59,7 @@
 */
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser *parser, const unsigned char *subject, const raptor_ntriples_term_type subject_type, const unsigned char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype);
+static void raptor_ntriples_generate_statement(raptor_parser* parser, const unsigned char *subject, const raptor_ntriples_term_type subject_type, const unsigned char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype);
 
 /*
  * NTriples parser object
@@ -92,7 +92,8 @@ typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
  **/
 
 static int
-raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
+raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name)
+{
   /*raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context; */
   return 0;
 }
@@ -107,7 +108,8 @@ raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name) {
  * 
  **/
 static void
-raptor_ntriples_parse_terminate(raptor_parser *rdf_parser) {
+raptor_ntriples_parse_terminate(raptor_parser* rdf_parser)
+{
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
   if(ntriples_parser->line_length)
     RAPTOR_FREE(cdata, ntriples_parser->line);
@@ -121,15 +123,26 @@ static const char *term_type_strings[]={
 };
 
 
+/**
+ * raptor_ntriples_term_as_string:
+ * @term: N-Triples term.
+ * 
+ * @Deprecated: an internal debug function, do not use.
+ *
+ * Get a label for a #raptor_ntriples_term_type.
+ * 
+ * Return value: a pointer to a constant string.
+ **/
 const char *
-raptor_ntriples_term_as_string (raptor_ntriples_term_type term) {
+raptor_ntriples_term_as_string(raptor_ntriples_term_type term)
+{
   return term_type_strings[(int)term];
 }
 
 
 
 static void
-raptor_ntriples_generate_statement(raptor_parser *parser, 
+raptor_ntriples_generate_statement(raptor_parser* parser, 
                                    const unsigned char *subject,
                                    const raptor_ntriples_term_type subject_type,
                                    const unsigned char *predicate,
@@ -466,10 +479,24 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 }
 
 
+/**
+ * raptor_ntriples_string_as_utf8_string:
+ * @rdf_parser: parser object
+ * @src: data to read from
+ * @len: size of data
+ * @dest_lenp: pointer to length of destination (out) or NULL
+ * 
+ * Turn an N-Triples string with escapes into a UTF-8 string.
+ *
+ * @Deprecated: This requires use of parser internals and was never in the public API header.
+ * 
+ * Return value: a new UTF-8 string
+ **/
 unsigned char*
 raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, 
                                       const unsigned char *src, int len,  
-                                      size_t *dest_lenp) {
+                                      size_t *dest_lenp)
+{
   const unsigned char *start=src;
   size_t length=len;
   unsigned char *dest=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
@@ -487,7 +514,8 @@ raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser,
 
 static int
 raptor_ntriples_parse_line(raptor_parser* rdf_parser,
-                           unsigned char *buffer, size_t len) {
+                           unsigned char *buffer, size_t len)
+{
   int i;
   unsigned char *p;
   unsigned char *dest;
@@ -1049,7 +1077,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 
 
 static int
-raptor_ntriples_parse_start(raptor_parser *rdf_parser) 
+raptor_ntriples_parse_start(raptor_parser* rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
   raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
@@ -1105,7 +1133,8 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
 
 
 void
-raptor_init_parser_ntriples (void) {
+raptor_init_parser_ntriples(void)
+{
   raptor_parser_register_factory("ntriples",  "N-Triples",
                                  NULL,
                                  (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples",
