@@ -7,7 +7,7 @@
  * N-Triples
  * http://www.w3.org/TR/rdf-testcases/#ntriples
  *
- * Copyright (C) 2001-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2001-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
