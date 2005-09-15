@@ -1,3 +1,39 @@
+2005-09-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor.h: delete unused raptor_www_fetch_to_string prototype
+
+	* src/raptor_www.c: autodocs
+	(raptor_www_set_source_uri): Added to set URI for content source
+	(raptor_www_set_source_file_handle): Added to set URI for content
+	source.
+	(raptor_www_file_handle_fetch): Added, with guts of
+	raptor_www_file_fetch.
+	(raptor_www_file_fetch): Modified to call
+	raptor_www_file_handle_fetch.
+	(raptor_www_retrieve): Added to retrieve from whatever source (URI
+	or handle).
+	(raptor_www_retrieve_to_string): Added to retrieve from whatever
+	source (URI or handle) into a string.
+	(raptor_www_fetch): Now a wrapper over raptor_www_retrieve.
+	(raptor_www_fetch_to_string): Now a wrapper over
+	raptor_www_retrieve_to_string.
+
+	* src/raptor.h: Added prototypes for raptor_www_set_source_uri,
+	raptor_www_set_source_file_handle, raptor_www_retrieve,
+	raptor_www_retrieve_to_string and
+	raptor_www_fetch_from_file_handle
+
+	* src/raptor_internal.h: (struct raptor_www_s) gains a handle
+	field
+
+	* src/raptor_parse.c: autodocs
+
+	* src/ntriples_parse.c: autodocs and some code style fixes
+
+2005-09-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* docs/tmpl/section-parser.sgml: new functions
+
 2005-09-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* src/raptor_expat.c: Updates to use new raptor_sax2 handler
