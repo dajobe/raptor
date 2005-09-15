@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2003-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
  * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
  * University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -50,7 +50,7 @@
 
 
 
-static int raptor_www_file_fetch(raptor_www *www);
+static int raptor_www_file_fetch(raptor_www* www);
 
 
 /* should raptor_www do initializing and cleanup of the WWW library */
@@ -62,6 +62,14 @@ static int raptor_www_do_www_init_finish=1;
 static int raptor_libwww_initialised=0;
 #endif
 
+
+/**
+ * raptor_www_init:
+ * 
+ * Initialise the WWW class.
+ *
+ * Must be called before creating any #raptor_www object.
+ **/
 void
 raptor_www_init(void)
 {
@@ -111,6 +119,13 @@ raptor_www_no_www_library_init_finish(void)
 }
 
 
+/**
+ * raptor_www_finish:
+ * 
+ * Terminate the WWW class.
+ *
+ * Must be called to clean any resources used by the WWW implementation.
+ **/
 void
 raptor_www_finish(void)
 {
@@ -128,10 +143,23 @@ raptor_www_finish(void)
 
 
 
-raptor_www *
+/**
+ * raptor_www_new_with_connection:
+ * @connection: external WWW connection object.
+ * 
+ * Constructor - create a new #raptor_www object over an existing WWW connection.
+ *
+ * At present this only works with a libcurl CURL handle object
+ * when raptor is compiled with libcurl suppport. Otherwise the
+ * @connection is ignored.  This allows such things as setting
+ * up special flags on the curl handle before passing into the constructor.
+ * 
+ * Return value: a new #raptor_www object or NULL on failure.
+ **/
+raptor_www* 
 raptor_www_new_with_connection(void *connection)
 {
-  raptor_www *www=(raptor_www *)RAPTOR_CALLOC(www, 1, sizeof(raptor_www));
+  raptor_www* www=(raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(raptor_www));
   if(!www)
     return NULL;
   
@@ -160,6 +188,14 @@ raptor_www_new_with_connection(void *connection)
   return www;
 }
 
+
+/**
+ * raptor_www_new:
+ * 
+ * Constructor - create a new #raptor_www object.
+ * 
+ * Return value: a new #raptor_www or NULL on failure.
+ **/
 raptor_www*
 raptor_www_new(void)
 {
@@ -167,8 +203,14 @@ raptor_www_new(void)
 }
 
 
+/**
+ * raptor_www_free: 
+ * @www: WWW object.
+ * 
+ * Destructor - destroy a #raptor_www object.
+ **/
 void
-raptor_www_free(raptor_www *www)
+raptor_www_free(raptor_www* www)
 {
   /* free context */
   if(www->type) {
@@ -213,8 +255,19 @@ raptor_www_free(raptor_www *www)
 
 
 
+/**
+ * raptor_www_set_error_handler:
+ * @www: WWW object
+ * @error_handler: error handler function
+ * @error_data: error handler data
+ * 
+ * Set the error handler routine for the raptor_www class.
+ *
+ * This takes the same arguments as the raptor_parser_set_error() and
+ * raptor_parser_set_warning_handler() methods.
+ **/
 void
-raptor_www_set_error_handler(raptor_www *www, 
+raptor_www_set_error_handler(raptor_www* www, 
                              raptor_message_handler error_handler, 
                              void *error_data)
 {
@@ -223,8 +276,17 @@ raptor_www_set_error_handler(raptor_www *www,
 }
 
 
+/**
+ * raptor_www_set_write_bytes_handler:
+ * @www: WWW object
+ * @handler: bytes handler function
+ * @user_data: bytes handler data
+ * 
+ * Set the handler to receive bytes written by the #raptor_www implementation.
+ *
+ **/
 void
-raptor_www_set_write_bytes_handler(raptor_www *www, 
+raptor_www_set_write_bytes_handler(raptor_www* www, 
                                    raptor_www_write_bytes_handler handler, 
                                    void *user_data)
 {
@@ -233,8 +295,20 @@ raptor_www_set_write_bytes_handler(raptor_www *www,
 }
 
 
+/**
+ * raptor_www_set_content_type_handler:
+ * @www: WWW object
+ * @handler: content type handler function
+ * @user_data: content type handler data
+ * 
+ * Set the handler to receive the HTTP Content-Type header value.
+ *
+ * This is called if or when the value is discovered during retrieval
+ * by the raptor_www implementation.  Not all implementations provide
+ * access to this.
+ **/
 void
-raptor_www_set_content_type_handler(raptor_www *www, 
+raptor_www_set_content_type_handler(raptor_www* www, 
                                     raptor_www_content_type_handler handler, 
                                     void *user_data)
 {
@@ -243,8 +317,15 @@ raptor_www_set_content_type_handler(raptor_www *www,
 }
 
 
+/**
+ * raptor_www_set_user_agent:
+ * @www: WWW object
+ * @user_agent: User-Agent string
+ * 
+ * Set the user agent value, for HTTP requests typically.
+ **/
 void
-raptor_www_set_user_agent(raptor_www *www, const char *user_agent)
+raptor_www_set_user_agent(raptor_www* www, const char *user_agent)
 {
   char *ua_copy=(char*)RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
   if(!ua_copy)
@@ -255,8 +336,17 @@ raptor_www_set_user_agent(raptor_www *www, const char *user_agent)
 }
 
 
+/**
+ * raptor_www_set_proxy:
+ * @www: WWW object
+ * @proxy: proxy string.
+ * 
+ * Set the proxy for the WWW object.
+ *
+ * The @proxy usually a string of the form http://server.domain:port.
+ **/
 void
-raptor_www_set_proxy(raptor_www *www, const char *proxy)
+raptor_www_set_proxy(raptor_www* www, const char *proxy)
 {
   char *proxy_copy=(char*)RAPTOR_MALLOC(cstring, strlen(proxy)+1);
   if(!proxy_copy)
@@ -264,6 +354,57 @@ raptor_www_set_proxy(raptor_www *www, const char *proxy)
   strcpy(proxy_copy, proxy);
   
   www->proxy=proxy_copy;
+}
+
+
+/**
+ * raptor_www_set_source_uri:
+ * @www: #raptor_www object
+ * @uri: URI of source content
+ * 
+ * Set the source URI for content retrieval.
+ * 
+ * Return value: non-0 on failure.
+ **/
+int
+raptor_www_set_source_uri(raptor_www* www, raptor_uri *uri) 
+{
+  if(!uri)
+    return 1;
+  
+  www->uri=raptor_new_uri_for_retrieval(uri);
+  if(!www->uri)
+    return 1;
+  www->handle=NULL;
+  
+  www->locator.uri=uri;
+  www->locator.line= -1;
+  www->locator.column= -1;
+
+  return 0;
+}
+
+
+/**
+ * raptor_www_set_source_file_handle:
+ * @www: WWW object
+ * @handle: FILE handle
+ * 
+ * Set the source FILE* @handle for content retrieval.
+ * 
+ * Return value: non-0 on failure.
+ **/
+int
+raptor_www_set_source_file_handle(raptor_www* www, FILE* handle)
+{
+  www->uri=NULL;
+  www->handle=handle;
+  
+  www->locator.uri=NULL;
+  www->locator.line= -1;
+  www->locator.column= -1;
+
+  return 0;
 }
 
 
@@ -276,7 +417,7 @@ raptor_www_set_proxy(raptor_www *www, const char *proxy)
  * 
  **/
 void
-raptor_www_set_http_accept(raptor_www *www, const char *value)
+raptor_www_set_http_accept(raptor_www* www, const char *value)
 {
   char *value_copy;
   size_t len=8; /* strlen("Accept:")+1 */
@@ -302,12 +443,16 @@ raptor_www_set_http_accept(raptor_www *www, const char *value)
  * raptor_www_get_connection:
  * @www: #raptor_www object 
  *
- * Get internal WWW library connection object.
+ * Get WWW library connection object.
  * 
- * Return value: connection object or NULL
+ * Return the internal WWW connection handle.  For libcurl, this
+ * returns the CURL handle and for libxml the context.  Otherwise
+ * it returns NULL.
+ *
+ * Return value: connection pointer
  **/
 void*
-raptor_www_get_connection(raptor_www *www) 
+raptor_www_get_connection(raptor_www* www) 
 {
 #ifdef RAPTOR_WWW_NONE
   return NULL;
@@ -333,14 +478,27 @@ raptor_www_get_connection(raptor_www *www)
 }
 
 
+/**
+ * raptor_www_abort:
+ * @www: WWW object
+ * @reason: abort reason message
+ * 
+ * Abort an ongoing raptor WWW operation and pass back a reason.
+ *
+ * This is typically used within one of the raptor WWW handlers
+ * when retrieval need no longer continue due to another
+ * processing issue or error.
+ **/
 void
-raptor_www_abort(raptor_www *www, const char *reason) {
+raptor_www_abort(raptor_www* www, const char *reason)
+{
   www->failed=1;
 }
 
 
 void
-raptor_www_error_varargs(raptor_www *www, const char *message, va_list arguments)
+raptor_www_error_varargs(raptor_www* www, const char *message, 
+                         va_list arguments)
 {
   if(www->error_handler) {
     char *buffer=raptor_vsnprintf(message, arguments);
@@ -360,7 +518,7 @@ raptor_www_error_varargs(raptor_www *www, const char *message, va_list arguments
 
   
 void
-raptor_www_error(raptor_www *www, const char *message, ...) 
+raptor_www_error(raptor_www* www, const char *message, ...) 
 {
   va_list arguments;
 
@@ -371,11 +529,35 @@ raptor_www_error(raptor_www *www, const char *message, ...)
 
   
 static int 
-raptor_www_file_fetch(raptor_www *www) 
+raptor_www_file_handle_fetch(raptor_www* www, FILE* fh) 
+{
+  unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE];
+  
+  while(!feof(fh)) {
+    int len=fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
+    if(len > 0) {
+      www->total_bytes += len;
+
+      if(www->write_bytes)
+        www->write_bytes(www, www->write_bytes_userdata, buffer, len, 1);
+    }
+
+    if(feof(fh) || www->failed)
+      break;
+  }
+  
+  if(!www->failed)
+    www->status_code=200;
+  
+  return www->failed;
+}
+
+
+static int 
+raptor_www_file_fetch(raptor_www* www) 
 {
   char *filename;
   FILE *fh;
-  unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE];
   unsigned char *uri_string=raptor_uri_as_string(www->uri);
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   struct stat buf;
@@ -405,35 +587,28 @@ raptor_www_file_fetch(raptor_www *www)
     return 1;
   }
 
-  while(!feof(fh)) {
-    int len=fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
-    www->total_bytes += len;
-
-    if(len > 0 && www->write_bytes)
-      www->write_bytes(www, www->write_bytes_userdata, buffer, len, 1);
-
-    if(feof(fh) || www->failed)
-      break;
-  }
+  raptor_www_file_handle_fetch(www, fh);
   fclose(fh);
 
   RAPTOR_FREE(cstring, filename);
-  
-  if(!www->failed)
-    www->status_code=200;
   
   return www->failed;
 }
 
 
+/**
+ * raptor_www_retrieve:
+ * @www: WWW object
+ * 
+ * Start a WWW content retrieval, returning data into the write_bytes handler.
+ * 
+ * Return value: non-0 on failure.
+ **/
 int
-raptor_www_fetch(raptor_www *www, raptor_uri *uri) 
+raptor_www_retrieve(raptor_www* www)
 {
-  www->uri=raptor_new_uri_for_retrieval(uri);
-  
-  www->locator.uri=uri;
-  www->locator.line= -1;
-  www->locator.column= -1;
+  if(www->handle)
+    return raptor_www_file_handle_fetch(www, www->handle);
 
 #ifdef RAPTOR_WWW_NONE
   return raptor_www_file_fetch(www);
@@ -465,9 +640,9 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 
 
 static void
-raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
-                                       const void *ptr, size_t size,
-                                       size_t nmemb)
+raptor_www_retrieve_to_string_write_bytes(raptor_www* www, void *userdata,
+                                          const void *ptr, size_t size,
+                                          size_t nmemb)
 {
   raptor_stringbuffer* sb=(raptor_stringbuffer*)userdata;
   int len=size*nmemb;
@@ -477,14 +652,13 @@ raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
 
 
 /**
- * raptor_www_fetch_to_string:
+ * raptor_www_retrieve_to_string:
  * @www: raptor_www object
- * @uri: raptor_uri to retrieve
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
  * @malloc_handler: pointer to malloc to use to make string (or NULL)
  *
- * Fetch WWW content to a new string.
+ * Start a WWW content retrieval, returning the data into a new string.
  *
  * If malloc_handler is null, raptor will allocate it using it's
  * own memory allocator.  *string_p is set to NULL on failure (and
@@ -493,9 +667,9 @@ raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
  * Return value: non-0 on failure
  **/
 int
-raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
-                           void **string_p, size_t *length_p,
-                           void *(*malloc_handler)(size_t size))
+raptor_www_retrieve_to_string(raptor_www* www,
+                              void **string_p, size_t *length_p,
+                              void *(*malloc_handler)(size_t size))
 {
   raptor_stringbuffer *sb=NULL;
   void *str=NULL;
@@ -511,9 +685,9 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
 
   saved_write_bytes=www->write_bytes;
   saved_write_bytes_userdata=www->write_bytes_userdata;
-  raptor_www_set_write_bytes_handler(www, raptor_www_fetch_to_string_write_bytes, sb);
+  raptor_www_set_write_bytes_handler(www, raptor_www_retrieve_to_string_write_bytes, sb);
 
-  if(raptor_www_fetch(www, uri))
+  if(raptor_www_retrieve(www))
     str=NULL;
   else {
     size_t len=raptor_stringbuffer_length(sb);
@@ -534,4 +708,47 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
   raptor_www_set_write_bytes_handler(www, saved_write_bytes, saved_write_bytes_userdata);
 
   return (str == NULL);
+}
+
+
+/**
+ * raptor_www_fetch:
+ * @www: WWW object
+ * @uri: URI to read from
+ * 
+ * Start a WWW content retrieval for the given URI, returning data via the write_bytes handler.
+ * 
+ * Return value: non-0 on failure.
+ **/
+int
+raptor_www_fetch(raptor_www* www, raptor_uri *uri) 
+{
+  raptor_www_set_source_uri(www, uri);
+  return raptor_www_retrieve(www);
+}
+
+
+/**
+ * raptor_www_fetch_to_string:
+ * @www: raptor_www object
+ * @uri: raptor_uri to retrieve
+ * @string_p: pointer to location to hold string
+ * @length_p: pointer to location to hold length of string (or NULL)
+ * @malloc_handler: pointer to malloc to use to make string (or NULL)
+ *
+ * Start a WWW content retrieval for the given URI, returning the data in a new string.
+ *
+ * This is a wrapper around raptor_www_retrieve_to_string() which
+ * describes the arguments in detail.
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_www_fetch_to_string(raptor_www* www, raptor_uri *uri,
+                           void **string_p, size_t *length_p,
+                           void *(*malloc_handler)(size_t size))
+{
+  raptor_www_set_source_uri(www, uri);
+  return raptor_www_retrieve_to_string(www, string_p, length_p, 
+                                       malloc_handler);
 }
