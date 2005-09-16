@@ -10,7 +10,199 @@
 
 <h2 id="rel1_4_8"><a name="rel1_4_8">Raptor 1.4.8 Changes</a></h2>
 
-<p>Not yet released.
+<p>Not yet released.<br />
+</p>
+
+<h3>General Changes</h3>
+
+<p>A large source re-arrangement was performed.  All C sources and
+headers that build the library are now in the src dir, general
+documentation in the doc dir and utilities in the utils dir.  This
+both tidied up the mixture of files at the top level and also enabled
+better use with gtk-doc.
+</p>
+
+
+<h3>Configuration Changes</h3>
+
+<p>The autogen.sh script for building from CVS was revamped to be
+more modular.</p>
+
+<p><code>configure</code> now takes an <code>--enable-gtk-doc</code>
+option to enable building of the documentation using the
+<code>gtk-doc</code> utility.  It is by default enabled only if the
+utility is available.
+</p>
+
+<p>Added a new configure option <code>--enable-serializers</code> (in
+1.4.7) to allow the selection of the required RDF serializers from
+any of those supported.</p>
+
+<p><code>raptor-config</code> now has a <code>--options</code>
+argument to list the configured or discovered options of the library
+such as parsers, serializers and other choices.
+</p>
+
+
+<h3>Documentation Changes</h3>
+
+<p>The GNOME <code>gtk-doc</code> program is now used to
+automatically extract documentation from source comments into
+reference documentation.  This is then merged with templates and
+additional documentation to provide a reference manual for raptor
+as XML document which is turned into HTML along with GNOME devhelp
+support.</p>
+
+<p>This new documentation intended to replace the libraptor manual
+page/web page as easier to read document with scope for better
+expanding with more detail of raptor including examples and tutorial
+information.
+</p>
+
+
+<h3>Portability Changes</h3>
+
+<p>Fix a long-standing URI resolution bug on win32 - only remove
+leading / if there is one present (John C. Barstow)</p>
+
+
+<h3><code>rapper</code> utility Changes</h3>
+
+<p>Altered the <code>-g</code> argument to invoke the guessing parser
+rather than guess on file/URI name alone.  This is now equivalent to
+choosing an input syntax of <em>guess</em> with <code>-i guess</code>.</p>
+
+<p>Added a <code>--show-namespaces</code> long option (no short version)
+to show namespaces that are declared in the parsed content.
+</p>
+
+
+<h3>Parser Changes</h3>
+
+<p>A new guessing parser was added, picking the actual parser to use
+at run-time based on protocol or other information.</p>
+
+<p>Allow a content type returned by a protocol (such as HTTP) to
+enable choosing of parser at run-time.  Added a new optional
+parser factory method <code>content_type_handler</code> to return this.
+</p>
+
+<p>Allow parsers to handle several syntaxes rather than only 1 or 2.
+</p>
+
+<p>Parsers can now return namespace prefix/URI declarations as are
+given in the content by a new handler type
+<code>raptor_namespace_handler</code> and parser method
+<code>raptor_set_namespace_handler</code>.  Duplicate namespace
+prefix/URIs can be returned.
+</p>
+
+<h4>GRDDL Parser Changes</h4>
+
+<p>Bug fix when the entire content is in one chunk (René Puls).</p>
+
+<h4>Guessing Parser Changes</h4>
+
+<p>A new parser that guesses the actual parser to use at run-time
+based on a combination of MIME Content-Type, file or URI name and in
+future, iniital bytes of the content.  If the Content-Type is an
+exact match to a known parser, it is always chosen before trying
+heuristics.
+</p>
+
+<h4>RDF/XML Parser Changes</h4>
+
+<p>When emitting literals, handle a datatyped empty literal.  This
+is a post-REC errata for the revised RDF/XML recommendation.
+See
+<a href="http://lists.w3.org/Archives/Public/www-archive/2005Jul/0017.html">archived example</a>
+for further information.
+</p>
+
+<h4>RSS Tag Soup Parser Changes</h4>
+
+<p>Added atom 1.0 support including use of the new namespace.  Atom
+0.3 namespace terms are turned into new properties.  Replace atom
+copies of Dublin Core or RSS properties with the original terms:
+</p>
+<div style="text-align:center">
+<table>
+<tr><th>Atom 1.0 term</th>               <th>Original term</th></tr>
+<tr><td><code>atom:content</code></td>   <td><code>rss:description</code></td></tr>
+<tr><td><code>atom:id</code></td>        <td><code>rss:link</code></td></tr>
+<tr><td><code>atom:published</code></td> <td><code>dc:date</code></td></tr>
+<tr><td><code>atom:rights</code></td>    <td><code>dc:rights</code></td></tr>
+<tr><td><code>atom:title</code></td>     <td><code>rss:title</code></td></tr>
+</table>
+</div>
+
+<p>Apply the in-scope base URI (such as from <code>xml:base</code>)
+to atom 1.0 fields that take URI values:
+<code>atom:id</code>, <code>atom:icon</code> and <code>atom:logo</code>.
+</p>
+
+<p>Added optional date parsing code to turn XML RSS date fields into
+ISO format ones, suitable for Atom and XML schema datatypes format.
+Will use library parsedate code from curl or INN if available.
+</p>
+
+<p>XML RSS field <code>pubDate</code> is now turned into Dublin Core
+<code>dc:date</code> field in the ISO format.
+</p>
+
+<p>XML RSS field <code>content</code> is turned into
+<code>content:encoded</code> in RDF triples on output with
+escaping.</p>
+
+<h4>Turtle Parser Changes</h4>
+
+<p>Switch qname, blank node and prefix definitions to SPARQL ones.</p>
+
+<p>Check for illegal not-hexadecimal \u and \U escape values.</p>
+
+<p>Fix greedy matching of long literals ("""....""") that ended on
+the last """ found rather than the first.</p>
+
+<p>Added double constants to turtle.</p>
+
+<p>Take care to reset the generated <code>raptor_statement</code>
+language and datatype fields when not used.
+</p>
+
+
+<h3>Serializer Changes</h3>
+
+<p>Added a new Atom 1.0 serializer by parameterising the RSS 1.0
+serializer.
+</p>
+
+<p>All serializers can be chosen at <code>configure</code> time from
+those available using configure option <code>--enable-serializers</code>.
+</p>
+
+<p>The RSS parser and serializer can now be independently enabled or
+disabled.  The RSS serializer no longer requires an XML parser.</p>
+
+
+<h3>Atom 1.0 Serializer Changes</h3>
+
+<p>Added a new serializer using the Atom 1.0 format and namespace.
+This reads RDF triples in the RSS 1.0 model, along with any
+additional atom 1.0 properties and serializes an Atom 1.0 feed
+file.</p>
+
+
+<h3>Internal Changes</h3>
+
+<p>The internal SAX2 class was extensively changed so that remaining
+interdependencies with the RDF/XML parser were removed and it can now
+be re-used for other syntaxes cleanly.  Several functions
+were modified or added.</p>
+
+<p>Removed old and hardly-tested internal support for XML entity
+resolution (libxml only).</p>
+
+<p>Various fixes for GCC 4 warnings.
 </p>
 
 
