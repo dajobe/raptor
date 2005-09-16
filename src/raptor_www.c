@@ -358,57 +358,6 @@ raptor_www_set_proxy(raptor_www* www, const char *proxy)
 
 
 /**
- * raptor_www_set_source_uri:
- * @www: #raptor_www object
- * @uri: URI of source content
- * 
- * Set the source URI for content retrieval.
- * 
- * Return value: non-0 on failure.
- **/
-int
-raptor_www_set_source_uri(raptor_www* www, raptor_uri *uri) 
-{
-  if(!uri)
-    return 1;
-  
-  www->uri=raptor_new_uri_for_retrieval(uri);
-  if(!www->uri)
-    return 1;
-  www->handle=NULL;
-  
-  www->locator.uri=uri;
-  www->locator.line= -1;
-  www->locator.column= -1;
-
-  return 0;
-}
-
-
-/**
- * raptor_www_set_source_file_handle:
- * @www: WWW object
- * @handle: FILE handle
- * 
- * Set the source FILE* @handle for content retrieval.
- * 
- * Return value: non-0 on failure.
- **/
-int
-raptor_www_set_source_file_handle(raptor_www* www, FILE* handle)
-{
-  www->uri=NULL;
-  www->handle=handle;
-  
-  www->locator.uri=NULL;
-  www->locator.line= -1;
-  www->locator.column= -1;
-
-  return 0;
-}
-
-
-/**
  * raptor_www_set_http_accept:
  * @www: #raptor_www class
  * @value: Accept: header value or NULL to have an empty one.
@@ -597,18 +546,22 @@ raptor_www_file_fetch(raptor_www* www)
 
 
 /**
- * raptor_www_retrieve:
- * @www: WWW object
- * 
- * Start a WWW content retrieval, returning data into the write_bytes handler.
- * 
- * Return value: non-0 on failure.
- **/
+* raptor_www_fetch:
+* @www: WWW object
+* @uri: URI to read from
+* 
+* Start a WWW content retrieval for the given URI, returning data via the write_bytes handler.
+* 
+* Return value: non-0 on failure.
+**/
 int
-raptor_www_retrieve(raptor_www* www)
+raptor_www_fetch(raptor_www *www, raptor_uri *uri) 
 {
-  if(www->handle)
-    return raptor_www_file_handle_fetch(www, www->handle);
+  www->uri=raptor_new_uri_for_retrieval(uri);
+  
+  www->locator.uri=uri;
+  www->locator.line= -1;
+  www->locator.column= -1;
 
 #ifdef RAPTOR_WWW_NONE
   return raptor_www_file_fetch(www);
@@ -640,9 +593,9 @@ raptor_www_retrieve(raptor_www* www)
 
 
 static void
-raptor_www_retrieve_to_string_write_bytes(raptor_www* www, void *userdata,
-                                          const void *ptr, size_t size,
-                                          size_t nmemb)
+raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
+                                       const void *ptr, size_t size,
+                                       size_t nmemb)
 {
   raptor_stringbuffer* sb=(raptor_stringbuffer*)userdata;
   int len=size*nmemb;
@@ -652,13 +605,14 @@ raptor_www_retrieve_to_string_write_bytes(raptor_www* www, void *userdata,
 
 
 /**
- * raptor_www_retrieve_to_string:
+ * raptor_www_fetch_to_string:
  * @www: raptor_www object
+ * @uri: raptor_uri to retrieve
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
  * @malloc_handler: pointer to malloc to use to make string (or NULL)
  *
- * Start a WWW content retrieval, returning the data into a new string.
+ * Start a WWW content retrieval for the given URI, returning the data in a new string.
  *
  * If malloc_handler is null, raptor will allocate it using it's
  * own memory allocator.  *string_p is set to NULL on failure (and
@@ -667,9 +621,9 @@ raptor_www_retrieve_to_string_write_bytes(raptor_www* www, void *userdata,
  * Return value: non-0 on failure
  **/
 int
-raptor_www_retrieve_to_string(raptor_www* www,
-                              void **string_p, size_t *length_p,
-                              void *(*malloc_handler)(size_t size))
+raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
+                           void **string_p, size_t *length_p,
+                           void *(*malloc_handler)(size_t size))
 {
   raptor_stringbuffer *sb=NULL;
   void *str=NULL;
@@ -685,9 +639,9 @@ raptor_www_retrieve_to_string(raptor_www* www,
 
   saved_write_bytes=www->write_bytes;
   saved_write_bytes_userdata=www->write_bytes_userdata;
-  raptor_www_set_write_bytes_handler(www, raptor_www_retrieve_to_string_write_bytes, sb);
+  raptor_www_set_write_bytes_handler(www, raptor_www_fetch_to_string_write_bytes, sb);
 
-  if(raptor_www_retrieve(www))
+  if(raptor_www_fetch(www, uri))
     str=NULL;
   else {
     size_t len=raptor_stringbuffer_length(sb);
@@ -708,47 +662,4 @@ raptor_www_retrieve_to_string(raptor_www* www,
   raptor_www_set_write_bytes_handler(www, saved_write_bytes, saved_write_bytes_userdata);
 
   return (str == NULL);
-}
-
-
-/**
- * raptor_www_fetch:
- * @www: WWW object
- * @uri: URI to read from
- * 
- * Start a WWW content retrieval for the given URI, returning data via the write_bytes handler.
- * 
- * Return value: non-0 on failure.
- **/
-int
-raptor_www_fetch(raptor_www* www, raptor_uri *uri) 
-{
-  raptor_www_set_source_uri(www, uri);
-  return raptor_www_retrieve(www);
-}
-
-
-/**
- * raptor_www_fetch_to_string:
- * @www: raptor_www object
- * @uri: raptor_uri to retrieve
- * @string_p: pointer to location to hold string
- * @length_p: pointer to location to hold length of string (or NULL)
- * @malloc_handler: pointer to malloc to use to make string (or NULL)
- *
- * Start a WWW content retrieval for the given URI, returning the data in a new string.
- *
- * This is a wrapper around raptor_www_retrieve_to_string() which
- * describes the arguments in detail.
- * 
- * Return value: non-0 on failure
- **/
-int
-raptor_www_fetch_to_string(raptor_www* www, raptor_uri *uri,
-                           void **string_p, size_t *length_p,
-                           void *(*malloc_handler)(size_t size))
-{
-  raptor_www_set_source_uri(www, uri);
-  return raptor_www_retrieve_to_string(www, string_p, length_p, 
-                                       malloc_handler);
 }
