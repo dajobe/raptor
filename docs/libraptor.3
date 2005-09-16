@@ -7,7 +7,7 @@
 .\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
 .\" University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH libraptor 3 "2005-06-08"
+.TH libraptor 3 "2005-09-16"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -106,6 +106,8 @@ Set the parser fatal error handler callback.
 Set the parser non-fatal error handler callback.
 .IP "\fBvoid raptor_set_warning_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_message_handler \fIhandler\fB)\fR"
 Set the parser warning message handler callback.
+.IP "\fBraptor_set_namespace_handler(raptor_parser* \fIparser\fP, void* \fIuser_data\fP, raptor_namespace_handler \fIhandler\fP)\fR"
+Set the namespace declaration handler callback.
 .SH "PARSER STATEMENT CALLBACK METHOD"
 The parser allows the registration of a callback function to return
 the statements to the application.
@@ -1082,6 +1084,8 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
+.SS 1.4.8
+Added \fBraptor_set_namespace_handler\fP.
 .SS 1.4.7
 No changes.
 .SS 1.4.6
