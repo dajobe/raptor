@@ -1,3 +1,10 @@
+2005-09-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_www.c, src/raptor.h:
+	Revert: remove raptor_www_set_source_uri,
+	raptor_www_set_source_file_handle, raptor_www_retrieve and
+	raptor_www_retrieve_to_string
+
 2005-09-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* src/raptor.h: delete unused raptor_www_fetch_to_string prototype
