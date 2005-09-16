@@ -1,5 +1,8 @@
 2005-09-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* docs/libraptor.3:
+	Update for 1.4.8 - added raptor_set_namespace_handler
+
 	* src/raptor_www.c, src/raptor.h:
 	Revert: remove raptor_www_set_source_uri,
 	raptor_www_set_source_file_handle, raptor_www_retrieve and
@@ -405,7 +408,7 @@
 	(rdfxml) and ntriplesplus (turtle)
 
 	* src/raptor_internal.h: Update raptor_parser_register_factory
-	prototype to return the registered factory and remvoe the alias
+	prototype to return the registered factory and remove the alias
 	arg.  Added prototype for raptor_parser_factory_add_alias
 
 	* src/raptor_parse.c (raptor_parser_register_factory): Now returns
