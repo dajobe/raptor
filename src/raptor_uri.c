@@ -338,17 +338,27 @@ raptor_default_uri_equals(void *context, raptor_uri* uri1, raptor_uri* uri2)
 
 /**
  * raptor_uri_equals:
- * @uri1: URI 1
- * @uri2: URI 2
+ * @uri1: URI 1 (may be NULL)
+ * @uri2: URI 2 (may be NULL)
  * 
  * Check if two URIs are equal.
  * 
+ * A NULL URI is not equal to a non-NULL URI.
+ *
  * Return value: non-0 if the URIs are equal
  **/
 int
 raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 {
-  return (*raptor_uri_current_uri_handler->uri_equals)(raptor_uri_current_uri_context, uri1, uri2);
+  if(uri1 && uri2)
+    /* Both not-NULL - check with handler */
+    return (*raptor_uri_current_uri_handler->uri_equals)(raptor_uri_current_uri_context, uri1, uri2);
+  else if(uri1 || uri2)
+    /* Only one is NULL - not equal */
+    return 0;
+  else
+    /* both NULL - equal */
+    return 1;
 }
 
 
