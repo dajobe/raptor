@@ -189,7 +189,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   
   if(!predicate_ordinal) {
     predicate_uri=raptor_new_uri_relative_to_base(parser->base_uri, predicate);
-    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     statement->predicate=predicate_uri;
   }
   

@@ -1032,7 +1032,7 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
   }
   
   if(!predicate_ordinal) {
-    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     statement->predicate=t->predicate->uri;
   }
   
