@@ -491,7 +491,7 @@ struct raptor_element_s {
 typedef struct raptor_element_s raptor_element;
 
 
-#define RAPTOR_N_CONCEPTS 21
+#define RAPTOR_RDFXML_N_CONCEPTS 22
 
 /*
  * Raptor parser object
@@ -503,7 +503,7 @@ struct raptor_rdfxml_parser_s {
   raptor_element *root_element;
   raptor_element *current_element;
 
-  raptor_uri* concepts[RAPTOR_N_CONCEPTS];
+  raptor_uri* concepts[RAPTOR_RDFXML_N_CONCEPTS];
 
   /* set of seen rdf:ID / rdf:bagID values (with in-scope base URI) */
   raptor_id_set* id_set;
@@ -551,7 +551,9 @@ struct raptor_rdfxml_parser_s {
 #define RAPTOR_RDF_Description_URI(rdf_xml_parser) rdf_xml_parser->concepts[19]
 #define RAPTOR_RDF_li_URI(rdf_xml_parser)          rdf_xml_parser->concepts[20]
 
-/* RAPTOR_N_CONCEPTS defines size of array */
+#define RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser)  rdf_xml_parser->concepts[21]
+
+/* RAPTOR_RDFXML_N_CONCEPTS defines size of array */
 
 
 /* prototypes for element functions */
@@ -1237,6 +1239,8 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   RAPTOR_RDF_Description_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("Description");
   RAPTOR_RDF_li_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("li");
 
+  RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser)=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+
   rdf_xml_parser->id_set=raptor_new_id_set();
 
   return 0;
@@ -1284,7 +1288,7 @@ raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser)
     raptor_free_element(element);
 
 
-  for(i=0; i< RAPTOR_N_CONCEPTS; i++) {
+  for(i=0; i< RAPTOR_RDFXML_N_CONCEPTS; i++) {
     raptor_uri* concept_uri=rdf_xml_parser->concepts[i];
     if(concept_uri) {
       raptor_free_uri(concept_uri);
@@ -2885,9 +2889,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                           
                                           (raptor_uri*)buffer,
                                           NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
+                                          RAPTOR_IDENTIFIER_TYPE_LITERAL,
                                           RAPTOR_URI_SOURCE_NOT_URI,
-                                          NULL,
+                                          RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser),
                                           
                                           &element->reified,
                                           element->parent);
@@ -2905,9 +2909,9 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                                           
                                           (raptor_uri*)buffer,
                                           NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_XML_LITERAL,
+                                          RAPTOR_IDENTIFIER_TYPE_LITERAL,
                                           RAPTOR_URI_SOURCE_NOT_URI,
-                                          NULL,
+                                          RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser),
                                           
                                           &element->reified,
                                           element->parent);
