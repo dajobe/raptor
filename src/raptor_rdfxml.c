@@ -1493,7 +1493,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
   statement->predicate=RAPTOR_RDF_predicate_URI(rdf_xml_parser);
   statement->object=predicate_uri ? (void*)predicate_uri : (void*)predicate_id;
-  statement->object_type=(predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ? RAPTOR_IDENTIFIER_TYPE_RESOURCE : predicate_type;
+  statement->object_type=predicate_type;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
   statement->predicate=RAPTOR_RDF_object_URI(rdf_xml_parser);
