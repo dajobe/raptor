@@ -798,7 +798,7 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
   rss_parser->statement.subject_type=resource->type;
   
   rss_parser->statement.predicate=RAPTOR_RSS_RDF_type_URI(&rss_parser->model);
-  rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+  rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   
   rss_parser->statement.object=(void*)type_uri;
   rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -936,7 +936,7 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
 
   if(predicate_uri) {
     rss_parser->statement.predicate=predicate_uri;
-    rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+    rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else {
     rss_parser->statement.predicate=(void*)&predicate_ordinal;
     rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
