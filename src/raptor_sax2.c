@@ -418,9 +418,15 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 #endif /* EXPAT */
 
 #if RAPTOR_XML_EXPAT
-  sax2->error_handler(sax2->error_data, sax2->locator,
-                      "XML Parsing failed - %s",
-                      XML_ErrorString(XML_GetErrorCode(xp)));
+  if(1) {
+    char *error_buffer=raptor_vsnprintf("XML Parsing failed - %s", 
+                                        (char*)XML_ErrorString(XML_GetErrorCode(xp)));
+    if(buffer) {
+      sax2->error_handler(sax2->error_data, sax2->locator, error_buffer);
+      RAPTOR_FREE(cstring, error_buffer);
+    } else
+      sax2->error_handler(sax2->error_data, sax2->locator, "XML Parsing failed");
+  }
 #endif
 #ifdef RAPTOR_XML_LIBXML
   sax2->error_handler(sax2->error_data, sax2->locator, "XML Parsing failed");
