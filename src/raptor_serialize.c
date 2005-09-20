@@ -636,6 +636,11 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
       return -1;
       break;
 
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+      if(value == 10 || value == 11)
+        serializer->xml_version=value;
+      break;
+
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
@@ -714,6 +719,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
 
     default:
       return -1;
@@ -752,6 +758,10 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
       result= -1;
       break;
 
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+      result=serializer->xml_version;
+      break;
+      
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
@@ -823,6 +833,7 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
 
     default:
       return NULL;
