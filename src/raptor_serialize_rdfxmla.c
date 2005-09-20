@@ -1404,6 +1404,9 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
   raptor_xml_writer_set_feature(xml_writer,RAPTOR_FEATURE_WRITER_AUTO_INDENT,1);
   raptor_xml_writer_set_feature(xml_writer,RAPTOR_FEATURE_WRITER_AUTO_EMPTY, 1);
   raptor_xml_writer_set_feature(xml_writer,RAPTOR_FEATURE_WRITER_INDENT_WIDTH,2);
+  raptor_xml_writer_set_feature(xml_writer, RAPTOR_FEATURE_WRITER_XML_VERSION,
+                                serializer->xml_version);
+  
   
   context->xml_writer=xml_writer;
   
@@ -1421,8 +1424,13 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
   }
   
 
-  raptor_xml_writer_raw(xml_writer,
-                        (const unsigned char*)"<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+  raptor_xml_writer_raw(xml_writer, (const unsigned char*)"<?xml version=\"");
+  raptor_xml_writer_raw_counted(xml_writer,
+                                (serializer->xml_version == 10) ?
+                                (const unsigned char*)"1.0" :
+                                (const unsigned char*)"1.1",
+                                3);
+  raptor_xml_writer_raw(xml_writer,  (const unsigned char*)"\" encoding=\"utf-8\"?>\n");
 
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   
