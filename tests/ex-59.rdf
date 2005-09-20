@@ -1,0 +1,5 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://example.org/node">
+    <ns0:foo xmlns:ns0="http://example.org/prop&amp;">value</ns0:foo>
+  </rdf:Description>
+</rdf:RDF>
