@@ -390,6 +390,7 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * @buffer: the buffer to use for new string (UTF-8)
  * @length: buffer size
  * @quote: optional quote character to escape for attribute content, or 0
+ * @xml_version: XML 1.0 (10) or XML 1.1 (11)
  * @error_handler: error handler function
  * @error_data: error handler user data
  *
@@ -429,11 +430,12 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * Return value: the number of bytes required / used or <0 on failure.
  **/
 int
-raptor_xml_escape_string(const unsigned char *string, size_t len,
-                         unsigned char *buffer, size_t length,
-                         char quote,
-                         raptor_simple_message_handler error_handler,
-                         void *error_data)
+raptor_xml_any_escape_string(const unsigned char *string, size_t len,
+                             unsigned char *buffer, size_t length,
+                             char quote,
+                             int xml_version,
+                             raptor_simple_message_handler error_handler,
+                             void *error_data)
 {
   int l;
   size_t new_len=0;
@@ -471,7 +473,18 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
              (quote && (unichar == 0x09 || unichar == 0x0a)))
       /* &#xD; or &#x9; or &xA; */
       new_len+= 5;
-    else
+    else if (unichar == 0x7f ||
+             (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
+      if(!unichar || xml_version < 11) {
+        if(error_handler)
+          error_handler(error_data, "Cannot write illegal XML 1.0 character %d.", unichar);
+      } else {
+        /* &#xX; */
+        new_len+= 5;
+        if(unichar > 0x0f)
+          new_len++;
+      }
+    } else
       new_len+= unichar_len;
 
     unichar_len--; /* since loop does len-- */
@@ -518,6 +531,20 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
       else
         *q++ = 'A'+ ((char)unichar-0x0a);
       *q++= ';';
+    } else if (unichar == 0x7f ||
+               (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
+      if(!unichar || xml_version < 11) {
+        if(error_handler)
+          error_handler(error_data, "Cannot write illegal XML 1.0 character %d.", unichar);
+      } else {
+        /* &#xX; */
+        *q++='&';
+        *q++='#';
+        *q++='x';
+        sprintf((char*)q, "%X", (unsigned int)unichar);
+        q+= (unichar < 0x10) ? 1 : 2;
+        *q++=';';
+      }
     } else {
       strncpy((char*)q, (const char*)p, unichar_len);
       q+= unichar_len;
@@ -535,31 +562,68 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
 
 
 /**
- * raptor_iostream_write_xml_escaped_string:
+ * raptor_xml_escape_string:
+ * @string: string to XML 1.0 escape (UTF-8)
+ * @len: length of string
+ * @buffer: the buffer to use for new string (UTF-8)
+ * @length: buffer size
+ * @quote: optional quote character to escape for attribute content, or 0
+ * @error_handler: error handler function
+ * @error_data: error handler user data
+ *
+ * Return an XML 1.0-escaped version a string.
+ * 
+ * See raptor_xml_any_escape_string() for the conditions on parameters.
+ *
+ * Return value: the number of bytes required / used or <0 on failure.
+ **/
+int
+raptor_xml_escape_string(const unsigned char *string, size_t len,
+                         unsigned char *buffer, size_t length,
+                         char quote,
+                         raptor_simple_message_handler error_handler,
+                         void *error_data)
+{
+  return raptor_xml_any_escape_string(string, len,
+                                      buffer, length,
+                                      quote,
+                                      10,
+                                      error_handler, error_data);
+}
+
+
+/**
+ * raptor_iostream_write_xml_any_escaped_string:
  * @string: string to XML escape (UTF-8)
  * @len: length of string
  * @quote: optional quote character to escape for attribute content, or 0
  * @iostr: the #raptor_iostream to write to
+ * @xml_version: XML version - 10 (XML 1.0) or 11 (XML 1.1)
  * @error_handler: error handler function
  * @error_data: error handler data
  *
  * Write an XML-escaped version of a string to an iostream.
  * 
  * See raptor_xml_escape_string() for the escapes performed and
- * the conditions on @quote and @string.
+ * the conditions on @quote and @string.  XML 1.1 allows additional
+ * characters in XML such as U+0001 to U+001F inclusive.
  *
  * Return value: non 0 on failure
  **/
 int
-raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
-                                         const unsigned char *string,
-                                         size_t len,
-                                         char quote,
-                                         raptor_simple_message_handler error_handler,
-                                         void *error_data)
+raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
+                                             const unsigned char *string,
+                                             size_t len,
+                                             char quote,
+                                             int xml_version,
+                                             raptor_simple_message_handler error_handler,
+                                             void *error_data)
 {
   int l;
   const unsigned char *p;
+
+  if(xml_version != 10)
+    xml_version=11;
 
   if(quote != '\"' && quote != '\'')
     quote='\0';
@@ -596,7 +660,19 @@ raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
         raptor_iostream_write_byte(iostr, '9');
       else
         raptor_iostream_write_byte(iostr, 'A'+ ((char)unichar-0x0a));
-      raptor_iostream_write_byte(iostr,  ';');
+    } else if (unichar == 0x7f ||
+               (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
+      if(!unichar || xml_version < 11) {
+        if(error_handler)
+          error_handler(error_data, "Cannot write illegal XML 1.0 character %d.", unichar);
+      } else {
+        int width=(unichar < 0x10) ? 1 : 2;
+
+        /* &#xX; */
+        raptor_iostream_write_counted_string(iostr, "&#x", 3);
+        raptor_iostream_format_hexadecimal(iostr, unichar, width);
+        raptor_iostream_write_byte(iostr,  ';');
+      }
     } else
       raptor_iostream_write_counted_string(iostr, (const char*)p, unichar_len);
 
@@ -605,6 +681,37 @@ raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
   }
 
   return 0;
+}
+
+
+/**
+ * raptor_iostream_write_xml_escaped_string:
+ * @string: string to XML 1.0 escape (UTF-8)
+ * @len: length of string
+ * @quote: optional quote character to escape for attribute content, or 0
+ * @iostr: the #raptor_iostream to write to
+ * @error_handler: error handler function
+ * @error_data: error handler data
+ *
+ * Write an XML 1.0-escaped version of a string to an iostream.
+ * 
+ * See raptor_iostream_write_xml_any_escaped_string() for the escapes
+ * performed and the conditions on @quote and @string.
+ *
+ * Return value: non 0 on failure
+ **/
+int
+raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
+                                         const unsigned char *string,
+                                         size_t len,
+                                         char quote,
+                                         raptor_simple_message_handler error_handler,
+                                         void *error_data)
+{
+  return raptor_iostream_write_xml_any_escaped_string(iostr, string, len,
+                                                      quote, 10,
+                                                      error_handler, 
+                                                      error_data);
 }
 
 
