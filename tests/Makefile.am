@@ -91,6 +91,9 @@ RDF_ASSUME_OUT_FILES=ex-19.out
 
 RDF_SCAN_OUT_FILES=ex-52.out
 
+RDF_SERIALIZE_TEST_FILES=ex-59.nt
+RDF_SERIALIZE_OUT_FILES=ex-59.rdf
+
 NT_TEST_FILES=test.nt
 
 NT_OUT_FILES=test.out
@@ -127,7 +130,10 @@ EXTRA_DIST = \
 	$(RDF_WARN_OUT_FILES) \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES) \
-	$(NT_BAD_TEST_FILES)
+	$(NT_BAD_TEST_FILES) \
+	$(RDF_SERIALIZE_TEST_FILES) \
+	$(RDF_SERIALIZE_OUT_FILES)
+
 
 SUBDIRS = turtle
 
@@ -141,7 +147,8 @@ build-rdfdiff:
 check-local: build-rapper \
 check-rdf check-mayfail-xml-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
-check-nt check-bad-nt check-turtle check-rdfdiff check-rdfxmla
+check-nt check-bad-nt check-turtle check-rdfdiff \
+check-rdfxml check-rdfxmla
 
 check-rdf: build-rapper $(RDF_TEST_FILES)
 	@set +e; result=0; \
@@ -391,6 +398,23 @@ check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 	    $(ECHO) "FAILED"; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
+	done; \
+	set -e; exit $$result
+
+check-rdfxml: build-rapper $(RDF_SERIALIZE_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing rdfxml serialization with legal rdf/xml"; \
+	for test in $(RDF_SERIALIZE_TEST_FILES); do \
+	  name=`basename $$test .nt` ; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/utils/rapper -q -i ntriples -o rdfxml $(srcdir)/$$test $(srcdir)/$$test > $$name-rdfxml.rdf 2> $$name.err; \
+	  if cmp $(srcdir)/$$name.rdf $$name-rdfxml.rdf >/dev/null 2>&1; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.rdf $$name-rdfxml.rdf; result=1; \
+	  fi; \
+	  rm -f $$name-rdfxml.rdf $$name.res $$name.err; \
 	done; \
 	set -e; exit $$result
 
