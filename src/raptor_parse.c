@@ -1215,6 +1215,7 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
     default:
       return -1;
       break;
@@ -1317,6 +1318,7 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
 
     default:
       break;
