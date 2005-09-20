@@ -1,5 +1,53 @@
 2005-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
+	* src/raptor_serialize_rdfxmla.c (raptor_rdfxmla_serialize_start):
+	Pass down xml_version to the raptor_xml_writer and write the
+	versioned header.
+
+	* src/raptor_serialize_rdfxml.c (raptor_rdfxml_serialize_start):
+	Pass down xml_version to the raptor_xml_writer and write the
+	versioned header.
+
+	* src/raptor_xml_writer.c: Add xml_version to raptor_xml_writer
+	structure.
+	(raptor_iostream_write_xml_element_start): Add xml_version field
+	and pass it down to the XML escape function.
+	(raptor_new_xml_writer): Init xml_version to 10.
+	(raptor_xml_writer_empty_element, raptor_xml_writer_start_element,
+	raptor_xml_writer_cdata, raptor_xml_writer_cdata_counted): Pass
+	down xml_version.
+	(raptor_xml_writer_set_feature, raptor_xml_writer_get_feature):
+	Handle RAPTOR_FEATURE_WRITER_XML_VERSION.
+
+	* src/raptor_xml.c (raptor_xml_any_escape_string,
+	raptor_iostream_write_xml_any_escaped_string): Added, handling XML
+	1.0 or XML 1.1 Error if writing #x1-#x1f (excluding #x9, #xA, #xD)
+	or #x7F for XML 1.0
+
+	* src/raptor_serialize.c (raptor_serializer_set_feature,
+	raptor_serializer_get_feature): Add
+	RAPTOR_FEATURE_WRITER_XML_VERSION
+
+	* src/raptor_parse.c: switch on enum updates for feature
+	RAPTOR_FEATURE_WRITER_XML_VERSION for serializer and xml writer
+
+	* src/raptor_feature.c: Added RAPTOR_FEATURE_WRITER_XML_VERSION
+	for serializer and xml writer with short name xmlVersion
+
+	* src/raptor.h: Added RAPTOR_FEATURE_WRITER_XML_VERSION for
+	serializer, xml writer.  Added prototypes for
+	raptor_xml_any_escape_string and
+	raptor_iostream_write_xml_any_escaped_string
+
+	* src/raptor_internal.h: raptor_serializer_s gains an xml_version
+	field
+
+	* src/raptor_sax2.c (raptor_sax2_parse_chunk): Once more with
+	static buffer, no vsnprintf
+
+	* src/raptor_sax2.c (raptor_sax2_parse_chunk): Fix error message
+	with 2 args for expat using raptor_vsnprintf.
+
 	* src/raptor_namespace.c (raptor_namespaces_format): XML escape
 	the written namespace name URI
 
