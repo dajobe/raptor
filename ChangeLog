@@ -1,4 +1,23 @@
+2005-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_namespace.c (raptor_namespaces_format): XML escape
+	the written namespace name URI
+
+	* tests/ex-59.rdf: correct result
+
+	* tests/ex-59.nt, tests/ex-59.rdf: Test rdfxml serializer escapes
+	dquote in uri attrs
+
+	* tests/Makefile.am: Added RDF_SERIALIZE_TEST_FILES,
+	RDF_SERIALIZE_OUT_FILES and ex-59 for testing the rdfxml
+	serializer
+
+	* examples/Makefile.am: fix libraptor.la dir
+
 2005-09-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_rdfxml.c (raptor_generate_statement): When reifiying,
+	just copy predicate_type.
 
 	* src/raptor_uri.c (raptor_uri_equals): Alter to accept NULL
 	pointers, which do not compare equal to a non-NULL URI.  NULL does
