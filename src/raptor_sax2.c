@@ -419,9 +419,19 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 
 #if RAPTOR_XML_EXPAT
   if(1) {
-    char *error_buffer=raptor_vsnprintf("XML Parsing failed - %s", 
-                                        (char*)XML_ErrorString(XML_GetErrorCode(xp)));
-    if(buffer) {
+    const char *error_prefix="XML Parsing failed - "; /* 21 chars */
+    #define ERROR_PREFIX_LEN 21
+    const char *error_message=XML_ErrorString(XML_GetErrorCode(xp));
+    size_t error_length;
+    char *error_buffer;
+
+    error_length=strlen(error_message);
+    error_buffer=(char*)RAPTOR_MALLOC(cstring, 
+                                      ERROR_PREFIX_LEN + error_length+1);
+    if(error_buffer) {
+      strncpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
+      strncpy(error_buffer+ERROR_PREFIX_LEN, error_message, error_length+1);
+
       sax2->error_handler(sax2->error_data, sax2->locator, error_buffer);
       RAPTOR_FREE(cstring, error_buffer);
     } else
