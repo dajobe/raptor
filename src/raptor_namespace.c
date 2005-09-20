@@ -611,12 +611,19 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 {
   size_t uri_length=0L;
   const unsigned char *uri_string=NULL;
+  size_t xml_uri_length=0L;
   size_t length;
   unsigned char *buffer;
+  const char quote='"';
+  unsigned char *p;
 
-  if(ns->uri)
+  if(ns->uri) {
     uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
-  length=8+uri_length+ns->prefix_length; /* 8=length of [[xmlns=""] */
+    xml_uri_length=raptor_xml_escape_string(uri_string, uri_length,
+                                            NULL, 0, quote, NULL, NULL);
+  }
+
+  length=8+xml_uri_length+ns->prefix_length; /* 8=length of [[xmlns=""] */
 
   if(ns->prefix)
     length++; /* for : */
@@ -628,17 +635,25 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
   if(!buffer)
     return NULL;
   
-  if(!uri_length) {
-    if(ns->prefix)
-      sprintf((char*)buffer, "xmlns:%s=\"\"", ns->prefix);
-    else
-      strcpy((char*)buffer, "xmlns=\"\"");
-  } else {
-    if(ns->prefix)
-      sprintf((char*)buffer, "xmlns:%s=\"%s\"", ns->prefix, uri_string);
-    else
-      sprintf((char*)buffer, "xmlns=\"%s\"", uri_string);
+  p=buffer;
+  
+  strncpy((char*)p, "xmlns", 5);
+  p+= 5;
+  
+  if(ns->prefix) {
+    *p++ = ':';
+    strncpy((char*)p, (char*)ns->prefix, ns->prefix_length);
+    p+= ns->prefix_length;
   }
+  *p++ = '=';
+  *p++ = quote;
+  if(uri_length) {
+    raptor_xml_escape_string(uri_string, uri_length,
+                             p, xml_uri_length, quote,
+                             NULL, NULL);
+    p+= xml_uri_length;
+  }
+  *p++ = quote;
 
   return buffer;
 }
