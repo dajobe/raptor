@@ -257,6 +257,7 @@ typedef struct {
  *   abbreviate empty elements when serializing.
  * @RAPTOR_FEATURE_WRITER_INDENT_WIDTH: Integer number of spaces to use
  *   for each indent level when serializing with auto indent.
+ * @RAPTOR_FEATURE_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -277,7 +278,8 @@ typedef enum {
   RAPTOR_FEATURE_WRITER_AUTO_INDENT,
   RAPTOR_FEATURE_WRITER_AUTO_EMPTY,
   RAPTOR_FEATURE_WRITER_INDENT_WIDTH,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITER_INDENT_WIDTH
+  RAPTOR_FEATURE_WRITER_XML_VERSION,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITER_XML_VERSION
 } raptor_feature;
 
 
@@ -780,6 +782,10 @@ RAPTOR_API
 int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
 RAPTOR_API
 void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
+RAPTOR_API
+int raptor_xml_any_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);
+RAPTOR_API
+int raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API
 int raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API
