@@ -35,19 +35,19 @@ LIBS=@LIBS@ $(MEM_LIBS)
 AM_CPPFLAGS=-I$(top_srcdir)
 
 raptor_abort_SOURCES = raptor_abort.c
-raptor_abort_LDADD=$(top_builddir)/libraptor.la
+raptor_abort_LDADD=$(top_builddir)/src/libraptor.la
 raptor_abort_DEPENDENCIES = $(top_builddir)/libraptor.la
 
 grapper_SOURCES = grapper.c
-grapper_LDADD=$(top_builddir)/libraptor.la
+grapper_LDADD=$(top_builddir)/src/libraptor.la
 grapper_CFLAGS=`pkg-config --cflags gtk+-2.0 gconf-2.0`
 grapper_LDFLAGS=`pkg-config --libs gtk+-2.0 gconf-2.0`
-grapper_DEPENDENCIES = $(top_builddir)/libraptor.la
+grapper_DEPENDENCIES = $(top_builddir)/src/libraptor.la
 
 
 
-$(top_builddir)/libraptor.la:
-	cd $(top_builddir) && $(MAKE) libraptor.la
+$(top_builddir)/src/libraptor.la:
+	cd $(top_builddir)/src && $(MAKE) libraptor.la
 
 $(top_builddir)/../librdf/librdf.la:
 	cd $(top_builddir)/../librdf && $(MAKE) librdf.la
