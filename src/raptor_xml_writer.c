@@ -100,7 +100,9 @@ struct raptor_xml_writer_s {
 
   /* indentation per level if formatting */
   int indent;
-  
+
+  /* XML 1.0 (10) or XML 1.1 (11) */
+  int xml_version;
 };
 
 
@@ -172,7 +174,8 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
                                         raptor_simple_message_handler error_handler,
                                         void *error_data,
                                         int auto_empty,
-                                        int depth)
+                                        int depth,
+                                        int xml_version)
 {
   struct nsd *nspace_declarations=NULL;
   size_t nspace_declarations_count=0;  
@@ -303,11 +306,12 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
       
       raptor_iostream_write_counted_string(iostr, "=\"", 2);
       
-      raptor_iostream_write_xml_escaped_string(iostr,
-                                               element->attributes[i]->value, 
-                                               element->attributes[i]->value_length,
-                                               '"',
-                                               error_handler, error_data);
+      raptor_iostream_write_xml_any_escaped_string(iostr,
+                                                   element->attributes[i]->value, 
+                                                   element->attributes[i]->value_length,
+                                                   '"',
+                                                   xml_version,
+                                                   error_handler, error_data);
       raptor_iostream_write_byte(iostr, '"');
     }
   }
@@ -389,6 +393,8 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
   xml_writer->flags = 0;
   xml_writer->indent = 2;
   
+  xml_writer->xml_version = 10;
+  
   return xml_writer;
 }
 
@@ -432,7 +438,8 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
                                           xml_writer->error_handler,
                                           xml_writer->error_data,
                                           1,
-                                          xml_writer->depth);
+                                          xml_writer->depth,
+                                          xml_writer->xml_version);
 
   raptor_iostream_write_xml_element_end(xml_writer->iostr, element, 1);
   
@@ -467,7 +474,8 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                           xml_writer->error_handler,
                                           xml_writer->error_data,
                                           XML_WRITER_AUTO_EMPTY(xml_writer),
-                                          xml_writer->depth);
+                                          xml_writer->depth,
+                                          xml_writer->xml_version);
 
   xml_writer->depth++;
 
@@ -536,11 +544,12 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 {
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
-                                           s, strlen((const char*)s),
-                                           '\0',
-                                           xml_writer->error_handler,
-                                           xml_writer->error_data);
+  raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
+                                               s, strlen((const char*)s),
+                                               '\0',
+                                               xml_writer->xml_version,
+                                               xml_writer->error_handler,
+                                               xml_writer->error_data);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen=1;
@@ -565,11 +574,12 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
 {
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_iostream_write_xml_escaped_string(xml_writer->iostr,
-                                           s, len,
-                                           '\0',
-                                           xml_writer->error_handler,
-                                           xml_writer->error_data);
+  raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
+                                               s, len,
+                                               '\0',
+                                               xml_writer->xml_version,
+                                               xml_writer->error_handler,
+                                               xml_writer->error_data);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen=1;
@@ -733,6 +743,11 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
       xml_writer->indent = value;
       break;
         
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+      if(value == 10 || value == 11)
+        xml_writer->xml_version = value;
+      break;
+        
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
@@ -817,6 +832,10 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
       result=xml_writer->indent;
       break;
 
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+      result=xml_writer->xml_version;
+      break;
+      
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
