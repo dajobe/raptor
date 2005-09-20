@@ -466,6 +466,9 @@ struct raptor_serializer_s {
   raptor_iostream *iostream;
   
   struct raptor_serializer_factory_s* factory;
+
+  /* XML 1.0 (10) or XML 1.1 (11) */
+  int xml_version;
 };
 
 
