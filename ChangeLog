@@ -1,3 +1,10 @@
+2005-09-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_for_xmlbase, raptor_new_uri_for_retrieval):
+	Set ud->path_len to 1 when adding a default path of /
+	Fixes bug 0000045  http://bugs.librdf.org/mantis/view.php?id=45
+
 2005-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
 
 	* src/raptor_serialize_rdfxmla.c (raptor_rdfxmla_serialize_start):
