@@ -147,10 +147,13 @@ static void rdfdiff_compare_statements(void *user_data, const raptor_statement *
 
 int main(int argc, char *argv[]);
 
-static int safe_strcmp(const char *s1, const char *s2)
+
+/* Version of strcmp that can take NULL parameters. Assume that
+ * Non-NULL strings are lexically greater than NULL strings 
+ */
+static int
+safe_strcmp(const char *s1, const char *s2)
 {
-  /* Version of strcmp that can take NULL parameters. Assume that
-   * Non-NULL strings are lexically greater than NULL strings */
   if(s1 == NULL && s2 == NULL) {
     return 0;
   } else if(s1 == NULL && s2 != NULL) {
@@ -163,18 +166,6 @@ static int safe_strcmp(const char *s1, const char *s2)
   
 }
 
-static int safe_uri_equals(raptor_uri* u1, raptor_uri* u2)
-{
-  /* Version of raptor_uri_equals that can take NULL parameters. */
-  if(u1 != NULL && u2 != NULL) {
-    return raptor_uri_equals(u1, u2);
-  } else if(u1 == NULL && u2 == NULL) {
-    return 1;
-  } else {
-    return 0;
-  }
-  
-}
 
 #ifdef RDFDIFF_DEBUG
 static void
@@ -291,7 +282,8 @@ rdfdiff_ordinal_equals_resource(int ordinal, raptor_uri *resource)
   raptor_uri *ordinal_uri;
   int equal;
 
-  snprintf((char *)ordinal_string, ORDINAL_STRING_LEN, "%s_%d", raptor_rdf_namespace_uri, ordinal);
+  snprintf((char *)ordinal_string, ORDINAL_STRING_LEN, "%s_%d",
+           raptor_rdf_namespace_uri, ordinal);
   
   ordinal_uri = raptor_new_uri(ordinal_string);
 
@@ -307,21 +299,23 @@ static int
 rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
 {
   
-  if(s1 == 0 || s2 == 0)
+  if(!s1 || !s2)
     return 0;
 
   if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL &&
-      s2->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+     s2->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s1->subject, (raptor_uri *)s2->subject))
+    if(!rdfdiff_ordinal_equals_resource(*(int *)s1->subject, 
+                                        (raptor_uri *)s2->subject))
       return 0;
     
   } else if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-             s2->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+            s2->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s2->subject, (raptor_uri *)s1->subject))
+    if(!rdfdiff_ordinal_equals_resource(*(int *)s2->subject,
+                                        (raptor_uri *)s1->subject))
       return 0;
       
   } else {
@@ -335,7 +329,8 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
       /*if(strcmp((const char *)s1->subject, (const char *)s2->subject) != 0)
         return 0;*/
     } else {
-      if(!raptor_uri_equals((raptor_uri *)s1->subject, (raptor_uri *)s2->subject))
+      if(!raptor_uri_equals((raptor_uri *)s1->subject,
+                            (raptor_uri *)s2->subject))
         return 0;
     }
   }
@@ -344,14 +339,16 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
       s2->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s1->predicate, (raptor_uri *)s2->predicate))
+    if(!rdfdiff_ordinal_equals_resource(*(int *)s1->predicate, 
+                                        (raptor_uri *)s2->predicate))
       return 0;
 
   } else if(s1->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE &&
-             s2->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+            s2->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s2->predicate, (raptor_uri *)s1->predicate))
+    if(!rdfdiff_ordinal_equals_resource(*(int *)s2->predicate,
+                                        (raptor_uri *)s1->predicate))
       return 0;
       
   } else {
@@ -363,7 +360,8 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
       if(*(int *)s1->predicate != *(int *)s2->predicate)
         return 0;
     } else {
-      if(!raptor_uri_equals((raptor_uri *)s1->predicate, (raptor_uri *)s2->predicate))
+      if(!raptor_uri_equals((raptor_uri *)s1->predicate,
+                            (raptor_uri *)s2->predicate))
         return 0;
     }
   }
@@ -373,14 +371,25 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
   
   if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
      s1->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-
-    int equal = (safe_strcmp((char *)s1->object, (char *)s2->object) == 0 &&
-                 safe_strcmp((char *)s1->object_literal_language, (char *)s2->object_literal_language) == 0 &&
-                 safe_uri_equals(s1->object_literal_datatype, s2->object_literal_datatype) != 0);
-
-    if(!equal)
-      return 0;
+    int equal;
     
+    equal=!safe_strcmp((char *)s1->object, (char *)s2->object);
+
+    if(equal) {
+      if(s1->object_literal_language && s2->object_literal_language)
+        equal=!strcmp((char *)s1->object_literal_language,
+                      (char *)s2->object_literal_language);
+      else if(s1->object_literal_language || s2->object_literal_language)
+        equal=0;
+      else
+        equal=1;
+
+      if(equal)
+        equal=raptor_uri_equals(s1->object_literal_datatype, 
+                              s2->object_literal_datatype);
+    }
+
+    return equal;
   } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     /* Here for completeness. Anonymous nodes are taken care of
      * elsewhere */
@@ -422,6 +431,9 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
     
   } else if(b1->owner->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
              b2->owner->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    rdfdiff_blank *p1;
+    rdfdiff_blank *p2;
+
     /* Both are anonymous.  Need further testing. Check that the
      * containing anononymous nodes are eaual. */
 #if 0
@@ -433,8 +445,8 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
     raptor_print_statement(b2->owner, stderr);
     fprintf(stderr, "\n");
 #endif    
-    rdfdiff_blank *p1 = rdfdiff_find_blank(b1_file->first_blank, (char *)b1->owner->subject);
-    rdfdiff_blank *p2 = rdfdiff_find_blank(b2_file->first_blank, (char *)b2->owner->subject);
+    p1 = rdfdiff_find_blank(b1_file->first_blank, (char *)b1->owner->subject);
+    p2 = rdfdiff_find_blank(b2_file->first_blank, (char *)b2->owner->subject);
     equal = rdfdiff_blank_equals(p1, p2, b1_file, b2_file);
   } else {
     equal = 0;
@@ -675,12 +687,6 @@ rdfdiff_collect_statements(void *user_data, const raptor_statement *statement)
   rdfdiff_file*file = (rdfdiff_file*)user_data;
   file->statement_count++;
 
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    fprintf(stderr, "found ordinal\n");
-    raptor_print_statement(statement, stderr);
-    fprintf(stderr, "\n");
-  }
-  
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
       statement->object_type  == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
 
