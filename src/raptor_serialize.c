@@ -282,7 +282,8 @@ raptor_serializers_enumerate(const unsigned int counter,
  * Return value: non 0 if name is a known syntax name
  */
 int
-raptor_serializer_syntax_name_check(const char *name) {
+raptor_serializer_syntax_name_check(const char *name)
+{
   return (raptor_get_serializer_factory(name) != NULL);
 }
 
@@ -294,7 +295,8 @@ raptor_serializer_syntax_name_check(const char *name) {
  * Return value: a new #raptor_serializer object or NULL on failure
  */
 raptor_serializer*
-raptor_new_serializer(const char *name) {
+raptor_new_serializer(const char *name)
+{
   raptor_serializer_factory* factory;
   raptor_serializer* rdf_serializer;
 
@@ -319,6 +321,9 @@ raptor_new_serializer(const char *name) {
   /* Default features */
   /* Emit relative URIs where possible */
   rdf_serializer->feature_relative_uris=1;
+
+  /* XML 1.0 output */
+  rdf_serializer->xml_version=10;
 
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
@@ -506,7 +511,8 @@ raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
  **/
 int
 raptor_serialize_statement(raptor_serializer* rdf_serializer,
-                           const raptor_statement *statement) {
+                           const raptor_statement *statement)
+{
   if(!rdf_serializer->iostream)
     return 1;
   return rdf_serializer->factory->serialize_statement(rdf_serializer, statement);
