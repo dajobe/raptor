@@ -800,8 +800,10 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
   if(!ud)
     return NULL;
 
-  if(!ud->path)
+  if(!ud->path) {
     ud->path=(unsigned char*)"/";
+    ud->path_len=1;
+  }
   
   ud->query=NULL; ud->query_len=0;
   ud->fragment=NULL; ud->fragment_len=0;
@@ -841,8 +843,10 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
   if(!ud)
     return NULL;
 
-  if(!ud->path)
+  if(!ud->path) {
     ud->path=(unsigned char*)"/";
+    ud->path_len=1;
+  }
 
   ud->fragment=NULL; ud->fragment_len=0;
   new_uri_string=raptor_uri_detail_to_string(ud, NULL);
