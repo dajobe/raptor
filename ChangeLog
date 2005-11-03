@@ -1,5 +1,12 @@
 2005-11-02  Dave Beckett  <dave@dajobe.org>
 
+	* src/turtle_parser.y, src/raptor_internal.h, src/n3_parser.y:
+	Added RAPTOR_ASSERT with no return value and use it for turtle and
+	n3 parsers.  Some compilers complain at an empty 3rd macro arg
+	with RAPTOR_ASSERT_RETURN.
+
+	* src/raptor_serialize_rss.c: remove ;;
+
 	* src/raptor_rdfxml.c (raptor_generate_statement): Make predicate
 	type fix in reifying.
 
