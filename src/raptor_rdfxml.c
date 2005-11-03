@@ -2805,7 +2805,11 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
                 element->parent->last_ordinal++;
               } else {
                 predicate_uri=raptor_xml_element_get_name(xml_element)->uri;
-                predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+                /* FIXME.  Deprecated fixup.
+                 * Leave this inplace until depenedent code - rasqal and redland
+                 * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
+                 */
+                predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
               }
 
 
