@@ -631,7 +631,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
                        int indent, int emit_container) 
 {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
-  raptor_xml_writer* xml_writer;;
+  raptor_xml_writer* xml_writer;
   raptor_rss_model* rss_model;
   raptor_uri *base_uri=serializer->base_uri;
   raptor_xml_element *element;
