@@ -124,11 +124,19 @@ void raptor_system_free(void *ptr);
 
 #ifdef RAPTOR_DISABLE_ASSERT
 
+#define RAPTOR_ASSERT(condition, msg) 
 #define RAPTOR_ASSERT_RETURN(condition, msg, ret) 
 #define RAPTOR_ASSERT_OBJECT_POINTER_RETURN(pointer, type)
 #define RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(pointer, type, ret)
 
 #else
+
+#define RAPTOR_ASSERT(condition, msg) do { \
+  if(condition) { \
+    RAPTOR_ASSERT_REPORT(msg) \
+    RAPTOR_ASSERT_DIE \
+  } \
+} while(0)
 
 #define RAPTOR_ASSERT_RETURN(condition, msg, ret) do { \
   if(condition) { \
