@@ -193,6 +193,12 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     statement->predicate=predicate_uri;
   }
   
+  /* FIXME.  Deprecated fixup.
+   * Leave this inplace until depenedent code - rasqal and redland
+   * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
+   */
+  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
 
   /* Three choices for object from N-Triples */
   statement->object_literal_language=NULL;

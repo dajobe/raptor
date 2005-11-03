@@ -1408,6 +1408,12 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   statement->subject_type=subject_type;
 
   statement->predicate=predicate_uri ? (void*)predicate_uri : (void*)predicate_id;
+  /* FIXME.  Deprecated fixup.
+   * Leave this inplace until depenedent code - rasqal and redland
+   * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
+   */
+  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
   statement->predicate_type=predicate_type;
 
   statement->object=object_uri ? (void*)object_uri : (void*)object_id;
@@ -1468,7 +1474,11 @@ raptor_generate_statement(raptor_parser *rdf_parser,
 
   /* generate reified statements */
   statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  /* FIXME.  Deprecated fixup.
+   * Leave this inplace until depenedent code - rasqal and redland
+   * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
+   */
+  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
   statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
   statement->object_literal_language=NULL;
