@@ -1491,6 +1491,8 @@ raptor_generate_statement(raptor_parser *rdf_parser,
     statement->subject_type=reified->type;
   }
   
+  if(predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE)
+    predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
   statement->predicate=RAPTOR_RDF_type_URI(rdf_xml_parser);
   statement->object=RAPTOR_RDF_Statement_URI(rdf_xml_parser);
