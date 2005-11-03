@@ -22,6 +22,14 @@ both tidied up the mixture of files at the top level and also enabled
 better use with gtk-doc.
 </p>
 
+<p>Future API change: From the next release of
+Raptor, <code>raptor_statement</code> predicates will return
+identifiers of type <code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code>
+instead of <code>RAPTOR_IDENTIFIER_TYPE_PREDICATE</code>.
+Identifiers of type <code>RAPTOR_IDENTIFIER_TYPE_ORDINAL</code> may
+no longer be returned in any statement position (to be confirmed).
+</p>
+
 
 <h3>Configuration Changes</h3>
 
@@ -161,7 +169,7 @@ escaping.</p>
 <p>Check for illegal not-hexadecimal \u and \U escape values.</p>
 
 <p>Fix greedy matching of long literals ("""....""") that ended on
-the last """ found rather than the first.</p>
+the last """ found rather than the first.</p> <!-- """ -->
 
 <p>Added double constants to turtle.</p>
 
@@ -184,12 +192,42 @@ those available using configure option <code>--enable-serializers</code>.
 disabled.  The RSS serializer no longer requires an XML parser.</p>
 
 
+<h3>RDF/XML Serializer / XML Writer Changes</h3>
+
+<p>A new XML Writer feature
+<code>RAPTOR_FEATURE_WRITER_XML_VERSION</code> was added to allow
+chosing XML 1.0 (value 10) or XML 1.1 output (value 11).  This
+feature is also accepted by serializers as an option and used by the
+RDF/XML and RDF/XML-Abbrev serializers.
+</p>
+
+<p>Added functions <code>raptor_xml_any_escape_string()</code>
+and <code>raptor_iostream_write_xml_any_escaped_string()</code>
+which take an XML version.  The XML 1.0 functions give errors
+when attempting to write #x1-#x1f (excluding #x9, #xA, #xD) or #x7F.
+</p>
+
+
 <h3>Atom 1.0 Serializer Changes</h3>
 
 <p>Added a new serializer using the Atom 1.0 format and namespace.
 This reads RDF triples in the RSS 1.0 model, along with any
 additional atom 1.0 properties and serializes an Atom 1.0 feed
 file.</p>
+
+
+<h3>URI Class Changes</h3>
+
+<p>Fix a bug when adding a default path of / to a URI
+in functions <code>raptor_new_uri_for_xmlbase()</code>
+and <code>raptor_new_uri_for_retrieval()</code>.
+(Bug #<a href="http://bugs.librdf.org/mantis/view.php?id=45">0000045</a>)
+</p>
+
+
+<p><em>raptor_uri_equals</em> was altered to accept NULL pointers,
+which do not compare equal to a non-NULL URI.  NULL does equal NULL.
+</p>
 
 
 <h3>Internal Changes</h3>
