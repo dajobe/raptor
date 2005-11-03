@@ -285,7 +285,9 @@ raptor_xml_writer_get_feature
 raptor_xml_writer_get_feature_string
 raptor_iostream_write_xml_element
 raptor_xml_writer
+raptor_xml_any_escape_string
 raptor_xml_escape_string
+raptor_iostream_write_xml_any_escaped_string
 raptor_iostream_write_xml_escaped_string
 raptor_xml_name_check
 </SECTION>
