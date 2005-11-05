@@ -261,6 +261,22 @@ a name is legal in some XML version.
 </para>
 
 
+<!-- ##### FUNCTION raptor_xml_any_escape_string ##### -->
+<para>
+
+</para>
+
+@string: 
+@len: 
+@buffer: 
+@length: 
+@quote: 
+@xml_version: 
+@error_handler: 
+@error_data: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_xml_escape_string ##### -->
 <para>
 
@@ -271,6 +287,21 @@ a name is legal in some XML version.
 @buffer: 
 @length: 
 @quote: 
+@error_handler: 
+@error_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_iostream_write_xml_any_escaped_string ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@string: 
+@len: 
+@quote: 
+@xml_version: 
 @error_handler: 
 @error_data: 
 @Returns: 
