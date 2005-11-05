@@ -64,14 +64,15 @@ support.</p>
 <p>This new documentation intended to replace the libraptor manual
 page/web page as easier to read document with scope for better
 expanding with more detail of raptor including examples and tutorial
-information.
+information.  The manual page will continue to contain the summary
+information for the present.
 </p>
 
 
 <h3>Portability Changes</h3>
 
-<p>Fix a long-standing URI resolution bug on win32 - only remove
-leading / if there is one present (John C. Barstow)</p>
+<p>Fixed a long-standing URI resolution bug on win32 - only remove
+leading / if there is one present (patch from John C. Barstow)</p>
 
 
 <h3><code>rapper</code> utility Changes</h3>
@@ -98,8 +99,8 @@ parser factory method <code>content_type_handler</code> to return this.
 <p>Allow parsers to handle several syntaxes rather than only 1 or 2.
 </p>
 
-<p>Parsers can now return namespace prefix/URI declarations as are
-given in the content by a new handler type
+<p>Parsers can now return namespace prefix/URI declarations as
+they are given in the content by the means of a new handler type
 <code>raptor_namespace_handler</code> and parser method
 <code>raptor_set_namespace_handler</code>.  Duplicate namespace
 prefix/URIs can be returned.
