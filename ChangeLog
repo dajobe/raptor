@@ -1,4 +1,16 @@
+2005-11-04  Dave Beckett  <dave@dajobe.org>
+
+	* docs/tmpl/section-xml.sgml: new functions
+
+	* docs/tmpl/section-feature.sgml: New feature
+
+	* docs/libraptor.3: Updated for 1.4.8
+
 2005-11-02  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-sections.txt:
+	Added raptor_iostream_write_xml_any_escaped_string
+	raptor_xml_any_escape_string
 
 	* src/turtle_parser.y, src/raptor_internal.h, src/n3_parser.y:
 	Added RAPTOR_ASSERT with no return value and use it for turtle and
