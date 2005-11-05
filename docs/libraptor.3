@@ -4,10 +4,9 @@
 .\" $Id$
 .\"
 .\" Copyright (C) 2002-2005 David Beckett - http://purl.org/net/dajobe/
-.\" Institute for Learning and Research Technology - http://www.ilrt.bris.ac.uk/
-.\" University of Bristol - http://www.bristol.ac.uk/
+.\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2005-09-16"
+.TH libraptor 3 "2005-11-04"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -370,6 +369,7 @@ Write an N-Triples encoded version of the raptor_statement
 .IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type \fIterm\fP)\fR"
 Deprecated, for internal use.
 .SH "XML UTILITY FUNCTIONS"
+.IP "\fBint raptor_xml_any_escape_string(const unsigned char* \fIstring\fP, size_t \fIlen\fP, unsigned char* \fIbuffer\fP, size_t \fIlength\fP, char \fIquote\fP, int \fIxml_version\fP, raptor_simple_message_handler \fIerror_handler\fP, void* \fIerror_data\fP)\fR"
 .IP "\fBint raptor_xml_escape_string(const unsigned char *\fIstring\fB, size_t \fIlen\fB, unsigned char *\fIbuffer\fB, size_t \fIlength\fB, char \fIquote\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Apply the XML escaping rules to the string given in (string, len)
 into the \fIbuffer\fP of size \fIlength\fP.  If \fIquote\fP
@@ -378,7 +378,13 @@ appropriate quote character \" or \' is used, otherwise it is
 XML element content (CDATA).   The \fIerror_handler\fR method along
 with \fIerror_data\fR allow error reporting to be given.
 If buffer is NULL, returns the size of the buffer required to escape.
-Otherwise the return value is the number of bytes used or <0 on failure.
+Otherwise the return value is the number of bytes used or <0 on
+failure.
+.IP
+When an \fIxml_version\fP argument is present and has a value 10 (XML
+1.0) or 11 (XML 1.1) then that version is used.  The default with no
+argument is to generate XML 1.0.
+.IP "\fBint raptor_iostream_write_xml_any_escaped_string(raptor_iostream* \fIiostr\fP, const unsigned char* \fIstring\fP, size_t \fIlen\fP, char \fIquote\fP, int \fIxml_version\fP, raptor_simple_message_handler \fIerror_handler\fP, void* \fIerror_data\fP)\fR"
 .IP "\fBint raptor_iostream_write_xml_escaped_string(raptor_iostream* \fIiostr\fB, const unsigned char *\fIstring\fB, size_t \fIlen\fB, char \fIquote\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Write an XML-escaped version of the string given in (string, len) to
 iostream \fIiostr\fP.  If \fIquote\fP is given, the escaped content
@@ -386,6 +392,10 @@ is for an XML attribute and the appropriate quote character \" or \'
 is used, otherwise it is XML element content (CDATA).  The
 \fIerror_handler\fR method along with \fIerror_data\fR allow error
 reporting to be given.
+.IP
+When an \fIxml_version\fP argument is present and has a value 10 (XML
+1.0) or 11 (XML 1.1) then that version is used.  The default with no
+argument is to generate XML 1.0.
 .IP "\fBint raptor_xml_name_check(const unsigned char *\fIstring\fP, size_t \fIlength\fP, int xml_version)\fR"
 Check that the given \fIstring\fP of \fIlength\fP bytes
 is a legal XML name according to XML 1.0 or XML 1.1.
@@ -1086,6 +1096,21 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
 .SS 1.4.8
 Added \fBraptor_set_namespace_handler\fP.
+.LP
+Added XML 1.1 serializing support, feature
+\fBRAPTOR_FEATURE_WRITER_XML_VERSION\fP with shortname
+\fIxmlVersion\fP for serializer and xml writer classes to support
+it.  Added new functions \fBraptor_xml_any_escape_string\fP and
+\fBraptor_iostream_write_xml_any_escaped_string\fP to allow
+generating XML 1.1 or XML 1.0.
+.LP
+\fBRAPTOR_IDENTIFIER_TYPE_PREDICATE\fP will no longer be generated
+from version 1.4.9 onwards as the type of returned statement predicates.
+\fBRAPTOR_IDENTIFIER_TYPE_RESOURCE\fP will be returned.
+.LP
+\fBRAPTOR_IDENTIFIER_TYPE_ORDINAL\fP may no longer be generated
+from version 1.4.9 onwards, \fBRAPTOR_IDENTIFIER_TYPE_RESOURCE\fP
+may replace it.
 .SS 1.4.7
 No changes.
 .SS 1.4.6
