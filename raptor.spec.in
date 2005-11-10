@@ -68,6 +68,8 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 %doc %{_mandir}/man1/rapper.1*
 %doc %{_mandir}/man3/libraptor.3*
 
+%doc %{_datadir}/gtk-doc/html/raptor/*
+
 %{_libdir}/libraptor*.so.*
 %{prefix}/bin/rapper
 
@@ -89,6 +91,9 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
 
 %changelog
+* Wed Nov 9 2005  Dave Beckett <dave@dajobe.org>
+- Add gtk-doc documentation
+
 * Wed Aug 11 2005  Dave Beckett <dave.beckett@bristol.ac.uk>
 - Update Source:
 - Use %makeinstall
