@@ -477,6 +477,11 @@ struct raptor_serializer_s {
 
   /* XML 1.0 (10) or XML 1.1 (11) */
   int xml_version;
+
+  /* FEATURE:
+   * non 0 to write XML 1.0 or 1.1 declaration (default 1)
+   */
+  int feature_write_xml_declaration;
 };
 
 
