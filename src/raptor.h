@@ -258,6 +258,7 @@ typedef struct {
  * @RAPTOR_FEATURE_WRITER_INDENT_WIDTH: Integer number of spaces to use
  *   for each indent level when serializing with auto indent.
  * @RAPTOR_FEATURE_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
+ * @RAPTOR_FEATURE_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -279,7 +280,8 @@ typedef enum {
   RAPTOR_FEATURE_WRITER_AUTO_EMPTY,
   RAPTOR_FEATURE_WRITER_INDENT_WIDTH,
   RAPTOR_FEATURE_WRITER_XML_VERSION,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITER_XML_VERSION
+  RAPTOR_FEATURE_WRITER_XML_DECLARATION,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITER_XML_DECLARATION
 } raptor_feature;
 
 
