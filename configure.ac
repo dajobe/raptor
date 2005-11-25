@@ -615,7 +615,7 @@ for xml_parser_name in $xml_parser libxml expat; do
 	need_expat=1
 	need_expat_source=1
       fi
-      if test $need_expat; then
+      if test $need_expat = 1; then
 	AC_DEFINE(RAPTOR_XML_EXPAT, 1, [Use expat XML parser])
         break
       fi
@@ -628,7 +628,7 @@ for xml_parser_name in $xml_parser libxml expat; do
 	need_libxml=1
 	need_libxml_source=1
       fi
-      if test $need_libxml; then
+      if test $need_libxml = 1; then
 	AC_DEFINE(RAPTOR_XML_LIBXML, 1, [Use libxml XML parser])
         break
       fi
