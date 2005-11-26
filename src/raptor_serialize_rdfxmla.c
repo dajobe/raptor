@@ -1,12 +1,12 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_serialize_xmlrdf.c - RDF/XML abbreviations serializer
+ * raptor_serialize_rdfxmla.c - RDF/XML with abbreviations serializer
  *
  * $Id$
  *
  * Copyright (C) 2004-2005, David Beckett http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
- * University of Bristol, UK http://www.bristol.ac.uk/
+ *
+ * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  *
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
@@ -115,6 +115,9 @@ typedef struct {
 
   /* URI of rdf:XMLLiteral */
   raptor_uri* rdf_xml_literal_uri;
+
+  /* non-zero if is Adobe XMP abbreviated form */
+  int is_xmp;
 } raptor_rdfxmla_context;
 
 
@@ -642,11 +645,14 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   /* emit the subject node */
   if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
     attr_name = (unsigned char*)"about";
-    if(serializer->feature_relative_uris)
+    if(context->is_xmp) {
+      /* XML rdf:about value is always "" */
+      attr_value = (unsigned char *)RAPTOR_CALLOC(string, 1, sizeof(unsigned char*));
+    } else if(serializer->feature_relative_uris)
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                      subject->node->value.resource.uri);
     else
-      attr_value = raptor_uri_as_string(subject->node->value.resource.uri);
+      attr_value = raptor_uri_to_string(subject->node->value.resource.uri);
     
   } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     if(subject->node->ref_count != 2 &&
@@ -1307,6 +1313,10 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
 
+  context->is_xmp=!strncmp(name, "rdfxml-xmp", 10);
+  if(context->is_xmp)
+    serializer->feature_write_xml_declaration=0;
+
   return 0;
 }
   
@@ -1406,7 +1416,9 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
   raptor_xml_writer_set_feature(xml_writer,RAPTOR_FEATURE_WRITER_INDENT_WIDTH,2);
   raptor_xml_writer_set_feature(xml_writer, RAPTOR_FEATURE_WRITER_XML_VERSION,
                                 serializer->xml_version);
-  
+  raptor_xml_writer_set_feature(xml_writer, 
+                                RAPTOR_FEATURE_WRITER_XML_DECLARATION, 
+                                serializer->feature_write_xml_declaration);
   
   context->xml_writer=xml_writer;
   
@@ -1424,14 +1436,10 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
   }
   
 
-  raptor_xml_writer_raw(xml_writer, (const unsigned char*)"<?xml version=\"");
-  raptor_xml_writer_raw_counted(xml_writer,
-                                (serializer->xml_version == 10) ?
-                                (const unsigned char*)"1.0" :
-                                (const unsigned char*)"1.1",
-                                3);
-  raptor_xml_writer_raw(xml_writer,  (const unsigned char*)"\" encoding=\"utf-8\"?>\n");
-
+  if(context->is_xmp)
+    raptor_xml_writer_raw(xml_writer,
+                          (const unsigned char*)"<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n<x:xmpmeta xmlns:x='adobe:ns:meta/'>");
+  
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   
   return 0;
@@ -1449,10 +1457,10 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   raptor_node *object = 0;
   int rv;
   raptor_identifier_type object_type;
-  
+
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-      statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-      statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+     statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
+     statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     subject = raptor_rdfxmla_lookup_subject(context, statement->subject_type,
                                             statement->subject);
@@ -1509,14 +1517,39 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       subject->node_type->ref_count++;
       return 0;
     
-    } else {    
-      rv = raptor_subject_add_property(subject, predicate, object);
-      if(rv) {
-        raptor_serializer_error(serializer,
-                                "Unable to add properties to subject 0x%x\n",
-                                subject);
+    } else {
+      int add_property=1;
+
+      if(context->is_xmp && predicate->ref_count > 1) {
+        int i;
+        for(i=0; i < raptor_sequence_size(subject->properties); i++) {
+          raptor_node *node = (raptor_node*)raptor_sequence_get_at(subject->properties, i);
+          if(node == predicate) {
+            add_property=0;
+            
+            if(object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+              /* look for any generated blank node associated with this
+               * statement and free it
+               */
+              int idx=0;
+              if(raptor_rdfxmla_find_subject(context->blanks, object_type,
+                                             statement->object, &idx))
+                raptor_sequence_set_at(context->blanks, idx, NULL);
+            }
+            
+            break;
+          }
+        }
       }
-      
+
+      if(add_property) {
+	rv = raptor_subject_add_property(subject, predicate, object);
+	if(rv) {
+	  raptor_serializer_error(serializer,
+				  "Unable to add properties to subject 0x%x\n",
+				  subject);
+	}
+      }
     }
   
   } else if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
@@ -1569,7 +1602,9 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
   raptor_free_xml_element(context->rdf_RDF_element);
   context->rdf_RDF_element=NULL;
 
-  context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+  if(context->is_xmp)
+    raptor_xml_writer_raw(xml_writer, 
+                          (const unsigned char*)"</x:xmpmeta>\n<?xpacket end='r'?>\n");
   
   return 0;
 }
@@ -1602,6 +1637,11 @@ void
 raptor_init_serializer_rdfxmla(void)
 {
   raptor_serializer_register_factory("rdfxml-abbrev", "RDF/XML (Abbreviated)", 
+                                     "application/rdf+xml",
+                                     NULL,
+                                     (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
+                                     &raptor_rdfxmla_serializer_register_factory);
+  raptor_serializer_register_factory("rdfxml-xmp", "RDF/XML (XMP Profile)", 
                                      "application/rdf+xml",
                                      NULL,
                                      (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
