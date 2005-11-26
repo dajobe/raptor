@@ -2389,6 +2389,9 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                                                              raptor_parser_simple_error, rdf_parser,
                                                              1);
             
+            raptor_xml_writer_set_feature(rdf_xml_parser->xml_writer, 
+                                          RAPTOR_FEATURE_WRITER_XML_DECLARATION, 0);
+
             element->child_state=RAPTOR_STATE_PARSETYPE_LITERAL;
             element->content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
             element->child_content_type=RAPTOR_ELEMENT_CONTENT_TYPE_XML_LITERAL;
