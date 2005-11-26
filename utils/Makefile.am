@@ -26,11 +26,11 @@
 
 
 bin_PROGRAMS = rapper
-EXTRA_PROGRAMS = rdfdiff
+EXTRA_PROGRAMS = rdfdiff rdfcat
 
 man_MANS = rapper.1
 
-CLEANFILES=rdfdiff
+CLEANFILES=rdfdiff rdfcat
 
 # Memory debugging alternatives
 MEM=@MEM@
@@ -50,7 +50,7 @@ STANDARD_CFLAGS= @STANDARD_CFLAGS@ $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
-EXTRA_DIST=\
+EXTRA_DIST= rdfcat.1 \
 $(man_MANS)
 
 
@@ -71,6 +71,12 @@ if MAINTAINER_MODE
 rapper.html: $(srcdir)/rapper.1 $(srcdir)/../fix-groff-xhtml
 	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/../fix-groff-xhtml $@
 endif
+
+rdfcat_SOURCES = rdfcat.c
+if GETOPT
+rdfcat_SOURCES += getopt.c raptor_getopt.h
+endif
+rdfcat_LDADD= $(top_builddir)/src/libraptor.la
 
 
 $(top_builddir)/src/libraptor.la:
