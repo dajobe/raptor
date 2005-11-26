@@ -325,6 +325,9 @@ raptor_new_serializer(const char *name)
   /* XML 1.0 output */
   rdf_serializer->xml_version=10;
 
+  /* Write XML declaration */
+  rdf_serializer->feature_write_xml_declaration=1;
+
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
     return NULL;
@@ -647,6 +650,10 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
         serializer->xml_version=value;
       break;
 
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+      serializer->feature_write_xml_declaration = value;
+      break;
+
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
@@ -726,6 +733,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
 
     default:
       return -1;
@@ -766,6 +774,10 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
 
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
       result=serializer->xml_version;
+      break;
+  
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+      result=serializer->feature_write_xml_declaration;
       break;
       
     /* parser features */
@@ -840,6 +852,7 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
 
     default:
       return NULL;
