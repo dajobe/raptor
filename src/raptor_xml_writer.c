@@ -103,6 +103,12 @@ struct raptor_xml_writer_s {
 
   /* XML 1.0 (10) or XML 1.1 (11) */
   int xml_version;
+
+  /* Write XML 1.0 or 1.1 declaration (default 1) */
+  int xml_declaration;
+
+  /* Has writing the XML declaration writing been checked? */
+  int xml_declaration_checked;
 };
 
 
@@ -394,6 +400,9 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
   xml_writer->indent = 2;
   
   xml_writer->xml_version = 10;
+
+  /* Write XML declaration */
+  xml_writer->xml_declaration=1;
   
   return xml_writer;
 }
@@ -416,6 +425,29 @@ raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 }
 
 
+static void
+raptor_xml_writer_write_xml_declaration(raptor_xml_writer* xml_writer)
+{
+  if(!xml_writer->xml_declaration_checked) {
+    /* check that it should be written once only */
+    xml_writer->xml_declaration_checked=1;
+
+    if(xml_writer->xml_declaration) {
+      raptor_iostream_write_string(xml_writer->iostr, 
+                                   (const unsigned char*)"<?xml version=\"");
+      raptor_iostream_write_counted_string(xml_writer->iostr, 
+                                           (xml_writer->xml_version == 10) ?
+                                           (const unsigned char*)"1.0" :
+                                           (const unsigned char*)"1.1",
+                                           3);
+      raptor_iostream_write_string(xml_writer->iostr, 
+                                   (const unsigned char*)"\" encoding=\"utf-8\"?>\n");
+    }
+  }
+
+}
+
+
 /**
  * raptor_xml_writer_empty_element:
  * @xml_writer: XML writer object
@@ -430,6 +462,8 @@ void
 raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
                                 raptor_xml_element *element)
 {
+  raptor_xml_writer_write_xml_declaration(xml_writer);
+
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_xml_element_start(xml_writer->iostr,
@@ -463,6 +497,8 @@ void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
                                 raptor_xml_element *element)
 {
+  raptor_xml_writer_write_xml_declaration(xml_writer);
+
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   if (XML_WRITER_AUTO_INDENT(xml_writer))
@@ -542,6 +578,8 @@ void
 raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
                         const unsigned char *s)
 {
+  raptor_xml_writer_write_xml_declaration(xml_writer);
+
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
@@ -572,6 +610,8 @@ void
 raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
                                 const unsigned char *s, unsigned int len)
 {
+  raptor_xml_writer_write_xml_declaration(xml_writer);
+
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
@@ -601,6 +641,8 @@ void
 raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
                       const unsigned char *s)
 {
+  raptor_xml_writer_write_xml_declaration(xml_writer);
+
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_string(xml_writer->iostr, s);
@@ -626,6 +668,8 @@ void
 raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
                               const unsigned char *s, unsigned int len)
 {
+  raptor_xml_writer_write_xml_declaration(xml_writer);
+
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
   raptor_iostream_write_counted_string(xml_writer->iostr, s, len);
@@ -748,6 +792,10 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
         xml_writer->xml_version = value;
       break;
         
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+      xml_writer->xml_declaration = value;
+      break;
+        
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
@@ -835,6 +883,10 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
       result=xml_writer->xml_version;
       break;
+
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+      result=xml_writer->xml_declaration;
+      break;
       
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
@@ -890,7 +942,7 @@ int main(int argc, char *argv[]);
 
 const unsigned char *base_uri_string=(const unsigned char*)"http://example.org/base#";
 
-#define OUT_BYTES_COUNT 96
+#define OUT_BYTES_COUNT 135
 
 int
 main(int argc, char *argv[]) 
