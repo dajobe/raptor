@@ -191,14 +191,6 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
   }
   
 
-  raptor_xml_writer_raw(xml_writer, (const unsigned char*)"<?xml version=\"");
-  raptor_xml_writer_raw_counted(xml_writer,
-                                (serializer->xml_version == 10) ?
-                                (const unsigned char*)"1.0" :
-                                (const unsigned char*)"1.1",
-                                3);
-  raptor_xml_writer_raw(xml_writer,  (const unsigned char*)"\" encoding=\"utf-8\"?>\n");
-
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
 
