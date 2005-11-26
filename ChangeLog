@@ -1,3 +1,45 @@
+2005-11-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c: Add automatic writing of the XML
+	declaration (dependent on the XML version).
+	(raptor_xml_writer_write_xml_declaration): Added, to support this.
+	New feature RAPTOR_FEATURE_WRITER_XML_DECLARATION can disable
+	this.
+	(main): Update the test code to expect an XML declaration in the
+	string.
+
+	* src/raptor_parse.c: Add do-nothing switch cases for
+	RAPTOR_FEATURE_WRITER_XML_DECLARATION.
+
+	* src/raptor_serialize_rdfxmla.c: Add Adobe XMP compatible output
+	as new serializer rdfxml-xmp based on patch from Sid Steward.
+	Duplicate predicates are ignored for a single subject.
+
+	* src/raptor_serialize_rdfxml.c: Defer writing xml declaration to
+	the xml writer.
+
+	* src/raptor_serialize.c: Add XML declaration writing feature
+	support
+	(RAPTOR_FEATURE_WRITER_XML_DECLARATION) for serializer.
+
+2005-11-25  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac: Add test X = 1 for expat and libxml tests.  Fixes
+	Issue#0000060
+
+2005-11-22  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_feature.c: Added
+	RAPTOR_FEATURE_WRITER_XML_DECLARATION feature.
+
+	* src/raptor.h: Added RAPTOR_FEATURE_WRITER_XML_DECLARATION to
+	control generating the XML declaration on serializers and XML
+	writer.
+
+2005-11-10  Dave Beckett  <dave@dajobe.org>
+
+	* raptor.spec.in: Add gtk-doc docs to rpm
+
 2005-11-04  Dave Beckett  <dave@dajobe.org>
 
 	* docs/tmpl/section-xml.sgml: new functions
