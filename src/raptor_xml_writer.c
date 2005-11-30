@@ -133,7 +133,14 @@ raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
   
   num_spaces = xml_writer->depth * xml_writer->indent;
 
-  raptor_iostream_write_byte(xml_writer->iostr, '\n');
+  /* Do not write an extra newline at the start of the document
+   * (after the XML declaration or XMP processing instruction has
+   * been writtten)
+   */
+  if(xml_writer->xml_declaration_checked == 1)
+    xml_writer->xml_declaration_checked++;
+  else
+    raptor_iostream_write_byte(xml_writer->iostr, '\n');
   
   while (num_spaces > 0) {
 
@@ -501,7 +508,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  if (XML_WRITER_AUTO_INDENT(xml_writer))
+  if(XML_WRITER_AUTO_INDENT(xml_writer))
     raptor_xml_writer_indent(xml_writer);
   
   raptor_iostream_write_xml_element_start(xml_writer->iostr,
