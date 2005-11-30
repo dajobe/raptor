@@ -1,3 +1,9 @@
+2005-11-30  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c (raptor_xml_writer_indent):
+	Fix writing an extra newline at doc
+	start.
+
 2005-11-26  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_xml_writer.c: Add automatic writing of the XML
