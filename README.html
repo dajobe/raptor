@@ -20,8 +20,8 @@ generate Resource Description Framework (RDF) triples
 by parsing syntaxes or serialize the triples into a syntax.
 The supported parsing syntaxes are RDF/XML,
 N-Triples, Turtle, RSS tag soup including Atom 1.0 and 0.3,
-GRDDL for XHTML and XML.  The serializing syntaxes are RDF/XML,
-N-Triples and RSS 1.0.</p>
+GRDDL for XHTML and XML.  The serializing syntaxes are RDF/XML (regular,
+and abbreviated), N-Triples, RSS 1.0, Atom 1.0 and Adobe XMP.</p>
 
 <p>Raptor was designed to work closely with the
 <a href="http://librdf.org/">Redland RDF library</a>
@@ -157,6 +157,13 @@ format.
 <p>An alpha quality serializer to the Atom 1.0 format.  A critical
 missing part is that it does not write the text content of the feed.
 Hence this is not ready for use.
+</p>
+
+
+<h3>Adobe XMP Serializer</h3>
+
+<p>An alpha quality serializer to the Adobe XMP profile of RDF/XML
+suitable for embedding inside an external document.
 </p>
 
 

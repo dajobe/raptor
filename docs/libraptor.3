@@ -1068,6 +1068,7 @@ The current defined writer features are:
   \fBRAPTOR_FEATURE_WRITER_AUTO_INDENT\fR       Boolean (non 0 true)
   \fBRAPTOR_FEATURE_WRITER_AUTO_EMPTY\fR        Boolean (non 0 true)
   \fBRAPTOR_FEATURE_WRITER_INDENT_WIDTH\fR      Integer
+  \fBRAPTOR_FEATURE_WRITER_XML_DECLARATION\fR   Boolean (non 0 true)
 .P
 If the \fIwriter_auto_indent\fR
 feature is set (default true), the XML writer will automatically
@@ -1080,6 +1081,10 @@ generate empty elements if a start/end element sequence has no content.
 If the \fIwriter_indent_width\fR
 feature is set (default 2) if the XML writer is outputing indented
 XML, it will use that many spaces.
+.P
+If the \fIwriter_xml_declaration\fR
+feature is set (default true) the XML declaration is written at the
+start of serialized XML.
 .IP "\fBint raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char *value)\fR"
 Set an XML writer feature \fIfeature\fR to a particular string \fIvalue\fR.
 Returns non 0 on failure or if the feature is unknown.
@@ -1100,7 +1105,10 @@ Added \fBraptor_set_namespace_handler\fP.
 Added XML 1.1 serializing support, feature
 \fBRAPTOR_FEATURE_WRITER_XML_VERSION\fP with shortname
 \fIxmlVersion\fP for serializer and xml writer classes to support
-it.  Added new functions \fBraptor_xml_any_escape_string\fP and
+it.  Added XML writer feature
+\fBRAPTOR_FEATURE_WRITER_XML_DECLARATION\fP to control generation
+of the XML declaration.
+Added new functions \fBraptor_xml_any_escape_string\fP and
 \fBraptor_iostream_write_xml_any_escaped_string\fP to allow
 generating XML 1.1 or XML 1.0.
 .LP
@@ -1429,14 +1437,4 @@ http://www.ietf.org/html.charters/atompub-charter.html
 Dave Beckett - 
 .UR http://purl.org/net/dajobe/
 http://purl.org/net/dajobe/
-.UE
-.br
-.UR
-Institute for Learning and Research Technology (ILRT)
-http://www.ilrt.bristol.ac.uk/
-.UE
-.br
-.UR
-University of Bristol
-http://www.bristol.ac.uk/
 .UE

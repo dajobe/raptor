@@ -188,8 +188,13 @@ language and datatype fields when not used.
 
 <h3>Serializer Changes</h3>
 
-<p>Added a new Atom 1.0 serializer by parameterising the RSS 1.0
-serializer.
+<p>Added a new Atom 1.0 serializer (name <em>atom</em>)
+by parameterising the RSS 1.0 serializer.
+</p>
+
+<p>Added a new Adobe XMP compatible serializer (name <em>rdfxml-xmp</em>)
+by parameterising the RDF/XML Abbreviated serializer.  Patch provided by
+Sid Steward.
 </p>
 
 <p>All serializers can be chosen at <code>configure</code> time from
@@ -209,6 +214,11 @@ feature is also accepted by serializers as an option and used by the
 RDF/XML and RDF/XML-Abbrev serializers.
 </p>
 
+<p>A new XML Writer feature
+<code>RAPTOR_FEATURE_WRITER_XML_DECLARATION</code> was added to allow
+omitting the XML declaration (default true).
+</p>
+
 <p>Added functions <code>raptor_xml_any_escape_string()</code>
 and <code>raptor_iostream_write_xml_any_escaped_string()</code>
 which take an XML version.  The XML 1.0 functions give errors
@@ -222,6 +232,14 @@ when attempting to write #x1-#x1f (excluding #x9, #xA, #xD) or #x7F.
 This reads RDF triples in the RSS 1.0 model, along with any
 additional atom 1.0 properties and serializes an Atom 1.0 feed
 file.</p>
+
+
+<h3>Adobe XMP Serializer Changes</h3>
+
+<p>Added a new serializer writing RDF/XML in the profile used by
+Adobe XMP.  Note that this does require RDF triples to be used in a
+certain style; for example all triple subjects are the "current
+documment" giving <code>rdf:about=""</code>.</p>
 
 
 <h3>URI Class Changes</h3>
