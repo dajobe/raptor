@@ -51,8 +51,8 @@ LIBS=@LIBS@ $(MEM_LIBS)
 
 
 EXTRA_DIST= \
+rapper.html \
 $(man_MANS)
-
 
 rapper_SOURCES = rapper.c
 if GETOPT
