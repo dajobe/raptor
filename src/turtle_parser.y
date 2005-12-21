@@ -1188,7 +1188,7 @@ raptor_init_parser_turtle (void) {
 
   factory=raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
                                          "application/x-turtle",
-                                         (const unsigned char*)"http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/",
+                                         (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/",
                                          &raptor_turtle_parser_register_factory);
   raptor_parser_factory_add_alias(factory, "ntriples-plus");
 }
