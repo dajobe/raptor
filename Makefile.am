@@ -45,6 +45,10 @@ raptor.spec.in \
 fix-groff-xhtml \
 raptor.pc.in
 
+if RELEASE_VERSION
+EXTRA_DIST += raptor.spec
+endif
+
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
 # Create some text files from HTML sources

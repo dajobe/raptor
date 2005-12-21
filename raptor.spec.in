@@ -1,7 +1,7 @@
 # -*- RPM-SPEC -*-
 %define name    @PACKAGE@
 %define version @VERSION@
-%define release SNAP
+%define release @RPM_RELEASE@
 
 Summary:   Raptor RDF Parser Toolkit for Redland
 Name:      %{name}
@@ -22,7 +22,8 @@ Docdir: %{_docdir}
 Raptor is the RDF Parser Toolkit for Redland that provides a set of
 Resource Description Framework (RDF) parsers and serializers, generating
 RDF triples from RDF/XML, N-Triples, Turtle, several XML RSS tag soup
-formats and Atom 0.3 along with serializers to RDF/XML and N-Triples.
+formats and Atom 0.3 along with serializers to RDF/XML, RSS 1.0, Atom
+1.0 N-Triples and Adobe XMP.
 
 %package devel
 Summary: Libraries, includes etc to develop with Raptor RDF parser library
@@ -91,6 +92,9 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
 
 %changelog
+* Wed Dec 20 2005  Dave Beckett <dave@dajobe.org>
+- Update description of parsers and serializers.
+
 * Wed Nov 9 2005  Dave Beckett <dave@dajobe.org>
 - Add gtk-doc documentation
 

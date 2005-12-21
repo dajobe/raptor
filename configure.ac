@@ -46,11 +46,18 @@ AC_ARG_ENABLE(release, [  --enable-release        Turn on optimizations (for mai
 	  release_version=yes
 fi;)	
 
+AM_CONDITIONAL(RELEASE_VERSION, test $release_version = yes)
 if test "$USE_MAINTAINER_MODE" = yes -a $release_version = no; then 
   CFLAGS=`echo $CFLAGS | sed s/-O2//`
   CXXFLAGS=`echo $CXXFLAGS | sed s/-O2//`
   CPPFLAGS=`echo $CPPFLAGS | sed s/-O2//`
 fi
+RPM_RELEASE=SNAP
+if test "$release_version" = "yes"; then
+  RPM_RELEASE=1
+fi
+AC_SUBST(RPM_RELEASE)
+
 
 dnl Checks for programs.
 AC_CANONICAL_HOST
