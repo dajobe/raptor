@@ -340,7 +340,8 @@ raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)
  * Find a namespace in a namespace stack by prefix.
  *
  * Note that this uses the @length so that the prefix may be a prefix (sic)
- * of a longer string.
+ * of a longer string.  If @prefix is NULL, the default namespace will
+ * be returned if present, @prefix_length length is ignored in this case.
  * 
  * Return value: #raptor_namespace for the prefix or NULL on failure
  **/
@@ -350,10 +351,14 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 {
   raptor_namespace* ns;
   
-  for(ns=nstack->top; ns ; ns=ns->next)
-    if(ns->prefix && prefix_length == ns->prefix_length && 
+  for(ns=nstack->top; ns ; ns=ns->next) {
+    if(!prefix && !ns->prefix)
+      break;
+    
+    if(prefix_length == ns->prefix_length && 
        !strncmp((char*)prefix, (char*)ns->prefix, prefix_length))
       break;
+  }
   return ns;
 }
 
@@ -815,7 +820,9 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[]) 
 {
+  const char *program=raptor_basename(argv[0]);
   raptor_namespace_stack namespaces;
+  raptor_namespace* ns;
   raptor_uri_handler *handler;
   void *context;
 
@@ -835,6 +842,33 @@ main(int argc, char *argv[])
                                          (const unsigned char*)"ex2",
                                          (const unsigned char*)"http://example.org/ns2",
                                          1);
+
+  if(raptor_namespaces_find_namespace(&namespaces, NULL, 0)) {
+      fprintf(stderr, "%s: Default namespace found when should not be found, returning error\n", 
+              program);
+    return(1);
+  }
+
+  raptor_namespaces_start_namespace_full(&namespaces,
+                                         NULL,
+                                         (const unsigned char*)"http://example.org/ns3",
+                                         2);
+
+  ns=raptor_namespaces_find_namespace(&namespaces, NULL, 0);
+  if(!ns) {
+    fprintf(stderr, "%s: Default namespace not found when should not be found, returning error\n", 
+            program);
+    return(1);
+  }
+
+  ns=raptor_namespaces_find_namespace(&namespaces, "ex2", 3);
+  if(!ns) {
+    fprintf(stderr, "%s: namespace ex2 not found when should not be found, returning error\n", 
+            program);
+    return(1);
+  }
+
+  raptor_namespaces_end_for_depth(&namespaces, 2);
 
   raptor_namespaces_end_for_depth(&namespaces, 1);
 
