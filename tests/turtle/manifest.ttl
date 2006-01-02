@@ -91,5 +91,77 @@
         mf:result  <test-13.out>
      ]
 
+     [  mf:name      "test-14" ;
+        rdfs:comment "10000 triples, more than the default Bison stack size" ;
+        mf:action [ qt:data   <test-14.ttl> ] ;
+        mf:result  <test-14.out>
+     ]
+
+     [  mf:name      "test-15" ;
+        rdfs:comment "10000 triple objects (10000 triples)" ;
+        mf:action [ qt:data   <test-15.ttl> ] ;
+        mf:result  <test-15.out>
+     ]
+
+     [  mf:name      "test-16" ;
+        rdfs:comment "10000 items (10000 triples)" ;
+        mf:action [ qt:data   <test-16.ttl> ] ;
+        mf:result  <test-16.out>
+     ]
+
+     [  mf:name      "test-17" ;
+        rdfs:comment "simple long literal" ;
+        mf:action [ qt:data   <test-17.ttl> ] ;
+        mf:result  <test-17.out>
+     ]
+
+     [  mf:name      "test-18" ;
+        rdfs:comment "long literals with escapes" ;
+        mf:action [ qt:data   <test-18.ttl> ] ;
+        mf:result  <test-18.out>
+     ]
+
+     [  mf:name      "test-19" ;
+        rdfs:comment "floating point number" ;
+        mf:action [ qt:data   <test-19.ttl> ] ;
+        mf:result  <test-19.out>
+     ]
+
+     [  mf:name      "test-20" ;
+        rdfs:comment "empty literals, normal and long variant" ;
+        mf:action [ qt:data   <test-20.ttl> ] ;
+        mf:result  <test-20.out>
+     ]
+
+     [  mf:name      "test-21" ;
+        rdfs:comment "positive integer, decimal and doubles" ;
+        mf:action [ qt:data   <test-21.ttl> ] ;
+        mf:result  <test-21.out>
+     ]
+
+     [  mf:name      "test-22" ;
+        rdfs:comment "negative integer, decimal and doubles" ;
+        mf:action [ qt:data   <test-22.ttl> ] ;
+        mf:result  <test-22.out>
+     ]
+
+     [  mf:name      "rdf-schema" ;
+        rdfs:comment "RDF Namespace document converted into Turtle" ;
+        mf:action [ qt:data   <rdf-schema.ttl> ] ;
+        mf:result  <rdf-schema.out>
+     ]
+
+     [  mf:name      "rdfs-namespace" ;
+        rdfs:comment "RDFS Namespace document converted into Turtle" ;
+        mf:action [ qt:data   <rdfs-namespace.ttl> ] ;
+        mf:result  <rdfs-namespace.out>
+     ]
+
+     [  mf:name      "rdfq-results" ;
+        rdfs:comment "Example query result from http://www.w3.org/2003/03/rdfqr-tests/recording-query-results.html" ;
+        mf:action [ qt:data   <rdfq-results.ttl> ] ;
+        mf:result  <rdfq-results.out>
+     ]
+
     # End of tests
    ).
