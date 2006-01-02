@@ -27,7 +27,7 @@ TEST_FILES=test-00.ttl test-01.ttl test-02.ttl test-03.ttl \
 test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl \
 test-09.ttl test-10.ttl test-11.ttl test-12.ttl test-13.ttl \
 test-14.ttl test-15.ttl test-16.ttl test-17.ttl test-18.ttl \
-test-19.ttl test-20.ttl test-21.ttl test-22.ttl \
+test-19.ttl test-20.ttl test-21.ttl test-22.ttl test-23.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
 rdfq-results.ttl
@@ -42,7 +42,7 @@ TEST_OUT_FILES=test-00.out test-01.out test-02.out test-03.out \
 test-04.out test-05.out test-06.out test-07.out test-08.out \
 test-09.out test-10.out test-11.out test-12.out test-13.out \
 test-14.out test-15.out test-16.out test-17.out test-18.out \
-test-19.out test-20.out test-21.out test-22.out \
+test-19.out test-20.out test-21.out test-22.out test-23.out \
 rdf-schema.out \
 rdfs-namespace.out \
 rdfq-results.out
