@@ -198,7 +198,7 @@ EXPONENT [eE][+-]?[0-9]+
                   turtle_parser->sb=NULL;
                   return STRING_LITERAL; }
 
-<LITERAL>\"|(([^\"]|\n)*)		{
+<LITERAL>\"|(\\[^uU]|\\u....|\\U........|[^\"]|\n)*	{
 		  if (*yytext == EOF) {
                     BEGIN(INITIAL);
                     turtle_syntax_error(rdf_parser, "End of file in middle of literal");
