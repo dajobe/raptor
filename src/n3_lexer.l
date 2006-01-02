@@ -4,9 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
- * University of Bristol, UK http://www.bristol.ac.uk/
+ * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -144,6 +143,10 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
  
 [\ \t\v]+   { /* empty */ }
 
+DECIMAL [0-9]+"."[0-9]*|"."[0-9]+
+DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
+EXPONENT [eE][+-]?[0-9]+
+
 
 "a" { return A; }
 
@@ -182,7 +185,7 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
                   n3_parser->sb=NULL;
                   return STRING_LITERAL; }
 
-<LITERAL>\"|(([^\"]|\n)*)		{
+<LITERAL>\"|(\\[^uU]|\\u....|\\U........|[^\"]|\n)*	{
 		  if (*yytext == EOF) {
                     BEGIN(INITIAL);
                     n3_syntax_error(rdf_parser, "End of file in middle of literal");
@@ -215,7 +218,11 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)
 :	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-[0-9]+"."[0-9]*[eE][+-]?[0-9]+[fFdD]?|"."[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+"."[0-9]*  { 
+[-+]?{DECIMAL}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+                        return DECIMAL_LITERAL;
+}
+
+[-+]?{DOUBLE} {
                         double d;
                         int n;
                         
@@ -228,7 +235,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)
                         return FLOATING_LITERAL;
 }
 
-[0-9]+        { n3_parser_lval->integer=atoi(yytext);
+[-+]?[0-9]+        { n3_parser_lval->integer=atoi(yytext);
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
@@ -413,6 +420,10 @@ n3_token_print(int token, YYSTYPE *lval)
     case IDENTIFIER:
       sprintf(buffer, "IDENTIFIER(%s)", 
               (lval->string ? (char*)lval->string : ""));
+      return buffer;
+
+    case DECIMAL_LITERAL:
+      sprintf(buffer, "DECIMAL_LITERAL(%s)", lval->string);
       return buffer;
 
     case ERROR_TOKEN:
