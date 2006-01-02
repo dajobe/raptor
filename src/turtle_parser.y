@@ -134,7 +134,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 /*
  * FIXME: Document these
  */
-%expect 9
+%expect 10
 
 
 /* word symbols */
@@ -156,6 +156,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token <string> IDENTIFIER
 %token <integer> INTEGER_LITERAL
 %token <floating> FLOATING_LITERAL
+%token <string> DECIMAL_LITERAL
 
 /* syntax error */
 %token ERROR_TOKEN
@@ -671,6 +672,15 @@ URI_LITERAL
   printf("resource double=%1g\n", $1);
 #endif
   $$=raptor_new_identifier_from_double($1);
+}
+| DECIMAL_LITERAL
+{
+  raptor_uri *uri;
+#if RAPTOR_DEBUG > 1  
+  printf("resource decimal=%s\n", $1);
+#endif
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
 }
 
 
