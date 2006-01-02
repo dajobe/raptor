@@ -129,10 +129,10 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         d+=raptor_unicode_char_to_utf8(unichar, d);
 
       } else {
-        /* don't handle \x where x isn't one of: \n \r \\ (delim) */
+        /* don't handle \x where x isn't one of: \t \n \r \\ (delim) */
         error_handler(error_data,
-                      "Turtle string error - illegal escape \\%c in \"%s\"", 
-                      c, text);
+                      "Turtle string error - illegal escape \\%c (#x%02X) in \"%s\"", 
+                      c, c, text);
       }
     } else
       *d++=c;
