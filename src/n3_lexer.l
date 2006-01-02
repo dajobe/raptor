@@ -129,24 +129,35 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 %}
 
+/* from SPARQL */
+LANGUAGETOKEN [A-Za-z][-A-Z_a-z0-9]*
+NCCHAR1 [A-Za-z\\\x80-\xff]
+NCCHAR {NCCHAR1}|"-"|"_"|[0-9]
+NCNAME_PREFIX {NCCHAR1}(({NCCHAR}|".")*{NCCHAR})?
+NCNAME ("_"|{NCCHAR1})(({NCCHAR}|".")*{NCCHAR})?
+QNAME {NCNAME_PREFIX}?":"{NCNAME}?
+BNAME "_:"{NCNAME}
+
+/* similar to SPARQL but no need for <= check here */
+QUOTEDURI \<[^\>]*\>
+
+DECIMAL [0-9]+"."[0-9]*|"."[0-9]+
+DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
+EXPONENT [eE][+-]?[0-9]+
+
+
 %x PREF LITERAL
 
 
 %%
   /* rules */
 
-  int c;
   raptor_parser *rdf_parser=(raptor_parser*)yyextra;
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
 \r\n|\r|\n   { n3_parser->lineno++; }
  
 [\ \t\v]+   { /* empty */ }
-
-DECIMAL [0-9]+"."[0-9]*|"."[0-9]+
-DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
-EXPONENT [eE][+-]?[0-9]+
-
 
 "a" { return A; }
 
@@ -203,19 +214,10 @@ EXPONENT [eE][+-]?[0-9]+
                   
    }
 
-_:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
+{BNAME}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
                           return BLANK_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*:[A-Za-z_][-A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                          return QNAME_LITERAL; }
-
-:[A-Za-z_][-A-Za-z0-9_]*	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                          return QNAME_LITERAL; }
-
-[A-Za-z][-A-Za-z0-9_]*:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                          return QNAME_LITERAL; }
-
-:	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+{QNAME}	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
@@ -239,9 +241,13 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>(:|[A-Za-z][-A-Za-z0-9_]*:)	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+<PREF>{NCNAME_PREFIX}":"	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
+<PREF>":"	{ BEGIN(INITIAL);
+		  n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, 0);
+                  return IDENTIFIER; }
+
 <PREF>(.|\n)	{ BEGIN(INITIAL);
 		  if (*yytext == EOF)
                     return EOF;
@@ -250,7 +256,7 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)
                   yyterminate();  }
 
 
-\<[^>]*\>   { if(yyleng == 2) 
+{QUOTEDURI}   { if(yyleng == 2) 
                 n3_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
               else {
                 yytext[yyleng-1]='\0';
@@ -258,14 +264,11 @@ _:[A-Za-z_][A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)
               }
               return URI_LITERAL; }
 
-[A-Za-z][-A-Za-z0-9_]*	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+{LANGUAGETOKEN}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                           return IDENTIFIER; }
 
-\#              { while((c=INPUT_FN(yyscanner)) != EOF && c != '\n'  && c != '\r' && c)
-                    ;
-                  n3_parser->lineno++;
-                  if(c == EOF)
-                    return EOF;
+\#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
+		n3_parser->lineno++;
                 }
 
 .         	{ if (*yytext == EOF)
