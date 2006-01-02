@@ -4,9 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
- * University of Bristol, UK http://www.bristol.ac.uk/
+ * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -23,7 +22,7 @@
  * the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
  * 
  * 
- * Turtle is defined in http://www.ilrt.bristol.ac.uk/discovery/2004/01/turtle/
+ * Turtle is defined in http://www.dajobe.org/2004/01/turtle/
  *
  * Made from a subset of the terms in
  *   http://www.w3.org/DesignIssues/Notation3.html
