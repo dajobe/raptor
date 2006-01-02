@@ -142,6 +142,10 @@ BNAME "_:"{NCNAME}
 /* similar to SPARQL but no need for <= check here */
 QUOTEDURI \<[^\>]*\>
 
+DECIMAL [0-9]+"."[0-9]*|"."[0-9]+
+DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
+EXPONENT [eE][+-]?[0-9]+
+
 
 %x PREF LITERAL
 
@@ -218,7 +222,11 @@ QUOTEDURI \<[^\>]*\>
 {QNAME}	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
-[0-9]+"."[0-9]*[eE][+-]?[0-9]+[fFdD]?|"."[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+[eE][+-]?[0-9]+[fFdD]?|[0-9]+"."[0-9]*  { 
+[-+]?{DECIMAL}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                        return DECIMAL_LITERAL;
+}
+
+[-+]?{DOUBLE} {
                         double d;
                         int n;
                         
@@ -231,7 +239,7 @@ QUOTEDURI \<[^\>]*\>
                         return FLOATING_LITERAL;
 }
 
-[0-9]+        { turtle_parser_lval->integer=atoi(yytext);
+[-+]?[0-9]+        { turtle_parser_lval->integer=atoi(yytext);
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
@@ -416,6 +424,10 @@ turtle_token_print(int token, YYSTYPE *lval)
     case IDENTIFIER:
       sprintf(buffer, "IDENTIFIER(%s)", 
               (lval->string ? (char*)lval->string : ""));
+      return buffer;
+
+    case DECIMAL_LITERAL:
+      sprintf(buffer, "DECIMAL_LITERAL(%s)", lval->string);
       return buffer;
 
     case ERROR_TOKEN:
