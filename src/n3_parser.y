@@ -4,9 +4,8 @@
  *
  * $Id$
  *
- * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
- * University of Bristol, UK http://www.bristol.ac.uk/
+ * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -21,8 +20,6 @@
  * See LICENSE.html or LICENSE.txt at the top of this package for the
  * complete terms and further detail along with the license texts for
  * the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
- * 
- * 
  * 
  * Made from a subset of the terms in
  *   http://www.w3.org/DesignIssues/Notation3.html
@@ -133,7 +130,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 /*
  * FIXME: Document these
  */
-%expect 9
+%expect 10
 
 
 /* word symbols */
@@ -155,6 +152,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 %token <string> IDENTIFIER
 %token <integer> INTEGER_LITERAL
 %token <floating> FLOATING_LITERAL
+%token <string> DECIMAL_LITERAL
 
 /* syntax error */
 %token ERROR_TOKEN
@@ -670,6 +668,15 @@ URI_LITERAL
   printf("resource double=%1g\n", $1);
 #endif
   $$=raptor_new_identifier_from_double($1);
+}
+| DECIMAL_LITERAL
+{
+  raptor_uri *uri;
+#if RAPTOR_DEBUG > 1  
+  printf("resource decimal=%s\n", $1);
+#endif
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
 }
 
 
