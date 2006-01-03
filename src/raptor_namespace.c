@@ -860,7 +860,7 @@ main(int argc, char *argv[])
     return(1);
   }
 
-  ns=raptor_namespaces_find_namespace(&namespaces, "ex2", 3);
+  ns=raptor_namespaces_find_namespace(&namespaces, (const unsigned char*)"ex2", 3);
   if(!ns) {
     fprintf(stderr, "%s: namespace ex2 not found when should not be found, returning error\n", 
             program);
