@@ -1,8 +1,10 @@
-2006-01-03  Dave Beckett <dave@dajobe.org>
+2006-01-03  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor_1_4_8 for 1.4.8 release
+
+2006-01-02  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_namespace.c (main): Cast for string
-
-2006-01-02  Dave Beckett <dave@dajobe.org>
 
 	* src/n3_lexer.l: Apply more turtle to n3 changes for names.
 
@@ -45,7 +47,7 @@
 	decimal/double/integer + and - checks from
 	http://lists.w3.org/Archives/Public/public-cwm-talk/2005OctDec/0017.html
 
-2006-01-01  Dave Beckett <dave@dajobe.org>
+2006-01-01  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_namespace.c (raptor_namespaces_find_namespace):
 	Handle searching for default namespace with prefix=NULL.
