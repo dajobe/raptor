@@ -32,7 +32,7 @@ no longer be returned in any statement position (to be confirmed).
 for version control after the 1.4.8 release.  Please check the
 <a href="http://svn.librdf.org/">Redland Subversion site</a>
 for the latest status or the online
-<a href="http://librdf.org/raptor?INSTALL.html">Raptor installation notes</a>
+<a href="http://librdf.org/raptor/INSTALL.html">Raptor installation notes</a>
 for the raptor specific subversion installation information.
 </p>
 
@@ -172,6 +172,10 @@ escaping.</p>
 
 <h4>Turtle Parser Changes</h4>
 
+<p>Updated to support Turtle version 2006-01-02
+(<a href="http://www.dajobe.org/2004/01/turtle/">announcement</a>).
+</p>
+
 <p>Switch qname, blank node and prefix definitions to SPARQL ones.</p>
 
 <p>Check for illegal not-hexadecimal \u and \U escape values.</p>
@@ -179,7 +183,11 @@ escaping.</p>
 <p>Fix greedy matching of long literals ("""....""") that ended on
 the last """ found rather than the first.</p> <!-- """ -->
 
-<p>Added double constants to turtle.</p>
+<p>Added double and decimal constants.</p>
+
+<p>Added optional +- sign to all numeric constants.</p>
+
+<p>Allow \" escape inside long strings.</p>
 
 <p>Take care to reset the generated <code>raptor_statement</code>
 language and datatype fields when not used.

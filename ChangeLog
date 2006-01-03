@@ -1,3 +1,52 @@
+2006-01-02  Dave Beckett <dave@dajobe.org>
+
+	* src/n3_lexer.l: Apply more turtle to n3 changes for names.
+
+	* src/n3_parser.y: Update N3 parser to turtle.
+
+	* src/n3_lexer.l: Update N3 lexer to turtle.
+
+	* src/raptor_general.c, src/raptor_namespace.c,
+	src/turtle_parser.y, src/turtle_lexer.l: 2006 and urls
+
+	* tests/turtle/Makefile.am: Added test-23
+
+	* tests/turtle/test-23.out, tests/turtle/test-23.ttl: Test long
+	literal ending in a double quote
+
+	* tests/turtle/manifest.ttl: Added test-23 testing long literal
+	ending in a double quote
+
+	* src/turtle_common.c (raptor_stringbuffer_append_turtle_string):
+	Fix comment to match code and report hex char of bad escapes.
+
+	* src/turtle_lexer.l: Try to handle \-escapes inside """ properly.
+
+	* tests/turtle/README.txt: url
+
+	* tests/turtle/Makefile.am: Add TEST_MANIFEST_FILES to tests.zip
+
+	* tests/turtle/manifest-bad.ttl, tests/turtle/manifest.ttl:
+	Updated manifests from Arjohn Kampman
+
+	* src/turtle_parser.y (DECIMAL_LITERAL): Added turtle decimal and
+	double after SPARQL 2005-11-23
+
+	* src/turtle_lexer.l: Added turtle decimal and double after SPARQL
+	2005-11-23
+
+	* tests/turtle/Makefile.am, tests/turtle/test-19.out,
+	tests/turtle/test-21.out, tests/turtle/test-21.ttl,
+	tests/turtle/test-22.out, tests/turtle/test-22.ttl: Added
+	decimal/double/integer + and - checks from
+	http://lists.w3.org/Archives/Public/public-cwm-talk/2005OctDec/0017.html
+
+2006-01-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_namespace.c (raptor_namespaces_find_namespace):
+	Handle searching for default namespace with prefix=NULL.
+	(main): Add test code for above.
+
 2005-12-21  Dave Beckett  <dave@dajobe.org>
 
 	* configure.ac, raptor.spec.in, Makefile.am:

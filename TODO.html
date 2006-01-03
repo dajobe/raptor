@@ -22,15 +22,6 @@ from unicode character form into UTF-8 (DATA, DOCS)</li>
 to register a parser outside raptor that provides RDF query results as
 triples.  Alternatively, provide a skeleton wrapper parser that
 allows the same by delegating all triple generation to callbacks. (FEATURE)</li>
-<li>Add a guessing parser that sends an Accept: HTTP header for all
-supported mime types and uses the returned headers to select a
-parser. (FEATURE)</li>
-<li>Describe in libraptor.3 relevant raptor.h structures -
-describe important ones such as raptor_statement, raptor_locator and
-raptor_feature as well as reference internal ones such as raptor_identifier,
-raptor_identifier_type, raptor_uri_source, raptor_ntriples_term_type,
-raptor_genid_type and raptor_uri_handler for the raptor_uri class.
-(DOCS)</li>
 <li>RSS tag soup parser junks/overwrites element content if it is
 delivered in chunks rather than as one big CDATA, such as when
 libxml2 sees entities, it emits the content in bits (BUG)</li>
@@ -39,7 +30,6 @@ libxml2 sees entities, it emits the content in bits (BUG)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Add a N3 parser (FEATURE)</li>
 <li>Provide a perl interface (FEATURE)</li>
-<li>Add namespace/prefix declaration user level callback (FEATURE)</li>
 <li>Other <code>rdf:parseType</code> support (FEATURE)</li>
 <li>Add a PNG parser, like
 <a href="http://pmt.sourceforge.net/pngmeta/">pngmeta</a> and parse
@@ -52,6 +42,16 @@ the embedded RDF/XML into triples (FEATURE)</li>
 release version where appropriate.</p>
 
 <ul>
+<li>Describe in libraptor.3 relevant raptor.h structures -
+describe important ones such as raptor_statement, raptor_locator and
+raptor_feature as well as reference internal ones such as raptor_identifier,
+raptor_identifier_type, raptor_uri_source, raptor_ntriples_term_type,
+raptor_genid_type and raptor_uri_handler for the raptor_uri class.
+(DOCS) (1.4.8)</li>
+<li>Add namespace/prefix declaration user level callback (FEATURE) (1.4.8)</li>
+<li>Add a guessing parser that sends an Accept: HTTP header for all
+supported mime types and uses the returned headers to select a
+parser. (FEATURE) (1.4.8)</li>
 <li>Add an XSLT 'parser' based on <a href="http://xmlsoft.org/XSLT/">libxslt</a> (FEATURE) (1.4.6)</li>
 <li>Escape outputing the &gt; delimiter for N-Triples URI-references (1.4.3)</li>
 <li>Allow the supported parsers to be selected by configure (1.3.3)</li>
