@@ -1,3 +1,7 @@
+2006-01-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_namespace.c (main): Cast for string
+
 2006-01-02  Dave Beckett <dave@dajobe.org>
 
 	* src/n3_lexer.l: Apply more turtle to n3 changes for names.
