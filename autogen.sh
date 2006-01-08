@@ -2,8 +2,6 @@
 #
 # autogen.sh - Generates initial makefiles from a pristine CVS tree
 #
-# $Id$
-#
 # USAGE:
 #   autogen.sh [configure options]
 #
