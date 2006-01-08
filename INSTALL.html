@@ -18,35 +18,20 @@
 <a href="http://sourceforge.net/projects/librdf/">SourceForge site</a>.</p>
 
 
-<h2>1.2 Getting the sources from CVS</h2>
+<h2>1.2 Getting the sources from Subversion</h2>
 
-<p><strong>NOTE</strong>: Raptor will be switching to use
+<p><strong>NOTE</strong>: Raptor switched to use
 <a href="http://subversion.tigris.org/">Subversion</a>
-for version control after the 1.4.8 release.  Please check the
-<a href="http://svn.librdf.org/">Redland Subversion site</a>
-for the latest status or the online
-<a href="http://librdf.org/raptor?INSTALL.html">Raptor installation notes</a>
-for the raptor specific subversion installation information.
-</p>
+for version control after the 1.4.8 release.  If you were
+using CVS, you will need to re-check out the sources.</p>
 
 <pre>
-  # sh, bash, ...
-  CVSROOT=:pserver:anonymous@cvs.librdf.org:/cvsroot
-  export CVSROOT
-  # csh, tcsh, ...
-  setenv CVSROOT :pserver:anonymous@cvs.librdf.org:/cvsroot
+  svn checkout http://svn.librdf.org/repository/raptor/trunk/
 
-  cvs login
-Logging in to :pserver:anonymous@cvs.librdf.org:2401/cvsroot
-CVS password: 
-  [return]
-
-  cvs checkout redland/raptor
-
-  cd redland/raptor
+  cd trunk
 </pre>
 
-<p>At this stage, or after a <tt>cvs update</tt> you will
+<p>At this stage, or after a <tt>svn update</tt> you will
 need to create the automake and autoconf derived files, as described
 below in <a href="#sec-create-configure">Create the configure program</a>
 by using the <code>autogen.sh</code> script.</p>
@@ -99,7 +84,7 @@ below for what these are):</p>
 <p>The automake and autoconf tools have many different versions and
 at present development is being done with automake 1.8.3 (minimum
 version 1.7), autoconf 2.59 (minimum version 2.54) and libtool 1.5.4
-(minimum version 1.4).  These are only needed when compiling from CVS
+(minimum version 1.4).  These are only needed when compiling from Subversion
 sources.  autogen.sh enforces the requirements.  In future
 development will move to require automake 1.8, autoconf 2.58 and
 libtool 1.5.</p>
@@ -109,7 +94,7 @@ libtool 1.5.</p>
 (2.5.4 will not work) and
 <a href="http://www.gnu.org/software/bison/bison.html">GNU Bison</a>
 to build lexers and parsers.
-These are only required when building from CVS.</p>
+These are only required when building from Subversion.</p>
 
 
 <h3>2.2 Options for <tt>configure</tt></h3>
@@ -304,7 +289,7 @@ They are in the <code>examples</code> sub-directory and can be built with:</p>
 
 <hr />
 
-<p>Copyright 2000-2005 <a href="http://purl.org/net/dajobe/">Dave Beckett</a><br />Copyright 2000-2005 <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2000-2006 <a href="http://purl.org/net/dajobe/">Dave Beckett</a><br />Copyright 2000-2005 <a href="http://www.ilrt.bristol.ac.uk/">Institute for Learning and Research Technology</a>, <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
