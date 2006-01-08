@@ -1,8 +1,6 @@
 /* 
  * Public Domain getopt - history below
  *
- * $Id$
- *
  */
 
 /*

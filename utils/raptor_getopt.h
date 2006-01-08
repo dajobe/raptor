@@ -1,8 +1,6 @@
 /* 
  * Public Domain getopt header
  *
- * $Id$
- *
  */
 
 #ifndef RAPTOR_GETOPT_H
