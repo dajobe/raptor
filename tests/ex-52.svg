@@ -7,8 +7,6 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink">
 
-  <!-- $Id$ -->
-
   <!-- Test for searching for rdf:RDF inside some other XML -->
 
   <!-- Note: this is legal svg - since the SVG specification allows
