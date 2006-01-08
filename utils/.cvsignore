@@ -1,8 +1,0 @@
-.deps
-.libs
-*.lo
-Makefile
-Makefile.in
-rapper
-rdfdiff
-
