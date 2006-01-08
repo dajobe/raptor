@@ -2,8 +2,6 @@
  *
  * turtle_parser.y - Raptor Turtle parser - over tokens from turtle grammar lexer
  *
- * $Id$
- *
  * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 

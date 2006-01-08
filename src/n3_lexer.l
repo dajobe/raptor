@@ -2,8 +2,6 @@
  *
  * n3_lexer.l - Raptor Notation 3 lexer - making tokens for grammar generator
  *
- * $Id$
- *
  * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 

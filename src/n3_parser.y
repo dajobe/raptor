@@ -2,8 +2,6 @@
  *
  * n3_parser.y - Raptor Notation 3 parser - over tokens from n3 grammar lexer
  *
- * $Id$
- *
  * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 

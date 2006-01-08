@@ -2,8 +2,6 @@
  *
  * strcasecmp.c - strcasecmp compatibility
  *
- * $Id$
- *
  * This file is in the public domain.
  * 
  */

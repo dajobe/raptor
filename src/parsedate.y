@@ -26,8 +26,6 @@
 **  This code is in the public domain and has no copyright.
 */
 
-/* $Id$ */
-
 
 #ifdef HAVE_CONFIG_H
 #include <raptor_config.h>

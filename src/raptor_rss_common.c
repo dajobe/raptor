@@ -2,11 +2,8 @@
  *
  * raptor_rss_common.c - Raptor RSS common code
  *
- * $Id$
- *
- * Copyright (C) 2003-2005, David Beckett http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
- * University of Bristol, UK http://www.bristol.ac.uk/
+ * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * Contributions:
  *   Copyright (C) 2004-2005, Suzan Foster <su@islief.nl>

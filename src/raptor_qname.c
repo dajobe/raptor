@@ -2,11 +2,8 @@
  *
  * raptor_qname.c - Raptor XML qname class
  *
- * $Id$
- *
- * Copyright (C) 2002-2004, David Beckett http://purl.org/net/dajobe/
- * Institute for Learning and Research Technology http://www.ilrt.bristol.ac.uk/
- * University of Bristol, UK http://www.bristol.ac.uk/
+ * Copyright (C) 2002-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
