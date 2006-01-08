@@ -1,3 +1,8 @@
+2006-01-07  Dave Beckett  <dave@dajobe.org>
+
+	* docs/tmpl/section-feature.sgml: Added
+	RAPTOR_FEATURE_WRITER_XML_VERSION
+
 2006-01-03  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor_1_4_8 for 1.4.8 release
