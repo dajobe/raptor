@@ -1,9 +1,60 @@
+2006-01-08  Dave Beckett  <dave@dajobe.org>
+
+	* fix-groff-xhtml: footer
+
 2006-01-07  Dave Beckett  <dave@dajobe.org>
 
-	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.9
+	* Makefile.am, autogen.sh,, configure.ac, docs/Makefile.am,
+	examples/Makefile.am, examples/grapper.c,
+	examples/raptor_abort.c, fix-groff-xhtml, manifest.pl,
+	raptor-src-config.in,, src/Makefile.am, src/fix-flex,
+	src/n3_common.h, src/n3_lexer.l,, src/n3_parser.y,
+	src/ntriples_parse.c, src/parsedate.y,, src/raptor-config.1,
+	src/raptor-config.1,, src/raptor-config.in, src/raptor.h,,
+	src/raptor_expat.c, src/raptor_feature.c,
+	src/raptor_general.c,, src/raptor_guess.c,
+	src/raptor_identifier.c,, src/raptor_internal.h,
+	src/raptor_iostream.c, src/raptor_libxml.c,,
+	src/raptor_locator.c, src/raptor_namespace.c,
+	src/raptor_nfc.c,, src/raptor_nfc.h, src/raptor_nfc_test.c,
+	src/raptor_parse.c,, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rfc2396.c,, src/raptor_rss.c, src/raptor_rss.h,
+	src/raptor_rss_common.c, src/raptor_sax2.c,,
+	src/raptor_sequence.c, src/raptor_serialize.c,,
+	src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c,,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,,
+	src/raptor_serialize_simple.c, src/raptor_set.c,,
+	src/raptor_stringbuffer.c, src/raptor_uri.c,
+	src/raptor_utf8.c,, src/raptor_win32.c, src/raptor_www.c,
+	src/raptor_www_curl.c,, src/raptor_www_libfetch.c,
+	src/raptor_www_libwww.c,, src/raptor_www_libxml.c,
+	src/raptor_www_test.c, src/raptor_xml.c,,
+	src/raptor_xml_writer.c, src/raptor_xsd.c,
+	src/raptor_xslt.c,, src/strcasecmp.c, src/turtle_common.c,
+	src/turtle_common.h, src/turtle_lexer.l,,
+	src/turtle_parser.y, src/win32_raptor_config.h,
+	tests/Makefile.am,, tests/empty.c, tests/ex-52.svg,
+	tests/test.html, tests/test.nt, tests/test.svg,,
+	utils/Makefile.am, utils/getopt.c, utils/rapper.1,,
+	utils/rapper.c,, utils/raptor_getopt.h, utils/rdfdiff.c:
+	Remove RCS ID.  Copyright 2006
+
+	* .cvsignore, data/.cvsignore, docs/.cvsignore,
+	examples/.cvsignore, src/.cvsignore, tests/.cvsignore,
+	tests/turtle/.cvsignore, utils/.cvsignore, win32/.cvsignore,
+	delete .cvsignore files
+
+2006-01-07  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac, src/win32_raptor_config.h: Bumped version to 1.4.9
 
 	* docs/tmpl/section-feature.sgml: Added
 	RAPTOR_FEATURE_WRITER_XML_VERSION
+
+	* Switched to Subversion version control.
+	CVS tag for raptor 1.4.8: raptor_1_4_8
+	Subversion revision ID for raptor.1.48: 3091
 
 2006-01-03  Dave Beckett  <dave@dajobe.org>
 
