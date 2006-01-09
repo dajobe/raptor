@@ -33,7 +33,7 @@ AM_CPPFLAGS=-I$(top_srcdir)
 
 raptor_abort_SOURCES = raptor_abort.c
 raptor_abort_LDADD=$(top_builddir)/src/libraptor.la
-raptor_abort_DEPENDENCIES = $(top_builddir)/libraptor.la
+raptor_abort_DEPENDENCIES = $(top_builddir)/src/libraptor.la
 
 grapper_SOURCES = grapper.c
 grapper_LDADD=$(top_builddir)/src/libraptor.la
