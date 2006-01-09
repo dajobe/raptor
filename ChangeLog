@@ -1,3 +1,7 @@
+2006-01-09  Dave Beckett  <dave@dajobe.org>
+
+	* examples/Makefile.am: Fix raptor_abort link dependencies
+
 2006-01-08  Dave Beckett  <dave@dajobe.org>
 
 	* fix-groff-xhtml: footer
