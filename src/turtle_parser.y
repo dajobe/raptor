@@ -527,6 +527,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
 }
 ;
 
+
 subject: resource
 {
   $$=$1;
@@ -537,11 +538,13 @@ subject: resource
 }
 ;
 
+
 predicate: resource
 {
   $$=$1;
 }
 ;
+
 
 object: resource
 {
@@ -562,6 +565,7 @@ object: resource
   $$=$1;
 }
 ;
+
 
 literal: STRING_LITERAL AT IDENTIFIER
 {
@@ -628,8 +632,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 ;
 
-resource:
-URI_LITERAL
+
+resource: URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
   printf("resource URI=<%s>\n", raptor_uri_as_string($1));
@@ -679,6 +683,8 @@ URI_LITERAL
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
 }
+;
+
 
 
 blank: BLANK_LITERAL
@@ -815,6 +821,8 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(turtle_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
+;
+
 
 %%
 
