@@ -151,6 +151,12 @@
         mf:result  <test-23.out>
      ]
 
+     [  mf:name      "test-24" ;
+        rdfs:comment "boolean literals" ;
+        mf:action [ qt:data   <test-24.ttl> ] ;
+        mf:result  <test-24.out>
+     ]
+
      [  mf:name      "rdf-schema" ;
         rdfs:comment "RDF Namespace document converted into Turtle" ;
         mf:action [ qt:data   <rdf-schema.ttl> ] ;
