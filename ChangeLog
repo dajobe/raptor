@@ -1,3 +1,21 @@
+2006-01-10  Dave Beckett  <dave@dajobe.org>
+
+	* src/turtle_parser.y: Use TRUE and FALSE boolean literals to make
+	xsd:boolean values.  Make literal be just literals, resource only
+	URI or QNAME.
+
+	* src/turtle_lexer.l: Added true & false boolean literals
+
+	* tests/turtle/Makefile.am, tests/turtle/manifest.ttl,
+	tests/turtle/test-24.out, tests/turtle/test-24.ttl: Added boolean
+	literals tests
+
+	* src/turtle_parser.y: Compatibility fixes for older bisons (1.7x)
+	and whitespace edits.
+
+	* src/n3_parser.y: Compatibility fixes for older bisons (1.7x) and
+	whitespace edits.
+
 2006-01-09  Dave Beckett  <dave@dajobe.org>
 
 	* src/turtle_parser.y, src/n3_parser.y: Compatibility fixes for
