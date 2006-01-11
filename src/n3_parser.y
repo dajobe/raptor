@@ -627,31 +627,6 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, NULL);
 }
-;
-
-
-resource: URI_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
-}
-| QNAME_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
-}
 | INTEGER_LITERAL
 {
   unsigned char *string;
@@ -679,6 +654,31 @@ resource: URI_LITERAL
 #endif
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
+}
+;
+
+
+resource: URI_LITERAL
+{
+#if RAPTOR_DEBUG > 1  
+  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
+#endif
+
+  if($1)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  else
+    $$=NULL;
+}
+| QNAME_LITERAL
+{
+#if RAPTOR_DEBUG > 1  
+  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
+#endif
+
+  if($1)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
+  else
+    $$=NULL;
 }
 ;
 
