@@ -131,7 +131,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 /*
  * FIXME: Document these
  */
-%expect 10
+%expect 12
 
 
 /* word symbols */
@@ -143,6 +143,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token DOT COMMA SEMICOLON
 %token LEFT_SQUARE RIGHT_SQUARE
 %token LEFT_ROUND RIGHT_ROUND
+%token TRUE FALSE
 
 /* literals */
 %token <string> STRING_LITERAL
@@ -630,31 +631,6 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, NULL);
 }
-;
-
-
-resource: URI_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
-}
-| QNAME_LITERAL
-{
-#if RAPTOR_DEBUG > 1  
-  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
-#endif
-
-  if($1)
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
-  else
-    $$=NULL;
-}
 | INTEGER_LITERAL
 {
   unsigned char *string;
@@ -683,8 +659,56 @@ resource: URI_LITERAL
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
 }
+| TRUE
+{
+  unsigned char *string;
+  raptor_uri *uri;
+#if RAPTOR_DEBUG > 1  
+  fputs("resource boolean true\n", stderr);
+#endif
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  string=(unsigned char*)RAPTOR_MALLOC(cstring, 5);
+  strncpy((char*)string, "true", 5);
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+}
+| FALSE
+{
+  unsigned char *string;
+  raptor_uri *uri;
+#if RAPTOR_DEBUG > 1  
+  fputs("resource boolean false\n", stderr);
+#endif
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  string=(unsigned char*)RAPTOR_MALLOC(cstring, 6);
+  strncpy((char*)string, "false", 6);
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+}
 ;
 
+
+resource: URI_LITERAL
+{
+#if RAPTOR_DEBUG > 1  
+  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
+#endif
+
+  if($1)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  else
+    $$=NULL;
+}
+| QNAME_LITERAL
+{
+#if RAPTOR_DEBUG > 1  
+  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
+#endif
+
+  if($1)
+    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
+  else
+    $$=NULL;
+}
+;
 
 
 blank: BLANK_LITERAL
