@@ -428,6 +428,7 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
+	    cat $$name.err; \
 	  fi; \
 	  rm -f $$name-rdfxmla.rdf $$name.res $$name.err; \
 	done; \
