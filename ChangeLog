@@ -1,5 +1,8 @@
 2006-01-10  Dave Beckett  <dave@dajobe.org>
 
+	* src/n3_parser.y: Make literal be just literals, resource only
+	URI or QNAME.
+
 	* src/turtle_parser.y: Use TRUE and FALSE boolean literals to make
 	xsd:boolean values.  Make literal be just literals, resource only
 	URI or QNAME.
