@@ -62,6 +62,7 @@ extern char *optarg;
 
 static void print_statements(void *user_data, const raptor_statement *statement);
 static void print_namespaces(void* user_data, raptor_namespace *nspace);
+static void relay_namespaces(void* user_data, raptor_namespace *nspace);
 int main(int argc, char *argv[]);
 
 
@@ -132,6 +133,16 @@ print_namespaces(void* user_data, raptor_namespace *nspace)
 }
 
 
+static void
+relay_namespaces(void* user_data, raptor_namespace *nspace)
+{
+  raptor_serializer* rdf_serializer=(raptor_serializer*)user_data;
+
+  raptor_serialize_set_namespace_from_namespace(rdf_serializer, nspace);
+  return;
+}
+
+
 
 #ifdef HAVE_GETOPT_LONG
 #define HELP_TEXT(short, long, description) "  -" short ", --" long "  " description
@@ -180,7 +191,7 @@ static int warning_count=0;
 static int ignore_warnings=0;
 static int ignore_errors=0;
 
-static const char *title_format_string="Raptor RDF parser utility %s\n";
+static const char *title_format_string="Raptor RDF parsing and serializing utility %s\n";
 
 
 static void
@@ -672,7 +683,8 @@ main(int argc, char *argv[])
   
   raptor_set_statement_handler(rdf_parser, rdf_parser, print_statements);
 
-  raptor_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
+  if(report_namespace)
+    raptor_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
 
 
   if(serializer_syntax_name) {    
@@ -710,6 +722,8 @@ main(int argc, char *argv[])
 
     raptor_serialize_start_to_file_handle(serializer, base_uri, stdout);
 
+    if(!report_namespace)
+      raptor_set_namespace_handler(rdf_parser, serializer, relay_namespaces);
   }
   
 
