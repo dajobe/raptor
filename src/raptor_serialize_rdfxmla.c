@@ -114,6 +114,11 @@ typedef struct {
 
   /* non-zero if is Adobe XMP abbreviated form */
   int is_xmp;
+
+  /* non zero if rdf:RDF has been written (and thus no new namespaces
+   * can be declared).
+   */
+  int written_header;
 } raptor_rdfxmla_context;
 
 
@@ -1282,6 +1287,8 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                                            0);
 
   context->namespaces=raptor_new_sequence(NULL, NULL);
+  /* Note: item 0 in the list is rdf:RDF's namespace */
+  raptor_sequence_push(context->namespaces, context->rdf_nspace);
 
   context->subjects =
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_subject,NULL);
@@ -1335,7 +1342,8 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
   if(context->namespaces) {
     int i;
     
-    for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
+    /* Note: item 0 in the list is rdf:RDF's namespace and freed above */
+    for(i=1; i< raptor_sequence_size(context->namespaces); i++) {
       raptor_namespace* ns;
       ns =(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
       if(ns)
@@ -1365,6 +1373,43 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
 }
   
 
+#define RDFXMLA_NAMESPACE_DEPTH 0
+
+/* add a namespace */
+static int
+raptor_rdfxmla_serialize_declare_namespace_from_namespace(raptor_serializer* serializer, 
+                                                          raptor_namespace *nspace)
+{
+  raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
+  int i;
+  
+  if(context->written_header)
+    return 1;
+  
+  for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
+    raptor_namespace* ns;
+    ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
+
+    /* If prefix is already declared, ignore ig */
+    if(!ns->prefix && !nspace->prefix)
+      return 1;
+    
+    if(ns->prefix && nspace->prefix && 
+       !strcmp((const char*)ns->prefix, (const char*)nspace->prefix))
+      return 1;
+  }
+
+  nspace=raptor_new_namespace_from_uri(context->nstack,
+                                       nspace->prefix, nspace->uri,
+                                       RDFXMLA_NAMESPACE_DEPTH);
+  if(!nspace)
+    return 1;
+  
+  raptor_sequence_push(context->namespaces, nspace);
+  return 0;
+}
+
+
 /* add a namespace */
 static int
 raptor_rdfxmla_serialize_declare_namespace(raptor_serializer* serializer, 
@@ -1373,13 +1418,16 @@ raptor_rdfxmla_serialize_declare_namespace(raptor_serializer* serializer,
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_namespace *ns;
+  int rc;
   
-  ns=raptor_new_namespace_from_uri(context->nstack, prefix, uri, 0);
-  if(!ns)
-    return 1;
+  ns=raptor_new_namespace_from_uri(context->nstack, prefix, uri, 
+                                   RDFXMLA_NAMESPACE_DEPTH);
+
+  rc=raptor_rdfxmla_serialize_declare_namespace_from_namespace(serializer, 
+                                                               ns);
+  raptor_free_namespace(ns);
   
-  raptor_sequence_push(context->namespaces, ns);
-  return 0;
+  return rc;
 }
 
 
@@ -1389,12 +1437,8 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_xml_writer* xml_writer;
-  raptor_uri *base_uri=serializer->base_uri;
-  int i;
   raptor_uri_handler *uri_handler;
   void *uri_context;
-  raptor_xml_element *element;
-  raptor_qname *qname;
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
@@ -1417,30 +1461,49 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
                                 serializer->feature_write_xml_declaration);
   
   context->xml_writer=xml_writer;
-  
-  qname=raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
-                                                   (const unsigned char*)"RDF",
-                                                   NULL);
-  if(base_uri)
-    base_uri=raptor_uri_copy(base_uri);
-  element=raptor_new_xml_element(qname, NULL, base_uri);
-  context->rdf_RDF_element=element;
-  for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
-    raptor_namespace* ns;
-    ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
-    raptor_xml_element_declare_namespace(context->rdf_RDF_element, ns);
-  }
-  
 
+  return 0;
+}
+
+
+static void
+raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
+                                    raptor_rdfxmla_context* context) 
+{
+  raptor_xml_writer* xml_writer;
+  raptor_qname *qname;
+  raptor_uri *base_uri;
+  int i;
+
+  if(context->written_header)
+    return;
+  
+  xml_writer=context->xml_writer;
   if(context->is_xmp)
     raptor_xml_writer_raw(xml_writer,
                           (const unsigned char*)"<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n<x:xmpmeta xmlns:x='adobe:ns:meta/'>");
   
+  qname=raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
+                                                   (const unsigned char*)"RDF",
+                                                   NULL);
+  base_uri=serializer->base_uri;
+  if(base_uri)
+    base_uri=raptor_uri_copy(base_uri);
+  context->rdf_RDF_element=raptor_new_xml_element(qname, NULL, base_uri);
+  
+  /* NOTE: Starts it item 1 as item 0 is the element's namespace (rdf) 
+   * and does not need to be declared
+   */
+  for(i=1; i< raptor_sequence_size(context->namespaces); i++) {
+    raptor_namespace* ns;
+    ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
+    raptor_xml_element_declare_namespace(context->rdf_RDF_element, ns);
+  }
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   
-  return 0;
+  context->written_header=1;
 }
-
+  
 
 /* serialize a statement */
 static int
@@ -1587,6 +1650,8 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_xml_writer* xml_writer;
   
+  raptor_rdfxmla_ensure_writen_header(serializer, context);
+  
   raptor_rdfxmla_emit(serializer);  
 
   xml_writer=context->xml_writer;
@@ -1622,6 +1687,7 @@ raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
   factory->init                = raptor_rdfxmla_serialize_init;
   factory->terminate           = raptor_rdfxmla_serialize_terminate;
   factory->declare_namespace   = raptor_rdfxmla_serialize_declare_namespace;
+  factory->declare_namespace_from_namespace   = raptor_rdfxmla_serialize_declare_namespace_from_namespace;
   factory->serialize_start     = raptor_rdfxmla_serialize_start;
   factory->serialize_statement = raptor_rdfxmla_serialize_statement;
   factory->serialize_end       = raptor_rdfxmla_serialize_end;
