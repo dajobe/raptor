@@ -955,6 +955,8 @@ raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 RAPTOR_API
 const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 RAPTOR_API
+const unsigned char* raptor_namespace_get_counted_prefix(const raptor_namespace *ns, size_t *length_p);
+RAPTOR_API
 unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
 int raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns);
