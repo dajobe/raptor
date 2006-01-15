@@ -703,6 +703,8 @@ int raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer, rap
 RAPTOR_API
 int raptor_serialize_set_namespace(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char *prefix);
 RAPTOR_API
+int raptor_serialize_set_namespace_from_namespace(raptor_serializer* rdf_serializer, raptor_namespace *nspace);
+RAPTOR_API
 int raptor_serialize_statement(raptor_serializer* rdf_serializer, const raptor_statement *statement);
 RAPTOR_API
 int raptor_serialize_end(raptor_serializer *rdf_serializer);
