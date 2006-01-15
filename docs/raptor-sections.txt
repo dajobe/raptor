@@ -324,6 +324,7 @@ raptor_free_namespace
 raptor_namespace_copy
 raptor_namespace_get_uri
 raptor_namespace_get_prefix
+raptor_namespace_get_counted_prefix
 raptor_namespaces_format
 raptor_iostream_write_namespace
 raptor_new_namespace_parts_from_string
