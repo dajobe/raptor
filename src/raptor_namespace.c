@@ -591,6 +591,24 @@ raptor_namespace_get_prefix(const raptor_namespace *ns)
 
 
 /**
+ * raptor_namespace_get_counted_prefix:
+ * @ns: namespace object
+ * @length_p: pointer to store length or NULL
+ * 
+ * Get the namespace prefix and length.
+ * 
+ * Return value: prefix string or NULL
+ **/
+const unsigned char*
+raptor_namespace_get_counted_prefix(const raptor_namespace *ns, size_t *length_p)
+{
+  if(length_p)
+    *length_p=ns->prefix_length;
+  return (const unsigned char*)ns->prefix;
+}
+
+
+/**
  * raptor_namespaces_format:
  * @ns: namespace object
  * @length_p: pointer to length (or NULL)
