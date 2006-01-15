@@ -128,10 +128,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
   double floating;
 }
 
-/*
- * FIXME: Document these
- */
-%expect 12
+%expect 0
 
 
 /* word symbols */
@@ -167,8 +164,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 Document : statementList
 ;
 
-statementList: statement
-| statementList statement
+statementList: statementList statement
 | /* empty line */
 ;
 
