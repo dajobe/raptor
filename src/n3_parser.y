@@ -125,10 +125,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
   double floating;
 }
 
-/*
- * FIXME: Document these
- */
-%expect 10
+%expect 0
 
 
 /* word symbols */
@@ -163,8 +160,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 Document : statementList
 ;
 
-statementList: statement
-| statementList  statement
+statementList: statementList  statement
 | /* empty line */
 ;
 
