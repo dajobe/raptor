@@ -1,3 +1,79 @@
+2006-01-14  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rapper.c: (relay_namespaces): Added, calling
+	raptor_serialize_set_namespace_from_namespace when namespaces are
+	not just printed out.  Makes serializers use namespace prefix/URIs
+	found in parsed RDF.
+
+	* src/raptor_serialize_rdfxmla.c: Delay the writing of the
+	namespaces on the rdf:RDF root element till as late as possible,
+	allowing user declaration of namespaces to effect the output.
+	(raptor_rdfxmla_serialize_init): Add rdf:RDF's namespace to the
+	list of namespaces to declare.
+	(raptor_rdfxmla_serialize_terminate): Do not free namespace #0
+	because of above.
+	(raptor_rdfxmla_serialize_declare_namespace_from_namespace):
+	Added, to set a namespace declared once only, preventing the same
+	prefix appearing twice.
+	(raptor_rdfxmla_serialize_declare_namespace): Use the above.
+	(raptor_rdfxmla_serialize_start): Do not write root element here.
+	(raptor_rdfxmla_ensure_writen_header): Added to write root element
+	and namespace declarations.
+	(raptor_rdfxmla_serialize_statement,
+	raptor_rdfxmla_serialize_end): Call
+	raptor_rdfxmla_ensure_writen_header before emitting syntax.
+	(raptor_rdfxmla_serializer_register_factory): Register
+	raptor_rdfxmla_serialize_declare_namespace_from_namespace.
+
+	* src/raptor_serialize_rdfxml.c: Delay the writing of the
+	namespaces on the rdf:RDF root element till as late as possible,
+	allowing user declaration of namespaces to effect the output.
+	(raptor_rdfxml_serialize_init): Add rdf:RDF's namespace to the
+	list of namespaces to declare.
+	(raptor_rdfxml_serialize_terminate): Do not free namespace #0
+	because of above.
+	(raptor_rdfxml_serialize_declare_namespace_from_namespace): Added,
+	to set a namespace declared once only, preventing the same prefix
+	appearing twice.
+	(raptor_rdfxml_serialize_declare_namespace): Use the above.
+	(raptor_rdfxml_serialize_start): Do not write root element here.
+	(raptor_rdfxml_ensure_writen_header): Added to write root element
+	and namespace declarations.
+	(raptor_rdfxml_serialize_statement, raptor_rdfxml_serialize_end):
+	Call raptor_rdfxml_ensure_writen_header before emitting syntax.
+	(raptor_rdfxml_serializer_register_factory): Register
+	raptor_rdfxml_serialize_declare_namespace_from_namespace.
+
+	* src/raptor.h: Added prototype for
+	raptor_serialize_set_namespace_from_namespace
+
+	* src/raptor_serialize.c: (raptor_serialize_set_namespace): Now a
+	wrapper around:
+	(raptor_serialize_set_namespace_from_namespace:): Added, to set a
+	namespace for serialzing from an existing raptor_namespace
+
+	* src/raptor_internal.h: raptor_serializer_factory gains a factory
+	method declare_namespace_from_namespace
+
+	* tests/Makefile.am: Report error output on rdfxml-abbrev failure
+
+	* tests/Makefile.am: (check-rdfxmla): Don't die on first error,
+	report all then die.
+
+	* docs/raptor-sections.txt: Added
+	raptor_namespace_get_counted_prefix
+
+	* src/raptor.h: Added prototype for raptor_namespace_get_counted_prefix
+
+	* src/raptor_namespace.c: (raptor_namespace_get_counted_prefix):
+	Added to return prefix and it's length.
+
+	* src/turtle_parser.y: (statementList): Rewrite to remove all
+	shift/reduce conflicts.
+
+	* src/n3_parser.y: (statementList): Rewrite to remove all
+	shift/reduce conflicts.
+
 2006-01-10  Dave Beckett  <dave@dajobe.org>
 
 	* src/n3_parser.y: Make literal be just literals, resource only
