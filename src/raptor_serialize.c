@@ -484,9 +484,9 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
  * @uri: #raptor_uri of namespace
  * @prefix: prefix to use
  *
- * Set a namespace URI/prefix mapping.
- * 
- * Return value: non-0 on failure.
+ * set a namespace uri/prefix mapping for serializing.
+ *
+ * return value: non-0 on failure.
  **/
 int
 raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
@@ -495,6 +495,31 @@ raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
   if(rdf_serializer->factory->declare_namespace)
     return rdf_serializer->factory->declare_namespace(rdf_serializer, 
                                                       uri, prefix);
+
+  return 1;
+}
+
+
+/**
+ * raptor_serialize_set_namespace_from_namespace:
+ * @rdf_serializer: the #raptor_serializer
+ * @nspace: #raptor_namespace to set
+ *
+ * Set a namespace uri/prefix mapping for serializing from an existing namespace.
+ *
+ * Return value: non-0 on failure.
+ **/
+int
+raptor_serialize_set_namespace_from_namespace(raptor_serializer* rdf_serializer,
+                                              raptor_namespace *nspace)
+{
+  if(rdf_serializer->factory->declare_namespace_from_namespace)
+    return rdf_serializer->factory->declare_namespace_from_namespace(rdf_serializer, 
+                                                                     nspace);
+  else if (rdf_serializer->factory->declare_namespace)
+    return rdf_serializer->factory->declare_namespace(rdf_serializer, 
+                                                      raptor_namespace_get_uri(nspace),
+                                                      raptor_namespace_get_prefix(nspace));
 
   return 1;
 }
