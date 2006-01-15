@@ -202,6 +202,16 @@ XML documents where inner namespaces can override outer ones.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_namespace_get_counted_prefix ##### -->
+<para>
+
+</para>
+
+@ns: 
+@length_p: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_namespaces_format ##### -->
 <para>
 

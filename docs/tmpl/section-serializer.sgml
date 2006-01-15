@@ -103,6 +103,16 @@ that can adjust how serializing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_serialize_set_namespace_from_namespace ##### -->
+<para>
+
+</para>
+
+@rdf_serializer: 
+@nspace: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_serialize_statement ##### -->
 <para>
 
