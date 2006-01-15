@@ -522,6 +522,9 @@ struct raptor_serializer_factory_s {
   
   /* finish the serializer factory */
   void (*finish_factory)(raptor_serializer_factory* factory);
+
+  /* add a namespace using an existing namespace */
+  int (*declare_namespace_from_namespace)(raptor_serializer* serializer, raptor_namespace *nspace);
 };
 
 
