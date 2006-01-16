@@ -1,4 +1,26 @@
+2006-01-16  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_namespace.c: (raptor_namespaces_format):
+	NULL-terminate the namespace string.
+	Fixes bug 0000062  http://bugs.librdf.org/mantis/view.php?id=62
+
+	* tests/test.nt: Remove svn:eol-style native property so that
+	multiple line endings in one file work
+
+	* win32/rapper.dsp, win32/rapper.vcproj, win32/raptor.dsp,
+	win32/raptor.dsw, win32/raptor.sln, win32/raptor.vcproj,
+	win32/raptortest.cpp, win32/raptortest.dsp,
+	win32/raptortest.vcproj: Restore CRLF end of lines, set
+	svn:eol-style CRLF
+
 2006-01-14  Dave Beckett  <dave@dajobe.org>
+
+	* docs/tmpl/section-serializer.sgml,
+	docs/tmpl/section-xml-namespace.sgml: update docs for new
+	functions
+
+	* docs/raptor-sections.txt: Added
+	raptor_serialize_set_namespace_from_namespace
 
 	* utils/rapper.c: (relay_namespaces): Added, calling
 	raptor_serialize_set_namespace_from_namespace when namespaces are
