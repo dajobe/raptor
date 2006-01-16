@@ -35,7 +35,7 @@
     <mailing-list rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-announce" />
     <mailing-list rdf:resource="http://lists.usefulinc.com/mailman/listinfo/redland-commits" />
 
-    <download-page rdf:resource="http://librdf.org/dist/sources/"/>
+    <download-page rdf:resource="http://download.librdf.org/sources/"/>
     <download-mirror rdf:resource="http://sourceforge.net/projects/librdf/" />
 
     <!-- Freshmeat category: Database Engines/Servers -->
