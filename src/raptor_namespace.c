@@ -674,6 +674,7 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
     p+= xml_uri_length;
   }
   *p++ = quote;
+  *p++ = '\0';
 
   return buffer;
 }
