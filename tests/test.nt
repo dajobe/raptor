@@ -2,6 +2,8 @@
 # N-Triples Test Cases
 # Dave Beckett - http://purl.org/net/dajobe/
 # 
+# $Id$
+#
 # comment lines
   	  	   # comment line after whitespace
 # empty blank line, then one with spaces and tabs
@@ -17,8 +19,7 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 <http://example.org/resource4> <http://example.org/property> <http://example.org/resource2> .
 
 # 2 statement lines separated by single CR (ASCII 10)
-<http://example.org/resource5> <http://example.org/property> <http://example.org/resource2> .
-<http://example.org/resource6> <http://example.org/property> <http://example.org/resource2> .
+<http://example.org/resource5> <http://example.org/property> <http://example.org/resource2> .<http://example.org/resource6> <http://example.org/property> <http://example.org/resource2> .
 
 
 # All literal escapes
