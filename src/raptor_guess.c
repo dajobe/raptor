@@ -119,7 +119,6 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
     return 1;
   }
   
-  RAPTOR_DEBUG2("Guessed parser name '%s'\n", name);
   raptor_parser_exec(rdf_parser, name);
   
   /* now we are parser type 'name' */
