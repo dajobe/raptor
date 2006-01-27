@@ -913,9 +913,6 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
                                    1);
   rss_serializer->xml_writer=xml_writer;
 
-  raptor_xml_writer_raw(xml_writer,
-                        (const unsigned char*)"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-
   raptor_rss10_build_xml_names(serializer);
 
   raptor_xml_writer_start_element(xml_writer, rss_serializer->root_element);
