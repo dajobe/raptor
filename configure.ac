@@ -726,6 +726,9 @@ AC_ARG_ENABLE(parsers, [  --enable-parsers=LIST      Use RDF parsers (default=al
 if test "X$parsers" = Xall -o "X$parsers" = X; then
   parsers="$rdf_parsers_available"
   AC_MSG_RESULT(all)
+elif test "X$parsers" = Xnone; then
+  parsers=
+  AC_MSG_RESULT(none)
 else
   AC_MSG_RESULT($parsers)
 fi
@@ -800,6 +803,9 @@ AC_ARG_ENABLE(serializers, [  --enable-serializers=LIST  Use RDF serializers (de
 if test "X$serializers" = Xall -o "X$serializers" = X; then
   serializers="$rdf_serializers_available"
   AC_MSG_RESULT(all)
+elif test "X$serializers" = Xnone; then
+  serializers=
+  AC_MSG_RESULT(none)
 else
   AC_MSG_RESULT($serializers)
 fi
@@ -1188,7 +1194,7 @@ RAPTOR_PARSERS=$rdf_parsers_enabled
 AC_SUBST(RAPTOR_PARSERS)
 RAPTOR_SERIALIZERS=$rdf_serializers_enabled
 AC_SUBST(RAPTOR_SERIALIZERS)
-# single values or nonoe
+# single values or none
 AC_SUBST(RAPTOR_WWW_LIBRARY)
 AC_SUBST(RAPTOR_XML_PARSER)
 
