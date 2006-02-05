@@ -852,46 +852,21 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
  * raptor_parser_error 
  */
 void
-raptor_parser_simple_error(void* parser, const char *message, ...)
+raptor_parser_simple_error(void* user_data, const char *message, ...)
 {
+  raptor_parser* parser=(raptor_parser*)user_data;
   va_list arguments;
 
   va_start(arguments, message);
 
-  raptor_parser_error_varargs((raptor_parser*)parser, message, arguments);
+  if(parser)
+    raptor_invoke_message_varargs("error",
+                                  parser->error_handler,
+                                  parser->error_user_data,
+                                  &parser->locator,
+                                  message, arguments);
   
   va_end(arguments);
-}
-
-
-/*
- * raptor_parser_error_varargs - Error from a parser - Internal
- */
-void
-raptor_parser_error_varargs(raptor_parser* parser, const char *message, 
-                            va_list arguments)
-{
-  if(parser && parser->error_handler) {
-    char *buffer=raptor_vsnprintf(message, arguments);
-    size_t length;
-    if(!buffer) {
-      fprintf(stderr, "raptor_parser_error_varargs: Out of memory\n");
-      return;
-    }
-    length=strlen(buffer);
-    if(buffer[length-1]=='\n')
-      buffer[length-1]='\0';
-    parser->error_handler(parser->error_user_data, 
-                          &parser->locator, buffer);
-    RAPTOR_FREE(cstring, buffer);
-    return;
-  }
-
-  if(parser)
-    raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " raptor error - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
 }
 
 
@@ -928,40 +903,15 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 
   va_start(arguments, message);
 
+  if(parser)
+    raptor_invoke_message_varargs("warning",
+                                  parser->warning_handler,
+                                  parser->warning_user_data, &parser->locator,
+                                  message, arguments);
+  
   raptor_parser_warning_varargs(parser, message, arguments);
 
   va_end(arguments);
-}
-
-
-/*
- * raptor_parser_warning - Warning from a parser - Internal
- */
-void
-raptor_parser_warning_varargs(raptor_parser* parser, const char *message, 
-                              va_list arguments)
-{
-
-  if(parser->warning_handler) {
-    char *buffer=raptor_vsnprintf(message, arguments);
-    size_t length;
-    if(!buffer) {
-      fprintf(stderr, "raptor_parser_warning_varargs: Out of memory\n");
-      return;
-    }
-    length=strlen(buffer);
-    if(buffer[length-1]=='\n')
-      buffer[length-1]='\0';
-    parser->warning_handler(parser->warning_user_data,
-                            &parser->locator, buffer);
-    RAPTOR_FREE(cstring, buffer);
-    return;
-  }
-
-  raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " raptor warning - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
 }
 
 
