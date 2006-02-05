@@ -870,6 +870,27 @@ raptor_parser_simple_error(void* user_data, const char *message, ...)
 }
 
 
+/**
+ * raptor_parser_error_varargs:
+ * @parser: parser
+ * @message: error format message
+ * @arguments: varargs for message
+ *
+ * Error from a parser - Internal.
+ */  
+void  
+raptor_parser_error_varargs(raptor_parser* parser, const char *message,  
+                            va_list arguments)
+{
+  if(parser)
+    raptor_invoke_message_varargs("error",
+                                  parser->error_handler,
+                                  parser->error_user_data,
+                                  &parser->locator,
+                                  message, arguments);
+}
+
+
 /*
  * raptor_parser_error_message_handler - Error from a parser - Internal
  */
