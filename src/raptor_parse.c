@@ -930,8 +930,6 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
                                   parser->warning_user_data, &parser->locator,
                                   message, arguments);
   
-  raptor_parser_warning_varargs(parser, message, arguments);
-
   va_end(arguments);
 }
 
