@@ -817,17 +817,13 @@ struct raptor_xml_element_s {
   unsigned int content_element_seen;
 
   raptor_sequence *declared_nspaces;
-  
-  void *user_data;
 };
 
 
 /* start of an element */
 typedef void (*raptor_sax2_start_element_handler)(void *user_data, const unsigned char *name,  const unsigned char **atts);
-typedef void (*raptor_sax2_start_xml_element_handler)(void *user_data, raptor_xml_element* element);
 /* end of an element */
 typedef void (*raptor_sax2_end_element_handler)(void *user_data, const unsigned char *name);
-typedef void (*raptor_sax2_end_xml_element_handler)(void *user_data, raptor_xml_element* element);
 /* characters */
 typedef void (*raptor_sax2_characters_handler)(void *user_data, const unsigned char *s, int len);
 /* like <![CDATA[...]> */
@@ -875,10 +871,8 @@ struct raptor_sax2_s {
 
   /* start of an element */
   raptor_sax2_start_element_handler start_element_handler;
-  raptor_sax2_start_xml_element_handler start_xml_element_handler;
   /* end of an element */
   raptor_sax2_end_element_handler end_element_handler;
-  raptor_sax2_end_xml_element_handler end_xml_element_handler;
   /* characters */
   raptor_sax2_characters_handler characters_handler;
   /* like <![CDATA[...]> */
@@ -900,13 +894,6 @@ struct raptor_sax2_s {
 
   void *warning_data;
   raptor_message_handler warning_handler;
-
-  /* stack of namespaces, most recently added at top */
-  raptor_namespace_stack namespaces;
-
-  /* namespace callback */
-  raptor_namespace_handler namespace_handler;
-  void* namespace_handler_user_data;
 };
 
 void raptor_init_sax2(void);
@@ -916,16 +903,13 @@ raptor_sax2* raptor_new_sax2(void *user_data, void *error_data, raptor_message_h
 void raptor_free_sax2(raptor_sax2 *sax2);
 
 void raptor_sax2_set_start_element_handler(raptor_sax2* sax2, raptor_sax2_start_element_handler handler);
-void raptor_sax2_set_start_xml_element_handler(raptor_sax2* sax2, raptor_sax2_start_xml_element_handler handler);
 void raptor_sax2_set_end_element_handler(raptor_sax2* sax2, raptor_sax2_end_element_handler handler);
-void raptor_sax2_set_end_xml_element_handler(raptor_sax2* sax2, raptor_sax2_end_xml_element_handler handler);
 void raptor_sax2_set_characters_handler(raptor_sax2* sax2, raptor_sax2_characters_handler handler);
 void raptor_sax2_set_cdata_handler(raptor_sax2* sax2, raptor_sax2_cdata_handler handler);
 void raptor_sax2_set_comment_handler(raptor_sax2* sax2, raptor_sax2_comment_handler handler);
 void raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler);
 void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler);
 void raptor_sax2_set_locator(raptor_sax2* sax2, raptor_locator* locator);
-void raptor_sax2_set_namespace_handler(raptor_sax2* sax2, void *user_data, raptor_namespace_handler handler);
 void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
 void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
