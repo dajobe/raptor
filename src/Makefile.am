@@ -143,7 +143,7 @@ $(man_MANS) \
 turtle_lexer.l turtle_parser.y \
 n3_lexer.l n3_parser.y \
 parsedate.y \
-fix-flex
+fix-flex fix-bison
 
 
 LEX=@LEX@
@@ -158,9 +158,9 @@ turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/fix-flex
 	$(PERL) $(srcdir)/fix-flex turtle_lexer.h > turtle_lexer.t
 	mv turtle_lexer.t turtle_lexer.h
 
-turtle_parser.c: $(srcdir)/turtle_parser.y
+turtle_parser.c: $(srcdir)/turtle_parser.y $(srcdir)/fix-bison
 	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
-	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/turtle_parser.tab.c/$@/" turtle_parser.tab.c > $@
+	$(PERL) $(srcdir)/fix-bison turtle_parser.tab.c > $@
 	mv turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
 
@@ -172,9 +172,9 @@ n3_lexer.c: $(srcdir)/n3_lexer.l n3_parser.c $(srcdir)/fix-flex
 	$(PERL) $(srcdir)/fix-flex n3_lexer.h > n3_lexer.t
 	mv n3_lexer.t n3_lexer.h
 
-n3_parser.c: $(srcdir)/n3_parser.y
+n3_parser.c: $(srcdir)/n3_parser.y  $(srcdir)/fix-bison
 	$(YACC) -b n3_parser -p n3_parser_ -d -v $(srcdir)/n3_parser.y
-	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/n3_parser.tab.c/$@/" n3_parser.tab.c > $@
+	$(PERL) $(srcdir)/fix-bison n3_parser.tab.c > $@
 	mv n3_parser.tab.h n3_parser.h
 	rm -f n3_parser.tab.c
 
