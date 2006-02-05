@@ -811,6 +811,96 @@ raptor_check_ordinal(const unsigned char *name) {
 
 
 /**
+ * raptor_invoke_simple_message_varargs:
+ * @type: string type "warning" or "error" for messages
+ * @handler: simple message handler
+ * @user_data; message handler data 
+ * @message: message format string and arguments
+ *
+ * Call message handler/data with varargs  - Internal
+ *
+ * Calls a function matching the raptor_simple_message_handler API but
+ * allows variable arguments
+ */
+void
+raptor_invoke_simple_message_varargs(const char *type,
+                                     raptor_simple_message_handler handler,
+                                     void* user_data, const char *message, 
+                                     va_list arguments)
+{
+  char *buffer;
+  size_t length;
+
+  buffer=raptor_vsnprintf(message, arguments);
+  if(!buffer) {
+    fprintf(stderr, "raptor_invoke_simple_message: Out of memory\n");
+    fprintf(stderr, "raptor %s - ", type);
+    vfprintf(stderr, message, arguments);
+    fputc('\n', stderr);
+  } else {
+    if(handler) {
+      length=strlen(buffer);
+      if(buffer[length-1]=='\n')
+        buffer[length-1]='\0';
+      handler(user_data, buffer);
+    } else {
+      fprintf(stderr, " raptor %s - ", type);
+      fputs(buffer, stderr);
+      fputc('\n', stderr);
+    }
+    RAPTOR_FREE(cstring, buffer);
+  }
+}
+
+
+/**
+ * raptor_invoke_message:
+ * @type: string type "warning" or "error" for messages
+ * @handler: simple message handler
+ * @user_data; message handler data 
+ * @locator: raptor_locator
+ * @message: message format string and arguments
+ *
+ * Call message handler/data with varargs  - Internal
+ *
+ * Calls a function matching the raptor_message_handler API but
+ * allows variable arguments
+ */
+void
+raptor_invoke_message_varargs(const char *type,
+                              raptor_message_handler handler,
+                              void* user_data, 
+                              raptor_locator* locator,
+                              const char *message, va_list arguments)
+{
+  char *buffer;
+  size_t length;
+
+  buffer=raptor_vsnprintf(message, arguments);
+  if(!buffer) {
+    fprintf(stderr, "raptor_invoke_message: Out of memory\n");
+    fprintf(stderr, "raptor %s - ", type);
+    vfprintf(stderr, message, arguments);
+    fputc('\n', stderr);
+  } else {
+    if(handler) {
+      length=strlen(buffer);
+      if(buffer[length-1]=='\n')
+        buffer[length-1]='\0';
+      handler(user_data, locator, buffer);
+    } else {
+      if(locator)
+        raptor_print_locator(stderr, locator);
+      fprintf(stderr, " raptor %s - ", type);
+      fputs(buffer, stderr);
+      fputc('\n', stderr);
+    }
+    RAPTOR_FREE(cstring, buffer);
+  }
+}
+
+
+/**
  * raptor_free_memory:
  * @ptr: memory pointer
  *
