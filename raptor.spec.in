@@ -13,7 +13,7 @@ Group:     Development/Libraries
 Source:    http://download.librdf.org/source/%{name}-%{version}.tar.gz
 URL:       http://librdf.org/raptor/
 BuildRoot: /tmp/%{name}-%{version}
-BuildRequires: libxml2 libxml2-devel curl curl-devel
+BuildRequires: libxml2 libxml2-devel curl curl-devel libxslt libxslt-devel
 Packager:  Dave Beckett <Dave.Beckett@bristol.ac.uk>
 Docdir: %{_docdir}
 
@@ -92,6 +92,9 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
 
 %changelog
+* Wed Feb 15 2006  Dave Beckett <dave@dajobe.org>
+- Add libxslt and libxslt-devel for GRDDL
+
 * Wed Dec 20 2005  Dave Beckett <dave@dajobe.org>
 - Update description of parsers and serializers.
 
