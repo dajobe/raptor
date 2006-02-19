@@ -113,17 +113,15 @@ raptor_free_sax2(raptor_sax2 *sax2) {
     raptor_libxml_free(sax2->xc);
     sax2->xc=NULL;
   }
-
-#ifdef RAPTOR_LIBXML_MY_ENTITIES
-  raptor_libxml_libxml_free_entities(rdf_parser);
-#endif
-
 #endif
 
   while( (xml_element=raptor_xml_element_pop(sax2)) )
     raptor_free_xml_element(xml_element);
 
   raptor_namespaces_clear(&sax2->namespaces);
+
+  if(sax2->base_uri)
+    raptor_free_uri(sax2->base_uri);
 
   RAPTOR_FREE(raptor_sax2, sax2);
 }
@@ -268,7 +266,7 @@ raptor_sax2_inscope_base_uri(raptor_sax2 *sax2) {
     if(xml_element->base_uri)
       return xml_element->base_uri;
     
-  return NULL;
+  return sax2->base_uri;
 }
 
 
@@ -322,6 +320,11 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
   sax2->depth=0;
   sax2->root_element=NULL;
   sax2->current_element=NULL;
+
+  if(base_uri)
+    sax2->base_uri=raptor_uri_copy(base_uri);
+  else
+    sax2->base_uri=NULL;
 
 #ifdef RAPTOR_XML_EXPAT
   if(sax2->xp) {
@@ -617,8 +620,170 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   }
 #endif
 
-  if(sax2->start_element_handler)
-    sax2->start_element_handler(sax2->user_data, name, atts);
+  if(!sax2->start_element_handler)
+    return;
+  
+  raptor_qname* el_name;
+  unsigned char **xml_atts_copy=NULL;
+  size_t xml_atts_size=0;
+  int all_atts_count=0;
+  int ns_attributes_count=0;
+  raptor_qname** named_attrs=NULL;
+  int i;
+  raptor_xml_element* xml_element=NULL;
+  unsigned char *xml_language=NULL;
+  raptor_uri *xml_base=NULL;
+
+  raptor_sax2_inc_depth(sax2);
+
+  if(atts) {
+    /* Save passed in XML attributes pointers so we can 
+     * NULL the pointers when they get handled below (various atts[i]=NULL)
+     */
+    for (i = 0; atts[i]; i++);
+    xml_atts_size=sizeof(unsigned char*) * i;
+    if(xml_atts_size) {
+      xml_atts_copy=(unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
+      memcpy(xml_atts_copy, atts, xml_atts_size);
+    }
+
+    /* XML attributes processing:
+     *   xmlns*   - XML namespaces (Namespaces in XML REC)
+     *     Deleted and used to synthesise namespaces declarations
+     *   xml:lang - XML language (XML REC)
+     *     Deleted and optionally normalised to lowercase
+     *   xml:base - XML Base (XML Base REC)
+     *     Deleted and used to set the in-scope base URI for this XML element
+     */
+    for (i = 0; atts[i]; i+= 2) {
+      all_atts_count++;
+
+      if(strncmp((char*)atts[i], "xml", 3)) {
+        /* count and skip non xml* attributes */
+        ns_attributes_count++;
+        continue;
+      }
+
+      /* synthesise the XML namespace events */
+      if(!memcmp((const char*)atts[i], "xmlns", 5)) {
+        const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
+        const unsigned char *namespace_name=atts[i+1];
+
+        raptor_namespace* nspace;
+        nspace=raptor_new_namespace(&sax2->namespaces,
+                                    prefix, namespace_name,
+                                    raptor_sax2_get_depth(sax2));
+
+        if(nspace) {
+          raptor_namespaces_start_namespace(&sax2->namespaces, nspace);
+
+          if(sax2->namespace_handler)
+            (*sax2->namespace_handler)(sax2->user_data, nspace);
+        }
+      } else if(!strcmp((char*)atts[i], "xml:lang")) {
+        xml_language=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)atts[i+1])+1);
+        if(!xml_language) {
+          sax2->fatal_error_handler(sax2->fatal_error_data, sax2->locator, "Out of memory");
+          return;
+        }
+
+        /* optionally normalize language to lowercase */
+        if(sax2->feature_normalize_language) {
+          unsigned char *from=(unsigned char*)atts[i+1];
+          unsigned char *to=xml_language;
+          
+          while(*from) {
+            if(isupper(*from))
+              *to++ =tolower(*from++);
+            else
+              *to++ =*from++;
+          }
+          *to='\0';
+        } else
+          strcpy((char*)xml_language, (char*)atts[i+1]);
+      } else if(!strcmp((char*)atts[i], "xml:base")) {
+        raptor_uri* base_uri;
+        raptor_uri* xuri;
+        base_uri=raptor_sax2_inscope_base_uri(sax2);
+        xuri=raptor_new_uri_relative_to_base(base_uri, atts[i+1]);
+        xml_base=raptor_new_uri_for_xmlbase(xuri);
+        raptor_free_uri(xuri);
+      }
+
+      /* delete all xml attributes whether processed above or not */
+      atts[i]=NULL; 
+    }
+  }
+
+
+  /* Create new element structure */
+  el_name=raptor_new_qname(&sax2->namespaces, name, NULL,
+                           raptor_sax2_simple_error, sax2);
+  if(!el_name)
+    return;
+
+  xml_element=raptor_new_xml_element(el_name, xml_language, xml_base);
+  if(!xml_element) {
+    raptor_free_qname(el_name);
+    return;
+  }
+
+  /* Turn string attributes into namespaced-attributes */
+  if(ns_attributes_count) {
+    int offset = 0;
+
+    /* Allocate new array to hold namespaced-attributes */
+    named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, 
+                                              ns_attributes_count, 
+                                              sizeof(raptor_qname*));
+    if(!named_attrs) {
+      sax2->fatal_error_handler(sax2->fatal_error_data, sax2->locator, "Out of memory");
+      RAPTOR_FREE(raptor_xml_element, xml_element);
+      raptor_free_qname(raptor_xml_element_get_name(xml_element));
+      return;
+    }
+
+    for (i = 0; i < all_atts_count; i++) {
+      raptor_qname* attr;
+
+      /* Skip previously processed attributes */
+      if(!atts[i<<1])
+        continue;
+
+      /* namespace-name[i] stored in named_attrs[i] */
+      attr=raptor_new_qname(&sax2->namespaces,
+                            atts[i<<1], atts[(i<<1)+1],
+                            raptor_sax2_simple_error, sax2);
+      if(!attr) { /* failed - tidy up and return */
+        int j;
+
+        for (j=0; j < i; j++)
+          RAPTOR_FREE(raptor_qname, named_attrs[j]);
+        RAPTOR_FREE(raptor_qname_array, named_attrs);
+        raptor_free_xml_element(xml_element);
+        return;
+      }
+
+      named_attrs[offset++]=attr;
+    }
+  } /* end if ns_attributes_count */
+
+
+  if(named_attrs)
+    raptor_xml_element_set_attributes(xml_element, 
+                                      named_attrs, ns_attributes_count);
+
+  raptor_xml_element_push(sax2, xml_element);
+
+  sax2->start_element_handler(sax2->user_data, xml_element);
+
+  if(xml_atts_copy) {
+    /* Restore passed in XML attributes, free the copy */
+    memcpy((void*)atts, xml_atts_copy, xml_atts_size);
+    RAPTOR_FREE(cstringpointer, xml_atts_copy);
+  }
+
+
 }
 
 
@@ -633,9 +798,32 @@ raptor_sax2_end_element(void* user_data, const unsigned char *name)
 #endif
 #endif
 
-  if(sax2->end_element_handler)
-    sax2->end_element_handler(sax2->user_data, name);
+  if(!sax2->end_element_handler)
+    return;
+
+  raptor_xml_element* xml_element;
+
+  xml_element=sax2->current_element;
+  if(xml_element) {
+#ifdef RAPTOR_DEBUG_VERBOSE
+    fprintf(stderr, "\nraptor_rdfxml_end_element_handler: End ns-element: ");
+    raptor_qname_print(stderr, xml_element->name);
+    fputc('\n', stderr);
+#endif
+
+    sax2->end_element_handler(sax2->user_data, xml_element);
+  }
+  
+  raptor_namespaces_end_for_depth(&sax2->namespaces, 
+                                  raptor_sax2_get_depth(sax2));
+  xml_element=raptor_xml_element_pop(sax2);
+  if(xml_element)
+    raptor_free_xml_element(xml_element);
+
+  raptor_sax2_dec_depth(sax2);
 }
+
+
 
 
 /* characters */
