@@ -870,11 +870,11 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
         if((char *)node1->value.literal.string != NULL &&
             (char *)node2->value.literal.string != NULL) {
 
-          // string
+          /* string */
           rv = (strcmp((char *)node1->value.literal.string,
                        (char *)node2->value.literal.string) == 0);
 
-          // language
+          /* language */
           if((char *)node1->value.literal.language != NULL &&
               (char *)node2->value.literal.language != NULL) {
             rv &= (strcmp((char *)node1->value.literal.language,
@@ -884,7 +884,7 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
             rv = 0;
           }
 
-          // datatype
+          /* datatype */
           if(node1->value.literal.datatype != NULL &&
               node2->value.literal.datatype != NULL) {
             rv &= (raptor_uri_equals(node1->value.literal.datatype,
@@ -943,11 +943,11 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
         if((char *)node->value.literal.string != NULL &&
             (char *)node_data != NULL) {
 
-          // string
+          /* string */
           rv = (strcmp((char *)node->value.literal.string,
                        (char *)node_data) == 0);
 
-          // language
+          /* language */
           if((char *)node->value.literal.language != NULL &&
               (char *)language != NULL) {
 
@@ -958,7 +958,7 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
             rv = 0;
           }
 
-          // datatype
+          /* datatype */
           if(node->value.literal.datatype != NULL && datatype != NULL) {
             rv &= (raptor_uri_equals(node->value.literal.datatype,datatype) !=0);
           } else if(node->value.literal.datatype != NULL || datatype != NULL) {
