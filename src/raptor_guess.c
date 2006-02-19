@@ -89,7 +89,7 @@ raptor_guess_parse_content_type_handler(raptor_parser* rdf_parser,
   if(content_type) {
     size_t len=strlen(content_type);
     
-    guess_parser->content_type=RAPTOR_MALLOC(cstring, len+1);
+    guess_parser->content_type=(char*)RAPTOR_MALLOC(cstring, len+1);
     strncpy(guess_parser->content_type, content_type, len+1);
 
     RAPTOR_DEBUG2("Got content type '%s'\n", content_type);
