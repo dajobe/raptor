@@ -19,6 +19,25 @@
 	feature_normalize_language fields.  Added prototypes for
 	raptor_sax2_set_namespace_handler and raptor_sax2_set_feature.
 
+	* src/raptor_rdfxml.c: (raptor_rdfxml_sax2_new_namespace_handler):
+	Added, as callback raptor_sax2_set_namespace_handler.
+	(raptor_rdfxml_start_element_handler): Split XML and RDF/XML
+	namespace processing parts in preparation for moving them
+	elsewhere.
+	(raptor_rdfxml_parse_init): Use raptor_sax2_set_feature to set the
+	XML namespace handler.
+
+	* src/raptor.h: Added prototypes for
+	raptor_xml_element_get_attributes and
+	raptor_xml_element_get_attributes_count.
+
+	* src/raptor_xml.c: (raptor_xml_element_get_attributes,
+	raptor_xml_element_get_attributes_count): Added.
+
+	* src/raptor_internal.h: raptor_sax2 gaisn namespace_handler and
+	feature_normalize_language fields.  Added prototypes for
+	raptor_sax2_set_namespace_handler and raptor_sax2_set_feature.
+
 	* src/raptor_sax2.c: (raptor_sax2_set_namespace_handler): Added,
 	to allow callbacks when an XML namespace is defined.
 	(raptor_sax2_set_feature): Added, with one feature
