@@ -117,6 +117,19 @@ raptor_xml_element_set_attributes(raptor_xml_element* xml_element,
 }
 
 
+raptor_qname**
+raptor_xml_element_get_attributes(raptor_xml_element* xml_element)
+{
+  return xml_element->attributes;
+}
+
+int
+raptor_xml_element_get_attributes_count(raptor_xml_element* xml_element)
+{
+  return xml_element->attribute_count;
+}
+
+
 void
 raptor_xml_element_declare_namespace(raptor_xml_element* xml_element,
                                      raptor_namespace *nspace) {
