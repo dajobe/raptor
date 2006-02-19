@@ -511,9 +511,6 @@ struct raptor_rdfxml_parser_s {
 
   /* writer for building parseType="Literal" content */
   raptor_xml_writer* xml_writer;
-
-  /* stack of namespaces, most recently added at top */
-  raptor_namespace_stack namespaces;
 };
 
 
@@ -663,6 +660,10 @@ raptor_rdfxml_sax2_new_namespace_handler(void *user_data,
 }
 
 
+
+static void raptor_rdfxml_start_xml_element_handler(void *user_data, raptor_xml_element* xml_element);
+
+
 static void
 raptor_rdfxml_start_element_handler(void *user_data,
                                     const unsigned char *name, 
@@ -678,21 +679,13 @@ raptor_rdfxml_start_element_handler(void *user_data,
   int ns_attributes_count=0;
   raptor_qname** named_attrs=NULL;
   int i;
-  raptor_element* element=NULL;
   raptor_xml_element* xml_element=NULL;
   unsigned char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
-  int count_bumped=0;
-  
+
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   sax2=rdf_xml_parser->sax2;
-  
-  if(rdf_parser->failed)
-    return;
-
-  raptor_rdfxml_update_document_locator(rdf_parser);
-
   raptor_sax2_inc_depth(sax2);
 
   if(atts) {
@@ -729,12 +722,12 @@ raptor_rdfxml_start_element_handler(void *user_data,
         const unsigned char *namespace_name=atts[i+1];
 
         raptor_namespace* nspace;
-        nspace=raptor_new_namespace(&rdf_xml_parser->namespaces,
+        nspace=raptor_new_namespace(&sax2->namespaces,
                                     prefix, namespace_name,
                                     raptor_sax2_get_depth(sax2));
 
         if(nspace) {
-          raptor_namespaces_start_namespace(&rdf_xml_parser->namespaces, nspace);
+          raptor_namespaces_start_namespace(&sax2->namespaces, nspace);
           raptor_parser_start_namespace(rdf_parser, nspace);
 
           if(sax2->namespace_handler)
@@ -775,16 +768,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
 
 
   /* Create new element structure */
-  element=(raptor_element*)RAPTOR_CALLOC(raptor_element, 1, 
-                                         sizeof(raptor_element));
-  if(!element) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
-    return;
-  } 
-
-
-  /* Create new element structure */
-  el_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
+  el_name=raptor_new_qname(&sax2->namespaces, name, NULL,
                            raptor_parser_simple_error, rdf_parser);
   if(!el_name)
     return;
@@ -794,8 +778,6 @@ raptor_rdfxml_start_element_handler(void *user_data,
     raptor_free_qname(el_name);
     return;
   }
-
-  element->sax2=xml_element;
 
   /* Turn string attributes into namespaced-attributes */
   if(ns_attributes_count) {
@@ -820,7 +802,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
         continue;
 
       /* namespace-name[i] stored in named_attrs[i] */
-      attr=raptor_new_qname(&rdf_xml_parser->namespaces,
+      attr=raptor_new_qname(&sax2->namespaces,
                             atts[i<<1], atts[(i<<1)+1],
                             raptor_parser_simple_error, rdf_parser);
       if(!attr) { /* failed - tidy up and return */
@@ -844,10 +826,50 @@ raptor_rdfxml_start_element_handler(void *user_data,
 
   raptor_xml_element_push(rdf_xml_parser->sax2, xml_element);
 
+  raptor_rdfxml_start_xml_element_handler(user_data, xml_element);
+
+  if(xml_atts_copy) {
+    /* Restore passed in XML attributes, free the copy */
+    memcpy((void*)atts, xml_atts_copy, xml_atts_size);
+    RAPTOR_FREE(cstringpointer, xml_atts_copy);
+  }
+}  
+
+
+static void
+raptor_rdfxml_start_xml_element_handler(void *user_data,
+                                        raptor_xml_element* xml_element)
+{
+  raptor_parser* rdf_parser;
+  raptor_rdfxml_parser* rdf_xml_parser;
+  raptor_element* element;
+  raptor_sax2* sax2;
+  int ns_attributes_count=0;
+  raptor_qname** named_attrs=NULL;
+  int i;
+  int count_bumped=0;
+  
+  rdf_parser=(raptor_parser*)user_data;
+  rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
+  sax2=rdf_xml_parser->sax2;
+  
+  if(rdf_parser->failed)
+    return;
+
+  raptor_rdfxml_update_document_locator(rdf_parser);
+
+  /* Create new element structure */
+  element=(raptor_element*)RAPTOR_CALLOC(raptor_element, 1, 
+                                         sizeof(raptor_element));
+  if(!element) {
+    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    rdf_parser->failed=1;
+    return;
+  } 
+  element->sax2=xml_element;
+
+
   raptor_element_push(rdf_xml_parser, element);
-
-
-  /* ------ General SAX2 namespaced XML stuff above here ----------- */
 
   named_attrs=raptor_xml_element_get_attributes(xml_element);
   ns_attributes_count=raptor_xml_element_get_attributes_count(xml_element);
@@ -868,8 +890,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
                                                   sizeof(raptor_qname*));
     if(!new_named_attrs) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      RAPTOR_FREE(raptor_xml_element, xml_element);
-      raptor_free_qname(raptor_xml_element_get_name(xml_element));
+      rdf_parser->failed=1;
       return;
     }
 
@@ -1071,14 +1092,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
   /* Right, now ready to enter the grammar */
   raptor_start_element_grammar(rdf_parser, element);
 
-
-  /* ----------------- XML specific cleanup ------------------------- */
-  if(xml_atts_copy) {
-    /* Restore passed in XML attributes, free the copy */
-    memcpy((void*)atts, xml_atts_copy, xml_atts_size);
-    RAPTOR_FREE(cstringpointer, xml_atts_copy);
-  }
-    
+  return;
 }
 
 
@@ -1087,6 +1101,7 @@ raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
 {
   raptor_parser* rdf_parser;
   raptor_rdfxml_parser* rdf_xml_parser;
+  raptor_sax2* sax2;
   raptor_element* element;
   raptor_xml_element* xml_element;
 #ifdef RAPTOR_DEBUG_VERBOSE
@@ -1095,12 +1110,13 @@ raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
 
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
+  sax2=rdf_xml_parser->sax2;
 
   if(!rdf_parser->failed) {
     raptor_rdfxml_update_document_locator(rdf_parser);
 
 #ifdef RAPTOR_DEBUG_VERBOSE
-    element_name=raptor_new_qname(&rdf_xml_parser->namespaces, name, NULL,
+    element_name=raptor_new_qname(&sax2->namespaces, name, NULL,
                                   raptor_parser_simple_error, rdf_parser);
     if(!element_name) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
@@ -1117,10 +1133,6 @@ raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
   }
   
   element=raptor_element_pop(rdf_xml_parser);
-
-  raptor_namespaces_end_for_depth(&rdf_xml_parser->namespaces, 
-                                  raptor_sax2_get_depth(rdf_xml_parser->sax2));
-
   if(element) {
     if(element->parent) {
       /* Do not change this; PROPERTYELT will turn into MEMBER if necessary
@@ -1137,11 +1149,15 @@ raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
     raptor_free_element(element);
   }
 
-  xml_element=raptor_xml_element_pop(rdf_xml_parser->sax2);
+  /* --- Tidy up XML below here ---- */
+  raptor_namespaces_end_for_depth(&sax2->namespaces, 
+                                  raptor_sax2_get_depth(sax2));
+
+  xml_element=raptor_xml_element_pop(sax2);
   if(xml_element)
     raptor_free_xml_element(xml_element);
 
-  raptor_sax2_dec_depth(rdf_xml_parser->sax2);
+  raptor_sax2_dec_depth(sax2);
 
 }
 
@@ -1303,8 +1319,6 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
 static int
 raptor_rdfxml_parse_start(raptor_parser* rdf_parser)
 {
-  raptor_uri_handler *uri_handler;
-  void *uri_context;
   raptor_uri *uri=rdf_parser->base_uri;
   raptor_rdfxml_parser* rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
 
@@ -1315,14 +1329,6 @@ raptor_rdfxml_parse_start(raptor_parser* rdf_parser)
   /* initialise fields */
 
   raptor_sax2_parse_start(rdf_xml_parser->sax2, uri);
-
-  raptor_namespaces_clear(&rdf_xml_parser->namespaces);
-
-  raptor_uri_get_handler(&uri_handler, &uri_context);
-  raptor_namespaces_init(&rdf_xml_parser->namespaces,
-                         uri_handler, uri_context,
-                         raptor_parser_simple_error, rdf_parser, 
-                         1);
 
   return 0;
 }
@@ -1351,8 +1357,6 @@ raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser)
   
 
   raptor_free_id_set(rdf_xml_parser->id_set);
-
-  raptor_namespaces_clear(&rdf_xml_parser->namespaces);
 
 }
 
