@@ -894,6 +894,14 @@ struct raptor_sax2_s {
 
   void *warning_data;
   raptor_message_handler warning_handler;
+
+  /* New XML namespace callback */
+  raptor_namespace_handler  namespace_handler;
+
+  /* FEATURE: 
+   * non 0 if require normalizing xml:lang attribute values to lowercase.
+   */
+  int feature_normalize_language;
 };
 
 void raptor_init_sax2(void);
@@ -909,6 +917,7 @@ void raptor_sax2_set_cdata_handler(raptor_sax2* sax2, raptor_sax2_cdata_handler 
 void raptor_sax2_set_comment_handler(raptor_sax2* sax2, raptor_sax2_comment_handler handler);
 void raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler);
 void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler);
+void raptor_sax2_set_namespace_handler(raptor_sax2* sax2, raptor_namespace_handler handler);
 void raptor_sax2_set_locator(raptor_sax2* sax2, raptor_locator* locator);
 void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
@@ -922,6 +931,7 @@ void raptor_sax2_dec_depth(raptor_sax2* sax2);
 const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2* sax2);
 raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
 void raptor_sax2_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
+int raptor_sax2_set_feature(raptor_sax2* sax2, raptor_feature feature, int value);
   
 #ifdef RAPTOR_DEBUG
 void raptor_print_xml_element(raptor_xml_element *element, FILE* stream);
