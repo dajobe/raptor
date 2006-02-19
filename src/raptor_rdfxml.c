@@ -1096,17 +1096,50 @@ raptor_rdfxml_start_xml_element_handler(void *user_data,
 }
 
 
+static void raptor_rdfxml_end_xml_element_handler(void *user_data, raptor_xml_element* xml_element);
+
+
 static void
 raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
 {
   raptor_parser* rdf_parser;
   raptor_rdfxml_parser* rdf_xml_parser;
   raptor_sax2* sax2;
-  raptor_element* element;
   raptor_xml_element* xml_element;
+
+  rdf_parser=(raptor_parser*)user_data;
+  rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
+  sax2=rdf_xml_parser->sax2;
+
+  xml_element=sax2->current_element;
+  if(xml_element) {
 #ifdef RAPTOR_DEBUG_VERBOSE
-  raptor_qname *element_name;
+    fprintf(stderr, "\nraptor_rdfxml_end_element_handler: End ns-element: ");
+    raptor_qname_print(stderr, xml_element->name);
+    fputc('\n', stderr);
 #endif
+
+    raptor_rdfxml_end_xml_element_handler(user_data, xml_element);
+  }
+  
+  raptor_namespaces_end_for_depth(&sax2->namespaces, 
+                                  raptor_sax2_get_depth(sax2));
+  xml_element=raptor_xml_element_pop(sax2);
+  if(xml_element)
+    raptor_free_xml_element(xml_element);
+
+  raptor_sax2_dec_depth(sax2);
+}
+
+
+static void
+raptor_rdfxml_end_xml_element_handler(void *user_data, 
+                                      raptor_xml_element* xml_element)
+{
+  raptor_parser* rdf_parser;
+  raptor_rdfxml_parser* rdf_xml_parser;
+  raptor_sax2* sax2;
+  raptor_element* element;
 
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
@@ -1114,20 +1147,6 @@ raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
 
   if(!rdf_parser->failed) {
     raptor_rdfxml_update_document_locator(rdf_parser);
-
-#ifdef RAPTOR_DEBUG_VERBOSE
-    element_name=raptor_new_qname(&sax2->namespaces, name, NULL,
-                                  raptor_parser_simple_error, rdf_parser);
-    if(!element_name) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      return;
-    }
-    
-    fprintf(stderr, "\nraptor_xml_end_element_handler: End ns-element: ");
-    raptor_qname_print(stderr, element_name);
-    fputc('\n', stderr);
-    raptor_free_qname(element_name);
-#endif
 
     raptor_end_element_grammar(rdf_parser, rdf_xml_parser->current_element);
   }
@@ -1148,17 +1167,6 @@ raptor_rdfxml_end_element_handler(void *user_data, const unsigned char *name)
   
     raptor_free_element(element);
   }
-
-  /* --- Tidy up XML below here ---- */
-  raptor_namespaces_end_for_depth(&sax2->namespaces, 
-                                  raptor_sax2_get_depth(sax2));
-
-  xml_element=raptor_xml_element_pop(sax2);
-  if(xml_element)
-    raptor_free_xml_element(xml_element);
-
-  raptor_sax2_dec_depth(sax2);
-
 }
 
 
