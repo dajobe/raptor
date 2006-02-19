@@ -515,7 +515,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
                           (const unsigned char*)raptor_uri_as_string($3), 0);
   if(ns) {
     raptor_namespaces_start_namespace(&turtle_parser->namespaces, ns);
-    raptor_parser_start_namespace(rdf_parser, ns);
+    raptor_parser_start_namespace((raptor_parser*)rdf_parser, ns);
   }
 
   if($2)
