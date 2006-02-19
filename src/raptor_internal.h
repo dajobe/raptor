@@ -821,9 +821,9 @@ struct raptor_xml_element_s {
 
 
 /* start of an element */
-typedef void (*raptor_sax2_start_element_handler)(void *user_data, const unsigned char *name,  const unsigned char **atts);
+typedef void (*raptor_sax2_start_element_handler)(void *user_data, raptor_xml_element *xml_element);
 /* end of an element */
-typedef void (*raptor_sax2_end_element_handler)(void *user_data, const unsigned char *name);
+typedef void (*raptor_sax2_end_element_handler)(void *user_data, raptor_xml_element* xml_element);
 /* characters */
 typedef void (*raptor_sax2_characters_handler)(void *user_data, const unsigned char *s, int len);
 /* like <![CDATA[...]> */
@@ -905,6 +905,9 @@ struct raptor_sax2_s {
 
   /* stack of namespaces, most recently added at top */
   raptor_namespace_stack namespaces;
+
+  /* base URI for resolving relative URIs or xml:base URIs */
+  raptor_uri* base_uri;
 };
 
 void raptor_init_sax2(void);
