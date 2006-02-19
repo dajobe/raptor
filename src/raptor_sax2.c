@@ -184,6 +184,31 @@ raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2,
 }
 
 
+/**
+ * raptor_sax2_set_namespace_handler:
+ * @parser: #raptor_sax2 object
+ * @user_data: user data pointer for callback
+ * @handler: new namespace callback function
+ *
+ * Set the XML namespace handler function.
+ *
+ * When a prefix/namespace is seen in an XML parser, call the given
+ * @handler with the prefix string and the #raptor_uri namespace URI.
+ * Either can be NULL for the default prefix or default namespace.
+ *
+ * The handler function does not deal with duplicates so any
+ * namespace may be declared multiple times when a namespace is seen
+ * in different parts of a document.
+ * 
+ **/
+void
+raptor_sax2_set_namespace_handler(raptor_sax2* sax2,
+                                  raptor_namespace_handler handler)
+{
+  sax2->namespace_handler=handler;
+}
+
+
 void
 raptor_sax2_set_locator(raptor_sax2* sax2, raptor_locator* locator)
 {
@@ -440,6 +465,54 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 #endif
 
   return 1;
+}
+
+
+/**
+ * raptor_sax2_set_feature:
+ * @sax2: #raptor_sax2 SAX2 object
+ * @feature: feature to set from enumerated #raptor_feature values
+ * @value: integer feature value (0 or larger)
+ *
+ * Set various SAX2 features.
+ * 
+ * The allowed features are available via raptor_sax2_features_enumerate().
+ *
+ * Return value: non 0 on failure or if the feature is unknown
+ **/
+int
+raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
+{
+  if(value < 0)
+    return -1;
+  
+  switch(feature) {
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+      sax2->feature_normalize_language=value;
+      break;
+
+    case RAPTOR_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+    case RAPTOR_FEATURE_START_URI:
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    default:
+      return -1;
+      break;
+  }
+
+  return 0;
 }
 
 
