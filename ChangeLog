@@ -1,23 +1,50 @@
 2006-02-18  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_sax2.c: (raptor_free_sax2): Delete obsolete
+	raptor_libxml_libxml_free_entities.  Free base URI.
+	(raptor_sax2_inscope_base_uri): Return SAX2 base URI if nothing is
+	in scope.
+	(raptor_sax2_parse_start): Save Base URI.
+	(raptor_sax2_start_element): Add all code from old
+	raptor_rdfxml_start_element_handler.
+	(raptor_sax2_end_element): Add all code from old
+	raptor_rdfxml_end_element_handler.
+
 	* src/raptor_rdfxml.c: (raptor_rdfxml_sax2_new_namespace_handler):
-	Added, as callback raptor_sax2_set_namespace_handler.
-	(raptor_rdfxml_start_element_handler): Split XML and RDF/XML
-	namespace processing parts in preparation for moving them
-	elsewhere.
-	(raptor_rdfxml_parse_init): Use raptor_sax2_set_feature to set the
-	XML namespace handler.
+	Add raptor_parser_start_namespace call.
+	(raptor_rdfxml_start_element_handler): Deleted and merged into
+	raptor_sax2_start_element.
+	(raptor_rdfxml_end_element_handler): Use raptor_xml_element*
+	argument.
+	(raptor_inscope_base_uri): Tidy code.
 
-	* src/raptor.h: Added prototypes for
-	raptor_xml_element_get_attributes and
-	raptor_xml_element_get_attributes_count.
+	* src/raptor_internal.h: raptor_sax2_start_element_handler and
+	raptor_sax2_end_element_handler now take raptor_xml_element*
+	raptor_sax2 gaisn base_uri field.
 
-	* src/raptor_xml.c: (raptor_xml_element_get_attributes,
-	raptor_xml_element_get_attributes_count): Added.
+	* src/raptor_rdfxml.c: (raptor_rdfxml_end_element_handler): Split
+	into XML and RDF/XML parts now calling
+	raptor_rdfxml_end_xml_element_handler.
+	(raptor_rdfxml_end_xml_element_handler): Added, splitting RDF/XML
+	part out of raptor_rdfxml_end_element_handler
 
-	* src/raptor_internal.h: raptor_sax2 gaisn namespace_handler and
-	feature_normalize_language fields.  Added prototypes for
-	raptor_sax2_set_namespace_handler and raptor_sax2_set_feature.
+	* src/raptor_sax2.c: (raptor_free_sax2): Run
+	raptor_namespaces_clear.
+	(raptor_sax2_simple_error): Added, to report errors from
+	namespaces upwards.
+	(raptor_sax2_parse_start): Init namespaces stack.
+
+	* src/raptor_rdfxml.c: Deleted raptor_namespace_stack, now in
+	raptor_sax2
+	(raptor_rdfxml_start_xml_element_handler): Added, splitting
+	RDF/XML part out of raptor_rdfxml_start_element_handler
+	(raptor_rdfxml_end_element_handler): Prepare for splitting XML and
+	RDF/XML parts.
+	(raptor_rdfxml_parse_start): Moved namespaces stack init into
+	raptor_sax2_parse_start.
+
+	* src/raptor_internal.h: raptor_sax2 gains raptor_namespace_stack
+	from rdf/xml parser
 
 	* src/raptor_rdfxml.c: (raptor_rdfxml_sax2_new_namespace_handler):
 	Added, as callback raptor_sax2_set_namespace_handler.
