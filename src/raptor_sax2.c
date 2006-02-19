@@ -123,6 +123,8 @@ raptor_free_sax2(raptor_sax2 *sax2) {
   while( (xml_element=raptor_xml_element_pop(sax2)) )
     raptor_free_xml_element(xml_element);
 
+  raptor_namespaces_clear(&sax2->namespaces);
+
   RAPTOR_FREE(raptor_sax2, sax2);
 }
 
@@ -286,8 +288,37 @@ raptor_sax2_dec_depth(raptor_sax2 *sax2) {
 }
 
 
+/*
+ * raptor_sax2_simple_error - Error from a sax2 - Internal
+ *
+ * Matches the raptor_simple_message_handler API but calls
+ * the sax2 error_handler
+ */
+static void
+raptor_sax2_simple_error(void* user_data, const char *message, ...)
+{
+  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  if(sax2)
+    raptor_invoke_message_varargs("error",
+                                  sax2->error_handler,
+                                  sax2->error_data,
+                                  sax2->locator,
+                                  message, arguments);
+  
+  va_end(arguments);
+}
+
+
 void
-raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri) {
+raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
+{
+  raptor_uri_handler *uri_handler;
+  void *uri_context;
+
   sax2->depth=0;
   sax2->root_element=NULL;
   sax2->current_element=NULL;
@@ -313,6 +344,15 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri) {
     sax2->xc=NULL;
   }
 #endif
+
+  raptor_namespaces_clear(&sax2->namespaces);
+
+  raptor_uri_get_handler(&uri_handler, &uri_context);
+  raptor_namespaces_init(&sax2->namespaces,
+                         uri_handler, uri_context,
+                         raptor_sax2_simple_error, sax2, 
+                         1);
+
 }
 
 
