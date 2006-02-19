@@ -1,5 +1,22 @@
 2006-02-18  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_serialize_rdfxmla.c: Remove // comments
+
+	* src/raptor_guess.c: Cast for C++
+
+	* src/n3_parser.y: Cast for C++
+
+	* src/turtle_parser.y: Cast for C++
+
+	* src/raptor_sax2.c: (raptor_sax2_parse_start,
+	raptor_sax2_end_element): Code tidying, move decls to top of
+	functions and don't end early if there is no handler.
+
+	* src/raptor_rdfxml.c: Remove several unused uses of raptor_sax2*
+
+	* src/raptor_rdfxml.c: Change to use field name xml_element for a
+	raptor_xml_element inside raptor_element.
+
 	* src/raptor_sax2.c: (raptor_free_sax2): Delete obsolete
 	raptor_libxml_libxml_free_entities.  Free base URI.
 	(raptor_sax2_inscope_base_uri): Return SAX2 base URI if nothing is
