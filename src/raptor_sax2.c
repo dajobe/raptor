@@ -578,7 +578,16 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
                           const unsigned char **atts)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
-  
+  raptor_qname* el_name;
+  unsigned char **xml_atts_copy=NULL;
+  size_t xml_atts_size=0;
+  int all_atts_count=0;
+  int ns_attributes_count=0;
+  raptor_qname** named_attrs=NULL;
+  raptor_xml_element* xml_element=NULL;
+  unsigned char *xml_language=NULL;
+  raptor_uri *xml_base=NULL;
+
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   sax2->tokens_count++;
@@ -620,23 +629,11 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   }
 #endif
 
-  if(!sax2->start_element_handler)
-    return;
-  
-  raptor_qname* el_name;
-  unsigned char **xml_atts_copy=NULL;
-  size_t xml_atts_size=0;
-  int all_atts_count=0;
-  int ns_attributes_count=0;
-  raptor_qname** named_attrs=NULL;
-  int i;
-  raptor_xml_element* xml_element=NULL;
-  unsigned char *xml_language=NULL;
-  raptor_uri *xml_base=NULL;
-
   raptor_sax2_inc_depth(sax2);
 
   if(atts) {
+    int i;
+
     /* Save passed in XML attributes pointers so we can 
      * NULL the pointers when they get handled below (various atts[i]=NULL)
      */
@@ -730,6 +727,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
 
   /* Turn string attributes into namespaced-attributes */
   if(ns_attributes_count) {
+    int i;
     int offset = 0;
 
     /* Allocate new array to hold namespaced-attributes */
@@ -770,19 +768,19 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
 
 
   if(named_attrs)
-    raptor_xml_element_set_attributes(xml_element, 
+    raptor_xml_element_set_attributes(xml_element,
                                       named_attrs, ns_attributes_count);
 
   raptor_xml_element_push(sax2, xml_element);
 
-  sax2->start_element_handler(sax2->user_data, xml_element);
+  if(sax2->start_element_handler)
+    sax2->start_element_handler(sax2->user_data, xml_element);
 
   if(xml_atts_copy) {
     /* Restore passed in XML attributes, free the copy */
     memcpy((void*)atts, xml_atts_copy, xml_atts_size);
     RAPTOR_FREE(cstringpointer, xml_atts_copy);
   }
-
 
 }
 
@@ -792,16 +790,13 @@ void
 raptor_sax2_end_element(void* user_data, const unsigned char *name)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_xml_element* xml_element;
+
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   sax2->tokens_count++;
 #endif
 #endif
-
-  if(!sax2->end_element_handler)
-    return;
-
-  raptor_xml_element* xml_element;
 
   xml_element=sax2->current_element;
   if(xml_element) {
@@ -811,7 +806,8 @@ raptor_sax2_end_element(void* user_data, const unsigned char *name)
     fputc('\n', stderr);
 #endif
 
-    sax2->end_element_handler(sax2->user_data, xml_element);
+    if(sax2->end_element_handler)
+      sax2->end_element_handler(sax2->user_data, xml_element);
   }
   
   raptor_namespaces_end_for_depth(&sax2->namespaces, 
