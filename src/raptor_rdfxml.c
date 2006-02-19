@@ -632,6 +632,38 @@ raptor_free_element(raptor_element *element)
 
 
 static void
+raptor_rdfxml_sax2_new_namespace_handler(void *user_data,
+                                         raptor_namespace* nspace)
+{
+  raptor_parser* rdf_parser;
+  rdf_parser=(raptor_parser*)user_data;
+  const unsigned char* namespace_name;
+  size_t namespace_name_len;
+  raptor_uri* uri=raptor_namespace_get_uri(nspace);
+
+  if(!uri)
+    return;
+  
+  namespace_name=raptor_uri_as_counted_string(uri, &namespace_name_len);
+  
+  if(namespace_name_len == raptor_rdf_namespace_uri_len-1 && 
+     !strncmp((const char*)namespace_name, 
+              (const char*)raptor_rdf_namespace_uri, 
+              namespace_name_len)) {
+    const unsigned char *prefix=raptor_namespace_get_prefix(nspace);
+    raptor_parser_warning(rdf_parser, "Declaring a namespace with prefix %s to URI %s - one letter short of the RDF namespace URI and probably a mistake.", prefix, namespace_name);
+  } 
+
+  if(namespace_name_len > raptor_rdf_namespace_uri_len && 
+     !strncmp((const char*)namespace_name,
+              (const char*)raptor_rdf_namespace_uri,
+              raptor_rdf_namespace_uri_len)) {
+    raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
+  }
+}
+
+
+static void
 raptor_rdfxml_start_element_handler(void *user_data,
                                     const unsigned char *name, 
                                     const unsigned char **atts)
@@ -674,60 +706,52 @@ raptor_rdfxml_start_element_handler(void *user_data,
       memcpy(xml_atts_copy, atts, xml_atts_size);
     }
 
-    /* Round 1 - process XML attributes */
-    for (i = 0; atts[i]; i+=2) {
+    /* XML attributes processing:
+     *   xmlns*   - XML namespaces (Namespaces in XML REC)
+     *     Deleted and used to synthesise namespaces declarations
+     *   xml:lang - XML language (XML REC)
+     *     Deleted and optionally normalised to lowercase
+     *   xml:base - XML Base (XML Base REC)
+     *     Deleted and used to set the in-scope base URI for this XML element
+     */
+    for (i = 0; atts[i]; i+= 2) {
       all_atts_count++;
 
-      /* synthesise the XML namespace events */
-      if(!memcmp((const char*)atts[i], "xmlns", 5)) {
-        /* there is more i.e. xmlns:foo */
-        const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
-        const unsigned char *namespace_name=atts[i+1];
-        size_t namespace_name_len=strlen((const char*)namespace_name);
-
-        if(namespace_name_len == raptor_rdf_namespace_uri_len-1 && 
-           !strncmp((const char*)namespace_name, 
-                    (const char*)raptor_rdf_namespace_uri, 
-                    namespace_name_len)) {
-          raptor_parser_warning(rdf_parser, "Declaring a namespace with prefix %s to URI %s - one letter short of the RDF namespace URI and probably a mistake.", prefix, namespace_name);
-        } 
-
-        if(namespace_name_len > raptor_rdf_namespace_uri_len && 
-           !strncmp((const char*)namespace_name,
-                    (const char*)raptor_rdf_namespace_uri,
-                    raptor_rdf_namespace_uri_len)) {
-          raptor_parser_error(rdf_parser, "Declaring a namespace URI %s to which the RDF namespace URI is a prefix is forbidden.", namespace_name);
-        } else {
-          raptor_namespace *ns;
-          
-          ns=raptor_new_namespace(&rdf_xml_parser->namespaces,
-                                  prefix, namespace_name,
-                                  raptor_sax2_get_depth(sax2));
-
-          if(ns) {
-            raptor_namespaces_start_namespace(&rdf_xml_parser->namespaces, ns);
-            raptor_parser_start_namespace(rdf_parser, ns);
-          }
-        }
-        
-        atts[i]=NULL; 
+      if(strncmp((char*)atts[i], "xml", 3)) {
+        /* count and skip non xml* attributes */
+        ns_attributes_count++;
         continue;
       }
 
-      if(!strcmp((char*)atts[i], "xml:lang")) {
+      /* synthesise the XML namespace events */
+      if(!memcmp((const char*)atts[i], "xmlns", 5)) {
+        const unsigned char *prefix=atts[i][5] ? &atts[i][6] : NULL;
+        const unsigned char *namespace_name=atts[i+1];
+
+        raptor_namespace* nspace;
+        nspace=raptor_new_namespace(&rdf_xml_parser->namespaces,
+                                    prefix, namespace_name,
+                                    raptor_sax2_get_depth(sax2));
+
+        if(nspace) {
+          raptor_namespaces_start_namespace(&rdf_xml_parser->namespaces, nspace);
+          raptor_parser_start_namespace(rdf_parser, nspace);
+
+          if(sax2->namespace_handler)
+            (*sax2->namespace_handler)(sax2->user_data, nspace);
+        }
+      } else if(!strcmp((char*)atts[i], "xml:lang")) {
         xml_language=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)atts[i+1])+1);
         if(!xml_language) {
           raptor_parser_fatal_error(rdf_parser, "Out of memory");
           return;
         }
 
-        if(rdf_parser->feature_normalize_language) {
+        /* optionally normalize language to lowercase */
+        if(sax2->feature_normalize_language) {
           unsigned char *from=(unsigned char*)atts[i+1];
           unsigned char *to=xml_language;
           
-          /* Normalize language to lowercase
-           * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
-           */
           while(*from) {
             if(isupper(*from))
               *to++ =tolower(*from++);
@@ -737,28 +761,15 @@ raptor_rdfxml_start_element_handler(void *user_data,
           *to='\0';
         } else
           strcpy((char*)xml_language, (char*)atts[i+1]);
-
-        atts[i]=NULL; 
-        continue;
-      }
-      
-      if(!strcmp((char*)atts[i], "xml:base")) {
+      } else if(!strcmp((char*)atts[i], "xml:base")) {
         raptor_uri* xuri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), atts[i+1]);
 
         xml_base=raptor_new_uri_for_xmlbase(xuri);
         raptor_free_uri(xuri);
-        atts[i]=NULL; 
-        continue;
       }
 
-      /* delete other xml attributes - not used */
-      if(!strncmp((char*)atts[i], "xml", 3)) {
-        atts[i]=NULL; 
-        continue;
-      }
-      
-
-      ns_attributes_count++;
+      /* delete all xml attributes whether processed above or not */
+      atts[i]=NULL; 
     }
   }
 
@@ -785,11 +796,10 @@ raptor_rdfxml_start_element_handler(void *user_data,
   }
 
   element->sax2=xml_element;
-  
+
+  /* Turn string attributes into namespaced-attributes */
   if(ns_attributes_count) {
     int offset = 0;
-
-    /* Round 2 - turn string attributes into namespaced-attributes */
 
     /* Allocate new array to hold namespaced-attributes */
     named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, 
@@ -823,21 +833,64 @@ raptor_rdfxml_start_element_handler(void *user_data,
         return;
       }
 
-      
+      named_attrs[offset++]=attr;
+    }
+  } /* end if ns_attributes_count */
+
+
+  if(named_attrs)
+    raptor_xml_element_set_attributes(xml_element, 
+                                      named_attrs, ns_attributes_count);
+
+  raptor_xml_element_push(rdf_xml_parser->sax2, xml_element);
+
+  raptor_element_push(rdf_xml_parser, element);
+
+
+  /* ------ General SAX2 namespaced XML stuff above here ----------- */
+
+  named_attrs=raptor_xml_element_get_attributes(xml_element);
+  ns_attributes_count=raptor_xml_element_get_attributes_count(xml_element);
+
+  /* RDF-specific processing of attributes */
+  if(ns_attributes_count) {
+    raptor_qname** new_named_attrs;
+    int offset = 0;
+    raptor_element* parent_element;
+
+    parent_element=element->parent;
+
+    /* Allocate new array to move namespaced-attributes to if
+     * rdf processing is performed
+     */
+    new_named_attrs=(raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, 
+                                                  ns_attributes_count, 
+                                                  sizeof(raptor_qname*));
+    if(!new_named_attrs) {
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      RAPTOR_FREE(raptor_xml_element, xml_element);
+      raptor_free_qname(raptor_xml_element_get_name(xml_element));
+      return;
+    }
+
+    for (i = 0; i < ns_attributes_count; i++) {
+      raptor_qname* attr=named_attrs[i];
+
       /* If:
        *  1 We are handling RDF content and RDF processing is allowed on
        *    this element
        * OR
        *  2 We are not handling RDF content and 
        *    this element is at the top level (top level Desc. / typedNode)
+       *    i.e. we have no parent
        * then handle the RDF attributes
        */
-      if ((rdf_xml_parser->sax2->current_element &&
-           rdf_content_type_info[rdf_xml_parser->current_element->child_content_type].rdf_processing) ||
-          !rdf_xml_parser->sax2->current_element) {
+      if((parent_element &&
+          rdf_content_type_info[parent_element->child_content_type].rdf_processing) ||
+         !parent_element) {
 
         /* Save pointers to some RDF M&S attributes */
-
+        
         /* If RDF namespace-prefixed attributes */
         if(attr->nspace && attr->nspace->is_rdf_ms) {
           const unsigned char *attr_name=attr->local_name;
@@ -863,8 +916,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
           continue;
 
         /* If non namespace-prefixed RDF attributes found on an element */
-        if(rdf_parser->feature_allow_non_ns_attributes &&
-           !attr->nspace) {
+        if(rdf_parser->feature_allow_non_ns_attributes && !attr->nspace) {
           const unsigned char *attr_name=attr->local_name;
           int j;
 
@@ -889,26 +941,22 @@ raptor_rdfxml_start_element_handler(void *user_data,
       } /* end if leave literal XML alone */
 
       if(attr)
-        named_attrs[offset++]=attr;
+        new_named_attrs[offset++]=attr;
     }
 
-    /* set actual count from attributes that haven't been skipped */
+    /* new attribute count is set from attributes that haven't been skipped */
     ns_attributes_count=offset;
-    if(!offset && named_attrs) {
-      /* all attributes were RDF namespace or other specials and deleted
-       * so delete array and don't store pointer */
-      RAPTOR_FREE(raptor_qname_array, named_attrs);
-      named_attrs=NULL;
+    if(!ns_attributes_count) {
+      /* all attributes were deleted so delete the new array */
+      RAPTOR_FREE(raptor_qname_array, new_named_attrs);
+      new_named_attrs=NULL;
     }
 
-  } /* end if ns_attributes_count */
-
-  if(named_attrs)
+    RAPTOR_FREE(raptor_qname_array, named_attrs);
+    named_attrs=new_named_attrs;
     raptor_xml_element_set_attributes(xml_element, 
-                                       named_attrs, ns_attributes_count);
-  raptor_xml_element_push(rdf_xml_parser->sax2, xml_element);
-
-  raptor_element_push(rdf_xml_parser, element);
+                                      named_attrs, ns_attributes_count);
+  } /* end if ns_attributes_count */
 
 
   /* start from unknown; if we have a parent, it may set this */
@@ -1023,6 +1071,8 @@ raptor_rdfxml_start_element_handler(void *user_data,
   /* Right, now ready to enter the grammar */
   raptor_start_element_grammar(rdf_parser, element);
 
+
+  /* ----------------- XML specific cleanup ------------------------- */
   if(xml_atts_copy) {
     /* Restore passed in XML attributes, free the copy */
     memcpy((void*)atts, xml_atts_copy, xml_atts_size);
@@ -1206,6 +1256,12 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_comment_handler(sax2, raptor_rdfxml_comment_handler);
   raptor_sax2_set_unparsed_entity_decl_handler(sax2, raptor_rdfxml_unparsed_entity_decl_handler);
   raptor_sax2_set_external_entity_ref_handler(sax2, raptor_rdfxml_external_entity_ref_handler);
+  raptor_sax2_set_namespace_handler(sax2, raptor_rdfxml_sax2_new_namespace_handler);
+  /* Optionally normalize language to lowercase
+   * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+   */
+  raptor_sax2_set_feature(sax2, RAPTOR_FEATURE_NORMALIZE_LANGUAGE, 
+                          rdf_parser->feature_normalize_language);
 
   raptor_sax2_set_locator(sax2, &rdf_parser->locator);
   
