@@ -59,6 +59,24 @@ a name is legal in some XML version.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_xml_element_get_attributes ##### -->
+<para>
+
+</para>
+
+@xml_element: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_xml_element_get_attributes_count ##### -->
+<para>
+
+</para>
+
+@xml_element: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_xml_element_set_attributes ##### -->
 <para>
 
