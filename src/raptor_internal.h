@@ -902,6 +902,9 @@ struct raptor_sax2_s {
    * non 0 if require normalizing xml:lang attribute values to lowercase.
    */
   int feature_normalize_language;
+
+  /* stack of namespaces, most recently added at top */
+  raptor_namespace_stack namespaces;
 };
 
 void raptor_init_sax2(void);
