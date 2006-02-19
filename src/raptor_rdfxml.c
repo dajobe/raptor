@@ -670,7 +670,6 @@ raptor_rdfxml_start_element_handler(void *user_data,
   raptor_parser* rdf_parser;
   raptor_rdfxml_parser* rdf_xml_parser;
   raptor_element* element;
-  raptor_sax2* sax2;
   int ns_attributes_count=0;
   raptor_qname** named_attrs=NULL;
   int i;
@@ -678,7 +677,6 @@ raptor_rdfxml_start_element_handler(void *user_data,
   
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
-  sax2=rdf_xml_parser->sax2;
   
   if(rdf_parser->failed)
     return;
@@ -929,12 +927,10 @@ raptor_rdfxml_end_element_handler(void *user_data,
 {
   raptor_parser* rdf_parser;
   raptor_rdfxml_parser* rdf_xml_parser;
-  raptor_sax2* sax2;
   raptor_element* element;
 
   rdf_parser=(raptor_parser*)user_data;
   rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
-  sax2=rdf_xml_parser->sax2;
 
   if(!rdf_parser->failed) {
     raptor_rdfxml_update_document_locator(rdf_parser);
@@ -2932,7 +2928,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
     /* Whitespace is ignored except for literal or preserved content types */
     if(all_whitespace) {
 #ifdef RAPTOR_DEBUG_CDATA
-      RAPTOR_DEBUG2("Ignoring whitespace cdata inside element '%s'\n", raptor_xml_element_get_name(element->parent->sax2)->local_name);
+      RAPTOR_DEBUG2("Ignoring whitespace cdata inside element '%s'\n", raptor_xml_element_get_name(element->parent->xml_element)->local_name);
 #endif
       return;
     }
