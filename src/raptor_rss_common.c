@@ -60,6 +60,7 @@ raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE]
   { RSS1_1_NAMESPACE_URI,     NULL,      },
   { CONTENT_NAMESPACE_URI,    "content", },
   { ATOM1_0_NAMESPACE_URI,    "atom",    },
+  { RDF_NAMESPACE_URI,        "rdf",     },
 };
 
 
