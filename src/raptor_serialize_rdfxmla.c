@@ -248,6 +248,11 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
     return NULL;
   }
 
+  qname=raptor_namespaces_qname_from_uri(context->nstack, 
+                                         node->value.resource.uri, 10);
+  if(qname)
+    return qname;
+  
   uri_string = raptor_uri_as_counted_string(node->value.resource.uri, &uri_len);
 
   p= uri_string;
