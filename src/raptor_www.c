@@ -564,7 +564,7 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   return raptor_www_file_fetch(www);
 #else
 
-  if(raptor_uri_is_file_uri(raptor_uri_as_string(www->uri)))
+  if(raptor_uri_string_is_file_uri(raptor_uri_as_string(www->uri)))
     return raptor_www_file_fetch(www);
 
 #ifdef RAPTOR_WWW_LIBCURL
