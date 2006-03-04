@@ -100,7 +100,7 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
   size_t len;
   
   /* If uri_string is "file:path-to-file", turn it into a correct file:URI */
-  if(raptor_uri_is_file_uri(uri_string)) {
+  if(raptor_uri_string_is_file_uri(uri_string)) {
     unsigned char *fragment=NULL;
     char *filename;
     raptor_uri* uri=NULL;
@@ -764,12 +764,30 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
  * raptor_uri_is_file_uri:
  * @uri_string: The URI string to check
  *
- * Check if a URI string is a a file: URI.
- * 
+ * @Deprecated: use raptor_uri_string_is_file_uri
+ *
+ * Check if a URI string is a file: URI.
+ *
  * Return value: Non zero if URI string is a file: URI
  **/
 int
 raptor_uri_is_file_uri(const unsigned char* uri_string) {
+  return raptor_uri_string_is_file_uri(uri_string);
+}
+
+
+/**
+ * raptor_uri_string_is_file_uri:
+ * @uri_string: The URI string to check
+ *
+ * Check if a URI string is a file: URI.
+ * 
+ * 1.4.9+
+ *
+ * Return value: Non zero if URI string is a file: URI
+ **/
+int
+raptor_uri_string_is_file_uri(const unsigned char* uri_string) {
   return raptor_strncasecmp((const char*)uri_string, "file:", 5)==0;
 }
 
