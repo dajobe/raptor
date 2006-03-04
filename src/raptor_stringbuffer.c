@@ -139,7 +139,9 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
  *
  * INTERNAL
  *
- * If do_copy is non-0, the passed-in string is copied into new memory
+ * If @string is NULL or @length is 0, no work is performed.
+ *
+ * If @do_copy is non-0, the passed-in string is copied into new memory
  * otherwise the stringbuffer becomes the owner of the string pointer
  * and will free it when the stringbuffer is destroyed.
  *
@@ -147,11 +149,15 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
  **/
 static int
 raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer, 
-                                         const unsigned char *string, size_t length,
+                                         const unsigned char *string,
+                                         size_t length,
                                          int do_copy)
 {
   raptor_stringbuffer_node *node;
 
+  if(!string || !length)
+    return 0;
+  
   node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
   if(!node)
     return 1;
@@ -194,8 +200,10 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
  * @string: string
  * @length: length of string
  * @do_copy: non-0 to copy the string
-
- * If do_copy is non-0, the passed-in string is copied into new memory
+ *
+ * If @string is NULL or @length is 0, no work is performed.
+ *
+ * If @do_copy is non-0, the passed-in string is copied into new memory
  * otherwise the stringbuffer becomes the owner of the string pointer
  * and will free it when the stringbuffer is destroyed.
  *
@@ -208,6 +216,9 @@ raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer,
                                           const unsigned char *string, size_t length,
                                           int do_copy)
 {
+  if(!string || !length)
+    return 0;
+  
   return raptor_stringbuffer_append_string_common(stringbuffer, string, length, do_copy);
 }
   
@@ -220,7 +231,9 @@ raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer,
  *
  * Add a string to the stringbuffer.
  * 
- * If do_copy is non-0, the passed-in string is copied into new memory
+ * If @string is NULL, no work is performed.
+ *
+ * If @do_copy is non-0, the passed-in string is copied into new memory
  * otherwise the stringbuffer becomes the owner of the string pointer
  * and will free it when the stringbuffer is destroyed.
  *
@@ -230,6 +243,9 @@ int
 raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer, 
                                   const unsigned char *string, int do_copy)
 {
+  if(!string)
+    return 0;
+  
   return raptor_stringbuffer_append_string_common(stringbuffer, string, strlen((const char*)string), do_copy);
 }
 
@@ -707,6 +723,23 @@ main(int argc, char *argv[])
     }
   }
 
+  if(1) {
+    int rc;
+
+    rc=raptor_stringbuffer_append_counted_string(sb1, (unsigned char*)"X", 0, 1);
+    if(rc) {
+      fprintf(stderr, "%s: Adding 0-length counted string failed, returning error %d\n",
+              program, rc);
+      exit(1);
+    }
+    rc=raptor_stringbuffer_append_string(sb1, NULL, 1);
+    if(rc) {
+      fprintf(stderr, "%s: Adding NULL string failed, returning error %d\n",
+              program, rc);
+      exit(1);
+    }
+  }
+  
   str=raptor_stringbuffer_as_string(sb1);
   if(strcmp((const char*)str, test_append_results[0])) {
     fprintf(stderr, "%s: string buffer sb1 contains '%s', expected '%s'\n",
