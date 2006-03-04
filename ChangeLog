@@ -7,7 +7,7 @@
 	and save string conversions.
 
 	* src/raptor_www.c: (raptor_www_fetch): Use
-	raptor_uri_string_is_file_uri.  instead of deprecated
+	raptor_uri_string_is_file_uri instead of deprecated
 	raptor_uri_is_file_uri
 
 	* src/raptor_serialize_simple.c:
