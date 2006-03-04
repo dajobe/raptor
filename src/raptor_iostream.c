@@ -470,6 +470,24 @@ raptor_iostream_write_counted_string(raptor_iostream *iostr,
 
 
 /**
+ * raptor_iostream_write_uri:
+ * @iostr: raptor iostream
+ * @uri: URI
+ *
+ * Write a raptor URI to the iostream.
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_iostream_write_uri(raptor_iostream* iostr,raptor_uri* uri)
+{
+  size_t len;
+  const void *string=raptor_uri_as_counted_string(uri, &len);
+  return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
+}
+
+
+/**
  * raptor_iostream_write_end:
  * @iostr: raptor iostream
  *
