@@ -286,6 +286,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   int attrs_count=0;
   raptor_uri* base_uri=NULL;
   raptor_identifier_type object_type;
+  int allocated=1;
   
   raptor_rdfxml_ensure_writen_header(serializer, context);
 
@@ -352,6 +353,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+      allocated=1;
       if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
         subject_uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
         sprintf((char*)subject_uri_string, "%s_%d", 
@@ -360,12 +362,15 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         if(serializer->feature_relative_uris)
           subject_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                               (raptor_uri*)statement->subject);
-        else
+        else {
           subject_uri_string=raptor_uri_as_string((raptor_uri*)statement->subject);
+          allocated=0;
+        }
       }
       
       attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
-      RAPTOR_FREE(cstring, subject_uri_string);
+      if(allocated)
+        RAPTOR_FREE(cstring, subject_uri_string);
       
       break;
       
@@ -463,7 +468,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-
+      allocated=1;
       if(object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
         object_uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
         sprintf((char*)object_uri_string, "%s_%d",
@@ -473,12 +478,15 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         if(serializer->feature_relative_uris)
           object_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                               (raptor_uri*)statement->object);
-        else
-          object_uri_string=raptor_uri_as_string((raptor_uri*)statement->object);
+        else {
+          object_uri_string=raptor_uri_to_string((raptor_uri*)statement->object);
+          allocated=0;
+        }
       }
       
       attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
-      RAPTOR_FREE(cstring, object_uri_string);
+      if(allocated)
+        RAPTOR_FREE(cstring, object_uri_string);
 
       raptor_xml_element_set_attributes(predicate_element, attrs, 1);
 
