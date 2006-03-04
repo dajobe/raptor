@@ -506,9 +506,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
     }
   }
 
-  ns=raptor_new_namespace(&n3_parser->namespaces,
-                          prefix, 
-                          (const unsigned char*)raptor_uri_as_string($3), 0);
+  ns=raptor_new_namespace_from_uri(&n3_parser->namespaces, prefix, $3, 0);
   if(ns) {
     raptor_namespaces_start_namespace(&n3_parser->namespaces, ns);
     raptor_parser_start_namespace((raptor_parser*)rdf_parser, ns);
