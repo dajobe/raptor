@@ -315,6 +315,7 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   attr_name = (unsigned char *)"resource";
 
   if(serializer->feature_relative_uris)
+    /* newly allocated string */
     attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                    node->value.resource.uri);
   else
@@ -324,7 +325,8 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
                                                         attr_name, 
                                                         attr_value);
       
-  RAPTOR_FREE(cstring, attr_value);
+  if(serializer->feature_relative_uris)
+    RAPTOR_FREE(cstring, attr_value);
 
   raptor_xml_element_set_attributes(element, attrs, 1);
 
