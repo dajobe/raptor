@@ -1,4 +1,84 @@
+2006-03-04  Dave Beckett  <dave@dajobe.org>
+
+	* src/turtle_parser.y: (directive): Use
+	raptor_new_namespace_from_uri and save string conversions.
+
+	* src/n3_parser.y: (directive): Use raptor_new_namespace_from_uri
+	and save string conversions.
+
+	* src/raptor_www.c: (raptor_www_fetch): Use
+	raptor_uri_string_is_file_uri.  instead of deprecated
+	raptor_uri_is_file_uri
+
+	* src/raptor_serialize_simple.c:
+	(raptor_simple_serialize_statement): Use new raptor_iostream_write_uri.
+
+	* src/raptor_uri.c: (raptor_uri_is_file_uri): Deprecated for
+	raptor_uri_string_is_file_uri.
+	(raptor_uri_string_is_file_uri): Added.
+
+	* src/raptor.h: Deprecated raptor_uri_is_file_uri for
+	raptor_uri_string_is_file_uri.
+	Added raptor_iostream_write_uri.
+
+	* src/raptor_iostream.c: (raptor_iostream_write_uri): Added.
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_serialize_statement): Do not free shared string
+	returned from raptor_uri_as_string.  Fixes issue#0000065
+	http://bugs.librdf.org/mantis/view.php?id=65
+
+	* src/raptor_serialize_rdfxml.c:
+	(raptor_rdfxml_serialize_statement): Use raptor_uri_to_string so
+	that new strings are allocated then freed.  Fixes issue#0000065
+	http://bugs.librdf.org/mantis/view.php?id=65
+
+	* src/raptor_stringbuffer.c:
+	(raptor_stringbuffer_append_string_common,
+	raptor_stringbuffer_append_counted_string,
+	raptor_stringbuffer_append_string): Do nothing on appending a NULL
+	string or a string of length 0.
+	(main): Add tests for this.  Fixes issue#0000073
+	http://bugs.librdf.org/mantis/view.php?id=73
+
+2006-02-21  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_new_qname_from_resource): Use
+	raptor_namespaces_qname_from_uri to prefer using an existing XML
+	namespace for creating a qname, otherwise make a new one just for
+	this element.
+
+	* src/raptor_namespace.c: (raptor_namespaces_qname_from_uri):
+	Added, to make a qname from the in-scope namespaces in a stack.
+
+	* src/raptor.h: Added prototype for raptor_namespaces_qname_from_uri
+
+2006-02-20  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.c: raptor_rss_parser_context_s gains is_empty and
+	nstack fields.
+	(raptor_rss_context_init): Initialise new namespace stack and the
+	nspace field of raptor_rss_namespace_info.
+	(raptor_rss_context_terminate): Delete new namespace stack.
+	(raptor_rss_parse_start): Synthesise the namespace events.
+	(raptor_rss_start_element): Push is_empty flag into rss parser
+	context and reorganize empty case.
+	(raptor_rss_parser_processNode): set element_is_empty flag and use
+	it.
+
+	* src/raptor_rss_common.c: Add RDF namespace for RSS use
+
+	* src/raptor_rss.h: Add RDF namespace for RSS use
+
+2006-02-19  Dave Beckett  <dave@dajobe.org>
+
+	* AUTHORS: update me
+
 2006-02-18  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: Add raptor_xml_element_get_attributes
+	raptor_xml_element_get_attributes_count
 
 	* src/raptor_serialize_rdfxmla.c: Remove // comments
 
