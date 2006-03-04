@@ -809,8 +809,10 @@ RAPTOR_API
 char *raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API
 char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
-RAPTOR_API
+RAPTOR_API RAPTOR_DEPRECATED
 int raptor_uri_is_file_uri(const unsigned char* uri_string);
+RAPTOR_API
+int raptor_uri_string_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API
 unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
 RAPTOR_API
@@ -1173,6 +1175,8 @@ RAPTOR_API
 int raptor_iostream_format_hexadecimal(raptor_iostream* iostr, unsigned int integer, int width);
 RAPTOR_API
 int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor_stringbuffer *sb);
+RAPTOR_API
+int raptor_iostream_write_uri(raptor_iostream *iostr,  raptor_uri *uri);
 
 /* Parser and Serializer features */
 RAPTOR_API
