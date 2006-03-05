@@ -812,7 +812,7 @@ char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string
 RAPTOR_API RAPTOR_DEPRECATED
 int raptor_uri_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API
-int raptor_uri_string_is_file_uri(const unsigned char* uri_string);
+int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API
 unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
 RAPTOR_API
