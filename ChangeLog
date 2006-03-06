@@ -1,3 +1,18 @@
+2006-03-05  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor.h: Added raptor_qname_get_namespace
+
+	* src/raptor_qname.c: (raptor_qname_get_namespace): Added.
+
+	* src/raptor_www.c: (raptor_uri_uri_string_is_file_uri): Renamed
+	from raptor_uri_string_is_file_uri.
+
+	* src/raptor_uri.c: (raptor_uri_uri_string_is_file_uri): Renamed
+	from raptor_uri_string_is_file_uri.
+
+	* src/raptor.h: (raptor_uri_uri_string_is_file_uri): Renamed from
+	raptor_uri_string_is_file_uri.
+
 2006-03-04  Dave Beckett  <dave@dajobe.org>
 
 	* src/turtle_parser.y: (directive): Use
