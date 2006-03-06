@@ -919,6 +919,8 @@ RAPTOR_API
 raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API
 int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
+RAPTOR_API
+raptor_namespace* raptor_qname_get_namespace(raptor_qname* name);
 
 /* raptor_namespace_stack - stack of XML namespaces */
 RAPTOR_API
