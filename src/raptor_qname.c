@@ -507,3 +507,15 @@ raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname)
   return 0;
 }
 
+
+/**
+ * raptor_qname_get_namespace:
+ * @name: #raptor_qname object
+ * 
+ * Get the #raptor_namespace of an XML QName.
+ **/
+raptor_namespace*
+raptor_qname_get_namespace(raptor_qname* name)
+{
+  return name->nspace;
+}
