@@ -670,6 +670,7 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
         raptor_iostream_write_byte(iostr, '9');
       else
         raptor_iostream_write_byte(iostr, 'A'+ ((char)unichar-0x0a));
+      raptor_iostream_write_byte(iostr, ';');
     } else if (unichar == 0x7f ||
                (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
