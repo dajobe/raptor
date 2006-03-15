@@ -44,7 +44,7 @@ rapper -q -i ntriples -o rdfxml-abbrev example.ttl
 <p>The RSS/Atom serializer now uses input namespace declarations to
 choose namespaces on output.</p>
 
-<p><code>raptor_serialize_set_namespace_from_namespace</code> added
+<p>Added <code>raptor_serialize_set_namespace_from_namespace</code>
 to set a namespace for serializing from an existing
 <code>raptor_namespace</code>.
 </p>
@@ -65,7 +65,8 @@ to an iostream without the need to go via a string.</p>
 
 <h3>QName Class Changes</h3>
 
-<p>Added <code>raptor_qname_get_namespace</code></p>
+<p>Added <code>raptor_qname_get_namespace</code> to get the namespace
+associated with a QName.</p>
 
 
 <h3>Namespaces Class Changes</h3>
