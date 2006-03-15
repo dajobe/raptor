@@ -13,21 +13,78 @@
 <p>Not yet released.
 </p>
 
-<p>
-Now using subversion
+<h3>Configuration and Build Changes</h3>
+
+<p>Now using subversion</p>
+
+<p>configure: allow --enable-parsers/serializers=none</p>
+
+
+<h3><code>rapper</code> utility Changes</h3>
+
+<p><code>rapper</code> now uses namespaces found in parsing to give
+hints to the serializer.  The result of this is that rapper can be
+used as an RDF pretty-printer filter especially good at such things
+as N-Triples to RDF/XML or RDF/XML-Abbrev. such as:
+</p>
+<pre>
+rapper -q -i ntriples -o rdfxml-abbrev example.ttl
+</pre>
+
+
+<h3>Parser Changes</h3>
+
+<p>Turtle (and N3) parser gains true and false boolean literals.
 </p>
 
-<p>Deprecated <code>raptor_uri_is_file_uri</code> which takes a
-URI string argument for new function <code>raptor_uri_string_is_file_uri</code>
-which more clearly says that.
+
+<h3>Serializer Changes</h3>
+
+<p>RSS serializer now uses input namespace declarations to choose
+namespaces on output.</p>
+
+<p><code>raptor_serialize_set_namespace_from_namespace</code> added
+to set a namespace for serializing from an existing
+<code>raptor_namespace</code>.
 </p>
+
+<p>Serializing to RDF/XML (or RDF/XML Abbrev) now does not
+double-free URI strings.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=65">Issue#0000065</a>
+</p>
+
+<p>RSS serializer: Do not write XML header twice</p>
+
+
+<h3>IOStream Class Changes</h3>
 
 <p>Added <code>raptor_iostream_write_uri</code> to directly write a URI
 to an iostream.</p>
 
-<p>Serializing to RDF/XML (or abbrev) now does not double-free URI strings.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=65">Issue#0000065</a>
+
+<h3>QName Class Changes</h3>
+
+<p>Added <code>raptor_qname_get_namespace</code></p>
+
+
+<h3>Namespaces Class Changes</h3>
+
+<p>Added <code>raptor_namespaces_qname_from_uri</code>
+to do URI splitting into qname with the current in-scope namespaces.
 </p>
+
+<p><code>raptor_namespaces_format</code> NULL-terminate the namespace string.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=62">Issue#0000062</a>
+</p>
+
+<p><code>raptor_namespace_get_counted_prefix</code> added
+to return a namespace prefix and it's length.
+</p>
+
+<p>Added <code>raptor_namespaces_qname_from_uri</code>.</p>
+
+
+<h3>StringBuffer Class Changes</h3>
 
 <p><code>raptor_stringbuffer_append_counted_string</code> and
 <code>raptor_stringbuffer_append_string</code> now Do nothing on
@@ -35,37 +92,24 @@ appending a NULL string or a string of length 0.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=73">Issue#0000073</a>
 </p>
 
-<p><code>rdfproc</code> now uses namespaces found in parsing to give
-hints to the serializer.</p>
 
-<p>Added <code>raptor_namespaces_qname_from_uri</code>
-to do URI splitting into qname with the current in-scope namespaces.
+<h3>URI Class Changes</h3>
+
+<p>Deprecated <code>raptor_uri_is_file_uri</code> which takes a
+URI string argument for new function <code>raptor_uri_string_is_file_uri</code>
+which more clearly says that.
 </p>
+
+
+<h3>Internal Changes</h3>
 
 <p>Added XML element methods
 <code>raptor_xml_element_get_attributes</code> and
 <code>raptor_xml_element_get_attributes_count</code>.
 </p>
 
-<p>configure: allow --enable-parsers/serializers=none</p>
-
-<p>RSS serializer: Do not write XML header twice</p>
-
-<p><code>raptor_namespaces_format</code> NULL-terminate the namespace string.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=62">Issue#0000062</a>
-</p>
-
-<p><code>raptor_serialize_set_namespace_from_namespace</code> added
-to set a namespace for serializing from an existing
-<code>raptor_namespace</code>.
-</p>
-
-<p><code>raptor_namespace_get_counted_prefix</code> added
-to return a namespace prefix and it's length.
-</p>
-
-<p>Turtle (and N3) parser gains true and false boolean literals.
-</p>
+<p>Many internal changes to SAX2 API to finally separate XML and
+RDF/XML parts.</p>
 
 
 <h2 id="rel1_4_8"><a name="rel1_4_8">Raptor 1.4.8 Changes</a></h2>
