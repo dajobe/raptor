@@ -3,10 +3,10 @@
 .\"
 .\" $Id$
 .\"
-.\" Copyright (C) 2002-2005 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2002-2006 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2005-11-04"
+.TH libraptor 3 "2006-03-14"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -608,6 +608,8 @@ If \fBraptor_uri_to_relative_counted_string\fP is used, the length of
 the returned string is stored in *\fIlen_p\fP if not NULL.
 .IP "\fBvoid raptor_uri_print(const raptor_uri* \fIuri\fP, FILE *\fIstream\fP)\fR"
 Print URI \fIuri\fP to the file handle \fIstream\fP.
+.IP "\fBint raptor_iostream_write_uri(raptor_iostream* \fIiostr\fP,  raptor_uri* \fIuri\fP)\fR"
+Write the raptor_uri \fIuri\fP to the iostream \fIostr\fP.
 .SH "URI UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_uri_resolve_uri_reference (const unsigned char* \fIbase_uri\fB, const unsigned char* \fIreference_uri\fB, char unsigned* \fIbuffer\fB, size_t \fIlength\fB)\fR"
 This is a standalone function that resolves the relative URI
@@ -630,18 +632,21 @@ location to store a newly allocated string containing the fragment.
 The returned strings must be freed by the caller.  Some systems
 require memory allocated in a library to be deallocated inside that
 library in which case \fBraptor_free_memory\fP may be used.
-.IP "\fBint raptor_uri_is_file_uri(const unsigned char* \fIuri_string\fB)\fR
-Returns non-zero if the given URI string represents a filename,
-is a file: URI.
+.IP "\fBint raptor_uri_is_file_uri(const unsigned char* \fIuri_string\fB)\fR"
+DEPRECATED in 1.4.9.
+Returns non-zero if the given URI string represents a filename.
+Use \fBraptor_uri_uri_string_is_file_uri\fP in preference.
+.IP "\fBint raptor_uri_uri_string_is_file_uri(const unsigned char* \fIuri_string\fP)\fR"
+Returns non-zero if the given URI string represents a filename.
 .SH "URI CLASS IMPLEMENTATION"
-.IP "\fBvoid raptor_uri_set_handler(raptor_uri_handler *\fIhandler\fB, void *\fIcontext\fB)\fR
+.IP "\fBvoid raptor_uri_set_handler(raptor_uri_handler *\fIhandler\fB, void *\fIcontext\fB)\fR"
 Change the URI class implementation to the functions provided by the
 \fIhandler\fR
 URI implementation.
 The
 \fIcontext\fR
 user data is passed in to the handler URI implementation calls.
-.IP "\fBvoid raptor_uri_get_handler(raptor_uri_handler **\fIhandler\fB, void **\fIcontext\fB)\fR
+.IP "\fBvoid raptor_uri_get_handler(raptor_uri_handler **\fIhandler\fB, void **\fIcontext\fB)\fR"
 Return the current raptor URI class implementation
 \fIhandler\fR
 and
@@ -742,13 +747,17 @@ Destroy a raptor qname object.
 .IP "\fBint raptor_qname_equal(raptor_qname* \fIname1\fP, raptor_qname *\fIname2\fP)\fR"
 Return non-zero if the given QNames are equal.
 .IP "\fBint raptor_iostream_write_qname(raptor_iostream* \fIiostr\fP, raptor_qname *\fIqname\fP)\fR"
-Write the qname to the iostream \fIostr\fP.
+Write the raptor_qname \fIqname\fP to the iostream \fIostr\fP.
 .SH "QNAME UTILITY FUNCTIONS"
 .IP "\fBraptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *\fInstack\fB,  const unsigned char *\fIname\fB, size_t \fIname_len\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Return the URI corresponding to the QName according to the RDF
 method; concatenating the namespace's name (URI) with the local
 name.  Takes the same arguments as \fBraptor_new_qname\fR but
 does not create a raptor_qname object.
+.IP "\fBraptor_namespace* raptor_qname_get_namespace(raptor_qname* \fIname\fB)\fR"
+Return the raptor_namespace used by the QName.  Will never be NULL
+even for the default namespace in which case the URI of the returned
+namespace object will be NULL.
 .SH "NAMESPACE CLASS"
 An XML namespace class - each entry is on a stack and consists of a
 name (URI) and prefix.  The prefix or the name but not both may be
@@ -781,6 +790,9 @@ Destroy a raptor namespace object.
 Return the namespace name (URI) of the namespace.
 .IP "\fBconst unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns)\fR"
 Return the prefix of the namespace.
+.IP "\fBconst unsigned char* raptor_namespace_get_counted_prefix(const raptor_namespace* \fIns\fP, size_t* \fIlength_p\fP)\fR"
+Return the prefix of the namespace as a string with optional count stored in
+the variable address \fIlength_p\fP if it is not NULL.
 .IP "\fBunsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)\fR"
 Format the namespace as a string and return it as a new string, returning the
 length of the resulting string in \fIlength_p\fR if it is not NULL.
@@ -844,6 +856,13 @@ or NULL if there is none.
 .IP "\fBint raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace)\fR"
 Return non-zero if the raptor_namespace \fInspace\fR is declared
 on the stack; i.e. in scope if this is a stack of XML namespaces.
+.SH "NAMESPACE STACK UTILITY FUNCTIONS"
+.IP "\fBraptor_qname* raptor_namespaces_qname_from_uri(raptor_namespace_stack* \fInstack\fP,  raptor_uri* \fIuri\fP, int \fIxml_version\fP)\fR"
+Create a raptor QName from the URI \fIuri\fP if the URI is squal one
+of the namespace URIs on the namespace stack \fInstack\fP URIs
+concatenated to a legal XML name for the given XML version.  URIs are
+created and errors are reported using the namespace stack fields.
+Fails if it cannot be legally described with any of the namespaces.
 .SH "SEQUENCE CLASS"
 A class for ordered sequences of items, adding at either end of the
 sequence.  The method names should be familiar to Perl users.
@@ -992,6 +1011,12 @@ Get the XML element QName of XML element \fIxml_element\fP.
 .IP "\fBvoid raptor_xml_element_set_attributes(raptor_xml_element* \fIxml_element\fP, raptor_qname **\fIattributes\fP, int \fIcount\fP)\fR"
 Set the attributes on XML element \fIxml_element\fP to the
 array of QNames in array \fIattributes\fP of size \fIcount\fP.
+.IP "\fBraptor_qname** raptor_xml_element_get_attributes(raptor_xml_element* \fIxml_element\fP)\fR"
+Get the attributes of an XML element \fIxml_element\fP as an
+array of QNames.  As set by \fBvoid raptor_xml_element_set_attributes\fP.
+.IP "\fBint raptor_xml_element_get_attributes_count(raptor_xml_element* \fIxml_element\fP)\fR"
+Get the number of attributes of an XML element \fIxml_element\fP as
+set by \fBvoid raptor_xml_element_set_attributes\fP.
 .IP "\fBvoid raptor_xml_element_declare_namespace(raptor_xml_element* \fIxml_element\fP, raptor_namespace* \fInspace\fP)\fR"
 Declare an XML namespace \fInspace\fP expliclitly on XML element
 \fIxml_element\fP.  Namespaces used in the element or attribute
@@ -1099,6 +1124,23 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
+.SS 1.4.9
+Added \fBraptor_qname_get_namespace\fP
+.LP
+Added \fBraptor_iostream_write_uri\fP
+.LP
+Added \fBraptor_namespaces_qname_from_uri\fP.
+.LP
+Added \fBraptor_namespace_get_counted_prefix\fP
+.LP
+Added \fBraptor_serialize_set_namespace_from_namespace\fP
+.LP
+Deprecated \fBraptor_uri_is_file_uri\fP
+for new \fBraptor_uri_string_is_file_uri\fP.
+.LP
+Added
+\fBraptor_xml_element_get_attributes\fP and
+\fBraptor_xml_element_get_attributes_count\fP
 .SS 1.4.8
 Added \fBraptor_set_namespace_handler\fP.
 .LP
