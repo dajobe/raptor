@@ -17,7 +17,8 @@
 
 <p>Now using subversion</p>
 
-<p>configure: allow --enable-parsers/serializers=none</p>
+<p>configure now allows <code>--enable-parsers=node</code> and
+<code>--enable-serializers=none</code>.  Using both is possible!</p>
 
 
 <h3><code>rapper</code> utility Changes</h3>
@@ -40,8 +41,8 @@ rapper -q -i ntriples -o rdfxml-abbrev example.ttl
 
 <h3>Serializer Changes</h3>
 
-<p>RSS serializer now uses input namespace declarations to choose
-namespaces on output.</p>
+<p>The RSS/Atom serializer now uses input namespace declarations to
+choose namespaces on output.</p>
 
 <p><code>raptor_serialize_set_namespace_from_namespace</code> added
 to set a namespace for serializing from an existing
@@ -53,13 +54,13 @@ double-free URI strings.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=65">Issue#0000065</a>
 </p>
 
-<p>RSS serializer: Do not write XML header twice</p>
+<p>RSS serializer no longer writes the XML header twice.</p>
 
 
 <h3>IOStream Class Changes</h3>
 
 <p>Added <code>raptor_iostream_write_uri</code> to directly write a URI
-to an iostream.</p>
+to an iostream without the need to go via a string.</p>
 
 
 <h3>QName Class Changes</h3>
@@ -69,17 +70,16 @@ to an iostream.</p>
 
 <h3>Namespaces Class Changes</h3>
 
-<p>Added <code>raptor_namespaces_qname_from_uri</code>
-to do URI splitting into qname with the current in-scope namespaces.
-</p>
+<p>Added <code>raptor_namespaces_qname_from_uri</code> to do URI
+splitting into qname prefering to use the current in-scope namespaces
+before having to search.</p>
 
-<p><code>raptor_namespaces_format</code> NULL-terminate the namespace string.
+<p><code>raptor_namespaces_format</code> now NULL-terminates the namespace string.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=62">Issue#0000062</a>
 </p>
 
-<p><code>raptor_namespace_get_counted_prefix</code> added
-to return a namespace prefix and it's length.
-</p>
+<p><code>raptor_namespace_get_counted_prefix</code> added to return a
+namespace prefix and it's length.</p>
 
 <p>Added <code>raptor_namespaces_qname_from_uri</code>.</p>
 
