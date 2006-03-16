@@ -569,14 +569,14 @@
 	RAPTOR_IDENTIFIER_TYPE_RESOURCE change for predicates until the
 	next release.
 
-2005-09-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-21  Dave Beckett
 
 	* src/raptor_uri.c:
 	(raptor_new_uri_for_xmlbase, raptor_new_uri_for_retrieval):
 	Set ud->path_len to 1 when adding a default path of /
 	Fixes bug 0000045  http://bugs.librdf.org/mantis/view.php?id=45
 
-2005-09-20  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-20  Dave Beckett
 
 	* src/raptor_serialize_rdfxmla.c (raptor_rdfxmla_serialize_start):
 	Pass down xml_version to the raptor_xml_writer and write the
@@ -640,7 +640,7 @@
 
 	* examples/Makefile.am: fix libraptor.la dir
 
-2005-09-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-18  Dave Beckett
 
 	* src/raptor_rdfxml.c (raptor_generate_statement): When reifiying,
 	just copy predicate_type.
@@ -667,7 +667,7 @@
 	RAPTOR_IDENTIFIER_TYPE_XML_LITERAL, instead generate a
 	RAPTOR_IDENTIFIER_TYPE_LITERAL with the rdf:XMLLiteral datatype.
 
-2005-09-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-16  Dave Beckett
 
 	* docs/libraptor.3: Update for 1.4.8 - added
 	raptor_set_namespace_handler
@@ -677,7 +677,7 @@
 	raptor_www_set_source_file_handle, raptor_www_retrieve and
 	raptor_www_retrieve_to_string
 
-2005-09-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-15  Dave Beckett
 
 	* src/raptor.h: delete unused raptor_www_fetch_to_string prototype
 
@@ -709,11 +709,11 @@
 
 	* src/ntriples_parse.c: autodocs and some code style fixes
 
-2005-09-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-14  Dave Beckett
 
 	* docs/tmpl/section-parser.sgml: new functions
 
-2005-09-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-10  Dave Beckett
 
 	* src/raptor_expat.c: Updates to use new raptor_sax2 handler
 	style.  The user data now points at the raptor_sax2* object, not
@@ -812,7 +812,7 @@
 	raptor_sax2_external_entity_ref): Added, internal functions
 	calling the same-named handler.
 
-2005-09-09  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-09  Dave Beckett
 
 	* src/raptor_qname.c: autodocs
 
@@ -833,12 +833,12 @@
 	in one chunk and is_end is true, call xmlParseChunk with the
 	is_end flag.  (patch from René Puls)
 
-2005-09-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-07  Dave Beckett
 
 	* src/n3_parser.y, src/turtle_parser.y (statement):
 	Handle error recovery when subject is NULL
 
-2005-09-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-09-06  Dave Beckett
 
 	* src/turtle_common.c (raptor_stringbuffer_append_turtle_string):
 	Do not check unsigned for <0
@@ -863,7 +863,7 @@
 	* src/raptor_parse.c (raptor_syntaxes_enumerate):
 	counter can never be <0
 
-2005-08-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-24  Dave Beckett
 
 	* src/Makefile.am: Add more conditional compiles for serializers
 
@@ -913,7 +913,7 @@
 	and namespace_handler_user_data fields.  Added
 	raptor_parser_start_namespace prototype.
 
-2005-08-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-24  Dave Beckett
 
 	* tests/Makefile.am: link to libxml2 bug report
 
@@ -933,7 +933,7 @@
 	* src/turtle_parser.y (raptor_turtle_generate_statement): Zap
 	literal language and datatype for !literals.  Add assertion.
 
-2005-08-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-22  Dave Beckett
 
 	* src/raptor.h: autodocs fixes
 
@@ -961,7 +961,7 @@
 
 	* src/raptor_uri.c: autodocs
 
-2005-08-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-19  Dave Beckett
 
 	* Makefile.am: Enable gtk doc with make distcheck
 
@@ -1015,7 +1015,7 @@
 
 	* configure.ac: check for gtk-doc
 
-2005-08-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-19  Dave Beckett
 
 	* src/raptor-config.1: Document --features and --help.  Order
 	flags alphabetically in summary and body.
@@ -1027,7 +1027,7 @@
 	RAPTOR_WWW_LIBRARY (or none), RAPTOR_XML_PARSER (or none),
 	RAPTOR_PARSERS (list) and RAPTOR_SERIALIZERS (list).
 
-2005-08-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-18  Dave Beckett
 
 	* src/raptor_sax2.c (raptor_sax2_parse_start): Fix for expat
 
@@ -1084,7 +1084,7 @@
 	the registered factory.  Removed alias arg into new function:
 	(raptor_parser_factory_add_alias): Added.
 
-2005-08-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-17  Dave Beckett
 
 	* src/Makefile.am: maintainer clean n3 files
 
@@ -1119,7 +1119,7 @@
 
 	* tests/turtle/Makefile.am: re-add test-19
 
-2005-08-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-16  Dave Beckett
 
 	* src/raptor_internal.h: Added raptor_new_identifier_from_double
 	pointer
@@ -1173,7 +1173,7 @@
 
 	* manifest.pl: typo
 
-2005-08-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-11  Dave Beckett
 
 	* autogen.sh: Rewrite with functions, generalize to any redland
 	package.  Add docs.
@@ -1181,11 +1181,11 @@
 	* raptor.spec.in: - Update Source:
 	- Use %makeinstall
 
-2005-08-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-10  Dave Beckett
 
 	* raptor.spec.in: Use %configure and %{_make}
 
-2005-08-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-08-08  Dave Beckett
 
 	* src/raptor_rss_common.c, src/raptor_rss.c,
 	src/raptor_internal.h: Move time.h and sys/time.h #ifdef and
@@ -1195,7 +1195,7 @@
 	* tests/Makefile.am: adjust -I to point to srcdir for
 	raptor_empty_test
 
-2005-07-31  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-31  Dave Beckett
 
 	* src/raptor_xml_writer.c (main): syntax
 
@@ -1208,7 +1208,7 @@
 	rapper and rdfdif moved to new utils/ dir.  Other manual pages to
 	docs/.
 
-2005-07-27  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-27  Dave Beckett
 
 	* Makefile.am: Add n3_lexer_test, n3_parser_test for maintainer
 
@@ -1239,13 +1239,13 @@
 	* turtle_parser.y: gcc4 ignored return warning fixes:
 	(main): Check fread() return value and throw a user error.
 
-2005-07-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-25  Dave Beckett
 
 	* examples/grapper.c (fs_ok_button_callback): Protect from
 	defining when when not used as a callback.
 	(open_button_callback): cast for gcc4
 
-2005-07-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-24  Dave Beckett
 
 	* raptor_rss.c (raptor_rss_parser_processNode): for rss:link and
 	atom:link with href, allow multiple link for atom, and continue to
@@ -1318,7 +1318,7 @@
 	raptor_iostream_write_xml_element from raptor_sax2.c to
 	raptor_xml.c
 
-2005-07-23  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-23  Dave Beckett
 
 	* raptor_rss.c: More base URIs on base URIs fixes.
 	(raptor_rss_parser_processNode): Ensure base URI is always copied
@@ -1328,7 +1328,7 @@
 	(raptor_rss_parse_chunk): Remove duplicate document base URI
 	setting.
 
-2005-07-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-22  Dave Beckett
 
 	* raptor_rss.c: raptor_rss_info gains flags field to store
 	RAPTOR_RSS_INFO_FLAG_URI_VALUE where the value of the element
@@ -1375,14 +1375,14 @@
 	(raptor_rss10_emit_item): Write content:encoded using
 	<![CDATA[...]]>
 
-2005-07-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-19  Dave Beckett
 
 	* raptor_guess.c (raptor_guess_parse_chunk): unused var parser
 
 	* ntriples_parse.c (raptor_init_parser_ntriples): Do not register
 	interest in text/plain -- too general.
 
-2005-07-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-18  Dave Beckett
 
 	* raptor_guess.c: Slim down, to use raptor_parser_exec.
 	(raptor_guess_parse_start): Deleted again.
@@ -1457,7 +1457,7 @@
 	See http://lists.w3.org/Archives/Public/www-rdf-comments/2005AprJun/0000.html
 	for discussion.
 
-2005-07-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-13  Dave Beckett
 
 	* turtle_lexer.l: Switch qname, blank node and prefix definitions
 	to SPARQL ones.
@@ -1468,13 +1468,13 @@
 	* raptor_utf8.c (raptor_unicode_is_xml11_namechar):
 	Call raptor_unicode_is_xml11_namestartchar.
 
-2005-07-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-07-01  Dave Beckett
 
 	* configure.ac: Check for isascii, for parsedate.y
 
 	* parsedate.y: Update source links
 
-2005-06-29  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-29  Dave Beckett
 
 	* raptor_rss.c (raptor_rss_uplift_fields): Fix valid condition.
 
@@ -1484,17 +1484,17 @@
 	(raptor_rss_uplift_items): Added, to scan items to uplift.
 	(raptor_rss_parse_chunk): Call raptor_rss_uplift_items.
 
-2005-06-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-17  Dave Beckett
 
 	* raptor.spec.in: License not Copyright header
 
-2005-06-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-12  Dave Beckett
 
 	* raptor_rss.c: update for INN parsedate
 
 	* configure.ac: Look for parsedate in libINN
 
-2005-06-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-11  Dave Beckett
 
 	* Makefile.am: Add parsedate.y to EXTRA_DIST
 
@@ -1519,11 +1519,11 @@
 	* parsedate.y: Imported public domain date parsing code from
 	http://cvs.php.net/php-src/ext/standard/parsedate.y
 
-2005-06-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-10  Dave Beckett
 
 	* raptor_rss.c: Added Suzan Foster to copyright
 
-2005-06-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-08  Dave Beckett
 
 	* rdfdiff.c: Casts for c++
 
@@ -1533,7 +1533,7 @@
 
 	* libraptor.3: Note no changes in 1.4.6 and 1.4.7
 
-2005-06-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-07  Dave Beckett
 
 	* raptor_serialize_rdfxmla.c (raptor_new_qname_from_resource):
 	Fail to split predicate if entire uri is an XML name - it's
@@ -1546,12 +1546,12 @@
 	* raptor_namespace.c (raptor_namespaces_find_namespace_by_uri):
 	Return NULL if ns_uri is NULL.
 
-2005-06-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-06  Dave Beckett
 
 	* raptor_rss.c (raptor_rss_emit):
 	Fix crash when no RSS channel is present (Suzan Foster)
 
-2005-06-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-06-01  Dave Beckett
 
 	* Makefile.am: Added ChangeLog.[2-5]
 
@@ -1560,16 +1560,16 @@
 	* raptor_rss.c (raptor_rss_parser_processNode): Copy attribute
 	value before storing in the item field.
 
-2005-05-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-25  Dave Beckett
 
 	* raptor_xslt.c: docs
 
-2005-05-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-22  Dave Beckett
 
 	* configure.ac: Test for libxslt/xslt.h as well as library, and
 	disable if missing.
 
-2005-05-19  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-19  Dave Beckett
 
 	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.7
 
@@ -1594,7 +1594,7 @@
 	* configure.ac: Added --enable-serializers=LIST and serializers to
 	summary.  Reformat other help messages to match.
 
-2005-05-18  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-18  Dave Beckett
 
 	* turtle_parser.y: (main) Move filename here
 
@@ -1604,7 +1604,7 @@
 
 	* configure.ac, rdfdump.c: Bugs to http://bugs.librdf.org/
 
-2005-05-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-17  Dave Beckett
 
 	* raptor_identifier.c, raptor_parse.c, raptor_serialize.c,
 	raptor_serialize_rdfxmla.c, raptor_sax2.c, raptor_rdfxml.c: Casts
@@ -1640,7 +1640,7 @@
 
 	* rdfdump.c: Add raptor_finish() before usage exit
 
-2005-05-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-13  Dave Beckett
 
 	* raptor_rss.c: Casts for C++
 
@@ -1650,7 +1650,7 @@
 	(raptor_rdfxmla_serialize_statement): Turn datatyped literals that
 	are rdf:XMLLiteral into inline XML, not escaped.
 
-2005-05-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-12  Dave Beckett
 
 	* raptor_serialize.c (raptor_rdfxml_serialize_init,
 	raptor_rdfxml_serialize_terminate): Init/free rdf_xml_literal_uri
@@ -1658,13 +1658,13 @@
 	(raptor_rdfxml_serialize_statement): Turn datatyped literals that
 	are rdf:XMLLiteral into inline XML, not escaped.
 
-2005-05-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-10  Dave Beckett
 
 	* configure.ac: Change quotes around bison test
 
 	* configure.ac: Try to work for older bison version styles
 
-2005-05-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-08  Dave Beckett
 
 	* raptor_rss.c:
 	Update from Suzan Foster to reflect the latest status of the
@@ -1704,15 +1704,15 @@
 	(raptor_rss10_serialize_end): Updates for lists of common items and
 	lists of fields.
 
-2005-05-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-05-04  Dave Beckett
 
 	* win32_raptor_config.h: Added SIZEOF_UNSIGNED_SHORT
 
-2005-04-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-17  Dave Beckett
 
 	* autogen.sh: allow envariables to override the programs
 
-2005-04-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-16  Dave Beckett
 
 	* raptor_iostream.c (raptor_string_iostream_finish):
 	Fixes bug 0000021: the output of to_string for an empty model should
@@ -1723,16 +1723,16 @@
 	Return an empty string "" (aka 1
 	byte, \0) when the stringbuffer is NULL, do not return the NULL.
 
-2005-04-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-14  Dave Beckett
 
 	* raptor_parse.c: docs typo
 
-2005-04-11  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-11  Dave Beckett
 
 	* tests/Makefile.am, tests/ex-56.out, tests/ex-56.rdf:
 	Added ex-56 test that relative URIs in datatypes work (Graham Klyne)
 
-2005-04-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-08  Dave Beckett
 
 	* raptor_xml_writer.c, raptor_serialize_rdfxmla.c,
 	raptor_serialize.c, raptor_rdfxml.c, raptor_parse.c,
@@ -1743,7 +1743,7 @@
 
 	* raptor_xslt.c: Casts for C++
 
-2005-04-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-07  Dave Beckett
 
 	* raptor_xslt.c (raptor_init_parser_grddl): Expand grddl parser
 	description.
@@ -1755,7 +1755,7 @@
 	* tests/Makefile.am:
 	test should use = not == for string compare portability
 
-2005-04-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-06  Dave Beckett
 
 	* raptor_xslt.c:
 	Added a list of XPaths to try, fixed searching for a profile.
@@ -1786,14 +1786,14 @@
 	run.  Report error if no XML DOM made.  Set xslt context
 	structured error handler to raptor_xslt_xmlStructuredErrorFunc.
 
-2005-04-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-04-04  Dave Beckett
 
 	* raptor_xslt.c (raptor_xslt_parse_chunk):
 	Declare 'nodes' at top of block.
 	Init doc_txt/doc_txt_len earlier so do not free junk.
 	Get the base URI string from the XML doc if it exists.
 
-2005-03-25  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-03-25  Dave Beckett
 
 	* configure.ac: Added --with-xslt-config
 	Added grddl parser and checking.
@@ -1822,7 +1822,7 @@
 	raptor_xslt_parse_recognise_syntax,
 	raptor_xslt_parser_register_factory, raptor_init_parser_xslt): Added
 
-2005-03-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-03-24  Dave Beckett
 
 	* raptor_xslt.c: Fix some memory leaks.
 
@@ -1834,7 +1834,7 @@
 
 	* raptor_parse.c (raptor_parse_chunk): docs
 
-2005-03-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-03-10  Dave Beckett
 
 	* n3_lexer.l, turtle_lexer.l: Tidy to use .|\n to match any char
 
@@ -1847,7 +1847,7 @@
 	* tests/turtle/Makefile.am:
 	Added test-17.ttl bad-14.ttl for long literals
 
-2005-03-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-03-06  Dave Beckett
 
 	* raptor_serialize_rdfxmla.c (raptor_new_qname_from_resource):
 	Use maximal xml name length for	splitting predicate.
@@ -1855,16 +1855,16 @@
 	* raptor_serialize.c (raptor_rdfxml_serialize_statement):
 	Use maximal xml name length for	splitting predicate.
 
-2005-02-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-21  Dave Beckett
 
 	* examples/Makefile.am: Add gconf-2.0 to grapper args
 
-2005-02-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-16  Dave Beckett
 
 	* examples/grapper.c: Added gconf storing of window width/height
 	at namespace /apps/grapper
 
-2005-02-14  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-14  Dave Beckett
 
 	* win32_raptor_config.h: Define RASQAL_INLINE to __inline
 
@@ -1873,7 +1873,7 @@
 	* raptor_internal.h: Define RAPTOR_INLINE to inline if not alerady
 	defined to something else
 
-2005-02-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-12  Dave Beckett
 
 	* raptor_serialize_rdfxmla.c
 	 (raptor_rdfxmla_emit_subject_list_items,
@@ -1883,12 +1883,12 @@
 	(raptor_rdfxmla_serialize_statement): Handle predicate type
 	RAPTOR_IDENTIFIER_TYPE_RESOURCE as an alternative.
 
-2005-02-10  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-10  Dave Beckett
 
 	* raptor_xml.c (raptor_valid_xml_ID): Just return an error status,
 	don't error out here.
 
-2005-02-08  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-08  Dave Beckett
 
 	* Makefile.am: Add n3_lexer.l n3_parser.y to EXTRA_DIST otherwise
 	building with --enable-maintainer-mode from tarball will fail.
@@ -1909,25 +1909,25 @@
 
 	* raptor_rss.c: re-comment back item enclosure thing
 
-2005-02-07  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-07  Dave Beckett
 
 	* raptor_rss.c (raptor_rss_parser_processNode): Do not assign
 	'alternate' attribute values when there's no field to use.
 
-2005-02-06  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-06  Dave Beckett
 
 	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.6
 
 	* Snapshotted raptor_1_4_5 for 1.4.5 release
 
-2005-02-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-04  Dave Beckett
 
 	* autogen.sh: Add autoheader and libtoolize to the path search.
 
 	* configure.ac: AM_PROG_LIBTOOL to AC_PROG_LIBTOOL seems to make
 	things happier
 
-2005-02-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-03  Dave Beckett
 
 	* configure.ac: In maintainer mode, stop if there is no flex.
 
@@ -1944,14 +1944,14 @@
 	10.3.x libxml features in the shared library rather than the ones
 	declared in the inconsistent header.
 
-2005-02-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-02  Dave Beckett
 
 	* raptor.rdf.in: Updates for schema
 
 	* tests/Makefile.am (check-rdfxmla): rdfdiff should read
 	$name-rdfxmla.rdf from builddir
 
-2005-02-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-02-01  Dave Beckett
 
 	* rdfdiff.c: C style Move more declarations to start of blocks.
 
@@ -2016,7 +2016,7 @@
 	    * tests/Makefile.am: Added tests for rdfdiff and the
 	    rdfxml-abbrev serialization format.
 	
-2005-01-26  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-26  Dave Beckett
 	* rapper.1: mention what RSS tag soup can do
 
 	* turtle_parser.y, n3_parser.y: Rename
@@ -2031,12 +2031,12 @@
 	(turtle_copy_string_token): Renamed from copy_string_token.
 	(main): filename moved here from global!
 
-2005-01-24  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-24  Dave Beckett
 
 	* raptor_rss.c (raptor_rss_emit_item): Do not emit an items
 	property, that's only done by raptor_rss_emit_connection.
 
-2005-01-22  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-22  Dave Beckett
 
 	* raptor_rss.c: Added RSS1.1 namespace http://inamidst.com/rss1.1/
 	(raptor_rss_parser_processNode): Turn Channel into RSS type channel.
@@ -2049,7 +2049,7 @@
 	(raptor_rss10_emit_item): Add item_type arg and use it to only emit
 	items for the channel.
 
-2005-01-21  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-21  Dave Beckett
 
 	* raptor.h: Added const to src arg of
 	raptor_ntriples_string_as_utf8_string.
@@ -2069,12 +2069,12 @@
 	raptor_ntriples_parse_line): Update uses of
 	raptor_ntriples_term_valid.
 
-2005-01-17  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-17  Dave Beckett
 
 	* raptor_general.c (raptor_statement_part_as_counted_string):
 	Declare language_len to NULL, uri_string as unsigned char*.
 
-2005-01-16  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-16  Dave Beckett
 
 	* raptor_rss.c (raptor_rss10_emit_item): Copy original base_uri
 	each time, a raptor_new_xml_element is made and don't lose the
@@ -2083,7 +2083,7 @@
 	* raptor_xml_writer.c (main): Copy original base_uri each time,
 	don't lose the original reference.
 
-2005-01-15  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-15  Dave Beckett
 
 	* raptor_general.c (raptor_statement_part_as_counted_string):
 	Initialise language_len, uri_string used in some cases to prevent
@@ -2096,7 +2096,7 @@
 	* raptor_rss.c (raptor_rss10_emit_item): Portability - declare
 	rdf_Seq* variables at start of block.
 
-2005-01-13  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-13  Dave Beckett
 
 	* win32_raptor_config.h, win32/Makefile.am, win32/rapper.dsp,
 	win32/raptor.dsp, win32/raptor.dsw, win32/raptortest.dsp: win32
@@ -2105,12 +2105,12 @@
 	* win32_raptor_config.h:
 	RAPTOR_INTERNAL should be defined in the build configuration
 
-2005-01-12  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-12  Dave Beckett
 
 	* raptor_rss.c: Recognise old RSS 0.9 namespace and handle it as
 	rss 1.0.
 
-2005-01-04  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-04  Dave Beckett
 
 	* raptor_serialize.c:
 	(raptor_rdfxml_serialize_start,
@@ -2133,7 +2133,7 @@
 	no path in reference URI
 	(main): Add test for that
 
-2005-01-03  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-03  Dave Beckett
 
 	* configure.ac, win32_raptor_config.h: Bumped version to 1.4.4
 
@@ -2174,7 +2174,7 @@
 
 	* raptor.h: remove old comment re xml writer
 
-2005-01-02  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-02  Dave Beckett
 
 	* rdfdump.c: set serializer features before starting to serialize
 
@@ -2187,7 +2187,7 @@
 
 	* rapper.1: Added RSS 1.0 ref
 
-2005-01-01  Dave Beckett  <Dave.Beckett@bristol.ac.uk>
+2005-01-01  Dave Beckett
 
 	* rapper.1: Update for new parser, serializers, xmlns syntax
 
