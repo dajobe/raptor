@@ -11,7 +11,7 @@
 <h2>Bugs and Features</h2>
 
 <p>Bugs should be reported at the
-<a href="http://bugs.librdf.org/">Redland bugs site</a>.
+<a href="http://bugs.librdf.org/">Redland Issue Tracker</a>.
 </p>
 
 <ul>
@@ -20,7 +20,6 @@ dissallowed URI octets (RFC 2396 as updated by RFC 2732) - silently convert
 on input or noisly convert on input.  For example, &gt; in a URI in RDF/XML would get turned into \u003E in an N-Triples output.</li>
 <li>Update the rdf/rdfs schema documents. Convert the turtle labels
 from unicode character form into UTF-8 (DATA, DOCS)</li>
-<li>LSID URN support (FEATURE)</li>
 <li>Ensure there is support to allow
 <a href="http://librdf.org/rasqal/">Rasqal</a>
 to register a parser outside raptor that provides RDF query results as
@@ -31,10 +30,7 @@ delivered in chunks rather than as one big CDATA, such as when
 libxml2 sees entities, it emits the content in bits (BUG)</li>
 <li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work (FEATURE)</li>
 <li>Turtle parser: the lexer <code>lval-&gt;string</code> values get overwritten on errors (BUG)</li>
-<li>Record the xml parser used and make available from API (FEATURE)</li>
 <li>Add a N3 parser (FEATURE)</li>
-<li>Provide a perl interface (FEATURE)</li>
-<li>Other <code>rdf:parseType</code> support (FEATURE)</li>
 <li>Add a PNG parser, like
 <a href="http://pmt.sourceforge.net/pngmeta/">pngmeta</a> and parse
 the embedded RDF/XML into triples (FEATURE)</li>
@@ -132,6 +128,16 @@ that knows OSX. (0.9.6)
 <li>rdf:li used as a propertyElt does not work (0.9.3)</li>
 <li>parseType literal support complete (0.9.3)</li>
 <li>Fixed many crashes (0.9.3)</li>
+</ul>
+
+
+<h2>Decided not to do list</h2>
+
+<ul>
+<li>Provide a perl interface (FEATURE): use Redland bindings</li>
+<li>LSID URN support (FEATURE)</li>
+<li>Record the xml parser used and make available from API (FEATURE)</li>
+<li>Other <code>rdf:parseType</code> support (FEATURE)</li>
 </ul>
 
 
