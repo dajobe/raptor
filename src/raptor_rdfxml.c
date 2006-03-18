@@ -604,7 +604,7 @@ raptor_rdfxml_element_push(raptor_rdfxml_parser *rdf_xml_parser, raptor_rdfxml_e
 
 
 static void
-raptor_free_element(raptor_rdfxml_element *element)
+raptor_free_rdfxml_element(raptor_rdfxml_element *element)
 {
   int i;
   
@@ -952,7 +952,7 @@ raptor_rdfxml_end_element_handler(void *user_data,
         element->parent->child_state=element->state;
     }
   
-    raptor_free_element(element);
+    raptor_free_rdfxml_element(element);
   }
 }
 
@@ -1139,7 +1139,7 @@ raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser)
   raptor_free_sax2(rdf_xml_parser->sax2);
   
   while( (element=raptor_rdfxml_element_pop(rdf_xml_parser)) )
-    raptor_free_element(element);
+    raptor_free_rdfxml_element(element);
 
 
   for(i=0; i< RAPTOR_RDFXML_N_CONCEPTS; i++) {
