@@ -150,6 +150,7 @@ raptor_uri_resolve_uri_reference
 raptor_uri_filename_to_uri_string
 raptor_uri_uri_string_to_filename
 raptor_uri_uri_string_to_filename_fragment
+raptor_uri_uri_string_is_file_uri
 raptor_uri_is_file_uri
 raptor_uri_to_relative_counted_uri_string
 raptor_uri_to_relative_uri_string
@@ -158,6 +159,7 @@ raptor_uri_to_counted_string
 raptor_uri_to_string
 raptor_uri_set_handler
 raptor_uri_get_handler
+raptor_iostream_write_uri
 </SECTION>
 
 <SECTION>
@@ -305,6 +307,7 @@ raptor_free_qname
 raptor_qname_equal
 raptor_qname_string_to_uri
 raptor_iostream_write_qname
+raptor_qname_get_namespace
 </SECTION>
 
 <SECTION>
@@ -332,6 +335,7 @@ raptor_namespaces_format
 raptor_iostream_write_namespace
 raptor_new_namespace_parts_from_string
 raptor_namespace_stack
+raptor_namespaces_qname_from_uri
 </SECTION>
 
 <SECTION>
