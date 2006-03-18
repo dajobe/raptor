@@ -150,6 +150,9 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
 raptor_uri*
 raptor_new_uri(const unsigned char *uri_string) 
 {
+  if(!uri_string || !*uri_string)
+    return NULL;
+  
   return (*raptor_uri_current_uri_handler->new_uri)(raptor_uri_current_uri_context, uri_string);
 }
 
@@ -188,6 +191,9 @@ raptor_default_new_uri_from_uri_local_name(void *context,
 raptor_uri*
 raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_name)
 {
+  if(!uri || !local_name)
+    return NULL;
+  
   return (*raptor_uri_current_uri_handler->new_uri_from_uri_local_name)(raptor_uri_current_uri_context, uri, local_name);
 }
 
@@ -230,6 +236,9 @@ raptor_uri*
 raptor_new_uri_relative_to_base(raptor_uri *base_uri, 
                                 const unsigned char *uri_string) 
 {
+  if(!base_uri || !uri_string)
+    return NULL;
+
   return (*raptor_uri_current_uri_handler->new_uri_relative_to_base)(raptor_uri_current_uri_context, base_uri, uri_string);
 }
 
@@ -252,6 +261,9 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id)
   raptor_uri *new_uri;
   unsigned char *local_name;
   int len;
+
+  if(!base_uri || !id)
+    return NULL;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Using ID %s\n", id);
@@ -302,6 +314,9 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
 raptor_uri*
 raptor_new_uri_for_rdf_concept(const char *name) 
 {
+  if(!name)
+    return NULL;
+  
   return (*raptor_uri_current_uri_handler->new_uri_for_rdf_concept)(raptor_uri_current_uri_context, name);
 }
 
@@ -382,6 +397,9 @@ raptor_default_uri_copy(void *context, raptor_uri *uri)
 raptor_uri*
 raptor_uri_copy(raptor_uri *uri) 
 {
+  if(!uri)
+    return NULL;
+  
   return (*raptor_uri_current_uri_handler->uri_copy)(raptor_uri_current_uri_context, uri);
 }
 
@@ -408,6 +426,9 @@ raptor_default_uri_as_string(void *context, raptor_uri *uri)
 unsigned char*
 raptor_uri_as_string(raptor_uri *uri) 
 {
+  if(!uri)
+    return NULL;
+  
   return (*raptor_uri_current_uri_handler->uri_as_string)(raptor_uri_current_uri_context, uri);
 }
 
@@ -439,6 +460,9 @@ raptor_default_uri_as_counted_string(void *context, raptor_uri *uri,
 unsigned char*
 raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p) 
 {
+  if(!uri)
+    return NULL;
+  
   return (*raptor_uri_current_uri_handler->uri_as_counted_string)(raptor_uri_current_uri_context, uri, len_p);
 }
 
@@ -467,6 +491,9 @@ raptor_uri_filename_to_uri_string(const char *filename)
 #endif
   /*     "file://" ... \0 */
   size_t len=7+1;
+  
+  if(!filename)
+    return NULL;
   
 #ifdef WIN32
 /*
@@ -595,6 +622,9 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   unsigned char *p;
 #endif
 
+  if(!uri_string || !*uri_string)
+    return NULL;
+  
   ud=raptor_new_uri_detail(uri_string);
   if(!ud)
     return NULL;
@@ -786,6 +816,9 @@ raptor_uri_is_file_uri(const unsigned char* uri_string) {
  **/
 int
 raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
+  if(!uri_string || !*uri_string)
+    return 1;
+
   return raptor_strncasecmp((const char*)uri_string, "file:", 5)==0;
 }
 
@@ -804,11 +837,16 @@ raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
 raptor_uri*
 raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 {
-  unsigned char *uri_string=raptor_uri_as_string(old_uri);
+  unsigned char *uri_string;
   unsigned char *new_uri_string;
   raptor_uri* new_uri;
   raptor_uri_detail *ud;
   
+  if(!old_uri)
+    return NULL;
+
+  uri_string=raptor_uri_as_string(old_uri);
+
   ud=raptor_new_uri_detail(uri_string);
   if(!ud)
     return NULL;
@@ -846,11 +884,15 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 raptor_uri*
 raptor_new_uri_for_retrieval(raptor_uri* old_uri)
 {
-  unsigned char *uri_string=raptor_uri_as_string(old_uri);
+  unsigned char *uri_string;
   unsigned char *new_uri_string;
   raptor_uri* new_uri;
   raptor_uri_detail *ud;
   
+  if(!old_uri)
+    return NULL;
+
+  uri_string=raptor_uri_as_string(old_uri);
 
   ud=raptor_new_uri_detail(uri_string);
   if(!ud)
@@ -1054,7 +1096,7 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
 
 /**
  * raptor_uri_to_relative_counted_uri_string:
- * @base_uri: The base absolute URI to resolve against
+ * @base_uri: The base absolute URI to resolve against (or NULL)
  * @reference_uri: The reference absolute URI to use
  * @length_p: Location to store the length of the relative URI string or NULL
  *
@@ -1073,12 +1115,12 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   size_t base_len, reference_len, reference_file_len, prefix_len, suffix_len;
   unsigned char *result=NULL;
 
-  if(length_p)
-    *length_p=0;
-
   if(!reference_uri)
     return NULL;
     
+  if(length_p)
+    *length_p=0;
+
   reference_str=raptor_uri_as_counted_string(reference_uri, &reference_len);
   reference_detail=raptor_new_uri_detail(reference_str);
   
@@ -1225,9 +1267,12 @@ raptor_uri_to_relative_uri_string(raptor_uri *base_uri,
  **/
 void
 raptor_uri_print(const raptor_uri* uri, FILE *stream) {
-  size_t len;
-  unsigned char *string=raptor_uri_as_counted_string((raptor_uri*)uri, &len);
-  (void)fwrite(string, len, 1, stream);
+  if(uri) {
+    size_t len;
+    unsigned char *string=raptor_uri_as_counted_string((raptor_uri*)uri, &len);
+    (void)fwrite(string, len, 1, stream);
+  } else 
+    (void)fwrite("(NULL URI)", 10, 1, stream);
 }
 
 
@@ -1252,6 +1297,9 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
   unsigned char *string;
   unsigned char *new_string;
 
+  if(!uri)
+    return NULL;
+  
   string=raptor_uri_as_counted_string(uri, &len);
   if(!string)
     return NULL;
