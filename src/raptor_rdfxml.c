@@ -1246,12 +1246,6 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
   statement->subject_type=subject_type;
 
   statement->predicate=predicate_uri ? (void*)predicate_uri : (void*)predicate_id;
-  /* FIXME.  Deprecated fixup.
-   * Leave this inplace until dependent code - rasqal and redland
-   * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
-   */
-  if(predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
-    predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
   statement->predicate_type=predicate_type;
 
   statement->object=object_uri ? (void*)object_uri : (void*)object_id;
@@ -1312,11 +1306,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
   /* generate reified statements */
   statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  /* FIXME.  Deprecated fixup.
-   * Leave this inplace until dependent code - rasqal and redland
-   * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
-   */
-  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
   statement->object_literal_language=NULL;
@@ -1329,9 +1319,6 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
     statement->subject_type=reified->type;
   }
   
-  if(predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE)
-    predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-
   statement->predicate=RAPTOR_RDF_type_URI(rdf_xml_parser);
   statement->object=RAPTOR_RDF_Statement_URI(rdf_xml_parser);
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
@@ -2652,11 +2639,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 element->parent->last_ordinal++;
               } else {
                 predicate_uri=raptor_xml_element_get_name(xml_element)->uri;
-                /* FIXME.  Deprecated fixup.
-                 * Leave this inplace until dependent code - rasqal and redland
-                 * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
-                 */
-                predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+                predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
               }
 
 
