@@ -554,7 +554,7 @@ struct raptor_rdfxml_parser_s {
 static raptor_rdfxml_element* raptor_rdfxml_element_pop(raptor_rdfxml_parser *rdf_parser);
 static void raptor_rdfxml_element_push(raptor_rdfxml_parser *rdf_parser, raptor_rdfxml_element* element);
 
-static int raptor_record_ID(raptor_parser *rdf_parser, raptor_rdfxml_element *element, const unsigned char *id);
+static int raptor_rdfxml_record_ID(raptor_parser *rdf_parser, raptor_rdfxml_element *element, const unsigned char *id);
 
 /* prototypes for grammar functions */
 static void raptor_start_element_grammar(raptor_parser *parser, raptor_rdfxml_element *element);
@@ -574,7 +574,7 @@ static int raptor_rdfxml_parse_start(raptor_parser* rdf_parser);
 static int raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 static void raptor_rdfxml_update_document_locator(raptor_parser *rdf_parser);
 
-
+static raptor_uri* raptor_rdfxml_inscope_base_uri(raptor_parser *rdf_parser);
 
 
 static raptor_rdfxml_element*
@@ -1251,7 +1251,7 @@ raptor_generate_statement(raptor_parser *rdf_parser,
   if((object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
       object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) &&
      !literal_datatype) {
-    language=raptor_inscope_xml_language(rdf_parser);
+    language=raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
     if(!object_uri)
       object_uri=(raptor_uri*)empty_literal;
   }
@@ -1568,7 +1568,7 @@ raptor_process_property_attributes(raptor_parser *rdf_parser,
 
     property_uri=raptor_new_uri_for_rdf_concept(rdf_syntax_terms_info[i].name);
     
-    object_uri=object_is_literal ? (raptor_uri*)value : raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), value);
+    object_uri=object_is_literal ? (raptor_uri*)value : raptor_new_uri_relative_to_base(raptor_rdfxml_inscope_base_uri(rdf_parser), value);
     object_type=object_is_literal ? RAPTOR_IDENTIFIER_TYPE_LITERAL : RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     
     raptor_generate_statement(rdf_parser, 
@@ -1612,11 +1612,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                          raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
   raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   int rc=0;
+  raptor_uri* base_uri;
   
   state=element->state;
 #ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Starting in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
+
+  base_uri=raptor_rdfxml_inscope_base_uri(rdf_parser);
 
   finished= 0;
   while(!finished) {
@@ -1763,7 +1766,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->subject.id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->subject.id);
+          element->subject.uri=raptor_new_uri_from_id(base_uri, element->subject.id);
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->subject.uri_source=RAPTOR_URI_SOURCE_ID;
           if(!raptor_valid_xml_ID(rdf_parser, element->subject.id)) {
@@ -1773,7 +1776,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             finished=1;
             break;
           }
-          if(raptor_record_ID(rdf_parser, element, element->subject.id)) {
+          if(raptor_rdfxml_record_ID(rdf_parser, element, element->subject.id)) {
             raptor_parser_error(rdf_parser, "Duplicated rdf:ID value '%s'", element->subject.id);
             state=RAPTOR_STATE_SKIPPING;
             element->child_state=RAPTOR_STATE_SKIPPING;
@@ -1781,7 +1784,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             break;
           }
         } else if (element->rdf_attr[RDF_ATTR_about]) {
-          element->subject.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (const unsigned char*)element->rdf_attr[RDF_ATTR_about]);
+          element->subject.uri=raptor_new_uri_relative_to_base(base_uri, (const unsigned char*)element->rdf_attr[RDF_ATTR_about]);
           RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_about]);
           element->rdf_attr[RDF_ATTR_about]=NULL;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -1815,7 +1818,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
           if(rdf_parser->feature_allow_bagID) {
             element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
             element->rdf_attr[RDF_ATTR_bagID]=NULL;
-            element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
+            element->bag.uri=raptor_new_uri_from_id(base_uri, element->bag.id);
             element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
             
@@ -1826,7 +1829,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
               finished=1;
               break;
             }
-            if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
+            if(raptor_rdfxml_record_ID(rdf_parser, element, element->bag.id)) {
               raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
               state=RAPTOR_STATE_SKIPPING;
               element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2091,7 +2094,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->reified.id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->reified.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->reified.id);
+          element->reified.uri=raptor_new_uri_from_id(base_uri, element->reified.id);
           element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
 
@@ -2102,7 +2105,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             finished=1;
             break;
           }
-          if(raptor_record_ID(rdf_parser, element, element->reified.id)) {
+          if(raptor_rdfxml_record_ID(rdf_parser, element, element->reified.id)) {
             raptor_parser_error(rdf_parser, "Duplicated rdf:ID value '%s'", element->reified.id);
             state=RAPTOR_STATE_SKIPPING;
             element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2116,7 +2119,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
          *   http://www.w3.org/TR/rdf-syntax-grammar/#literalPropertyElt 
          */
         if (element->rdf_attr[RDF_ATTR_datatype]) {
-          element->object_literal_datatype=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser), (const unsigned char*)element->rdf_attr[RDF_ATTR_datatype]);
+          element->object_literal_datatype=raptor_new_uri_relative_to_base(base_uri, (const unsigned char*)element->rdf_attr[RDF_ATTR_datatype]);
           RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_datatype]); 
           element->rdf_attr[RDF_ATTR_datatype]=NULL; 
         }
@@ -2134,7 +2137,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             } else {
               element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
               element->rdf_attr[RDF_ATTR_bagID]=NULL;
-              element->bag.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->bag.id);
+              element->bag.uri=raptor_new_uri_from_id(base_uri, element->bag.id);
               element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
               element->bag.uri_source=RAPTOR_URI_SOURCE_GENERATED;
               
@@ -2145,7 +2148,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
                 finished=1;
                 break;
               }
-              if(raptor_record_ID(rdf_parser, element, element->bag.id)) {
+              if(raptor_rdfxml_record_ID(rdf_parser, element, element->bag.id)) {
                 raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", element->bag.id);
                 state=RAPTOR_STATE_SKIPPING;
                 element->child_state=RAPTOR_STATE_SKIPPING;
@@ -2263,7 +2266,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
            * using this id
            */
           if(element->reified.id && !element->reified.uri) {
-            element->reified.uri=raptor_new_uri_from_id(raptor_inscope_base_uri(rdf_parser), element->reified.id);
+            element->reified.uri=raptor_new_uri_from_id(base_uri, element->reified.id);
             element->reified.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
             element->reified.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           }
@@ -2541,7 +2544,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
             if(element->object.type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN) {
               if(element->rdf_attr[RDF_ATTR_resource]) {
-                element->object.uri=raptor_new_uri_relative_to_base(raptor_inscope_base_uri(rdf_parser),
+                element->object.uri=raptor_new_uri_relative_to_base(raptor_rdfxml_inscope_base_uri(rdf_parser),
                                                     (const unsigned char*)element->rdf_attr[RDF_ATTR_resource]);
                 RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_resource]);
                 element->rdf_attr[RDF_ATTR_resource]=NULL;
@@ -2990,25 +2993,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
 
 
 /**
- * raptor_inscope_xml_language:
- * @rdf_parser: Raptor parser object
- *
- * Return the in-scope xml:lang.
- * 
- * Looks for the innermost xml:lang on an element
- * 
- * Return value: The xml:lang value or NULL if none is in scope. 
- **/
-const unsigned char*
-raptor_inscope_xml_language(raptor_parser *rdf_parser)
-{
-  raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
-  return raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
-}
-
-
-/**
- * raptor_inscope_base_uri:
+ * raptor_rdfxml_inscope_base_uri:
  * @rdf_parser: Raptor parser object
  *
  * Return the in-scope base URI.
@@ -3017,8 +3002,8 @@ raptor_inscope_xml_language(raptor_parser *rdf_parser)
  * 
  * Return value: The URI string value or NULL on failure.
  **/
-raptor_uri*
-raptor_inscope_base_uri(raptor_parser *rdf_parser)
+static raptor_uri*
+raptor_rdfxml_inscope_base_uri(raptor_parser *rdf_parser)
 {
   raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   raptor_uri* base_uri;
@@ -3032,7 +3017,7 @@ raptor_inscope_base_uri(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_record_ID:
+ * raptor_rdfxml_record_ID:
  * @rdf_parser: Raptor parser object
  * @element: Current element
  * @id: ID string
@@ -3045,14 +3030,15 @@ raptor_inscope_base_uri(raptor_parser *rdf_parser)
  * Return value: non-zero if already seen, or failure
  **/
 static int
-raptor_record_ID(raptor_parser *rdf_parser, raptor_rdfxml_element *element,
-                 const unsigned char *id)
+raptor_rdfxml_record_ID(raptor_parser *rdf_parser,
+                        raptor_rdfxml_element *element,
+                        const unsigned char *id)
 {
   raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
-  raptor_uri* base_uri=raptor_inscope_base_uri(rdf_parser);
+  raptor_uri* base_uri=raptor_rdfxml_inscope_base_uri(rdf_parser);
   size_t id_len=strlen((const char*)id);
   int rc;
-
+  
   if(!rdf_parser->feature_check_rdf_id)
     return 0;
 
