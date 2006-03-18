@@ -865,11 +865,7 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
   rss_parser->statement.subject_type=resource->type;
   
   rss_parser->statement.predicate=RAPTOR_RSS_RDF_type_URI(&rss_parser->model);
-  /* FIXME.  Deprecated fixup.
-   * Leave this inplace until depenedent code - rasqal and redland
-   * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
-   */
-  rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+  rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
   rss_parser->statement.object=(void*)type_uri;
   rss_parser->statement.object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -896,11 +892,7 @@ raptor_rss_emit_enclosure(raptor_parser* rdf_parser,
   }
 
   rss_parser->statement.predicate=raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE].uri;
-  /* FIXME.  Deprecated fixup.
-   * Leave this inplace until depenedent code - rasqal and redland
-   * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
-   */
-  rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+  rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   
   if (identifier->uri) { 
     /* emit as resource */
@@ -970,11 +962,7 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
     if(!rss_parser->statement.predicate)
       continue;
     
-    /* FIXME.  Deprecated fixup.
-     * Leave this inplace until depenedent code - rasqal and redland
-     * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
-     */
-    rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+    rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
     for (field=item->fields[f]; field; field=field->next) {
       rss_parser->statement.object_literal_language=NULL;
@@ -1019,11 +1007,7 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
 
   if(predicate_uri) {
     rss_parser->statement.predicate=predicate_uri;
-    /* FIXME.  Deprecated fixup.
-     * Leave this inplace until depenedent code - rasqal and redland
-     * expect RAPTOR_IDENTIFIER_TYPE_RESOURCE in the predicate position
-     */
-    rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_PREDICATE;
+    rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else {
     rss_parser->statement.predicate=(void*)&predicate_ordinal;
     rss_parser->statement.predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
