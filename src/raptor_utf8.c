@@ -45,10 +45,16 @@
 #endif
 
 
-/*
- * Based on librdf_unicode_char_to_utf8
- * with no need to calculate length since the encoded character is
- * always copied into a buffer with sufficient size.
+/**
+ * raptor_unicode_char_to_utf8:
+ * @c: Unicode character
+ * @output: UTF-8 string buffer or NULL
+ *
+ * Convert a Unicode character to UTF-8 encoding.
+ * 
+ * Based on librdf_unicode_char_to_utf8() with no need to calculate
+ * length since the encoded character is always copied into a buffer
+ * with sufficient size.
  * 
  * Return value: bytes encoded to output buffer or <0 on failure
  **/
@@ -110,13 +116,20 @@ raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output)
   return size;
 }
 
-/*
- * Based on librdf_utf8_to_unicode_char
- * replacing librdf_unicode_char with long
- *
- * Return value: number of bytes used or <0 on failure
- */
 
+/**
+ * raptor_utf8_to_unicode_char:
+ * @output: Pointer to the Unicode character or NULL
+ * @input: UTF-8 string buffer
+ * @length: buffer size
+ *
+ * Convert an UTF-8 encoded buffer to a Unicode character.
+ * 
+ * If output is NULL, then will calculate the number of bytes that
+ * will be used from the input buffer and not perform the conversion.
+ * 
+ * Return value: bytes used from input buffer or <0 on failure: -1 input buffer too short or length error, -2 overlong UTF-8 sequence, -3 illegal code positions, -4 code out of range U+0000 to U+10FFFF.  In cases -2, -3 and -4 the coded character is stored in the output.
+ */
 int
 raptor_utf8_to_unicode_char(unsigned long *output,
                             const unsigned char *input, int length)
@@ -184,8 +197,42 @@ raptor_utf8_to_unicode_char(unsigned long *output,
       c |= in;
       /* FALLTHROUGH */
     default:
-      *output=c;
+      break;
   }
+  
+  *output=c;
+
+  /* check for overlong UTF-8 sequences */
+  switch(size) {
+    case 2:
+      if(c < 0x00000080)
+        return -2;
+      break;
+    case 3:
+      if(c < 0x00000800)
+        return -2;
+      break;
+    case 4:
+      if(c < 0x00010000)
+        return -2;
+      break;
+
+    default: /* 1 */
+      break;
+  }
+
+
+  /* check for illegal code positions:
+   * U+D800 to U+DFFF (UTF-16 surrogates)
+   * U+FFFE and U+FFFF
+   */
+  if((c > 0xD7FF && c < 0xE000) || c == 0xFFFE || c == 0xFFFF)
+    return -3;
+
+  /* Unicode 3.2 only defines U+0000 to U+10FFFF and UTF-8 encodings of it */
+  /* of course this makes some 4 byte forms illegal */
+  if(c > 0x10ffff)
+    return -4;
 
   return size;
 }
