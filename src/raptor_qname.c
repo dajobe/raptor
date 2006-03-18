@@ -513,6 +513,8 @@ raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname)
  * @name: #raptor_qname object
  * 
  * Get the #raptor_namespace of an XML QName.
+ * 
+ * Return value: the namespace
  **/
 const raptor_namespace*
 raptor_qname_get_namespace(raptor_qname* name)
