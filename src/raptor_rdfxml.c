@@ -142,7 +142,7 @@ static const char * const raptor_state_names[RAPTOR_STATE_PARSETYPE_LAST+2]={
 };
 
 
-static const char * raptor_state_as_string(raptor_state state) 
+static const char * raptor_rdfxml_state_as_string(raptor_state state) 
 {
   if(state<1 || state > RAPTOR_STATE_PARSETYPE_LAST)
     state=(raptor_state)0;
@@ -270,7 +270,7 @@ static const struct {
 
 
 static int
-raptor_forbidden_nodeElement_name(const char *name) 
+raptor_rdfxml_forbidden_nodeElement_name(const char *name) 
 {
   int i;
 
@@ -286,7 +286,7 @@ raptor_forbidden_nodeElement_name(const char *name)
 
 
 static int
-raptor_forbidden_propertyElement_name(const char *name) 
+raptor_rdfxml_forbidden_propertyElement_name(const char *name) 
 {
   int i;
 
@@ -1615,7 +1615,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
   
   state=element->state;
 #ifdef RAPTOR_DEBUG_VERBOSE
-  RAPTOR_DEBUG2("Starting in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Starting in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
 
   finished= 0;
@@ -1647,7 +1647,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
             break;
           }
 
-          if(element_in_rdf_ns && (rc=raptor_forbidden_nodeElement_name((const char*)el_name))) {
+          if(element_in_rdf_ns && (rc=raptor_rdfxml_forbidden_nodeElement_name((const char*)el_name))) {
             if(rc > 0) {
               raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
               state=RAPTOR_STATE_SKIPPING;
@@ -1716,7 +1716,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
         }
 
         if(element_in_rdf_ns &&
-           (rc = raptor_forbidden_nodeElement_name((const char*)el_name))) {
+           (rc = raptor_rdfxml_forbidden_nodeElement_name((const char*)el_name))) {
           if(rc > 0) {
             raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
             state=RAPTOR_STATE_SKIPPING;
@@ -2073,7 +2073,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
 
         if(element_in_rdf_ns && 
-           (rc = raptor_forbidden_propertyElement_name((const char*)el_name))) {
+           (rc = raptor_rdfxml_forbidden_propertyElement_name((const char*)el_name))) {
           if(rc > 0) {
             raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a property element.", el_name);
             state=RAPTOR_STATE_SKIPPING;
@@ -2287,7 +2287,7 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_INVALID:
       default:
-        raptor_parser_fatal_error(rdf_parser, "raptor_start_element_grammar - unexpected parser state %d - %s", state, raptor_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_start_element_grammar - unexpected parser state %d - %s", state, raptor_rdfxml_state_as_string(state));
         finished=1;
 
     } /* end switch */
@@ -2295,14 +2295,14 @@ raptor_start_element_grammar(raptor_parser *rdf_parser,
     if(state != element->state) {
       element->state=state;
 #ifdef RAPTOR_DEBUG_VERBOSE
-      RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_state_as_string(state));
+      RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_rdfxml_state_as_string(state));
 #endif
     }
 
   } /* end while */
 
 #ifdef RAPTOR_DEBUG_VERBOSE
-  RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Ending in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
 }
 
@@ -2322,7 +2322,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
   state=element->state;
 #ifdef RAPTOR_DEBUG_VERBOSE
-  RAPTOR_DEBUG2("Starting in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Starting in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
 
   finished= 0;
@@ -2820,7 +2820,7 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_INVALID:
       default:
-        raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar - unexpected parser state %d - %s", state, raptor_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_end_element_grammar - unexpected parser state %d - %s", state, raptor_rdfxml_state_as_string(state));
         finished=1;
 
     } /* end switch */
@@ -2828,14 +2828,14 @@ raptor_end_element_grammar(raptor_parser *rdf_parser,
     if(state != element->state) {
       element->state=state;
 #ifdef RAPTOR_DEBUG_VERBOSE
-      RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_state_as_string(state));
+      RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_rdfxml_state_as_string(state));
 #endif
     }
 
   } /* end while */
 
 #ifdef RAPTOR_DEBUG_VERBOSE
-  RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Ending in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
 
 }
@@ -2887,7 +2887,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
    */
   state=element->child_state;
 #ifdef RAPTOR_DEBUG_VERBOSE
-  RAPTOR_DEBUG2("Working in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Working in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
 
 
@@ -2983,7 +2983,7 @@ raptor_cdata_grammar(raptor_parser *rdf_parser,
   RAPTOR_DEBUG3("Content cdata now: '%s' (%d bytes)\n", xml_element->content_cdata, xml_element->content_cdata_length);
 #endif
 #ifdef RAPTOR_DEBUG_VERBOSE
-  RAPTOR_DEBUG2("Ending in state %s\n", raptor_state_as_string(state));
+  RAPTOR_DEBUG2("Ending in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
 }
 
