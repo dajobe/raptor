@@ -538,8 +538,6 @@ raptor_parser_factory* raptor_parser_register_factory(const char *name, const ch
 void raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
 
 unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
-const unsigned char* raptor_inscope_xml_language(raptor_parser *rdf_parser);
-raptor_uri* raptor_inscope_base_uri(raptor_parser *rdf_parser);
 #ifdef RAPTOR_DEBUG
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
