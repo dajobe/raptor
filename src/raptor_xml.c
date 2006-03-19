@@ -50,14 +50,25 @@
 
 #ifndef STANDALONE
 
+/**
+ * raptor_new_xml_element:
+ * @name: The XML element name
+ * @xml_language: the in-scope XML language (or NULL)
+ * @xml_base: the in-scope XML base URI (or NULL)
+ * 
+ * Constructor - create a new XML element
+ * 
+ * Return value: a new #raptor_xml_element or NULL on failure
+ **/
 raptor_xml_element*
 raptor_new_xml_element(raptor_qname *name,
-                        const unsigned char *xml_language, 
-                        raptor_uri *xml_base) {
+                       const unsigned char *xml_language, 
+                       raptor_uri *xml_base)
+{
   raptor_xml_element* xml_element;
 
   xml_element=(raptor_xml_element*)RAPTOR_CALLOC(raptor_xml_element, 1,
-                                                   sizeof(raptor_xml_element));
+                                                 sizeof(raptor_xml_element));
   if(!xml_element)
     return NULL;
 
@@ -72,6 +83,12 @@ raptor_new_xml_element(raptor_qname *name,
 }
 
 
+/**
+ * raptor_free_xml_element:
+ * @element: XML Element
+ * 
+ * Destructor - destroy a raptor_xml_element object.
+ **/
 void
 raptor_free_xml_element(raptor_xml_element *element)
 {
@@ -102,12 +119,29 @@ raptor_free_xml_element(raptor_xml_element *element)
 }
 
 
+/**
+ * raptor_xml_element_get_name:
+ * @xml_element: XML Element
+ * 
+ * Get the XML Name of an XML element
+ * 
+ * Return value: The Name.
+ **/
 raptor_qname*
-raptor_xml_element_get_name(raptor_xml_element *xml_element) {
+raptor_xml_element_get_name(raptor_xml_element *xml_element)
+{
   return xml_element->name;
 }
 
 
+/**
+ * raptor_xml_element_set_attributes:
+ * @xml_element: XML Element
+ * @attributes: Array of XML Qname attributes with values
+ * @count: Length of array
+ * 
+ * Set the attributes on an XML element.
+ **/
 void
 raptor_xml_element_set_attributes(raptor_xml_element* xml_element,
                                    raptor_qname **attributes, int count)
@@ -117,12 +151,32 @@ raptor_xml_element_set_attributes(raptor_xml_element* xml_element,
 }
 
 
+/**
+ * raptor_xml_element_get_attributes:
+ * @xml_element: XML Element
+ * 
+ * Get the array of attributes on the XML element.
+ *
+ * Use raptor_xml_element_get_attributes_count() to get the count
+ * of the array size.
+ * 
+ * Return value: the array of qnames or NULL if none are present.
+ **/
 raptor_qname**
 raptor_xml_element_get_attributes(raptor_xml_element* xml_element)
 {
   return xml_element->attributes;
 }
 
+
+/**
+ * raptor_xml_element_get_attributes_count:
+ * @xml_element: XML Element
+ * 
+ * Get the number of attributes on the XML element.
+ * 
+ * Return value: Integer number of attributes - 0 or more.
+ **/
 int
 raptor_xml_element_get_attributes_count(raptor_xml_element* xml_element)
 {
@@ -130,9 +184,17 @@ raptor_xml_element_get_attributes_count(raptor_xml_element* xml_element)
 }
 
 
+/**
+ * raptor_xml_element_declare_namespace:
+ * @xml_element: XML Element
+ * @nspace: raptor_namespace to declare
+ * 
+ * Declare a namespace on the XML Element.
+ **/
 void
 raptor_xml_element_declare_namespace(raptor_xml_element* xml_element,
-                                     raptor_namespace *nspace) {
+                                     raptor_namespace *nspace)
+{
   if(!xml_element->declared_nspaces)
     xml_element->declared_nspaces=raptor_new_sequence(NULL, NULL);
   raptor_sequence_push(xml_element->declared_nspaces, nspace);
