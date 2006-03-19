@@ -246,15 +246,24 @@ static int raptor_unicode_is_digit(long c);
 static int raptor_unicode_is_extender(long c);
 
 
+/**
+ * raptor_unicode_is_xml11_namestartchar:
+ * @c: Unicode character to check
+ * 
+ * Check if Unicode character is legal to start an XML 1.1 Name
+ * 
+ * Namespaces in XML 1.1 REC 2004-02-04
+ *   http://www.w3.org/TR/2004/REC-xml11-20040204/#NT-NameStartChar
+ * updating
+ *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
+ *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
+ * excluding the ':'
+ *
+ * Return value: non-0 if legal
+ **/
 int
-raptor_unicode_is_xml11_namestartchar(long c) {
-  /* Namespaces in XML 1.1 REC 2004-02-04
-   *   http://www.w3.org/TR/2004/REC-xml11-20040204/#NT-NameStartChar
-   * updating
-   *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
-   *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
-   * excluding the ':'
-   */
+raptor_unicode_is_xml11_namestartchar(long c)
+{
   return (((c >= 0x0041)  && (c <= 0x005A)) || /* [A-Z] */
           (c == 0x005F) ||                     /* '_' */
           ((c >= 0x0061)  && (c <= 0x007A)) || /* [a-z] */
@@ -273,15 +282,24 @@ raptor_unicode_is_xml11_namestartchar(long c) {
 }
 
 
+/**
+ * raptor_unicode_is_xml10_namestartchar:
+ * @c: Unicode character to check
+ *
+ * Check if Unicode character is legal to start an XML 1.0 Name
+ * 
+ * Namespaces in XML REC 1999-01-14
+ *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
+ * updating
+ *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
+ *   http://www.w3.org/TR/2004/REC-xml-20040204/
+ * excluding the ':'
+ *
+ * Return value: non-0 if legal
+ **/
 int
-raptor_unicode_is_xml10_namestartchar(long c) {
-  /* Namespaces in XML REC 1999-01-14
-   *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
-   * updating
-   *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
-   *   http://www.w3.org/TR/2004/REC-xml-20040204/
-   * excluding the ':'
-   */
+raptor_unicode_is_xml10_namestartchar(long c)
+{
   return (raptor_unicode_is_letter(c) ||
           (c == '_'));
 }
@@ -291,7 +309,7 @@ raptor_unicode_is_xml10_namestartchar(long c) {
  * raptor_unicode_is_namestartchar:
  * @c: Unicode character to check
  *
- * Check if Unicode character is legal to start an XML Namespace Name .
+ * Check if Unicode character is legal to start an XML Name
  * 
  * Return value: non-0 if the character is legal
  **/
@@ -305,15 +323,24 @@ raptor_unicode_is_namestartchar(long c) {
 }
 
 
+/**
+ * raptor_unicode_is_xml11_namechar:
+ * @c: Unicode character
+ * 
+ * Check if a Unicode codepoint is a legal to continue an XML 1.1 Name
+ *
+ * Namespaces in XML 1.1 REC 2004-02-04
+ *   http://www.w3.org/TR/2004/REC-xml11-20040204/
+ * updating
+ *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
+ *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
+ * excluding the ':'
+ * 
+ * Return value: non-0 if legal
+ **/
 int
-raptor_unicode_is_xml11_namechar(long c) {
-  /* Namespaces in XML 1.1 REC 2004-02-04
-   *   http://www.w3.org/TR/2004/REC-xml11-20040204/
-   * updating
-   *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
-   *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
-   * excluding the ':'
-   */
+raptor_unicode_is_xml11_namechar(long c)
+{
   return (raptor_unicode_is_xml11_namestartchar(c) ||
           (c == 0x002D) || /* '-' */
           (c == 0x002E) || /* '.' */
@@ -324,15 +351,24 @@ raptor_unicode_is_xml11_namechar(long c) {
 }
 
 
+/**
+ * raptor_unicode_is_xml10_namechar:
+ * @c: Unicode character
+ * 
+ * Check if a Unicode codepoint is a legal to continue an XML 1.0 Name
+ * 
+ * Namespaces in XML REC 1999-01-14
+ *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCNameChar
+ * updating
+ *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
+ *   http://www.w3.org/TR/2004/REC-xml-20040204/
+ * excluding the ':'
+ *
+ * Return value: non-0 if legal
+ **/
 int
-raptor_unicode_is_xml10_namechar(long c) {
-  /* Namespaces in XML REC 1999-01-14
-   *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCNameChar
-   * updating
-   *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
-   *   http://www.w3.org/TR/2004/REC-xml-20040204/
-   * excluding the ':'
-   */
+raptor_unicode_is_xml10_namechar(long c)
+{
   return (raptor_unicode_is_letter(c) ||
           raptor_unicode_is_digit(c) ||
           (c == 0x002E) || /* '.' */
@@ -347,7 +383,7 @@ raptor_unicode_is_xml10_namechar(long c) {
  * raptor_unicode_is_namechar:
  * @c: Unicode character to check
  *
- * Check if Unicode character is legal to continue an XML Namespace Name .
+ * Check if Unicode character is legal to continue an XML Name .
  * 
  * Return value: non-0 if the character is legal
  **/
