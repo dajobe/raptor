@@ -1,4 +1,97 @@
-2006-03-05  Dave Beckett  <dave@dajobe.org>
+2006-03-19  Dave Beckett  <dave@dajobe.org>
+
+	* gtkdoc-mkdb reports "100% symbol docs coverage"
+
+	* src/raptor.h: autodocs
+
+	* docs/raptor-overrides.txt: Override internal struct names.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_xml.c, src/raptor_xml_writer.c:
+	autodocs
+
+2006-03-18  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_utf8.c, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-unicode.sgml:
+	autodocs
+
+	* src/raptor_utf8.c: (raptor_unicode_char_to_utf8): Add docs.
+	(raptor_utf8_to_unicode_char): Add docs.  Now also checks for
+	overlong UTF-8 sequences, illegal code positions or out of range
+	codes.
+
+	* src/raptor_qname.c: autodocs
+
+	* docs/raptor-sections.txt: Added new functions
+
+	* src/turtle_parser.y: Remove generating
+	RAPTOR_IDENTIFIER_TYPE_RESOURCE for statement predicates as
+	deprecated in 1.4.8
+
+	* src/raptor_rss.c: Remove generating
+	RAPTOR_IDENTIFIER_TYPE_RESOURCE for statement predicates as
+	deprecated in 1.4.8
+
+	* src/raptor_rdfxml.c: Remove generating
+	RAPTOR_IDENTIFIER_TYPE_RESOURCE for statement predicates as
+	deprecated in 1.4.8
+
+	* src/ntriples_parse.c: Remove generating
+	RAPTOR_IDENTIFIER_TYPE_RESOURCE for statement predicates as
+	deprecated in 1.4.8
+
+	* src/n3_parser.y: Remove generating
+	RAPTOR_IDENTIFIER_TYPE_RESOURCE for statement predicates as
+	deprecated in 1.4.8
+
+	* src/raptor_uri.c: (raptor_new_uri): Fail on NULL or empty uri_string.
+	(raptor_new_uri_from_uri_local_name): Fail on NULL uri or local_name
+	(raptor_new_uri_relative_to_base): Fail on NULL base_uri or uri_string
+	(raptor_new_uri_from_id): Fail on NULL base_uri or id.
+	(raptor_new_uri_for_rdf_concept): Fail on NULL name.
+	(raptor_uri_copy): Fail on NULL uri.
+	(raptor_uri_as_string): Fail on NULL uri.
+	(raptor_uri_as_counted_string): Fail on NULL uri.
+	(raptor_uri_filename_to_uri_string): : Fail on NULL filename.
+	(raptor_uri_uri_string_to_filename_fragment): Fail on NULL or empty
+	uri_string.
+	(raptor_uri_uri_string_is_file_uri): Fail on NULL or empty uri_string.
+	(raptor_new_uri_for_xmlbase): Fail on NULL uri.
+	(raptor_new_uri_for_retrieval): Fail on NULL uri.
+	(raptor_uri_to_relative_counted_uri_string): Fail on NULL
+	reference_uri.  Document allowing NULL base_uri.
+	(raptor_uri_print): Print "(NULL URI)" for NULL URI.
+	(raptor_uri_to_counted_string): Fail on NULL uri.
+
+	* src/raptor_rdfxml.c: More raptor_* to raptor_rdfxml_* renames
+
+	* src/raptor_internal.h: Delete prototypes for functions only used
+	in rdfxml
+
+	* src/raptor_qname.c: Return const namespace from
+	raptor_qname_get_namespace
+
+	* src/raptor.h: Return const namespace from
+	raptor_qname_get_namespace
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_record_ID): Renamed from
+	raptor_record_ID
+	(raptor_rdfxml_inscope_base_uri): Renamed from
+	raptor_inscope_base_uri and now static
+	(raptor_inscope_xml_language): Deleted, replaced with 1 call to
+	raptor_sax2_inscope_xml_language
+
+	* src/raptor_rdfxml.c: raptor_element to raptor_rdfxml_element renames
+
+2006-03-15  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xml.c: (raptor_iostream_write_xml_any_escaped_string):
+	Write XML-escaped ASCII 9 and A as XML with trailing ';'
+
+	* tests/Makefile.am, tests/ex-60.nt, tests/ex-60.rdf: Added ex-60
+	rdf/xml serializing test
 
 	* src/raptor.h: Added raptor_qname_get_namespace
 
