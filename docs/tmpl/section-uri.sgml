@@ -193,6 +193,15 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_uri_uri_string_is_file_uri ##### -->
+<para>
+
+</para>
+
+@uri_string: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_uri_is_file_uri ##### -->
 <para>
 
@@ -267,5 +276,15 @@ current access to internals of URIs such as URI scheme, path, authority.
 
 @handler: 
 @context: 
+
+
+<!-- ##### FUNCTION raptor_iostream_write_uri ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@uri: 
+@Returns: 
 
 

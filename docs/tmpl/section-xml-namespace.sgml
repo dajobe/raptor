@@ -249,3 +249,14 @@ XML documents where inner namespaces can override outer ones.
 </para>
 
 
+<!-- ##### FUNCTION raptor_namespaces_qname_from_uri ##### -->
+<para>
+
+</para>
+
+@nstack: 
+@uri: 
+@xml_version: 
+@Returns: 
+
+
