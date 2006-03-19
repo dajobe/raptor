@@ -915,7 +915,7 @@ void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
 #define RAPTOR_RDF_MS_URI raptor_rdf_namespace_uri
 
 /**
- * RAPTOR_RDF_sCHEMA_URI:
+ * RAPTOR_RDF_SCHEMA_URI:
  *
  * RDF Schema Namespace URI (rdfs:).
  *
@@ -924,7 +924,7 @@ void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
 #define RAPTOR_RDF_SCHEMA_URI raptor_rdf_schema_namespace_uri
 
 /**
- * RAPTOR_XML_sCHEMA_DATATYPES_URI:
+ * RAPTOR_XMLSCHEMA_DATATYPES_URI:
  *
  * XML Schema Datatypes URI (xsd:).
  *
