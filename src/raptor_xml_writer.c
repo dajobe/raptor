@@ -367,6 +367,20 @@ raptor_iostream_write_xml_element_end(raptor_iostream* iostr,
 }
 
 
+/**
+ * raptor_new_xml_writer:
+ * @nstack: Namespace stack for the writer to start with (or NULL)
+ * @uri_handler: URI handler function
+ * @uri_context: URI handler context data
+ * @iostr: I/O stream to write to
+ * @error_handler: error handler function
+ * @error_data: error handler data
+ * @canonicalize: unused
+ * 
+ * Constructor - Create a new XML Writer writing XML to a raptor_iostream
+ * 
+ * Return value: a new #raptor_xml_writer object or NULL on failure
+ **/
 raptor_xml_writer*
 raptor_new_xml_writer(raptor_namespace_stack *nstack,
                       raptor_uri_handler *uri_handler,
@@ -416,7 +430,7 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
  * raptor_free_xml_writer:
  * @xml_writer: XML writer object
  *
- * Free XML writer content.
+ * Destructor - Free XML Writer
  * 
  **/
 void
@@ -754,7 +768,7 @@ raptor_xml_writer_features_enumerate(const raptor_feature feature,
 
 
 /**
- * raptor_set_xml_writer_feature:
+ * raptor_xml_writer_set_feature:
  * @xml_writer: #raptor_xml_writer xml_writer object
  * @feature: feature to set from enumerated #raptor_feature values
  * @value: integer feature value (0 or larger)
