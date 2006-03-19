@@ -37,6 +37,13 @@ extern "C" {
 /* Required for va_list in raptor_vsnprintf */
 #include <stdarg.h>
 
+
+/**
+ * RAPTOR_API:
+ *
+ * Macro for wrapping API function call declarations.
+ *
+ */
 #ifdef WIN32
 #  ifdef RAPTOR_STATIC
 #    define RAPTOR_API
@@ -65,6 +72,11 @@ extern "C" {
 #define RAPTOR_DEPRECATED
 #endif
 
+/**
+ * raptor_uri:
+ *
+ * Raptor URI Class.
+ */
 typedef void* raptor_uri;
 
 
@@ -105,22 +117,71 @@ extern const unsigned int raptor_rdf_namespace_uri_len;
 
 RAPTOR_API
 extern const unsigned char * const raptor_xml_literal_datatype_uri_string;
+
+/**
+ * raptor_xml_literal_datatype_uri_string_len:
+ *
+ * Length of #raptor_xml_literal_datatype_uri_string
+ */
 RAPTOR_API
 extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
 
 
 /* Public structure */
+/**
+ * raptor_parser:
+ *
+ * Raptor Parser class
+ */
 typedef struct raptor_parser_s raptor_parser;
+/**
+ * raptor_serializer:
+ *
+ * Raptor Serializer class
+ */
 typedef struct raptor_serializer_s raptor_serializer;
 
+/**
+ * raptor_www:
+ *
+ * Raptor WWW class
+ */
 typedef struct raptor_www_s raptor_www;
+/**
+ * raptor_iostream:
+ *
+ * Raptor I/O Stream class
+ */
 typedef struct raptor_iostream_s raptor_iostream;
-
+/**
+ * raptor_xml_element:
+ *
+ * Raptor XML Element class
+ */
 typedef struct raptor_xml_element_s raptor_xml_element;
+/**
+ * raptor_xml_writer:
+ *
+ * Raptor XML Writer class
+ */
 typedef struct raptor_xml_writer_s raptor_xml_writer;
-
+/**
+ * raptor_qname:
+ *
+ * Raptor XML qname class
+ */
 typedef struct raptor_qname_s raptor_qname;
+/**
+ * raptor_namespace:
+ *
+ * Raptor XML Namespace class
+ */
 typedef struct raptor_namespace_s raptor_namespace;
+/**
+ * raptor_namespace_stack:
+ *
+ * Raptor XML Namespace Stack class
+ */
 typedef struct raptor_namespace_stack_s raptor_namespace_stack;
 
 /**
@@ -327,7 +388,22 @@ typedef struct {
 } raptor_identifier;
 
 
-/* Returned by statement_handler */
+/**
+ * raptor_statement:
+ * @subject: triple subject data
+ * @subject_type: triple subject type
+ * @predicate: triple predicate data
+ * @predicate_type: triple predicate type
+ * @object: triple object literal string
+ * @object_type: triple object type
+ * @object_literal_datatype: triple object literal datatype URI (or NULL)
+ * @object_literal_language: triple object literal language string (or NULL)
+ *
+ * An RDF triple
+ *
+ * See #raptor_identifier for a description of how the fields may be used.
+ * As returned by a parser statement_handler.
+ */
 typedef struct {
   const void *subject;
   raptor_identifier_type subject_type;
@@ -970,9 +1046,19 @@ int raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns
 RAPTOR_API
 int raptor_new_namespace_parts_from_string(const unsigned char *string, unsigned char **prefix, unsigned char **uri_string);
 
+/**
+ * raptor_stringbuffer:
+ *
+ * Raptor string buffer class
+ */
 typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 
 /* Sequence class */
+/**
+ * raptor_sequence:
+ *
+ * Raptor sequence class
+ */
 typedef struct raptor_sequence_s raptor_sequence;
 
 /**

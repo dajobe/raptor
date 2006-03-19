@@ -286,8 +286,10 @@ raptor_serializer_syntax_name_check(const char *name)
 
 
 /**
- * raptor_new_serializer - Constructor - create a new raptor_serializer object
+ * raptor_new_serializer:
  * @name: the serializer name
+ *
+ * Constructor - create a new raptor_serializer object
  *
  * Return value: a new #raptor_serializer object or NULL on failure
  */
@@ -335,11 +337,13 @@ raptor_new_serializer(const char *name)
 
 
 /**
- * raptor_serialize_start: Start serialization with given base URI
+ * raptor_serialize_start:
  * @rdf_serializer:  the #raptor_serializer
  * @uri: base URI or NULL if no base URI is required
  * @iostream: #raptor_iostream to write serialization to
  * 
+ * Start serialization with given base URI
+ *
  * Return value: non-0 on failure.
  **/
 int
@@ -526,7 +530,7 @@ raptor_serialize_set_namespace_from_namespace(raptor_serializer* rdf_serializer,
 
 
 /**
- * raptor_start_serialize:
+ * raptor_serialize_statement:
  * @rdf_serializer: the #raptor_serializer
  * @statement: #raptor_statement to serialize to a syntax
  *
@@ -640,7 +644,7 @@ raptor_serializer_features_enumerate(const raptor_feature feature,
 
 
 /**
- * raptor_set_serializer_feature:
+ * raptor_serializer_set_feature:
  * @serializer: #raptor_serializer serializer object
  * @feature: feature to set from enumerated #raptor_feature values
  * @value: integer feature value (0 or larger)

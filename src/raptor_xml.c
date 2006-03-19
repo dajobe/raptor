@@ -456,7 +456,7 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 
 
 /**
- * raptor_xml_escape_string:
+ * raptor_xml_any_escape_string:
  * @string: string to XML escape (UTF-8)
  * @len: length of string
  * @buffer: the buffer to use for new string (UTF-8)

@@ -175,8 +175,24 @@ raptor_sequence_size(raptor_sequence* seq)
 
 
 /* Store methods */
+
+/**
+ * raptor_sequence_set_at:
+ * @seq: sequence object
+ * @idx: index into sequence to operate at
+ * @data: new data item.
+ * 
+ * Replace/set an item in a sequence.
+ * 
+ * The item at the offset @idx in the sequence is replaced with the
+ * new item @data (which may be NULL).  Any existing item is freed
+ * with the sequence's free_handler.
+ *
+ * Return value: non-0 on failure
+ **/
 int
-raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data) {
+raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
+{
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(idx < 0)

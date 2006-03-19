@@ -60,12 +60,43 @@ const char * const raptor_short_copyright_string = "Copyright 2000-2006 David Be
 
 const char * const raptor_copyright_string = "Copyright (C) 2000-2006 David Beckett - http://purl.org/net/dajobe/\nCopyright (C) 2000-2005 University of Bristol - http://www.bristol.ac.uk/";
 
+/**
+ * raptor_version_string:
+ *
+ * Library full version as a string.
+ *
+ * See also #raptor_version_decimal.
+ */
 const char * const raptor_version_string = VERSION;
 
+/**
+ * raptor_version_major:
+ *
+ * Library major version number as a decimal integer.
+ */
 const unsigned int raptor_version_major = RAPTOR_VERSION_MAJOR;
+
+/**
+ * raptor_version_minor:
+ *
+ * Library minor version number as a decimal integer.
+ */
 const unsigned int raptor_version_minor = RAPTOR_VERSION_MINOR;
+
+/**
+ * raptor_version_release:
+ *
+ * Library release version number as a decimal integer.
+ */
 const unsigned int raptor_version_release = RAPTOR_VERSION_RELEASE;
 
+/**
+ * raptor_version_decimal:
+ *
+ * Library full version as a decimal integer.
+ *
+ * See also #raptor_version_string.
+ */
 const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 
 
