@@ -1159,17 +1159,20 @@ raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser)
 
 static int
 raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory, 
-                                  const unsigned char *buffer, size_t len,
-                                  const unsigned char *identifier, 
-                                  const unsigned char *suffix, 
-                                  const char *mime_type)
+                                     const unsigned char *buffer, size_t len,
+                                     const unsigned char *identifier, 
+                                     const unsigned char *suffix, 
+                                     const char *mime_type)
 {
   int score= 0;
   
   if(suffix) {
     if(!strcmp((const char*)suffix, "rdf") || 
        !strcmp((const char*)suffix, "rdfs") ||
-      !strcmp((const char*)suffix, "owl") || !strcmp((const char*)suffix, "daml"))
+       !strcmp((const char*)suffix, "foaf") ||
+       !strcmp((const char*)suffix, "doap") ||
+       !strcmp((const char*)suffix, "owl") ||
+       !strcmp((const char*)suffix, "daml"))
       score=9;
     if(!strcmp((const char*)suffix, "rss"))
       score=3;
