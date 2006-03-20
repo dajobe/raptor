@@ -1,0 +1,90 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<chapter id="introduction">
+
+<title>Introduction</title>
+
+<para>This document describes the APIs provided by
+<ulink url="http://librdf.org/raptor/">Raptor</ulink> to
+turn syntaxes into RDF triples and RDF triples into syntaxes.</para>
+
+<para>See also the <ulink url="http://librdf.org/raptor/">Raptor Home Page</ulink>
+and the <ulink url="../README.html">main document overview</ulink>.
+</para>
+
+<section>
+<title>Initialising and Finishing using the Library</title>
+
+<para>The raptor library has a single initialising function and a
+single terminating function.  These must be called before any other
+Raptor API functions are called:
+<programlisting>
+  raptor_init();
+  ...
+  raptor_finish();
+</programlisting>
+</para>
+
+<para>It is safe to call these functions more than once.  But don't
+do that!</para>
+
+</section>
+
+<section>
+<title>Querying Functionality</title>
+
+<para>
+Raptor can be configured and compiled with support for different
+parsers and serializers.  The list of those built into the library
+can be interrogated by means of <emphasis>enumerate</emphasis>
+functions.  These take as input an counter and return descriptions of
+the feature at that offset.  The return value of the function
+indicates when the counter has gone too far.
+<programlisting>
+  // List the parse syntaxes (parsers)
+  int raptor_parsers_enumerate(const unsigned int counter, const char **name, const char **label);
+  // List the parse syntaxes - same as above but with more information
+  int raptor_syntaxes_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+  // List the serializer syntaxes
+  int raptor_serializers_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+
+  // List the Parser features
+  int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
+  // List the Serializer features
+  int raptor_serializer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+  // List the XML Writer features
+  int raptor_xml_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+</programlisting>
+</para>
+
+
+<para>
+These are all used in the same pattern:
+<programlisting>
+  /* Get all the parser features */
+  int i;
+  for(i=0; 1; i++) {
+    const char *name;
+    raptor_uri *uri;
+    const char *label;
+    if(raptor_features_enumerate((raptor_feature)i, &name, &uri, &label))
+      break;
+    /* do something with name, uri and label */
+  }
+</programlisting>
+</para>
+
+<para>There are more examples of this usage in the source for the
+<literal>rapper</literal> utility in <filename>util/rapper.c</filename>.
+</para>
+
+</section>
+
+</chapter>
+
+<!--
+Local variables:
+mode: sgml
+sgml-parent-document: ("raptor-docs.xml" "book" "chapter")
+End:
+-->
