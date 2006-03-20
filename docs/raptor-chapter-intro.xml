@@ -67,7 +67,7 @@ These are all used in the same pattern:
     const char *name;
     raptor_uri *uri;
     const char *label;
-    if(raptor_features_enumerate((raptor_feature)i, &name, &uri, &label))
+    if(raptor_features_enumerate((raptor_feature)i, &amp;name, &amp;uri, &amp;label))
       break;
     /* do something with name, uri and label */
   }
