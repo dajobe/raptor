@@ -19,6 +19,12 @@ features such as Unicode, URIs, WWW retrieval and XML writing.
 
   </chapter>
 
+  <xi:include href="raptor-chapter-intro.xml"/>
+
+  <part>
+    <title>Tutorial</title>
+  </part>				  
+
   <part>
     <title>Reference Manual</title>
 
