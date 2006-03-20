@@ -15,11 +15,17 @@
 
 <h3>Configuration and Build Changes</h3>
 
-<p>Now using subversion.</p>
+<p>Now using <a href="http://subversion.tigris.org/">Subversion</a>
+for version control.</p>
 
 <p>configure now allows <code>--enable-parsers=node</code> and
 <code>--enable-serializers=none</code>.  Using both is possible!</p>
 
+
+<h3>Documentation Changes</h3>
+
+<p>100% of all functions, structs and defines have gtkdoc generated
+documentation.</p>
 
 <h3><code>rapper</code> utility Changes</h3>
 
@@ -34,6 +40,11 @@ rapper -q -i ntriples -o rdfxml-abbrev example.ttl
 
 
 <h3>Parser Changes</h3>
+
+<p>All parsers no longer generate
+<code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code> as the statement
+predicate type as deprecated in 1.4.8.  The replacement is
+type <code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code>.</p>
 
 <p>Turtle (and N3) parser gains true and false boolean literals.
 </p>
@@ -62,6 +73,8 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=65">Issue#0000065</a>
 <p>Added <code>raptor_iostream_write_uri</code> to directly write a URI
 to an iostream without the need to go via a string.</p>
 
+<p>Fixed bug in <code>raptor_iostream_write_xml_any_escaped_string</code>
+failing to write ';' after escaping U+0009 and U+000A</p>
 
 <h3>QName Class Changes</h3>
 
@@ -89,6 +102,14 @@ namespace prefix and it's length.</p>
 <code>raptor_stringbuffer_append_string</code> now Do nothing on
 appending a NULL string or a string of length 0.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=73">Issue#0000073</a>
+</p>
+
+
+<h3>Unicode Class Changes</h3>
+
+<p><code>raptor_utf8_to_unicode_char</code> now also checks for
+overlong UTF-8 sequences, illegal code positions or out of range
+codes.
 </p>
 
 
