@@ -12,7 +12,8 @@ turn syntaxes into RDF triples and RDF triples into syntaxes.</para>
 and the <ulink url="../README.html">main document overview</ulink>.
 </para>
 
-<section>
+
+<section id="initialising-finishing">
 <title>Initialising and Finishing using the Library</title>
 
 <para>The raptor library has a single initialising function and a
@@ -30,7 +31,8 @@ do that!</para>
 
 </section>
 
-<section>
+
+<section id="querying-functionality">
 <title>Querying Functionality</title>
 
 <para>
@@ -126,6 +128,130 @@ of the
 <literal>rapper</literal> utility in <filename>util/rapper.c</filename>.
 </para>
 </example>
+
+</section>
+
+
+
+<section id="parsing">
+<title>Parsing syntaxes to RDF Triples</title>
+
+<para>
+The sequence is typically to create a parser object, set various
+callback and features, start the parsing, send some syntax to the
+parser object, finish the parsing and destroy the parser object.
+Several parts of this process are optional, including actually using
+the triple results, which is useful as a syntax checking process.
+</para>
+
+
+<section>
+<title>Create the Parser object</title>
+
+<para>The parser can be created directly from a known name such as
+<literal>rdfxml</literal> for the W3C Recommendation RDF/XML syntax:
+<programlisting>
+  raptor_parser* rdf_parser;
+
+  rdf_parser = raptor_new_parser("rdfxml");
+</programlisting>
+or the name can be discovered from an <emphasis>enumeration</emphasis>
+as discussed in <link linkend="querying-functionality">Querying Functionality</link>
+</para>
+
+<para>The parser can also be created by identifying the syntax by a
+URI, specifying the syntax by a MIME Type, providng an identifier for
+the content such as filename or URI string or giving some initial
+content bytes that can be used to guess.
+Using the
+<link linkend="raptor-new-parser-for-content"><function>raptor_new_parser_for_content()</function></link>
+function, all of these can be given as optional parameters, using NULL
+or 0 for undefined paramters.  The constructor will then use as much of
+this information as possible.
+</para>
+<example>
+<title>Create a parser by identifying the syntax or providing content</title>
+<programlisting>
+  raptor_parser* rdf_parser;
+
+  /* Create a parser that reads the MIME Type for RDF/XML */
+  rdf_parser = raptor_new_parser_for_content(NULL, "application/rdf+xml", NULL, 0, NULL);
+
+  /* Create a parser that can read a syntax identified by the URI
+   * for Turtle, which has no registered MIME Type at this date.
+   */
+  syntax_uri = raptor_new_uri("http://www.dajobe.org/2004/01/turtle/");
+  rdf_parser = raptor_new_parser_for_content(syntax_uri, NULL, NULL, 0, NULL);
+
+  /* Create a parser that recognises the identifier */
+  rdf_parser = raptor_new_parser_for_content(NULL, NULL, NULL, 0, "foo.rss");
+
+  /* Create a parser that recognises the content in buffer */
+  rdf_parser = raptor_new_parser_for_content(NULL, NULL, buffer, len, NULL);
+</programlisting>
+</example>
+
+<para>Any of the constructor calls can return NULL if no matching
+parser could be found, or the construction failed in another way.
+</para>
+
+</section>
+
+<section>
+<title>Set parser features</title>
+<programlisting>
+  raptor_set_feature(rdf_parser, feature, 1);
+  raptor_set_feature_string(rdf_parser, feature, "abc");
+</programlisting>
+</section>
+
+<section>
+<title>Set RDF triple callback handler</title>
+<programlisting>
+  void
+  triples_handler(void* user_data, const raptor_statement* triple) 
+  {
+    /* do something with the triple */
+  }
+
+  raptor_set_statement_handler(rdf_parser, user_data, triples_handler);
+</programlisting>
+</section>
+
+<section>
+<title>Set other handlers: error, warning, namespace</title>
+<programlisting>
+  raptor_set_error_handler(rdf_parser, user_data, error_handler);
+
+  raptor_set_warning_handler(rdf_parser, user_data, warning_handler);
+
+  raptor_set_namespace_handler(rdf_parser, user_data, namespaces_handler);
+</programlisting>
+</section>
+
+<section>
+<title>Provide syntax content to parse</title>
+<programlisting>
+  /* 1) parse a URI */
+  raptor_parse_uri(rdf_parser, uri, base_uri)
+  /* 2) parse a URI known to be a file URI */
+  raptor_parse_file(rdf_parser, file_uri, base_uri)
+  /* 3) parse in steps */
+  raptor_start_parse(rdf_parser, base_uri);
+  while(/* condition */) {
+    /* get syntax in string of size string_len bytes */
+    raptor_parse_chunk(rdf_parser, string, string_len, 0);
+  }
+  raptor_parse_chunk(rdf_parser, NULL, 0, 1);
+</programlisting>
+</section>
+
+<section>
+<title>Destroy the parser</title>
+<programlisting>
+  raptor_free_parser(rdf_parser);
+</programlisting>
+</section>
 
 </section>
 
