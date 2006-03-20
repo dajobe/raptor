@@ -67,11 +67,6 @@ NEWS: NEWS.html
 # Some people need a little help ;-)
 test: check
 
-deb: distcheck
-	rm -rf $(distdir)
-	tar xfz $(distdir).tar.gz
-	cd $distdir && dpkg-buildpackage -rfakeroot
-
 dist-hook: README NEWS
 	@for file in README NEWS; do \
           if test -r $(srcdir)/$$file; then \
