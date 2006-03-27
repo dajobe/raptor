@@ -1212,7 +1212,8 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 
 
 void
-raptor_init_parser_turtle (void) {
+raptor_init_parser_turtle(void)
+{
   raptor_parser_factory* factory;
 
   factory=raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
@@ -1220,6 +1221,8 @@ raptor_init_parser_turtle (void) {
                                          (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/",
                                          &raptor_turtle_parser_register_factory);
   raptor_parser_factory_add_alias(factory, "ntriples-plus");
+  raptor_parser_factory_add_mime_type(factory, "application/turtle", 10);
+  raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10);
 }
 
 
