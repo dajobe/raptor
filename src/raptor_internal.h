@@ -388,6 +388,15 @@ struct raptor_parser_s {
 };
 
 
+/** A list of (MIME Type, Q) values */
+struct raptor_type_q_s {
+  const char* mime_type;
+  size_t mime_type_len;
+  int q; /* 0-10 standing for 0.0-1.0 */
+};
+typedef struct raptor_type_q_s raptor_type_q;
+
+
 /** A Parser Factory for a syntax */
 struct raptor_parser_factory_s {
   struct raptor_parser_factory_s* next;
@@ -399,8 +408,10 @@ struct raptor_parser_factory_s {
 
   /* syntax readable label */
   const char* label;
+
   /* syntax MIME type (or NULL) */
-  const char* mime_type;
+  raptor_sequence* mime_types;
+
   /* syntax URI (or NULL) */
   const unsigned char* uri_string;
   
@@ -432,6 +443,8 @@ struct raptor_parser_factory_s {
   /* get the Content-Type value of a URI request */
   void (*content_type_handler)(raptor_parser* rdf_parser, const char* content_type);
 
+  /* get the Accept header of a URI request (OPTIONAL) */
+  const char* (*accept_header)(raptor_parser* rdf_parser);
 };
 
 
@@ -536,6 +549,7 @@ void raptor_serializer_register_factory(const char *name, const char *label, con
 
 raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, const char *mime_type, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
 void raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
+void raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
 
 unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
 #ifdef RAPTOR_DEBUG
@@ -547,6 +561,8 @@ void raptor_free_statement(raptor_statement *statement);
 
 /* raptor_parse.c */
 void raptor_delete_parser_factories(void);
+void raptor_free_type_q(raptor_type_q* type_q);
+const char* raptor_parse_get_all_accept_headers(void);
 
 /* raptor_general.c */
 void raptor_invoke_message_varargs(const char *type, raptor_message_handler handler, void* user_data, raptor_locator* locator, const char *message, va_list arguments);
