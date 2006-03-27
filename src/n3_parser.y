@@ -1183,11 +1183,14 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
 
 
 void
-raptor_init_parser_n3 (void) {
-  raptor_parser_register_factory("n3",  "Notation 3",
-                                 NULL,
-                                 NULL,
-                                 &raptor_n3_parser_register_factory);
+raptor_init_parser_n3(void)
+{
+  raptor_parser_factory* factory;
+  factory=raptor_parser_register_factory("n3",  "Notation 3",
+                                         NULL,
+                                         NULL,
+                                         &raptor_n3_parser_register_factory);
+  raptor_parser_factory_add_mime_type(factory, "text/n3", 6);
 }
 
 
