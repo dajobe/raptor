@@ -722,7 +722,6 @@ struct  raptor_www_s {
 
 #ifdef RAPTOR_WWW_LIBCURL
   CURL* curl_handle;
-  CURLcode status;
   char error_buffer[CURL_ERROR_SIZE];
   int curl_init_here;
 #endif
