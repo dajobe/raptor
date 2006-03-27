@@ -1,4 +1,80 @@
+2006-03-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/n3_parser.y: (raptor_init_parser_n3): Register n3 mime type
+
+	* src/turtle_parser.y: (raptor_init_parser_turtle): Register
+	turtle experimental mime types
+
+	* src/raptor_xslt.c: (raptor_init_parser_grddl): Register HTML and
+	XHTML mime types at low q.
+
+	* src/raptor_rdfxml.c: (raptor_init_parser_rdfxml): Register
+	rdf/xml and older mozilla-era mime type.
+
+	* src/raptor_www.c: (raptor_www_set_http_accept): debug message
+
+	* src/raptor_rss.c: (raptor_rss_parse_recognise_syntax): look in
+	mime type for rss or atom.
+	(raptor_init_parser_rss): Register two rss mime types.
+
+	* src/raptor_guess.c: (raptor_guess_accept_header): Added
+	(raptor_guess_parser_register_factory): Use
+	raptor_guess_accept_header to accept all known types.
+
+	* src/raptor.h: Added prototype for raptor_parser_get_accept_header
+
+	* src/raptor_parse.c: (raptor_delete_parser_factories): Delete new
+	mime_types list.
+	(raptor_parser_register_factory): Use
+	raptor_parser_factory_add_mime_type.
+	(raptor_free_type_q): Added.
+	(raptor_parser_factory_add_mime_type): Added.
+	(raptor_syntaxes_enumerate): Use mime types from sequence to
+	return first as primary.
+	(raptor_parse_uri_with_connection): Use
+	raptor_parser_get_accept_header to do the work.
+	(raptor_get_mime_type): Use mime_type sequence in factory to
+	return first mime type if registered.
+	(raptor_guess_parser_name): Use mime types from sequence to find
+	them.
+	(raptor_parser_get_accept_header): Added
+	(raptor_parser_get_accept_header_all): Added to return an accept
+	header for all types
+
+	* src/raptor_internal.h: Added raptor_type_q for storing mime
+	type+Q values. raptor_parser_factory gains raptor_sequence*
+	mime_types replacing a single mime_type const char* and an
+	accept_header method to return the Accept: header rather than use
+	it from the mime_types list. Added prototypes, for
+	raptor_parser_factory_add_mime_type, raptor_free_type_q and
+	raptor_parse_get_all_accept_headers
+
+	* src/raptor_www_curl.c: (raptor_www_curl_fetch): Get the curl
+	status into a long, not an int which causes failure on 64 bit
+	archs. Fixes issue#0000075
+	http://bugs.librdf.org/mantis/view.php?id=75
+
+	* src/raptor_internal.h: (struct raptor_www_s): Removed CURLcode
+	status
+
+2006-03-20  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-chapter-intro.xml: docs
+
 2006-03-19  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-chapter-intro.xml: docs
+
+	* docs/raptor-docs.xml: Added raptor-chapter-intro.xml
+
+	* docs/Makefile.am: Added raptor-chapter-intro.xml
+
+	* docs/raptor-chapter-intro.xml: intro
+
+	* Makefile.am: deleted obsolete deb rule
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax): Add
+	foaf and doap to suffixes that are likely RDF/XML
 
 	* gtkdoc-mkdb reports "100% symbol docs coverage"
 
