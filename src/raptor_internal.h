@@ -562,7 +562,7 @@ void raptor_free_statement(raptor_statement *statement);
 /* raptor_parse.c */
 void raptor_delete_parser_factories(void);
 void raptor_free_type_q(raptor_type_q* type_q);
-const char* raptor_parse_get_all_accept_headers(void);
+const char* raptor_parser_get_accept_header_all(void);
 
 /* raptor_general.c */
 void raptor_invoke_message_varargs(const char *type, raptor_message_handler handler, void* user_data, raptor_locator* locator, const char *message, va_list arguments);
