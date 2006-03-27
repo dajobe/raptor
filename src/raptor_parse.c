@@ -1768,7 +1768,12 @@ raptor_parser_start_namespace(raptor_parser* rdf_parser,
  * raptor_parser_get_accept_header:
  * @rdf_parser: parser
  * 
- * Return an accept header string for this parser
+ * Get an HTTP Accept value for the parser.
+ *
+ * The returned string must be freed by the caller such as with
+ * raptor_free_memory().
+ *
+ * Return value: a new Accept: header string or NULL on failure
  **/
 const char*
 raptor_parser_get_accept_header(raptor_parser* rdf_parser)
