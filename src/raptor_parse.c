@@ -85,8 +85,8 @@ raptor_delete_parser_factories(void)
     RAPTOR_FREE(raptor_parser_factory, (void*)factory->label);
     if(factory->alias)
       RAPTOR_FREE(raptor_parser_factory, (void*)factory->alias);
-    if(factory->mime_type)
-      RAPTOR_FREE(raptor_parser_factory, (void*)factory->mime_type);
+    if(factory->mime_types)
+      raptor_free_sequence(factory->mime_types);
     if(factory->uri_string)
       RAPTOR_FREE(raptor_parser_factory, (void*)factory->uri_string);
 
@@ -118,7 +118,7 @@ raptor_parser_register_factory(const char *name, const char *label,
                                void (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser, *h;
-  char *name_copy, *label_copy, *mime_type_copy;
+  char *name_copy, *label_copy;
   unsigned char *uri_string_copy;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -155,15 +155,10 @@ raptor_parser_register_factory(const char *name, const char *label,
   strcpy(label_copy, label);
   parser->label=label_copy;
 
-  if(mime_type) {
-    mime_type_copy=(char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
-    if(!mime_type_copy) {
-      RAPTOR_FREE(raptor_parser, parser);
-      RAPTOR_FATAL1("Out of memory\n");
-    }
-    strcpy(mime_type_copy, mime_type);
-    parser->mime_type=mime_type_copy;
-  }
+  parser->mime_types=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
+  
+  if(mime_type)
+    raptor_parser_factory_add_mime_type(parser, mime_type, 10);
 
   if(uri_string) {
     uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
@@ -181,7 +176,7 @@ raptor_parser_register_factory(const char *name, const char *label,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("%s has context size %d\n", name, parser->context_length);
 #endif
-  
+
   parser->next = parsers;
   parsers = parser;
 
@@ -207,6 +202,54 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
   }
   strcpy(alias_copy, alias);
   factory->alias=alias_copy;
+}
+
+
+void
+raptor_free_type_q(raptor_type_q* type_q)
+{
+  RAPTOR_FREE(cstring, (void*)type_q->mime_type);
+  RAPTOR_FREE(raptor_type_q, (void*)type_q);
+}
+
+
+/**
+ * raptor_parser_factory_add_mime_type:
+ * @factory: Raptor parser factory
+ * @mime_type: MIME Type string
+ * @q: Accept 'Q' value 0 to 10 inclusive representing 0.0 to 1.0
+ * 
+ * Register a MIME type as handled by a factory.
+ *
+ * The last added MIME type is the default or main one reported.
+ *
+ **/
+void
+raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
+                                    const char* mime_type, int q)
+{
+  raptor_type_q* type_q;
+  char* mime_type_copy;
+  size_t len;
+  
+  type_q=(raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, sizeof(raptor_type_q), 1);
+  len=strlen(mime_type);
+  mime_type_copy=(char*)RAPTOR_CALLOC(cstring, len+1, 1);
+  if(!mime_type_copy) {
+    RAPTOR_FATAL1("Out of memory\n");
+  }
+  strcpy(mime_type_copy, mime_type);
+
+  type_q->mime_type=mime_type_copy;
+  type_q->mime_type_len=len;
+
+  if(q<0)
+    q=0;
+  if(q>10)
+    q=10;
+  type_q->q=q;
+
+  raptor_sequence_push(factory->mime_types, type_q);
 }
 
 
@@ -277,8 +320,16 @@ raptor_syntaxes_enumerate(const unsigned int counter,
         *name=factory->name;
       if(label)
         *label=factory->label;
-      if(mime_type)
-        *mime_type=factory->mime_type;
+      if(mime_type) {
+        const char *mime_type_t=NULL;
+        if(factory->mime_types) {
+          raptor_type_q* tq;
+          tq=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, 0);
+          if(tq)
+            mime_type_t=tq->mime_type;
+        }
+        *mime_type=mime_type_t;
+      }
       if(uri_string)
         *uri_string=factory->uri_string;
       return 0;
@@ -706,7 +757,6 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                  raptor_uri *base_uri, void *connection)
 {
   raptor_www *www;
-  const char* mime_type;
   
   if(!base_uri)
     base_uri=uri;
@@ -719,10 +769,8 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     www=raptor_www_new();
     if(!www)
       return 1;
-    if((mime_type=raptor_get_mime_type(rdf_parser))) {
-      char *accept_h=(char*)RAPTOR_MALLOC(cstring, strlen(mime_type)+11);
-      strcpy(accept_h, mime_type);
-      strcat(accept_h, ",*/*;q=0.1"); /* strlen()=4 chars */
+    const char *accept_h=raptor_parser_get_accept_header(rdf_parser);
+    if(accept_h) {
       raptor_www_set_http_accept(www, accept_h);
       RAPTOR_FREE(cstring, accept_h);
     }
@@ -1437,7 +1485,15 @@ raptor_get_label(raptor_parser *rdf_parser)
 const char*
 raptor_get_mime_type(raptor_parser *rdf_parser) 
 {
-  return rdf_parser->factory->mime_type;
+  const char *mime_type=NULL;
+  if(rdf_parser->factory->mime_types) {
+    raptor_type_q* tq;
+    tq=(raptor_type_q*)raptor_sequence_get_at(rdf_parser->factory->mime_types, 0);
+    if(tq)
+      mime_type=tq->mime_type;
+  }
+  
+  return mime_type;
 }
 
 
@@ -1610,10 +1666,18 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
   for(i=0; factory; i++, factory=factory->next) {
     int score= -1;
     
-    if(mime_type && factory->mime_type &&
-       !strcmp(mime_type, factory->mime_type))
+    if(mime_type && factory->mime_types) {
+      int j;
+      raptor_type_q* type_q=NULL;
+      for(j=0; i< raptor_sequence_size(factory->mime_types); j++) {
+        type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j);
+        if(!strcmp(mime_type, type_q->mime_type))
+          break;
+      }
       /* got an exact match mime type - return result */
-      break;
+      if(type_q)
+        break;
+    }
     
     if(uri && factory->uri_string &&
        !strcmp((const char*)raptor_uri_as_string(uri), 
@@ -1697,6 +1761,117 @@ raptor_parser_start_namespace(raptor_parser* rdf_parser,
 
   (*rdf_parser->namespace_handler)(rdf_parser->namespace_handler_user_data, 
                                    nspace);
+}
+
+
+/*
+ * raptor_parser_get_accept_header:
+ * @rdf_parser: parser
+ * 
+ * Return an accept header string for this parser
+ **/
+const char*
+raptor_parser_get_accept_header(raptor_parser* rdf_parser)
+{
+  raptor_parser_factory *factory=rdf_parser->factory;
+  char *accept_header=NULL;
+  size_t len;
+  char *p;
+  int i;
+  
+  if(factory->accept_header)
+    return factory->accept_header(rdf_parser);
+
+  if(!factory->mime_types)
+    return NULL;
+  
+  for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+    raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+    if(type_q->mime_type)
+      len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
+  }
+  
+  /* 9 = "\*\/\*;q=0.1" */
+  accept_header=(char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
+  if(!accept_header)
+    return NULL;
+
+  p=accept_header;
+  for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+    raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+    if(type_q->mime_type) {
+      int r;
+      
+      strncpy(p, type_q->mime_type, type_q->mime_type_len);
+      p+= type_q->mime_type_len;
+      *p++ = ';';
+      *p++ = 'q';
+      *p++ = '=';
+      r=(int)(type_q->q/10);
+      *p++ = ('0' + r);
+      *p++ = '.';
+      *p++ = ('0' + ((type_q->q - (10*r))/10));
+    }
+    
+    *p++ = ',';
+    *p++ = ' ';
+  }
+
+  strncpy(p, "*/*;q=0.1", 10);
+
+  return accept_header;
+}
+
+
+const char*
+raptor_parser_get_accept_header_all(void)
+{
+  raptor_parser_factory *factory;
+  char *accept_header=NULL;
+  size_t len;
+  char *p;
+  int i;
+  
+  for(factory=parsers; factory; factory=factory->next) {
+    for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+      raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+      if(type_q->mime_type)
+        len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
+    }
+  }
+  
+  /* 9 = "\*\/\*;q=0.1" */
+  accept_header=(char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
+  if(!accept_header)
+    return NULL;
+
+  p=accept_header;
+  for(factory=parsers; factory; factory=factory->next) {
+    for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+      raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+      if(type_q->mime_type) {
+        int r;
+        
+        strncpy(p, type_q->mime_type, type_q->mime_type_len);
+        p+= type_q->mime_type_len;
+        *p++ = ';';
+        *p++ = 'q';
+        *p++ = '=';
+        r=(int)(type_q->q/10);
+        *p++ = ('0' + r);
+        *p++ = '.';
+        *p++ = ('0' + (type_q->q - (10*r)));
+      }
+      
+      *p++ = ',';
+      *p++ = ' ';
+    }
+    
+  }
+  
+  strncpy(p, "*/*;q=0.1", 10);
+  
+  return accept_header;
 }
 
 
