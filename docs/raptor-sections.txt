@@ -92,6 +92,7 @@ raptor_parser_set_feature_string
 raptor_get_feature
 raptor_parser_get_feature_string
 raptor_set_parser_strict
+raptor_parser_get_accept_header
 </SECTION>
 
 <SECTION>
