@@ -1287,6 +1287,13 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
       score+=4;
   }
   
+  if(mime_type) {
+    if(strstr((const char*)mime_type, "rss"))
+      score+=4;
+    else if(strstr((const char*)mime_type, "atom"))
+      score+=4;
+  }
+  
   return score;
 }
 
@@ -1305,9 +1312,13 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
 
 
 void
-raptor_init_parser_rss (void) {
-  raptor_parser_register_factory("rss-tag-soup",  "RSS Tag Soup",
-                                 NULL,
-                                 NULL,
-                                 &raptor_rss_parser_register_factory);
+raptor_init_parser_rss(void)
+{
+  raptor_parser_factory* factory;
+  factory=raptor_parser_register_factory("rss-tag-soup",  "RSS Tag Soup",
+                                         NULL,
+                                         NULL,
+                                         &raptor_rss_parser_register_factory);
+  raptor_parser_factory_add_mime_type(factory, "application/rss", 10);
+  raptor_parser_factory_add_mime_type(factory, "text/rss", 8);
 }
