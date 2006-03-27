@@ -755,6 +755,8 @@ RAPTOR_API
 const unsigned char* raptor_parser_get_feature_string(raptor_parser *parser, raptor_feature feature);
 RAPTOR_API
 void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
+RAPTOR_API
+const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
 
 /* Get serializer names */
 RAPTOR_API
