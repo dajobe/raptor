@@ -150,17 +150,22 @@ raptor_www_curl_fetch(raptor_www *www)
   curl_easy_setopt(www->curl_handle, CURLOPT_URL, 
                    raptor_uri_as_string(www->uri));
 
-  www->status=curl_easy_perform(www->curl_handle);
-  curl_easy_getinfo(www->curl_handle, CURLINFO_HTTP_CODE, &www->status_code);
+  if(curl_easy_perform(www->curl_handle)) {
+    /* failed */
+    www->failed=1;
+    raptor_www_error(www, www->error_buffer);
+  } else {
+    long lstatus;
+
+    /* Requires pointer to a long */
+    curl_easy_getinfo(www->curl_handle, CURLINFO_HTTP_CODE, &lstatus);
+    www->status_code=lstatus;
+  }
 
   if(slist)
     curl_slist_free_all(slist);
-
-  if(www->status) {
-    raptor_www_error(www, www->error_buffer);
-    return 1;
-  }
-  return 0;
+  
+  return www->failed;
 }
 
 #endif /* RAPTOR_WWW_LIBCURL */
