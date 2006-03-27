@@ -1815,7 +1815,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
       r=(int)(type_q->q/10);
       *p++ = ('0' + r);
       *p++ = '.';
-      *p++ = ('0' + ((type_q->q - (10*r))/10));
+      *p++ = ('0' + (type_q->q - (10*r)));
     }
     
     *p++ = ',';
