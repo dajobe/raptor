@@ -131,6 +131,13 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
 }
 
 
+static const char*
+raptor_guess_accept_header(raptor_parser* rdf_parser)
+{
+  return raptor_parser_get_accept_header_all();
+}
+
+
 static void
 raptor_guess_parser_register_factory(raptor_parser_factory *factory) 
 {
@@ -140,6 +147,7 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
   factory->terminate = raptor_guess_parse_terminate;
   factory->chunk     = raptor_guess_parse_chunk;
   factory->content_type_handler = raptor_guess_parse_content_type_handler;
+  factory->accept_header = raptor_guess_accept_header;
 }
 
 
