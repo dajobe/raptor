@@ -1764,7 +1764,7 @@ raptor_parser_start_namespace(raptor_parser* rdf_parser,
 }
 
 
-/*
+/**
  * raptor_parser_get_accept_header:
  * @rdf_parser: parser
  * 
