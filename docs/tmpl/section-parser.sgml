@@ -305,3 +305,12 @@ adjust how parsing is performed.
 @is_strict: 
 
 
+<!-- ##### FUNCTION raptor_parser_get_accept_header ##### -->
+<para>
+
+</para>
+
+@rdf_parser: 
+@Returns: 
+
+
