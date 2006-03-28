@@ -27,10 +27,6 @@ raptor_sequence* raptor_sequence;
 raptor_serializer* raptor_serializer;
 </TYPEDEF>
 <TYPEDEF>
-<NAME>raptor_statement</NAME>
-raptor_statement* raptor_statement;
-</TYPEDEF>
-<TYPEDEF>
 <NAME>raptor_stringbuffer</NAME>
 raptor_stringbuffer* raptor_stringbuffer;
 </TYPEDEF>
