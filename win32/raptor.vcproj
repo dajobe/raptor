@@ -2,9 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="raptor"
-	SccProjectName="$/RDFDB/DSPs/RDF File/raptor"
-	SccLocalPath=".">
+	Name="raptor">
 	<Platforms>
 		<Platform
 			Name="Win32"/>
@@ -21,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\source\sandbox\redland-win\iconv-1.9.1.win32\include&quot;;&quot;C:\source\sandbox\redland-win\libxml2\include&quot;;&quot;C:\source\sandbox\redland-win\redland-1.0.0\raptor&quot;;&quot;C:\source\sandbox\redland-win\curl-7.13.2\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\..\..\iconv-1.9.1.win32\include&quot;;..\..\..\libxml2\include;..\src;&quot;..\..\..\curl-7.13.2\include&quot;;..\..\..\libxslt\include"
 				PreprocessorDefinitions="RAPTOR_INTERNAL;WIN32;_DEBUG;_WINDOWS;_USRDLL;WIN32_EXPORTS;RAPTOR_DEBUG"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -38,11 +36,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="urlmon.lib odbc32.lib odbccp32.lib libxml2.lib iconv.lib"
+				AdditionalDependencies="urlmon.lib libxml2.lib iconv.lib libxslt.lib"
 				OutputFile=".\Debug/raptor.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;C:\source\sandbox\redland-win\libxml2\lib&quot;;&quot;C:\source\sandbox\redland-win\iconv-1.9.1.win32\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\libxml2\lib;&quot;..\..\..\iconv-1.9.1.win32\lib&quot;;..\..\..\libxslt\lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/raptor.pdb"
 				GenerateMapFile="TRUE"
@@ -90,7 +88,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;..\..\..\iconv-1.9.1.win32\include&quot;;..\..\..\libxml2\include;&quot;C:\source\sandbox\redland-win\curl-7.13.2\include&quot;;.."
+				AdditionalIncludeDirectories="&quot;..\..\..\iconv-1.9.1.win32\include&quot;;..\..\..\libxml2\include;&quot;..\..\..\curl-7.13.2\include&quot;;..\..\..\libxslt\include;..\src"
 				PreprocessorDefinitions="RAPTOR_INTERNAL;WIN32;NDEBUG;_WINDOWS;_USRDLL;WIN32_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -101,16 +99,16 @@
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				CompileAs="1"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="urlmon.lib odbc32.lib odbccp32.lib libxml2.lib iconv.lib"
+				AdditionalDependencies="urlmon.lib odbc32.lib odbccp32.lib libxml2.lib iconv.lib libxslt.lib"
 				OutputFile=".\Release/raptor.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\..\libxml2\lib;&quot;..\..\..\iconv-1.9.1.win32\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\libxml2\lib;&quot;..\..\..\iconv-1.9.1.win32\lib&quot;;..\..\..\libxslt\lib"
 				ProgramDatabaseFile=".\Release/raptor.pdb"
 				ImportLibrary=".\Release/raptor.lib"
 				TargetMachine="1"/>
@@ -154,7 +152,13 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\getopt.c">
+				RelativePath="..\src\n3_lexer.c">
+			</File>
+			<File
+				RelativePath="..\src\n3_parser.c">
+			</File>
+			<File
+				RelativePath="..\src\ntriples_parse.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -176,7 +180,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\ntriples_parse.c">
+				RelativePath="..\src\parsedate.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_expat.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -198,7 +205,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_expat.c">
+				RelativePath="..\src\raptor_feature.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -220,7 +227,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_feature.c">
+				RelativePath="..\src\raptor_general.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -242,7 +249,31 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_general.c">
+				RelativePath="..\src\raptor_guess.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_identifier.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions="RAPTOR_INTERNAL;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WIN32_EXPORTS;$(NoInherit)"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\raptor_iostream.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -264,7 +295,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_identifier.c">
+				RelativePath="..\src\raptor_libxml.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -286,7 +317,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_iostream.c">
+				RelativePath="..\src\raptor_locator.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -308,7 +339,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_libxml.c">
+				RelativePath="..\src\raptor_namespace.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -330,7 +361,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_locator.c">
+				RelativePath="..\src\raptor_nfc.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -352,7 +383,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_namespace.c">
+				RelativePath="..\src\raptor_nfc_data.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -374,7 +405,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_nfc.c">
+				RelativePath="..\src\raptor_parse.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -396,7 +427,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_nfc_data.c">
+				RelativePath="..\src\raptor_qname.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -418,7 +449,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_parse.c">
+				RelativePath="..\src\raptor_rdfxml.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -440,7 +471,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_qname.c">
+				RelativePath="..\src\raptor_rfc2396.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -462,7 +493,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_rdfxml.c">
+				RelativePath="..\src\raptor_rss.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -484,7 +515,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_rfc2396.c">
+				RelativePath="..\src\raptor_rss_common.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_sax2.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -506,7 +540,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_rss.c">
+				RelativePath="..\src\raptor_sequence.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -528,7 +562,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_sax2.c">
+				RelativePath="..\src\raptor_serialize.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -550,7 +584,22 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_sequence.c">
+				RelativePath="..\src\raptor_serialize_ntriples.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_serialize_rdfxml.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_serialize_rdfxmla.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_serialize_rss.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_serialize_simple.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_set.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -572,7 +621,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_serialize.c">
+				RelativePath="..\src\raptor_stringbuffer.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -594,7 +643,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_set.c">
+				RelativePath="..\src\raptor_uri.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -616,7 +665,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_stringbuffer.c">
+				RelativePath="..\src\raptor_utf8.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -638,7 +687,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_uri.c">
+				RelativePath="..\src\raptor_win32.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -660,7 +709,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_utf8.c">
+				RelativePath="..\src\raptor_www.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -682,7 +731,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_win32.c">
+				RelativePath="..\src\raptor_www_curl.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -704,7 +753,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_www.c">
+				RelativePath="..\src\raptor_www_libfetch.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -726,7 +775,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_www_curl.c">
+				RelativePath="..\src\raptor_www_libwww.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -748,7 +797,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_www_libfetch.c">
+				RelativePath="..\src\raptor_www_libxml.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -770,7 +819,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_www_libwww.c">
+				RelativePath="..\src\raptor_xml.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -792,7 +841,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_www_libxml.c">
+				RelativePath="..\src\raptor_xml_writer.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -814,7 +863,13 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_xml.c">
+				RelativePath="..\src\raptor_xsd.c">
+			</File>
+			<File
+				RelativePath="..\src\raptor_xslt.c">
+			</File>
+			<File
+				RelativePath="..\src\strcasecmp.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -836,7 +891,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\raptor_xml_writer.c">
+				RelativePath="..\src\turtle_common.c">
+			</File>
+			<File
+				RelativePath="..\src\turtle_lexer.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -858,51 +916,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\strcasecmp.c">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="RAPTOR_INTERNAL;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WIN32_EXPORTS;$(NoInherit)"
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"
-						CompileAs="0"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="RAPTOR_INTERNAL;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WIN32_EXPORTS;$(NoInherit)"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\turtle_lexer.c">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="RAPTOR_INTERNAL;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WIN32_EXPORTS;$(NoInherit)"
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"
-						CompileAs="0"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="RAPTOR_INTERNAL;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WIN32_EXPORTS;$(NoInherit)"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\turtle_parser.c">
+				RelativePath="..\src\turtle_parser.c">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -928,31 +942,37 @@
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\ntriples.h">
+				RelativePath="..\src\n3_common.h">
 			</File>
 			<File
-				RelativePath="..\raptor.h">
+				RelativePath="..\src\n3_lexer.h">
 			</File>
 			<File
-				RelativePath="..\raptor_getopt.h">
+				RelativePath="..\src\n3_parser.h">
 			</File>
 			<File
-				RelativePath="..\raptor_internal.h">
+				RelativePath="..\src\raptor.h">
 			</File>
 			<File
-				RelativePath="..\raptor_nfc.h">
+				RelativePath="..\src\raptor_internal.h">
 			</File>
 			<File
-				RelativePath="..\turtle_common.h">
+				RelativePath="..\src\raptor_nfc.h">
 			</File>
 			<File
-				RelativePath="..\turtle_lexer.h">
+				RelativePath="..\src\raptor_rss.h">
 			</File>
 			<File
-				RelativePath="..\turtle_parser.h">
+				RelativePath="..\src\turtle_common.h">
 			</File>
 			<File
-				RelativePath="..\win32_raptor_config.h">
+				RelativePath="..\src\turtle_lexer.h">
+			</File>
+			<File
+				RelativePath="..\src\turtle_parser.h">
+			</File>
+			<File
+				RelativePath="..\src\win32_raptor_config.h">
 			</File>
 		</Filter>
 	</Files>
