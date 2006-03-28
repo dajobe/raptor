@@ -26,7 +26,9 @@ Unused
 
 <!-- ##### MACRO RAPTOR_DEPRECATED ##### -->
 <para>
-
+When defined before a function, indicates that the function
+has been deprecated and may be replaced in a future release.
+With some versions of gcc this may give a compilation warning.
 </para>
 
 
