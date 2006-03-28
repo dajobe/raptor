@@ -47,6 +47,23 @@ extern "C" {
 /* For using libxml2 on win32 */
 #define RAPTOR_XML_LIBXML
 #define HAVE_LIBXML_XMLREADER_H
+/* does libxml struct xmlEntity have a field etype */
+/*#define RAPTOR_LIBXML_ENTITY_ETYPE*/
+
+/* does libxml struct xmlEntity have a field name_length */
+/*#define RAPTOR_LIBXML_ENTITY_NAME_LENGTH*/
+
+/* does libxml have xmlSAX2InternalSubset */
+#define RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET
+
+/* does libxml xmlSAXHandler have externalSubset field */
+/*#define RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET*/
+
+/* does libxml xmlSAXHandler have initialized field */
+/*#define RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED*/
+
+/* does libxml have xmlUseNewParser */
+/*#define RAPTOR_LIBXML_XMLUSENEWPARSER*/
 #endif
 
 #define HAVE_STRICMP 1
@@ -58,7 +75,7 @@ extern "C" {
 #define stricmp _stricmp
 #define strnicmp _strnicmp
 
-#define HAVE_C99_VSNPRINTF 1
+/*#define HAVE_C99_VSNPRINTF */
 
 /* for access() which is POSIX but doesn't seem to have the defines in VC */
 #ifndef R_OK
@@ -95,9 +112,19 @@ extern "C" {
 #undef RAPTOR_PARSER_RSS
 #endif
 
+#define RAPTOR_PARSER_GUESS 1
+#define RAPTOR_PARSER_GRDDL 1
+#define RAPTOR_PARSER_N3 1
 #define RAPTOR_PARSER_TURTLE 1
 #define RAPTOR_PARSER_NTRIPLES 1
 #define RAPTOR_PARSER_RDFXML 1
+
+#define RAPTOR_SERIALIZER_ATOM 1
+#define RAPTOR_SERIALIZER_RSS_1_0 1
+#define RAPTOR_SERIALIZER_RDFXML 1
+#define RAPTOR_SERIALIZER_RDFXML_ABBREV 1
+#define RAPTOR_SERIALIZER_NTRIPLES 1
+
 #define RAPTOR_WWW_LIBCURL 1
 
 
