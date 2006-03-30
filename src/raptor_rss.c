@@ -54,7 +54,7 @@
 /*
  * RSS parser object
  */
-struct raptor_rss_parser_context_s {
+struct raptor_rss_parser_s {
   /* static model */
   raptor_rss_model model;
   
@@ -90,10 +90,10 @@ struct raptor_rss_parser_context_s {
 };
 
 
-typedef struct raptor_rss_parser_context_s raptor_rss_parser_context;
+typedef struct raptor_rss_parser_s raptor_rss_parser;
 
 static void
-raptor_rss_context_init(raptor_rss_parser_context* rss_parser) {
+raptor_rss_context_init(raptor_rss_parser* rss_parser) {
   raptor_uri_handler *uri_handler;
   void *uri_context;
   int n;
@@ -142,7 +142,7 @@ raptor_rss_context_init(raptor_rss_parser_context* rss_parser) {
 
 
 static void
-raptor_rss_context_terminate(raptor_rss_parser_context* rss_parser)
+raptor_rss_context_terminate(raptor_rss_parser* rss_parser)
 {
   if(rss_parser->reader)
     xmlFreeTextReader(rss_parser->reader);
@@ -171,7 +171,7 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name) {
 
 static void
 raptor_rss_parse_terminate(raptor_parser *rdf_parser) {
-  raptor_rss_parser_context *rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser *rss_parser=(raptor_rss_parser*)rdf_parser->context;
   raptor_rss_context_terminate(rss_parser);
   raptor_rss_common_terminate();
 }
@@ -199,7 +199,7 @@ static int
 raptor_rss_parse_start(raptor_parser *rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int n;
   
   locator->line=1;
@@ -245,7 +245,7 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
 
 
 static void
-raptor_rss_start_element(raptor_rss_parser_context *rss_parser, xmlChar* name) 
+raptor_rss_start_element(raptor_rss_parser *rss_parser, xmlChar* name) 
 {
   xmlTextReaderPtr reader=rss_parser->reader;
   raptor_uri *uri=NULL;
@@ -551,7 +551,7 @@ raptor_rss_start_element(raptor_rss_parser_context *rss_parser, xmlChar* name)
 
 
 static void
-raptor_rss_end_element(raptor_rss_parser_context *rss_parser, xmlChar *name) 
+raptor_rss_end_element(raptor_rss_parser *rss_parser, xmlChar *name) 
 {
   if(rss_parser->current_type != RAPTOR_RSS_NONE) {
     if(rss_parser->current_field != RAPTOR_RSS_FIELD_NONE) {
@@ -572,7 +572,7 @@ raptor_rss_end_element(raptor_rss_parser_context *rss_parser, xmlChar *name)
 
 
 static int
-raptor_rss_cdata(raptor_rss_parser_context *rss_parser)
+raptor_rss_cdata(raptor_rss_parser *rss_parser)
 {      
   int depth;
   xmlTextReaderPtr reader=rss_parser->reader;
@@ -649,7 +649,7 @@ raptor_rss_cdata(raptor_rss_parser_context *rss_parser)
 
 static void
 raptor_rss_parser_processNode(raptor_parser *rdf_parser) {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   xmlTextReaderPtr reader=rss_parser->reader;
   xmlChar *name;
   int free_name=0;
@@ -744,7 +744,7 @@ raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser,
 static void
 raptor_rss_insert_identifiers(raptor_parser* rdf_parser) 
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int i;
   raptor_rss_item* item;
   
@@ -854,7 +854,7 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
                             raptor_identifier *resource,
                             raptor_uri *type_uri) 
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
 
   if(!resource->uri && !resource->id) {
     raptor_parser_error(rdf_parser, "RSS node has no identifier");
@@ -882,7 +882,7 @@ static int
 raptor_rss_emit_enclosure(raptor_parser* rdf_parser, 
                           raptor_rss_enclosure *enclosure)
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   raptor_identifier* identifier=&enclosure->identifier;
   const void* subject=rss_parser->statement.subject;
 
@@ -940,7 +940,7 @@ raptor_rss_emit_enclosure(raptor_parser* rdf_parser,
 static int
 raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item) 
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int f;
   raptor_identifier* identifier=&item->identifier;
   raptor_rss_enclosure* enclosure;
@@ -995,7 +995,7 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
                            raptor_uri predicate_uri, int predicate_ordinal,
                            raptor_identifier *object_identifier) 
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
 
   if(!subject_identifier->uri && !subject_identifier->id) {
     raptor_parser_error(rdf_parser, "Connection subject has no identifier");
@@ -1029,7 +1029,7 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
 static int
 raptor_rss_emit(raptor_parser* rdf_parser) 
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int i;
   raptor_rss_item* item;
 
@@ -1184,7 +1184,7 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
 static void
 raptor_rss_uplift_items(raptor_parser* rdf_parser) 
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int i;
   raptor_rss_item* item;
   
@@ -1206,7 +1206,7 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
                        const unsigned char *s, size_t len,
                        int is_end)
 {
-  raptor_rss_parser_context* rss_parser=(raptor_rss_parser_context*)rdf_parser->context;
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int ret;
   
   if(!rss_parser->reader) {
@@ -1301,7 +1301,7 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
 static void
 raptor_rss_parser_register_factory(raptor_parser_factory *factory) 
 {
-  factory->context_length     = sizeof(raptor_rss_parser_context);
+  factory->context_length     = sizeof(raptor_rss_parser);
   
   factory->init      = raptor_rss_parse_init;
   factory->terminate = raptor_rss_parse_terminate;
