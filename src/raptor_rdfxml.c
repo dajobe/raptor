@@ -825,7 +825,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
 
     } else {
       if(!element->parent->child_state)
-        raptor_parser_fatal_error(rdf_parser, "raptor_xml_start_element_handler - no parent element child_state set");      
+        raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_start_element_handler: no parent element child_state set");      
 
       element->state=element->parent->child_state;
       element->parent->xml_element->content_element_seen++;
@@ -865,7 +865,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
 #ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Using content type %s\n", rdf_content_type_info[element->content_type].name);
 
-  fprintf(stderr, "raptor_xml_start_element_handler: Start ns-element: ");
+  fprintf(stderr, "raptor_rdfxml_start_element_handler: Start ns-element: ");
   raptor_print_xml_element(xml_element, stderr);
 #endif
 
@@ -993,7 +993,7 @@ raptor_rdfxml_unparsed_entity_decl_handler(void *user_data,
 {
 /*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
   fprintf(stderr,
-          "raptor_xml_unparsed_entity_decl_handler: entityName %s base %s systemId %s publicId %s notationName %s\n",
+          "raptor_rdfxml_unparsed_entity_decl_handler: entityName %s base %s systemId %s publicId %s notationName %s\n",
           entityName, (base ? (const char*)base : "(None)"), 
           systemId, (publicId ?  (const char*)publicId: "(None)"),
           (const char*)notationName);
@@ -1009,7 +1009,7 @@ raptor_rdfxml_external_entity_ref_handler(void *user_data,
 {
 /*  raptor_rdfxml_parser* rdf_parser=(raptor_rdfxml_parser*)user_data; */
   fprintf(stderr,
-          "raptor_xml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
+          "raptor_rdfxml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
           (base ?  (const char*)base : "(None)"), 
           systemId, (publicId ?  (const char*)publicId: "(None)"));
 
@@ -2266,7 +2266,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_INVALID:
       default:
-        raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_start_element_grammar - unexpected parser state %d - %s", state, raptor_rdfxml_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_start_element_grammar: Unexpected parser state %d - %s", state, raptor_rdfxml_state_as_string(state));
         finished=1;
 
     } /* end switch */
@@ -2788,7 +2788,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_UNKNOWN:
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LAST:
           default:
-            raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_end_element_grammar state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)", raptor_rdfxml_element_content_type_as_string(element->content_type), element->content_type);
+            raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_end_element_grammar: state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)", raptor_rdfxml_element_content_type_as_string(element->content_type), element->content_type);
         } /* end switch */
 
       finished=1;
@@ -2796,7 +2796,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_INVALID:
       default:
-        raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_end_element_grammar - unexpected parser state %d - %s", state, raptor_rdfxml_state_as_string(state));
+        raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_end_element_grammar: Unexpected parser state %d - %s", state, raptor_rdfxml_state_as_string(state));
         finished=1;
 
     } /* end switch */
