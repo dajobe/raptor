@@ -833,8 +833,8 @@ raptor_rdfxml_start_element_handler(void *user_data,
     
       /* leave literal XML alone */
       if (!rdf_content_type_info[element->content_type].cdata_allowed) {
-        if(++element->parent->xml_element->content_element_seen == 1 &&
-           element->parent->xml_element->content_cdata_seen == 1) {
+        if(element->parent->xml_element->content_element_seen &&
+           element->parent->xml_element->content_cdata_seen) {
           /* Uh oh - mixed content, the parent element has cdata too */
           raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
                                 raptor_xml_element_get_name(element->parent->xml_element)->local_name);
@@ -2909,8 +2909,7 @@ raptor_rdfxml_cdata_grammar(raptor_parser *rdf_parser,
       return;
     }
 
-    if(xml_element->content_cdata_seen == 1 &&
-       xml_element->content_element_seen == 1) {
+    if(xml_element->content_cdata_seen && xml_element->content_element_seen) {
       /* Uh oh - mixed content, this element has elements too */
       raptor_parser_warning(rdf_parser, "element '%s' has mixed content.", 
                             raptor_xml_element_get_name(element->parent->xml_element)->local_name);
