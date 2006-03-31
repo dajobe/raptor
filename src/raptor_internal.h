@@ -830,6 +830,8 @@ struct raptor_xml_element_s {
   unsigned int content_element_seen;
 
   raptor_sequence *declared_nspaces;
+
+  void* user_data;
 };
 
 
