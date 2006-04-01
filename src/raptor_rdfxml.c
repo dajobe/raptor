@@ -963,6 +963,7 @@ raptor_rdfxml_end_element_handler(void *user_data,
  */
 static void
 raptor_rdfxml_characters_handler(void *user_data, 
+                                 raptor_xml_element* xml_element,
                                  const unsigned char *s, int len)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
@@ -975,7 +976,8 @@ raptor_rdfxml_characters_handler(void *user_data,
  * s is not 0 terminated for expat, is for libxml - grrrr.
  */
 static void
-raptor_rdfxml_cdata_handler(void *user_data, const unsigned char *s, int len)
+raptor_rdfxml_cdata_handler(void *user_data, raptor_xml_element* xml_element,
+                            const unsigned char *s, int len)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
@@ -1024,7 +1026,8 @@ raptor_rdfxml_external_entity_ref_handler(void *user_data,
  * s is 0 terminated
  */
 static void
-raptor_rdfxml_comment_handler(void *user_data, const unsigned char *s)
+raptor_rdfxml_comment_handler(void *user_data, raptor_xml_element* xml_element,
+                              const unsigned char *s)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
   raptor_rdfxml_parser* rdf_xml_parser;
