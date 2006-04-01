@@ -197,7 +197,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
           if(s->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
             field->uri=(raptor_uri*)s->object;
           else
-            field->value=s->object;
+            field->value=(unsigned char*)s->object;
           s->object=NULL;
 
           if(is_atom) { 
@@ -321,7 +321,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
           field->uri=(raptor_uri*)s->object;
           s->object=NULL;
         } else {
-          field->value=s->object;
+          field->value=(unsigned char*)s->object;
           s->object=NULL;
         }
 
