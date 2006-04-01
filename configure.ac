@@ -29,8 +29,6 @@ AC_CONFIG_SRCDIR(src/raptor_general.c)
 AC_REVISION($Revision$)
 
 libxml_min_version=2.4.0
-# Need XML Reader and node type enums for RSS Tag Soup parser
-libxml_rss_min_version=2.5.10
 
 libxslt_min_version=1.0.18
 
@@ -511,7 +509,7 @@ if test "X$XML_CONFIG" != X; then
   fi
 
   AC_CHECK_HEADERS(libxml/parser.h)
-  AC_CHECK_HEADERS(libxml/hash.h libxml/xmlreader.h libxml/SAX2.h,,,
+  AC_CHECK_HEADERS(libxml/hash.h libxml/SAX2.h,,,
   [#ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
@@ -677,26 +675,12 @@ rss_parser=no
 grddl_parser=no
 guess_parser=yes
 
-rdf_parsers_available="rdfxml ntriples turtle guess"
+rdf_parsers_available="rdfxml ntriples turtle guess rss-tag-soup"
 if test "$USE_MAINTAINER_MODE" = yes; then
   rdf_parsers_available="$rdf_parsers_available n3"
 fi
 rdf_parsers_enabled=
 
-rss_parser_ok=no
-AC_MSG_CHECKING(RSS Tag Soup parser requirements)
-if test $need_libxml = 1; then
-  libxml_rss_min_version_dec=`echo $libxml_rss_min_version | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-  if test $libxml_version_dec -ge $libxml_rss_min_version_dec; then
-    AC_MSG_RESULT(yes - libxml2 $LIBXML_VERSION ok)
-    rss_parser_ok=yes
-    rdf_parsers_available="$rdf_parsers_available rss-tag-soup"
-  else
-    AC_MSG_RESULT(no - libxml2 $LIBXML_VERSION too old)
-  fi
-else
-  AC_MSG_RESULT(no - libxml2 not available)
-fi
 
 grddl_parser_ok=no
 AC_MSG_CHECKING(GRDDL parser requirements)
@@ -736,10 +720,6 @@ fi
 for parser in $parsers; do
   p=$parser
   if test $p = rss-tag-soup; then
-    if test $rss_parser_ok != yes; then
-      AC_MSG_WARN(RSS tag soup parser is not available)
-      continue
-    fi
     p=rss
   fi
 
