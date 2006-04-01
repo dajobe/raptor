@@ -236,7 +236,7 @@ typedef struct raptor_rss_enclosure_s raptor_rss_enclosure;
 
 struct raptor_rss_field_s
 {
-  char* value;
+  unsigned char* value;
   raptor_uri* uri;
   struct raptor_rss_field_s* next;
 };
@@ -305,7 +305,7 @@ void raptor_enclosure_free(raptor_rss_enclosure* enclosure);
 raptor_rss_field* raptor_rss_new_field(void);
 void raptor_rss_field_free(raptor_rss_field* field);
 
-int raptor_rss_date_uplift(raptor_rss_field* to_field, const char *date_string);
+int raptor_rss_date_uplift(raptor_rss_field* to_field, const unsigned char *date_string);
 
 #ifdef __cplusplus
 }

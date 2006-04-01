@@ -175,6 +175,7 @@ const raptor_field_pair raptor_atom_to_rss[]={
   { RAPTOR_RSS_FIELD_ATOM_PUBLISHED, RAPTOR_RSS_FIELD_DC_DATE },
   { RAPTOR_RSS_FIELD_ATOM_RIGHTS,    RAPTOR_RSS_FIELD_DC_RIGHTS },
   { RAPTOR_RSS_FIELD_ATOM_TITLE,     RAPTOR_RSS_FIELD_TITLE },
+  { RAPTOR_RSS_FIELD_ATOM_SUMMARY,   RAPTOR_RSS_FIELD_CONTENT_ENCODED },
 
   /* atom 0.3 to atom 1.0 */
   { RAPTOR_RSS_FIELD_ATOM_COPYRIGHT, RAPTOR_RSS_FIELD_ATOM_RIGHTS },
@@ -455,7 +456,8 @@ raptor_rss_field_free(raptor_rss_field* field)
 
 
 int
-raptor_rss_date_uplift(raptor_rss_field* to_field, const char *date_string)
+raptor_rss_date_uplift(raptor_rss_field* to_field, 
+                       const unsigned char *date_string)
 {
 #ifdef RAPTOR_PARSEDATE_FUNCTION
   time_t unix_time;
@@ -465,7 +467,7 @@ raptor_rss_date_uplift(raptor_rss_field* to_field, const char *date_string)
   static char date_buffer[ISO_DATE_LEN + 1];
   size_t len;
   
-  unix_time=RAPTOR_PARSEDATE_FUNCTION(date_string, NULL);
+  unix_time=RAPTOR_PARSEDATE_FUNCTION((const char*)date_string, NULL);
   if(unix_time < 0)
     return 1;
   
@@ -475,8 +477,8 @@ raptor_rss_date_uplift(raptor_rss_field* to_field, const char *date_string)
   
   if(to_field->value)
     RAPTOR_FREE(cstring, to_field->value);
-  to_field->value=(char*)RAPTOR_MALLOC(cstring, len + 1);
-  strncpy(to_field->value, date_buffer, len+1);
+  to_field->value=(unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  strncpy((char*)to_field->value, date_buffer, len+1);
   return 0;
 #else
   return 1;
