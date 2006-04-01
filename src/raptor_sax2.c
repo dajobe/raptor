@@ -242,8 +242,17 @@ raptor_xml_element_push(raptor_sax2 *sax2, raptor_xml_element* element)
 }
 
 
+int
+raptor_xml_element_is_empty(raptor_xml_element* xml_element)
+{
+  return !xml_element->content_cdata_seen &&
+         !xml_element->content_element_seen;
+}
+
+
 const unsigned char*
-raptor_sax2_inscope_xml_language(raptor_sax2 *sax2) {
+raptor_sax2_inscope_xml_language(raptor_sax2 *sax2)
+{
   raptor_xml_element* xml_element;
   
   for(xml_element=sax2->current_element;
@@ -257,7 +266,8 @@ raptor_sax2_inscope_xml_language(raptor_sax2 *sax2) {
 
 
 raptor_uri*
-raptor_sax2_inscope_base_uri(raptor_sax2 *sax2) {
+raptor_sax2_inscope_base_uri(raptor_sax2 *sax2)
+{
   raptor_xml_element *xml_element;
   
   for(xml_element=sax2->current_element; 
@@ -271,17 +281,20 @@ raptor_sax2_inscope_base_uri(raptor_sax2 *sax2) {
 
 
 int
-raptor_sax2_get_depth(raptor_sax2 *sax2) {
+raptor_sax2_get_depth(raptor_sax2 *sax2)
+{
   return sax2->depth;
 }
 
 void
-raptor_sax2_inc_depth(raptor_sax2 *sax2) {
+raptor_sax2_inc_depth(raptor_sax2 *sax2)
+{
   sax2->depth++;
 }
 
 void
-raptor_sax2_dec_depth(raptor_sax2 *sax2) {
+raptor_sax2_dec_depth(raptor_sax2 *sax2)
+{
   sax2->depth--;
 }
 
@@ -828,7 +841,7 @@ raptor_sax2_characters(void* user_data, const unsigned char *s, int len)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
   if(sax2->characters_handler)
-    sax2->characters_handler(sax2->user_data, s, len);
+    sax2->characters_handler(sax2->user_data, sax2->current_element, s, len);
 }
 
 
@@ -844,7 +857,7 @@ raptor_sax2_cdata(void* user_data, const unsigned char *s, int len)
 #endif
 
   if(sax2->cdata_handler)
-    sax2->cdata_handler(sax2->user_data, s, len);
+    sax2->cdata_handler(sax2->user_data, sax2->current_element, s, len);
 }
 
 
@@ -854,7 +867,7 @@ raptor_sax2_comment(void* user_data, const unsigned char *s)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
   if(sax2->comment_handler)
-    sax2->comment_handler(sax2->user_data, s);
+    sax2->comment_handler(sax2->user_data, sax2->current_element, s);
 }
 
 
