@@ -1,4 +1,58 @@
+2006-04-01  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: Switch to using raptor_sax2 API from
+	xmlReader, and now can do atom type 'xhtml' content using
+	raptor_xml_writer.
+
+	* src/raptor.h: Add prototype for raptor_xml_element_is_empty
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_characters_handler,
+	raptor_rdfxml_cdata_handler, raptor_rdfxml_comment_handler): Add
+	xml_element parameter.
+
+	* src/raptor_sax2.c: (raptor_xml_element_is_empty): Added.
+	(raptor_sax2_characters_handler, raptor_sax2_cdata_handler,
+	raptor_sax2_comment_handler): Add xml_element parameter.
+
+	* src/raptor_internal.h: Add xml_element field to
+	raptor_sax2_characters_handler, raptor_sax2_cdata_handler and
+	raptor_sax2_comment_handler
+
+2006-03-30  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: update function names in fatal/debug messages
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_start_element_handler): Tidy
+	tests for looking for an empty element.
+
+	* src/raptor_internal.h: raptor_xml_element gains a user_data
+	field
+
+2006-03-29  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.c: Replace raptor_rss_parser_context* with
+	raptor_rss_parser*
+
+2006-03-27  Dave Beckett  <dave@dajobe.org>
+
+	* src/win32_raptor_config.h: raptor win32 build files update from
+	John Barstow
+
+	* win32/rapper.vcproj, win32/raptor.sln, win32/raptor.vcproj:
+	raptor win32 build files update from John Barstow
+
+	* docs/tmpl/section-parser.sgml: docs update
+
+	* docs/raptor-overrides.txt: Do not override raptor_statement
+
+	* docs/tmpl/section-unused.sgml: RAPTOR_DEPRECATED
+
 2006-03-26  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: Added raptor_parser_get_accept_header
+
+	* src/raptor_parse.c: (raptor_parser_get_accept_header): fix q format
 
 	* src/n3_parser.y: (raptor_init_parser_n3): Register n3 mime type
 
