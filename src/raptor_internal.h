@@ -840,11 +840,11 @@ typedef void (*raptor_sax2_start_element_handler)(void *user_data, raptor_xml_el
 /* end of an element */
 typedef void (*raptor_sax2_end_element_handler)(void *user_data, raptor_xml_element* xml_element);
 /* characters */
-typedef void (*raptor_sax2_characters_handler)(void *user_data, const unsigned char *s, int len);
+typedef void (*raptor_sax2_characters_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s, int len);
 /* like <![CDATA[...]> */
-typedef void (*raptor_sax2_cdata_handler)(void *user_data, const unsigned char *s, int len);
+typedef void (*raptor_sax2_cdata_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s, int len);
 /* comment */
-typedef void (*raptor_sax2_comment_handler)(void *user_data, const unsigned char *s);
+typedef void (*raptor_sax2_comment_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s);
 /* unparsed (NDATA) entity */
 typedef void (*raptor_sax2_unparsed_entity_decl_handler)(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
 /* external entity reference */
