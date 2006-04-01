@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_serialize_rss.c - Raptor RSS 1.0 serializer
+ * raptor_serialize_rss.c - Raptor RSS 1.0 and Atom 1.0 serializers
  *
  * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
@@ -779,10 +779,12 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       } else {
         /* not a URI, must be a literal */
         raptor_xml_writer_start_element(xml_writer, predicate);
-        if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED) {
+        if(!is_atom && f == RAPTOR_RSS_FIELD_CONTENT_ENCODED) {
           raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<![CDATA[", 9);
           raptor_xml_writer_raw(xml_writer, (const unsigned char*)field->value);
           raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"]]>", 3);
+        } else if(is_atom && f == RAPTOR_RSS_FIELD_ATOM_SUMMARY) {
+          raptor_xml_writer_raw(xml_writer, (const unsigned char*)field->value);
         } else
           raptor_xml_writer_cdata(xml_writer, (const unsigned char*)field->value);
         raptor_xml_writer_end_element(xml_writer, predicate);
