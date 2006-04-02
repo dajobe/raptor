@@ -1,5 +1,56 @@
 2006-04-01  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_rss.c: (raptor_rss_start_element_handler): Tidying of
+	logic near type attribute
+
+	* src/raptor_rss.c: (raptor_rss_start_element_handler): More
+	atom/old atom/rss guessing.  Look for type=xml and an XML mime
+	type to trigger xml writer Look for attribute version on feed to
+	ensure old atom is found
+
+	* src/raptor_rss.c: (raptor_init_parser_rss): Add another mime
+	type possibility.
+
+	* src/raptor_rss.c: Add is_atom field to rss_parser structure.
+	(raptor_rss_start_element_handler): Use elements seen to pick
+	is_atom flag.  Use is_atom flag to switch between rss author and
+	atom author handling.
+
+	* src/raptor_rss.c: (raptor_init_parser_rss): Add more
+	unregistered rss mime type possibilities.
+
+	* src/raptor_guess.c: (raptor_guess_parse_content_type_handler):
+	Strip ';' onwards from content type for guessing.
+
+	* src/raptor_rss.c: (raptor_rss_parse_recognise_syntax): Use xml
+	in mime type guess
+
+	* src/raptor_parse.c: (raptor_parser_get_accept_header,
+	raptor_parser_get_accept_header_all): Do not format with ;q=1.0
+
+	* src/turtle_parser.y: (raptor_init_parser_turtle): Register
+	application/x-turtle once only.
+
+	* src/raptor_parse.c: (raptor_guess_parser_name,
+	raptor_parser_get_accept_header,
+	raptor_parser_get_accept_header_all): Fix type_q list walking to
+	detect end of loops vs early exit properly.
+
+	* src/turtle_parser.y: (raptor_init_parser_turtle): Register N3
+	mime types here with lower Q, if no N3 parser is present.
+
+	* src/n3_parser.y: (raptor_init_parser_n3): Add another N3 mime
+	type possibility.
+
+	* src/raptor_parse.c: (raptor_guess_parser_name): Fix i/j problem.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_item): Handle
+	atom:summary XML content
+
+	* configure.ac: No longer require libxml for rss-tag-soup parser.
+
+	* src/raptor_serialize_rss.c: casts
+
 	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
 	src/raptor_serialize_rss.c: Switch to using raptor_sax2 API from
 	xmlReader, and now can do atom type 'xhtml' content using
