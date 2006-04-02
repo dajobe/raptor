@@ -1191,6 +1191,7 @@ raptor_init_parser_n3(void)
                                          NULL,
                                          &raptor_n3_parser_register_factory);
   raptor_parser_factory_add_mime_type(factory, "text/n3", 6);
+  raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 6);
 }
 
 
