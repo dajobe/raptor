@@ -89,6 +89,9 @@ struct raptor_rss_parser_s {
 
   /* stack of namespaces */
   raptor_namespace_stack *nstack;
+
+  /* non-0 if this is an atom 1.0 parser */
+  int is_atom;
 };
 
 typedef struct raptor_rss_parser_s raptor_rss_parser;
@@ -303,14 +306,20 @@ raptor_rss_start_element_handler(void *user_data,
        !strcmp((const char*)name, "RDF")) {
       /* rss */
       goto check_attributes;
-    } else if(!strcmp((const char*)name, "feed") ||
-              !strcmp((const char*)name, "Channel")) {
-      /* atom feed or rss Channel */
+    } else if(!strcmp((const char*)name, "Channel")) {
+      /* rss Channel */
       rss_parser->current_type=RAPTOR_RSS_CHANNEL;
-    } else if(!strcmp((const char*)name, "item") ||
-              !strcmp((const char*)name, "entry")) {
+    } else if(!strcmp((const char*)name, "feed")) {
+      /* atom feed */
+      rss_parser->current_type=RAPTOR_RSS_CHANNEL;
+      rss_parser->is_atom=1;
+    } else if(!strcmp((const char*)name, "item")) {
       raptor_rss_model_add_item(&rss_parser->model);
       rss_parser->current_type=RAPTOR_RSS_ITEM;
+    } else if(!strcmp((const char*)name, "entry")) {
+      raptor_rss_model_add_item(&rss_parser->model);
+      rss_parser->current_type=RAPTOR_RSS_ITEM;
+      rss_parser->is_atom=1;
     } else {
       int i;
       rss_parser->current_type=RAPTOR_RSS_UNKNOWN;
@@ -341,8 +350,12 @@ raptor_rss_start_element_handler(void *user_data,
     } else {
       for(i=0; i<RAPTOR_RSS_COMMON_SIZE; i++)
         if(!strcmp((const char*)name, raptor_rss_types_info[i].name)) {
-          rss_parser->current_type=(raptor_rss_type)i;
-          break;
+          /* rss and atom clash on the author name field (rss) or type (atom) */
+          if(i != RAPTOR_ATOM_AUTHOR ||
+             (i == RAPTOR_ATOM_AUTHOR && rss_parser->is_atom)) {
+            rss_parser->current_type=(raptor_rss_type)i;
+            break;
+          }
         }
     }
     
