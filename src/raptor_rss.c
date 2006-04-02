@@ -1282,5 +1282,7 @@ raptor_init_parser_rss(void)
   raptor_parser_factory_add_mime_type(factory, "application/rss", 10);
   raptor_parser_factory_add_mime_type(factory, "application/rss+xml", 10);
   raptor_parser_factory_add_mime_type(factory, "text/rss", 8);
+
+  raptor_parser_factory_add_mime_type(factory, "application/xml", 3);
   raptor_parser_factory_add_mime_type(factory, "text/xml", 3);
 }
