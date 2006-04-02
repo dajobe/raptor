@@ -314,7 +314,7 @@ raptor_syntaxes_enumerate(const unsigned int counter,
   if(!factory)
     return 1;
 
-  for(i=0; factory && i<=counter ; i++, factory=factory->next) {
+  for(i=0; factory && i <= counter ; i++, factory=factory->next) {
     if(i == counter) {
       if(name)
         *name=factory->name;
@@ -1669,7 +1669,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
     if(mime_type && factory->mime_types) {
       int j;
       raptor_type_q* type_q=NULL;
-      for(j=0; i< raptor_sequence_size(factory->mime_types); j++) {
+      for(j=0; j < raptor_sequence_size(factory->mime_types); j++) {
         type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j);
         if(!strcmp(mime_type, type_q->mime_type))
           break;
@@ -1790,7 +1790,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
   if(!factory->mime_types)
     return NULL;
   
-  for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+  for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
     raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
     if(type_q->mime_type)
       len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
@@ -1802,7 +1802,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
     return NULL;
 
   p=accept_header;
-  for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+  for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
     raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
     if(type_q->mime_type) {
       int r;
@@ -1838,7 +1838,7 @@ raptor_parser_get_accept_header_all(void)
   int i;
   
   for(factory=parsers; factory; factory=factory->next) {
-    for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+    for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
       raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
       if(type_q->mime_type)
         len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
@@ -1852,7 +1852,7 @@ raptor_parser_get_accept_header_all(void)
 
   p=accept_header;
   for(factory=parsers; factory; factory=factory->next) {
-    for(i=0; i< raptor_sequence_size(factory->mime_types); i++) {
+    for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
       raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
       if(type_q->mime_type) {
         int r;
