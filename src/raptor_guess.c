@@ -87,12 +87,19 @@ raptor_guess_parse_content_type_handler(raptor_parser* rdf_parser,
   raptor_guess_parser_context* guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
 
   if(content_type) {
-    size_t len=strlen(content_type);
+    const char *p;
+    size_t len;
+
+    if((p=strchr(content_type,';')))
+      len=p-content_type;
+    else
+      len=strlen(content_type);
     
     guess_parser->content_type=(char*)RAPTOR_MALLOC(cstring, len+1);
-    strncpy(guess_parser->content_type, content_type, len+1);
+    strncpy(guess_parser->content_type, content_type, len);
+    guess_parser->content_type[len]='\0';
 
-    RAPTOR_DEBUG2("Got content type '%s'\n", content_type);
+    RAPTOR_DEBUG2("Got content type '%s'\n", guess_parser->content_type);
   }
 }
 
@@ -118,6 +125,8 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
     raptor_parse_abort(rdf_parser);
     return 1;
   }
+
+  RAPTOR_DEBUG2("Guessed parser name '%s'\n", name);
   
   raptor_parser_exec(rdf_parser, name);
   
