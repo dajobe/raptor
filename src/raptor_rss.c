@@ -306,11 +306,11 @@ raptor_rss_start_element_handler(void *user_data,
        !strcmp((const char*)name, "RDF")) {
       /* rss */
       goto check_attributes;
-    } else if(!strcmp((const char*)name, "Channel")) {
-      /* rss Channel */
+    } else if(!strcasecmp((const char*)name, "channel")) {
+      /* rss or atom 0.3 channel */
       rss_parser->current_type=RAPTOR_RSS_CHANNEL;
     } else if(!strcmp((const char*)name, "feed")) {
-      /* atom feed */
+      /* atom 1.0 feed */
       rss_parser->current_type=RAPTOR_RSS_CHANNEL;
       rss_parser->is_atom=1;
     } else if(!strcmp((const char*)name, "item")) {
@@ -512,11 +512,15 @@ raptor_rss_start_element_handler(void *user_data,
           enclosure->type=(char*)RAPTOR_MALLOC(cstring, len+1);
           strncpy(enclosure->type, (char*)attrValue, len+1);
         } else {
-          if (!strcmp((const char*)attrValue, "xhtml")) {
+          if (!strcmp((const char*)attrValue, "xhtml") ||
+              !strcmp((const char*)attrValue, "xml") ||
+              (rss_parser->current_field != RAPTOR_RSS_FIELD_ATOM_LINK &&
+               strstr((const char*)attrValue, "+xml"))) {
             raptor_uri_handler *uri_handler;
             void *uri_context;
 
-            RAPTOR_DEBUG1("  found type xhtml, making an XML writer\n");
+            RAPTOR_DEBUG2("  found type '%s', making an XML writer\n", 
+                          attrValue);
             
             raptor_uri_get_handler(&uri_handler, &uri_context);
             rss_element->type=RAPTOR_RSS_CONTENT_TYPE_XML;
@@ -533,6 +537,11 @@ raptor_rss_start_element_handler(void *user_data,
             rss_element->sb=NULL;
 
           }
+        }
+      } else if (!strcmp((const char*)attrName, "version")) {
+        if(!strcasecmp((const char*)name, "feed")) {
+          if(!strcmp((const char*)attrValue, "0.3"))
+            rss_parser->is_atom=1;
         }
       }
     }
