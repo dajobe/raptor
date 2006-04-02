@@ -1223,6 +1223,11 @@ raptor_init_parser_turtle(void)
   raptor_parser_factory_add_alias(factory, "ntriples-plus");
   raptor_parser_factory_add_mime_type(factory, "application/turtle", 10);
   raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10);
+
+#ifndef RAPTOR_PARSER_N3
+  raptor_parser_factory_add_mime_type(factory, "text/n3", 3);
+  raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3);
+#endif
 }
 
 
