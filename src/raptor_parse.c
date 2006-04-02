@@ -1665,19 +1665,23 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
 
   for(i=0; factory; i++, factory=factory->next) {
     int score= -1;
+    raptor_type_q* type_q=NULL;
     
     if(mime_type && factory->mime_types) {
       int j;
-      raptor_type_q* type_q=NULL;
-      for(j=0; j < raptor_sequence_size(factory->mime_types); j++) {
-        type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j);
+      type_q=NULL;
+      for(j=0; 
+          (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j)); 
+          j++) {
         if(!strcmp(mime_type, type_q->mime_type))
           break;
       }
-      /* got an exact match mime type - return result */
       if(type_q)
         break;
     }
+    /* got an exact match mime type - return result */
+    if(type_q)
+      break;
     
     if(uri && factory->uri_string &&
        !strcmp((const char*)raptor_uri_as_string(uri), 
@@ -1783,6 +1787,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
   size_t len;
   char *p;
   int i;
+  raptor_type_q* type_q;
   
   if(factory->accept_header)
     return factory->accept_header(rdf_parser);
@@ -1790,8 +1795,9 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
   if(!factory->mime_types)
     return NULL;
   
-  for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
-    raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+  for(i=0; 
+      (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+      i++) {
     if(type_q->mime_type)
       len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
   }
@@ -1802,8 +1808,9 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
     return NULL;
 
   p=accept_header;
-  for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
-    raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+  for(i=0; 
+      (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+      i++) {
     if(type_q->mime_type) {
       int r;
       
@@ -1838,8 +1845,10 @@ raptor_parser_get_accept_header_all(void)
   int i;
   
   for(factory=parsers; factory; factory=factory->next) {
-    for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
-      raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+    raptor_type_q* type_q;
+    for(i=0;
+        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+        i++) {
       if(type_q->mime_type)
         len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
     }
@@ -1852,8 +1861,10 @@ raptor_parser_get_accept_header_all(void)
 
   p=accept_header;
   for(factory=parsers; factory; factory=factory->next) {
-    for(i=0; i < raptor_sequence_size(factory->mime_types); i++) {
-      raptor_type_q* type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i);
+    raptor_type_q* type_q;
+    for(i=0; 
+        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+        i++) {
       if(type_q->mime_type) {
         int r;
         
