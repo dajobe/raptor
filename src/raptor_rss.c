@@ -511,11 +511,13 @@ raptor_rss_start_element_handler(void *user_data,
           RAPTOR_DEBUG2("  setting enclosure type %s\n", attrValue);
           enclosure->type=(char*)RAPTOR_MALLOC(cstring, len+1);
           strncpy(enclosure->type, (char*)attrValue, len+1);
-        } else {
+        } else if(rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
+          /* do nothing with atom link attribute type */
+        } else if(rss_parser->is_atom) {
+          /* Atom only typing */
           if (!strcmp((const char*)attrValue, "xhtml") ||
               !strcmp((const char*)attrValue, "xml") ||
-              (rss_parser->current_field != RAPTOR_RSS_FIELD_ATOM_LINK &&
-               strstr((const char*)attrValue, "+xml"))) {
+              strstr((const char*)attrValue, "+xml")) {
             raptor_uri_handler *uri_handler;
             void *uri_context;
 
