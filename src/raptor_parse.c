@@ -1794,12 +1794,16 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
 
   if(!factory->mime_types)
     return NULL;
-  
+
+  len=0;
   for(i=0; 
       (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
       i++) {
-    if(type_q->mime_type)
-      len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
+    if(type_q->mime_type) {
+      len+= type_q->mime_type_len + 2; /* ", " */
+      if(type_q->q < 10)
+        len+= 6; /* ";q=X.Y" */
+    }
   }
   
   /* 9 = "\*\/\*;q=0.1" */
@@ -1812,17 +1816,16 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
       (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
       i++) {
     if(type_q->mime_type) {
-      int r;
-      
       strncpy(p, type_q->mime_type, type_q->mime_type_len);
       p+= type_q->mime_type_len;
-      *p++ = ';';
-      *p++ = 'q';
-      *p++ = '=';
-      r=(int)(type_q->q/10);
-      *p++ = ('0' + r);
-      *p++ = '.';
-      *p++ = ('0' + (type_q->q - (10*r)));
+      if(type_q->q < 10) {
+        *p++ = ';';
+        *p++ = 'q';
+        *p++ = '=';
+        *p++ = '0';
+        *p++ = '.';
+        *p++ = '0' + (type_q->q);
+      }
     }
     
     *p++ = ',';
@@ -1844,13 +1847,17 @@ raptor_parser_get_accept_header_all(void)
   char *p;
   int i;
   
+  len=0;
   for(factory=parsers; factory; factory=factory->next) {
     raptor_type_q* type_q;
     for(i=0;
         (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
         i++) {
-      if(type_q->mime_type)
-        len+= type_q->mime_type_len + 8; /* TYPE + 8 = ";q=X.Y, " */
+      if(type_q->mime_type) {
+        len+= type_q->mime_type_len + 2; /* ", " */
+        if(type_q->q < 10)
+          len+= 6; /* ";q=X.Y" */
+      }
     }
   }
   
@@ -1866,17 +1873,16 @@ raptor_parser_get_accept_header_all(void)
         (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
         i++) {
       if(type_q->mime_type) {
-        int r;
-        
         strncpy(p, type_q->mime_type, type_q->mime_type_len);
         p+= type_q->mime_type_len;
-        *p++ = ';';
-        *p++ = 'q';
-        *p++ = '=';
-        r=(int)(type_q->q/10);
-        *p++ = ('0' + r);
-        *p++ = '.';
-        *p++ = ('0' + (type_q->q - (10*r)));
+        if(type_q->q < 10) {
+          *p++ = ';';
+          *p++ = 'q';
+          *p++ = '=';
+          *p++ = '0';
+          *p++ = '.';
+          *p++ = '0' + (type_q->q);
+        }
       }
       
       *p++ = ',';
