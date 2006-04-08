@@ -1,3 +1,14 @@
+2006-04-07  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xslt.c: (raptor_xslt_parse_chunk): Added debug statement.
+
+2006-04-03  Dave Beckett  <dave@dajobe.org>
+
+	* tests/turtle/manifest.ttl: Added test-25
+
+	* tests/turtle/Makefile.am, tests/turtle/test-25.out,
+	tests/turtle/test-25.ttl: Added comment test
+
 2006-04-01  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_rss.c: (raptor_rss_start_element_handler): Tidying of
