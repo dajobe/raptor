@@ -304,6 +304,8 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
       continue;
     }
 
+    RAPTOR_DEBUG3("Found GRDDL with XPath expression \"%s\" over '%s'\n", 
+                  xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
 
     for(i=0; i < xmlXPathNodeSetGetLength(nodes); i++) {
       xmlNodePtr node=nodes->nodeTab[i];
