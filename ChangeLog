@@ -1,3 +1,12 @@
+2006-04-09  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xml.c: (raptor_xml_element_declare_namespace): Add
+	int return value for when a namespace is failed to be declared,
+	when it is already there.
+
+	* src/raptor.h: raptor_xml_element_declare_namespace now has an
+	int return value
+
 2006-04-07  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_xslt.c: (raptor_xslt_parse_chunk): Added debug statement.
