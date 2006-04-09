@@ -190,14 +190,49 @@ raptor_xml_element_get_attributes_count(raptor_xml_element* xml_element)
  * @nspace: raptor_namespace to declare
  * 
  * Declare a namespace on the XML Element.
+ *
+ * Return value: non-0 if namespace cannot be declared 
  **/
-void
+int
 raptor_xml_element_declare_namespace(raptor_xml_element* xml_element,
                                      raptor_namespace *nspace)
 {
+  int i;
+  const raptor_namespace *ns;
+
   if(!xml_element->declared_nspaces)
     xml_element->declared_nspaces=raptor_new_sequence(NULL, NULL);
+
+  if((ns = xml_element->name->nspace)) {
+    /* Cannot have same namespace already seen */
+    if(ns == nspace ||
+       /* ... or two default nspaces */
+       (!ns->prefix && !nspace->prefix) ||
+       /* ... or two same prefixes */
+       (ns->prefix && nspace->prefix &&
+        !strcmp((const char*)ns->prefix, (const char*)nspace->prefix))
+       )
+      return 1;
+  }
+
+  
+  for(i=0;
+      (ns = (const raptor_namespace*)raptor_sequence_get_at(xml_element->declared_nspaces, i));
+      i++) {
+    /* Cannot have same namespace already seen */
+    if(ns == nspace ||
+       /* ... or two default nspaces */
+       (!ns->prefix && !nspace->prefix) ||
+       /* ... or two same prefixes */
+       (ns->prefix && nspace->prefix &&
+        !strcmp((const char*)ns->prefix, (const char*)nspace->prefix))
+       )
+      return 1;
+  }
+
   raptor_sequence_push(xml_element->declared_nspaces, nspace);
+
+  return 0;
 }
 
 
