@@ -1288,7 +1288,7 @@ raptor_qname** raptor_xml_element_get_attributes(raptor_xml_element* xml_element
 RAPTOR_API
 int raptor_xml_element_get_attributes_count(raptor_xml_element* xml_element);
 RAPTOR_API
-void raptor_xml_element_declare_namespace(raptor_xml_element* xml_element, raptor_namespace *nspace);
+int raptor_xml_element_declare_namespace(raptor_xml_element* xml_element, raptor_namespace *nspace);
 RAPTOR_API
 int raptor_iostream_write_xml_element(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
 RAPTOR_API
