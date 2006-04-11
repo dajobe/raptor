@@ -19,13 +19,10 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
 
   </chapter>
 
-  <part id="part-tutorial">
-    <title>Tutorial</title>
-  </part>				  
-
+  <!-- Tutorial chapter -->
   <xi:include href="raptor-tutorial.xml"/>
 
-  <part id="part-reference-manual">
+  <chapter id="part-reference-manual">
     <title>Reference Manual</title>
 
     <xi:include href="xml/section-general.xml"/>
@@ -48,7 +45,8 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
     <xi:include href="xml/section-xml.xml"/>
 
     <!-- <xi:include href="xml/section-unused.xml"/> -->
-  </part>
+  </chapter>
+
   <index>
     <title>Index</title>
   </index>
