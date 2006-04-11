@@ -2,6 +2,8 @@
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
 <chapter id="tutorial-chapter">
 
+<title>Tutorial</title>
+
 <section id="tutorial-section-intro">
 <title>Introduction</title>
 
@@ -147,6 +149,9 @@ of the
 <section id="tutorial-parsing">
 <title>Parsing syntaxes to RDF Triples</title>
 
+<section>
+<title>Parsing syntaxes to RDF Triples</title>
+
 <para>
 The sequence is typically to create a parser object, set various
 callback and features, start the parsing, send some syntax to the
@@ -154,7 +159,7 @@ parser object, finish the parsing and destroy the parser object.
 Several parts of this process are optional, including actually using
 the triple results, which is useful as a syntax checking process.
 </para>
-
+</section>
 
 <section>
 <title>Create the Parser object</title>
@@ -193,20 +198,20 @@ this information as possible.
 
 <para>Create a parser that can read a syntax identified by the URI
 for Turtle <literal>http://www.dajobe.org/2004/01/turtle/</literal>,
-which has no registered MIME Type at this date.
+which has no registered MIME Type at this date:
 <programlisting>
   syntax_uri = raptor_new_uri("http://www.dajobe.org/2004/01/turtle/");
   rdf_parser = raptor_new_parser_for_content(syntax_uri, NULL, NULL, 0, NULL);
 </programlisting>
 </para>
 
-<para>Create a parser that recognises the identifier <literal>foo.rss</literal>
+<para>Create a parser that recognises the identifier <literal>foo.rss</literal>:
 <programlisting>
   rdf_parser = raptor_new_parser_for_content(NULL, NULL, NULL, 0, "foo.rss");
 </programlisting>
 </para>
 
-<para>Create a parser that recognises the content in <emphasis>buffer</emphasis>
+<para>Create a parser that recognises the content in <emphasis>buffer</emphasis>:
 <programlisting>
   rdf_parser = raptor_new_parser_for_content(NULL, NULL, buffer, len, NULL);
 </programlisting>
@@ -217,6 +222,7 @@ parser could be found, or the construction failed in another way.
 </para>
 
 </section>
+
 
 <section>
 <title>Set parser features</title>
@@ -285,7 +291,6 @@ message_handler(void *user_data, raptor_locator* locator,
                 const char *message)
 {
   /* do something with the message */
-  fprintf(stderr, "Raptor message: %s\n", message);
 }
 </programlisting>
 returning the user data given, associated location information
@@ -304,8 +309,9 @@ similar functions that take a handler as follows:
 
   raptor_set_warning_handler(rdf_parser, user_data, warning_handler);
 </programlisting>
-Note that the program will terminate
+<note>The program will terminate
 with <function>abort()</function> if the fatal error handler returns.
+</note>
 </para>
 </section>
 
@@ -367,8 +373,9 @@ namespaces_handler(void* user_data, raptor_namespace *nspace) {
   /*  */
 }
 </programlisting>
-Note that this may be called multiple times with the same namespace,
+<note>This may be called multiple times with the same namespace,
 if the namespace is declared inside different XML sub-trees.
+</note>
 </para>
 
 </section>
@@ -475,9 +482,10 @@ _:genid1 &lt;http://usefulinc.com/ns/doap#homepage&gt; &lt;http://librdf.org/rap
 
 </chapter>
 
+
 <!--
 Local variables:
 mode: sgml
-sgml-parent-document: ("raptor-docs.xml" "book" "chapter")
+sgml-parent-document: ("raptor-docs.xml" "book" "part")
 End:
 -->
