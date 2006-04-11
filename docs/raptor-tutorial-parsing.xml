@@ -178,11 +178,13 @@ with <function>abort()</function> if the fatal error handler returns.
 <section id="tutorial-set-id-handler">
 <title>Set the identifier creator handler</title>
 
-<para>This is used to customize how identifiers are made
-for certain parsers, such as in RDF/XML for generated blank node identifiers as well 
-as those from <literal>rdf:nodeID</literal>.
-This handler allows the identifier generation mechanism to be
-fully replaced.  An alternative is to use
+<para>Identifiers are created in some parsers by generating them
+automatically or via hints given a syntax.  Raptor can customise this
+process using a user-supplied identifier handler function.
+For example, in RDF/XML generated blank node identifiers and those
+those specified <literal>rdf:nodeID</literal> are passed through this
+process.  Setting a handler allows the identifier generation mechanism to be
+fully replaced.  A lighter alternative is to use
 <link linkend="raptor-set-default-generate-id-parameters"><function>raptor_set_default_generate_id_parameters()</function></link>
 to adjust the default algorithm for generated identifiers.
 </para>
@@ -216,8 +218,10 @@ such as the value of a <literal>rdf:nodeID</literal> in RDF/XML.
 <section id="tutorial-set-namespace-handler">
 <title>Set namespace declared handler</title>
 
-<para>This allows the tracking of declarations of namespaces
-during parsing of a syntax.  
+<para>Raptor can report when namespace prefix/URIs are declared in
+during parsing a syntax such as those in XML, RDF/XML or Turtle.
+A handler function can be set to receive these declarations using
+the namespace handler method.
 <programlisting>
   raptor_namespace_handler namespaces_handler;
 
