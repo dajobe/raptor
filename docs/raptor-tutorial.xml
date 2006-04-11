@@ -1,24 +1,32 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
-<chapter id="introduction">
+<chapter id="tutorial-chapter">
 
+<section id="tutorial-section-intro">
 <title>Introduction</title>
 
-<para>This document describes the APIs provided by
-<ulink url="http://librdf.org/raptor/">Raptor</ulink> to
+<para>This chapter describes how to use the
+<ulink url="http://librdf.org/raptor/">Raptor</ulink> APIs to
 turn syntaxes into RDF triples and RDF triples into syntaxes.</para>
 
-<para>See also the <ulink url="http://librdf.org/raptor/">Raptor Home Page</ulink>
-and the <ulink url="../README.html">main document overview</ulink>.
+<para>The next chapter contains the
+<link linkend="part-reference-manual">Raptor Reference Manual</link>
+which comprehensively describes every class and function of the API.
 </para>
 
+<para>For the latest information, see the
+<ulink url="http://librdf.org/raptor/">Raptor Home Page</ulink>
+and the <ulink url="../README.html">main document overview</ulink>
+in this document tree.
+</para>
+</section>
 
-<section id="initialising-finishing">
+<section id="tutorial-initialising-finishing">
 <title>Initialising and Finishing using the Library</title>
 
-<para>The raptor library has a single initialising function and a
-single terminating function.  These must be called before any other
-Raptor API functions are called:
+<para>Raptor has a single initialising function and a single
+terminating function.  The initialising function must be called
+before any other Raptor API functions are called:
 <programlisting>
   raptor_init();
   ...
@@ -32,8 +40,8 @@ do that!</para>
 </section>
 
 
-<section id="querying-functionality">
-<title>Querying Functionality</title>
+<section id="tutorial-querying-functionality">
+<title>Listing built-in functionality</title>
 
 <para>
 Raptor can be configured and compiled with support for different
@@ -136,7 +144,7 @@ of the
 
 
 
-<section id="parsing">
+<section id="tutorial-parsing">
 <title>Parsing syntaxes to RDF Triples</title>
 
 <para>
@@ -263,7 +271,7 @@ have some uses if just counting triples or validating a syntax.
 </section>
 
 <section>
-<title>Set error, warning or namespace handlers</title>
+<title>Set fatal error, error and warning handlers</title>
 
 <para>There are several other callback handlers that can be set
 on parsers.  These can be set any time before parsing is called.
@@ -276,24 +284,45 @@ void
 message_handler(void *user_data, raptor_locator* locator, 
                 const char *message)
 {
-  ...
+  /* do something with the message */
+  fprintf(stderr, "Raptor message: %s\n", message);
 }
 </programlisting>
 returning the user data given, associated location information
 as a <link linkend="raptor-locator"><type>raptor_locator</type></link>
-and the error/warning message itself.
+and the error/warning message itself.  The <emphasis>locator</emphasis>
+structure contains full information on the details of where in the
+file or URI the message occurred.
 </para>
 
+<para>The fatal error, error and warning handlers are all set with
+similar functions that take a handler as follows:
 <programlisting>
-  /* parsing always finishes after this handler returns */
   raptor_set_fatal_error_handler(rdf_parser, user_data, fatal_handler);
 
   raptor_set_error_handler(rdf_parser, user_data, error_handler);
 
   raptor_set_warning_handler(rdf_parser, user_data, warning_handler);
 </programlisting>
+Note that the program will terminate
+with <function>abort()</function> if the fatal error handler returns.
+</para>
+</section>
 
-<para>Set the identifier creator handler function.
+
+<section>
+<title>Set the identifier creator handler</title>
+
+<para>This is used to customize how identifiers are made
+for certain parsers, such as in RDF/XML for generated blank node identifiers as well 
+as those from <literal>rdf:nodeID</literal>.
+This handler allows the identifier generation mechanism to be
+fully replaced.  An alternative is to use
+<link linkend="raptor-set-default-generate-id-parameters"><function>raptor_set_default_generate_id_parameters()</function></link>
+to adjust the default algorithm for generated identifiers.
+</para>
+
+<para>It is used as follows
 <programlisting>
   raptor_generate_id_handler id_handler;
 
@@ -301,7 +330,29 @@ and the error/warning message itself.
 </programlisting>
 </para>
 
-<para>Set the declated namespace handler
+<para>The <emphasis>id_handler</emphasis> takes the following signature:
+<programlisting>
+unsigned char*
+generate_id_handler(void* user_data, raptor_genid_type type,
+                    unsigned char* user_id) {
+   /* return a new generated ID based on user_id (optional) */
+}
+</programlisting>
+where the
+<link linkend="raptor-genid-type"><type>raptor_genid_type</type></link>
+provides extra information on the identifier being created and
+<emphasis>user_id</emphasis> an optional user-supplied identifier,
+such as the value of a <literal>rdf:nodeID</literal> in RDF/XML.
+</para>
+
+</section>
+
+
+<section>
+<title>Set namespace declared handler</title>
+
+<para>This allows the tracking of declarations of namespaces
+during parsing of a syntax.  
 <programlisting>
   raptor_namespace_handler namespaces_handler;
 
@@ -309,7 +360,19 @@ and the error/warning message itself.
 </programlisting>
 </para>
 
+<para>The <emphasis>namespaces_handler</emphasis> takes the following signature:
+<programlisting>
+void
+namespaces_handler(void* user_data, raptor_namespace *nspace) {
+  /*  */
+}
+</programlisting>
+Note that this may be called multiple times with the same namespace,
+if the namespace is declared inside different XML sub-trees.
+</para>
+
 </section>
+
 
 <section>
 <title>Provide syntax content to parse</title>
