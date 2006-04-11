@@ -293,7 +293,7 @@ To tidy up, delete the parser object as follows:
 
 
 <section id="tutorial-parser-example">
-<title>Parser Example</title>
+<title>Parsing example code</title>
 
 <example>
 <title><filename>rdfprint.c</filename>: Parse an RDF/XML file and print the triples</title>
