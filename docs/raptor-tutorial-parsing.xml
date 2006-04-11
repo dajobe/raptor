@@ -3,13 +3,20 @@
 <chapter id="tutorial-parsing">
 <title>Parsing syntaxes to RDF Triples</title>
 
+<section>
+<title>Introduction</title>
+
 <para>
-The sequence is typically to create a parser object, set various
-callback and features, start the parsing, send some syntax to the
-parser object, finish the parsing and destroy the parser object.
-Several parts of this process are optional, including actually using
-the triple results, which is useful as a syntax checking process.
+The typical sequence of operations to parse is to create a parser
+object, set various callback and features, start the parsing, send
+some syntax content to the parser object, finish the parsing and
+destroy the parser object.</para>
+
+<para>Several parts of this process are optional, including actually
+using the triple results, which is useful as a syntax checking
+process.
 </para>
+</section>
 
 <section id="tutorial-create-parser">
 <title>Create the Parser object</title>
