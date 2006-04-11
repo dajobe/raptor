@@ -336,17 +336,17 @@ main(int argc, char *argv[])
 </programlisting>
 
 <para>Compile it like this:
-<programlisting>
-  gcc -o rdfprint rdfprint.c `raptor-config --cflags` `raptor-config --libs`
-</programlisting>
+<screen>
+$ gcc -o rdfprint rdfprint.c `raptor-config --cflags` `raptor-config --libs`
+</screen>
 and run it on an RDF file as:
-<programlisting>
-  ./rdfprint ../raptor.rdf
+<screen>
+$ ./rdfprint raptor.rdf
 _:genid1 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://usefulinc.com/ns/doap#Project&gt; .
 _:genid1 &lt;http://usefulinc.com/ns/doap#name&gt; "Raptor" .
 _:genid1 &lt;http://usefulinc.com/ns/doap#homepage&gt; &lt;http://librdf.org/raptor/&gt; .
 ...
-</programlisting>
+</screen>
 </para>
 
 </example>
