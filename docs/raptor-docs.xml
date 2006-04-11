@@ -19,7 +19,7 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
 
   </chapter>
 
-  <part id="part-tutorial"> 
+  <part id="tutorial"> 
     <title>Raptor Tutorial</title>
 
     <partintro id="tutorial-introduction">
@@ -28,7 +28,7 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
       turn syntaxes into RDF triples and RDF triples into syntaxes.</para>
 
       <para>The next part contains the
-      <link linkend="part-reference-manual">Raptor Reference Manual</link>
+      <link linkend="reference-manual">Raptor Reference Manual</link>
       which comprehensively describes every class and function of the API.
       </para>
 
@@ -45,16 +45,16 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
   </part>
 
 
-  <part id="part-reference-manual">
+  <part id="reference-manual">
     <title>Raptor Reference Manual</title>
 
-    <partintro id="tutorial-introduction">
+    <partintro id="reference-manual-introduction">
       <para>This part contains the Raptor Reference Manual
       which comprehensively describes every class and function of the API.
       </para>
       
       <para>The previous part contains the
-      <link linkend="part-tutorial">Raptor Tutorial</link>
+      <link linkend="tutorial">Raptor Tutorial</link>
       explaining how to use the API parts.
       </para>
 
