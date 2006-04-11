@@ -247,13 +247,25 @@ if the namespace is declared inside different XML sub-trees.
 <section id="tutorial-parse-content">
 <title>Provide syntax content to parse</title>
 
-<para>There are several alternatives in how to run the actual
-operation of turning syntax into triples.</para>
+<para>The operation of turning syntax into RDF triples has several
+alternatives from functions that do most of the work starting from a
+URI to functions that allow passing in data buffers.</para>
 
-<orderedlist>
+<note>
+<title>Parsing and MIME Type</title> 
+The mime type of the retrieved content is not used to choose
+a parser unless the parser is of type <literal>guess</literal>.
+The guess parser will send an <literal>Accept:</literal> header
+for all known parser syntax mime types (if a URI request is made)
+and based on the response, including the identifiers used,
+pick the appropriate parser to execute.  See
+<link linkend="raptor-guess-parser-name"><function>raptor_guess_parser_name()</function></link>
+for a full discussion of the inputs to the guessing.
+</note>
 
-<listitem>
-<para>Parse the content from a URI</para>
+
+<section>
+<title>Parse the content from a URI (<link linkend="raptor-parse-uri"><function>raptor_parse_uri()</function></link>)</title>
 
 <para>The URI is resolved and the content read from it and passed to
 the parser:
@@ -264,22 +276,18 @@ The <emphasis>base_uri</emphasis> is optional (can be
 <literal>NULL</literal>) and will default to the
 <emphasis>uri</emphasis>.
 </para>
-<note>
-<title>Parsing and MIME Type</title> 
-The mime type of the retrieved content is not used to choose
-a parser unless the parser is of type <literal>guess</literal>.
-The guess parser will send an <literal>Accept:</literal> header
-for all known parser syntax mime types and based on the response,
-pick the appropriate parser to execute.
-</note>
-</listitem>
+</section>
 
 
-<listitem>
-<para>Parse the content of a URI using an existing <type>raptor_www</type> connection</para>
+<section>
+<title>Parse the content of a URI using an existing WWW connection (<link linkend="raptor-parse-uri-with-connection"><function>raptor_parse_uri_with_connection()</function></link>)</title>
 
-<para>The URI is resolved using the previously opened WWW connection
-to allow for existing configuration to be used and the content read from it:
+<para>The URI is resolved using an existing WWW connection (for
+example a libcurl CURL handle) to allow for any existing
+WWW configuration to be reused.  See
+<link linkend="raptor-www-new-with-connection"><function>raptor_www_new_with_connection</function></link>
+for full details of how this works.   The content is then read from the
+result of resolving the URI:
 <programlisting>
   raptor_parse_uri_with_connection(rdf_parser, uri, base_uri, connection);
 </programlisting>
@@ -287,11 +295,11 @@ The <emphasis>base_uri</emphasis> is optional (can be
 <literal>NULL</literal>) and will default to the
 <emphasis>uri</emphasis>.
 </para>
-</listitem>
+</section>
 
 
-<listitem>
-<para>Parse the content of a C <literal>FILE*</literal></para>
+<section>
+<title>Parse the content of a C <literal>FILE*</literal> (<link linkend="raptor-parse-file-stream"><function>raptor_parse_file_stream()</function></link>)</title>
 
 <para>Parsing can read from a C STDIO file handle:
 <programlisting>
@@ -304,11 +312,11 @@ is used in locator error messages.
 The <emphasis>base_uri</emphasis> may be required by some parsers
 and if <literal>NULL</literal> will cause the parsing to fail.
 </para>
-</listitem>
+</section>
 
 
-<listitem>
-<para>Parse the content of a file URI</para>
+<section>
+<title>Parse the content of a file URI (<link linkend="raptor-parse-file"><function>raptor_parse_file()</function></link>)</title>
 
 <para>Parsing can read from a URI known to be a <literal>file:</literal> URI:
 <programlisting>
@@ -321,21 +329,21 @@ must be true.
 The <emphasis>base_uri</emphasis> may be required by some parsers
 and if <literal>NULL</literal> will cause the parsing to fail.
 </para>
-</listitem>
+</section>
 
-<listitem>
-<para>Parse chunks of syntax content provided by the application</para>
+<section>
+<title>Parse chunks of syntax content provided by the application  (<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link> and <link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>)</title>
 
 <para>
 <programlisting>
   raptor_start_parse(rdf_parser, base_uri);
-  while(/* not finished getting all content */) {
+  while(/* not finished getting content */) {
     unsigned char *buffer;
     size_t buffer_len;
     /* obtain some syntax content in buffer of size buffer_len bytes */
     raptor_parse_chunk(rdf_parser, buffer, buffer_len, 0);
   }
-  raptor_parse_chunk(rdf_parser, NULL, 0, 1); /* is_end = 1 */
+  raptor_parse_chunk(rdf_parser, NULL, 0, 1); /* no data and is_end = 1 */
 </programlisting>
 The <emphasis>base_uri</emphasis> argument to 
 <link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link>
@@ -357,9 +365,7 @@ buffer_len or NULL buffer can be used.</para>
   raptor_parse_chunk(rdf_parser, buffer, buffer_len, 1); /* is_end = 1 */
 </programlisting>
 
-</listitem>
-
-</orderedlist>
+</section>
 
 </section>
 
