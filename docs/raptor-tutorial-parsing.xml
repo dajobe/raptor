@@ -3,7 +3,7 @@
 <chapter id="tutorial-parsing">
 <title>Parsing syntaxes to RDF Triples</title>
 
-<section>
+<section id="tutorial-parsing-intro">
 <title>Introduction</title>
 
 <para>
@@ -277,9 +277,14 @@ NULL given if it is finished.  </para>
 
 <section id="tutorial-destroy-parser">
 <title>Destroy the parser</title>
+
+<para>
+To tidy up, delete the parser object as follows: 
 <programlisting>
   raptor_free_parser(rdf_parser);
 </programlisting>
+</para>
+
 </section>
 
 
