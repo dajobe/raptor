@@ -1,6 +1,6 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
-<chapter id="tutorial-chapter">
+<chapter id="chapter-tutorial">
 
 <title>Tutorial</title>
 
@@ -12,7 +12,7 @@
 turn syntaxes into RDF triples and RDF triples into syntaxes.</para>
 
 <para>The next chapter contains the
-<link linkend="part-reference-manual">Raptor Reference Manual</link>
+<link linkend="chapter-reference-manual">Raptor Reference Manual</link>
 which comprehensively describes every class and function of the API.
 </para>
 
@@ -172,7 +172,7 @@ the triple results, which is useful as a syntax checking process.
   rdf_parser = raptor_new_parser("rdfxml");
 </programlisting>
 or the name can be discovered from an <emphasis>enumeration</emphasis>
-as discussed in <link linkend="querying-functionality">Querying Functionality</link>
+as discussed in <link linkend="tutorial-querying-functionality">Querying Functionality</link>
 </para>
 
 <para>The parser can also be created by identifying the syntax by a
@@ -230,7 +230,7 @@ parser could be found, or the construction failed in another way.
 <para>There are several options that can be set on parsers, called
 <emphasis>features</emphasis>.  The exact list of features can be
 found via
-<link linkend="querying-functionality">Querying Functionality</link>
+<link linkend="tutorial-querying-functionality">Querying Functionality</link>
 or in the API reference for 
 <link linkend="raptor-set-feature"><function>raptor_set_feature()</function></link>.  (This should be properly called raptor_parser_set_feature as
 it only applies to <literal>raptor_parser</literal> objects).
