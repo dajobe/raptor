@@ -168,9 +168,9 @@ similar functions that take a handler as follows:
 
   raptor_set_warning_handler(rdf_parser, user_data, warning_handler);
 </programlisting>
-<note>The program will terminate
+<caution>The program will terminate
 with <function>abort()</function> if the fatal error handler returns.
-</note>
+</caution>
 </para>
 </section>
 
