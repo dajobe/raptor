@@ -94,6 +94,7 @@ a name is legal in some XML version.
 
 @xml_element: 
 @nspace: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_new_xml_writer ##### -->

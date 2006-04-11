@@ -9,21 +9,21 @@
     <releaseinfo>for Raptor &version;</releaseinfo>
   </bookinfo>
 
-  <chapter id="raptor">
+   <chapter id="intro">
     <title>Raptor Overview</title>
     <para>
-Raptor is an RDF syntax parsing and serializing library providing
-APIs to turn syntaxes to and from RDF triples as well a supporting
-features such as Unicode, URIs, WWW retrieval and XML writing.
+Raptor is a library for RDF syntax parsing and serializing providing
+APIs to turn syntax to and from RDF triples.  It also includes supporting
+functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
     </para>
 
   </chapter>
 
-  <xi:include href="raptor-chapter-intro.xml"/>
-
   <part>
     <title>Tutorial</title>
   </part>				  
+
+  <xi:include href="raptor-tutorial.xml"/>
 
   <part>
     <title>Reference Manual</title>
