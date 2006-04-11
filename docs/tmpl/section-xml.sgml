@@ -97,6 +97,15 @@ a name is legal in some XML version.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_xml_element_is_empty ##### -->
+<para>
+
+</para>
+
+@xml_element: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_xml_writer ##### -->
 <para>
 

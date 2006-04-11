@@ -1,155 +1,6 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
-<chapter id="chapter-tutorial">
-
-<title>Tutorial</title>
-
-<section id="tutorial-section-intro">
-<title>Introduction</title>
-
-<para>This chapter describes how to use the
-<ulink url="http://librdf.org/raptor/">Raptor</ulink> APIs to
-turn syntaxes into RDF triples and RDF triples into syntaxes.</para>
-
-<para>The next chapter contains the
-<link linkend="chapter-reference-manual">Raptor Reference Manual</link>
-which comprehensively describes every class and function of the API.
-</para>
-
-<para>For the latest information, see the
-<ulink url="http://librdf.org/raptor/">Raptor Home Page</ulink>
-and the <ulink url="../README.html">main document overview</ulink>
-in this document tree.
-</para>
-</section>
-
-<section id="tutorial-initialising-finishing">
-<title>Initialising and Finishing using the Library</title>
-
-<para>Raptor has a single initialising function and a single
-terminating function.  The initialising function must be called
-before any other Raptor API functions are called:
-<programlisting>
-  raptor_init();
-  ...
-  raptor_finish();
-</programlisting>
-</para>
-
-<para>It is safe to call these functions more than once.  But don't
-do that!</para>
-
-</section>
-
-
-<section id="tutorial-querying-functionality">
-<title>Listing built-in functionality</title>
-
-<para>
-Raptor can be configured and compiled with support for different
-parsers and serializers.  Lists of the functionality built into the
-library can be interrogated by means of
-<emphasis>enumerate</emphasis> functions.  These take as input an
-<literal>int</literal> counter and return descriptions of the feature
-at that offset in the list.  The descriptions are returned stored in
-the variables pointed to by the reference arguments of the
-<literal>**</literal><emphasis>var</emphasis> form.
-The return value of the function is non-zero when the counter has
-gone too far.
-</para>
-
-<variablelist>
-<title>Listing Functionality with Enumeration</title>
-<varlistentry><term>List the parse syntaxes (parser names)</term>
-<listitem><programlisting>
-int
-raptor_parsers_enumerate(const unsigned int counter,
-                         const char **name, const char **label);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the parse syntaxes
-(same as above but with more information)</term>
-<listitem><programlisting>
-int
-raptor_syntaxes_enumerate(const unsigned int counter,
-                          const char **name,
-                          const char **label, 
-                          const char **mime_type,
-                          const unsigned char **uri_string);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the serializer syntaxes (serializer names)</term>
-<listitem><programlisting>
-int
-raptor_serializers_enumerate(const unsigned int counter,
-                             const char **name,
-                             const char **label,
-                             const char **mime_type,
-                             const unsigned char **uri_string);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the Parser features</term>
-<listitem><programlisting>
-int
-raptor_features_enumerate(const raptor_feature feature,
-                          const char **name, raptor_uri **uri,
-                          const char **label);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the Serializer features</term>
-<listitem><programlisting>
-int
-raptor_serializer_features_enumerate(const raptor_feature feature,
-                                     const char **name,
-                                     raptor_uri **uri,
-                                     const char **label);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the XML Writer features</term>
-<listitem><programlisting>
-int
-raptor_xml_writer_features_enumerate(const raptor_feature feature,
-                                     const char **name,
-                                     raptor_uri **uri,
-                                     const char **label);
-</programlisting></listitem>
-</varlistentry>
-</variablelist>
-
-<para>These functions can be called directly after
-<link linkend="raptor-init"><function>raptor_init()</function></link>
-has been called so can be used to find name parameters for creating
-parser and serializer instances.  This is one way to find a parser
-(name) by it's MIME Type, the other is to use the mime_type parameter
-of the
-<link linkend="raptor-new-parser-for-content"><function>raptor_new_parser_for_content()</function></link>.</para>
-
-<example>
-<title>List all features of parsers with an enumerate function</title>
-<programlisting>
-  int i;
-  for(i=0; 1; i++) {
-    const char *name;
-    raptor_uri *uri;
-    const char *label;
-    if(raptor_features_enumerate((raptor_feature)i, &amp;name, &amp;uri, &amp;label))
-      break;
-    /* do something with name, uri and label */
-  }
-</programlisting>
-<para>There are more examples of this usage in the source for the
-<literal>rapper</literal> utility in <filename>util/rapper.c</filename>.
-</para>
-</example>
-
-</section>
-
-
-
-<section id="tutorial-parsing">
-<title>Parsing syntaxes to RDF Triples</title>
-
-<section>
+<chapter id="tutorial-parsing">
 <title>Parsing syntaxes to RDF Triples</title>
 
 <para>
@@ -159,9 +10,8 @@ parser object, finish the parsing and destroy the parser object.
 Several parts of this process are optional, including actually using
 the triple results, which is useful as a syntax checking process.
 </para>
-</section>
 
-<section>
+<section id="tutorial-create-parser">
 <title>Create the Parser object</title>
 
 <para>The parser can be created directly from a known name such as
@@ -224,7 +74,7 @@ parser could be found, or the construction failed in another way.
 </section>
 
 
-<section>
+<section id="tutorial-set-parser-features">
 <title>Set parser features</title>
 
 <para>There are several options that can be set on parsers, called
@@ -251,7 +101,8 @@ The two functions that set features are:
 
 </section>
 
-<section>
+
+<section id="tutorial-set-triple-handler">
 <title>Set RDF triple callback handler</title>
 
 <para>The main reason to parse a syntax is to get RDF triples
@@ -276,7 +127,8 @@ have some uses if just counting triples or validating a syntax.
 </para>
 </section>
 
-<section>
+
+<section id="tutorial-set-error-warning-handlers">
 <title>Set fatal error, error and warning handlers</title>
 
 <para>There are several other callback handlers that can be set
@@ -316,7 +168,7 @@ with <function>abort()</function> if the fatal error handler returns.
 </section>
 
 
-<section>
+<section id="tutorial-set-id-handler">
 <title>Set the identifier creator handler</title>
 
 <para>This is used to customize how identifiers are made
@@ -354,7 +206,7 @@ such as the value of a <literal>rdf:nodeID</literal> in RDF/XML.
 </section>
 
 
-<section>
+<section id="tutorial-set-namespace-handler">
 <title>Set namespace declared handler</title>
 
 <para>This allows the tracking of declarations of namespaces
@@ -381,7 +233,7 @@ if the namespace is declared inside different XML sub-trees.
 </section>
 
 
-<section>
+<section id="tutorial-parse-content">
 <title>Provide syntax content to parse</title>
 
 <para>There are three alternatives in how to run the actual
@@ -415,12 +267,17 @@ NULL given if it is finished.  </para>
 
 </section>
 
-<section>
+
+<section id="tutorial-destroy-parser">
 <title>Destroy the parser</title>
 <programlisting>
   raptor_free_parser(rdf_parser);
 </programlisting>
 </section>
+
+
+<section id="tutorial-parser-example">
+<title>Parser Example</title>
 
 <example>
 <title><filename>rdfprint.c</filename>: Parse an RDF/XML file and print the triples</title>
