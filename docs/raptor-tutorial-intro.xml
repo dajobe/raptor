@@ -1,6 +1,9 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
 <chapter id="chapter-tutorial">
+<title>Tutorial</title>
+
+<section id="tutorial-introduction">
 <title>Introduction</title>
 
 <para>This chapter describes how to use the
@@ -17,6 +20,7 @@ which comprehensively describes every class and function of the API.
 and the <ulink url="../README.html">main document overview</ulink>
 in this document tree.
 </para>
+</section>
 
 
 <section id="tutorial-initialising-finishing">
