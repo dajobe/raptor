@@ -41,8 +41,11 @@ parsers and serializers.  Lists of the functionality built into the
 library can be interrogated by means of
 <emphasis>enumerate</emphasis> functions.  These take as input an
 <literal>int</literal> counter and return descriptions of the feature
-at that offset in the list.  The return value of the function
-is non-zero when the counter has gone too far.
+at that offset in the list.  The descriptions are returned stored in
+the variables pointed to by the reference arguments of the
+<literal>**</literal><emphasis>var</emphasis> form.
+The return value of the function is non-zero when the counter has
+gone too far.
 </para>
 
 <variablelist>
@@ -171,22 +174,35 @@ this information as possible.
 </para>
 <programlisting>
   raptor_parser* rdf_parser;
+</programlisting>
 
-  /* Create a parser that reads the MIME Type for RDF/XML */
+<para>Create a parser that reads the MIME Type for RDF/XML
+<literal>application/rdf+xml</literal>
+<programlisting>
   rdf_parser = raptor_new_parser_for_content(NULL, "application/rdf+xml", NULL, 0, NULL);
+</programlisting>
+</para>
 
-  /* Create a parser that can read a syntax identified by the URI
-   * for Turtle, which has no registered MIME Type at this date.
-   */
+<para>Create a parser that can read a syntax identified by the URI
+for Turtle <literal>http://www.dajobe.org/2004/01/turtle/</literal>,
+which has no registered MIME Type at this date.
+<programlisting>
   syntax_uri = raptor_new_uri("http://www.dajobe.org/2004/01/turtle/");
   rdf_parser = raptor_new_parser_for_content(syntax_uri, NULL, NULL, 0, NULL);
+</programlisting>
+</para>
 
-  /* Create a parser that recognises the identifier */
+<para>Create a parser that recognises the identifier <literal>foo.rss</literal>
+<programlisting>
   rdf_parser = raptor_new_parser_for_content(NULL, NULL, NULL, 0, "foo.rss");
+</programlisting>
+</para>
 
-  /* Create a parser that recognises the content in buffer */
+<para>Create a parser that recognises the content in <emphasis>buffer</emphasis>
+<programlisting>
   rdf_parser = raptor_new_parser_for_content(NULL, NULL, buffer, len, NULL);
 </programlisting>
+</para>
 
 <para>Any of the constructor calls can return NULL if no matching
 parser could be found, or the construction failed in another way.
@@ -277,17 +293,22 @@ and the error/warning message itself.
   raptor_set_warning_handler(rdf_parser, user_data, warning_handler);
 </programlisting>
 
-<para>FIXME set ID handler</para>
+<para>Set the identifier creator handler function.
 <programlisting>
   raptor_generate_id_handler id_handler;
+
   raptor_set_generate_id_handler(rdf_parser, user_data, id_handler);
 </programlisting>
+</para>
 
-<para>FIXME set namespace handler</para>
+<para>Set the declated namespace handler
 <programlisting>
   raptor_namespace_handler namespaces_handler;
+
   raptor_set_namespace_handler(rdf_parser, user_data, namespaces_handler);
 </programlisting>
+</para>
+
 </section>
 
 <section>
