@@ -247,20 +247,86 @@ if the namespace is declared inside different XML sub-trees.
 <section id="tutorial-parse-content">
 <title>Provide syntax content to parse</title>
 
-<para>There are three alternatives in how to run the actual
+<para>There are several alternatives in how to run the actual
 operation of turning syntax into triples.</para>
 
-<para>FIXME parse the content of a retrieval from a URI</para>
-<programlisting>
-  raptor_parse_uri(rdf_parser, uri, base_uri)
-</programlisting>
+<orderedlist>
 
-<para>FIXME parse the content from a URI known to be a file</para>
-<programlisting>
-  raptor_parse_file(rdf_parser, file_uri, base_uri)
-</programlisting>
+<listitem>
+<para>Parse the content from a URI</para>
 
-<para>FIXME parse chunks of content
+<para>The URI is resolved and the content read from it and passed to
+the parser:
+<programlisting>
+  raptor_parse_uri(rdf_parser, uri, base_uri);
+</programlisting>
+The <emphasis>base_uri</emphasis> is optional (can be
+<literal>NULL</literal>) and will default to the
+<emphasis>uri</emphasis>.
+</para>
+<note>
+<title>Parsing and MIME Type</title> 
+The mime type of the retrieved content is not used to choose
+a parser unless the parser is of type <literal>guess</literal>.
+The guess parser will send an <literal>Accept:</literal> header
+for all known parser syntax mime types and based on the response,
+pick the appropriate parser to execute.
+</note>
+</listitem>
+
+
+<listitem>
+<para>Parse the content of a URI using an existing <type>raptor_www</type> connection</para>
+
+<para>The URI is resolved using the previously opened WWW connection
+to allow for existing configuration to be used and the content read from it:
+<programlisting>
+  raptor_parse_uri_with_connection(rdf_parser, uri, base_uri, connection);
+</programlisting>
+The <emphasis>base_uri</emphasis> is optional (can be
+<literal>NULL</literal>) and will default to the
+<emphasis>uri</emphasis>.
+</para>
+</listitem>
+
+
+<listitem>
+<para>Parse the content of a C <literal>FILE*</literal></para>
+
+<para>Parsing can read from a C STDIO file handle:
+<programlisting>
+  stream=fopen(filename, "rb");
+  raptor_parse_file_stream(rdf_parser, stream, filename, base_uri);
+  fclose(stream);
+</programlisting>
+This function can use take an optional <emphasis>filename</emphasis> which
+is used in locator error messages.
+The <emphasis>base_uri</emphasis> may be required by some parsers
+and if <literal>NULL</literal> will cause the parsing to fail.
+</para>
+</listitem>
+
+
+<listitem>
+<para>Parse the content of a file URI</para>
+
+<para>Parsing can read from a URI known to be a <literal>file:</literal> URI:
+<programlisting>
+  raptor_parse_file(rdf_parser, file_uri, base_uri);
+</programlisting>
+This function requires that the <emphasis>file_uri</emphasis> is
+a file URI, that is 
+<literal>raptor_uri_uri_string_is_file_uri( raptor_uri_as_string( file_uri) )</literal>
+must be true.
+The <emphasis>base_uri</emphasis> may be required by some parsers
+and if <literal>NULL</literal> will cause the parsing to fail.
+</para>
+</listitem>
+
+<listitem>
+<para>Parse chunks of syntax content provided by the application</para>
+
+<para>
 <programlisting>
   raptor_start_parse(rdf_parser, base_uri);
   while(/* not finished getting all content */) {
@@ -269,12 +335,31 @@ operation of turning syntax into triples.</para>
     /* obtain some syntax content in buffer of size buffer_len bytes */
     raptor_parse_chunk(rdf_parser, buffer, buffer_len, 0);
   }
-  raptor_parse_chunk(rdf_parser, NULL, 0, 1);
+  raptor_parse_chunk(rdf_parser, NULL, 0, 1); /* is_end = 1 */
 </programlisting>
-On the last <function>raptor_parse_chunk()</function> call, or after
-the loop is ended, the <literal>is_end</literal> parameter must be
-set to non-0.  Content can also be passed with this final call or
-NULL given if it is finished.  </para>
+The <emphasis>base_uri</emphasis> argument to 
+<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link>
+may be required by some parsers
+and if <literal>NULL</literal> will cause the parsing to fail.
+</para>
+
+<para>On the last
+<link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>
+call, or after the loop is ended, the <literal>is_end</literal>
+parameter must be set to non-0.  Content can be passed with the
+final call.  If no content is present at the end (such as in
+some kind of <quote>end of file</quote> situation), then a 0-length
+buffer_len or NULL buffer can be used.</para>
+
+<para>The minimal case is an entire parse in one chunk as follows:</para>
+<programlisting>
+  raptor_start_parse(rdf_parser, base_uri);
+  raptor_parse_chunk(rdf_parser, buffer, buffer_len, 1); /* is_end = 1 */
+</programlisting>
+
+</listitem>
+
+</orderedlist>
 
 </section>
 
