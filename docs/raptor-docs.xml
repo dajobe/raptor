@@ -22,7 +22,7 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
   <!-- Tutorial chapter -->
   <xi:include href="raptor-tutorial.xml"/>
 
-  <chapter id="part-reference-manual">
+  <chapter id="chapter-reference-manual">
     <title>Reference Manual</title>
 
     <xi:include href="xml/section-general.xml"/>
