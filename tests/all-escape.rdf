@@ -1,0 +1,7 @@
+<?xml version="1.1" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://example.org/node">
+    <rdf:value>&#x1;&#x2;&#x3;&#x4;&#x5;&#x6;&#x7;&#x8;	
+&#xB;&#xC;&#xD&#xE;&#xF;&#x10;&#x11;&#x12;&#x13;&#x14;&#x15;&#x16;&#x17;&#x18;&#x19;&#x1A;&#x1B;&#x1C;&#x1D;&#x1E;&#x1F; !"#$%&amp;'()*+,-./0123456789:/&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~&#x7F;</rdf:value>
+  </rdf:Description>
+</rdf:RDF>
