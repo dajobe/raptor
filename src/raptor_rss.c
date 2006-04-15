@@ -1125,7 +1125,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
 }
 
 
-static raptor_field_pair raptor_rss_uplift_map[]={
+static const raptor_field_pair raptor_rss_uplift_map[]={
   /* from */                  /* to */
 #ifdef RAPTOR_PARSEDATE_FUNCTION
   /* convert to ISO date */
