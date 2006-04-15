@@ -42,10 +42,6 @@
 #include "raptor_internal.h"
 
 
-/* If this is enabled, content type is received long after content */
-#undef USE_CURLINFO_CONTENT_TYPE
-
-
 static size_t
 raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userdata) 
 {
@@ -69,7 +65,6 @@ raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userd
 }
 
 
-#ifndef USE_CURLINFO_CONTENT_TYPE
 static size_t 
 raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
                                 void *userdata) 
@@ -99,7 +94,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
   
   return bytes;
 }
-#endif
+
 
 void
 raptor_www_curl_init(raptor_www *www)
@@ -121,13 +116,11 @@ raptor_www_curl_init(raptor_www *www)
   curl_easy_setopt(www->curl_handle, CURLOPT_WRITEDATA, www);
 
 
-#ifndef USE_CURLINFO_CONTENT_TYPE
   /* send all headers to this function */
   curl_easy_setopt(www->curl_handle, CURLOPT_HEADERFUNCTION, 
                    raptor_www_curl_header_callback);
   /* ... using this data pointer */
   curl_easy_setopt(www->curl_handle, CURLOPT_WRITEHEADER, www);
-#endif
 
   /* Make it follow Location: headers */
   curl_easy_setopt(www->curl_handle, CURLOPT_FOLLOWLOCATION, 1);
@@ -176,9 +169,6 @@ raptor_www_curl_fetch(raptor_www *www)
     raptor_www_error(www, www->error_buffer);
   } else {
     long lstatus;
-#ifdef USE_CURLINFO_CONTENT_TYPE
-    char* type;
-#endif
 
 #ifndef CURLINFO_RESPONSE_CODE
 #define CURLINFO_RESPONSE_CODE CURLINFO_HTTP_CODE
@@ -187,24 +177,6 @@ raptor_www_curl_fetch(raptor_www *www)
     /* Requires pointer to a long */
     if(curl_easy_getinfo(www->curl_handle, CURLINFO_RESPONSE_CODE, &lstatus) == CURLE_OK)
       www->status_code=lstatus;
-
-#ifdef USE_CURLINFO_CONTENT_TYPE
-    type=NULL;
-    if((curl_easy_getinfo(www->curl_handle, CURLINFO_CONTENT_TYPE, &type) == CURLE_OK) &&
-       type) {
-      int len=strlen(type);
-      char *type_buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
-      strncpy(type_buffer, type, len);
-      type_buffer[len]='\0';
-      www->type=type_buffer;
-
-#if RAPTOR_DEBUG > 2
-      RAPTOR_DEBUG3("Got content type '%s' (%d bytes)\n", type_buffer, len);
-#endif
-      if(www->content_type)
-        www->content_type(www, www->content_type_userdata, www->type);
-    }
-#endif
 
   }
 
