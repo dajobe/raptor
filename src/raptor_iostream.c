@@ -45,7 +45,7 @@
 struct raptor_iostream_s
 {
   void *context;
-  raptor_iostream_handler* handler;
+  const raptor_iostream_handler* handler;
   size_t bytes;
   int ended;
 };
@@ -65,7 +65,7 @@ struct raptor_iostream_s
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler) {
+raptor_new_iostream_from_handler(void *context, const raptor_iostream_handler *handler) {
   raptor_iostream* iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
@@ -99,7 +99,7 @@ raptor_sink_iostream_write_bytes(void *context,
 }
 
 
-static raptor_iostream_handler raptor_iostream_sink_handler={
+static const raptor_iostream_handler raptor_iostream_sink_handler={
   NULL, /* init */
   NULL, /* finish */
   raptor_sink_iostream_write_byte,
@@ -147,7 +147,7 @@ raptor_filename_iostream_write_end(void *context)
 }
 
 
-static raptor_iostream_handler raptor_iostream_filename_handler={
+static const raptor_iostream_handler raptor_iostream_filename_handler={
   NULL, /* init */
   NULL, /* finish */
   raptor_filename_iostream_write_byte,
@@ -190,7 +190,7 @@ raptor_new_iostream_to_filename(const char *filename)
 }
 
 
-static raptor_iostream_handler raptor_iostream_file_handler={
+static const raptor_iostream_handler raptor_iostream_file_handler={
   NULL, /* init */
   NULL, /* finish */
   raptor_filename_iostream_write_byte,
@@ -296,7 +296,7 @@ raptor_string_iostream_write_bytes(void *context,
   return raptor_stringbuffer_append_counted_string(con->sb, (const unsigned char*)ptr, size * nmemb, 1);
 }
 
-static raptor_iostream_handler raptor_iostream_string_handler={
+static const raptor_iostream_handler raptor_iostream_string_handler={
   raptor_string_iostream_init,
   raptor_string_iostream_finish,
   raptor_string_iostream_write_byte,
