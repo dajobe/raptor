@@ -903,7 +903,7 @@ RAPTOR_API
 unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
 RAPTOR_API
-void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
+void raptor_uri_set_handler(const raptor_uri_handler *handler, void *context);
 RAPTOR_API
 void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
 
@@ -1236,7 +1236,7 @@ typedef struct {
 
 
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_handler(void *context, raptor_iostream_handler *handler);
+raptor_iostream* raptor_new_iostream_from_handler(void *context, const raptor_iostream_handler *handler);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_sink(void);
 RAPTOR_API
