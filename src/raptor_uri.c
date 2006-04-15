@@ -70,9 +70,9 @@ static void *raptor_uri_current_uri_context;
  * @handler URI implementation.
  **/
 void
-raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
+raptor_uri_set_handler(const raptor_uri_handler *handler, void *context) 
 {
-  raptor_uri_current_uri_handler=handler;
+  raptor_uri_current_uri_handler=(raptor_uri_handler *)handler;
   raptor_uri_current_uri_context=context;
 }
 
@@ -916,26 +916,7 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
 }
 
 
-void
-raptor_uri_init_default_handler(raptor_uri_handler *handler) 
-{
-  if(handler->initialised)
-    return;
-  
-  handler->new_uri=raptor_default_new_uri;
-  handler->new_uri_from_uri_local_name=raptor_default_new_uri_from_uri_local_name;
-  handler->new_uri_relative_to_base=raptor_default_new_uri_relative_to_base;
-  handler->new_uri_for_rdf_concept=raptor_default_new_uri_for_rdf_concept;
-  handler->free_uri=raptor_default_free_uri;
-  handler->uri_equals=raptor_default_uri_equals;
-  handler->uri_copy=raptor_default_uri_copy;
-  handler->uri_as_string=raptor_default_uri_as_string;
-  handler->uri_as_counted_string=raptor_default_uri_as_counted_string;
-  
-  handler->initialised=1;
-}
-
-static raptor_uri_handler raptor_uri_default_handler = {
+static const raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_new_uri,
   raptor_default_new_uri_from_uri_local_name,
   raptor_default_new_uri_relative_to_base,
@@ -952,7 +933,6 @@ static raptor_uri_handler raptor_uri_default_handler = {
 void
 raptor_uri_init(void)
 {
-  raptor_uri_init_default_handler(&raptor_uri_default_handler);
   raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
 }
 
