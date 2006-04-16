@@ -1,4 +1,48 @@
+2006-04-15  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_www_curl.c: Delete alternate path using
+	CURLINFO_CONTENT_TYPE instead of grepping headers.
+
+	* src/raptor_www_curl.c: Add alternate path to use
+	CURLINFO_CONTENT_TYPE instead of grepping headers.  Downside is
+	that the content type appears long after content.  Add more debug
+	messages when RAPTOR_DEBUG > 2
+	(raptor_www_curl_init): Tidy alternate defines
+
+	* src/raptor_internal.h: Deleted raptor_uri_init_default_handler
+	prototype.
+
+	* src/raptor_uri.c: (raptor_uri_set_handler,
+	raptor_new_iostream_from_handler): Ajusted to take const handler
+	args.
+	(raptor_uri_init_default_handler): Deleted.
+	(raptor_uri_init): No need to init static struct.
+
+	* src/raptor.h: Adjust raptor_uri_set_handler and
+	raptor_new_iostream_from_handler prototypes to take const handler
+	args.
+
+	* src/raptor_rss.c: make raptor_rss_uplift_map const
+
+	* src/raptor_iostream.c: make handler field a const
+	(raptor_new_iostream_from_handler): Take a const handler.
+
+2006-04-14  Dave Beckett  <dave@dajobe.org>
+
+	* tests/all-escape.nt, tests/all-escape.rdf: All 0-7F ascii
+	escapes and the XML 1.1 output
+
+2006-04-11  Dave Beckett  <dave@dajobe.org>
+
+	* docs: DocBook updates
+
+2006-04-10  Dave Beckett  <dave@dajobe.org>
+
+	* docs: DocBook updates: Tutorial introduction, parsing.
+
 2006-04-09  Dave Beckett  <dave@dajobe.org>
+
+	* docs: DocBook updates
 
 	* src/raptor_xml.c: (raptor_xml_element_declare_namespace): Add
 	int return value for when a namespace is failed to be declared,
