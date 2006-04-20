@@ -81,6 +81,7 @@ content_files = \
 	raptor-tutorial-intro.xml \
 	raptor-tutorial-querying-functionality.xml \
 	raptor-tutorial-parsing.xml \
+	raptor-tutorial-serializing.xml \
 	version.xml
 
 # Images to copy into HTML directory
