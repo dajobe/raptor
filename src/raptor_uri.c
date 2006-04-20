@@ -113,7 +113,7 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
         unsigned char *new_fragment;
         raptor_uri* new_uri;
 
-        new_fragment=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)fragment)+2);
+        new_fragment=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)fragment) + 1 + sizeof(char*));
         *new_fragment='#';
         strcpy((char*)new_fragment+1, (const char*)fragment);
         new_uri=raptor_new_uri_relative_to_base(uri, new_fragment);
@@ -131,7 +131,7 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
   }
 
   len=strlen((const char*)uri_string);
-  p=(unsigned char*)RAPTOR_MALLOC(raptor_uri, len+1);
+  p=(unsigned char*)RAPTOR_MALLOC(raptor_uri, len + sizeof(char*));
   if(!p)
     return NULL;
   strcpy((char*)p, (const char*)uri_string);
@@ -164,7 +164,7 @@ raptor_default_new_uri_from_uri_local_name(void *context,
 {
   int uri_length=strlen((char*)uri);
   unsigned char *p=(unsigned char*)RAPTOR_MALLOC(cstring, 
-                                                 uri_length + strlen((const char*)local_name) + 1);
+                                                 uri_length + strlen((const char*)local_name) + sizeof(char*));
   if(!p)
     return NULL;
   
@@ -204,7 +204,7 @@ raptor_default_new_uri_relative_to_base(void *context,
                                         const unsigned char *uri_string) 
 {
   raptor_uri* new_uri;
-  size_t new_uri_len=strlen((const char*)base_uri)+strlen((const char*)uri_string)+1;
+  size_t new_uri_len=strlen((const char*)base_uri)+strlen((const char*)uri_string) + sizeof(char*);
 
   /* +2 is for \0 plus an extra 1 for adding any missing URI path '/' */
   new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len+2);
@@ -270,7 +270,7 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id)
 #endif
 
   /* "#id\0" */
-  len=1+strlen((char*)id)+1;
+  len=1+strlen((char*)id) + sizeof(char*);
   local_name=(unsigned char*)RAPTOR_MALLOC(cstring, len);
   if(!local_name)
     return NULL;
@@ -290,7 +290,7 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
   unsigned int base_uri_len=raptor_rdf_namespace_uri_len;
   unsigned int new_uri_len;
 
-  new_uri_len=base_uri_len+strlen(name)+1;
+  new_uri_len=base_uri_len+strlen(name) + sizeof(char*);
   new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, new_uri_len);
   if(!new_uri)
     return NULL;
@@ -377,7 +377,7 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 static raptor_uri*
 raptor_default_uri_copy(void *context, raptor_uri *uri)
 {
-  raptor_uri* new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, strlen((char*)uri)+1);
+  raptor_uri* new_uri=(raptor_uri*)RAPTOR_MALLOC(cstring, strlen((char*)uri) + sizeof(char*));
   if(!new_uri)
     return NULL;
   strcpy((char*)new_uri, (char*)uri);
@@ -490,7 +490,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
   char path[PATH_MAX];
 #endif
   /*     "file://" ... \0 */
-  size_t len=7+1;
+  size_t len=7 + sizeof(char*);
   
   if(!filename)
     return NULL;
@@ -576,20 +576,6 @@ raptor_uri_filename_to_uri_string(const char *filename)
   }
   *to='\0';
   
-#ifdef RAPTOR_DEBUG
-  if(1) {
-    size_t actual_len=strlen((const char*)buffer)+1;
-    if(actual_len != len) {
-      if(actual_len > len)
-        RAPTOR_FATAL3("uri length %d is LONGER than malloced %d\n", 
-                      (int)actual_len, (int)len);
-      else
-        RAPTOR_DEBUG4("uri '%s' length %d is shorter than malloced %d\n", 
-                      buffer, (int)actual_len, (int)len);
-    }
-  }
-#endif
-
   return buffer;
 }
 
@@ -692,7 +678,7 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
     return NULL;
   }
     
-  filename=(char*)RAPTOR_MALLOC(cstring, len+1);
+  filename=(char*)RAPTOR_MALLOC(cstring, len + sizeof(char*));
   if(!filename) {
     raptor_free_uri_detail(ud);
     return NULL;
@@ -742,25 +728,10 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   }
   *to='\0';
 
-#ifdef RAPTOR_DEBUG
-  if(1) {
-    size_t actual_len=strlen(filename);
-    if(actual_len != len) {
-      if(actual_len > len) {
-        fprintf(stderr, "filename '%s'\n", filename);
-        RAPTOR_FATAL3("Filename length %d is LONGER than malloced %d\n", 
-                      (int)actual_len, (int)len);
-      } else
-        RAPTOR_DEBUG3("Filename length %d is shorter than malloced %d\n", 
-                      (int)actual_len, (int)len);
-    }
-  }
-#endif
-
   if(fragment_p) {
     if(ud->fragment) {
       len=ud->fragment_len;
-      *fragment_p=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      *fragment_p=(unsigned char*)RAPTOR_MALLOC(cstring, len + sizeof(char*));
       strncpy((char*)*fragment_p, (const char*)ud->fragment, len+1);
     } else
       *fragment_p=NULL;
@@ -1030,7 +1001,7 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
   
   /* Create the final relative path */
   final_len = up_dirs*3 + to_dir_len + suffix_len; /* 3 for each "../" */
-  final_path=(unsigned char*)RAPTOR_MALLOC(cstring, final_len + 1);
+  final_path=(unsigned char*)RAPTOR_MALLOC(cstring, final_len + sizeof(char*));
   *final_path=0;
   
   /* First, add the necessary "../" parts */
@@ -1168,7 +1139,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
       suffix_len++; /* add one char for the '#' */
     
     /* Assemble the suffix */
-    suffix=(unsigned char*)RAPTOR_MALLOC(cstring, suffix_len + 1);
+    suffix=(unsigned char*)RAPTOR_MALLOC(cstring, suffix_len + sizeof(char*));
     cur_ptr=suffix;
     if(reference_file) {
       memcpy(suffix, reference_file, reference_file_len);
@@ -1204,7 +1175,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   /* If result is NULL at this point, it means that we were unable to find a
      relative URI, so we'll return a full absolute URI instead. */
   if(!result) {
-    result=(unsigned char*)RAPTOR_MALLOC(cstring, reference_len+1);
+    result=(unsigned char*)RAPTOR_MALLOC(cstring, reference_len + sizeof(char*));
     if(reference_len)
       memcpy(result, reference_str, reference_len);
     result[reference_len] = 0;
@@ -1284,7 +1255,7 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
   if(!string)
     return NULL;
   
-  new_string=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  new_string=(unsigned char*)RAPTOR_MALLOC(cstring, len + sizeof(char*));
   if(!new_string)
     return NULL;
   
