@@ -39,7 +39,7 @@ content bytes that can be used to guess.
 Using the
 <link linkend="raptor-new-parser-for-content"><function>raptor_new_parser_for_content()</function></link>
 function, all of these can be given as optional parameters, using NULL
-or 0 for undefined paramters.  The constructor will then use as much of
+or 0 for undefined parameters.  The constructor will then use as much of
 this information as possible.
 </para>
 <programlisting>
