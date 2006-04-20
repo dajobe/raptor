@@ -18,7 +18,7 @@ process.
 </para>
 </section>
 
-<section id="tutorial-create-parser">
+<section id="tutorial-parser-create">
 <title>Create the Parser object</title>
 
 <para>The parser can be created directly from a known name such as
@@ -265,7 +265,7 @@ to non-0 (true) will cause parser errors to be generated in these cases.
 </section>
 
 
-<section id="tutorial-parse-content">
+<section id="tutorial-parser-content">
 <title>Provide syntax content to parse</title>
 
 <para>The operation of turning syntax into RDF triples has several
@@ -285,7 +285,7 @@ for a full discussion of the inputs to the guessing.
 </note>
 
 
-<section>
+<section id="parse-from-uri">
 <title>Parse the content from a URI (<link linkend="raptor-parse-uri"><function>raptor_parse_uri()</function></link>)</title>
 
 <para>The URI is resolved and the content read from it and passed to
@@ -300,7 +300,7 @@ The <emphasis>base_uri</emphasis> is optional (can be
 </section>
 
 
-<section>
+<section id="parse-from-www">
 <title>Parse the content of a URI using an existing WWW connection (<link linkend="raptor-parse-uri-with-connection"><function>raptor_parse_uri_with_connection()</function></link>)</title>
 
 <para>The URI is resolved using an existing WWW connection (for
@@ -319,7 +319,7 @@ The <emphasis>base_uri</emphasis> is optional (can be
 </section>
 
 
-<section>
+<section id="parse-from-filehandle">
 <title>Parse the content of a C <literal>FILE*</literal> (<link linkend="raptor-parse-file-stream"><function>raptor_parse_file_stream()</function></link>)</title>
 
 <para>Parsing can read from a C STDIO file handle:
@@ -336,7 +336,7 @@ and if <literal>NULL</literal> will cause the parsing to fail.
 </section>
 
 
-<section>
+<section id="parse-from-file-uri">
 <title>Parse the content of a file URI (<link linkend="raptor-parse-file"><function>raptor_parse_file()</function></link>)</title>
 
 <para>Parsing can read from a URI known to be a <literal>file:</literal> URI:
@@ -353,7 +353,7 @@ and if <literal>NULL</literal> will cause the parsing to fail.
 </section>
 
 
-<section>
+<section id="parse-from-chunks">
 <title>Parse chunks of syntax content provided by the application  (<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link> and <link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>)</title>
 
 <para>
@@ -392,7 +392,7 @@ buffer_len or NULL buffer can be used.</para>
 </section>
 
 
-<section id="tutorial-parse-static-info">
+<section id="tutorial-parser-static-info">
 <title>Querying parser static information</title>
 
 <para>
@@ -419,7 +419,7 @@ parser only.
 </section>
 
 
-<section id="tutorial-parse-runtime-info">
+<section id="tutorial-parser-runtime-info">
 <title>Querying parser run-time information</title>
 
 <para>
@@ -432,7 +432,7 @@ file or URI the current parser has reached.
 </section>
 
 
-<section id="tutorial-parse-abort">
+<section id="tutorial-parser-abort">
 <title>Aborting parsing</title>
 
 <para>
@@ -446,7 +446,7 @@ an active parsing.
 </section>
 
 
-<section id="tutorial-destroy-parser">
+<section id="tutorial-parser-destroy">
 <title>Destroy the parser</title>
 
 <para>
