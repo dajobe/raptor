@@ -140,9 +140,6 @@ similar functions that take a handler as follows:
 
   raptor_serializer_set_warning_handler(rdf_serializer, user_data, warning_handler);
 </programlisting>
-<caution>The program will terminate
-with <function>abort()</function> if the fatal error handler returns.
-</caution>
 </para>
 
 </section>
