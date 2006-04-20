@@ -1,3 +1,10 @@
+2006-04-19  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_uri.c: Change all calloc/mallocs for URI strings to
+	add enough room for a full pointer at the end of a URI string to
+	stop valgrind moans on 64bit systems when they are looking for the
+	end of string NUL.
+
 2006-04-15  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_www_curl.c: Delete alternate path using
