@@ -100,8 +100,6 @@ XML documents where inner namespaces can override outer ones.
 @ns_uri_string: 
 @depth: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@nspace: 
 
 
 <!-- ##### FUNCTION raptor_namespaces_end_for_depth ##### -->

@@ -28,8 +28,6 @@ rules.
 @Param1: 
 @output: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@c: 
 
 
 <!-- ##### FUNCTION raptor_utf8_to_unicode_char ##### -->
@@ -50,8 +48,6 @@ rules.
 
 @Param1: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@c: 
 
 
 <!-- ##### FUNCTION raptor_unicode_is_xml10_namestartchar ##### -->
@@ -61,8 +57,6 @@ rules.
 
 @Param1: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@c: 
 
 
 <!-- ##### FUNCTION raptor_unicode_is_xml11_namechar ##### -->
@@ -72,8 +66,6 @@ rules.
 
 @Param1: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@c: 
 
 
 <!-- ##### FUNCTION raptor_unicode_is_xml10_namechar ##### -->
@@ -83,8 +75,6 @@ rules.
 
 @Param1: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@c: 
 
 
 <!-- ##### FUNCTION raptor_utf8_check ##### -->

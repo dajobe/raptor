@@ -289,6 +289,36 @@ To tidy up, delete the serializer object as follows:
 
 </section>
 
+<section id="tutorial-serializer-example">
+<title>Serializing example code</title>
+
+<example>
+<title><filename>rdfcat.c</filename>: Read any RDF syntax and serialize to RDF/XML (Abbreviated)</title>
+<programlisting>
+<xi:include href="rdfcat.c" parse="text"/>
+</programlisting>
+
+<para>Compile it like this:
+<screen>
+$ gcc -o rdfcat rdfcat.c `raptor-config --cflags` `raptor-config --libs`
+</screen>
+and run it on an RDF file as:
+<screen>
+$ ./rdfcat raptor.rdf
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rdf:RDF xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://usefulinc.com/ns/doap#"&gt;
+  &lt;rdf:Description rdf:about=""&gt;
+    &lt;foaf:maker&gt;
+      &lt;foaf:Person&gt;
+        &lt;foaf:name&gt;Dave Beckett&lt;/foaf:name&gt;
+...
+</screen>
+</para>
+
+</example>
+
+</section>
+
 </chapter>
 
 
