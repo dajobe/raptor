@@ -81,15 +81,15 @@ parser could be found, or the construction failed in another way.
 </section>
 
 
-<section id="tutorial-set-parser-features">
-<title>Set parser features</title>
+<section id="tutorial-parser-features">
+<title>Parser features</title>
 
 <para>There are several options that can be set on parsers, called
 <emphasis>features</emphasis>.  The exact list of features can be
 found via
 <link linkend="tutorial-querying-functionality">Querying Functionality</link>
 or in the API reference for 
-<link linkend="raptor-set-feature"><function>raptor_set_feature()</function></link>.  (This should be properly called raptor_parser_set_feature as
+<link linkend="raptor-set-feature"><function>raptor_set_feature()</function></link>.  (This should be properly called <function>raptor_parser_set_feature()</function> as
 it only applies to <literal>raptor_parser</literal> objects).
 </para>
 
@@ -104,6 +104,16 @@ The two functions that set features are:
   /* Set a string valued feature */
   raptor_set_feature_string(rdf_parser, feature, "abc");
 </programlisting>
+</para>
+
+<para>
+There are also two corresponding functions for reading the values of parser
+features:
+<link linkend="raptor-get-feature"><function>raptor_get_feature()</function></link>
+and
+<link linkend="raptor-get-feature-string"><function>raptor_get_feature_string()</function></link>
+taken the feature enumeration parameter and returning the integer or string
+value correspondingly.
 </para>
 
 </section>
@@ -244,6 +254,17 @@ if the namespace is declared inside different XML sub-trees.
 </section>
 
 
+<section id="tutorial-parse-strictness">
+<title>Set the parsing strictness</title>
+<para>
+<link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
+allows setting of the parser strictness flag.  The default is lax parsing,
+accepting older or deprecated syntax forms but may generate a warning. Setting
+to non-0 (true) will cause parser errors to be generated in these cases.
+</para>
+</section>
+
+
 <section id="tutorial-parse-content">
 <title>Provide syntax content to parse</title>
 
@@ -330,6 +351,60 @@ The <emphasis>base_uri</emphasis> may be required by some parsers
 and if <literal>NULL</literal> will cause the parsing to fail.
 </para>
 </section>
+
+
+<section>
+<title>Querying parser static information</title>
+
+<para>
+These methods return information about the constructed parser
+implementation corresponding to the information available
+via <link linkend="raptor-syntaxes-enumerate"><function>raptor_syntaxes_enumerate()</function></link>
+for all parsers.
+</para>
+
+<para><link linkend="raptor-get-name"><function>raptor_get_name()</function></link> return the parser syntax name,
+<link linkend="raptor-get-label"><function>raptor_get_label()</function></link>
+the long label for the parser and
+<link linkend="raptor-get-mime-type"><function>raptor_get_mime_type()</function></link>
+the primary MIME Type for the parser (there may be others that the parser
+will accept but this is the main one).
+</para>
+
+<para><link linkend="raptor-parser-get-accept-header"><function>raptor_parser_get_accept_header()</function></link>
+returns a string that would be sent in an HTTP
+request <code>Accept:</code> header for the syntaxes accepted by this
+parser only. 
+</para>
+
+</section>
+
+<section>
+<title>Querying parser run-time information</title>
+
+<para>
+<link linkend="raptor-get-locator"><function>raptor_get_locator()</function></link>
+returns the <link linkend="raptor-locator"><type>raptor_locator</type></link>
+for the current position in the input stream.  The <emphasis>locator</emphasis>
+structure contains full information on the details of where in the
+file or URI the current parser has reached.
+</para>
+</section>
+
+
+<section>
+<title>Aborting parsing</title>
+
+<para>
+<link linkend="raptor-parse-abort"><function>raptor_parse_abort()</function></link>
+allows the current parsing to be aborted, at which point no further
+triples will be passed to callbacks and the parser will attempt to
+return control to the application.  This is most useful when called
+inside a handler function which allows the application to decide to stop
+an active parsing.
+</para>
+</section>
+
 
 <section>
 <title>Parse chunks of syntax content provided by the application  (<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link> and <link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>)</title>
