@@ -96,7 +96,8 @@ man_MANS = libraptor.3
 EXTRA_DIST+= \
 libraptor.html \
 $(man_MANS) \
-version.xml.in
+version.xml.in \
+rdfprint.c
 
 
 if MAINTAINER_MODE
