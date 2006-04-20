@@ -119,7 +119,7 @@ value correspondingly.
 </section>
 
 
-<section id="tutorial-set-triple-handler">
+<section id="tutorial-parser-set-triple-handler">
 <title>Set RDF triple callback handler</title>
 
 <para>The main reason to parse a syntax is to get RDF triples
@@ -145,7 +145,7 @@ have some uses if just counting triples or validating a syntax.
 </section>
 
 
-<section id="tutorial-set-error-warning-handlers">
+<section id="tutorial-parser-set-error-warning-handlers">
 <title>Set fatal error, error and warning handlers</title>
 
 <para>There are several other callback handlers that can be set
@@ -185,7 +185,7 @@ with <function>abort()</function> if the fatal error handler returns.
 </section>
 
 
-<section id="tutorial-set-id-handler">
+<section id="tutorial-parser-set-id-handler">
 <title>Set the identifier creator handler</title>
 
 <para>Identifiers are created in some parsers by generating them
@@ -225,7 +225,7 @@ such as the value of a <literal>rdf:nodeID</literal> in RDF/XML.
 </section>
 
 
-<section id="tutorial-set-namespace-handler">
+<section id="tutorial-parser-set-namespace-handler">
 <title>Set namespace declared handler</title>
 
 <para>Raptor can report when namespace prefix/URIs are declared in
@@ -354,6 +354,45 @@ and if <literal>NULL</literal> will cause the parsing to fail.
 
 
 <section>
+<title>Parse chunks of syntax content provided by the application  (<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link> and <link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>)</title>
+
+<para>
+<programlisting>
+  raptor_start_parse(rdf_parser, base_uri);
+  while(/* not finished getting content */) {
+    unsigned char *buffer;
+    size_t buffer_len;
+    /* obtain some syntax content in buffer of size buffer_len bytes */
+    raptor_parse_chunk(rdf_parser, buffer, buffer_len, 0);
+  }
+  raptor_parse_chunk(rdf_parser, NULL, 0, 1); /* no data and is_end = 1 */
+</programlisting>
+The <emphasis>base_uri</emphasis> argument to 
+<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link>
+may be required by some parsers
+and if <literal>NULL</literal> will cause the parsing to fail.
+</para>
+
+<para>On the last
+<link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>
+call, or after the loop is ended, the <literal>is_end</literal>
+parameter must be set to non-0.  Content can be passed with the
+final call.  If no content is present at the end (such as in
+some kind of <quote>end of file</quote> situation), then a 0-length
+buffer_len or NULL buffer can be used.</para>
+
+<para>The minimal case is an entire parse in one chunk as follows:</para>
+<programlisting>
+  raptor_start_parse(rdf_parser, base_uri);
+  raptor_parse_chunk(rdf_parser, buffer, buffer_len, 1); /* is_end = 1 */
+</programlisting>
+
+</section>
+
+</section>
+
+
+<section>
 <title>Querying parser static information</title>
 
 <para>
@@ -403,45 +442,6 @@ return control to the application.  This is most useful when called
 inside a handler function which allows the application to decide to stop
 an active parsing.
 </para>
-</section>
-
-
-<section>
-<title>Parse chunks of syntax content provided by the application  (<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link> and <link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>)</title>
-
-<para>
-<programlisting>
-  raptor_start_parse(rdf_parser, base_uri);
-  while(/* not finished getting content */) {
-    unsigned char *buffer;
-    size_t buffer_len;
-    /* obtain some syntax content in buffer of size buffer_len bytes */
-    raptor_parse_chunk(rdf_parser, buffer, buffer_len, 0);
-  }
-  raptor_parse_chunk(rdf_parser, NULL, 0, 1); /* no data and is_end = 1 */
-</programlisting>
-The <emphasis>base_uri</emphasis> argument to 
-<link linkend="raptor-start-parse"><function>raptor_start_parse()</function></link>
-may be required by some parsers
-and if <literal>NULL</literal> will cause the parsing to fail.
-</para>
-
-<para>On the last
-<link linkend="raptor-parse-chunk"><function>raptor_parse_chunk()</function></link>
-call, or after the loop is ended, the <literal>is_end</literal>
-parameter must be set to non-0.  Content can be passed with the
-final call.  If no content is present at the end (such as in
-some kind of <quote>end of file</quote> situation), then a 0-length
-buffer_len or NULL buffer can be used.</para>
-
-<para>The minimal case is an entire parse in one chunk as follows:</para>
-<programlisting>
-  raptor_start_parse(rdf_parser, base_uri);
-  raptor_parse_chunk(rdf_parser, buffer, buffer_len, 1); /* is_end = 1 */
-</programlisting>
-
-</section>
-
 </section>
 
 
