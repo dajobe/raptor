@@ -21,7 +21,7 @@
 # 
 # 
 
-EXTRA_PROGRAMS = raptor_abort grapper
+EXTRA_PROGRAMS = raptor_abort grapper rdfcat rdfprint
 
 examples: grapper
 
@@ -41,6 +41,13 @@ grapper_CFLAGS=`pkg-config --cflags gtk+-2.0 gconf-2.0`
 grapper_LDFLAGS=`pkg-config --libs gtk+-2.0 gconf-2.0`
 grapper_DEPENDENCIES = $(top_builddir)/src/libraptor.la
 
+rdfcat_SOURCES = rdfcat.c
+rdfcat_LDADD=$(top_builddir)/src/libraptor.la
+rdfcat_DEPENDENCIES = $(top_builddir)/src/libraptor.la
+
+rdfprint_SOURCES = rdfprint.c
+rdfprint_LDADD=$(top_builddir)/src/libraptor.la
+rdfprint_DEPENDENCIES = $(top_builddir)/src/libraptor.la
 
 
 $(top_builddir)/src/libraptor.la:
