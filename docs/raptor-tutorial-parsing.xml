@@ -1,6 +1,6 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
-<chapter id="tutorial-parsing">
+<chapter id="tutorial-parsing" xmlns:xi="http://www.w3.org/2003/XInclude">
 <title>Parsing syntaxes to RDF Triples</title>
 
 <section id="tutorial-parsing-intro">
@@ -252,7 +252,7 @@ alternatives from functions that do most of the work starting from a
 URI to functions that allow passing in data buffers.</para>
 
 <note>
-<title>Parsing and MIME Type</title> 
+<title>Parsing and MIME Types</title> 
 The mime type of the retrieved content is not used to choose
 a parser unless the parser is of type <literal>guess</literal>.
 The guess parser will send an <literal>Accept:</literal> header
@@ -389,41 +389,7 @@ To tidy up, delete the parser object as follows:
 <example>
 <title><filename>rdfprint.c</filename>: Parse an RDF/XML file and print the triples</title>
 <programlisting>
-#include &lt;stdio.h&gt;
-#include &lt;raptor.h&gt;
-
-void
-print_triple(void* user_data, const raptor_statement* triple) 
-{
-  raptor_print_statement_as_ntriples(triple, stdout);
-  fputc('\n', stdout);
-}
-
-int
-main(int argc, char *argv[])
-{
-  raptor_parser* rdf_parser;
-  unsigned char *uri_string;
-  raptor_uri *uri, *base_uri;
-
-  raptor_init();
-
-  rdf_parser=raptor_new_parser("rdfxml");
-
-  raptor_set_statement_handler(rdf_parser, NULL, print_triple);
-
-  uri_string=raptor_uri_filename_to_uri_string(argv[1]);
-  uri=raptor_new_uri(uri_string);
-  base_uri=raptor_uri_copy(uri);
-
-  raptor_parse_file(rdf_parser, uri, base_uri);
-
-  raptor_free_uri(uri);
-  raptor_free_uri(base_uri);
-  raptor_free_parser(rdf_parser);
-
-  raptor_finish();
-}
+<xi:include href="rdfprint.c" parse="text"/>
 </programlisting>
 
 <para>Compile it like this:
