@@ -1,4 +1,10 @@
-2006-04-19  Dave Beckett  <dave@dajobe.org>
+2006-04-20  Dave Beckett  <dave@dajobe.org>
+
+	* examples/Makefile.am, examples/rdfcat.c, examples/rdfprint.c:
+	Add tutorial examples rdfcat.c and rdfprint.c here.
+
+	* docs: DocBook updates: new Tutorial chapter on serializing plus
+	completing of parsing chapter.
 
 	* src/raptor_uri.c: Change all calloc/mallocs for URI strings to
 	add enough room for a full pointer at the end of a URI string to
