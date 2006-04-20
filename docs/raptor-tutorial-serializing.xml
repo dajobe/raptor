@@ -16,7 +16,7 @@ finish the serializing and destroy the serializer object.
 </section>
 
 
-<section id="tutorial-create-serializer">
+<section id="tutorial-serializer-create">
 <title>Create the Serializer object</title>
 
 <para>The serializer can be created directly from a known name using
@@ -148,7 +148,7 @@ with <function>abort()</function> if the fatal error handler returns.
 </section>
 
 
-<section id="tutorial-serialize-to-destination">
+<section id="tutorial-serializer-to-destination">
 <title>Provide a destination for the serialized syntax</title>
 
 <para>The operation of turning RDF triples into a syntax has several
@@ -157,7 +157,7 @@ or string to functions that allow passing in a
 <link linkend="raptor-iostream"><type>raptor_iostream</type></link>
 which can be entirely user-constructed.</para>
 
-<section>
+<section id="serialize-to-filename">
 <title>Serialize to a filename (<link linkend="raptor-serialize-start-to-filename"><function>raptor_serialize_start_to_filename()</function></link>)</title>
 
 <para>Serialize to a new filename
@@ -170,7 +170,7 @@ and uses asf base URI, the file's URI.
 </para>
 </section>
 
-<section>
+<section id="serialize-to-string">
 <title>Serialize to a string (<link linkend="raptor-serialize-start-to-string"><function>raptor_serialize_start_to_string()</function></link>)</title>
 
 <para>Serialize to a string that is allocated by the serializer
@@ -192,7 +192,7 @@ takes an optional base URI but may be required by some serializers.
 </section>
 
 
-<section>
+<section id="serialize-to-filehandle">
 <title>Serialize to a FILE* file handle (<link linkend="raptor-serialize-start-to-file-handle"><function>raptor_serialize_start_to_file_handle()</function></link>)</title>
 
 <para>Serialize to an existing open C FILE* file handle
@@ -206,7 +206,7 @@ takes an optional base URI but may be required by some serializers.
 </para>
 </section>
 
-<section>
+<section id="serialize-to-iostream">
 <title>Serialize to an <link linkend="raptor-iostream"><type>raptor_iostream</type></link> (<link linkend="raptor-serialize-start"><function>raptor_serialize_start()</function></link>)</title>
 
 <para>This is the most flexible serializing method as it allows
@@ -230,7 +230,7 @@ via callbacks.
 </section>
 
 
-<section>
+<section id="tutorial-serializer-send-triples">
 <title>Send RDF Triples to serializer</title>
 
 <para>
@@ -259,7 +259,7 @@ get flushed or any string constructed for
 </section>
 
 
-<section>
+<section id="tutorial-serializer-runtime-info">
 <title>Querying serializer run-time information</title>
 
 <para>
@@ -277,7 +277,7 @@ file or URI the current serializer has reached.
 </section>
 
 
-<section id="tutorial-destroy-serializer">
+<section id="tutorial-serializer-destroy">
 <title>Destroy the serializer</title>
 
 <para>
