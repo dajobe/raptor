@@ -392,7 +392,7 @@ buffer_len or NULL buffer can be used.</para>
 </section>
 
 
-<section>
+<section id="tutorial-parse-static-info">
 <title>Querying parser static information</title>
 
 <para>
@@ -418,7 +418,8 @@ parser only.
 
 </section>
 
-<section>
+
+<section id="tutorial-parse-runtime-info">
 <title>Querying parser run-time information</title>
 
 <para>
@@ -431,7 +432,7 @@ file or URI the current parser has reached.
 </section>
 
 
-<section>
+<section id="tutorial-parse-abort">
 <title>Aborting parsing</title>
 
 <para>
