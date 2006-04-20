@@ -25,7 +25,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @output: 
 @Returns: 
 
@@ -46,7 +46,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 
@@ -55,7 +55,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 
@@ -64,7 +64,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 
@@ -73,7 +73,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 
