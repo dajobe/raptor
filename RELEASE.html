@@ -21,11 +21,21 @@ for version control.</p>
 <p>configure now allows <code>--enable-parsers=node</code> and
 <code>--enable-serializers=none</code>.  Using both is possible!</p>
 
+<p>No longer require libxml for rss-tag-soup parser</p>
+
+<p>Various Win32 fixes and VC build files updates from John Barstow.
+</p>
+
 
 <h3>Documentation Changes</h3>
 
+<p>Raptor now has a full tutorial covering all parsing and
+serializing functions along with example code for each.
+</p>
+
 <p>100% of all functions, structs and defines have gtkdoc generated
 documentation.</p>
+
 
 <h3><code>rapper</code> utility Changes</h3>
 
@@ -42,12 +52,32 @@ rapper -q -i ntriples -o rdfxml-abbrev example.ttl
 <h3>Parser Changes</h3>
 
 <p>All parsers no longer generate
-<code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code> as the statement
+<code>RAPTOR_IDENTIFIER_TYPE_PREDICATE</code> as the statement
 predicate type as deprecated in 1.4.8.  The replacement is
 type <code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code>.</p>
 
 <p>Turtle (and N3) parser gains true and false boolean literals.
 </p>
+
+<p>Parsers can register capabilities for handling multiple mime types
+with Q values.  These are then used in WWW requests for content
+in the <code>Accept:</code> header for HTTP.  Added
+<code>raptor_parser_factory_add_mime_type</code> for registering,
+<code>raptor_parser_get_accept_header</code> to get the accept header
+values for the types supported by one parser.
+</p>
+
+<p>From the previous change, the RSS parser now accepts various
+unregistered RSS mime types as well as the registered Atom one; the
+RDF/XML parser accepts unregistered mime types text/rdf.  Turtle
+parser accepts experimental mime types.  All unregistered or
+experimental types are accepted with lower Q.
+</p>
+
+<p>The RSS Tag Soup parser for RSS* and Atom no longer requires
+libxml2 (for it's XML Reader API).  Internal changes mean that it
+will fully work on top of expat.</p>
+
 
 
 <h3>Serializer Changes</h3>
@@ -75,6 +105,7 @@ to an iostream without the need to go via a string.</p>
 
 <p>Fixed bug in <code>raptor_iostream_write_xml_any_escaped_string</code>
 failing to write ';' after escaping U+0009 and U+000A</p>
+
 
 <h3>QName Class Changes</h3>
 
@@ -120,16 +151,41 @@ URI string argument for new function <code>raptor_uri_string_is_file_uri</code>
 which more clearly says that.
 </p>
 
+<p>Changed all URI string calloc/mallocs to add enough room for a
+full pointer at the string end to stop valgrind moaning on 64bit
+systems when looking for the end of string NUL.
+</p>
+
+
+<h3>WWW Class Changes</h3>
+
+<p>Get the curl success status into a long, not an int which causes
+failure on 64 bit.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=75">issue#0000075</a>
+</p>
+
+<p>WWW requests for content to parse now always send an appropriate
+<code>Accept:</code> header with Q values for the parser, or for the
+<code>guess</code> parser, all supported mime types.
+</p>
+
 
 <h3>Internal Changes</h3>
 
 <p>Added XML element methods
 <code>raptor_xml_element_get_attributes</code> and
-<code>raptor_xml_element_get_attributes_count</code>.
+<code>raptor_xml_element_get_attributes_count</code>,
+<code>raptor_xml_element_is_empty</code>.
 </p>
 
 <p>Many internal changes to SAX2 API to finally separate XML and
-RDF/XML parts.</p>
+RDF/XML parts.  The SAX2 API is fully usable on either libxml2 or expat.
+That last sentence implies a lot of work, by the way.</p>
+
+<p><code>raptor_uri_set_handler</code> and
+<code>raptor_new_iostream_from_handler</code> now take const handler
+args.
+</p>
 
 
 <h2 id="rel1_4_8"><a name="rel1_4_8">Raptor 1.4.8 Changes</a></h2>
