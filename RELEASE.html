@@ -10,18 +10,15 @@
 
 <h2 id="rel1_4_9"><a name="rel1_4_9">Raptor 1.4.9 Changes</a></h2>
 
-<p>Not yet released.
-</p>
-
 <h3>Configuration and Build Changes</h3>
 
 <p>Now using <a href="http://subversion.tigris.org/">Subversion</a>
-for version control.</p>
+for version control and the <a href="INSTALL.html">Raptor installation instructions</a> explain how to get Raptor from Subversion.</p>
 
 <p>configure now allows <code>--enable-parsers=node</code> and
 <code>--enable-serializers=none</code>.  Using both is possible!</p>
 
-<p>No longer require libxml for rss-tag-soup parser</p>
+<p>No longer require libxml2 for the RSS Tag Soup parser</p>
 
 <p>Various Win32 fixes and VC build files updates from John Barstow.
 </p>
@@ -29,23 +26,28 @@ for version control.</p>
 
 <h3>Documentation Changes</h3>
 
-<p>Raptor now has a full tutorial covering all parsing and
-serializing functions along with example code for each.
+<p>A new 
+<a href="http://librdf.org/raptor/api/tutorial.html">Raptor Tutorial</a>
+was written covering using all parsing and serializing functions along with
+example code.
 </p>
 
-<p>100% of all functions, structs and defines have gtkdoc generated
+<p>The
+<a href="http://librdf.org/raptor/api/reference-manual.html">Raptor Reference Manual</a> 
+now covers 100% of all functions, structs and defines with gtkdoc generated
 documentation.</p>
 
 
 <h3><code>rapper</code> utility Changes</h3>
 
 <p><code>rapper</code> now uses namespaces found in parsing to give
-hints to the serializer.  The result of this is that rapper can be
-used as an RDF pretty-printer filter especially good at such things
-as N-Triples to RDF/XML or RDF/XML-Abbrev. such as:
+hints to the serializer as to how to format the output.  The result
+of this is that <code>rapper</code> can be used as an RDF
+pretty-printer and is especially good at such things as turning flat
+N-Triples to RDF/XML or RDF/XML-Abbrev. such as:
 </p>
 <pre>
-rapper -q -i ntriples -o rdfxml-abbrev example.ttl
+rapper -q -i ntriples -o rdfxml-abbrev example.nt
 </pre>
 
 
@@ -53,10 +55,12 @@ rapper -q -i ntriples -o rdfxml-abbrev example.ttl
 
 <p>All parsers no longer generate
 <code>RAPTOR_IDENTIFIER_TYPE_PREDICATE</code> as the statement
-predicate type as deprecated in 1.4.8.  The replacement is
-type <code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code>.</p>
+predicate type, as deprecated in 1.4.8.  The replacement
+type generated is <code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code>.</p>
 
-<p>Turtle (and N3) parser gains true and false boolean literals.
+<p>The Turtle parser now has <code>true</code> and <code>false</code>
+boolean literals, which were accidently omiited from the parser in
+the 1.4.8 update.
 </p>
 
 <p>Parsers can register capabilities for handling multiple mime types
@@ -67,11 +71,12 @@ in the <code>Accept:</code> header for HTTP.  Added
 values for the types supported by one parser.
 </p>
 
-<p>From the previous change, the RSS parser now accepts various
+<p>From the previous change, the RSS parser now accepts several
 unregistered RSS mime types as well as the registered Atom one; the
-RDF/XML parser accepts unregistered mime types text/rdf.  Turtle
-parser accepts experimental mime types.  All unregistered or
-experimental types are accepted with lower Q.
+RDF/XML parser accepts unregistered mime type <code>text/rdf</code>
+seen occasionally; the Turtle parser accepts several experimental
+mime types.  All unregistered or experimental types are accepted with
+lower Q than any registered type.
 </p>
 
 <p>The RSS Tag Soup parser for RSS* and Atom no longer requires
@@ -107,12 +112,6 @@ to an iostream without the need to go via a string.</p>
 failing to write ';' after escaping U+0009 and U+000A</p>
 
 
-<h3>QName Class Changes</h3>
-
-<p>Added <code>raptor_qname_get_namespace</code> to get the namespace
-associated with a QName.</p>
-
-
 <h3>Namespaces Class Changes</h3>
 
 <p>Added <code>raptor_namespaces_qname_from_uri</code> to do URI
@@ -125,6 +124,12 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=62">Issue#0000062</a>
 
 <p>Added <code>raptor_namespace_get_counted_prefix</code> to return a
 namespace prefix and it's length.</p>
+
+
+<h3>QName Class Changes</h3>
+
+<p>Added <code>raptor_qname_get_namespace</code> to get the namespace
+associated with a QName.</p>
 
 
 <h3>StringBuffer Class Changes</h3>
@@ -156,6 +161,11 @@ full pointer at the string end to stop valgrind moaning on 64bit
 systems when looking for the end of string NUL.
 </p>
 
+<p><code>raptor_uri_set_handler</code> and
+<code>raptor_new_iostream_from_handler</code> now take const
+<em>handler</em> arguments.
+</p>
+
 
 <h3>WWW Class Changes</h3>
 
@@ -175,17 +185,15 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=75">issue#0000075</a>
 <p>Added XML element methods
 <code>raptor_xml_element_get_attributes</code> and
 <code>raptor_xml_element_get_attributes_count</code>,
-<code>raptor_xml_element_is_empty</code>.
+<code>raptor_xml_element_is_empty</code>
+to the SAX2 API.
 </p>
 
-<p>Many internal changes to SAX2 API to finally separate XML and
-RDF/XML parts.  The SAX2 API is fully usable on either libxml2 or expat.
-That last sentence implies a lot of work, by the way.</p>
+<p>Many internal changes were made to the SAX2 API to finally
+separate XML and RDF/XML parts.  The SAX2 API is now fully usable on
+either libxml2 or expat.  That last sentence implies a lot of work,
+by the way.</p>
 
-<p><code>raptor_uri_set_handler</code> and
-<code>raptor_new_iostream_from_handler</code> now take const handler
-args.
-</p>
 
 
 <h2 id="rel1_4_8"><a name="rel1_4_8">Raptor 1.4.8 Changes</a></h2>
