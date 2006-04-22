@@ -1,5 +1,7 @@
 2006-04-22  Dave Beckett  <dave@dajobe.org>
 
+	* Bumped version to 1.4.10
+
 	* Snapshotted raptor_1_4_9 for 1.4.9 release
 
 	* src/raptor_rdfxml.c: (raptor_rdfxml_sax2_new_namespace_handler):

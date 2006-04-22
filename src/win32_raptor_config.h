@@ -90,7 +90,7 @@ extern "C" {
  */
 
 /* Release version as a decimal */
-#define RAPTOR_VERSION_DECIMAL 10409
+#define RAPTOR_VERSION_DECIMAL 10410
 
 /* Major version number */
 #define RAPTOR_VERSION_MAJOR 1
@@ -99,10 +99,10 @@ extern "C" {
 #define RAPTOR_VERSION_MINOR 4
 
 /* Release version number */
-#define RAPTOR_VERSION_RELEASE 9
+#define RAPTOR_VERSION_RELEASE 10
 
 /* Version number of package */
-#define VERSION "1.4.9"
+#define VERSION "1.4.10"
 
 
 #ifdef RAPTOR_XML_LIBXML
