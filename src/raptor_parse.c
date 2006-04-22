@@ -766,10 +766,13 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     if(!www)
       return 1;
   } else {
+    const char *accept_h;
+
     www=raptor_www_new();
     if(!www)
       return 1;
-    const char *accept_h=raptor_parser_get_accept_header(rdf_parser);
+
+    accept_h=raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
       raptor_www_set_http_accept(www, accept_h);
       RAPTOR_FREE(cstring, accept_h);
