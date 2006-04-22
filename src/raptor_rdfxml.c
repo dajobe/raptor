@@ -634,11 +634,11 @@ raptor_rdfxml_sax2_new_namespace_handler(void *user_data,
                                          raptor_namespace* nspace)
 {
   raptor_parser* rdf_parser;
-  rdf_parser=(raptor_parser*)user_data;
   const unsigned char* namespace_name;
   size_t namespace_name_len;
   raptor_uri* uri=raptor_namespace_get_uri(nspace);
 
+  rdf_parser=(raptor_parser*)user_data;
   raptor_parser_start_namespace(rdf_parser, nspace);
 
   if(!uri)
