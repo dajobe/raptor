@@ -1,3 +1,11 @@
+2006-04-22  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_sax2_new_namespace_handler):
+	Move var def to start of block.
+
+	* src/raptor_parse.c: (raptor_parse_uri_with_connection): Move var
+	def to start of block.
+
 2006-04-20  Dave Beckett  <dave@dajobe.org>
 
 	* examples/Makefile.am, examples/rdfcat.c, examples/rdfprint.c:
