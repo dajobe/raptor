@@ -559,7 +559,7 @@ raptor_rss_end_element_handler(void *user_data,
   raptor_rss_parser* rss_parser;
   const unsigned char* name=raptor_xml_element_get_name(xml_element)->local_name;
   raptor_rss_element* rss_element;
-  size_t cdata_len;
+  size_t cdata_len=0;
   unsigned char* cdata=NULL;
 
   rss_element=(raptor_rss_element*)xml_element->user_data;
