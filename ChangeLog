@@ -1,6 +1,21 @@
 2006-04-22  Dave Beckett  <dave@dajobe.org>
 
-	* Bumped version to 1.4.10
+	* src/raptor_xml_writer.c: (main): Rewrite to remove warning
+	punning
+
+	* src/raptor_www_test.c: (main): Rewrite to remove warning punning
+
+	* src/raptor_uri.c: (raptor_uri_uri_string_to_filename_fragment):
+	Rewrite to remove warning punning
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_item): Init
+	element to NULL
+
+	* src/raptor_rss.c: (raptor_rss_end_element_handler): Init
+	cdata_len to 0
+
+	* configure.ac, src/win32_raptor_config.h: Bumped version to
+	1.4.10
 
 	* Snapshotted raptor_1_4_9 for 1.4.9 release
 
