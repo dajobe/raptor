@@ -713,12 +713,12 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
 #endif
     if(c == '%') {
       if(*from && from[1]) {
-        unsigned char hexbuf[3];
-        unsigned char *endptr=NULL;
-        hexbuf[0]=*from;
-        hexbuf[1]=from[1];
+        char hexbuf[3];
+        char *endptr=NULL;
+        hexbuf[0]=(char)*from;
+        hexbuf[1]=(char)from[1];
         hexbuf[2]='\0';
-        c=(char)strtol((const char*)hexbuf, (char**)&endptr, 16);
+        c=(char)strtol((const char*)hexbuf, &endptr, 16);
         if(endptr == &hexbuf[2])
           *to++ = c;
       }
