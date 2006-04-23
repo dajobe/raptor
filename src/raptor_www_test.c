@@ -54,7 +54,7 @@ int main (int argc, char *argv[])
   raptor_www *www;
   const char *user_agent="raptor-www-test";
   raptor_uri *uri;
-  unsigned char *string=NULL;
+  void *string=NULL;
   size_t string_length=0;
   
   if(argc>1)
@@ -79,7 +79,7 @@ int main (int argc, char *argv[])
   /* start retrieval (always a GET) */
   
   if(raptor_www_fetch_to_string(www, uri,
-                                (void**)&string, &string_length, malloc)) {
+                                &string, &string_length, malloc)) {
     printf("WWW fetch failed\n");
   } else {
     printf("HTTP response status %d\n", www->status_code);
