@@ -631,7 +631,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   raptor_xml_writer* xml_writer;
   raptor_rss_model* rss_model;
   raptor_uri *base_uri=serializer->base_uri;
-  raptor_xml_element *element;
+  raptor_xml_element *element=NULL;
   raptor_qname **attrs=NULL;
   raptor_uri* base_uri_copy=NULL;
   int f;
