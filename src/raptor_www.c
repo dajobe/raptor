@@ -383,7 +383,9 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
     strcpy(value_copy, value);
   }
 
+#if RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Using Accept header: '%s'\n", www->http_accept);
+#endif
 }
 
 
