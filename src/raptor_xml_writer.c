@@ -980,12 +980,12 @@ main(int argc, char *argv[])
   raptor_uri* base_uri_copy=NULL;
 
   /* for raptor_new_iostream_to_string */
-  char *string=NULL;
+  void *string=NULL;
   size_t string_len=0;
 
   raptor_init();
   
-  iostr=raptor_new_iostream_to_string((void**)&string, &string_len, NULL);
+  iostr=raptor_new_iostream_to_string(&string, &string_len, NULL);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create iostream to string\n", program);
     exit(1);
