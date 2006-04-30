@@ -6,7 +6,7 @@
 .\" Copyright (C) 2002-2006 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2006-03-14"
+.TH libraptor 3 "2006-05-30"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -544,7 +544,7 @@ Raptor has a raptor_uri class must be used for manipulating and
 passing URI references.  The default internal implementation
 uses char* strings for URIs, manipulating them and constructing them.
 This URI implementation can be replaced by any other that provides the
-equivalent functionality, using the raptor_uri_set_handler function.
+equivalent functionality, using the \fBraptor_uri_set_handler\fP function.
 
 .SH "URI CONSTRUCTORS"
 There a several constructors for raptor_uri to build them from
@@ -639,7 +639,7 @@ Use \fBraptor_uri_uri_string_is_file_uri\fP in preference.
 .IP "\fBint raptor_uri_uri_string_is_file_uri(const unsigned char* \fIuri_string\fP)\fR"
 Returns non-zero if the given URI string represents a filename.
 .SH "URI CLASS IMPLEMENTATION"
-.IP "\fBvoid raptor_uri_set_handler(raptor_uri_handler *\fIhandler\fB, void *\fIcontext\fB)\fR"
+.IP "\fBvoid raptor_uri_set_handler(const raptor_uri_handler *\fIhandler\fB, void *\fIcontext\fB)\fR"
 Change the URI class implementation to the functions provided by the
 \fIhandler\fR
 URI implementation.
@@ -951,7 +951,7 @@ size \fIlength\fP.  Returns non-0 on failure.
 This class provides an I/O stream that can write to filenames, FILE*,
 strings and user-defined output via callbacks.
 .SH "IOSTREAM CONSTRUCTOR"
-.IP "\fBraptor_iostream* raptor_new_iostream_from_handler(void *\fIcontext\fB, raptor_iostream_handler *\fIhandler\fB)\fR"
+.IP "\fBraptor_iostream* raptor_new_iostream_from_handler(void* \fIcontext\fB, const raptor_iostream_handler *\fIhandler\fB)\fR"
 Create a new raptor iostream from a user-defined
 raptor_iostream_handler \fIhandler\fP that is called with the
 passed-in \fIcontext\fP for the write operations.
@@ -1017,11 +1017,13 @@ array of QNames.  As set by \fBvoid raptor_xml_element_set_attributes\fP.
 .IP "\fBint raptor_xml_element_get_attributes_count(raptor_xml_element* \fIxml_element\fP)\fR"
 Get the number of attributes of an XML element \fIxml_element\fP as
 set by \fBvoid raptor_xml_element_set_attributes\fP.
-.IP "\fBvoid raptor_xml_element_declare_namespace(raptor_xml_element* \fIxml_element\fP, raptor_namespace* \fInspace\fP)\fR"
+.IP "\fBint raptor_xml_element_declare_namespace(raptor_xml_element* \fIxml_element\fP, raptor_namespace* \fInspace\fP)\fR"
 Declare an XML namespace \fInspace\fP expliclitly on XML element
 \fIxml_element\fP.  Namespaces used in the element or attribute
 names are automatically declared, this method allows additional ones
 to be done.
+.IP "\fBint raptor_xml_element_is_empty(raptor_xml_element*\fI xml_element\fP)"
+Return non-0 if the XML element is empty.
 .IP "\fBint raptor_iostream_write_xml_element(raptor_iostream* \fIiostr\fP, raptor_xml_element *\fIelement\fP, raptor_namespace_stack* \fInstack\fP, int \fIis_empty\fP, int \fIis_end\fP, raptor_simple_message_handler \fIerror_handler\fP, void* \fIerror_data\fP, int \fIdepth\fP)\fR"
 Write a XML element \fIxml_element\fP to iostream \fIostr\fP.
 This is done in context of an XML namespace stack \fInstack\fP and
@@ -1125,6 +1127,10 @@ Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
 .SS 1.4.9
+Added \fBraptor_parser_get_accept_header\fP
+.LP
+Added \fBraptor_xml_element_is_empty\fP
+.LP
 Added \fBraptor_qname_get_namespace\fP
 .LP
 Added \fBraptor_iostream_write_uri\fP
@@ -1468,9 +1474,10 @@ http://my.netscape.com/publish/formats/rss-spec-0.91.html
 http://purl.org/rss/1.0/spec
 .UE
 
-\fIAtom Publishing Format and Protocol (atompub)\fR, IETF working group,
-.UR http://www.ietf.org/html.charters/atompub-charter.html
-http://www.ietf.org/html.charters/atompub-charter.html
+\fIAtom 1.0 syndication format\fP,
+RFC 4287,
+.UR http://www.ietf.org/rfc/rfc4287.txt
+http://www.ietf.org/rfc/rfc4287.txt
 .UE
 
 .SH SEE ALSO
