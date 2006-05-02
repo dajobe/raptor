@@ -219,6 +219,7 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
                                 serializer->xml_version);
   
   context->xml_writer=xml_writer;
+  context->written_header=0;
 
   return 0;
 }
