@@ -213,17 +213,6 @@ raptor_rss_parse_terminate(raptor_parser *rdf_parser)
   raptor_rss_parser *rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int n;
   
-  if(!rdf_parser->failed) {
-    /* turn strings into URIs, move things around if needed */
-    raptor_rss_insert_identifiers(rdf_parser);
-    
-    /* add some new fields  */
-    raptor_rss_uplift_items(rdf_parser);
-    
-    /* generate the triples */
-    raptor_rss_emit(rdf_parser);
-  }
-
   if(rss_parser->sax2)
     raptor_free_sax2(rss_parser->sax2);
 
@@ -723,6 +712,9 @@ raptor_rss_comment_handler(void *user_data, raptor_xml_element* xml_element,
 {
   raptor_rss_element* rss_element;
 
+  if(!xml_element)
+    return;
+  
   rss_element=(raptor_rss_element*)xml_element->user_data;
 
   if(rss_element->xml_writer) {
@@ -1218,10 +1210,27 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
                        int is_end)
 {
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
+  int ret;
+  
   if(rdf_parser->failed)
     return 1;
 
-  return raptor_sax2_parse_chunk(rss_parser->sax2, s, len, is_end);
+  raptor_sax2_parse_chunk(rss_parser->sax2, s, len, is_end);
+
+  if(!is_end)
+    return 0;
+
+  if(rdf_parser->failed)
+    return 1;
+
+  /* turn strings into URIs, move things around if needed */
+  raptor_rss_insert_identifiers(rdf_parser);
+  
+  /* add some new fields  */
+  raptor_rss_uplift_items(rdf_parser);
+  
+  /* generate the triples */
+  raptor_rss_emit(rdf_parser);
 }
 
 
