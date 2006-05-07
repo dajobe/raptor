@@ -1033,7 +1033,7 @@ raptor_rdfxml_comment_handler(void *user_data, raptor_xml_element* xml_element,
   raptor_rdfxml_parser* rdf_xml_parser;
   raptor_rdfxml_element* element;
 
-  if(rdf_parser->failed)
+  if(rdf_parser->failed || !xml_element)
     return;
 
   rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
