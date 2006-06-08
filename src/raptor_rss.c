@@ -1210,7 +1210,6 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
                        int is_end)
 {
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
-  int ret;
   
   if(rdf_parser->failed)
     return 1;
@@ -1231,6 +1230,8 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
   
   /* generate the triples */
   raptor_rss_emit(rdf_parser);
+
+  return 0;
 }
 
 
