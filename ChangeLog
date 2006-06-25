@@ -1,4 +1,35 @@
+2006-06-07  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.c: (raptor_rss_parse_chunk): Return 0 on success
+
+2006-05-07  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_comment_handler): Do nothing
+	when a comment is given outside an xml_element context.
+
+	* src/raptor_rss.c: (raptor_rss_parse_chunk,
+	raptor_rss_parse_terminate): Make triples appear at end of
+	parsing, not on parser destruction which was terribly wrong.
+	(raptor_rss_comment_handler): Do nothing when a comment is given
+	outside an xml_element context.
+
+2006-05-02  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_start):
+	Reset "written header" flag. Without this, reusing a serializer
+	dies.
+
+2006-04-30  Dave Beckett  <dave@dajobe.org>
+
+	* docs/libraptor.3: Updated for some final 1.4.9 changes
+
 2006-04-22  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_guess.c: (raptor_guess_parse_chunk): Tired of seeing
+	guess parser name, move to verbose debugging.
+
+	* src/raptor_www.c: (raptor_www_set_http_accept): Tired of seeing
+	accept headers, move to verbose debugging.
 
 	* src/raptor_xml_writer.c: (main): Rewrite to remove warning
 	punning
