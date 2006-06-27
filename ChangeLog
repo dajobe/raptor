@@ -1,3 +1,35 @@
+2006-06-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/n3_parser.y: Remove duplicate symbol PREFIX.
+	(raptor_n3_generate_statement): Do not turn a rdf:_n into an
+	ordinal but just check it for validity.
+
+	* src/turtle_parser.y: Remove duplicate symbol PREFIX.
+	(raptor_turtle_generate_statement): Do not turn a rdf:_n predicate
+	into an ordinal but just check it for validity.
+
+	* src/ntriples_parse.c: (raptor_ntriples_generate_statement): Do
+	not turn a rdf:_n predicate into an ordinal but just check it for
+	validity.
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_generate_statement): Turn a
+	predicate ordinal into a resource using
+	raptor_new_uri_from_rdf_ordinal Handle reifying this afterwards.
+
+	* src/raptor_general.c: (raptor_statement_copy): Turn a subject,
+	predicate or object ordinal into a resource using
+	raptor_new_uri_from_rdf_ordinal
+
+	* src/raptor_internal.h: Added raptor_new_uri_from_rdf_ordinal
+	prototype.
+
+	* src/raptor_uri.c: (raptor_new_uri_from_rdf_ordinal): Added - internal.
+
+2006-06-25  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_generate_statement): Add
+	predicate_ordinal field, for now.  Fix up calls to this to use it.
+
 2006-06-07  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_rss.c: (raptor_rss_parse_chunk): Return 0 on success
