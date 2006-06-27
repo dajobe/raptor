@@ -152,7 +152,6 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   /* raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)parser->context; */
   raptor_statement *statement=&parser->statement;
   raptor_uri *subject_uri=NULL;
-  int predicate_ordinal=0;
   raptor_uri *predicate_uri=NULL;
   raptor_uri *object_uri=NULL;
   raptor_uri *datatype_uri=NULL;
@@ -172,23 +171,16 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
    object_literal_language=NULL;
  }
 
-  /* Predicates in N-Triples are URIs or ordinals */
+  /* Predicates in N-Triples are URIs but check for bad ordinals */
   if(!strncmp((const char*)predicate, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    predicate_ordinal=raptor_check_ordinal(predicate+44);
-    if(predicate_ordinal > 0) {
-      statement->predicate=(void*)&predicate_ordinal;
-      statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
-    } else {
+    int predicate_ordinal=raptor_check_ordinal(predicate+44);
+    if(predicate_ordinal <= 0)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate);
-      predicate_ordinal=0;
-    }
   }
   
-  if(!predicate_ordinal) {
-    predicate_uri=raptor_new_uri_relative_to_base(parser->base_uri, predicate);
-    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-    statement->predicate=predicate_uri;
-  }
+  predicate_uri=raptor_new_uri_relative_to_base(parser->base_uri, predicate);
+  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate=predicate_uri;
   
   /* Three choices for object from N-Triples */
   statement->object_literal_language=NULL;
