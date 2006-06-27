@@ -8,6 +8,45 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
+<h2 id="rel1_4_10"><a name="rel1_4_10">Raptor 1.4.10 Changes</a></h2>
+
+<p>Not yet released.
+</p>
+
+<h3>General Changes</h3>
+
+<p>No parser will now generate a triple with an identifier type
+<code>RAPTOR_IDENTIFIER_TYPE_ORDINAL</code>.  Only identifier type
+resource, anonymous (blank node) and literal will be generated.
+All serializers will convert any existing ordinal type on input to resource.
+</p>
+
+<h3>Parser Changes</h3>
+
+<p>All parsers no longer generate a triple with an identifier type
+<code>RAPTOR_IDENTIFIER_TYPE_ORDINAL</code>, as deprecated in 1.4.8.
+The replacement type generated is <code>RAPTOR_IDENTIFIER_TYPE_RESOURCE</code>.
+</p>
+
+
+<p>The RSS Tag Soup (<code>rss-tag-soup</code>) parser< now makes the
+triples appear before parser destruction. This caused odd symptoms
+like parsing in python returning no triples and the parser then
+crashing during object destruction.
+</p>
+
+<p>The RDF/XML (<code>rdfxml</code>) parser no longer crashes if a
+comment is seen outside an element, such as before or after the root
+element.</p>
+
+
+<h3>Serializer Changes</h3>
+
+<p>The RDF/XML (<code>rdfxml</code>) serializer no longer crashes if
+the serializer is used more than once.
+</p>
+
+
 <h2 id="rel1_4_9"><a name="rel1_4_9">Raptor 1.4.9 Changes</a></h2>
 
 <h3>Configuration and Build Changes</h3>
