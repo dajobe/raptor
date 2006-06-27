@@ -1285,6 +1285,27 @@ raptor_uri_to_string(raptor_uri *uri)
 }
 
 
+/**
+ * raptor_new_uri_from_rdf_ordinal:
+ * @ordinal: integer rdf:_n
+ * 
+ * Internal - convert an integer rdf:_n ordinal to the resource URI
+ * 
+ * Return value: new URI object or NULL on failure
+ **/
+raptor_uri*
+raptor_new_uri_from_rdf_ordinal(int ordinal)
+{
+  /* 55 = strlen(rdf namespace URI) + _ + 10-digit number + \0 */
+  unsigned char uri_string[55];
+  strncpy((char*)uri_string, (const char*)raptor_rdf_namespace_uri, 
+          raptor_rdf_namespace_uri_len);
+  sprintf((char*)uri_string+raptor_rdf_namespace_uri_len, "_%d",
+          ordinal);
+  return raptor_new_uri(uri_string);
+}
+
+
 #ifdef STANDALONE
 
 #include <stdio.h>
