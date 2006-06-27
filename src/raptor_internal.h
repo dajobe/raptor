@@ -668,6 +668,7 @@ void raptor_qname_print(FILE *stream, raptor_qname* name);
 
 /* raptor_uri.c */
 void raptor_uri_init(void);
+raptor_uri* raptor_new_uri_from_rdf_ordinal(int ordinal);
 
 /* raptor_parse.c */
 void raptor_init_parser_rdfxml(void);
