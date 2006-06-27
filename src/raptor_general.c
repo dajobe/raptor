@@ -312,18 +312,15 @@ raptor_statement_copy(const raptor_statement *statement) {
     strcpy((char*)new_blank, (const char*)statement->subject);
     s->subject=new_blank;
   } else if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    int *new_ordinal=(int*)RAPTOR_MALLOC(int, sizeof(int));
-    *new_ordinal=*((int*)statement->subject);
-    s->subject=new_ordinal;
+    s->subject=raptor_new_uri_from_rdf_ordinal(*((int*)statement->subject));
+    s->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else
     s->subject=raptor_uri_copy((raptor_uri*)statement->subject);
 
-  s->predicate_type=statement->predicate_type;
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    int *new_ordinal=(int*)RAPTOR_MALLOC(int, sizeof(int));
-    *new_ordinal=*((int*)statement->predicate);
-    s->predicate=new_ordinal;
-  } else
+  s->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    s->predicate=raptor_new_uri_from_rdf_ordinal(*((int*)statement->predicate));
+  else
     s->predicate=raptor_uri_copy((raptor_uri*)statement->predicate);
 
 
@@ -356,9 +353,8 @@ raptor_statement_copy(const raptor_statement *statement) {
     strcpy((char*)new_blank, (const char*)blank);
     s->object=new_blank;
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    int *new_ordinal=(int*)RAPTOR_MALLOC(int, sizeof(int));
-    *new_ordinal=*((int*)statement->object);
-    s->object=new_ordinal;
+    s->object=raptor_new_uri_from_rdf_ordinal(*((int*)statement->object));
+    s->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else {
     raptor_uri *uri=raptor_uri_copy((raptor_uri*)statement->object);
     s->object=uri;
