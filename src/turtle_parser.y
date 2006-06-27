@@ -131,9 +131,6 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %expect 0
 
 
-/* word symbols */
-%token PREFIX
-
 /* others */
 
 %token A AT HAT
@@ -1035,7 +1032,6 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
 {
   /* raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)parser->context; */
   raptor_statement *statement=&parser->statement;
-  int predicate_ordinal=0;
 
   if(!t->subject || !t->predicate || !t->object)
     return;
@@ -1051,22 +1047,17 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
     statement->subject=t->subject->uri;
   }
 
-  /* Predicates are URIs, in Raptor some are turned into ordinals */
+  /* Predicates are URIs but check for bad ordinals */
   if(!strncmp((const char*)raptor_uri_as_string(t->predicate->uri),
               "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    predicate_ordinal=raptor_check_ordinal(raptor_uri_as_string(t->predicate->uri)+44);
-    if(predicate_ordinal > 0) {
-      statement->predicate=(void*)&predicate_ordinal;
-      statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_ORDINAL;
-    } else {
-      predicate_ordinal=0;
-    }
+    unsigned char* predicate_uri_string=raptor_uri_as_string(t->predicate->uri);
+    int predicate_ordinal=raptor_check_ordinal(predicate_uri_string+44);
+    if(predicate_ordinal <= 0)
+      raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
   }
   
-  if(!predicate_ordinal) {
-    statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-    statement->predicate=t->predicate->uri;
-  }
+  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate=t->predicate->uri;
   
 
   /* Three choices for object for Turtle */
