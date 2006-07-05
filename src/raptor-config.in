@@ -126,7 +126,7 @@ if test "$echo_options" = "yes"; then
   done
 fi
 if test "$echo_libs" = "yes"; then
-  echo -L@libdir@ -lraptor @LDFLAGS@ @LIBS@
+  echo -L@libdir@ -lraptor @LIBS@
 fi
 if test "$echo_libtool_libs" = "yes"; then
   echo @libdir@/@RAPTOR_LIBTOOLLIBS@
