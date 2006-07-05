@@ -76,6 +76,15 @@ below for what these are):</p>
   ./autogen.sh --prefix=/usr/local/somewhere
 </pre>
 
+<blockquote>
+<p>On OSX you may have to explicitly set the <code>LIBTOOLIZE</code>
+variable for the <code>libtoolize</code> utility since on
+OSX <code>libtoolize</code> is a different program:</p>
+<pre>
+  LIBTOOLIZE=glibtoolize ./autogen.sh
+</pre>
+</blockquote>
+
 <p>Alternatively you can run them by hand with:</p>
 <pre>
   aclocal; autoheader; automake --add-missing; autoconf
