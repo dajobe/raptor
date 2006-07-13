@@ -21,6 +21,15 @@ resource, anonymous (blank node) and literal will be generated.
 All serializers will convert any existing ordinal type on input to resource.
 </p>
 
+
+<h3>Configuration Changes</h3>
+
+<p>No longer adds LDFLAGS to pkgconfig file <code>raptor.pc</code>
+and <code>raptor-config</code> fixing
+<a href="http://bugs.librdf.org/mantis/view.php?id=97">Issue#0000097</a>.
+</p>
+
+
 <h3>Parser Changes</h3>
 
 <p>All parsers no longer generate a triple with an identifier type
@@ -45,6 +54,7 @@ element.</p>
 <p>The RDF/XML (<code>rdfxml</code>) serializer no longer crashes if
 the serializer is used more than once.
 </p>
+
 
 
 <h2 id="rel1_4_9"><a name="rel1_4_9">Raptor 1.4.9 Changes</a></h2>
