@@ -1,4 +1,13 @@
+2006-07-04  Dave Beckett  <dave@dajobe.org>
+
+	* raptor.pc.in, src/raptor-config.in: Remove @LDFLAGS from
+	raptor.pc.in and src/raptor-config.in.
+	Fixes Issue#0000097 http://bugs.librdf.org/mantis/view.php?id=97
+
 2006-06-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor.h: (raptor_identifier_type): no more
+	RAPTOR_IDENTIFIER_TYPE_ORDINAL generated.
 
 	* src/n3_parser.y: Remove duplicate symbol PREFIX.
 	(raptor_n3_generate_statement): Do not turn a rdf:_n into an
