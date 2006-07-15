@@ -10,15 +10,14 @@
 
 <h2 id="rel1_4_10"><a name="rel1_4_10">Raptor 1.4.10 Changes</a></h2>
 
-<p>Not yet released.
-</p>
-
 <h3>General Changes</h3>
 
 <p>No parser will now generate a triple with an identifier type
 <code>RAPTOR_IDENTIFIER_TYPE_ORDINAL</code>.  Only identifier type
 resource, anonymous (blank node) and literal will be generated.
-All serializers will convert any existing ordinal type on input to resource.
+All serializers will convert any
+<code>RAPTOR_IDENTIFIER_TYPE_ORDINAL</code> type on input to type
+resource.
 </p>
 
 
