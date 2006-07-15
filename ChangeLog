@@ -1,3 +1,7 @@
+2006-07-14  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor_1_4_10 for 1.4.10 release
+
 2006-07-04  Dave Beckett  <dave@dajobe.org>
 
 	* raptor.pc.in, src/raptor-config.in: Remove @LDFLAGS from
