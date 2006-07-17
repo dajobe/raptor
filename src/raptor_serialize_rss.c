@@ -501,18 +501,24 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     return;
   
   for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++) {
+    int ordinal= -1;
     raptor_statement* s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
     if(!s)
       continue;
 
-    if(raptor_uri_equals((raptor_uri*)s->subject, rss_serializer->seq_uri) &&
-       s->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-      int* p=(int*)s->predicate;
-
-      RAPTOR_DEBUG3("Found RSS 1.0 item %d with URI <%s>\n", *p,
+    if(raptor_uri_equals((raptor_uri*)s->subject, rss_serializer->seq_uri)) {
+      if(s->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+        ordinal= *((int*)s->predicate);
+      else { /* predicate is a resource */
+        const unsigned char* uri_str;
+        uri_str= raptor_uri_as_string((raptor_uri*)s->predicate);
+        if(!strncmp((const char*)uri_str, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44))
+          ordinal= raptor_check_ordinal(uri_str+44);
+      }
+      RAPTOR_DEBUG3("Found RSS 1.0 item %d with URI <%s>\n", ordinal,
                     raptor_uri_as_string((raptor_uri*)s->object));
 
-      if(*p > 0) {
+      if(ordinal >= 0) {
         raptor_rss_item* item=(raptor_rss_item*)RAPTOR_CALLOC(raptor_rss_item, 1, sizeof(raptor_rss_item));
         raptor_identifier* identifier=&item->identifier;
 
@@ -522,7 +528,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
         identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
         identifier->uri_source=RAPTOR_URI_SOURCE_URI;
 
-        raptor_sequence_set_at(rss_serializer->items, (*p)-1, item);
+        raptor_sequence_set_at(rss_serializer->items, ordinal-1, item);
 
         raptor_sequence_set_at(rss_serializer->triples, i, NULL);
 
