@@ -1,3 +1,15 @@
+2006-07-16  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_build_items):
+	Recognize ordinals also by their URI, not just from the deprecated
+	ORDINAL special type - this makes RSS 1.0 serializing work again.
+	Based on patch from Shin-ichi Hirata.
+
+2006-07-15  Dave Beckett  <dave@dajobe.org>
+
+	* NEWS.html, configure.ac, src/win32_raptor_config.h: Bumped
+	versions to 1.4.11
+
 2006-07-14  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor_1_4_10 for 1.4.10 release
