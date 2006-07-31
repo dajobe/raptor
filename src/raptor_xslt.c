@@ -175,6 +175,7 @@ raptor_xslt_parse_start(raptor_parser *rdf_parser)
 
 static struct {
   const xmlChar* xpath;
+  int is_value_list;
   const xmlChar* xslt_sheet_uri;
 } match_table[]={
   /* XHTML document where the GRDDL profile is in
@@ -182,6 +183,7 @@ static struct {
    */
   {
     (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/html:link[@rel=\"transformation\"]/@href",
+    0,
     NULL
   }
   ,
@@ -190,18 +192,23 @@ static struct {
    */
   {
     (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/../..//html:a[@rel=\"transformation\"]/@href",
+    0,
     NULL
   }
   ,
-  /* XML document linking to transform via attribute dataview:transformation */
+  /* XML document linking to transform via attribute dataview:transformation 
+   * Example: http://www.w3.org/2004/01/rdxh/grddl-p3p-example
+   **/
   {
     (const xmlChar*)"//@dataview:transformation",
+    1, /* list of URIs */
     NULL
   }
   ,
   /* Dublin Core in <meta> tags http://dublincore.org/documents/dcq-html/ */
   {
     (const xmlChar*)"/html:html/html:head/html:link[@href=\"http://purl.org/dc/elements/1.1/\"]",
+    0,
     (const xmlChar*)"http://www.w3.org/2000/06/dc-extract/dc-extract.xsl"
   }
   ,
@@ -210,17 +217,20 @@ static struct {
    */
   { 
     (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://purl.org/NET/erdf/profile\")]",
+    0,
     (const xmlChar*)"http://purl.org/NET/erdf/extract-rdf.xsl"
   }
   ,
   /* hCalendar microformat http://microformats.org/wiki/hcalendar */
   {
     (const xmlChar*)"//*[@class=\"vevent\"]",
+    0,
     (const xmlChar*)"http://www.w3.org/2002/12/cal/glean-hcal.xsl"
   }
   ,
   { 
     NULL,
+    0,
     0
   }
 };
@@ -482,6 +492,7 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
 
         /* returns base URI or NULL - must be freed with xmlFree() */
         base_uri_string=xmlNodeGetBase(doc, node);
+
         uri_string=(const unsigned char*)node->children->content;
 
         if(base_uri_string) {
@@ -493,9 +504,32 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
         else
           base_uri=NULL;
 
-        uri=raptor_new_uri_relative_to_base(base_uri, uri_string);
-        ret=raptor_xslt_run_grddl_transform_uri(rdf_parser, uri, doc);
-        raptor_free_uri(uri);
+        if(match_table[expri].is_value_list) {
+          char *start;
+          char *end;
+          char* buffer;
+          size_t list_len=strlen((const char*)uri_string);
+
+          buffer=(char*)RAPTOR_MALLOC(cstring, list_len+1);
+          strncpy(buffer, (const char*)uri_string, list_len+1);
+          
+          for(start=end=buffer; end; start=end+1) {
+            end=strchr(start, ' ');
+            if(end)
+              *end='\0';
+
+            RAPTOR_DEBUG2("Got list URI '%s'\n", start);
+
+            uri=raptor_new_uri_relative_to_base(base_uri, (const unsigned char*)start);
+            ret=raptor_xslt_run_grddl_transform_uri(rdf_parser, uri, doc);
+            raptor_free_uri(uri);
+          }
+          RAPTOR_FREE(cstring, buffer);
+        } else {
+          uri=raptor_new_uri_relative_to_base(base_uri, uri_string);
+          ret=raptor_xslt_run_grddl_transform_uri(rdf_parser, uri, doc);
+          raptor_free_uri(uri);
+        }
         
         if(base_uri)
           raptor_free_uri(base_uri);
