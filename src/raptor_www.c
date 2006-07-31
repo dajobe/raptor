@@ -54,12 +54,6 @@ static int raptor_www_file_fetch(raptor_www* www);
 static int raptor_www_do_www_init_finish=1;
 
 
-#ifdef RAPTOR_WWW_LIBWWW
-/* Non-zero only if Raptor initialised the W3C libwww library */
-static int raptor_libwww_initialised=0;
-#endif
-
-
 /**
  * raptor_www_init:
  * 
@@ -78,12 +72,6 @@ raptor_www_init(void)
 #ifdef RAPTOR_WWW_LIBCURL
     curl_global_init(CURL_GLOBAL_ALL);
 #endif
-#ifdef RAPTOR_WWW_LIBWWW
-    if(!HTLib_isInitialized()) {
-      raptor_libwww_initialised=1;
-      HTLibInit(PACKAGE, VERSION);
-    }
-#endif
   }
   initialized=1;
 }
@@ -96,9 +84,8 @@ raptor_www_init(void)
  *
  * If this is called then the raptor_www library will neither
  * initialise or terminate the lower level WWW library.  Usually in
- * raptor_init either curl_global_init (for libcurl) or HTLibInit
- * (for w3c libwww) are called and in raptor_finish either
- * curl_global_cleanup or HTLibTerminate are called.
+ * raptor_init either curl_global_init (for libcurl)
+ * are called and in raptor_finish curl_global_cleanup is called.
  *
  * This allows the application finer control over these libraries such
  * as setting other global options or potentially calling and terminating
@@ -129,11 +116,6 @@ raptor_www_finish(void)
   if(raptor_www_do_www_init_finish) {
 #ifdef RAPTOR_WWW_LIBCURL
     curl_global_cleanup();
-#endif
-
-#ifdef RAPTOR_WWW_LIBWWW
-    if(raptor_libwww_initialised)
-      HTLibTerminate();
 #endif
   }
 }
@@ -174,9 +156,6 @@ raptor_www_new_with_connection(void *connection)
 #endif
 #ifdef RAPTOR_WWW_LIBXML
   raptor_www_libxml_init(www);
-#endif
-#ifdef RAPTOR_WWW_LIBWWW
-  raptor_www_libwww_init(www);
 #endif
 #ifdef RAPTOR_WWW_LIBFETCH
   raptor_www_libfetch_init(www);
@@ -236,9 +215,6 @@ raptor_www_free(raptor_www* www)
 #endif
 #ifdef RAPTOR_WWW_LIBXML
   raptor_www_libxml_free(www);
-#endif
-#ifdef RAPTOR_WWW_LIBWWW
-  raptor_www_libwww_free(www);
 #endif
 #ifdef RAPTOR_WWW_LIBFETCH
   raptor_www_libfetch_free(www);
@@ -416,10 +392,6 @@ raptor_www_get_connection(raptor_www* www)
   return www->ctxt;
 #endif
 
-#ifdef RAPTOR_WWW_LIBWWW
-  return NULL;
-#endif
-
 #ifdef RAPTOR_WWW_LIBFETCH
   return NULL;
 #endif
@@ -577,10 +549,6 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 
 #ifdef RAPTOR_WWW_LIBXML
   return raptor_www_libxml_fetch(www);
-#endif
-
-#ifdef RAPTOR_WWW_LIBWWW
-  return raptor_www_libwww_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBFETCH
