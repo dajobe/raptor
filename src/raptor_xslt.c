@@ -173,18 +173,56 @@ raptor_xslt_parse_start(raptor_parser *rdf_parser)
 }
 
 
-static const xmlChar* xpathExpressions[4]={
+static struct {
+  const xmlChar* xpath;
+  const xmlChar* xslt_sheet_uri;
+} match_table[]={
   /* XHTML document where the GRDDL profile is in
    * <link ref='transform' href='url'>  inside the html <head>
    */
-  (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/html:link[@rel=\"transformation\"]/@href",
+  {
+    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/html:link[@rel=\"transformation\"]/@href",
+    NULL
+  }
+  ,
   /* XHTML document where the GRDDL profile is in
    * <a rel='transform' href='url'> inside the html <body>
    */
-  (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/../..//html:a[@rel=\"transformation\"]/@href",
+  {
+    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/../..//html:a[@rel=\"transformation\"]/@href",
+    NULL
+  }
+  ,
   /* XML document linking to transform via attribute dataview:transformation */
-  (const xmlChar*)"//@dataview:transformation",
-  NULL
+  {
+    (const xmlChar*)"//@dataview:transformation",
+    NULL
+  }
+  ,
+  /* Dublin Core in <meta> tags http://dublincore.org/documents/dcq-html/ */
+  {
+    (const xmlChar*)"/html:html/html:head/html:link[@href=\"http://purl.org/dc/elements/1.1/\"]",
+    (const xmlChar*)"http://www.w3.org/2000/06/dc-extract/dc-extract.xsl"
+  }
+  ,
+  /* Embedded RDF 
+   * <head profile="http://purl.org/NET/erdf/profile"> inside <html>
+   */
+  { 
+    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://purl.org/NET/erdf/profile\")]",
+    (const xmlChar*)"http://purl.org/NET/erdf/extract-rdf.xsl"
+  }
+  ,
+  /* hCalendar microformat http://microformats.org/wiki/hcalendar */
+  {
+    (const xmlChar*)"//*[@class=\"vevent\"]",
+    (const xmlChar*)"http://www.w3.org/2002/12/cal/glean-hcal.xsl"
+  }
+  ,
+  { 
+    NULL,
+    0
+  }
 };
 
 
@@ -218,6 +256,114 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
 }
 
 
+/* Run a GRDDL transform using a pre-parsed XSLT stylesheet already
+ * formed into a libxml document (with URI)
+ */
+static int
+raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser, 
+                                    raptor_uri* xslt_uri, xmlDocPtr xslt_doc,
+                                    xmlDocPtr doc)
+{
+  raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
+  int ret=0;
+  xsltStylesheetPtr sheet=NULL;
+  xmlDocPtr res=NULL;
+  xmlChar *doc_txt=NULL;
+  int doc_txt_len=0;
+
+  RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI '%s' on doc URI '%s'\n",
+                raptor_uri_as_string(xslt_uri),
+                raptor_uri_as_string(rdf_parser->base_uri));
+  
+  sheet = xsltParseStylesheetDoc(xslt_doc);
+  if(!sheet) {
+    raptor_parser_error(rdf_parser, "Failed to parse stylesheet in '%s'",
+                        raptor_uri_as_string(xslt_uri));
+    ret=1;
+    goto cleanup_xslt;
+  }
+  
+  res = xsltApplyStylesheet(sheet, doc, NULL); /* no params */
+  if(!res) {
+    raptor_parser_error(rdf_parser, "Failed to apply stylesheet in '%s'",
+                        raptor_uri_as_string(xslt_uri));
+    ret=1;
+    goto cleanup_xslt;
+  }
+  
+  
+  /* write the resulting XML to a string */
+  xsltSaveResultToString(&doc_txt, &doc_txt_len, res, sheet);
+  
+  if(!doc_txt || !doc_txt_len) {
+    /* empty document - continue? FIXME */
+    raptor_parser_warning(rdf_parser, 
+                          "XSLT returned an empty document");
+  } else {
+    RAPTOR_DEBUG2("XSLT returned %d bytes RDF/XML document\n", doc_txt_len);
+    
+    /* generate the triples */
+    raptor_start_parse(xslt_parser->rdfxml, rdf_parser->base_uri);
+    raptor_parse_chunk(xslt_parser->rdfxml, doc_txt, doc_txt_len, 1);
+  }
+  
+  cleanup_xslt:
+  if(doc_txt)    
+    xmlFree(doc_txt);
+  
+  if(res)
+    xmlFreeDoc(res);
+  
+  if(sheet)
+    xsltFreeStylesheet(sheet);
+  
+  return ret;
+}
+
+
+/* Run a GRDDL transform using a XSLT stylesheet at a given URI */
+static int
+raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser, 
+                                    raptor_uri* xslt_uri, xmlDocPtr doc)
+{
+  raptor_www *www=NULL;
+  xmlParserCtxtPtr xslt_ctxt;
+  int ret=0;
+  
+  RAPTOR_DEBUG2("Running GRDDL transform with XSLT URI '%s'\n",
+                raptor_uri_as_string(xslt_uri));
+  
+  /* make an xsltStylesheetPtr via the raptor_xslt_uri_parse_bytes 
+   * callback as bytes are returned
+   */
+  xslt_ctxt=NULL;
+  
+  www=raptor_www_new();
+  raptor_www_set_write_bytes_handler(www, raptor_xslt_uri_parse_bytes, 
+                                     &xslt_ctxt);
+  
+  if(raptor_www_fetch(www, xslt_uri)) {
+    ret=1;
+    goto cleanup_xslt;
+  }
+  
+  xmlParseChunk(xslt_ctxt, NULL, 0, 1);
+  
+  ret=raptor_xslt_run_grddl_transform_doc(rdf_parser, 
+                                          xslt_uri, xslt_ctxt->myDoc, 
+                                          doc);
+  
+  cleanup_xslt:
+  if(xslt_ctxt)
+    xmlFreeParserCtxt(xslt_ctxt); 
+  
+  if(www)
+    raptor_www_free(www);
+
+  return ret;
+}
+
+
 static int
 raptor_xslt_parse_chunk(raptor_parser* rdf_parser, 
                         const unsigned char *s, size_t len,
@@ -232,6 +378,8 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
   xmlDocPtr doc;
   xmlNodeSetPtr nodes;
   int expri;
+  xmlChar *base_uri_string;
+  raptor_uri* base_uri=NULL;
 
   if(!xslt_parser->ctxt) {
     uri_string=raptor_uri_as_string(rdf_parser->base_uri);
@@ -283,9 +431,11 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
                      (const xmlChar*)"dataview",
                      (const xmlChar*)"http://www.w3.org/2003/g/data-view#");
 
+  base_uri=NULL;
+  
   /* Try all XPaths */
-  for(expri=0; xpathExpressions[expri]; expri++) {
-    const xmlChar* xpathExpr=xpathExpressions[expri];
+  for(expri=0; match_table[expri].xpath; expri++) {
+    const xmlChar* xpathExpr=match_table[expri].xpath;
 
     /* Evaluate xpath expression */
     xslt_parser->xpathObj = xmlXPathEvalExpression(xpathExpr, 
@@ -299,126 +449,65 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
 
     nodes=xslt_parser->xpathObj->nodesetval;
     if(!nodes || xmlXPathNodeSetIsEmpty(nodes)) {
-      RAPTOR_DEBUG3("No GRDDL found with XPath expression \"%s\" over '%s'\n", 
+      RAPTOR_DEBUG3("No match found with XPath expression \"%s\" over '%s'\n", 
                     xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
       continue;
     }
 
-    RAPTOR_DEBUG3("Found GRDDL with XPath expression \"%s\" over '%s'\n", 
+    RAPTOR_DEBUG3("Found match with XPath expression \"%s\" over '%s'\n", 
                   xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
 
-    for(i=0; i < xmlXPathNodeSetGetLength(nodes); i++) {
-      xmlNodePtr node=nodes->nodeTab[i];
-      xsltStylesheetPtr sheet=NULL;
-      xmlDocPtr res=NULL;
-      xmlParserCtxtPtr xslt_ctxt;
-      raptor_www *www;
-      xmlChar *doc_txt=NULL;
-      int doc_txt_len=0;
-      xmlChar *base_uri_string;
-      raptor_uri* base_uri=NULL;
+    if(match_table[expri].xslt_sheet_uri) {
+      /* Ignore what matched, use a hardcoded XSLT URI */
+      uri_string=match_table[expri].xslt_sheet_uri;
+      base_uri=raptor_uri_copy(rdf_parser->base_uri);
 
-      if(node->type != XML_ATTRIBUTE_NODE) {
-        raptor_parser_error(rdf_parser, "Got unexpected node type %d", 
-                            node->type);
-        continue;
-      }
+      RAPTOR_DEBUG2("Using hard-coded XSLT URI '%s'\n",  uri_string);
 
-
-      /* returns base URI or NULL - must be freed with xmlFree() */
-      base_uri_string=xmlNodeGetBase(doc, node);
-      if(base_uri_string) {
-        base_uri=raptor_new_uri(base_uri_string);
-        xmlFree(base_uri_string);
-        RAPTOR_DEBUG2("Got XML base URI '%s'\n", raptor_uri_as_string(base_uri));
-      } else if(rdf_parser->base_uri)
-        base_uri=raptor_uri_copy(rdf_parser->base_uri);
-
-      uri_string=(const unsigned char*)node->children->content;
       uri=raptor_new_uri_relative_to_base(base_uri, uri_string);
+      ret=raptor_xslt_run_grddl_transform_uri(rdf_parser, uri, doc);
+      raptor_free_uri(uri);
+
       if(base_uri)
         raptor_free_uri(base_uri);
+    } else {
+      for(i=0; i < xmlXPathNodeSetGetLength(nodes); i++) {
+        xmlNodePtr node=nodes->nodeTab[i];
 
-      RAPTOR_DEBUG2("Running GRDDL transform with URI '%s'\n",
-                    raptor_uri_as_string(uri));
+        if(node->type != XML_ATTRIBUTE_NODE) {
+          raptor_parser_error(rdf_parser, "Got unexpected node type %d", 
+                              node->type);
+          continue;
+        }
 
+        /* returns base URI or NULL - must be freed with xmlFree() */
+        base_uri_string=xmlNodeGetBase(doc, node);
+        uri_string=(const unsigned char*)node->children->content;
 
-      /* make an xsltStylesheetPtr via the raptor_xslt_uri_parse_bytes 
-       * callback as bytes are returned
-       */
-      xslt_ctxt=NULL;
+        if(base_uri_string) {
+          base_uri=raptor_new_uri(base_uri_string);
+          xmlFree(base_uri_string);
+          RAPTOR_DEBUG2("Got XML base URI '%s'\n", raptor_uri_as_string(base_uri));
+        } else if(rdf_parser->base_uri)
+          base_uri=raptor_uri_copy(rdf_parser->base_uri);
+        else
+          base_uri=NULL;
 
-      www=raptor_www_new();
-      raptor_www_set_write_bytes_handler(www,
-                                         raptor_xslt_uri_parse_bytes, 
-                                         &xslt_ctxt);
-
-      if(raptor_www_fetch(www, uri)) {
-        ret=1;
-        goto cleanup_xslt;
-      }
-
-      xmlParseChunk(xslt_ctxt, NULL, 0, 1);
-
-      sheet = xsltParseStylesheetDoc(xslt_ctxt->myDoc);
-      if(!sheet) {
-        raptor_parser_error(rdf_parser, "Failed to parse stylesheet in '%s'",
-                            raptor_uri_as_string(uri));
-        ret=1;
-        goto cleanup_xslt;
-      }
-
-      res = xsltApplyStylesheet(sheet, doc, NULL); /* no params */
-      if(!res) {
-        raptor_parser_error(rdf_parser, "Failed to apply stylesheet in '%s'",
-                            raptor_uri_as_string(uri));
-        ret=1;
-        goto cleanup_xslt;
-      }
-
-
-      /* write the resulting XML to a string */
-      xsltSaveResultToString(&doc_txt, &doc_txt_len, res, sheet);
-
-      if(!doc_txt || !doc_txt_len) {
-        /* empty document - continue? FIXME */
-        raptor_parser_warning(rdf_parser, 
-                              "Stylesheet returned an empty document");
-      } else {
-        RAPTOR_DEBUG2("XSLT gave %d bytes XML result\n", doc_txt_len);
-
-        /* generate the triples */
-        raptor_start_parse(xslt_parser->rdfxml, rdf_parser->base_uri);
-        raptor_parse_chunk(xslt_parser->rdfxml, doc_txt, doc_txt_len, 1);
-      }
-
-    cleanup_xslt:
-      if(doc_txt)    
-        xmlFree(doc_txt);
-
-      if(res)
-        xmlFreeDoc(res);
-
-      if(sheet)
-        xsltFreeStylesheet(sheet);
-
-      if(xslt_ctxt)
-        xmlFreeParserCtxt(xslt_ctxt); 
-
-      if(uri)
+        uri=raptor_new_uri_relative_to_base(base_uri, uri_string);
+        ret=raptor_xslt_run_grddl_transform_uri(rdf_parser, uri, doc);
         raptor_free_uri(uri);
+        
+        if(base_uri)
+          raptor_free_uri(base_uri);
 
-      if(www)
-        raptor_www_free(www);
-
-    } /* end node loop */
-
+      }
+    }
+    
     if(rdf_parser->failed || ret != 0)
       break;
 
   } /* end XPath expression loop */
   
-
   if(rdf_parser->failed)
     return 1;
 
