@@ -56,7 +56,10 @@
 #define MAX_ASCII_INT_SIZE 13
 
 typedef struct {
-  int ref_count;                /* count of references */
+  int ref_count;         /* count of references to this node */
+  int count_as_subject;  /* count of this blank/resource node as subject */
+  int count_as_object;   /* count of this blank/resource node as object */
+  
   raptor_identifier_type type;  /* node type */
   union {
 
@@ -79,7 +82,6 @@ typedef struct {
     } blank;
     
   } value;
-  
 } raptor_node;
 
 
@@ -119,6 +121,9 @@ typedef struct {
    * can be declared).
    */
   int written_header;
+
+  /* for labeling namespaces */
+  int namespace_count;
 } raptor_rdfxmla_context;
 
 
@@ -130,23 +135,30 @@ static raptor_qname *raptor_new_qname_from_resource(raptor_serializer *serialize
 
 static int raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
                                         raptor_xml_element *element,
-                                        raptor_node *node);
+                                        raptor_node *node,
+                                        int depth);
 
 static int raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
                                        raptor_xml_element *element,
-                                       raptor_node *node);
+                                       raptor_node *node,
+                                       int depth);
 static int raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
                                            raptor_xml_element *element,
-                                           raptor_node *node);
+                                           raptor_node *node,
+                                           int depth);
 static int raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
                                      raptor_xml_element *element,
-                                     raptor_node *node);
+                                     raptor_node *node,
+                                     int depth);
 static int raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
-                                                  raptor_subject *subject);
+                                                  raptor_subject *subject,
+                                                  int depth);
 static int raptor_rdfxmla_emit_subject_properties(raptor_serializer *serializer,
-                                                  raptor_subject *subject);
+                                                  raptor_subject *subject,
+                                                  int depth);
 static int raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
-                                       raptor_subject *subject);
+                                       raptor_subject *subject,
+                                       int depth);
 static int raptor_rdfxmla_emit(raptor_serializer *serializer);
 
 static raptor_node *raptor_new_node(raptor_identifier_type node_type,
@@ -197,22 +209,26 @@ static int raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 static int raptor_rdfxmla_serialize_end(raptor_serializer* serializer);
 static void raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* factory);
 
-/* static vars */
-static int raptor_namespace_count = 0;
-
 
 /* helper functions */
 
-static unsigned char *
+/*
+ * raptor_unique_id:
+ * @base: base ID
+ * 
+ * Generate a node ID for serializing
+ *
+ * Raptor doesn't check that blank IDs it generates are unique from
+ * any specified by rdf:nodeID. Here, we need to emit IDs that are
+ * different from the ones the parser generates so that there is no
+ * collision. For now, just prefix a '_' to the parser generated
+ * name.
+ * 
+ * Return value: new node ID
+ **/
+static unsigned char*
 raptor_unique_id(unsigned char *base) 
 {
-  /* Raptor doesn't check that blank IDs it generates are unique
-   * from any specified by rdf:nodeID. Here, we need to emit IDs that
-   * are different from the ones the parser generates so that there
-   * is no collision. For now, just prefix a '_' to the parser
-   * generated name.
-   */
-    
   const char *prefix = "_";
   int prefix_len = strlen(prefix);
   int base_len = strlen((const char*)base);
@@ -228,8 +244,17 @@ raptor_unique_id(unsigned char *base)
 }
 
 
-static raptor_qname *
-raptor_new_qname_from_resource(raptor_serializer* serializer,
+/*
+ * raptor_new_qname_from_resource:
+ * @serializer: #raptor_serializer object
+ * @node: #raptor_node to use 
+ * 
+ * Make an XML QName from the URI associated with the node.
+ * 
+ * Return value: the QName or NULL on failure
+ **/
+static raptor_qname*
+raptor_new_qname_from_resource(raptor_serializer* serializer, 
                                raptor_node *node)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
@@ -276,7 +301,7 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
   if(!ns) {
     /* The namespace was not declared, so create one */
     unsigned char prefix[2 + MAX_ASCII_INT_SIZE + 1];
-    sprintf((char *)prefix, "ns%d", raptor_namespace_count++);
+    sprintf((char *)prefix, "ns%d", context->namespace_count++);
 
     ns = raptor_new_namespace_from_uri(context->nstack, prefix, ns_uri, 0);
 
@@ -295,9 +320,21 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
 }
 
 
+/*
+ * raptor_rdfxmla_emit_resource:
+ * @serializer: #raptor_serializer object
+ * @element: XML Element
+ * @node: resource node
+ * @depth: depth into tree
+ * 
+ * Emit a description of a resource using an XML Element
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
-                             raptor_xml_element *element, raptor_node *node) 
+                             raptor_xml_element *element, raptor_node *node,
+                             int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_xml_writer *xml_writer = context->xml_writer;
@@ -305,6 +342,10 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   unsigned char *attr_name;
   unsigned char *attr_value;
   
+  RAPTOR_DEBUG5("Emitting resource node %p refcount %d subject %d object %d\n",
+                node, 
+                node->ref_count, node->count_as_subject, node->count_as_object);
+
   if(node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE)
     return 1;
 
@@ -333,20 +374,37 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   raptor_xml_writer_start_element(xml_writer, element);
   raptor_xml_writer_end_element(context->xml_writer, element);
 
-  return 0;
+  RAPTOR_DEBUG2("Emitted %p\n", node);
   
+  return 0;
 }
 
 
+/*
+ * raptor_rdfxmla_emit_literal:
+ * @serializer: #raptor_serializer object
+ * @element: XML Element
+ * @node: literal node
+ * @depth: depth into tree
+ * 
+ * Emit a description of a literal using an XML Element
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
-                            raptor_xml_element *element, raptor_node *node)
+                            raptor_xml_element *element, raptor_node *node,
+                            int depth)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_xml_writer *xml_writer = context->xml_writer;
   raptor_qname **attrs;
   int attrs_count;
   
+  RAPTOR_DEBUG5("Emitting literal node %p refcount %d subject %d object %d\n",
+                node, 
+                node->ref_count, node->count_as_subject, node->count_as_object);
+
   if(node->type != RAPTOR_IDENTIFIER_TYPE_LITERAL)
     return 1;
   
@@ -385,17 +443,36 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
   raptor_xml_writer_cdata(xml_writer, node->value.literal.string);
   raptor_xml_writer_end_element(xml_writer, element);
 
+  RAPTOR_DEBUG2("Emitted %p\n", node);
+  
   return 0;
 }
 
+
+/*
+ * raptor_rdfxmla_emit_xml_literal:
+ * @serializer: #raptor_serializer object
+ * @element: XML Element
+ * @node: XML literal node
+ * @depth: depth into tree
+ * 
+ * Emit a description of a literal using an XML Element
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
-                                raptor_xml_element *element, raptor_node *node) 
+                                raptor_xml_element *element, raptor_node *node,
+                                int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_xml_writer *xml_writer = context->xml_writer;
   raptor_qname **attrs;
   
+  RAPTOR_DEBUG5("Emitting XML literal node %p refcount %d subject %d object %d\n",
+                node, 
+                node->ref_count, node->count_as_subject, node->count_as_object);
+
   if(node->type != RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
     return 1;
   
@@ -411,26 +488,39 @@ raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
   raptor_xml_writer_raw(xml_writer, node->value.literal.string);
   raptor_xml_writer_end_element(xml_writer, element);
 
-  return 0;
-  
+  return 0;  
 }
 
 
+/*
+ * raptor_rdfxmla_emit_blank:
+ * @serializer: #raptor_serializer object
+ * @element: XML Element
+ * @node: blank node
+ * @depth: depth into tree
+ * 
+ * Emit a description of a blank node using an XML Element
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
-                          raptor_xml_element *element, raptor_node *node) 
+                          raptor_xml_element *element, raptor_node *node,
+                          int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
+
+  RAPTOR_DEBUG5("Emitting blank node %p refcount %d subject %d object %d\n",
+                node, 
+                node->ref_count, node->count_as_subject, node->count_as_object);
 
   if(node->type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     return 1;
   
-  if(node->ref_count == 3) {
-    /* If ref_count == 3, we know that this subject is only one
-     * that refers to the blank resource. It holds one reference
-     * because it is the subject of a statement, one because it
-     * is in the nodes array and one because it is in the
-     * properties sequence. */
+  if((node->count_as_subject == 1 && node->count_as_object == 1)) {
+    /* If this is only used as a 1 subject and object or never
+     * used as a subject or never used as an object, it never need
+     * be referenced with an explicit name */
     int idx;
     raptor_subject *blank;
 
@@ -440,7 +530,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
                                         node->value.blank.string, &idx);
           
     if(blank) {
-      raptor_rdfxmla_emit_subject(serializer, blank);
+      raptor_rdfxmla_emit_subject(serializer, blank, depth+1);
       raptor_sequence_set_at(context->blanks, idx, NULL);
     }
           
@@ -466,20 +556,37 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
 
   raptor_xml_writer_end_element(context->xml_writer, element);
 
+  RAPTOR_DEBUG2("Emitted %p\n", node);
+  
   return 0;
-
 }
 
 
+/*
+ * raptor_rdfxmla_emit_subject_list_items:
+ * @serializer: #raptor_serializer object
+ * @subject: subject node
+ * @depth: depth into tree
+ * 
+ * Emit an rdf list of items (rdf:li) about a subject node.
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
-                                       raptor_subject *subject)
+                                       raptor_subject *subject,
+                                       int depth)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   int rv = 0;
   int i=0;
   raptor_uri* base_uri=NULL;
   
+  RAPTOR_DEBUG5("Emitting subject list items for node %p refcount %d subject %d object %d\n", 
+                subject->node,
+                subject->node->ref_count, subject->node->count_as_subject, 
+                subject->node->count_as_object);
+
   while (!rv && i < raptor_sequence_size(subject->list_items)) {
 
     raptor_node *object;
@@ -501,19 +608,22 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
     switch (object->type) {
       
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-        rv = raptor_rdfxmla_emit_resource(serializer, element, object);
+        rv = raptor_rdfxmla_emit_resource(serializer, element, object,
+                                          depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-        rv = raptor_rdfxmla_emit_literal(serializer, element, object);
+        rv = raptor_rdfxmla_emit_literal(serializer, element, object,
+                                         depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-        rv = raptor_rdfxmla_emit_xml_literal(serializer, element, object);
+        rv = raptor_rdfxmla_emit_xml_literal(serializer, element, object,
+                                             depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        rv = raptor_rdfxmla_emit_blank(serializer, element, object);
+        rv = raptor_rdfxmla_emit_blank(serializer, element, object, depth+1);
         break;
 
       case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
@@ -532,20 +642,36 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
   }
   
   return rv;
-
 }
 
+
+/*
+ * raptor_rdfxmla_emit_subject_properties:
+ * @serializer: #raptor_serializer object
+ * @subject: subject node
+ * @depth: depth into tree
+ * 
+ * Emit the properties about a subject node.
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
-                                       raptor_subject *subject)
+                                       raptor_subject *subject,
+                                       int depth)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   int rv = 0;  
   int i;
   
-  /* Emit any container props we've collected */
+  RAPTOR_DEBUG5("Emitting subject properties for node %p refcount %d subject %d object %d\n", 
+                subject->node, subject->node->ref_count, 
+                subject->node->count_as_subject,
+                subject->node->count_as_object);
+
+  /* Emit any rdf:_n properties collected */
   if(raptor_sequence_size(subject->list_items) > 0)
-    rv = raptor_rdfxmla_emit_subject_list_items(serializer, subject);
+    rv = raptor_rdfxmla_emit_subject_list_items(serializer, subject, depth+1);
 
   i=0;
   while (!rv && i < raptor_sequence_size(subject->properties)) {
@@ -557,7 +683,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
     
     predicate = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
     object = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
-    
+
     if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
       /* we should only get here in rare cases -- usually when there
        * are multiple ordinals with the same value. */
@@ -579,19 +705,20 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
     switch (object->type) {
       
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-        rv = raptor_rdfxmla_emit_resource(serializer, element, object);
+        rv = raptor_rdfxmla_emit_resource(serializer, element, object, depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-        rv = raptor_rdfxmla_emit_literal(serializer, element, object);
+        rv = raptor_rdfxmla_emit_literal(serializer, element, object, depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        rv = raptor_rdfxmla_emit_blank(serializer, element, object);
+        rv = raptor_rdfxmla_emit_blank(serializer, element, object, depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-        rv = raptor_rdfxmla_emit_xml_literal(serializer, element, object);
+        rv = raptor_rdfxmla_emit_xml_literal(serializer, element, object,
+                                             depth+1);
         break;
 
       case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
@@ -612,9 +739,20 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
 }
 
 
+/*
+ * raptor_rdfxmla_emit_subject:
+ * @serializer: #raptor_serializer object
+ * @subject: subject node
+ * @depth: depth into tree
+ * 
+ * Emit a subject node
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
-                            raptor_subject *subject) 
+                            raptor_subject *subject,
+                            int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;  
   raptor_qname *qname = NULL;    
@@ -623,7 +761,22 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   unsigned char *attr_name;
   unsigned char *attr_value;
   raptor_uri *base_uri=NULL;
+
+  RAPTOR_DEBUG5("Emitting subject node %p refcount %d subject %d object %d\n", 
+                subject->node,
+                subject->node->ref_count, 
+                subject->node->count_as_subject,
+                subject->node->count_as_object);
+
+  if(!depth &&
+     subject->node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
+     subject->node->count_as_subject == 1 &&
+     subject->node->count_as_object == 1) {
+    RAPTOR_DEBUG2("Skipping subject node %p\n", subject->node);
+    return 0;
+  }
   
+
   if(subject->node_type) { /* if rdf:type was associated with this subject */
     qname = raptor_new_qname_from_resource(serializer, subject->node_type);
     
@@ -663,14 +816,13 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
       attr_value = raptor_uri_to_string(subject->node->value.resource.uri);
     
   } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    if(subject->node->ref_count != 2 &&
-        subject->node->ref_count != 3) {
-      /* If ref_count == 2, we know that this is a top-level
-       * node. There is one reference because it is the subject of a
-       * statement and one because it is in the nodes array. If
-       * ref_count == 3, we know it is a "private" node. The
-       * additional ref_count is due to the fact that it is the object
-       * of a statement.*/
+    if(subject->node->count_as_subject &&
+       subject->node->count_as_object &&
+       !(subject->node->count_as_subject == 1 && 
+         subject->node->count_as_object == 1)) {
+      /* No need for nodeID if this node is never used as a subject
+       * or object OR if it is used exactly once as subject and object.
+       */
       attr_name = (unsigned char*)"nodeID";
       attr_value = raptor_unique_id(subject->node->value.blank.string);
     }
@@ -697,7 +849,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     
   raptor_xml_writer_start_element(context->xml_writer, element);
     
-  raptor_rdfxmla_emit_subject_properties(serializer, subject);    
+  raptor_rdfxmla_emit_subject_properties(serializer, subject, depth+1);
     
   raptor_xml_writer_end_element(context->xml_writer, element);
     
@@ -707,6 +859,14 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
 }
 
 
+/*
+ * raptor_rdfxmla_emit - 
+ * @serializer: #raptor_serializer object
+ * 
+ * Emit RDF/XML for all stored triples.
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_rdfxmla_emit(raptor_serializer *serializer)
 {
@@ -716,30 +876,26 @@ raptor_rdfxmla_emit(raptor_serializer *serializer)
   int i;
   
   for(i=0; i < raptor_sequence_size(context->subjects); i++) {
-  
     subject = (raptor_subject *)raptor_sequence_get_at(context->subjects, i);
-  
-    if(subject) {
-      raptor_rdfxmla_emit_subject(serializer, subject);
-      /*raptor_sequence_set_at(context->subjects, i, NULL); */
-    }
-  
+    if(subject)
+      raptor_rdfxmla_emit_subject(serializer, subject, 0);
   }
     
-  /* Emit any remaining anonymous nodes */
+  /* Emit any remaining blank nodes */
   for(i=0; i < raptor_sequence_size(context->blanks); i++) {
     blank = (raptor_subject *)raptor_sequence_get_at(context->blanks, i);
     if(blank)
-      raptor_rdfxmla_emit_subject(serializer, blank);
+      raptor_rdfxmla_emit_subject(serializer, blank, 0);
   }
     
   return 0;
-    
 }
 
 
 /*
- * raptor_node implementation
+ * raptor_node implementation.
+ *
+ * Parts of this is taken from redland librdf_node.h and librdf_node.c
  *
  **/
 
@@ -756,7 +912,6 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
   node = (raptor_node *)RAPTOR_CALLOC(raptor_node, 1, sizeof(raptor_node));
 
   if(node) {
-
     node->type = node_type;
     
     switch (node_type) {
@@ -768,7 +923,8 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
           break;
           
         case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-          string=(unsigned char*)RAPTOR_MALLOC(blank,strlen((char*)node_data)+1);
+          string=(unsigned char*)RAPTOR_MALLOC(blank,
+                                               strlen((char*)node_data)+1);
           strcpy((char*)string, (const char*) node_data);
           node->value.blank.string = string;
           break;
@@ -805,8 +961,8 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
   }
 
   return node;
-  
 }
+
 
 static void
 raptor_free_node(raptor_node *node)
@@ -814,9 +970,7 @@ raptor_free_node(raptor_node *node)
   if(!node)
     return;
 
-  node->ref_count--;
-  
-  if(node->ref_count > 0)
+  if(--node->ref_count)
     return;
   
   switch (node->type) {
@@ -849,8 +1003,8 @@ raptor_free_node(raptor_node *node)
   }
 
   RAPTOR_FREE(raptor_node, node);
-  
 }
+
 
 static int
 raptor_node_equals(raptor_node *node1, raptor_node *node2)
@@ -923,6 +1077,18 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
 }
 
 
+/*
+ * raptor_node_matches:
+ * @node: #raptor_node to compare
+ * @node_type: Raptor identifier type
+ * @node_data: For node_type RAPTOR_IDENTIFIER_TYPE_ORDINAL, int* to the
+ *             ordinal.
+ * @datatype: Literal datatype or NULL
+ * @language: Literal language or NULL
+ *
+ * Return value: non-zero if @node matches the node described by the rest of
+ *   the parameters.
+ */
 static int
 raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
                     const void *node_data, raptor_uri *datatype,
@@ -956,21 +1122,18 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
 
           /* language */
           if((char *)node->value.literal.language != NULL &&
-              (char *)language != NULL) {
-
+              (char *)language != NULL)
             rv &= (strcmp((char *)node->value.literal.language,
                           (char *)language) == 0);
-          } else if((char *)node->value.literal.language != NULL ||
-                     (char *)language != NULL) {
-            rv = 0;
-          }
+          else if((char *)node->value.literal.language != NULL ||
+                  (char *)language != NULL)
+            rv= 0;
 
           /* datatype */
-          if(node->value.literal.datatype != NULL && datatype != NULL) {
+          if(node->value.literal.datatype != NULL && datatype != NULL)
             rv &= (raptor_uri_equals(node->value.literal.datatype,datatype) !=0);
-          } else if(node->value.literal.datatype != NULL || datatype != NULL) {
+          else if(node->value.literal.datatype != NULL || datatype != NULL)
             rv = 0;
-          }
           
         } else {
           RAPTOR_FATAL1("string must be non-NULL for literal or xml literal\n");
@@ -995,9 +1158,12 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
 
 /*
  * raptor_subject implementation
+ *
+ * The subject of triples, with all predicates and values
+ * linked from them.
+ *
  **/
-
-static raptor_subject *
+static raptor_subject*
 raptor_new_subject(raptor_node *node)
 {
   raptor_subject *subject;
@@ -1015,6 +1181,7 @@ raptor_new_subject(raptor_node *node)
   if(subject) {
     subject->node = node;
     subject->node->ref_count++;
+    subject->node->count_as_subject++;
     
     subject->node_type = NULL;
     subject->properties =
@@ -1022,9 +1189,7 @@ raptor_new_subject(raptor_node *node)
     subject->list_items =
       raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_node, NULL);
 
-    if(subject->node == NULL ||
-        subject->properties == NULL ||
-        subject->list_items == NULL) {
+    if(!subject->node || !subject->properties || !subject->list_items) {
       raptor_free_subject(subject);
       subject = NULL;
     }
@@ -1032,7 +1197,6 @@ raptor_new_subject(raptor_node *node)
   }
 
   return subject;
-
 }
 
 
@@ -1040,7 +1204,6 @@ static void
 raptor_free_subject(raptor_subject *subject) 
 {
   if(subject) {
-
     if(subject->node)
       raptor_free_node(subject->node);
     
@@ -1054,23 +1217,30 @@ raptor_free_subject(raptor_subject *subject)
       raptor_free_sequence(subject->list_items);
 
     RAPTOR_FREE(raptor_subject, subject);
-    
   }
   
 }
 
 
+/*
+ * raptor_subject_add_property:
+ * @subject: subject node to add to
+ * @predicate: predicate node
+ * @object: object node
+ * 
+ * Add predicate/object pair into properties array of a subject node.
+ * 
+ * Return value: non-0 on failure
+ **/
 static int
 raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate,
                             raptor_node *object) 
 {
-  /* insert predicate/object pair in properties array */
   int err;
   
   err = raptor_sequence_push(subject->properties, predicate);
-  if(err) {
+  if(err)
     return err;
-  }
   
   err = raptor_sequence_push(subject->properties, object);
   if(err) {
@@ -1082,10 +1252,19 @@ raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate,
   object->ref_count++;
   
   return 0;
-  
 }
 
 
+/**
+ * raptor_subject_add_list_element - 
+ * @subject: subject node to add to
+ * @ordinal: ordinal index
+ * @object: object node
+ * 
+ * Add rdf:li into list element array of a subject node.
+ * 
+ * Return value: 
+ **/
 static int
 raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
                                 raptor_node *object)
@@ -1097,9 +1276,10 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
   if(!node) {
     /* If there isn't already an entry */
     rv = raptor_sequence_set_at(subject->list_items, ordinal, object);
-    if(!rv)
+    if(!rv) {
       object->ref_count++;
-
+      object->count_as_subject++;
+    }
   }
   
   return rv;
@@ -1172,8 +1352,9 @@ raptor_print_subject(raptor_subject *subject)
 }
 #endif
 
+
 /*
- * raptor rdfxml-abbrev implementation
+ * raptor serializer rdfxml-abbrev implementation
  */
 
 static raptor_node *
@@ -1182,7 +1363,7 @@ raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
                            const void *node_value, raptor_uri *datatype,
                            const unsigned char *language)
 {
-  raptor_node *rv_node = 0;
+  raptor_node *rv_node = NULL;
   int i;
   
   /* Search for specified node in array. TODO: this should really be a
@@ -1205,7 +1386,7 @@ raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
         rv_node->ref_count++;
       } else {
         raptor_free_node(rv_node);
-        rv_node = 0;
+        rv_node = NULL;
       }
       
     }
@@ -1213,21 +1394,22 @@ raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
   }
   
   return rv_node;
-  
 }
+
 
 static raptor_subject *
 raptor_rdfxmla_find_subject(raptor_sequence *sequence,
                             raptor_identifier_type node_type,
                             const void *node_data, int *idx)
 {
-  raptor_subject *rv_subject = 0;
+  raptor_subject *rv_subject = NULL;
   int i;
   
   for(i=0; i < raptor_sequence_size(sequence); i++) {
     raptor_subject *subject=(raptor_subject*)raptor_sequence_get_at(sequence, i);
 
-    if(subject && raptor_node_matches(subject->node, node_type, node_data, 0, 0)) {
+    if(subject &&
+       raptor_node_matches(subject->node, node_type, node_data, NULL, NULL)) {
       rv_subject = subject;
       break;
     }
@@ -1238,7 +1420,6 @@ raptor_rdfxmla_find_subject(raptor_sequence *sequence,
     *idx = i;
   
   return rv_subject;
-  
 }
 
 
@@ -1247,13 +1428,16 @@ raptor_rdfxmla_lookup_subject(raptor_rdfxmla_context* context,
                               raptor_identifier_type node_type,
                               const void *node_data)
 {
-  /* Search for specified resource in resources array. TODO: this
-   * should really be a hash, not a list. */
-  raptor_sequence *sequence = (node_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) ?
-    context->blanks : context->subjects;
-  
-  raptor_subject *rv_subject = raptor_rdfxmla_find_subject(sequence, node_type,
-                                                           node_data, NULL);
+  raptor_sequence *sequence;
+  raptor_subject *rv_subject;
+
+  /* Search for specified resource in resources array.
+   * FIXME: this should really be a hash, not a list.
+   */
+  sequence= (node_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) ?
+            context->blanks : context->subjects;
+  rv_subject= raptor_rdfxmla_find_subject(sequence, node_type,
+                                          node_data, NULL);
 
   /* If not found, create one and insert it */
   if(!rv_subject) {
@@ -1271,8 +1455,8 @@ raptor_rdfxmla_lookup_subject(raptor_rdfxmla_context* context,
   }
   
   return rv_subject;
-  
 }
+
 
 /* create a new serializer */
 static int
@@ -1313,10 +1497,9 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
     raptor_free_uri(rdf_type_uri);
   }
   
-  if(context->nstack == NULL || context->rdf_nspace == NULL ||
-      context->namespaces == NULL || context->subjects == NULL ||
-      context->blanks == NULL || context->nodes == NULL ||
-      context->rdf_type == NULL) {
+  if(!context->nstack || !context->rdf_nspace || !context->namespaces ||
+     !context->subjects || !context->blanks || !context->nodes ||
+     !context->rdf_type) {
     raptor_rdfxmla_serialize_terminate(serializer);
     return 1;
   }
@@ -1518,9 +1701,9 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                                    const raptor_statement *statement)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  raptor_subject *subject = 0;
-  raptor_node *predicate = 0;
-  raptor_node *object = 0;
+  raptor_subject *subject = NULL;
+  raptor_node *predicate = NULL;
+  raptor_node *object = NULL;
   int rv;
   raptor_identifier_type object_type;
 
@@ -1534,7 +1717,9 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       return 1;
 
   } else {
-    raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", statement->subject_type);
+    raptor_serializer_error(serializer,
+                            "Do not know how to serialize node type %d\n",
+                            statement->subject_type);
     return 1;
   }  
   
@@ -1558,9 +1743,15 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                                         statement->object_literal_language);
     if(!object)
       return 1;          
+
+    if(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+       object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+      object->count_as_object++;
     
   } else {
-    raptor_serializer_error(serializer, "Do not know how to serialize node type %d\n", object_type);
+    raptor_serializer_error(serializer,
+                            "Do not know how to serialize node type %d\n",
+                            object_type);
     return 1;
   }
 
@@ -1569,8 +1760,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     predicate = raptor_rdfxmla_lookup_node(context, statement->predicate_type,
                                            statement->predicate, NULL, NULL);
 
-    if(subject->node_type == NULL &&
-        raptor_node_equals(predicate, context->rdf_type)) {
+    if(!subject->node_type && 
+       raptor_node_equals(predicate, context->rdf_type)) {
 
       /* Store the first one as the type for abbreviation 2.14
        * purposes. Note that it is perfectly legal to have
