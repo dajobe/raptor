@@ -1148,6 +1148,10 @@ raptor_turtle_parse_start(raptor_parser *rdf_parser)
   raptor_locator *locator=&rdf_parser->locator;
   raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
 
+  /* base URI required for Turtle */
+  if(!rdf_parser->base_uri)
+    return 1;
+
   locator->line=1;
   locator->column= -1; /* No column info */
   locator->byte= -1; /* No bytes info */
