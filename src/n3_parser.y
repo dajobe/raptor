@@ -1121,6 +1121,10 @@ raptor_n3_parse_start(raptor_parser *rdf_parser)
   raptor_locator *locator=&rdf_parser->locator;
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
+  /* base URI required for N3 */
+  if(!rdf_parser->base_uri)
+    return 1;
+
   locator->line=1;
   locator->column= -1; /* No column info */
   locator->byte= -1; /* No bytes info */
