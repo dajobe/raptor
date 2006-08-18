@@ -59,6 +59,11 @@ dnl Checks for programs.
 AC_CANONICAL_HOST
 AM_SANITY_CHECK
 AM_PROG_CC_STDC
+
+m4_undefine([AC_PROG_CXX])
+m4_defun([AC_PROG_CXX],[])
+m4_undefine([AC_PROG_F77])
+m4_defun([AC_PROG_F77],[])
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
