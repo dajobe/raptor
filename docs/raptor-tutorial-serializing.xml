@@ -289,7 +289,7 @@ To tidy up, delete the serializer object as follows:
 <section id="tutorial-serializer-example">
 <title>Serializing example code</title>
 
-<example>
+<example id="raptor-example-rdfcat">
 <title><filename>rdfcat.c</filename>: Read any RDF syntax and serialize to RDF/XML (Abbreviated)</title>
 <programlisting>
 <xi:include href="rdfcat.c" parse="text"/>
