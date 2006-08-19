@@ -349,6 +349,13 @@ raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser,
   xslt_ctxt=NULL;
   
   www=raptor_www_new();
+
+  if(rdf_parser->uri_filter)
+    raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
+                              rdf_parser->uri_filter_user_data);
+  else if(rdf_parser->feature_no_net)
+    raptor_www_set_uri_filter(www, raptor_parse_uri_no_net_filter, rdf_parser);
+
   raptor_www_set_write_bytes_handler(www, raptor_xslt_uri_parse_bytes, 
                                      &xslt_ctxt);
   
