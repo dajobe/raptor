@@ -82,16 +82,16 @@ parser and serializer instances.  This is one way to find a parser
 of the
 <link linkend="raptor-new-parser-for-content"><function>raptor_new_parser_for_content()</function></link>.</para>
 
-<example>
+<example id="raptor-example-list-all-parser-features">
 <title>List all features of parsers with an enumerate function</title>
 <programlisting>
   int i;
-  for(i=0; 1; i++) {
+  for(i=0; i < RAPTOR_FEATURE_LAST; i++) {
     const char *name;
     raptor_uri *uri;
     const char *label;
     if(raptor_features_enumerate((raptor_feature)i, &amp;name, &amp;uri, &amp;label))
-      break;
+      continue;
     /* do something with name, uri and label */
   }
 </programlisting>
