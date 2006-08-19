@@ -826,6 +826,9 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
 
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
+
     /* XML writer features */
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_START_URI:
@@ -917,6 +920,9 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
     case RAPTOR_FEATURE_NON_NFC_FATAL:
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
+
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
 
     /* XML writer features */
     case RAPTOR_FEATURE_RELATIVE_URIS:
