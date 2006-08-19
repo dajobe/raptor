@@ -93,6 +93,7 @@ raptor_get_feature
 raptor_parser_get_feature_string
 raptor_set_parser_strict
 raptor_parser_get_accept_header
+raptor_parser_set_uri_filter
 </SECTION>
 
 <SECTION>
@@ -229,6 +230,8 @@ raptor_www_set_http_accept
 raptor_www_set_write_bytes_handler
 raptor_www_set_content_type_handler
 raptor_www_set_error_handler
+raptor_www_uri_filter_func
+raptor_www_set_uri_filter
 raptor_www_fetch
 raptor_www_fetch_to_string
 raptor_www_get_connection
