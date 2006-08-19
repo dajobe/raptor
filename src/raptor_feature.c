@@ -71,7 +71,8 @@ static struct
   { RAPTOR_FEATURE_WRITER_AUTO_EMPTY       , 8, "autoEmpty", "Automatically detect and abbreviate empty elements." },
   { RAPTOR_FEATURE_WRITER_INDENT_WIDTH     , 8, "indentWidth", "Number of spaces to indent." },
   { RAPTOR_FEATURE_WRITER_XML_VERSION      , 10, "xmlVersion", "XML version to write." },
-  { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , 10, "xmlDeclaration", "Write XML declaration." }
+  { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , 10, "xmlDeclaration", "Write XML declaration." },
+  { RAPTOR_FEATURE_NO_NET                  , 1,  "noNet", "Deny network requests." }
 };
 
 
