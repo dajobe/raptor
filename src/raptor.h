@@ -649,6 +649,7 @@ typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata,
  * raptor_www_uri_filter_func:
  * @www: WWW object
  * @user_data: user data
+ * @uri: #raptor_uri URI to check
  *
  * Callback function for #raptor_www_set_uri_filter
  *
