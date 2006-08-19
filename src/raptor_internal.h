@@ -353,6 +353,11 @@ struct raptor_parser_s {
    */
   int feature_check_rdf_id;
 
+  /* FEATURE:
+   * non 0 to forbid network requests
+   */
+  int feature_no_net;
+
   /* stuff for our user */
   void *user_data;
 
@@ -375,6 +380,9 @@ struct raptor_parser_s {
   int default_generate_id_handler_base;
   char *default_generate_id_handler_prefix;
   size_t default_generate_id_handler_prefix_length;
+
+  void* uri_filter_user_data;
+  raptor_www_uri_filter_func uri_filter;
 
   /* parser specific stuff */
   void *context;
@@ -563,6 +571,7 @@ void raptor_free_statement(raptor_statement *statement);
 void raptor_delete_parser_factories(void);
 void raptor_free_type_q(raptor_type_q* type_q);
 const char* raptor_parser_get_accept_header_all(void);
+int raptor_parse_uri_no_net_filter(raptor_www* www, void *user_data, raptor_uri* uri);
 
 /* raptor_general.c */
 void raptor_invoke_message_varargs(const char *type, raptor_message_handler handler, void* user_data, raptor_locator* locator, const char *message, va_list arguments);
@@ -764,6 +773,9 @@ struct  raptor_www_s {
 
   void *error_data;
   raptor_message_handler error_handler;
+
+  void* uri_filter_user_data;
+  raptor_www_uri_filter_func uri_filter;
 
   /* can be filled with error location information */
   raptor_locator locator;
