@@ -395,6 +395,8 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
   
 #ifdef RAPTOR_XML_LIBXML
   if(!xc) {
+    int libxml_options = 0;
+
     if(!len) {
       /* no data given at all - emit a similar message to expat */
       raptor_sax2_update_document_locator(sax2, sax2->locator);
@@ -408,6 +410,10 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
                                  NULL);
     if(!xc)
       goto handle_error;
+
+    if(sax2->feature_no_net)
+      libxml_options |= XML_PARSE_NONET;
+    xmlCtxtUseOptions(xc, libxml_options);
     
     xc->userData = sax2; /* user data */
     xc->vctxt.userData = sax2; /* user data */
@@ -555,6 +561,10 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
       sax2->feature_normalize_language=value;
       break;
 
+    case RAPTOR_FEATURE_NO_NET:
+      sax2->feature_no_net=value;
+      break;
+
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
@@ -571,7 +581,6 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-    case RAPTOR_FEATURE_NO_NET:
     default:
       return -1;
       break;
