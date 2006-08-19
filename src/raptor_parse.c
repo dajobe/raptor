@@ -1971,7 +1971,7 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Known features:\n", program);
 #endif
 
-  for(i=0; 1; i++) {
+  for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
     const char *feature_name;
     const char *feature_label;
     raptor_uri *feature_uri;
@@ -1979,7 +1979,7 @@ main(int argc, char *argv[])
     
     if(raptor_features_enumerate((raptor_feature)i,
                                  &feature_name, &feature_uri, &feature_label))
-      break;
+      continue;
 
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, " %2d %-20s %s\n", i, feature_name, feature_label);
