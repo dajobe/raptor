@@ -242,6 +242,14 @@ raptor_xml_element_push(raptor_sax2 *sax2, raptor_xml_element* element)
 }
 
 
+/**
+ * raptor_xml_element_is_empty:
+ * @xml_element: 
+ * 
+ * Check if an XML Element is empty.
+ * 
+ * Return value: non-0 if the element is empty.
+ **/
 int
 raptor_xml_element_is_empty(raptor_xml_element* xml_element)
 {
