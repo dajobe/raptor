@@ -392,6 +392,119 @@ buffer_len or NULL buffer can be used.</para>
 </section>
 
 
+<section id="restrict-parser-network-access">
+<title>Restrict parser network access</title>
+
+<para>
+Parsing can cause network requests to be performed, especially
+if a URI is given as an argument such as with
+<link linkend="raptor-parse-uri"><function>raptor_parse_uri()</function></link>
+however there may also be indirect requests such as with the
+GRDDL parser that retrieves URIs depending on the results of
+initial parse requests.  The URIs requested may not be wanted
+to be fetched or need to be filtered, and this can be done in
+three ways.
+</para>
+
+<section id="tutorial-filter-network-with-feature">
+<title>Filtering parser network requests with feature <link linkend="RAPTOR-FEATURE-NO-NET:CAPS"><literal>RAPTOR_FEATURE_NO_NET</literal></link></title>
+<para>
+The parser feature 
+<link linkend="RAPTOR-FEATURE-NO-NET:CAPS"><literal>RAPTOR_FEATURE_NO_NET</literal></link>
+can be set with
+<link linkend="raptor-set-feature"><function>raptor_set_feature()</function></link>
+and forbids all network requests.  There is no customisation of
+this approach.
+</para>
+
+<programlisting>
+  rdf_parser = raptor_new_parser("rdfxml");
+  raptor_set_feature(rdf_parser, RAPTOR_FEATURE_NO_NET);
+</programlisting>
+
+</section>
+
+
+<section id="tutorial-filter-network-www-uri-filter">
+<title>Filtering parser network requests with <link linkend="raptor-www-set-uri-filter"><function>raptor_www_set_uri_filter()</function></link></title>
+<para>
+The
+<link linkend="raptor-www-set-uri-filter"><function>raptor_www_set_uri_filter()</function></link>
+
+allows setting of a filtering function to operate on all URIs
+retrieved by a WWW connection.  This connection can be used in
+parsing when operated by hand.
+</para>
+
+<programlisting>
+void write_bytes_handler(raptor_www* www, void *user_data, 
+                         const void *ptr, size_t size, size_t nmemb) {
+{
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_parse_chunk(rdf_parser, (unsigned char*)ptr, size*nmemb, 0);
+}
+
+int uri_filter(raptor_www* www, void* filter_user_data, raptor_uri* uri) {
+  /* return non-0 to forbid the request */
+}
+
+int main(int argc, char *argv[]) { 
+  ...
+
+  rdf_parser = raptor_new_parser("rdfxml");
+  www = raptor_new_www();
+
+  /* filter all URI requests */
+  raptor_www_set_uri_filter(parser, uri_filter, filter_user_data);
+
+  /* make WWW write bytes to parser */
+  raptor_www_set_write_bytes_handler(www, write_bytes_handler, rdf_parser);
+
+  raptor_start_parse(rdf_parser, uri);
+  raptor_www_fetch(www, uri);
+  /* tell the parser that we are done */
+  raptor_parse_chunk(rdf_parser, NULL, 0, 1);
+
+  raptor_www_free(www);
+  raptor_free_parser(rdf_parser);
+
+  ...
+}
+
+</programlisting>
+
+</section>
+
+
+<section id="tutorial-filter-network-parser-uri-filter">
+<title>Filtering parser network requests with <link linkend="raptor-parser-set-uri-filter"><function>raptor_parser_set_uri_filter()</function></link></title>
+
+<para>
+The
+<link linkend="raptor-parser-set-uri-filter"><function>raptor_parser_set_uri_filter()</function></link>
+allows setting of a filtering function to operate on all URIs that
+the parser sees.  This operates on the internal raptor_www object
+used inside parsing to retrieve URIs, similar to that described in
+the <link linkend="tutorial-filter-network-www-uri-filter">previous section</link>.
+</para>
+
+<programlisting>
+  int uri_filter(raptor_www* www, void* filter_user_data, raptor_uri* uri) {
+    /* return non-0 to forbid the request */
+  }
+
+  rdf_parser = raptor_new_parser("rdfxml");
+  raptor_parser_set_uri_filter(parser, uri_filter, filter_user_data);
+
+  /* parse content as normal */
+  raptor_parse_uri(rdf_parser, uri, base_uri);
+</programlisting>
+
+</section>
+
+</section>
+
+
 <section id="tutorial-parser-static-info">
 <title>Querying parser static information</title>
 
