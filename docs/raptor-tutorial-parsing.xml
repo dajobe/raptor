@@ -444,7 +444,7 @@ void write_bytes_handler(raptor_www* www, void *user_data,
   raptor_parse_chunk(rdf_parser, (unsigned char*)ptr, size*nmemb, 0);
 }
 
-int uri_filter(raptor_www* www, void* filter_user_data, raptor_uri* uri) {
+int uri_filter(void* filter_user_data, raptor_uri* uri) {
   /* return non-0 to forbid the request */
 }
 
@@ -489,7 +489,7 @@ the <link linkend="tutorial-filter-network-www-uri-filter">previous section</lin
 </para>
 
 <programlisting>
-  int uri_filter(raptor_www* www, void* filter_user_data, raptor_uri* uri) {
+  int uri_filter(void* filter_user_data, raptor_uri* uri) {
     /* return non-0 to forbid the request */
   }
 
