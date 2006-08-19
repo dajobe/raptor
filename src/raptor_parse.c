@@ -713,6 +713,21 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
 }
 
 
+int
+raptor_parse_uri_no_net_filter(raptor_www* www, void *user_data, 
+                               raptor_uri* uri)
+{
+  unsigned char* uri_string=raptor_uri_as_string(uri);
+  
+  if(raptor_uri_uri_string_is_file_uri(uri_string))
+    return 0;
+
+  raptor_parser_error((raptor_parser*)user_data, 
+                      "Network fetch of URI '%s' denied", uri);
+  return 1;
+}
+
+
 /**
  * raptor_parse_uri:
  * @rdf_parser: parser
@@ -778,6 +793,12 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
       RAPTOR_FREE(cstring, accept_h);
     }
   }
+  
+  if(rdf_parser->uri_filter)
+    raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
+                              rdf_parser->uri_filter_user_data);
+  else if(rdf_parser->feature_no_net)
+    raptor_www_set_uri_filter(www, raptor_parse_uri_no_net_filter, rdf_parser);
   
   raptor_www_set_error_handler(www, rdf_parser->error_handler, 
                                rdf_parser->error_user_data);
@@ -1147,6 +1168,24 @@ raptor_set_namespace_handler(raptor_parser* parser,
 
 
 /**
+ * raptor_parser_set_uri_filter:
+ * @parser: parser object
+ * @filter: URI filter function
+ * @user_data: User data to pass to filter function
+ * 
+ * Set URI filter function for WWW retrieval.
+ **/
+void
+raptor_parser_set_uri_filter(raptor_parser* parser, 
+                             raptor_www_uri_filter_func filter,
+                             void *user_data)
+{
+  parser->uri_filter=filter;
+  parser->uri_filter_user_data=user_data;
+}
+
+
+/**
  * raptor_features_enumerate:
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
@@ -1225,6 +1264,10 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
 
     case RAPTOR_FEATURE_CHECK_RDF_ID:
       parser->feature_check_rdf_id=value;
+      break;
+
+    case RAPTOR_FEATURE_NO_NET:
+      parser->feature_no_net=value;
       break;
 
     case RAPTOR_FEATURE_RELATIVE_URIS:
@@ -1326,6 +1369,10 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
 
     case RAPTOR_FEATURE_CHECK_RDF_ID:
       result=(parser->feature_check_rdf_id != 0);
+      break;
+
+    case RAPTOR_FEATURE_NO_NET:
+      result=(parser->feature_no_net != 0);
       break;
 
     /* serializing features */
@@ -1748,6 +1795,8 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
   to_parser->namespace_handler= from_parser->namespace_handler;
   to_parser->namespace_handler_user_data= from_parser->namespace_handler_user_data;
+  to_parser->uri_filter= from_parser->uri_filter;
+  to_parser->uri_filter_user_data= from_parser->uri_filter_user_data;
 
 }
 
