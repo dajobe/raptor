@@ -1287,7 +1287,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 #endif
 
   if(!rdf_parser->statement_handler)
-    return;
+    goto generate_tidy;
 
   /* Generate the statement; or is it fact? */
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
@@ -1320,7 +1320,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
     (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
     
   } else if(!reified || (!reified->uri && !reified->id))
-    return;
+    goto generate_tidy;
 
   /* generate reified statements */
   statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -1359,6 +1359,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
+ generate_tidy:
   /* Tidy up things allocated here */
   if(reified_id)
     RAPTOR_FREE(cstring, reified_id);
