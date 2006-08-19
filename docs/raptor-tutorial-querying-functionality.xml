@@ -86,7 +86,7 @@ of the
 <title>List all features of parsers with an enumerate function</title>
 <programlisting>
   int i;
-  for(i=0; i < RAPTOR_FEATURE_LAST; i++) {
+  for(i=0; i &lt; RAPTOR_FEATURE_LAST; i++) {
     const char *name;
     raptor_uri *uri;
     const char *label;
