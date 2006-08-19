@@ -317,6 +317,7 @@ typedef struct {
  *   for each indent level when serializing with auto indent.
  * @RAPTOR_FEATURE_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
  * @RAPTOR_FEATURE_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
+ * @RAPTOR_FEATURE_NO_NET: Deny network requests
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
