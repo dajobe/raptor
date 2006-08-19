@@ -244,7 +244,7 @@ raptor_xml_element_push(raptor_sax2 *sax2, raptor_xml_element* element)
 
 /**
  * raptor_xml_element_is_empty:
- * @xml_element: 
+ * @xml_element: XML Element
  * 
  * Check if an XML Element is empty.
  * 
