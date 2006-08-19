@@ -236,36 +236,6 @@ static struct {
 };
 
 
-static void
-raptor_xslt_uri_parse_bytes(raptor_www* www,
-                            void *userdata, 
-                            const void *ptr, size_t size, size_t nmemb)
-{
-  xmlParserCtxtPtr* ctxt_ptr=(xmlParserCtxtPtr*)userdata;
-  int len=size*nmemb;
-  int rc=0;
-  
-  if(!*ctxt_ptr) {
-    xmlParserCtxtPtr xc;
-    
-    xc = xmlCreatePushParserCtxt(NULL, NULL,
-                                 (const char*)ptr, len, 
-                                 (const char*)raptor_uri_as_string(www->uri));
-    if(!xc)
-      rc=1;
-    else {
-      xc->replaceEntities = 1;
-      xc->loadsubset = 1;
-    }
-    *ctxt_ptr=xc;
-  } else
-    rc=xmlParseChunk(*ctxt_ptr, (const char*)ptr, len, 0);
-
-  if(rc)
-    raptor_www_abort(www, "Parsing failed");
-}
-
-
 /* Run a GRDDL transform using a pre-parsed XSLT stylesheet already
  * formed into a libxml document (with URI)
  */
@@ -331,13 +301,57 @@ raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser,
 }
 
 
+typedef struct 
+{
+  raptor_parser* rdf_parser;
+  xmlParserCtxtPtr xc;
+} raptor_xslt_parse_bytes_context;
+  
+
+static void
+raptor_xslt_uri_parse_bytes(raptor_www* www,
+                            void *userdata, 
+                            const void *ptr, size_t size, size_t nmemb)
+{
+  raptor_xslt_parse_bytes_context* pbc=(raptor_xslt_parse_bytes_context*)userdata;
+  int len=size*nmemb;
+  int rc=0;
+  
+  if(!pbc->xc) {
+    xmlParserCtxtPtr xc;
+    
+    xc = xmlCreatePushParserCtxt(NULL, NULL,
+                                 (const char*)ptr, len, 
+                                 (const char*)raptor_uri_as_string(www->uri));
+    if(!xc)
+      rc=1;
+    else {
+      int libxml_options = 0;
+
+      if(pbc->rdf_parser->feature_no_net)
+        libxml_options |= XML_PARSE_NONET;
+      xmlCtxtUseOptions(xc, libxml_options);
+
+      xc->replaceEntities = 1;
+      xc->loadsubset = 1;
+    }
+    pbc->xc=xc;
+  } else
+    rc=xmlParseChunk(pbc->xc, (const char*)ptr, len, 0);
+
+  if(rc)
+    raptor_parser_error(pbc->rdf_parser, "Parsing failed");
+}
+
+
 /* Run a GRDDL transform using a XSLT stylesheet at a given URI */
 static int
 raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser, 
                                     raptor_uri* xslt_uri, xmlDocPtr doc)
 {
   raptor_www *www=NULL;
-  xmlParserCtxtPtr xslt_ctxt;
+  xmlParserCtxtPtr xslt_ctxt=NULL;
+  raptor_xslt_parse_bytes_context pbc;
   int ret=0;
   
   RAPTOR_DEBUG2("Running GRDDL transform with XSLT URI '%s'\n",
@@ -346,7 +360,8 @@ raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser,
   /* make an xsltStylesheetPtr via the raptor_xslt_uri_parse_bytes 
    * callback as bytes are returned
    */
-  xslt_ctxt=NULL;
+  pbc.xc=NULL;
+  pbc.rdf_parser=rdf_parser;
   
   www=raptor_www_new();
 
@@ -356,15 +371,15 @@ raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser,
   else if(rdf_parser->feature_no_net)
     raptor_www_set_uri_filter(www, raptor_parse_uri_no_net_filter, rdf_parser);
 
-  raptor_www_set_write_bytes_handler(www, raptor_xslt_uri_parse_bytes, 
-                                     &xslt_ctxt);
+  raptor_www_set_write_bytes_handler(www, raptor_xslt_uri_parse_bytes, &pbc);
   
   if(raptor_www_fetch(www, xslt_uri)) {
     ret=1;
     goto cleanup_xslt;
   }
   
-  xmlParseChunk(xslt_ctxt, NULL, 0, 1);
+  xslt_ctxt=pbc.xc;
+  xmlParseChunk(pbc.xc, NULL, 0, 1);
   
   ret=raptor_xslt_run_grddl_transform_doc(rdf_parser, 
                                           xslt_uri, xslt_ctxt->myDoc, 
