@@ -339,7 +339,8 @@ typedef enum {
   RAPTOR_FEATURE_WRITER_INDENT_WIDTH,
   RAPTOR_FEATURE_WRITER_XML_VERSION,
   RAPTOR_FEATURE_WRITER_XML_DECLARATION,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITER_XML_DECLARATION
+  RAPTOR_FEATURE_NO_NET,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_NO_NET
 } raptor_feature;
 
 
@@ -643,6 +644,17 @@ typedef void (*raptor_www_write_bytes_handler)(raptor_www* www, void *userdata, 
  */
 typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata, const char *content_type);
 
+/**
+ * raptor_www_uri_filter_func:
+ * @www: WWW object
+ * @user_data: user data
+ *
+ * Callback function for #raptor_www_set_uri_filter
+ *
+ * Return value: non-0 to filter the URI
+ */
+typedef int (*raptor_www_uri_filter_func)(raptor_www* www, void *user_data, raptor_uri* uri);
+
 
 /* Public functions */
 
@@ -687,6 +699,8 @@ RAPTOR_API
 void raptor_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
 RAPTOR_API
 void raptor_set_namespace_handler(raptor_parser* parser, void *user_data, raptor_namespace_handler handler);
+RAPTOR_API
+void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_www_uri_filter_func filter, void* user_data);
 
 RAPTOR_API
 void raptor_print_statement(const raptor_statement * statement, FILE *stream);
@@ -971,6 +985,8 @@ RAPTOR_API
 void raptor_www_set_content_type_handler(raptor_www *www, raptor_www_content_type_handler handler, void *user_data);
 RAPTOR_API
 void raptor_www_set_error_handler(raptor_www *www, raptor_message_handler error_handler, void *error_data);
+RAPTOR_API
+void raptor_www_set_uri_filter(raptor_www* www, raptor_www_uri_filter_func filter, void* user_data);
 RAPTOR_API
 int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API
