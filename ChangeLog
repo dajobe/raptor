@@ -1,3 +1,95 @@
+2006-08-18  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_parse.c: (main): Print all features for a parser,
+	don't stop at first non parser feature.
+
+	* src/raptor_xslt.c: (raptor_xslt_run_grddl_transform_uri): Set
+	URI filter or if feature NO_NET is set,
+	raptor_parse_uri_no_net_filter
+
+	* src/raptor_xml_writer.c: Add RAPTOR_FEATURE_NO_NET to switches
+
+	* src/raptor_sax2.c: Add RAPTOR_FEATURE_NO_NET to switches
+
+	* src/raptor_serialize.c: Add RAPTOR_FEATURE_NO_NET to switches
+
+	* src/raptor_parse.c: (raptor_parse_uri_no_net_filter): Added to
+	use in parsers to deny network fetches when feature NO_NET is in
+	action.
+	(raptor_parse_uri_with_connection): Set URI filter or if feature
+	NO_NET is set, raptor_parse_uri_no_net_filter
+	(raptor_parser_set_uri_filter): Added.
+	(raptor_set_feature, raptor_get_feature): Handle
+	RAPTOR_FEATURE_NO_NET.
+	(raptor_parser_copy_user_state): Copy uri filter fields.
+
+	* src/raptor_www.c: (raptor_www_set_uri_filter): Added to add a
+	filter function to check a URI before it is resolved.
+	(raptor_www_fetch): call URI filter function before resolving.
+
+	* src/raptor_feature.c: Added RAPTOR_FEATURE_NO_NET to deny
+	network requests, primarily in parsing.
+
+	* src/raptor_internal.h: Add feature_no_net Added
+	raptor_parse_uri_no_net_filter prototype raptor_parser and
+	raptor_www gain fields uri_filter_user_data and
+	raptor_www_uri_filter_func uri_filter
+
+	* src/raptor.h: Added RAPTOR_FEATURE_NO_NET
+	Added raptor_www_uri_filter_func filter.
+	Added raptor_parser_set_uri_filter prototype.
+	Added raptor_www_set_uri_filter
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_generate_statement): Make
+	sure the allocated URI is always freed.
+
+	* configure.ac: Strip more -O flags from incoming CFLAGS, CXXFLAGS
+	and CPPFLAGS.
+
+	* configure.ac: Patch configure.ac to remove un-necessary tests
+	for C++ or F77++ compilers that libtool stupidly insists on
+
+2006-08-14  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxmla.c: Replace reference counting with
+	counting blank/resource nodes used as subjects and objects to
+	prevent dual-triple generation. 
+	Fixes Issue#0000014 http://bugs.librdf.org/mantis/view.php?id=14
+	Add function documentation and tidy code style.
+
+	* src/n3_parser.y: (raptor_n3_parse_start): Enforce that a base
+	URI is required.
+
+	* src/turtle_parser.y: (raptor_turtle_parse_start): Enforce that a
+	base URI is required.
+
+2006-07-30  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xslt.c: Allow GRDDL value to be a space-separated
+	list of URIs, so now can support dataview:transformation in XML
+	taking a list of transformations as defined in
+	http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml
+	(raptor_xslt_parse_chunk): Split the value into a list of XSLT
+	URIs and use each of them on the document. 
+	Fixes Issue #0000041 http://bugs.librdf.org/mantis/view.php?id=41
+
+	* src/raptor_xslt.c: Added a table of xpaths and optional XSLT
+	URIs to use, which allows non-GRDDL to be given as long as
+	XML/XHTML is recognised and the XSLT sheet does the transformation
+	work.  Added transform pointers for DC <meta>, Embedded RDF and
+	HCalendar
+	(raptor_xslt_run_grddl_transform_doc,
+	raptor_xslt_run_grddl_transform_uri): Added, pulled out of
+	raptor_xslt_parse_chunk which was too long.
+	(raptor_xslt_parse_chunk): Much smaller and tidied error messages.
+	Use the given XSLT URI to do a transform if it exists rather than
+	the node value(s) as URIs for multiple transforms.
+
+	* configure.ac: Remove libwww support
+
+	* src/raptor_internal.h, src/raptor_www.c,
+	src/raptor_www_libwww.c: Remove libwww support
+
 2006-07-16  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_build_items):
