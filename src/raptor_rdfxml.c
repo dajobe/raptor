@@ -1072,12 +1072,6 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_unparsed_entity_decl_handler(sax2, raptor_rdfxml_unparsed_entity_decl_handler);
   raptor_sax2_set_external_entity_ref_handler(sax2, raptor_rdfxml_external_entity_ref_handler);
   raptor_sax2_set_namespace_handler(sax2, raptor_rdfxml_sax2_new_namespace_handler);
-  /* Optionally normalize language to lowercase
-   * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
-   */
-  raptor_sax2_set_feature(sax2, RAPTOR_FEATURE_NORMALIZE_LANGUAGE, 
-                          rdf_parser->feature_normalize_language);
-
   raptor_sax2_set_locator(sax2, &rdf_parser->locator);
   
   RAPTOR_RDF_type_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("type");
@@ -1125,8 +1119,18 @@ raptor_rdfxml_parse_start(raptor_parser* rdf_parser)
   if(!uri)
     return 1;
 
-  /* initialise fields */
+  /* Optionally normalize language to lowercase
+   * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+   */
+  raptor_sax2_set_feature(rdf_xml_parser->sax2,
+                          RAPTOR_FEATURE_NORMALIZE_LANGUAGE, 
+                          rdf_parser->feature_normalize_language);
 
+  /* Optionally forbid network requests in the XML parser */
+  raptor_sax2_set_feature(rdf_xml_parser->sax2, 
+                          RAPTOR_FEATURE_NO_NET,
+                          rdf_parser->feature_no_net);
+  
   raptor_sax2_parse_start(rdf_xml_parser->sax2, uri);
 
   return 0;
