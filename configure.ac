@@ -44,9 +44,9 @@ fi;)
 
 AM_CONDITIONAL(RELEASE_VERSION, test $release_version = yes)
 if test "$USE_MAINTAINER_MODE" = yes -a $release_version = no; then 
-  CFLAGS=`echo $CFLAGS | sed s/-O2//`
-  CXXFLAGS=`echo $CXXFLAGS | sed s/-O2//`
-  CPPFLAGS=`echo $CPPFLAGS | sed s/-O2//`
+  CFLAGS=`echo $CFLAGS | sed -e "s/-O[A-Za-z0-9]*//"`
+  CXXFLAGS=`echo $CXXFLAGS | sed -e "s/-O[A-Za-z0-9]*//"`
+  CPPFLAGS=`echo $CPPFLAGS | sed -e "s/-O[A-Za-z0-9]*//"`
 fi
 RPM_RELEASE=SNAP
 if test "$release_version" = "yes"; then
