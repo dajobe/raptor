@@ -692,6 +692,9 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
 
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
+
     /* XML writer features */
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
@@ -753,6 +756,9 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_NON_NFC_FATAL:
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
+
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
 
     /* XML writer features */
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
@@ -818,6 +824,9 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
 
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
+
     /* XML writer features */
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
@@ -872,6 +881,9 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_NON_NFC_FATAL:
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
+
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
 
     /* XML writer features */
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
