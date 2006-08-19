@@ -563,6 +563,7 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    case RAPTOR_FEATURE_NO_NET:
     default:
       return -1;
       break;
