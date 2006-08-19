@@ -714,8 +714,7 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
 
 
 int
-raptor_parse_uri_no_net_filter(raptor_www* www, void *user_data, 
-                               raptor_uri* uri)
+raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri)
 {
   unsigned char* uri_string=raptor_uri_as_string(uri);
   
@@ -1177,7 +1176,7 @@ raptor_set_namespace_handler(raptor_parser* parser,
  **/
 void
 raptor_parser_set_uri_filter(raptor_parser* parser, 
-                             raptor_www_uri_filter_func filter,
+                             raptor_uri_filter_func filter,
                              void *user_data)
 {
   parser->uri_filter=filter;
