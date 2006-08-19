@@ -149,6 +149,7 @@ raptor_www_new_with_connection(void *connection)
   www->status_code=0;
   www->write_bytes=NULL;
   www->content_type=NULL;
+  www->uri_filter=NULL;
 
 #ifdef RAPTOR_WWW_LIBCURL
   www->curl_handle=(CURL*)connection;
@@ -366,6 +367,24 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
 
 
 /**
+ * raptor_www_set_uri_filter:
+ * @www: WWW object
+ * @filter: URI filter function
+ * @user_data: User data to pass to filter function
+ * 
+ * Set URI filter function for WWW retrieval.
+ **/
+void
+raptor_www_set_uri_filter(raptor_www* www, 
+                          raptor_www_uri_filter_func filter,
+                          void *user_data)
+{
+  www->uri_filter=filter;
+  www->uri_filter_user_data=user_data;
+}
+
+
+/**
  * raptor_www_get_connection:
  * @www: #raptor_www object 
  *
@@ -536,6 +555,10 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   www->locator.line= -1;
   www->locator.column= -1;
 
+  if(www->uri_filter)
+    if(www->uri_filter(www, www->uri_filter_user_data, uri))
+      return 1;
+  
 #ifdef RAPTOR_WWW_NONE
   return raptor_www_file_fetch(www);
 #else
