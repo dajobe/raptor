@@ -462,7 +462,7 @@ To tidy up, delete the parser object as follows:
 <section id="tutorial-parser-example">
 <title>Parsing example code</title>
 
-<example>
+<example id="raptor-example-rdfprint">
 <title><filename>rdfprint.c</filename>: Parse an RDF/XML file and print the triples</title>
 <programlisting>
 <xi:include href="rdfprint.c" parse="text"/>
