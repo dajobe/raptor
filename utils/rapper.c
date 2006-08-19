@@ -60,7 +60,7 @@ extern int optind;
 extern char *optarg;
 #endif
 
-static void print_statements(void *user_data, const raptor_statement *statement);
+static void print_triples(void *user_data, const raptor_statement *statement);
 static void print_namespaces(void* user_data, raptor_namespace *nspace);
 static void relay_namespaces(void* user_data, raptor_namespace *nspace);
 int main(int argc, char *argv[]);
@@ -76,7 +76,7 @@ static int quiet=0;
 /* just count, no printing */
 static int count=0;
 
-static int statement_count=0;
+static int triple_count=0;
 
 static raptor_serializer* serializer=NULL;
 
@@ -87,10 +87,10 @@ static int reported_guess=0;
 static int report_namespace=0;
 
 static
-void print_statements(void *user_data, const raptor_statement *statement) 
+void print_triples(void *user_data, const raptor_statement *triple) 
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
-  statement_count++;
+  triple_count++;
 
   if(guess && !quiet && !reported_guess) {
      fprintf(stdout, "%s: Guessed parser name '%s'\n", program,
@@ -104,14 +104,14 @@ void print_statements(void *user_data, const raptor_statement *statement)
 
   /* replace newlines with spaces if object is a literal string */
   if(replace_newlines && 
-     statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+     triple->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     char *s;
-    for(s=(char*)statement->object; *s; s++)
+    for(s=(char*)triple->object; *s; s++)
       if(*s == '\n')
         *s=' ';
   }
 
-  raptor_serialize_statement(serializer, statement);
+  raptor_serialize_statement(serializer, triple);
   return;
 }
 
@@ -191,7 +191,7 @@ static int warning_count=0;
 static int ignore_warnings=0;
 static int ignore_errors=0;
 
-static const char *title_format_string="Raptor RDF parsing and serializing utility %s\n";
+static const char *title_format_string="Raptor RDF syntax parsing and serializing utility %s\n";
 
 
 static void
@@ -541,8 +541,7 @@ main(int argc, char *argv[])
     printf(title_format_string, raptor_version_string);
     puts(raptor_short_copyright_string);
     puts("Parse RDF content at the source URI into RDF triples.");
-    puts("\nMain options:");
-    puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
+    puts("\nSyntax options:");
     puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
@@ -567,12 +566,13 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
-    puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
-    puts("\nAdditional options:");
+    puts("\nGeneral options:");
     puts(HELP_TEXT("c", "count           ", "Count triples only - do not print them."));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
     puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser or serializer features" HELP_PAD "Use `-f help' for a list of valid features"));
     puts(HELP_TEXT("g", "guess           ", "Guess the input syntax (same as -i guess)"));
+    puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
+    puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
@@ -681,7 +681,7 @@ main(int argc, char *argv[])
     }
   }
   
-  raptor_set_statement_handler(rdf_parser, rdf_parser, print_statements);
+  raptor_set_statement_handler(rdf_parser, rdf_parser, print_triples);
 
   if(report_namespace)
     raptor_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
@@ -752,8 +752,8 @@ main(int argc, char *argv[])
   
 
   if(!quiet)
-    fprintf(stdout, "%s: Parsing returned %d statements\n", program,
-            statement_count);
+    fprintf(stdout, "%s: Parsing returned %d triple%s\n", program,
+            triple_count, (triple_count == 1 ? "" : "s"));
 
   raptor_free_uri(base_uri);
   if(uri)
