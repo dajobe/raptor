@@ -925,6 +925,11 @@ struct raptor_sax2_s {
    */
   int feature_normalize_language;
 
+  /* FEATURE: 
+   * non 0 if network access is denied
+   */
+  int feature_no_net;
+
   /* stack of namespaces, most recently added at top */
   raptor_namespace_stack namespaces;
 
