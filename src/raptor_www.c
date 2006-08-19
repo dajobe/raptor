@@ -376,7 +376,7 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
  **/
 void
 raptor_www_set_uri_filter(raptor_www* www, 
-                          raptor_www_uri_filter_func filter,
+                          raptor_uri_filter_func filter,
                           void *user_data)
 {
   www->uri_filter=filter;
@@ -556,7 +556,7 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   www->locator.column= -1;
 
   if(www->uri_filter)
-    if(www->uri_filter(www, www->uri_filter_user_data, uri))
+    if(www->uri_filter(www->uri_filter_user_data, uri))
       return 1;
   
 #ifdef RAPTOR_WWW_NONE
