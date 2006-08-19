@@ -6,7 +6,7 @@
 .\" Copyright (C) 2002-2006 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2006-05-30"
+.TH libraptor 3 "2006-08-19"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -20,7 +20,7 @@ libraptor \- Raptor RDF parser and serializer library
 .br
 .BI "raptor_parser *" p =raptor_new_parser("rdfxml");
 .br
-.BI raptor_set_statement_handler( p , NULL , print_statements );
+.BI raptor_set_statement_handler( p , NULL , print_triples );
 .br
 .BI "raptor_uri *" file_uri =raptor_new_uri("http://example.org/");
 .br
@@ -262,6 +262,9 @@ a blank node or bag identifier is required.  The memory returned
 is deallocated inside raptor.  Some systems require this to be
 allocated inside the same library, in which case the 
 \fBraptor_alloc_memory\fP function may be useful.
+.IP "\fBvoid raptor_parser_set_uri_filter(raptor_parser* \fIparser\fP, raptor_www_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
+Set the URI filter function \fIfilter\fP for URIs retrieved
+during parsing by the the raptor_parser.
 .SH "PARSER UTILITY FUNCTIONS"
 .IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **\fIname\fB, const char **\fIlabel\fB)\fR"
 Return the parser name/label for a parser with a given integer
@@ -704,6 +707,9 @@ NULL, an empty header is sent.
 .IP "\fBvoid raptor_www_set_error_handler(raptor_www *www\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Set the error handler routine for the raptor_www class.  This takes the
 same arguments as the raptor_parser error, warning handler methods.
+.IP "\fBvoid raptor_www_set_uri_filter(raptor_www* \fIwww\fP, raptor_www_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
+Set the URI filter function \fIfilter\fP for URIs retrieved by
+the raptor_www object.
 .IP "\fBvoid* raptor_www_get_connection(raptor_www *\fIwww\fB)\fR"
 Return the underlying WWW library connection object.  For example,
 for libcurl this is the curl_handle.
@@ -1126,6 +1132,13 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
+.SS 1.4.11
+Added parser feature \fBRAPTOR_FEATURE_NO_NET\fP
+.LP
+Added \fBraptor_www_set_uri_filter\fP, \fBraptor_parser_set_uri_filter\fP
+with filter type \fBraptor_www_uri_filter_func\fP
+.SS 1.4.10
+No API changes.
 .SS 1.4.9
 Added \fBraptor_parser_get_accept_header\fP
 .LP
