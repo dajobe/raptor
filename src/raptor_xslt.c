@@ -216,8 +216,8 @@ static struct {
     0,
     (const xmlChar*)"http://www.w3.org/2000/06/dc-extract/dc-extract.xsl"
   }
-#endif
   ,
+#endif
   /* Embedded RDF 
    * <head profile="http://purl.org/NET/erdf/profile"> inside <html>
    */
