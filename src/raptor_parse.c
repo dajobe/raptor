@@ -54,7 +54,6 @@
 #ifndef STANDALONE
 
 /* prototypes for helper functions */
-static raptor_parser_factory* raptor_get_parser_factory(const char *name);
 
 
 /* statics */
