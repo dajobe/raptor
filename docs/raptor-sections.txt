@@ -230,7 +230,7 @@ raptor_www_set_http_accept
 raptor_www_set_write_bytes_handler
 raptor_www_set_content_type_handler
 raptor_www_set_error_handler
-raptor_www_uri_filter_func
+raptor_uri_filter_func
 raptor_www_set_uri_filter
 raptor_www_fetch
 raptor_www_fetch_to_string
