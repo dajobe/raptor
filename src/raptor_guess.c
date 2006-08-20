@@ -163,6 +163,9 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
         if(!guess_parser->parser)
           return 1;
       }
+
+      /* copy any user data to the grddl parser */
+      raptor_parser_copy_user_state(guess_parser->parser, rdf_parser);
       
       if(raptor_start_parse(guess_parser->parser, rdf_parser->base_uri))
         return 1;
