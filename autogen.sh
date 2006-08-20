@@ -91,45 +91,60 @@ if test "X$DRYRUN" != X; then
 fi
 
 update_prog_version() {
-  prog=$1
+  dir=$1
+  prog=$2
 
   # If there exists an envariable PROG in uppercase, use that and do not scan
   ucprog=`echo $prog | tr 'a-z' 'A-Z' `
   eval env=\$${ucprog}
   if test X$env != X; then
     prog_name=$env
-    prog_vers=`$prog_name --version 2>&1 | head -n 1 | awk '{print $NF}'`
+    prog_vers=`$prog_name --version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
+    if [ "X$prog_vers" = "X" ]; then
+      prog_vers=`$prog_name -version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
+    fi
     eval ${prog}_name=${prog_name}
     eval ${prog}_vers=${prog_vers}
+    eval ${prog}_dir=environment
     return
   fi
 
   eval prog_name=\$${prog}_name
   eval prog_vers=\$${prog}_vers
+  eval prog_dir=\$${prog}_dir
   if test X$prog_vers = X; then
     prog_vers=0
   fi
 
+  save_PATH="$PATH"
+
+  cd $dir
+  PATH=".:$PATH"
+
   names=`ls $prog* 2>/dev/null`
   if [ "X$names" != "X" ]; then
     for name in $names; do
-      vers=`$name --version 2>&1 | grep -v Unable | head -n 1 | awk '{print $NF}'`
+      vers=`$name --version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
       if [ "X$vers" = "X" ]; then
-        vers=`$name -version 2>&1 | grep Version | awk '{print $NF}'`
+        vers=`$name -version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
         if [ "X$vers" = "X" ]; then
           continue
         fi
       fi
+
       if expr $vers '>' $prog_vers >/dev/null; then
         prog_name=$name
         prog_vers=$vers
+        prog_dir=$dir
       fi
     done
   fi
 
   eval ${prog}_name=${prog_name}
   eval ${prog}_vers=${prog_vers}
+  eval ${prog}_dir=${prog_dir}
 
+  PATH="$save_PATH"
 }
 
 
@@ -140,13 +155,14 @@ check_prog_version() {
 
   eval prog_name=\$${prog}_name
   eval prog_vers=\$${prog}_vers
+  eval prog_dir=\$${prog}_dir
 
-  echo "$program: Found $prog program '$prog_name' version $prog_vers (min $min)" 1>&2
+  echo "$program: $prog program '$prog_name' V $prog_vers (min $min) in $prog_dir" 1>&2
 
   rc=1
   if test $prog_vers != 0; then
     if expr $prog_vers '<' $min >/dev/null; then
-       echo "$program: ERROR: \`$prog' version $prog_vers is too old."
+       echo "$program: ERROR: \`$prog' version $prog_vers in $prog_dir is too old."
        echo "    (version $min or newer is required)"
        rc=0
     else
@@ -179,10 +195,9 @@ while [ $# -ne 0 ] ; do
   if [ ! -d $dir ]; then
     continue
   fi
-  cd $dir
 
   for prog in $programs; do
-    update_prog_version $prog
+    update_prog_version $dir $prog
   done
 done
 cd $here
