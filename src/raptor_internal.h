@@ -591,8 +591,6 @@ void raptor_parser_warning_message_handler(void *user_data, raptor_locator* loca
 
 /* raptor_parse.c */
 
-int raptor_parser_exec(raptor_parser* rdf_parser, const char *name);
-
 typedef struct raptor_rdfxml_parser_s raptor_rdfxml_parser;
 
 /* Prototypes for common expat/libxml parsing event-handling functions */
