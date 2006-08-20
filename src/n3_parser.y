@@ -130,21 +130,27 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 
 /* others */
 
-%token A AT HAT
-%token DOT COMMA SEMICOLON
-%token LEFT_SQUARE RIGHT_SQUARE
-%token LEFT_ROUND RIGHT_ROUND
+%token A "a"
+%token AT "@"
+%token HAT "^"
+%token DOT "."
+%token COMMA ","
+%token SEMICOLON ";"
+%token LEFT_SQUARE "["
+%token RIGHT_SQUARE "]"
+%token LEFT_ROUND "("
+%token RIGHT_ROUND ")"
 
 /* literals */
-%token <string> STRING_LITERAL
-%token <uri> URI_LITERAL
-%token <string> BLANK_LITERAL
-%token <uri> QNAME_LITERAL
-%token <string> PREFIX
-%token <string> IDENTIFIER
-%token <integer> INTEGER_LITERAL
-%token <floating> FLOATING_LITERAL
-%token <string> DECIMAL_LITERAL
+%token <string> STRING_LITERAL "string literal"
+%token <uri> URI_LITERAL "URI literal"
+%token <string> BLANK_LITERAL "blank node"
+%token <uri> QNAME_LITERAL "QName"
+%token <string> PREFIX "@prefix"
+%token <string> IDENTIFIER "identifier"
+%token <integer> INTEGER_LITERAL "integer literal"
+%token <floating> FLOATING_LITERAL "floating point literal"
+%token <string> DECIMAL_LITERAL "decimal literal"
 
 /* syntax error */
 %token ERROR_TOKEN
