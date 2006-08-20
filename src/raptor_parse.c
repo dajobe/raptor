@@ -751,7 +751,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
-  else if(rdf_parser->feature_no_net)
+  else if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
     raptor_www_set_uri_filter(www, raptor_parse_uri_no_net_filter, rdf_parser);
   
   raptor_www_set_error_handler(www, rdf_parser->error_handler, 
@@ -1182,47 +1182,21 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
   
   switch(feature) {
     case RAPTOR_FEATURE_SCANNING:
-      parser->feature_scanning_for_rdf_RDF=value;
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+    case RAPTOR_FEATURE_NO_NET:
+      parser->features[(int)feature]=value;
       break;
 
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
       break;
 
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-      parser->feature_allow_non_ns_attributes=value;
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-      parser->feature_allow_other_parseTypes=value;
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-      parser->feature_allow_bagID=value;
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-      parser->feature_allow_rdf_type_rdf_List=value;
-      break;
-
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-      parser->feature_normalize_language=value;
-      break;
-
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-      parser->feature_non_nfc_fatal=value;
-      break;
-
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-      parser->feature_warn_other_parseTypes=value;
-      break;
-
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-      parser->feature_check_rdf_id=value;
-      break;
-
-    case RAPTOR_FEATURE_NO_NET:
-      parser->feature_no_net=value;
-      break;
 
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_START_URI:
@@ -1286,47 +1260,20 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
   
   switch(feature) {
     case RAPTOR_FEATURE_SCANNING:
-      result=(parser->feature_scanning_for_rdf_RDF != 0);
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+    case RAPTOR_FEATURE_NO_NET:
+      result=(parser->features[(int)feature] != 0);
       break;
 
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
       result=0;
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-      result=(parser->feature_allow_non_ns_attributes != 0);
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-      result=(parser->feature_allow_other_parseTypes != 0);
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-      result=(parser->feature_allow_bagID != 0);
-      break;
-
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-      result=(parser->feature_allow_rdf_type_rdf_List != 0);
-      break;
-
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-      result=(parser->feature_normalize_language != 0);
-      break;
-
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-      result=(parser->feature_non_nfc_fatal != 0);
-      break;
-      
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-      result=(parser->feature_warn_other_parseTypes != 0);
-      break;
-
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-      result=(parser->feature_check_rdf_id != 0);
-      break;
-
-    case RAPTOR_FEATURE_NO_NET:
-      result=(parser->feature_no_net != 0);
       break;
 
     /* serializing features */
@@ -1386,16 +1333,16 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   is_strict=(is_strict) ? 1 : 0;
 
   /* Initialise default parser mode */
-  rdf_parser->feature_scanning_for_rdf_RDF=0;
+  rdf_parser->features[RAPTOR_FEATURE_SCANNING]=0;
 
-  rdf_parser->feature_allow_non_ns_attributes=!is_strict;
-  rdf_parser->feature_allow_other_parseTypes=!is_strict;
-  rdf_parser->feature_allow_bagID=!is_strict;
-  rdf_parser->feature_allow_rdf_type_rdf_List=0;
-  rdf_parser->feature_normalize_language=1;
-  rdf_parser->feature_non_nfc_fatal=is_strict;
-  rdf_parser->feature_warn_other_parseTypes=!is_strict;
-  rdf_parser->feature_check_rdf_id=1;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST]=0;
+  rdf_parser->features[RAPTOR_FEATURE_NORMALIZE_LANGUAGE]=1;
+  rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL]=is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_WARN_OTHER_PARSETYPES]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID]=1;
 }
 
 
@@ -1734,6 +1681,8 @@ void
 raptor_parser_copy_user_state(raptor_parser *to_parser, 
                               raptor_parser *from_parser)
 {
+  int i;
+  
   to_parser->user_data= from_parser->user_data;
   to_parser->fatal_error_user_data= from_parser->fatal_error_user_data;
   to_parser->error_user_data= from_parser->error_user_data;
@@ -1751,6 +1700,10 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->namespace_handler_user_data= from_parser->namespace_handler_user_data;
   to_parser->uri_filter= from_parser->uri_filter;
   to_parser->uri_filter_user_data= from_parser->uri_filter_user_data;
+
+  /* copy features */
+  for(i=0; i< RAPTOR_FEATURE_LAST; i++)
+    to_parser->features[i]= from_parser->features[i];
 
 }
 
