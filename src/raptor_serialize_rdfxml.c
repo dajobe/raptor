@@ -157,12 +157,16 @@ raptor_rdfxml_serialize_declare_namespace_from_namespace(raptor_serializer* seri
     raptor_namespace* ns;
     ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
 
-    /* If prefix is already declared, ignore ig */
+    /* If prefix is already declared, ignore it */
     if(!ns->prefix && !nspace->prefix)
       return 1;
     
     if(ns->prefix && nspace->prefix && 
        !strcmp((const char*)ns->prefix, (const char*)nspace->prefix))
+      return 1;
+
+    if(ns->uri && nspace->uri &&
+       raptor_uri_equals(ns->uri, nspace->uri))
       return 1;
   }
 
