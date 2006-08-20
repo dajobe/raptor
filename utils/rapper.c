@@ -138,8 +138,10 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 {
   raptor_serializer* rdf_serializer=(raptor_serializer*)user_data;
 
+  if(report_namespace)
+    print_namespaces(user_data, nspace);
+
   raptor_serialize_set_namespace_from_namespace(rdf_serializer, nspace);
-  return;
 }
 
 
