@@ -205,12 +205,18 @@ static struct {
     NULL
   }
   ,
+#if 0
+  /* FIXME Disabled. This returns the wrong namespaces in
+   * Id: dc-extract.xsl,v 1.10 2005/09/07 17:10:06 connolly Exp
+   */
+
   /* Dublin Core in <meta> tags http://dublincore.org/documents/dcq-html/ */
   {
     (const xmlChar*)"/html:html/html:head/html:link[@href=\"http://purl.org/dc/elements/1.1/\"]",
     0,
     (const xmlChar*)"http://www.w3.org/2000/06/dc-extract/dc-extract.xsl"
   }
+#endif
   ,
   /* Embedded RDF 
    * <head profile="http://purl.org/NET/erdf/profile"> inside <html>
