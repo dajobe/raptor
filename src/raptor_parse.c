@@ -261,8 +261,8 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
  * 
  * Return value: the factory object or NULL if there is no such factory
  **/
-static raptor_parser_factory*
-raptor_get_parser_factory (const char *name) 
+raptor_parser_factory*
+raptor_get_parser_factory(const char *name) 
 {
   raptor_parser_factory *factory;
 
