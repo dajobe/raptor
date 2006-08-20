@@ -763,7 +763,8 @@ raptor_rdfxml_start_element_handler(void *user_data,
           continue;
 
         /* If non namespace-prefixed RDF attributes found on an element */
-        if(rdf_parser->feature_allow_non_ns_attributes && !attr->nspace) {
+        if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES] &&
+           !attr->nspace) {
           const unsigned char *attr_name=attr->local_name;
           int j;
 
@@ -1124,12 +1125,12 @@ raptor_rdfxml_parse_start(raptor_parser* rdf_parser)
    */
   raptor_sax2_set_feature(rdf_xml_parser->sax2,
                           RAPTOR_FEATURE_NORMALIZE_LANGUAGE, 
-                          rdf_parser->feature_normalize_language);
+                          rdf_parser->features[RAPTOR_FEATURE_NORMALIZE_LANGUAGE]);
 
   /* Optionally forbid network requests in the XML parser */
   raptor_sax2_set_feature(rdf_xml_parser->sax2, 
                           RAPTOR_FEATURE_NO_NET,
-                          rdf_parser->feature_no_net);
+                          rdf_parser->features[RAPTOR_FEATURE_NO_NET]);
   
   raptor_sax2_parse_start(rdf_xml_parser->sax2, uri);
 
@@ -1298,7 +1299,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
 
   /* the bagID mess */
-  if(rdf_parser->feature_allow_bagID &&
+  if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID] &&
      bag_element && (bag_element->bag.uri || bag_element->bag.id)) {
     raptor_identifier* bag=&bag_element->bag;
     
@@ -1448,7 +1449,7 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
     if(!raptor_utf8_is_nfc(value, strlen((const char*)value))) {
       const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_rdfxml_update_document_locator(rdf_parser);
-      if(rdf_parser->feature_non_nfc_fatal)
+      if(rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL])
         raptor_parser_error(rdf_parser, message, name, value);
       else
         raptor_parser_warning(rdf_parser, message, name, value);
@@ -1563,7 +1564,7 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
     if(object_is_literal && !raptor_utf8_is_nfc(value, strlen((const char*)value))) {
       const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_rdfxml_update_document_locator(rdf_parser);
-      if(rdf_parser->feature_non_nfc_fatal)
+      if(rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL])
         raptor_parser_error(rdf_parser, message, rdf_syntax_terms_info[i].name, value);
       else
         raptor_parser_warning(rdf_parser, message, rdf_syntax_terms_info[i].name, value);
@@ -1668,7 +1669,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         }
 
         /* If scanning for element, can continue */
-        if(rdf_parser->feature_scanning_for_rdf_RDF) {
+        if(rdf_parser->features[RAPTOR_FEATURE_SCANNING]) {
           finished=1;
           break;
         }
@@ -1820,7 +1821,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
 
         if(element->rdf_attr[RDF_ATTR_bagID]) {
-          if(rdf_parser->feature_allow_bagID) {
+          if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]) {
             element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
             element->rdf_attr[RDF_ATTR_bagID]=NULL;
             element->bag.uri=raptor_new_uri_from_id(base_uri, element->bag.id);
@@ -1888,7 +1889,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             raptor_uri *collection_uri=(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_List_URI(rdf_xml_parser) : RAPTOR_RDF_List_URI(rdf_xml_parser);
 
             if((element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ||
-               rdf_parser->feature_allow_rdf_type_rdf_List)
+               rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST])
               raptor_rdfxml_generate_statement(rdf_parser, 
                                         NULL,
                                         idList,
@@ -2136,7 +2137,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
         if(element->rdf_attr[RDF_ATTR_bagID]) {
 
-          if(rdf_parser->feature_allow_bagID) {
+          if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]) {
 
             if(element->rdf_attr[RDF_ATTR_resource] ||
                element->rdf_attr[RDF_ATTR_parseType]) {
@@ -2222,14 +2223,14 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
             element->child_content_type=RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_COLLECTION;
           } else {
-            if(rdf_parser->feature_allow_other_parseTypes &&
+            if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES] &&
                !raptor_strcasecmp((char*)parse_type, "daml:collection")) {
                 /* A DAML collection appears as a single node */
                 element->content_type=RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
                 element->child_state=RAPTOR_STATE_PARSETYPE_COLLECTION;
                 element->child_content_type=RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION;
             } else {
-              if(rdf_parser->feature_warn_other_parseTypes) {
+              if(rdf_parser->features[RAPTOR_FEATURE_WARN_OTHER_PARSETYPES]) {
                 raptor_parser_warning(rdf_parser, "Unknown rdf:parseType value '%s' taken as 'Literal'", parse_type);
               }
               is_parseType_Literal=1;
@@ -2360,7 +2361,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
         /* When scanning, another element ending is outside the RDF
          * world so this can happen without further work
          */
-        if(rdf_parser->feature_scanning_for_rdf_RDF) {
+        if(rdf_parser->features[RAPTOR_FEATURE_SCANNING]) {
           state=RAPTOR_STATE_UNKNOWN;
           finished=1;
           break;
@@ -2605,7 +2606,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
             if(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL) {
 
-              if(rdf_parser->feature_allow_bagID) {
+              if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]) {
                 /* Only an empty literal can have a rdf:bagID */
                 if(element->bag.uri || element->bag.id) {
                   if(xml_element->content_cdata_length > 0) {
@@ -2695,7 +2696,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                    !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
                   const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
                   raptor_rdfxml_update_document_locator(rdf_parser);
-                  if(rdf_parser->feature_non_nfc_fatal)
+                  if(rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL])
                     raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
                   else
                     raptor_parser_warning(rdf_parser, message, el_name, xml_element->content_cdata);
@@ -2755,7 +2756,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               if(!raptor_utf8_is_nfc(buffer, length)) {
                 const char *message="Property element '%s' has XML literal content not in Unicode Normal Form C: %s";
                 raptor_rdfxml_update_document_locator(rdf_parser);
-                if(rdf_parser->feature_non_nfc_fatal)
+                if(rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL])
                   raptor_parser_error(rdf_parser, message, el_name, buffer);
                 else
                   raptor_parser_warning(rdf_parser, message, el_name, buffer);
@@ -2921,7 +2922,7 @@ raptor_rdfxml_cdata_grammar(raptor_parser *rdf_parser,
 
   if(state == RAPTOR_STATE_UNKNOWN) {
     /* Ignore all cdata if still looking for RDF */
-    if(rdf_parser->feature_scanning_for_rdf_RDF)
+    if(rdf_parser->features[RAPTOR_FEATURE_SCANNING])
       return;
 
     /* Ignore all whitespace cdata before first element */
@@ -3054,7 +3055,7 @@ raptor_rdfxml_record_ID(raptor_parser *rdf_parser,
   size_t id_len=strlen((const char*)id);
   int rc;
   
-  if(!rdf_parser->feature_check_rdf_id)
+  if(!rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID])
     return 0;
 
   rc=raptor_id_set_add(rdf_xml_parser->id_set, base_uri, id, id_len);
