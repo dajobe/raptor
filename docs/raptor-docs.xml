@@ -5,7 +5,7 @@
 ]>
 <book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
-    <title>Raptor RDF Parsing Library Manual</title>
+    <title>Raptor RDF Syntax Parsing and Serializing Library Manual</title>
     <releaseinfo>for Raptor &version;</releaseinfo>
   </bookinfo>
 
