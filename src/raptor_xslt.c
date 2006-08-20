@@ -334,7 +334,7 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
     else {
       int libxml_options = 0;
 
-      if(pbc->rdf_parser->feature_no_net)
+      if(pbc->rdf_parser->features[RAPTOR_FEATURE_NO_NET])
         libxml_options |= XML_PARSE_NONET;
       xmlCtxtUseOptions(xc, libxml_options);
 
@@ -374,7 +374,7 @@ raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser,
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
-  else if(rdf_parser->feature_no_net)
+  else if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
     raptor_www_set_uri_filter(www, raptor_parse_uri_no_net_filter, rdf_parser);
 
   raptor_www_set_write_bytes_handler(www, raptor_xslt_uri_parse_bytes, &pbc);
