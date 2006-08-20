@@ -296,67 +296,8 @@ struct raptor_parser_s {
   /* static statement for use in passing to user code */
   raptor_statement statement;
 
-  /* FEATURE: 
-   * non 0 if scanning for <rdf:RDF> element inside the XML,
-   * else require rdf:RDF as first element. See also feature_assume_is_rdf
-   */
-  int feature_scanning_for_rdf_RDF;
-
-  /* FEATURE:
-   * non 0 to allow non-namespaced resource, ID etc attributes
-   * on RDF namespaced-elements
-   */
-  int feature_allow_non_ns_attributes;
-
-
-  /* FEATURE:
-   * non 0 to handle other rdf:parseType values that are not
-   * literal or resource
-   */
-  int feature_allow_other_parseTypes;
-
-
-  /* FEATURE: 
-   * non 0 if rdf:bagID is allowed.
-   * RDF/XML Syntax (Revised) 2003 forbids this.
-   */
-  int feature_allow_bagID;
-
-  /* FEATURE: 
-   * non 0 if rdf:Collection generates the <idList> rdf:type rdf:List triple.
-   * post-last call WD of RDF/XML Syntax (Revised) 2003 forbids amended
-   * the rules to not generate this.
-   */
-  int feature_allow_rdf_type_rdf_List;
-
-  /* FEATURE: 
-   * non 0 if normalizing xml:lang attribute values to lowercase.
-   * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
-   * says this is done when language-tagged literals are in the graph.
-   */
-  int feature_normalize_language;
-
-  /* FEATURE
-   * non 0 if non-NFC literals cause a fatal error rather than
-   * a warning.
-   */
-  int feature_non_nfc_fatal;
-
-  /* FEATURE:
-   * non 0 to give a warning when other rdf:parseType values that are not
-   * Literal, Resource or Collection are seen.
-   */
-  int feature_warn_other_parseTypes;
-
-  /* FEATURE:
-   * non 0 to check rdf:ID values for duplicates
-   */
-  int feature_check_rdf_id;
-
-  /* FEATURE:
-   * non 0 to forbid network requests
-   */
-  int feature_no_net;
+  /* Features */
+  int features[RAPTOR_FEATURE_LAST+1];
 
   /* stuff for our user */
   void *user_data;
