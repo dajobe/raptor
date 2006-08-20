@@ -8,6 +8,69 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
+<h2 id="rel1_4_11"><a name="rel1_4_11">Raptor 1.4.11 Changes</a></h2>
+
+<p>Not yet released.</p>
+
+<h3>General Changes</h3>
+
+
+<h3>Documentation Changes</h3>
+
+<p>The reference manual now includes descriptions of all the parsers
+and serializers and the tutorial has a new section describing how
+to filter URIs and deny network requests.</p>
+
+
+<h3>Parser Changes</h3>
+
+<p>Made GRDDL parser handle a list of URIs in the profile so it now
+can support <code>dataview:transformation</code> in XML taking a list
+of transformations as defined in
+<a href="http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml">http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml</a>.
+</p>
+
+<p>The GRDDL parser now knows how to recognise Dublin Core
+&lt;meta&gt;, Embedded RDF and HCalendar using well known XPaths and
+XSLT sheet URIs.
+</p>
+
+<p>Turtle (and experimental N3 parser) now require base URIs as they
+always should have.
+</p>
+
+<p>All parsers gain ways to prevent network requests either via a
+feature <code>RAPTOR_FEATURE_NO_NET</code> that denies network
+requests during a parser operation or with a URI filter function
+<code>raptor_parser_set_uri_filter()</code>.
+</p>
+
+
+<h3>Serializer Changes</h3>
+
+<p>Made RSS 1.0 serializing work again.</p>
+
+<p>Updated RDF/XML Abbreviated serializer to do proper reference counting
+on the blank/resource nodes used as subjects and objects to
+prevent dual-triple generation.  Fixes the reported
+<a href="http://bugs.librdf.org/mantis/view.php?id=14">Issue#0000014</a>
+</p>
+
+
+<h3>Other Changes</h3>
+
+<p>The WWW objects now can have an optional a URI filter function
+attached that checks if the URL given is allowed to be retrieved, or
+denied entirely using the new method <code>raptor_www_set_uri_filter()</code>
+</p>
+
+<p>The internal SAX2 API can also prevent network fetches with the
+feature <code>RAPTOR_FEATURE_NO_NET</code>.</p>
+
+<p><code>rapper</code> help and verbose message formats tidied.</p>
+
+
+
 <h2 id="rel1_4_10"><a name="rel1_4_10">Raptor 1.4.10 Changes</a></h2>
 
 <h3>General Changes</h3>
