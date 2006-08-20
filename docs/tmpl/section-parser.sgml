@@ -314,3 +314,13 @@ adjust how parsing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_parser_set_uri_filter ##### -->
+<para>
+
+</para>
+
+@parser: 
+@filter: 
+@user_data: 
+
+
