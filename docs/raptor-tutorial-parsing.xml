@@ -455,7 +455,7 @@ int main(int argc, char *argv[]) {
   www = raptor_new_www();
 
   /* filter all URI requests */
-  raptor_www_set_uri_filter(parser, uri_filter, filter_user_data);
+  raptor_www_set_uri_filter(www, uri_filter, filter_user_data);
 
   /* make WWW write bytes to parser */
   raptor_www_set_write_bytes_handler(www, write_bytes_handler, rdf_parser);
@@ -494,7 +494,7 @@ the <link linkend="tutorial-filter-network-www-uri-filter">previous section</lin
   }
 
   rdf_parser = raptor_new_parser("rdfxml");
-  raptor_parser_set_uri_filter(parser, uri_filter, filter_user_data);
+  raptor_parser_set_uri_filter(rdf_parser, uri_filter, filter_user_data);
 
   /* parse content as normal */
   raptor_parse_uri(rdf_parser, uri, base_uri);
