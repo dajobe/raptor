@@ -1,4 +1,102 @@
+2006-08-19  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-docs.xml: Added raptor-parsers.xml and
+	raptor-serializers.xml
+
+	* docs/Makefile.am: Added raptor-parsers.xml and
+	raptor-serializers.xml
+
+	* docs/raptor-parsers.xml, docs/raptor-serializers.xml: Added list
+	of parsers and serializers
+
+	* docs/tmpl/section-parser.sgml: Updated
+
+	* docs/tmpl/section-www.sgml: Updated
+
+	* docs/tmpl/section-feature.sgml: Updated
+
+	* docs/libraptor.3: Rename raptor_uri_filter_func
+
+	* docs/raptor-docs.xml: tweak title
+
+	* docs/raptor-tutorial-parsing.xml: params
+
+	* docs/raptor-sections.txt: Rename raptor_uri_filter_func
+
+	* utils/rapper.c: Allow --show-namespaces to print to stderr while
+	relaying them to the serializer.
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_serialize_declare_namespace_from_namespace): Don't
+	declared multiple prefixes for the same namespace URI.
+
+	* src/raptor_serialize_rdfxml.c:
+	(raptor_rdfxml_serialize_declare_namespace_from_namespace): Don't
+	declared multiple prefixes for the same namespace URI.
+
+	* docs/raptor-tutorial-parsing.xml: Update for uri filter arg change
+
+	* src/raptor_parse.c: Renamed raptor_www_uri_filter_func uri_filter to
+	raptor_uri_filter_func uri_filter and removed raptor_www* arg to
+	the filter function.
+
+	* src/raptor.h: Renamed raptor_www_uri_filter_func uri_filter to
+	raptor_uri_filter_func uri_filter and removed raptor_www* arg to
+	the filter function.
+
+	* src/raptor_www.c: Renamed raptor_www_uri_filter_func uri_filter
+	to raptor_uri_filter_func uri_filter and removed raptor_www* arg
+	to the filter function.
+
+	* src/raptor_internal.h: Renamed raptor_www_uri_filter_func
+	uri_filter to raptor_uri_filter_func uri_filter and removed
+	raptor_www* arg to the filter function.
+
+	* src/raptor_xslt.c: (raptor_xslt_uri_parse_bytes): Take in a
+	small structure to get the raptor_parser* pointer as well as the
+	libxml parser context.  Use it to pass on the nonet option to
+	libxml if it is set.
+	(raptor_xslt_run_grddl_transform_uri): Use new struct.
+
+	* src/raptor_rss.c: (raptor_rss_parse_start): Pass on
+	raptor_parser feature no_net to raptor_sax2.
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_init): Do feature
+	related initialising at the start of every parse, not once for all
+	rdf/xml parser instances.
+	(raptor_rdfxml_parse_start): Init feature_normalize_language and
+	feature_no_net here.
+
+	* src/raptor_sax2.c: (raptor_sax2_parse_chunk): Set libxml option
+	XML_PARSE_NONET if sax2 feature RAPTOR_FEATURE_NO_NET is set.
+	(raptor_sax2_set_feature): Handle RAPTOR_FEATURE_NO_NET.
+
+	* src/raptor_internal.h: raptor_sax2 gains feature_no_net
+
+	* docs/raptor-tutorial-parsing.xml: Add parser URI filtering
+	examples to tutorial
+
+	* docs/libraptor.3: Updated for 1.4.11
+
+	* utils/rapper.c: Reorder help message. Use triples in messages
+	and fix that plurals thing.
+
 2006-08-18  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-tutorial-serializing.xml: Add IDs to examples
+
+	* docs/raptor-tutorial-parsing.xml: Add IDs to examples
+
+	* docs/raptor-tutorial-querying-functionality.xml: Make it xml
+
+	* src/raptor_sax2.c: Added autodocs for raptor_xml_element_is_empty
+
+	* docs/raptor-sections.txt: Add raptor_parser_set_uri_filter,
+	raptor_www_set_uri_filter and raptor_www_uri_filter_func
+
+	* docs/raptor-tutorial-querying-functionality.xml: Fix example, add ID
+
+	* src/raptor.h: Document RAPTOR_FEATURE_NO_NET
 
 	* src/raptor_parse.c: (main): Print all features for a parser,
 	don't stop at first non parser feature.
