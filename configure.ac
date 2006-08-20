@@ -78,7 +78,7 @@ fi
 
 if test "$USE_MAINTAINER_MODE" = yes; then
   FLEX_MIN_VERSION=2.5.19
-  FLEX_REC_VERSION=2.5.31
+  FLEX_REC_VERSION=2.5.33
   AC_MSG_CHECKING(flex version)
   if test "X$LEX" != "X:"; then
     FLEX_VERSION=`$LEX -V 2>&1 | awk '{print $NF}'`
