@@ -1,4 +1,63 @@
+2006-08-20  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_parse.c: (raptor_parse_uri_with_connection,
+	raptor_set_feature, raptor_get_feature, raptor_set_parser_strict):
+	Update to use array of features throughout.
+	(raptor_parser_copy_user_state): Copy all features when copying
+	state.
+
+	* src/raptor_xslt.c: (raptor_xslt_uri_parse_bytes,
+	raptor_xslt_run_grddl_transform_uri): Update to use array of
+	features.
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_start_element_handler,
+	raptor_rdfxml_parse_start, raptor_rdfxml_generate_statement,
+	raptor_rdfxml_process_property_attributes,
+	raptor_rdfxml_start_element_grammar,
+	raptor_rdfxml_end_element_grammar, raptor_rdfxml_cdata_grammar,
+	raptor_rdfxml_record_ID): Update to use array of features
+	throughout.
+
+	* src/raptor_rss.c: (raptor_rss_parse_start): Update to use array
+	of features.
+
+	* src/raptor_guess.c: (raptor_guess_parse_chunk): Use
+	raptor_parser_copy_user_state to copy over pointers and feature
+	flags to the inner parser.
+
+	* src/raptor_internal.h: struct raptor_parser_s - replace
+	individual feature fields with an array.
+
+	* src/raptor_parse.c: Removed static raptor_get_parser_factory
+	prototype
+
+	* src/raptor_internal.h: Added raptor_get_parser_factory
+
+	* src/raptor_parse.c: (raptor_get_parser_factory): Now internal
+	not static
+
+	* configure.ac: flex check - warn before failing
+
+	* src/raptor_xslt.c: comma chameleon
+
+	* configure.ac: recommend flex 2.5.33
+
+	* configure.ac: Update to point at main flex site whichq finally
+	gets 2.5.33 after 9 years
+
+	* src/raptor_guess.c: Rework to call an internal use of a parser
+	rather than "exec"ing into the guessed parser.
+	Fixes Issue#0000091 http://bugs.librdf.org/mantis/view.php?id=91
+
+	* src/raptor_parse.c: (raptor_parser_exec): Deleted
+
+	* src/raptor_internal.h: Delete raptor_parser_exec
+
+	* src/raptor_xslt.c: Disable dc-extract.xsl
+
 2006-08-19  Dave Beckett  <dave@dajobe.org>
+
+	* RELEASE.html: Updated for 1.4.11
 
 	* docs/raptor-docs.xml: Added raptor-parsers.xml and
 	raptor-serializers.xml
