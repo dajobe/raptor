@@ -152,6 +152,26 @@ chunks of byte content.
 @error_data: 
 
 
+<!-- ##### USER_FUNCTION raptor_uri_filter_func ##### -->
+<para>
+
+</para>
+
+@user_data: 
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_www_set_uri_filter ##### -->
+<para>
+
+</para>
+
+@www: 
+@filter: 
+@user_data: 
+
+
 <!-- ##### FUNCTION raptor_www_fetch ##### -->
 <para>
 
