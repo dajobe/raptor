@@ -447,50 +447,6 @@ raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
 
 
 
-/*
- * raptor_parser_exec:
- * @parser: old parser to change
- * @name: the parser name
- *
- * Overwriting Constructor - turn one parser into another type - internal
- *
- * Return value: non-0 on failure
- */
-int
-raptor_parser_exec(raptor_parser* rdf_parser, const char *name)
-{
-  raptor_parser_factory* factory;
-
-  factory=raptor_get_parser_factory(name);
-  if(!factory)
-    return 1;
-
-  /* Free parser-implementation specific bits */
-  if(rdf_parser->factory)
-    rdf_parser->factory->terminate(rdf_parser);
-
-  if(rdf_parser->context)
-    RAPTOR_FREE(raptor_parser_context, rdf_parser->context);
-
-  rdf_parser->context=(char*)RAPTOR_CALLOC(raptor_parser_context, 1,
-                                           factory->context_length);
-
-  rdf_parser->factory=factory;
-  
-  if(!rdf_parser->context) {
-    raptor_free_parser(rdf_parser);
-    return 1;
-  }
-
-  if(factory->init(rdf_parser, name)) {
-    raptor_free_parser(rdf_parser);
-    return 1;
-  }
-  
-  return 0;
-}
-
-
 /**
  * raptor_start_parse:
  * @rdf_parser: RDF parser
