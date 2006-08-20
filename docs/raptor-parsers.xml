@@ -1,0 +1,146 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+<chapter id="raptor-parsers">
+<title>Parsers in Raptor (syntax to triples)</title>
+
+<section id="raptor-parsers-intro">
+<title>Introduction</title>
+
+<para>This section describes the parsers that can be compiled into
+Raptor and their features.  The exact parsers supported may vary
+by different builds of raptor and can be queried at run-time by
+use of the 
+<link linkend="raptor-parsers-enumerate"><function>raptor_parsers_enumerate</function></link>
+and
+<link linkend="raptor-syntaxes-enumerate"><function>raptor_syntaxes_enumerate</function></link>
+functions</para>
+
+<para>The optional features that may be set on parsers can also
+be queried at run-time iwth the 
+<link linkend="raptor-features-enumerate"><function>raptor_features_enumerate</function></link>
+function.</para>
+
+</section>
+
+
+<section id="parser-grddl">
+<title>GRDDL over XHTML/XML using XSLT parser (name <literal>grddl</literal>)</title>
+<para>A parser for
+<ulink url="http://www.w3.org/2004/01/rdxh/spec">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</ulink>
+which allows reading XHTML and XML as RDF triples by using
+profiles in the document that declare XSLT transforms from the XHTML/XML
+content into RDF/XML which is the RDF content.</para>
+
+<para>The parser does not support all the GRDDL styles, for example
+<literal>dataview:namespaceTransformation</literal>, or perform recursive
+transformations.</para>
+
+</section>
+
+
+<section id="parser-guess">
+<title>Guess parser (name <literal>guess</literal>)</title>
+<para>
+This is a special parser that picks the actual parser to use based
+on the content type, the content bytes or the content identifier.  The
+content name can be either from a local file or from a URI.
+</para>
+
+<para>If the protocol that delivered the content (such as HTTP)
+provided a <emphasis>Content Type</emphasis> (aka MIME Type) then
+this will be the primary means for identifying th ecotnent.
+</para>
+
+<para>The secondary means to identify the content are the bytes of
+the content (if available), otherwise the content identifier is used,
+which is the least reliable.
+</para>
+
+</section>
+
+
+<section id="parser-ntriples">
+<title>N-Triples parser (name <literal>ntriples</literal>)</title>
+
+<para>A parser for the
+<ulink url="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</ulink>
+syntax as used by the 
+<ulink url="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</ulink>
+for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
+</para>
+
+</section>
+
+
+<section id="parser-rdfxml">
+<title>RDF/XML parser - default (name <literal>rdfxml</literal>)</title>
+<para>
+A parser for the standard
+<ulink url="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</ulink>
+as revised by the
+<ulink url="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</ulink>.</para>
+
+<para>This is the default parser in Raptor.</para>
+
+<para>Features of this parser:</para>
+<itemizedlist>
+<listitem><para>Fully handles the <ulink url="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax updates</ulink> for <ulink url="http://www.w3.org/TR/xmlbase/">XML Base</ulink>, <literal>xml:lang</literal>, RDF datatyping and Collections.</para></listitem>
+
+<listitem><para>Handles all RDF vocabularies such as <ulink url="http://www.foaf-project.org/">FOAF</ulink>, <ulink url="http://www.purl.org/rss/1.0/">RSS 1.0</ulink>, <ulink url="http://dublincore.org/">Dublin Core</ulink>, <ulink url="http://www.w3.org/TR/owl-features/">OWL</ulink>, <ulink url="http://usefulinc.com/doap">DOAP</ulink></para></listitem>
+
+<listitem><para>Handles <literal>rdf:resource</literal> / <literal>resource</literal> attributes</para></listitem>
+
+<listitem><para>Uses <ulink url="http://expat.sourceforge.net/">expat</ulink> and/or (GNOME) <ulink url="http://xmlsoft.org/">libxml</ulink> XML parsers as available or required</para></listitem>
+
+</itemizedlist>
+
+</section>
+
+
+<section id="parser-rss-tag-soup">
+<title>RSS Tag Soup parser (name <literal>rss-tag-soup</literal>)</title>
+
+<para>A parser for the multiple XML RSS formats that use the elements
+such as <literal>channel</literal>, <literal>item</literal>,
+<literal>title</literal>, <literal>description</literal>
+in different ways.
+This includes support for the Atom 1.0 syndication format defined in IETF
+<ulink url="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</ulink>
+</para>
+
+<para>The parser attempts to turn the input into
+<ulink url="http://www.purl.org/rss/1.0/">RSS 1.0</ulink>
+RDF triples in the RSS 1.0 model of a syndication feed.
+This includes triples for RSS Enclosures.
+</para>
+
+<para>
+True <ulink url="http://www.purl.org/rss/1.0/">RSS 1.0</ulink> when
+wanted to be used as a full RDF vocabulary, is best parsed by the
+RDF/XML parser (name <literal>rdfxml</literal>).
+</para>
+
+
+</section>
+
+
+<section id="parser-turtle">
+<title>Turtle Terse RDF Triple Language parser (name <literal>turtle</literal>)</title>
+
+<para>A parser for the
+<ulink url="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</ulink>
+syntax, designed as a useful subset of
+<ulink url="http://www.w3.org/DesignIssues/Notation3">Notation 3</ulink>.
+</para>
+
+</section>
+
+
+</chapter>
+
+<!--
+Local variables:
+mode: sgml
+sgml-parent-document: ("raptor-docs.xml" "book" "part")
+End:
+-->
