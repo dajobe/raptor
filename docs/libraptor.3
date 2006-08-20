@@ -262,7 +262,7 @@ a blank node or bag identifier is required.  The memory returned
 is deallocated inside raptor.  Some systems require this to be
 allocated inside the same library, in which case the 
 \fBraptor_alloc_memory\fP function may be useful.
-.IP "\fBvoid raptor_parser_set_uri_filter(raptor_parser* \fIparser\fP, raptor_www_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
+.IP "\fBvoid raptor_parser_set_uri_filter(raptor_parser* \fIparser\fP, raptor_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
 Set the URI filter function \fIfilter\fP for URIs retrieved
 during parsing by the the raptor_parser.
 .SH "PARSER UTILITY FUNCTIONS"
@@ -707,7 +707,7 @@ NULL, an empty header is sent.
 .IP "\fBvoid raptor_www_set_error_handler(raptor_www *www\fB, raptor_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Set the error handler routine for the raptor_www class.  This takes the
 same arguments as the raptor_parser error, warning handler methods.
-.IP "\fBvoid raptor_www_set_uri_filter(raptor_www* \fIwww\fP, raptor_www_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
+.IP "\fBvoid raptor_www_set_uri_filter(raptor_www* \fIwww\fP, raptor_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
 Set the URI filter function \fIfilter\fP for URIs retrieved by
 the raptor_www object.
 .IP "\fBvoid* raptor_www_get_connection(raptor_www *\fIwww\fB)\fR"
@@ -1136,7 +1136,7 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 Added parser feature \fBRAPTOR_FEATURE_NO_NET\fP
 .LP
 Added \fBraptor_www_set_uri_filter\fP, \fBraptor_parser_set_uri_filter\fP
-with filter type \fBraptor_www_uri_filter_func\fP
+with filter type \fBraptor_uri_filter_func\fP
 .SS 1.4.10
 No API changes.
 .SS 1.4.9
