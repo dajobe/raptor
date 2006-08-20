@@ -89,14 +89,16 @@ if test "$USE_MAINTAINER_MODE" = yes; then
     if test $FLEX_VERSION_DEC -ge $FLEX_MIN_VERSION_DEC; then
       AC_MSG_RESULT($FLEX_VERSION - OK)
     else
-      AC_MSG_FAILURE(version $FLEX_VERSION - too old)
+      AC_MSG_RESULT(version $FLEX_VERSION - too old)
       AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
       AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+      AC_MSG_FAILURE(flex too old)
     fi
   else
-    AC_MSG_FAILURE(not present)
+    AC_MSG_RESULT(not present)
     AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
     AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+    AC_MSG_FAILURE(flex not present)
   fi
 fi
 
