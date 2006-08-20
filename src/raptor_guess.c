@@ -54,6 +54,12 @@ struct raptor_guess_parser_context_s {
 
   /* URI from start_parse */
   raptor_uri* uri;
+
+  /* Non-0 when we need to guess */
+  int do_guess;
+  
+  /* Actual parser to use */
+  raptor_parser* parser;
 };
 
 
@@ -65,7 +71,9 @@ raptor_guess_parse_init(raptor_parser* rdf_parser, const char *name)
 {
   raptor_guess_parser_context *guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
   guess_parser->content_type=NULL;
-  
+
+  guess_parser->do_guess=1;
+
   return 0;
 }
 
@@ -77,6 +85,9 @@ raptor_guess_parse_terminate(raptor_parser *rdf_parser)
 
   if(guess_parser->content_type)
     RAPTOR_FREE(cstring, guess_parser->content_type);
+
+  if(guess_parser->parser)
+    raptor_free_parser(guess_parser->parser);
 }
 
 
@@ -110,35 +121,57 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
                         int is_end)
 {
   raptor_guess_parser_context* guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
-  const unsigned char *identifier=NULL;
-  const char *name;
-  
-  if(rdf_parser->base_uri)
-    identifier=raptor_uri_as_string(rdf_parser->base_uri);
 
-  name=raptor_guess_parser_name(NULL, guess_parser->content_type, buffer, len,
-                                identifier);
-  if(!name) {
-    raptor_parser_error(rdf_parser, "Failed to guess parser from content type '%s'",
-                        guess_parser->content_type ? 
-                        guess_parser->content_type : "(none)");
-    raptor_parse_abort(rdf_parser);
-    return 1;
-  }
+  if(guess_parser->do_guess) {
+    const unsigned char *identifier=NULL;
+    const char *name;
+    
+    guess_parser->do_guess=0;
 
-#if RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2("Guessed parser name '%s'\n", name);
-#endif
-  
-  raptor_parser_exec(rdf_parser, name);
-  
-  /* now we are parser type 'name' */
-  if(rdf_parser->factory->start) {
-    if(rdf_parser->factory->start(rdf_parser))
+    if(rdf_parser->base_uri)
+      identifier=raptor_uri_as_string(rdf_parser->base_uri);
+    
+    name=raptor_guess_parser_name(NULL, guess_parser->content_type, buffer, len,
+                                  identifier);
+    if(!name) {
+      raptor_parser_error(rdf_parser, "Failed to guess parser from content type '%s'",
+                          guess_parser->content_type ? 
+                          guess_parser->content_type : "(none)");
+      raptor_parse_abort(rdf_parser);
+      if(guess_parser->parser) {
+        raptor_free_parser(guess_parser->parser);
+        guess_parser->parser=NULL;
+      }
       return 1;
+    } else {
+    
+#if RAPTOR_DEBUG > 1
+      RAPTOR_DEBUG2("Guessed parser name '%s'\n", name);
+#endif
+      
+      if(guess_parser->parser) {
+        raptor_parser_factory* factory=raptor_get_parser_factory(name);
+
+        if(guess_parser->parser->factory != factory) {
+          raptor_free_parser(guess_parser->parser);
+          guess_parser->parser=NULL;
+        }
+      }
+      
+      if(!guess_parser->parser) {
+        guess_parser->parser=raptor_new_parser(name);
+        if(!guess_parser->parser)
+          return 1;
+      }
+      
+      if(raptor_start_parse(guess_parser->parser, rdf_parser->base_uri))
+        return 1;
+    }
   }
   
-  return rdf_parser->factory->chunk(rdf_parser, buffer, len, is_end);
+
+  /* now we can pass on calls to internal guess_parser */
+  return raptor_parse_chunk(guess_parser->parser, buffer, len, is_end);
 }
 
 
