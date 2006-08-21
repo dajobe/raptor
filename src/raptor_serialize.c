@@ -54,7 +54,28 @@ static raptor_serializer_factory* raptor_get_serializer_factory(const char *name
 /* statics */
 
 /* list of serializer factories */
-static raptor_serializer_factory* serializers=NULL;
+static raptor_sequence* serializers=NULL;
+
+
+/* helper methods */
+
+static void
+raptor_free_serializer_factory(raptor_serializer_factory* factory)
+{
+  if(factory->finish_factory)
+    factory->finish_factory(factory);
+  
+  RAPTOR_FREE(raptor_serializer_factory, (void*)factory->name);
+  RAPTOR_FREE(raptor_serializer_factory, (void*)factory->label);
+  if(factory->alias)
+    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->alias);
+  if(factory->mime_type)
+    RAPTOR_FREE(cstring, factory->mime_type);
+  if(factory->uri_string)
+    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->uri_string);
+  
+  RAPTOR_FREE(raptor_serializer_factory, factory);
+}
 
 
 /* class methods */
@@ -62,52 +83,39 @@ static raptor_serializer_factory* serializers=NULL;
 void
 raptor_serializers_init()
 {
-  serializers=NULL;
+  serializers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_serializer_factory, NULL);
+
+  /* raptor_init_serializer_simple(); */
+
+#ifdef RAPTOR_SERIALIZER_NTRIPLES
+  raptor_init_serializer_ntriples();
+#endif
+
+#ifdef RAPTOR_SERIALIZER_RDFXML
+  raptor_init_serializer_rdfxml();
+#endif
+
+#ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
+  raptor_init_serializer_rdfxmla();
+#endif
+
+#ifdef RAPTOR_SERIALIZER_RSS_1_0
+  raptor_init_serializer_rss10();
+#endif
 
 #ifdef RAPTOR_SERIALIZER_ATOM
   raptor_init_serializer_atom();
 #endif
-#ifdef RAPTOR_SERIALIZER_RSS_1_0
-  raptor_init_serializer_rss10();
-#endif
-#ifdef RAPTOR_SERIALIZER_RDFXML
-  raptor_init_serializer_rdfxml();
-#endif
-#ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
-  raptor_init_serializer_rdfxmla();
-#endif
-#ifdef RAPTOR_SERIALIZER_NTRIPLES
-  raptor_init_serializer_ntriples();
-#endif
-  /* raptor_init_serializer_simple(); */
 }
 
 
 /*
- * raptor_finish_serializers - delete all the registered serializers
+ * raptor_serializers_finish - delete all the registered serializers
  */
 void
 raptor_serializers_finish(void)
 {
-  raptor_serializer_factory *factory, *next;
-  
-  for(factory=serializers; factory; factory=next) {
-    next=factory->next;
-
-    if(factory->finish_factory)
-      factory->finish_factory(factory);
-
-    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->name);
-    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->label);
-    if(factory->alias)
-      RAPTOR_FREE(raptor_serializer_factory, (void*)factory->alias);
-    if(factory->mime_type)
-      RAPTOR_FREE(raptor_serializer_factory, (void*)factory->mime_type);
-    if(factory->uri_string)
-      RAPTOR_FREE(raptor_serializer_factory, (void*)factory->uri_string);
-
-    RAPTOR_FREE(raptor_serializer_factory, factory);
-  }
+  raptor_free_sequence(serializers);
   serializers=NULL;
 }
 
@@ -130,9 +138,10 @@ raptor_serializer_register_factory(const char *name, const char *label,
                                    const unsigned char *uri_string,
                                    void (*factory) (raptor_serializer_factory*)) 
 {
-  raptor_serializer_factory *serializer, *h;
+  raptor_serializer_factory *serializer;
   char *name_copy, *label_copy, *mime_type_copy, *alias_copy;
   unsigned char *uri_string_copy;
+  int i;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG4("Received registration for syntax serializer %s '%s' with alias '%s'\n", 
@@ -143,18 +152,21 @@ raptor_serializer_register_factory(const char *name, const char *label,
                 (uri_string ? uri_string : "none"));
 #endif
   
+  for(i=0;
+      (serializer=(raptor_serializer_factory*)raptor_sequence_get_at(serializers, i));
+      i++) {
+    if(!strcmp(serializer->name, name)) {
+      RAPTOR_FATAL2("serializer %s already registered\n", name);
+      return;
+    }
+  }
+  
+
   serializer=(raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
                                                sizeof(raptor_serializer_factory));
   if(!serializer)
     RAPTOR_FATAL1("Out of memory\n");
 
-  for(h = serializers; h; h = h->next ) {
-    if(!strcmp(h->name, name) ||
-       (alias && !strcmp(h->name, alias))) {
-      RAPTOR_FATAL2("serializer %s already registered\n", h->name);
-    }
-  }
-  
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy) {
     RAPTOR_FREE(raptor_serializer, serializer);
@@ -208,8 +220,7 @@ raptor_serializer_register_factory(const char *name, const char *label,
   RAPTOR_DEBUG3("%s has context size %d\n", name, serializer->context_length);
 #endif
   
-  serializer->next = serializers;
-  serializers = serializer;
+  raptor_sequence_push(serializers, serializer);
 }
 
 
@@ -222,23 +233,29 @@ raptor_serializer_register_factory(const char *name, const char *label,
  * Return value: the factory object or NULL if there is no such factory
  **/
 static raptor_serializer_factory*
-raptor_get_serializer_factory (const char *name) 
+raptor_get_serializer_factory(const char *name) 
 {
   raptor_serializer_factory *factory;
 
   /* return 1st serializer if no particular one wanted - why? */
   if(!name) {
-    factory=serializers;
+    factory=(raptor_serializer_factory *)raptor_sequence_get_at(serializers, 0);
     if(!factory) {
       RAPTOR_DEBUG1("No (default) serializers registered\n");
       return NULL;
     }
   } else {
-    for(factory=serializers; factory; factory=factory->next) {
+    int i;
+    
+    for(i=0;
+        (factory=(raptor_serializer_factory*)raptor_sequence_get_at(serializers, i));
+        i++) {
       if(!strcmp(factory->name, name) ||
          (factory->alias && !strcmp(factory->alias, name)))
         break;
+
     }
+
     /* else FACTORY name not found */
     if(!factory) {
       RAPTOR_DEBUG2("No serializer with name %s found\n", name);
@@ -268,28 +285,29 @@ raptor_serializers_enumerate(const unsigned int counter,
                              const char **mime_type,
                              const unsigned char **uri_string)
 {
-  unsigned int i;
-  raptor_serializer_factory *factory=serializers;
+  raptor_serializer_factory *factory;
+
+  if(counter < 0)
+    return 1;
+
+  factory=(raptor_serializer_factory*)raptor_sequence_get_at(serializers,
+                                                             counter);
 
   if(!factory)
     return 1;
 
-  for(i=0; factory && i<=counter ; i++, factory=factory->next) {
-    if(i == counter) {
-      if(name)
-        *name=factory->name;
-      if(label)
-        *label=factory->label;
-      if(mime_type)
-        *mime_type=factory->mime_type;
-      if(uri_string)
-        *uri_string=factory->uri_string;
-      return 0;
-    }
-  }
-        
-  return 1;
+  if(name)
+    *name=factory->name;
+  if(label)
+    *label=factory->label;
+  if(mime_type)
+    *mime_type=factory->mime_type;
+  if(uri_string)
+    *uri_string=factory->uri_string;
+
+  return 0;
 }
+
 
 /**
  * raptor_serializer_syntax_name_check:
