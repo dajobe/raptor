@@ -1218,18 +1218,11 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_turtle_parse_start;
   factory->chunk     = raptor_turtle_parse_chunk;
   factory->recognise_syntax = raptor_turtle_parse_recognise_syntax;
-}
 
-
-void
-raptor_init_parser_turtle(void)
-{
-  raptor_parser_factory* factory;
-
-  factory=raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
-                                         (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/",
-                                         &raptor_turtle_parser_register_factory);
   raptor_parser_factory_add_alias(factory, "ntriples-plus");
+
+  raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/");
+
   raptor_parser_factory_add_mime_type(factory, "application/turtle", 10);
   raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10);
 
@@ -1237,6 +1230,14 @@ raptor_init_parser_turtle(void)
   raptor_parser_factory_add_mime_type(factory, "text/n3", 3);
   raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3);
 #endif
+}
+
+
+void
+raptor_init_parser_turtle(void)
+{
+  raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
+                                 &raptor_turtle_parser_register_factory);
 }
 
 

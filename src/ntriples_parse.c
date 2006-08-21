@@ -1120,6 +1120,9 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_ntriples_parse_start;
   factory->chunk     = raptor_ntriples_parse_chunk;
   factory->recognise_syntax = raptor_ntriples_parse_recognise_syntax;
+
+  raptor_parser_factory_add_uri(factory, 
+                                (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples");
 }
 
 
@@ -1127,6 +1130,5 @@ void
 raptor_init_parser_ntriples(void)
 {
   raptor_parser_register_factory("ntriples",  "N-Triples",
-                                 (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples",
                                  &raptor_ntriples_parser_register_factory);
 }

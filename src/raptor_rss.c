@@ -1294,20 +1294,19 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_rss_parse_start;
   factory->chunk     = raptor_rss_parse_chunk;
   factory->recognise_syntax = raptor_rss_parse_recognise_syntax;
-}
 
-
-void
-raptor_init_parser_rss(void)
-{
-  raptor_parser_factory* factory;
-  factory=raptor_parser_register_factory("rss-tag-soup",  "RSS Tag Soup",
-                                         NULL,
-                                         &raptor_rss_parser_register_factory);
   raptor_parser_factory_add_mime_type(factory, "application/rss", 10);
   raptor_parser_factory_add_mime_type(factory, "application/rss+xml", 10);
   raptor_parser_factory_add_mime_type(factory, "text/rss", 8);
 
   raptor_parser_factory_add_mime_type(factory, "application/xml", 3);
   raptor_parser_factory_add_mime_type(factory, "text/xml", 3);
+}
+
+
+void
+raptor_init_parser_rss(void)
+{
+  raptor_parser_register_factory("rss-tag-soup",  "RSS Tag Soup",
+                                 &raptor_rss_parser_register_factory);
 }

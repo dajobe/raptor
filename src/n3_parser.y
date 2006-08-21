@@ -1188,18 +1188,17 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_n3_parse_start;
   factory->chunk     = raptor_n3_parse_chunk;
   factory->recognise_syntax = raptor_n3_parse_recognise_syntax;
+
+  raptor_parser_factory_add_mime_type(factory, "text/n3", 6);
+  raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 6);
 }
 
 
 void
 raptor_init_parser_n3(void)
 {
-  raptor_parser_factory* factory;
-  factory=raptor_parser_register_factory("n3",  "Notation 3",
-                                         NULL,
-                                         &raptor_n3_parser_register_factory);
-  raptor_parser_factory_add_mime_type(factory, "text/n3", 6);
-  raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 6);
+  raptor_parser_register_factory("n3",  "Notation 3",
+                                 &raptor_n3_parser_register_factory);
 }
 
 
