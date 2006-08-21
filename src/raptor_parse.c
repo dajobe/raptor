@@ -59,7 +59,28 @@
 /* statics */
 
 /* list of parser factories */
-static raptor_parser_factory* parsers=NULL;
+static raptor_sequence* parsers=NULL;
+
+
+/* helper methods */
+
+static void
+raptor_free_parser_factory(raptor_parser_factory* factory)
+{
+  if(factory->finish_factory)
+    factory->finish_factory(factory);
+  
+  RAPTOR_FREE(raptor_parser_factory, (void*)factory->name);
+  RAPTOR_FREE(raptor_parser_factory, (void*)factory->label);
+  if(factory->alias)
+    RAPTOR_FREE(raptor_parser_factory, (void*)factory->alias);
+  if(factory->mime_types)
+    raptor_free_sequence(factory->mime_types);
+  if(factory->uri_string)
+    RAPTOR_FREE(raptor_parser_factory, (void*)factory->uri_string);
+  
+  RAPTOR_FREE(raptor_parser_factory, factory);
+}
 
 
 /* class methods */
@@ -67,28 +88,34 @@ static raptor_parser_factory* parsers=NULL;
 void
 raptor_parsers_init(void)
 {
-  parsers=NULL;
+  parsers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
   
-#ifdef RAPTOR_PARSER_GUESS
-  raptor_init_parser_guess();
+#ifdef RAPTOR_PARSER_RDFXML
+  raptor_init_parser_rdfxml();
 #endif
-#ifdef RAPTOR_PARSER_GRDDL
-  raptor_init_parser_grddl();
-#endif
-#ifdef RAPTOR_PARSER_RSS
-  raptor_init_parser_rss();
-#endif
-#ifdef RAPTOR_PARSER_TURTLE
-  raptor_init_parser_turtle();
-#endif
-#ifdef RAPTOR_PARSER_N3
-  raptor_init_parser_n3();
-#endif
+
 #ifdef RAPTOR_PARSER_NTRIPLES
   raptor_init_parser_ntriples();
 #endif
-#ifdef RAPTOR_PARSER_RDFXML
-  raptor_init_parser_rdfxml();
+
+#ifdef RAPTOR_PARSER_N3
+  raptor_init_parser_n3();
+#endif
+
+#ifdef RAPTOR_PARSER_TURTLE
+  raptor_init_parser_turtle();
+#endif
+
+#ifdef RAPTOR_PARSER_RSS
+  raptor_init_parser_rss();
+#endif
+
+#ifdef RAPTOR_PARSER_GRDDL
+  raptor_init_parser_grddl();
+#endif
+
+#ifdef RAPTOR_PARSER_GUESS
+  raptor_init_parser_guess();
 #endif
 }
 
@@ -99,25 +126,7 @@ raptor_parsers_init(void)
 void
 raptor_parsers_finish(void)
 {
-  raptor_parser_factory *factory, *next;
-  
-  for(factory=parsers; factory; factory=next) {
-    next=factory->next;
-
-    if(factory->finish_factory)
-      factory->finish_factory(factory);
-
-    RAPTOR_FREE(raptor_parser_factory, (void*)factory->name);
-    RAPTOR_FREE(raptor_parser_factory, (void*)factory->label);
-    if(factory->alias)
-      RAPTOR_FREE(raptor_parser_factory, (void*)factory->alias);
-    if(factory->mime_types)
-      raptor_free_sequence(factory->mime_types);
-    if(factory->uri_string)
-      RAPTOR_FREE(raptor_parser_factory, (void*)factory->uri_string);
-
-    RAPTOR_FREE(raptor_parser_factory, factory);
-  }
+  raptor_free_sequence(parsers);
   parsers=NULL;
 }
 
@@ -141,21 +150,26 @@ raptor_parser_register_factory(const char *name, const char *label,
 {
   raptor_parser_factory *parser, *h;
   char *name_copy, *label_copy;
+  int i;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Received registration for syntax %s '%s'\n", name, label);
 #endif
+  
+  for(i=0;
+      (h=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      i++) {
+    if(!strcmp(h->name, name)) {
+      RAPTOR_FATAL2("parser %s already registered\n", h->name);
+      return NULL;
+    }
+  }
   
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
                                                sizeof(raptor_parser_factory));
   if(!parser)
     RAPTOR_FATAL1("Out of memory\n");
 
-  for(h = parsers; h; h = h->next ) {
-    if(!strcmp(h->name, name))
-      RAPTOR_FATAL2("parser %s already registered\n", h->name);
-  }
-  
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy) {
     RAPTOR_FREE(raptor_parser, parser);
@@ -181,8 +195,7 @@ raptor_parser_register_factory(const char *name, const char *label,
   RAPTOR_DEBUG3("%s has context size %d\n", name, parser->context_length);
 #endif
 
-  parser->next = parsers;
-  parsers = parser;
+  raptor_sequence_push(parsers, parser);
 
   return parser;
 }
@@ -194,10 +207,15 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
 {
   raptor_parser_factory *p;
   char *alias_copy;
-
-  for(p = parsers; p; p = p->next ) {
-    if(!strcmp(p->name, alias))
+  int i;
+  
+  for(i=0;
+      (p=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      i++) {
+    if(!strcmp(p->name, alias)) {
       RAPTOR_FATAL2("parser %s already registered\n", p->name);
+      return;
+    }
   }
   
   alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
@@ -298,13 +316,17 @@ raptor_get_parser_factory(const char *name)
 
   /* return 1st parser if no particular one wanted - why? */
   if(!name) {
-    factory=parsers;
+    factory=(raptor_parser_factory *)raptor_sequence_get_at(parsers, 0);
     if(!factory) {
       RAPTOR_DEBUG1("No (default) parsers registered\n");
       return NULL;
     }
   } else {
-    for(factory=parsers; factory; factory=factory->next) {
+    int i;
+    
+    for(i=0;
+        (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+        i++) {
       if(!strcmp(factory->name, name) ||
          (factory->alias && !strcmp(factory->alias, name)))
         break;
@@ -338,35 +360,34 @@ raptor_syntaxes_enumerate(const unsigned int counter,
                           const char **mime_type,
                           const unsigned char **uri_string)
 {
-  unsigned int i;
-  raptor_parser_factory *factory=parsers;
+  raptor_parser_factory *factory;
+
+  if(counter < 0)
+    return 1;
+
+  factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers,
+                                                         counter);
 
   if(!factory)
     return 1;
 
-  for(i=0; factory && i <= counter ; i++, factory=factory->next) {
-    if(i == counter) {
-      if(name)
-        *name=factory->name;
-      if(label)
-        *label=factory->label;
-      if(mime_type) {
-        const char *mime_type_t=NULL;
-        if(factory->mime_types) {
-          raptor_type_q* tq;
-          tq=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, 0);
-          if(tq)
-            mime_type_t=tq->mime_type;
-        }
-        *mime_type=mime_type_t;
-      }
-      if(uri_string)
-        *uri_string=factory->uri_string;
-      return 0;
+  if(name)
+    *name=factory->name;
+  if(label)
+    *label=factory->label;
+  if(mime_type) {
+    const char *mime_type_t=NULL;
+    if(factory->mime_types) {
+      raptor_type_q* tq;
+      tq=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, 0);
+      if(tq)
+        mime_type_t=tq->mime_type;
     }
+    *mime_type=mime_type_t;
   }
-        
-  return 1;
+  if(uri_string)
+    *uri_string=factory->uri_string;
+  return 0;
 }
 
 
@@ -1623,7 +1644,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
                          const unsigned char *identifier)
 {
   unsigned int i;
-  raptor_parser_factory *factory=parsers;
+  raptor_parser_factory *factory;
   unsigned char *suffix=NULL;
 /* FIXME - up to 10 parsers :) */
 #define MAX_PARSERS 10
@@ -1645,7 +1666,9 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
     }
   }
 
-  for(i=0; factory; i++, factory=factory->next) {
+  for(i=0;
+      (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      i++) {
     int score= -1;
     raptor_type_q* type_q=NULL;
     
@@ -1838,11 +1861,15 @@ raptor_parser_get_accept_header_all(void)
   int i;
   
   len=0;
-  for(factory=parsers; factory; factory=factory->next) {
+  for(i=0;
+      (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      i++) {
     raptor_type_q* type_q;
-    for(i=0;
-        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
-        i++) {
+    int j;
+    
+    for(j=0;
+        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
+        j++) {
       if(type_q->mime_type) {
         len+= type_q->mime_type_len + 2; /* ", " */
         if(type_q->q < 10)
@@ -1857,11 +1884,15 @@ raptor_parser_get_accept_header_all(void)
     return NULL;
 
   p=accept_header;
-  for(factory=parsers; factory; factory=factory->next) {
+  for(i=0;
+      (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      i++) {
     raptor_type_q* type_q;
-    for(i=0; 
-        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
-        i++) {
+    int j;
+    
+    for(j=0; 
+        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
+        j++) {
       if(type_q->mime_type) {
         strncpy(p, type_q->mime_type, type_q->mime_type_len);
         p+= type_q->mime_type_len;
@@ -1902,6 +1933,7 @@ main(int argc, char *argv[])
 {
   const char *program=raptor_basename(argv[0]);
   int i;
+  const char *s;
 
   raptor_init();
   
@@ -1929,6 +1961,10 @@ main(int argc, char *argv[])
     }
     raptor_free_uri(feature_uri);
   }
+
+  s=raptor_parser_get_accept_header_all();
+  fprintf(stderr, "Default HTTP accept header: '%s'\n", s);
+  RAPTOR_FREE(cstring, s);
 
   raptor_finish();
   
