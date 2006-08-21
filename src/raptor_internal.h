@@ -496,9 +496,10 @@ void raptor_serializer_register_factory(const char *name, const char *label, con
 
 /* raptor_general.c */
 
-raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
+raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, void (*factory) (raptor_parser_factory*));
 void raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
 void raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
+void raptor_parser_factory_add_uri(raptor_parser_factory* factory, const unsigned char *uri_string);
 
 unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
 #ifdef RAPTOR_DEBUG
@@ -619,16 +620,21 @@ void raptor_qname_print(FILE *stream, raptor_qname* name);
 void raptor_uri_init(void);
 raptor_uri* raptor_new_uri_from_rdf_ordinal(int ordinal);
 
-/* raptor_parse.c */
+/* parsers */
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
 void raptor_init_parser_n3(void);
 void raptor_init_parser_grddl(void);
 void raptor_init_parser_guess(void);
+void raptor_init_parser_rss(void);
+
+/* raptor_parse.c */
+void raptor_parsers_init(void);
+void raptor_parsers_finish(void);
+
 
 /* raptor_rss.c */
-void raptor_init_parser_rss(void);
 void raptor_init_serializer_rss10(void);
 void raptor_init_serializer_atom(void);
 
@@ -639,11 +645,16 @@ raptor_uri_detail* raptor_new_uri_detail(const unsigned char *uri_string);
 void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
 unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p);
 
-/* raptor_serializer.c */
+/* serializers */
 void raptor_init_serializer_rdfxml(void);
 void raptor_init_serializer_ntriples(void);
 void raptor_init_serializer_simple(void);
 void raptor_delete_serializer_factories(void);
+
+/* raptor_serializer.c */
+void raptor_serializers_init(void);
+void raptor_serializers_finish(void);
+
 void raptor_serializer_error(raptor_serializer* serializer, const char *message, ...);
 void raptor_serializer_simple_error(void* serializer, const char *message, ...);
 void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *message,  va_list arguments);
@@ -877,8 +888,8 @@ struct raptor_sax2_s {
   raptor_uri* base_uri;
 };
 
-void raptor_init_sax2(void);
-void raptor_finish_sax2(void);
+void raptor_sax2_init(void);
+void raptor_sax2_finish(void);
 
 raptor_sax2* raptor_new_sax2(void *user_data, void *error_data, raptor_message_handler error_handler, void *fatal_error_data, raptor_message_handler fatal_error_handler, void *warning_data, raptor_message_handler warning_handler);
 void raptor_free_sax2(raptor_sax2 *sax2);
