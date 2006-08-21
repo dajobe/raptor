@@ -160,6 +160,9 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 /* syntax error */
 %token ERROR_TOKEN
 
+%destructor { RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL PREFIX IDENTIFIER 
+%destructor { raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
+
 %type <identifier> subject predicate object verb literal resource blank collection
 %type <sequence> objectList itemList propertyList
 
@@ -498,6 +501,10 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
   unsigned char *prefix=$2;
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
   raptor_namespace *ns;
+
+#if 0
+  Get around bison complaining about not using $1
+#endif
 
 #if RAPTOR_DEBUG > 1  
   printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string($3));
