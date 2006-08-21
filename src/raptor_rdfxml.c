@@ -3100,7 +3100,6 @@ raptor_init_parser_rdfxml(void)
 {
   raptor_parser_factory* factory;
   factory=raptor_parser_register_factory("rdfxml", "RDF/XML",
-                                         NULL,
                                          (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
                                          &raptor_rdfxml_parser_register_factory);
   raptor_parser_factory_add_alias(factory, "raptor");

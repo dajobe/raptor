@@ -204,6 +204,5 @@ raptor_init_parser_guess(void)
   raptor_parser_register_factory("guess",  
                                  "Pick the parser to use using content type and URI",
                                  NULL,
-                                 NULL,
                                  &raptor_guess_parser_register_factory);
 }

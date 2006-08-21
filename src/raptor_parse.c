@@ -112,7 +112,6 @@ raptor_delete_parser_factories(void)
  **/
 raptor_parser_factory*
 raptor_parser_register_factory(const char *name, const char *label,
-                               const char *mime_type,
                                const unsigned char *uri_string,
                                void (*factory) (raptor_parser_factory*)) 
 {
@@ -122,10 +121,8 @@ raptor_parser_register_factory(const char *name, const char *label,
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Received registration for syntax %s '%s'\n", name, label);
-  RAPTOR_DEBUG4(raptor_parser_register_factory,
-                "MIME type %s, URI %s\n", 
-                (mime_type ? mime_type : "none"),
-                (uri_string ? uri_string : "none"));
+  RAPTOR_DEBUG3(raptor_parser_register_factory,
+                "URI %s\n", (uri_string ? uri_string : "none"));
 #endif
   
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
@@ -156,9 +153,6 @@ raptor_parser_register_factory(const char *name, const char *label,
 
   parser->mime_types=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
   
-  if(mime_type)
-    raptor_parser_factory_add_mime_type(parser, mime_type, 10);
-
   if(uri_string) {
     uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
     if(!uri_string_copy) {

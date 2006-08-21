@@ -621,7 +621,6 @@ raptor_init_parser_grddl(void)
   raptor_parser_factory* factory;
   factory=raptor_parser_register_factory("grddl",  "GRDDL over XHTML/XML using XSLT",
                                          NULL,
-                                         NULL,
                                          &raptor_xslt_parser_register_factory);
   raptor_parser_factory_add_mime_type(factory, "text/html", 2);
   raptor_parser_factory_add_mime_type(factory, "application/html+xml", 2);

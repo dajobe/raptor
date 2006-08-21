@@ -496,7 +496,7 @@ void raptor_serializer_register_factory(const char *name, const char *label, con
 
 /* raptor_general.c */
 
-raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, const char *mime_type, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
+raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, const unsigned char *uri_string, void (*factory) (raptor_parser_factory*));
 void raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
 void raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
 
