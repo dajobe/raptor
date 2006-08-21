@@ -190,3 +190,21 @@ raptor_feature_from_uri(raptor_uri *uri)
 
   return feature;
 }
+
+
+/**
+ * raptor_feature_last:
+ *
+ * Get the count of features defined.
+ *
+ * This is prefered to the compile time-only symbol #RAPTOR_FEATURE_LAST
+ * and returns a count of the number of features which is
+ * #RAPTOR_FEATURE_LAST+1.
+ *
+ * Return value: count of features in the #raptor_feature enumeration
+ **/
+unsigned int
+raptor_get_feature_count(void) {
+  return RAPTOR_FEATURE_LAST+1;
+}
+
