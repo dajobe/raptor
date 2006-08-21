@@ -1,5 +1,21 @@
 2006-08-20  Dave Beckett  <dave@dajobe.org>
 
+	* src/n3_parser.y: Add %destructor to tidy up tokens when doing
+	error recovery.
+	(directive): Hack to stop Bison moaning about not using $1
+
+	* src/turtle_parser.y: Add %destructor to tidy up tokens when
+	doing error recovery.
+	(directive): Hack to stop Bison moaning about not using $1
+
+	* src/n3_parser.y: Added labels for tokens to enable better error
+	messages.
+
+	* src/turtle_parser.y: Added labels for tokens to enable better
+	error messages.
+
+	* autogen.sh: Track where programs are discovered.
+
 	* src/raptor_parse.c: (raptor_parse_uri_with_connection,
 	raptor_set_feature, raptor_get_feature, raptor_set_parser_strict):
 	Update to use array of features throughout.
