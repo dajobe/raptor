@@ -62,15 +62,42 @@
 static raptor_parser_factory* parsers=NULL;
 
 
+/* class methods */
 
-/* helper functions */
+void
+raptor_parsers_init(void)
+{
+  parsers=NULL;
+  
+#ifdef RAPTOR_PARSER_GUESS
+  raptor_init_parser_guess();
+#endif
+#ifdef RAPTOR_PARSER_GRDDL
+  raptor_init_parser_grddl();
+#endif
+#ifdef RAPTOR_PARSER_RSS
+  raptor_init_parser_rss();
+#endif
+#ifdef RAPTOR_PARSER_TURTLE
+  raptor_init_parser_turtle();
+#endif
+#ifdef RAPTOR_PARSER_N3
+  raptor_init_parser_n3();
+#endif
+#ifdef RAPTOR_PARSER_NTRIPLES
+  raptor_init_parser_ntriples();
+#endif
+#ifdef RAPTOR_PARSER_RDFXML
+  raptor_init_parser_rdfxml();
+#endif
+}
 
 
 /*
- * raptor_delete_parser_factories - helper function to delete all the registered parser factories
+ * raptor_finish_parsers - delete all the registered parsers
  */
 void
-raptor_delete_parser_factories(void)
+raptor_parsers_finish(void)
 {
   raptor_parser_factory *factory, *next;
   
@@ -95,8 +122,6 @@ raptor_delete_parser_factories(void)
 }
 
 
-/* class methods */
-
 /*
  * raptor_parser_register_factory:
  * @name: the short syntax name
@@ -112,17 +137,13 @@ raptor_delete_parser_factories(void)
  **/
 raptor_parser_factory*
 raptor_parser_register_factory(const char *name, const char *label,
-                               const unsigned char *uri_string,
                                void (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser, *h;
   char *name_copy, *label_copy;
-  unsigned char *uri_string_copy;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Received registration for syntax %s '%s'\n", name, label);
-  RAPTOR_DEBUG3(raptor_parser_register_factory,
-                "URI %s\n", (uri_string ? uri_string : "none"));
 #endif
   
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
@@ -153,16 +174,6 @@ raptor_parser_register_factory(const char *name, const char *label,
 
   parser->mime_types=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
   
-  if(uri_string) {
-    uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
-    if(!uri_string_copy) {
-    RAPTOR_FREE(raptor_parser, parser);
-    RAPTOR_FATAL1("Out of memory\n");
-    }
-    strcpy((char*)uri_string_copy, (const char*)uri_string);
-    parser->uri_string=uri_string_copy;
-  }
-        
   /* Call the parser registration function on the new object */
   (*factory)(parser);
   
@@ -243,6 +254,32 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
   type_q->q=q;
 
   raptor_sequence_push(factory->mime_types, type_q);
+}
+
+
+/**
+ * raptor_parser_factory_add_uri:
+ * @factory: Raptor parser factory
+ * @uri_string: URI string
+ * 
+ * Register an identifying URI as handled by a factory.
+ *
+ **/
+void
+raptor_parser_factory_add_uri(raptor_parser_factory* factory,
+                              const unsigned char *uri_string)
+{
+  unsigned char *uri_string_copy;
+
+  if(!uri_string)
+    return;
+  
+  uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
+  if(!uri_string_copy)
+    RAPTOR_FATAL1("Out of memory\n");
+
+  strcpy((char*)uri_string_copy, (const char*)uri_string);
+  factory->uri_string=uri_string_copy;
 }
 
 
