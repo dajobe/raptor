@@ -193,7 +193,7 @@ raptor_feature_from_uri(raptor_uri *uri)
 
 
 /**
- * raptor_feature_last:
+ * raptor_feature_count:
  *
  * Get the count of features defined.
  *
