@@ -155,7 +155,8 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 /* syntax error */
 %token ERROR_TOKEN
 
-%destructor { RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL PREFIX IDENTIFIER 
+/* tidy up tokens after errors */
+%destructor { RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER 
 %destructor { raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
 
 %type <identifier> subject predicate object verb literal resource blank collection
