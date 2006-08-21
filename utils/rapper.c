@@ -310,7 +310,7 @@ main(int argc, char *argv[])
             int i;
             
             fprintf(stderr, "%s: Valid parser features are:\n", program);
-            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+            for(i=0; i < raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
@@ -320,7 +320,7 @@ main(int argc, char *argv[])
               }
             }
             fprintf(stderr, "%s: Valid serializer features are:\n", program);
-            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+            for(i=0; i < raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
@@ -331,6 +331,9 @@ main(int argc, char *argv[])
             }
             fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE=VALUE or `-f FEATURE'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
             fputs("\nA feature of the form xmlns:PREFIX=\"URI\" can be used to declare output\nnamespace prefixes and names for serializing using an XML-style syntax\nEither or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\nThis form can be repeated for multiple declarations.\n", stderr);
+
+            raptor_finish();
+
             exit(0);
           } else if(!strncmp(optarg, "xmlns", 5)) {
             struct namespace_decl *nd;
@@ -352,7 +355,7 @@ main(int argc, char *argv[])
             int i;
             size_t arg_len=strlen(optarg);
             
-            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+            for(i=0; i < raptor_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
@@ -376,7 +379,7 @@ main(int argc, char *argv[])
               }
             }
             
-            for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+            for(i=0; i < raptor_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
@@ -508,6 +511,9 @@ main(int argc, char *argv[])
       case 'v':
         fputs(raptor_version_string, stdout);
         fputc('\n', stdout);
+
+        raptor_finish();
+
         exit(0);
 
 #ifdef SHOW_NAMESPACES_FLAG
@@ -533,6 +539,8 @@ main(int argc, char *argv[])
     }
     fprintf(stderr, "Try `%s " HELP_ARG(h, help) "' for more information.\n",
                     program);
+    raptor_finish();
+
     exit(1);
   }
 
