@@ -104,14 +104,14 @@ raptor_www_no_www_library_init_finish(void)
 
 
 /*
- * raptor_finish_www:
+ * raptor_www_finish:
  * 
  * Terminate the WWW class.
  *
  * Must be called to clean any resources used by the WWW implementation.
  **/
 void
-raptor_finish_www(void)
+raptor_www_finish(void)
 {
   if(raptor_www_do_www_init_finish) {
 #ifdef RAPTOR_WWW_LIBCURL
