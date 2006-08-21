@@ -103,7 +103,7 @@ raptor_www_no_www_library_init_finish(void)
 }
 
 
-/*
+/**
  * raptor_www_finish:
  * 
  * Terminate the WWW class.
