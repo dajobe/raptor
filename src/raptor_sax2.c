@@ -53,7 +53,7 @@
 
 
 void
-raptor_init_sax2(void)
+raptor_sax2_init(void)
 {
 #ifdef RAPTOR_XML_LIBXML
   xmlInitParser();
@@ -62,7 +62,7 @@ raptor_init_sax2(void)
 
 
 void
-raptor_finish_sax2(void)
+raptor_sax2_finish(void)
 {
 #ifdef RAPTOR_XML_LIBXML
   xmlCleanupParser();
