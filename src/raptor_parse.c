@@ -1501,6 +1501,21 @@ raptor_get_mime_type(raptor_parser *rdf_parser)
 
 
 /**
+ * raptor_get_need_base_uri:
+ * @rdf_parser: #raptor_parser parser object
+ *
+ * Get a boolean whether this parser needs a base URI to start parsing.
+ *
+ * Return value: non-0 if this parser needs a base URI
+ **/
+int
+raptor_get_need_base_uri(raptor_parser *rdf_parser)
+{
+  return rdf_parser->factory->need_base_uri;
+}
+
+
+/**
  * raptor_parse_abort:
  * @rdf_parser: #raptor_parser parser object
  *

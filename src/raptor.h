@@ -757,6 +757,8 @@ RAPTOR_API
 const char* raptor_get_label(raptor_parser *rdf_parser);
 RAPTOR_API
 const char* raptor_get_mime_type(raptor_parser *rdf_parser);
+RAPTOR_API
+int raptor_get_need_base_uri(raptor_parser *rdf_parser);
 
 RAPTOR_API
 int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);

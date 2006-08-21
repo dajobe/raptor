@@ -394,6 +394,9 @@ struct raptor_parser_factory_s {
 
   /* get the Accept header of a URI request (OPTIONAL) */
   const char* (*accept_header)(raptor_parser* rdf_parser);
+
+  /* non-0 if this parser needs a base URI */
+  int need_base_uri;
 };
 
 

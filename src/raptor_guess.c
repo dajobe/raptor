@@ -190,6 +190,8 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
 {
   factory->context_length     = sizeof(raptor_guess_parser_context);
   
+  factory->need_base_uri = 1;
+  
   factory->init      = raptor_guess_parse_init;
   factory->terminate = raptor_guess_parse_terminate;
   factory->chunk     = raptor_guess_parse_chunk;

@@ -1183,6 +1183,8 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
 {
   factory->context_length     = sizeof(raptor_n3_parser);
   
+  factory->need_base_uri = 1;
+  
   factory->init      = raptor_n3_parse_init;
   factory->terminate = raptor_n3_parse_terminate;
   factory->start     = raptor_n3_parse_start;

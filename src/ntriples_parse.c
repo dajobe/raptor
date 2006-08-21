@@ -1114,6 +1114,8 @@ static void
 raptor_ntriples_parser_register_factory(raptor_parser_factory *factory) 
 {
   factory->context_length     = sizeof(raptor_ntriples_parser_context);
+
+  factory->need_base_uri = 0;
   
   factory->init      = raptor_ntriples_parse_init;
   factory->terminate = raptor_ntriples_parse_terminate;

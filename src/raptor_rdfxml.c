@@ -3086,6 +3086,8 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
 {
   factory->context_length     = sizeof(raptor_rdfxml_parser);
   
+  factory->need_base_uri = 1;
+  
   factory->init      = raptor_rdfxml_parse_init;
   factory->terminate = raptor_rdfxml_parse_terminate;
   factory->start     = raptor_rdfxml_parse_start;
