@@ -114,46 +114,11 @@ raptor_init(void)
   if(raptor_initialised)
     return;
 
-  raptor_init_sax2();
-  
-#ifdef RAPTOR_PARSER_GUESS
-  raptor_init_parser_guess();
-#endif
-#ifdef RAPTOR_PARSER_GRDDL
-  raptor_init_parser_grddl();
-#endif
-#ifdef RAPTOR_PARSER_RSS
-  raptor_init_parser_rss();
-#endif
-#ifdef RAPTOR_PARSER_TURTLE
-  raptor_init_parser_turtle();
-#endif
-#ifdef RAPTOR_PARSER_N3
-  raptor_init_parser_n3();
-#endif
-#ifdef RAPTOR_PARSER_NTRIPLES
-  raptor_init_parser_ntriples();
-#endif
-#ifdef RAPTOR_PARSER_RDFXML
-  raptor_init_parser_rdfxml();
-#endif
+  raptor_sax2_init();
 
-#ifdef RAPTOR_SERIALIZER_ATOM
-  raptor_init_serializer_atom();
-#endif
-#ifdef RAPTOR_SERIALIZER_RSS_1_0
-  raptor_init_serializer_rss10();
-#endif
-#ifdef RAPTOR_SERIALIZER_RDFXML
-  raptor_init_serializer_rdfxml();
-#endif
-#ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
-  raptor_init_serializer_rdfxmla();
-#endif
-#ifdef RAPTOR_SERIALIZER_NTRIPLES
-  raptor_init_serializer_ntriples();
-#endif
-  /* raptor_init_serializer_simple(); */
+  raptor_parsers_init();
+  
+  raptor_serializers_init();
 
   raptor_uri_init();
   raptor_www_init();
@@ -177,10 +142,12 @@ raptor_finish(void)
     return;
 
   raptor_www_finish();
-  raptor_delete_parser_factories();
-  raptor_delete_serializer_factories();
 
-  raptor_finish_sax2();
+  raptor_parsers_finish();
+
+  raptor_serializers_finish();
+
+  raptor_sax2_finish();
   
   raptor_initialised=0;
 }
