@@ -1,4 +1,89 @@
+2006-08-21  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: Added raptor_get_feature_count and
+	raptor_get_need_base_uri
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_guess.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_xslt.c,
+	src/turtle_parser.y: Added raptor_get_need_base_uri to return new
+	field need_base_uri_flag in raptor_parser_factory that is set by
+	all parsers now
+
 2006-08-20  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rapper.c: Use raptor_get_feature_count and add
+	raptor_finish() before all exits.
+
+	* src/raptor.h: Added raptor_get_feature_count prototype
+
+	* src/raptor_feature.c: (raptor_get_feature_count): Added
+
+	* src/raptor_serialize.c: Turn serializers into a raptor_sequence
+	(raptor_free_serializer_factory): Added.
+	(raptor_serializers_init): Init sequence, reverse order so
+	N-Triples remains first.
+	(raptor_serializers_finish): Free with raptor_free_sequence
+	(raptor_serializer_register_factory,
+	raptor_get_serializer_factory, raptor_serializers_enumerate):
+	Update to use sequence.
+
+	* src/raptor_parse.c: Turn parsers into a raptor_sequence
+	(raptor_free_parser_factory): Added.
+	(raptor_parsers_init): Init sequence, reverse order so RDF/XML
+	remains first.
+	(raptor_parsers_finish): Free with raptor_free_sequence
+	(raptor_parser_register_factory, raptor_parser_factory_add_alias,
+	raptor_get_parser_factory, raptor_syntaxes_enumerate,
+	raptor_guess_parser_name): Update to use sequence.
+	(main): Added test for raptor_parser_get_accept_header_all
+
+	* src/raptor_www.c: (raptor_www_finish): Renamed from raptor_finish_www
+
+	* src/raptor_www.c: (raptor_finish_www): Renamed from raptor_www_finish
+
+	* src/raptor_internal.h: Added prototypes for raptor_parsers_init,
+	raptor_serializers_init, raptor_parsers_finish and
+	raptor_serializers_finish.  Rename raptor_init/finish_sax2 to
+	raptor_sax2_init/finish
+
+	* src/raptor_sax2.c: (raptor_sax2_init): Renamed from
+	raptor_init_sax2
+	(raptor_sax2_finish): Renamed from raptor_finish_sax2
+
+	* src/raptor_general.c: (raptor_init): Call raptor_parsers_init
+	and raptor_serializers_init.
+	(raptor_finish): Call raptor_parsers_finish and
+	raptor_serializers_finish.
+
+	* src/raptor_serialize.c: (raptor_serializers_init): Added.
+	(raptor_serializers_finish): Renamed from
+	raptor_delete_serializer_factories
+
+	* src/raptor_parse.c: (raptor_parsers_init): Added.
+	(raptor_parsers_finish): Renamed from
+	raptor_delete_parser_factories
+	(raptor_parser_register_factory): Delete mime_type and uri_string
+	args.
+	(raptor_parser_factory_add_uri): Added for registering a URI
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor_guess.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_xslt.c,
+	src/turtle_parser.y: Remove mime_type and uri args from
+	raptor_parser_register_factory
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_parse.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_xslt.c,
+	src/turtle_parser.y: (raptor_parser_register_factory): Remove mime
+	type arg, nothing uses it now
+
+	* src/ntriples_parse.c: (raptor_ntriples_parse_chunk): Make junk
+	at end of input errro return from the function as a failure.
+
+	* src/turtle_parser.y: Remove %destructor tidy for PREFIX
+
+	* src/n3_parser.y: Remove %destructor tidy for PREFIX
 
 	* src/n3_parser.y: Add %destructor to tidy up tokens when doing
 	error recovery.
@@ -640,8 +725,6 @@
 
 	* gtkdoc-mkdb reports "100% symbol docs coverage"
 
-	* src/raptor.h: autodocs
-
 	* docs/raptor-overrides.txt: Override internal struct names.
 
 	* src/raptor.h, src/raptor_general.c, src/raptor_sequence.c,
@@ -659,8 +742,6 @@
 	(raptor_utf8_to_unicode_char): Add docs.  Now also checks for
 	overlong UTF-8 sequences, illegal code positions or out of range
 	codes.
-
-	* src/raptor_qname.c: autodocs
 
 	* docs/raptor-sections.txt: Added new functions
 
