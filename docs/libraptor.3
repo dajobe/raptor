@@ -182,6 +182,7 @@ The current defined parser features are:
   \fBRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
   \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
   \fBRAPTOR_FEATURE_START_URI\fR                Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_NO_NET\fR                   Boolean (non 0 true)
 .P
 If the \fIscanning\fR
 feature is true (default false), then the RDF/XML parser will look for embedded
@@ -226,6 +227,9 @@ in literals will give a fatal error, otherwise it gives a warning.
 If the \fIcheck_rdf_id\fR
 feature is true (default true) then rdf:ID values will be
 checked for duplicates and cause an error if found.
+.P
+If the \fIno_net\fR
+feature is true (default false) then network requests are denied.
 .IP "\fBraptor_parser_set_feature_string(raptor_parser *\fIparser\fP, raptor_feature \fIfeature\fP, const unsigned char *\fIvalue\fP)\fR"
 Set a parser feature \fIfeature\fR to a particular string \fIvalue\fR.
 Returns non 0 on failure or if the feature is unknown.
@@ -239,6 +243,11 @@ and types are given under \fBraptor_features_enumerate\fP.
 .IP "\fBconst unsigned char* raptor_parser_get_feature_string(raptor_parser *\fIparser\fP, raptor_feature \fIfeature\fP)\fR"
 Get parser feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_features_enumerate\fP.
+.IP "\fBunsigned int raptor_get_feature_count(void)\fP"
+Get the count of features defined.
+Prefered to the compile time-only symbol \fBRAPTOR_FEATURE_LAST\fP
+which returns the maximum value, not the count.
+Added raptor_get_need_base_uri
 .IP "\fBint raptor_feature_value_type(const raptor_feature feature)\fR"
 Get a raptor feature value tyype - integer or string.
 .IP "\fBraptor_locator* raptor_get_locator(raptor_parser* \fIrdf_parser\fB)\fR"
@@ -265,6 +274,8 @@ allocated inside the same library, in which case the
 .IP "\fBvoid raptor_parser_set_uri_filter(raptor_parser* \fIparser\fP, raptor_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
 Set the URI filter function \fIfilter\fP for URIs retrieved
 during parsing by the the raptor_parser.
+.IP "\fBint raptor_get_need_base_uri(raptor_parser* \fIrdf_parser\fP)\fP"
+Get a boolean whether this parser needs a base URI to start parsing.
 .SH "PARSER UTILITY FUNCTIONS"
 .IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **\fIname\fB, const char **\fIlabel\fB)\fR"
 Return the parser name/label for a parser with a given integer
@@ -1125,14 +1136,18 @@ The current defined XML writer features are given in
 \fBraptor_xml_writer_set_feature\fP and at present only take integer values. If
 an integer value feature is set with this function, \fIvalue\fP is
 interpreted as an integer and then that value is used.
-.IP "\fBint raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature feature)\fR"
+.IP "\fBint raptor_xml_writer_get_feature(raptor_xml_writer* \fIxml_writer\fP, raptor_feature \fIfeature\fP)\fR"
 Get XML writer feature integer values.  The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
-.IP "\fBconst unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature)\fR"
+.IP "\fBconst unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer* \fIxml_writer\fP, raptor_feature \fIfeature\fP)\fR"
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
 .SS 1.4.11
+Added \fBraptor_get_feature_count\fP
+.LP
+Added \fBraptor_get_need_base_uri\fP
+.LP
 Added parser feature \fBRAPTOR_FEATURE_NO_NET\fP
 .LP
 Added \fBraptor_www_set_uri_filter\fP, \fBraptor_parser_set_uri_filter\fP
