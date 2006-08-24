@@ -1047,6 +1047,7 @@ RAPTOR_API
 raptor_namespace* raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, raptor_uri *ns_uri);
 RAPTOR_API
 int raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace);
+RAPTOR_API
 raptor_qname* raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,  raptor_uri *uri, int xml_version);
 
 /* raptor_namespace - XML namespace */
