@@ -300,7 +300,7 @@ raptor_rss_start_element_handler(void *user_data,
        !strcmp((const char*)name, "RDF")) {
       /* rss */
       goto check_attributes;
-    } else if(!strcasecmp((const char*)name, "channel")) {
+    } else if(!raptor_strcasecmp((const char*)name, "channel")) {
       /* rss or atom 0.3 channel */
       rss_parser->current_type=RAPTOR_RSS_CHANNEL;
     } else if(!strcmp((const char*)name, "feed")) {
@@ -535,7 +535,7 @@ raptor_rss_start_element_handler(void *user_data,
           }
         }
       } else if (!strcmp((const char*)attrName, "version")) {
-        if(!strcasecmp((const char*)name, "feed")) {
+        if(!raptor_strcasecmp((const char*)name, "feed")) {
           if(!strcmp((const char*)attrValue, "0.3"))
             rss_parser->is_atom=1;
         }
