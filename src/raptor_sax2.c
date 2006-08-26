@@ -342,6 +342,8 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
   sax2->root_element=NULL;
   sax2->current_element=NULL;
 
+  if(sax2->base_uri)
+    raptor_free_uri(sax2->base_uri);
   if(base_uri)
     sax2->base_uri=raptor_uri_copy(base_uri);
   else
