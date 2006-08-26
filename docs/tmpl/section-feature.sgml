@@ -45,6 +45,14 @@ taken.
 @RAPTOR_FEATURE_NO_NET: 
 @RAPTOR_FEATURE_LAST: 
 
+<!-- ##### FUNCTION raptor_get_feature_count ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_features_enumerate ##### -->
 <para>
 

@@ -254,6 +254,15 @@ adjust how parsing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_get_need_base_uri ##### -->
+<para>
+
+</para>
+
+@rdf_parser: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_set_feature ##### -->
 <para>
 
