@@ -501,17 +501,20 @@ raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
 /**
  * raptor_start_parse:
  * @rdf_parser: RDF parser
- * @uri: base URI or NULL if no base URI is required
+ * @uri: base URI or may be NULL if no base URI is required
  *
  * Start a parse of content with base URI.
  * 
- * Only the N-Triples parser has an optional base URI.
+ * Parsers that need a base URI can be tested with raptor_get_need_base_uri().
  * 
- * Return value: non-0 on failure.
+ * Return value: non-0 on failure, <0 if a required base URI was missing
  **/
 int
 raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) 
 {
+  if(rdf_parser->factory->need_base_uri && !uri)
+    return -1;
+
   if(uri)
     uri=raptor_uri_copy(uri);
   
