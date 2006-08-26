@@ -512,15 +512,17 @@ raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
 int
 raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) 
 {
-  if(rdf_parser->factory->need_base_uri && !uri)
+  if(rdf_parser->factory->need_base_uri && !uri) {
+    raptor_parser_error(rdf_parser, "Missing base URI for %s parser.",
+                        rdf_parser->factory->name);
     return -1;
+  }
 
   if(uri)
     uri=raptor_uri_copy(uri);
   
   if(rdf_parser->base_uri)
     raptor_free_uri(rdf_parser->base_uri);
-
   rdf_parser->base_uri=uri;
 
   rdf_parser->locator.uri    = uri;
