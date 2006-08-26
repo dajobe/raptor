@@ -14,6 +14,11 @@
 
 <h3>General Changes</h3>
 
+<p>Added <code>raptor_get_feature_count()</code> to return
+the count of features, in preference to using
+<code>RAPTOR_FEATURE_LAST</code>
+</p>
+
 
 <h3>Documentation Changes</h3>
 
@@ -34,8 +39,14 @@ of transformations as defined in
 HCalendar using well known XPaths and XSLT sheet URIs.
 </p>
 
+<p>The GRDDL parser now resets after each parse and does a fresh guess.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=91">Issue#0000091</a>
+</p>
+
 <p>Turtle (and experimental N3 parser) now require base URIs as they
-always should have.
+always should have.  The error messages when reporting problems with
+grammar tokens now return better responses.  Added better memory
+cleanup during parser error recovery.
 </p>
 
 <p>All parsers gain ways to prevent network requests either via a
@@ -43,6 +54,10 @@ feature <code>RAPTOR_FEATURE_NO_NET</code> that denies network
 requests during a parser operation or with a URI filter function
 <code>raptor_parser_set_uri_filter()</code>.
 </p>
+
+<p>Added <code>raptor_get_need_base_uri()</code> to tell if a parser
+requires a base URI argument.</p>
+
 
 
 <h3>Serializer Changes</h3>
