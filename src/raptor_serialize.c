@@ -91,12 +91,12 @@ raptor_serializers_init()
   raptor_init_serializer_ntriples();
 #endif
 
-#ifdef RAPTOR_SERIALIZER_RDFXML
-  raptor_init_serializer_rdfxml();
-#endif
-
 #ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
   raptor_init_serializer_rdfxmla();
+#endif
+
+#ifdef RAPTOR_SERIALIZER_RDFXML
+  raptor_init_serializer_rdfxml();
 #endif
 
 #ifdef RAPTOR_SERIALIZER_RSS_1_0
