@@ -1,4 +1,19 @@
+2006-08-27  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor_1_4_12 for 1.4.12 release
+
+	* docs/libraptor.3: 1.4.12 no API changes
+
+	* src/raptor_serialize.c: (raptor_serializers_init): Restore order
+	from 1.4.10
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_init_serializer_rdfxmla):
+	Restore order from 1.4.10
+
 2006-08-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/win32_raptor_config.h, configure.ac, NEWS.html: Bumped
+	version to 1.4.12
 
 	* Snapshotted raptor_1_4_11 for 1.4.11 release
 
