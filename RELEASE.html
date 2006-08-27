@@ -59,35 +59,35 @@ is the only parser that does not require a base URI.
 URI is given and it is needed.
 </p>
 
-<p>GRDDL parser was changed:</p>
-<ul>
-<li>Handle a list of URIs in the profile so it now
+<p>The <em>GRDDL parser</em> was changed to
+handle a list of URIs in the profile so it now
 can support <code>dataview:transformation</code> in XML taking a list
 of transformations as defined in
 <a href="http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml">The GRDDL profile for XHTML</a> part of the GRDDL specification.
-</li>
-<li>Recognises
+It now also recognises
 <a href="http://research.talis.com/2005/erdf/wiki/Main/RdfInHtml">Embedded RDF</a> and
 <a href="http://microformats.org/wiki/hcalendar">HCalendar</a>
 using well known XPaths and transforms them to RDF triples using well
 known XSLT sheet URIs.
-</li>
-<li>Resets after each parse and does a fresh guess
-on the syntax based on the incoming information.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=91">Issue#0000091</a>
-</li>
-</ul>
+</p>
 
-<p>Turtle (and experimental N3 parser) were changed to now require
-base URIs as they always should have.  The error messages when
-reporting problems with grammar tokens now return better responses.
-Added better memory cleanup during parser error recovery.
+<p>The <em>Guess parser</em> now resets after each parse and does a
+fresh guess on the syntax based on the incoming information.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=91">Issue#0000091</a>
+</p>
+
+
+<p>The <em>Turtle parser </em> (and experimental N3 parser) were
+changed to now require base URIs as they always should have.  The
+error messages when reporting problems with grammar tokens now return
+better responses.  Added better memory cleanup during parser error
+recovery.
 </p>
 
 
 <h3>Serializer Changes</h3>
 
-<p>Made RSS 1.0 serializing work again.</p>
+<p>The <em>RSS 1.0 Serializer</em> now works again.</p>
 
 <p>Updated the <em>RDF/XML Abbreviated</em> serializer to do proper
 reference counting on the blank/resource nodes used as subjects and
