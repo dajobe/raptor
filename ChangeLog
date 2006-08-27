@@ -1,5 +1,7 @@
 2006-08-26  Dave Beckett  <dave@dajobe.org>
 
+	* Snapshotted raptor_1_4_11 for 1.4.11 release
+
 	* src/raptor_parse.c: (raptor_start_parse): Throw an error if no
 	base URI is given and it is needed.
 
