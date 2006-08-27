@@ -8,6 +8,17 @@
 
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
+
+<h2 id="rel1_4_12"><a name="rel1_4_12">Raptor 1.4.12 Changes</a></h2>
+
+<p>Restored the order of serialized syntaxes back to the same as in
+Raptor 1.4.10 which Redland was relying on - asking to serialize to
+mime type 'application/rdf+xml' in Redland 1.4.11 wrote it in XMP.
+That problem will be fixed in a future release of Redland but for now,
+this stops wierd things like that happening.
+</p>
+
+
 <h2 id="rel1_4_11"><a name="rel1_4_11">Raptor 1.4.11 Changes</a></h2>
 
 <h3>General Changes</h3>
