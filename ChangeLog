@@ -1,5 +1,8 @@
 2006-08-27  Dave Beckett  <dave@dajobe.org>
 
+	* NEWS.html, configure.ac, src/win32_raptor_config.h: Bumped
+	version to 1.4.13
+
 	* Snapshotted raptor_1_4_12 for 1.4.12 release
 
 	* docs/libraptor.3: 1.4.12 no API changes
