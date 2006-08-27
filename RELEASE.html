@@ -10,78 +10,102 @@
 
 <h2 id="rel1_4_11"><a name="rel1_4_11">Raptor 1.4.11 Changes</a></h2>
 
-<p>Not yet released.</p>
-
 <h3>General Changes</h3>
 
 <p>Added <code>raptor_get_feature_count()</code> to return
-the count of features, in preference to using
-<code>RAPTOR_FEATURE_LAST</code>
+the count of features, in preference to using the
+macro value <code>RAPTOR_FEATURE_LAST</code>.
 </p>
+
+<p>Added <code>raptor_www_set_uri_filter()</code> method of the
+WWW class (<code>raptor_www</code>) objects to have an
+optional URI filter function that checks if the URL given is
+allowed to be retrieved, or denied entirely.
+</p>
+
+<p>Fixed issues reported on the <a href="http://bugs.librdf.org/">Redland Issue Tracker</a>:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000112">#0000112</a>: raptor_namespaces_qname_from_uri not public API?</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000110">#0000110</a>: strcasecmp problem under windows (raptor_rss.c does not compile)</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000091">#0000091</a>: guess parser should guess the syntax each time it is run, not be fixed</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000089">#0000089</a>: Add a NONET feature to prevent network fetches</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000041">#0000041</a>: Allow multiple transformation URLs in data-view:transformation property</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000014">#0000014</a>: bNode content written twice in rdfxml-abbrev output mode</li>
+</ul>
 
 
 <h3>Documentation Changes</h3>
 
-<p>The reference manual now includes descriptions of all the parsers
-and serializers and the tutorial has a new section describing how
-to filter URIs and deny network requests.</p>
+<p>The
+<a href="http://librdf.org/raptor/api/">Raptor Reference Manual</a>
+now includes descriptions of all the parsers and serializers and the
+tutorial has a new section describing how to filter URIs and deny
+network requests.</p>
 
 
 <h3>Parser Changes</h3>
 
-<p>Made GRDDL parser handle a list of URIs in the profile so it now
-can support <code>dataview:transformation</code> in XML taking a list
-of transformations as defined in
-<a href="http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml">http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml</a>.
-</p>
-
-<p>The GRDDL parser now knows how to recognise Embedded RDF and
-HCalendar using well known XPaths and XSLT sheet URIs.
-</p>
-
-<p>The GRDDL parser now resets after each parse and does a fresh guess.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=91">Issue#0000091</a>
-</p>
-
-<p>Turtle (and experimental N3 parser) now require base URIs as they
-always should have.  The error messages when reporting problems with
-grammar tokens now return better responses.  Added better memory
-cleanup during parser error recovery.
-</p>
-
-<p>All parsers gain ways to prevent network requests either via a
-feature <code>RAPTOR_FEATURE_NO_NET</code> that denies network
+<p>Added functionality to prevent network requests either via setting
+a new feature <code>RAPTOR_FEATURE_NO_NET</code> that denies network
 requests during a parser operation or with a URI filter function
-<code>raptor_parser_set_uri_filter()</code>.
+<code>raptor_parser_set_uri_filter()</code>.  This function uses
+<code>raptor_www_set_uri_filter()</code> internally.
 </p>
 
 <p>Added <code>raptor_get_need_base_uri()</code> to tell if a parser
-requires a base URI argument.</p>
+requires a base URI argument. Presently the <em>N-Triples</em> parser
+is the only parser that does not require a base URI.
+<code>raptor_start_parse()</code> will now throw an error if no base
+URI is given and it is needed.
+</p>
 
+<p>GRDDL parser was changed:</p>
+<ul>
+<li>Handle a list of URIs in the profile so it now
+can support <code>dataview:transformation</code> in XML taking a list
+of transformations as defined in
+<a href="http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml">The GRDDL profile for XHTML</a> part of the GRDDL specification.
+</li>
+<li>Recognises
+<a href="http://research.talis.com/2005/erdf/wiki/Main/RdfInHtml">Embedded RDF</a> and
+<a href="http://microformats.org/wiki/hcalendar">HCalendar</a>
+using well known XPaths and transforms them to RDF triples using well
+known XSLT sheet URIs.
+</li>
+<li>Resets after each parse and does a fresh guess
+on the syntax based on the incoming information.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=91">Issue#0000091</a>
+</li>
+</ul>
+
+<p>Turtle (and experimental N3 parser) were changed to now require
+base URIs as they always should have.  The error messages when
+reporting problems with grammar tokens now return better responses.
+Added better memory cleanup during parser error recovery.
+</p>
 
 
 <h3>Serializer Changes</h3>
 
 <p>Made RSS 1.0 serializing work again.</p>
 
-<p>Updated RDF/XML Abbreviated serializer to do proper reference counting
-on the blank/resource nodes used as subjects and objects to
-prevent dual-triple generation.  Fixes the reported
+<p>Updated the <em>RDF/XML Abbreviated</em> serializer to do proper
+reference counting on the blank/resource nodes used as subjects and
+objects to prevent dual-triple generation.  Fixes the reported
 <a href="http://bugs.librdf.org/mantis/view.php?id=14">Issue#0000014</a>
 </p>
 
 
 <h3>Other Changes</h3>
 
-<p>The WWW objects now can have an optional a URI filter function
-attached that checks if the URL given is allowed to be retrieved, or
-denied entirely using the new method <code>raptor_www_set_uri_filter()</code>
-</p>
-
 <p>The internal SAX2 API can also prevent network fetches with the
 feature <code>RAPTOR_FEATURE_NO_NET</code>.</p>
 
-<p><code>rapper</code> help and verbose message formats tidied.</p>
+<p>Fixed a SAX2 problem that caused parsers that use it to leak
+memory for 1 URI, affected RDF/XML and RSS Tag Soup.
+</p>
+
+<p><code>rapper</code> help and verbose message formats were tidied.</p>
 
 
 
