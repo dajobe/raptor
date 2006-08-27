@@ -1900,12 +1900,12 @@ raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
 void
 raptor_init_serializer_rdfxmla(void)
 {
-  raptor_serializer_register_factory("rdfxml-abbrev", "RDF/XML (Abbreviated)", 
+  raptor_serializer_register_factory("rdfxml-xmp", "RDF/XML (XMP Profile)", 
                                      "application/rdf+xml",
                                      NULL,
                                      (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
                                      &raptor_rdfxmla_serializer_register_factory);
-  raptor_serializer_register_factory("rdfxml-xmp", "RDF/XML (XMP Profile)", 
+  raptor_serializer_register_factory("rdfxml-abbrev", "RDF/XML (Abbreviated)", 
                                      "application/rdf+xml",
                                      NULL,
                                      (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
