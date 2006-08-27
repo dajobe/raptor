@@ -13,7 +13,9 @@
 
 <p>Restored the order of serialized syntaxes back to the same as in
 Raptor 1.4.10 which Redland was relying on - asking to serialize to
-mime type 'application/rdf+xml' in Redland 1.4.11 wrote it in XMP.
+mime type 'application/rdf+xml' without specifying a parser name in
+Redland with Raptor 1.4.11 wrote it in XMP instead of RDF/XML as
+it used to.  This happened more often with language bindings.
 That problem will be fixed in a future release of Redland but for now,
 this stops wierd things like that happening.
 </p>
