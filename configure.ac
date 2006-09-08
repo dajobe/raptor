@@ -70,10 +70,14 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 AC_PROG_LEX
-if test "$LEX" != flex -a "$LEX" != ":"; then
-  LEX="$SHELL $missing_dir/missing flex"
-  AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
-  AC_SUBST(LEXLIB, '')
+if test $LEX != : ; then
+  if echo "$LEX" | grep flex >/dev/null 2>&1; then
+    :
+  else
+    LEX="$SHELL $missing_dir/missing flex"
+    AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
+    AC_SUBST(LEXLIB, '')
+  fi
 fi
 
 if test "$USE_MAINTAINER_MODE" = yes; then
