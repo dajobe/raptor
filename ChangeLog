@@ -1,3 +1,15 @@
+2006-09-17  Dave Beckett  <dave@dajobe.org>
+
+	* utils/Makefile.am: (AM_CFLAGS, AM_CPPFLAGS): Remove duplication
+	of @CFLAGS@, @CPPFLAGS@
+
+	* src/Makefile.am: (AM_CFLAGS): Remove duplication of @CFLAGS@
+
+2006-09-08  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac: Allow LEX to be set to things that aren't exactly
+	'flex'
+
 2006-08-27  Dave Beckett  <dave@dajobe.org>
 
 	* NEWS.html, configure.ac, src/win32_raptor_config.h: Bumped
