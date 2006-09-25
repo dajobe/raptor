@@ -1,5 +1,8 @@
 2006-09-24  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_xslt.c: (raptor_xslt_uri_parse_bytes): Only use
+	XML_PARSE_NONET if defined.
+
 	* src/raptor_sax2.c: (raptor_sax2_parse_chunk): Use
 	XML_PARSE_NONET only if defined.
 
