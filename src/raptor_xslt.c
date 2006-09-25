@@ -334,8 +334,10 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
     else {
       int libxml_options = 0;
 
+#ifdef XML_PARSE_NONET
       if(pbc->rdf_parser->features[RAPTOR_FEATURE_NO_NET])
         libxml_options |= XML_PARSE_NONET;
+#endif
       xmlCtxtUseOptions(xc, libxml_options);
 
       xc->replaceEntities = 1;
