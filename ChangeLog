@@ -1,3 +1,8 @@
+2006-09-24  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_sax2.c: (raptor_sax2_parse_chunk): Use
+	XML_PARSE_NONET only if defined.
+
 2006-09-17  Dave Beckett  <dave@dajobe.org>
 
 	* utils/Makefile.am: (AM_CFLAGS, AM_CPPFLAGS): Remove duplication
