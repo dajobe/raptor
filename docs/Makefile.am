@@ -86,7 +86,8 @@ content_files = \
 	raptor-tutorial-serializing.xml \
 	version.xml \
 	rdfprint.c \
-	rdfcat.c
+	rdfcat.c \
+	rdfserialize.c
 
 # Images to copy into HTML directory
 HTML_IMAGES =
@@ -114,8 +115,11 @@ rdfcat.c: $(srcdir)/../examples/rdfcat.c
 rdfprint.c: $(srcdir)/../examples/rdfprint.c
 	$(install_sh_DATA) $? $@
 
+rdfserialize.c: $(srcdir)/../examples/rdfserialize.c
+	$(install_sh_DATA) $? $@
+
 raptor-tutorial-parsing.xml: rdfcat.c
 
-raptor-tutorial-serializing.xml: rdfprint.c
+raptor-tutorial-serializing.xml: rdfprint.c rdfserialize.c
 
 endif
