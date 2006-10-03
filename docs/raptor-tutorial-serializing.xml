@@ -228,16 +228,16 @@ via callbacks.
 
 
 <section id="tutorial-serializer-get-triples">
-<title>Get RDF Triples</title>
+<title>Get or construct RDF Triples</title>
 <para>
-<link linkend="raptor-statement"><type>raptor_statement</type></link>
-can be made either by getting them from a
+An <link linkend="raptor-statement"><type>raptor_statement</type></link>
+can be made either by receiving them from a
 <link linkend="raptor-parser"><type>raptor_parser</type></link>
-object, or can be constructed by hand.</para>
+via parsing or can be constructed by hand.</para>
 
-<para>When building them by hand,
+<para>When constructing by hand,
 the <link linkend="raptor-statement"><type>raptor_statement</type></link>
-structure has to be allocated by the application and the fields
+structure should be allocated by the application and the fields
 filled in.  Each triple has three parts.  The subject can be a URI
 or blank node, the predicate can only be a URI and the object
 can be a URI, blank node or RDF literal. RDF literals can have either
@@ -245,18 +245,26 @@ just a Unicode string, a Unicode string and a language or a Unicode
 string and a datatype URI.</para>
 
 <para>The triple part types are set as fields named
-like <literal>subject_type</literal> for <literal>subject</literal>
-so to set the subject of the triple,
-set <literal>statement.subject</literal> to point to the
-<link linkend="raptor-uri"><type>raptor_uri*</type></link> (for URI)
-or <literal>char*</literal> (for blank node), and
+like <literal>subject_type</literal> for describing
+field <literal>subject</literal>.
+So to initialise the subject of the triple,
+set the field <literal>statement.subject</literal> to point to a
+previously allocated
+<link linkend="raptor-uri"><type>raptor_uri*</type></link> object (for URI)
+or <literal>char*</literal> (for blank node) and
 set <literal>statement.subject_type</literal>
 to <literal>RAPTOR_IDENTIFIER_TYPE_RESOURCE</literal> or
 <literal>RAPTOR_IDENTIFIER_TYPE_ANONYMOUS</literal> respectively.
-Predicates are always of type <literal>RAPTOR_IDENTIFIER_TYPE_RESOURCE</literal>.
-Objects are all all types given above and also 
-<literal>RAPTOR_IDENTIFIER_TYPE_LITERAL</literal>.  The triple part
-types are described under
+Triple predicates are always of type
+<literal>RAPTOR_IDENTIFIER_TYPE_RESOURCE</literal>.
+Triple objects are all all types given above and also
+<literal>RAPTOR_IDENTIFIER_TYPE_LITERAL</literal> which takes
+an <literal>unsigned char*</literal> pointer plus an optional
+language <literal>char*</literal> pointer
+in the <literal>object_literal_language</literal> field OR a
+a <literal>raptor_uri*</literal> literal datatype pointer
+in the <literal>object_literal_datatype</literal> field.
+The triple part types are described under
 <link linkend="raptor-identifier-type"><type>raptor_identifier_type</type>.</link>
 </para>
 
