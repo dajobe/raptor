@@ -227,6 +227,50 @@ via callbacks.
 </section>
 
 
+<section id="tutorial-serializer-get-triples">
+<title>Get RDF Triples</title>
+<para>
+<link linkend="raptor-statement"><type>raptor_statement</type></link>
+can be made either by getting them from a
+<link linkend="raptor-parser"><type>raptor_parser</type></link>
+object, or can be constructed by hand.</para>
+
+<para>When building them by hand,
+the <link linkend="raptor-statement"><type>raptor_statement</type></link>
+structure has to be allocated by the application and the fields
+filled in.  Each triple has three parts.  The subject can be a URI
+or blank node, the predicate can only be a URI and the object
+can be a URI, blank node or RDF literal. RDF literals can have either
+just a Unicode string, a Unicode string and a language or a Unicode
+string and a datatype URI.
+</para>
+
+<example id="raptor-example-rdfserialize">
+<title><filename>rdfserialize.c</filename>: Serialize 1 triple to RDF/XML (Abbreviated)</title>
+<programlisting>
+<xi:include href="rdfserialize.c" parse="text"/>
+</programlisting>
+
+<para>Compile it like this:
+<screen>
+$ gcc -o rdfserialize rdfserialize.c `raptor-config --cflags` `raptor-config --libs`
+</screen>
+and run it with an optional base URI argument
+<screen>
+$ ./rdfserialize
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"&gt;
+  &lt;rdf:Description rdf:about="http://example.org/subject"&gt;
+    &lt;ns0:predicate xmlns:ns0="http://example.org/" xml:lang="en"&gt;An example&lt;/ns0:predicate&gt;
+  &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;
+</screen>
+</para>
+
+</example>
+
+</section>
+
 <section id="tutorial-serializer-send-triples">
 <title>Send RDF Triples to serializer</title>
 
@@ -236,7 +280,10 @@ via the
 <link linkend="raptor-serialize-statement"><function>raptor_serialize_statement()</function></link>
 function with a
 <link linkend="raptor-statement"><type>raptor_statement</type></link>
-value.   Once all triples are sent, the serializing must be finished
+value.
+</para>
+
+<para>Once all triples are sent, the serializing must be finished
 with a call to
 <link linkend="raptor-serialize-end"><function>raptor_serialize_end()</function></link>.
 In particular, only at this point does the 
