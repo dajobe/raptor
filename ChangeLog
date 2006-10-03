@@ -1,3 +1,20 @@
+2006-10-02  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-tutorial-serializing.xml: typo
+	raptor_serializer_set_namespace => raptor_serialize_set_namespace
+
+	* docs/raptor-tutorial-serializing.xml: Add single triple
+	serializing example rdfserialize.c
+
+	* docs/Makefile.am: Add rdfserialize.c
+
+	* examples/rdfserialize.c: tidy
+
+	* examples/Makefile.am: Added rdfserialize example.
+
+	* examples/rdfserialize.c: rdfserialize.c: serialize 1 triple to
+	RDF/XML-Abbrev
+
 2006-09-24  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_xslt.c: (raptor_xslt_uri_parse_bytes): Only use
