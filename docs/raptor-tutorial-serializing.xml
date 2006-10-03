@@ -242,7 +242,19 @@ filled in.  Each triple has three parts.  The subject can be a URI
 or blank node, the predicate can only be a URI and the object
 can be a URI, blank node or RDF literal. RDF literals can have either
 just a Unicode string, a Unicode string and a language or a Unicode
-string and a datatype URI.
+string and a datatype URI.</para><
+
+<para>The triple part types are set as fields named
+like <literal>subject_type</literal> for <literal>subject</literal>
+so to set the subject of the triple,
+set <literal>statement.subject</literal> to point to the
+<link linkend="raptor-uri"><type>raptor_uri*</type> (for URI)
+or <literal>char*</literal> (for blank node), and
+set <literal>statement.subject_type</literal>
+to <literal>RAPTOR_IDENTIFIER_TYPE_RESOURCE</literal> or
+<literal>RAPTOR_IDENTIFIER_TYPE_BLANK</literal> respectively.
+The other types of statement parts are described under
+<link linkend="raptor-identifier"><type>raptor_identifier</type>.</link>
 </para>
 
 <example id="raptor-example-rdfserialize">
