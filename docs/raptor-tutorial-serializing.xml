@@ -252,8 +252,11 @@ set <literal>statement.subject</literal> to point to the
 or <literal>char*</literal> (for blank node), and
 set <literal>statement.subject_type</literal>
 to <literal>RAPTOR_IDENTIFIER_TYPE_RESOURCE</literal> or
-<literal>RAPTOR_IDENTIFIER_TYPE_BLANK</literal> respectively.
-The other types of statement parts are described under
+<literal>RAPTOR_IDENTIFIER_TYPE_ANONYMOUS</literal> respectively.
+Predicates are always of type <literal>RAPTOR_IDENTIFIER_TYPE_RESOURCE</literal>.
+Objects are all all types given above and also 
+<literal>RAPTOR_IDENTIFIER_TYPE_LITERAL</literal>.  The triple part
+types are described under
 <link linkend="raptor-identifier-type"><type>raptor_identifier_type</type>.</link>
 </para>
 
