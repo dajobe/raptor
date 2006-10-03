@@ -17,6 +17,10 @@ main(int argc, char *argv[])
   uri_string=raptor_uri_filename_to_uri_string(argv[1]);
   base_uri=raptor_new_uri(uri_string);
 
+  rdf_serializer=raptor_new_serializer("rdfxml-abbrev");
+  raptor_serialize_start_to_file_handle(rdf_serializer, base_uri, stdout);
+  
+  /* Make a triple with URI subject, URI predicate, literal object */
   triple=malloc(sizeof(raptor_statement));
   triple->subject=(void*)raptor_new_uri((const unsigned char*)"http://example.org/subject");
   triple->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -26,17 +30,17 @@ main(int argc, char *argv[])
   triple->object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
   triple->object_literal_language=(const unsigned char*)"en";
 
-  rdf_serializer=raptor_new_serializer("rdfxml-abbrev");
-  raptor_serialize_start_to_file_handle(rdf_serializer, base_uri, stdout);
+  /* Write the triple */
   raptor_serialize_statement(rdf_serializer, triple);
-  raptor_serialize_end(rdf_serializer);
-  raptor_free_serializer(rdf_serializer);
-  
-  /* These are URIs */
+
+  /* Delete the triple */
   raptor_free_uri((raptor_uri*)triple->subject);
   raptor_free_uri((raptor_uri*)triple->predicate);
   free(triple);
 
+  raptor_serialize_end(rdf_serializer);
+  raptor_free_serializer(rdf_serializer);
+  
   raptor_free_uri(base_uri);
   raptor_free_memory(uri_string);
 
