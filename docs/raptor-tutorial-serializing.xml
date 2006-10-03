@@ -254,7 +254,7 @@ set <literal>statement.subject_type</literal>
 to <literal>RAPTOR_IDENTIFIER_TYPE_RESOURCE</literal> or
 <literal>RAPTOR_IDENTIFIER_TYPE_BLANK</literal> respectively.
 The other types of statement parts are described under
-<link linkend="raptor-identifier"><type>raptor_identifier</type>.</link>
+<link linkend="raptor-identifier-type"><type>raptor_identifier_type</type>.</link>
 </para>
 
 <example id="raptor-example-rdfserialize">
