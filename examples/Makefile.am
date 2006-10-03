@@ -23,13 +23,13 @@
 
 EXTRA_PROGRAMS = raptor_abort grapper rdfcat rdfprint rdfserialize
 
-examples: grapper
+examples: $(EXTRA_PROGRAMS)
 
 CLEANFILES = $(EXTRA_PROGRAMS)
 
-AM_CFLAGS=@CFLAGS@ $(MEM)
-LIBS=@LIBS@ $(MEM_LIBS)
-AM_CPPFLAGS=-I$(top_srcdir)
+AM_CFLAGS=$(MEM)
+AM_LDFLAGS=$(MEM_LIBS)
+AM_CPPFLAGS=-I$(top_srcdir)/src
 
 raptor_abort_SOURCES = raptor_abort.c
 raptor_abort_LDADD=$(top_builddir)/src/libraptor.la
