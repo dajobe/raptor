@@ -21,7 +21,7 @@
 # 
 # 
 
-EXTRA_PROGRAMS = raptor_abort grapper rdfcat rdfprint
+EXTRA_PROGRAMS = raptor_abort grapper rdfcat rdfprint rdfserialize
 
 examples: grapper
 
@@ -48,6 +48,10 @@ rdfcat_DEPENDENCIES = $(top_builddir)/src/libraptor.la
 rdfprint_SOURCES = rdfprint.c
 rdfprint_LDADD=$(top_builddir)/src/libraptor.la
 rdfprint_DEPENDENCIES = $(top_builddir)/src/libraptor.la
+
+rdfserialize_SOURCES = rdfserialize.c
+rdfserialize_LDADD=$(top_builddir)/src/libraptor.la
+rdfserialize_DEPENDENCIES = $(top_builddir)/src/libraptor.la
 
 
 $(top_builddir)/src/libraptor.la:
