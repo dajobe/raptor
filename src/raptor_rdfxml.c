@@ -847,12 +847,12 @@ raptor_rdfxml_start_element_handler(void *user_data,
         if(element->parent->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES &&
            element->parent->xml_element->content_element_seen &&
            element->parent->content_cdata_all_whitespace &&
-           element->parent->xml_element->content_cdata) {
+           element->parent->xml_element->content_cdata_length) {
           
           element->parent->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
           
-          RAPTOR_FREE(raptor_qname_array, element->parent->xml_element->content_cdata);
-          element->parent->xml_element->content_cdata=NULL;
+          raptor_free_stringbuffer(element->parent->xml_element->content_cdata_sb);
+          element->parent->xml_element->content_cdata_sb=NULL;
           element->parent->xml_element->content_cdata_length=0;
         }
         
@@ -2595,9 +2595,9 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
             /* We know object is a resource, so delete any unsignficant
              * whitespace so that FALLTHROUGH code below finds the object.
              */
-            if(xml_element->content_cdata) {
-              RAPTOR_FREE(raptor_qname_array, xml_element->content_cdata);
-              xml_element->content_cdata=NULL;
+            if(xml_element->content_cdata_length) {
+              raptor_free_stringbuffer(xml_element->content_cdata_sb);
+              xml_element->content_cdata_sb=NULL;
               xml_element->content_cdata_length=0;
             }
 
@@ -2688,24 +2688,27 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
 
               if(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL) {
+                unsigned char* literal;
+
                 object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
-                object_uri=(raptor_uri*)xml_element->content_cdata;
+                literal=raptor_stringbuffer_as_string(xml_element->content_cdata_sb);
                 literal_datatype=element->object_literal_datatype;
 
-                if(!literal_datatype && xml_element->content_cdata &&
-                   !raptor_utf8_is_nfc(xml_element->content_cdata, xml_element->content_cdata_length)) {
+                if(!literal_datatype && literal &&
+                   !raptor_utf8_is_nfc(literal, xml_element->content_cdata_length)) {
                   const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
                   raptor_rdfxml_update_document_locator(rdf_parser);
                   if(rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL])
-                    raptor_parser_error(rdf_parser, message, el_name, xml_element->content_cdata);
+                    raptor_parser_error(rdf_parser, message, el_name, literal);
                   else
-                    raptor_parser_warning(rdf_parser, message, el_name, xml_element->content_cdata);
+                    raptor_parser_warning(rdf_parser, message, el_name, literal);
                 }
 
-                if(!object_uri)
+                if(!literal)
                   /* empty literal */
-                  object_uri=(raptor_uri*)empty_literal;
+                  literal=(unsigned char*)empty_literal;
 
+                object_uri=(raptor_uri*)literal;
               } else { 
                 object_type=element->object.type;
                 object_uri=element->object.uri;
@@ -2749,7 +2752,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 buffer=(unsigned char*)rdf_xml_parser->xml_content;
                 length=rdf_xml_parser->xml_content_length;
               } else {
-                buffer=xml_element->content_cdata;
+                buffer=raptor_stringbuffer_as_string(xml_element->content_cdata_sb);
                 length=xml_element->content_cdata_length;
               }
 
@@ -2871,7 +2874,6 @@ raptor_rdfxml_cdata_grammar(raptor_parser *rdf_parser,
   raptor_rdfxml_element* element;
   raptor_xml_element* xml_element;
   raptor_state state;
-  unsigned char *ptr;
   int all_whitespace=1;
   int i;
 
@@ -2971,35 +2973,17 @@ raptor_rdfxml_cdata_grammar(raptor_parser *rdf_parser,
   if(element->child_content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_XML_LITERAL)
     raptor_xml_writer_cdata_counted(rdf_xml_parser->xml_writer, s, len);
   else {
-    unsigned char *buffer=(unsigned char*)RAPTOR_MALLOC(cstring, xml_element->content_cdata_length + len + 1);
-    if(!buffer) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      return;
-    }
-    
-    if(xml_element->content_cdata_length) {
-      strncpy((char*)buffer, (const char*)xml_element->content_cdata, xml_element->content_cdata_length);
-      RAPTOR_FREE(cstring, xml_element->content_cdata);
-      element->content_cdata_all_whitespace &= all_whitespace;
-    } else
-      element->content_cdata_all_whitespace = all_whitespace;
-    
-    xml_element->content_cdata=buffer;
-    
-    /* move pointer to end of cdata buffer */
-    ptr=buffer+xml_element->content_cdata_length;
+    raptor_stringbuffer_append_counted_string(xml_element->content_cdata_sb,
+                                              s, len, 1);
+    element->content_cdata_all_whitespace &= all_whitespace;
     
     /* adjust stored length */
     xml_element->content_cdata_length += len;
-    
-    strncpy((char*)ptr, (char*)s, len);
-    ptr += len;
-    *ptr = '\0';
   }
 
 
 #ifdef RAPTOR_DEBUG_CDATA
-  RAPTOR_DEBUG3("Content cdata now: '%s' (%d bytes)\n", xml_element->content_cdata, xml_element->content_cdata_length);
+  RAPTOR_DEBUG3("Content cdata now: %d bytes\n", xml_element->content_cdata_length);
 #endif
 #ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Ending in state %s\n", raptor_rdfxml_state_as_string(state));

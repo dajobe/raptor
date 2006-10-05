@@ -79,6 +79,8 @@ raptor_new_xml_element(raptor_qname *name,
 
   xml_element->declared_nspaces=NULL;
 
+  xml_element->content_cdata_sb=raptor_new_stringbuffer();
+
   return xml_element;
 }
 
@@ -101,8 +103,8 @@ raptor_free_xml_element(raptor_xml_element *element)
   if(element->attributes)
     RAPTOR_FREE(raptor_qname_array, element->attributes);
 
-  if(element->content_cdata_length)
-    RAPTOR_FREE(raptor_qname_array, element->content_cdata);
+  if(element->content_cdata_sb)
+    raptor_free_stringbuffer(element->content_cdata_sb);
 
   if(element->base_uri)
     raptor_free_uri(element->base_uri);

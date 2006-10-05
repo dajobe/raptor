@@ -783,7 +783,7 @@ struct raptor_xml_element_s {
   raptor_uri *base_uri;
 
   /* CDATA content of element and checks for mixed content */
-  unsigned char *content_cdata;
+  raptor_stringbuffer* content_cdata_sb;
   unsigned int content_cdata_length;
   /* how many cdata blocks seen */
   unsigned int content_cdata_seen;
