@@ -134,17 +134,44 @@ AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 
 
-
 dnl compiler checks
-# if using gcc...
-if test "$ac_cv_prog_gcc" = yes; then
-  STANDARD_CFLAGS=
-  MAINTAINER_CFLAGS="-Wall -Wshadow -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Wredundant-decls -Wswitch-enum"
-else
-  STANDARD_CFLAGS=
-  MAINTAINER_CFLAGS=
+
+AC_DEFUN([REDLAND_CC_TRY_FLAG], [
+  AC_MSG_CHECKING([whether $CC supports $1])
+  redland_save_CFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS $1"
+  AC_COMPILE_IFELSE([ ], [redland_cc_flag=yes], [redland_cc_flag=no])
+  CFLAGS="$redland_save_CFLAGS"
+  if test "X$redland_cc_flag" = "Xyes"; then
+    ifelse([$2], , :, [$2])
+  else
+    ifelse([$3], , :, [$3])
+  fi
+  AC_MSG_RESULT($redland_cc_flag)
+])
+
+possible_warnings="-Wall -Wextra \
+-Wshadow -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes \
+-Wmissing-declarations -Wnested-externs -Wredundant-decls -Wswitch-enum \
+-Wsign-compare -Werror-implicit-function-declaration -Wwrite-strings
+-Wpacked -Wmissing-format-attribute -Wstrict-aliasing=2 -Winit-self \
+-Wunsafe-loop-optimizations -Wdeclaration-after-statement \
+-Wold-style-definition \
+-Wno-missing-field-initializers -Wno-unused-parameter"
+
+warning_cflags=
+if test "$USE_MAINTAINER_MODE" = yes; then
+  AC_MSG_CHECKING(for supported $CC warning flags)
+  AC_MSG_RESULT($warning_cflags)
+  for warning in $possible_warnings; do
+    REDLAND_CC_TRY_FLAG([$warning], [warning_cflags="$warning_cflags $warning"])
+  done
+  AC_MSG_CHECKING($CC supports warning flags)
+  AC_MSG_RESULT($warning_cflags)
 fi
 
+STANDARD_CFLAGS=
+MAINTAINER_CFLAGS="$warning_cflags"
 
 
 dnl Checks for header files.
