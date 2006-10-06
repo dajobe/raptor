@@ -362,9 +362,6 @@ raptor_syntaxes_enumerate(const unsigned int counter,
 {
   raptor_parser_factory *factory;
 
-  if(counter < 0)
-    return 1;
-
   factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers,
                                                          counter);
 
@@ -734,7 +731,7 @@ raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri)
     return 0;
 
   raptor_parser_error((raptor_parser*)user_data, 
-                      "Network fetch of URI '%s' denied", uri);
+                      "Network fetch of URI '%s' denied", uri_string);
   return 1;
 }
 
