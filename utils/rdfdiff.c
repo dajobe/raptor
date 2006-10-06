@@ -786,8 +786,8 @@ main(int argc, char *argv[])
   unsigned char *to_string=NULL;
   raptor_uri *from_uri=NULL;
   raptor_uri *to_uri=NULL;
-  char *from_syntax = "rdfxml";
-  char *to_syntax = "rdfxml";
+  const char *from_syntax = "rdfxml";
+  const char *to_syntax = "rdfxml";
   int free_from_string = 0;
   int free_to_string = 0;
   int usage=0;
