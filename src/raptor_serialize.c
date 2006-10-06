@@ -81,7 +81,7 @@ raptor_free_serializer_factory(raptor_serializer_factory* factory)
 /* class methods */
 
 void
-raptor_serializers_init()
+raptor_serializers_init(void)
 {
   serializers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_serializer_factory, NULL);
 
@@ -286,9 +286,6 @@ raptor_serializers_enumerate(const unsigned int counter,
                              const unsigned char **uri_string)
 {
   raptor_serializer_factory *factory;
-
-  if(counter < 0)
-    return 1;
 
   factory=(raptor_serializer_factory*)raptor_sequence_get_at(serializers,
                                                              counter);
