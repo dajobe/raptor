@@ -1,3 +1,51 @@
+2006-10-05  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac: In maintainer mode, add all the supported -W
+	options to the MAINTAINER_CFLAGS
+
+	* utils/rapper.c: Cast for signed/unsigned comparison
+
+	* src/raptor_libxml.c: redundant decl
+
+	* utils/rapper.c: Cast for unsigned vs signed int use of
+	raptor_get_feature_count()
+
+	* src/n3_common.h, src/n3_lexer.l, src/n3_parser.y,
+	src/raptor_libxml.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_sax2.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/turtle_common.h,
+	src/turtle_lexer.l, src/turtle_parser.y: Make internal
+	error/warning/vargs functions use RAPTOR_PRINTF_FORMAT and fix a
+	few bad uses of args
+
+	* src/raptor_parse.c: (raptor_syntaxes_enumerate): Discard test
+	for unsigned int < 0.
+	(raptor_parse_uri_no_net_filter); Fix raptor_parser_error format
+	arg.
+
+	* src/raptor_serialize.c: (raptor_serializers_init): Declare new
+	style void.
+	(raptor_serializers_enumerate): Discard test for unsigned int < 0.
+
+	* src/ntriples_parse.c: (raptor_ntriples_term): Cast for
+	raptor_parser_error arg.
+
+	* src/raptor_internal.h: Declare many error/warning/*varargs
+	prototypes with RAPTOR_PRINTF_FORMAT that they take a printf-style
+	format argument.
+
+	* src/raptor.h: Added RAPTOR_PRINTF_FORMAT to allow declaring of
+	functions with a printf-style format argument.
+	Declare raptor_vsnprintf using it.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c, src/raptor_xml.c:
+	Turn content_cdata into using raptor_stringbuffer so that it does
+	a lot less copying (strncpy) when joining literals
+
+2006-10-03  Dave Beckett  <dave@dajobe.org>
+
+	* examples/Makefile.am: Fix AM_* flags
+
 2006-10-02  Dave Beckett  <dave@dajobe.org>
 
 	* docs/raptor-tutorial-serializing.xml: typo
