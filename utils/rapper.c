@@ -320,7 +320,7 @@ main(int argc, char *argv[])
               }
             }
             fprintf(stderr, "%s: Valid serializer features are:\n", program);
-            for(i=0; i < raptor_get_feature_count(); i++) {
+            for(i=0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
@@ -355,7 +355,7 @@ main(int argc, char *argv[])
             int i;
             size_t arg_len=strlen(optarg);
             
-            for(i=0; i < raptor_get_feature_count(); i++) {
+            for(i=0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
@@ -379,7 +379,7 @@ main(int argc, char *argv[])
               }
             }
             
-            for(i=0; i < raptor_get_feature_count(); i++) {
+            for(i=0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
