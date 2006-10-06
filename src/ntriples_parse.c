@@ -441,7 +441,9 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         break;
 
       default:
-        raptor_parser_error(rdf_parser, "Illegal string escape \\%c in \"%s\"", c, start);
+        raptor_parser_error(rdf_parser,
+                            "Illegal string escape \\%c in \"%s\"", c, 
+                            (char*)start);
         return 0;
     }
 
