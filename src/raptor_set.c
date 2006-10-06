@@ -519,7 +519,7 @@ int
 main(int argc, char *argv[]) 
 {
   const char *program=raptor_basename(argv[0]);
-  char *items[8] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", NULL };
+  const char *items[8] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", NULL };
   raptor_id_set *set;
   raptor_uri *base_uri;
   int i=0;
