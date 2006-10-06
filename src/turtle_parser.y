@@ -959,7 +959,7 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 
   return raptor_qname_string_to_uri(&turtle_parser->namespaces,
                                     name, name_len,
-                                    raptor_parser_simple_error, rdf_parser);
+                                    (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser);
 }
 
 
@@ -1003,7 +1003,7 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
 
   raptor_namespaces_init(&turtle_parser->namespaces,
                          uri_handler, uri_context,
-                         raptor_parser_simple_error, rdf_parser, 
+                         (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser, 
                          0);
 
   turtle_parser->nil_uri=raptor_new_uri_for_rdf_concept("nil");

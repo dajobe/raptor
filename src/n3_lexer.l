@@ -105,7 +105,7 @@
 /* Prototypes */ 
 static unsigned char *n3_copy_token(unsigned char *text, size_t len);
 static unsigned char *n3_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
-void n3_lexer_syntax_error(void* rdf_parser, const char *msg, ...);
+void n3_lexer_syntax_error(void* rdf_parser, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 #ifdef RAPTOR_DEBUG
 const char * n3_token_print(int token, YYSTYPE *lval);
@@ -203,7 +203,7 @@ EXPONENT [eE][+-]?[0-9]+
                     return EOF;
                   }
 
-                  if(raptor_stringbuffer_append_turtle_string(n3_parser->sb, (unsigned char*)yytext, yyleng, '"', n3_lexer_syntax_error, rdf_parser)) { /* " */
+                  if(raptor_stringbuffer_append_turtle_string(n3_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)n3_lexer_syntax_error, rdf_parser)) { /* " */
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(n3_parser->sb);
                     n3_parser->sb=NULL;
@@ -312,7 +312,7 @@ n3_copy_string_token(raptor_parser* rdf_parser,
       return NULL;
     
     rc=raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
-                                                n3_lexer_syntax_error,
+                                                (raptor_simple_message_handler)n3_lexer_syntax_error,
                                                 rdf_parser);
     if(rc) {
       raptor_free_stringbuffer(sb);

@@ -419,7 +419,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
       attrs[attrs_count++] = raptor_new_qname(context->nstack,
                                               (unsigned char*)"xml:lang",
                                               (unsigned char*)node->value.literal.language,
-                                              raptor_serializer_simple_error,
+                                              (raptor_simple_message_handler)raptor_serializer_simple_error,
                                               serializer);
     }
 
@@ -1469,7 +1469,7 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
   
   raptor_uri_get_handler(&uri_handler, &uri_context);
   context->nstack=raptor_new_namespaces(uri_handler, uri_context,
-                                        raptor_serializer_simple_error,
+                                        (raptor_simple_message_handler)raptor_serializer_simple_error,
                                         serializer,
                                         1);
   context->rdf_nspace=raptor_new_namespace(context->nstack,
@@ -1639,7 +1639,7 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
   xml_writer=raptor_new_xml_writer(context->nstack,
                                    uri_handler, uri_context,
                                    serializer->iostream,
-                                   raptor_serializer_simple_error,
+                                   (raptor_simple_message_handler)raptor_serializer_simple_error,
                                    serializer,
                                    1);
   if(!xml_writer)
@@ -1807,7 +1807,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 	rv = raptor_subject_add_property(subject, predicate, object);
 	if(rv) {
 	  raptor_serializer_error(serializer,
-				  "Unable to add properties to subject 0x%x\n",
+				  "Unable to add properties to subject 0x%p\n",
 				  subject);
 	}
       }
@@ -1824,7 +1824,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       rv = raptor_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,
-                                "Unable to add properties to subject 0x%x\n",
+                                "Unable to add properties to subject 0x%p\n",
                                 subject);
       }
     }

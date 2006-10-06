@@ -31,7 +31,7 @@ extern "C" {
 
 
 /* turtle_parser.y */
-int turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...);
+int turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 raptor_uri* turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
 
 

@@ -2252,7 +2252,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             rdf_xml_parser->xml_writer=raptor_new_xml_writer(NULL,
                                                              uri_handler, uri_context,
                                                              rdf_xml_parser->iostream,
-                                                             raptor_parser_simple_error, rdf_parser,
+                                                             (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser,
                                                              1);
             
             raptor_xml_writer_set_feature(rdf_xml_parser->xml_writer, 

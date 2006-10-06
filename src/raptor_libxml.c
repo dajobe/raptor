@@ -51,9 +51,13 @@
 
 
 /* prototypes */
-static void raptor_libxml_warning(void *context, const char *msg, ...);
-static void raptor_libxml_error(void *context, const char *msg, ...);
-static void raptor_libxml_fatal_error(void *context, const char *msg, ...);
+static void raptor_libxml_warning(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+static void raptor_libxml_error_common(void* user_data, const char *msg, va_list args,  const char *prefix, int is_fatal) RAPTOR_PRINTF_FORMAT(2, 0);
+static void raptor_libxml_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+static void raptor_libxml_fatal_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+static void raptor_libxml_generic_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+static void raptor_libxml_fatal_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+
 
 
 static const char* xml_warning_prefix="XML parser warning - ";
@@ -233,6 +237,8 @@ raptor_libxml_update_document_locator(raptor_sax2* sax2,
 
 }
   
+
+static void raptor_libxml_call_handler(void *data, raptor_message_handler handler, raptor_locator* locator, const char *message,  va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
 
 static void
 raptor_libxml_call_handler(void *data,
@@ -451,9 +457,9 @@ raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
   sax->ignorableWhitespace= raptor_sax2_cdata;
   sax->processingInstruction = NULL; /* processingInstruction */
   sax->comment = raptor_sax2_comment;      /* comment */
-  sax->warning=raptor_libxml_warning;
-  sax->error=raptor_libxml_error;
-  sax->fatalError=raptor_libxml_fatal_error;
+  sax->warning=(warningSAXFunc)raptor_libxml_warning;
+  sax->error=(errorSAXFunc)raptor_libxml_error;
+  sax->fatalError=(fatalErrorSAXFunc)raptor_libxml_fatal_error;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
   sax->externalSubset = raptor_libxml_externalSubset;
@@ -467,9 +473,9 @@ raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
 
 void
 raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
-  sax->warning=raptor_libxml_warning;
-  sax->error=raptor_libxml_error;
-  sax->fatalError=raptor_libxml_fatal_error;
+  sax->warning=(warningSAXFunc)raptor_libxml_warning;
+  sax->error=(errorSAXFunc)raptor_libxml_error;
+  sax->fatalError=(fatalErrorSAXFunc)raptor_libxml_fatal_error;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
   sax->initialized = 1;
@@ -480,7 +486,7 @@ raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
 void
 raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser)
 {
-  xmlGenericError = raptor_libxml_generic_error;
+  xmlGenericError = (xmlGenericErrorFunc)raptor_libxml_generic_error;
   xmlGenericErrorContext = rdf_parser;
 }
 

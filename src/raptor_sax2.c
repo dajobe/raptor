@@ -307,6 +307,8 @@ raptor_sax2_dec_depth(raptor_sax2 *sax2)
 }
 
 
+static void raptor_sax2_simple_error(void* user_data, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+
 /*
  * raptor_sax2_simple_error - Error from a sax2 - Internal
  *
@@ -376,7 +378,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
   raptor_uri_get_handler(&uri_handler, &uri_context);
   raptor_namespaces_init(&sax2->namespaces,
                          uri_handler, uri_context,
-                         raptor_sax2_simple_error, sax2, 
+                         (raptor_simple_message_handler)raptor_sax2_simple_error, sax2, 
                          1);
 
 }
@@ -421,8 +423,8 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     
     xc->userData = sax2; /* user data */
     xc->vctxt.userData = sax2; /* user data */
-    xc->vctxt.error=raptor_libxml_validation_error;
-    xc->vctxt.warning=raptor_libxml_validation_warning;
+    xc->vctxt.error=(xmlValidityErrorFunc)raptor_libxml_validation_error;
+    xc->vctxt.warning=(xmlValidityWarningFunc)raptor_libxml_validation_warning;
     xc->replaceEntities = 1;
     
     sax2->xc = xc;
@@ -750,7 +752,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
 
   /* Create new element structure */
   el_name=raptor_new_qname(&sax2->namespaces, name, NULL,
-                           raptor_sax2_simple_error, sax2);
+                           (raptor_simple_message_handler)raptor_sax2_simple_error, sax2);
   if(!el_name)
     return;
 
@@ -786,7 +788,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
       /* namespace-name[i] stored in named_attrs[i] */
       attr=raptor_new_qname(&sax2->namespaces,
                             atts[i<<1], atts[(i<<1)+1],
-                            raptor_sax2_simple_error, sax2);
+                            (raptor_simple_message_handler)raptor_sax2_simple_error, sax2);
       if(!attr) { /* failed - tidy up and return */
         int j;
 

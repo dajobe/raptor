@@ -87,7 +87,7 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
   
   raptor_uri_get_handler(&uri_handler, &uri_context);
   context->nstack=raptor_new_namespaces(uri_handler, uri_context,
-                                        raptor_serializer_simple_error,
+                                        (raptor_simple_message_handler)raptor_serializer_simple_error,
                                         serializer,
                                         1);
   context->rdf_nspace=raptor_new_namespace(context->nstack,
@@ -216,7 +216,7 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
   xml_writer=raptor_new_xml_writer(context->nstack,
                                    uri_handler, uri_context,
                                    serializer->iostream,
-                                   raptor_serializer_simple_error,
+                                   (raptor_simple_message_handler)raptor_serializer_simple_error,
                                    serializer,
                                    1);
   raptor_xml_writer_set_feature(xml_writer, RAPTOR_FEATURE_WRITER_XML_VERSION,
@@ -423,7 +423,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         attrs[attrs_count++]=raptor_new_qname(context->nstack,
                                               (unsigned char*)"xml:lang",
                                               (unsigned char*)statement->object_literal_language,
-                                              raptor_serializer_simple_error,
+                                              (raptor_simple_message_handler)raptor_serializer_simple_error,
                                               serializer);
 
       len=strlen((const char*)statement->object);
