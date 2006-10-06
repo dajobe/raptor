@@ -310,7 +310,7 @@ main(int argc, char *argv[])
             int i;
             
             fprintf(stderr, "%s: Valid parser features are:\n", program);
-            for(i=0; i < raptor_get_feature_count(); i++) {
+            for(i=0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
