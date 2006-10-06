@@ -72,6 +72,13 @@ extern "C" {
 #define RAPTOR_DEPRECATED
 #endif
 
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+#define RAPTOR_PRINTF_FORMAT(string_index, first_to_check_index) \
+  __attribute__((__format__(__printf__, string_index, first_to_check_index)))
+#else
+#define RAPTOR_PRINTF_FORMAT(string_index, first_to_check_index)
+#endif
+
 /**
  * raptor_uri:
  *
@@ -890,7 +897,7 @@ RAPTOR_API
 int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, raptor_simple_message_handler error_handler, void *error_data);
 
 RAPTOR_API
-char* raptor_vsnprintf(const char *message, va_list arguments);
+char* raptor_vsnprintf(const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(1, 0);
 
 RAPTOR_API
 int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_version);
