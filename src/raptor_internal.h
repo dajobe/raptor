@@ -195,8 +195,8 @@ extern void raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri);
 extern void raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax);
 extern void raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser);
 
-extern void raptor_libxml_validation_error(void *context, const char *msg, ...);
-extern void raptor_libxml_validation_warning(void *context, const char *msg, ...);
+extern void raptor_libxml_validation_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+extern void raptor_libxml_validation_warning(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_libxml_free(xmlParserCtxtPtr xc);
 
 /* raptor_parse.c - exported to libxml part */
@@ -520,18 +520,18 @@ const char* raptor_parser_get_accept_header_all(void);
 int raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri);
 
 /* raptor_general.c */
-void raptor_invoke_message_varargs(const char *type, raptor_message_handler handler, void* user_data, raptor_locator* locator, const char *message, va_list arguments);
-void raptor_invoke_simple_message_varargs(const char *type, raptor_simple_message_handler handler, void* user_data, const char *message, va_list arguments);
+void raptor_invoke_message_varargs(const char *type, raptor_message_handler handler, void* user_data, raptor_locator* locator, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(5, 0);
+void raptor_invoke_simple_message_varargs(const char *type, raptor_simple_message_handler handler, void* user_data, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
 
-extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...);
-extern void raptor_parser_error(raptor_parser* parser, const char *message, ...);
-extern void raptor_parser_simple_error(void* parser, const char *message, ...);
+extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+extern void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+extern void raptor_parser_simple_error(void* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_parser_error_message_handler(void *user_data, raptor_locator* locator, const char *message);
-extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...);
-extern void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
+extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+extern void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
 extern void raptor_parser_fatal_error_message_handler(void *user_data, raptor_locator* locator, const char *message);
-extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments);
-extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments);
+extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
+extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments)  RAPTOR_PRINTF_FORMAT(2, 0);
 void raptor_parser_warning_message_handler(void *user_data, raptor_locator* locator, const char *message);
 
 
@@ -658,11 +658,11 @@ void raptor_delete_serializer_factories(void);
 void raptor_serializers_init(void);
 void raptor_serializers_finish(void);
 
-void raptor_serializer_error(raptor_serializer* serializer, const char *message, ...);
-void raptor_serializer_simple_error(void* serializer, const char *message, ...);
-void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *message,  va_list arguments);
-void raptor_serializer_warning(raptor_serializer* serializer, const char *message, ...);
-void raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, va_list arguments);
+void raptor_serializer_error(raptor_serializer* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+void raptor_serializer_simple_error(void* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *message,  va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
+void raptor_serializer_warning(raptor_serializer* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+void raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
 
 /* raptor_serialize_rdfxml.c */  
 void raptor_init_serializer_rdfxmla(void);
@@ -746,8 +746,8 @@ void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www);
 
-void raptor_www_error_varargs(raptor_www *www, const char *message, va_list arguments);
-void raptor_www_error(raptor_www *www, const char *message, ...);
+void raptor_www_error_varargs(raptor_www *www, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
+void raptor_www_error(raptor_www *www, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 void raptor_www_curl_init(raptor_www *www);
 void raptor_www_curl_free(raptor_www *www);
