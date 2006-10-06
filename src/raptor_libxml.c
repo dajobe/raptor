@@ -56,7 +56,6 @@ static void raptor_libxml_error_common(void* user_data, const char *msg, va_list
 static void raptor_libxml_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 static void raptor_libxml_fatal_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 static void raptor_libxml_generic_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-static void raptor_libxml_fatal_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 
 
