@@ -913,6 +913,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
                                                NULL, NULL, /* errors */
                                                1);
 
+  if(rss_serializer->xml_writer)
+    raptor_free_xml_writer(rss_serializer->xml_writer);
+
   xml_writer=raptor_new_xml_writer(rss_serializer->nstack,
                                    uri_handler, uri_context,
 
