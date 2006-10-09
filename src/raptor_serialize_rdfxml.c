@@ -213,6 +213,9 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
+  if(context->xml_writer)
+    raptor_free_xml_writer(context->xml_writer);
+
   xml_writer=raptor_new_xml_writer(context->nstack,
                                    uri_handler, uri_context,
                                    serializer->iostream,
