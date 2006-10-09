@@ -1,4 +1,21 @@
+2006-10-08  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_start)
+	Free any existing xml_writer before making a new one.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_start)
+	Free any existing xml_writer before making a new one.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_end): Free
+	any existing xml_writer before making a new one.
+
 2006-10-05  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac: Found more -W flags.
+
+	* utils/rdfdiff.c: cast
+
+	* src/raptor_set.c: const
 
 	* configure.ac: In maintainer mode, add all the supported -W
 	options to the MAINTAINER_CFLAGS
