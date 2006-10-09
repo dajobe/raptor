@@ -9,6 +9,49 @@
   <h1>Raptor RDF Parser Toolkit - Release Notes</h1>
 
 
+<h2 id="rel1_4_13"><a name="rel1_4_13">Raptor 1.4.13 Changes</a></h2>
+
+<p>Not yet released.
+</p>
+
+<h3>General Changes</h3>
+
+<p>Prevent losing memory for a <code>raptor_xml_writer</code> when a
+serializer is reused several times.</p>
+
+<p>Fixed issues reported on the <a href="http://bugs.librdf.org/">Redland Issue Tracker</a>:</p>
+
+<h3>Configuration Changes</h3>
+
+<p>In maintainer mode, add all the supported compiler <code>-W</code>
+warning flags to the CFLAGS.
+</p>
+
+<p>Allow <code>LEX</code> to be set to things that aren't exactly
+'flex'.</p>
+
+<h3>Documentation Changes</h3>
+
+<p>Added single triple serializing example to the tutorial to
+demonstrate serializing without parsing and building
+a <code>raptor_statement</code>.</p>
+
+<h3>Other Changes</h3>
+
+
+<p>Declare several raptor functions with GCC printf-formatting
+attributes when using a new enough GCC.</p>
+
+<p>RDF/XML parser now creates literals with
+<code>raptor_stringbuffer</code> so that it does a lot less copying
+when constructing longer literals.
+</p>
+
+<p>Added single <code>raptor_statement</code> serializing example
+to demonstrate serializing alone without parsing.</p>
+
+
+
 <h2 id="rel1_4_12"><a name="rel1_4_12">Raptor 1.4.12 Changes</a></h2>
 
 <p>Restored the order of serialized syntaxes back to the same as in
