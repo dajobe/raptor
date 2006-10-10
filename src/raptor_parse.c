@@ -1412,13 +1412,13 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
  * The default algorithm uses both @prefix and @base to generate a new
  * identifier.   The exact identifier generated is not guaranteed to
  * be a strict concatenation of @prefix and @base but will use both
- * parts.
+ * parts. The @prefix parameter is copied to generate an ID.
  *
  * For finer control of the generated identifiers, use
  * raptor_set_default_generate_id_handler().
  *
- * If prefix is NULL, the default prefix is used (currently "genid")
- * If base is less than 1, it is initialised to 1.
+ * If @prefix is NULL, the default prefix is used (currently "genid")
+ * If @base is less than 1, it is initialised to 1.
  * 
  **/
 void
