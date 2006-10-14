@@ -1533,6 +1533,7 @@ main(int argc, char *argv[])
   failures += assert_uri_to_relative("http://example.org/base#", "http://www.foo.org", "http://www.foo.org");
   failures += assert_uri_to_relative("http://example.org", "http://a.example.org/", "http://a.example.org/");
   failures += assert_uri_to_relative("http://example.org", "http://a.example.org", "http://a.example.org");
+  failures += assert_uri_to_relative("http://abcdefgh.example.org/foo/bar/", "http://ijklmnop.example.org/", "http://ijklmnop.example.org/");
 
   return failures ;
 }
