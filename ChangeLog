@@ -1,3 +1,16 @@
+2006-10-13  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_uri.c: (raptor_uri_to_relative_counted_uri_string):
+	Check for equal scheme and authority correctly.
+	Fixes Issue #0000134 http://bugs.librdf.org/mantis/view.php?id=134
+
+	* src/raptor_uri.c: (main): Test for bug 134
+
+2006-10-09  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_parse.c: (raptor_set_default_generate_id_parameters)
+	autodocs
+
 2006-10-08  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_start)
