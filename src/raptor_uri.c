@@ -1063,7 +1063,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   raptor_uri_detail *base_detail=NULL, *reference_detail;
   const unsigned char *base, *reference_str, *base_file, *reference_file;
   unsigned char *suffix, *cur_ptr;
-  size_t base_len, reference_len, reference_file_len, prefix_len, suffix_len;
+  size_t base_len, reference_len, reference_file_len, suffix_len;
   unsigned char *result=NULL;
 
   if(!reference_uri)
@@ -1081,9 +1081,6 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   base=raptor_uri_as_counted_string(base_uri, &base_len);
   base_detail=raptor_new_uri_detail(base);
   
-  /* The "prefix" is the scheme+authority part */
-  prefix_len = base_detail->scheme_len + base_detail->authority_len;
-  
   /* Check if the whole URIs are equal */
   if(raptor_uri_equals(base_uri, reference_uri)) {
     reference_len=0;
@@ -1091,12 +1088,14 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   }
   
   /* Check if scheme and authority of the URIs are equal */
-  if(prefix_len != (reference_detail->scheme_len + reference_detail->authority_len))
-    goto buildresult;
-  
-
-  if(!strncmp((const char*)base_detail->buffer,
-              (const char*)reference_detail->buffer, prefix_len)) {
+  if(base_detail->scheme_len == reference_detail->scheme_len &&
+     base_detail->authority_len == reference_detail->authority_len &&
+     !strncmp((const char*)base_detail->scheme, 
+              (const char*)reference_detail->scheme,
+              base_detail->scheme_len) &&
+     !strncmp((const char*)base_detail->authority, 
+              (const char*)reference_detail->authority,
+              base_detail->authority_len)) {
     
     if(!base_detail->path)
       goto buildresult;
