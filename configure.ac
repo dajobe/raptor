@@ -588,8 +588,7 @@ if test "X$XML_CONFIG" != X; then
 		AC_DEFINE(RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET, 1, [does libxml xmlSAXHandler have externalSubset field]),
 		AC_MSG_RESULT(no))
 
-    AC_CHECK_FUNC(xmlUseNewParser, AC_DEFINE(RAPTOR_LIBXML_XMLUSENEWPARSER, 1, [does libxml have xmlUseNewParser]))
-    AC_CHECK_FUNC(xmlSAX2InternalSubset, AC_DEFINE(RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET, 1, [does libxml have xmlSAX2InternalSubset]))
+    AC_CHECK_FUNCS(xmlSAX2InternalSubset xmlCtxtUseOptions)
   fi
 
 fi
