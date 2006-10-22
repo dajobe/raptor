@@ -419,7 +419,9 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     if(sax2->feature_no_net)
       libxml_options |= XML_PARSE_NONET;
 #endif
+#ifdef HAVE_XMLCTXTUSEOPTIONS
     xmlCtxtUseOptions(xc, libxml_options);
+#endif
     
     xc->userData = sax2; /* user data */
     xc->vctxt.userData = sax2; /* user data */
