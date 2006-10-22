@@ -695,8 +695,15 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
       qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                          uri_string, NULL);
       
-    } else
+    } else {
       qname = raptor_new_qname_from_resource(serializer, predicate);
+      if(!qname) {
+        raptor_serializer_error(serializer,
+                                "Cannot split URI '%s' into an XML qname",
+                                raptor_uri_as_string(predicate->value.resource.uri));
+        continue;
+      }
+    }
     
     if(serializer->base_uri)
       base_uri=raptor_uri_copy(serializer->base_uri);
@@ -782,7 +789,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     
     if(!qname) {
       raptor_serializer_error(serializer,
-                              "Cannot split URI %s into an XML qname",
+                              "Cannot split URI '%s' into an XML qname",
                               raptor_uri_as_string(subject->node_type->value.resource.uri));
       return 1;
     }
