@@ -67,7 +67,7 @@ static const char* xml_validation_error_prefix="XML parser validation error - ";
 static const char* xml_validation_warning_prefix="XML parser validation warning - ";
 
 
-#ifdef RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET
+#ifdef HAVE_XMLSAX2INTERNALSUBSET
 /* SAX2 - 2.6.0 or later */
 #define libxml2_internalSubset xmlSAX2InternalSubset
 #define libxml2_externalSubset xmlSAX2ExternalSubset
