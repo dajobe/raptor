@@ -1,3 +1,9 @@
+2006-10-21  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_properties): Throw an error and skip
+	triple if cannot make URI from a predicate.
+
 2006-10-13  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_uri.c: (raptor_uri_to_relative_counted_uri_string):
