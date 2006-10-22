@@ -53,17 +53,17 @@ extern "C" {
 /* does libxml struct xmlEntity have a field name_length */
 /*#define RAPTOR_LIBXML_ENTITY_NAME_LENGTH*/
 
-/* does libxml have xmlSAX2InternalSubset */
-#define RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET
+/* Define to 1 if you have the `xmlCtxtUseOptions' function. */
+#define HAVE_XMLCTXTUSEOPTIONS 1
+
+/* Define to 1 if you have the `xmlSAX2InternalSubset' function. */
+#define HAVE_XMLSAX2INTERNALSUBSET 1
 
 /* does libxml xmlSAXHandler have externalSubset field */
 /*#define RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET*/
 
 /* does libxml xmlSAXHandler have initialized field */
 /*#define RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED*/
-
-/* does libxml have xmlUseNewParser */
-/*#define RAPTOR_LIBXML_XMLUSENEWPARSER*/
 #endif
 
 #define HAVE_STRICMP 1
