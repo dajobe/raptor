@@ -551,7 +551,9 @@ raptor_rss_end_element_handler(void *user_data,
 {
   raptor_parser* rdf_parser;
   raptor_rss_parser* rss_parser;
+#ifdef RAPTOR_DEBUG
   const unsigned char* name=raptor_xml_element_get_name(xml_element)->local_name;
+#endif
   raptor_rss_element* rss_element;
   size_t cdata_len=0;
   unsigned char* cdata=NULL;
