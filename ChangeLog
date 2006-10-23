@@ -1,5 +1,7 @@
 2006-10-22  Dave Beckett  <dave@dajobe.org>
 
+	* Snapshotted raptor_1_4_13 for 1.4.13 release
+
 	* src/raptor_rss.c: (raptor_rss_end_element_handler): Only declare
 	name when debugging.
 
