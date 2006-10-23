@@ -1,3 +1,26 @@
+2006-10-22  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.c: (raptor_rss_end_element_handler): Only declare
+	name when debugging.
+
+	* src/win32_raptor_config.h: Update defines:
+	HAVE_XMLSAX2INTERNALSUBSET replaces RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET
+	Added HAVE_XMLCTXTUSEOPTIONS
+	Deleted RAPTOR_LIBXML_XMLUSENEWPARSER
+
+	* src/raptor_xslt.c: (raptor_xslt_uri_parse_bytes): Use #ifdef
+	HAVE_XMLCTXTUSEOPTIONS to protect call to xmlCtxtUseOptions
+
+	* src/raptor_sax2.c: (raptor_sax2_parse_chunk): Use #ifdef
+	HAVE_XMLCTXTUSEOPTIONS to protect call to xmlCtxtUseOptions
+
+	* src/raptor_libxml.c: #ifdef HAVE_XMLSAX2INTERNALSUBSET replaces
+	RAPTOR_LIBXML_XMLSAX2INTERNALSUBSET
+
+	* configure.ac: Remove unused check for xmlUseNewParser (defining
+	RAPTOR_LIBXML_XMLUSENEWPARSER) Use AC_CHECK_FUNCS to check for new
+	xmlCtxtUseOptions and existing xmlSAX2InternalSubset
+
 2006-10-21  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_serialize_rdfxmla.c:
