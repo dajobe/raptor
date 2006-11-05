@@ -1732,7 +1732,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
   } else {
     raptor_serializer_error(serializer,
-                            "Do not know how to serialize node type %d\n",
+                            "Cannot serialize a triple with subject node type %d\n",
                             statement->subject_type);
     return 1;
   }  
@@ -1764,7 +1764,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     
   } else {
     raptor_serializer_error(serializer,
-                            "Do not know how to serialize node type %d\n",
+                            "Cannot serialize a triple with object node type %d\n",
                             object_type);
     return 1;
   }
@@ -1844,7 +1844,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     
   } else {
     raptor_serializer_error(serializer,
-                            "Do not know how to serialize node type %d\n",
+                            "Cannot serialize a triple with predicate node type %d\n",
                             statement->predicate_type);
     return 1;
   }
