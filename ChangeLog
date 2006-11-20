@@ -1,3 +1,8 @@
+2006-11-19  Dave Beckett  <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac,
+	src/win32_raptor_config.h: Bumped version to 1.5.0
+
 2006-10-22  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor_1_4_13 for 1.4.13 release
