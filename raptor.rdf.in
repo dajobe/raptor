@@ -9,11 +9,14 @@
 
     <shortdesc xml:lang="en">Raptor RDF Parser Toolkit Library.</shortdesc>
 
-    <description xml:lang="en">Raptor is the RDF Parser Toolkit for
-    Redland that provides a set of Resource Description Framework (RDF)
-    parsers and serializers, generating RDF triples from RDF/XML,
-    N-Triples, Turtle, several XML RSS tag soup formats and Atom 0.3
-    along with serializers to RDF/XML, N-Triples and RSS 1.0.</description>
+    <description xml:lang="en">is a free software / Open Source C
+    library that provides a set of parsers and serializers that
+    generate Resource Description Framework (RDF) triples by parsing
+    syntaxes or serialize the triples into a syntax.  The supported
+    parsing syntaxes are RDF/XML, N-Triples, Turtle, RSS tag soup
+    including Atom 1.0 and 0.3, GRDDL for XHTML and XML.  The
+    serializing syntaxes are RDF/XML (regular, and abbreviated),
+    N-Triples, RSS 1.0, Atom 1.0 and Adobe XMP.</description>
 
     <maintainer>
       <foaf:Person>
@@ -59,10 +62,10 @@
 
     <!-- source repository -->
     <repository>
-      <CVSRepository>
-	<anonCVS>:pserver:anonymous@cvs.librdf.org:/cvs/redland raptor</anonCVS>
-	<repositoryWebView rdf:resource="http://cvs.librdf.org/cvsweb/redland/raptor/"/>
-      </CVSRepository>
+      <SVNRepository>
+	<location rdf:resource="http://svn.librdf.org/repository/raptor/" />
+	<browse rdf:resource="http://svn.librdf.org/view/raptor/" />
+      </SVNRepository>
     </repository>
   </Project>
 
