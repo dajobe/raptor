@@ -483,11 +483,11 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
 unsigned char *
 raptor_uri_filename_to_uri_string(const char *filename) 
 {
-  unsigned char *buffer;
+  unsigned char *buffer=NULL;
   const char *from;
   char *to;
 #ifndef WIN32
-  char path[PATH_MAX];
+  char *path=NULL;
 #endif
   /*     "file://" ... \0 */
   size_t len=7 + sizeof(char*);
@@ -526,8 +526,29 @@ raptor_uri_filename_to_uri_string(const char *filename)
 /* others - unix: turn spaces into %20, '%' into %25 */
 
   if(*filename != '/') {
-    if(!getcwd(path, PATH_MAX))
-      return NULL;
+    size_t path_max;
+#ifdef PATH_MAX
+    path_max=PATH_MAX;
+#else
+    path_max=1024; /* an initial guess at the length */
+#endif
+    path=(char*)malloc(path_max);
+    while(1) {
+      /* malloc() failed or getcwd() succeeded */
+      if(!path || getcwd(path, path_max))
+        break;
+
+      /* failed */
+      if(errno != ERANGE)
+        break;
+
+      /* try again with a bigger buffer */
+      path_max >>= 2;
+      path=(char*)realloc(path, path_max);
+    }
+    if(!path)
+      goto path_done;
+
     strcat(path, "/");
     strcat(path, filename);
     filename=(const char*)path;
@@ -543,7 +564,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
 
   buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len);
   if(!buffer)
-    return NULL;
+    goto path_done;
 
   strcpy((char*)buffer, "file://");
   from=filename;
@@ -575,6 +596,12 @@ raptor_uri_filename_to_uri_string(const char *filename)
       *to++ =c;
   }
   *to='\0';
+
+  path_done:
+#ifndef WIN32
+  if(path)
+    free(path);
+#endif
   
   return buffer;
 }
