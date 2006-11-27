@@ -1,5 +1,13 @@
 2006-11-26  Dave Beckett  <dave@dajobe.org>
 
+	* docs/raptor-serializers.xml, src/raptor.h, src/raptor_feature.c,
+	src/raptor_internal.h, src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c: Import updated DOT serializer.
+	Renamed features to remove _color/_COLOR from end of name.  Added
+	feature descriptions
+
+	* src/raptor_serialize_dot.c: alter label
+
 	* src/Makefile.am, src/raptor_internal.h, src/raptor_serialize.c,
 	src/raptor_serialize_dot.c: Add DOT serializer
 
