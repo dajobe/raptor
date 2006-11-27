@@ -28,7 +28,7 @@ AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(src/raptor_general.c)
 AC_REVISION($Revision$)
 
-libxml_min_version=2.4.0
+libxml_min_version=2.6.8
 
 libxslt_min_version=1.0.18
 
@@ -789,8 +789,9 @@ ntriples_serializer=no
 rdfxml_abbrev_serializer=no
 rss_1_0_serializer=no
 atom_serializer=no
+dot_serializer=no
 
-rdf_serializers_available="rdfxml rdfxml-abbrev ntriples rss-1.0"
+rdf_serializers_available="rdfxml rdfxml-abbrev ntriples rss-1.0 dot"
 if test "$USE_MAINTAINER_MODE" = yes; then
   rdf_serializers_available="$rdf_serializers_available atom"
 fi
@@ -803,6 +804,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML_ABBREV, 1, [Building RDF/XML-abbreviated serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RSS_1_0, 1, [Building RSS 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_ATOM, 1, [Building Atom 1.0 serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_DOT, 1, [Building GraphViz DOT serializer])
 fi
 
 AC_MSG_CHECKING(RDF serializers required)
@@ -830,7 +832,7 @@ AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML, test $rdfxml_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_NTRIPLES, test $ntriples_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML_ABBREV, test $rdfxml_abbrev_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RSS_1_0, test $rss_1_0_serializer = yes)
-
+AM_CONDITIONAL(RAPTOR_SERIALIZER_DOT, test $dot_serializer = yes)
 
 AM_CONDITIONAL(RAPTOR_RSS_COMMON, test $rss_1_0_serializer = yes -o $rss_parser = yes)
 
