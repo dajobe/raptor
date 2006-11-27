@@ -325,6 +325,18 @@ typedef struct {
  * @RAPTOR_FEATURE_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
  * @RAPTOR_FEATURE_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
  * @RAPTOR_FEATURE_NO_NET: Deny network requests
+ * @RAPTOR_FEATURE_RESOURCE_BORDER: Border color of resource
+ *   nodes for GraphViz DOT serializer.
+ * @RAPTOR_FEATURE_LITERAL_BORDER: Border color of literal nodes
+ *   for GraphViz DOT serializer.
+ * @RAPTOR_FEATURE_BNODE_BORDER: Border color of blank nodes for
+ *   GraphViz DOT serializer.
+ * @RAPTOR_FEATURE_RESOURCE_FILL: Fill color of resource nodes
+ *   for GraphViz DOT serializer.
+ * @RAPTOR_FEATURE_LITERAL_FILL: Fill color of literal nodes for
+ *   GraphViz DOT serializer.
+ * @RAPTOR_FEATURE_BNODE_FILL: Fill color of blank nodes for
+ *   GraphViz DOT serializer.
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -348,7 +360,13 @@ typedef enum {
   RAPTOR_FEATURE_WRITER_XML_VERSION,
   RAPTOR_FEATURE_WRITER_XML_DECLARATION,
   RAPTOR_FEATURE_NO_NET,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_NO_NET
+  RAPTOR_FEATURE_RESOURCE_BORDER,
+  RAPTOR_FEATURE_LITERAL_BORDER,
+  RAPTOR_FEATURE_BNODE_BORDER,
+  RAPTOR_FEATURE_RESOURCE_FILL,
+  RAPTOR_FEATURE_LITERAL_FILL,
+  RAPTOR_FEATURE_BNODE_FILL,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_BNODE_FILL
 } raptor_feature;
 
 

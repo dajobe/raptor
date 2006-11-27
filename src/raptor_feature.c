@@ -72,7 +72,13 @@ static struct
   { RAPTOR_FEATURE_WRITER_INDENT_WIDTH     , 8, "indentWidth", "Number of spaces to indent." },
   { RAPTOR_FEATURE_WRITER_XML_VERSION      , 10, "xmlVersion", "XML version to write." },
   { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , 10, "xmlDeclaration", "Write XML declaration." },
-  { RAPTOR_FEATURE_NO_NET                  , 1,  "noNet", "Deny network requests." }
+  { RAPTOR_FEATURE_NO_NET                  , 1,  "noNet", "Deny network requests." },
+  { RAPTOR_FEATURE_RESOURCE_BORDER   , 6,  "resourceBorder", "DOT serializer resource border color" },
+  { RAPTOR_FEATURE_LITERAL_BORDER    , 6,  "literalBorder", "DOT serializer literal border color" },
+  { RAPTOR_FEATURE_BNODE_BORDER      , 6,  "bnodeBorder", "DOT serializer blank node border color" },
+  { RAPTOR_FEATURE_RESOURCE_FILL     , 6,  "resourceFill", "DOT serializer resource fill color" },
+  { RAPTOR_FEATURE_LITERAL_FILL      , 6,  "literalFill", "DOT serializer literal fill color" },
+  { RAPTOR_FEATURE_BNODE_FILL        , 6,  "bnodeFill", "DOT serializer blank node fill color" }
 };
 
 

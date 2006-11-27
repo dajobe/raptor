@@ -417,6 +417,20 @@ struct raptor_serializer_s {
    */
   raptor_uri* feature_start_uri;
 
+  /* FEATURES:
+   * non NULL to override default border color
+   */
+  unsigned char *feature_resource_border;
+  unsigned char *feature_literal_border;
+  unsigned char *feature_bnode_border;
+
+  /* FEATURES:
+   * non NULL to fill with value
+   */
+  unsigned char *feature_resource_fill;
+  unsigned char *feature_literal_fill;
+  unsigned char *feature_bnode_fill;
+
   void *error_user_data;
   void *warning_user_data;
 

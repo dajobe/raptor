@@ -361,6 +361,13 @@ raptor_new_serializer(const char *name)
   /* Emit relative URIs where possible */
   rdf_serializer->feature_relative_uris=1;
 
+  rdf_serializer->feature_resource_border  =
+    rdf_serializer->feature_literal_border =
+    rdf_serializer->feature_bnode_border   =
+    rdf_serializer->feature_resource_fill  =
+    rdf_serializer->feature_literal_fill   =
+    rdf_serializer->feature_bnode_fill     = NULL;
+
   /* XML 1.0 output */
   rdf_serializer->xml_version=10;
 
@@ -740,10 +747,38 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
 
+    /* String features */
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+    case RAPTOR_FEATURE_BNODE_BORDER:
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+    case RAPTOR_FEATURE_LITERAL_FILL:
+    case RAPTOR_FEATURE_BNODE_FILL:
+
     default:
       return -1;
       break;
   }
+
+  return 0;
+}
+
+
+static int
+raptor_serializer_copy_string(unsigned char ** dest,
+			      const unsigned char * src)
+{
+  size_t src_len=strlen((const char *)src);
+
+  if(*dest) {
+    RAPTOR_FREE(cstring, *dest);
+    *dest=NULL;
+  }
+
+  if(!(*dest=(unsigned char*)RAPTOR_MALLOC(cstring, src_len+1)))
+    return -1;
+
+  strcpy((char *)(*dest), (const char *)src);
 
   return 0;
 }
@@ -807,6 +842,32 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
 
+    /* GraphViz serializer features */
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_resource_border), value);
+      break;
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_literal_border), value);
+      break;
+    case RAPTOR_FEATURE_BNODE_BORDER:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_bnode_border), value);
+      break;
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_resource_fill), value);
+      break;
+    case RAPTOR_FEATURE_LITERAL_FILL:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_literal_fill), value);
+      break;
+    case RAPTOR_FEATURE_BNODE_FILL:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_bnode_fill), value);
+      break;
+
     default:
       return -1;
       break;
@@ -840,7 +901,14 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
       result=(serializer->feature_relative_uris != 0);
       break;
 
+    /* String features */
     case RAPTOR_FEATURE_START_URI:
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+    case RAPTOR_FEATURE_BNODE_BORDER:
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+    case RAPTOR_FEATURE_LITERAL_FILL:
+    case RAPTOR_FEATURE_BNODE_FILL:
       result= -1;
       break;
 
@@ -910,6 +978,26 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
       return NULL;
       break;
       
+    /* GraphViz serializer features */
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+      return (unsigned char *)(serializer->feature_resource_border);
+      break;
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+      return (unsigned char *)(serializer->feature_literal_border);
+      break;
+    case RAPTOR_FEATURE_BNODE_BORDER:
+      return (unsigned char *)(serializer->feature_bnode_border);
+      break;
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+      return (unsigned char *)(serializer->feature_resource_fill);
+      break;
+    case RAPTOR_FEATURE_LITERAL_FILL:
+      return (unsigned char *)(serializer->feature_literal_fill);
+      break;
+    case RAPTOR_FEATURE_BNODE_FILL:
+      return (unsigned char *)(serializer->feature_bnode_fill);
+      break;
+        
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
