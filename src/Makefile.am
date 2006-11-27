@@ -120,6 +120,9 @@ endif
 if RAPTOR_SERIALIZER_RSS_1_0
 libraptor_la_SOURCES += raptor_serialize_rss.c
 endif
+if RAPTOR_SERIALIZER_DOT
+libraptor_la_SOURCES += raptor_serialize_dot.c
+endif
 if RAPTOR_NFC_CHECK
 libraptor_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
 endif

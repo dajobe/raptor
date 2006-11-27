@@ -651,6 +651,7 @@ unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
 /* serializers */
 void raptor_init_serializer_rdfxml(void);
 void raptor_init_serializer_ntriples(void);
+void raptor_init_serializer_dot(void);
 void raptor_init_serializer_simple(void);
 void raptor_delete_serializer_factories(void);
 

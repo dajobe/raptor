@@ -106,6 +106,10 @@ raptor_serializers_init(void)
 #ifdef RAPTOR_SERIALIZER_ATOM
   raptor_init_serializer_atom();
 #endif
+
+#ifdef RAPTOR_SERIALIZER_DOT
+  raptor_init_serializer_dot();
+#endif
 }
 
 
