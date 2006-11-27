@@ -721,7 +721,8 @@ raptor_dot_serializer_register_factory(raptor_serializer_factory *factory)
 void
 raptor_init_serializer_dot (void)
 {
-  raptor_serializer_register_factory("dot",  "Dot",
+  raptor_serializer_register_factory("dot",  
+                                     "GraphViz DOT format",
                                      "text/x-graphviz",
                                      NULL,
                                      (const unsigned char*)"http://www.graphviz.org/doc/info/lang.html",
