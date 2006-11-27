@@ -1,3 +1,16 @@
+2006-11-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_internal.h, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c: Add DOT serializer
+
+	* configure.ac: libxml minimum version is now 2.6.8 since 2.6.7
+	crashes on PPC64 Linux.  2.6.8 was released March 2004 so this
+	should be no burden.
+
+2006-11-20  Dave Beckett  <dave@dajobe.org>
+
+	* raptor.rdf.in: Update description and for SVN repository.
+
 2006-11-19  Dave Beckett  <dave@dajobe.org>
 
 	* NEWS.html, RELEASE.html, configure.ac,
