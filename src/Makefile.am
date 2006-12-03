@@ -115,6 +115,9 @@ if RAPTOR_SERIALIZER_NTRIPLES
 libraptor_la_SOURCES += raptor_serialize_ntriples.c
 endif
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
+libraptor_la_SOURCES += raptor_abbrev.c
+endif
+if RAPTOR_SERIALIZER_RDFXML_ABBREV
 libraptor_la_SOURCES += raptor_serialize_rdfxmla.c
 endif
 if RAPTOR_SERIALIZER_RSS_1_0

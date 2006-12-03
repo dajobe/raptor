@@ -167,8 +167,8 @@ void raptor_system_free(void *ptr);
 #define RAPTOR_FATAL2(msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg); abort();} while(0)
 #define RAPTOR_FATAL3(msg,arg1,arg2) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg1, arg2); abort();} while(0)
 
-
-
+#define MAX_ASCII_INT_SIZE 13
+  
 /* XML parser includes */
 #ifdef RAPTOR_XML_EXPAT
 #ifdef HAVE_EXPAT_H
@@ -679,8 +679,11 @@ void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *
 void raptor_serializer_warning(raptor_serializer* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
 
-/* raptor_serialize_rdfxml.c */  
+/* raptor_serialize_rdfxmla.c */  
 void raptor_init_serializer_rdfxmla(void);
+
+/* raptor_serialize_turtle.c */  
+void raptor_init_serializer_turtle(void);
   
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(long c);
@@ -1018,6 +1021,69 @@ int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, 
 
 /* raptor_xsd.c */
 raptor_identifier* raptor_new_identifier_from_double(double d);
+
+
+/* raptor_abbrev.c */
+
+typedef struct {
+  int ref_count;         /* count of references to this node */
+  int count_as_subject;  /* count of this blank/resource node as subject */
+  int count_as_object;   /* count of this blank/resource node as object */
+  
+  raptor_identifier_type type;  /* node type */
+  union {
+
+    struct {
+      raptor_uri *uri;
+    } resource;
+
+    struct {
+      unsigned char *string;
+      raptor_uri *datatype;
+      unsigned char *language;
+    } literal;
+
+    struct {
+      int ordinal;
+    } ordinal;
+
+    struct {
+      unsigned char *string;
+    } blank;
+    
+  } value;
+} raptor_node;
+
+
+typedef struct {
+  raptor_node *node;             /* node representing the subject of
+                                  * this resource */
+  raptor_node *node_type;        /* the rdf:type of this resource */
+  raptor_sequence *properties;   /* list of properties
+                                  * (predicate/object pair) of this
+                                  * subject */
+  raptor_sequence *list_items;   /* list of container elements if
+                                  * is rdf container */
+} raptor_subject;
+
+
+raptor_node *raptor_new_node(raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
+void raptor_free_node(raptor_node *node);
+int raptor_node_equals(raptor_node *node1, raptor_node *node2);
+int raptor_node_matches(raptor_node *node, raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
+raptor_node *raptor_lookup_node(raptor_sequence* nodes, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language);
+
+raptor_subject *raptor_new_subject(raptor_node *node);
+void raptor_free_subject(raptor_subject *subject);
+int raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate, raptor_node *object);
+int raptor_subject_add_list_element(raptor_subject *subject, int ordinal, raptor_node *object);
+raptor_subject *raptor_rdfxmla_find_subject(raptor_sequence *sequence, raptor_identifier_type node_type, const void *node_data, int *idx);
+raptor_node* raptor_rdfxmla_lookup_node(void* context, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language);
+raptor_subject* raptor_rdfxmla_lookup_subject(void* context, raptor_identifier_type node_type, const void *node_data);
+
+unsigned char *raptor_unique_id(unsigned char *base);
+
+raptor_qname* raptor_new_qname_from_resource(raptor_serializer* serializer, raptor_node *node);
 
 /* end of RAPTOR_INTERNAL */
 #endif
