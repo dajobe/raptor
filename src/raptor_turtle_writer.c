@@ -234,7 +234,7 @@ raptor_turtle_writer_contains_newline(const unsigned char *s)
  **/
 void
 raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer,
-                          const unsigned char *s)
+                         const unsigned char *s)
 {
   raptor_iostream_write_string(turtle_writer->iostr, s);
 }
@@ -251,7 +251,7 @@ raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer,
  **/
 void
 raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer,
-                                  const unsigned char *s, unsigned int len)
+                                 const unsigned char *s, unsigned int len)
 {
   raptor_iostream_write_counted_string(turtle_writer->iostr, s, len);
 }
@@ -290,7 +290,8 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
  *
  **/
 void
-raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri)
+raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, 
+                               raptor_uri* uri)
 {
   unsigned char* uri_str;
   size_t length;
@@ -316,9 +317,18 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* 
  **/
 void
 raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
-                      raptor_qname* qname)
+                           raptor_qname* qname)
 {
-  raptor_iostream_write_qname(turtle_writer->iostr, qname);
+  raptor_iostream* iostr=turtle_writer->iostr;
+  
+  if(qname->nspace && qname->nspace->prefix_length > 0)
+    raptor_iostream_write_counted_string(iostr, qname->nspace->prefix,
+                                         qname->nspace->prefix_length);
+  raptor_iostream_write_byte(iostr, ':');
+  
+  raptor_iostream_write_counted_string(iostr, qname->local_name,
+                                       qname->local_name_length);
+  return 0;
 }
 
 
