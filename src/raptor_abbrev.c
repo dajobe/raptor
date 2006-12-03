@@ -67,7 +67,7 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
                 raptor_uri *datatype, const unsigned char *language)
 {
   unsigned char *string;
-  raptor_node* node;
+  raptor_node* node=NULL;
   
   if(node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
     return 0;
