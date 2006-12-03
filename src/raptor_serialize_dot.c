@@ -276,7 +276,7 @@ raptor_dot_serializer_new_node(raptor_identifier_type node_type,
 
 /* add a namespace */
 static int
-raptor_dot_serializer_declare_namespace_from_namespace(raptor_serializer* serializer, 
+raptor_dot_serializer_declare_namespace_from_namespace(raptor_serializer* serializer,
 						       raptor_namespace *nspace)
 {
   raptor_dot_context * context = (raptor_dot_context *)serializer->context;
@@ -309,7 +309,7 @@ raptor_dot_serializer_declare_namespace_from_namespace(raptor_serializer* serial
 
 /* add a namespace */
 static int
-raptor_dot_serializer_declare_namespace(raptor_serializer* serializer, 
+raptor_dot_serializer_declare_namespace(raptor_serializer* serializer,
 					raptor_uri* uri,
 					const unsigned char *prefix)
 {
@@ -333,7 +333,7 @@ raptor_dot_serializer_init(raptor_serializer *serializer, const char *name)
   raptor_dot_context * context = (raptor_dot_context *)serializer->context;
   raptor_uri_handler *uri_handler;
   void* uri_context;
-  
+
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
   /* Setup namespace handling */
@@ -344,7 +344,7 @@ raptor_dot_serializer_init(raptor_serializer *serializer, const char *name)
   context->namespaces=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_namespace, NULL);
 
   /* We keep a list of nodes to avoid duplication (which isn't
-   * critical in graphviz, but why bloat the file?) 
+   * critical in graphviz, but why bloat the file?)
    */
   context->resources =
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_dot_serializer_free_node, NULL);
@@ -365,7 +365,7 @@ raptor_dot_serializer_init(raptor_serializer *serializer, const char *name)
  * or \0 for no escaping.
  *
  * Write an UTF-8 string, escaped for graphviz.
- * 
+ *
  * Return value: non-0 on failure.
  **/
 static int
@@ -500,14 +500,14 @@ raptor_dot_serializer_write_node(raptor_serializer * serializer,
  * to the list.
  */
 static void
-raptor_dot_serializer_assert_node(raptor_serializer* serializer, 
+raptor_dot_serializer_assert_node(raptor_serializer* serializer,
                                   raptor_identifier_type node_type,
-				  const void* node_data, 
-                                  raptor_uri* datatype, 
+                                  const void* node_data,
+                                  raptor_uri* datatype,
                                   const unsigned char* language)
 {
   raptor_dot_context* context = (raptor_dot_context*)serializer->context;
-  raptor_sequence* seq;
+  raptor_sequence* seq = NULL;
   int i;
 
   /* Which list are we searching? */
@@ -528,7 +528,7 @@ raptor_dot_serializer_assert_node(raptor_serializer* serializer,
 
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-	break;
+      break;
   }
 
   for( i = 0 ; i < raptor_sequence_size(seq) ; i++ ) {
@@ -566,7 +566,7 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
       if(serializer->feature_resource_border) {
 	raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)", color=");
-	raptor_iostream_write_string(serializer->iostream, 
+	raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)serializer->feature_resource_border);
       }
       else
@@ -605,7 +605,7 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
       if(serializer->feature_literal_border) {
-	raptor_iostream_write_string(serializer->iostream, 
+	raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)", color=");
 	raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)serializer->feature_literal_border);
@@ -655,7 +655,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
 				     RAPTOR_IDENTIFIER_TYPE_RESOURCE, NULL, NULL);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\", shape=ellipse");
-    raptor_dot_serializer_write_colors(serializer, 
+    raptor_dot_serializer_write_colors(serializer,
                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)" ];\n");
@@ -700,7 +700,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
 				     node->value.literal.language);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\", shape=record");
-    raptor_dot_serializer_write_colors(serializer, 
+    raptor_dot_serializer_write_colors(serializer,
                                        RAPTOR_IDENTIFIER_TYPE_LITERAL);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)" ];\n");
@@ -757,7 +757,7 @@ raptor_dot_serializer_terminate(raptor_serializer* serializer)
 
 /* serialize a statement */
 static int
-raptor_dot_serializer_statement(raptor_serializer* serializer, 
+raptor_dot_serializer_statement(raptor_serializer* serializer,
 				const raptor_statement *statement)
 {
   /* Cache the nodes for later. */
