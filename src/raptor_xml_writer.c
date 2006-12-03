@@ -753,7 +753,7 @@ raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
  *
  * Get list of xml_writer features.
  * 
- * If uri is not NULL, a pointer toa new raptor_uri is returned
+ * If uri is not NULL, a pointer to a new raptor_uri is returned
  * that must be freed by the caller with raptor_free_uri().
  *
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
