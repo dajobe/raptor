@@ -1,5 +1,40 @@
 2006-12-02  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_abbrev.c: (raptor_new_node): init node always
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_emit_blank): Do
+	not double-encode blank node ids.  Do not free a shared blank node
+	string value.
+	(raptor_rdfxmla_emit_subject): Do not double-encode blank node
+	ids.  Free only allocated attr_value.
+	(raptor_rdfxmla_serialize_init): Ensure rdf_type is initialized.
+
+	* src/raptor_turtle_writer.c: Remove // comments
+
+	* src/raptor_serialize_turtle.c: deleting commented-out code
+
+	* src/raptor_serialize_turtle.c: Code style, whitespace.
+
+	* src/raptor.h, src/raptor_internal.h: Move turtle write functions
+	into internal API for now
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_serialize_declare_namespace_from_namespace): Allow
+	a default namespace to be handled when prefix is NULL.
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_qname): Write
+	a QName using Turtle's rules either prefix:local or :local which
+	is not how raptor_iostream_write_qname() writes them for XML.
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_namespace_prefix):
+	Only emit a prefix if 	there is one.
+
+	* src/raptor_serialize_turtle.c, docs/raptor-serializers.xml,
+	docs/tmpl/section-general.sgml, configure.ac, src/Makefile.am,
+	src/raptor.h, src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	tests/Makefile.am, tests/turtle/Makefile.am: Turtle serializer by
+	Dave Robillard
+
 	* src/raptor_xml_writer.c: docs
 
 	* src/raptor_abbrev.c, src/raptor_internal.h,
