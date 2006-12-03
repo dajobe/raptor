@@ -81,6 +81,17 @@ always emitted.
 </section>
 
 
+<section id="serializer-turtle">
+<title>Turtle serializer (name <literal>turtle</literal>)</title>
+<para>A serializer for the
+<ulink url="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</ulink>
+syntax, designed as a useful subset of
+<ulink url="http://www.w3.org/DesignIssues/Notation3">Notation 3</ulink>.
+</para>
+
+</section>
+
+
 <section id="serializer-rss-1-0">
 <title>RSS 1.0 serializer (name <literal>rss-1.0</literal>)</title>
 <para>A serializer to the
