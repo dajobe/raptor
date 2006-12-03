@@ -110,9 +110,10 @@ struct raptor_xslt_parser_context_s {
   /* Evaluate xpath expression */
   xmlXPathObjectPtr xpathObj;
 
-  /* (RDF/XML) parser for dealing with the result */
-  raptor_parser* rdfxml;
-
+  /* parser for dealing with the result */
+  raptor_parser* internal_parser;
+  /* ... constructed with this name */
+  const char* internal_parser_name;
 };
 
 
@@ -122,14 +123,6 @@ typedef struct raptor_xslt_parser_context_s raptor_xslt_parser_context;
 static int
 raptor_xslt_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  raptor_xslt_parser_context *xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
-
-  xslt_parser->rdfxml=raptor_new_parser("rdfxml");
-  if(!xslt_parser->rdfxml) {
-    raptor_parser_error(rdf_parser, "Failed to create RDF/XML parser");
-    return 1;
-  }
-
   return 0;
 }
 
@@ -152,22 +145,17 @@ raptor_xslt_parse_terminate(raptor_parser *rdf_parser)
   if(xslt_parser->xpathObj)
     xmlXPathFreeObject(xslt_parser->xpathObj);
 
-  if(xslt_parser->rdfxml)
-    raptor_free_parser(xslt_parser->rdfxml);
+  if(xslt_parser->internal_parser)
+    raptor_free_parser(xslt_parser->internal_parser);
 }
 
 
 static int
 raptor_xslt_parse_start(raptor_parser *rdf_parser) 
 {
-  raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
   raptor_locator *locator=&rdf_parser->locator;
-  raptor_parser *p=xslt_parser->rdfxml;
   
   locator->line=1;
-
-  /* copy any user data to the internal parser */
-  raptor_parser_copy_user_state(p, rdf_parser);
 
   return 0;
 }
@@ -256,6 +244,7 @@ raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser,
   xmlDocPtr res=NULL;
   xmlChar *doc_txt=NULL;
   int doc_txt_len=0;
+  const char* parser_name;
 
   RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI '%s' on doc URI '%s'\n",
                 raptor_uri_as_string(xslt_uri),
@@ -276,21 +265,95 @@ raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser,
     ret=1;
     goto cleanup_xslt;
   }
-  
-  
+
+  if(res->type == XML_HTML_DOCUMENT_NODE) {
+    if(sheet->method != NULL)
+      xmlFree(sheet->method);
+    sheet->method = xmlMalloc(5);
+    strncpy((char*)sheet->method, "html", 5);
+  }
+
   /* write the resulting XML to a string */
   xsltSaveResultToString(&doc_txt, &doc_txt_len, res, sheet);
   
   if(!doc_txt || !doc_txt_len) {
-    /* empty document - continue? FIXME */
-    raptor_parser_warning(rdf_parser, 
-                          "XSLT returned an empty document");
-  } else {
-    RAPTOR_DEBUG2("XSLT returned %d bytes RDF/XML document\n", doc_txt_len);
+    /* FIXME: continue with an empty document? */
+    raptor_parser_warning(rdf_parser, "XSLT returned an empty document");
+    goto cleanup_xslt;
+  }
+
+  RAPTOR_DEBUG4("XSLT returned %d bytes document method %s media type %s\n", 
+                doc_txt_len, 
+                (sheet->method ? (const char*)sheet->method : "NULL"), 
+                (sheet->mediaType ? (const char*)sheet->mediaType : "NULL"));
+
+  /* FIXME: Assumes mime types for XSLT <xsl:output method> */
+  if(sheet->mediaType == NULL && sheet->method) {
+    if(!(strcmp((const char*)sheet->method, "text"))) {
+      sheet->mediaType = xmlMalloc(11);
+      strncpy((char*)sheet->mediaType, "text/plain",11);
+    } else if(!(strcmp((const char*)sheet->method, "xml"))) {
+      sheet->mediaType = xmlMalloc(16);
+      strncpy((char*)sheet->mediaType, "application/xml",16);
+    } else if(!(strcmp((const char*)sheet->method, "html"))) {
+      sheet->mediaType = xmlMalloc(10);
+      /* FIXME: use xhtml mime type? */
+      strncpy((char*)sheet->mediaType, "text/html",10);
+    }
+  }
+
+  /* FIXME: Assume all that all media XML is RDF/XML and also that
+   * with no information at all we have RDF/XML
+   */
+  if(!sheet->mediaType ||
+     (sheet->mediaType &&
+      !strcmp((const char*)sheet->mediaType, "application/xml"))) {
+    if(sheet->mediaType)
+      xmlFree(sheet->mediaType);
+    sheet->mediaType = xmlMalloc(20);
+    strncpy((char*)sheet->mediaType, "application/rdf+xml",20);
+  }
+  
+  parser_name=raptor_guess_parser_name(NULL, (const char*)sheet->mediaType, 
+                                       doc_txt, doc_txt_len, NULL);
+  RAPTOR_DEBUG3("Guessed parser %s from mime type '%s'\n",
+                parser_name, sheet->mediaType);
+
+  if(!strcmp((const char*)parser_name, "grddl")) {
+    RAPTOR_DEBUG1("Ignoring guess to run grddl parser.");
+    goto cleanup_xslt;
+  }
+
+  /* construct a parser or use the previous one if it is the same */
+  if(!xslt_parser->internal_parser_name ||
+     strcmp(xslt_parser->internal_parser_name, parser_name)) {
+    if(xslt_parser->internal_parser) {
+
+      RAPTOR_DEBUG2("Freeing internal %s parser.\n",
+                    xslt_parser->internal_parser_name);
+      
+      raptor_free_parser(xslt_parser->internal_parser);
+      xslt_parser->internal_parser=NULL;
+      xslt_parser->internal_parser_name=NULL;
+    }
     
+    RAPTOR_DEBUG2("Allocating new internal %s parser.\n", parser_name);
+    xslt_parser->internal_parser=raptor_new_parser(parser_name);
+    if(!xslt_parser->internal_parser) {
+      raptor_parser_error(rdf_parser, "Failed to create %s parser",
+                          parser_name);
+    } else {
+      /* initialise the new parser with the outer state */
+      xslt_parser->internal_parser_name=parser_name;
+      raptor_parser_copy_user_state(xslt_parser->internal_parser,
+                                    rdf_parser);
+    }
+  }
+
+  if(xslt_parser->internal_parser) {
     /* generate the triples */
-    raptor_start_parse(xslt_parser->rdfxml, rdf_parser->base_uri);
-    raptor_parse_chunk(xslt_parser->rdfxml, doc_txt, doc_txt_len, 1);
+    raptor_start_parse(xslt_parser->internal_parser, rdf_parser->base_uri);
+    raptor_parse_chunk(xslt_parser->internal_parser, doc_txt, doc_txt_len, 1);
   }
   
   cleanup_xslt:
