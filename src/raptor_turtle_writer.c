@@ -328,7 +328,7 @@ raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
   
   raptor_iostream_write_counted_string(iostr, qname->local_name,
                                        qname->local_name_length);
-  return 0;
+  return;
 }
 
 
@@ -653,6 +653,14 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_START_URI:
 
+    /* DOT serializer features */
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+    case RAPTOR_FEATURE_BNODE_BORDER:
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+    case RAPTOR_FEATURE_LITERAL_FILL:
+    case RAPTOR_FEATURE_BNODE_FILL:
+
     default:
       return -1;
       break;
@@ -740,6 +748,14 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
     /* XML writer features */
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_START_URI:
+
+    /* DOT serializer features */
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+    case RAPTOR_FEATURE_BNODE_BORDER:
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+    case RAPTOR_FEATURE_LITERAL_FILL:
+    case RAPTOR_FEATURE_BNODE_FILL:
 
     default:
       break;
