@@ -86,41 +86,41 @@ typedef struct {
 /* prototypes for functions */
 
 static int raptor_turtle_emit_resource(raptor_serializer *serializer,
-                                        raptor_node *node,
-                                        int depth);
-
-static int raptor_turtle_emit_literal(raptor_serializer *serializer,
                                        raptor_node *node,
                                        int depth);
+
+static int raptor_turtle_emit_literal(raptor_serializer *serializer,
+                                      raptor_node *node,
+                                      int depth);
 static int raptor_turtle_emit_xml_literal(raptor_serializer *serializer,
-                                           raptor_node *node,
-                                           int depth);
+                                          raptor_node *node,
+                                          int depth);
 static int raptor_turtle_emit_blank(raptor_serializer *serializer,
-                                     raptor_node *node,
-                                     int depth);
+                                    raptor_node *node,
+                                    int depth);
 static int raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
-                                                  raptor_subject *subject,
-                                                  int depth);
+                                                 raptor_subject *subject,
+                                                 int depth);
 static int raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
                                                        raptor_subject *subject,
                                                        int depth);
 static int raptor_turtle_emit_subject_properties(raptor_serializer *serializer,
-                                                  raptor_subject *subject,
-                                                  int depth);
+                                                 raptor_subject *subject,
+                                                 int depth);
 static int raptor_turtle_emit_subject(raptor_serializer *serializer,
-                                       raptor_subject *subject,
-                                       int depth);
+                                      raptor_subject *subject,
+                                      int depth);
 static int raptor_turtle_emit(raptor_serializer *serializer);
 
 static int raptor_turtle_serialize_init(raptor_serializer* serializer,
-                                         const char *name);
+                                        const char *name);
 static void raptor_turtle_serialize_terminate(raptor_serializer* serializer);
 static int raptor_turtle_serialize_declare_namespace(raptor_serializer* serializer, 
-                                                      raptor_uri *uri,
-                                                      const unsigned char *prefix);
+                                                     raptor_uri *uri,
+                                                     const unsigned char *prefix);
 static int raptor_turtle_serialize_start(raptor_serializer* serializer);
 static int raptor_turtle_serialize_statement(raptor_serializer* serializer, 
-                                              const raptor_statement *statement);
+                                             const raptor_statement *statement);
 
 static int raptor_turtle_serialize_end(raptor_serializer* serializer);
 static void raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory);
@@ -154,7 +154,7 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
     return 1;
 
   qname = raptor_namespaces_qname_from_uri(context->nstack,
-      node->value.resource.uri, 10);
+                                           node->value.resource.uri, 10);
 
   if(qname) {
     raptor_turtle_writer_qname(turtle_writer, qname);
@@ -320,21 +320,17 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
     if(!object)
       continue;
     
-    switch (object->type) {
-      
+    switch(object->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-        rv = raptor_turtle_emit_resource(serializer, object,
-                                          depth+1);
+        rv = raptor_turtle_emit_resource(serializer, object, depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-        rv = raptor_turtle_emit_literal(serializer, object,
-                                         depth+1);
+        rv = raptor_turtle_emit_literal(serializer, object, depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-        rv = raptor_turtle_emit_xml_literal(serializer, object,
-                                             depth+1);
+        rv = raptor_turtle_emit_xml_literal(serializer, object, depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
@@ -370,8 +366,7 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
  **/
 static int
 raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
-                                            raptor_subject *subject,
-                                            int depth)
+                                            raptor_subject *subject, int depth)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   int rv = 0;
@@ -383,7 +378,6 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
                 subject->node->count_as_object);
 
   while (!rv && raptor_sequence_size(subject->properties) >= 2) {
-
     raptor_node *predicate;
     raptor_node *object;
     
@@ -401,8 +395,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     if(!object)
       continue;
     
-    switch (object->type) {
-      
+    switch(object->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
         rv = raptor_turtle_emit_resource(serializer, object,
                                           depth+1);
@@ -430,10 +423,12 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
         break;
-
     }
-    
-    //raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)" ");
+
+    /* FIXME - why is this commented out? */
+    /*
+    raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)" ");
+    */
    
     /* last item */
     if (i >= raptor_sequence_size(subject->properties))
@@ -444,7 +439,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
 
     if (!raptor_uri_equals(predicate->value.resource.uri, context->rdf_rest_uri)) {
       raptor_serializer_error(serializer,
-                            "Malformed collection (second predicate is not rdf:rest)");
+                              "Malformed collection (second predicate is not rdf:rest)");
       return 1;
     }
  
@@ -478,8 +473,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
  **/
 static int
 raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
-                                       raptor_subject *subject,
-                                       int depth)
+                                      raptor_subject *subject,
+                                      int depth)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
@@ -497,20 +492,21 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
     rv = raptor_turtle_emit_subject_list_items(serializer, subject, depth+1);
 
   i=0;
-  while (!rv && i < raptor_sequence_size(subject->properties)) {
+  while(!rv && i < raptor_sequence_size(subject->properties)) {
     raptor_node *predicate;
     raptor_node *object;
     raptor_qname *qname;
 
-    predicate = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
-    object = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
+    predicate = (raptor_node*)raptor_sequence_get_at(subject->properties, i++);
+    object = (raptor_node*)raptor_sequence_get_at(subject->properties, i++);
 
-    if( ! (last_predicate && raptor_node_equals(predicate, last_predicate))) {
+    if(!(last_predicate && raptor_node_equals(predicate, last_predicate))) {
       /* no object list abbreviation possible, terminate last object */
       if(last_predicate) {
         raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)";");
         raptor_turtle_writer_newline(turtle_writer);
       }
+
       if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
         /* we should only get here in rare cases -- usually when there
          * are multiple ordinals with the same value. */
@@ -520,12 +516,11 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         sprintf((char*)uri_string, "_%d", predicate->value.ordinal.ordinal);
 
         qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
-            uri_string, NULL);
+                                                           uri_string, NULL);
 
       } else {
-  
         qname = raptor_namespaces_qname_from_uri(context->nstack,
-          predicate->value.resource.uri, 10);
+                                                 predicate->value.resource.uri, 10);
       
       }
 
@@ -540,12 +535,11 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
     
       if(qname)
         raptor_free_qname(qname);
-    } else {
+    } else
       raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)", ");
-    }
 
-    switch (object->type) {
-      
+
+    switch(object->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
         rv = raptor_turtle_emit_resource(serializer, object, depth+1);
         break;
@@ -619,16 +613,16 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
   /* check if we can do collection abbreviation */
   if (raptor_sequence_size(subject->properties) >= 4) {
-    raptor_node* pred1 = (raptor_node *)raptor_sequence_get_at(subject->properties, 0);
-    raptor_node* pred2 = (raptor_node *)raptor_sequence_get_at(subject->properties, 2);
+    raptor_node* pred1 = (raptor_node*)raptor_sequence_get_at(subject->properties, 0);
+    raptor_node* pred2 = (raptor_node*)raptor_sequence_get_at(subject->properties, 2);
 
     if(pred1->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE
           && pred2->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE
           && (
-              (raptor_uri_equals(pred1->value.resource.uri, context->rdf_first_uri)
-                && raptor_uri_equals(pred2->value.resource.uri, context->rdf_rest_uri))
-            || (raptor_uri_equals(pred2->value.resource.uri, context->rdf_first_uri)
-             && raptor_uri_equals(pred1->value.resource.uri, context->rdf_rest_uri)))) {
+              (raptor_uri_equals(pred1->value.resource.uri, context->rdf_first_uri) &&
+               raptor_uri_equals(pred2->value.resource.uri, context->rdf_rest_uri))
+            || (raptor_uri_equals(pred2->value.resource.uri, context->rdf_first_uri) &&
+                raptor_uri_equals(pred1->value.resource.uri, context->rdf_rest_uri)))) {
       collection = 1;
     }
   }
@@ -697,9 +691,11 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   }
 
   if(depth == 0) {
-    /* NOTE: the space before the . here MUST be there or statements that end in
-       a numeric literal will be interpreted incorrectly (the "." will be parsed
-       as part of the literal and statement left unterminated) */
+    /* NOTE: the space before the . here MUST be there or statements
+     * that end in a numeric literal will be interpreted incorrectly
+     * (the "." will be parsed as part of the literal and statement
+     * left unterminated) 
+     */
     raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)" .");
     raptor_turtle_writer_newline(turtle_writer);
     raptor_turtle_writer_newline(turtle_writer);
@@ -710,10 +706,10 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
 
 /*
- * raptor_turtle_emit - 
+ * raptor_turtle_emit:
  * @serializer: #raptor_serializer object
  * 
- * Emit RDF/XML for all stored triples.
+ * Emit Turtle for all stored triples.
  * 
  * Return value: non-0 on failure
  **/
@@ -743,7 +739,7 @@ raptor_turtle_emit(raptor_serializer *serializer)
 
 
 /*
- * raptor serializer turtle implementation
+ * raptor serializer Turtle implementation
  */
 
 
@@ -784,9 +780,8 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
     context->rdf_type = raptor_new_node(RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                         rdf_type_uri, NULL, NULL);
     raptor_free_uri(rdf_type_uri);
-  } else {
+  } else
     context->rdf_type = NULL;
-  }
   
   if(!context->nstack || !context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||
@@ -859,7 +854,7 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
 /* add a namespace */
 static int
 raptor_turtle_serialize_declare_namespace_from_namespace(raptor_serializer* serializer, 
-                                                          raptor_namespace *nspace)
+                                                         raptor_namespace *nspace)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   int i;
@@ -931,10 +926,10 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
     raptor_free_turtle_writer(context->turtle_writer);
 
   turtle_writer=raptor_new_turtle_writer(serializer->base_uri, context->nstack,
-                                   uri_handler, uri_context,
-                                   serializer->iostream,
-                                   (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                   serializer);
+                                         uri_handler, uri_context,
+                                         serializer->iostream,
+                                         (raptor_simple_message_handler)raptor_serializer_simple_error,
+                                         serializer);
   if(!turtle_writer)
     return 1;
 
@@ -948,7 +943,7 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
 
 static void
 raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
-                                    raptor_turtle_context* context) 
+                                   raptor_turtle_context* context) 
 {
   int i;
 
@@ -970,7 +965,7 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
 /* serialize a statement */
 static int
 raptor_turtle_serialize_statement(raptor_serializer* serializer, 
-                                   const raptor_statement *statement)
+                                  const raptor_statement *statement)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   raptor_subject *subject = NULL;
@@ -1042,6 +1037,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   
   } else if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     int idx = *(int*)statement->predicate;
+
     rv = raptor_subject_add_list_element(subject, idx, object);
     if(rv) {
       /* An ordinal might already exist at that location, the fallback
