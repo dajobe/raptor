@@ -1384,43 +1384,6 @@ int raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature 
 RAPTOR_API
 const unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature);
 
-/* Turtle Writer Class (raptor_turtle_writer) */
-RAPTOR_API
-raptor_turtle_writer* raptor_new_turtle_writer(raptor_uri* base_uri, raptor_namespace_stack *nstack, raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data);
-RAPTOR_API
-void raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer);
-RAPTOR_API
-void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-RAPTOR_API
-void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);
-RAPTOR_API
-void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns);
-RAPTOR_API
-void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
-RAPTOR_API
-void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
-RAPTOR_API
-void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
-RAPTOR_API
-void raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
-RAPTOR_API
-void raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, unsigned char *s, unsigned char* lang, raptor_uri* datatype);
-RAPTOR_API
-void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
-RAPTOR_API
-void raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer, unsigned char *s);
-RAPTOR_API
-void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-RAPTOR_API
-int raptor_turtle_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
-RAPTOR_API
-int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature, int value);
-RAPTOR_API
-int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature, const unsigned char *value);
-RAPTOR_API
-int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);
-RAPTOR_API
-const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature);
 #ifdef __cplusplus
 }
 #endif

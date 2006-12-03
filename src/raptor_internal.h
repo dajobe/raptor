@@ -1084,6 +1084,27 @@ unsigned char *raptor_unique_id(unsigned char *base);
 
 raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor_namespace_stack* nstack, int* namespace_count, raptor_node *node);
 
+
+/* Turtle Writer Class (raptor_turtle_writer) */
+raptor_turtle_writer* raptor_new_turtle_writer(raptor_uri* base_uri, raptor_namespace_stack *nstack, raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data);
+void raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer);
+void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
+void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);
+void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns);
+void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
+void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
+void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
+void raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
+void raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, unsigned char *s, unsigned char* lang, raptor_uri* datatype);
+void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
+void raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer, unsigned char *s);
+void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
+int raptor_turtle_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature, int value);
+int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature, const unsigned char *value);
+int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);
+const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature);
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
