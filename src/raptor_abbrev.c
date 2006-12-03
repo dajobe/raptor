@@ -57,115 +57,6 @@
 
 
 /*
- * raptor_unique_id:
- * @base: base ID
- * 
- * Generate a node ID for serializing
- *
- * Raptor doesn't check that blank IDs it generates are unique from
- * any specified by rdf:nodeID. Here, we need to emit IDs that are
- * different from the ones the parser generates so that there is no
- * collision. For now, just prefix a '_' to the parser generated
- * name.
- * 
- * Return value: new node ID
- **/
-unsigned char*
-raptor_unique_id(unsigned char *base) 
-{
-  const char *prefix = "_";
-  int prefix_len = strlen(prefix);
-  int base_len = strlen((const char*)base);
-  int len = prefix_len + base_len + 1;
-  unsigned char *unique_id;
-
-  unique_id= (unsigned char *)RAPTOR_MALLOC(cstring, len);
-  strncpy((char*)unique_id, prefix, prefix_len);
-  strncpy((char*)unique_id+prefix_len, (char *)base, base_len);
-  unique_id[len-1]='\0';
-    
-  return unique_id;
-}
-
-
-/*
- * raptor_new_qname_from_resource:
- * @serializer: #raptor_serializer object
- * @node: #raptor_node to use 
- * 
- * Make an XML QName from the URI associated with the node.
- * 
- * Return value: the QName or NULL on failure
- **/
-raptor_qname*
-raptor_new_qname_from_resource(raptor_serializer* serializer, 
-                               raptor_node *node)
-{
-  raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  unsigned char* name=NULL;  /* where to split predicate name */
-  size_t name_len=1;
-  unsigned char *uri_string;
-  size_t uri_len;
-  unsigned char c;
-  unsigned char *p;
-  raptor_uri *ns_uri;
-  raptor_namespace *ns;
-  raptor_qname *qname;
-  
-  if(node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    RAPTOR_FATAL1("Node must be a resource\n");
-    return NULL;
-  }
-
-  qname=raptor_namespaces_qname_from_uri(context->nstack, 
-                                         node->value.resource.uri, 10);
-  if(qname)
-    return qname;
-  
-  uri_string = raptor_uri_as_counted_string(node->value.resource.uri, &uri_len);
-
-  p= uri_string;
-  name_len=uri_len;
-  while(name_len >0) {
-    if(raptor_xml_name_check(p, name_len, 10)) {
-      name=p;
-      break;
-    }
-    p++; name_len--;
-  }
-      
-  if(!name || (name == uri_string))
-    return NULL;
-
-  c=*name; *name='\0';
-  ns_uri=raptor_new_uri(uri_string);
-  *name=c;
-  
-  ns = raptor_namespaces_find_namespace_by_uri(context->nstack, ns_uri);
-  if(!ns) {
-    /* The namespace was not declared, so create one */
-    unsigned char prefix[2 + MAX_ASCII_INT_SIZE + 1];
-    sprintf((char *)prefix, "ns%d", context->namespace_count++);
-
-    ns = raptor_new_namespace_from_uri(context->nstack, prefix, ns_uri, 0);
-
-    /* We'll most likely need this namespace again. Push it on our
-     * stack.  It will be deleted in
-     * raptor_rdfxmla_serialize_terminate
-     */
-    raptor_sequence_push(context->namespaces, ns);
-  }
-
-  qname = raptor_new_qname_from_namespace_local_name(ns, name,  NULL);
-  
-  raptor_free_uri(ns_uri);
-
-  return qname;
-}
-
-
-
-/*
  * raptor_node implementation.
  *
  * Parts of this is taken from redland librdf_node.h and librdf_node.c
@@ -430,6 +321,50 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
 
 
 /*
+ * raptor serializer rdfxml-abbrev implementation
+ */
+
+raptor_node *
+raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
+                           raptor_identifier_type node_type,
+                           const void *node_value, raptor_uri *datatype,
+                           const unsigned char *language)
+{
+  raptor_node *rv_node = NULL;
+  int i;
+  
+  /* Search for specified node in array. TODO: this should really be a
+   * hash, not a list. */
+  for(i=0; i < raptor_sequence_size(context->nodes); i++) {
+    raptor_node *node = (raptor_node*)raptor_sequence_get_at(context->nodes, i);
+
+    if(raptor_node_matches(node, node_type, node_value, datatype, language)) {
+      rv_node = node;
+      break;
+    }
+  }
+  
+  /* If not found, create one and insert it */
+  if(!rv_node) {
+    rv_node = raptor_new_node(node_type, node_value, datatype, language);
+    
+    if(rv_node) {
+      if(raptor_sequence_push(context->nodes, rv_node) == 0) {
+        rv_node->ref_count++;
+      } else {
+        raptor_free_node(rv_node);
+        rv_node = NULL;
+      }
+      
+    }
+    
+  }
+  
+  return rv_node;
+}
+
+
+/*
  * raptor_subject implementation
  *
  * The subject of triples, with all predicates and values
@@ -559,6 +494,68 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
 }
 
 
+raptor_subject *
+raptor_rdfxmla_find_subject(raptor_sequence *sequence,
+                            raptor_identifier_type node_type,
+                            const void *node_data, int *idx)
+{
+  raptor_subject *rv_subject = NULL;
+  int i;
+  
+  for(i=0; i < raptor_sequence_size(sequence); i++) {
+    raptor_subject *subject=(raptor_subject*)raptor_sequence_get_at(sequence, i);
+
+    if(subject &&
+       raptor_node_matches(subject->node, node_type, node_data, NULL, NULL)) {
+      rv_subject = subject;
+      break;
+    }
+    
+  }
+
+  if(idx)
+    *idx = i;
+  
+  return rv_subject;
+}
+
+
+raptor_subject *
+raptor_rdfxmla_lookup_subject(void* context,
+                              raptor_identifier_type node_type,
+                              const void *node_data)
+{
+  raptor_sequence *sequence;
+  raptor_subject *rv_subject;
+
+  /* Search for specified resource in resources array.
+   * FIXME: this should really be a hash, not a list.
+   */
+  sequence= (node_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) ?
+            context->blanks : context->subjects;
+  rv_subject= raptor_rdfxmla_find_subject(sequence, node_type,
+                                          node_data, NULL);
+
+  /* If not found, create one and insert it */
+  if(!rv_subject) {
+    raptor_node *node = raptor_rdfxmla_lookup_node(context, node_type,
+                                                   node_data, NULL, NULL);
+    if(node) {      
+      rv_subject = raptor_new_subject(node);
+      if(rv_subject) {
+        if(raptor_sequence_push(sequence, rv_subject)) {
+          raptor_free_subject(rv_subject);
+          rv_subject = NULL;
+        }      
+      }
+    }
+  }
+  
+  return rv_subject;
+}
+
+
+
 #ifdef RDFXMLA_DEBUG
 static void
 raptor_print_subject(raptor_subject *subject) 
@@ -627,105 +624,111 @@ raptor_print_subject(raptor_subject *subject)
 
 
 /*
- * raptor serializer rdfxml-abbrev implementation
- */
-
-raptor_node *
-raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
-                           raptor_identifier_type node_type,
-                           const void *node_value, raptor_uri *datatype,
-                           const unsigned char *language)
+ * raptor_unique_id:
+ * @base: base ID
+ * 
+ * Generate a node ID for serializing
+ *
+ * Raptor doesn't check that blank IDs it generates are unique from
+ * any specified by rdf:nodeID. Here, we need to emit IDs that are
+ * different from the ones the parser generates so that there is no
+ * collision. For now, just prefix a '_' to the parser generated
+ * name.
+ * 
+ * Return value: new node ID
+ **/
+unsigned char*
+raptor_unique_id(unsigned char *base) 
 {
-  raptor_node *rv_node = NULL;
-  int i;
-  
-  /* Search for specified node in array. TODO: this should really be a
-   * hash, not a list. */
-  for(i=0; i < raptor_sequence_size(context->nodes); i++) {
-    raptor_node *node = (raptor_node*)raptor_sequence_get_at(context->nodes, i);
+  const char *prefix = "_";
+  int prefix_len = strlen(prefix);
+  int base_len = strlen((const char*)base);
+  int len = prefix_len + base_len + 1;
+  unsigned char *unique_id;
 
-    if(raptor_node_matches(node, node_type, node_value, datatype, language)) {
-      rv_node = node;
+  unique_id= (unsigned char *)RAPTOR_MALLOC(cstring, len);
+  strncpy((char*)unique_id, prefix, prefix_len);
+  strncpy((char*)unique_id+prefix_len, (char *)base, base_len);
+  unique_id[len-1]='\0';
+    
+  return unique_id;
+}
+
+
+/*
+ * raptor_new_qname_from_resource:
+ * @serializer: #raptor_serializer object
+ * @node: #raptor_node to use 
+ * 
+ * Make an XML QName from the URI associated with the node.
+ * 
+ * Return value: the QName or NULL on failure
+ **/
+raptor_qname*
+raptor_new_qname_from_resource(raptor_serializer* serializer, 
+                               raptor_node *node)
+{
+  raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
+  unsigned char* name=NULL;  /* where to split predicate name */
+  size_t name_len=1;
+  unsigned char *uri_string;
+  size_t uri_len;
+  unsigned char c;
+  unsigned char *p;
+  raptor_uri *ns_uri;
+  raptor_namespace *ns;
+  raptor_qname *qname;
+  
+  if(node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+    RAPTOR_FATAL1("Node must be a resource\n");
+    return NULL;
+  }
+
+  qname=raptor_namespaces_qname_from_uri(context->nstack, 
+                                         node->value.resource.uri, 10);
+  if(qname)
+    return qname;
+  
+  uri_string = raptor_uri_as_counted_string(node->value.resource.uri, &uri_len);
+
+  p= uri_string;
+  name_len=uri_len;
+  while(name_len >0) {
+    if(raptor_xml_name_check(p, name_len, 10)) {
+      name=p;
       break;
     }
+    p++; name_len--;
   }
-  
-  /* If not found, create one and insert it */
-  if(!rv_node) {
-    rv_node = raptor_new_node(node_type, node_value, datatype, language);
-    
-    if(rv_node) {
-      if(raptor_sequence_push(context->nodes, rv_node) == 0) {
-        rv_node->ref_count++;
-      } else {
-        raptor_free_node(rv_node);
-        rv_node = NULL;
-      }
       
-    }
-    
-  }
+  if(!name || (name == uri_string))
+    return NULL;
+
+  c=*name; *name='\0';
+  ns_uri=raptor_new_uri(uri_string);
+  *name=c;
   
-  return rv_node;
+  ns = raptor_namespaces_find_namespace_by_uri(context->nstack, ns_uri);
+  if(!ns) {
+    /* The namespace was not declared, so create one */
+    unsigned char prefix[2 + MAX_ASCII_INT_SIZE + 1];
+    sprintf((char *)prefix, "ns%d", context->namespace_count++);
+
+    ns = raptor_new_namespace_from_uri(context->nstack, prefix, ns_uri, 0);
+
+    /* We'll most likely need this namespace again. Push it on our
+     * stack.  It will be deleted in
+     * raptor_rdfxmla_serialize_terminate
+     */
+    raptor_sequence_push(context->namespaces, ns);
+  }
+
+  qname = raptor_new_qname_from_namespace_local_name(ns, name,  NULL);
+  
+  raptor_free_uri(ns_uri);
+
+  return qname;
 }
 
 
-raptor_subject *
-raptor_rdfxmla_find_subject(raptor_sequence *sequence,
-                            raptor_identifier_type node_type,
-                            const void *node_data, int *idx)
-{
-  raptor_subject *rv_subject = NULL;
-  int i;
-  
-  for(i=0; i < raptor_sequence_size(sequence); i++) {
-    raptor_subject *subject=(raptor_subject*)raptor_sequence_get_at(sequence, i);
 
-    if(subject &&
-       raptor_node_matches(subject->node, node_type, node_data, NULL, NULL)) {
-      rv_subject = subject;
-      break;
-    }
-    
-  }
-
-  if(idx)
-    *idx = i;
-  
-  return rv_subject;
-}
-
-
-raptor_subject *
-raptor_rdfxmla_lookup_subject(void* context,
-                              raptor_identifier_type node_type,
-                              const void *node_data)
-{
-  raptor_sequence *sequence;
-  raptor_subject *rv_subject;
-
-  /* Search for specified resource in resources array.
-   * FIXME: this should really be a hash, not a list.
-   */
-  sequence= (node_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) ?
-            context->blanks : context->subjects;
-  rv_subject= raptor_rdfxmla_find_subject(sequence, node_type,
-                                          node_data, NULL);
-
-  /* If not found, create one and insert it */
-  if(!rv_subject) {
-    raptor_node *node = raptor_rdfxmla_lookup_node(context, node_type,
-                                                   node_data, NULL, NULL);
-    if(node) {      
-      rv_subject = raptor_new_subject(node);
-      if(rv_subject) {
-        if(raptor_sequence_push(sequence, rv_subject)) {
-          raptor_free_subject(rv_subject);
-          rv_subject = NULL;
-        }      
-      }
-    }
-  }
-  
-  return rv_subject;
-}
