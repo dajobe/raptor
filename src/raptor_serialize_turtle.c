@@ -425,11 +425,6 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
         break;
     }
 
-    /* FIXME - why is this commented out? */
-    /*
-    raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)" ");
-    */
-   
     /* last item */
     if (i >= raptor_sequence_size(subject->properties))
       break;
