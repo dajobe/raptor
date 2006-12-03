@@ -1,4 +1,42 @@
+2006-12-02  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c: docs
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_find_subject):
+	Renamed from raptor_find_subject.
+	(raptor_new_qname_from_resource): Remove link to rdfxml-abbrev
+	serializer context and pass in namespaces stack parameters.
+	(raptor_lookup_node): Renamed from raptor_rdfxmla_lookup_node
+	(raptor_lookup_subject): Renamed from
+	raptor_rdfxmla_lookup_subject.
+	(raptor_find_subject): Renamed from raptor_rdfxmla_find_subject.
+
+	* src/raptor_abbrev.c: Re order functions
+
+	* src/Makefile.am, src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c: (raptor_new_qname_from_resource,
+	raptor_new_node, raptor_free_node, raptor_node_equals,
+	raptor_node_matches, raptor_new_subject, raptor_free_subject,
+	raptor_subject_add_property, raptor_subject_add_list_element,
+	raptor_rdfxmla_lookup_node, raptor_rdfxmla_find_subject,
+	raptor_rdfxmla_lookup_subject): Move common abbreviated serializer
+	code from raptor_serialize_rdfxmla.c to raptor_abbrev.c
+
+	* src/raptor_serialize_dot.c: gratuitous whitespace schanges
+
+	* docs/tmpl/section-feature.sgml: New DOT features
+
+	* src/raptor_turtle_writer.c copied from
+	/raptor/trunk/src/raptor_xml_writer.c:11666: copy for turtle
+	writing
+
 2006-11-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_uri.c: (raptor_uri_filename_to_uri_string):
+	Dynamically allocate the path buffer and realloc it if it's too
+	small.  This helps Hurd which does not handle PATH_MAX like
+	linux/unix.
 
 	* docs/raptor-serializers.xml, src/raptor.h, src/raptor_feature.c,
 	src/raptor_internal.h, src/raptor_parse.c, src/raptor_serialize.c,
