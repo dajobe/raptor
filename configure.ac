@@ -787,11 +787,12 @@ dnl RDF Serializers
 rdfxml_serializer=no
 ntriples_serializer=no
 rdfxml_abbrev_serializer=no
+turtle_serializer=no
 rss_1_0_serializer=no
 atom_serializer=no
 dot_serializer=no
 
-rdf_serializers_available="rdfxml rdfxml-abbrev ntriples rss-1.0 dot"
+rdf_serializers_available="rdfxml rdfxml-abbrev turtle ntriples rss-1.0 dot"
 if test "$USE_MAINTAINER_MODE" = yes; then
   rdf_serializers_available="$rdf_serializers_available atom"
 fi
@@ -802,6 +803,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML, 1, [Building RDF/XML serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_NTRIPLES, 1, [Building N-Triples serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML_ABBREV, 1, [Building RDF/XML-abbreviated serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_TURTLE, 1, [Building Turtle serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RSS_1_0, 1, [Building RSS 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_ATOM, 1, [Building Atom 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_DOT, 1, [Building GraphViz DOT serializer])
@@ -831,6 +833,7 @@ done
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML, test $rdfxml_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_NTRIPLES, test $ntriples_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML_ABBREV, test $rdfxml_abbrev_serializer = yes)
+AM_CONDITIONAL(RAPTOR_SERIALIZER_TURTLE, test $turtle_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RSS_1_0, test $rss_1_0_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_DOT, test $dot_serializer = yes)
 

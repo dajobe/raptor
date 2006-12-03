@@ -35,7 +35,8 @@ man_MANS = raptor-config.1
 TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
-raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test
+raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test \
+raptor_turtle_writer_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
@@ -75,7 +76,7 @@ raptor_www.c \
 raptor_identifier.c \
 raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \
 raptor_xml.c raptor_xml_writer.c raptor_set.c turtle_common.c \
-raptor_xsd.c
+raptor_turtle_writer.c raptor_xsd.c
 if RAPTOR_PARSER_RDFXML
 if RAPTOR_XML_LIBXML
 libraptor_la_SOURCES += raptor_libxml.c
@@ -114,11 +115,21 @@ endif
 if RAPTOR_SERIALIZER_NTRIPLES
 libraptor_la_SOURCES += raptor_serialize_ntriples.c
 endif
+
+#raptor_abbrev.c required by both turtle and xml-abbrev
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
 libraptor_la_SOURCES += raptor_abbrev.c
+else
+if RAPTOR_SERIALIZER_TURTLE
+libraptor_la_SOURCES += raptor_abbrev.c
 endif
+endif
+
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
 libraptor_la_SOURCES += raptor_serialize_rdfxmla.c
+endif
+if RAPTOR_SERIALIZER_TURTLE
+libraptor_la_SOURCES += raptor_serialize_turtle.c
 endif
 if RAPTOR_SERIALIZER_RSS_1_0
 libraptor_la_SOURCES += raptor_serialize_rss.c
@@ -255,3 +266,6 @@ raptor_iostream_test: $(srcdir)/raptor_iostream.c libraptor.la
 
 raptor_xml_writer_test: $(srcdir)/raptor_xml_writer.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml_writer.c libraptor.la $(LIBS)
+
+raptor_turtle_writer_test: $(srcdir)/raptor_turtle_writer.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_turtle_writer.c libraptor.la $(LIBS)

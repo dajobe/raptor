@@ -91,6 +91,10 @@ raptor_serializers_init(void)
   raptor_init_serializer_ntriples();
 #endif
 
+#ifdef RAPTOR_SERIALIZER_TURTLE
+  raptor_init_serializer_turtle();
+#endif
+
 #ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
   raptor_init_serializer_rdfxmla();
 #endif

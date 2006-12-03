@@ -434,5 +434,25 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
+check-turtle-serialize: build-rdfdiff build-rapper $(RDF_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing turtle serialization with legal rdf/xml"; \
+	for test in $(RDF_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $(srcdir)/$$test > $$name-turtle.rdf 2> $$name.err; \
+	  $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.rdf > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status = 0; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    cat $$name.err; \
+	  fi; \
+	  rm -f $$name-turtle.rdf $$name.res $$name.err; \
+	done; \
+	set -e; exit $$result
+
+
 $(top_builddir)/src/libraptor.la:
 	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libraptor.la
