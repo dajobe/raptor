@@ -867,9 +867,6 @@ raptor_turtle_serialize_declare_namespace_from_namespace(raptor_serializer* seri
   if(context->written_header)
     return 1;
   
-  if (!nspace->prefix)
-    return 1;
-  
   for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
     raptor_namespace* ns;
     ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
