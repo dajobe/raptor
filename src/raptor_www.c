@@ -504,6 +504,8 @@ raptor_www_file_fetch(raptor_www* www)
   struct stat buf;
 #endif
   
+  www->status_code=200;
+
   filename=raptor_uri_uri_string_to_filename(uri_string);
   if(!filename) {
     raptor_www_error(www, "Not a file: URI");
@@ -524,8 +526,10 @@ raptor_www_file_fetch(raptor_www* www)
     raptor_www_error(www, "file '%s' open failed - %s",
                      filename, strerror(errno));
     RAPTOR_FREE(cstring, filename);
-    www->status_code=404;
-    return 1;
+    www->status_code=(errno == EACCES) ? 403: 404;
+    www->failed=1;
+    
+    return www->failed;
   }
 
   raptor_www_file_handle_fetch(www, fh);
@@ -549,6 +553,8 @@ raptor_www_file_fetch(raptor_www* www)
 int
 raptor_www_fetch(raptor_www *www, raptor_uri *uri) 
 {
+  int status=1;
+  
   www->uri=raptor_new_uri_for_retrieval(uri);
   
   www->locator.uri=uri;
@@ -557,30 +563,35 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 
   if(www->uri_filter)
     if(www->uri_filter(www->uri_filter_user_data, uri))
-      return 1;
+      return status;
   
 #ifdef RAPTOR_WWW_NONE
-  return raptor_www_file_fetch(www);
+  status=raptor_www_file_fetch(www);
 #else
 
   if(raptor_uri_uri_string_is_file_uri(raptor_uri_as_string(www->uri)))
-    return raptor_www_file_fetch(www);
-
+    status=raptor_www_file_fetch(www);
+  else {
 #ifdef RAPTOR_WWW_LIBCURL
-  return raptor_www_curl_fetch(www);
+    status=raptor_www_curl_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBXML
-  return raptor_www_libxml_fetch(www);
+    status=raptor_www_libxml_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBFETCH
-  return raptor_www_libfetch_fetch(www);
+    status=raptor_www_libfetch_fetch(www);
 #endif
-
+  }
+  
 #endif
+  if(!status && www->status_code && www->status_code != 200)
+    status=1;
 
-  return 1; /* Default to failed */
+  www->failed=status;
+  
+  return www->failed;
 }
 
 
