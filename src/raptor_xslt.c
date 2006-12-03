@@ -550,6 +550,9 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
             if(end)
               *end='\0';
 
+            if(start == end)
+              continue;
+            
             RAPTOR_DEBUG2("Got list URI '%s'\n", start);
 
             uri=raptor_new_uri_relative_to_base(base_uri, (const unsigned char*)start);
