@@ -385,7 +385,8 @@ raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
         turtle_writer->error_handler, turtle_writer->error_data);
 
     raptor_iostream_write_byte(turtle_writer->iostr, '\"');
-    // FIXME: over-escapes things because ntriples is ASCII
+
+    /* FIXME: over-escapes things because ntriples is ASCII */
     raptor_iostream_write_string_ntriples(turtle_writer->iostr, s,
                                           strlen((const char*)s), '"');
     raptor_iostream_write_byte(turtle_writer->iostr, '\"');
@@ -565,7 +566,7 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
       raptor_iostream_write_counted_string(turtle_writer->iostr,
                                            (const unsigned char*)"# ", 2);
     } else if(c != '\r') { 
-      // skip carriage returns (windows... *sigh*)
+      /* skip carriage returns (windows... *sigh*) */
       raptor_iostream_write_byte(turtle_writer->iostr, c);
     }
   }
