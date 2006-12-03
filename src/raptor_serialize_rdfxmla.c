@@ -346,7 +346,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
           
   } else {
     unsigned char *attr_name = (unsigned char*)"nodeID";
-    unsigned char *attr_value = raptor_unique_id(node->value.blank.string);
+    unsigned char *attr_value = node->value.blank.string;
     raptor_qname **attrs;
 
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray,1,sizeof(raptor_qname *));
@@ -357,8 +357,6 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
                                                           attr_name,
                                                           attr_value);
 
-    RAPTOR_FREE(cstring, attr_value);
-    
     raptor_xml_element_set_attributes(element, attrs, 1);
     raptor_xml_writer_start_element(context->xml_writer, element);
 
@@ -647,7 +645,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
        * or object OR if it is used exactly once as subject and object.
        */
       attr_name = (unsigned char*)"nodeID";
-      attr_value = raptor_unique_id(subject->node->value.blank.string);
+      attr_value = subject->node->value.blank.string;
     }
   } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     attr_name = (unsigned char*)"about";
@@ -661,7 +659,9 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                           attr_name,
                                                           attr_value);
-    RAPTOR_FREE(cstring, attr_value);
+    
+    if(subject->node->type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+      RAPTOR_FREE(cstring, attr_value);
     
     /* Note: if we were willing to track the in-scope rdf:lang, we
      * could do the "2.5 Property Attributes" abbreviation here */
@@ -757,7 +757,8 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
     context->rdf_type = raptor_new_node(RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                         rdf_type_uri, NULL, NULL);
     raptor_free_uri(rdf_type_uri);
-  }
+  } else
+    context->rdf_type = NULL;
   
   if(!context->nstack || !context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||
@@ -950,7 +951,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
     base_uri=raptor_uri_copy(base_uri);
   context->rdf_RDF_element=raptor_new_xml_element(qname, NULL, base_uri);
   
-  /* NOTE: Starts it item 1 as item 0 is the element's namespace (rdf) 
+  /* NOTE: Starts at item 1 as item 0 is the element's namespace (rdf) 
    * and does not need to be declared
    */
   for(i=1; i< raptor_sequence_size(context->namespaces); i++) {
