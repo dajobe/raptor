@@ -336,8 +336,8 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
 
     raptor_xml_writer_start_element(context->xml_writer, element);
 
-    blank = raptor_rdfxmla_find_subject(context->blanks, node->type,
-                                        node->value.blank.string, &idx);
+    blank = raptor_find_subject(context->blanks, node->type,
+                                node->value.blank.string, &idx);
           
     if(blank) {
       raptor_rdfxmla_emit_subject(serializer, blank, depth+1);
@@ -506,7 +506,10 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
                                                          uri_string, NULL);
       
     } else {
-      qname = raptor_new_qname_from_resource(serializer, predicate);
+      qname = raptor_new_qname_from_resource(context->namespaces,
+                                             context->nstack,
+                                             &context->namespace_count,
+                                             predicate);
       if(!qname) {
         raptor_serializer_error(serializer,
                                 "Cannot split URI '%s' into an XML qname",
@@ -595,7 +598,10 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   
 
   if(subject->node_type) { /* if rdf:type was associated with this subject */
-    qname = raptor_new_qname_from_resource(serializer, subject->node_type);
+    qname = raptor_new_qname_from_resource(context->namespaces,
+                                           context->nstack,
+                                           &context->namespace_count,
+                                           subject->node_type);
     
     if(!qname) {
       raptor_serializer_error(serializer,
@@ -974,8 +980,9 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
      statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
      statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
-    subject = raptor_rdfxmla_lookup_subject(context, statement->subject_type,
-                                            statement->subject);
+    subject = raptor_lookup_subject(context->nodes, context->subjects,
+                                    context->blanks, statement->subject_type,
+                                    statement->subject);
     if(!subject)
       return 1;
 
@@ -1000,10 +1007,10 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
      object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
      object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
-    object = raptor_rdfxmla_lookup_node(context, object_type,
-                                        statement->object,
-                                        statement->object_literal_datatype,
-                                        statement->object_literal_language);
+    object = raptor_lookup_node(context->nodes, object_type,
+                                statement->object,
+                                statement->object_literal_datatype,
+                                statement->object_literal_language);
     if(!object)
       return 1;          
 
@@ -1020,8 +1027,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
   if((statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
      (statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
-    predicate = raptor_rdfxmla_lookup_node(context, statement->predicate_type,
-                                           statement->predicate, NULL, NULL);
+    predicate = raptor_lookup_node(context->nodes, statement->predicate_type,
+                                   statement->predicate, NULL, NULL);
 
     if(!subject->node_type && 
        raptor_node_equals(predicate, context->rdf_type)) {
@@ -1030,10 +1037,10 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
        * purposes. Note that it is perfectly legal to have
        * multiple type definitions.  All definitions after the
        * first go in the property list */
-      subject->node_type = raptor_rdfxmla_lookup_node(context,
-                                                      object_type,
-                                                      statement->object, NULL,
-                                                      NULL);
+      subject->node_type = raptor_lookup_node(context->nodes,
+                                              object_type,
+                                              statement->object, NULL,
+                                              NULL);
       subject->node_type->ref_count++;
       return 0;
     
@@ -1052,8 +1059,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                * statement and free it
                */
               int idx=0;
-              if(raptor_rdfxmla_find_subject(context->blanks, object_type,
-                                             statement->object, &idx))
+              if(raptor_find_subject(context->blanks, object_type,
+                                     statement->object, &idx))
                 raptor_sequence_set_at(context->blanks, idx, NULL);
             }
             
@@ -1078,8 +1085,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     if(rv) {
       /* An ordinal might already exist at that location, the fallback
        * is to just put in the properties list */
-      predicate = raptor_rdfxmla_lookup_node(context, statement->predicate_type,
-                                             statement->predicate, NULL, NULL);
+      predicate = raptor_lookup_node(context->nodes, statement->predicate_type,
+                                     statement->predicate, NULL, NULL);
       rv = raptor_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,

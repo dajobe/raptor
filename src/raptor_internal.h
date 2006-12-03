@@ -1077,13 +1077,12 @@ raptor_subject *raptor_new_subject(raptor_node *node);
 void raptor_free_subject(raptor_subject *subject);
 int raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate, raptor_node *object);
 int raptor_subject_add_list_element(raptor_subject *subject, int ordinal, raptor_node *object);
-raptor_subject *raptor_rdfxmla_find_subject(raptor_sequence *sequence, raptor_identifier_type node_type, const void *node_data, int *idx);
-raptor_node* raptor_rdfxmla_lookup_node(void* context, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language);
-raptor_subject* raptor_rdfxmla_lookup_subject(void* context, raptor_identifier_type node_type, const void *node_data);
+raptor_subject *raptor_find_subject(raptor_sequence *sequence, raptor_identifier_type node_type, const void *node_data, int *idx);
+raptor_subject *raptor_lookup_subject(raptor_sequence* nodes, raptor_sequence* subjects, raptor_sequence* blanks, raptor_identifier_type node_type, const void *node_data);
 
 unsigned char *raptor_unique_id(unsigned char *base);
 
-raptor_qname* raptor_new_qname_from_resource(raptor_serializer* serializer, raptor_node *node);
+raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor_namespace_stack* nstack, int* namespace_count, raptor_node *node);
 
 /* end of RAPTOR_INTERNAL */
 #endif

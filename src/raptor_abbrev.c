@@ -1,7 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_abbrev.c - RDF abbreviations serializer common code
+ * raptor_abbrev.c - Code common to abbreviating serializers (ttl/rdfxmla)
  *
+ * Copyright (C) 2006, Dave Robillard
  * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
@@ -19,7 +20,7 @@
  * See LICENSE.html or LICENSE.txt at the top of this package for the
  * complete terms and further detail along with the license texts for
  * the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
- * 
+ *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -52,8 +53,6 @@
  *
  * Parts of this is taken from redland librdf_node.h and librdf_node.c
  */
-
-#define MAX_ASCII_INT_SIZE 13
 
 
 /*
@@ -321,22 +320,29 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
 
 
 /*
- * raptor serializer rdfxml-abbrev implementation
+ * raptor_lookup_node:
+ * @nodes: Sequence of nodes to search
+ * @node_type: Raptor identifier type
+ * @node_value: Node value to search with (using raptor_node_matches).
+ * @datatype: Literal datatype or NULL
+ * @language: Literal language or NULL
+ *
+ * Return value: non-zero if @node matches the node described by the rest of
+ *   the parameters.
  */
-
 raptor_node *
-raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
-                           raptor_identifier_type node_type,
-                           const void *node_value, raptor_uri *datatype,
-                           const unsigned char *language)
+raptor_lookup_node(raptor_sequence* nodes,
+                   raptor_identifier_type node_type,
+                   const void *node_value, raptor_uri *datatype,
+                   const unsigned char *language)
 {
   raptor_node *rv_node = NULL;
   int i;
   
   /* Search for specified node in array. TODO: this should really be a
    * hash, not a list. */
-  for(i=0; i < raptor_sequence_size(context->nodes); i++) {
-    raptor_node *node = (raptor_node*)raptor_sequence_get_at(context->nodes, i);
+  for(i=0; i < raptor_sequence_size(nodes); i++) {
+    raptor_node *node = (raptor_node*)raptor_sequence_get_at(nodes, i);
 
     if(raptor_node_matches(node, node_type, node_value, datatype, language)) {
       rv_node = node;
@@ -349,7 +355,7 @@ raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
     rv_node = raptor_new_node(node_type, node_value, datatype, language);
     
     if(rv_node) {
-      if(raptor_sequence_push(context->nodes, rv_node) == 0) {
+      if(raptor_sequence_push(nodes, rv_node) == 0) {
         rv_node->ref_count++;
       } else {
         raptor_free_node(rv_node);
@@ -362,7 +368,6 @@ raptor_rdfxmla_lookup_node(raptor_rdfxmla_context* context,
   
   return rv_node;
 }
-
 
 /*
  * raptor_subject implementation
@@ -495,9 +500,9 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
 
 
 raptor_subject *
-raptor_rdfxmla_find_subject(raptor_sequence *sequence,
-                            raptor_identifier_type node_type,
-                            const void *node_data, int *idx)
+raptor_find_subject(raptor_sequence *sequence,
+                    raptor_identifier_type node_type,
+                    const void *node_data, int *idx)
 {
   raptor_subject *rv_subject = NULL;
   int i;
@@ -521,9 +526,11 @@ raptor_rdfxmla_find_subject(raptor_sequence *sequence,
 
 
 raptor_subject *
-raptor_rdfxmla_lookup_subject(void* context,
-                              raptor_identifier_type node_type,
-                              const void *node_data)
+raptor_lookup_subject(raptor_sequence* nodes,
+                      raptor_sequence* subjects,
+                      raptor_sequence* blanks,
+                      raptor_identifier_type node_type,
+                      const void *node_data)
 {
   raptor_sequence *sequence;
   raptor_subject *rv_subject;
@@ -532,14 +539,14 @@ raptor_rdfxmla_lookup_subject(void* context,
    * FIXME: this should really be a hash, not a list.
    */
   sequence= (node_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) ?
-            context->blanks : context->subjects;
-  rv_subject= raptor_rdfxmla_find_subject(sequence, node_type,
-                                          node_data, NULL);
+            blanks : subjects;
+  rv_subject= raptor_find_subject(sequence, node_type,
+                                  node_data, NULL);
 
   /* If not found, create one and insert it */
   if(!rv_subject) {
-    raptor_node *node = raptor_rdfxmla_lookup_node(context, node_type,
-                                                   node_data, NULL, NULL);
+    raptor_node *node = raptor_lookup_node(nodes, node_type,
+                                           node_data, NULL, NULL);
     if(node) {      
       rv_subject = raptor_new_subject(node);
       if(rv_subject) {
@@ -555,9 +562,8 @@ raptor_rdfxmla_lookup_subject(void* context,
 }
 
 
-
-#ifdef RDFXMLA_DEBUG
-static void
+#ifdef ABBREV_DEBUG
+void
 raptor_print_subject(raptor_subject *subject) 
 {
   int i;
@@ -622,6 +628,7 @@ raptor_print_subject(raptor_subject *subject)
 }
 #endif
 
+/* helper functions */
 
 /*
  * raptor_unique_id:
@@ -657,7 +664,9 @@ raptor_unique_id(unsigned char *base)
 
 /*
  * raptor_new_qname_from_resource:
- * @serializer: #raptor_serializer object
+ * @namespaces: sequence of namespaces (corresponding to nstack)
+ * @nstack: #raptor_namespace_stack to use/update
+ * @namespace_count: size of nstack (may be modified)
  * @node: #raptor_node to use 
  * 
  * Make an XML QName from the URI associated with the node.
@@ -665,10 +674,11 @@ raptor_unique_id(unsigned char *base)
  * Return value: the QName or NULL on failure
  **/
 raptor_qname*
-raptor_new_qname_from_resource(raptor_serializer* serializer, 
+raptor_new_qname_from_resource(raptor_sequence* namespaces,
+                               raptor_namespace_stack* nstack,
+                               int* namespace_count,
                                raptor_node *node)
 {
-  raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   unsigned char* name=NULL;  /* where to split predicate name */
   size_t name_len=1;
   unsigned char *uri_string;
@@ -684,7 +694,7 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
     return NULL;
   }
 
-  qname=raptor_namespaces_qname_from_uri(context->nstack, 
+  qname=raptor_namespaces_qname_from_uri(nstack, 
                                          node->value.resource.uri, 10);
   if(qname)
     return qname;
@@ -708,19 +718,20 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
   ns_uri=raptor_new_uri(uri_string);
   *name=c;
   
-  ns = raptor_namespaces_find_namespace_by_uri(context->nstack, ns_uri);
+  ns = raptor_namespaces_find_namespace_by_uri(nstack, ns_uri);
   if(!ns) {
     /* The namespace was not declared, so create one */
     unsigned char prefix[2 + MAX_ASCII_INT_SIZE + 1];
-    sprintf((char *)prefix, "ns%d", context->namespace_count++);
+	*namespace_count = *namespace_count + 1;
+    sprintf((char *)prefix, "ns%d", *namespace_count);
 
-    ns = raptor_new_namespace_from_uri(context->nstack, prefix, ns_uri, 0);
+    ns = raptor_new_namespace_from_uri(nstack, prefix, ns_uri, 0);
 
     /* We'll most likely need this namespace again. Push it on our
      * stack.  It will be deleted in
      * raptor_rdfxmla_serialize_terminate
      */
-    raptor_sequence_push(context->namespaces, ns);
+    raptor_sequence_push(namespaces, ns);
   }
 
   qname = raptor_new_qname_from_namespace_local_name(ns, name,  NULL);
@@ -729,6 +740,3 @@ raptor_new_qname_from_resource(raptor_serializer* serializer,
 
   return qname;
 }
-
-
-
