@@ -271,8 +271,9 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
                                       raptor_namespace* ns)
 {
   raptor_iostream_write_string(turtle_writer->iostr, "@prefix ");
-  raptor_iostream_write_string(turtle_writer->iostr, 
-                               raptor_namespace_get_prefix(ns));
+  if(ns->prefix)
+    raptor_iostream_write_string(turtle_writer->iostr, 
+                                 raptor_namespace_get_prefix(ns));
   raptor_iostream_write_string(turtle_writer->iostr, ": <");
   raptor_iostream_write_string(turtle_writer->iostr,
                                raptor_namespace_get_uri(ns));
