@@ -1052,37 +1052,37 @@ typedef struct {
     } blank;
     
   } value;
-} raptor_node;
+} raptor_abbrev_node;
 
 
 typedef struct {
-  raptor_node *node;             /* node representing the subject of
+  raptor_abbrev_node* node;      /* node representing the subject of
                                   * this resource */
-  raptor_node *node_type;        /* the rdf:type of this resource */
+  raptor_abbrev_node* node_type; /* the rdf:type of this resource */
   raptor_sequence *properties;   /* list of properties
                                   * (predicate/object pair) of this
                                   * subject */
   raptor_sequence *list_items;   /* list of container elements if
                                   * is rdf container */
-} raptor_subject;
+} raptor_abbrev_subject;
 
 
-raptor_node *raptor_new_node(raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
-void raptor_free_node(raptor_node *node);
-int raptor_node_equals(raptor_node *node1, raptor_node *node2);
-int raptor_node_matches(raptor_node *node, raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
-raptor_node *raptor_lookup_node(raptor_sequence* nodes, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language);
+raptor_abbrev_node* raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
+void raptor_free_abbrev_node(raptor_abbrev_node* node);
+int raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
+int raptor_abbrev_node_matches(raptor_abbrev_node* node, raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
+raptor_abbrev_node* raptor_abbrev_node_lookup(raptor_sequence* nodes, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language);
 
-raptor_subject *raptor_new_subject(raptor_node *node);
-void raptor_free_subject(raptor_subject *subject);
-int raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate, raptor_node *object);
-int raptor_subject_add_list_element(raptor_subject *subject, int ordinal, raptor_node *object);
-raptor_subject *raptor_find_subject(raptor_sequence *sequence, raptor_identifier_type node_type, const void *node_data, int *idx);
-raptor_subject *raptor_lookup_subject(raptor_sequence* nodes, raptor_sequence* subjects, raptor_sequence* blanks, raptor_identifier_type node_type, const void *node_data);
+raptor_abbrev_subject* raptor_new_abbrev_subject(raptor_abbrev_node* node);
+void raptor_free_abbrev_subject(raptor_abbrev_subject* subject);
+int raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject, raptor_abbrev_node* predicate, raptor_abbrev_node* object);
+int raptor_abbrev_subject_add_list_element(raptor_abbrev_subject* subject, int ordinal, raptor_abbrev_node* object);
+raptor_abbrev_subject* raptor_abbrev_subject_find(raptor_sequence *sequence, raptor_identifier_type node_type, const void *node_data, int *idx);
+raptor_abbrev_subject* raptor_abbrev_subject_lookup(raptor_sequence* nodes, raptor_sequence* subjects, raptor_sequence* blanks, raptor_identifier_type node_type, const void *node_data);
 
 unsigned char *raptor_unique_id(unsigned char *base);
 
-raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor_namespace_stack* nstack, int* namespace_count, raptor_node *node);
+raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor_namespace_stack* nstack, int* namespace_count, raptor_abbrev_node* node);
 
 
 /* Turtle Writer Class (raptor_turtle_writer) */

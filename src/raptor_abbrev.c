@@ -49,30 +49,26 @@
 
 
 /*
- * FIXME Duplicate code
+ * raptor_abbrev_node implementation.
  *
- * Parts of this is taken from redland librdf_node.h and librdf_node.c
- */
-
-
-/*
- * raptor_node implementation.
+ * FIXME Duplicate code
  *
  * Parts of this is taken from redland librdf_node.h and librdf_node.c
  *
  **/
 
-raptor_node *
-raptor_new_node(raptor_identifier_type node_type, const void *node_data,
-                raptor_uri *datatype, const unsigned char *language)
+raptor_abbrev_node* 
+raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
+                       raptor_uri *datatype, const unsigned char *language)
 {
   unsigned char *string;
-  raptor_node* node=NULL;
+  raptor_abbrev_node* node=NULL;
   
   if(node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
     return 0;
 
-  node = (raptor_node *)RAPTOR_CALLOC(raptor_node, 1, sizeof(raptor_node));
+  node = (raptor_abbrev_node*)RAPTOR_CALLOC(raptor_abbrev_node, 1,
+                                            sizeof(raptor_abbrev_node));
 
   if(node) {
     node->type = node_type;
@@ -109,8 +105,8 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
 
           if(language) {
             unsigned char *lang;
-            lang =(unsigned char*)RAPTOR_MALLOC(language,
-                                                strlen((const char*)language)+1);
+            lang=(unsigned char*)RAPTOR_MALLOC(language,
+                                               strlen((const char*)language)+1);
             strcpy((char*)lang, (const char*)language);
             node->value.literal.language = lang;
           }
@@ -118,7 +114,7 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
           
         case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
         default:
-          RAPTOR_FREE(raptor_node, node);
+          RAPTOR_FREE(raptor_abbrev_node, node);
     }
     
   }
@@ -128,7 +124,7 @@ raptor_new_node(raptor_identifier_type node_type, const void *node_data,
 
 
 void
-raptor_free_node(raptor_node *node)
+raptor_free_abbrev_node(raptor_abbrev_node* node)
 {
   if(!node)
     return;
@@ -165,12 +161,12 @@ raptor_free_node(raptor_node *node)
         break;
   }
 
-  RAPTOR_FREE(raptor_node, node);
+  RAPTOR_FREE(raptor_abbrev_node, node);
 }
 
 
 int
-raptor_node_equals(raptor_node *node1, raptor_node *node2)
+raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 {
   int rv = 0;  
 
@@ -185,7 +181,8 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        rv = !strcmp((const char*)node1->value.blank.string, (const char*)node2->value.blank.string);
+        rv = !strcmp((const char*)node1->value.blank.string,
+                     (const char*)node2->value.blank.string);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
@@ -241,8 +238,8 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
 
 
 /*
- * raptor_node_matches:
- * @node: #raptor_node to compare
+ * raptor_abbrev_node_matches:
+ * @node: #raptor_abbrev_node to compare
  * @node_type: Raptor identifier type
  * @node_data: For node_type RAPTOR_IDENTIFIER_TYPE_ORDINAL, int* to the
  *             ordinal.
@@ -253,9 +250,10 @@ raptor_node_equals(raptor_node *node1, raptor_node *node2)
  *   the parameters.
  */
 int
-raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
-                    const void *node_data, raptor_uri *datatype,
-                    const unsigned char *language)
+raptor_abbrev_node_matches(raptor_abbrev_node* node,
+                           raptor_identifier_type node_type,
+                           const void *node_data, raptor_uri *datatype,
+                           const unsigned char *language)
 {
   int rv = 0;
   
@@ -270,7 +268,8 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        rv = !strcmp((const char*)node->value.blank.string, (const char *)node_data);
+        rv = !strcmp((const char*)node->value.blank.string,
+                     (const char *)node_data);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
@@ -320,31 +319,32 @@ raptor_node_matches(raptor_node *node, raptor_identifier_type node_type,
 
 
 /*
- * raptor_lookup_node:
+ * raptor_abbrev_node_lookup:
  * @nodes: Sequence of nodes to search
  * @node_type: Raptor identifier type
- * @node_value: Node value to search with (using raptor_node_matches).
+ * @node_value: Node value to search with (using raptor_abbrev_node_matches).
  * @datatype: Literal datatype or NULL
  * @language: Literal language or NULL
  *
  * Return value: non-zero if @node matches the node described by the rest of
  *   the parameters.
  */
-raptor_node *
-raptor_lookup_node(raptor_sequence* nodes,
-                   raptor_identifier_type node_type,
-                   const void *node_value, raptor_uri *datatype,
-                   const unsigned char *language)
+raptor_abbrev_node* 
+raptor_abbrev_node_lookup(raptor_sequence* nodes,
+                          raptor_identifier_type node_type,
+                          const void *node_value, raptor_uri *datatype,
+                          const unsigned char *language)
 {
-  raptor_node *rv_node = NULL;
+  raptor_abbrev_node* rv_node = NULL;
   int i;
   
   /* Search for specified node in array. TODO: this should really be a
    * hash, not a list. */
   for(i=0; i < raptor_sequence_size(nodes); i++) {
-    raptor_node *node = (raptor_node*)raptor_sequence_get_at(nodes, i);
+    raptor_abbrev_node* node = (raptor_abbrev_node*)raptor_sequence_get_at(nodes, i);
 
-    if(raptor_node_matches(node, node_type, node_value, datatype, language)) {
+    if(raptor_abbrev_node_matches(node, node_type, node_value, datatype,
+                                  language)) {
       rv_node = node;
       break;
     }
@@ -352,13 +352,13 @@ raptor_lookup_node(raptor_sequence* nodes,
   
   /* If not found, create one and insert it */
   if(!rv_node) {
-    rv_node = raptor_new_node(node_type, node_value, datatype, language);
+    rv_node = raptor_new_abbrev_node(node_type, node_value, datatype, language);
     
     if(rv_node) {
       if(raptor_sequence_push(nodes, rv_node) == 0) {
         rv_node->ref_count++;
       } else {
-        raptor_free_node(rv_node);
+        raptor_free_abbrev_node(rv_node);
         rv_node = NULL;
       }
       
@@ -370,16 +370,16 @@ raptor_lookup_node(raptor_sequence* nodes,
 }
 
 /*
- * raptor_subject implementation
+ * raptor_abbrev_subject implementation
  *
  * The subject of triples, with all predicates and values
  * linked from them.
  *
  **/
-raptor_subject*
-raptor_new_subject(raptor_node *node)
+raptor_abbrev_subject*
+raptor_new_abbrev_subject(raptor_abbrev_node* node)
 {
-  raptor_subject *subject;
+  raptor_abbrev_subject* subject;
   
   if(!(node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
         node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
@@ -388,8 +388,8 @@ raptor_new_subject(raptor_node *node)
     return NULL;
   }  
   
-  subject = (raptor_subject *)RAPTOR_CALLOC(raptor_subject, 1,
-                                            sizeof(raptor_subject));
+  subject = (raptor_abbrev_subject*)RAPTOR_CALLOC(raptor_subject, 1,
+                                                  sizeof(raptor_abbrev_subject));
 
   if(subject) {
     subject->node = node;
@@ -398,12 +398,12 @@ raptor_new_subject(raptor_node *node)
     
     subject->node_type = NULL;
     subject->properties =
-      raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_node, NULL);
+      raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_node, NULL);
     subject->list_items =
-      raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_node, NULL);
+      raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_node, NULL);
 
     if(!subject->node || !subject->properties || !subject->list_items) {
-      raptor_free_subject(subject);
+      raptor_free_abbrev_subject(subject);
       subject = NULL;
     }
   
@@ -414,14 +414,14 @@ raptor_new_subject(raptor_node *node)
 
 
 void
-raptor_free_subject(raptor_subject *subject) 
+raptor_free_abbrev_subject(raptor_abbrev_subject* subject) 
 {
   if(subject) {
     if(subject->node)
-      raptor_free_node(subject->node);
+      raptor_free_abbrev_node(subject->node);
     
     if(subject->node_type)
-      raptor_free_node(subject->node_type);
+      raptor_free_abbrev_node(subject->node_type);
     
     if(subject->properties)
       raptor_free_sequence(subject->properties);
@@ -446,8 +446,9 @@ raptor_free_subject(raptor_subject *subject)
  * Return value: non-0 on failure
  **/
 int
-raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate,
-                            raptor_node *object) 
+raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
+                                   raptor_abbrev_node* predicate,
+                                   raptor_abbrev_node* object) 
 {
   int err;
   
@@ -469,23 +470,25 @@ raptor_subject_add_property(raptor_subject *subject, raptor_node *predicate,
 
 
 /**
- * raptor_subject_add_list_element - 
+ * raptor_abbrev_subject_add_list_element:
  * @subject: subject node to add to
  * @ordinal: ordinal index
  * @object: object node
  * 
- * Add rdf:li into list element array of a subject node.
+ * Add rdf:li into list element array of a #raptor_abbrev_subject node.
  * 
  * Return value: 
  **/
 int
-raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
-                                raptor_node *object)
+raptor_abbrev_subject_add_list_element(raptor_abbrev_subject* subject, 
+                                       int ordinal,
+                                       raptor_abbrev_node* object)
 {
   int rv = 1;
-  raptor_node *node;
+  raptor_abbrev_node* node;
 
-  node = (raptor_node*)raptor_sequence_get_at(subject->list_items, ordinal);
+  node = (raptor_abbrev_node*)raptor_sequence_get_at(subject->list_items,
+                                                     ordinal);
   if(!node) {
     /* If there isn't already an entry */
     rv = raptor_sequence_set_at(subject->list_items, ordinal, object);
@@ -499,19 +502,19 @@ raptor_subject_add_list_element(raptor_subject *subject, int ordinal,
 }
 
 
-raptor_subject *
-raptor_find_subject(raptor_sequence *sequence,
-                    raptor_identifier_type node_type,
-                    const void *node_data, int *idx)
+raptor_abbrev_subject*
+raptor_abbrev_subject_find(raptor_sequence *sequence,
+                           raptor_identifier_type node_type,
+                           const void *node_data, int *idx)
 {
-  raptor_subject *rv_subject = NULL;
+  raptor_abbrev_subject* rv_subject = NULL;
   int i;
   
   for(i=0; i < raptor_sequence_size(sequence); i++) {
-    raptor_subject *subject=(raptor_subject*)raptor_sequence_get_at(sequence, i);
+    raptor_abbrev_subject* subject=(raptor_abbrev_subject*)raptor_sequence_get_at(sequence, i);
 
     if(subject &&
-       raptor_node_matches(subject->node, node_type, node_data, NULL, NULL)) {
+       raptor_abbrev_node_matches(subject->node, node_type, node_data, NULL, NULL)) {
       rv_subject = subject;
       break;
     }
@@ -525,33 +528,33 @@ raptor_find_subject(raptor_sequence *sequence,
 }
 
 
-raptor_subject *
-raptor_lookup_subject(raptor_sequence* nodes,
-                      raptor_sequence* subjects,
-                      raptor_sequence* blanks,
-                      raptor_identifier_type node_type,
-                      const void *node_data)
+raptor_abbrev_subject* 
+raptor_abbrev_subject_lookup(raptor_sequence* nodes,
+                             raptor_sequence* subjects,
+                             raptor_sequence* blanks,
+                             raptor_identifier_type node_type,
+                             const void *node_data)
 {
   raptor_sequence *sequence;
-  raptor_subject *rv_subject;
+  raptor_abbrev_subject* rv_subject;
 
   /* Search for specified resource in resources array.
    * FIXME: this should really be a hash, not a list.
    */
   sequence= (node_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) ?
             blanks : subjects;
-  rv_subject= raptor_find_subject(sequence, node_type,
-                                  node_data, NULL);
+  rv_subject= raptor_abbrev_subject_find(sequence, node_type,
+                                         node_data, NULL);
 
   /* If not found, create one and insert it */
   if(!rv_subject) {
-    raptor_node *node = raptor_lookup_node(nodes, node_type,
-                                           node_data, NULL, NULL);
+    raptor_abbrev_node* node = raptor_abbrev_node_lookup(nodes, node_type,
+                                                         node_data, NULL, NULL);
     if(node) {      
-      rv_subject = raptor_new_subject(node);
+      rv_subject = raptor_new_abbrev_subject(node);
       if(rv_subject) {
         if(raptor_sequence_push(sequence, rv_subject)) {
-          raptor_free_subject(rv_subject);
+          raptor_free_abbrev_subject(rv_subject);
           rv_subject = NULL;
         }      
       }
@@ -564,14 +567,14 @@ raptor_lookup_subject(raptor_sequence* nodes,
 
 #ifdef ABBREV_DEBUG
 void
-raptor_print_subject(raptor_subject *subject) 
+raptor_print_subject(raptor_abbrev_subject* subject) 
 {
   int i;
   unsigned char *subj;
   unsigned char *pred;
   unsigned char *obj;
 
-  /* Note: The raptor_node field passed as the first argument for
+  /* Note: The raptor_abbrev_node field passed as the first argument for
    * raptor_statement_part_as_string() is somewhat arbitrary, since as
    * the data structure is designed, the first word in the value union
    * is what was passed as the subject/predicate/object of the
@@ -591,7 +594,7 @@ raptor_print_subject(raptor_subject *subject)
   
   for(i=0; i < raptor_sequence_size(subject->elements); i++) {
 
-    raptor_node *o = raptor_sequence_get_at(subject->elements, i);
+    raptor_abbrev_node* o = raptor_sequence_get_at(subject->elements, i);
     if(o) {
       obj = raptor_statement_part_as_string(o->value.literal.string,
                                             o->type,
@@ -606,8 +609,8 @@ raptor_print_subject(raptor_subject *subject)
   i=0;
   while (i < raptor_sequence_size(subject->properties)) {
 
-    raptor_node *p = raptor_sequence_get_at(subject->properties, i++);
-    raptor_node *o = raptor_sequence_get_at(subject->properties, i++);
+    raptor_abbrev_node* p = raptor_sequence_get_at(subject->properties, i++);
+    raptor_abbrev_node* o = raptor_sequence_get_at(subject->properties, i++);
 
     if(p && o) {
       pred = raptor_statement_part_as_string(p->value.resource.uri, p->type,
@@ -627,6 +630,7 @@ raptor_print_subject(raptor_subject *subject)
   
 }
 #endif
+
 
 /* helper functions */
 
@@ -667,7 +671,7 @@ raptor_unique_id(unsigned char *base)
  * @namespaces: sequence of namespaces (corresponding to nstack)
  * @nstack: #raptor_namespace_stack to use/update
  * @namespace_count: size of nstack (may be modified)
- * @node: #raptor_node to use 
+ * @node: #raptor_abbrev_node to use 
  * 
  * Make an XML QName from the URI associated with the node.
  * 
@@ -677,7 +681,7 @@ raptor_qname*
 raptor_new_qname_from_resource(raptor_sequence* namespaces,
                                raptor_namespace_stack* nstack,
                                int* namespace_count,
-                               raptor_node *node)
+                               raptor_abbrev_node* node)
 {
   unsigned char* name=NULL;  /* where to split predicate name */
   size_t name_len=1;

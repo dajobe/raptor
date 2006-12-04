@@ -65,7 +65,7 @@ typedef struct {
   raptor_sequence *subjects;            /* subject items */
   raptor_sequence *blanks;              /* blank subject items */
   raptor_sequence *nodes;               /* nodes */
-  raptor_node *rdf_type;                /* rdf:type uri */
+  raptor_abbrev_node *rdf_type;         /* rdf:type uri */
 
   /* URI of rdf:XMLLiteral */
   raptor_uri* rdf_xml_literal_uri;
@@ -87,29 +87,29 @@ typedef struct {
 
 static int raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
                                         raptor_xml_element *element,
-                                        raptor_node *node,
+                                        raptor_abbrev_node *node,
                                         int depth);
 
 static int raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
                                        raptor_xml_element *element,
-                                       raptor_node *node,
+                                       raptor_abbrev_node *node,
                                        int depth);
 static int raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
                                            raptor_xml_element *element,
-                                           raptor_node *node,
+                                           raptor_abbrev_node* node,
                                            int depth);
 static int raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
                                      raptor_xml_element *element,
-                                     raptor_node *node,
+                                     raptor_abbrev_node* node,
                                      int depth);
 static int raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
-                                                  raptor_subject *subject,
+                                                  raptor_abbrev_subject* subject,
                                                   int depth);
 static int raptor_rdfxmla_emit_subject_properties(raptor_serializer *serializer,
-                                                  raptor_subject *subject,
+                                                  raptor_abbrev_subject* subject,
                                                   int depth);
 static int raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
-                                       raptor_subject *subject,
+                                       raptor_abbrev_subject* subject,
                                        int depth);
 static int raptor_rdfxmla_emit(raptor_serializer *serializer);
 
@@ -143,7 +143,8 @@ static void raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* f
  **/
 static int
 raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
-                             raptor_xml_element *element, raptor_node *node,
+                             raptor_xml_element *element,
+                             raptor_abbrev_node* node,
                              int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
@@ -203,7 +204,8 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
  **/
 static int
 raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
-                            raptor_xml_element *element, raptor_node *node,
+                            raptor_xml_element *element,
+                            raptor_abbrev_node* node,
                             int depth)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
@@ -272,7 +274,8 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
  **/
 static int
 raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
-                                raptor_xml_element *element, raptor_node *node,
+                                raptor_xml_element *element,
+                                raptor_abbrev_node* node,
                                 int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
@@ -315,7 +318,7 @@ raptor_rdfxmla_emit_xml_literal(raptor_serializer *serializer,
  **/
 static int
 raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
-                          raptor_xml_element *element, raptor_node *node,
+                          raptor_xml_element *element, raptor_abbrev_node* node,
                           int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
@@ -332,12 +335,12 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
      * used as a subject or never used as an object, it never need
      * be referenced with an explicit name */
     int idx;
-    raptor_subject *blank;
+    raptor_abbrev_subject* blank;
 
     raptor_xml_writer_start_element(context->xml_writer, element);
 
-    blank = raptor_find_subject(context->blanks, node->type,
-                                node->value.blank.string, &idx);
+    blank = raptor_abbrev_subject_find(context->blanks, node->type,
+                                       node->value.blank.string, &idx);
           
     if(blank) {
       raptor_rdfxmla_emit_subject(serializer, blank, depth+1);
@@ -382,7 +385,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
  **/
 static int
 raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
-                                       raptor_subject *subject,
+                                       raptor_abbrev_subject* subject,
                                        int depth)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
@@ -397,11 +400,11 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
 
   while (!rv && i < raptor_sequence_size(subject->list_items)) {
 
-    raptor_node *object;
+    raptor_abbrev_node* object;
     raptor_qname *qname;
     raptor_xml_element *element;
     
-    object = (raptor_node *)raptor_sequence_get_at(subject->list_items, i++);
+    object = (raptor_abbrev_node* )raptor_sequence_get_at(subject->list_items, i++);
     if(!object)
       continue;
     
@@ -465,7 +468,7 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
  **/
 static int
 raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
-                                       raptor_subject *subject,
+                                       raptor_abbrev_subject* subject,
                                        int depth)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
@@ -484,13 +487,13 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   i=0;
   while (!rv && i < raptor_sequence_size(subject->properties)) {
     raptor_uri *base_uri=NULL;
-    raptor_node *predicate;
-    raptor_node *object;
+    raptor_abbrev_node* predicate;
+    raptor_abbrev_node* object;
     raptor_qname *qname;
     raptor_xml_element *element;
     
-    predicate = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
-    object = (raptor_node *)raptor_sequence_get_at(subject->properties, i++);
+    predicate = (raptor_abbrev_node* )raptor_sequence_get_at(subject->properties, i++);
+    object = (raptor_abbrev_node* )raptor_sequence_get_at(subject->properties, i++);
 
     if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
       /* we should only get here in rare cases -- usually when there
@@ -569,7 +572,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
  **/
 static int
 raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
-                            raptor_subject *subject,
+                            raptor_abbrev_subject* subject,
                             int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;  
@@ -629,7 +632,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     attr_name = (unsigned char*)"about";
     if(context->is_xmp) {
       /* XML rdf:about value is always "" */
-      attr_value = (unsigned char *)RAPTOR_CALLOC(string, 1, sizeof(unsigned char*));
+      attr_value = (unsigned char *)RAPTOR_CALLOC(string, 1, 
+                                                  sizeof(unsigned char*));
     } else if(serializer->feature_relative_uris)
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                      subject->node->value.resource.uri);
@@ -694,19 +698,19 @@ static int
 raptor_rdfxmla_emit(raptor_serializer *serializer)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  raptor_subject *subject;
-  raptor_subject *blank;
+  raptor_abbrev_subject* subject;
+  raptor_abbrev_subject* blank;
   int i;
   
   for(i=0; i < raptor_sequence_size(context->subjects); i++) {
-    subject = (raptor_subject *)raptor_sequence_get_at(context->subjects, i);
+    subject = (raptor_abbrev_subject* )raptor_sequence_get_at(context->subjects, i);
     if(subject)
       raptor_rdfxmla_emit_subject(serializer, subject, 0);
   }
     
   /* Emit any remaining blank nodes */
   for(i=0; i < raptor_sequence_size(context->blanks); i++) {
-    blank = (raptor_subject *)raptor_sequence_get_at(context->blanks, i);
+    blank = (raptor_abbrev_subject* )raptor_sequence_get_at(context->blanks, i);
     if(blank)
       raptor_rdfxmla_emit_subject(serializer, blank, 0);
   }
@@ -744,18 +748,18 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_sequence_push(context->namespaces, context->rdf_nspace);
 
   context->subjects =
-    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_subject,NULL);
+    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
 
   context->blanks =
-    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_subject,NULL);
+    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
   
   context->nodes =
-    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_node, NULL);
+    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_node, NULL);
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
   if(rdf_type_uri) {    
-    context->rdf_type = raptor_new_node(RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-                                        rdf_type_uri, NULL, NULL);
+    context->rdf_type = raptor_new_abbrev_node(RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                               rdf_type_uri, NULL, NULL);
     raptor_free_uri(rdf_type_uri);
   } else
     context->rdf_type = NULL;
@@ -818,7 +822,7 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
     raptor_free_namespaces(context->nstack);
 
   if(context->rdf_type)
-    raptor_free_node(context->rdf_type);
+    raptor_free_abbrev_node(context->rdf_type);
   
   if(context->rdf_xml_literal_uri)
     raptor_free_uri(context->rdf_xml_literal_uri);
@@ -870,8 +874,8 @@ raptor_rdfxmla_serialize_declare_namespace_from_namespace(raptor_serializer* ser
 /* add a namespace */
 static int
 raptor_rdfxmla_serialize_declare_namespace(raptor_serializer* serializer, 
-                                          raptor_uri *uri,
-                                          const unsigned char *prefix)
+                                           raptor_uri *uri,
+                                           const unsigned char *prefix)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_namespace *ns;
@@ -971,9 +975,9 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                                    const raptor_statement *statement)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  raptor_subject *subject = NULL;
-  raptor_node *predicate = NULL;
-  raptor_node *object = NULL;
+  raptor_abbrev_subject* subject = NULL;
+  raptor_abbrev_node* predicate = NULL;
+  raptor_abbrev_node* object = NULL;
   int rv;
   raptor_identifier_type object_type;
 
@@ -981,9 +985,10 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
      statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
      statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
-    subject = raptor_lookup_subject(context->nodes, context->subjects,
-                                    context->blanks, statement->subject_type,
-                                    statement->subject);
+    subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
+                                           context->blanks,
+                                           statement->subject_type,
+                                           statement->subject);
     if(!subject)
       return 1;
 
@@ -1008,10 +1013,10 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
      object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
      object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
-    object = raptor_lookup_node(context->nodes, object_type,
-                                statement->object,
-                                statement->object_literal_datatype,
-                                statement->object_literal_language);
+    object = raptor_abbrev_node_lookup(context->nodes, object_type,
+                                       statement->object,
+                                       statement->object_literal_datatype,
+                                       statement->object_literal_language);
     if(!object)
       return 1;          
 
@@ -1028,20 +1033,21 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
   if((statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
      (statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
-    predicate = raptor_lookup_node(context->nodes, statement->predicate_type,
-                                   statement->predicate, NULL, NULL);
+    predicate = raptor_abbrev_node_lookup(context->nodes,
+                                          statement->predicate_type,
+                                          statement->predicate, NULL, NULL);
 
     if(!subject->node_type && 
-       raptor_node_equals(predicate, context->rdf_type)) {
+       raptor_abbrev_node_equals(predicate, context->rdf_type)) {
 
       /* Store the first one as the type for abbreviation 2.14
        * purposes. Note that it is perfectly legal to have
        * multiple type definitions.  All definitions after the
        * first go in the property list */
-      subject->node_type = raptor_lookup_node(context->nodes,
-                                              object_type,
-                                              statement->object, NULL,
-                                              NULL);
+      subject->node_type = raptor_abbrev_node_lookup(context->nodes,
+                                                     object_type,
+                                                     statement->object, NULL,
+                                                     NULL);
       subject->node_type->ref_count++;
       return 0;
     
@@ -1051,7 +1057,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       if(context->is_xmp && predicate->ref_count > 1) {
         int i;
         for(i=0; i < raptor_sequence_size(subject->properties); i++) {
-          raptor_node *node = (raptor_node*)raptor_sequence_get_at(subject->properties, i);
+          raptor_abbrev_node* node = (raptor_abbrev_node*)raptor_sequence_get_at(subject->properties, i);
           if(node == predicate) {
             add_property=0;
             
@@ -1060,8 +1066,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                * statement and free it
                */
               int idx=0;
-              if(raptor_find_subject(context->blanks, object_type,
-                                     statement->object, &idx))
+              if(raptor_abbrev_subject_find(context->blanks, object_type,
+                                            statement->object, &idx))
                 raptor_sequence_set_at(context->blanks, idx, NULL);
             }
             
@@ -1071,7 +1077,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       }
 
       if(add_property) {
-	rv = raptor_subject_add_property(subject, predicate, object);
+	rv = raptor_abbrev_subject_add_property(subject, predicate, object);
 	if(rv) {
 	  raptor_serializer_error(serializer,
 				  "Unable to add properties to subject 0x%p\n",
@@ -1082,13 +1088,14 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   
   } else if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     int idx = *(int*)statement->predicate;
-    rv = raptor_subject_add_list_element(subject, idx, object);
+    rv = raptor_abbrev_subject_add_list_element(subject, idx, object);
     if(rv) {
       /* An ordinal might already exist at that location, the fallback
        * is to just put in the properties list */
-      predicate = raptor_lookup_node(context->nodes, statement->predicate_type,
-                                     statement->predicate, NULL, NULL);
-      rv = raptor_subject_add_property(subject, predicate, object);
+      predicate = raptor_abbrev_node_lookup(context->nodes,
+                                            statement->predicate_type,
+                                            statement->predicate, NULL, NULL);
+      rv = raptor_abbrev_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,
                                 "Unable to add properties to subject 0x%p\n",
