@@ -41,6 +41,8 @@
 
 #ifdef RAPTOR_WWW_LIBXML
 
+static void raptor_www_libxml_http_error(void *ctx, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 0);
+
 static void
 raptor_www_libxml_http_error(void *ctx, const char *msg, ...) 
 {
