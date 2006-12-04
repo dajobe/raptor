@@ -1,4 +1,33 @@
+2006-12-03  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_turtle_writer.c: Use limits.h to get LONG_MAX
+
+	* src/raptor_www_libxml.c: raptor_www_libxml_http_error prototype.
+
+	* src/raptor_xslt.c: Store a single parser that could be of any
+	name, not just 'rdfxml'.
+	(raptor_xslt_parse_init): Do not init rdfxml parser here.
+	9raptor_xslt_parse_terminate): Free internal parser if present.
+	(raptor_xslt_parse_start): Do not copy user state to internal
+	parser here.
+	(raptor_xslt_run_grddl_transform_doc): Delve into the XSL
+	transformation results and try to interpret a mime type out of the
+	output type (if present).  Assume any XML mime type is actually
+	RDF/XML and refuse to do recursive grddl guesses this way.  Tidy
+	up code to clean up error paths
+
+	* src/raptor_www.c: (raptor_www_file_fetch): Return 200, 403 or
+	404 status codes and set failed flag.
+	(raptor_www_fetch): Set failed flag if a status code was returned
+	and the result was not 200.
+
+	* src/raptor_xslt.c: (raptor_xslt_parse_chunk): Skip empty XSLT
+	URIs in the list found.
+
 2006-12-02  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_sax2.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Add new features to switch()s
 
 	* src/raptor_abbrev.c: (raptor_new_node): init node always
 
