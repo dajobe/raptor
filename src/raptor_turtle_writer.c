@@ -302,8 +302,9 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
   uri_str = raptor_uri_to_relative_counted_uri_string(turtle_writer->base_uri, uri, &length);
 
   raptor_iostream_write_byte(turtle_writer->iostr, '<');
-  raptor_iostream_write_string_ntriples(turtle_writer->iostr,
-                                        uri_str, length, '>');
+  if (uri_str)
+  	raptor_iostream_write_string_ntriples(turtle_writer->iostr,
+                                          uri_str, length, '>');
   raptor_iostream_write_byte(turtle_writer->iostr, '>');
 
   RAPTOR_FREE(cstring, uri_str);
