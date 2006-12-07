@@ -1,4 +1,14 @@
+2006-12-06  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_reference):
+	Generate <> for the empty relative URI
+
 2006-12-03  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Rename raptor_node to raptor_abbrev_node and raptor_subject to
+	raptor_abbrev_subject and rename functions to match the pattern
 
 	* src/raptor_turtle_writer.c: Use limits.h to get LONG_MAX
 
