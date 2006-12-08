@@ -1778,7 +1778,14 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->generate_id_handler_user_data= from_parser->generate_id_handler_user_data;
   to_parser->generate_id_handler= from_parser->generate_id_handler;
   to_parser->default_generate_id_handler_base= from_parser->default_generate_id_handler_base;
-  to_parser->default_generate_id_handler_prefix= from_parser->default_generate_id_handler_prefix;
+  /* copy over non-shared user state - generate ID prefix string */
+  if(from_parser->default_generate_id_handler_prefix) {
+    to_parser->default_generate_id_handler_prefix=RAPTOR_MALLOC(cstring,
+                    from_parser->default_generate_id_handler_prefix_length+1);
+    strncpy((char*)to_parser->default_generate_id_handler_prefix, 
+            (const char*)from_parser->default_generate_id_handler_prefix,
+            from_parser->default_generate_id_handler_prefix_length+1);
+  }
   to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
   to_parser->namespace_handler= from_parser->namespace_handler;
   to_parser->namespace_handler_user_data= from_parser->namespace_handler_user_data;
