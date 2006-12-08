@@ -1038,7 +1038,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                                           statement->predicate, NULL, NULL);
 
     if(!subject->node_type && 
-       raptor_abbrev_node_equals(predicate, context->rdf_type)) {
+       raptor_abbrev_node_equals(predicate, context->rdf_type) &&
+       statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
 
       /* Store the first one as the type for abbreviation 2.14
        * purposes. Note that it is perfectly legal to have
