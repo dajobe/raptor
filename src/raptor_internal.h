@@ -193,7 +193,7 @@ typedef struct raptor_sax2_s raptor_sax2;
 /* raptor_libxml.c exports */
 extern void raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri);
 extern void raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax);
-extern void raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser);
+extern void raptor_libxml_init_generic_error_handlers(raptor_sax2 *sax2);
 
 extern void raptor_libxml_validation_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
