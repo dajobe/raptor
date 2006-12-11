@@ -166,7 +166,7 @@ raptor_xslt_parse_start(raptor_parser *rdf_parser)
   locator->line=1;
 
   /* sax2 structure - only for recording error pointers */
-  xslt_parser->sax2=raptor_new_sax2(rdf_parser, 
+  xslt_parser->sax2=raptor_new_sax2(rdf_parser,
                                     rdf_parser,
                                     raptor_parser_error_message_handler,
                                     rdf_parser,
@@ -262,7 +262,7 @@ static struct {
  * formed into a libxml document (with URI)
  */
 static int
-raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser, 
+raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser,
                                     raptor_uri* xslt_uri, xmlDocPtr xslt_doc,
                                     xmlDocPtr doc)
 {
@@ -310,9 +310,9 @@ raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser,
     goto cleanup_xslt;
   }
 
-  RAPTOR_DEBUG4("XSLT returned %d bytes document method %s media type %s\n", 
-                doc_txt_len, 
-                (sheet->method ? (const char*)sheet->method : "NULL"), 
+  RAPTOR_DEBUG4("XSLT returned %d bytes document method %s media type %s\n",
+                doc_txt_len,
+                (sheet->method ? (const char*)sheet->method : "NULL"),
                 (sheet->mediaType ? (const char*)sheet->mediaType : "NULL"));
 
   /* FIXME: Assumes mime types for XSLT <xsl:output method> */
@@ -342,7 +342,7 @@ raptor_xslt_run_grddl_transform_doc(raptor_parser* rdf_parser,
     strncpy((char*)sheet->mediaType, "application/rdf+xml",20);
   }
   
-  parser_name=raptor_guess_parser_name(NULL, (const char*)sheet->mediaType, 
+  parser_name=raptor_guess_parser_name(NULL, (const char*)sheet->mediaType,
                                        doc_txt, doc_txt_len, NULL);
   RAPTOR_DEBUG3("Guessed parser %s from mime type '%s'\n",
                 parser_name, sheet->mediaType);
@@ -407,7 +407,7 @@ typedef struct
 
 static void
 raptor_xslt_uri_parse_bytes(raptor_www* www,
-                            void *userdata, 
+                            void *userdata,
                             const void *ptr, size_t size, size_t nmemb)
 {
   raptor_xslt_parse_bytes_context* pbc=(raptor_xslt_parse_bytes_context*)userdata;
@@ -418,7 +418,7 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
     xmlParserCtxtPtr xc;
     
     xc = xmlCreatePushParserCtxt(NULL, NULL,
-                                 (const char*)ptr, len, 
+                                 (const char*)ptr, len,
                                  (const char*)raptor_uri_as_string(www->uri));
     if(!xc)
       rc=1;
@@ -447,7 +447,7 @@ raptor_xslt_uri_parse_bytes(raptor_www* www,
 
 /* Run a GRDDL transform using a XSLT stylesheet at a given URI */
 static int
-raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser, 
+raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser,
                                     raptor_uri* xslt_uri, xmlDocPtr doc)
 {
   raptor_www *www=NULL;
@@ -482,8 +482,8 @@ raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser,
   xslt_ctxt=pbc.xc;
   xmlParseChunk(pbc.xc, NULL, 0, 1);
   
-  ret=raptor_xslt_run_grddl_transform_doc(rdf_parser, 
-                                          xslt_uri, xslt_ctxt->myDoc, 
+  ret=raptor_xslt_run_grddl_transform_doc(rdf_parser,
+                                          xslt_uri, xslt_ctxt->myDoc,
                                           doc);
   
   cleanup_xslt:
@@ -498,7 +498,7 @@ raptor_xslt_run_grddl_transform_uri(raptor_parser* rdf_parser,
 
 
 static int
-raptor_xslt_parse_chunk(raptor_parser* rdf_parser, 
+raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
                         const unsigned char *s, size_t len,
                         int is_end)
 {
@@ -555,7 +555,7 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
   }
 
   xmlXPathRegisterNs(xslt_parser->xpathCtx,
-                     (const xmlChar*)"html", 
+                     (const xmlChar*)"html",
                      (const xmlChar*)"http://www.w3.org/1999/xhtml");
   xmlXPathRegisterNs(xslt_parser->xpathCtx,
                      (const xmlChar*)"dataview",
@@ -568,10 +568,10 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
     const xmlChar* xpathExpr=match_table[expri].xpath;
 
     /* Evaluate xpath expression */
-    xslt_parser->xpathObj = xmlXPathEvalExpression(xpathExpr, 
+    xslt_parser->xpathObj = xmlXPathEvalExpression(xpathExpr,
                                                    xslt_parser->xpathCtx);
     if(!xslt_parser->xpathObj) {
-      raptor_parser_error(rdf_parser, 
+      raptor_parser_error(rdf_parser,
                           "Unable to evaluate XPath expression \"%s\"",
                           xpathExpr);
       return 1;
@@ -579,12 +579,12 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
 
     nodes=xslt_parser->xpathObj->nodesetval;
     if(!nodes || xmlXPathNodeSetIsEmpty(nodes)) {
-      RAPTOR_DEBUG3("No match found with XPath expression \"%s\" over '%s'\n", 
+      RAPTOR_DEBUG3("No match found with XPath expression \"%s\" over '%s'\n",
                     xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
       continue;
     }
 
-    RAPTOR_DEBUG3("Found match with XPath expression \"%s\" over '%s'\n", 
+    RAPTOR_DEBUG3("Found match with XPath expression \"%s\" over '%s'\n",
                   xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
 
     if(match_table[expri].xslt_sheet_uri) {
@@ -605,7 +605,7 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
         xmlNodePtr node=nodes->nodeTab[i];
 
         if(node->type != XML_ATTRIBUTE_NODE) {
-          raptor_parser_error(rdf_parser, "Got unexpected node type %d", 
+          raptor_parser_error(rdf_parser, "Got unexpected node type %d",
                               node->type);
           continue;
         }
@@ -673,10 +673,10 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
 
 
 static int
-raptor_xslt_parse_recognise_syntax(raptor_parser_factory* factory, 
+raptor_xslt_parse_recognise_syntax(raptor_parser_factory* factory,
                                    const unsigned char *buffer, size_t len,
-                                   const unsigned char *identifier, 
-                                   const unsigned char *suffix, 
+                                   const unsigned char *identifier,
+                                   const unsigned char *suffix,
                                    const char *mime_type)
 {
   int score= 0;
