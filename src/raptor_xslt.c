@@ -114,6 +114,9 @@ struct raptor_xslt_parser_context_s {
   raptor_parser* internal_parser;
   /* ... constructed with this name */
   const char* internal_parser_name;
+
+  /* sax2 structure - only for recording error pointers */
+  raptor_sax2* sax2;
 };
 
 
@@ -147,15 +150,40 @@ raptor_xslt_parse_terminate(raptor_parser *rdf_parser)
 
   if(xslt_parser->internal_parser)
     raptor_free_parser(xslt_parser->internal_parser);
+
+  if(xslt_parser->sax2)
+    raptor_free_sax2(xslt_parser->sax2);
+
 }
 
 
 static int
 raptor_xslt_parse_start(raptor_parser *rdf_parser) 
 {
+  raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
   raptor_locator *locator=&rdf_parser->locator;
   
   locator->line=1;
+
+  /* sax2 structure - only for recording error pointers */
+  xslt_parser->sax2=raptor_new_sax2(rdf_parser, 
+                                    rdf_parser,
+                                    raptor_parser_error_message_handler,
+                                    rdf_parser,
+                                    raptor_parser_fatal_error_message_handler,
+                                    rdf_parser,
+                                    raptor_parser_warning_message_handler);
+  /* FIXME: this should really be part of raptor_new_sax2() 
+   * since every use of the above calls the following soon after
+   */
+  raptor_sax2_set_locator(xslt_parser->sax2, &rdf_parser->locator);
+  
+  /* The following error fields are normally initialised by
+   * raptor_libxml_init() via raptor_sax2_parse_start() which is
+   * not used here as we go to libxml calls direct.
+   */
+  raptor_libxml_init_sax_error_handlers(&xslt_parser->sax);
+  raptor_libxml_init_generic_error_handlers(xslt_parser->sax2);
 
   return 0;
 }
@@ -497,10 +525,7 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
       raptor_parser_error(rdf_parser, "Failed to create XML parser");
       return 1;
     }
-    
-    raptor_libxml_init_sax_error_handlers(&xslt_parser->sax);
-    raptor_libxml_init_generic_error_handlers(rdf_parser);
-    
+
     xslt_parser->ctxt->replaceEntities = 1;
     xslt_parser->ctxt->loadsubset = 1;
 
