@@ -222,6 +222,9 @@ raptor_libxml_update_document_locator(raptor_sax2* sax2,
   if(xc && xc->inSubset)
     return;
 
+  if(!locator) 
+    return;
+  
   locator->line= -1;
   locator->column= -1;
 
@@ -322,8 +325,9 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
       /* user_data is not userData */
       sax2=(raptor_sax2*)((xmlParserCtxtPtr)user_data)->userData;
   }
-  
-  raptor_libxml_update_document_locator(sax2, sax2->locator);
+
+  if(sax2->locator)
+    raptor_libxml_update_document_locator(sax2, sax2->locator);
 
   length=prefix_length+strlen(msg)+1;
   nmsg=(char*)RAPTOR_MALLOC(cstring, length);
@@ -483,10 +487,10 @@ raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
 
 
 void
-raptor_libxml_init_generic_error_handlers(raptor_parser *rdf_parser)
+raptor_libxml_init_generic_error_handlers(raptor_sax2 *sax2)
 {
   xmlGenericError = (xmlGenericErrorFunc)raptor_libxml_generic_error;
-  xmlGenericErrorContext = rdf_parser;
+  xmlGenericErrorContext = sax2;
 }
 
 
