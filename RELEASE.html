@@ -20,12 +20,51 @@
 </p>
 
 <p>Added a 
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a> serializer, by Dave Robillard.
+<a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a> serialiser by Dave Robillard based on the existing RDF/XML-Abbrev
+serialiser.
 </p>
 
 <p>Added a GraphViz
-<a href="http://www.graphviz.org/doc/info/lang.html">DOT format</a> serializer.
-by 
+<a href="http://www.graphviz.org/doc/info/lang.html">DOT format</a> serialiser
+by Evan Nemerson.
+</p>
+
+<p>Added an internal <code>raptor_abbrev</code> subsystem for the
+common 'abbreviated serializer' core that is shared between the
+RDF/XML and Turtle serializer.
+</p>
+
+<p>Added an internal <code>turtle_writer</code> API to allow
+serializing triples to Turtle.  This may be in the public API
+in a future release.
+</p>
+
+<p>The GRDDL parser now tries to guess which of the RDF/XML or Turtle
+parser is wanted from an XSLT result.  Guessing is performed because
+not all the XSLT sheets used in the demonstrations set the mime type
+to match Turtle's unregistered type, or because the return no mime
+type, or return an XML one, when it was expected RDF/XML would be
+received.
+</p>
+
+<p>Fixed Issues:</p>
+<ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=141">#0000141</a>: Crash when GRDDL parser is used with a used-generated blank node ID prefix.</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=143">#0000143</a>: Crash when GRDDL parser fails to retrieve URI.</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=157">#0000157</a>: Crash when RDF/XML Abbrev serializer sees a <code>rdf:type</code> predicate with a literal object.</li>
+</ul>
+
+<p>The libxml minimum version is now 2.6.8 since 2.6.7 crashes on
+PPC64 Linux.  2.6.8 was released March 2004 so this should be no
+burden.</p>
+
+<p>Failures to retrieve content from a URI using
+the <code>raptor_www</code> class implementations now return a
+failure as well as setting the HTTP status code to 403 or 404 as
+appropriate.  Previously success may have been returned with no
+bytes.</p>
+
+<p>Do not use <code>PATH_MAX</code> so raptor can build on Hurd.
 </p>
 
 
