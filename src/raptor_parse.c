@@ -899,8 +899,7 @@ raptor_parser_fatal_error_message_handler(void *user_data,
     abort();
   }
 
-  if(parser)
-    raptor_print_locator(stderr, locator);
+  raptor_print_locator(stderr, locator);
   fprintf(stderr, " raptor fatal error - ");
   fputs(message, stderr);
   fputc('\n', stderr);
@@ -986,8 +985,7 @@ raptor_parser_error_message_handler(void *user_data,
     return;
   }
 
-  if(parser)
-    raptor_print_locator(stderr, locator);
+  raptor_print_locator(stderr, locator);
   fprintf(stderr, " raptor error - ");
   fputs(message, stderr);
   fputc('\n', stderr);
@@ -1029,8 +1027,7 @@ raptor_parser_warning_message_handler(void *user_data,
     return;
   }
 
-  if(parser)
-    raptor_print_locator(stderr, locator);
+  raptor_print_locator(stderr, locator);
   fprintf(stderr, " raptor warning - ");
   fputs(message, stderr);
   fputc('\n', stderr);
