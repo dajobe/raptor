@@ -126,6 +126,28 @@ typedef struct raptor_xslt_parser_context_s raptor_xslt_parser_context;
 static int
 raptor_xslt_parse_init(raptor_parser* rdf_parser, const char *name)
 {
+  raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
+
+  /* sax2 structure - only for recording error pointers */
+  xslt_parser->sax2=raptor_new_sax2(rdf_parser,
+                                    rdf_parser,
+                                    raptor_parser_error_message_handler,
+                                    rdf_parser,
+                                    raptor_parser_fatal_error_message_handler,
+                                    rdf_parser,
+                                    raptor_parser_warning_message_handler);
+  /* FIXME: this should really be part of raptor_new_sax2() 
+   * since every use of the above calls the following soon after
+   */
+  raptor_sax2_set_locator(xslt_parser->sax2, &rdf_parser->locator);
+  
+  /* The following error fields are normally initialised by
+   * raptor_libxml_init() via raptor_sax2_parse_start() which is
+   * not used here as we go to libxml calls direct.
+   */
+  raptor_libxml_init_sax_error_handlers(&xslt_parser->sax);
+  raptor_libxml_init_generic_error_handlers(xslt_parser->sax2);
+
   return 0;
 }
 
@@ -160,30 +182,9 @@ raptor_xslt_parse_terminate(raptor_parser *rdf_parser)
 static int
 raptor_xslt_parse_start(raptor_parser *rdf_parser) 
 {
-  raptor_xslt_parser_context* xslt_parser=(raptor_xslt_parser_context*)rdf_parser->context;
   raptor_locator *locator=&rdf_parser->locator;
   
   locator->line=1;
-
-  /* sax2 structure - only for recording error pointers */
-  xslt_parser->sax2=raptor_new_sax2(rdf_parser,
-                                    rdf_parser,
-                                    raptor_parser_error_message_handler,
-                                    rdf_parser,
-                                    raptor_parser_fatal_error_message_handler,
-                                    rdf_parser,
-                                    raptor_parser_warning_message_handler);
-  /* FIXME: this should really be part of raptor_new_sax2() 
-   * since every use of the above calls the following soon after
-   */
-  raptor_sax2_set_locator(xslt_parser->sax2, &rdf_parser->locator);
-  
-  /* The following error fields are normally initialised by
-   * raptor_libxml_init() via raptor_sax2_parse_start() which is
-   * not used here as we go to libxml calls direct.
-   */
-  raptor_libxml_init_sax_error_handlers(&xslt_parser->sax);
-  raptor_libxml_init_generic_error_handlers(xslt_parser->sax2);
 
   return 0;
 }
