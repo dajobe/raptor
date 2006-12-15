@@ -567,6 +567,9 @@ raptor_xslt_parse_chunk(raptor_parser* rdf_parser,
   for(expri=0; match_table[expri].xpath; expri++) {
     const xmlChar* xpathExpr=match_table[expri].xpath;
 
+    if(xslt_parser->xpathObj)
+      xmlXPathFreeObject(xslt_parser->xpathObj);
+
     /* Evaluate xpath expression */
     xslt_parser->xpathObj = xmlXPathEvalExpression(xpathExpr,
                                                    xslt_parser->xpathCtx);
