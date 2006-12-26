@@ -1708,11 +1708,12 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
         if(!strcmp(mime_type, type_q->mime_type))
           break;
       }
+      /* got an exact match mime type - score it via the Q */
       if(type_q)
-        break;
+        score=type_q->q;
     }
-    /* got an exact match mime type - return result */
-    if(type_q)
+    /* mime type match has high Q - return result */
+    if(score >= 10)
       break;
     
     if(uri && factory->uri_string &&
