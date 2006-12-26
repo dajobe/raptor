@@ -1200,6 +1200,30 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
   if(mime_type &&
      (!strcmp((const char*)mime_type, "application/xml")))
     score+=5;
+
+  if(buffer && len) {
+    /* Check it's an XML namespace declared and not N3 or Turtle which
+     * mention the namespace URI but not in this form.
+     */
+#define  HAS_RDF_XMLNS1 (strstr((const char*)buffer, "xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS2 (strstr((const char*)buffer, "xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS3 (strstr((const char*)buffer, "xmlns=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS4 (strstr((const char*)buffer, "xmlns=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+
+    if(HAS_RDF_XMLNS1 || HAS_RDF_XMLNS2 || HAS_RDF_XMLNS3 || HAS_RDF_XMLNS4) {
+      int has_rdf_RDF=(strstr((const char*)buffer, "<rdf:RDF") != NULL);
+      int has_rdf_Description=(strstr((const char*)buffer, "rdf:Description") != NULL);
+      int has_rdf_about=(strstr((const char*)buffer, "rdf:about") != NULL);
+
+      score=7;
+      if(has_rdf_RDF)
+        score++;
+      if(has_rdf_Description)
+        score++;
+      if(has_rdf_about)
+        score++;
+    }
+  }
   
   return score;
 }
