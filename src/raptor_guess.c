@@ -134,7 +134,8 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
     name=raptor_guess_parser_name(NULL, guess_parser->content_type, buffer, len,
                                   identifier);
     if(!name) {
-      raptor_parser_error(rdf_parser, "Failed to guess parser from content type '%s'",
+      raptor_parser_error(rdf_parser,
+                          "Failed to guess parser from content type '%s'",
                           guess_parser->content_type ? 
                           guess_parser->content_type : "(none)");
       raptor_parse_abort(rdf_parser);
