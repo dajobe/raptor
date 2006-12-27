@@ -848,7 +848,7 @@ raptor_invoke_simple_message_varargs(const char *type,
 
 
 /**
- * raptor_invoke_message:
+ * raptor_invoke_message_varargs:
  * @type: string type "warning" or "error" for messages
  * @handler: simple message handler
  * @user_data; message handler data 
