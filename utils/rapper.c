@@ -558,19 +558,20 @@ main(int argc, char *argv[])
       const char *help_label;
       if(raptor_syntaxes_enumerate(i, &help_name, &help_label, NULL, NULL))
         break;
-      printf("    %-14s          %s", help_name, help_label);
+      printf("    %-14s  %s", help_name, help_label);
       if(!i)
         puts(" (default)");
       else
         putchar('\n');
     }
+    putchar('\n');
     puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
       const char *help_label;
       if(raptor_serializers_enumerate(i, &help_name, &help_label, NULL, NULL))
         break;
-      printf("    %-14s          %s", help_name, help_label);
+      printf("    %-14s  %s", help_name, help_label);
       if(!i)
         puts(" (default)");
       else
