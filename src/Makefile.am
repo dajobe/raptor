@@ -102,7 +102,7 @@ if RAPTOR_PARSER_RSS
 libraptor_la_SOURCES += raptor_rss.c
 endif
 if RAPTOR_PARSER_GRDDL
-libraptor_la_SOURCES += raptor_xslt.c
+libraptor_la_SOURCES += raptor_grddl.c
 endif
 if RAPTOR_PARSER_GUESS
 libraptor_la_SOURCES += raptor_guess.c
