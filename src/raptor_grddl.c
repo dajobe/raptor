@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_grddl_parse.c - Raptor GRDDL Parser implementation
+ * raptor_grddl.c - Raptor GRDDL Parser implementation
  *
  * Copyright (C) 2005-2006, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2005, University of Bristol, UK http://www.bristol.ac.uk/
@@ -975,6 +975,7 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
 void
 raptor_init_parser_grddl(void)
 {
-  raptor_parser_register_factory("grddl",  "GRDDL over XHTML/XML using XSLT",
+  raptor_parser_register_factory("grddl", 
+                                 "Gleaning Resource Descriptions from Dialects of Languages",
                                  &raptor_grddl_parser_register_factory);
 }
