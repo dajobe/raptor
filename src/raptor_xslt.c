@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_xslt_parse.c - Raptor GRDDL XSLT Parser implementation
+ * raptor_xslt_parse.c - Raptor GRDDL Parser implementation
  *
  * Copyright (C) 2005-2006, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2005, University of Bristol, UK http://www.bristol.ac.uk/
@@ -22,30 +22,11 @@
  */
 
 /*
- * W3C Gleaning Resource Descriptions from Dialects of Languages (GRDDL)
- * http://www.w3.org/2004/01/rdxh/spec
- * 
- * See also
- *   http://www.w3.org/2003/g/data-view
- *
- *
- * Looks for indication of GRDDL meaning intended in the XML (XHTML)
- * document source.
- *
- * 1. /html/head[@profile="http://www.w3.org/2003/g/data-view"]
- * 2. /html/head/link[@rel="transformation"] (may be repeated)
- *
- * Indicating that the sheet in the value of @href of #2 transforms
- * the document into RDF/XML and hence RDF triples.
- *
- * In example:
- *
- * <html xmlns="http://www.w3.org/1999/xhtml">
- * <head profile="http://www.w3.org/2003/g/data-view">
- *   ...
- *   <link rel="transformation" href="URI-of-XSLT" />
- *
- * The <link rel> may be repeated.
+ * Specification:
+ *   Gleaning Resource Descriptions from Dialects of Languages (GRDDL)
+ *   W3C Working Draft 24 October 2006
+ *   http://www.w3.org/TR/2006/WD-grddl-20061024/
+ *   http://www.w3.org/TR/grddl/
  */
 
 
