@@ -149,6 +149,9 @@ raptor_www_curl_fetch(raptor_www *www)
 {
   struct curl_slist *slist=NULL;
     
+  if(www->proxy)
+    curl_easy_setopt(www->curl_handle, CURLOPT_PROXY, www->proxy);
+
   if(www->user_agent)
     curl_easy_setopt(www->curl_handle, CURLOPT_USERAGENT, www->user_agent);
 
