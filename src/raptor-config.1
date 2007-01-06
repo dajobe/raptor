@@ -2,10 +2,10 @@
 .\"
 .\" raptor-config.1 - Raptor compiling utility manual page
 .\"
-.\" Copyright (C) 2003-2006 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2003-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2003-2005 University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH raptor-config 1 "2005-08-24"
+.TH raptor-config 1 "2007-01-05"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 raptor-config \- script to get information about the installed version of Raptor
@@ -16,6 +16,7 @@ raptor-config \- script to get information about the installed version of Raptor
 [\-\-help]
 [\-\-libs]
 [\-\-libtool\-libs]
+[\-\-private\-libs]
 [\-\-prefix\fI[=DIR]\fP]
 [\-\-version\-decimal]
 [\-\-version]
@@ -40,9 +41,15 @@ Print a help message summarising usage.
 .TP 8
 .B  \-\-libs
 Print the linker flags that are necessary to link a raptor program.
+This excludes linker arguments used to build the raptor shared library.
 .TP 8
 .B  \-\-libtool\-libs
 Print the path to the libtool file for raptor.
+.TP 8
+.B  \-\-private\-libs
+Print the linker flags that are necessary to build the raptor shared
+library.  This option is not usually needed because the raptor
+shared library has already been dynamically linked against these flags.
 .TP 8
 .B  \-\-prefix=PREFIX
 If specified, use PREFIX instead of the installation prefix that
