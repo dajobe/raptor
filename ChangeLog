@@ -1,3 +1,116 @@
+2006-12-29  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Add profile_transformation_uri and
+	profile_uris list to grddl parser structure.
+	(raptor_xslt_parse_init, raptor_xslt_parse_terminate): init/free
+	the above fields.  Add MATH_IS_VALUE_LIST and MATCH_IS_PROFILE
+	flags to match_table.  Comment out hard-coded embedded RDF,
+	hCalendar xpaths.  Added head profile xpath for profile URI
+	resoltuion.
+	(raptor_grddl_relay_triples): Look for matches in the list of
+	profile_uris for getting XSLT uris.
+	(typedef raptor_grddl_xml_parse_bytes_context): Renamed from
+	raptor_grddl_parse_bytes_context.
+	(raptor_grddl_uri_xml_parse_bytes): Renamed from
+	raptor_grddl_uri_parse_bytes.
+	(raptor_grddl_fetch_uri): Added to provide a single place to
+	retrieve URIs in the GRDDL operation.  Set a user agent, send
+	accept header and handle no-net.
+	(raptor_grddl_run_grddl_transform_uri): Use raptor_grddl_fetch_uri
+	to retrieve the XSLT doc.
+	(raptor_grddl_seen_uri): Do a check only, mark done in new
+	function:
+	(raptor_grddl_done_uri): Added.
+	(raptor_grddl_parse_uri_write_bytes): Added for use by
+	raptor_grddl_parse_chunk.
+	(raptor_grddl_parse_chunk): Mark done when received is_end.  Use
+	profile_uris list to record root namespace as first item in list
+	at index 0.  Accept an XPath result of element and use its
+	namespace name if seen, to allow an XPath matching the root
+	element - not yet used.  Update to use the match_table flags
+	field.  Handle MATCH_IS_PROFILE by storing in the profile_uris
+	list, skipping the http://www.w3.org/2003/g/data-view profile URI.
+	Do all recursive GRDDL in one place over all the profile_uris
+	using raptor_grddl_fetch_uri.
+
+	* src/raptor_www_curl.c: (raptor_www_curl_fetch): set proxy if
+	www->proxy set
+
+2006-12-28  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rapper.c: adjust whitespace so longer grddl description fits
+
+	* src/raptor_grddl.c: grddl docs, description updates
+
+	* src/Makefile.am, src/raptor_grddl.c (from
+	/raptor/trunk/src/raptor_xslt.c:11760), src/raptor_xslt.c:
+	Renameed raptor_xslt.c to raptor_grddl.c
+
+	* src/raptor_xslt.c: Rename all functions / structures to be
+	raptor_grddl / grddl not xslt.
+
+	* src/raptor_xslt.c: update spec reference
+
+2006-12-27  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xslt.c: Track list of visited URIs across recursive
+	GRDDL parsers
+	(raptor_xslt_parse_init, raptor_xslt_parse_terminate): Share the
+	list of visited uris, allocated/freed at depth 0 parser.
+	(raptor_xslt_add_parent): Added to associate a parent with a child
+	GRDDL parser and to all share the depth 0 parser's list of visited
+	URIs.
+	(raptor_xslt_relay_triples, raptor_xslt_ensure_internal_parser):
+	Return failure code and prepare for alternative when this may not
+	pass on all triples for namespace/profile GRDDL operations.
+	(raptor_xslt_run_grddl_transform_doc): Handle error code from
+	above.
+	(raptor_xslt_seen_uri): Added to track URIs seen.
+	(raptor_xslt_parse_chunk): Use seen URI tracking for initial
+	document and recursive GRDDLs.
+	
+	* src/raptor_general.c: docs
+
+2006-12-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xslt.c: Add GRDDL looking up of root namespace URIs.
+	(raptor_xslt_parse_init, raptor_xslt_parse_terminate): Init/free
+	doc_transform_uris and namespace_transformation_uri.
+	grddl_namespace_uris_ignore_list added with list of namespace URIs
+	to never attempt to retrieve.
+	(raptor_xslt_relay_triples): Added, to relay triples to user but
+	look for data-view:namespaceTransformation triples
+	(raptor_xslt_ensure_internal_parser): Added to init an internal
+	parser if needed, reusing otherwise.  Relay triples via
+	raptor_xslt_relay_triples before sending to user handler.
+	(raptor_xslt_run_grddl_transform_doc): Moved internal parser code
+	to raptor_xslt_ensure_internal_parser.
+	(raptor_xslt_parse_chunk): Get and store document root namespace
+	URI and then use it if not ignored.  Do not do transforms
+	immediately but store in a sequence.  Do a parse on the root
+	namespace URI if present to look for transformation triples.
+	Finally apply all transformation URIs seen in one go.
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
+	Recognize RDF/XML in sample content by looking for the XML marking
+	the RDF namespace declaration, the root element and likely
+	attributes.
+
+	* src/raptor_parse.c: (raptor_guess_parser_name): Mime type
+	matches that are q<10 no longer return a match but use the q as
+	score.  Guessing then continues with the recognise_syntax factory
+	method, if present.
+
+2006-12-14  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xslt.c: (raptor_xslt_parse_init,
+	raptor_xslt_parse_start): Move xslt_parser->sax2 init from
+	raptor_xslt_parse_start - running on every parse to
+	raptor_xslt_parse_init - running once.
+
+	* src/raptor_xslt.c: (raptor_xslt_parse_chunk): Free any
+	previously used xpathObj before making a new one
+
 2006-12-10  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_xslt.c: Previous changes did this:
