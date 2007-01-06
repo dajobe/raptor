@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (C) 2002-2006, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2002-2007, David Beckett http://purl.org/net/dajobe/
 # Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -41,6 +41,7 @@ known values for OPTION are:
   --prefix[=DIR]        change raptor prefix [default $prefix]
   --libs                print library linking information
   --libtool-libs        print linking information for use with libtool
+  --private-libs        print library private/static linking information
   --cflags		print pre-processor and compiler flags
   --options		print raptor library compiled options
   --help                display this help and exit
@@ -89,6 +90,9 @@ while test $# -gt 0; do
     --libtool-libs)
       echo_libtool_libs=yes
       ;;
+    --private-libs)
+      echo_private_libs=yes
+      ;;
     --help|--usage)
       usage 0
       ;;
@@ -126,8 +130,11 @@ if test "$echo_options" = "yes"; then
   done
 fi
 if test "$echo_libs" = "yes"; then
-  echo -L@libdir@ -lraptor @LIBS@
+  echo -L@libdir@ -lraptor
 fi
 if test "$echo_libtool_libs" = "yes"; then
   echo @libdir@/@RAPTOR_LIBTOOLLIBS@
+fi
+if test "$echo_private_libs" = "yes"; then
+  echo @LIBS@
 fi
