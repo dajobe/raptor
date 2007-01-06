@@ -14,16 +14,17 @@ Source:    http://download.librdf.org/source/%{name}-%{version}.tar.gz
 URL:       http://librdf.org/raptor/
 BuildRoot: /tmp/%{name}-%{version}
 BuildRequires: libxml2 libxml2-devel curl curl-devel libxslt libxslt-devel
-Packager:  Dave Beckett <Dave.Beckett@bristol.ac.uk>
+Packager:  Dave Beckett <dave@dajobe.org>
 Docdir: %{_docdir}
 
 %description
 
 Raptor is the RDF Parser Toolkit for Redland that provides a set of
-Resource Description Framework (RDF) parsers and serializers, generating
-RDF triples from RDF/XML, N-Triples, Turtle, several XML RSS tag soup
-formats and Atom 0.3 along with serializers to RDF/XML, RSS 1.0, Atom
-1.0 N-Triples and Adobe XMP.
+Resource Description Framework (RDF) parsers and serializers,
+generating RDF triples from the following syntaxes: RDF/XML,
+N-Triples, Turtle, several XML RSS tag soup formats, Atom 0.3 and
+Atom 1.0 and serializing RDF triples to syntaxes: RDF/XML, RSS 1.0,
+Atom 1.0, N-Triples, Adobe XMP, Turtle and GraphViz DOT.
 
 %package devel
 Summary: Libraries, includes etc to develop with Raptor RDF parser library
@@ -92,6 +93,9 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
 
 %changelog
+* Fri Jan 5 2007  Dave Beckett <dave@dajobe.org>
+- Document Turtle and DOT serializers
+
 * Wed Feb 15 2006  Dave Beckett <dave@dajobe.org>
 - Add libxslt and libxslt-devel for GRDDL
 
@@ -120,10 +124,8 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 - Requires curl
 
 * Mon Jan 13 2003 Dave Beckett <Dave.Beckett@bristol.ac.uk>
-
 - rdfdump now rapper
 
 * Fri Dec 20 2002 Dave Beckett <Dave.Beckett@bristol.ac.uk>
-
 - Updated to have two RPMs for raptor and raptor-devel.  Depend on
   libxml2 as XML parser.
