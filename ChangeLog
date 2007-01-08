@@ -1,3 +1,40 @@
+2007-01-07  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rdfdiff.c: Apply the base URI to the to-file, if given.
+	Otherwise use the from_file's URI.
+
+	* tests/turtle/Makefile.am: (check-turtle-serialize): Add base
+	URIs for the rdf-schema.ttl and rdfs-namespace.ttl
+
+	* tests/turtle/Makefile.am: (check-turtle-serialize): Ensure it
+	dies when a failure happens
+
+	* tests/turtle/Makefile.am: (check-turtle-serialize): Call rdfdiff
+	with -u to set base URI for input turtle.  This allows test-00.ttl
+	to produce the same absolute URIs each time and for round-trip
+	serializing to work.
+
+	* utils/rdfdiff.c: Added -u/--base-uri option to specify the from
+	file base URI so that if the from file is a local file or relative
+	URI, it can be given an absolute base.
+
+	* tests/turtle/Makefile.am: (check-turtle-serialize): output
+	serialization results to .ttl files
+
+	* tests/turtle/Makefile.am: Add check-turtle-serialize to
+	check-local
+
+2007-01-05  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor-config.1: Document --private-libs and explain what it
+	is under --libs too.
+
+	* src/raptor-config.in: Add --private-libs and move private @LIBS
+	to that from --libs
+
+	* raptor.pc.in: Use Libs.private for internal dynamically linked
+	libraries
+
 2006-12-29  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Add profile_transformation_uri and
