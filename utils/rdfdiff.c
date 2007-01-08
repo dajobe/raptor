@@ -876,7 +876,7 @@ main(int argc, char *argv[])
     puts("\nOPTIONS:");
     puts(HELP_TEXT("h", "help                      ", "Print this help, then exit"));
     puts(HELP_TEXT("b", "brief                     ", "Report only whether files differ"));
-    puts(HELP_TEXT("u BASE-URI", "base-uri BASE-URI  ", "Set the base URI for the from URI"));
+    puts(HELP_TEXT("u BASE-URI", "base-uri BASE-URI  ", "Set the base URI for the files"));
     puts(HELP_TEXT("f FORMAT",   "from-format FORMAT ", "Format of <from URI> (default is rdfxml)"));
     puts(HELP_TEXT("t FORMAT",   "to-format FORMAT   ", "Format of <to URI> (default is rdfxml)"));
     rv = 1;
@@ -952,7 +952,7 @@ main(int argc, char *argv[])
 
     /* Note intentional from_uri as base_uri */
     raptor_set_statement_handler(to_file->parser, to_file, rdfdiff_compare_statements);
-    if(raptor_parse_uri(to_file->parser, to_uri, from_uri)) {
+    if(raptor_parse_uri(to_file->parser, to_uri, base_uri ? base_uri: from_uri)) {
       fprintf(stderr, "%s: Failed to parse URI %s as %s content\n", program, 
               to_string, to_syntax);
       rv = 1;
@@ -1064,6 +1064,9 @@ main(int argc, char *argv[])
 
 exit:
 
+  if(base_uri)
+    raptor_free_uri(base_uri);
+  
   if(from_file)
     rdfdiff_free_file(from_file);
 
