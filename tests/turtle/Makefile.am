@@ -55,6 +55,10 @@ TEST_MANIFEST_FILES=manifest.ttl manifest-bad.ttl
 
 # Used to make N-triples output consistent
 BASE_URI=http://www.w3.org/2001/sw/DataAccess/df1/tests/
+# for rdf-schema.ttl
+RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
+# for rdfs-namespace.ttl
+RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
 ALL_TEST_FILES= README.txt \
 	$(TEST_FILES) \
@@ -152,7 +156,13 @@ check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
 	$(ECHO) "Testing turtle serialization with legal turtle"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .ttl` ; \
-	  baseuri=$(BASE_URI)$$test; \
+	  if test $$name = rdf-schema; then \
+	    baseuri=$(RDF_NS_URI); \
+	  elif test $$name = rdfs-namespace; then \
+	    baseuri=$(RDFS_NS_URI); \
+	  else \
+	    baseuri=$(BASE_URI)$$test; \
+	  fi; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
 	  $(top_builddir)/utils/rdfdiff -f turtle -u $$baseuri -t turtle $(srcdir)/$$test $(srcdir)/$$name-turtle.ttl > $$name.res 2> $$name.err; \
