@@ -326,7 +326,7 @@
 
 2006-10-22  Dave Beckett  <dave@dajobe.org>
 
-	* Snapshotted raptor_1_4_13 for 1.4.13 release
+	* Snapshotted raptor_1_4_13 for 1.4.13 release (SVN r11540)
 
 	* src/raptor_rss.c: (raptor_rss_end_element_handler): Only declare
 	name when debugging.
@@ -475,7 +475,7 @@
 	* NEWS.html, configure.ac, src/win32_raptor_config.h: Bumped
 	version to 1.4.13
 
-	* Snapshotted raptor_1_4_12 for 1.4.12 release
+	* Snapshotted raptor_1_4_12 for 1.4.12 release (SVN r11256)
 
 	* docs/libraptor.3: 1.4.12 no API changes
 
@@ -490,7 +490,7 @@
 	* src/win32_raptor_config.h, configure.ac, NEWS.html: Bumped
 	version to 1.4.12
 
-	* Snapshotted raptor_1_4_11 for 1.4.11 release
+	* Snapshotted raptor_1_4_11 for 1.4.11 release (SVN r11244)
 
 	* src/raptor_parse.c: (raptor_start_parse): Throw an error if no
 	base URI is given and it is needed.
@@ -881,7 +881,7 @@
 
 2006-07-14  Dave Beckett  <dave@dajobe.org>
 
-	* Snapshotted raptor_1_4_10 for 1.4.10 release
+	* Snapshotted raptor_1_4_10 for 1.4.10 release (SVN r11070) 
 
 2006-07-04  Dave Beckett  <dave@dajobe.org>
 
@@ -974,7 +974,7 @@
 	* configure.ac, src/win32_raptor_config.h: Bumped version to
 	1.4.10
 
-	* Snapshotted raptor_1_4_9 for 1.4.9 release
+	* Snapshotted raptor_1_4_9 for 1.4.9 release (SVN r10822)
 
 	* src/raptor_rdfxml.c: (raptor_rdfxml_sax2_new_namespace_handler):
 	Move var def to start of block.
@@ -1747,7 +1747,7 @@
 
 2006-01-03  Dave Beckett  <dave@dajobe.org>
 
-	* Snapshotted raptor_1_4_8 for 1.4.8 release
+	* Snapshotted raptor_1_4_8 for 1.4.8 release (SVN r3091)
 
 2006-01-02  Dave Beckett  <dave@dajobe.org>
 
