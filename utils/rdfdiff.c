@@ -63,7 +63,7 @@ extern char *optarg;
 #define RDF_NAMESPACE_URI_LEN 43
 #define ORDINAL_STRING_LEN (RDF_NAMESPACE_URI_LEN + MAX_ASCII_INT_SIZE + 1)
 
-#define GETOPT_STRING "bhf:t:"
+#define GETOPT_STRING "bhf:t:u:"
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_options[] =
@@ -73,6 +73,7 @@ static struct option long_options[] =
   {"help"        , 0, 0, 'h'},
   {"from-format" , 1, 0, 'f'},
   {"to-format"   , 1, 0, 't'},
+  {"base-uri"    , 1, 0, 'u'},
   {NULL          , 0, 0, 0}
 };
 #endif
@@ -786,6 +787,7 @@ main(int argc, char *argv[])
   unsigned char *to_string=NULL;
   raptor_uri *from_uri=NULL;
   raptor_uri *to_uri=NULL;
+  raptor_uri *base_uri=NULL;
   const char *from_syntax = "rdfxml";
   const char *to_syntax = "rdfxml";
   int free_from_string = 0;
@@ -795,7 +797,7 @@ main(int argc, char *argv[])
   char *p;
   int rv = 0;
   rdfdiff_blank *b1;
-
+  
   program=argv[0];
   if((p=strrchr(program, '/')))
     program=p+1;
@@ -842,6 +844,11 @@ main(int argc, char *argv[])
           to_syntax = optarg;
         break;
 
+      case 'u':
+        if(optarg)
+          base_uri = raptor_new_uri((const unsigned char*)optarg);
+        break;
+
     }
     
   }
@@ -869,8 +876,9 @@ main(int argc, char *argv[])
     puts("\nOPTIONS:");
     puts(HELP_TEXT("h", "help                      ", "Print this help, then exit"));
     puts(HELP_TEXT("b", "brief                     ", "Report only whether files differ"));
-    puts(HELP_TEXT("f FORMAT", "from-format FORMAT ", "Format of <from URI> (default is rdfxml)"));
-    puts(HELP_TEXT("t FORMAT", "to-format FORMAT   ", "Format of <to URI> (default is rdfxml)"));
+    puts(HELP_TEXT("u BASE-URI", "base-uri BASE-URI  ", "Set the base URI for the from URI"));
+    puts(HELP_TEXT("f FORMAT",   "from-format FORMAT ", "Format of <from URI> (default is rdfxml)"));
+    puts(HELP_TEXT("t FORMAT",   "to-format FORMAT   ", "Format of <to URI> (default is rdfxml)"));
     rv = 1;
     goto exit;
   }
@@ -935,7 +943,7 @@ main(int argc, char *argv[])
   /* parse the files */
   raptor_set_statement_handler(from_file->parser, from_file, rdfdiff_collect_statements);
   
-  if(raptor_parse_uri(from_file->parser, from_uri, NULL)) {
+  if(raptor_parse_uri(from_file->parser, from_uri, base_uri)) {
     fprintf(stderr, "%s: Failed to parse URI %s as %s content\n", program, 
             from_string, from_syntax);
     rv = 1;
