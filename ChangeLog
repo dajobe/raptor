@@ -1,5 +1,12 @@
 2007-01-07  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_abbrev.c: (raptor_new_abbrev_node): Initialise with
+	ref_count 1
+	(raptor_abbrev_node_lookup): Do not add ref_count here
+
+	* tests/turtle/Makefile.am: (check-turtle-serialize): rdfdiff with
+	a local file, not one in $(srcdir)
+
 	* utils/rdfdiff.c: Apply the base URI to the to-file, if given.
 	Otherwise use the from_file's URI.
 
