@@ -72,7 +72,7 @@ build-rapper:
 build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff)
 
-check-local: check-rdf check-bad-rdf
+check-local: check-rdf check-bad-rdf check-turtle-serialize
 # check-warn-rdf
 
 check-rdf: build-rapper $(TEST_FILES)
