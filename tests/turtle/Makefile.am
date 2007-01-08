@@ -151,10 +151,11 @@ check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing turtle serialization with legal turtle"; \
 	for test in $(TEST_FILES); do \
-	  name=`basename $$test .rdf` ; \
+	  name=`basename $$test .ttl` ; \
+	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $(srcdir)/$$test > $$name-turtle.ttl 2> $$name.err; \
-	  $(top_builddir)/utils/rdfdiff -f turtle -t turtle $(srcdir)/$$test $$name-turtle.ttl > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
+	  $(top_builddir)/utils/rdfdiff -f turtle -u $$baseuri -t turtle $(srcdir)/$$test $(srcdir)/$$name-turtle.ttl > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
