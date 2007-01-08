@@ -71,6 +71,7 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
                                             sizeof(raptor_abbrev_node));
 
   if(node) {
+    node->ref_count = 1;
     node->type = node_type;
     
     switch (node_type) {
@@ -355,9 +356,7 @@ raptor_abbrev_node_lookup(raptor_sequence* nodes,
     rv_node = raptor_new_abbrev_node(node_type, node_value, datatype, language);
     
     if(rv_node) {
-      if(raptor_sequence_push(nodes, rv_node) == 0) {
-        rv_node->ref_count++;
-      } else {
+      if(raptor_sequence_push(nodes, rv_node)) {
         raptor_free_abbrev_node(rv_node);
         rv_node = NULL;
       }
