@@ -62,7 +62,7 @@ const char * const raptor_copyright_string = "Copyright (C) 2000-2007 David Beck
 
 const char * const raptor_license_string = "LGPL 2.1 or newer, GPL 2 or newer, Apache 2.0 or newer.\nSee http://librdf.org/raptor/LICENSE.html for full terms.";
 
-const char * const raptor_url = "http://librdf.org/raptor/";
+const char * const raptor_home_url_string = "http://librdf.org/raptor/";
 
 /**
  * raptor_version_string:
