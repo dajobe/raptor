@@ -102,6 +102,8 @@ RAPTOR_API
 extern const unsigned int raptor_version_release;
 RAPTOR_API
 extern const unsigned int raptor_version_decimal;
+RAPTOR_API
+extern const char * const raptor_license_string;
 
 RAPTOR_API
 extern const unsigned char * const raptor_xml_namespace_uri;
