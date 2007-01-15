@@ -534,8 +534,13 @@ main(int argc, char *argv[])
   if(usage) {
     if(usage>1) {
       fprintf(stderr, title_format_string, raptor_version_string);
-      fputs(raptor_short_copyright_string, stderr);
+      fputs("Raptor home page: ", stderr);
+      fputs(raptor_home_url_string, stderr);
       fputc('\n', stderr);
+      fputs(raptor_copyright_string, stderr);
+      fputs("\nLicense: ", stderr);
+      fputs(raptor_license_string, stderr);
+      fputs("\n\n", stderr);
     }
     fprintf(stderr, "Try `%s " HELP_ARG(h, help) "' for more information.\n",
                     program);
@@ -547,10 +552,16 @@ main(int argc, char *argv[])
   if(help) {
     int i;
     
-    printf("Usage: %s [OPTIONS] <source URI> [base URI]\n", program);
     printf(title_format_string, raptor_version_string);
-    puts(raptor_short_copyright_string);
     puts("Parse RDF content at the source URI into RDF triples.");
+    printf("Usage: %s [OPTIONS] <source URI> [base URI]\n\n", program);
+
+    fputs(raptor_copyright_string, stdout);
+    fputs("\nLicense: ", stdout);
+    puts(raptor_license_string);
+    fputs("Raptor home page: ", stdout);
+    puts(raptor_home_url_string);
+
     puts("\nSyntax options:");
     puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format to one of:"));
     for(i=0; 1; i++) {
@@ -593,7 +604,6 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("w", "ignore-warnings ", "Ignore warning messages"));
     puts(HELP_TEXT("v", "version         ", "Print the Raptor version"));
     puts("\nReport bugs to http://bugs.librdf.org/");
-    puts("Raptor home page: http://librdf.org/raptor/");
 
     raptor_finish();
 
