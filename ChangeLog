@@ -1,3 +1,36 @@
+2007-01-14  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s loses
+	xpathObj
+	(raptor_grddl_parse_terminate): Remove xpathObj tidy.  Remove
+	profile URIs from 'match_table' list of xpaths - now invoked on
+	it's own.
+	(raptor_grddl_relay_triples): Add relay triples debugging.  Fix
+	loop to properly walk through profile URIs
+	(raptor_grddl_run_xpath_match): Added to invoke a match to an
+	xpath returning a list of URIs as raptor_sequence.  Code removed
+	from raptor_grddl_parse_chunk.
+	(raptor_grddl_run_recursive): Added to invoke a recursive GRDDL on
+	a URI, sending triples back to the current parser.  Code removed
+	from raptor_grddl_parse_chunk.
+	(raptor_grddl_parse_chunk): Use raptor_grddl_run_recursive to do
+	most of the work.  Invoke the <head profile> early on before
+	running general XPath matches.  Use raptor_grddl_run_xpath_match
+	to run general XPath matches.
+
+	* utils/rapper.c: Use raptor_home_url_string and
+	raptor_license_string in short and long usage messages.
+
+	* src/raptor.h: Added raptor_home_url_string (replacing raptor_url)
+
+	* src/raptor_general.c: raptor_home_url_string
+
+	* src/raptor.h: Added raptor_url
+
+	* src/raptor.h: Added raptor_license_string
+
+	* src/raptor_general.c: 2007 and add raptor_license_string
+
 2007-01-07  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_abbrev.c: (raptor_new_abbrev_node): Initialise with
