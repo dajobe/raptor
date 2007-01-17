@@ -333,7 +333,6 @@ main(int argc, char *argv[])
             fputs("\nA feature of the form xmlns:PREFIX=\"URI\" can be used to declare output\nnamespace prefixes and names for serializing using an XML-style syntax\nEither or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\nThis form can be repeated for multiple declarations.\n", stderr);
 
             raptor_finish();
-
             exit(0);
           } else if(!strncmp(optarg, "xmlns", 5)) {
             struct namespace_decl *nd;
@@ -344,6 +343,8 @@ main(int argc, char *argv[])
               fprintf(stderr, "%s: Bad xmlns syntax in '%s'\n", program, 
                       optarg);
               rdfdump_free_namespace_decl(nd);
+
+              raptor_finish();
               exit(0);
             }
 
@@ -513,7 +514,6 @@ main(int argc, char *argv[])
         fputc('\n', stdout);
 
         raptor_finish();
-
         exit(0);
 
 #ifdef SHOW_NAMESPACES_FLAG
@@ -544,8 +544,8 @@ main(int argc, char *argv[])
     }
     fprintf(stderr, "Try `%s " HELP_ARG(h, help) "' for more information.\n",
                     program);
-    raptor_finish();
 
+    raptor_finish();
     exit(1);
   }
 
@@ -606,7 +606,6 @@ main(int argc, char *argv[])
     puts("\nReport bugs to http://bugs.librdf.org/");
 
     raptor_finish();
-
     exit(0);
   }
 
