@@ -1,3 +1,7 @@
+2007-01-16  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rapper.c: Add a another raptor_finish() before exit
+
 2007-01-14  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s loses
