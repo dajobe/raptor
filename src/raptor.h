@@ -813,6 +813,8 @@ void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
 RAPTOR_API
 const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
 
+unsigned char* raptor_parser_generate_id(raptor_parser *rdf_parser, raptor_genid_type type);
+
 /* Get serializer names */
 RAPTOR_API
 int raptor_serializers_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
