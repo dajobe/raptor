@@ -933,7 +933,7 @@ raptor_free_memory(void *ptr)
  * that can be freed inside raptor either internally or via
  * raptor_free_memory.
  *
- * Examples include using this in the raptor_generate_id handler
+ * Examples include using this in the raptor_parser_generate_id() handler
  * code to create new strings that will be used internally
  * as short identifiers and freed later on by the parsers.
  *
@@ -960,7 +960,7 @@ raptor_alloc_memory(size_t size)
  * that can be freed inside raptor either internally or via
  * raptor_free_memory.
  *
- * Examples include using this in the raptor_generate_id handler
+ * Examples include using this in the raptor_parser_generate_id() handler
  * code to create new strings that will be used internally
  * as short identifiers and freed later on by the parsers.
  *

@@ -695,14 +695,14 @@ blank: BLANK_LITERAL
 #if RAPTOR_DEBUG > 1  
   printf("subject blank=\"%s\"\n", $1);
 #endif
-  id=raptor_generate_id((raptor_parser*)rdf_parser, 0, $1);
+  id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, $1);
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
 }
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
   int i;
-  const unsigned char *id=raptor_generate_id((raptor_parser*)rdf_parser, 0, NULL);
+  const unsigned char *id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
   
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
 
@@ -775,7 +775,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
   for(i=raptor_sequence_size($2)-1; i>=0; i--) {
     raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-    const unsigned char *blank_id=raptor_generate_id((raptor_parser*)rdf_parser, 0, NULL);
+    const unsigned char *blank_id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
     raptor_identifier* blank=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
     raptor_identifier* temp;
     
