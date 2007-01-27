@@ -518,7 +518,8 @@ void raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char 
 void raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
 void raptor_parser_factory_add_uri(raptor_parser_factory* factory, const unsigned char *uri_string);
 
-unsigned char* raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag, unsigned char* user_bnodeid);
+unsigned char* raptor_parser_internal_generate_id(raptor_parser *rdf_parser, raptor_genid_type type, unsigned char *user_bnodeid);
+
 #ifdef RAPTOR_DEBUG
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
