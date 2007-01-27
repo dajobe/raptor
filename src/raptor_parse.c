@@ -1589,15 +1589,32 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 }
 
 
-/*
- * raptor_generate_id - Default generate id - internal
- */
-unsigned char *
-raptor_generate_id(raptor_parser *rdf_parser, const int id_for_bag,
-                   unsigned char *user_bnodeid)
+/**
+ * raptor_parser_generate_id:
+ * @rdf_parser: #raptor_parser parser object
+ * @type: Type of ID to generate
+ * 
+ * Type can be either RAPTOR_GENID_TYPE_BNODEID or
+ * RAPTOR_GENID_TYPE_BAGID
+ * 
+ * Return value: newly allocated generated ID or NULL on failure
+ **/
+unsigned char*
+raptor_parser_generate_id(raptor_parser *rdf_parser, raptor_genid_type type)
 {
-  raptor_genid_type type=id_for_bag ? RAPTOR_GENID_TYPE_BNODEID :
-                                      RAPTOR_GENID_TYPE_BAGID;
+  if(type != RAPTOR_GENID_TYPE_BNODEID || 
+     type != RAPTOR_GENID_TYPE_BAGID)
+    return NULL;
+  
+  return raptor_parser_internal_generate_id(rdf_parser, type, NULL);
+}
+
+
+unsigned char*
+raptor_parser_internal_generate_id(raptor_parser *rdf_parser, 
+                                   raptor_genid_type type,
+                                   unsigned char *user_bnodeid)
+{
   if(rdf_parser->generate_id_handler)
     return rdf_parser->generate_id_handler(rdf_parser->generate_id_handler_user_data,
                                            type, user_bnodeid);
