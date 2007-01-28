@@ -2,7 +2,7 @@
  *
  * raptor_parse.c - Parsers
  *
- * Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -1594,6 +1594,8 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
  * @rdf_parser: #raptor_parser parser object
  * @type: Type of ID to generate
  * 
+ * Generate an ID for a parser
+ *
  * Type can be either RAPTOR_GENID_TYPE_BNODEID or
  * RAPTOR_GENID_TYPE_BAGID
  * 
