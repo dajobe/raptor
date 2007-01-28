@@ -321,6 +321,7 @@ static struct {
 static const char* grddl_namespace_uris_ignore_list[]={
   "http://www.w3.org/1999/xhtml",
   "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "http://www.w3.org/2001/XMLSchema",
   NULL
 };
 
@@ -971,7 +972,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   /* Always put something at the start of the list even if NULL 
    * so later it can be searched for in output triples
    */
-  raptor_sequence_push(grddl_parser->profile_uris, grddl_parser->root_ns_uri);
+  raptor_sequence_push(grddl_parser->profile_uris, 
+                       raptor_uri_copy(grddl_parser->root_ns_uri));
         
 
   /* Create the XPath evaluation context */
@@ -1112,4 +1114,14 @@ raptor_init_parser_grddl(void)
   raptor_parser_register_factory("grddl", 
                                  "Gleaning Resource Descriptions from Dialects of Languages",
                                  &raptor_grddl_parser_register_factory);
+
+  xsltInit();
 }
+
+
+void
+raptor_terminate_parser_grddl(void)
+{
+  xsltCleanupGlobals();
+}
+
