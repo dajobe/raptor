@@ -1,3 +1,21 @@
+2007-01-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor_general.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Rename
+	raptor_generate_id to raptor_parser_internal_generate_id with
+	altered calling convention - pass in ID type
+
+	* src/raptor.h: Adedd prototype for raptor_parser_generate_id
+
+	* src/raptor_internal.h: raptor_parser_internal_generate_id
+	renamed from raptor_generate_id.
+
+	* src/raptor_parse.c: (raptor_parser_generate_id): Added as a
+	public function, modified from previously internal
+	raptor_generate_id().
+	(raptor_parser_internal_generate_id): Renamed from
+	raptor_generate_id.
+
 2007-01-16  Dave Beckett  <dave@dajobe.org>
 
 	* utils/rapper.c: Add a another raptor_finish() before exit
