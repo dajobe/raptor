@@ -1,5 +1,21 @@
 2007-01-27  Dave Beckett  <dave@dajobe.org>
 
+	* configure.ac: Add AC_CHECK_FUNC(xsltInit)
+
+	* src/raptor_grddl.c: (raptor_init_parser_grddl): Check for xsltInit
+
+	* src/raptor_parse.c: (raptor_parsers_finish): Call
+	raptor_terminate_parser_grddl when enabled.
+
+	* src/raptor_internal.h: Added raptor_terminate_parser_grddl prototype
+
+	* src/raptor_grddl.c: Add XML schema namespace to ignored
+	namespace list.
+	(raptor_grddl_parse_chunk): Copy root namespace URI when adding to
+	a list.
+	(raptor_terminate_parser_grddl): Added, to free up shared
+	resources.
+
 	* docs/libraptor.3: 1.4.14
 
 	* src/raptor_parse.c: autodocs
