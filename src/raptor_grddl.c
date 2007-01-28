@@ -1115,7 +1115,9 @@ raptor_init_parser_grddl(void)
                                  "Gleaning Resource Descriptions from Dialects of Languages",
                                  &raptor_grddl_parser_register_factory);
 
+#ifdef HAVE_XSLTINIT
   xsltInit();
+#endif
 }
 
 
