@@ -3,10 +3,10 @@
 .\"
 .\" $Id$
 .\"
-.\" Copyright (C) 2002-2006 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2006-10-22"
+.TH libraptor 3 "2007-01-27"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -183,6 +183,12 @@ The current defined parser features are:
   \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
   \fBRAPTOR_FEATURE_START_URI\fR                Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NO_NET\fR                   Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_RESOURCE_BORDER\fR          String
+  \fBRAPTOR_FEATURE_LITERAL_BORDER\fR           String
+  \fBRAPTOR_FEATURE_BNODE_BORDER\fR             String
+  \fBRAPTOR_FEATURE_RESOURCE_FILL\fR            String
+  \fBRAPTOR_FEATURE_LITERAL_FILL\fR             String
+  \fBRAPTOR_FEATURE_BNODE_FILL\fR               String
 .P
 If the \fIscanning\fR
 feature is true (default false), then the RDF/XML parser will look for embedded
@@ -276,6 +282,10 @@ Set the URI filter function \fIfilter\fP for URIs retrieved
 during parsing by the the raptor_parser.
 .IP "\fBint raptor_get_need_base_uri(raptor_parser* \fIrdf_parser\fP)\fP"
 Get a boolean whether this parser needs a base URI to start parsing.
+.IP "\fBunsigned char* raptor_parser_generate_id(raptor_parser* \fIrdf_parser\fP, raptor_genid_type \fItype\fP)\fP"
+Generate an ID for a parser of type \fItype\fP, either
+\fBRAPTOR_GENID_TYPE_BNODEID\fP or \fBRAPTOR_GENID_TYPE_BAGID\fP.
+This uses any configuration set by \fBraptor_set_generate_id_handler\fP.
 .SH "PARSER UTILITY FUNCTIONS"
 .IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **\fIname\fB, const char **\fIlabel\fB)\fR"
 Return the parser name/label for a parser with a given integer
@@ -380,6 +390,9 @@ a null delimiter \\0 is given, no extra escaping is performed.
 .IP "\fBvoid raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement)\fR"
 Write an N-Triples encoded version of the raptor_statement
 \fIstatement\fP to iostream \fIiostr\fP.
+.IP "\fBvoid raptor_iostream_write_string_turtle(raptor_iostream* \fIiostr\fP, const unsigned char* \fIstring\fP, size_t \fIlen\fP)\fP"
+Write an UTF-8 \fIstring\fP of length \fIlen\fP using the Turtle
+"longString" triple quoting format to the iostream \fIiostr\fP.
 .IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type \fIterm\fP)\fR"
 Deprecated, for internal use.
 .SH "XML UTILITY FUNCTIONS"
@@ -479,6 +492,10 @@ The minor version number as an integer.
 The release version number as an integer.
 .IP "\fBconst unsigned int raptor_version_decimal\fR"
 The version number as a single decimal.
+.IP "\fBconst char * const raptor_license_string\fR"
+The license string over several lines including URLs.
+.IP "\fBconst char * const raptor_home_url_string\fR"
+The home page URL as a string.
 .SH "SERIALIZER CLASS"
 This class provides the functionality of turning RDF triples
 into syntaxes - RDF serializing.
@@ -1143,6 +1160,17 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
+.SS 1.4.14
+Add two new exported strings raptor_license_string and raptor_home_url_string.
+.LP
+Added new features for the 'dot' serializer:
+RAPTOR_FEATURE_RESOURCE_BORDER, RAPTOR_FEATURE_LITERAL_BORDER,
+RAPTOR_FEATURE_BNODE_BORDER, RAPTOR_FEATURE_RESOURCE_FILL,
+RAPTOR_FEATURE_LITERAL_FILL and RAPTOR_FEATURE_BNODE_FILL
+.LP
+Added \fBraptor_parser_generate_id\fP
+.LP
+Added \fBraptor_iostream_write_string_turtle\fP
 .SS 1.4.13
 No API changes.
 .SS 1.4.12
