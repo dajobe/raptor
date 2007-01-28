@@ -2,7 +2,7 @@
  *
  * raptor.h - Redland Parser Toolkit for RDF (Raptor) interfaces and definition
  *
- * Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -194,13 +194,6 @@ typedef struct raptor_namespace_s raptor_namespace;
  * Raptor XML Namespace Stack class
  */
 typedef struct raptor_namespace_stack_s raptor_namespace_stack;
-
-/**
- * raptor_turtle_writer:
- *
- * Raptor Turtle Writer class
- */
-typedef struct raptor_turtle_writer_s raptor_turtle_writer;
 
 /**
  * raptor_ntriples_parser:
