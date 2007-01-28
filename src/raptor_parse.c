@@ -127,6 +127,9 @@ void
 raptor_parsers_finish(void)
 {
   raptor_free_sequence(parsers);
+#ifdef RAPTOR_PARSER_GRDDL
+  raptor_terminate_parser_grddl();
+#endif
   parsers=NULL;
 }
 
