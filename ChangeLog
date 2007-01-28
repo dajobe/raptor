@@ -1,3 +1,15 @@
+2007-01-27  Dave Beckett  <dave@dajobe.org>
+
+	* docs/libraptor.3: 1.4.14
+
+	* src/raptor_parse.c: autodocs
+
+	* src/raptor_internal.h: Move raptor_turtle_writer to
+	raptor_internal.h for now.
+
+	* src/raptor.h: Move raptor_turtle_writer to raptor_internal.h for
+	now.
+
 2007-01-26  Dave Beckett  <dave@dajobe.org>
 
 	* src/n3_parser.y, src/ntriples_parse.c, src/raptor_general.c,
