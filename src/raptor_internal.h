@@ -647,6 +647,8 @@ void raptor_init_parser_grddl(void);
 void raptor_init_parser_guess(void);
 void raptor_init_parser_rss(void);
 
+void raptor_terminate_parser_grddl(void);
+
 /* raptor_parse.c */
 void raptor_parsers_init(void);
 void raptor_parsers_finish(void);
