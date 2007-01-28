@@ -3,7 +3,7 @@
  * raptor_turtle_writer.c - Raptor Turtle Writer
  *
  * Copyright (C) 2006, Dave Robillard
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -279,13 +279,13 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
                                  raptor_namespace_get_prefix(ns));
   raptor_iostream_write_string(turtle_writer->iostr, ": <");
   raptor_iostream_write_string(turtle_writer->iostr,
-                               raptor_namespace_get_uri(ns));
+                               raptor_uri_as_string(raptor_namespace_get_uri(ns)));
   raptor_iostream_write_string(turtle_writer->iostr, "> .\n");
 }
 
 
 /**
- * raptor_turtle_writer_reference
+ * raptor_turtle_writer_reference:
  * @turtle_writer: Turtle writer object
  * @uri: URI to write
  *
@@ -303,7 +303,7 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
 
   raptor_iostream_write_byte(turtle_writer->iostr, '<');
   if (uri_str)
-  	raptor_iostream_write_string_ntriples(turtle_writer->iostr,
+    raptor_iostream_write_string_ntriples(turtle_writer->iostr,
                                           uri_str, length, '>');
   raptor_iostream_write_byte(turtle_writer->iostr, '>');
 
@@ -337,7 +337,7 @@ raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
 
 
 /**
- * raptor_iostream_write_string_turtle
+ * raptor_iostream_write_string_turtle:
  * @iostr: #raptor_iostream to write to
  * @string: UTF-8 string to write
  * @len: length of UTF-8 string
