@@ -619,6 +619,8 @@ if test "X$XSLT_CONFIG" != X; then
     AC_MSG_RESULT(no)
   fi
 
+  AC_CHECK_FUNC(xsltInit)
+
   AC_CHECK_HEADERS(libxslt/xslt.h)
   if test "$ac_cv_header_libxslt_xslt_h" = no ; then
     AC_MSG_WARN(libxslt library found but not headers - disabling)
