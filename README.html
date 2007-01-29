@@ -57,9 +57,7 @@ and file-by-file changes in the CVS <a href="ChangeLog">ChangeLog</a>.</p>
 <h3>RDF/XML Parser</h3>
 
 <p>A Parser for the standard
-<a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</a>
-as revised by the
-<a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>.</p>
+<a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</a>.</p>
 <ul>
 <li>Fully handles the <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax updates</a> for <a href="http://www.w3.org/TR/xmlbase/">XML Base</a>, <code>xml:lang</code>, RDF datatyping and Collections.</li>
 <li>Handles all RDF vocabularies such as <a href="http://www.foaf-project.org/">FOAF</a>, <a href="http://www.purl.org/rss/1.0/">RSS 1.0</a>, <a href="http://dublincore.org/">Dublin Core</a>, <a href="http://www.w3.org/TR/owl-features/">OWL</a>, <a href="http://usefulinc.com/doap">DOAP</a></li>
@@ -72,7 +70,7 @@ as revised by the
 
 <p>A parser for the
 <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
-syntax as used by the 
+syntax as defined by the 
 <a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>
 for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 </p>
@@ -105,14 +103,13 @@ format defined in IETF
 <h3>GRDDL parser</h3>
 
 <p>A parser for
-<a href="http://www.w3.org/2004/01/rdxh/spec">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
-which allows reading XHTML and XML as RDF triples by using
-profiles in the document that declare XSLT transforms from the XHTML/XML
-content into RDF/XML which is the RDF content.</p>
+<a href="http://www.w3.org/TR/2006/WD-grddl-20061024/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
+syntax, W3C Working Draft of 2006-10-24 which allows reading XHTML
+and XML as RDF triples by using profiles in the document that declare
+XSLT transforms from the XHTML or XML content into RDF/XML or other
+RDF syntax which can then be parsed.</p>
 
-<p>The parser does not support all the GRDDL styles, for example
-<code>dataview:namespaceTransformation</code>, or perform recursive
-transformations.</p>
+<p>The parser is beta quality.</p>
 
 
 <h2>Serializers</h2>
@@ -122,8 +119,8 @@ transformations.</p>
 <p>A serializer to the standard
 <a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</a>
 as revised by the
-<a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>.
-This writes a plain triple-based RDF/XML serialization with
+<a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>
+in 2004.   This writes a plain triple-based RDF/XML serialization with
 no optimisation or pretty-printing.</p>
 
 <p>A second serializer is provided using several of the RDF/XML
