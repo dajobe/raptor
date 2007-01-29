@@ -109,6 +109,22 @@ the RDF triples that describe the RSS channel found.
 <ulink url="http://www.graphviz.org/">GraphViz</ulink> DOT format.
 </para>
 
+<para>This serializer has a set of associated serializer features
+that may be set to customise the output colors using
+<link linkend="raptor-serializer-set-feature"><function>raptor_serializer_set_feature()</function></link>
+with the appropriate feature name and value as given below.
+</para>
+
+<programlisting>
+RAPTOR_FEATURE_RESOURCE_BORDER 	Border color of resource nodes
+RAPTOR_FEATURE_LITERAL_BORDER 	Border color of literal nodes
+RAPTOR_FEATURE_BNODE_BORDER 	Border color of blank nodes
+RAPTOR_FEATURE_RESOURCE_FILL 	Fill color of resource nodes
+RAPTOR_FEATURE_LITERAL_FILL 	Fill color of literal nodes
+RAPTOR_FEATURE_BNODE_FILL 	Fill color of blank nodes
+</programlisting>
+
+
 </section>
 
 
