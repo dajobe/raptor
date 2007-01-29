@@ -104,9 +104,9 @@ the RDF triples that describe the RSS channel found.
 
 
 <section id="serializer-dot">
-<title>GraphViz dot serializer</title>
+<title>GraphViz dot serializer (name <literal>dot</literal>)</title>
 <para>A serializer to the
-<ulink url="http://www.graphviz.org/">GraphViz</ulink> dot format.
+<ulink url="http://www.graphviz.org/">GraphViz</ulink> DOT format.
 </para>
 
 </section>
