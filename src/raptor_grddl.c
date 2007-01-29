@@ -77,6 +77,11 @@
 
 static void raptor_grddl_relay_triples(void *user_data, const raptor_statement *statement);
 
+static void raptor_libxslt_error_common(raptor_parser* rdf_parser, const char *msg, va_list args, const char *prefix) RAPTOR_PRINTF_FORMAT(2, 0);
+
+static void raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 0);
+
+
 /*
  * XSLT parser object
  */
@@ -133,6 +138,48 @@ struct raptor_grddl_parser_context_s {
 typedef struct raptor_grddl_parser_context_s raptor_grddl_parser_context;
 
 
+static void
+raptor_libxslt_error_common(raptor_parser* rdf_parser,
+                            const char *msg, va_list args, 
+                            const char *prefix)
+{
+  int prefix_length=strlen(prefix);
+  int length;
+  char *nmsg;
+
+  length=prefix_length+strlen(msg)+1;
+  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
+  if(nmsg) {
+    strcpy(nmsg, prefix);
+    strcpy(nmsg+prefix_length, msg);
+    if(nmsg[length-1]=='\n')
+      nmsg[length-1]='\0';
+  }
+
+  raptor_parser_error_varargs(rdf_parser, 
+                              nmsg ? nmsg : msg,
+                              args);
+  if(nmsg)
+    RAPTOR_FREE(cstring,nmsg);
+}
+
+
+static void
+raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  va_list arguments;
+
+  if(!msg || *msg == '\n')
+    return;
+
+  va_start(arguments, msg);
+  raptor_libxslt_error_common(rdf_parser, msg, arguments, "libxslt error: ");
+  va_end(arguments);
+}
+
+
+
 static int
 raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
 {
@@ -173,6 +220,8 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
    * the depth 0 grddl parser
    */
   grddl_parser->visited_uris=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_uri, (raptor_sequence_print_handler*)raptor_sequence_print_uri);
+
+  xsltSetGenericErrorFunc(rdf_parser, raptor_grddl_xsltGenericError_handler);
 
   return 0;
 }
@@ -457,10 +506,17 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   xmlChar *doc_txt=NULL;
   int doc_txt_len=0;
   const char* parser_name;
+  const char* params[5];
+  const unsigned char* base_uri_string;
+  size_t base_uri_len;
+  char *quoted_base_uri=NULL;
+
+  base_uri_string=raptor_uri_as_counted_string(rdf_parser->base_uri, 
+                                               &base_uri_len);
 
   RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI '%s' on doc URI '%s'\n",
                 raptor_uri_as_string(xslt_uri),
-                raptor_uri_as_string(rdf_parser->base_uri));
+                base_uri_string);
   
   sheet = xsltParseStylesheetDoc(xslt_doc);
   if(!sheet) {
@@ -469,8 +525,29 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     ret=1;
     goto cleanup_xslt;
   }
+
+#if 1
+  /* FIXME:
+   * Define 'base' and 'Base' params to allow some XSLT sheets to work:
+   *   http://www.w3.org/2000/07/uri43/uri.xsl
+   *   http://www.w3.org/2000/08/w3c-synd/home2rss.xsl
+   */
+  quoted_base_uri=RAPTOR_MALLOC(cstring, base_uri_len+3);
+  quoted_base_uri[0]='\'';
+  strncpy(quoted_base_uri+1, (const char*)base_uri_string, base_uri_len);
+  quoted_base_uri[base_uri_len+1]='\'';
+  quoted_base_uri[base_uri_len+2]='\0';
   
-  res = xsltApplyStylesheet(sheet, doc, NULL); /* no params */
+  params[0]="base";
+  params[1]=(const char*)quoted_base_uri;
+  params[2]="Base";
+  params[3]=(const char*)quoted_base_uri;
+  params[4]=NULL;
+
+  res = xsltApplyStylesheet(sheet, doc, params);
+#else
+  res = xsltApplyStylesheet(sheet, doc, NULL); /* No params */
+#endif
   if(!res) {
     raptor_parser_error(rdf_parser, "Failed to apply stylesheet in '%s'",
                         raptor_uri_as_string(xslt_uri));
@@ -547,6 +624,10 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   }
   
   cleanup_xslt:
+
+  if(quoted_base_uri)
+    RAPTOR_FREE(cstring, quoted_base_uri);
+  
   if(doc_txt)    
     xmlFree(doc_txt);
   
