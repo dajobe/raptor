@@ -1,3 +1,24 @@
+2007-01-28  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_libxslt_error_common): Added.
+	(raptor_grddl_xsltGenericError_handler): Added.
+	(raptor_grddl_parse_init): Register
+	raptor_grddl_xsltGenericError_handler to handle XSLT generic
+	errors.
+	(raptor_grddl_run_grddl_transform_doc): Set 'base' and 'Base' XSLT
+	parameters to allow some XSLT sheets to work - pragmatism.
+
+	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s gains
+	rdf_parser field.  Add lots more debugging messages
+	(raptor_grddl_parse_init): Init rdf_parser field.
+	(raptor_grddl_parser_add_parent): Relay all triples to the parent
+	grddl parser.
+	(raptor_grddl_ensure_internal_parser): Lose relay flag - always
+	relay.
+	(raptor_grddl_parse_chunk): Copy root_ns_uri if not NULL.  When
+	processing head profile URIs, strip out the GRDDL profile URI
+	before adding them to the grddl_parser->profile_uris sequence.
+
 2007-01-27  Dave Beckett  <dave@dajobe.org>
 
 	* configure.ac: Add AC_CHECK_FUNC(xsltInit)
