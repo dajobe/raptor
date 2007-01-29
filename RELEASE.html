@@ -14,8 +14,10 @@
 <p>Not yet released.
 </p>
 
+<h3>General Changes</h3>
+
 <p>Added a 
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a> serialiser by Dave Robillard based on the existing RDF/XML-Abbrev
+<a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a> serialiser by <a href="http://codeson.net/">Dave Robillard</a> based on the existing RDF/XML-Abbrev
 serialiser.
 </p>
 
@@ -24,43 +26,117 @@ serialiser.
 by Evan Nemerson.
 </p>
 
-<p>Added an internal <code>raptor_abbrev</code> subsystem for the
-common 'abbreviated serializer' core that is shared between the
-RDF/XML and Turtle serializer.
-</p>
-
-<p>Added an internal <code>turtle_writer</code> API to allow
-serializing triples to Turtle.  This may be in the public API
-in a future release.
-</p>
-
-<p>The GRDDL parser now tries to guess which of the RDF/XML or Turtle
-parser is wanted from an XSLT result.  Guessing is performed because
-not all the XSLT sheets used in the demonstrations set the mime type
-to match Turtle's unregistered type, or because the return no mime
-type, or return an XML one, when it was expected RDF/XML would be
-received.
+<p>The GRDDL parser now does namespace and profile URI recursion and
+has other improvements and fixes.
 </p>
 
 <p>Fixed Issues:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=141">#0000141</a>: Crash when GRDDL parser is used with a used-generated blank node ID prefix.</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=143">#0000143</a>: Crash when GRDDL parser fails to retrieve URI.</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=157">#0000157</a>: Crash when RDF/XML Abbrev serializer sees a <code>rdf:type</code> predicate with a literal object.</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=32">#0000032</a>: GRDDL indirection feature request</a>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=141">#0000141</a>: Crash when GRDDL parser is used with a used-generated blank node ID prefix.</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=143">#0000143</a>: Crash when GRDDL parser fails to retrieve URI.</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=148">#0000148</a>: A public function to generate a blank ID would be nice though.</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=155">#0000155</a>: entity processing in literal property elements (with libxml)</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=157">#0000157</a>: Crash when RDF/XML Abbrev serializer sees a <code>rdf:type</code> predicate with a literal object.</li>
 </ul>
+
+<h3>Configuration Changes</h3>
+
+<p><code>raptor-config</code> gains a <code>--private-libs</code>
+for the internal libraries used in building raptor, with the public
+ones only emitted with <code>--libs</code>.
+</p>
+
+<p><code>raptor.pc</code> now uses <code>Libs.private</code> for
+internal dynamically linked libraries.
+</p>
 
 <p>The libxml minimum version is now 2.6.8 since 2.6.7 crashes on
 PPC64 Linux.  2.6.8 was released March 2004 so this should be no
 burden.</p>
+
+<p>Do not use <code>PATH_MAX</code> so raptor can build on Hurd.
+</p>
+
+<h3>Parser Changes</h3>
+
+<p>RDF/XML parser now looks for the RDF/XML root element and
+namespace declaration in the initial bytes of content when guessing.
+This allows content that is in other mime types such as
+<code>application/xml</code> to be more likely guessed as RDF/XML.
+</p>
+
+<p>When guessing a parser to use, if an an exact match is found for
+the mime type (q=10), then that parser is used.
+</p>
+
+<p>The GRDDL parser has several changes:</p>
+<ul>
+  <li>Recurses through the root element's namespace URI and the profile
+    URIs.  It excludes several common namespace URIs from processing
+    (XHTML, RDF/XML, XML Schema) and does not traverse the GRDDL profile
+    URI itself.
+  </li>
+  <li>Tries to guess which of the RDF/XML or Turtle parser is wanted
+    from an XSLT result.  Guessing is performed because not all the XSLT
+    sheets used in the demonstrations set the mime type to match Turtle's
+    unregistered type, or because the return no mime type, or return an
+    XML one, when it was expected RDF/XML would be received.
+  </li>
+  <li>Watches the processed URIs and never visits the same URI more
+    than once in a session.
+  </li>
+  <li>Passes on general XSLT errors to raptor rather than letting the
+    default (printing to stderr) work.
+  </li>
+  <li>Declares XSLT 'base' and 'Base' parameters to allow some XSLT
+    sheets to work - pragmatism.
+  </li>
+</ul>
+
+<h3>Serializer Changes</h3>
+
+<p>Added a new
+<a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a>
+serializer and two new internal APIs based on the existing RDF/XML-Abbrev
+serialiser, written by <a href="http://codeson.net/">Dave Robillard</a>:
+<ul>
+  <li><code>turtle_writer</code> for serializing triples to Turtle This
+    may be moved to the public API in a future release.</li>
+  <li><code>raptor_abbrev</code> for the common 'abbreviated
+    serializer' core that is shared between the RDF/XML-Abbrev and Turtle
+    serializer.</li>
+</ul>
+
+<p>Added a new GraphViz
+<a href="http://www.graphviz.org/doc/info/lang.html">DOT format</a> serialiser
+writen by Evan Nemerson.
+</p>
+
+<p>Note that testing the turtle serializing (<code>make test</code>)
+requires the <code>rdfdiff -u</code> and a few of the tests take some
+time to run.</p>
+
+
+<h3>Other Changes</h3>
+
+<p>Added <code>raptor_home_url_string</code>
+and <code>raptor_license_string</code> exported strings.
+</p>
+
+<p>Added <code>raptor_parser_generate_id()</code as a public function
+to generate an identifier for a parser.
+</p>
+
+<p><code>rdfdiff</code> gains the -u/--base-uri option to specify the
+from file base URI so that if the from file is a local file or
+relative URI, it can be given an absolute base.</p>
 
 <p>Failures to retrieve content from a URI using
 the <code>raptor_www</code> class implementations now return a
 failure as well as setting the HTTP status code to 403 or 404 as
 appropriate.  Previously success may have been returned with no
 bytes.</p>
-
-<p>Do not use <code>PATH_MAX</code> so raptor can build on Hurd.
-</p>
 
 
 <h2 id="rel1_4_13"><a name="rel1_4_13">Raptor 1.4.13 Changes</a></h2>
