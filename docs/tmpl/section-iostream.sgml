@@ -251,3 +251,13 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @statement: 
 
 
+<!-- ##### FUNCTION raptor_iostream_write_string_turtle ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@string: 
+@len: 
+
+

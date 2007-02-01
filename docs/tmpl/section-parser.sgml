@@ -333,3 +333,13 @@ adjust how parsing is performed.
 @user_data: 
 
 
+<!-- ##### FUNCTION raptor_parser_generate_id ##### -->
+<para>
+
+</para>
+
+@rdf_parser: 
+@type: 
+@Returns: 
+
+

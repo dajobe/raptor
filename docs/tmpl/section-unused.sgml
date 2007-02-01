@@ -33,6 +33,15 @@ With some versions of gcc this may give a compilation warning.
 
 
 
+<!-- ##### MACRO RAPTOR_PRINTF_FORMAT ##### -->
+<para>
+
+</para>
+
+@string_index: 
+@first_to_check_index: 
+
+
 <!-- ##### TYPEDEF raptor_ntriples_parser ##### -->
 <para>
 
