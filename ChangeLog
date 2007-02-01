@@ -1,6 +1,6 @@
 2007-01-28  Dave Beckett  <dave@dajobe.org>
 
-	* Snapshotted raptor_1_4_14 for 1.4.14 release (SVN r11858)
+	* Snapshotted raptor_1_4_14 for 1.4.14 release (SVN r11860)
 
 	* src/raptor_grddl.c: (raptor_libxslt_error_common): Added.
 	(raptor_grddl_xsltGenericError_handler): Added.
