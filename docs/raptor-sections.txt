@@ -96,6 +96,7 @@ raptor_parser_get_feature_string
 raptor_set_parser_strict
 raptor_parser_get_accept_header
 raptor_parser_set_uri_filter
+raptor_parser_generate_id
 </SECTION>
 
 <SECTION>
@@ -266,6 +267,7 @@ raptor_iostream_format_hexadecimal
 raptor_iostream_write_stringbuffer
 raptor_iostream_write_string_ntriples
 raptor_iostream_write_statement_ntriples
+raptor_iostream_write_string_turtle
 </SECTION>
 
 <SECTION>
@@ -360,6 +362,7 @@ raptor_utf8_check
 <FILE>section-unused</FILE>
 RAPTOR_API
 RAPTOR_DEPRECATED
+RAPTOR_PRINTF_FORMAT
 raptor_ntriples_parser
 raptor_uri_source
 raptor_ntriples_term_type
