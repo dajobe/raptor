@@ -275,6 +275,11 @@ raptor_grddl_parser_add_parent(raptor_parser *rdf_parser,
                                raptor_grddl_parser_context* parent_grddl_parser)
 {
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
+
+  /* Do not set parent twice */
+  if(grddl_parser->visited_uris == parent_grddl_parser->visited_uris)
+    return;
+  
   /* free any sequence here */
   if(grddl_parser->visited_uris)
     raptor_free_sequence(grddl_parser->visited_uris);
