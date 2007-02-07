@@ -1031,7 +1031,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   doc=grddl_parser->ctxt->myDoc;
   if(!doc) {
     raptor_parser_error(rdf_parser, "Failed to create XML DOM for document");
-    return 1;
+    ret=1;
+    goto tidy;
   }
 
 
@@ -1088,20 +1089,23 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         
 
   /* Create the XPath evaluation context */
-  grddl_parser->xpathCtx = xmlXPathNewContext(doc);
   if(!grddl_parser->xpathCtx) {
-    raptor_parser_error(rdf_parser,
-                        "Failed to create XPath context for document");
-    return 1;
+    grddl_parser->xpathCtx = xmlXPathNewContext(doc);
+    if(!grddl_parser->xpathCtx) {
+      raptor_parser_error(rdf_parser,
+                          "Failed to create XPath context for document");
+      ret=1;
+      goto tidy;
+    }
+    
+    xmlXPathRegisterNs(grddl_parser->xpathCtx,
+                       (const xmlChar*)"html",
+                       (const xmlChar*)"http://www.w3.org/1999/xhtml");
+    xmlXPathRegisterNs(grddl_parser->xpathCtx,
+                       (const xmlChar*)"dataview",
+                       (const xmlChar*)"http://www.w3.org/2003/g/data-view#");
   }
-
-  xmlXPathRegisterNs(grddl_parser->xpathCtx,
-                     (const xmlChar*)"html",
-                     (const xmlChar*)"http://www.w3.org/1999/xhtml");
-  xmlXPathRegisterNs(grddl_parser->xpathCtx,
-                     (const xmlChar*)"dataview",
-                     (const xmlChar*)"http://www.w3.org/2003/g/data-view#");
-
+  
   /* Try <head profile> URIs */
   if(1) {
     raptor_sequence* result;
@@ -1170,8 +1174,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   } /* end XPath expression loop */
   
-  if(rdf_parser->failed)
-    return 1;
+  if(rdf_parser->failed) {
+    ret=1;
+    goto tidy;
+  }
 
 
   /* Apply all transformation URIs seen */
@@ -1185,7 +1191,22 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       break;
   }
 
-  
+
+ tidy:
+  if(grddl_parser->ctxt) {
+    if(grddl_parser->ctxt->myDoc) {
+      xmlFreeDoc(grddl_parser->ctxt->myDoc);
+      grddl_parser->ctxt->myDoc=NULL;
+    }
+    xmlFreeParserCtxt(grddl_parser->ctxt);
+    grddl_parser->ctxt=NULL;
+  }
+
+  if(grddl_parser->xpathCtx) {
+    xmlXPathFreeContext(grddl_parser->xpathCtx);
+    grddl_parser->xpathCtx=NULL;
+  }
+
   return (ret != 0);
 }
 
