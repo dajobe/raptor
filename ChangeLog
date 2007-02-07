@@ -1,9 +1,18 @@
+2007-02-06  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Tidy up doc and
+	xpath context on errors or success so that it is initialised next
+	time for new documents.
+
+	* src/raptor_grddl.c: (raptor_grddl_parser_add_parent): Do not set
+	parent twice
+
 2007-01-31  Dave Beckett  <dave@dajobe.org>
 
-	* Snapshotted raptor_1_4_14 for 1.4.14 release (SVN r11863)
+	* configure.ac, src/win32_raptor_config.h: Bumped version to
+	1.4.15
 
-	* docs/tmpl/section-iostream.sgml, docs/tmpl/section-parser.sgml,
-	docs/tmpl/section-unused.sgml: Updated tmpls
+	* Snapshotted raptor_1_4_14 for 1.4.14 release (SVN r11863)
 
 2007-01-28  Dave Beckett  <dave@dajobe.org>
 
