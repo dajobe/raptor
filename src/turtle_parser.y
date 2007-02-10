@@ -1202,6 +1202,10 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
   if(mime_type) {
     if(strstr((const char*)mime_type, "turtle"))
       score+=6;
+#ifndef RAPTOR_PARSER_N3
+    if(strstr((const char*)mime_type, "n3"))
+      score+=3;
+#endif
   }
   
   return score;
@@ -1230,6 +1234,7 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 
 #ifndef RAPTOR_PARSER_N3
   raptor_parser_factory_add_mime_type(factory, "text/n3", 3);
+  raptor_parser_factory_add_mime_type(factory, "text/rdf+n3", 3);
   raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3);
 #endif
 }
