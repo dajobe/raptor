@@ -1033,6 +1033,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     grddl_parser->ctxt->replaceEntities = 1;
     grddl_parser->ctxt->loadsubset = 1;
 
+    xmlSetStructuredErrorFunc(rdf_parser, 
+                              raptor_libxml_xmlStructuredErrorFunc);
+
     if(is_end)
       xmlParseChunk(grddl_parser->ctxt, (const char*)s, 0, is_end);
   } else if((s && len) || is_end)
