@@ -198,6 +198,7 @@ extern void raptor_libxml_init_generic_error_handlers(raptor_sax2 *sax2);
 extern void raptor_libxml_validation_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_libxml_free(xmlParserCtxtPtr xc);
+void raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err);
 
 /* raptor_parse.c - exported to libxml part */
 extern void raptor_libxml_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
