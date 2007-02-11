@@ -53,10 +53,12 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
+#include <libxml/xpath.h>
+/* for xmlXPathRegisterNs() */
 #include <libxml/xpathInternals.h>
+#include <libxml/xinclude.h>
 
 #include <libxslt/xslt.h>
-#include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
 
@@ -75,7 +77,7 @@
  */
 
 
-static void raptor_grddl_relay_triples(void *user_data, const raptor_statement *statement);
+static void raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement);
 
 static void raptor_libxslt_error_common(raptor_parser* rdf_parser, const char *msg, va_list args, const char *prefix) RAPTOR_PRINTF_FORMAT(2, 0);
 
@@ -111,7 +113,7 @@ struct raptor_grddl_parser_context_s {
   raptor_sequence* doc_transform_uris;
 
   /* Copy of the user data statement_handler overwritten to point to
-   * raptor_grddl_relay_triples() 
+   * raptor_grddl_filter_triples() 
    */
   void* saved_user_data;
   raptor_statement_handler saved_statement_handler;
@@ -289,7 +291,7 @@ raptor_grddl_parser_add_parent(raptor_parser *rdf_parser,
   grddl_parser->grddl_depth= parent_grddl_parser->grddl_depth+1;
 
   grddl_parser->saved_user_data= parent_grddl_parser->rdf_parser;
-  grddl_parser->saved_statement_handler= raptor_grddl_relay_triples;
+  grddl_parser->saved_statement_handler= raptor_grddl_filter_triples;
 }
 
     
@@ -389,74 +391,76 @@ static const char* grddl_namespace_uris_ignore_list[]={
 
 
 static void
-raptor_grddl_relay_triples(void *user_data, const raptor_statement *statement)
+raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
   raptor_grddl_parser_context* grddl_parser;
+  int i;
+  raptor_uri* predicate_uri;
 
   grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
   /* Look for a triple <uri> <uri> <uri> */
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-     statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-     statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    int i;
-    raptor_uri* predicate_uri=grddl_parser->namespace_transformation_uri;
+  if(!statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+     !statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+     !statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    return;
 
-#ifdef RAPTOR_DEBUG
-    RAPTOR_DEBUG2("Parser %p: Relaying statement: ", rdf_parser);
-    raptor_print_statement(statement, stderr);
-    fputc('\n', stderr);
+#if RAPTOR_DEBUG > 2
+  RAPTOR_DEBUG2("Parser %p: Relaying statement: ", rdf_parser);
+  raptor_print_statement(statement, stderr);
+  fputc('\n', stderr);
 #endif
 
-    RAPTOR_DEBUG3("Parser %p: Checking against %d profile URIs\n", 
-                  rdf_parser, raptor_sequence_size(grddl_parser->profile_uris));
-
-    /* Look for (i=0, root namespace URI)
-     * <document-root-element-namespace-URI> data-view:namespaceTransformation ?tr
-     * or (i>0, profile URIs)
-     * <document-root-element-namespace-URI> data-view:profileTransformation ?tr
-     * and then ?tr becomes a new document transformation URI
-     */
-    for(i=0; i < raptor_sequence_size(grddl_parser->profile_uris); i++) {
-      raptor_uri* profile_uri=raptor_sequence_get_at(grddl_parser->profile_uris, i);
-      if(i==1)
-        predicate_uri=grddl_parser->profile_transformation_uri;
-
-      if(!profile_uri)
-        continue;
+#if RAPTOR_DEBUG > 1
+  RAPTOR_DEBUG3("Parser %p: Checking against %d profile URIs\n", 
+                rdf_parser, raptor_sequence_size(grddl_parser->profile_uris));
+#endif
+  
+  /* Look for (i=0, root namespace URI)
+   * <document-root-element-namespace-URI> data-view:namespaceTransformation ?tr
+   * or (i>0, profile URIs)
+   * <document-root-element-namespace-URI> data-view:profileTransformation ?tr
+   * and then ?tr becomes a new document transformation URI
+   */
+  predicate_uri=grddl_parser->namespace_transformation_uri;
+  for(i=0; i < raptor_sequence_size(grddl_parser->profile_uris); i++) {
+    raptor_uri* profile_uri=raptor_sequence_get_at(grddl_parser->profile_uris, i);
+    if(i==1)
+      predicate_uri=grddl_parser->profile_transformation_uri;
+    
+    if(!profile_uri)
+      continue;
+    
+    if(raptor_uri_equals((raptor_uri*)statement->subject, profile_uri) &&
+       raptor_uri_equals((raptor_uri*)statement->predicate, predicate_uri)) {
+      raptor_uri* uri=(raptor_uri*)statement->object;
       
-      if(raptor_uri_equals((raptor_uri*)statement->subject, profile_uri) &&
-         raptor_uri_equals((raptor_uri*)statement->predicate, predicate_uri)) {
-        raptor_uri* uri=(raptor_uri*)statement->object;
-        
-        RAPTOR_DEBUG4("Parser %p: Matches profile URI #%d '%s'\n",
-                      rdf_parser, i, raptor_uri_as_string(profile_uri));
-
-        /* add object as URI to transformation URI*/
-        RAPTOR_DEBUG2("Found document transformation URI '%s'\n",
-                      raptor_uri_as_string(uri));
-        raptor_sequence_push(grddl_parser->doc_transform_uris, 
-                             raptor_uri_copy(uri));
-      } else {
-        RAPTOR_DEBUG4("Parser %p: Failed to match profile URI #%d '%s'\n",
-                      rdf_parser, i, raptor_uri_as_string(profile_uri));
-      }
+#if RAPTOR_DEBUG > 1
+      RAPTOR_DEBUG4("Parser %p: Matches profile URI #%d '%s'\n",
+                    rdf_parser, i, raptor_uri_as_string(profile_uri));
+#endif
       
+      /* add object as URI to transformation URI*/
+      RAPTOR_DEBUG2("Found document transformation URI '%s'\n",
+                    raptor_uri_as_string(uri));
+      raptor_sequence_push(grddl_parser->doc_transform_uris, 
+                           raptor_uri_copy(uri));
+    } else {
+#if RAPTOR_DEBUG > 1
+      RAPTOR_DEBUG4("Parser %p: Failed to match profile URI #%d '%s'\n",
+                    rdf_parser, i, raptor_uri_as_string(profile_uri));
+#endif
     }
-
+    
   }
 
-  /* Send triple onwards to the original caller */
-  if(grddl_parser->saved_statement_handler)
-    grddl_parser->saved_statement_handler(grddl_parser->saved_user_data, 
-                                         statement);
 }
 
 
 static int
 raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
-                                    const char* parser_name)
+                                    const char* parser_name, int filter)
 {
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
@@ -488,9 +492,11 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
     }
   }
 
-  /* Go via relay */
-  grddl_parser->internal_parser->user_data= rdf_parser;
-  grddl_parser->internal_parser->statement_handler= raptor_grddl_relay_triples;
+  /* Filter the triples for profile/namespace URIs */
+  if(filter) {
+    grddl_parser->internal_parser->user_data= rdf_parser;
+    grddl_parser->internal_parser->statement_handler= raptor_grddl_filter_triples;
+  }
 
   return 0;
 }
@@ -618,7 +624,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     goto cleanup_xslt;
   }
 
-  ret=raptor_grddl_ensure_internal_parser(rdf_parser, parser_name);
+  ret=raptor_grddl_ensure_internal_parser(rdf_parser, parser_name, 0);
   if(ret)
     goto cleanup_xslt;
   
@@ -917,7 +923,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
         if(start == end)
           continue;
         
-#if RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG
         RAPTOR_DEBUG2("Got list match URI '%s'\n", start);
 #endif
         
@@ -934,7 +940,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       }
       RAPTOR_FREE(cstring, buffer);
     } else {
-#if RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG
       RAPTOR_DEBUG2("Got single match URI '%s'\n", uri_string);
 #endif
 
@@ -965,7 +971,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri)
   if(raptor_grddl_seen_uri(grddl_parser, uri))
     return 0;
   
-  if(raptor_grddl_ensure_internal_parser(rdf_parser, parser_name))
+  if(raptor_grddl_ensure_internal_parser(rdf_parser, parser_name, 1))
     return 1;
   
   RAPTOR_DEBUG2("Running recursive GRDDL operation on URI '%s'\n",
@@ -1044,6 +1050,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     ret=1;
     goto tidy;
   }
+
+  RAPTOR_DEBUG3("Parser %p: Running XInclude processing on URI '%s'\n",
+                rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
+  xmlXIncludeProcess(doc);
 
 
   RAPTOR_DEBUG3("Parser %p: Running top-level GRDDL on URI '%s'\n",
@@ -1149,6 +1159,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       /* Recursive GRDDL through all the <head profile> URIs */
       for(i=1; i < raptor_sequence_size(grddl_parser->profile_uris); i++) {
         uri=raptor_sequence_get_at(grddl_parser->profile_uris, i);
+        if(!uri)
+          continue;
+
         RAPTOR_DEBUG4("Processing <head profile> #%d of URI %s: URI %s\n",
                       i, raptor_uri_as_string(rdf_parser->base_uri),
                         raptor_uri_as_string(uri));
@@ -1191,7 +1204,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
 
   /* Apply all transformation URIs seen */
-  for(i=0; i < raptor_sequence_size(grddl_parser->doc_transform_uris); i++) {
+  while(raptor_sequence_size(grddl_parser->doc_transform_uris)) {
     uri=raptor_sequence_unshift(grddl_parser->doc_transform_uris);
     RAPTOR_DEBUG3("Parser %p: Running transformation URI '%s'\n",
                   rdf_parser, raptor_uri_as_string(uri));
