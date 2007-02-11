@@ -500,5 +500,153 @@ raptor_libxml_free(xmlParserCtxtPtr xc) {
   xmlFreeParserCtxt(xc);
 }
 
+
+#if LIBXML_VERSION > 20621
+#define XML_LAST_DL XML_FROM_I18N
+#else
+#if LIBXML_VERSION > 20617
+#define XML_LAST_DL XML_FROM_WRITER
+#else
+#if LIBXML_VERSION > 20616
+#define XML_LAST_DL XML_FROM_CHECK
+#else
+#if LIBXML_VERSION > 20615
+#define XML_LAST_DL XML_FROM_VALID
+#else
+#define XML_LAST_DL XML_FROM_XSLT
+#endif
+#endif
+#endif
+#endif
+
+
+/* All other symbols not specifically below noted were added during
+ * the period 2-10 October 2003 which is before the minimum libxml2
+ * version 2.6.8 release date of Mar 23 2004.
+ *
+ * When the minimum libxml2 version goes up, the #ifdefs for
+ * older versions can be removed.
+ */
+static const char* raptor_libxml_domain_labels[XML_LAST_DL+2]= {
+  NULL,                /* XML_FROM_NONE */
+  "parser",            /* XML_FROM_PARSER */
+  "tree",              /* XML_FROM_TREE */
+  "namespace",         /* XML_FROM_NAMESPACE */
+  "validity",          /* XML_FROM_DTD */
+  "HTML parser",       /* XML_FROM_HTML */
+  "memory",            /* XML_FROM_MEMORY */
+  "output",            /* XML_FROM_OUTPUT */
+  "I/O" ,              /* XML_FROM_IO */
+  "FTP",               /* XML_FROM_FTP */
+#if LIBXML_VERSION > 20618
+  /* 2005-02-13 - v2.6.18 */
+  "HTTP",              /* XML_FROM_HTTP */
+#endif
+  "XInclude",          /* XML_FROM_XINCLUDE */
+  "XPath",             /* XML_FROM_XPATH */
+  "parser",            /* XML_FROM_XPOINTER */
+  "regexp",            /* XML_FROM_REGEXP */
+  "Schemas datatype",  /* XML_FROM_DATATYPE */
+  "Schemas parser",    /* XML_FROM_SCHEMASP */
+  "Schemas validity",  /* XML_FROM_SCHEMASV */
+  "Relax-NG parser",   /* XML_FROM_RELAXNGP */
+  "Relax-NG validity", /* XML_FROM_RELAXNGV */
+  "Catalog",           /* XML_FROM_CATALOG */
+  "C14",               /* XML_FROM_C14N */
+  "XSLT",              /* XML_FROM_XSLT */
+#if LIBXML_VERSION > 20615
+  /* 2004-10-07 - v2.6.15 */
+  "validity",          /* XML_FROM_VALID */
+#endif
+#if LIBXML_VERSION > 20616
+  /* 2004-11-04 - v2.6.16 */
+  "checking",          /* XML_FROM_CHECK */
+#endif
+#if LIBXML_VERSION > 20617
+  /* 2005-01-04 - v2.6.17 */
+  "writer",            /* XML_FROM_WRITER */
+#endif
+#if LIBXML_VERSION > 20621
+  /* 2005-08-24 - v2.6.21 */
+  "module",            /* XML_FROM_MODULE */
+  "encoding",          /* XML_FROM_I18N */
+#endif
+  NULL
+};
+
+
+void 
+raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_locator l;
+  raptor_stringbuffer* sb;
+  char *nmsg;
+  
+  if(err == NULL || err->code == XML_ERR_OK || err->level == XML_ERR_NONE)
+    return;
+
+  /* Do not warn about things with no location */
+  if(err->level == XML_ERR_WARNING && !err->file)
+    return;
+  
+  if(err->file)
+    l.uri=raptor_new_uri((const unsigned char*)err->file);
+  else
+    l.uri=NULL;
+  l.file=   NULL;
+  l.line=   (err->line > 0) ? err->line : -1 ;
+  l.column= (err->int2 > 0) ? err->int2 : -1;
+  l.byte=   -1;
+  
+  sb=raptor_new_stringbuffer();
+  raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)"XML ",
+                                            4, 1);
+  
+  if(err->domain != XML_FROM_NONE && err->domain < XML_LAST_DL) {
+    const unsigned char* label;
+    label=(const unsigned char*)raptor_libxml_domain_labels[(int)err->domain];
+    raptor_stringbuffer_append_string(sb, label, 1);
+    raptor_stringbuffer_append_counted_string(sb, 
+                                              (const unsigned char*)" ", 1, 1);
+  }
+  
+  if(err->level == XML_ERR_WARNING)
+    raptor_stringbuffer_append_counted_string(sb, 
+                                              (const unsigned char*)"warning: ", 
+                                              9, 1);
+  else /*  XML_ERR_ERROR or XML_ERR_FATAL */
+    raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)"error: ", 
+                                              7, 1);
+  
+  if(err->message) {
+    unsigned char* msg;
+    size_t len;
+    msg=(unsigned char*)err->message;
+    len= strlen((const char*)msg);
+    if(len && msg[len-1] == '\n')
+      msg[--len]='\0';
+    
+    raptor_stringbuffer_append_counted_string(sb, msg, len, 1);
+  }
+  
+  /* When err->domain == XML_FROM_XPATH then err->int1 is
+   * the offset into err->str1, the line with the error
+   */
+  
+  nmsg=(char*)raptor_stringbuffer_as_string(sb);
+  if(err->level == XML_ERR_FATAL)
+    rdf_parser->fatal_error_handler(rdf_parser->fatal_error_user_data, &l, nmsg);
+  else if(err->level == XML_ERR_ERROR)
+    rdf_parser->error_handler(rdf_parser->error_user_data, &l, nmsg);
+  else
+    rdf_parser->warning_handler(rdf_parser->warning_user_data, &l, nmsg);
+  
+  raptor_free_stringbuffer(sb);
+  if(l.uri)
+    raptor_free_uri(l.uri);
+}
+
+
 /* end if RAPTOR_XML_LIBXML */
 #endif
