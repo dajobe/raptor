@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * rdfdump.c - Raptor RDF Parser example code 
+ * rapper.c - Raptor RDF Parsing and Serializing utility
  *
- * Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -159,7 +159,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #endif
 
 
-#define GETOPT_STRING "nsaf:ghrqo:wecm:i:v"
+#define GETOPT_STRING "nsaf:ghrqo:wecm:i:vt"
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
@@ -180,6 +180,7 @@ static struct option long_options[] =
   {"replace-newlines", 0, 0, 'r'},
   {"scan", 0, 0, 's'},
   {"show-namespaces", 0, 0, SHOW_NAMESPACES_FLAG},
+  {"trace", 0, 0, 't'},
   {"ignore-warnings", 0, 0, 'w'},
   {"version", 0, 0, 'v'},
   {NULL, 0, 0, 0}
@@ -243,6 +244,15 @@ rdfdump_free_namespace_decl(void* data) {
 }
 
 
+static int 
+rapper_uri_trace(void *user_data, raptor_uri* uri)
+{
+  fprintf(stderr, "%s: Processing URI %s\n", program,
+          raptor_uri_as_string(uri));
+  return 0;
+}
+
+
 int
 main(int argc, char *argv[]) 
 {
@@ -257,6 +267,7 @@ main(int argc, char *argv[])
   int strict_mode=0;
   int usage=0;
   int help=0;
+  int trace=0;
   raptor_uri *base_uri;
   raptor_uri *uri;
   char *p;
@@ -428,6 +439,10 @@ main(int argc, char *argv[])
 
       case 's':
         scanning=1;
+        break;
+
+      case 't':
+        trace=1;
         break;
 
       case 'q':
@@ -683,6 +698,9 @@ main(int argc, char *argv[])
     raptor_parser_set_feature_string(rdf_parser, 
                                      parser_feature,
                                      parser_feature_string_value);
+
+  if(trace)
+    raptor_parser_set_uri_filter(rdf_parser, rapper_uri_trace, NULL);
 
 
   if(!quiet) {
