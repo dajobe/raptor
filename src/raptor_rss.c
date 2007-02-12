@@ -2,7 +2,7 @@
  *
  * raptor_rss.c - Raptor RSS tag soup parser
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * Contributions:
@@ -189,10 +189,7 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
     raptor_rss_namespaces_info[n].nspace=nspace;
   }
 
-  sax2=raptor_new_sax2(rdf_parser, 
-                       rdf_parser, raptor_parser_error_message_handler,
-                       rdf_parser, raptor_parser_fatal_error_message_handler,
-                       rdf_parser, raptor_parser_warning_message_handler);
+  sax2=raptor_new_sax2(rdf_parser, &rdf_parser->error_handlers);
   rss_parser->sax2=sax2;
 
   raptor_sax2_set_start_element_handler(sax2, raptor_rss_start_element_handler);
@@ -200,8 +197,6 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_characters_handler(sax2, raptor_rss_cdata_handler);
   raptor_sax2_set_cdata_handler(sax2, raptor_rss_cdata_handler);
   raptor_sax2_set_comment_handler(sax2, raptor_rss_comment_handler);
-
-  raptor_sax2_set_locator(sax2, &rdf_parser->locator);
 
   return 0;
 }
