@@ -613,6 +613,7 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
+    puts(HELP_TEXT("t", "trace           ", "Trace URIs retrieved during parsing"));
 #ifdef SHOW_NAMESPACES_FLAG
     puts(HELP_TEXT_LONG("show-namespaces ", "Show namespaces as they are declared"));
 #endif
