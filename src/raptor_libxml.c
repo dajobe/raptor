@@ -501,16 +501,16 @@ raptor_libxml_free(xmlParserCtxtPtr xc) {
 }
 
 
-#if LIBXML_VERSION > 20621
+#if LIBXML_VERSION >= 20621
 #define XML_LAST_DL XML_FROM_I18N
 #else
-#if LIBXML_VERSION > 20617
+#if LIBXML_VERSION >= 20617
 #define XML_LAST_DL XML_FROM_WRITER
 #else
-#if LIBXML_VERSION > 20616
+#if LIBXML_VERSION >= 20616
 #define XML_LAST_DL XML_FROM_CHECK
 #else
-#if LIBXML_VERSION > 20615
+#if LIBXML_VERSION >= 20615
 #define XML_LAST_DL XML_FROM_VALID
 #else
 #define XML_LAST_DL XML_FROM_XSLT
@@ -538,7 +538,7 @@ static const char* raptor_libxml_domain_labels[XML_LAST_DL+2]= {
   "output",            /* XML_FROM_OUTPUT */
   "I/O" ,              /* XML_FROM_IO */
   "FTP",               /* XML_FROM_FTP */
-#if LIBXML_VERSION > 20618
+#if LIBXML_VERSION >= 20618
   /* 2005-02-13 - v2.6.18 */
   "HTTP",              /* XML_FROM_HTTP */
 #endif
@@ -554,19 +554,19 @@ static const char* raptor_libxml_domain_labels[XML_LAST_DL+2]= {
   "Catalog",           /* XML_FROM_CATALOG */
   "C14",               /* XML_FROM_C14N */
   "XSLT",              /* XML_FROM_XSLT */
-#if LIBXML_VERSION > 20615
+#if LIBXML_VERSION >= 20615
   /* 2004-10-07 - v2.6.15 */
   "validity",          /* XML_FROM_VALID */
 #endif
-#if LIBXML_VERSION > 20616
+#if LIBXML_VERSION >= 20616
   /* 2004-11-04 - v2.6.16 */
   "checking",          /* XML_FROM_CHECK */
 #endif
-#if LIBXML_VERSION > 20617
+#if LIBXML_VERSION >= 20617
   /* 2005-01-04 - v2.6.17 */
   "writer",            /* XML_FROM_WRITER */
 #endif
-#if LIBXML_VERSION > 20621
+#if LIBXML_VERSION >= 20621
   /* 2005-08-24 - v2.6.21 */
   "module",            /* XML_FROM_MODULE */
   "encoding",          /* XML_FROM_I18N */
