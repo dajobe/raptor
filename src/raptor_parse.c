@@ -459,6 +459,8 @@ raptor_new_parser(const char *name) {
 
   rdf_parser->failed=0;
 
+  rdf_parser->error_handlers.locator=&rdf_parser->locator;
+  
   /* Initialise default (lax) feature values */
   raptor_set_parser_strict(rdf_parser, 0);
 
@@ -811,8 +813,8 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   else if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
     raptor_www_set_uri_filter(www, raptor_parse_uri_no_net_filter, rdf_parser);
   
-  raptor_www_set_error_handler(www, rdf_parser->error_handler, 
-                               rdf_parser->error_user_data);
+  raptor_www_set_error_handler(www, rdf_parser->error_handlers.error_handler, 
+                               rdf_parser->error_handlers.error_user_data);
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
                                      rdf_parser);
 
@@ -847,41 +849,16 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
   va_list arguments;
 
   va_start(arguments, message);
-
-  raptor_parser_fatal_error_varargs(parser, message, arguments);
-  
+  if(parser)
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL,
+                             parser->error_handlers.fatal_error_handler,
+                             parser->error_handlers.fatal_error_user_data, 
+                             &parser->locator,
+                             message, arguments); 
+  else
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL, NULL, NULL, NULL, 
+                             message, arguments); 
   va_end(arguments);
-}
-
-
-/*
- * raptor_parser_fatal_error_varargs - Fatal Error from a parser - Internal
- */
-void
-raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message,
-                                  va_list arguments)
-{
-  parser->failed=1;
-
-  if(parser->fatal_error_handler) {
-    char *buffer=raptor_vsnprintf(message, arguments);
-    if(!buffer) {
-      fprintf(stderr, "raptor_parser_fatal_error_varargs: Out of memory\n");
-      return;
-    }
-
-    parser->fatal_error_handler(parser->fatal_error_user_data, 
-                                &parser->locator, buffer); 
-    RAPTOR_FREE(cstring, buffer);
-    abort();
-  }
-
-  raptor_print_locator(stderr, &parser->locator);
-  fprintf(stderr, " raptor fatal error - ");
-  vfprintf(stderr, message, arguments);
-  fputc('\n', stderr);
-
-  abort();
 }
 
 
@@ -897,17 +874,14 @@ raptor_parser_fatal_error_message_handler(void *user_data,
 
   parser->failed=1;
 
-  if(parser && parser->error_handler) {
-    parser->fatal_error_handler(parser->fatal_error_user_data, locator, message);
-    abort();
-  }
-
-  raptor_print_locator(stderr, locator);
-  fprintf(stderr, " raptor fatal error - ");
-  fputs(message, stderr);
-  fputc('\n', stderr);
-
-  abort();
+  if(parser)
+    raptor_log_error(RAPTOR_LOG_LEVEL_FATAL,
+                     parser->error_handlers.fatal_error_handler,
+                     parser->error_handlers.fatal_error_user_data, 
+                     &parser->locator,
+                     message); 
+  else
+    raptor_log_error(RAPTOR_LOG_LEVEL_FATAL, NULL, NULL, NULL, message); 
 }
 
 
@@ -942,11 +916,15 @@ raptor_parser_simple_error(void* user_data, const char *message, ...)
   va_start(arguments, message);
 
   if(parser)
-    raptor_invoke_message_varargs("error",
-                                  parser->error_handler,
-                                  parser->error_user_data,
-                                  &parser->locator,
-                                  message, arguments);
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                             parser->error_handlers.error_handler,
+                             parser->error_handlers.error_user_data,
+                             &parser->locator,
+                             message, arguments);
+  else
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                             NULL, NULL, NULL,
+                             message, arguments);
   
   va_end(arguments);
 }
@@ -965,11 +943,15 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
                             va_list arguments)
 {
   if(parser)
-    raptor_invoke_message_varargs("error",
-                                  parser->error_handler,
-                                  parser->error_user_data,
-                                  &parser->locator,
-                                  message, arguments);
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                             parser->error_handlers.error_handler,
+                             parser->error_handlers.error_user_data,
+                             &parser->locator,
+                             message, arguments);
+  else
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                             NULL, NULL, NULL,
+                             message, arguments);
 }
 
 
@@ -983,15 +965,14 @@ raptor_parser_error_message_handler(void *user_data,
 {
   raptor_parser* parser=(raptor_parser*)user_data;
 
-  if(parser && parser->error_handler) {
-    parser->error_handler(parser->error_user_data, locator, message);
-    return;
-  }
-
-  raptor_print_locator(stderr, locator);
-  fprintf(stderr, " raptor error - ");
-  fputs(message, stderr);
-  fputc('\n', stderr);
+  if(parser)
+    raptor_log_error(RAPTOR_LOG_LEVEL_ERROR,
+                     parser->error_handlers.error_handler,
+                     parser->error_handlers.error_user_data,
+                     &parser->locator,
+                     message);
+  else
+    raptor_log_error(RAPTOR_LOG_LEVEL_ERROR, NULL, NULL, NULL, message);
 }
 
 
@@ -1006,10 +987,15 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
   va_start(arguments, message);
 
   if(parser)
-    raptor_invoke_message_varargs("warning",
-                                  parser->warning_handler,
-                                  parser->warning_user_data, &parser->locator,
-                                  message, arguments);
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
+                             parser->error_handlers.warning_handler,
+                             parser->error_handlers.warning_user_data,
+                             &parser->locator,
+                             message, arguments);
+  else
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
+                             NULL, NULL, NULL,
+                             message, arguments);
   
   va_end(arguments);
 }
@@ -1025,15 +1011,14 @@ raptor_parser_warning_message_handler(void *user_data,
 {
   raptor_parser* parser=(raptor_parser*)user_data;
 
-  if(parser && parser->warning_handler) {
-    parser->warning_handler(parser->warning_user_data, locator, message);
-    return;
-  }
-
-  raptor_print_locator(stderr, locator);
-  fprintf(stderr, " raptor warning - ");
-  fputs(message, stderr);
-  fputc('\n', stderr);
+  if(parser)
+    raptor_log_error(RAPTOR_LOG_LEVEL_WARNING,
+                     parser->error_handlers.warning_handler,
+                     parser->error_handlers.warning_user_data,
+                     &parser->locator,
+                     message);
+  else
+    raptor_log_error(RAPTOR_LOG_LEVEL_WARNING, NULL, NULL, NULL, message);
 }
 
 
@@ -1055,8 +1040,8 @@ void
 raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data,
                                raptor_message_handler handler)
 {
-  parser->fatal_error_user_data=user_data;
-  parser->fatal_error_handler=handler;
+  parser->error_handlers.fatal_error_user_data=user_data;
+  parser->error_handlers.fatal_error_handler=handler;
 }
 
 
@@ -1075,8 +1060,8 @@ void
 raptor_set_error_handler(raptor_parser* parser, void *user_data,
                          raptor_message_handler handler)
 {
-  parser->error_user_data=user_data;
-  parser->error_handler=handler;
+  parser->error_handlers.error_user_data=user_data;
+  parser->error_handlers.error_handler=handler;
 }
 
 
@@ -1095,8 +1080,8 @@ void
 raptor_set_warning_handler(raptor_parser* parser, void *user_data,
                            raptor_message_handler handler)
 {
-  parser->warning_user_data=user_data;
-  parser->warning_handler=handler;
+  parser->error_handlers.warning_user_data=user_data;
+  parser->error_handlers.warning_handler=handler;
 }
 
 
@@ -1788,12 +1773,8 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   int i;
   
   to_parser->user_data= from_parser->user_data;
-  to_parser->fatal_error_user_data= from_parser->fatal_error_user_data;
-  to_parser->error_user_data= from_parser->error_user_data;
-  to_parser->warning_user_data= from_parser->warning_user_data;
-  to_parser->fatal_error_handler= from_parser->fatal_error_handler;
-  to_parser->error_handler= from_parser->error_handler;
-  to_parser->warning_handler= from_parser->warning_handler;
+  memcpy(&to_parser->error_handlers, &from_parser->error_handlers,
+         sizeof(raptor_error_handlers));
   to_parser->statement_handler= from_parser->statement_handler;
   to_parser->generate_id_handler_user_data= from_parser->generate_id_handler_user_data;
   to_parser->generate_id_handler= from_parser->generate_id_handler;
