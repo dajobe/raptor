@@ -1,14 +1,14 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
 .\"
-.\" rapper.1 - Raptor RDF parser and serializer utility manual page
+.\" rapper.1 - Raptor RDF parsing and serializing utility manual page
 .\"
-.\" Copyright (C) 2002-2006 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2005-12-20"
+.TH rapper 1 "2007-02-11"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
-rapper \- Raptor RDF parser and serializer utility
+rapper \- Raptor RDF parsing and serializing utility
 .SH SYNOPSIS
 .B rapper
 .RB [ OPTIONS ]
@@ -95,6 +95,10 @@ Scan for <rdf:RDF> element in the RDF/XML source content.
 .B \-\-show-namespaces
 Print namespaces as they are seen in the input.
 .TP
+.B \-t, \-\-trace
+Print URIs retrieved during parsing.  Especially useful for 
+monitoring what the guess and GRDDL parsers are doing.
+.TP
 .B \-w, \-\-ignore-warnings
 Ignore warnings, do not emit the messages.
 .TP
@@ -130,6 +134,8 @@ http://purl.org/rss/1.0/spec
 .SH SEE ALSO
 .BR libraptor(3), raptor-config(1)
 .SH CHANGES
+.SS 1.4.15
+Added -t/--trace to do URI traces.
 .SS 1.4.5
 Updated to add serializer rdfxml-abbrev
 .SS 1.4.3
