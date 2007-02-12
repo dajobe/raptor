@@ -2,7 +2,7 @@
  *
  * raptor_www.c - Raptor WWW retrieval core
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -441,20 +441,10 @@ void
 raptor_www_error_varargs(raptor_www* www, const char *message, 
                          va_list arguments)
 {
-  if(www->error_handler) {
-    char *buffer=raptor_vsnprintf(message, arguments);
-    if(!buffer) {
-      fprintf(stderr, "raptor_www_error: Out of memory\n");
-      return;
-    }
-    www->error_handler(www->error_data, &www->locator, buffer);
-    RAPTOR_FREE(cstring, buffer);
-  } else {
-    raptor_print_locator(stderr, &www->locator);
-    fprintf(stderr, " raptor www error - ");
-    vfprintf(stderr, message, arguments);
-    fputc('\n', stderr);
-  }
+  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                           www->error_handler, www->error_data,
+                           &www->locator,
+                           message, arguments);
 }
 
   
