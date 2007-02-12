@@ -2,7 +2,7 @@
  *
  * raptor_libxml.c - Raptor libxml functions
  *
- * Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -240,31 +240,6 @@ raptor_libxml_update_document_locator(raptor_sax2* sax2,
 }
   
 
-static void raptor_libxml_call_handler(void *data, raptor_message_handler handler, raptor_locator* locator, const char *message,  va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
-
-static void
-raptor_libxml_call_handler(void *data,
-                           raptor_message_handler handler,
-                           raptor_locator* locator,
-                           const char *message, 
-                           va_list arguments)
-{
-  if(handler) {
-    char *buffer=raptor_vsnprintf(message, arguments);
-    size_t length;
-    if(!buffer) {
-      fprintf(stderr, "raptor_libxml_call_handler: Out of memory\n");
-      return;
-    }
-    length=strlen(buffer);
-    if(buffer[length-1]=='\n')
-      buffer[length-1]='\0';
-    handler(data, locator, buffer);
-    RAPTOR_FREE(cstring, buffer);
-  }
-}
-
-
 static void
 raptor_libxml_warning(void* user_data, const char *msg, ...) 
 {
@@ -296,10 +271,12 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
       nmsg[length-2]='\0';
   }
   
-  raptor_libxml_call_handler(sax2->warning_data,
-                             sax2->warning_handler, sax2->locator, 
-                             nmsg ? nmsg : msg, 
-                             args);
+  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                           sax2->error_handlers->warning_handler, 
+                           sax2->error_handlers->warning_user_data,
+                           sax2->locator, 
+                           nmsg ? nmsg : msg, 
+                           args);
   if(nmsg)
     RAPTOR_FREE(cstring,nmsg);
   va_end(args);
@@ -339,15 +316,19 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
   }
 
   if(is_fatal)
-    raptor_libxml_call_handler(sax2->fatal_error_data,
-                               sax2->fatal_error_handler, sax2->locator, 
-                               nmsg ? nmsg : msg, 
-                               args);
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL,
+                             sax2->error_handlers->fatal_error_handler, 
+                             sax2->error_handlers->fatal_error_user_data,
+                             sax2->locator, 
+                             nmsg ? nmsg : msg, 
+                             args);
   else
-    raptor_libxml_call_handler(sax2->error_data,
-                               sax2->error_handler, sax2->locator, 
-                               nmsg ? nmsg : msg, 
-                               args);
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                             sax2->error_handlers->error_handler, 
+                             sax2->error_handlers->error_user_data,
+                             sax2->locator, 
+                             nmsg ? nmsg : msg, 
+                             args);
   
   if(nmsg)
     RAPTOR_FREE(cstring,nmsg);
@@ -422,10 +403,12 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
       nmsg[length-2]='\0';
   }
 
-  raptor_libxml_call_handler(sax2->warning_data,
-                             sax2->warning_handler, sax2->locator, 
-                             nmsg ? nmsg : msg, 
-                             args);
+  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
+                           sax2->error_handlers->warning_handler, 
+                           sax2->error_handlers->warning_user_data,
+                           sax2->locator, 
+                           nmsg ? nmsg : msg, 
+                           args);
   if(nmsg)
     RAPTOR_FREE(cstring,nmsg);
   va_end(args);
@@ -573,13 +556,12 @@ static const char* raptor_libxml_domain_labels[XML_LAST_DL+2]= {
 #endif
   NULL
 };
-
+  
 
 void 
 raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
-  raptor_locator l;
+  raptor_error_handlers* error_handlers=(raptor_error_handlers*)user_data;
   raptor_stringbuffer* sb;
   char *nmsg;
   
@@ -589,15 +571,11 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   /* Do not warn about things with no location */
   if(err->level == XML_ERR_WARNING && !err->file)
     return;
+
+  /* XML fatal errors never cause an abort */
+  if(err->level == XML_ERR_FATAL)
+    err->level= XML_ERR_ERROR;
   
-  if(err->file)
-    l.uri=raptor_new_uri((const unsigned char*)err->file);
-  else
-    l.uri=NULL;
-  l.file=   NULL;
-  l.line=   (err->line > 0) ? err->line : -1 ;
-  l.column= (err->int2 > 0) ? err->int2 : -1;
-  l.byte=   -1;
   
   sb=raptor_new_stringbuffer();
   raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)"XML ",
@@ -636,15 +614,25 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   
   nmsg=(char*)raptor_stringbuffer_as_string(sb);
   if(err->level == XML_ERR_FATAL)
-    rdf_parser->fatal_error_handler(rdf_parser->fatal_error_user_data, &l, nmsg);
+    raptor_log_error(RAPTOR_LOG_LEVEL_FATAL, 
+                     error_handlers->fatal_error_handler,
+                     error_handlers->fatal_error_user_data,
+                     error_handlers->locator,
+                     nmsg);
   else if(err->level == XML_ERR_ERROR)
-    rdf_parser->error_handler(rdf_parser->error_user_data, &l, nmsg);
+    raptor_log_error(RAPTOR_LOG_LEVEL_ERROR, 
+                     error_handlers->error_handler,
+                     error_handlers->error_user_data,
+                     error_handlers->locator,
+                     nmsg);
   else
-    rdf_parser->warning_handler(rdf_parser->warning_user_data, &l, nmsg);
+    raptor_log_error(RAPTOR_LOG_LEVEL_WARNING, 
+                     error_handlers->warning_handler,
+                     error_handlers->warning_user_data,
+                     error_handlers->locator,
+                     nmsg);
   
   raptor_free_stringbuffer(sb);
-  if(l.uri)
-    raptor_free_uri(l.uri);
 }
 
 
