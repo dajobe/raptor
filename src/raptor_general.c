@@ -808,94 +808,126 @@ raptor_check_ordinal(const unsigned char *name) {
 }
 
 
-/**
- * raptor_invoke_simple_message_varargs:
- * @type: string type "warning" or "error" for messages
- * @handler: simple message handler
- * @user_data; message handler data 
- * @message: message format string and arguments
- *
- * Call message handler/data with varargs  - Internal
- *
- * Calls a function matching the raptor_simple_message_handler API but
- * allows variable arguments
- */
+/* internal */
 void
-raptor_invoke_simple_message_varargs(const char *type,
-                                     raptor_simple_message_handler handler,
-                                     void* user_data, const char *message, 
-                                     va_list arguments)
+raptor_error_handlers_init(raptor_error_handlers* error_handlers,
+                           void *fatal_error_user_data,
+                           raptor_message_handler fatal_error_handler,
+                           void *error_user_data,
+                           raptor_message_handler error_handler,
+                           void *warning_user_data,
+                           raptor_message_handler warning_handler,
+                           raptor_locator* locator)
 {
-  char *buffer;
-  size_t length;
+  error_handlers->fatal_error_user_data=fatal_error_user_data;
+  error_handlers->fatal_error_handler=raptor_parser_fatal_error_message_handler;
 
-  buffer=raptor_vsnprintf(message, arguments);
-  if(!buffer) {
-    fprintf(stderr, "raptor_invoke_simple_message: Out of memory\n");
-    fprintf(stderr, "raptor %s - ", type);
-    vfprintf(stderr, message, arguments);
-    fputc('\n', stderr);
-  } else {
-    if(handler) {
-      length=strlen(buffer);
-      if(buffer[length-1]=='\n')
-        buffer[length-1]='\0';
-      handler(user_data, buffer);
-    } else {
-      fprintf(stderr, " raptor %s - ", type);
-      fputs(buffer, stderr);
-      fputc('\n', stderr);
-    }
-    RAPTOR_FREE(cstring, buffer);
-  }
+  error_handlers->error_user_data=error_user_data;
+  error_handlers->error_handler=raptor_parser_error_message_handler;
+
+  error_handlers->warning_user_data=warning_user_data;
+  error_handlers->warning_handler=raptor_parser_warning_message_handler;
+
+  error_handlers->locator=locator;
 }
 
 
-/**
- * raptor_invoke_message_varargs:
- * @type: string type "warning" or "error" for messages
- * @handler: simple message handler
- * @user_data; message handler data 
- * @locator: raptor_locator
- * @message: message format string and arguments
- *
- * Call message handler/data with varargs  - Internal
- *
- * Calls a function matching the raptor_message_handler API but
- * allows variable arguments
- */
+static const char* raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
+  "none"
+  "fatal error",
+  "error",
+  "warning"
+};
+
+
+/* internal */
 void
-raptor_invoke_message_varargs(const char *type,
-                              raptor_message_handler handler,
-                              void* user_data, 
-                              raptor_locator* locator,
-                              const char *message, va_list arguments)
+raptor_log_error_simple(raptor_log_level level,
+                        raptor_message_handler handler, void* handler_data,
+                        raptor_locator* locator, const char* message, ...)
+{
+  va_list arguments;
+
+  if(level == RAPTOR_LOG_LEVEL_NONE)
+    return;
+
+  va_start(arguments, message);
+  raptor_log_error_varargs(level, handler, handler_data, locator,
+                           message, arguments);
+  va_end(arguments);
+}
+
+
+void
+raptor_log_error_varargs(raptor_log_level level,
+                         raptor_message_handler handler, void* handler_data,
+                         raptor_locator* locator,
+                         const char* message, va_list arguments)
 {
   char *buffer;
   size_t length;
+  
+  if(level == RAPTOR_LOG_LEVEL_NONE)
+    return;
 
   buffer=raptor_vsnprintf(message, arguments);
   if(!buffer) {
-    fprintf(stderr, "raptor_invoke_message: Out of memory\n");
-    fprintf(stderr, "raptor %s - ", type);
+    if(locator) {
+      raptor_print_locator(stderr, locator);
+      fputc(' ', stderr);
+    }
+    fputs("raptor ", stderr);
+    fputs(raptor_log_level_labels[level], stderr);
+    fputs(" - ", stderr);
     vfprintf(stderr, message, arguments);
     fputc('\n', stderr);
-  } else {
-    if(handler) {
-      length=strlen(buffer);
-      if(buffer[length-1]=='\n')
-        buffer[length-1]='\0';
-      handler(user_data, locator, buffer);
-    } else {
-      if(locator)
-        raptor_print_locator(stderr, locator);
-      fprintf(stderr, " raptor %s - ", type);
-      fputs(buffer, stderr);
-      fputc('\n', stderr);
-    }
-    RAPTOR_FREE(cstring, buffer);
+    return;
   }
+
+  length=strlen(buffer);
+  if(buffer[length-1]=='\n')
+    buffer[length-1]='\0';
+  
+  raptor_log_error(level, handler, handler_data, locator, buffer);
+
+  RAPTOR_FREE(cstring, buffer);
 }
+
+
+/* internal */
+void
+raptor_log_error(raptor_log_level level,
+                 raptor_message_handler handler, void* handler_data,
+                 raptor_locator* locator, const char* message)
+{
+  if(level == RAPTOR_LOG_LEVEL_NONE)
+    return;
+
+  if(handler)
+    /* This is the place in raptor that MOST of the user error handler
+     * functions are called.  Not all, since things that use
+     * raptor_simple_message_handler are called in their respective codes.
+     *
+     * FIXME: In future, this should be the only place but it requires
+     * a public API change such as e.g. raptor_new_qname()
+     */
+    handler(handler_data, locator, message);
+  else {
+    if(locator) {
+      raptor_print_locator(stderr, locator);
+      fputc(' ', stderr);
+    }
+    fputs("raptor ", stderr);
+    fputs(raptor_log_level_labels[level], stderr);
+    fputs(" - ", stderr);
+    fputs(message, stderr);
+    fputc('\n', stderr);
+  }
+  
+  if(level == RAPTOR_LOG_LEVEL_FATAL)
+    abort();
+}
+  
 
 
 /**
