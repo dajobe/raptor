@@ -190,18 +190,8 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   grddl_parser->rdf_parser=rdf_parser;
   
   /* sax2 structure - only for recording error pointers */
-  grddl_parser->sax2=raptor_new_sax2(rdf_parser,
-                                    rdf_parser,
-                                    raptor_parser_error_message_handler,
-                                    rdf_parser,
-                                    raptor_parser_fatal_error_message_handler,
-                                    rdf_parser,
-                                    raptor_parser_warning_message_handler);
-  /* FIXME: this should really be part of raptor_new_sax2() 
-   * since every use of the above calls the following soon after
-   */
-  raptor_sax2_set_locator(grddl_parser->sax2, &rdf_parser->locator);
-  
+  grddl_parser->sax2=raptor_new_sax2(rdf_parser, &rdf_parser->error_handlers);
+
   /* The following error fields are normally initialised by
    * raptor_libxml_init() via raptor_sax2_parse_start() which is
    * not used here as we go to libxml calls direct.
@@ -726,8 +716,8 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
-  raptor_www_set_error_handler(www, rdf_parser->error_handler, 
-                               rdf_parser->error_user_data);
+  raptor_www_set_error_handler(www, rdf_parser->error_handlers.error_handler, 
+                               rdf_parser->error_handlers.error_user_data);
   raptor_www_set_write_bytes_handler(www, write_bytes_handler,
                                      write_bytes_user_data);
   
@@ -1033,7 +1023,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     grddl_parser->ctxt->replaceEntities = 1;
     grddl_parser->ctxt->loadsubset = 1;
 
-    xmlSetStructuredErrorFunc(rdf_parser, 
+    xmlSetStructuredErrorFunc(&rdf_parser->error_handlers, 
                               raptor_libxml_xmlStructuredErrorFunc);
 
     if(is_end)
