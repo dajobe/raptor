@@ -2,7 +2,7 @@
  *
  * raptor_rdfxml.c - Raptor RDF/XML Parser
  *
- * Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -1058,11 +1058,8 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
 {
   raptor_rdfxml_parser* rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   raptor_sax2* sax2;
-  
-  sax2=raptor_new_sax2(rdf_parser, 
-                       rdf_parser, raptor_parser_error_message_handler,
-                       rdf_parser, raptor_parser_fatal_error_message_handler,
-                       rdf_parser, raptor_parser_warning_message_handler);
+
+  sax2=raptor_new_sax2(rdf_parser, &rdf_parser->error_handlers);
   rdf_xml_parser->sax2=sax2;
 
   raptor_sax2_set_start_element_handler(sax2, raptor_rdfxml_start_element_handler);
@@ -1073,7 +1070,6 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_unparsed_entity_decl_handler(sax2, raptor_rdfxml_unparsed_entity_decl_handler);
   raptor_sax2_set_external_entity_ref_handler(sax2, raptor_rdfxml_external_entity_ref_handler);
   raptor_sax2_set_namespace_handler(sax2, raptor_rdfxml_sax2_new_namespace_handler);
-  raptor_sax2_set_locator(sax2, &rdf_parser->locator);
   
   RAPTOR_RDF_type_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("type");
   RAPTOR_RDF_value_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("value");
