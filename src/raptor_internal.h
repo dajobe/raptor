@@ -2,7 +2,7 @@
  *
  * raptor_internal.h - Redland Parser Toolkit for RDF (Raptor) internals
  *
- * Copyright (C) 2002-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -270,9 +270,33 @@ struct raptor_namespace_s {
   int is_rdf_schema;
 };
 
+
+typedef struct {
+  void *fatal_error_user_data;
+  void *error_user_data;
+  void *warning_user_data;
+
+  raptor_message_handler fatal_error_handler;
+  raptor_message_handler error_handler;
+  raptor_message_handler warning_handler;
+
+  raptor_locator* locator;
+} raptor_error_handlers;
+
+
+typedef enum {
+  RAPTOR_LOG_LEVEL_NONE,
+  RAPTOR_LOG_LEVEL_FATAL,
+  RAPTOR_LOG_LEVEL_ERROR,
+  RAPTOR_LOG_LEVEL_WARNING,
+  RAPTOR_LOG_LEVEL_LAST=RAPTOR_LOG_LEVEL_WARNING
+} raptor_log_level;
+
+
 #ifdef RAPTOR_XML_LIBXML
 #define RAPTOR_LIBXML_MAGIC 0x8AF108
 #endif
+
 
 /*
  * Raptor parser object
@@ -303,13 +327,7 @@ struct raptor_parser_s {
   /* stuff for our user */
   void *user_data;
 
-  void *fatal_error_user_data;
-  void *error_user_data;
-  void *warning_user_data;
-
-  raptor_message_handler fatal_error_handler;
-  raptor_message_handler error_handler;
-  raptor_message_handler warning_handler;
+  raptor_error_handlers error_handlers;
 
   void* unused1; /* UNUSED - re-use struct slot later needed */
 
@@ -536,9 +554,6 @@ const char* raptor_parser_get_accept_header_all(void);
 int raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri);
 
 /* raptor_general.c */
-void raptor_invoke_message_varargs(const char *type, raptor_message_handler handler, void* user_data, raptor_locator* locator, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(5, 0);
-void raptor_invoke_simple_message_varargs(const char *type, raptor_simple_message_handler handler, void* user_data, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
-
 extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_parser_simple_error(void* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
@@ -549,6 +564,12 @@ extern void raptor_parser_fatal_error_message_handler(void *user_data, raptor_lo
 extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
 extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments)  RAPTOR_PRINTF_FORMAT(2, 0);
 void raptor_parser_warning_message_handler(void *user_data, raptor_locator* locator, const char *message);
+
+void raptor_error_handlers_init(raptor_error_handlers* error_handlers, void *fatal_error_user_data, raptor_message_handler fatal_error_handler, void *error_user_data, raptor_message_handler error_handler, void *warning_user_data, raptor_message_handler warning_handler, raptor_locator* locator);
+/* logging */
+void raptor_log_error_simple(raptor_log_level level, raptor_message_handler handler, void* handler_data, raptor_locator* locator, const char* message, ...) RAPTOR_PRINTF_FORMAT(5, 0);
+void raptor_log_error_varargs(raptor_log_level level, raptor_message_handler handler, void* handler_data, raptor_locator* locator, const char* message, va_list arguments) RAPTOR_PRINTF_FORMAT(5, 0);
+void raptor_log_error(raptor_log_level level, raptor_message_handler handler, void* handler_data, raptor_locator* locator, const char* message);
 
 
 /* raptor_parse.c */
@@ -884,14 +905,7 @@ struct raptor_sax2_s {
 
   raptor_locator *locator;
 
-  void *error_data;
-  raptor_message_handler error_handler;
-
-  void *fatal_error_data;
-  raptor_message_handler fatal_error_handler;
-
-  void *warning_data;
-  raptor_message_handler warning_handler;
+  raptor_error_handlers* error_handlers;
 
   /* New XML namespace callback */
   raptor_namespace_handler  namespace_handler;
@@ -916,7 +930,7 @@ struct raptor_sax2_s {
 void raptor_sax2_init(void);
 void raptor_sax2_finish(void);
 
-raptor_sax2* raptor_new_sax2(void *user_data, void *error_data, raptor_message_handler error_handler, void *fatal_error_data, raptor_message_handler fatal_error_handler, void *warning_data, raptor_message_handler warning_handler);
+raptor_sax2* raptor_new_sax2(void *user_data, raptor_error_handlers* error_handlers);
 void raptor_free_sax2(raptor_sax2 *sax2);
 
 void raptor_sax2_set_start_element_handler(raptor_sax2* sax2, raptor_sax2_start_element_handler handler);
@@ -927,7 +941,6 @@ void raptor_sax2_set_comment_handler(raptor_sax2* sax2, raptor_sax2_comment_hand
 void raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler);
 void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler);
 void raptor_sax2_set_namespace_handler(raptor_sax2* sax2, raptor_namespace_handler handler);
-void raptor_sax2_set_locator(raptor_sax2* sax2, raptor_locator* locator);
 void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
 void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
