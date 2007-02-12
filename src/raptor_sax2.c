@@ -2,7 +2,7 @@
  *
  * raptor_sax2.c - Raptor SAX2 API
  *
- * Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -71,10 +71,7 @@ raptor_sax2_finish(void)
 
 
 raptor_sax2*
-raptor_new_sax2(void* user_data,
-                void *error_data, raptor_message_handler error_handler,
-                void *fatal_error_data, raptor_message_handler fatal_error_handler,
-                void *warning_data, raptor_message_handler warning_handler)
+raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
 {
   raptor_sax2* sax2;
   sax2=(raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(raptor_sax2));
@@ -84,14 +81,17 @@ raptor_new_sax2(void* user_data,
 #ifdef RAPTOR_XML_LIBXML
   sax2->magic=RAPTOR_LIBXML_MAGIC;
 #endif
-  
+
   sax2->user_data=user_data;
-  sax2->error_data=error_data;
-  sax2->error_handler=error_handler;
-  sax2->fatal_error_data=fatal_error_data;
-  sax2->fatal_error_handler=fatal_error_handler;
-  sax2->warning_data=warning_data;
-  sax2->warning_handler=warning_handler;
+
+  sax2->locator=error_handlers->locator;
+  
+  sax2->error_handlers=error_handlers;
+
+#ifdef RAPTOR_XML_LIBXML
+  xmlSetStructuredErrorFunc(&sax2->error_handlers, 
+                            raptor_libxml_xmlStructuredErrorFunc);
+#endif
   
   return sax2;
 }
@@ -209,13 +209,6 @@ raptor_sax2_set_namespace_handler(raptor_sax2* sax2,
 }
 
 
-void
-raptor_sax2_set_locator(raptor_sax2* sax2, raptor_locator* locator)
-{
-  sax2->locator=locator;
-}
-
-
 raptor_xml_element*
 raptor_xml_element_pop(raptor_sax2 *sax2) 
 {
@@ -324,11 +317,11 @@ raptor_sax2_simple_error(void* user_data, const char *message, ...)
   va_start(arguments, message);
 
   if(sax2)
-    raptor_invoke_message_varargs("error",
-                                  sax2->error_handler,
-                                  sax2->error_data,
-                                  sax2->locator,
-                                  message, arguments);
+    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                             sax2->error_handlers->error_handler,
+                             sax2->error_handlers->error_user_data,
+                             sax2->locator,
+                             message, arguments);
   
   va_end(arguments);
 }
@@ -362,6 +355,9 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_init(sax2, base_uri);
+
+  xmlSetStructuredErrorFunc(sax2->error_handlers, 
+                            raptor_libxml_xmlStructuredErrorFunc);
 
 #if LIBXML_VERSION < 20425
   sax2->first_read=1;
@@ -404,8 +400,11 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     if(!len) {
       /* no data given at all - emit a similar message to expat */
       raptor_sax2_update_document_locator(sax2, sax2->locator);
-      sax2->error_handler(sax2->error_data, sax2->locator,
-                          "XML Parsing failed - no element found");
+      raptor_log_error_simple(RAPTOR_LOG_LEVEL_ERROR,
+                              sax2->error_handlers->error_handler,
+                              sax2->error_handlers->error_user_data,
+                              sax2->locator,
+                              "XML Parsing failed - no element found");
       return 1;
     }
 
@@ -532,14 +531,17 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
       strncpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
       strncpy(error_buffer+ERROR_PREFIX_LEN, error_message, error_length+1);
 
-      sax2->error_handler(sax2->error_data, sax2->locator, error_buffer);
+      raptor_log_error_simple(RAPTOR_LOG_LEVEL_ERROR,
+                              sax2->error_handlers->error_handler,
+                              sax2->error_handlers->error_user_data,
+                              sax2->locator, error_buffer);
       RAPTOR_FREE(cstring, error_buffer);
     } else
-      sax2->error_handler(sax2->error_data, sax2->locator, "XML Parsing failed");
+      raptor_log_error_simple(RAPTOR_LOG_LEVEL_ERROR,
+                              sax2->error_handlers->error_handler,
+                              sax2->error_handlers->error_user_data,
+                              sax2->locator, "XML Parsing failed");
   }
-#endif
-#ifdef RAPTOR_XML_LIBXML
-  sax2->error_handler(sax2->error_data, sax2->locator, "XML Parsing failed");
 #endif
 
   return 1;
@@ -653,7 +655,10 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
       unsigned char *dst = xmlStrdup(value);
 
       if (!dst) {
-        sax2->error_handler(sax2->error_data, sax2->locator, "Out of memory");
+        raptor_log_error_simple(RAPTOR_LOG_LEVEL_FATAL,
+                                sax2->error_handlers->fatal_error_handler,
+                                sax2->error_handlers->fatal_error_user_data,
+                                sax2->locator, "Out of memory");
 	return;
       }
 
@@ -728,7 +733,10 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
       } else if(!strcmp((char*)atts[i], "xml:lang")) {
         xml_language=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)atts[i+1])+1);
         if(!xml_language) {
-          sax2->fatal_error_handler(sax2->fatal_error_data, sax2->locator, "Out of memory");
+          raptor_log_error_simple(RAPTOR_LOG_LEVEL_FATAL,
+                                  sax2->error_handlers->fatal_error_handler,
+                                  sax2->error_handlers->fatal_error_user_data,
+                                  sax2->locator, "Out of memory");
           return;
         }
 
@@ -783,7 +791,10 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
                                               ns_attributes_count, 
                                               sizeof(raptor_qname*));
     if(!named_attrs) {
-      sax2->fatal_error_handler(sax2->fatal_error_data, sax2->locator, "Out of memory");
+      raptor_log_error_simple(RAPTOR_LOG_LEVEL_FATAL,
+                              sax2->error_handlers->fatal_error_handler,
+                              sax2->error_handlers->fatal_error_user_data,
+                              sax2->locator, "Out of memory");
       RAPTOR_FREE(raptor_xml_element, xml_element);
       raptor_free_qname(raptor_xml_element_get_name(xml_element));
       return;
