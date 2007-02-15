@@ -353,6 +353,8 @@ struct raptor_parser_s {
   raptor_namespace_handler namespace_handler;
 
   void* namespace_handler_user_data;
+
+  raptor_stringbuffer* sb;
 };
 
 
@@ -674,6 +676,9 @@ void raptor_terminate_parser_grddl(void);
 /* raptor_parse.c */
 void raptor_parsers_init(void);
 void raptor_parsers_finish(void);
+
+void raptor_parser_save_content(raptor_parser* rdf_parser, int save);
+const unsigned char* raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p);
 
 
 /* raptor_rss.c */
