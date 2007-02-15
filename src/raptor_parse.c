@@ -559,6 +559,9 @@ int
 raptor_parse_chunk(raptor_parser* rdf_parser,
                    const unsigned char *buffer, size_t len, int is_end) 
 {
+  if(rdf_parser->sb)
+    raptor_stringbuffer_append_counted_string(rdf_parser->sb, buffer, len, 1);
+    
   return rdf_parser->factory->chunk(rdf_parser, buffer, len, is_end);
 }
 
@@ -584,6 +587,9 @@ raptor_free_parser(raptor_parser* rdf_parser)
 
   if(rdf_parser->default_generate_id_handler_prefix)
     RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
+
+  if(rdf_parser->sb)
+    raptor_free_stringbuffer(rdf_parser->sb);
 
   RAPTOR_FREE(raptor_parser, rdf_parser);
 }
@@ -1953,6 +1959,39 @@ raptor_parser_get_accept_header_all(void)
   strncpy(p, "*/*;q=0.1", 10);
   
   return accept_header;
+}
+
+
+void
+raptor_parser_save_content(raptor_parser* rdf_parser, int save)
+{
+  if(rdf_parser->sb)
+    raptor_free_stringbuffer(rdf_parser->sb);
+
+  rdf_parser->sb= save ? raptor_new_stringbuffer() : NULL;
+}
+
+
+const unsigned char*
+raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p)
+{
+  unsigned char* buffer;
+  size_t len;
+  
+  if(!rdf_parser->sb)
+    return NULL;
+  
+  len=raptor_stringbuffer_length(rdf_parser->sb);
+  buffer=RAPTOR_MALLOC(cstring, len+1);
+  if(!buffer)
+    return NULL;
+
+  raptor_stringbuffer_copy_to_string(rdf_parser->sb, buffer, len);
+
+  if(length_p)
+    *length_p=len;
+
+  return buffer;
 }
 
 
