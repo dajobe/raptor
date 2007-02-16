@@ -1124,24 +1124,25 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         raptor_grddl_run_recursive(rdf_parser, grddl_parser->root_ns_uri,
                                    1);
 
-        buffer=raptor_parser_get_content(grddl_parser->internal_parser,
-                                         &buffer_len);
-        if(buffer) {
-          if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 1))
-            ret=1;
-          else {
-            if(raptor_start_parse(grddl_parser->internal_parser, 
-                                  rdf_parser->base_uri))
+        if(grddl_parser->internal_parser) {
+          buffer=raptor_parser_get_content(grddl_parser->internal_parser,
+                                           &buffer_len);
+          if(buffer) {
+            if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 1))
               ret=1;
-            else
-              ret=raptor_parse_chunk(grddl_parser->internal_parser, buffer, 
-                                     buffer_len, 1);
+            else {
+              if(raptor_start_parse(grddl_parser->internal_parser, 
+                                    rdf_parser->base_uri))
+                ret=1;
+              else
+                ret=raptor_parse_chunk(grddl_parser->internal_parser, buffer, 
+                                       buffer_len, 1);
+            }
+            
+            RAPTOR_FREE(cstring, buffer);
           }
-          
-          RAPTOR_FREE(cstring, buffer);
+          raptor_parser_save_content(grddl_parser->internal_parser, 0);
         }
-        raptor_parser_save_content(grddl_parser->internal_parser, 0);
-
       }
       
     }
