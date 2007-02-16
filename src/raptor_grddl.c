@@ -764,8 +764,9 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
                              &xpbc,
                              NULL, NULL);
   if(ret) {
-    RAPTOR_DEBUG2("Fetching XSLT document URI '%s' failed\n",
-                raptor_uri_as_string(xslt_uri));
+    raptor_parser_warning(rdf_parser, "Fetching XSLT document URI '%s' failed",
+                          raptor_uri_as_string(xslt_uri));
+    ret=0;
   } else {
     xslt_ctxt=xpbc.xc;
     xmlParseChunk(xpbc.xc, NULL, 0, 1);
@@ -1004,8 +1005,12 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
                             raptor_grddl_parse_uri_write_bytes,
                             grddl_parser->internal_parser,
                             content_type_handler,
-                            grddl_parser->internal_parser))
-    return 1;
+                            grddl_parser->internal_parser)) {
+    raptor_parser_warning(rdf_parser,
+                          "Fetching GRDDL document URI '%s' failed\n",
+                          raptor_uri_as_string(uri));
+    return 0;
+  }
   
   raptor_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
 
@@ -1068,14 +1073,20 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   doc=grddl_parser->ctxt->myDoc;
   if(!doc) {
-    raptor_parser_error(rdf_parser, "Failed to create XML DOM for document");
+    raptor_parser_error(rdf_parser, 
+                        "Failed to create XML DOM for GRDDL document");
     ret=1;
     goto tidy;
   }
 
   RAPTOR_DEBUG3("Parser %p: Running XInclude processing on URI '%s'\n",
                 rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
-  xmlXIncludeProcess(doc);
+  if(xmlXIncludeProcess(doc) < 0) {
+    raptor_parser_error(rdf_parser, 
+                        "XInclude processing failed for GRDDL document");
+    ret=1;
+    goto tidy;
+  }
 
 
   RAPTOR_DEBUG3("Parser %p: Running top-level GRDDL on URI '%s'\n",
@@ -1160,7 +1171,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     grddl_parser->xpathCtx = xmlXPathNewContext(doc);
     if(!grddl_parser->xpathCtx) {
       raptor_parser_error(rdf_parser,
-                          "Failed to create XPath context for document");
+                          "Failed to create XPath context for GRDDL document");
       ret=1;
       goto tidy;
     }
