@@ -1,3 +1,146 @@
+2007-02-15  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_ensure_internal_parser): Unset
+	user_data/statement_handler if filter is not used so that re-using
+	the same parser with different filter now works.
+	(raptor_grddl_fetch_uri): Add content_type_handler and
+	content_type_user_data args and use them to call
+	raptor_www_set_content_type_handler if not NULL.
+	(raptor_grddl_run_grddl_transform_uri): Update
+	raptor_grddl_fetch_uri call
+	(raptor_grddl_check_rdf_content_type_handler): Handler to look for
+	RDF MIME Type and trigger content saving if so.
+	(raptor_grddl_run_recursive): Add allow_rdf argument to allow
+	RDF/XML content to be processed if the type is right.
+	(raptor_grddl_parse_chunk): For a namespace URI, run recursive and
+	allow RDF/XML.  If it was seen on return, create a new "rdfxml"
+	parser and run it.  Reorder setting the root_ns_uri profile
+	earlier so that it can be recognised as a transform in RDF/XML
+	namespace documents.
+
+	* src/raptor_parse.c: (raptor_parse_chunk): If the stringbuffer is
+	declared, save a copy of the bytes that pass by.
+	(raptor_parser_save_content, raptor_parser_get_content): Added to
+	trigger/reset saving content and to get the content back as a new
+	string.
+
+	* src/raptor_internal.h: raptor_parser gains a stringbuffer Added
+	prototypes for raptor_parser_save_content and
+	raptor_parser_get_content
+
+2007-02-12  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_init): Update
+	raptor_new_sax2 call. Delete raptor_sax2_set_locator.
+
+	* src/raptor_rss.c: (raptor_rss_parse_init): Update
+	raptor_new_sax2 call. Delete raptor_sax2_set_locator.
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_init): Update
+	raptor_new_sax2 call. Delete raptor_sax2_set_locator.
+
+	* src/raptor_www.c: (raptor_www_error_varargs): Call
+	raptor_log_error_varargs.
+
+	* src/raptor_parse.c: (raptor_new_parser): Set locator and
+	handlers/data in the error_handlers.
+	(raptor_parser_fatal_error): Call raptor_log_error_varargs
+	(raptor_parser_fatal_error_varargs): Removed.
+	(raptor_parser_fatal_error_message_handler): call
+	raptor_log_error.
+	(raptor_parser_simple_error, raptor_parser_error_varargs,
+	raptor_parser_warning): Call raptor_log_error_varargs.
+	(raptor_parser_error_message_handler,
+	raptor_parser_warning_message_handler): Call raptor_log_error.
+	(raptor_set_fatal_error_handler, raptor_set_error_handler,
+	raptor_set_warning_handler): Update for error_handlers
+	(raptor_parser_copy_user_state): Copy raptor_error_handlers block.
+
+	* src/raptor_sax2.c: (raptor_new_sax2): Just have error_handlers
+	arg.  Use xmlSetStructuredErrorFunc for better libxml errors
+	(raptor_sax2_set_locator): Removed, not needed.
+	(raptor_sax2_simple_error): Call raptor_log_error_varargs.
+	(raptor_sax2_parse_start): Call xmlSetStructuredErrorFunc
+	(raptor_sax2_parse_chunk): Call raptor_log_error_simple instead of
+	directly calling the error handler.
+
+	* src/raptor_libxml.c: (raptor_libxml_call_handler): Removed.
+	(raptor_libxml_warning, raptor_libxml_error_common,
+	raptor_libxml_validation_warning): Use raptor_log_error_varargs.
+	(raptor_libxml_xmlStructuredErrorFunc): Use locator from the
+	error_handlers.  Call raptor_log_error.
+
+	* src/raptor_general.c: (raptor_invoke_simple_message_varargs,
+	raptor_invoke_message_varargs): Removed internal function.  Added
+	raptor_log_level_labels list.
+	(raptor_log_error_simple, raptor_log_error_varargs,
+	raptor_log_error): Added for new logging.
+	(raptor_error_handlers_init): Added to init new structure
+
+	* src/raptor_internal.h: Added raptor_error_handlers structure and
+	remove the pointers from raptor_parser, raptor_sax2.  Added
+	raptor_log_level enum Removed raptor_invoke_message_varargs,
+	raptor_invoke_simple_message_varargs Added
+	raptor_error_handlers_init, void raptor_log_error_simple, void
+	raptor_log_error_varargs, void raptor_log_error raptor_new_sax2
+	now just takes a raptor_error_handler* param
+	Removed raptor_sax2_set_locator
+
+	* utils/rapper.c: help text for -t/--trace
+
+2007-02-11  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_libxml.c: #if LIBXML_VERSION >= not >
+
+	* utils/rapper.1: Added -t/--trace option to show URIs traversed.
+
+	* utils/rapper.c: Added -t/--trace option to show URIs traversed.
+	(rapper_uri_trace): Added.
+	(main): If tracing, register rapper_uri_trace as a URI filter
+	function with raptor_parser_set_uri to see URis retrieved.
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Call
+	xmlSetStructuredErrorFunc to make most errors be printed much nicer.
+
+	* src/raptor_internal.h: Added
+	raptor_libxml_xmlStructuredErrorFunc prototype.
+
+	* src/raptor_libxml.c: (raptor_libxml_xmlStructuredErrorFunc):
+	Added for sending libxml structured error messages back to a
+	parser.
+
+2007-02-10  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Add XInclude headers
+	(raptor_grddl_filter_triples): Renamed from
+	raptor_grddl_relay_triples
+	(raptor_grddl_filter_triples): Do not pass on triples, just look
+	for transformation triples.
+	(raptor_grddl_ensure_internal_parser): Add filter arg and if set
+	for profile and namespace parsings, send triples via
+	raptor_grddl_filter_triples.
+	(raptor_grddl_run_grddl_transform_doc): Call
+	raptor_grddl_ensure_internal_parser with no filtering when have
+	got the resulting string and want to do a specific parse, not a
+	recursive GRDDL.
+	(raptor_grddl_run_recursive): Call
+	raptor_grddl_ensure_internal_parser filtering when doing a
+	recursive GRDDL - this is namespace or profile recursion.
+	(raptor_grddl_parse_chunk): Run XML include processing.  Do not
+	try to call NULL profile URIs.  Fix transformation loop to call
+	all transformations, not just first.
+
+	* src/raptor_grddl.c: (raptor_grddl_libxml_discard_error): Added
+	to throw away libxml errors.
+	(raptor_grddl_parse_chunk): Use raptor_grddl_libxml_discard_error
+	to dicard XML validation errors since it seems the GRDDL spec
+	doesn't care.
+
+	* src/turtle_parser.y: (raptor_turtle_parse_recognise_syntax):
+	Recognise n3 in mime type when N3 parser is not around.
+	(raptor_turtle_parser_register_factory): Register low interest in
+	text/rdf+n3 when N3 parser is not around.
+
 2007-02-06  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Tidy up doc and
