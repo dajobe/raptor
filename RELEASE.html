@@ -14,6 +14,75 @@
 <p>Not yet released.
 </p>
 
+<h3>General Changes</h3>
+
+<p>GRDDL parser now passes the test suite except for two
+tests that may have test errors.
+</p>
+
+<p>Fixed Issues:</p>
+<ul>
+<li>None</li>
+</ul>
+
+
+<h3>Parser Changes</h3>
+
+<p>Added better error reporting for XML errors using the
+libxml structured error reporing api.  From
+</p>
+<pre>
+$ rapper -i grddl http://librdf.org/LICENSE.txt
+rapper: Parsing URI http://librdf.org/LICENSE.txt
+rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - http://librdf.org/LICENSE.txt:2: 
+rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - parser 
+rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - error : 
+rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - Document is empty
+rapper: Error - URI http://librdf.org/LICENSE.txt - XML error -                   Redland RDF Application Framework - License
+rapper: Error - URI http://librdf.org/LICENSE.txt - XML error -                   ^
+rapper: Failed to parse URI http://librdf.org/LICENSE.txt grddl content
+rapper: Parsing returned 0 triples
+</pre>
+<p>To this:</p>
+<pre>
+$ rapper -i grddl http://librdf.org/LICENSE.txt
+rapper: Parsing URI http://librdf.org/LICENSE.txt
+rapper: Error - URI http://librdf.org/LICENSE.txt:1 - XML parser error: Document is empty
+rapper: Error - URI http://librdf.org/LICENSE.txt:1 - XInclude processing failed for GRDDL document
+rapper: Failed to parse URI http://librdf.org/LICENSE.txt grddl content
+rapper: Parsing returned 0 triples
+</pre>
+
+
+<p>GRDDL parser changes:</p>
+<ul>
+<li>When a namespace URI is seen that was RDF/XML Mime type, run
+the RDF/XML parser on the content.</li>
+<li>Use libxml structured errors for better reporting</li>
+<li>Run XML Include processing</li>
+<li>Throw away XML validation errors</li>
+<li>Handle N3 mime type</li>
+</ul>
+
+<p>Turtle parser changes:</p>
+<ul>
+<li>Accept N3 mime type <code>text/rdf+n3</code> at low Q(quality)</li> 
+</ul>
+
+<h3>Other Changes</h3>
+
+<p><code>rapper</code> gains a <code>-t/--trace</code> option to show
+URIs traversed.  Handy for GRDDL.
+</p>
+
+<p>Added an internal API for capturing parsed data as it is seen.
+Use by GRDDL parser but has no public API.
+</p>
+
+<p>Added an internal API for structured error reporting.
+Updates throughout but has no public API.
+</p>
+
 
 
 <h2 id="rel1_4_14"><a name="rel1_4_14">Raptor 1.4.14 Changes</a></h2>
