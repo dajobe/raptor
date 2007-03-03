@@ -213,8 +213,6 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
    */
   grddl_parser->visited_uris=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_uri, (raptor_sequence_print_handler*)raptor_sequence_print_uri);
 
-  xsltSetGenericErrorFunc(rdf_parser, raptor_grddl_xsltGenericError_handler);
-
   return 0;
 }
 
@@ -529,6 +527,8 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     ret=1;
     goto cleanup_xslt;
   }
+
+  xsltSetGenericErrorFunc(rdf_parser, raptor_grddl_xsltGenericError_handler);
 
 #if 1
   /* FIXME:
