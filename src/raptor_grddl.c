@@ -24,8 +24,8 @@
 /*
  * Specification:
  *   Gleaning Resource Descriptions from Dialects of Languages (GRDDL)
- *   W3C Working Draft 24 October 2006
- *   http://www.w3.org/TR/2006/WD-grddl-20061024/
+ *   W3C Working Draft 2 March 2007
+ *   http://www.w3.org/TR/2007/WD-grddl-20070302/
  *   http://www.w3.org/TR/grddl/
  */
 
