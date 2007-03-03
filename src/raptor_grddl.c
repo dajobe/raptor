@@ -304,18 +304,20 @@ static struct {
 } match_table[]={
   /* XHTML document where the GRDDL profile is in
    * <link ref='transform' href='url'>  inside the html <head>
+   * Value of @rel is a space-separated list of link types.
    */
   {
-    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/html:link[@rel=\"transformation\"]/@href",
+    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/html:link[contains(@rel,\"transformation\")]/@href",
     0,
     NULL
   }
   ,
   /* XHTML document where the GRDDL profile is in
    * <a rel='transform' href='url'> inside the html <body>
+   * Value of @rel is a space-separated list of link types.
    */
   {
-    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/../..//html:a[@rel=\"transformation\"]/@href",
+    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://www.w3.org/2003/g/data-view\")]/../..//html:a[contains(@rel,\"transformation\")]/@href",
     0,
     NULL
   }
@@ -329,30 +331,6 @@ static struct {
     NULL
   }
   ,
-#if 0
-  /* FIXME Disabled. This returns the wrong namespaces in
-   * Id: dc-extract.xsl,v 1.10 2005/09/07 17:10:06 connolly Exp
-   */
-
-  /* Dublin Core in <meta> tags http://dublincore.org/documents/dcq-html/ */
-  {
-    (const xmlChar*)"/html:html/html:head/html:link[@href=\"http://purl.org/dc/elements/1.1/\"]",
-    0,
-    (const xmlChar*)"http://www.w3.org/2000/06/dc-extract/dc-extract.xsl"
-  }
-  ,
-#endif
-#if 0
-  /* Embedded RDF 
-   * <head profile="http://purl.org/NET/erdf/profile"> inside <html>
-   */
-  { 
-    (const xmlChar*)"/html:html/html:head[contains(@profile,\"http://purl.org/NET/erdf/profile\")]",
-    0,
-    (const xmlChar*)"http://purl.org/NET/erdf/extract-rdf.xsl"
-  }
-  ,
-#endif
 #if 0
   /* hCalendar microformat http://microformats.org/wiki/hcalendar */
   {
