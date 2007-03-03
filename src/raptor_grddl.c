@@ -1018,13 +1018,6 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
 }
 
 
-static void
-raptor_grddl_libxml_discard_error(void* user_data, const char *msg, ...)
-{
-  return;
-}
-
-
 static int
 raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                          const unsigned char *s, size_t len,
@@ -1050,9 +1043,6 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       raptor_parser_error(rdf_parser, "Failed to create XML parser");
       return 1;
     }
-
-    grddl_parser->ctxt->vctxt.warning = raptor_grddl_libxml_discard_error;
-    grddl_parser->ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
 
     grddl_parser->ctxt->replaceEntities = 1;
     grddl_parser->ctxt->loadsubset = 1;
