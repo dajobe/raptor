@@ -1736,9 +1736,9 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
       break;
 
     if(factory->recognise_syntax)
-      score=factory->recognise_syntax(factory, buffer, len, 
-                                      identifier, suffix, 
-                                      mime_type);
+      score += factory->recognise_syntax(factory, buffer, len, 
+                                         identifier, suffix, 
+                                         mime_type);
 
     if(i > MAX_PARSERS)
       RAPTOR_FATAL2("Number of parsers greater than static buffer size %d\n",
