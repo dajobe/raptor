@@ -134,6 +134,14 @@ struct raptor_grddl_parser_context_s {
    * are owned by this parser: visited_uris
    * */
   int grddl_depth;
+
+  /* Content-Type of top-level document */
+  char* content_type;
+
+  /* Check content type once */
+  int content_type_check;
+
+  raptor_stringbuffer* sb;
 };
 
 
@@ -257,6 +265,12 @@ raptor_grddl_parse_terminate(raptor_parser *rdf_parser)
     if(grddl_parser->visited_uris)
       raptor_free_sequence(grddl_parser->visited_uris);
   }
+
+  if(grddl_parser->content_type)
+    RAPTOR_FREE(cstring, grddl_parser->content_type);
+
+  if(grddl_parser->sb)
+    raptor_free_stringbuffer(grddl_parser->sb);
 }
 
 
@@ -287,10 +301,13 @@ raptor_grddl_parser_add_parent(raptor_parser *rdf_parser,
 static int
 raptor_grddl_parse_start(raptor_parser *rdf_parser) 
 {
+  raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
   raptor_locator *locator=&rdf_parser->locator;
   
   locator->line=1;
  
+  grddl_parser->content_type_check=0;
+
   return 0;
 }
 
@@ -996,6 +1013,13 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
 }
 
 
+static void
+raptor_grddl_libxml_discard_error(void* user_data, const char *msg, ...)
+{
+  return;
+}
+
+
 static int
 raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                          const unsigned char *s, size_t len,
@@ -1010,6 +1034,19 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   xmlDocPtr doc;
   int expri;
 
+  if(!grddl_parser->content_type_check) {
+    grddl_parser->content_type_check++;
+    if(grddl_parser->content_type && 
+       !strncmp(grddl_parser->content_type, "application/rdf+xml", 19)) {
+      RAPTOR_DEBUG1("Found document is RDF/XML content type - saving content\n");
+      grddl_parser->sb=raptor_new_stringbuffer();
+    }
+  }
+
+  if(grddl_parser->sb)
+    raptor_stringbuffer_append_counted_string(grddl_parser->sb, s, len, 1);
+    
+
   if(!grddl_parser->ctxt) {
     uri_string=raptor_uri_as_string(rdf_parser->base_uri);
 
@@ -1021,6 +1058,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       raptor_parser_error(rdf_parser, "Failed to create XML parser");
       return 1;
     }
+
+    grddl_parser->ctxt->vctxt.warning = raptor_grddl_libxml_discard_error;
+    grddl_parser->ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
 
     grddl_parser->ctxt->replaceEntities = 1;
     grddl_parser->ctxt->loadsubset = 1;
@@ -1229,6 +1269,37 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   }
 
 
+  /* Try to process *this document* saved content as RDF/XML */
+  if(grddl_parser->sb) {
+    const unsigned char* buffer=NULL;
+    size_t buffer_len=0;
+
+    buffer_len=raptor_stringbuffer_length(grddl_parser->sb);
+    buffer=RAPTOR_MALLOC(cstring, buffer_len+1);
+    if(buffer) {
+      RAPTOR_DEBUG2("Parsing saved RDF/XML document content inside URI %s\n",
+                    raptor_uri_as_string(rdf_parser->base_uri));
+
+      raptor_stringbuffer_copy_to_string(grddl_parser->sb, 
+                                         (unsigned char*)buffer, buffer_len);
+      if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 1))
+        ret=1;
+      else {
+        if(raptor_start_parse(grddl_parser->internal_parser, 
+                              rdf_parser->base_uri))
+          ret=1;
+        else
+          ret=raptor_parse_chunk(grddl_parser->internal_parser, buffer, 
+                                 buffer_len, 1);
+      }
+      
+      RAPTOR_FREE(cstring, buffer);
+    }
+    raptor_free_stringbuffer(grddl_parser->sb);
+    grddl_parser->sb=NULL;
+  }
+
+  
   /* Apply all transformation URIs seen */
   while(raptor_sequence_size(grddl_parser->doc_transform_uris)) {
     uri=raptor_sequence_unshift(grddl_parser->doc_transform_uris);
@@ -1286,6 +1357,24 @@ raptor_grddl_parse_recognise_syntax(raptor_parser_factory* factory,
 
 
 static void
+raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser, 
+                                        const char* content_type)
+{
+  raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
+
+  if(content_type) {
+    size_t len=strlen(content_type)+1;
+    if(grddl_parser->content_type)
+      RAPTOR_FREE(cstring,grddl_parser->content_type);
+    
+    grddl_parser->content_type=RAPTOR_MALLOC(cstring, len+1);
+    strncpy(grddl_parser->content_type, content_type, len+1);
+  }
+}
+
+
+
+static void
 raptor_grddl_parser_register_factory(raptor_parser_factory *factory) 
 {
   factory->context_length     = sizeof(raptor_grddl_parser_context);
@@ -1297,6 +1386,7 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_grddl_parse_start;
   factory->chunk     = raptor_grddl_parse_chunk;
   factory->recognise_syntax = raptor_grddl_parse_recognise_syntax;
+  factory->content_type_handler= raptor_grddl_parse_content_type_handler;
 
   raptor_parser_factory_add_mime_type(factory, "text/html", 2);
   raptor_parser_factory_add_mime_type(factory, "application/html+xml", 2);
