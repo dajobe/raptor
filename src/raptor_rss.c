@@ -92,6 +92,9 @@ struct raptor_rss_parser_s {
 
   /* non-0 if this is an atom 1.0 parser */
   int is_atom;
+
+  /* namespaces declared here */
+  raptor_namespace* nspaces[RAPTOR_RSS_NAMESPACES_SIZE];
 };
 
 typedef struct raptor_rss_parser_s raptor_rss_parser;
@@ -186,7 +189,7 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
     if(prefix && uri)
       nspace=raptor_new_namespace_from_uri(rss_parser->nstack,
                                            prefix, uri, 0);
-    raptor_rss_namespaces_info[n].nspace=nspace;
+    rss_parser->nspaces[n]=nspace;
   }
 
   sax2=raptor_new_sax2(rdf_parser, &rdf_parser->error_handlers);
@@ -215,8 +218,8 @@ raptor_rss_parse_terminate(raptor_parser *rdf_parser)
 
   /* Initialise the namespaces */
   for(n=0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++) {
-    if(raptor_rss_namespaces_info[n].nspace)
-      raptor_free_namespace(raptor_rss_namespaces_info[n].nspace);
+    if(rss_parser->nspaces[n])
+      raptor_free_namespace(rss_parser->nspaces[n]);
   }
 
   if(rss_parser->nstack)
