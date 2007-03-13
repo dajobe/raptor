@@ -1,4 +1,62 @@
+2007-03-12  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.c, src/raptor_serialize_rss.c: Replace shared
+	nspaces list with one per rss-parser/serializer.
+
+	* src/raptor_rss.h: raptor_rss_namespace_info looses nspace field.
+
+	* src/raptor_rfc2396.c: (raptor_uri_resolve_uri_reference): In
+	removing ./ do not go past end of buffer.
+
+2007-03-11  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s gains
+	content_type, content_type_check and stringbuffer for saved
+	rdf/xml content.
+	(raptor_grddl_parse_terminate): Free any saved content type or
+	stringbuffer.
+	(raptor_grddl_parse_start): Init type check.
+	(raptor_grddl_libxml_discard_error): Restore, for discarding
+	validation errors again.
+	(raptor_grddl_parse_chunk): If content type was seen and type was
+	application/rdf+xml, save content for later parsing as RDF/XML.
+	Discard validation errors again.
+	(raptor_grddl_parse_content_type_handler): Save content type
+	header when passed in.
+	(raptor_grddl_parser_register_factory): Register
+	raptor_grddl_parse_content_type_handler.
+
+	* src/raptor_parse.c: (raptor_guess_parser_name): Add any mime
+	type q <10 to the score, don't lose it entirely.
+
+2007-03-02  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Alter match_table to look for substrings
+	inside html:link@rel and html:a@rel Delete old hard-coded
+	transforms for dc: never worked and embedded RDF: grddl profile
+	support handles this now.
+
+	* src/raptor_grddl.c: (raptor_grddl_run_grddl_transform_doc):
+	Invoke xsltSetGenericErrorFunc here to get the right rdf_parser
+	configured.
+
+	* src/raptor_grddl.c: Handles GRDDL W3C Working Draft 2 March 2007
+
+	* src/raptor_grddl.c: (raptor_grddl_libxml_discard_error): Deleted.
+	(raptor_grddl_parse_chunk): No longer ignore validation errors
+	http://lists.w3.org/Archives/Public/public-grddl-comments/2007JanMar/0062.html
+
 2007-02-15  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_run_grddl_transform_uri):
+	Return a warning and do not fail if XSLT sheet is not found
+	(raptor_grddl_run_recursive): Return a warning and do not fail if
+	the recursive GRDDL doc is not found.
+	(raptor_grddl_parse_chunk): Tidy other errors.  Add aborting on
+	XInclude failure.
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Do not get/set
+	content when there was no internal parser.
 
 	* src/raptor_grddl.c: (raptor_grddl_ensure_internal_parser): Unset
 	user_data/statement_handler if filter is not used so that re-using
