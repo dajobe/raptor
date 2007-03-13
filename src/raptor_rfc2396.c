@@ -398,6 +398,8 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
       
       p=prev;
       result.path_len -=2;
+      if(!*p)
+        break;
     } else {
       prev=p+1;
     }
