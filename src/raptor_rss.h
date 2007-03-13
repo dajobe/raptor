@@ -102,7 +102,6 @@ typedef struct {
   const char *const uri_string;
   const char *prefix;
   raptor_uri* uri;
-  raptor_namespace* nspace;
 } raptor_rss_namespace_info;
 
 
