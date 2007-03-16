@@ -16,9 +16,16 @@
 
 <h3>General Changes</h3>
 
-<p>GRDDL parser now passes the test suite except for two
-tests that may have test errors.
+<p>GRDDL parser now passes the (unapproved) test suite for the
+<a href="http://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>
+except for two tests that may have errors.
 </p>
+
+<p>When guessing for a parser to match some content, add any mime
+type Q &lt;10 to the score, don't lose the influence of the mime type
+entirely.  The consequence is that Turtle can pretend to be a partial
+N3 parser.</p>
+
 
 <p>Fixed Issues:</p>
 <ul>
@@ -26,7 +33,7 @@ tests that may have test errors.
 </ul>
 
 
-<h3>Parser Changes</h3>
+<h3>Parser and Serializer Changes</h3>
 
 <p>Added better error reporting for XML errors using the
 libxml structured error reporing api.  From
@@ -54,20 +61,31 @@ rapper: Parsing returned 0 triples
 </pre>
 
 
-<p>GRDDL parser changes:</p>
+<p>GRDDL parser updated to support the
+<a href="http://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>:
+</p>
 <ul>
-<li>When a namespace URI is seen that was RDF/XML Mime type, run
-the RDF/XML parser on the content.</li>
-<li>Use libxml structured errors for better reporting</li>
+<li>Namespace and profile URI handling now works.</li>
 <li>Run XML Include processing</li>
 <li>Throw away XML validation errors</li>
-<li>Handle N3 mime type</li>
+<li>When a namespace URI is seen that was RDF/XML Mime type, run
+the RDF/XML parser on the content.</li>
+<li>Look for substrings inside rel attributes when looking for profiles.</li>
+<li>Return a warning and do not fail if XSLT sheet is not found</li>
+<li>Use libxml structured errors for better reporting</li>
+<li>Removed old hard-coded xslt scripts</li>
 </ul>
 
-<p>Turtle parser changes:</p>
-<ul>
-<li>Accept N3 mime type <code>text/rdf+n3</code> at low Q(quality)</li> 
-</ul>
+<p>Turtle parser was changed to accept the N3 mime
+type <code>text/rdf+n3</code> at low Q(quality)
+so it might work for N3 that is the RDF subset - quite common.
+</p>
+
+<p>Changed the rss-tag-soup parser and rss-1.0 serializer to stop
+sharing use of the declared namespaces so that when using both at the
+same time, there is no double-free of the same objects.
+</p>
+
 
 <h3>Other Changes</h3>
 
@@ -75,13 +93,24 @@ the RDF/XML parser on the content.</li>
 URIs traversed.  Handy for GRDDL.
 </p>
 
-<p>Added an internal API for capturing parsed data as it is seen.
-Use by GRDDL parser but has no public API.
+<p><code>raptor_uri_resolve_uri_reference()</code> no longer goes
+past the end of buffer when the relative URI is <code>,/</code>
 </p>
 
-<p>Added an internal API for structured error reporting.
-Updates throughout but has no public API.
+
+<p>Added an internal API for capturing parsed data as it is seen.
+Use by GRDDL parser but with no public API.
 </p>
+
+<p>Added an internal API for structured error reporting.  Updates
+made throughout the library but with no public API.
+</p>
+
+<p>Internal API <code>raptor_new_sax2()</code> signature changed to
+just have an <code>error_handlers</code> pointer argument rather than
+multiple function / user_data pairs.
+</p>
+
 
 
 
@@ -105,7 +134,7 @@ has other improvements and fixes.
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=32">#0000032</a>: GRDDL indirection feature request</a>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=32">#0000032</a>: GRDDL indirection feature request</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=141">#0000141</a>: Crash when GRDDL parser is used with a used-generated blank node ID prefix.</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=143">#0000143</a>: Crash when GRDDL parser fails to retrieve URI.</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=148">#0000148</a>: A public function to generate a blank ID would be nice though.</li>
@@ -173,6 +202,7 @@ the mime type (q=10), then that parser is used.
 <a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a>
 serializer and two new internal APIs based on the existing RDF/XML-Abbrev
 serialiser, written by <a href="http://codeson.net/">Dave Robillard</a>:
+</p>
 <ul>
   <li><code>turtle_writer</code> for serializing triples to Turtle This
     may be moved to the public API in a future release.</li>
@@ -197,7 +227,7 @@ time to run.</p>
 and <code>raptor_license_string</code> exported strings.
 </p>
 
-<p>Added <code>raptor_parser_generate_id()</code as a public function
+<p>Added <code>raptor_parser_generate_id()</code> as a public function
 to generate an identifier for a parser.
 </p>
 
