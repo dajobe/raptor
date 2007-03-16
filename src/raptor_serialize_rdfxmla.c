@@ -58,6 +58,7 @@
  */
 typedef struct {
   raptor_namespace_stack *nstack;       /* Namespace stack */
+  raptor_namespace *xml_nspace;         /* the xml: namespace */
   raptor_namespace *rdf_nspace;         /* the rdf: namespace */
   raptor_xml_element* rdf_RDF_element;  /* the rdf:RDF element */
   raptor_xml_writer *xml_writer;        /* where the xml is being written */
@@ -738,6 +739,11 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                                         (raptor_simple_message_handler)raptor_serializer_simple_error,
                                         serializer,
                                         1);
+  context->xml_nspace=raptor_new_namespace(context->nstack,
+                                           (const unsigned char*)"xml",
+                                           (const unsigned char*)raptor_xml_namespace_uri,
+                                           0);
+  
   context->rdf_nspace=raptor_new_namespace(context->nstack,
                                            (const unsigned char*)"rdf",
                                            (const unsigned char*)raptor_rdf_namespace_uri,
@@ -795,6 +801,9 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
 
   if(context->rdf_nspace)
     raptor_free_namespace(context->rdf_nspace);
+
+  if(context->xml_nspace)
+    raptor_free_namespace(context->xml_nspace);
 
   if(context->namespaces) {
     int i;
@@ -938,6 +947,8 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   raptor_qname *qname;
   raptor_uri *base_uri;
   int i;
+  raptor_qname **attrs;
+  int attrs_count=0;
 
   if(context->written_header)
     return;
@@ -963,6 +974,24 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
     ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
     raptor_xml_element_declare_namespace(context->rdf_RDF_element, ns);
   }
+
+  if(base_uri) {
+    const unsigned char* base_uri_string;
+
+    attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+
+    base_uri_string=raptor_uri_as_string(base_uri);
+    attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
+  }
+
+  if(attrs_count)
+    raptor_xml_element_set_attributes(context->rdf_RDF_element, attrs, 
+                                      attrs_count);
+  else
+    raptor_xml_element_set_attributes(context->rdf_RDF_element, NULL, 0);
+
+
+
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   
   context->written_header=1;
