@@ -77,6 +77,9 @@ typedef struct {
    */
   raptor_namespace* default_nspace;
 
+  /* the xml: namespace */
+  raptor_namespace *xml_nspace;
+
   /* the root element (rdf:RDF or atom:feed) */
   raptor_xml_element* root_element;
 
@@ -144,6 +147,9 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   
   if(rss_serializer->default_nspace)
     raptor_free_namespace(rss_serializer->default_nspace);
+
+  if(rss_serializer->xml_nspace)
+    raptor_free_namespace(rss_serializer->xml_nspace);
 
   if(rss_serializer->nstack)
     raptor_free_namespaces(rss_serializer->nstack);
@@ -559,6 +565,11 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
                                                       (is_atom ? raptor_atom_namespace_uri : raptor_rdf_namespace_uri),
                                                       0);
   
+  rss_serializer->xml_nspace=raptor_new_namespace(rss_serializer->nstack,
+                                                  (const unsigned char*)"xml",
+                                                  (const unsigned char*)raptor_xml_namespace_uri,
+                                                  0);
+
   qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (is_atom ? (const unsigned char*)"feed" : (const unsigned char*)"RDF"),  NULL);
   if(base_uri)
     base_uri=raptor_uri_copy(base_uri);
@@ -884,6 +895,8 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   int triple_count=0;
 #endif
   int is_atom;
+  raptor_qname **attrs;
+  int attrs_count=0;
   
   rss_model=&rss_serializer->model;
   is_atom=rss_serializer->is_atom;
@@ -927,6 +940,21 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   rss_serializer->xml_writer=xml_writer;
 
   raptor_rss10_build_xml_names(serializer);
+
+  if(serializer->base_uri) {
+    const unsigned char* base_uri_string;
+
+    attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+
+    base_uri_string=raptor_uri_as_string(serializer->base_uri);
+    attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(rss_serializer->xml_nspace, (const unsigned char*)"base",  base_uri_string);
+  }
+
+  if(attrs_count)
+    raptor_xml_element_set_attributes(rss_serializer->root_element, attrs, 
+                                      attrs_count);
+  else
+    raptor_xml_element_set_attributes(rss_serializer->root_element, NULL, 0);
 
   raptor_xml_writer_start_element(xml_writer, rss_serializer->root_element);
 
