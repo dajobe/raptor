@@ -1,3 +1,25 @@
+2007-03-15  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: Adjust the xml:base attribute adding
+	to put it next to the raptor_xml_writer_start_element of the root
+	element.
+
+	* src/raptor_serialize_rdfxmla.c:
+	raptor_rdfxmla_serializer_context gains xml_nspace field.
+	(raptor_rdfxmla_serialize_init,
+	raptor_rdfxmla_serialize_terminate): Init/free xml namespace.
+	(raptor_rdfxmla_ensure_writen_header): Write xml:base when a base
+	URI is given.
+	Addresses Issue #0000174 http://bugs.librdf.org/mantis/view.php?id=174
+
+	* src/raptor_serialize_rdfxml.c: raptor_rdfxml_serializer_context
+	gains xml_nspace field.
+	(raptor_rdfxml_serialize_init, raptor_rdfxml_serialize_terminate):
+	Init/free xml namespace.
+	(raptor_rdfxml_ensure_writen_header): Write xml:base when a base
+	URI is given.
+	Addresses Issue #0000174 http://bugs.librdf.org/mantis/view.php?id=174
+
 2007-03-12  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_rss.c, src/raptor_serialize_rss.c: Replace shared
