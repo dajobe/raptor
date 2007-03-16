@@ -14,58 +14,6 @@
 <p>Not yet released.
 </p>
 
-<p>RSS parser / serializer: Removed shared use of namespaces so that
-when using both an RSS parser and RSS serializer at the same time,
-there is not a double-free.
-</p>
-
-<p><code>raptor_uri_resolve_uri_reference()</code> no longer
-goes past the end of buffer when the relative URI is <code>,/</code.
-</p>
-
-<p>When guessing for a parser to match some content, add any mime
-type q &lt;10 to the score, don't lose it entirely.</p>
-
-<p>Added internal parser methods
-<code>raptor_parser_save_content()</code>
-<code>raptor_parser_get_content()</code> to save the content
-received, such as via reading from a URI or file, rather than just
-parsing it and not preserving it.  Mostly intended for internal use
-by the GRDDL parser to allow multiple parsings of the same content.
-</p>
-
-<p><code>rapper</code> gains a <code>-t</code> / <code>--trace</code>
-option to show the URIs traversed - for GRDDL or the Guess parser
-this will show multiple requests.
-</p>
-
-<p>Tidied up the internals of error reporting to remove duplicate
-code.</p>
-
-<p><code>raptor_new_sax2()</code> changed it's signature to just have
-an <code>error_handlers</code> pointer argument rather than multiple
-function/user_data pairs.</p>
-
-<p>Use the structured error messages from libxml to give much better
-errors - typically just 1 error rather than multiple error line
-fragments.</p>
-
-<p>Turtle parser changed to recognize the N3 mime type at a low
-quality (Q)</p>
-
-<p>GRDDL parser changes to support the
-<a href="http://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>:
-</p>
-<ul>
-<li>Discard XML validation errors and let the GRDDLing continue.</li>
-<li>Run XML Include processing after retrieval, XML parsing and before 
-applying the XPaths.</li>
-<li>Namespace and profile URI handling now works.</li>
-<li>Apply an RDF/XML parser across retrieved content during processing.</li>
-<li>Return a warning and do not fail if XSLT sheet is not found</li>
-<li>Look for substrings inside rel attributes when looking for profiles.</li>
-<li>Removed old hard-coded xslt scripts</li>
-</ul>
 
 
 <h2 id="D2007-01-31-V1.4.14">2007-01-31 Raptor Version 1.4.14 Released</h2>
