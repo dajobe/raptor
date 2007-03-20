@@ -268,7 +268,7 @@ main(int argc, char *argv[])
   int usage=0;
   int help=0;
   int trace=0;
-  raptor_uri *base_uri;
+  raptor_uri *base_uri=NULL;
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
