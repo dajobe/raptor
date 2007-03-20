@@ -169,7 +169,7 @@ raptor_www_curl_fetch(raptor_www *www)
   if(curl_easy_perform(www->curl_handle)) {
     /* failed */
     www->failed=1;
-    raptor_www_error(www, www->error_buffer);
+    raptor_www_error(www, "Resolving URI failed: %s", www->error_buffer);
   } else {
     long lstatus;
 
