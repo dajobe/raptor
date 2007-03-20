@@ -1,3 +1,11 @@
+2007-03-19  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_www.c: (raptor_www_fetch): If a request returns a
+	status code that is not success, generate an error message.
+
+	* src/raptor_www_curl.c: (raptor_www_curl_fetch): Enhance failure
+	error message
+
 2007-03-15  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_serialize_rss.c: Adjust the xml:base attribute adding
