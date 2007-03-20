@@ -369,8 +369,9 @@ check-turtle: build-rapper $(NT_TEST_FILES)
 	$(ECHO) "Testing Turtle with N-Triples tests"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
+	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -403,8 +404,9 @@ check-rdfxml: build-rapper $(RDF_SERIALIZE_TEST_FILES)
 	$(ECHO) "Testing rdfxml serialization with legal rdf/xml"; \
 	for test in $(RDF_SERIALIZE_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
+	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i ntriples -o rdfxml $(srcdir)/$$test $(srcdir)/$$test > $$name-rdfxml.rdf 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -i ntriples -o rdfxml $(srcdir)/$$test $$baseuri > $$name-rdfxml.rdf 2> $$name.err; \
 	  if cmp $(srcdir)/$$name.rdf $$name-rdfxml.rdf >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -420,8 +422,9 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	$(ECHO) "Testing rdfxml-abbrev serialization with legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
+	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $(srcdir)/$$test > $$name-rdfxmla.rdf 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$name-rdfxmla.rdf 2> $$name.err; \
 	  $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
@@ -439,8 +442,9 @@ check-turtle-serialize: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	$(ECHO) "Testing turtle serialization with legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
+	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $(srcdir)/$$test > $$name-turtle.rdf 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.rdf 2> $$name.err; \
 	  $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.rdf > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
