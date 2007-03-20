@@ -568,14 +568,18 @@ main(int argc, char *argv[])
     int i;
     
     printf(title_format_string, raptor_version_string);
-    puts("Parse RDF content at the source URI into RDF triples.");
-    printf("Usage: %s [OPTIONS] <source URI> [base URI]\n\n", program);
+    puts("Parse RDF content at the source into RDF triples.");
+    printf("Usage: %s [OPTIONS] SOURCE-URI [BASE-URI]\n\n", program);
 
     fputs(raptor_copyright_string, stdout);
     fputs("\nLicense: ", stdout);
     puts(raptor_license_string);
     fputs("Raptor home page: ", stdout);
     puts(raptor_home_url_string);
+
+    puts("\nArguments:");
+    puts("  SOURCE-URI is a filename, URI or '-' for standard input (stdin).");
+    puts("  BASE-URI   is the source URI if omitted or '-' for no base URI.");
 
     puts("\nSyntax options:");
     puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format to one of:"));
@@ -666,11 +670,13 @@ main(int argc, char *argv[])
   if(!base_uri_string) {
     base_uri=raptor_uri_copy(uri);
   } else {
-    base_uri=raptor_new_uri(base_uri_string);
-    if(!base_uri) {
-      fprintf(stderr, "%s: Failed to create URI for %s\n",
-              program, base_uri_string);
-      return(1);
+    if(strcmp((const char*)base_uri_string, "-")) {
+      base_uri=raptor_new_uri(base_uri_string);
+      if(!base_uri) {
+        fprintf(stderr, "%s: Failed to create URI for %s\n",
+                program, base_uri_string);
+        return(1);
+      }
     }
   }
 

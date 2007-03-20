@@ -5,15 +5,15 @@
 .\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2007-02-11"
+.TH rapper 1 "2007-03-19"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 rapper \- Raptor RDF parsing and serializing utility
 .SH SYNOPSIS
 .B rapper
 .RB [ OPTIONS ]
-.IR "<source-URI>"
-.IR "[base-URI]"
+.IR "SOURCE-URI"
+.IR "[BASE-URI]"
 .SH EXAMPLE
 .nf
 .B rapper -o ntriples http://planetrdf.com/guide/rss.rdf
@@ -27,9 +27,11 @@ The
 utility allows parsing of RDF content by the
 .B Raptor
 RDF parser toolkit emitting the results as RDF triples in
-a choice of syntaxes.  The \fIsource-URI\fR can be a file name or if
-Raptor is built with a WWW retrieval library, a general URI.
-The optional \fIbase-URI\fR is used as the document URI if present.
+a choice of syntaxes.  The \fISOURCE-URI\fR can be a file name, '-'
+for standard input or if Raptor is built with a WWW retrieval
+library, a general URI.  The optional \fIBASE-URI\fR is used as the
+document URI if present otherwise defaults to the \ISOURCE-URI\fR.
+A base URI of '-' means no output base URI.
 .SH OPTIONS
 rapper uses the usual GNU command line syntax, with long
 options starting with two dashes (`-') if supported by the
