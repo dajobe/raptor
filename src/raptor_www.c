@@ -576,8 +576,11 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   }
   
 #endif
-  if(!status && www->status_code && www->status_code != 200)
+  if(!status && www->status_code && www->status_code != 200){
+    raptor_www_error(www, "Resolving URI failed with HTTP status %d",
+                     www->status_code);
     status=1;
+  }
 
   www->failed=status;
   
