@@ -1787,7 +1787,7 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->default_generate_id_handler_base= from_parser->default_generate_id_handler_base;
   /* copy over non-shared user state - generate ID prefix string */
   if(from_parser->default_generate_id_handler_prefix) {
-    to_parser->default_generate_id_handler_prefix=RAPTOR_MALLOC(cstring,
+    to_parser->default_generate_id_handler_prefix=(char*)RAPTOR_MALLOC(cstring,
                     from_parser->default_generate_id_handler_prefix_length+1);
     strncpy((char*)to_parser->default_generate_id_handler_prefix, 
             (const char*)from_parser->default_generate_id_handler_prefix,
@@ -1982,7 +1982,7 @@ raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p)
     return NULL;
   
   len=raptor_stringbuffer_length(rdf_parser->sb);
-  buffer=RAPTOR_MALLOC(cstring, len+1);
+  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
   if(!buffer)
     return NULL;
 

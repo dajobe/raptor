@@ -408,7 +408,9 @@ raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
    */
   predicate_uri=grddl_parser->namespace_transformation_uri;
   for(i=0; i < raptor_sequence_size(grddl_parser->profile_uris); i++) {
-    raptor_uri* profile_uri=raptor_sequence_get_at(grddl_parser->profile_uris, i);
+    raptor_uri* profile_uri;
+
+    profile_uri=(raptor_uri*)raptor_sequence_get_at(grddl_parser->profile_uris, i);
     if(i==1)
       predicate_uri=grddl_parser->profile_transformation_uri;
     
@@ -531,7 +533,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
    *   http://www.w3.org/2000/07/uri43/uri.xsl
    *   http://www.w3.org/2000/08/w3c-synd/home2rss.xsl
    */
-  quoted_base_uri=RAPTOR_MALLOC(cstring, base_uri_len+3);
+  quoted_base_uri=(char*)RAPTOR_MALLOC(cstring, base_uri_len+3);
   quoted_base_uri[0]='\'';
   strncpy(quoted_base_uri+1, (const char*)base_uri_string, base_uri_len);
   quoted_base_uri[base_uri_len+1]='\'';
@@ -557,7 +559,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   if(res->type == XML_HTML_DOCUMENT_NODE) {
     if(sheet->method != NULL)
       xmlFree(sheet->method);
-    sheet->method = xmlMalloc(5);
+    sheet->method = (xmlChar*)xmlMalloc(5);
     strncpy((char*)sheet->method, "html", 5);
   }
 
@@ -578,13 +580,13 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   /* FIXME: Assumes mime types for XSLT <xsl:output method> */
   if(sheet->mediaType == NULL && sheet->method) {
     if(!(strcmp((const char*)sheet->method, "text"))) {
-      sheet->mediaType = xmlMalloc(11);
+      sheet->mediaType = (xmlChar*)xmlMalloc(11);
       strncpy((char*)sheet->mediaType, "text/plain",11);
     } else if(!(strcmp((const char*)sheet->method, "xml"))) {
-      sheet->mediaType = xmlMalloc(16);
+      sheet->mediaType = (xmlChar*)xmlMalloc(16);
       strncpy((char*)sheet->mediaType, "application/xml",16);
     } else if(!(strcmp((const char*)sheet->method, "html"))) {
-      sheet->mediaType = xmlMalloc(10);
+      sheet->mediaType = (xmlChar*)xmlMalloc(10);
       /* FIXME: use xhtml mime type? */
       strncpy((char*)sheet->mediaType, "text/html",10);
     }
@@ -598,7 +600,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
       !strcmp((const char*)sheet->mediaType, "application/xml"))) {
     if(sheet->mediaType)
       xmlFree(sheet->mediaType);
-    sheet->mediaType = xmlMalloc(20);
+    sheet->mediaType = (xmlChar*)xmlMalloc(20);
     strncpy((char*)sheet->mediaType, "application/rdf+xml",20);
   }
   
@@ -1206,7 +1208,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
       /* Store profile URIs, skipping NULLs or the GRDDL profile itself */
       while(raptor_sequence_size(result)) {
-        uri=raptor_sequence_unshift(result);
+        uri=(raptor_uri*)raptor_sequence_unshift(result);
         if(!uri)
           continue;
         if(!strcmp("http://www.w3.org/2003/g/data-view",
@@ -1224,7 +1226,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
       /* Recursive GRDDL through all the <head profile> URIs */
       for(i=1; i < raptor_sequence_size(grddl_parser->profile_uris); i++) {
-        uri=raptor_sequence_get_at(grddl_parser->profile_uris, i);
+        uri=(raptor_uri*)raptor_sequence_get_at(grddl_parser->profile_uris, i);
         if(!uri)
           continue;
 
@@ -1275,7 +1277,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     size_t buffer_len=0;
 
     buffer_len=raptor_stringbuffer_length(grddl_parser->sb);
-    buffer=RAPTOR_MALLOC(cstring, buffer_len+1);
+    buffer=(const unsigned char*)RAPTOR_MALLOC(cstring, buffer_len+1);
     if(buffer) {
       RAPTOR_DEBUG2("Parsing saved RDF/XML document content inside URI %s\n",
                     raptor_uri_as_string(rdf_parser->base_uri));
@@ -1302,7 +1304,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   
   /* Apply all transformation URIs seen */
   while(raptor_sequence_size(grddl_parser->doc_transform_uris)) {
-    uri=raptor_sequence_unshift(grddl_parser->doc_transform_uris);
+    uri=(raptor_uri*)raptor_sequence_unshift(grddl_parser->doc_transform_uris);
     RAPTOR_DEBUG3("Parser %p: Running transformation URI '%s'\n",
                   rdf_parser, raptor_uri_as_string(uri));
     ret=raptor_grddl_run_grddl_transform_uri(rdf_parser, uri, doc);
@@ -1367,7 +1369,7 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
     if(grddl_parser->content_type)
       RAPTOR_FREE(cstring,grddl_parser->content_type);
     
-    grddl_parser->content_type=RAPTOR_MALLOC(cstring, len+1);
+    grddl_parser->content_type=(char*)RAPTOR_MALLOC(cstring, len+1);
     strncpy(grddl_parser->content_type, content_type, len+1);
   }
 }
