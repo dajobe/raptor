@@ -1,4 +1,15 @@
+2007-03-22  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.h: Fix CONTENT_NAMESPACE_URI to correct URI
+
 2007-03-19  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rapper.c: NULL base URI
+
+	* tests/Makefile.am: Set rapper output baseuri to NULL via '-'
+
+	* utils/rapper.1, utils/rapper.c: Allow base uri '-' for no output
+	base URI
 
 	* src/raptor_www.c: (raptor_www_fetch): If a request returns a
 	status code that is not success, generate an error message.
