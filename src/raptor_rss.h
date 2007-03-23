@@ -71,7 +71,7 @@ typedef enum {
 #define ATOM0_3_NAMESPACE_URI    "http://purl.org/atom/ns#"
 #define DC_NAMESPACE_URI         "http://purl.org/dc/elements/1.1/"
 #define RSS1_1_NAMESPACE_URI     "http://purl.org/net/rss1.1#"
-#define CONTENT_NAMESPACE_URI    "http://web.resource.org/rss/1.0/modules/content/"
+#define CONTENT_NAMESPACE_URI    "http://purl.org/rss/1.0/modules/content/"
 #define ATOM1_0_NAMESPACE_URI    "http://www.w3.org/2005/Atom"
 #define RDF_NAMESPACE_URI        "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 
