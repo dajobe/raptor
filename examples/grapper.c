@@ -2,7 +2,7 @@
  *
  * grapper.c - Raptor GTK GUI example code
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -679,13 +679,14 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 
 
 static GtkItemFactoryEntry menu_item_factory_entries[] = {
-  { "/_File",         NULL,      NULL,         0, "<Branch>" },
-  { "/File/_Open...", "<CTRL>O", (GtkItemFactoryCallback)open_menu_callback, 1, "<StockItem>", GTK_STOCK_OPEN },
-  { "/File/sep1",     NULL,      NULL,         0, "<Separator>" },
-  { "/File/_Quit",    "<CTRL>Q", (GtkItemFactoryCallback)quit_menu_callback, 1, "<StockItem>", GTK_STOCK_QUIT },
-  { "/_Preferences",  NULL,      NULL,         0, "<Branch>" },
-  { "/_Help",         NULL,      NULL,         0, "<LastBranch>" },
-  { "/Help/About",    NULL,     (GtkItemFactoryCallback)about_menu_callback, 1, "<Item>" } 
+  /* path,     accelerator,  callback, callback_action, item_type, extra_data */
+  { (gchar*)"/_File",         NULL,      NULL,         0, (gchar*)"<Branch>" },
+  { (gchar*)"/File/_Open...", (gchar*)"<CTRL>O", (GtkItemFactoryCallback)open_menu_callback, 1, (gchar*)"<StockItem>", GTK_STOCK_OPEN },
+  { (gchar*)"/File/sep1",     NULL,      NULL,         0, (gchar*)"<Separator>" },
+  { (gchar*)"/File/_Quit",    (gchar*)"<CTRL>Q", (GtkItemFactoryCallback)quit_menu_callback, 1, (gchar*)"<StockItem>", GTK_STOCK_QUIT },
+  { (gchar*)"/_Preferences",  NULL,      NULL,         0, (gchar*)"<Branch>" },
+  { (gchar*)"/_Help",         NULL,      NULL,         0, (gchar*)"<LastBranch>" },
+  { (gchar*)"/Help/About",    NULL,     (GtkItemFactoryCallback)about_menu_callback, 1, (gchar*)"<Item>" } 
 };
 
 static gint menu_item_factory_nentries = sizeof(menu_item_factory_entries) / sizeof(menu_item_factory_entries[0]);
@@ -1023,11 +1024,12 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   syntax_menu=gtk_menu_new();
   for(i=0; 1; i++) {
     const char *syntax_label;
+    GtkWidget *syntax_menu_item;
     
     if(raptor_parsers_enumerate(i, NULL, &syntax_label))
       break;
 
-    GtkWidget *syntax_menu_item = gtk_menu_item_new_with_label((const gchar*)syntax_label);
+    syntax_menu_item = gtk_menu_item_new_with_label((const gchar*)syntax_label);
     gtk_widget_show (syntax_menu_item);
     gtk_menu_shell_append(GTK_MENU_SHELL(syntax_menu), syntax_menu_item);
   }
