@@ -1,5 +1,12 @@
 2007-03-22  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_xml_writer.c, src/ntriples_parse.c,
+	src/raptor_grddl.c, src/raptor_parse.c: Casts for C++
+
+	* examples/grapper.c: Use library variables for license, home page
+
+	* examples/grapper.c: Casts and C99 fixes
+
 	* src/raptor_rss.h: Fix CONTENT_NAMESPACE_URI to correct URI
 
 2007-03-19  Dave Beckett  <dave@dajobe.org>
