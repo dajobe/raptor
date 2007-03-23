@@ -628,13 +628,13 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 #if 1
   /* using 2.5.x stock about */
   gtk_show_about_dialog(GTK_WINDOW(state->window), 
-                        "authors", authors,
-                        "comments", application_description,
+                        "authors",   authors,
+                        "comments",  application_description,
                         "copyright", raptor_short_copyright_string,
-                        "license", "LGPL 2.1 / Apache 2.0",
-                        "name", application_name,
-                        "version", raptor_version_string,
-                        "website", "http://librdf.org/raptor/",
+                        "license",   raptor_license_string,
+                        "name",      application_name,
+                        "version",   raptor_version_string,
+                        "website",   raptor_home_url_string,
                         "website-label", "Raptor",
                         NULL);
 #else
@@ -646,8 +646,8 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
   gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about), raptor_version_string);
   gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about), raptor_short_copyright_string);
   gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about), application_description);
-  gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(about), "LGPL 2.1 / Apache 2.0");
-  gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), "http://librdf.org/raptor/");
+  gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(about), raptor_license_string);
+  gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), raptor_home_url_string);
   gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), "Raptor");
   gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about), authors);
 
