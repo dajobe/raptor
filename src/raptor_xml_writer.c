@@ -1106,7 +1106,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: I/O stream failed to create a string\n", program);
     return 1;
   }
-  string_len=strlen(string);
+  string_len=strlen((const char*)string);
   if(string_len != count) {
     fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
     return 1;
