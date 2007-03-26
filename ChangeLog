@@ -1,3 +1,23 @@
+2007-03-25  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rfc2396.c: (raptor_new_uri_detail): Set
+	is_hierarchical flag.
+	(raptor_uri_resolve_uri_reference): Handle a non-hierarchical base
+	URI.
+	Fixes Issue#0000177 http://bugs.librdf.org/mantis/view.php?id=177
+	(main): Fix above changes an earlier test:
+	From:
+	  resolve("foo:", "not_scheme:blah") => "foo:/not_scheme:blah"
+	To:
+	  resolve("foo:", "not_scheme:blah") => "foo:not_scheme:blah"
+
+	* src/raptor_rfc2396.c: (main): Add test to confirm report from
+	Issue#000177 http://bugs.librdf.org/mantis/view.php?id=177
+
+	* utils/rapper.c: Print all informational and help messages to
+	stderr.  Only results of parsing and the help (-h/--help) message
+	goes to stdout now.
+
 2007-03-22  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_xml_writer.c, src/ntriples_parse.c,
