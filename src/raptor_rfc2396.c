@@ -2,7 +2,7 @@
  *
  * raptor_rfc2396.c - Raptor URI resolving from RFC2396
  *
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -169,6 +169,8 @@ raptor_new_uri_detail(const unsigned char *uri_string)
     *b='\0';
   }
 
+  ud->is_hierarchical=(ud->path && *ud->path == '/');
+
   return ud;
 }
 
@@ -332,8 +334,11 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   result.authority_len = base->authority_len;
     
 
-  if(ref->path && *ref->path == '/') {
-    /* reference path is absolute, just copy the reference path */
+  if(ref->is_hierarchical || !base->is_hierarchical) {
+    /* if the reference path is absolute OR the base URI
+     * is a non-hierarchical URI then just copy the reference path
+     * to the result.
+     */
     result.path = ref->path;
     result.path_len = ref->path_len;
     goto resolve_end;
@@ -729,7 +734,7 @@ main(int argc, char *argv[])
   failures += check_resolve("http://example.org/dir/file", "http://another.example.org/dir2/file2", "http://another.example.org/dir2/file2");
 
   /* base URI and relative URI with no absolute path works */
-  failures += check_resolve("foo:", "not_scheme:blah", "foo:/not_scheme:blah");
+  failures += check_resolve("foo:", "not_scheme:blah", "foo:not_scheme:blah");
 
   /* Issue#000177 http://bugs.librdf.org/mantis/view.php?id=177 */
   failures += check_resolve("foo:1234", "9999", "foo:9999");
