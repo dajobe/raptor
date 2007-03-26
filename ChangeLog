@@ -1,5 +1,18 @@
+2007-03-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_parser_register_factory):
+	Register XHTML mime type higher, very unlikely another parser is
+	dealing with this.
+
+	* src/raptor_rss.c: (raptor_rss_parse_recognise_syntax): Make mime
+	type heuristics ignore anything with html in it so XHTML mime type
+	is ignored.
+
 2007-03-25  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_internal.h: raptor_uri_detail_s gains is_hierarchical
+	flag.
+	
 	* src/raptor_rfc2396.c: (raptor_new_uri_detail): Set
 	is_hierarchical flag.
 	(raptor_uri_resolve_uri_reference): Handle a non-hierarchical base
