@@ -1006,6 +1006,9 @@ struct raptor_uri_detail_s
   size_t path_len;
   size_t query_len;
   size_t fragment_len;
+
+  /* Flags */
+  int is_hierarchical;
 };
 
 
