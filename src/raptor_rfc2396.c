@@ -731,6 +731,8 @@ main(int argc, char *argv[])
   /* base URI and relative URI with no absolute path works */
   failures += check_resolve("foo:", "not_scheme:blah", "foo:/not_scheme:blah");
 
+  /* Issue#000177 http://bugs.librdf.org/mantis/view.php?id=177 */
+  failures += check_resolve("foo:1234", "9999", "foo:9999");
 
   return failures;
 }
