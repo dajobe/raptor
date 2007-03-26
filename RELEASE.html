@@ -23,10 +23,12 @@ resolving a URI such as not found (404) are now reported as proper
 errors and cause parsing to fail rather than just return no triples.
 </p>
 
-<p>When guessing for a parser to match some content, add any mime
-type Q &lt;10 to the score, don't lose the influence of the mime type
-entirely.  The consequence is that Turtle can pretend to be a partial
-N3 parser.</p>
+<p>Some improvments where made to guessing for a parser to match some
+content.  Firstly, any mime type with Q &lt;10 is added to the score,
+don't lose the influence of the mime type entirely.  The consequence of
+this is that Turtle can pretend to be a partial N3 parser. Secondly,
+the XHTML mime type is now correctly recognised by the GRDDL parser
+rather than the RSS Tag Soup parser.</p>
 
 
 <p>Fixed Issues:</p>
