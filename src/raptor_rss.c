@@ -1272,12 +1272,14 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
   }
   
   if(mime_type) {
-    if(strstr((const char*)mime_type, "rss"))
-      score+=4;
-    else if(strstr((const char*)mime_type, "xml"))
-      score+=4;
-    else if(strstr((const char*)mime_type, "atom"))
-      score+=4;
+    if(!strstr((const char*)mime_type, "html")) {
+      if(strstr((const char*)mime_type, "rss"))
+        score+=4;
+      else if(strstr((const char*)mime_type, "xml"))
+        score+=4;
+      else if(strstr((const char*)mime_type, "atom"))
+        score+=4;
+    }
   }
   
   return score;
