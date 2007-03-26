@@ -1391,7 +1391,7 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
   factory->content_type_handler= raptor_grddl_parse_content_type_handler;
 
   raptor_parser_factory_add_mime_type(factory, "text/html", 2);
-  raptor_parser_factory_add_mime_type(factory, "application/html+xml", 2);
+  raptor_parser_factory_add_mime_type(factory, "application/xhtml+xml", 4);
 }
 
 
