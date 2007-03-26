@@ -11,14 +11,11 @@
 
 <h2 id="rel1_4_15"><a name="rel1_4_15">Raptor 1.4.15 Changes</a></h2>
 
-<p>Not yet released.
-</p>
-
 <h3>General Changes</h3>
 
 <p>GRDDL parser now passes the (unapproved) test suite for the
 <a href="http://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>
-except for two tests that may have errors.
+except for two tests that have been reported as having errors.
 </p>
 
 <p>When using libcurl as the WWW retrieval library, errors in
@@ -34,7 +31,10 @@ N3 parser.</p>
 
 <p>Fixed Issues:</p>
 <ul>
-<li>None</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000174">#0000174</a>: Serializing to rdfxml* with a base_uri doesn't set the <code>xml:base</code> attribute, but does truncate <code>rdf:about</code> and <code>rdf:resource</code> values</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000177">#0000177</a>: Some URI references mis-resolved</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000178">#0000178</a>: No errors from accessing 404 URIs</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000180">#0000180</a>: messages garble output to stdout</li>
 </ul>
 
 
@@ -86,7 +86,7 @@ type <code>text/rdf+n3</code> at low Q(quality)
 so it might work for N3 that is the RDF subset - quite common.
 </p>
 
-<p>Changed the rss-tag-soup parser and rss-1.0 serializer to stop
+<p>Changed the RSS Tag Soup parser and RSS 1.0 serializer to stop
 sharing use of the declared namespaces so that when using both at the
 same time, there is no double-free of the same objects.
 </p>
