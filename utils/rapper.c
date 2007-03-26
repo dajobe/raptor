@@ -93,7 +93,7 @@ void print_triples(void *user_data, const raptor_statement *triple)
   triple_count++;
 
   if(guess && !quiet && !reported_guess) {
-     fprintf(stdout, "%s: Guessed parser name '%s'\n", program,
+     fprintf(stderr, "%s: Guessed parser name '%s'\n", program,
              raptor_get_name(rdf_parser));
      reported_guess=1;
   }
@@ -326,7 +326,7 @@ main(int argc, char *argv[])
               const char *feature_label;
               if(!raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
                 const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
-                printf("  %-20s  %s%s\n", feature_name, feature_label, 
+                fprintf(stderr, "  %-20s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
             }
@@ -336,7 +336,7 @@ main(int argc, char *argv[])
               const char *feature_label;
               if(!raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, &feature_label)) {
                 const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
-                printf("  %-20s  %s%s\n", feature_name, feature_label, 
+                fprintf(stderr, "  %-20s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
             }
@@ -483,7 +483,7 @@ main(int argc, char *argv[])
               const char *help_label;
               if(raptor_serializers_enumerate(i, &help_name, &help_label, NULL, NULL))
                 break;
-              printf("  %-12s for %s\n", help_name, help_label);
+              fprintf(stderr, "  %-12s for %s\n", help_name, help_label);
             }
             usage=1;
             break;
@@ -507,7 +507,7 @@ main(int argc, char *argv[])
               const char *help_label;
               if(raptor_syntaxes_enumerate(i, &help_name, &help_label, NULL, NULL))
                 break;
-              printf("  %-12s for %s\n", help_name, help_label);
+              fprintf(stderr, "  %-12s for %s\n", help_name, help_label);
             }
             usage=1;
             break;
@@ -713,16 +713,16 @@ main(int argc, char *argv[])
   if(!quiet) {
     if (filename) {
       if(base_uri_string)
-        fprintf(stdout, "%s: Parsing file %s with base URI %s\n", program,
+        fprintf(stderr, "%s: Parsing file %s with base URI %s\n", program,
                 filename, base_uri_string);
       else
-        fprintf(stdout, "%s: Parsing file %s\n", program, filename);
+        fprintf(stderr, "%s: Parsing file %s\n", program, filename);
     } else {
       if(base_uri_string)
-        fprintf(stdout, "%s: Parsing URI %s with base URI %s\n", program,
+        fprintf(stderr, "%s: Parsing URI %s with base URI %s\n", program,
                 uri_string, base_uri_string);
       else
-        fprintf(stdout, "%s: Parsing URI %s\n", program, uri_string);
+        fprintf(stderr, "%s: Parsing URI %s\n", program, uri_string);
     }
   }
   
@@ -797,7 +797,7 @@ main(int argc, char *argv[])
   
 
   if(!quiet)
-    fprintf(stdout, "%s: Parsing returned %d triple%s\n", program,
+    fprintf(stderr, "%s: Parsing returned %d triple%s\n", program,
             triple_count, (triple_count == 1 ? "" : "s"));
 
   raptor_free_uri(base_uri);
