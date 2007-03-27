@@ -176,7 +176,7 @@ MAINTAINER_CFLAGS="$warning_cflags"
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h sys/stat.h curl/curl.h libxml/nanohttp.h sys/param.h sys/time.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h sys/stat.h libxml/nanohttp.h sys/param.h sys/time.h)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
@@ -868,11 +868,14 @@ need_libxml_www=0
 need_libfetch=0
 
 oCPPFLAGS="$CPPFLAGS"
+oLIBS="$LIBS"
 if test "X$CURL_CONFIG" != X; then
-  oLIBS="$LIBS"
+  CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
   LIBS="$LIBS `$CURL_CONFIG --libs`"
+  AC_CHECK_HEADER(curl/curl.h)
   AC_CHECK_FUNC(curl_easy_init, have_curl_easy_init=yes, have_curl_easy_init=no)
   LIBS="$oLIBS"
+  CPPFLAGS="$oCPPFLAGS"
   AC_MSG_CHECKING(for libcurl library)
   if test $have_curl_easy_init = yes -a "$ac_cv_header_curl_curl_h" = yes; then
     have_libcurl=1
