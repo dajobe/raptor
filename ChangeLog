@@ -1,5 +1,7 @@
 2007-03-26  Dave Beckett  <dave@dajobe.org>
 
+	* Snapshotted raptor_1_4_15 for 1.4.15 release (SVN r12027)
+
 	* src/raptor_grddl.c: (raptor_grddl_parser_register_factory):
 	Register XHTML mime type higher, very unlikely another parser is
 	dealing with this.
