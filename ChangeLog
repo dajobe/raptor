@@ -1,5 +1,8 @@
 2007-03-26  Dave Beckett  <dave@dajobe.org>
 
+	* configure.ac, src/win32_raptor_config.h: Bumped version to
+	1.4.16
+
 	* Snapshotted raptor_1_4_15 for 1.4.15 release (SVN r12027)
 
 	* src/raptor_grddl.c: (raptor_grddl_parser_register_factory):
