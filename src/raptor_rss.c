@@ -1259,6 +1259,11 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
   }
   
   if(identifier) {
+    if(!strncmp((const char*)identifier, "http://feed", 11))
+      score+=5;
+    else if(strstr((const char*)identifier, "feed"))
+      score+=3;
+
     if(strstr((const char*)identifier, "rss2"))
       score+=5;
     else if(!suffix && strstr((const char*)identifier, "rss"))
