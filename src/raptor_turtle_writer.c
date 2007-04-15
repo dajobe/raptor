@@ -465,6 +465,7 @@ snprint_turtle_double(char* buf, size_t buf_len, double num)
 /**
  * raptor_turtle_writer_literal:
  * @turtle_writer: Turtle writer object
+ * @nstack: Namespace stack for making a QName for datatype URI
  * @s: literal string to write (SHARED)
  * @lang: language tag (may be NULL)
  * @datatype: datatype URI (may be NULL)
@@ -473,6 +474,7 @@ snprint_turtle_double(char* buf, size_t buf_len, double num)
  **/
 void
 raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
+                             raptor_namespace_stack *nstack,
                              unsigned char* s, unsigned char* lang,
                              raptor_uri* datatype)
 {
@@ -535,13 +537,19 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
 
   /* typed literal, not a special case */
   if(datatype) {
+    raptor_qname* qname;
+
     raptor_iostream_write_string(turtle_writer->iostr, "^^");
-    raptor_turtle_writer_reference(turtle_writer, datatype);
-  
-  /* literal with language tag */
+    qname = raptor_namespaces_qname_from_uri(nstack, datatype, 10);
+    if(qname) {
+      raptor_turtle_writer_qname(turtle_writer, qname);
+      raptor_free_qname(qname);
+    } else
+      raptor_turtle_writer_reference(turtle_writer, datatype);
   } else if(lang) {
-      raptor_iostream_write_byte(turtle_writer->iostr, '@');
-      raptor_iostream_write_string(turtle_writer->iostr, lang);
+    /* literal with language tag */
+    raptor_iostream_write_byte(turtle_writer->iostr, '@');
+    raptor_iostream_write_string(turtle_writer->iostr, lang);
   }
 }
 
