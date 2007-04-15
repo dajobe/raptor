@@ -1701,7 +1701,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
       for(from=p, to=suffix; *from; ) {
         unsigned char c=*from++;
         /* discard the suffix if it wasn't '\.[a-zA-Z0-9]+$' */
-        if(!isalpha(c) || !isdigit(c)) {
+        if(!isalpha(c) && !isdigit(c)) {
           RAPTOR_FREE(cstring, suffix);
           suffix=NULL;
           to=NULL;
