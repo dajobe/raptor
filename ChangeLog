@@ -1,3 +1,9 @@
+2007-03-27  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac: Check for curl header after inserting any cflags
+	from curl-config.  This lets the curl test work when curl the
+	includes are not in the usual places
+
 2007-03-26  Dave Beckett  <dave@dajobe.org>
 
 	* configure.ac, src/win32_raptor_config.h: Bumped version to
