@@ -194,7 +194,8 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
   if(node->type != RAPTOR_IDENTIFIER_TYPE_LITERAL)
     return 1;
   
-  raptor_turtle_writer_literal(turtle_writer, node->value.literal.string,
+  raptor_turtle_writer_literal(turtle_writer, context->nstack,
+                               node->value.literal.string,
                                node->value.literal.language, 
                                node->value.literal.datatype);
 
@@ -233,7 +234,8 @@ raptor_turtle_emit_xml_literal(raptor_serializer *serializer,
   type_uri = raptor_new_uri((const unsigned char*)
     "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral");
   
-  raptor_turtle_writer_literal(turtle_writer, node->value.literal.string, NULL, type_uri);
+  raptor_turtle_writer_literal(turtle_writer, context->nstack,
+                               node->value.literal.string, NULL, type_uri);
 
   raptor_free_uri(type_uri);
 
