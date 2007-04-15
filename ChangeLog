@@ -1,3 +1,29 @@
+2007-04-14  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_emit_literal,
+	raptor_turtle_emit_xml_literal): Send namespace stack to
+	raptor_turtle_writer_literal
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_literal): Add
+	nspace field and use it to look up if a qname can be used for a
+	datatype URI.
+
+	* src/raptor_internal.h: raptor_turtle_writer_literal gains nspace
+	field
+
+	* src/raptor_parse.c: (raptor_guess_parser_name): Make suffix
+	decoding work again
+
+2007-04-10  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rss.c: (raptor_rss_parse_recognise_syntax): One more
+	addition in the neverending guesswork that is rss tag soup.  This
+	time for sites that have feed in the DNS name, or just somewhere
+	in the URL.
+
+	* src/raptor_parse.c: (raptor_guess_parser_name): Discard suffixes
+	that are not '\.[a-zA-Z0-9]+$'
+
 2007-03-27  Dave Beckett  <dave@dajobe.org>
 
 	* configure.ac: Check for curl header after inserting any cflags
