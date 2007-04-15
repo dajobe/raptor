@@ -1127,7 +1127,7 @@ void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
 void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
 void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
 void raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
-void raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, unsigned char *s, unsigned char* lang, raptor_uri* datatype);
+void raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_namespace_stack *nstack, unsigned char *s, unsigned char* lang, raptor_uri* datatype);
 void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
 void raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer, unsigned char *s);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
