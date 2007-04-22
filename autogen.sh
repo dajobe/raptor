@@ -45,10 +45,11 @@ CONFIG_DIR=${CONFIG_DIR-../config}
 # Set an envariable of the same name in uppercase, to override scan
 #
 programs="automake aclocal autoconf autoheader libtoolize"
-if grep "^GTK_DOC_CHECK" configure.ac >/dev/null; then
+confs=`find . -name configure.ac -print`
+if grep "^GTK_DOC_CHECK" $confs >/dev/null; then
   programs="$programs gtkdocize"
 fi
-if grep "^AC_CHECK_PROGS.SWIG" configure.ac >/dev/null; then
+if grep "^AC_CHECK_PROGS.SWIG" $confs >/dev/null; then
   programs="$programs swig"
 fi
 
