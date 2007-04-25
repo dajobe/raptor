@@ -819,16 +819,18 @@ raptor_error_handlers_init(raptor_error_handlers* error_handlers,
                            raptor_message_handler warning_handler,
                            raptor_locator* locator)
 {
-  error_handlers->fatal_error_user_data=fatal_error_user_data;
-  error_handlers->fatal_error_handler=raptor_parser_fatal_error_message_handler;
+  error_handlers->user_data[RAPTOR_LOG_LEVEL_FATAL]=fatal_error_user_data;
+  error_handlers->handlers[RAPTOR_LOG_LEVEL_FATAL]=raptor_parser_fatal_error_message_handler;
 
-  error_handlers->error_user_data=error_user_data;
-  error_handlers->error_handler=raptor_parser_error_message_handler;
+  error_handlers->user_data[RAPTOR_LOG_LEVEL_ERROR]=error_user_data;
+  error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR]=raptor_parser_error_message_handler;
 
-  error_handlers->warning_user_data=warning_user_data;
-  error_handlers->warning_handler=raptor_parser_warning_message_handler;
+  error_handlers->user_data[RAPTOR_LOG_LEVEL_WARNING]=warning_user_data;
+  error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING]=raptor_parser_warning_message_handler;
 
   error_handlers->locator=locator;
+
+  error_handlers->magic=RAPTOR_ERROR_HANDLER_MAGIC;
 }
 
 
