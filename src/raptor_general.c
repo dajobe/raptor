@@ -835,7 +835,7 @@ raptor_error_handlers_init(raptor_error_handlers* error_handlers,
 
 
 static const char* raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
-  "none"
+  "none",
   "fatal error",
   "error",
   "warning"
