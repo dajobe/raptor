@@ -271,19 +271,6 @@ struct raptor_namespace_s {
 };
 
 
-typedef struct {
-  void *fatal_error_user_data;
-  void *error_user_data;
-  void *warning_user_data;
-
-  raptor_message_handler fatal_error_handler;
-  raptor_message_handler error_handler;
-  raptor_message_handler warning_handler;
-
-  raptor_locator* locator;
-} raptor_error_handlers;
-
-
 typedef enum {
   RAPTOR_LOG_LEVEL_NONE,
   RAPTOR_LOG_LEVEL_FATAL,
@@ -291,6 +278,17 @@ typedef enum {
   RAPTOR_LOG_LEVEL_WARNING,
   RAPTOR_LOG_LEVEL_LAST=RAPTOR_LOG_LEVEL_WARNING
 } raptor_log_level;
+
+
+#define RAPTOR_ERROR_HANDLER_MAGIC 0xD00DB1FF
+typedef struct {
+  unsigned int magic;
+
+  raptor_locator* locator;
+
+  void* user_data[RAPTOR_LOG_LEVEL_LAST+1];
+  raptor_message_handler handlers[RAPTOR_LOG_LEVEL_LAST+1];
+} raptor_error_handlers;
 
 
 #ifdef RAPTOR_XML_LIBXML
