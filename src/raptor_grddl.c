@@ -718,8 +718,9 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
-  raptor_www_set_error_handler(www, rdf_parser->error_handlers.error_handler, 
-                               rdf_parser->error_handlers.error_user_data);
+  raptor_www_set_error_handler(www,
+                               rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR], 
+                               rdf_parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]);
   raptor_www_set_write_bytes_handler(www, write_bytes_handler,
                                      write_bytes_user_data);
   if(content_type_handler)
