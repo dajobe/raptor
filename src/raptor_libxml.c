@@ -271,9 +271,9 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
       nmsg[length-2]='\0';
   }
   
-  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
-                           sax2->error_handlers->warning_handler, 
-                           sax2->error_handlers->warning_user_data,
+  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
+                           sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING],
+                           sax2->error_handlers->user_data[RAPTOR_LOG_LEVEL_WARNING],
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
@@ -317,15 +317,15 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
 
   if(is_fatal)
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL,
-                             sax2->error_handlers->fatal_error_handler, 
-                             sax2->error_handlers->fatal_error_user_data,
+                             sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_FATAL], 
+                             sax2->error_handlers->user_data[RAPTOR_LOG_LEVEL_FATAL],
                              sax2->locator, 
                              nmsg ? nmsg : msg, 
                              args);
   else
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
-                             sax2->error_handlers->error_handler, 
-                             sax2->error_handlers->error_user_data,
+                             sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR], 
+                             sax2->error_handlers->user_data[RAPTOR_LOG_LEVEL_ERROR],
                              sax2->locator, 
                              nmsg ? nmsg : msg, 
                              args);
@@ -404,8 +404,8 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
   }
 
   raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
-                           sax2->error_handlers->warning_handler, 
-                           sax2->error_handlers->warning_user_data,
+                           sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING], 
+                           sax2->error_handlers->user_data[RAPTOR_LOG_LEVEL_WARNING],
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
@@ -564,6 +564,9 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   raptor_error_handlers* error_handlers=(raptor_error_handlers*)user_data;
   raptor_stringbuffer* sb;
   char *nmsg;
+  raptor_message_handler handler=NULL;
+  void* handler_data=NULL;
+  raptor_log_level level=RAPTOR_LOG_LEVEL_ERROR;
   
   if(err == NULL || err->code == XML_ERR_OK || err->level == XML_ERR_NONE)
     return;
@@ -611,26 +614,39 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   /* When err->domain == XML_FROM_XPATH then err->int1 is
    * the offset into err->str1, the line with the error
    */
+  if(err->domain == XML_FROM_XPATH && err->str1) {
+    raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)" in ",
+                                              4, 1);
+    raptor_stringbuffer_append_string(sb, (const unsigned char*)err->str1, 1);
+  }
+
+  if(error_handlers) {
+    if(error_handlers->magic != RAPTOR_ERROR_HANDLER_MAGIC) {
+#ifdef RAPTOR_DEBUG
+      RAPTOR_FATAL2("Received bogus error_handlers pointer %p\n",
+                    error_handlers);
+#endif
+      error_handlers=NULL;
+    }
+  }
   
   nmsg=(char*)raptor_stringbuffer_as_string(sb);
   if(err->level == XML_ERR_FATAL)
-    raptor_log_error(RAPTOR_LOG_LEVEL_FATAL, 
-                     error_handlers->fatal_error_handler,
-                     error_handlers->fatal_error_user_data,
-                     error_handlers->locator,
-                     nmsg);
+    level=RAPTOR_LOG_LEVEL_FATAL;
   else if(err->level == XML_ERR_ERROR)
-    raptor_log_error(RAPTOR_LOG_LEVEL_ERROR, 
-                     error_handlers->error_handler,
-                     error_handlers->error_user_data,
-                     error_handlers->locator,
-                     nmsg);
+    level=RAPTOR_LOG_LEVEL_ERROR;
   else
-    raptor_log_error(RAPTOR_LOG_LEVEL_WARNING, 
-                     error_handlers->warning_handler,
-                     error_handlers->warning_user_data,
-                     error_handlers->locator,
-                     nmsg);
+    level=RAPTOR_LOG_LEVEL_WARNING;
+
+  if(error_handlers) {
+    handler=error_handlers->handlers[level];
+    handler_data=error_handlers->user_data[level];
+  }
+
+  raptor_log_error(level, handler, handler_data,
+                   (error_handlers ? error_handlers->locator : NULL),
+                   nmsg);
+
   
   raptor_free_stringbuffer(sb);
 }
