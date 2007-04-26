@@ -52,6 +52,8 @@
 #include <alloca.h>
 #endif
 
+time_t raptor_parse_date(const char *p, time_t *now);
+
 #if defined (STDC_HEADERS) || (!defined (isascii) && !defined (HAVE_ISASCII))
 # define IN_CTYPE_DOMAIN(c) 1
 #else
@@ -1044,7 +1046,7 @@ difftm (struct tm *a, struct tm *b)
 	  + (a->tm_sec - b->tm_sec));
 }
 
-time_t raptor_parse_date(char *p, time_t *now)
+time_t raptor_parse_date(const char *p, time_t *now)
 {
   struct tm tm, tm0, *tmp;
   time_t Start;
