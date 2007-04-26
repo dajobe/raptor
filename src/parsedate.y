@@ -52,8 +52,6 @@
 #include <alloca.h>
 #endif
 
-time_t raptor_parse_date(const char *p, time_t *now);
-
 #if defined (STDC_HEADERS) || (!defined (isascii) && !defined (HAVE_ISASCII))
 # define IN_CTYPE_DOMAIN(c) 1
 #else
@@ -95,7 +93,8 @@ time_t raptor_parse_date(const char *p, time_t *now);
 #endif
 
 /* Prototypes */ 
-static int raptor_parsedate_error(char *msg);
+static int raptor_parsedate_error(const char *msg);
+time_t raptor_parse_date(const char *p, time_t *now);
 
 
 #define EPOCH		1970
@@ -781,16 +780,13 @@ static TABLE const MilitaryTable[] = {
 
 /* ARGSUSED */
 static int
-yyerror (s)
-     char *s ATTRIBUTE_UNUSED;
+yyerror(const char *s)
 {
   return 0;
 }
 
 static int
-ToHour (Hours, Meridian)
-     int Hours;
-     MERIDIAN Meridian;
+ToHour(int Hours, MERIDIAN Meridian)
 {
   switch (Meridian)
     {
@@ -817,8 +813,7 @@ ToHour (Hours, Meridian)
 }
 
 static int
-ToYear (Year)
-     int Year;
+ToYear(int Year)
 {
   if (Year < 0)
     Year = -Year;
@@ -834,13 +829,11 @@ ToYear (Year)
 }
 
 static int
-LookupWord (lvalp,buff)
-	YYSTYPE *lvalp;
-     char *buff;
+LookupWord (YYSTYPE *lvalp, char *buff)
 {
-  register char *p;
-  register char *q;
-  register const TABLE *tp;
+  char *p;
+  char *q;
+  const TABLE *tp;
   int i;
   int abbrev;
 
@@ -955,10 +948,10 @@ LookupWord (lvalp,buff)
   return tID;
 }
 
-int yylex (YYSTYPE *lvalp, void *parm)
+int yylex(YYSTYPE *lvalp, void *parm)
 {
-  register unsigned char c;
-  register char *p;
+  unsigned char c;
+  char *p;
   char buff[20];
   int Count;
   int sign;
