@@ -1,3 +1,37 @@
+2007-04-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/parsedate.y: ANSI C function prototypes.
+
+	* src/parsedate.y: Prototype for raptor_parse_date
+
+2007-04-24  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_general.c: raptor_log_level_labels make it the right size
+
+	* src/raptor_grddl.c, src/raptor_parse.c, src/raptor_sax2.c:
+	Update for error_handlers arrays.
+
+	* src/raptor_libxml.c: (raptor_libxml_warning): Update for
+	error_handlers arrays.  Also do not send an error to the warning
+	handlers.
+	(raptor_libxml_error_common, raptor_libxml_validation_warning):
+	Update for error_handlers arrays.
+	(raptor_libxml_xmlStructuredErrorFunc): Add xpath to the error
+	message when the domain is XML_FROM_XPATH.  Ignore error_handlers
+	if the pointer is bogus.  Use the arrays.  If error_handler is
+	NULL, ignore it.
+
+	* src/raptor_general.c: (raptor_error_handlers_init): Init error
+	handler array fields and magic field.
+
+	* src/raptor_internal.h: raptor_error_handlers now contains arrays
+	of user_data and handlers and a magic field to check that an
+	error_handler pointer is valid.
+
+2007-04-22  Dave Beckett  <dave@dajobe.org>
+
+	* autogen.sh: Update autogen.sh
+
 2007-04-14  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_serialize_turtle.c: (raptor_turtle_emit_literal,
