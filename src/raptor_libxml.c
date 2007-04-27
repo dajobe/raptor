@@ -472,8 +472,8 @@ raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
 void
 raptor_libxml_init_generic_error_handlers(raptor_sax2 *sax2)
 {
-  xmlGenericError = (xmlGenericErrorFunc)raptor_libxml_generic_error;
-  xmlGenericErrorContext = sax2;
+  xmlSetGenericErrorFunc(sax2, 
+                         (xmlGenericErrorFunc)raptor_libxml_generic_error);
 }
 
 
