@@ -752,7 +752,6 @@ struct  raptor_www_s {
 
 #ifdef RAPTOR_WWW_LIBXML
   void *ctxt;
-  xmlGenericErrorFunc old_handler;
   char buffer[RAPTOR_WWW_BUFFER_SIZE];
   int is_end;
 #endif
