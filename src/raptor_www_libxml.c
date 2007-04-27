@@ -59,10 +59,6 @@ raptor_www_libxml_http_error(void *ctx, const char *msg, ...)
 void
 raptor_www_libxml_init(raptor_www *www)
 {
-  initGenericErrorDefaultFunc(&www->old_handler);
-  /* This will destroy the generic error default context:
-   * there is no way to query and save it (xmlGenericErrorContext)
-   */
   xmlSetGenericErrorFunc(www, raptor_www_libxml_http_error);
   www->ctxt=NULL;
 }
@@ -71,7 +67,7 @@ raptor_www_libxml_init(raptor_www *www)
 void
 raptor_www_libxml_free(raptor_www *www)
 {
-  xmlSetGenericErrorFunc(NULL, www->old_handler);
+  xmlSetGenericErrorFunc(NULL, NULL);
 }
 
 
