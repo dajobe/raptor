@@ -1028,7 +1028,7 @@ struct raptor_uri_detail_s
 #define RAPTOR_PARSEDATE_FUNCTION parsedate
 #else
 #ifdef HAVE_RAPTOR_PARSE_DATE
-time_t raptor_parse_date(char *p, time_t *now);
+time_t raptor_parse_date(const char *p, time_t *now);
 #define RAPTOR_PARSEDATE_FUNCTION raptor_parse_date
 #else
 #ifdef HAVE_CURL_CURL_H
