@@ -32,7 +32,7 @@ pkgconfig_DATA = raptor.pc
 
 EXTRA_DIST=\
 ChangeLog ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 ChangeLog.5 \
-ChangeLog.6 \
+ChangeLog.6 ChangeLog.7 \
 README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 RELEASE.html \
