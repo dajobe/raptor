@@ -1198,6 +1198,17 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
     score+=5;
 
   if(buffer && len) {
+    int c;
+    
+    /* Only use first N bytes to avoid HTML documents that contain
+     * RDF/XML examples
+     */
+#define FIRSTN 512
+    if(len > FIRSTN) {
+      c=buffer[FIRSTN];
+      ((char*)buffer)[FIRSTN]='\0';
+    }
+
     /* Check it's an XML namespace declared and not N3 or Turtle which
      * mention the namespace URI but not in this form.
      */
@@ -1219,6 +1230,9 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
       if(has_rdf_about)
         score++;
     }
+
+    if(len > FIRSTN)
+      ((char*)buffer)[FIRSTN]=c;
   }
   
   return score;
