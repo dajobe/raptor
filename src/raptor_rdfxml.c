@@ -1187,6 +1187,10 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
       score+=5;
     else if(!suffix && strstr((const char*)identifier, "rss"))
       score+=3;
+    else if(!suffix && strstr((const char*)identifier, "rdf"))
+      score+=2;
+    else if(!suffix && strstr((const char*)identifier, "RDF"))
+      score+=2;
   }
   
   if(mime_type &&
@@ -1203,7 +1207,7 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
     /* Only use first N bytes to avoid HTML documents that contain
      * RDF/XML examples
      */
-#define FIRSTN 512
+#define FIRSTN 1024
     if(len > FIRSTN) {
       c=buffer[FIRSTN];
       ((char*)buffer)[FIRSTN]='\0';
@@ -1213,11 +1217,16 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
      * mention the namespace URI but not in this form.
      */
 #define  HAS_RDF_XMLNS1 (strstr((const char*)buffer, "xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
-#define  HAS_RDF_XMLNS2 (strstr((const char*)buffer, "xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS2 (strstr((const char*)buffer, "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
 #define  HAS_RDF_XMLNS3 (strstr((const char*)buffer, "xmlns=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
-#define  HAS_RDF_XMLNS4 (strstr((const char*)buffer, "xmlns=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS4 (strstr((const char*)buffer, "xmlns='http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_ENTITY1 (strstr((const char*)buffer, "<!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>") != NULL)
+#define  HAS_RDF_ENTITY2 (strstr((const char*)buffer, "<!ENTITY rdf \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">") != NULL)
+#define  HAS_RDF_ENTITY3 (strstr((const char*)buffer, "xmlns:rdf=\"&rdf;\"") != NULL)
+#define  HAS_RDF_ENTITY4 (strstr((const char*)buffer, "xmlns:rdf=\'&rdf;\'") != NULL)
 
-    if(HAS_RDF_XMLNS1 || HAS_RDF_XMLNS2 || HAS_RDF_XMLNS3 || HAS_RDF_XMLNS4) {
+    if(HAS_RDF_XMLNS1 || HAS_RDF_XMLNS2 || HAS_RDF_XMLNS3 || HAS_RDF_XMLNS4 ||
+       HAS_RDF_ENTITY1 || HAS_RDF_ENTITY2 || HAS_RDF_ENTITY3 || HAS_RDF_ENTITY4) {
       int has_rdf_RDF=(strstr((const char*)buffer, "<rdf:RDF") != NULL);
       int has_rdf_Description=(strstr((const char*)buffer, "rdf:Description") != NULL);
       int has_rdf_about=(strstr((const char*)buffer, "rdf:about") != NULL);
