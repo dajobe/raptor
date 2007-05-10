@@ -1223,7 +1223,7 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
 #define  HAS_RDF_ENTITY1 (strstr((const char*)buffer, "<!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>") != NULL)
 #define  HAS_RDF_ENTITY2 (strstr((const char*)buffer, "<!ENTITY rdf \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">") != NULL)
 #define  HAS_RDF_ENTITY3 (strstr((const char*)buffer, "xmlns:rdf=\"&rdf;\"") != NULL)
-#define  HAS_RDF_ENTITY4 (strstr((const char*)buffer, "xmlns:rdf=\'&rdf;\'") != NULL)
+#define  HAS_RDF_ENTITY4 (strstr((const char*)buffer, "xmlns:rdf='&rdf;'") != NULL)
 
     if(HAS_RDF_XMLNS1 || HAS_RDF_XMLNS2 || HAS_RDF_XMLNS3 || HAS_RDF_XMLNS4 ||
        HAS_RDF_ENTITY1 || HAS_RDF_ENTITY2 || HAS_RDF_ENTITY3 || HAS_RDF_ENTITY4) {
