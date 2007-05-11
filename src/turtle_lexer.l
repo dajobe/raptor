@@ -272,6 +272,9 @@ EXPONENT [eE][+-]?[0-9]+
 		turtle_parser->lineno++;
                 }
 
+\#[^\r\n]*	{ /* # comment on the last line with no terminating newline */
+                }
+
 .         	{ if (*yytext == EOF)
                     return EOF;
 
