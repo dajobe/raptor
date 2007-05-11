@@ -269,6 +269,9 @@ EXPONENT [eE][+-]?[0-9]+
 		n3_parser->lineno++;
                 }
 
+\#[^\r\n]*	{ /* # comment on the last line with no terminating newline */
+                }
+
 .         	{ if (*yytext == EOF)
                     return EOF;
 
