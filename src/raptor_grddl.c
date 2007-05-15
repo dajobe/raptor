@@ -1123,6 +1123,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   
   
   if(grddl_parser->html_ctxt) {
+    int options;
+
     /* HTML parser */
     grddl_parser->html_ctxt->replaceEntities = 1;
     grddl_parser->html_ctxt->loadsubset = 1;
@@ -1131,8 +1133,12 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     
     /* HTML_PARSE_NOWARNING disables sax->warning, vxtxt.warning  */
     /* HTML_PARSE_NOERROR disables sax->error, vctxt.error */
-    htmlCtxtUseOptions(grddl_parser->html_ctxt, 
-                       HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING | HTML_PARSE_RECOVER);
+    options = HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING;
+#ifdef HTML_PARSE_RECOVER
+    options |= HTML_PARSE_RECOVER;
+#endif
+
+    htmlCtxtUseOptions(grddl_parser->html_ctxt, options);
   } else { 
     /* must be XML */
     grddl_parser->xml_ctxt->vctxt.warning = raptor_grddl_libxml_discard_error;
