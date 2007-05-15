@@ -623,8 +623,12 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   if(error_handlers) {
     if(error_handlers->magic != RAPTOR_ERROR_HANDLER_MAGIC) {
 #ifdef RAPTOR_DEBUG
-      RAPTOR_FATAL2("Received bogus error_handlers pointer %p\n",
-                    error_handlers);
+      if(1) /* FIXME */
+        RAPTOR_DEBUG2("Received bogus error_handlers pointer %p\n",
+                      error_handlers);
+        else
+          RAPTOR_FATAL2("Received bogus error_handlers pointer %p\n",
+                        error_handlers);
 #endif
       error_handlers=NULL;
     }
