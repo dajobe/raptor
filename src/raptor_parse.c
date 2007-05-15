@@ -1744,10 +1744,25 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
       /* got an exact match syntax for URI - return result */
       break;
 
-    if(factory->recognise_syntax)
+    if(factory->recognise_syntax) {
+      int c= -1;
+    
+      /* Only use first N bytes to avoid HTML documents that contain
+       * RDF/XML examples
+       */
+#define FIRSTN 1024
+      if(buffer && len && len > FIRSTN) {
+        c=buffer[FIRSTN];
+        ((char*)buffer)[FIRSTN]='\0';
+      }
+
       score += factory->recognise_syntax(factory, buffer, len, 
                                          identifier, suffix, 
                                          mime_type);
+
+      if(c >= 0)
+        ((char*)buffer)[FIRSTN]=c;
+    }
 
     if(i > MAX_PARSERS)
       RAPTOR_FATAL2("Number of parsers greater than static buffer size %d\n",
