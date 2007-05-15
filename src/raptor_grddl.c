@@ -1072,7 +1072,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     grddl_parser->content_type_check++;
     if(grddl_parser->content_type && 
        !strncmp(grddl_parser->content_type, "application/rdf+xml", 19)) {
-      RAPTOR_DEBUG1("Found document is RDF/XML content type - saving content\n");
+      RAPTOR_DEBUG1("Found document is RDF/XML content type\n");
       grddl_parser->process_this_as_rdfxml=1;
     }
   }
