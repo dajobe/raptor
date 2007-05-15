@@ -341,6 +341,7 @@ typedef struct {
  *   GraphViz DOT serializer.
  * @RAPTOR_FEATURE_BNODE_FILL: Fill color of blank nodes for
  *   GraphViz DOT serializer.
+ * @RAPTOR_FEATURE_HTML_TAG_SOUP: Use a lax HTML parser when parsing HTML
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -370,7 +371,8 @@ typedef enum {
   RAPTOR_FEATURE_RESOURCE_FILL,
   RAPTOR_FEATURE_LITERAL_FILL,
   RAPTOR_FEATURE_BNODE_FILL,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_BNODE_FILL
+  RAPTOR_FEATURE_HTML_TAG_SOUP,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_HTML_TAG_SOUP
 } raptor_feature;
 
 

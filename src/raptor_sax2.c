@@ -584,6 +584,7 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
     case RAPTOR_FEATURE_NON_NFC_FATAL:
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
+    case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_START_URI:
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:

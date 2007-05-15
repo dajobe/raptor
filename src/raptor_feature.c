@@ -78,7 +78,8 @@ static struct
   { RAPTOR_FEATURE_BNODE_BORDER      , 6,  "bnodeBorder", "DOT serializer blank node border color" },
   { RAPTOR_FEATURE_RESOURCE_FILL     , 6,  "resourceFill", "DOT serializer resource fill color" },
   { RAPTOR_FEATURE_LITERAL_FILL      , 6,  "literalFill", "DOT serializer literal fill color" },
-  { RAPTOR_FEATURE_BNODE_FILL        , 6,  "bnodeFill", "DOT serializer blank node fill color" }
+  { RAPTOR_FEATURE_BNODE_FILL        , 6,  "bnodeFill", "DOT serializer blank node fill color" },
+  { RAPTOR_FEATURE_HTML_TAG_SOUP     , 1,  "htmlTagSoup", "HTML parsing uses a lax HTML parser" }
 };
 
 

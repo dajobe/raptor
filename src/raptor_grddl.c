@@ -1101,7 +1101,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                                                    (const char*)uri_string);
   
   /* if that failed, try to create an HTML parser context */
-  if(!grddl_parser->xml_ctxt) {
+  if(!grddl_parser->xml_ctxt &&
+     rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]) {
     xmlCharEncoding enc;
 
     RAPTOR_DEBUG2("Creating an XML parser failed for %s content\n", uri_string);
