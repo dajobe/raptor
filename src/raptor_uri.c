@@ -543,7 +543,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
         break;
 
       /* try again with a bigger buffer */
-      path_max >>= 2;
+      path_max *= 2;
       path=(char*)realloc(path, path_max);
     }
     if(!path)
