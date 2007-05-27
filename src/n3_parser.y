@@ -893,7 +893,7 @@ n3_parser_error(void* ctx, const char *msg)
   rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
 #endif
 
-  raptor_parser_simple_error(rdf_parser, msg);
+  raptor_parser_simple_error(rdf_parser, "%s", msg);
   return yy_init_globals(NULL); /* 0 but a way to use yy_init_globals */
 }
 
