@@ -154,8 +154,7 @@ raptor_serializer_register_factory(const char *name, const char *label,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG4("Received registration for syntax serializer %s '%s' with alias '%s'\n", 
                 name, label, (alias ? alias : "none"));
-  RAPTOR_DEBUG4(raptor_serializer_register_factory,
-                "MIME type %s, URI %s\n", 
+  RAPTOR_DEBUG3("MIME type %s, URI %s\n", 
                 (mime_type ? mime_type : "none"),
                 (uri_string ? uri_string : "none"));
 #endif
