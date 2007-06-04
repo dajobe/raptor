@@ -433,6 +433,34 @@ static const char* grddl_namespace_uris_ignore_list[]={
 };
 
 
+/* add URI to XSLT transformation URI list */
+static void
+raptor_grddl_add_transform_uri(raptor_grddl_parser_context* grddl_parser,
+                               raptor_uri* uri)
+{
+  int i;
+  
+  RAPTOR_DEBUG2("Found document transformation URI '%s'\n",
+                raptor_uri_as_string(uri));
+
+  for(i=0; i < raptor_sequence_size(grddl_parser->doc_transform_uris); i++) {
+    raptor_uri* xslt_uri=(raptor_uri*)raptor_sequence_get_at(grddl_parser->doc_transform_uris, i);
+    RAPTOR_DEBUG3("URI '%s' vs XSLT URI '%s'\n", 
+                  raptor_uri_as_string(uri), raptor_uri_as_string(xslt_uri));
+    if(raptor_uri_equals(uri, xslt_uri)) {
+      //#if RAPTOR_DEBUG > 1
+      RAPTOR_DEBUG2("Already seen XSLT URI '%s'\n", raptor_uri_as_string(uri));
+      //#endif
+      return;
+    }
+    RAPTOR_DEBUG2("Saw existing XSLT URI '%s'\n", raptor_uri_as_string(xslt_uri));
+  }
+
+  raptor_sequence_push(grddl_parser->doc_transform_uris, 
+                       raptor_uri_copy(uri));
+}
+
+
 static void
 raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
 {
@@ -486,11 +514,7 @@ raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
                     rdf_parser, i, raptor_uri_as_string(profile_uri));
 #endif
       
-      /* add object as URI to transformation URI*/
-      RAPTOR_DEBUG2("Found document transformation URI '%s'\n",
-                    raptor_uri_as_string(uri));
-      raptor_sequence_push(grddl_parser->doc_transform_uris, 
-                           raptor_uri_copy(uri));
+      raptor_grddl_add_transform_uri(grddl_parser, uri);
     } else {
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Failed to match profile URI #%d '%s'\n",
@@ -1381,6 +1405,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                                         match_table[expri].xpath,
                                         match_table[expri].flags);
     if(result) {
+      int k;
+    
       if(match_table[expri].xslt_sheet_uri) {
         /* Ignore what matched, use a hardcoded XSLT URI */
         uri_string=match_table[expri].xslt_sheet_uri;
@@ -1390,7 +1416,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         raptor_sequence_set_at(result, 0, uri);
       }
       
-      raptor_sequence_join(grddl_parser->doc_transform_uris, result);
+      for(k=0; k < raptor_sequence_size(result); k++) {
+        raptor_uri* xslt_uri=(raptor_uri*)raptor_sequence_get_at(result, k);
+        raptor_grddl_add_transform_uri(grddl_parser, xslt_uri);
+      }
       raptor_free_sequence(result);
     }
 
