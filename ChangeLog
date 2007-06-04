@@ -1,4 +1,125 @@
+2007-06-04  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_add_transform_uri): Added, to
+	add a transformation URI
+	(XSLT) for a document, removing duplicate URIs.
+	(raptor_grddl_filter_triples, raptor_grddl_parse_chunk): Use
+	raptor_grddl_add_transform_uri.
+
+2007-06-03  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_parse.c: Add RDFa parser
+
+2007-05-27  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize.c: (raptor_serializer_register_factory):
+	Fix debug call with RAPTOR_DEBUG>1
+	Fixes Issue#0000195 http://bugs.librdf.org/mantis/view.php?id=195
+
+2007-05-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_uri.c: (raptor_uri_filename_to_uri_string): Make
+	path_max bigger *2, not smaller /4.
+	Fixes Issue#0000192 http://bugs.librdf.org/mantis/view.php?id=192
+
+	* src/n3_parser.y: (n3_parser_error): Invoke
+	raptor_parser_simple_error with a format string and arg.
+
+	* src/turtle_parser.y: (turtle_parser_error): Invoke
+	raptor_parser_simple_error with a format string and arg.
+
+	* src/raptor.h: Allow _declspec and __declspec
+	Fixes Issue#0000188 http://bugs.librdf.org/mantis/view.php?id=188
+
+2007-05-23  Dave Beckett  <dave@dajobe.org>
+
+	* docs/tmpl/section-feature.sgml: Add RAPTOR_FEATURE_HTML_TAG_SOUP
+
+2007-05-21  Dave Beckett  <dave@dajobe.org>
+
+	* configure.ac: Check for libxml/nanohttp.h only once the
+	xml-config include paths have been setup.
+
+	* configure.ac: Add -Wformat-security
+
+2007-05-14  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Use
+	HTML_PARSE_RECOVER if available
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_grddl.c,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Added parser
+	feature RAPTOR_FEATURE_HTML_TAG_SOUP aka htmlTagSoup for use by
+	GRDDL parser
+
+	* src/raptor_libxml.c: debug bogus pointers not fail temporarily
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
+	Move buffer editing to raptor_guess_parser_name.
+
+	* src/raptor_parse.c: (raptor_guess_parser_name): Only run
+	recognise_syntax with first N bytes of content
+
+	* src/raptor_grddl.c: debugmsg
+
+	* src/raptor_grddl.c: Use HTML parser when XML parser fails, to
+	create a DOM for GRDDLing from invalid/not-WF HTML content.
+	raptor_grddl_parser_context_s gains htmlParserCtxt as well as
+	xmlParserCtxt and process_this_as_rdfxml GRDDL flag to know when
+	to parse the content twice.
+	(raptor_grddl_parse_terminate): Tidy htmlParserCtxt.  Add
+	MATCH_IS_HARDCODED to match_table just to make it clear.
+	(match_table): Re-enable hcalendar and hcard as hardcoded XSLTs
+	(raptor_grddl_run_xpath_match): Handle non-namespace elements.
+	Handle MATCH_IS_HARDCODED and return on first match.
+	(raptor_grddl_parse_chunk): Major change in structure - all
+	content passed in is saved until is_end=1, then parsed with XML
+	parser and if that fails, HTML parser.  HTML parser is run with no
+	errors or warnings.
+
+2007-05-11  Dave Beckett  <dave@dajobe.org>
+
+	* src/turtle_parser.y: (raptor_turtle_parse_recognise_syntax):
+	Look for turtle @prefix and rdf namespace use in buffer.
+
+	* src/n3_lexer.l: Add rule to allow a comment on the last line,
+	without a final newline
+
+	* src/turtle_lexer.l: Add rule to allow a comment on the last
+	line, without a final newline
+
+	* tests/turtle/Makefile.am, tests/turtle/test-26.out,
+	tests/turtle/test-26.ttl: Add test-26
+
+2007-05-10  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: 's
+
+2007-05-09  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
+	Recognize rdf entities as namespaces.  Add bonus points for using
+	the words rdf and rdf
+
+2007-05-08  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
+	Only use first 512 bytes of content for hunting for namespaces.
+
 2007-04-26  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_internal.h: struct raptor_www_s loses useless
+	old_handler field for www_libxml
+
+	* src/raptor_www_libxml.c: (raptor_www_libxml_init,
+	raptor_www_libxml_free): Set, reset generic error func.
+
+	* src/raptor_internal.h: Fix raptor_parse_date prototype
+
+	* src/raptor_libxml.c: (raptor_libxml_init_generic_error_handlers):
+	Use xmlSetGenericErrorFunc
 
 	* src/parsedate.y: ANSI C function prototypes.
 
