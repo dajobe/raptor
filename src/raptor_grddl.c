@@ -144,8 +144,15 @@ struct raptor_grddl_parser_context_s {
   /* Check content type once */
   int content_type_check;
 
+  /* stringbuffer to use to store retrieved document */
   raptor_stringbuffer* sb;
+
+  /* non-0 to perform an additional RDF/XML parse on a retrieved document
+   * because it has been identified as RDF/XML. */
   int process_this_as_rdfxml;
+
+  /* non-0 to perform GRDL processing on document */
+  int grddl_processing;
 };
 
 
@@ -195,7 +202,7 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
 
 
 static int
-raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
+raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
 {
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
@@ -214,6 +221,19 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   /* Sequence of URIs of XSLT sheets to transform the document */
   grddl_parser->doc_transform_uris=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_uri, (raptor_sequence_print_handler*)raptor_sequence_print_uri);
 
+  grddl_parser->grddl_processing=1;
+  
+  return 0;
+}
+
+
+static int
+raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
+{
+  raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
+
+  raptor_grddl_parse_init_common(rdf_parser, name);
+
   /* Sequence of URIs from <head profile> */
   grddl_parser->profile_uris=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_uri, (raptor_sequence_print_handler*)raptor_sequence_print_uri);
 
@@ -224,6 +244,27 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
    * the depth 0 grddl parser
    */
   grddl_parser->visited_uris=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_uri, (raptor_sequence_print_handler*)raptor_sequence_print_uri);
+
+  return 0;
+}
+
+
+static int
+raptor_rdfa_parse_init(raptor_parser* rdf_parser, const char *name)
+{
+  raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_uri* uri;
+  
+  raptor_grddl_parse_init_common(rdf_parser, name);
+
+  /* skip content type checking */
+  grddl_parser->content_type_check++;
+
+  /* skip grddl processing */
+  grddl_parser->grddl_processing=0;
+  
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/sw/grddl-wg/td/RDFa2RDFXML.xsl");
+  raptor_sequence_push(grddl_parser->doc_transform_uris, uri);
 
   return 0;
 }
@@ -524,7 +565,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   xmlChar *doc_txt=NULL;
   int doc_txt_len=0;
   const char* parser_name;
-  const char* params[5];
+  const char* params[7];
   const unsigned char* base_uri_string;
   size_t base_uri_len;
   char *quoted_base_uri=NULL;
@@ -548,9 +589,13 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
 
 #if 1
   /* FIXME:
-   * Define 'base' and 'Base' params to allow some XSLT sheets to work:
+   * Define 'base', 'Base' and 'url' params to allow some XSLT sheets to work:
+   * base:
    *   http://www.w3.org/2000/07/uri43/uri.xsl
+   * Base:
    *   http://www.w3.org/2000/08/w3c-synd/home2rss.xsl
+   * url:
+   *   http://www.w3.org/2001/sw/grddl-wg/td/RDFa2RDFXML.xsl
    */
   quoted_base_uri=(char*)RAPTOR_MALLOC(cstring, base_uri_len+3);
   quoted_base_uri[0]='\'';
@@ -562,7 +607,9 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   params[1]=(const char*)quoted_base_uri;
   params[2]="Base";
   params[3]=(const char*)quoted_base_uri;
-  params[4]=NULL;
+  params[4]="url";
+  params[5]=(const char*)quoted_base_uri;
+  params[6]=NULL;
 
   res = xsltApplyStylesheet(sheet, doc, params);
 #else
@@ -827,6 +874,9 @@ static void
 raptor_grddl_done_uri(raptor_grddl_parser_context* grddl_parser,
                       raptor_uri* uri)
 {
+  if(!grddl_parser->visited_uris)
+    return;
+  
   if(!raptor_grddl_seen_uri(grddl_parser, uri)) {
     raptor_sequence* seq=grddl_parser->visited_uris;
     raptor_sequence_push(seq, raptor_uri_copy(uri));
@@ -1171,6 +1221,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     goto tidy;
   }
 
+  if(!grddl_parser->grddl_processing)
+    goto transform;
+  
   RAPTOR_DEBUG3("Parser %p: Running XInclude processing on URI '%s'\n",
                 rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
   if(xmlXIncludeProcess(doc) < 0) {
@@ -1378,6 +1431,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   
   /* Apply all transformation URIs seen */
+  transform:
   while(raptor_sequence_size(grddl_parser->doc_transform_uris)) {
     uri=(raptor_uri*)raptor_sequence_unshift(grddl_parser->doc_transform_uris);
     RAPTOR_DEBUG3("Parser %p: Running transformation URI '%s'\n",
@@ -1478,12 +1532,38 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
 }
 
 
+static void
+raptor_rdfa_parser_register_factory(raptor_parser_factory *factory) 
+{
+  factory->context_length     = sizeof(raptor_grddl_parser_context);
+  
+  factory->need_base_uri = 1;
+
+  factory->init      = raptor_rdfa_parse_init;
+  factory->terminate = raptor_grddl_parse_terminate;
+  factory->start     = raptor_grddl_parse_start;
+  factory->chunk     = raptor_grddl_parse_chunk;
+}
+
+
 void
 raptor_init_parser_grddl(void)
 {
   raptor_parser_register_factory("grddl", 
                                  "Gleaning Resource Descriptions from Dialects of Languages",
                                  &raptor_grddl_parser_register_factory);
+
+#ifdef HAVE_XSLTINIT
+  xsltInit();
+#endif
+}
+
+void
+raptor_init_parser_rdfa(void)
+{
+  raptor_parser_register_factory("rdfa", 
+                                 "RDFa Embedding RDF in XHTML W3C WD 2007-03-12",
+                                 &raptor_rdfa_parser_register_factory);
 
 #ifdef HAVE_XSLTINIT
   xsltInit();

@@ -114,6 +114,10 @@ raptor_parsers_init(void)
   raptor_init_parser_grddl();
 #endif
 
+#ifdef RAPTOR_PARSER_RDFA
+  raptor_init_parser_rdfa();
+#endif
+
 #ifdef RAPTOR_PARSER_GUESS
   raptor_init_parser_guess();
 #endif

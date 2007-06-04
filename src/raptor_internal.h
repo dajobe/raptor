@@ -666,6 +666,7 @@ void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
 void raptor_init_parser_n3(void);
 void raptor_init_parser_grddl(void);
+void raptor_init_parser_rdfa(void);
 void raptor_init_parser_guess(void);
 void raptor_init_parser_rss(void);
 

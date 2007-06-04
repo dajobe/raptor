@@ -704,6 +704,7 @@ turtle_parser=no
 n3_parser=no
 rss_parser=no
 grddl_parser=no
+rdfa_parser=no
 guess_parser=yes
 
 rdf_parsers_available="rdfxml ntriples turtle guess rss-tag-soup"
@@ -714,11 +715,12 @@ rdf_parsers_enabled=
 
 
 grddl_parser_ok=no
-AC_MSG_CHECKING(GRDDL parser requirements)
+AC_MSG_CHECKING(GRDDL/RDFa parser requirements)
 if test $need_libxml = 1 -a $have_libxslt = 1; then
   AC_MSG_RESULT(yes)
   grddl_parser_ok=yes
   rdf_parsers_available="$rdf_parsers_available grddl"
+  rdf_parsers_available="$rdf_parsers_available rdfa"
 else
   AC_MSG_RESULT(no - libxml2 and libxslt are both not available)
 fi
@@ -733,6 +735,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_PARSER_N3, 1, [Building Notation 3 parser])
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
   AC_DEFINE(RAPTOR_PARSER_GRDDL, 1, [Building GRDDL parser])
+  AC_DEFINE(RAPTOR_PARSER_RDFA, 1, [Building RDFA parser])
   AC_DEFINE(RAPTOR_PARSER_GUESS, 1, [Building guess parser])
 fi
 
@@ -754,9 +757,9 @@ for parser in $parsers; do
     p=rss
   fi
 
-  if test $p = grddl; then
+  if test $p = grddl -o $p = rdfa; then
     if test $grddl_parser_ok != yes; then
-      AC_MSG_WARN(GRDDL parser is not available)
+      AC_MSG_WARN(GRDDL and RDFa parsers are not available)
       continue
     fi
   fi
@@ -774,7 +777,7 @@ if test $rdfxml_parser = yes; then
 fi
 
 need_libxslt=0
-if test $grddl_parser = yes; then
+if test $grddl_parser = yes -o $rdfa_parser = yes; then
   need_libxslt=1
 fi
 
@@ -783,7 +786,8 @@ AM_CONDITIONAL(RAPTOR_PARSER_NTRIPLES, test $ntriples_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_N3, test $n3_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
-AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes -o $rdfa_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_RDFA, test $rdfa_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GUESS, test $guess_parser = yes)
 
 
