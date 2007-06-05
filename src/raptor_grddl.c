@@ -457,9 +457,9 @@ raptor_grddl_add_transform_uri(raptor_grddl_parser_context* grddl_parser,
     RAPTOR_DEBUG3("URI '%s' vs XSLT URI '%s'\n", 
                   raptor_uri_as_string(uri), raptor_uri_as_string(xslt_uri));
     if(raptor_uri_equals(uri, xslt_uri)) {
-      //#if RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG2("Already seen XSLT URI '%s'\n", raptor_uri_as_string(uri));
-      //#endif
+#endif
       return;
     }
     RAPTOR_DEBUG2("Saw existing XSLT URI '%s'\n", raptor_uri_as_string(xslt_uri));
@@ -627,7 +627,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
    *   http://www.w3.org/2000/07/uri43/uri.xsl
    * Base:
    *   http://www.w3.org/2000/08/w3c-synd/home2rss.xsl
-   * url:
+   * url: (optional)
    *   http://www.w3.org/2001/sw/grddl-wg/td/RDFa2RDFXML.xsl
    */
   quoted_base_uri=(char*)RAPTOR_MALLOC(cstring, base_uri_len+3);
