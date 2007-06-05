@@ -665,12 +665,13 @@ void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
 void raptor_init_parser_n3(void);
+void raptor_init_parser_grddl_common(void);
 void raptor_init_parser_grddl(void);
 void raptor_init_parser_rdfa(void);
 void raptor_init_parser_guess(void);
 void raptor_init_parser_rss(void);
 
-void raptor_terminate_parser_grddl(void);
+void raptor_terminate_parser_grddl_common(void);
 
 /* raptor_parse.c */
 void raptor_parsers_init(void);
