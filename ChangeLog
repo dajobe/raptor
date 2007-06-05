@@ -1,5 +1,48 @@
 2007-06-04  Dave Beckett  <dave@dajobe.org>
 
+	* src/raptor_grddl.c: Do an additional RDF/XML parse of content
+	that is found to be RDF/XML by mime type during recursive GRDDL,
+	and an additional parse of the top level content too, if also
+	found.
+
+	* src/raptor_parse.c: (raptor_parser_copy_user_state): Copy last
+	feature too!
+
+	* src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Added
+	RAPTOR_FEATURE_MICROFORMATS
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Use feature
+	RAPTOR_FEATURE_MICROFORMATS to dis/enable checking for hardcoded
+	microformats
+
+	* src/raptor_feature.c: C
+
+	* src/raptor_feature.c: raptor_features_list gains
+	RAPTOR_FEATURE_MICROFORMATS with name 'microformats'
+
+	* src/raptor.h: Added RAPTOR_FEATURE_MICROFORMATS
+
+	* src/raptor_grddl.c: Remove C++ comment
+
+	* src/raptor_grddl.c: Added MATCH_LAST to stop searching for
+	hardcoded sheets.  Add hReview sheet that if matches, stops
+	looking for later microformats such as hCard.
+	(raptor_grddl_parse_chunk): Use MATCH_LAST to stop looking for
+	later hardcoded matches.
+	(raptor_init_parser_grddl_common,
+	raptor_terminate_parser_grddl_common): Added, called once for
+	grddl or rdfa available.
+
+	* src/raptor_parse.c: (raptor_parsers_init): Call
+	raptor_init_parser_grddl_common for GRDDL or RDFA parsers.
+	(raptor_parsers_finish): Call raptor_terminate_parser_grddl_common
+	for GRDDL or RDFA parsers.
+
+	* src/raptor_internal.h: Add prototypes for
+	raptor_init_parser_grddl_common and
+	raptor_terminate_parser_grddl_common
+
 	* src/raptor_grddl.c: (raptor_grddl_add_transform_uri): Added, to
 	add a transformation URI
 	(XSLT) for a document, removing duplicate URIs.
