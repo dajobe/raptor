@@ -1411,6 +1411,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   for(expri=0; match_table[expri].xpath; expri++) {
     raptor_sequence* result;
     int flags=match_table[expri].flags;
+
+    if((flags & MATCH_IS_HARDCODED) && 
+       !rdf_parser->features[RAPTOR_FEATURE_MICROFORMATS])
+      continue;
     
     result=raptor_grddl_run_xpath_match(rdf_parser, doc, 
                                         match_table[expri].xpath, flags);
