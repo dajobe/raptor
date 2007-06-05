@@ -742,6 +742,7 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -836,6 +837,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -937,6 +939,7 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -1016,6 +1019,7 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:

@@ -826,6 +826,7 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -930,6 +931,7 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
     case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:

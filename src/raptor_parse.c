@@ -1246,6 +1246,7 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_NO_NET:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
       parser->features[(int)feature]=value;
       break;
 
@@ -1332,6 +1333,7 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_NO_NET:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
       result=(parser->features[(int)feature] != 0);
       break;
 
@@ -1413,6 +1415,7 @@ raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
   rdf_parser->features[RAPTOR_FEATURE_WARN_OTHER_PARSETYPES]=!is_strict;
   rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID]=1;
   rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_MICROFORMATS]=!is_strict;
 }
 
 
