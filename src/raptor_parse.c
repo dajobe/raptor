@@ -1838,7 +1838,7 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->uri_filter_user_data= from_parser->uri_filter_user_data;
 
   /* copy features */
-  for(i=0; i< RAPTOR_FEATURE_LAST; i++)
+  for(i=0; i<= RAPTOR_FEATURE_LAST; i++)
     to_parser->features[i]= from_parser->features[i];
 
 }
