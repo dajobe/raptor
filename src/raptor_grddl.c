@@ -258,7 +258,7 @@ raptor_rdfa_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_grddl_parse_init_common(rdf_parser, name);
 
   /* skip content type checking */
-  grddl_parser->content_type_check++;
+  grddl_parser->content_type_check=1;
 
   /* skip grddl processing */
   grddl_parser->grddl_processing=0;
@@ -369,6 +369,8 @@ raptor_grddl_parse_start(raptor_parser *rdf_parser)
 #define MATCH_IS_VALUE_LIST 1
 #define MATCH_IS_PROFILE    2
 #define MATCH_IS_HARDCODED  4
+/* stop looking for other hardcoded matches */
+#define MATCH_LAST          8
 static struct {
   const xmlChar* xpath;
   int flags;
@@ -408,6 +410,13 @@ static struct {
     (const xmlChar*)"//*[contains(concat(' ', concat(normalize-space(@class),' ')),' vevent ')]",
     MATCH_IS_HARDCODED,
     (const xmlChar*)"http://www.w3.org/2002/12/cal/glean-hcal.xsl"
+  }
+  ,
+  /* hReview microformat http://microformats.org/wiki/review */
+  {
+    (const xmlChar*)"//*[contains(concat(' ', concat(normalize-space(@class),' ')),' hreview ')]",
+    MATCH_IS_HARDCODED | MATCH_LAST, /* stop here since hCard is inside hReview */
+    (const xmlChar*)"http://www.w3.org/2001/sw/grddl-wg/doc29/hreview2rdfxml.xsl"
   }
   ,
   /* hCard microformat http://microformats.org/wiki/hcard */
@@ -1401,9 +1410,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   /* Try all XPaths */
   for(expri=0; match_table[expri].xpath; expri++) {
     raptor_sequence* result;
+    int flags=match_table[expri].flags;
+    
     result=raptor_grddl_run_xpath_match(rdf_parser, doc, 
-                                        match_table[expri].xpath,
-                                        match_table[expri].flags);
+                                        match_table[expri].xpath, flags);
     if(result) {
       int k;
     
@@ -1421,6 +1431,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         raptor_grddl_add_transform_uri(grddl_parser, xslt_uri);
       }
       raptor_free_sequence(result);
+
+      if(flags & MATCH_LAST)
+        break;
     }
 
     
@@ -1576,15 +1589,20 @@ raptor_rdfa_parser_register_factory(raptor_parser_factory *factory)
 
 
 void
+raptor_init_parser_grddl_common(void)
+{
+#ifdef HAVE_XSLTINIT
+  xsltInit();
+#endif
+}
+
+
+void
 raptor_init_parser_grddl(void)
 {
   raptor_parser_register_factory("grddl", 
                                  "Gleaning Resource Descriptions from Dialects of Languages",
                                  &raptor_grddl_parser_register_factory);
-
-#ifdef HAVE_XSLTINIT
-  xsltInit();
-#endif
 }
 
 void
@@ -1593,15 +1611,11 @@ raptor_init_parser_rdfa(void)
   raptor_parser_register_factory("rdfa", 
                                  "RDFa Embedding RDF in XHTML W3C WD 2007-03-12",
                                  &raptor_rdfa_parser_register_factory);
-
-#ifdef HAVE_XSLTINIT
-  xsltInit();
-#endif
 }
 
 
 void
-raptor_terminate_parser_grddl(void)
+raptor_terminate_parser_grddl_common(void)
 {
   xsltCleanupGlobals();
 }
