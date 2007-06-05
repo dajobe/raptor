@@ -2,7 +2,7 @@
  *
  * raptor_feature.c - Parser and Serializer features
  *
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -80,6 +80,7 @@ static struct
   { RAPTOR_FEATURE_LITERAL_FILL      , 6,  "literalFill", "DOT serializer literal fill color" },
   { RAPTOR_FEATURE_BNODE_FILL        , 6,  "bnodeFill", "DOT serializer blank node fill color" },
   { RAPTOR_FEATURE_HTML_TAG_SOUP     , 1,  "htmlTagSoup", "HTML parsing uses a lax HTML parser" }
+  { RAPTOR_FEATURE_MICROFORMATS      , 1,  "microformats", "GRDDL parsing looks for microformats" }
 };
 
 
