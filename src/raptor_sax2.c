@@ -89,8 +89,12 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
   sax2->error_handlers=error_handlers;
 
 #ifdef RAPTOR_XML_LIBXML
+  /* sets xmlGenericErrorContext and xmlStructuredError */
   xmlSetStructuredErrorFunc(&sax2->error_handlers, 
                             raptor_libxml_xmlStructuredErrorFunc);
+  /* sets xmlGenericErrorContext and xmlGenericError */
+  xmlSetGenericErrorFunc(&sax2->error_handlers, 
+                         (xmlGenericErrorFunc)raptor_libxml_generic_error);
 #endif
   
   return sax2;
