@@ -468,6 +468,7 @@ raptor_new_parser(const char *name) {
   rdf_parser->failed=0;
 
   rdf_parser->error_handlers.locator=&rdf_parser->locator;
+  rdf_parser->error_handlers.magic = RAPTOR_ERROR_HANDLER_MAGIC;
   
   /* Initialise default (lax) feature values */
   raptor_set_parser_strict(rdf_parser, 0);
