@@ -193,7 +193,7 @@ typedef struct raptor_sax2_s raptor_sax2;
 /* raptor_libxml.c exports */
 extern void raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri);
 extern void raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax);
-extern void raptor_libxml_init_generic_error_handlers(raptor_sax2 *sax2);
+extern void raptor_libxml_generic_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 extern void raptor_libxml_validation_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
@@ -756,6 +756,7 @@ struct  raptor_www_s {
   void *ctxt;
   char buffer[RAPTOR_WWW_BUFFER_SIZE];
   int is_end;
+  void *old_xmlGenericErrorContext;
 #endif
 
 #ifdef RAPTOR_WWW_LIBFETCH
@@ -772,9 +773,6 @@ struct  raptor_www_s {
   void *content_type_userdata;
   raptor_www_content_type_handler content_type;
 
-  void *error_data;
-  raptor_message_handler error_handler;
-
   void* uri_filter_user_data;
   raptor_uri_filter_func uri_filter;
 
@@ -784,6 +782,8 @@ struct  raptor_www_s {
   char *http_accept;
 
   FILE* handle;
+
+  raptor_error_handlers error_handlers;
 };
 
 
@@ -793,7 +793,6 @@ void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www);
 
-void raptor_www_error_varargs(raptor_www *www, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
 void raptor_www_error(raptor_www *www, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 void raptor_www_curl_init(raptor_www *www);
