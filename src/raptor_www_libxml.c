@@ -41,25 +41,12 @@
 
 #ifdef RAPTOR_WWW_LIBXML
 
-static void raptor_www_libxml_http_error(void *ctx, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 0);
-
-static void
-raptor_www_libxml_http_error(void *ctx, const char *msg, ...) 
-{
-  raptor_www* www=(raptor_www*)ctx;
-  va_list args;
-  
-  www->failed=1;
-
-  va_start(args, msg);
-  raptor_www_error_varargs(www, msg, args);
-  va_end(args);
-}
-
 void
 raptor_www_libxml_init(raptor_www *www)
 {
-  xmlSetGenericErrorFunc(www, raptor_www_libxml_http_error);
+  www->error_handlers.user_data[RAPTOR_LOG_LEVEL_NONE]=www;
+  www->old_xmlGenericErrorContext=xmlGenericErrorContext;
+  xmlSetGenericErrorFunc(&www->error_handlers, raptor_libxml_generic_error);
   www->ctxt=NULL;
 }
 
@@ -67,7 +54,8 @@ raptor_www_libxml_init(raptor_www *www)
 void
 raptor_www_libxml_free(raptor_www *www)
 {
-  xmlSetGenericErrorFunc(NULL, NULL);
+  xmlSetGenericErrorFunc(www->old_xmlGenericErrorContext,
+                         raptor_libxml_generic_error);
 }
 
 
