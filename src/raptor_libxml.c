@@ -55,7 +55,6 @@ static void raptor_libxml_warning(void* user_data, const char *msg, ...) RAPTOR_
 static void raptor_libxml_error_common(void* user_data, const char *msg, va_list args,  const char *prefix, int is_fatal) RAPTOR_PRINTF_FORMAT(2, 0);
 static void raptor_libxml_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 static void raptor_libxml_fatal_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-static void raptor_libxml_generic_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 
 
@@ -347,13 +346,39 @@ raptor_libxml_error(void* user_data, const char *msg, ...)
 
 
 
-static void
+void
 raptor_libxml_generic_error(void* user_data, const char *msg, ...) 
 {
+  raptor_error_handlers* error_handlers=(raptor_error_handlers*)user_data;
   va_list args;
+  const char* prefix=xml_generic_error_prefix;
+  int prefix_length=strlen(prefix);
+  int length;
+  char *nmsg;
 
   va_start(args, msg);
-  raptor_libxml_error_common(user_data, msg, args, xml_generic_error_prefix, 0);
+
+  /* no SAX2 and locator from error_handlers */
+
+  length=prefix_length+strlen(msg)+1;
+  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
+  if(nmsg) {
+    strcpy(nmsg, prefix);
+    strcpy(nmsg+prefix_length, msg);
+    if(nmsg[length-1]=='\n')
+      nmsg[length-1]='\0';
+  }
+
+  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                           error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR], 
+                           error_handlers->user_data[RAPTOR_LOG_LEVEL_ERROR],
+                           error_handlers->locator,
+                           nmsg ? nmsg : msg, 
+                           args);
+  
+  if(nmsg)
+    RAPTOR_FREE(cstring,nmsg);
+
   va_end(args);
 }
 
@@ -466,14 +491,6 @@ raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
   sax->initialized = 1;
 #endif
-}
-
-
-void
-raptor_libxml_init_generic_error_handlers(raptor_sax2 *sax2)
-{
-  xmlSetGenericErrorFunc(sax2, 
-                         (xmlGenericErrorFunc)raptor_libxml_generic_error);
 }
 
 
@@ -608,6 +625,19 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
     if(len && msg[len-1] == '\n')
       msg[--len]='\0';
     
+    raptor_stringbuffer_append_counted_string(sb, msg, len, 1);
+  }
+  
+  if(err->str1) {
+    unsigned char* msg;
+    size_t len;
+    msg=(unsigned char*)err->str1;
+    len= strlen((const char*)msg);
+    if(len && msg[len-1] == '\n')
+      msg[--len]='\0';
+    
+    raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)" - ",
+                                              3, 1);
     raptor_stringbuffer_append_counted_string(sb, msg, len, 1);
   }
   
