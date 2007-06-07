@@ -162,6 +162,9 @@ raptor_www_new_with_connection(void *connection)
   raptor_www_libfetch_init(www);
 #endif
 
+  www->error_handlers.locator=&www->locator;
+  www->error_handlers.magic = RAPTOR_ERROR_HANDLER_MAGIC;
+
   return www;
 }
 
@@ -245,8 +248,8 @@ raptor_www_set_error_handler(raptor_www* www,
                              raptor_message_handler error_handler, 
                              void *error_data)
 {
-  www->error_handler=error_handler;
-  www->error_data=error_data;
+  www->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]=error_data;
+  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR]=error_handler;
 }
 
 
@@ -438,23 +441,18 @@ raptor_www_abort(raptor_www* www, const char *reason)
 
 
 void
-raptor_www_error_varargs(raptor_www* www, const char *message, 
-                         va_list arguments)
-{
-  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
-                           www->error_handler, www->error_data,
-                           &www->locator,
-                           message, arguments);
-}
-
-  
-void
 raptor_www_error(raptor_www* www, const char *message, ...) 
 {
   va_list arguments;
 
   va_start(arguments, message);
-  raptor_www_error_varargs(www, message, arguments);
+
+  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+                           www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR],
+                           www->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR],
+                           &www->locator,
+                           message, arguments);
+
   va_end(arguments);
 }
 
