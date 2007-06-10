@@ -683,7 +683,7 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
  *
  * Get the WWW final resolved URI.
  * 
- * Thsi returns the URI used after any protocol redirection.
+ * This returns the URI used after any protocol redirection.
  *
  * Return value: a new URI or NULL if not known.
  **/
@@ -691,4 +691,26 @@ raptor_uri*
 raptor_www_get_final_uri(raptor_www* www) 
 {
   return www->final_uri ? raptor_uri_copy(www->final_uri) : NULL;
+}
+
+
+/**
+ * raptor_www_set_final_uri_handler:
+ * @www: WWW object
+ * @handler: content type handler function
+ * @user_data: content type handler data
+ * 
+ * Set the handler to receive the HTTP Content-Type header value.
+ *
+ * This is called if or when the value is discovered during retrieval
+ * by the raptor_www implementation.  Not all implementations provide
+ * access to this.
+ **/
+void
+raptor_www_set_final_uri_handler(raptor_www* www, 
+                                 raptor_www_final_uri_handler handler, 
+                                 void *user_data)
+{
+  www->final_uri_handler=handler;
+  www->final_uri_userdata=user_data;
 }
