@@ -858,6 +858,9 @@ raptor_grddl_discard_message(void *user_data, raptor_locator* locator,
 }
 
 
+#define FETCH_IGNORE_ERRORS 1
+#define FETCH_ACCEPT_XSLT   2
+
 static int
 raptor_grddl_fetch_uri(raptor_parser* rdf_parser, 
                        raptor_uri* uri,
@@ -865,11 +868,12 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
                        void* write_bytes_user_data,
                        raptor_www_content_type_handler content_type_handler,
                        void* content_type_user_data,
-                       int ignore_errors)
+                       int flags)
 {
   raptor_www *www;
   const char *accept_h;
   int ret=0;
+  int ignore_errors=(flags & FETCH_IGNORE_ERRORS);
   
   if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
     return 1;
@@ -880,10 +884,14 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   
   raptor_www_set_user_agent(www, "grddl/0.1");
   
-  accept_h=raptor_parser_get_accept_header(rdf_parser);
-  if(accept_h) {
-    raptor_www_set_http_accept(www, accept_h);
-    RAPTOR_FREE(cstring, accept_h);
+  if(flags & FETCH_ACCEPT_XSLT) {
+    raptor_www_set_http_accept(www, "Accept: application/xml");
+  } else {
+    accept_h=raptor_parser_get_accept_header(rdf_parser);
+    if(accept_h) {
+      raptor_www_set_http_accept(www, accept_h);
+      RAPTOR_FREE(cstring, accept_h);
+    }
   }
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
@@ -942,7 +950,7 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
                              raptor_grddl_uri_xml_parse_bytes,
                              &xpbc,
                              NULL, NULL,
-                             0);
+                             FETCH_ACCEPT_XSLT);
   if(ret) {
     raptor_parser_warning(rdf_parser, "Fetching XSLT document URI '%s' failed",
                           raptor_uri_as_string(xslt_uri));
@@ -1217,11 +1225,11 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
                             grddl_parser->internal_parser,
                             content_type_handler,
                             grddl_parser->internal_parser,
-                            ignore_errors)) {
+                            FETCH_IGNORE_ERRORS)) {
     if(!ignore_errors)
       raptor_parser_warning(rdf_parser,
                             "Fetching GRDDL document URI '%s' failed\n",
-                          raptor_uri_as_string(uri));
+                            raptor_uri_as_string(uri));
     return 0;
   }
   
