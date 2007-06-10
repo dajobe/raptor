@@ -231,6 +231,7 @@ raptor_www_set_user_agent
 raptor_www_set_proxy
 raptor_www_set_http_accept
 raptor_www_set_write_bytes_handler
+raptor_www_set_connection_timeout
 raptor_www_set_content_type_handler
 raptor_www_set_error_handler
 raptor_uri_filter_func
