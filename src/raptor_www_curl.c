@@ -177,6 +177,7 @@ raptor_www_curl_fetch(raptor_www *www)
     raptor_www_error(www, "Resolving URI failed: %s", www->error_buffer);
   } else {
     long lstatus;
+    char* final_uri;
 
 #ifndef CURLINFO_RESPONSE_CODE
 #define CURLINFO_RESPONSE_CODE CURLINFO_HTTP_CODE
@@ -185,6 +186,9 @@ raptor_www_curl_fetch(raptor_www *www)
     /* Requires pointer to a long */
     if(curl_easy_getinfo(www->curl_handle, CURLINFO_RESPONSE_CODE, &lstatus) == CURLE_OK)
       www->status_code=lstatus;
+
+    if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, &final_uri) == CURLE_OK)
+      www->final_uri=raptor_new_uri((const unsigned char*)final_url);
 
   }
 
