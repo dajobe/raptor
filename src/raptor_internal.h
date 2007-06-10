@@ -750,6 +750,7 @@ struct  raptor_www_s {
   CURL* curl_handle;
   char error_buffer[CURL_ERROR_SIZE];
   int curl_init_here;
+  int checked_status;
 #endif
 
 #ifdef RAPTOR_WWW_LIBXML
