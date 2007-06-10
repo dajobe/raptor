@@ -150,6 +150,7 @@ raptor_www_new_with_connection(void *connection)
   www->write_bytes=NULL;
   www->content_type=NULL;
   www->uri_filter=NULL;
+  www->connection_timeout=10;
 
 #ifdef RAPTOR_WWW_LIBCURL
   www->curl_handle=(CURL*)connection;
@@ -366,6 +367,20 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
 #if RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Using Accept header: '%s'\n", www->http_accept);
 #endif
+}
+
+
+/**
+ * raptor_www_set_connection_timeout:
+ * @www: WWW object
+ * @timeout: Timeout in seconds
+ * 
+ * Set WWW connection timeout
+ **/
+void
+raptor_www_set_connection_timeout(raptor_www* www, int timeout)
+{
+  www->connection_timeout=timeout;
 }
 
 
