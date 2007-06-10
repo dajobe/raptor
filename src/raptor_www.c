@@ -228,6 +228,9 @@ raptor_www_free(raptor_www* www)
   if(www->uri)
     raptor_free_uri(www->uri);
 
+  if(www->final_uri)
+    raptor_free_uri(www->final_uri);
+
   RAPTOR_FREE(www, www);
 }
 
@@ -671,4 +674,21 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
   raptor_www_set_write_bytes_handler(www, saved_write_bytes, saved_write_bytes_userdata);
 
   return (str == NULL);
+}
+
+
+/**
+ * raptor_www_get_final_uri:
+ * @www: #raptor_www object 
+ *
+ * Get the WWW final resolved URI.
+ * 
+ * Thsi returns the URI used after any protocol redirection.
+ *
+ * Return value: a new URI or NULL if not known.
+ **/
+raptor_uri*
+raptor_www_get_final_uri(raptor_www* www) 
+{
+  return www->final_uri ? raptor_uri_copy(www->final_uri) : NULL;
 }
