@@ -2,7 +2,7 @@
  *
  * raptor_www_curl.c - Raptor WWW retrieval via libcurl
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -130,6 +130,10 @@ raptor_www_curl_init(raptor_www *www)
 #endif
 
   curl_easy_setopt(www->curl_handle, CURLOPT_ERRORBUFFER, www->error_buffer);
+
+  /* Connection timeout in seconds */
+  curl_easy_setopt(www->curl_handle, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_easy_setopt(www->curl_handle, CURLOPT_NOSIGNAL, 1);
 }
 
 
