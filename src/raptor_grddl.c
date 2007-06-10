@@ -1232,6 +1232,13 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
                             raptor_uri_as_string(uri));
     return 0;
   }
+
+  if(ignore_errors) {
+    int i;
+    /* NOTE not setting RAPTOR_LOG_LEVEL_NONE handler */
+    for(i=1; i<= RAPTOR_LOG_LEVEL_LAST; i++)
+      grddl_parser->internal_parser->error_handlers.handlers[i]=raptor_grddl_discard_message;
+  }
   
   raptor_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
 
