@@ -720,18 +720,10 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 }
 
 
-typedef struct 
-{
-  raptor_parser* rdf_parser;
-  raptor_uri* base_uri;
-  raptor_uri* final_uri;
-  int started;
-} raptor_parse_bytes_context;
-  
-
-static void
+void
 raptor_parse_uri_write_bytes(raptor_www* www,
-                             void *userdata, const void *ptr, size_t size, size_t nmemb)
+                             void *userdata, const void *ptr, 
+                             size_t size, size_t nmemb)
 {
   raptor_parse_bytes_context* rpbc=(raptor_parse_bytes_context*)userdata;
   int len=size*nmemb;
