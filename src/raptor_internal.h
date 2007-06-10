@@ -784,6 +784,8 @@ struct  raptor_www_s {
   FILE* handle;
 
   raptor_error_handlers error_handlers;
+
+  int connection_timeout;
 };
 
 
