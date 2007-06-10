@@ -54,8 +54,11 @@ raptor_www_curl_update_status(raptor_www* www)
     return;
   
   if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, 
-                       &final_uri) == CURLE_OK)
+                       &final_uri) == CURLE_OK) {
     www->final_uri=raptor_new_uri((const unsigned char*)final_uri);
+    if(www->final_uri_handler)
+      www->final_uri_handler(www, www->final_uri_userdata, www->final_uri);
+  }
 
 }
 
