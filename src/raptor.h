@@ -683,6 +683,18 @@ typedef void (*raptor_www_write_bytes_handler)(raptor_www* www, void *userdata, 
 typedef void (*raptor_www_content_type_handler)(raptor_www* www, void *userdata, const char *content_type);
 
 /**
+ * raptor_www_final_uri_handler:
+ * @www: WWW object
+ * @userdata: user data
+ * @final_uri: final URI seen
+ *
+ * Receiving the final resolved URI from a WWW retrieval
+ *
+ * Set by raptor_www_set_final_uri_handler().
+ */
+typedef void (*raptor_www_final_uri_handler)(raptor_www* www, void *userdata, raptor_uri *final_uri);
+
+/**
  * raptor_uri_filter_func:
  * @user_data: user data
  * @uri: #raptor_uri URI to check
@@ -1029,6 +1041,8 @@ RAPTOR_API
 void raptor_www_set_write_bytes_handler(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data);
 RAPTOR_API
 void raptor_www_set_content_type_handler(raptor_www *www, raptor_www_content_type_handler handler, void *user_data);
+RAPTOR_API
+void raptor_www_set_final_uri_handler(raptor_www* www, raptor_www_final_uri_handler handler, void *user_data);
 RAPTOR_API
 void raptor_www_set_error_handler(raptor_www *www, raptor_message_handler error_handler, void *error_data);
 RAPTOR_API
