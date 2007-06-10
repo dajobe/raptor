@@ -188,7 +188,7 @@ raptor_www_curl_fetch(raptor_www *www)
       www->status_code=lstatus;
 
     if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, &final_uri) == CURLE_OK)
-      www->final_uri=raptor_new_uri((const unsigned char*)final_url);
+      www->final_uri=raptor_new_uri((const unsigned char*)final_uri);
 
   }
 
