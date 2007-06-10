@@ -132,7 +132,8 @@ raptor_www_curl_init(raptor_www *www)
   curl_easy_setopt(www->curl_handle, CURLOPT_ERRORBUFFER, www->error_buffer);
 
   /* Connection timeout in seconds */
-  curl_easy_setopt(www->curl_handle, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_easy_setopt(www->curl_handle, CURLOPT_CONNECTTIMEOUT,
+                   www->connection_timeout);
   curl_easy_setopt(www->curl_handle, CURLOPT_NOSIGNAL, 1);
 }
 
