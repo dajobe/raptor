@@ -526,6 +526,18 @@ struct raptor_serializer_factory_s {
 };
 
 
+/* for raptor_parse_uri_write_bytes() when used as a handler for
+ * raptor_www_set_write_bytes_handler()
+ */
+typedef struct 
+{
+  raptor_parser* rdf_parser;
+  raptor_uri* base_uri;
+  raptor_uri* final_uri;
+  int started;
+} raptor_parse_bytes_context;
+
+
 /* raptor_serialize.c */
 void raptor_serializer_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, void (*factory) (raptor_serializer_factory*));
 
@@ -552,6 +564,7 @@ void raptor_delete_parser_factories(void);
 void raptor_free_type_q(raptor_type_q* type_q);
 const char* raptor_parser_get_accept_header_all(void);
 int raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri);
+void raptor_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 
 /* raptor_general.c */
 extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
