@@ -627,8 +627,12 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
     
     raptor_stringbuffer_append_counted_string(sb, msg, len, 1);
   }
-  
-  if(err->str1) {
+
+#if LIBXML_VERSION >= 20618
+  /* 2005-02-13 - v2.6.18 */
+
+  /* str1 has the detailed HTTP error */
+  if(err->domain == XML_FROM_HTTP && err->str1) {
     unsigned char* msg;
     size_t len;
     msg=(unsigned char*)err->str1;
@@ -640,6 +644,7 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
                                               3, 1);
     raptor_stringbuffer_append_counted_string(sb, msg, len, 1);
   }
+#endif
   
   /* When err->domain == XML_FROM_XPATH then err->int1 is
    * the offset into err->str1, the line with the error
