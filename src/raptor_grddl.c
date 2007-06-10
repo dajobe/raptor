@@ -947,8 +947,7 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
 
   ret=raptor_grddl_fetch_uri(rdf_parser,
                              xslt_uri,
-                             raptor_grddl_uri_xml_parse_bytes,
-                             &xpbc,
+                             raptor_grddl_uri_xml_parse_bytes, &xpbc,
                              NULL, NULL,
                              FETCH_ACCEPT_XSLT);
   if(ret) {
@@ -1006,19 +1005,6 @@ raptor_grddl_done_uri(raptor_grddl_parser_context* grddl_parser,
     raptor_sequence* seq=grddl_parser->visited_uris;
     raptor_sequence_push(seq, raptor_uri_copy(uri));
   }
-}
-
-
-static void
-raptor_grddl_parse_uri_write_bytes(raptor_www* www,
-                                   void *userdata, const void *ptr,
-                                   size_t size, size_t nmemb)
-{
-  raptor_parser* rdf_parser=(raptor_parser*)userdata;
-  int len=size*nmemb;
-
-  if(raptor_parse_chunk(rdf_parser, (unsigned char*)ptr, len, 0))
-    raptor_www_abort(www, "Parsing failed");
 }
 
 
@@ -1199,6 +1185,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   int ret=0;
   const unsigned char* ibuffer=NULL;
   size_t ibuffer_len=0;
+  raptor_parse_bytes_context rpbc;
   
   grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
@@ -1216,15 +1203,15 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   
   raptor_grddl_parser_add_parent(grddl_parser->internal_parser, grddl_parser);
   
-  if(raptor_start_parse(grddl_parser->internal_parser, uri))
-    return !ignore_errors;
-
+  rpbc.rdf_parser=rdf_parser;
+  rpbc.base_uri=NULL;
+  rpbc.final_uri=NULL;
+  rpbc.started=0;
+  
   if(raptor_grddl_fetch_uri(grddl_parser->internal_parser,
                             uri,
-                            raptor_grddl_parse_uri_write_bytes,
-                            grddl_parser->internal_parser,
-                            content_type_handler,
-                            grddl_parser->internal_parser,
+                            raptor_parse_uri_write_bytes, &rpbc,
+                            content_type_handler, grddl_parser->internal_parser,
                             FETCH_IGNORE_ERRORS)) {
     if(!ignore_errors)
       raptor_parser_warning(rdf_parser,
@@ -1262,6 +1249,9 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
     RAPTOR_FREE(cstring, ibuffer);
     raptor_parser_save_content(grddl_parser->internal_parser, 0);
   }
+
+  if(rpbc.final_uri)
+    raptor_free_uri(rpbc.final_uri);
 
   if(ignore_errors)
     ret=0;
