@@ -132,6 +132,15 @@ chunks of byte content.
 @user_data: 
 
 
+<!-- ##### FUNCTION raptor_www_set_connection_timeout ##### -->
+<para>
+
+</para>
+
+@www: 
+@timeout: 
+
+
 <!-- ##### FUNCTION raptor_www_set_content_type_handler ##### -->
 <para>
 
