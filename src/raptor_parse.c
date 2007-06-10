@@ -720,14 +720,37 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 }
 
 
+typedef struct 
+{
+  raptor_parser* rdf_parser;
+  raptor_uri* base_uri;
+  raptor_uri* final_uri;
+  int started;
+} raptor_parse_bytes_context;
+  
+
 static void
 raptor_parse_uri_write_bytes(raptor_www* www,
                              void *userdata, const void *ptr, size_t size, size_t nmemb)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)userdata;
+  raptor_parse_bytes_context* rpbc=(raptor_parse_bytes_context*)userdata;
   int len=size*nmemb;
 
-  if(raptor_parse_chunk(rdf_parser, (unsigned char*)ptr, len, 0))
+  if(!rpbc->started) {
+    raptor_uri* base_uri=rpbc->base_uri;
+    
+    if(!base_uri) {
+      rpbc->final_uri=raptor_www_get_final_uri(www);
+      /* base URI after URI resolution is finally chosen */
+      base_uri = rpbc->final_uri ? rpbc->final_uri : www->uri;
+    }
+
+    if(raptor_start_parse(rpbc->rdf_parser, base_uri))
+      raptor_www_abort(www, "Parsing failed");
+    rpbc->started=1;
+  }
+
+  if(raptor_parse_chunk(rpbc->rdf_parser, (unsigned char*)ptr, len, 0))
     raptor_www_abort(www, "Parsing failed");
 }
 
@@ -765,7 +788,8 @@ raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri)
  * Parse the RDF content at URI.
  * 
  * Sends an HTTP Accept: header whent the URI is of the HTTP protocol,
- * see raptor_parse_uri_with_connection for details.
+ * see raptor_parse_uri_with_connection() for details including
+ * how the @base_uri is used.
  *
  * Return value: non 0 on failure
  **/
@@ -786,6 +810,13 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  *
  * Parse RDF content at URI using existing WWW connection.
  * 
+ * If @base_uri is not given and during resolution of the URI, a
+ * protocol redirection occurs, the final resolved URI will be
+ * used as the base URI.  If redirection does not occur, the
+ * base URI will be @uri.
+ *
+ * If @base_uri is given, it overrides the process above.
+ *
  * When @connection is NULL and a MIME Type exists for the parser
  * type - such as returned by raptor_get_mime_type(parser) - this
  * type is sent in an HTTP Accept: header in the form
@@ -800,17 +831,16 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                  raptor_uri *base_uri, void *connection)
 {
   raptor_www *www;
+  int ret=0;
+  raptor_parse_bytes_context rpbc;
   
-  if(!base_uri)
-    base_uri=uri;
- 
   if(connection) {
     www=raptor_www_new_with_connection(connection);
     if(!www)
       return 1;
   } else {
     const char *accept_h;
-
+    
     www=raptor_www_new();
     if(!www)
       return 1;
@@ -821,6 +851,11 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
       RAPTOR_FREE(cstring, accept_h);
     }
   }
+
+  rpbc.rdf_parser=rdf_parser;
+  rpbc.base_uri=base_uri;
+  rpbc.final_uri=NULL;
+  rpbc.started=0;
   
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
@@ -832,18 +867,18 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR], 
                                rdf_parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]);
   raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
-                                     rdf_parser);
+                                     &rpbc);
 
   raptor_www_set_content_type_handler(www,
                                       raptor_parse_uri_content_type_handler,
                                       rdf_parser);
 
-  if(raptor_start_parse(rdf_parser, base_uri)) {
-    raptor_www_free(www);
-    return 1;
-  }
+  ret=raptor_www_fetch(www, uri);
+  
+  if(rpbc.final_uri)
+    raptor_free_uri(rpbc.final_uri);
 
-  if(raptor_www_fetch(www, uri)) {
+  if(ret) {
     raptor_www_free(www);
     return 1;
   }
