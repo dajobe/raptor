@@ -1034,6 +1034,8 @@ void raptor_www_set_error_handler(raptor_www *www, raptor_message_handler error_
 RAPTOR_API
 void raptor_www_set_uri_filter(raptor_www* www, raptor_uri_filter_func filter, void* user_data);
 RAPTOR_API
+void raptor_www_set_connection_timeout(raptor_www* www, int timeout);
+RAPTOR_API
 int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API
 int raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
