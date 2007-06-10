@@ -1,3 +1,102 @@
+2007-06-09  Dave Beckett  <dave@dajobe.org>
+
+	* docs/tmpl/section-www.sgml: Added
+	raptor_www_set_connection_timeout
+
+	* docs/tmpl/section-feature.sgml: new feature
+	@RAPTOR_FEATURE_MICROFORMATS
+
+	* docs/raptor-sections.txt: Added
+	raptor_www_set_connection_timeout
+
+	* src/raptor_www_curl.c: (raptor_www_curl_init): Use
+	www->connection_timeout.
+
+	* src/raptor_www.c: (raptor_www_new_with_connection): Init
+	connection timeout to 10s
+	(raptor_www_set_connection_timeout): Added.
+
+	* src/raptor.h: Add raptor_www_set_connection_timeout
+
+	* src/raptor_internal.h: raptor_www gains connection_timeout
+
+	* src/raptor_www_curl.c: (raptor_www_curl_init): Set a 10 second
+	connection timeout.
+
+	* src/raptor_libxml.c: (raptor_libxml_xmlStructuredErrorFunc): For
+	HTTP error only, append str1 to the error.
+
+	* src/raptor_grddl.c: Use XML base URI passed around with the
+	grddl_xml_context.
+	(raptor_new_xml_context): Renamed from
+	raptor_sequence_push_xml_context, moving sequence push to main
+	code.
+	(raptor_rdfa_parse_init): Push URI for RDFa in
+	raptor_grddl_parse_start.
+	(raptor_grddl_parse_start): Add XML context for RDFa here.
+	(raptor_grddl_add_transform_xml_context): Renamed from
+	raptor_grddl_add_transform_uri
+	(raptor_grddl_run_grddl_transform_doc): If there is no parser name
+	guessable, return.
+	(raptor_grddl_run_grddl_transform_uri): Take a grddl_xml_context*
+	arg instead of raptor_uri.
+
+2007-06-06  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Added grddl_xml_context structure.
+	Transform and profile URI raptor_sequences are now sequences of
+	grddl_xml_context structures.
+	(raptor_sequence_push_xml_context, grddl_free_xml_context): Added.
+	(raptor_grddl_parse_init_common): No need for
+	raptor_libxml_init_generic_error_handlers, raptor_new_sax2 does
+	it.  Initialise raptor_sequence with grddl_free_xml_context.
+	(raptor_grddl_add_transform_uri): Use
+	raptor_sequence_push_xml_context.
+	(raptor_grddl_filter_triples): Use grddl_xml_context for
+	profile_uri sequence.
+	(raptor_grddl_run_xpath_match): Use grddl_xml_context for URI
+	results.
+	(raptor_grddl_parse_chunk): Use raptor_sequence_push_xml_context
+	for former URI sequences.
+
+	* src/raptor_libxml.c: (raptor_libxml_generic_error): Now
+	external, not static.  Call raptor_log_error_varargs direct, no
+	mention of sax2, locator is from error_handlers.
+	(raptor_libxml_init_generic_error_handlers): Removed.
+	(raptor_libxml_xmlStructuredErrorFunc): Add err->str1 to message
+	if it's given.
+
+	* src/raptor_www_libxml.c: (raptor_www_libxml_http_error):
+	Deleted, no longer needed.
+	(raptor_www_libxml_init): Set xml generic error context, but save
+	old one.
+	(raptor_www_libxml_free): Restore old xml generic error context.
+
+	* src/raptor_www.c: (raptor_www_new_with_connection): Init
+	RAPTOR_ERROR_HANDLER_MAGIC
+	(raptor_www_set_error_handler): Use error_handlers
+	(raptor_www_error_varargs): Removed, merged into raptor_www_error
+	(raptor_www_error): Call raptor_log_error_varargs here.
+
+	* src/raptor_sax2.c: (raptor_new_sax2): Set xmlSetGenericErrorFunc
+	here with the same context pointer as for structured errors.
+
+	* src/raptor_parse.c: (raptor_new_parser): Init
+	RAPTOR_ERROR_HANDLER_MAGIC
+
+	* src/raptor_internal.h: removed
+	raptor_libxml_init_generic_error_handlers prototype added
+	raptor_libxml_generic_error prototype raptor_www gains
+	old_xmlGenericErrorContext for libxml and error_handlers replacing
+	older error_data, error_handle.  removed raptor_www_error_varargs
+	prototype
+
+	* src/raptor_sax2.c: SAX2 error_handler fix for expat
+
+	* tests/turtle/Makefile.am, tests/turtle/test-27.out,
+	tests/turtle/test-27.ttl: Added turtle test test-27 for scope of
+	@prefix
+
 2007-06-04  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Do an additional RDF/XML parse of content
