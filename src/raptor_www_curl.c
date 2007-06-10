@@ -42,6 +42,24 @@
 #include "raptor_internal.h"
 
 
+static void
+raptor_www_curl_update_status(raptor_www* www) 
+{
+  char* final_uri;
+    
+  if(www->failed)
+    return;
+  
+  if(www->checked_status++)
+    return;
+  
+  if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, 
+                       &final_uri) == CURLE_OK)
+    www->final_uri=raptor_new_uri((const unsigned char*)final_uri);
+
+}
+
+
 static size_t
 raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userdata) 
 {
@@ -54,6 +72,8 @@ raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userd
   if(www->failed)
     return 0;
   
+  raptor_www_curl_update_status(www);
+
 #if RAPTOR_DEBUG > 2
   RAPTOR_DEBUG2("Got %d bytes\n", bytes);
 #endif
@@ -177,7 +197,6 @@ raptor_www_curl_fetch(raptor_www *www)
     raptor_www_error(www, "Resolving URI failed: %s", www->error_buffer);
   } else {
     long lstatus;
-    char* final_uri;
 
 #ifndef CURLINFO_RESPONSE_CODE
 #define CURLINFO_RESPONSE_CODE CURLINFO_HTTP_CODE
@@ -186,9 +205,6 @@ raptor_www_curl_fetch(raptor_www *www)
     /* Requires pointer to a long */
     if(curl_easy_getinfo(www->curl_handle, CURLINFO_RESPONSE_CODE, &lstatus) == CURLE_OK)
       www->status_code=lstatus;
-
-    if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, &final_uri) == CURLE_OK)
-      www->final_uri=raptor_new_uri((const unsigned char*)final_uri);
 
   }
 
