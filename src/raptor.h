@@ -1043,6 +1043,8 @@ RAPTOR_API
 void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API
 void raptor_www_abort(raptor_www *www, const char *reason);
+RAPTOR_API
+raptor_uri* raptor_www_get_final_uri(raptor_www* www);
 
 
 /* raptor_qname - XML qnames */
