@@ -638,7 +638,8 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
  */
 static int
 raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
-                                     raptor_uri* xslt_uri, xmlDocPtr xslt_doc,
+                                     grddl_xml_context* xml_context,
+                                     xmlDocPtr xslt_doc,
                                      xmlDocPtr doc)
 {
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
@@ -651,12 +652,16 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   const char* params[7];
   const unsigned char* base_uri_string;
   size_t base_uri_len;
+  raptor_uri* xslt_uri;
+  raptor_uri* base_uri;
   char *quoted_base_uri=NULL;
 
-  base_uri_string=raptor_uri_as_counted_string(rdf_parser->base_uri, 
-                                               &base_uri_len);
+  xslt_uri=xml_context->uri;
+  base_uri=xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
 
-  RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI '%s' on doc URI '%s'\n",
+  base_uri_string=raptor_uri_as_counted_string(base_uri, &base_uri_len);
+
+  RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI '%s' with doc base URI '%s'\n",
                 raptor_uri_as_string(xslt_uri),
                 base_uri_string);
   
@@ -775,7 +780,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   
   if(grddl_parser->internal_parser) {
     /* generate the triples */
-    raptor_start_parse(grddl_parser->internal_parser, rdf_parser->base_uri);
+    raptor_start_parse(grddl_parser->internal_parser, base_uri);
     raptor_parse_chunk(grddl_parser->internal_parser, doc_txt, doc_txt_len, 1);
   }
   
@@ -933,7 +938,8 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
     xmlParseChunk(xpbc.xc, NULL, 0, 1);
   
     ret=raptor_grddl_run_grddl_transform_doc(rdf_parser,
-                                             xslt_uri, xslt_ctxt->myDoc,
+                                             xml_context,
+                                             xslt_ctxt->myDoc,
                                              doc);
   }
   
