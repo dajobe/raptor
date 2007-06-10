@@ -1203,7 +1203,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   
   raptor_grddl_parser_add_parent(grddl_parser->internal_parser, grddl_parser);
   
-  rpbc.rdf_parser=rdf_parser;
+  rpbc.rdf_parser=grddl_parser->internal_parser;
   rpbc.base_uri=NULL;
   rpbc.final_uri=NULL;
   rpbc.started=0;
