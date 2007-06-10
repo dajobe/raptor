@@ -790,6 +790,9 @@ struct  raptor_www_s {
 
   /* The URI returned after any redirections */
   raptor_uri* final_uri;
+
+  void *final_uri_userdata;
+  raptor_www_final_uri_handler final_uri_handler;
 };
 
 
