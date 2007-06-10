@@ -667,9 +667,7 @@ main(int argc, char *argv[])
     uri=NULL; /* stdin */
 
 
-  if(!base_uri_string) {
-    base_uri=raptor_uri_copy(uri);
-  } else {
+  if(base_uri_string) {
     if(strcmp((const char*)base_uri_string, "-")) {
       base_uri=raptor_new_uri(base_uri_string);
       if(!base_uri) {
@@ -800,7 +798,8 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: Parsing returned %d triple%s\n", program,
             triple_count, (triple_count == 1 ? "" : "s"));
 
-  raptor_free_uri(base_uri);
+  if(base_uri)
+    raptor_free_uri(base_uri);
   if(uri)
     raptor_free_uri(uri);
   if(free_uri_string)
