@@ -786,6 +786,9 @@ struct  raptor_www_s {
   raptor_error_handlers error_handlers;
 
   int connection_timeout;
+
+  /* The URI returned after any redirections */
+  raptor_uri* final_uri;
 };
 
 
