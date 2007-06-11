@@ -1420,6 +1420,15 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       int n;
       
       RAPTOR_DEBUG2("Root namespace URI is %s\n", ns_uri_string);
+
+      if(!strcmp((const char*)ns_uri_string,
+                 (const char*)raptor_rdf_namespace_uri) &&
+         !strcmp((const char*)xnp->name, "RDF")) {
+        RAPTOR_DEBUG3("Parser %p: Root element of %s is rdf:RDF - process this as RDF/XML later\n",
+                      rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
+        grddl_parser->process_this_as_rdfxml=1;
+      }
+
       for(n=0; grddl_namespace_uris_ignore_list[n]; n++) {
         if(!strcmp(grddl_namespace_uris_ignore_list[n],
                    (const char*)ns_uri_string)) {
@@ -1586,7 +1595,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     RAPTOR_DEBUG2("Running additional RDF/XML parse on root document URI '%s' content\n",
                   raptor_uri_as_string(rdf_parser->base_uri));
     
-    if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 1))
+    if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 0))
       ret=1;
     else {
       if(raptor_start_parse(grddl_parser->internal_parser, 
