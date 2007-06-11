@@ -1,3 +1,106 @@
+2007-06-10  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Debug message madness!
+	(raptor_grddl_parse_chunk): After xinclude processing, reserialize
+	the document DOM so it can be parsed later as RDF/XML if needed.
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Recognise root
+	rdf:RDF element and process as RDF/XML.  Fix RDF/XML parsing of
+	doc to not filter triples.
+
+	* utils/rapper.c: If no base URI is given, do not set it
+
+	* src/raptor_grddl.c: (raptor_grddl_run_recursive): Send to right
+	parser.
+
+	* tests/ex-61.nt, tests/ex-61.out (from
+	/raptor/trunk/tests/ex-61.nt:12321): Rename ex-61.nt to ex-61.out
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_uri_write_bytes):
+	Removed.
+	(raptor_grddl_run_recursive): Use typedef
+	raptor_parse_bytes_context with raptor_parse_uri_write_bytes as a
+	handler for starting parse lazily
+
+	* src/raptor_parse.c: Moved raptor_parse_bytes_context to
+	raptor_internal.h
+	(raptor_parse_uri_write_bytes): No longer static.
+
+	* src/raptor_internal.h: Added raptor_parse_bytes_context Export
+	raptor_parse_uri_write_bytes handler for use with GRDDL fetch.
+
+	* src/raptor_parse.c: Added raptor_parse_bytes_context typedef
+	(raptor_parse_uri_write_bytes): Use the above to look if this is the
+	first time called, and if so, determine the base URI from the user's
+	set base URI, the final URI from protocol, or otherwise, the resolved
+	URI.  This prevents calling raptor_start_parse() until the first byte
+	is seen (and thus the base URI, protocol context is known)
+	(raptor_parse_uri_with_connection): Explains the base URI rules in
+	detail.  Remove call to raptor_start_parse() and initialse the rpbc
+	block.
+
+	* src/raptor_www_curl.c: (raptor_www_curl_update_status): set
+	final_uri and call final_uri_handler if set
+
+	* src/raptor_www.c: (raptor_www_set_final_uri_handler): Added.
+
+	* src/raptor.h: Added raptor_www_final_uri_handler typedef.  Added
+	raptor_www_set_final_uri_handler prototype.
+
+	* src/raptor_internal.h: raptor_www gains final_uri_userdata and
+	final_uri_handler;
+
+	* src/raptor_internal.h: struct raptor_www_s gains a
+	checked_status flag
+
+	* src/raptor_www_curl.c: (raptor_www_curl_update_status): Added.
+	(raptor_www_curl_write_callback): Call raptor_www_curl_update_status
+	from here when first byte arrives, before any parsing.
+	(raptor_www_curl_fetch): Move getting final URI earlier - above.
+
+	* src/raptor_www_curl.c: typo
+
+	* tests/Makefile.am, tests/ex-61.nt, tests/ex-61.rdf: Added ex-61
+
+	* src/raptor_www_curl.c: (raptor_www_curl_fetch): Save final URI
+
+	* src/raptor_www.c: (raptor_www_get_final_uri): Added.
+
+	* src/raptor.h: Added raptor_www_get_final_uri prototype
+
+	* src/raptor_internal.h: struct raptor_www_s gains a final_uri field
+
+	* src/raptor_sax2.c: (raptor_sax2_inscope_xml_language): Turn
+	xml:lang="" into a NULL result.
+
+	* src/raptor_grddl.c: (raptor_grddl_run_recursive): Zaps error
+	handlers on recursive parse when ignore_errors set.
+
+	* src/raptor_grddl.c: (raptor_grddl_fetch_uri): flags
+	argument (was ignore_errors) can now send a different accept
+	header.
+	(raptor_grddl_run_grddl_transform_uri): Call
+	raptor_grddl_fetch_uri and expect XSLT.
+	(raptor_grddl_run_recursive): Call raptor_grddl_fetch_uri and
+	ignore errors.
+
+	* src/raptor_grddl.c: (raptor_grddl_discard_message): Added.
+	(raptor_grddl_fetch_uri): Added ignore_errors argument to set the
+	raptor_www error handler to raptor_grddl_discard_message
+	(raptor_grddl_run_grddl_transform_uri): Do not discard errors from
+	raptor_grddl_fetch_uri call.
+	(raptor_grddl_run_recursive): Added ignore_errors argument and use
+	it to return 0 with no warnings, when errors happen.
+	(raptor_grddl_parse_chunk): Run namespace URI recursive grddl
+	while discarding errors.  Run head profile URIs recursive grddl
+	while discarding errors.
+
+	* src/raptor_grddl.c: (raptor_grddl_run_grddl_transform_doc): Pass
+	in an xml context and use the base URI there rather than the
+	parser's.
+	(raptor_grddl_run_grddl_transform_uri): Pass on the xml context to
+	the above.
+
 2007-06-09  Dave Beckett  <dave@dajobe.org>
 
 	* docs/tmpl/section-www.sgml: Added
