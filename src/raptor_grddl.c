@@ -761,16 +761,17 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   parser_name=raptor_guess_parser_name(NULL, (const char*)sheet->mediaType,
                                        doc_txt, doc_txt_len, NULL);
   if(!parser_name) {
-    RAPTOR_DEBUG2("Guessed no parser from mime type '%s' and content - ending",
-                  sheet->mediaType);
+    RAPTOR_DEBUG3("Parser %p: Guessed no parser from mime type '%s' and content - ending",
+                  rdf_parser, sheet->mediaType);
     goto cleanup_xslt;
   }
   
-  RAPTOR_DEBUG3("Guessed parser %s from mime type '%s'\n",
-                parser_name, sheet->mediaType);
+  RAPTOR_DEBUG4("Parser %p: Guessed parser %s from mime type '%s' and content\n",
+                rdf_parser, parser_name, sheet->mediaType);
 
   if(!strcmp((const char*)parser_name, "grddl")) {
-    RAPTOR_DEBUG1("Ignoring guess to run grddl parser - ending");
+    RAPTOR_DEBUG2("Parser %p: Ignoring guess to run grddl parser - ending",
+                  rdf_parser);
     goto cleanup_xslt;
   }
 
@@ -1282,7 +1283,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   int expri;
   const unsigned char* buffer=NULL;
   size_t buffer_len=0;
-  
+  int buffer_is_libxml=0;
 
   if(grddl_parser->content_type && !grddl_parser->content_type_check) {
     grddl_parser->content_type_check++;
@@ -1310,6 +1311,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   uri_string=raptor_uri_as_string(rdf_parser->base_uri);
 
+  RAPTOR_DEBUG4("Parser %p: URI %s: processing %d bytes of content\n",
+                rdf_parser, uri_string, (int)buffer_len);
+
   /* try to create an XML parser context */
   grddl_parser->xml_ctxt = xmlCreatePushParserCtxt(NULL, NULL,
                                                    (const char*)buffer,
@@ -1321,7 +1325,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
      rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]) {
     xmlCharEncoding enc;
 
-    RAPTOR_DEBUG2("Creating an XML parser failed for %s content\n", uri_string);
+    RAPTOR_DEBUG2("Parser %p: Creating an XML parser failed\n", rdf_parser);
 
     enc = xmlDetectCharEncoding((const unsigned char*)buffer, buffer_len);
     grddl_parser->html_ctxt = htmlCreatePushParserCtxt(/*sax*/ NULL, 
@@ -1397,6 +1401,19 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                         "XInclude processing failed for GRDDL document");
     ret=1;
     goto tidy;
+  } else {
+    int blen;
+    
+    /* write the result of XML Include to buffer */
+    RAPTOR_FREE(cstring, buffer);
+    xmlDocDumpFormatMemory(doc, (xmlChar**)&buffer, &blen,
+                           1 /* indent the result */);
+    buffer_len=blen;
+    buffer_is_libxml=1;
+
+    RAPTOR_DEBUG3("Parser %p: XML Include processing returned %d bytes document\n",
+                  rdf_parser, (int)buffer_len);
+
   }
 
 
@@ -1419,7 +1436,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     if(ns_uri_string) {
       int n;
       
-      RAPTOR_DEBUG2("Root namespace URI is %s\n", ns_uri_string);
+      RAPTOR_DEBUG3("Parser %p: Root namespace URI is %s\n", 
+                    rdf_parser, ns_uri_string);
 
       if(!strcmp((const char*)ns_uri_string,
                  (const char*)raptor_rdf_namespace_uri) &&
@@ -1433,8 +1451,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         if(!strcmp(grddl_namespace_uris_ignore_list[n],
                    (const char*)ns_uri_string)) {
           /* ignore this namespace */
-          RAPTOR_DEBUG2("Ignoring GRDDL for namespace URI '%s'\n",
-                        ns_uri_string);
+          RAPTOR_DEBUG3("Parser %p: Ignoring GRDDL for namespace URI '%s'\n",
+                        rdf_parser, ns_uri_string);
           ns_uri_string=NULL;
           break;
         }
@@ -1552,7 +1570,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
         /* Ignore what matched, use a hardcoded XSLT URI */
         uri_string=match_table[expri].xslt_sheet_uri;
-        RAPTOR_DEBUG2("Using hard-coded XSLT URI '%s'\n",  uri_string);
+        RAPTOR_DEBUG3("Parser %p: Using hard-coded XSLT URI '%s'\n",
+                      rdf_parser, uri_string);
 
         raptor_free_sequence(result);
         result=raptor_new_sequence((raptor_sequence_free_handler*)grddl_free_xml_context, NULL);
@@ -1592,8 +1611,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   /* Process this document's content buffer as RDF/XML */
   if(grddl_parser->process_this_as_rdfxml && buffer) {
-    RAPTOR_DEBUG2("Running additional RDF/XML parse on root document URI '%s' content\n",
-                  raptor_uri_as_string(rdf_parser->base_uri));
+    RAPTOR_DEBUG3("Parser %p: Running additional RDF/XML parse on root document URI '%s' content\n",
+                  rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
     
     if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 0))
       ret=1;
@@ -1608,8 +1627,12 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     
   }
 
-  if(buffer)
-    RAPTOR_FREE(cstring, buffer);
+  if(buffer) {
+    if(buffer_is_libxml)
+      xmlFree((xmlChar*)buffer);
+    else
+      RAPTOR_FREE(cstring, buffer);
+  }
 
   if(grddl_parser->sb) {
     raptor_free_stringbuffer(grddl_parser->sb);
