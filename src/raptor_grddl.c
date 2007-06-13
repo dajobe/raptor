@@ -451,10 +451,11 @@ static struct {
   }
   ,
   /* XML document linking to transform via attribute dataview:transformation 
+   * on the root element.
    * Example: http://www.w3.org/2004/01/rdxh/grddl-p3p-example
    **/
   {
-    (const xmlChar*)"//@dataview:transformation",
+    (const xmlChar*)"/@dataview:transformation",
     MATCH_IS_VALUE_LIST,
     NULL
   }
