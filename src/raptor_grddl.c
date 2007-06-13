@@ -162,6 +162,12 @@ struct raptor_grddl_parser_context_s {
 
   /* non-0 to perform GRDL processing on document */
   int grddl_processing;
+
+  /* non-0 to perform XML Include processing on document */
+  int xinclude_processing;
+
+  /* non-0 to perform HTML Base processing on document */
+  int html_base_processing;
 };
 
 
@@ -258,6 +264,8 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   grddl_parser->doc_transform_uris=raptor_new_sequence((raptor_sequence_free_handler*)grddl_free_xml_context, NULL);
 
   grddl_parser->grddl_processing=1;
+  grddl_parser->xinclude_processing=1;
+  grddl_parser->html_base_processing=0;
   
   return 0;
 }
@@ -294,6 +302,8 @@ raptor_rdfa_parse_init(raptor_parser* rdf_parser, const char *name)
 
   /* skip grddl processing */
   grddl_parser->grddl_processing=0;
+  grddl_parser->xinclude_processing=0;
+  grddl_parser->html_base_processing=1;
   
   return 0;
 }
@@ -1065,10 +1075,20 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
                           node->type);
       continue;
     }
+
+
+    /* xmlNodeGetBase() returns base URI or NULL and must be freed
+     * with xmlFree() 
+     */
+    if(grddl_parser->html_base_processing) {
+      xmlElementType savedType=doc->type;
+      doc->type=XML_HTML_DOCUMENT_NODE;
+      base_uri_string=xmlNodeGetBase(doc, node);
+      doc->type=savedType;
+    } else
+      base_uri_string=xmlNodeGetBase(doc, node);
     
-    /* returns base URI or NULL - must be freed with xmlFree() */
-    base_uri_string=xmlNodeGetBase(doc, node);
-    
+
     if(node->type == XML_ATTRIBUTE_NODE)
       uri_string=(const unsigned char*)node->children->content;
     else { /* XML_ELEMENT_NODE */
@@ -1292,6 +1312,12 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                     rdf_parser, grddl_parser->content_type);;
       grddl_parser->process_this_as_rdfxml=1;
     }
+    if(!strncmp(grddl_parser->content_type, "text/html", 9) ||
+       !strncmp(grddl_parser->content_type, "application/html+xml", 20)) {
+      RAPTOR_DEBUG3("Parser %p: Found document with type '%s' is HTML\n",
+                    rdf_parser, grddl_parser->content_type);;
+      grddl_parser->html_base_processing=1;
+    }
   }
   
   if(!grddl_parser->sb)
@@ -1394,26 +1420,28 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   if(!grddl_parser->grddl_processing)
     goto transform;
   
-  RAPTOR_DEBUG3("Parser %p: Running XInclude processing on URI '%s'\n",
-                rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
-  if(xmlXIncludeProcess(doc) < 0) {
-    raptor_parser_error(rdf_parser, 
-                        "XInclude processing failed for GRDDL document");
-    ret=1;
-    goto tidy;
-  } else {
-    int blen;
-    
-    /* write the result of XML Include to buffer */
-    RAPTOR_FREE(cstring, buffer);
-    xmlDocDumpFormatMemory(doc, (xmlChar**)&buffer, &blen,
-                           1 /* indent the result */);
-    buffer_len=blen;
-    buffer_is_libxml=1;
 
-    RAPTOR_DEBUG3("Parser %p: XML Include processing returned %d bytes document\n",
-                  rdf_parser, (int)buffer_len);
-
+  if(grddl_parser->xinclude_processing) {
+    RAPTOR_DEBUG3("Parser %p: Running XInclude processing on URI '%s'\n",
+                  rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
+    if(xmlXIncludeProcess(doc) < 0) {
+      raptor_parser_error(rdf_parser, 
+                          "XInclude processing failed for GRDDL document");
+      ret=1;
+      goto tidy;
+    } else {
+      int blen;
+      
+      /* write the result of XML Include to buffer */
+      RAPTOR_FREE(cstring, buffer);
+      xmlDocDumpFormatMemory(doc, (xmlChar**)&buffer, &blen,
+                             1 /* indent the result */);
+      buffer_len=blen;
+      buffer_is_libxml=1;
+      
+      RAPTOR_DEBUG3("Parser %p: XML Include processing returned %d bytes document\n",
+                    rdf_parser, (int)buffer_len);
+    }
   }
 
 
