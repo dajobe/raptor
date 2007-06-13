@@ -940,6 +940,8 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
   int ret=0;
   raptor_uri* xslt_uri;
   raptor_uri* base_uri;
+  raptor_uri* old_locator_uri;
+  raptor_locator *locator=&rdf_parser->locator;
 
   xslt_uri=xml_context->uri;
   base_uri=xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
@@ -955,14 +957,17 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
    */
   xpbc.xc=NULL;
   xpbc.rdf_parser=rdf_parser;
-  xpbc.base_uri=base_uri;
+  xpbc.base_uri=xslt_uri;
 
+  old_locator_uri=locator->uri;
+  locator->uri=xslt_uri;
   ret=raptor_grddl_fetch_uri(rdf_parser,
                              xslt_uri,
                              raptor_grddl_uri_xml_parse_bytes, &xpbc,
                              NULL, NULL,
                              FETCH_ACCEPT_XSLT);
   if(ret) {
+    locator->uri=old_locator_uri;
     raptor_parser_warning(rdf_parser, "Fetching XSLT document URI '%s' failed",
                           raptor_uri_as_string(xslt_uri));
     ret=0;
@@ -974,8 +979,9 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
                                              xml_context,
                                              xslt_ctxt->myDoc,
                                              doc);
+    locator->uri=old_locator_uri;
   }
-  
+
   if(xslt_ctxt)
     xmlFreeParserCtxt(xslt_ctxt); 
   
