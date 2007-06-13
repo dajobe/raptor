@@ -1174,31 +1174,42 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
 
 
 static void
-raptor_grddl_check_rdf_content_type_handler(raptor_www* www, void* userdata, 
+raptor_grddl_check_recursive_content_type_handler(raptor_www* www, void* userdata, 
                                             const char* content_type)
 {
-  if(content_type && !strncmp(content_type, "application/rdf+xml", 19)) {
-    raptor_parser* rdf_parser=(raptor_parser*)userdata;
-    raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
-    size_t len=strlen(content_type)+1;
+  raptor_parser* rdf_parser=(raptor_parser*)userdata;
+  raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
+  size_t len;
 
-    if(grddl_parser->content_type)
-      RAPTOR_FREE(cstring,grddl_parser->content_type);
-    
-    grddl_parser->content_type=(char*)RAPTOR_MALLOC(cstring, len+1);
-    strncpy(grddl_parser->content_type, content_type, len+1);
+  if(!content_type)
+    return;
 
+  len=strlen(content_type)+1;
+  if(grddl_parser->content_type)
+    RAPTOR_FREE(cstring,grddl_parser->content_type);
+  grddl_parser->content_type=(char*)RAPTOR_MALLOC(cstring, len+1);
+  strncpy(grddl_parser->content_type, content_type, len+1);
+
+  if(!strncmp(content_type, "application/rdf+xml", 19)) {
     grddl_parser->process_this_as_rdfxml=1;
 
-    RAPTOR_DEBUG2("Found RDF/XML content type for parser %p\n", rdf_parser);
+    RAPTOR_DEBUG2("Parser %p: Found RDF/XML content type\n", rdf_parser);
     raptor_parser_save_content(rdf_parser, 1);
   }
+
+  if(!strncmp(content_type, "text/html", 9) ||
+     !strncmp(content_type, "application/html+xml", 20)) {
+    RAPTOR_DEBUG3("Parser %p: Found HTML content type '%s'\n",
+                  rdf_parser, content_type);;
+    grddl_parser->html_base_processing=1;
+  }
+
 }
 
 
 static int
 raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
-                           int allow_rdf, int ignore_errors)
+                           int ignore_errors)
 {
   raptor_grddl_parser_context* grddl_parser;
   raptor_www_content_type_handler content_type_handler=NULL;
@@ -1213,8 +1224,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   if(raptor_grddl_seen_uri(grddl_parser, uri))
     return 0;
 
-  if(allow_rdf)
-    content_type_handler=raptor_grddl_check_rdf_content_type_handler;
+  content_type_handler=raptor_grddl_check_recursive_content_type_handler;
   
   if(raptor_grddl_ensure_internal_parser(rdf_parser, parser_name, 1))
     return !ignore_errors;
@@ -1497,8 +1507,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         RAPTOR_DEBUG3("Parser %p: Processing GRDDL namespace URI '%s'\n",
                       rdf_parser,
                       raptor_uri_as_string(grddl_parser->root_ns_uri));
-        raptor_grddl_run_recursive(rdf_parser, grddl_parser->root_ns_uri,
-                                   1, 1);
+        raptor_grddl_run_recursive(rdf_parser, grddl_parser->root_ns_uri, 1);
       }
       
     }
@@ -1575,7 +1584,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         RAPTOR_DEBUG4("Processing <head profile> #%d of URI %s: URI %s\n",
                       i, raptor_uri_as_string(rdf_parser->base_uri),
                         raptor_uri_as_string(uri));
-        ret=raptor_grddl_run_recursive(rdf_parser, uri, 1, 1);
+        ret=raptor_grddl_run_recursive(rdf_parser, uri, 1);
       }
     }
   }
