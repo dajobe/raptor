@@ -897,7 +897,7 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   raptor_www_set_user_agent(www, "grddl/0.1");
   
   if(flags & FETCH_ACCEPT_XSLT) {
-    raptor_www_set_http_accept(www, "Accept: application/xml");
+    raptor_www_set_http_accept(www, "application/xml");
   } else {
     accept_h=raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
