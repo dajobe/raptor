@@ -18,10 +18,11 @@ is a free software / Open Source C library that provides
 a set of parsers and serializers that
 generate Resource Description Framework (RDF) triples
 by parsing syntaxes or serialize the triples into a syntax.
-The supported parsing syntaxes are RDF/XML,
-N-Triples, Turtle, RSS tag soup including Atom 1.0 and 0.3,
-GRDDL for XHTML and XML.  The serializing syntaxes are RDF/XML (regular,
-and abbreviated), N-Triples, RSS 1.0, Atom 1.0 and Adobe XMP.</p>
+The supported parsing syntaxes are RDF/XML, N-Triples, TRiG, Turtle,
+RSS tag soup including all versions of RSS, Atom 1.0 and 0.3, GRDDL
+for XHTML and XML and RDFa for XHTML.  The serializing syntaxes are
+RDF/XML (regular, and abbreviated), N-Triples, RSS 1.0, Atom 1.0 and
+Adobe XMP.</p>
 
 <p>Raptor was designed to work closely with the
 <a href="http://librdf.org/">Redland RDF library</a>
@@ -76,6 +77,18 @@ for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 </p>
 
 
+<h3>RDFa Parser</h3>
+
+<p>A parser for the
+<a href="http://www.w3.org/TR/2006/WD-grddl-20061024/">RDFa Embedding RDF in XHTML</ulink>,
+W3C Working Draft of 2007-03-12 which allows reading special markup
+in XHTML or XHTML2 as RDF triples in the document.  It uses a public
+XSL sheet to transform an XHTML document.</p>
+
+<p>The parser is alpha quality and may not support the entire RDFa
+specification.</p>
+
+
 <h3>Turtle Parser</h3>
 
 <p>A parser for the
@@ -83,6 +96,17 @@ for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 syntax, designed as a useful subset of
 <a href="http://www.w3.org/DesignIssues/Notation3">Notation 3</a>.
 </p>
+
+
+<h3>TRiG Parser</h3>
+
+<p>A parser for the
+<a href="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/">TriG - Turtle with Named Graphs</a>
+syntax.
+</p>
+
+<p>The parser is alpha quality and may not support the entire TRiG
+specification.</p>
 
 
 <h3>RSS "tag soup" parser</h3>
@@ -100,16 +124,21 @@ format defined in IETF
 <a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</a>
 </p>
 
-<h3>GRDDL parser</h3>
+
+<h3>GRDDL and microformats parser</h3>
 
 <p>A parser for
-<a href="http://www.w3.org/TR/2006/WD-grddl-20061024/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
-syntax, W3C Working Draft of 2006-10-24 which allows reading XHTML
+<a href="http://www.w3.org/TR/2007/CR-grddl-20070502/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
+syntax, W3C Candidate Recommendation of 2007-05-02 which allows reading XHTML
 and XML as RDF triples by using profiles in the document that declare
 XSLT transforms from the XHTML or XML content into RDF/XML or other
-RDF syntax which can then be parsed.</p>
+RDF syntax which can then be parsed.  It uses either an XML or
+a lax HTML parser to allow HTML tag soup to be read.</p>
 
-<p>The parser is beta quality.</p>
+<p>The parser passes the all the GRDDL tests (raptor 1.4.16+) as
+of 2007-06-13.</p>
+
+<p>The parser also handles hCard and hReview using public XSL sheets.</p>
 
 
 <h2>Serializers</h2>
@@ -137,6 +166,7 @@ syntax as used by the
 <a href="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</a>
 for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 </p>
+
 
 <h3>RSS 1.0 Serializer</h3>
 
