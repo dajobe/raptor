@@ -643,7 +643,7 @@ typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement
  * API is separated from the statement handler. A graph is reported after all its 
  * statements.
  */
-typedef void (*raptor_graph_handler)(void *user_data, const raptor_uri *graph);
+typedef void (*raptor_graph_handler)(void *user_data, raptor_uri *graph);
 
 /**
  * raptor_generate_id_handler:
