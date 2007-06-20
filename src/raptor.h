@@ -635,6 +635,17 @@ typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator,
 typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
 
 /**
+ * raptor_graph_handler:
+ * @user_data: user data
+ * @graph: graph to report, 0 for the default graph
+ *
+ * Named graph reporting handler function. Due to historic reasons the named graph
+ * API is separated from the statement handler. A graph is reported after all its 
+ * statements.
+ */
+typedef void (*raptor_graph_handler)(void *user_data, const raptor_uri *graph);
+
+/**
  * raptor_generate_id_handler:
  * @user_data: user data
  * @type: type of ID to create
@@ -745,6 +756,8 @@ RAPTOR_API
 void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API
 void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
+RAPTOR_API
+void raptor_set_graph_handler(raptor_parser* parser, void *user_data, raptor_graph_handler handler);
 RAPTOR_API
 void raptor_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
 RAPTOR_API
