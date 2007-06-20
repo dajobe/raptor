@@ -170,6 +170,9 @@ EXPONENT [eE][+-]?[0-9]+
 "^^"      { return HAT; }
 "("       { return LEFT_ROUND; }
 ")"       { return RIGHT_ROUND; }
+"{"       { return LEFT_CURLY; }
+"}"       { return RIGHT_CURLY; }
+":-"      { return COLONMINUS; }
 "true"    { return TRUE; }
 "false"   { return FALSE; }
 
