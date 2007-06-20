@@ -701,13 +701,14 @@ dnl RDF Parsers
 rdfxml_parser=no
 ntriples_parser=no
 turtle_parser=no
+trig_parser=no
 n3_parser=no
 rss_parser=no
 grddl_parser=no
 rdfa_parser=no
 guess_parser=yes
 
-rdf_parsers_available="rdfxml ntriples turtle guess rss-tag-soup"
+rdf_parsers_available="rdfxml ntriples turtle trig guess rss-tag-soup"
 if test "$USE_MAINTAINER_MODE" = yes; then
   rdf_parsers_available="$rdf_parsers_available n3"
 fi
@@ -732,6 +733,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_PARSER_RDFXML, 1, [Building RDF/XML parser])
   AC_DEFINE(RAPTOR_PARSER_NTRIPLES, 1, [Building N-Triples parser])
   AC_DEFINE(RAPTOR_PARSER_TURTLE, 1, [Building Turtle parser])
+  AC_DEFINE(RAPTOR_PARSER_TRIG, 1, [Building TRiG parser])
   AC_DEFINE(RAPTOR_PARSER_N3, 1, [Building Notation 3 parser])
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
   AC_DEFINE(RAPTOR_PARSER_GRDDL, 1, [Building GRDDL parser])
@@ -784,6 +786,7 @@ fi
 AM_CONDITIONAL(RAPTOR_PARSER_RDFXML, test $rdfxml_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_NTRIPLES, test $ntriples_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_TRIG, test $trig_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_N3, test $n3_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes -o $rdfa_parser = yes)
@@ -1198,6 +1201,7 @@ examples/Makefile
 src/Makefile
 tests/Makefile
 tests/turtle/Makefile
+tests/trig/Makefile
 utils/Makefile
 win32/Makefile
 raptor.pc])
