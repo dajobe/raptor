@@ -2,7 +2,7 @@
  *
  * turtle_common.h - Turtle lexer/parser shared internals
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -66,6 +66,9 @@ struct raptor_turtle_parser_s {
 
   /* for creating long literals */
   raptor_stringbuffer* sb;
+
+  /* Allow TRIG extensions */
+  int trig;
 };
 
 
