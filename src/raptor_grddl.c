@@ -62,6 +62,7 @@
 #include <libxslt/xslt.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
+#include <libxslt/security.h>
 
 
 /*
@@ -1798,12 +1799,37 @@ raptor_rdfa_parser_register_factory(raptor_parser_factory *factory)
 }
 
 
+static xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
+
 void
 raptor_init_parser_grddl_common(void)
 {
 #ifdef HAVE_XSLTINIT
   xsltInit();
 #endif
+
+  raptor_xslt_sec = xsltNewSecurityPrefs();
+  xsltSetDefaultSecurityPrefs(raptor_xslt_sec);
+
+
+  /* no read from file (read from URI with scheme = file) */
+  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_READ_FILE,
+                       xsltSecurityForbid);
+  
+  /* no create/write to file */
+  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_WRITE_FILE,
+                       xsltSecurityForbid);
+  
+  /* no create directory */
+  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_CREATE_DIRECTORY,
+                       xsltSecurityForbid);
+  
+  /* yes read from URI with scheme != file (XSLT_SECPREF_READ_NETWORK) */
+  
+  /* no write to network (you can 'write' with GET params anyway) */
+  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_WRITE_NETWORK,
+                       xsltSecurityForbid);
+
 }
 
 
@@ -1828,5 +1854,8 @@ void
 raptor_terminate_parser_grddl_common(void)
 {
   xsltCleanupGlobals();
+
+  if(raptor_xslt_sec)
+    xsltFreeSecurityPrefs(raptor_xslt_sec);
 }
 
