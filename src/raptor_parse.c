@@ -106,6 +106,10 @@ raptor_parsers_init(void)
   raptor_init_parser_turtle();
 #endif
 
+#ifdef RAPTOR_PARSER_TRIG
+  raptor_init_parser_trig();
+#endif
+
 #ifdef RAPTOR_PARSER_RSS
   raptor_init_parser_rss();
 #endif
@@ -1148,6 +1152,25 @@ raptor_set_statement_handler(raptor_parser* parser,
 
 
 /**
+ * raptor_set_graph_handler:
+ * @parser: #raptor_parser parser object
+ * @user_data: user data pointer for callback
+ * @handler: new graph callback function
+ *
+ * Set the graph handler function for the parser.
+ * 
+ **/
+void
+raptor_set_graph_handler(raptor_parser* parser,
+			 void *user_data,
+			 raptor_graph_handler handler)
+{
+  parser->user_data=user_data;
+  parser->graph_handler=handler;
+}
+
+
+/**
  * raptor_set_generate_id_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
@@ -2058,6 +2081,14 @@ raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p)
     *length_p=len;
 
   return buffer;
+}
+
+
+void 
+raptor_parser_set_graph_name(raptor_parser* parser, raptor_uri* uri)
+{
+  if(parser->graph_handler)
+    (*parser->graph_handler)(parser->user_data, uri);
 }
 
 
