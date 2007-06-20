@@ -27,13 +27,28 @@ function.</para>
 <title>GRDDL parser (name <literal>grddl</literal>)</title>
 <para>A parser for the
 <ulink url="http://www.w3.org/TR/2006/WD-grddl-20061024/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</ulink>,
-W3C Working Draft of 2006-10-24 which allows reading XHTML and XML as
-RDF triples by using profiles in the document that declare XSLT
-transforms from the XHTML or XML content into RDF/XML or other RDF
-syntax which can then be parsed.</para>
+W3C Candidate Recommendation of 2007-05-02 which allows reading XHTML
+and XML as RDF triples by using profiles in the document that declare
+XSLT transforms from the XHTML or XML content into RDF/XML or other
+RDF syntax which can then be parsed.</para>
 
-<para>The parser is beta quality and may not support the entire GRDDL
-specification.</para>
+<para>The GRDDL parser has hardcoded support for hcard and hcalendar
+microformats, which can be disabled by setting parser
+feature
+<link linkend="RAPTOR-FEATURE-MICROFORMATS:CAPS"><literal>RAPTOR_FEATURE_MICROFORMATS</literal></link>
+to 0
+or using
+<link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
+</para>
+
+<para>The GRDDL parser by default will try an XML parser on the
+content followed by a lax HTML parser.  This can be disabled by
+setting parser feature
+<link linkend="RAPTOR-FEATURE-HTML_TAG_SOUP:CAPS"><literal>RAPTOR_FEATURE_HTML_TAG_SOUP</literal></link>
+to 0
+or using 
+<link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
+</para>
 
 </section>
 
@@ -68,6 +83,19 @@ syntax as used by the
 <ulink url="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</ulink>
 for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
 </para>
+
+</section>
+
+
+<section id="parser-rdfa">
+<title>RDFa parser (name <literal>rdfa</literal>)</title>
+<para>A parser for the
+<ulink url="http://www.w3.org/TR/2006/WD-grddl-20061024/">RDFa Embedding RDF in XHTML</ulink>,
+W3C Working Draft of 2007-03-12 which allows reading special markup
+in XHTML or XHTML2 as RDF triples in the document.</para>
+
+<para>The parser is alpha quality and may not support the entire RDFa
+specification.</para>
 
 </section>
 
@@ -120,6 +148,19 @@ wanted to be used as a full RDF vocabulary, is best parsed by the
 RDF/XML parser (name <literal>rdfxml</literal>).
 </para>
 
+</section>
+
+
+<section id="parser-trig">
+<title>TRiG parser (name <literal>trig</literal>)</title>
+
+<para>A parser for the
+<ulink url="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/">TriG - Turtle with Named Graphs</ulink>
+syntax.
+</para>
+
+<para>The parser is alpha quality and may not support the entire TRiG
+specification.</para>
 
 </section>
 
