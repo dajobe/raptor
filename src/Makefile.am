@@ -88,6 +88,10 @@ libraptor_la_SOURCES += raptor_rdfxml.c raptor_sax2.c
 endif
 if RAPTOR_PARSER_TURTLE
 libraptor_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+else
+if RAPTOR_PARSER_TRIG
+libraptor_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+endif
 endif
 if RAPTOR_PARSER_N3
 libraptor_la_SOURCES += n3_lexer.c n3_lexer.h n3_parser.c n3_parser.h n3_common.h
