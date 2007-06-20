@@ -132,7 +132,7 @@ EXTRA_DIST = \
 	$(RDF_SERIALIZE_OUT_FILES)
 
 
-SUBDIRS = turtle
+SUBDIRS = turtle trig
 
 
 build-rapper:
