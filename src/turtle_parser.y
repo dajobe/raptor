@@ -2,7 +2,7 @@
  *
  * turtle_parser.y - Raptor Turtle parser - over tokens from turtle grammar lexer
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -143,6 +143,9 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token RIGHT_SQUARE "]"
 %token LEFT_ROUND "("
 %token RIGHT_ROUND ")"
+%token LEFT_CURLY "{"
+%token RIGHT_CURLY "}"
+%token COLONMINUS ":-"
 %token TRUE "true"
 %token FALSE "false"
 
@@ -164,7 +167,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %destructor { if($$) RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER
 %destructor { if($$) raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
 
-%type <identifier> subject predicate object verb literal resource blank collection
+%type <identifier> subject predicate object verb literal resource blank collection graphName
 %type <sequence> objectList itemList propertyList
 
 %%
@@ -172,12 +175,73 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 Document : statementList
 ;
 
+colonMinusOpt: COLONMINUS 
+{
+  raptor_parser* parser=(raptor_parser *)rdf_parser;
+  raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)parser->context;
+  if(!turtle_parser->trig)
+    turtle_parser_error(rdf_parser, ":- is not allowed in Turtle");
+}
+| /* empty */
+;
+
+graph: graphName colonMinusOpt LEFT_CURLY
+  {
+    /* action in mid-rule so this is run BEFORE the triples in graphBody */
+    raptor_parser* parser=(raptor_parser *)rdf_parser;
+    raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)parser->context;
+    if(!turtle_parser->trig)
+      turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
+    else
+      raptor_parser_set_graph_name(parser, $1->uri);
+  }
+  graphBody RIGHT_CURLY
+{
+  /* free graph name in final action */
+  raptor_free_identifier($1);
+}
+|
+LEFT_CURLY
+  {
+    /* action in mid-rule so this is run BEFORE the triples in graphBody */
+    raptor_parser* parser=(raptor_parser *)rdf_parser;
+    raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)parser->context;
+    if(!turtle_parser->trig)
+      turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
+    else
+      raptor_parser_set_graph_name(parser, NULL);
+  }
+  graphBody RIGHT_CURLY
+;
+
+graphName: resource
+;
+
+graphBody: triplesList
+|
+/* empty */
+;
+
+triplesList: triples
+|
+terminatedTriples triplesList
+|
+terminatedTriples
+;
+
+terminatedTriples: triples DOT
+;
+
 statementList: statementList statement
 | /* empty line */
 ;
 
 statement: directive
-| subject propertyList DOT
+| graph
+| terminatedTriples
+;
+
+triples: subject propertyList
 {
   int i;
 
@@ -1010,6 +1074,8 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   turtle_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
   turtle_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
 
+  turtle_parser->trig=!strcmp(name, "trig");
+
   return 0;
 }
 
@@ -1226,6 +1292,58 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
+static int
+raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory, 
+                                   const unsigned char *buffer, size_t len,
+                                   const unsigned char *identifier, 
+                                   const unsigned char *suffix, 
+                                   const char *mime_type)
+{
+  int score= 0;
+  
+  if(suffix) {
+    if(!strcmp((const char*)suffix, "trig"))
+      score=9;
+#ifndef RAPTOR_PARSER_TURTLE
+    if(!strcmp((const char*)suffix, "ttl"))
+      score=8;
+#endif
+    if(!strcmp((const char*)suffix, "n3"))
+      score=3;
+  }
+  
+  if(mime_type) {
+#ifndef RAPTOR_PARSER_TURTLE
+    if(strstr((const char*)mime_type, "turtle"))
+      score+=6;
+#endif
+#ifndef RAPTOR_PARSER_N3
+    if(strstr((const char*)mime_type, "n3"))
+      score+=3;
+#endif
+  }
+
+#ifndef RAPTOR_PARSER_TURTLE
+  /* FIXME: Should do this as long as N3 is not also present since
+   * shares the same syntax */
+  if(buffer && len) {
+#define  HAS_TRIG_PREFIX (strstr((const char*)buffer, "@prefix ") != NULL)
+/* The following could also be found with N-Triples but not with @prefix */
+#define  HAS_TRIG_RDF_URI (strstr((const char*)buffer, ": <http://www.w3.org/1999/02/22-rdf-syntax-ns#>") != NULL)
+
+    if(HAS_TRIG_PREFIX) {
+      score=6;
+      if(HAS_TRIG_RDF_URI)
+        score+=2;
+    }
+  }
+#endif
+  
+  return score;
+}
+
+
+#ifdef RAPTOR_PARSER_TURTLE
 static void
 raptor_turtle_parser_register_factory(raptor_parser_factory *factory) 
 {
@@ -1252,15 +1370,47 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3);
 #endif
 }
+#endif
 
 
+#ifdef RAPTOR_PARSER_TRIG
+static void
+raptor_trig_parser_register_factory(raptor_parser_factory *factory) 
+{
+  factory->context_length     = sizeof(raptor_turtle_parser);
+  
+  factory->need_base_uri = 1;
+  
+  factory->init      = raptor_turtle_parse_init;
+  factory->terminate = raptor_turtle_parse_terminate;
+  factory->start     = raptor_turtle_parse_start;
+  factory->chunk     = raptor_turtle_parse_chunk;
+  factory->recognise_syntax = raptor_trig_parse_recognise_syntax;
+
+  raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/");
+
+  raptor_parser_factory_add_mime_type(factory, "application/x-trig", 10);
+}
+#endif
+
+
+#ifdef RAPTOR_PARSER_TURTLE
 void
 raptor_init_parser_turtle(void)
 {
   raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
                                  &raptor_turtle_parser_register_factory);
 }
+#endif
 
+#ifdef RAPTOR_PARSER_TRIG
+void
+raptor_init_parser_trig(void)
+{
+  raptor_parser_register_factory("trig", "TriG - Turtle with Named Graphs",
+                                 &raptor_trig_parser_register_factory);
+}
+#endif
 
 
 #ifdef STANDALONE
