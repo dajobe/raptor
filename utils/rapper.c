@@ -61,6 +61,7 @@ extern char *optarg;
 #endif
 
 static void print_triples(void *user_data, const raptor_statement *statement);
+static void print_graph(void *user_data, const raptor_uri *graph);
 static void print_namespaces(void* user_data, raptor_namespace *nspace);
 static void relay_namespaces(void* user_data, raptor_namespace *nspace);
 int main(int argc, char *argv[]);
@@ -85,6 +86,8 @@ static int guess=0;
 static int reported_guess=0;
 
 static int report_namespace=0;
+
+static int report_graph=0;
 
 static
 void print_triples(void *user_data, const raptor_statement *triple) 
@@ -115,6 +118,18 @@ void print_triples(void *user_data, const raptor_statement *triple)
   return;
 }
 
+static
+void print_graph(void *user_data, const raptor_uri *graph)
+{
+  if(!report_graph)
+    return;
+
+  if(graph)
+    fprintf(stderr, "%s: Named graph: URI %s\n", program,
+            raptor_uri_as_string(graph));
+  else
+    fprintf(stderr, "%s: Named graph: default\n", program);
+}
 
 static void
 print_namespaces(void* user_data, raptor_namespace *nspace)
@@ -163,6 +178,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
+#define SHOW_GRAPHS_FLAG 0x200
 
 static struct option long_options[] =
 {
@@ -179,6 +195,7 @@ static struct option long_options[] =
   {"quiet", 0, 0, 'q'},
   {"replace-newlines", 0, 0, 'r'},
   {"scan", 0, 0, 's'},
+  {"show-graphs", 0, 0, SHOW_GRAPHS_FLAG},
   {"show-namespaces", 0, 0, SHOW_NAMESPACES_FLAG},
   {"trace", 0, 0, 't'},
   {"ignore-warnings", 0, 0, 'w'},
@@ -537,6 +554,12 @@ main(int argc, char *argv[])
         break;
 #endif
 
+#ifdef SHOW_GRAPHS_FLAG
+      case SHOW_GRAPHS_FLAG:
+        report_graph=1;
+        break;
+#endif
+
     }
     
   }
@@ -617,10 +640,13 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
     puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
-    puts(HELP_TEXT("t", "trace           ", "Trace URIs retrieved during parsing"));
+#ifdef SHOW_GRAPHS_FLAG
+    puts(HELP_TEXT_LONG("show-graphs     ", "Show named graphs as they are declared"));
+#endif
 #ifdef SHOW_NAMESPACES_FLAG
     puts(HELP_TEXT_LONG("show-namespaces ", "Show namespaces as they are declared"));
 #endif
+    puts(HELP_TEXT("t", "trace           ", "Trace URIs retrieved during parsing"));
     puts(HELP_TEXT("w", "ignore-warnings ", "Ignore warning messages"));
     puts(HELP_TEXT("v", "version         ", "Print the Raptor version"));
     puts("\nReport bugs to http://bugs.librdf.org/");
@@ -725,6 +751,9 @@ main(int argc, char *argv[])
   }
   
   raptor_set_statement_handler(rdf_parser, rdf_parser, print_triples);
+
+  if(report_graph)
+    raptor_set_graph_handler(rdf_parser, rdf_parser, print_graph);
 
   if(report_namespace)
     raptor_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
