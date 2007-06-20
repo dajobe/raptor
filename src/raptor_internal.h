@@ -332,6 +332,8 @@ struct raptor_parser_s {
   /* parser callbacks */
   raptor_statement_handler statement_handler;
 
+  raptor_graph_handler graph_handler;
+
   void *generate_id_handler_user_data;
   raptor_generate_id_handler generate_id_handler;
 
@@ -677,6 +679,7 @@ raptor_uri* raptor_new_uri_from_rdf_ordinal(int ordinal);
 void raptor_init_parser_rdfxml(void);
 void raptor_init_parser_ntriples(void);
 void raptor_init_parser_turtle(void);
+void raptor_init_parser_trig(void);
 void raptor_init_parser_n3(void);
 void raptor_init_parser_grddl_common(void);
 void raptor_init_parser_grddl(void);
@@ -692,7 +695,7 @@ void raptor_parsers_finish(void);
 
 void raptor_parser_save_content(raptor_parser* rdf_parser, int save);
 const unsigned char* raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p);
-
+void raptor_parser_set_graph_name(raptor_parser* parser, raptor_uri* uri);
 
 /* raptor_rss.c */
 void raptor_init_serializer_rss10(void);
