@@ -461,6 +461,16 @@ static struct {
     NULL
   }
   ,
+  /* XHTML document with alternate RDF/XML form
+   * <link type="application/rdf+xml" href="URI" />
+   * Value of @href is a URI
+   */
+  {
+    (const xmlChar*)"/html:html/html:head/html:link[@type=\"application/rdf+xml\"]/@href",
+    0,
+    NULL
+  }
+  ,
   /* hCalendar microformat http://microformats.org/wiki/hcalendar */
   {
     (const xmlChar*)"//*[contains(concat(' ', concat(normalize-space(@class),' ')),' vevent ')]",
