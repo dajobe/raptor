@@ -1218,7 +1218,7 @@ raptor_grddl_check_recursive_content_type_handler(raptor_www* www, void* userdat
   if(!strncmp(content_type, "text/html", 9) ||
      !strncmp(content_type, "application/html+xml", 20)) {
     RAPTOR_DEBUG3("Parser %p: Found HTML content type '%s'\n",
-                  rdf_parser, content_type);;
+                  rdf_parser, content_type);
     grddl_parser->html_base_processing=1;
   }
 
@@ -1337,13 +1337,13 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     grddl_parser->content_type_check++;
     if(!strncmp(grddl_parser->content_type, "application/rdf+xml", 19)) {
       RAPTOR_DEBUG3("Parser %p: Found document with type '%s' is RDF/XML\n",
-                    rdf_parser, grddl_parser->content_type);;
+                    rdf_parser, grddl_parser->content_type);
       grddl_parser->process_this_as_rdfxml=1;
     }
     if(!strncmp(grddl_parser->content_type, "text/html", 9) ||
        !strncmp(grddl_parser->content_type, "application/html+xml", 20)) {
       RAPTOR_DEBUG3("Parser %p: Found document with type '%s' is HTML\n",
-                    rdf_parser, grddl_parser->content_type);;
+                    rdf_parser, grddl_parser->content_type);
       grddl_parser->html_base_processing=1;
     }
   }
