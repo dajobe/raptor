@@ -61,7 +61,7 @@ extern char *optarg;
 #endif
 
 static void print_triples(void *user_data, const raptor_statement *statement);
-static void print_graph(void *user_data, const raptor_uri *graph);
+static void print_graph(void *user_data, raptor_uri *graph);
 static void print_namespaces(void* user_data, raptor_namespace *nspace);
 static void relay_namespaces(void* user_data, raptor_namespace *nspace);
 int main(int argc, char *argv[]);
@@ -119,7 +119,7 @@ void print_triples(void *user_data, const raptor_statement *triple)
 }
 
 static
-void print_graph(void *user_data, const raptor_uri *graph)
+void print_graph(void *user_data, raptor_uri *graph)
 {
   if(!report_graph)
     return;
