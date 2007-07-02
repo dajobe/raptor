@@ -3,7 +3,7 @@
  * raptor_serialize_turtle.c - Turtle serializer
  *
  * Copyright (C) 2006, Dave Robillard
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
@@ -72,6 +72,9 @@ typedef struct {
   
   /* URI of rdf:rest */
   raptor_uri* rdf_rest_uri;
+
+  /* URI of rdf:nil */
+  raptor_uri* rdf_nil_uri;
 
   /* non zero if rdf:RDF has been written (and thus no new namespaces
    * can be declared).
@@ -395,7 +398,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     if(!raptor_uri_equals(predicate->value.resource.uri, 
                           context->rdf_first_uri)) {
       raptor_serializer_error(serializer,
-                              "Malformed collection (first predicate is not rdf:first)");
+                              "Malformed collection - first predicate is not rdf:first");
       return 1;
     }
     
@@ -438,21 +441,30 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
 
     if(!raptor_uri_equals(predicate->value.resource.uri, context->rdf_rest_uri)) {
       raptor_serializer_error(serializer,
-                              "Malformed collection (second predicate is not rdf:rest)");
+                              "Malformed collection - second predicate is not rdf:rest");
       return 1;
     }
- 
-    subject = raptor_abbrev_subject_find(context->blanks, object->type,
+
+    raptor_turtle_writer_newline(context->turtle_writer);
+    
+    if(object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+      subject = raptor_abbrev_subject_find(context->blanks, object->type,
                                          object->value.blank.string, &idx);
 
-    if(!subject) {
-      raptor_serializer_error(serializer,
-                            "Malformed collection (could not find subject for rdf:rest)");
-      return 1;
+      if(!subject) {
+        raptor_serializer_error(serializer,
+                            "Malformed collection - could not find subject for rdf:rest");
+        return 1;
+      }
     } else {
-      raptor_turtle_writer_newline(context->turtle_writer);
+      if(object->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+         !raptor_uri_equals(object->value.resource.uri, context->rdf_nil_uri)) {
+        raptor_serializer_error(serializer,
+                                "Malformed collection - last rdf:rest resource is not rdf:nil");
+        return 1;
+      }
+      break;
     }
-    
   }
   
   return rv;
@@ -795,6 +807,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
   context->rdf_first_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
   context->rdf_rest_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+  context->rdf_nil_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
   return 0;
 }
@@ -848,6 +861,9 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
   
   if(context->rdf_rest_uri)
     raptor_free_uri(context->rdf_rest_uri);
+
+  if(context->rdf_nil_uri)
+    raptor_free_uri(context->rdf_nil_uri);
 }
   
 
