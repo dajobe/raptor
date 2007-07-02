@@ -98,6 +98,8 @@ NT_OUT_FILES=test.out
 NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt bad-04.nt \
 bad-05.nt bad-06.nt
 
+TURTLE_SERIALIZE_TEST_FILES=ex-62.rdf
+
 
 # Used to make N-triples output consistent
 BASE_URI=http://librdf.org/raptor/tests/
@@ -129,7 +131,8 @@ EXTRA_DIST = \
 	$(NT_OUT_FILES) \
 	$(NT_BAD_TEST_FILES) \
 	$(RDF_SERIALIZE_TEST_FILES) \
-	$(RDF_SERIALIZE_OUT_FILES)
+	$(RDF_SERIALIZE_OUT_FILES) \
+	$(TURTLE_SERIALIZE_TEST_FILES)
 
 
 SUBDIRS = turtle trig
@@ -437,10 +440,10 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-turtle-serialize: build-rdfdiff build-rapper $(RDF_TEST_FILES)
+check-turtle-serialize: build-rdfdiff build-rapper $(RDF_TEST_FILES) $(TURTLE_SERIALIZE_TEST_FILES)
 	@set +e; result=0; \
 	$(ECHO) "Testing turtle serialization with legal rdf/xml"; \
-	for test in $(RDF_TEST_FILES); do \
+	for test in $(RDF_TEST_FILES) $(TURTLE_SERIALIZE_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
