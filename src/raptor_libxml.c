@@ -598,8 +598,9 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   
   
   sb=raptor_new_stringbuffer();
-  raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)"XML ",
-                                            4, 1);
+  if(err->domain != XML_FROM_HTML)
+    raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)"XML ",
+                                              4, 1);
   
   if(err->domain != XML_FROM_NONE && err->domain < XML_LAST_DL) {
     const unsigned char* label;
