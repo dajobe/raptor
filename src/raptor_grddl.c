@@ -877,6 +877,9 @@ static void
 raptor_grddl_discard_message(void *user_data, raptor_locator* locator,
                              const char *message)
 {
+#ifdef RAPTOR_DEBUG
+  fprintf(stderr, "Discarded error message: %s\n", message);
+#endif
   return;
 }
 
@@ -1332,6 +1335,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   const unsigned char* buffer=NULL;
   size_t buffer_len=0;
   int buffer_is_libxml=0;
+  int loop;
+  raptor_error_handlers eh;
 
   if(grddl_parser->content_type && !grddl_parser->content_type_check) {
     grddl_parser->content_type_check++;
@@ -1365,73 +1370,129 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   uri_string=raptor_uri_as_string(rdf_parser->base_uri);
 
+  if(1) {
+    /* Save error handlers and discard parsing errors
+     * NOTE not setting RAPTOR_LOG_LEVEL_NONE handler
+     */
+    for(i=1; i<= RAPTOR_LOG_LEVEL_LAST; i++) {
+      eh.handlers[i]=rdf_parser->error_handlers.handlers[i];
+      rdf_parser->error_handlers.handlers[i]=raptor_grddl_discard_message;
+    }
+  }
+
   RAPTOR_DEBUG4("Parser %p: URI %s: processing %d bytes of content\n",
                 rdf_parser, uri_string, (int)buffer_len);
 
-  /* try to create an XML parser context */
-  grddl_parser->xml_ctxt = xmlCreatePushParserCtxt(NULL, NULL,
-                                                   (const char*)buffer,
-                                                   buffer_len,
-                                                   (const char*)uri_string);
-  
-  /* if that failed, try to create an HTML parser context */
-  if(!grddl_parser->xml_ctxt &&
-     rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]) {
-    xmlCharEncoding enc;
+  for(loop=0; loop<2; loop++) {
+    int rc;
 
-    RAPTOR_DEBUG2("Parser %p: Creating an XML parser failed\n", rdf_parser);
+    if(loop == 0) { 
+      RAPTOR_DEBUG2("Parser %p: Creating an XML parser\n", rdf_parser);
 
-    enc = xmlDetectCharEncoding((const unsigned char*)buffer, buffer_len);
-    grddl_parser->html_ctxt = htmlCreatePushParserCtxt(/*sax*/ NULL, 
-                                                       /*user_data*/ NULL,
-                                                       (const char *)buffer,
+      /* try to create an XML parser context */
+      grddl_parser->xml_ctxt = xmlCreatePushParserCtxt(NULL, NULL,
+                                                       (const char*)buffer,
                                                        buffer_len,
-                                                       (const char *)uri_string,
-                                                       enc);
-  }
-  
-  if(!grddl_parser->html_ctxt && !grddl_parser->xml_ctxt) {
-    raptor_parser_error(rdf_parser, "Failed to create HTML or XML parsers");
-    return 1;
-  }
-  
-  
-  if(grddl_parser->html_ctxt) {
-    int options;
+                                                       (const char*)uri_string);
+      if(!grddl_parser->xml_ctxt) {
+        RAPTOR_DEBUG2("Parser %p: Creating an XML parser failed\n", rdf_parser);
+        continue;
+      }
 
-    /* HTML parser */
-    grddl_parser->html_ctxt->replaceEntities = 1;
-    grddl_parser->html_ctxt->loadsubset = 1;
+      grddl_parser->xml_ctxt->vctxt.warning = raptor_grddl_libxml_discard_error;
+      grddl_parser->xml_ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
     
-    grddl_parser->html_ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
+      grddl_parser->xml_ctxt->replaceEntities = 1;
+      grddl_parser->xml_ctxt->loadsubset = 1;
+    } else if (loop == 1) {
+  
+      /* try to create an HTML parser context */
+      if(rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]) {
+        xmlCharEncoding enc;
+        int options;
+
+        RAPTOR_DEBUG2("Parser %p: Creating an HTML parser\n", rdf_parser);
+
+        enc = xmlDetectCharEncoding((const unsigned char*)buffer, buffer_len);
+        grddl_parser->html_ctxt = htmlCreatePushParserCtxt(/*sax*/ NULL, 
+                                                         /*user_data*/ NULL,
+                                                         (const char *)buffer,
+                                                         buffer_len,
+                                                         (const char *)uri_string,
+                                                         enc);
+        if(!grddl_parser->html_ctxt) {
+          RAPTOR_DEBUG2("Parser %p: Creating an HTML parser failed\n", rdf_parser);
+          continue;
+        }
+  
+        /* HTML parser */
+        grddl_parser->html_ctxt->replaceEntities = 1;
+        grddl_parser->html_ctxt->loadsubset = 1;
     
-    /* HTML_PARSE_NOWARNING disables sax->warning, vxtxt.warning  */
-    /* HTML_PARSE_NOERROR disables sax->error, vctxt.error */
-    options = HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING;
+        grddl_parser->html_ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
+    
+        /* HTML_PARSE_NOWARNING disables sax->warning, vxtxt.warning  */
+        /* HTML_PARSE_NOERROR disables sax->error, vctxt.error */
+        options = HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING;
 #ifdef HTML_PARSE_RECOVER
-    options |= HTML_PARSE_RECOVER;
+        options |= HTML_PARSE_RECOVER;
 #endif
 
-    htmlCtxtUseOptions(grddl_parser->html_ctxt, options);
-  } else { 
-    /* must be XML */
-    grddl_parser->xml_ctxt->vctxt.warning = raptor_grddl_libxml_discard_error;
-    grddl_parser->xml_ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
-    
-    grddl_parser->xml_ctxt->replaceEntities = 1;
-    grddl_parser->xml_ctxt->loadsubset = 1;
+        htmlCtxtUseOptions(grddl_parser->html_ctxt, options);
+ 
+      } else
+        continue;
+    } else
+      continue;
+
+    xmlSetStructuredErrorFunc(&rdf_parser->error_handlers, 
+                              raptor_libxml_xmlStructuredErrorFunc);
+
+    rc=0;
+
+    if(grddl_parser->html_ctxt) {
+      RAPTOR_DEBUG2("Parser %p: Parsing as HTML\n", rdf_parser);
+      rc=htmlParseChunk(grddl_parser->html_ctxt, (const char*)s, 0, 1);
+      RAPTOR_DEBUG3("Parser %p: Parsing as HTML %s\n", rdf_parser, (rc ? "failed" : "succeeded"));
+      if(rc) {
+        if(grddl_parser->html_ctxt->myDoc) {
+          xmlFreeDoc(grddl_parser->html_ctxt->myDoc);
+          grddl_parser->html_ctxt->myDoc=NULL;
+        }
+        htmlFreeParserCtxt(grddl_parser->html_ctxt);
+        grddl_parser->html_ctxt=NULL;
+      }
+    } else {
+      RAPTOR_DEBUG2("Parser %p: Parsing as XML\n", rdf_parser);
+      rc=xmlParseChunk(grddl_parser->xml_ctxt, (const char*)s, 0, 1);
+      RAPTOR_DEBUG3("Parser %p: Parsing as XML %s\n", rdf_parser, (rc ? "failed" : "succeeded"));
+      if(rc) {
+        if(grddl_parser->xml_ctxt->myDoc) {
+          xmlFreeDoc(grddl_parser->xml_ctxt->myDoc);
+          grddl_parser->xml_ctxt->myDoc=NULL;
+        }
+        xmlFreeParserCtxt(grddl_parser->xml_ctxt);
+        grddl_parser->xml_ctxt=NULL;
+      }
+    }
+
+    if(!rc)
+      break;
+
   }
   
-  xmlSetStructuredErrorFunc(&rdf_parser->error_handlers, 
-                            raptor_libxml_xmlStructuredErrorFunc);
+  if(1) {
+    /* Restore error handlers */
+    for(i=1; i<= RAPTOR_LOG_LEVEL_LAST; i++)
+      rdf_parser->error_handlers.handlers[i]=eh.handlers[i];
+  }
 
-  /* immediately done */
-  if(grddl_parser->html_ctxt)
-    htmlParseChunk(grddl_parser->html_ctxt, (const char*)s, 0, 1);
-  else
-    xmlParseChunk(grddl_parser->xml_ctxt, (const char*)s, 0, 1);
-
-
+  if(!grddl_parser->html_ctxt && !grddl_parser->xml_ctxt) {
+    raptor_parser_error(rdf_parser, "Failed to create HTML or XML parsers");
+    ret=1;
+    goto tidy;
+  }
+  
   raptor_grddl_done_uri(grddl_parser, rdf_parser->base_uri);
 
   if(grddl_parser->html_ctxt)
@@ -1682,18 +1743,6 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     
   }
 
-  if(buffer) {
-    if(buffer_is_libxml)
-      xmlFree((xmlChar*)buffer);
-    else
-      RAPTOR_FREE(cstring, buffer);
-  }
-
-  if(grddl_parser->sb) {
-    raptor_free_stringbuffer(grddl_parser->sb);
-    grddl_parser->sb=NULL;
-  }
-
   
   /* Apply all transformation URIs seen */
   transform:
@@ -1707,6 +1756,18 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
 
  tidy:
+  if(buffer) {
+    if(buffer_is_libxml)
+      xmlFree((xmlChar*)buffer);
+    else
+      RAPTOR_FREE(cstring, buffer);
+  }
+
+  if(grddl_parser->sb) {
+    raptor_free_stringbuffer(grddl_parser->sb);
+    grddl_parser->sb=NULL;
+  }
+
   if(grddl_parser->xml_ctxt) {
     if(grddl_parser->xml_ctxt->myDoc) {
       xmlFreeDoc(grddl_parser->xml_ctxt->myDoc);
