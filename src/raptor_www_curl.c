@@ -106,7 +106,10 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     char *type_buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
     strncpy(type_buffer, (char*)ptr+14, len);
     type_buffer[len]='\0';
+    if(www->type)
+      RAPTOR_FREE(cstring, www->type);
     www->type=type_buffer;
+    www->free_type=1;
 
 #if RAPTOR_DEBUG > 2
     RAPTOR_DEBUG3("Got content type '%s' (%d bytes)\n", type_buffer, len);
