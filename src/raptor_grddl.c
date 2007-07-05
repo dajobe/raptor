@@ -1708,7 +1708,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
    * <link type="application/rdf+xml" href="URI" />
    * Value of @href is a URI
    */
-  if(1) {
+  if(rdf_parser->features[RAPTOR_FEATURE_HTML_LINK]) {
     raptor_sequence* result;
     result=raptor_grddl_run_xpath_match(rdf_parser, doc, 
                                         (const xmlChar*)"/html:html/html:head/html:link[@type=\"application/rdf+xml\"]/@href",

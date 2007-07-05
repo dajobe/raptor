@@ -659,6 +659,7 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
+    case RAPTOR_FEATURE_HTML_LINK:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -757,6 +758,7 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
     case RAPTOR_FEATURE_CHECK_RDF_ID:
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
+    case RAPTOR_FEATURE_HTML_LINK:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
