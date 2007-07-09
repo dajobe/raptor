@@ -235,6 +235,9 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
                                    1);
   raptor_xml_writer_set_feature(xml_writer, RAPTOR_FEATURE_WRITER_XML_VERSION,
                                 serializer->xml_version);
+  raptor_xml_writer_set_feature(xml_writer, 
+                                RAPTOR_FEATURE_WRITER_XML_DECLARATION, 
+                                serializer->feature_write_xml_declaration);
   
   context->xml_writer=xml_writer;
   context->written_header=0;
