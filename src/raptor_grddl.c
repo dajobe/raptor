@@ -169,6 +169,9 @@ struct raptor_grddl_parser_context_s {
 
   /* non-0 to perform HTML Base processing on document */
   int html_base_processing;
+
+  /* non-0 to perform HTML <link> processing on document */
+  int html_link_processing;
 };
 
 
@@ -268,7 +271,8 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   grddl_parser->grddl_processing=1;
   grddl_parser->xinclude_processing=1;
   grddl_parser->html_base_processing=0;
-  
+  grddl_parser->html_link_processing=1;
+
   return 0;
 }
 
@@ -306,6 +310,7 @@ raptor_rdfa_parse_init(raptor_parser* rdf_parser, const char *name)
   grddl_parser->grddl_processing=0;
   grddl_parser->xinclude_processing=0;
   grddl_parser->html_base_processing=1;
+  grddl_parser->html_link_processing=0;
   
   return 0;
 }
@@ -1708,7 +1713,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
    * <link type="application/rdf+xml" href="URI" />
    * Value of @href is a URI
    */
-  if(rdf_parser->features[RAPTOR_FEATURE_HTML_LINK]) {
+  if(grddl_parser->html_link_processing &&
+     rdf_parser->features[RAPTOR_FEATURE_HTML_LINK]) {
     raptor_sequence* result;
     result=raptor_grddl_run_xpath_match(rdf_parser, doc, 
                                         (const xmlChar*)"/html:html/html:head/html:link[@type=\"application/rdf+xml\"]/@href",
