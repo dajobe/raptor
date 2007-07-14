@@ -427,7 +427,7 @@ snprint_turtle_double(char* buf, size_t buf_len, double num)
 
   /* find the 'E' and start of mantissa trailing zeros */
 
-  for( ; e_index < strlen(buf); ++e_index) {
+  for( ; buf[e_index]; ++e_index) {
     if(e_index > 0 && buf[e_index] == '0' && buf[e_index-1] != '0')
       trailing_zero_start = e_index;
     else if(buf[e_index] == 'E')
@@ -445,17 +445,17 @@ snprint_turtle_double(char* buf, size_t buf_len, double num)
   }
 
   exponent_start = e_index+2;
-
-  while(exponent_start < strlen(buf) && buf[exponent_start] == '0')
+  while(buf[exponent_start] == '0')
     ++exponent_start;
 
-  if(exponent_start == strlen(buf)) {
+  buf_len = strlen(buf);
+  if(exponent_start == buf_len) {
     buf[trailing_zero_start+1] = '0';
     buf[trailing_zero_start+2] = '\0';
   } else {
     /* copy the exponent (minus leading zeros) after the new E */
     memmove(buf+trailing_zero_start+1, buf+exponent_start,
-            strlen(buf)-trailing_zero_start);
+            buf_len-trailing_zero_start);
   }
 
   return 0;
