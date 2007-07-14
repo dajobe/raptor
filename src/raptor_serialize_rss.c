@@ -395,7 +395,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 
       /* triple (?resource rdf:type rdf:Seq) */
       if(statement->subject_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-        RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n", statement->subject);
+        RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",
+                      (char*)statement->subject);
         rss_serializer->seq_uri=raptor_new_uri((unsigned char*)statement->subject);
       } else {
         RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
