@@ -394,12 +394,14 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
                          RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
 
       /* triple (?resource rdf:type rdf:Seq) */
-      RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
-                    raptor_uri_as_string((raptor_uri*)statement->subject));
-      if(statement->subject_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+      if(statement->subject_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+        RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n", statement->subject);
         rss_serializer->seq_uri=raptor_new_uri((unsigned char*)statement->subject);
-      else
+      } else {
+        RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
+                      raptor_uri_as_string((raptor_uri*)statement->subject));
         rss_serializer->seq_uri=raptor_uri_copy(rss_serializer->seq_uri);
+      }
       
       handled=1;
     } else {
