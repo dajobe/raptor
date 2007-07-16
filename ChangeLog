@@ -1,3 +1,203 @@
+2007-07-13  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_turtle_writer.c: (snprint_turtle_double): Tidy to
+	remove several strlen()s
+
+	* src/raptor_serialize_rss.c: cast
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_statement):
+	Do not debug die when rdf:Seq node is a blank node.
+
+2007-07-08  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_start):
+	Pass on the xml declaration feature to the xml writer.
+	Fixes Issue #0000210 http://bugs.librdf.org/mantis/view.php?id=210
+
+	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s gains
+	html_link_processing to enable looking for <html> <link> with
+	RDF/XML value.
+	(raptor_grddl_parse_init_common): Enable html <link> by default.
+	(raptor_rdfa_parse_init): Disable html <link> for RDFA parser.
+	(raptor_grddl_parse_chunk): Check for html <link> available as
+	well as allowed by feature.
+
+2007-07-05  Dave Beckett  <dave@dajobe.org>
+
+	* docs/tmpl/section-feature.sgml, src/raptor.h,
+	src/raptor_feature.c, src/raptor_grddl.c, src/raptor_parse.c,
+	src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Added
+	RAPTOR_FEATURE_HTML_LINK to control GRDDL looking for html <link
+	type="application/rdf+xml" href="uri">
+
+2007-07-04  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (grddl_free_xml_context): Free the context
+	itself.
+	(raptor_grddl_parser_add_parent): Deleted, merged into
+	raptor_grddl_new_child_parser.  Delete html:link entry from table
+	for now - handle rdf/xml links specially later.
+	(raptor_grddl_copy_state): Added, pulled out of
+	raptor_grddl_ensure_internal_parser
+	(raptor_grddl_ensure_internal_parser): Call
+	raptor_grddl_copy_state
+	(raptor_grddl_new_child_parser): Added, from
+	raptor_grddl_ensure_internal_parser and
+	raptor_grddl_parser_add_parent to allocate a new parser rather
+	than overwrite the 'internal_parser'.
+	(raptor_grddl_fetch_uri): Set/reset the content type handler
+	eachtime.
+	(raptor_grddl_run_xpath_match): Free URI after calculating
+	relative to base.
+	(raptor_grddl_run_recursive): Gains filter arg, again.  Use
+	raptor_grddl_new_child_parser to make a new (GRDDL) raptor_parser*
+	and free it here when done.
+	(raptor_grddl_parse_chunk): Add new filter arg to
+	raptor_grddl_run_recursive Look for <link
+	type="application/rdf+xml" href="URI" /> with RDF expected, not an
+	XSLT transform URI.
+
+	* src/raptor_www_curl.c: (raptor_www_curl_header_callback): Handle
+	multiple type headers appearing, overwriting - such as during an
+	HTTP redirect.
+
+2007-07-03  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_discard_message): Report
+	discarded errors when debugging.
+	(raptor_grddl_parse_chunk): Run XML then HTML parsing in sequence,
+	discarding all errors here.  Restore the error handlers
+	afterwards. Move tidying up of buffers to function exit tidying.
+
+	* src/raptor_libxml.c: (raptor_libxml_xmlStructuredErrorFunc):
+	Tidy output to say "HTML Parser" not "XML HTML Parser"
+
+2007-07-02  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: style
+
+	* src/raptor_grddl.c: match-table gains: looking for
+	<link type="application/rdf+xml" href="URI" />
+
+	* utils/rapper.c: Remove const for print_graph
+
+	* src/raptor_serialize_turtle.c: raptor_turtle_context gains
+	rdf_nil_uri. Tidy some error messages to remove ()s
+	(raptor_turtle_emit_subject_collection_items): At the object of an
+	rdf:rest, if it's blank, check it exists and make it the new
+	subject, otherwise check it's a URI called rdf:nil.
+	(raptor_turtle_serialize_init, raptor_turtle_serialize_terminate):
+	Init/free rdf:rest URI.
+	Fixes Issue#0000207 http://bugs.librdf.org/mantis/view.php?id=207
+
+	* tests/Makefile.am, tests/ex-62.rdf: Added ex-62 for Issue#0000207
+
+2007-06-23  Dave Beckett  <dave@dajobe.org>
+
+	* src/snprintf.c: style, ANSI C and std headers
+
+	* src/snprintf.c: Import Public Domain snprintf from mutt:
+	http://dev.mutt.org/hg/mutt/file/55cd4cb611d9/snprintf.c Last
+	Modified: Tue Aug 08 22:49:12 2006 +0000.
+
+2007-06-20  Dave Beckett  <dave@dajobe.org>
+
+	* raptor.rdf.in: Set Project URI
+	Update syntaxes
+
+	* src/raptor_grddl.c: Add XSLT security
+	(raptor_init_parser_grddl_common): Deny reading, writing to files,
+	creating directories or writing to network.
+	(raptor_terminate_parser_grddl_common): Tidy up xslt security prefs.
+
+2007-06-19  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor.h: raptor_graph_handler without const uri
+
+	* tests/Makefile.am: Add trig dir
+
+	* docs/raptor-parsers.xml: Update GRDDL
+	Add RDFa and TRiG
+
+	* utils/rapper.1: Added --show-graphs
+
+	* utils/rapper.c: Added --show-graphs option to print named graph
+	URIs as seen
+
+	* tests/trig, tests/trig/Makefile.am, tests/trig/example1.out,
+	tests/trig/example1.trig, tests/trig/example2.out,
+	tests/trig/example2.trig, tests/trig/example3.out,
+	tests/trig/example3.trig: Added TRiG tests
+
+	* configure.ac: Add trig parser support, enabled by default.
+
+	* src/Makefile.am: Added RAPTOR_PARSER_TRIG sharing turtle parser code
+
+	* src/raptor.h: Added raptor_graph_handler
+	Added raptor_set_graph_handler
+
+	* src/raptor_parse.c: (raptor_parsers_init): Call
+	raptor_init_parser_trig.
+	(raptor_set_graph_handler): Added to get graph name callbacks.
+	(raptor_parser_set_graph_name): Added internal function.
+
+	* src/turtle_common.h: struct raptor_turtle_parser_s gains trig flag.
+
+	* src/raptor_internal.h: struct raptor_parser_s gains field
+	graph_handler Added raptor_init_parser_trig and
+	raptor_parser_set_graph_name prototypes.
+
+
+	* src/turtle_parser.y: Add TRiG support.  New tokens LEFT_CURLY,
+	RIGHT_CURL, COLONMINUS ({, } and :-) New token graphName
+	(colonMinusOpt): Added for TRiG's optional :-
+	(graph): Added for TRiG graph name before { ... graph ... }
+	(graphName): Added for TRiG
+	(graphBody): Added for TRiG
+	(triplesList): Added for TRiG
+	(terminatedTriples): Added.
+	(statement): uses graph, terminatedTriples
+	(triples): Added, pulled out of statement
+	(raptor_trig_parse_recognise_syntax): Recognise trig in url.
+	(raptor_trig_parser_register_factory): Added for TRiG
+	(raptor_init_parser_trig): Added for TRiG
+
+	* src/turtle_lexer.l: Add { } and :- for TRiG
+
+2007-06-12  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: (raptor_grddl_run_grddl_transform_uri): Hack
+	locator URI so errors with XSLT are reported against that URI not
+	the documents.
+
+	* src/raptor_grddl.c: (raptor_grddl_fetch_uri): Fix accept header
+
+	* src/raptor_grddl.c: Use /* for root element
+
+	* src/raptor_grddl.c: XML @dataview:transformation are only on the
+	root element.
+
+	* src/raptor_grddl.c: (raptor_grddl_check_recursive_content_type_handler):
+	Renamed from raptor_grddl_check_rdf_content_type_handler since it
+	stores all content types now. Check for HTML content type and set
+	html_base processing flag 
+	(raptor_grddl_run_recursive): Remove allow_rdf flag, always true.
+
+
+	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s gains
+	xinclude_processing and html_base_processing flags.
+	(raptor_grddl_parse_init_common): Initialise grddl, xinclude but
+	not html base.
+	(raptor_rdfa_parse_init): Disable grddl, xinclude and init html
+	base.
+	(raptor_grddl_run_xpath_match): If html_base_processing is
+	enabled, switch XML doc type to XML_HTML for the xmlNodeGetBase()
+	call and restore afterwards.
+	(raptor_grddl_parse_chunk): Look for HTML or XHTML mime types to
+	enable html_base_processing.  Conditionalise XML Include
+	processing with xinclude_processing flag.
+
 2007-06-10  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Debug message madness!
