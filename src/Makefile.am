@@ -36,7 +36,7 @@ TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test \
-raptor_turtle_writer_test
+raptor_turtle_writer_test raptor_avltree_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
