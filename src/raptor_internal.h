@@ -730,7 +730,7 @@ void raptor_init_serializer_rdfxmla(void);
 
 /* raptor_serialize_turtle.c */  
 void raptor_init_serializer_turtle(void);
-  
+
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(long c);
 int raptor_unicode_is_namechar(long c);
@@ -1159,6 +1159,29 @@ int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor
 int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature, const unsigned char *value);
 int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);
 const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature);
+
+
+/* raptor_avltree.c */
+/* AVL data */
+typedef void* raptor_avltree_t;
+/* AVL tree */
+typedef struct raptor_avltree_s raptor_avltree;
+
+/* user functions */
+typedef int (*raptor_avltree_compare_function)(raptor_avltree_t data1, raptor_avltree_t data2);
+typedef void (*raptor_avltree_delete_function)(raptor_avltree_t data);
+typedef int (*raptor_avltree_visit_function)(int depth, raptor_avltree_t data, void *user_data);
+
+/* constructor / destructor */
+raptor_avltree* raptor_avltree_new(raptor_avltree_compare_function compare_fn, raptor_avltree_delete_function delete_fn, unsigned int flags);
+void raptor_avltree_free(raptor_avltree* tree);
+
+/* methods */
+int raptor_avltree_add(raptor_avltree* tree, raptor_avltree_t p_user);
+int raptor_avltree_delete(raptor_avltree* tree, raptor_avltree_t);
+raptor_avltree_t raptor_avltree_search(raptor_avltree* tree, raptor_avltree_t p_user);
+int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
+
 
 /* end of RAPTOR_INTERNAL */
 #endif

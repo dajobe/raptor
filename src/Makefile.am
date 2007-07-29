@@ -76,7 +76,7 @@ raptor_www.c \
 raptor_identifier.c \
 raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \
 raptor_xml.c raptor_xml_writer.c raptor_set.c turtle_common.c \
-raptor_turtle_writer.c raptor_xsd.c
+raptor_turtle_writer.c raptor_xsd.c raptor_avltree.c
 if RAPTOR_PARSER_RDFXML
 if RAPTOR_XML_LIBXML
 libraptor_la_SOURCES += raptor_libxml.c
@@ -273,3 +273,6 @@ raptor_xml_writer_test: $(srcdir)/raptor_xml_writer.c libraptor.la
 
 raptor_turtle_writer_test: $(srcdir)/raptor_turtle_writer.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_turtle_writer.c libraptor.la $(LIBS)
+
+raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_avltree.c libraptor.la $(LIBS)
