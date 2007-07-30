@@ -730,7 +730,9 @@ main(int argc, char *argv[])
   for(i=0; items[i]; i++) {
     int rc;
 
+#if RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding tree item '%s'\n", program, items[i]);
+#endif
   
     rc=raptor_avltree_add(tree, (void*)items[i]);
     if(rc) {
@@ -741,15 +743,19 @@ main(int argc, char *argv[])
     }
   }
 
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Printing tree\n", program);
   vs.fh=stderr;
   vs.count=0;
   raptor_avltree_visit(tree, print_string, &vs);
+#endif
 
   for(i=0; delete_items[i]; i++) {
     int rc;
 
+#if RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Deleting tree item '%s'\n", program, delete_items[i]);
+#endif
   
     rc=raptor_avltree_delete(tree, (void*)delete_items[i]);
     if(!rc) {
@@ -760,17 +766,21 @@ main(int argc, char *argv[])
     }
   }
 
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Checking tree\n", program);
+#endif
   vs.count=0;
   vs.results=results;
   vs.failed=0;
   raptor_avltree_visit(tree, check_string, &vs);
   if(vs.failed) {
-    fprintf(stderr, "%s: Ordered insertion failed\n", program);
+    fprintf(stderr, "%s: Checking tree failed\n", program);
     exit(1);
   }
 
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing tree\n", program);
+#endif
   raptor_avltree_free(tree);
 
   /* keep gcc -Wall happy */
