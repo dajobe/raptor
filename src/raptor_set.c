@@ -258,7 +258,9 @@ main(int argc, char *argv[])
   
   base_uri=raptor_new_uri((const unsigned char*)"http://example.org/base#");
 
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating set\n", program);
+#endif
 
   set=raptor_new_id_set();
   if(!set) {
@@ -270,7 +272,9 @@ main(int argc, char *argv[])
     size_t len=strlen(items[i]);
     int rc;
 
+#if RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding set item '%s'\n", program, items[i]);
+#endif
   
     rc=raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
 if(rc) {
@@ -284,7 +288,9 @@ if(rc) {
     size_t len=strlen(items[i]);
     int rc;
 
+#if RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding duplicate set item '%s'\n", program, items[i]);
+#endif
 
     rc=raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
     if(rc <= 0) {
@@ -298,7 +304,9 @@ if(rc) {
   raptor_id_set_stats_print(set, stderr);
 #endif
 
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing set\n", program);
+#endif
   raptor_free_id_set(set);
 
   raptor_free_uri(base_uri);
