@@ -50,6 +50,9 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
+#undef RAPTOR_DEBUG
+#define RAPTOR_DEBUG 2
+
 #if RAPTOR_DEBUG > 1
 #define RAPTOR_AVLTREE_DEBUG1(msg) RAPTOR_DEBUG1(msg)
 #else
@@ -672,6 +675,7 @@ typedef struct
   int failed;
 } visit_state;
   
+#if RAPTOR_DEBUG > 1
 static int
 print_string(int depth, raptor_avltree_t data, void *user_data) 
 {
@@ -681,6 +685,7 @@ print_string(int depth, raptor_avltree_t data, void *user_data)
   vs->count++;
   return 1;
 }
+#endif
 
 static int
 check_string(int depth, raptor_avltree_t data, void *user_data) 
