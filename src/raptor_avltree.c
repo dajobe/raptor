@@ -109,13 +109,13 @@ static void raptor_avltree_balance_left(raptor_avltree* tree, raptor_avltree_nod
 static void raptor_avltree_balance_right(raptor_avltree* tree, raptor_avltree_node** node_pp, int *rebalancing_p);
 static raptor_avltree_t raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node, raptor_avltree_t p_data);
 static int raptor_avltree_visit_internal(raptor_avltree* tree, raptor_avltree_node* node, int depth, raptor_avltree_visit_function visit_fn, void* user_data);
-static void raptor_avltree_free_internal(raptor_avltree* tree, raptor_avltree_node* node);
+static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_node* node);
 
 
 
 /* constructor */
 raptor_avltree*
-raptor_avltree_new(raptor_avltree_compare_function compare_fn,
+raptor_new_avltree(raptor_avltree_compare_function compare_fn,
                    raptor_avltree_delete_function delete_fn,
                    unsigned int flags)
 {
@@ -136,20 +136,20 @@ raptor_avltree_new(raptor_avltree_compare_function compare_fn,
 
 /* destructor */
 void
-raptor_avltree_free(raptor_avltree* tree)
+raptor_free_avltree(raptor_avltree* tree)
 {
-  raptor_avltree_free_internal(tree, tree->root);
+  raptor_free_avltree_internal(tree, tree->root);
   free(tree);
 }
 
 
 static void
-raptor_avltree_free_internal(raptor_avltree* tree, raptor_avltree_node* node)
+raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_node* node)
 {
   if(node) {
-    raptor_avltree_free_internal(tree, node->left);
+    raptor_free_avltree_internal(tree, node->left);
 
-    raptor_avltree_free_internal(tree, node->right);
+    raptor_free_avltree_internal(tree, node->right);
 
     if(tree->delete_fn)
       tree->delete_fn(node->data);
@@ -720,7 +720,7 @@ main(int argc, char *argv[])
   visit_state vs;
   int i;
   
-  tree=raptor_avltree_new(compare_strings,
+  tree=raptor_new_avltree(compare_strings,
                           NULL, /* no free as they are static pointers above */
                           0);
   if(!tree) {
@@ -781,7 +781,7 @@ main(int argc, char *argv[])
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing tree\n", program);
 #endif
-  raptor_avltree_free(tree);
+  raptor_free_avltree(tree);
 
   /* keep gcc -Wall happy */
   return(0);

@@ -1173,8 +1173,8 @@ typedef void (*raptor_avltree_delete_function)(raptor_avltree_t data);
 typedef int (*raptor_avltree_visit_function)(int depth, raptor_avltree_t data, void *user_data);
 
 /* constructor / destructor */
-raptor_avltree* raptor_avltree_new(raptor_avltree_compare_function compare_fn, raptor_avltree_delete_function delete_fn, unsigned int flags);
-void raptor_avltree_free(raptor_avltree* tree);
+raptor_avltree* raptor_new_avltree(raptor_avltree_compare_function compare_fn, raptor_avltree_delete_function delete_fn, unsigned int flags);
+void raptor_free_avltree(raptor_avltree* tree);
 
 /* methods */
 int raptor_avltree_add(raptor_avltree* tree, raptor_avltree_t p_user);
