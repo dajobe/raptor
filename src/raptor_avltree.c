@@ -50,8 +50,6 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
-#undef RAPTOR_DEBUG
-#define RAPTOR_DEBUG 2
 
 #if RAPTOR_DEBUG > 1
 #define RAPTOR_AVLTREE_DEBUG1(msg) RAPTOR_DEBUG1(msg)
