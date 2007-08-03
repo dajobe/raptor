@@ -631,7 +631,7 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
                          raptor_uri *base_uri)
 {
   /* Read buffer */
-  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE];
+  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE+1];
   int rc=0;
   raptor_locator *locator=&rdf_parser->locator;
 
@@ -646,6 +646,7 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
   
   while(!feof(stream)) {
     int len=fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, stream);
+    buffer[len] = '\0';
     int is_end=(len < RAPTOR_READ_BUFFER_SIZE);
     rc=raptor_parse_chunk(rdf_parser, buffer, len, is_end);
     if(rc || is_end)
