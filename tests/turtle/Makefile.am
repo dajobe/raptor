@@ -188,7 +188,7 @@ check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
 
 check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing turtle serialization with legal turtle"; \
+	$(ECHO) "Testing turtle exact serialization output"; \
 	for test in $(TEST_SERIALIZE_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  if test $$name = rdf-schema; then \
