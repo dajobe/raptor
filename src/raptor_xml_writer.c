@@ -1094,7 +1094,7 @@ main(int argc, char *argv[])
   
   count=raptor_iostream_get_bytes_written_count(iostr);
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing iostream\n", program);
 #endif
   raptor_free_iostream(iostr);
@@ -1118,10 +1118,12 @@ main(int argc, char *argv[])
     return 1;
   }
 
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Made XML string of %d bytes\n", program, (int)string_len);
   fputs("[[", stderr);
   (void)fwrite(string, 1, string_len, stderr);
   fputs("]]\n", stderr);
+#endif
 
   raptor_free_memory(string);
   
