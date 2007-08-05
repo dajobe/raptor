@@ -46,6 +46,7 @@
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
+#include <math.h>
 
 /* Raptor includes */
 #include "raptor.h"
@@ -404,25 +405,42 @@ raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
  * Output form is xsd:double canonical form, excluding NaN, INF, -INF.
  * Returns nonzero on failure (num is unrepresentable) */
 static int
-snprint_turtle_double(char* buf, size_t buf_len, double num)
+raptor_turtle_writer_double(raptor_turtle_writer* turtle_writer,
+                                    raptor_namespace_stack *nstack,
+                                    char* buf, size_t buf_len,
+                                    raptor_uri* datatype, double num)
 {
   size_t e_index = 0;
   size_t trailing_zero_start = 0;
   size_t exponent_start;
+  raptor_qname* qname;
+  qname = raptor_namespaces_qname_from_uri(nstack, datatype, 10);
   
   if(num == 0.0f) {
-    strcpy(buf, "0.0E0");
+    raptor_iostream_write_counted_string(turtle_writer->iostr, "0.0E0", 5);
+    return 0;
+  } else if(isnan(num) || isinf(num)) {
+    raptor_iostream_write_byte(turtle_writer->iostr, '"');
+    if(isnan(num)) {
+      raptor_iostream_write_counted_string(turtle_writer->iostr, "NaN", 3);
+    } else {
+      if(isinf(num) < 0)
+        raptor_iostream_write_counted_string(turtle_writer->iostr, "-INF", 4);
+      else
+        raptor_iostream_write_counted_string(turtle_writer->iostr, "INF", 3);
+    }
+    raptor_iostream_write_counted_string(turtle_writer->iostr, "\"^^", 3);
+    
+    if(qname) {
+      raptor_turtle_writer_qname(turtle_writer, qname);
+      raptor_free_qname(qname);
+    } else
+      raptor_turtle_writer_reference(turtle_writer, datatype);
     return 0;
   }
 
   snprintf(buf, buf_len, "%1.14E", num);
 
-  /* unrepresentable in turtle */
-  if(!strcmp(buf, "NAN") || !strcmp(buf, "INF") || !strcmp(buf, "-INF")) {
-    strcpy(buf, "");
-    return -1;
-  }
-  
   /* now munge snprintf output into turtle form (yes, ick) */
 
   /* find the 'E' and start of mantissa trailing zeros */
@@ -457,6 +475,8 @@ snprint_turtle_double(char* buf, size_t buf_len, double num)
     memmove(buf+trailing_zero_start+1, buf+exponent_start,
             buf_len-trailing_zero_start);
   }
+
+  raptor_iostream_write_string(turtle_writer->iostr, buf);
 
   return 0;
 }
@@ -508,10 +528,11 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
     } else if(!strcmp(type_uri_str, "http://www.w3.org/2001/XMLSchema#double")) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
-        if(!snprint_turtle_double(buf, 40, dnum)) {
-          raptor_iostream_write_string(turtle_writer->iostr, buf);
-          written = 1;
-        } else {
+        written= !raptor_turtle_writer_double(turtle_writer, nstack,
+                                              buf, 40,
+                                              datatype, dnum);
+        
+        if(!written) {
           turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:double literal.");
         }
       }
