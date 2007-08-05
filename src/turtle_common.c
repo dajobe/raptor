@@ -67,13 +67,14 @@
  **/
 int
 raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
-                                         unsigned char *text,
+                                         const unsigned char *text,
                                          size_t len, int delim,
                                          raptor_simple_message_handler error_handler, 
                                          void *error_data)
 {
   size_t i;
-  unsigned char *s, *d;
+  const unsigned char *s;
+  unsigned char *d;
   unsigned char *string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
 
   for(s=text, d=string, i=0; i<len; s++, i++) {
