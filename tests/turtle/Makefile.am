@@ -28,7 +28,7 @@ test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl \
 test-09.ttl test-10.ttl test-11.ttl test-12.ttl test-13.ttl \
 test-14.ttl test-15.ttl test-16.ttl test-17.ttl test-18.ttl \
 test-19.ttl test-20.ttl test-21.ttl test-22.ttl test-23.ttl \
-test-24.ttl test-25.ttl test-26.ttl test-27.ttl test-28.ttl \
+test-24.ttl test-25.ttl test-26.ttl test-27.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
 rdfq-results.ttl
