@@ -1,3 +1,40 @@
+2007-08-02  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_parse.c: (raptor_parse_file_stream): Always NULL
+	terminate the read buffer.
+
+	* tests/turtle/Makefile.am, tests/turtle/test-28.out,
+	tests/turtle/test-28.ttl: Added test-28.ttl test-28.out for
+	serializing xsd:double
+
+2007-07-29  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_set.c: (main): Make test silent when successful.
+
+	* src/raptor_avltree.c: remove debug
+
+	* src/raptor_set.c: comment
+
+	* src/raptor_avltree.c: print_string is not needed unless debugging
+
+	* src/raptor_set.c: Switch to use raptor_avltree for ID sets
+
+	* src/raptor_avltree.c, src/raptor_internal.h: Rename constructor
+	and destructor
+
+	* src/raptor_avltree.c: (main): Make test silent when successful.
+
+	* src/raptor_avltree.c: Conditionalise detailed AVL-tree debugging
+
+	* src/Makefile.am: Add raptor_avltree_test to TESTS
+
+	* src/Makefile.am, src/raptor_avltree.c, src/raptor_internal.h:
+	Added AVL-Tree code
+
+2007-07-19  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize.c: docs
+
 2007-07-13  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_turtle_writer.c: (snprint_turtle_double): Tidy to
