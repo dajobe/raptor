@@ -80,7 +80,9 @@ static void fmtint(char *buffer, size_t *currlen, size_t maxlen,
 const char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
       double fvalue, int min, int max, int flags);
 */
+#if 0
 static void dopr_outch(char *buffer, size_t *currlen, size_t maxlen, char c );
+#endif
 
 /*
  * dopr(): poor man's version of doprintf
