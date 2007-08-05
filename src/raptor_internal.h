@@ -1064,7 +1064,7 @@ time_t raptor_parse_date(const char *p, time_t *now);
 #endif
 
 /* turtle_common.c */
-int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
+int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, const unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
 
 
 /* raptor_xsd.c */
@@ -1150,9 +1150,9 @@ void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
 void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
 void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
 void raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
-void raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_namespace_stack *nstack, unsigned char *s, unsigned char* lang, raptor_uri* datatype);
+void raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_namespace_stack *nstack, const unsigned char *s, const unsigned char* lang, raptor_uri* datatype);
 void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
-void raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer, unsigned char *s);
+void raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 int raptor_turtle_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature, int value);
