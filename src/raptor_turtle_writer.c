@@ -375,7 +375,7 @@ raptor_iostream_write_string_turtle(raptor_iostream *iostr,
  **/
 void
 raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
-                            unsigned char *s)
+                            const unsigned char *s)
 {
   raptor_stringbuffer* sb = raptor_new_stringbuffer();
 
@@ -387,7 +387,8 @@ raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
   } else {
     raptor_stringbuffer_append_turtle_string(sb, s, strlen((const char*)s),
                                              (int)'"',
-        turtle_writer->error_handler, turtle_writer->error_data);
+                                             turtle_writer->error_handler,
+                                             turtle_writer->error_data);
 
     raptor_iostream_write_byte(turtle_writer->iostr, '\"');
 
@@ -495,7 +496,7 @@ raptor_turtle_writer_double(raptor_turtle_writer* turtle_writer,
 void
 raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
                              raptor_namespace_stack *nstack,
-                             unsigned char* s, unsigned char* lang,
+                             const unsigned char* s, const unsigned char* lang,
                              raptor_uri* datatype)
 {
   /* DBL_MAX = 309 decimal digits */
@@ -845,26 +846,25 @@ int main(int argc, char *argv[]);
 
 const unsigned char *base_uri_string=(const unsigned char*)"http://example.org/base#";
 
-#define OUT_BYTES_COUNT 135
+const unsigned char* longstr=(const unsigned char*)"it's quoted\nand has newlines, \"s <> and\n\ttabbing";
+
+#define OUT_BYTES_COUNT 133
 
 int
 main(int argc, char *argv[]) 
 {
-#if 0
   const char *program=raptor_basename(argv[0]);
   raptor_uri_handler *uri_handler;
   void *uri_context;
   raptor_iostream *iostr;
   raptor_namespace_stack *nstack;
-  raptor_namespace* foo_ns;
+  raptor_namespace* ex_ns;
   raptor_turtle_writer* turtle_writer;
   raptor_uri* base_uri;
   raptor_qname* el_name;
-  raptor_xml_element *element;
   size_t count;
-  raptor_qname **attrs;
-  raptor_uri* base_uri_copy=NULL;
-
+  raptor_uri* datatype;
+  
   /* for raptor_new_iostream_to_string */
   void *string=NULL;
   size_t string_len=0;
@@ -883,67 +883,68 @@ main(int argc, char *argv[])
                                NULL, NULL, /* errors */
                                1);
 
-  turtle_writer=raptor_new_turtle_writer(nstack,
-                                   uri_handler, uri_context,
-                                   iostr,
-                                   NULL, NULL, /* errors */
-                                   1);
+  base_uri=raptor_new_uri(base_uri_string);
+
+  turtle_writer=raptor_new_turtle_writer(base_uri,
+                                         nstack,
+                                         uri_handler, uri_context,
+                                         iostr,
+                                         NULL, NULL /* errors */
+                                         );
   if(!turtle_writer) {
     fprintf(stderr, "%s: Failed to create turtle_writer to iostream\n", program);
     exit(1);
   }
 
-  base_uri=raptor_new_uri(base_uri_string);
+  raptor_turtle_writer_set_feature(turtle_writer, 
+                                   RAPTOR_FEATURE_WRITER_AUTO_INDENT, 1);
 
-  foo_ns=raptor_new_namespace(nstack,
-                              (const unsigned char*)"foo",
-                              (const unsigned char*)"http://example.org/foo-ns#",
+  ex_ns=raptor_new_namespace(nstack,
+                              (const unsigned char*)"ex",
+                              (const unsigned char*)"http://example.org/ns#",
                               0);
 
 
-  el_name=raptor_new_qname_from_namespace_local_name(foo_ns,
+  raptor_turtle_writer_namespace_prefix(turtle_writer, ex_ns);
+
+  raptor_turtle_writer_reference(turtle_writer, base_uri);
+  
+  raptor_turtle_writer_increase_indent(turtle_writer);
+  raptor_turtle_writer_newline(turtle_writer);
+  
+  raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"ex:foo ");
+
+  raptor_turtle_writer_quoted(turtle_writer, longstr);
+  raptor_turtle_writer_raw_counted(turtle_writer,
+                                   (const unsigned char*)" ;", 2);
+  raptor_turtle_writer_newline(turtle_writer);
+
+  el_name=raptor_new_qname_from_namespace_local_name(ex_ns,
                                                      (const unsigned char*)"bar", 
                                                      NULL);
-  base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
-  element=raptor_new_xml_element(el_name,
-                                  NULL, /* language */
-                                  base_uri_copy);
 
-  raptor_turtle_writer_start_element(turtle_writer, element);
-  raptor_turtle_writer_cdata_counted(turtle_writer, (const unsigned char*)"hello\n", 6);
-  raptor_turtle_writer_comment_counted(turtle_writer, (const unsigned char*)"comment", 7);
-  raptor_turtle_writer_cdata(turtle_writer, (const unsigned char*)"\n");
-  raptor_turtle_writer_end_element(turtle_writer, element);
+  raptor_turtle_writer_qname(turtle_writer, el_name);
+  raptor_free_qname(el_name);
 
-  raptor_free_xml_element(element);
+  raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
 
-  raptor_turtle_writer_cdata(turtle_writer, (const unsigned char*)"\n");
+  datatype=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  raptor_turtle_writer_literal(turtle_writer, nstack,
+                               (const unsigned char*)"10", NULL,
+                               datatype);
+  raptor_free_uri(datatype);
 
-  el_name=raptor_new_qname(nstack, 
-                           (const unsigned char*)"blah", 
-                           NULL, /* no attribute value - element */
-                           NULL, NULL); /* errors */
-  base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
-  element=raptor_new_xml_element(el_name,
-                                  NULL, /* language */
-                                  base_uri_copy);
+  raptor_turtle_writer_newline(turtle_writer);
 
-  attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-  attrs[0]=raptor_new_qname(nstack, 
-                            (const unsigned char*)"a",
-                            (const unsigned char*)"b", /* attribute value */
-                            NULL, NULL); /* errors */
-  raptor_xml_element_set_attributes(element, attrs, 1);
+  raptor_turtle_writer_decrease_indent(turtle_writer);
 
-  raptor_turtle_writer_empty_element(turtle_writer, element);
+  raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)".", 1);
+  raptor_turtle_writer_newline(turtle_writer);
 
-  raptor_turtle_writer_cdata(turtle_writer, (const unsigned char*)"\n");
-
+  
   raptor_free_turtle_writer(turtle_writer);
 
-  raptor_free_xml_element(element);
-
-  raptor_free_namespace(foo_ns);
+  raptor_free_namespace(ex_ns);
 
   raptor_free_namespaces(nstack);
 
@@ -952,7 +953,7 @@ main(int argc, char *argv[])
   
   count=raptor_iostream_get_bytes_written_count(iostr);
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing iostream\n", program);
 #endif
   raptor_free_iostream(iostr);
@@ -976,16 +977,18 @@ main(int argc, char *argv[])
     return 1;
   }
 
-  fprintf(stderr, "%s: Made XML string of %d bytes\n", program, (int)string_len);
+#if RAPTOR_DEBUG > 1
+  fprintf(stderr, "%s: Made Turtle string of %d bytes\n", program, (int)string_len);
   fputs("[[", stderr);
   (void)fwrite(string, 1, string_len, stderr);
   fputs("]]\n", stderr);
+#endif
 
   raptor_free_memory(string);
   
 
   raptor_finish();
-#endif
+
   /* keep gcc -Wall happy */
   return(0);
 }
