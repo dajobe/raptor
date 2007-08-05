@@ -51,24 +51,35 @@
 #include <raptor_config.h>
 #endif
 
+#include "raptor.h"
+#include "raptor_internal.h"
+
 #if !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF)
 
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <stdarg.h>
+#include <float.h>
 
+#define __USE_ISOC99
+#include <math.h>
+
+#if 0
 int snprintf(char *str, size_t count, const char *fmt, ...);
 int vsnprintf(char *str, size_t count, const char *fmt, va_list arg);
+#endif
 
+/*
 static int dopr(char *buffer, size_t maxlen, const char *format, 
                 va_list args);
 static void fmtstr(char *buffer, size_t *currlen, size_t maxlen,
 		  char *value, int flags, int min, int max);
 static void fmtint(char *buffer, size_t *currlen, size_t maxlen,
 		  long value, int base, int min, int max, int flags);
-static void fmtfp(char *buffer, size_t *currlen, size_t maxlen,
-		 long double fvalue, int min, int max, int flags);
+const char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
+      double fvalue, int min, int max, int flags);
+*/
 static void dopr_outch(char *buffer, size_t *currlen, size_t maxlen, char c );
 
 /*
@@ -103,6 +114,7 @@ static void dopr_outch(char *buffer, size_t *currlen, size_t maxlen, char c );
 #undef MAX
 #define MAX(p,q) ((p >= q) ? p : q)
 
+#if 0
 static int
 dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 {
@@ -489,184 +501,101 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
     ++spadlen;
   }
 }
+#endif
 
 
-static long double
-abs_val(long double value)
+/** Convert a double to xsd:decimal representation.
+ * Returned is a pointer to the first character of the number
+ * in buffer (don't free it).
+ */
+char*
+raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
+                    double fvalue, unsigned int min, unsigned int max,
+                    int flags)
 {
-  long double result = value;
+  /* DBL_EPSILON = 52 digits */
+  #define FRAC_MAX_LEN 52
 
-  if(value < 0)
-    result = -value;
+  double ufvalue;
+  double intpart;
+  double fracpart = 0;
+  double frac;
+  double frac_delta = 10;
+  double mod_10;
+  size_t exp_len;
+  size_t frac_len = 0;
+  size_t idx;
 
-  return result;
-}
-
-
-static long double
-my_pow10(int exp)
-{
-  long double result = 1;
-
-  while (exp)
-  {
-    result *= 10;
-    exp--;
-  }
+  if (max < min)
+    max = min;
   
-  return result;
-}
+  /* index to the last char */
+  idx = maxlen - 1;
 
-static long
-my_round(long double value)
-{
-  long intpart;
-
-  intpart = value;
-  value = value - intpart;
-  if(value >= 0.5)
-    intpart++;
-
-  return intpart;
-}
-
-
-static void
-fmtfp(char *buffer, size_t *currlen, size_t maxlen,
-      long double fvalue, int min, int max, int flags)
-{
-  int signvalue = 0;
-  long double ufvalue;
-  char iconvert[20];
-  char fconvert[20];
-  int iplace = 0;
-  int fplace = 0;
-  int padlen = 0; /* amount to pad */
-  int zpadlen = 0; 
-  int caps = 0;
-  long intpart;
-  long fracpart;
+  buffer[idx--] = '\0';
   
-  /* 
-   * AIX manpage says the default is 0, but Solaris says the default
-   * is 6, and sprintf on AIX defaults to 6
-   */
-  if(max < 0)
-    max = 6;
-
-  ufvalue = abs_val (fvalue);
-
-  if(fvalue < 0)
-    signvalue = '-';
-  else
-    if(flags & DP_F_PLUS)  /* Do a sign (+/i) */
-      signvalue = '+';
-    else
-      if(flags & DP_F_SPACE)
-	signvalue = ' ';
-
-  if(flags & DP_F_UP) caps = 1; /* Should characters be upper case? */
-
-  intpart = ufvalue;
-
-  /* 
-   * Sorry, we only support 9 digits past the decimal because of our 
-   * conversion method
-   */
-  if(max > 9)
-    max = 9;
+  ufvalue = fabs (fvalue);
+  intpart = round(ufvalue);
 
   /* We "cheat" by converting the fractional part to integer by
    * multiplying by a factor of 10
    */
-  fracpart = my_round((my_pow10(max)) * (ufvalue - intpart));
 
-  if(fracpart >= my_pow10(max))
-  {
-    intpart++;
-    fracpart -= my_pow10(max);
-  }
 
-#ifdef DEBUG_SNPRINTF
-  dprint (1, (debugfile, "fmtfp: %f =? %d.%d\n", fvalue, intpart, fracpart));
-#endif
+  frac = (ufvalue - intpart);
+  
+  for (exp_len=0; exp_len <= max; ++exp_len) {
+    frac *= 10;
 
-  /* Convert integer part */
-  do {
-    iconvert[iplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[intpart % 10];
-    intpart = (intpart / 10);
-  } while(intpart && (iplace < 20));
-  if(iplace == 20) iplace--;
-  iconvert[iplace] = 0;
-
-  /* Convert fractional part */
-  do {
-    fconvert[fplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[fracpart % 10];
-    fracpart = (fracpart / 10);
-  } while(fracpart && (fplace < 20));
-  if(fplace == 20) fplace--;
-  fconvert[fplace] = 0;
-
-  /* -1 for decimal point, another -1 if we are printing a sign */
-  padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0); 
-  zpadlen = max - fplace;
-  if(zpadlen < 0)
-    zpadlen = 0;
-  if(padlen < 0) 
-    padlen = 0;
-  if(flags & DP_F_MINUS) 
-    padlen = -padlen; /* Left Justifty */
-
-  if((flags & DP_F_ZERO) && (padlen > 0)) 
-  {
-    if(signvalue) 
-    {
-      dopr_outch (buffer, currlen, maxlen, signvalue);
-      --padlen;
-      signvalue = 0;
+    mod_10 = trunc(fmod(trunc(frac), 10));
+    
+    if (fabs(frac_delta - (fracpart / pow(10, exp_len))) < (DBL_EPSILON * 2.0)) {
+      break;
     }
-    while (padlen > 0)
-    {
-      dopr_outch (buffer, currlen, maxlen, '0');
-      --padlen;
+    
+    frac_delta = fracpart / pow(10, exp_len);
+
+    /* Only "append" (numerically) if digit is not a zero */
+    if (mod_10 > 0 && mod_10 < 10) {
+        fracpart = round(frac);
+        frac_len = exp_len;
     }
   }
-  while (padlen > 0)
-  {
-    dopr_outch (buffer, currlen, maxlen, ' ');
-    --padlen;
-  }
-  if(signvalue) 
-    dopr_outch (buffer, currlen, maxlen, signvalue);
+  
+  if (frac_len < min) {
+    buffer[idx--] = '0';
+  } else {
+    /* Convert/write fractional part (right to left) */
+    do {
+      mod_10 = fmod(trunc(fracpart), 10);
+      --frac_len;
+      
+      buffer[idx--] = "0123456789"[(unsigned)mod_10];
+      fracpart /= 10;
 
-  while (iplace > 0) 
-    dopr_outch (buffer, currlen, maxlen, iconvert[--iplace]);
-
-  /*
-   * Decimal point.  This should probably use locale to find the correct
-   * char to print out.
-   */
-  dopr_outch (buffer, currlen, maxlen, '.');
-
-  while (fplace > 0) 
-    dopr_outch (buffer, currlen, maxlen, fconvert[--fplace]);
-
-  while (zpadlen > 0)
-  {
-    dopr_outch (buffer, currlen, maxlen, '0');
-    --zpadlen;
+    } while(fracpart > 1 && (frac_len + 1) > 0);
   }
 
-  while (padlen < 0) 
-  {
-    dopr_outch (buffer, currlen, maxlen, ' ');
-    ++padlen;
-  }
+  buffer[idx--] = '.';
+
+  /* Convert/write integer part (right to left) */
+  do {
+    buffer[idx--] = "0123456789"[(int)fmod(intpart, 10)];
+    intpart /= 10;
+  } while(round(intpart));
+  
+  /* Write a sign, if requested */
+  if(fvalue < 0)
+    buffer[idx--] = '-';
+  else if(flags & DP_F_PLUS)
+    buffer[idx--] = '+';
+  
+  *currlen = maxlen - idx - 2;
+  return buffer + idx + 1;
 }
 
 
+#if 0
 static void
 dopr_outch(char *buffer, size_t *currlen, size_t maxlen, char c)
 {
@@ -674,9 +603,12 @@ dopr_outch(char *buffer, size_t *currlen, size_t maxlen, char c)
     buffer[*currlen] = c;
   (*currlen)++;
 }
+#endif
+
 #endif /* !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF) */
 
 
+#if 0
 #ifndef HAVE_VSNPRINTF
 int
 vsnprintf(char *str, size_t count, const char *fmt, va_list args)
@@ -700,6 +632,7 @@ snprintf(char *str, size_t count, const char *fmt, ...)
   va_end(ap);
   return(len);
 }
+#endif
 
 
 #ifdef TEST_SNPRINTF
