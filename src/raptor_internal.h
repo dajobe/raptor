@@ -1160,6 +1160,8 @@ int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
 int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);
 const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature);
 
+/* snprintf.c */
+char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
 
 /* raptor_avltree.c */
 /* AVL data */
