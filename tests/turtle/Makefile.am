@@ -49,6 +49,12 @@ rdf-schema.out \
 rdfs-namespace.out \
 rdfq-results.out
 
+TEST_SERIALIZE_FILES= \
+test-28.ttl
+
+TEST_SERIALIZE_OUT_FILES= \
+test-28-out.ttl
+
 TEST_WARN_OUT_FILES=
 
 TEST_MANIFEST_FILES=manifest.ttl manifest-bad.ttl
@@ -66,7 +72,9 @@ ALL_TEST_FILES= README.txt \
 	$(TEST_WARN_FILES) \
 	$(TEST_OUT_FILES) \
 	$(TEST_WARN_OUT_FILES) \
-	$(TEST_MANIFEST_FILES)
+	$(TEST_MANIFEST_FILES) \
+	$(TEST_SERIALIZE_FILES) \
+	$(TEST_SERIALIZE_OUT_FILES)
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
@@ -76,7 +84,8 @@ build-rapper:
 build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff)
 
-check-local: check-rdf check-bad-rdf check-turtle-serialize
+check-local: check-rdf check-bad-rdf check-turtle-serialize \
+check-turtle-serialize-syntax
 # check-warn-rdf
 
 check-rdf: build-rapper $(TEST_FILES)
@@ -174,6 +183,32 @@ check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
 	    cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name-turtle.ttl $$name.res $$name.err; \
+	done; \
+	set -e; exit $$result
+
+check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing turtle serialization with legal turtle"; \
+	for test in $(TEST_SERIALIZE_FILES); do \
+	  name=`basename $$test .ttl` ; \
+	  if test $$name = rdf-schema; then \
+	    baseuri=$(RDF_NS_URI); \
+	  elif test $$name = rdfs-namespace; then \
+	    baseuri=$(RDFS_NS_URI); \
+	  else \
+	    baseuri=$(BASE_URI)$$test; \
+	  fi; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
+	  cmp -s $$name-turtle.ttl $$name-out.ttl; \
+	  status=$$?; \
+	  if test $$status = 0; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    diff -u $$name-out.ttl $$name-turtle.ttl; result=1; \
+	  fi; \
+	  rm -f $$name-turtle.ttl $$name.err; \
 	done; \
 	set -e; exit $$result
 
