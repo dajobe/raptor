@@ -478,7 +478,16 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
                              unsigned char* s, unsigned char* lang,
                              raptor_uri* datatype)
 {
-  char buf[40]; /* 20 is enough for 64 bit integer, I think 40 covers double.. */
+  /* DBL_MAX = 309 decimal digits */
+  #define INT_MAX_LEN 309 
+
+  /* DBL_EPSILON = 52 digits */
+  #define FRAC_MAX_LEN 52
+  
+  const size_t buflen = INT_MAX_LEN + FRAC_MAX_LEN + 3; /* sign, decimal, \0 */
+  char buf[buflen];
+
+  size_t len = 0;
   char* endptr = (char *)s;
   int written = 0;
 
@@ -511,8 +520,10 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
     } else if(!strcmp(type_uri_str, "http://www.w3.org/2001/XMLSchema#decimal")) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
-        snprintf(buf, 20, "%.1lf", dnum);
-        raptor_iostream_write_string(turtle_writer->iostr, buf);
+        const char* decimal = strchr((const char*)s, '.');
+        const size_t max_digits = (decimal ? (endptr - decimal - 2) : 1);
+        char* num_str = raptor_format_float(buf, &len, buflen, dnum, 1, max_digits, 0);
+        raptor_iostream_write_counted_string(turtle_writer->iostr, num_str, len);
         written = 1;
       }
     
