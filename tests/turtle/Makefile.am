@@ -206,7 +206,7 @@ check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    diff -u $$name-out.ttl $$name-turtle.ttl; result=1; \
+	    diff -a -u $$name-out.ttl $$name-turtle.ttl; result=1; \
 	  fi; \
 	  rm -f $$name-turtle.ttl $$name.err; \
 	done; \
