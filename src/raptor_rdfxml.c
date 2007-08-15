@@ -1193,13 +1193,14 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
       score+=2;
   }
   
-  if(mime_type &&
-     (!strcmp((const char*)mime_type, "text/rdf")))
-    score+=7;
-  
-  if(mime_type &&
-     (!strcmp((const char*)mime_type, "application/xml")))
-    score+=5;
+  if(mime_type) {
+    if(!strstr((const char*)mime_type, "html"))
+      score-= 4;
+    else if(!strcmp((const char*)mime_type, "text/rdf"))
+      score+= 7;
+    else if(!strcmp((const char*)mime_type, "application/xml"))
+      score+= 5;
+  }
 
   if(buffer && len) {
     /* Check it's an XML namespace declared and not N3 or Turtle which
@@ -1213,14 +1214,18 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
 #define  HAS_RDF_ENTITY2 (strstr((const char*)buffer, "<!ENTITY rdf \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">") != NULL)
 #define  HAS_RDF_ENTITY3 (strstr((const char*)buffer, "xmlns:rdf=\"&rdf;\"") != NULL)
 #define  HAS_RDF_ENTITY4 (strstr((const char*)buffer, "xmlns:rdf='&rdf;'") != NULL)
+#define  HAS_HTML_NS (strstr((const char*)buffer, "http://www.w3.org/1999/xhtml") != NULL)
+#define  HAS_HTML_ROOT (strstr((const char*)buffer, "<html") != NULL)
 
-    if(HAS_RDF_XMLNS1 || HAS_RDF_XMLNS2 || HAS_RDF_XMLNS3 || HAS_RDF_XMLNS4 ||
-       HAS_RDF_ENTITY1 || HAS_RDF_ENTITY2 || HAS_RDF_ENTITY3 || HAS_RDF_ENTITY4) {
+    if(!HAS_HTML_NS && !HAS_HTML_ROOT &&
+       (HAS_RDF_XMLNS1 || HAS_RDF_XMLNS2 || HAS_RDF_XMLNS3 || HAS_RDF_XMLNS4 ||
+        HAS_RDF_ENTITY1 || HAS_RDF_ENTITY2 || HAS_RDF_ENTITY3 || HAS_RDF_ENTITY4)
+      ) {
       int has_rdf_RDF=(strstr((const char*)buffer, "<rdf:RDF") != NULL);
       int has_rdf_Description=(strstr((const char*)buffer, "rdf:Description") != NULL);
       int has_rdf_about=(strstr((const char*)buffer, "rdf:about") != NULL);
 
-      score=7;
+      score+= 7;
       if(has_rdf_RDF)
         score++;
       if(has_rdf_Description)
