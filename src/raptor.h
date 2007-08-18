@@ -58,6 +58,12 @@ extern "C" {
 #      define RAPTOR_API _declspec(dllimport)
 #    endif
 #  endif
+#elif defined(__SYMBIAN32__)
+#  ifdef RAPTOR_INTERNAL
+#    define RAPTOR_API __declspec(dllexport)
+#  else
+#    define RAPTOR_API __declspec(dllimport)
+#  endif
 #else
 #  define RAPTOR_API
 #endif
