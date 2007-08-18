@@ -1,3 +1,74 @@
+2007-08-18  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_serialize_dot.c: (raptor_dot_serializer_end): Handle
+	a missing base URI.
+	Fixes Issue#0000216 http://bugs.librdf.org/mantis/view.php?id=216
+
+2007-08-17  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor.h: Applied raptor part of symbian portability fix for
+	Issue#0000203 http://bugs.librdf.org/mantis/view.php?id=203
+
+2007-08-14  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
+	Apply a negative score if html is in the mime type.  Do not
+	recognize as rdf if <html is present or the html namespace is
+	declared.
+
+2007-08-05  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c: (main) Quieter unit test
+
+	* src/snprintf.c: #ifdef out unused dopr_outch prototype
+
+	* src/turtle_common.c: (raptor_stringbuffer_append_turtle_string):
+	Take const string arg.
+
+	* src/raptor_internal.h: Update prototypes for
+	raptor_turtle_writer_quoted and raptor_turtle_writer_literal to
+	take const string args.
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_quoted,
+	raptor_turtle_writer_literal): const string args.
+	(main): Unit tests
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_double):
+	Renamed from snprint_turtle_double and now goes direct to the
+	writer's iostream. Serialize NaN, -INF and INF numbers
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_literal): Use
+	raptor_format_float to format decimals.
+
+	* src/Makefile.am: Added snprintf.c
+
+	* src/snprintf.c: (raptor_format_float): Renamed from fmtfp and
+	edited to be XSD rules.
+
+	* src/raptor_internal.h: Added raptor_format_float
+
+	* src/raptor_parse.c: (raptor_parse_file_stream): C99
+
+	* tests/turtle/test-28-out.ttl, tests/turtle/test-28.out,
+	tests/turtle/test-28.ttl: Update test-28 results for truncating to
+	precision
+
+	* tests/turtle/Makefile.am: Remove test-28 from roundtrip exact
+	test
+
+	* tests/turtle/Makefile.am: minor fix
+
+	* tests/turtle/Makefile.am: (check-turtle-serialize-syntax): diff
+	always in text
+
+	* tests/turtle/test-28-out.ttl: fix expected output
+
+	* tests/turtle/Makefile.am: comment
+
+	* tests/turtle/Makefile.am, tests/turtle/test-28-out.ttl,
+	tests/turtle/test-28.out: Check test-28 for exact syntax returned
+	as well as triples
+
 2007-08-02  Dave Beckett  <dave@dajobe.org>
 
 	* src/raptor_parse.c: (raptor_parse_file_stream): Always NULL
