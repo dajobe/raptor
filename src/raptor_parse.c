@@ -258,7 +258,7 @@ raptor_free_type_q(raptor_type_q* type_q)
  * 
  * Register a MIME type as handled by a factory.
  *
- * The last added MIME type is the default or main one reported.
+ * The FIRST added MIME type is the default or main one reported.
  *
  **/
 void
