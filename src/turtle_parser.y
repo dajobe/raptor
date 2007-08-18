@@ -1361,8 +1361,9 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 
   raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/");
 
-  raptor_parser_factory_add_mime_type(factory, "application/turtle", 10);
+  /* first one is the default */
   raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10);
+  raptor_parser_factory_add_mime_type(factory, "application/turtle", 10);
 
 #ifndef RAPTOR_PARSER_N3
   raptor_parser_factory_add_mime_type(factory, "text/n3", 3);
