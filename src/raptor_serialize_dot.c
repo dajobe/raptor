@@ -709,8 +709,11 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
 
   raptor_iostream_write_string(serializer->iostream,
                                (const unsigned char *)"\n\tlabel=\"\\n\\nModel:\\n");
-  raptor_iostream_write_string(serializer->iostream,
-			       raptor_uri_as_string(serializer->base_uri));
+  if(serializer->base_uri)
+    raptor_iostream_write_string(serializer->iostream,
+                                 raptor_uri_as_string(serializer->base_uri));
+  else
+    raptor_iostream_write_string(serializer->iostream, "(Unknown)");
 
   if(raptor_sequence_size(context->namespaces)) {
     raptor_iostream_write_string(serializer->iostream,
