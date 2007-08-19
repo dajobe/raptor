@@ -5,15 +5,15 @@
 .\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2007-06-19"
+.TH rapper 1 "2007-08-19"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 rapper \- Raptor RDF parsing and serializing utility
 .SH SYNOPSIS
 .B rapper
 .RB [ OPTIONS ]
-.IR "SOURCE-URI"
-.IR "[BASE-URI]"
+.IR "INPUT-URI"
+.IR "[INPUT-BASE-URI]"
 .SH EXAMPLE
 .nf
 .B rapper -o ntriples http://planetrdf.com/guide/rss.rdf
@@ -27,11 +27,11 @@ The
 utility allows parsing of RDF content by the
 .B Raptor
 RDF parser toolkit emitting the results as RDF triples in
-a choice of syntaxes.  The \fISOURCE-URI\fR can be a file name, '-'
+a choice of syntaxes.  The \fIINPUT-URI\fR can be a file name, '-'
 for standard input or if Raptor is built with a WWW retrieval
-library, a general URI.  The optional \fIBASE-URI\fR is used as the
-document URI if present otherwise defaults to the \ISOURCE-URI\fR.
-A base URI of '-' means no output base URI.
+library, a general URI.  The optional \fIINPUT-BASE-URI\fR is used as the
+document parser base URI if present otherwise defaults to the \IINPUT-URI\fR.
+A value of '-' means no base URI.
 .SH OPTIONS
 rapper uses the usual GNU command line syntax, with long
 options starting with two dashes (`-') if supported by the
@@ -52,6 +52,12 @@ The list of
 parsers depends on how libraptor(3) was built.  The list of
 supported parsers is given in the help summary given by \-h.
 .TP
+.B \-I, \-\-input-uri URI
+Set the input/parser base
+.I URI
+or use value '-' for no base.
+The default is the INPUT-URI argument value.
+.TP
 .B \-o, \-\-output FORMAT
 Set the output
 .I FORMAT
@@ -61,6 +67,14 @@ to 'ntriples' (N-Triples, default), 'rdfxml' (RDF/XML), 'rdfxml-abbrev'
 The list of
 serializers depends on how libraptor(3) was built.  The list of
 supported serializers is given in the help summary given by \-h.
+.TP
+.B \-O, \-\-output-uri URI
+Set the output/serializer base
+.I URI
+or use value '-' for no base.
+The default is the input base uri, either set by the argument
+INPUT-BASE-URI or via options
+.B \-I, \-\-input-uri URI
 .TP
 .B \-c, \-\-count
 Only count the triples and produce no other output.
@@ -140,6 +154,9 @@ http://purl.org/rss/1.0/spec
 .SH SEE ALSO
 .BR libraptor(3), raptor-config(1)
 .SH CHANGES
+.SS 1.4.16
+Added -I/--input-uri and -O/--output-uri to set the input and output
+(parser and serializer) base URIs separately.
 .SS 1.4.15
 Added -t/--trace to do URI traces.
 .SS 1.4.5
