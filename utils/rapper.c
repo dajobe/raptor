@@ -637,7 +637,7 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
-    puts(HELP_TEXT("I URI", "input-uri URI   ", "Set the input/parser base URI. '-' for none.") HELP_PAD "    Default is INPUT-URI argument value.");
+    puts(HELP_TEXT("I URI", "input-uri URI   ", "Set the input/parser base URI. '-' for none.") HELP_PAD "    Default is INPUT-BASE-URI argument value.");
     putchar('\n');
 
     puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format/serializer to one of:"));
@@ -652,7 +652,7 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
-    puts(HELP_TEXT("O URI", "output-uri URI  ", "Set the output/serializer base URI. '-' for none.")  HELP_PAD "    Default is INPUT-BASE-URI argument value.");
+    puts(HELP_TEXT("O URI", "output-uri URI  ", "Set the output/serializer base URI. '-' for none.")  HELP_PAD "    Default is input/parser base URI.");
     putchar('\n');
 
     puts("General options:");
