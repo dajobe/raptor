@@ -165,16 +165,18 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #define HELP_TEXT(short, long, description) "  -" short ", --" long "  " description
 #define HELP_TEXT_LONG(long, description) "      --" long "  " description
 #define HELP_ARG(short, long) "--" #long
+#define HELP_ARG_BOTH(short, long) " -" #short ", --" #long
 #define HELP_PAD "\n                          "
 #else
 #define HELP_TEXT(short, long, description) "  -" short "  " description
 #define HELP_TEXT_LONG(long, description)
 #define HELP_ARG(short, long) "-" #short
+#define HELP_ARG_BOTH(short, long) "-" short
 #define HELP_PAD "\n      "
 #endif
 
 
-#define GETOPT_STRING "nsaf:ghrqo:wecm:i:vt"
+#define GETOPT_STRING "nsaf:ghrqo:O:wecm:i:I:vt"
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
@@ -189,9 +191,11 @@ static struct option long_options[] =
   {"guess", 0, 0, 'g'},
   {"help", 0, 0, 'h'},
   {"input", 1, 0, 'i'},
+  {"input-uri", 1, 0, 'I'},
   {"mode", 1, 0, 'm'},
   {"ntriples", 0, 0, 'n'},
   {"output", 1, 0, 'o'},
+  {"output-uri", 1, 0, 'O'},
   {"quiet", 0, 0, 'q'},
   {"replace-newlines", 0, 0, 'r'},
   {"scan", 0, 0, 's'},
@@ -277,6 +281,7 @@ main(int argc, char *argv[])
   unsigned char *uri_string=NULL;
   int free_uri_string=0;
   unsigned char *base_uri_string=NULL;
+  unsigned char *output_base_uri_string=NULL;
   int rc;
   int scanning=0;
   const char *syntax_name="rdfxml";
@@ -286,6 +291,7 @@ main(int argc, char *argv[])
   int help=0;
   int trace=0;
   raptor_uri *base_uri=NULL;
+  raptor_uri *output_base_uri=NULL;
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
@@ -509,6 +515,11 @@ main(int argc, char *argv[])
         }
         break;
 
+      case 'O':
+        if(optarg)
+          output_base_uri_string=(unsigned char*)optarg;
+        break;
+        
       case 'i':
         if(optarg) {
           if(raptor_syntax_name_check(optarg))
@@ -533,6 +544,11 @@ main(int argc, char *argv[])
         }
         break;
 
+      case 'I':
+        if(optarg)
+          base_uri_string=(unsigned char*)optarg;
+        break;
+        
       case 'w':
         ignore_warnings=1;
         break;
@@ -560,8 +576,8 @@ main(int argc, char *argv[])
         break;
 #endif
 
-    }
-    
+    } /* end switch */
+
   }
 
   if(optind != argc-1 && optind != argc-2 && !help && !usage) {
@@ -591,8 +607,8 @@ main(int argc, char *argv[])
     int i;
     
     printf(title_format_string, raptor_version_string);
-    puts("Parse RDF content at the source into RDF triples.");
-    printf("Usage: %s [OPTIONS] SOURCE-URI [BASE-URI]\n\n", program);
+    puts("Parse RDF syntax from a source into serialized RDF triples.");
+    printf("Usage: %s [OPTIONS] INPUT-URI [INPUT-BASE-URI]\n\n", program);
 
     fputs(raptor_copyright_string, stdout);
     fputs("\nLicense: ", stdout);
@@ -601,11 +617,15 @@ main(int argc, char *argv[])
     puts(raptor_home_url_string);
 
     puts("\nArguments:");
-    puts("  SOURCE-URI is a filename, URI or '-' for standard input (stdin).");
-    puts("  BASE-URI   is the source URI if omitted or '-' for no base URI.");
+    puts("  INPUT-URI       a filename, URI or '-' for standard input (stdin).");
+    puts("  INPUT-BASE-URI  the input/parser base URI or '-' for none."
+         "\n"
+         "    Default is INPUT-UR"
+         "\n"
+         "    Equivalent to" HELP_ARG_BOTH(I INPUT-BASE-URI, input-uri INPUT-BASE-URI));
 
-    puts("\nSyntax options:");
-    puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format to one of:"));
+    puts("\nMain options:");
+    puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format/parser to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
       const char *help_label;
@@ -617,8 +637,10 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
+    puts(HELP_TEXT("I URI", "input-uri URI   ", "Set the input/parser base URI. '-' for none.") HELP_PAD "    Default is INPUT-URI argument value.");
     putchar('\n');
-    puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format to one of:"));
+
+    puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format/serializer to one of:"));
     for(i=0; 1; i++) {
       const char *help_name;
       const char *help_label;
@@ -630,7 +652,10 @@ main(int argc, char *argv[])
       else
         putchar('\n');
     }
-    puts("\nGeneral options:");
+    puts(HELP_TEXT("O URI", "output-uri URI  ", "Set the output/serializer base URI. '-' for none.")  HELP_PAD "    Default is INPUT-BASE-URI argument value.");
+    putchar('\n');
+
+    puts("General options:");
     puts(HELP_TEXT("c", "count           ", "Count triples only - do not print them."));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
     puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser or serializer features" HELP_PAD "Use `-f help' for a list of valid features"));
@@ -693,6 +718,7 @@ main(int argc, char *argv[])
     uri=NULL; /* stdin */
 
 
+  /* Set the input/parser base URI */
   if(base_uri_string) {
     if(strcmp((const char*)base_uri_string, "-")) {
       base_uri=raptor_new_uri(base_uri_string);
@@ -703,6 +729,26 @@ main(int argc, char *argv[])
       }
     }
   }
+
+
+  /* Set the output/serializer base URI from the argument if explicitly
+   * set, otherwise default to the input base URI if present.
+   */
+  if(!output_base_uri_string) {
+    if(base_uri)
+      output_base_uri=raptor_uri_copy(base_uri);
+  } else {
+    if(strcmp((const char*)output_base_uri_string, "-")) {
+      output_base_uri=raptor_new_uri((const unsigned char*)output_base_uri_string);
+      if(!output_base_uri) {
+        fprintf(stderr, "%s: Failed to create output base URI for %s\n",
+                program, output_base_uri_string);
+        return(1);
+      }
+    } else
+      output_base_uri=NULL;
+  }
+    
 
   if(guess)
     syntax_name="guess";
@@ -737,16 +783,18 @@ main(int argc, char *argv[])
   if(!quiet) {
     if (filename) {
       if(base_uri_string)
-        fprintf(stderr, "%s: Parsing file %s with base URI %s\n", program,
-                filename, base_uri_string);
+        fprintf(stderr, "%s: Parsing file %s with parser %s and base URI %s\n", program,
+                filename, syntax_name, base_uri_string);
       else
-        fprintf(stderr, "%s: Parsing file %s\n", program, filename);
+        fprintf(stderr, "%s: Parsing file %s with parser %s\n", program,
+                filename, syntax_name);
     } else {
       if(base_uri_string)
-        fprintf(stderr, "%s: Parsing URI %s with base URI %s\n", program,
-                uri_string, base_uri_string);
+        fprintf(stderr, "%s: Parsing URI %s with parser %s and base URI %s\n",
+                program, uri_string, syntax_name, base_uri_string);
       else
-        fprintf(stderr, "%s: Parsing URI %s\n", program, uri_string);
+        fprintf(stderr, "%s: Parsing URI %s with parser %s\n", program,
+                uri_string, syntax_name);
     }
   }
   
@@ -760,6 +808,16 @@ main(int argc, char *argv[])
 
 
   if(serializer_syntax_name) {    
+    if(!quiet) {
+      if(output_base_uri)
+        fprintf(stderr, "%s: Serializing with serializer %s and base URI %s\n",
+                program, serializer_syntax_name,
+                raptor_uri_as_string(output_base_uri));
+      else
+        fprintf(stderr, "%s: Serializing with serializer %s\n",
+                program, serializer_syntax_name);
+    }
+
     serializer=raptor_new_serializer(serializer_syntax_name);
     if(!serializer) {
       fprintf(stderr, 
@@ -792,7 +850,8 @@ main(int argc, char *argv[])
                                            serializer_feature,
                                            serializer_feature_string_value);
 
-    raptor_serialize_start_to_file_handle(serializer, base_uri, stdout);
+    raptor_serialize_start_to_file_handle(serializer, 
+                                          output_base_uri, stdout);
 
     if(!report_namespace)
       raptor_set_namespace_handler(rdf_parser, serializer, relay_namespaces);
@@ -827,6 +886,8 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: Parsing returned %d triple%s\n", program,
             triple_count, (triple_count == 1 ? "" : "s"));
 
+  if(output_base_uri)
+    raptor_free_uri(output_base_uri);
   if(base_uri)
     raptor_free_uri(base_uri);
   if(uri)
