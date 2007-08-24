@@ -620,7 +620,7 @@ main(int argc, char *argv[])
     puts("  INPUT-URI       a filename, URI or '-' for standard input (stdin).");
     puts("  INPUT-BASE-URI  the input/parser base URI or '-' for none."
          "\n"
-         "    Default is INPUT-UR"
+         "    Default is INPUT-URI"
          "\n"
          "    Equivalent to" HELP_ARG_BOTH(I INPUT-BASE-URI, input-uri INPUT-BASE-URI));
 
