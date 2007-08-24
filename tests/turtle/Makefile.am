@@ -201,13 +201,13 @@ check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
 	  fi; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
-	  cmp -s $$name-turtle.ttl $$name-out.ttl; \
+	  cmp -s $(srcdir)/$$name-out.ttl $$name-turtle.ttl; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    diff -a -u $$name-out.ttl $$name-turtle.ttl; result=1; \
+	    diff -a -u $(srcdir)/$$name-out.ttl $$name-turtle.ttl; result=1; \
 	  fi; \
 	  rm -f $$name-turtle.ttl $$name.err; \
 	done; \
