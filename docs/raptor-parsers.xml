@@ -26,19 +26,46 @@ function.</para>
 <section id="parser-grddl">
 <title>GRDDL parser (name <literal>grddl</literal>)</title>
 <para>A parser for the
-<ulink url="http://www.w3.org/TR/2006/WD-grddl-20061024/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</ulink>,
-W3C Candidate Recommendation of 2007-05-02 which allows reading XHTML
+<ulink url="http://www.w3.org/TR/2007/PR-grddl-20070716/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</ulink>,
+W3C Proposed Recommendation of 2007-07-16 which allows reading XHTML
 and XML as RDF triples by using profiles in the document that declare
 XSLT transforms from the XHTML or XML content into RDF/XML or other
 RDF syntax which can then be parsed.</para>
 
-<para>The GRDDL parser has hardcoded support for hcard and hcalendar
-microformats, which can be disabled by setting parser
-feature
+<para>The GRDDL parser is rather complex and different from the other
+parsers in that it retrieves URIs, reads HTML documents (possibly
+with errors), transforms the documents with XSLT and turns the result
+into a single graph.  The default configuration of the GRDDL parser
+also reads microformats (hcard, hcalendar) and follows &lt;link&gt;
+tags that point to RDF/XML.  Parts of the GRDDL process can be
+altered by configuration, which are describe below.
+</para>
+
+<para>The URIs that are processed during GRDDL operations can be checked
+and skipped if required using a handler set with the
+<link linkend="raptor-parser-set-uri-filter"><function>raptor_parser_set_uri_filter()</function></link>
+function.  If the handler returns non-0, the URI is rejected.
+This uses
+<link linkend="raptor-www-set-uri-filter"><function>raptor_www_set_uri_filter()</function></link>
+internally.
+</para>
+
+<para>If the value of feature
+<link linkend="RAPTOR-FEATURE-WWW_TIMEOUT:CAPS"><literal>RAPTOR_FEATURE_WWW_TIMEOUT</literal></link>
+if set to a number of &gt;0, it is used as the timeout in seconds
+for retrieving of URIs during GRDDL processing.
+This uses
+<link linkend="raptor-www-set-connection-timeout"><function>raptor_www_set_connection_timeout()</function></link>
+internally.
+</para>
+
+<para>The hardcoded support for hcard and hcalendar
+microformats can be disabled by setting parser feature
 <link linkend="RAPTOR-FEATURE-MICROFORMATS:CAPS"><literal>RAPTOR_FEATURE_MICROFORMATS</literal></link>
 to 0
 or using
 <link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
+with a value of 1.
 </para>
 
 <para>The GRDDL parser by default will try an XML parser on the
@@ -48,6 +75,17 @@ setting parser feature
 to 0
 or using 
 <link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
+with a value of 1.
+</para>
+
+<para>The GRDDL parser by default will try to look for an HTML
+&lt;link&gt; tag that points to RDF/XML.  This can be disabled by
+setting parser feature
+<link linkend="RAPTOR-FEATURE-HTML_LINK:CAPS"><literal>RAPTOR_FEATURE_HTML_LINK</literal></link>
+to 0
+or using 
+<link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
+with a value of 1.
 </para>
 
 </section>
@@ -90,7 +128,7 @@ for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
 <section id="parser-rdfa">
 <title>RDFa parser (name <literal>rdfa</literal>)</title>
 <para>A parser for the
-<ulink url="http://www.w3.org/TR/2006/WD-grddl-20061024/">RDFa Embedding RDF in XHTML</ulink>,
+<ulink url="http://www.w3.org/TR/2007/WD-xhtml-rdfa-primer-20070312/">RDFa Embedding RDF in XHTML</ulink>,
 W3C Working Draft of 2007-03-12 which allows reading special markup
 in XHTML or XHTML2 as RDF triples in the document.</para>
 
