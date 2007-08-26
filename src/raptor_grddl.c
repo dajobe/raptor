@@ -966,6 +966,10 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
                                      write_bytes_user_data);
   raptor_www_set_content_type_handler(www, content_type_handler,
                                       content_type_user_data);
+
+  if(rdf_parser->features[RAPTOR_FEATURE_WWW_TIMEOUT] > 0)
+    raptor_www_set_connection_timeout(www, 
+                                      rdf_parser->features[RAPTOR_FEATURE_WWW_TIMEOUT]);
   
   ret=raptor_www_fetch(www, uri);
   
