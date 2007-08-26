@@ -75,6 +75,8 @@ raptor_set_error_handler
 raptor_set_warning_handler
 raptor_set_statement_handler
 raptor_set_generate_id_handler
+raptor_graph_handler
+raptor_set_graph_handler
 raptor_namespace_handler
 raptor_set_namespace_handler
 raptor_get_locator
@@ -236,6 +238,9 @@ raptor_www_set_content_type_handler
 raptor_www_set_error_handler
 raptor_uri_filter_func
 raptor_www_set_uri_filter
+raptor_www_final_uri_handler
+raptor_www_get_final_uri
+raptor_www_set_final_uri_handler
 raptor_www_fetch
 raptor_www_fetch_to_string
 raptor_www_get_connection
@@ -350,6 +355,7 @@ raptor_namespaces_qname_from_uri
 
 <SECTION>
 <FILE>section-unicode</FILE>
+raptor_unichar
 raptor_unicode_char_to_utf8
 raptor_utf8_to_unicode_char
 raptor_unicode_is_xml11_namestartchar
