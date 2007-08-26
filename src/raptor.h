@@ -351,8 +351,11 @@ typedef struct {
  *   GraphViz DOT serializer.
  * @RAPTOR_FEATURE_BNODE_FILL: Fill color of blank nodes for
  *   GraphViz DOT serializer.
- * @RAPTOR_FEATURE_HTML_TAG_SOUP: Use a lax HTML parser when parsing HTML
- * @RAPTOR_FEATURE_MICROFORMATS: Look for microformats when doing GRDDL
+ * @RAPTOR_FEATURE_HTML_TAG_SOUP: Use a lax HTML parser if an XML parser
+ *   fails when read HTML for GRDDL parser
+ * @RAPTOR_FEATURE_MICROFORMATS: Look for microformats for GRDDL parser
+ * @RAPTOR_FEATURE_HTML_LINK: Look for head <link> to type rdf/xml
+ *   for GRDDL parser
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
