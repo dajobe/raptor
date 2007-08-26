@@ -52,7 +52,7 @@ internally.
 
 <para>If the value of feature
 <link linkend="RAPTOR-FEATURE-WWW-TIMEOUT:CAPS"><literal>RAPTOR_FEATURE_WWW_TIMEOUT</literal></link>
-if set to a number of &gt;0, it is used as the timeout in seconds
+if set to a number &gt;0, it is used as the timeout in seconds
 for retrieving of URIs during GRDDL processing.
 This uses
 <link linkend="raptor-www-set-connection-timeout"><function>raptor_www_set_connection_timeout()</function></link>
