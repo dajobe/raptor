@@ -20,12 +20,18 @@ rules.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### TYPEDEF raptor_unichar ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### FUNCTION raptor_unicode_char_to_utf8 ##### -->
 <para>
 
 </para>
 
-@Param1: 
+@c: 
 @output: 
 @Returns: 
 
@@ -46,7 +52,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 
@@ -55,7 +61,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 
@@ -64,7 +70,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 
@@ -73,7 +79,7 @@ rules.
 
 </para>
 
-@Param1: 
+@c: 
 @Returns: 
 
 

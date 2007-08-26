@@ -181,6 +181,35 @@ chunks of byte content.
 @user_data: 
 
 
+<!-- ##### USER_FUNCTION raptor_www_final_uri_handler ##### -->
+<para>
+
+</para>
+
+@www: 
+@userdata: 
+@final_uri: 
+
+
+<!-- ##### FUNCTION raptor_www_get_final_uri ##### -->
+<para>
+
+</para>
+
+@www: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_www_set_final_uri_handler ##### -->
+<para>
+
+</para>
+
+@www: 
+@handler: 
+@user_data: 
+
+
 <!-- ##### FUNCTION raptor_www_fetch ##### -->
 <para>
 
