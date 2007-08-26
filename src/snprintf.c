@@ -506,7 +506,7 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
 #endif
 
 
-/** Convert a double to xsd:decimal representation.
+/* Convert a double to xsd:decimal representation.
  * Returned is a pointer to the first character of the number
  * in buffer (don't free it).
  */
