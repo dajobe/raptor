@@ -1,4 +1,40 @@
+2007-08-24  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rapper.c: word
+
+2007-08-24  Dave Robillard <dave@drobilla.net>
+
+	* AUTHORS: Test commit (added undeserving self to AUTHORS).
+
+2007-08-24  Dave Beckett  <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am: (check-turtle-serialize-syntaxs):
+	srcdir added for diff and cmp
+
+2007-08-19  Dave Robillard <dave@drobilla.net>
+
+	* AUTHORS: Added Dave Robillard
+
+2007-08-19  Dave Beckett  <dave@dajobe.org>
+
+	* utils/rapper.c: words
+
+	* utils/rapper.1: Added -I/--input-uri and -O/--output-uri
+
+	* utils/rapper.c: Added -I/--input-uri and -O/--output-uri to set
+	the input/parser base URI and output/serializer base URI directly
+	Defaults remain the same - the serializer base URI defaults to the
+	input base URI, however it was set.  Tidied the verbose messages
+	to mention parser name.  Added a message for the serializer name
+	too.
+
 2007-08-18  Dave Beckett  <dave@dajobe.org>
+
+	* src/turtle_parser.y: (raptor_turtle_parser_register_factory):
+	Make default application/x-turtle for now
+
+	* src/raptor_parse.c: (raptor_parser_factory_add_mime_type): docs
+	were wrong.
 
 	* src/raptor_serialize_dot.c: (raptor_dot_serializer_end): Handle
 	a missing base URI.
