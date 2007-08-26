@@ -1,3 +1,52 @@
+2007-08-26  Dave Beckett  <dave@dajobe.org>
+
+	* docs/raptor-tutorial-parsing.xml: parsing filtering tutorial docs
+
+	* docs/raptor-parsers.xml: GRDDL docs
+
+	* src/raptor_grddl.c: (raptor_grddl_fetch_uri): Set WWW timeout
+	from value of new parser feature RAPTOR_FEATURE_WWW_TIMEOUT
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_parse.c,
+	src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Added parser
+	feature RAPTOR_FEATURE_WWW_TIMEOUT
+
+2007-08-25  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_general.c, src/raptor_nfc.c,
+	src/raptor_serialize_ntriples.c, src/raptor_xml.c: Use
+	raptor_unichar instead of unsigned long for a Unicode codepoint
+
+	* src/raptor_utf8.c: (raptor_unicode_char_to_utf8,
+	raptor_utf8_to_unicode_char,
+	raptor_unicode_is_xml11_namestartchar,
+	raptor_unicode_is_xml10_namestartchar,
+	raptor_unicode_is_xml11_namechar, raptor_unicode_is_xml10_namechar
+	raptor_unicode_is_namestartchar, raptor_unicode_is_namechar):
+	Updated to take a raptor_unichar argument.
+
+	* src/raptor_internal.h: Update the raptor_unicode_* functions
+	that take a unicode char to use raptor_unichar:
+	raptor_unicode_is_namestartchar and raptor_unicode_is_namechar
+
+	* src/raptor.h: Define raptor_unichar for a Unicode codepoint
+	instead of unsigned long.  Update the raptor_unicode_* functions
+	that take a unicode char to use it: raptor_unicode_char_to_utf8,
+	raptor_utf8_to_unicode_char,
+	raptor_unicode_is_xml11_namestartchar,
+	raptor_unicode_is_xml10_namestartchar,
+	raptor_unicode_is_xml11_namechar and
+	raptor_unicode_is_xml10_namechar.
+
+	* src/raptor_nfc.h: Remove unused u32
+
+	* src/raptor.h: Document RAPTOR_FEATURE_HTML_LINK
+
+	* src/snprintf.c: raptor_format_float not public
+
+	* docs/libraptor.3: 1.4.16
+
 2007-08-24  Dave Beckett  <dave@dajobe.org>
 
 	* utils/rapper.c: word
