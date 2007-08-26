@@ -6,7 +6,7 @@
 .\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2007-01-27"
+.TH libraptor 3 "2007-08-25"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -1160,6 +1160,21 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
+.SS 1.4.16
+Added new features for the 'grddl' parser:
+RAPTOR_FEATURE_HTML_TAG_SOUP, RAPTOR_FEATURE_MICROFORMATS and
+RAPTOR_FEATURE_HTML_LINK.
+.LP
+Added raptor_graph_handler typedef and \fBraptor_set_graph_handler\fP
+.LP
+Added raptor_www_final_uri_handler typedef and
+\fBraptor_www_set_final_uri_handler\fP
+.LP
+Added \fBraptor_www_set_connection_timeout\fP
+.LP
+Added \fBraptor_www_get_final_uri\fP
+.SS 1.4.15
+No changes.
 .SS 1.4.14
 Add two new exported strings raptor_license_string and raptor_home_url_string.
 .LP
@@ -1541,9 +1556,9 @@ http://www.ietf.org/rfc/rfc4287.txt
 .UE
 
 \fIGleaning Resource Descriptions from Dialects of Languages
-(GRDDL)\fP, Dan Connolly (ed.), W3C Working Draft,
-.UR http://www.w3.org/TR/2006/WD-grddl-20061024/
-http://www.w3.org/TR/2006/WD-grddl-20061024/
+(GRDDL)\fP, Dan Connolly (ed.), W3C Proposed Recommendation,
+.UR http://www.w3.org/TR/2007/PR-grddl-20070716/
+http://www.w3.org/TR/2007/PR-grddl-20070716/
 .UE
 
 .SH SEE ALSO
