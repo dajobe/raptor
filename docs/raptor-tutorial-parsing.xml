@@ -413,12 +413,14 @@ The parser feature
 <link linkend="RAPTOR-FEATURE-NO-NET:CAPS"><literal>RAPTOR_FEATURE_NO_NET</literal></link>
 can be set with
 <link linkend="raptor-set-feature"><function>raptor_set_feature()</function></link>
-and forbids all network requests.  There is no customisation of
-this approach.
+and forbids all network requests.  There is no customisation with
+this approach, for that see the URI filter in the next section.
 </para>
 
 <programlisting>
   rdf_parser = raptor_new_parser("rdfxml");
+
+  /* Disable internal network requests */
   raptor_set_feature(rdf_parser, RAPTOR_FEATURE_NO_NET);
 </programlisting>
 
@@ -501,6 +503,29 @@ the <link linkend="tutorial-filter-network-www-uri-filter">previous section</lin
 </programlisting>
 
 </section>
+
+
+<section id="tutorial-filter-network-parser-timeout">
+<title>Setting timeout for parser network requests with feature <link linkend="RAPTOR-FEATURE-WWW-TIMEOUT:CAPS"><literal>RAPTOR_FEATURE_WWW_TIMEOUT</literal></link></title>
+
+<para>If the value of feature
+<link linkend="RAPTOR-FEATURE-WWW-TIMEOUT:CAPS"><literal>RAPTOR_FEATURE_WWW_TIMEOUT</literal></link>
+if set to a number &gt;0, it is used as the timeout in seconds
+for retrieving of URIs during parsing (primarily for GRDDL).
+This uses
+<link linkend="raptor-www-set-connection-timeout"><function>raptor_www_set_connection_timeout()</function></link>
+internally.
+</para>
+
+<programlisting>
+  rdf_parser = raptor_new_parser("grddl");
+
+  /* set internal URI retrieval maximum time to 5 seconds */
+  raptor_set_feature(rdf_parser, RAPTOR_FEATURE_WWW_TIMEOUT , 5);
+</programlisting>
+
+</section>
+
 
 </section>
 
