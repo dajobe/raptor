@@ -51,7 +51,7 @@ internally.
 </para>
 
 <para>If the value of feature
-<link linkend="RAPTOR-FEATURE-WWW_TIMEOUT:CAPS"><literal>RAPTOR_FEATURE_WWW_TIMEOUT</literal></link>
+<link linkend="RAPTOR-FEATURE-WWW-TIMEOUT:CAPS"><literal>RAPTOR_FEATURE_WWW_TIMEOUT</literal></link>
 if set to a number of &gt;0, it is used as the timeout in seconds
 for retrieving of URIs during GRDDL processing.
 This uses
@@ -71,7 +71,7 @@ with a value of 1.
 <para>The GRDDL parser by default will try an XML parser on the
 content followed by a lax HTML parser.  This can be disabled by
 setting parser feature
-<link linkend="RAPTOR-FEATURE-HTML_TAG_SOUP:CAPS"><literal>RAPTOR_FEATURE_HTML_TAG_SOUP</literal></link>
+<link linkend="RAPTOR-FEATURE-HTML-TAG-SOUP:CAPS"><literal>RAPTOR_FEATURE_HTML_TAG_SOUP</literal></link>
 to 0
 or using 
 <link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
@@ -81,7 +81,7 @@ with a value of 1.
 <para>The GRDDL parser by default will try to look for an HTML
 &lt;link&gt; tag that points to RDF/XML.  This can be disabled by
 setting parser feature
-<link linkend="RAPTOR-FEATURE-HTML_LINK:CAPS"><literal>RAPTOR_FEATURE_HTML_LINK</literal></link>
+<link linkend="RAPTOR-FEATURE-HTML-LINK:CAPS"><literal>RAPTOR_FEATURE_HTML_LINK</literal></link>
 to 0
 or using 
 <link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
