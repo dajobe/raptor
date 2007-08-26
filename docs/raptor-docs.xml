@@ -6,7 +6,43 @@
 <book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
     <title>Raptor RDF Syntax Parsing and Serializing Library Manual</title>
-    <releaseinfo>for Raptor &version;</releaseinfo>
+    <releaseinfo>Manual for <ulink url="http://librdf.org/raptor/">Raptor</ulink> &version;</releaseinfo>
+
+    <author>
+      <firstname>Dave</firstname>
+      <surname>Beckett</surname>
+      <affiliation>
+	<address>
+	  <otheraddr><ulink url="http://www.dajobe.org/">http://www.dajobe.org/</ulink></otheraddr>
+	</address>
+      </affiliation>
+    </author>
+
+    <legalnotice>
+    <para>
+      This documentation is Free Software / Open Source - you can
+      redistribute it and/or modify it under the same licenses as
+      <ulink url="http://librdf.org/raptor/">Raptor</ulink>.
+      It is licensed under the following three licenses as alternatives:
+      <orderedlist>
+	<listitem><para>GNU Lesser General Public License (LGPL) V2.1 or any newer version</para></listitem>
+	<listitem><para>GNU General Public License (GPL) V2 or any newer version</para></listitem>
+	<listitem><para>Apache License, V2.0 or any newer version</para></listitem>
+      </orderedlist>
+      You may not use this documentation except in compliance with at
+      least one of the above three licenses. See the
+      <ulink url="http://librdf.org/raptor/">Raptor</ulink>
+      site for the full license terms.
+    </para>
+
+    </legalnotice>
+
+    <copyright>
+      <year>2005</year>
+      <year>2006</year>
+      <year>2007</year>
+      <holder>Dave Beckett</holder>
+    </copyright>
   </bookinfo>
 
    <chapter id="introduction">
