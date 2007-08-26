@@ -212,7 +212,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
   prev_class=0;
 
   while(offset < len) {
-    unsigned long unichar;
+    raptor_unichar unichar;
     int unichar_len;
     int combining_class=0;
     raptor_nfc_code_flag flag;

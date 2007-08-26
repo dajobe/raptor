@@ -551,7 +551,7 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
   const unsigned char *p;
   unsigned char *q;
   int unichar_len;
-  unsigned long unichar;
+  raptor_unichar unichar;
 
   if(quote != '\"' && quote != '\'')
     quote='\0';
@@ -739,7 +739,7 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
 
   for(l=len, p=string; l; p++, l--) {
     int unichar_len=1;
-    unsigned long unichar=*p;
+    raptor_unichar unichar=*p;
 
     if(*p > 0x7f) {
       unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
@@ -848,7 +848,7 @@ raptor_xml_name_check(const unsigned char *string, size_t length,
     return 0;
 
   for(pos=0; length > 0; pos++) {
-    unsigned long unichar=0;
+    raptor_unichar unichar=0;
 
     int unichar_len=raptor_utf8_to_unicode_char(&unichar, string, length);
     if(unichar_len < 0 || unichar_len > (int)length)

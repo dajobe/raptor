@@ -113,7 +113,7 @@ raptor_iostream_write_string_ntriples(raptor_iostream *iostr,
 {
   unsigned char c;
   int unichar_len;
-  unsigned long unichar;
+  raptor_unichar unichar;
   
   for(; (c=*string); string++, len--) {
     if((delim && c == delim && (delim=='\'' || delim == '"')) ||
