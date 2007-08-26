@@ -82,6 +82,13 @@ extern "C" {
 #define RAPTOR_DEPRECATED
 #endif
 
+/**
+ * RAPTOR_PRINTF_FORMAT:
+ * @string_index: ignore me
+ * @first_to_check_index: ignore me
+ *
+ * Internal macro
+ */
 #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
 #define RAPTOR_PRINTF_FORMAT(string_index, first_to_check_index) \
   __attribute__((__format__(__printf__, string_index, first_to_check_index)))
@@ -1227,19 +1234,27 @@ void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API
 int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
 
+
 /* Unicode and UTF8 */
+
+/**
+ * raptor_unichar:
+ *
+ * raptor Unicode codepoint
+ */
+typedef unsigned long raptor_unichar;
 RAPTOR_API
-int raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output);
+int raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output);
 RAPTOR_API
-int raptor_utf8_to_unicode_char(unsigned long *output, const unsigned char *input, int length);
+int raptor_utf8_to_unicode_char(raptor_unichar *output, const unsigned char *input, int length);
 RAPTOR_API
-int raptor_unicode_is_xml11_namestartchar(long c);
+int raptor_unicode_is_xml11_namestartchar(raptor_unichar c);
 RAPTOR_API
-int raptor_unicode_is_xml10_namestartchar(long c);
+int raptor_unicode_is_xml10_namestartchar(raptor_unichar c);
 RAPTOR_API
-int raptor_unicode_is_xml11_namechar(long c);
+int raptor_unicode_is_xml11_namechar(raptor_unichar c);
 RAPTOR_API
-int raptor_unicode_is_xml10_namechar(long c);
+int raptor_unicode_is_xml10_namechar(raptor_unichar c);
 RAPTOR_API
 int raptor_utf8_check(const unsigned char *string, size_t length);
 
