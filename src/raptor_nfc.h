@@ -25,18 +25,6 @@
 
 #include <sys/types.h>
 
-#if u32 == MISSING
-  #undef u32
-  #if SIZEOF_UNSIGNED_INT == 4
-    typedef unsigned int u32;
-  #elif SIZEOF_UNSIGNED_LONG == 4
-    typedef unsigned long u32;
-  #else
-    #error u32 type not defined
-  #endif
-#endif
-
-
 #if u16 == MISSING
   #undef u16
   #if SIZEOF_UNSIGNED_SHORT == 2
