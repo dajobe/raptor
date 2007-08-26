@@ -732,8 +732,8 @@ void raptor_init_serializer_rdfxmla(void);
 void raptor_init_serializer_turtle(void);
 
 /* raptor_utf8.c */
-int raptor_unicode_is_namestartchar(long c);
-int raptor_unicode_is_namechar(long c);
+int raptor_unicode_is_namestartchar(raptor_unichar c);
+int raptor_unicode_is_namechar(raptor_unichar c);
 int raptor_utf8_is_nfc(const unsigned char *input, size_t length);
 
 /* raptor_www*.c */
