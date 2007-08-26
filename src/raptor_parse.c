@@ -1300,6 +1300,7 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
       parser->features[(int)feature]=value;
       break;
 
@@ -1388,6 +1389,7 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
       result=(parser->features[(int)feature] != 0);
       break;
 

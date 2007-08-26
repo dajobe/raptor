@@ -744,6 +744,7 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -840,6 +841,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -943,6 +945,7 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:
@@ -1024,6 +1027,7 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_HTML_TAG_SOUP:
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
 
     /* Shared */
     case RAPTOR_FEATURE_NO_NET:

@@ -345,7 +345,7 @@ typedef struct {
  *   for each indent level when serializing with auto indent.
  * @RAPTOR_FEATURE_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
  * @RAPTOR_FEATURE_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
- * @RAPTOR_FEATURE_NO_NET: Deny network requests
+ * @RAPTOR_FEATURE_NO_NET: Deny network requests.
  * @RAPTOR_FEATURE_RESOURCE_BORDER: Border color of resource
  *   nodes for GraphViz DOT serializer.
  * @RAPTOR_FEATURE_LITERAL_BORDER: Border color of literal nodes
@@ -359,10 +359,12 @@ typedef struct {
  * @RAPTOR_FEATURE_BNODE_FILL: Fill color of blank nodes for
  *   GraphViz DOT serializer.
  * @RAPTOR_FEATURE_HTML_TAG_SOUP: Use a lax HTML parser if an XML parser
- *   fails when read HTML for GRDDL parser
- * @RAPTOR_FEATURE_MICROFORMATS: Look for microformats for GRDDL parser
+ *   fails when read HTML for GRDDL parser.
+ * @RAPTOR_FEATURE_MICROFORMATS: Look for microformats for GRDDL parser.
  * @RAPTOR_FEATURE_HTML_LINK: Look for head &lt;link&gt; to type rdf/xml
- *   for GRDDL parser
+ *   for GRDDL parser.
+ * @RAPTOR_FEATURE_WWW_TIMEOUT: Set timeout for internal WWW URI requests
+ *   for GRDDL parser.
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -395,7 +397,8 @@ typedef enum {
   RAPTOR_FEATURE_HTML_TAG_SOUP,
   RAPTOR_FEATURE_MICROFORMATS,
   RAPTOR_FEATURE_HTML_LINK,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_HTML_LINK
+  RAPTOR_FEATURE_WWW_TIMEOUT,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WWW_TIMEOUT
 } raptor_feature;
 
 
