@@ -59,7 +59,7 @@
  * Return value: bytes encoded to output buffer or <0 on failure
  **/
 int
-raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output)
+raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
 {
   int size=0;
   
@@ -131,12 +131,12 @@ raptor_unicode_char_to_utf8(unsigned long c, unsigned char *output)
  * Return value: bytes used from input buffer or <0 on failure: -1 input buffer too short or length error, -2 overlong UTF-8 sequence, -3 illegal code positions, -4 code out of range U+0000 to U+10FFFF.  In cases -2, -3 and -4 the coded character is stored in the output.
  */
 int
-raptor_utf8_to_unicode_char(unsigned long *output,
+raptor_utf8_to_unicode_char(raptor_unichar *output,
                             const unsigned char *input, int length)
 {
   unsigned char in;
   int size;
-  unsigned long c=0;
+  raptor_unichar c=0;
   
   if(length < 1)
     return -1;
@@ -262,7 +262,7 @@ static int raptor_unicode_is_extender(long c);
  * Return value: non-0 if legal
  **/
 int
-raptor_unicode_is_xml11_namestartchar(long c)
+raptor_unicode_is_xml11_namestartchar(raptor_unichar c)
 {
   return (((c >= 0x0041)  && (c <= 0x005A)) || /* [A-Z] */
           (c == 0x005F) ||                     /* '_' */
@@ -298,7 +298,7 @@ raptor_unicode_is_xml11_namestartchar(long c)
  * Return value: non-0 if legal
  **/
 int
-raptor_unicode_is_xml10_namestartchar(long c)
+raptor_unicode_is_xml10_namestartchar(raptor_unichar c)
 {
   return (raptor_unicode_is_letter(c) ||
           (c == '_'));
@@ -314,7 +314,7 @@ raptor_unicode_is_xml10_namestartchar(long c)
  * Return value: non-0 if the character is legal
  **/
 int
-raptor_unicode_is_namestartchar(long c) {
+raptor_unicode_is_namestartchar(raptor_unichar c) {
 #ifdef RAPTOR_XML_1_1
    return raptor_unicode_is_xml11_namestartchar(c);
 #else
@@ -339,7 +339,7 @@ raptor_unicode_is_namestartchar(long c) {
  * Return value: non-0 if legal
  **/
 int
-raptor_unicode_is_xml11_namechar(long c)
+raptor_unicode_is_xml11_namechar(raptor_unichar c)
 {
   return (raptor_unicode_is_xml11_namestartchar(c) ||
           (c == 0x002D) || /* '-' */
@@ -367,7 +367,7 @@ raptor_unicode_is_xml11_namechar(long c)
  * Return value: non-0 if legal
  **/
 int
-raptor_unicode_is_xml10_namechar(long c)
+raptor_unicode_is_xml10_namechar(raptor_unichar c)
 {
   return (raptor_unicode_is_letter(c) ||
           raptor_unicode_is_digit(c) ||
@@ -388,7 +388,7 @@ raptor_unicode_is_xml10_namechar(long c)
  * Return value: non-0 if the character is legal
  **/
 int
-raptor_unicode_is_namechar(long c) 
+raptor_unicode_is_namechar(raptor_unichar c) 
 {
 #ifdef RAPTOR_XML_1_1
    return raptor_unicode_is_xml11_namechar(c);
@@ -818,7 +818,7 @@ int
 raptor_utf8_check(const unsigned char *string, size_t length)
 {
   while(length > 0) {
-    unsigned long unichar=0;
+    raptor_unichar unichar=0;
 
     int unichar_len=raptor_utf8_to_unicode_char(&unichar, string, length);
     if(unichar_len < 0 || unichar_len > (int)length)
