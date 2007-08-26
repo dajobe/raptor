@@ -354,7 +354,7 @@ typedef struct {
  * @RAPTOR_FEATURE_HTML_TAG_SOUP: Use a lax HTML parser if an XML parser
  *   fails when read HTML for GRDDL parser
  * @RAPTOR_FEATURE_MICROFORMATS: Look for microformats for GRDDL parser
- * @RAPTOR_FEATURE_HTML_LINK: Look for head <link> to type rdf/xml
+ * @RAPTOR_FEATURE_HTML_LINK: Look for head &lt;link&gt; to type rdf/xml
  *   for GRDDL parser
  * @RAPTOR_FEATURE_LAST: Internal
  *
