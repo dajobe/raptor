@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_grddl.c - Raptor GRDDL Parser implementation
+ * raptor_grddl.c - Raptor GRDDL (+microformats) and RDFa Parser implementation
  *
  * Copyright (C) 2005-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2005, University of Bristol, UK http://www.bristol.ac.uk/
@@ -22,11 +22,16 @@
  */
 
 /*
- * Specification:
+ * Specifications:
  *   Gleaning Resource Descriptions from Dialects of Languages (GRDDL)
- *   W3C Working Draft 2 March 2007
- *   http://www.w3.org/TR/2007/WD-grddl-20070302/
+ *   W3C Proposed Recommendation 16 July 2007
+ *   http://www.w3.org/TR/2007/PR-grddl-20070716/
  *   http://www.w3.org/TR/grddl/
+ *
+ *   RDFa Primer 1.0
+ *   W3C Working Draft 12 March 2007
+ *   http://www.w3.org/TR/2007/WD-xhtml-rdfa-primer-20070312/
+ *   http://www.w3.org/TR/xhtml-rdfa-primer/
  */
 
 
