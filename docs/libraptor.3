@@ -6,7 +6,7 @@
 .\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2007-08-25"
+.TH libraptor 3 "2007-08-28"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -177,12 +177,15 @@ The current defined parser features are:
   \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fR  Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fR       Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NON_NFC_FATAL\fR            Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
   \fBRAPTOR_FEATURE_WARN_OTHER_PARSETYPES\fR    Boolean (non 0 true)
   \fBRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
   \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
   \fBRAPTOR_FEATURE_START_URI\fR                Boolean (non 0 true)
   \fBRAPTOR_FEATURE_NO_NET\fR                   Boolean (non 0 true)
+  \fRAPTOR_FEATURE_HTML_TAG_SOUP\fR             Boolean (non 0 true)
+  \fRAPTOR_FEATURE_MICROFORMATS\fR              Boolean (non 0 true)
+  \fRAPTOR_FEATURE_HTML_LINK\fR                 Boolean (non 0 true)
+  \fRAPTOR_FEATURE_WWW_TIMEOUT\fR               Integer
   \fBRAPTOR_FEATURE_RESOURCE_BORDER\fR          String
   \fBRAPTOR_FEATURE_LITERAL_BORDER\fR           String
   \fBRAPTOR_FEATURE_BNODE_BORDER\fR             String
@@ -236,6 +239,21 @@ checked for duplicates and cause an error if found.
 .P
 If the \fIno_net\fR
 feature is true (default false) then network requests are denied.
+.P
+If the \fIhtml_tag_soup\fR
+feature is true (default true), use a lax HTML parser if an XML parser
+fails when read HTML for GRDDL parser.
+.P
+If the \fImicroformats\fR
+feature is true (default true), look for microformats for GRDDL parser.
+.P
+if the \fIhtml_link\fR
+feature is true (default true), look for head &lt;link&gt; to type rdf/xml
+for GRDDL parser
+.P
+If the \fIwww_timeout\fR
+feature is set to an integer larger than 0, it sets the timeout in
+seconds for internal WWW URI requests for the GRDDL parser.
 .IP "\fBraptor_parser_set_feature_string(raptor_parser *\fIparser\fP, raptor_feature \fIfeature\fP, const unsigned char *\fIvalue\fP)\fR"
 Set a parser feature \fIfeature\fR to a particular string \fIvalue\fR.
 Returns non 0 on failure or if the feature is unknown.
@@ -286,6 +304,8 @@ Get a boolean whether this parser needs a base URI to start parsing.
 Generate an ID for a parser of type \fItype\fP, either
 \fBRAPTOR_GENID_TYPE_BNODEID\fP or \fBRAPTOR_GENID_TYPE_BAGID\fP.
 This uses any configuration set by \fBraptor_set_generate_id_handler\fP.
+.IP "\fBvoid raptor_set_graph_handler(raptor_parser* \fIparser\fP, void* \fIuser_data\fP, raptor_graph_handler \fIhandler\fP)\fP"
+Set the graph handler callback.
 .SH "PARSER UTILITY FUNCTIONS"
 .IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **\fIname\fB, const char **\fIlabel\fB)\fR"
 Return the parser name/label for a parser with a given integer
@@ -741,6 +761,10 @@ the raptor_www object.
 .IP "\fBvoid* raptor_www_get_connection(raptor_www *\fIwww\fB)\fR"
 Return the underlying WWW library connection object.  For example,
 for libcurl this is the curl_handle.
+.IP "\fBvoid raptor_www_set_connection_timeout(raptor_www* \fIwww\fP, int \fItimeout\fP)\fP"
+Set the WWW connection \fItimeout\fP in seconds.
+.IP "\fBraptor_uri* raptor_www_get_final_uri(raptor_www* \fIwww\fP)\fP"
+Get the final URI from a WWW retrieval, which may include redirections.
 .SH "WWW ACTION METHODS"
 .IP "\fBint raptor_www_fetch(raptor_www *www, raptor_uri *uri)\fR"
 Retrieve the given URL, returning non zero on failure.
