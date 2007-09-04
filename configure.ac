@@ -896,6 +896,10 @@ if test "X$CURL_CONFIG" != X; then
 fi
 
 
+if test "X$ac_cv_header_curl_curl_h" = Xyes; then
+  AC_DEFINE([HAVE_CURL_CURL_H], 1, [Have curl/curl.h])
+fi
+
 if test $ac_cv_header_fetch_h = yes; then
   oLIBS="$LIBS"
   AC_CHECK_LIB(fetch, fetchXGetURL, have_libfetch=1)
