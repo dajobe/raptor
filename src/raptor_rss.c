@@ -1126,14 +1126,11 @@ static const raptor_field_pair raptor_rss_uplift_map[]={
   /* from */                  /* to */
 #ifdef RAPTOR_PARSEDATE_FUNCTION
   /* convert to ISO date */
-  { RAPTOR_RSS_FIELD_PUBDATE, RAPTOR_RSS_FIELD_DC_DATE },
-#if 0
-  /* FIXME - could normalize to UTC */
-  { RAPTOR_RSS_FIELD_ATOM_PUBLISHED, RAPTOR_RSS_FIELD_ATOM_PUBLISHED },
-  { RAPTOR_RSS_FIELD_ATOM_UPDATED,   RAPTOR_RSS_FIELD_ATOM_UPDATED },
-#endif
-#endif
+  { RAPTOR_RSS_FIELD_PUBDATE,        RAPTOR_RSS_FIELD_DC_DATE },
 
+  /* default action: copy fields */
+  { RAPTOR_RSS_FIELD_ATOM_UPDATED,   RAPTOR_RSS_FIELD_DC_DATE },
+#endif
   /* default actions: copy fields */
   { RAPTOR_RSS_FIELD_DESCRIPTION,    RAPTOR_RSS_FIELD_CONTENT_ENCODED },
 
