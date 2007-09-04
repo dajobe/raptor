@@ -261,12 +261,22 @@ EXPONENT [eE][+-]?[0-9]+
 
 
 {QUOTEDURI}   { if(yyleng == 2) 
-                turtle_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
-              else {
-                yytext[yyleng-1]='\0';
-                turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
-              }
-              return URI_LITERAL; }
+                  turtle_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
+                else {
+                  raptor_stringbuffer* sb;
+                  unsigned char* uri_string;
+
+                  yytext[yyleng-1]='\0';
+                  sb=raptor_new_stringbuffer();
+                  if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-1, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) {
+                    raptor_free_stringbuffer(sb);
+                    yyterminate();
+                  }
+                  uri_string=raptor_stringbuffer_as_string(sb);
+                  turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
+                  raptor_free_stringbuffer(sb);
+                }
+                return URI_LITERAL; }
 
 {LANGUAGETOKEN}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                           return IDENTIFIER; }
