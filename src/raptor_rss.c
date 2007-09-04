@@ -601,7 +601,7 @@ raptor_rss_end_element_handler(void *user_data,
                       raptor_rss_fields_info[rss_parser->current_field].name);
       }
 
-      goto tidy_end_element;
+      goto do_end_element;
     }
 
     if(rss_parser->current_type >= RAPTOR_RSS_COMMON_IGNORED) {
@@ -670,6 +670,8 @@ raptor_rss_end_element_handler(void *user_data,
     }
 
   }
+
+ do_end_element:
   if(rss_parser->current_type != RAPTOR_RSS_NONE) {
     if(rss_parser->current_field != RAPTOR_RSS_FIELD_NONE) {
       RAPTOR_DEBUG3("Ending element %s field %s\n", name, raptor_rss_fields_info[rss_parser->current_field].name);
