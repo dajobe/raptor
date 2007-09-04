@@ -15,7 +15,7 @@
 #include "raptor_internal.h"
 
 #include <float.h>
-#define __USE_ISOC99
+#define __USE_ISOC99 1
 #include <math.h>
 
 /* Convert a double to xsd:decimal representation.
