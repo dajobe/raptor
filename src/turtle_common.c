@@ -2,7 +2,7 @@
  *
  * turtle_common.c - Raptor Turtle common code
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -51,7 +51,7 @@
  * @stringbuffer: String buffer to add to
  * @text: turtle string to decode
  * @len: length of string
- * @delim: delimiter for string - only ' or " allowed
+ * @delim: terminating delimiter for string - only ', " or &gt; are allowed
  * @error_handler: error handling function
  * @error_data: error handler data
  *
