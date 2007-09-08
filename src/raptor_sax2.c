@@ -66,6 +66,8 @@ raptor_sax2_finish(void)
 {
 #ifdef RAPTOR_XML_LIBXML
   xmlCleanupParser();
+  xmlSetStructuredErrorFunc(NULL, NULL);
+  xmlSetGenericErrorFunc(NULL, NULL);
 #endif
 }
 
