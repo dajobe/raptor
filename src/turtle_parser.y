@@ -155,6 +155,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token <string> BLANK_LITERAL "blank node"
 %token <uri> QNAME_LITERAL "QName"
 %token <string> PREFIX "@prefix"
+%token <string> BASE "@base"
 %token <string> IDENTIFIER "identifier"
 %token <integer> INTEGER_LITERAL "integer literal"
 %token <floating> FLOATING_LITERAL "floating point literal"
@@ -561,7 +562,10 @@ propertyList: propertyList SEMICOLON verb objectList
 }
 ;
 
-directive : PREFIX IDENTIFIER URI_LITERAL DOT
+directive : prefix | base
+;
+
+prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 {
   unsigned char *prefix=$2;
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
@@ -598,6 +602,17 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
 }
 ;
 
+
+base: BASE URI_LITERAL DOT
+{
+  raptor_uri *uri=$2;
+  /*raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);*/
+  raptor_parser* parser=(raptor_parser*)rdf_parser;
+  if(parser->base_uri)
+    raptor_free_uri(parser->base_uri);
+  parser->base_uri=uri;
+}
+;
 
 subject: resource
 {

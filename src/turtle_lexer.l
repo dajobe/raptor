@@ -166,6 +166,7 @@ EXPONENT [eE][+-]?[0-9]+
 "["       { return LEFT_SQUARE; }
 "]"       { return RIGHT_SQUARE; }
 "@prefix" { BEGIN(PREF); return PREFIX; }
+"@base"   { return BASE; }
 "@"       { return AT; }
 "^^"      { return HAT; }
 "("       { return LEFT_ROUND; }
@@ -385,6 +386,9 @@ turtle_token_print(int token, YYSTYPE *lval)
   switch(token) {
     case PREFIX:
       return "PREFIX";
+
+    case BASE:
+      return "BASE";
 
     case A:
       return "A";
