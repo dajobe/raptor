@@ -405,6 +405,9 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     if(!object)
       continue;
     
+	if (i > 0)
+	  raptor_turtle_writer_newline(context->turtle_writer);
+    
     switch(object->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
         rv = raptor_turtle_emit_resource(serializer, object, depth+1);
@@ -444,8 +447,6 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
                               "Malformed collection - second predicate is not rdf:rest");
       return 1;
     }
-
-    raptor_turtle_writer_newline(context->turtle_writer);
     
     if(object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
       subject = raptor_abbrev_subject_find(context->blanks, object->type,
@@ -678,7 +679,6 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"(");
     
     raptor_turtle_writer_increase_indent(turtle_writer);
-    raptor_turtle_writer_newline(turtle_writer);
     
     raptor_turtle_emit_subject_collection_items(serializer, subject, depth+1);
     
@@ -686,6 +686,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     raptor_turtle_writer_newline(turtle_writer);
     
     raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)")");
+
   } else {
     if(blank && depth > 1)
       raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"[");
@@ -696,7 +697,6 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     raptor_turtle_emit_subject_properties(serializer, subject, depth+1);
     
     raptor_turtle_writer_decrease_indent(turtle_writer);
-
     
     if(blank && depth > 1) {
       raptor_turtle_writer_newline(turtle_writer);
