@@ -186,8 +186,8 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
   switch (node1->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        rv = strcmp((const char*)node1->value.resource.uri,
-                    (const char*)node2->value.resource.uri);
+        rv = raptor_uri_compare(node1->value.resource.uri,
+                                node2->value.resource.uri);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:

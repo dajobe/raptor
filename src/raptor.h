@@ -543,6 +543,18 @@ typedef void (*raptor_free_uri_func) (void *context, raptor_uri *uri);
 typedef int (*raptor_uri_equals_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
 
 /**
+ * raptor_uri_compare_func:
+ * @context: URI context data
+ * @uri1: URI object 1
+ * @uri2: URI object 2
+ *
+ * Handler function for implementing raptor_uri_equals().
+ *
+ * Return value: -1 if uri1 < uri2, 0 if equal, 1 if uri1 > uri2
+ */
+typedef int (*raptor_uri_compare_func) (void *context, raptor_uri* uri1, raptor_uri* uri2);
+
+/**
  * raptor_uri_copy_func:
  * @context: URI context data
  * @uri: URI object
@@ -585,6 +597,7 @@ typedef unsigned char* (*raptor_uri_as_counted_string_func)(void *context, rapto
  * @new_uri_for_rdf_concept: function for raptor_new_uri_for_rdf_concept()
  * @free_uri: function for raptor_free_uri()
  * @uri_equals: function for raptor_uri_equals()
+ * @uri_compare: function for raptor_uri_compare()
  * @uri_copy: function for raptor_uri_copy()
  * @uri_as_string: function for raptor_uri_as_string()
  * @uri_as_counted_string: function for raptor_uri_as_counted_string()
@@ -602,6 +615,7 @@ typedef struct {
   raptor_free_uri_func                    free_uri;
   /* methods */
   raptor_uri_equals_func                  uri_equals;
+  raptor_uri_compare_func                 uri_compare;
   raptor_uri_copy_func                    uri_copy; /* well, copy constructor */
   raptor_uri_as_string_func               uri_as_string;
   raptor_uri_as_counted_string_func       uri_as_counted_string;
@@ -931,6 +945,8 @@ RAPTOR_API
 void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API
 int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
+RAPTOR_API
+int raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API
 raptor_uri* raptor_uri_copy(raptor_uri *uri);
 RAPTOR_API

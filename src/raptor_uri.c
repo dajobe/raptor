@@ -348,6 +348,13 @@ raptor_default_uri_equals(void *context, raptor_uri* uri1, raptor_uri* uri2)
 }
 
 
+static int
+raptor_default_uri_compare(void *context, raptor_uri* uri1, raptor_uri* uri2)
+{
+  return strcmp((char*)uri1, (char*)uri2);
+}
+
+
 /**
  * raptor_uri_equals:
  * @uri1: URI 1 (may be NULL)
@@ -371,6 +378,32 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
   else
     /* both NULL - equal */
     return 1;
+}
+
+
+/**
+ * raptor_uri_compare:
+ * @uri1: URI 1 (may be NULL)
+ * @uri2: URI 2 (may be NULL)
+ * 
+ * Compare two URIs, ala strcmp.
+ * 
+ * A NULL URI is always less than (never equal to) a non-NULL URI.
+ *
+ * Return value: -1 if uri1 < uri2, 0 if equal, 1 if uri1 > uri2
+ **/
+int
+raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
+{
+  if(uri1 && uri2)
+    /* string compare */
+    return (*raptor_uri_current_uri_handler->uri_compare)(raptor_uri_current_uri_context, uri1, uri2);
+  else if(uri1)
+    /* uri1 > uri2 (NULL) */
+    return 1;
+  else
+    /* uri1 (NULL) < uri2 */
+    return -1;
 }
 
 
@@ -921,6 +954,7 @@ static const raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_new_uri_for_rdf_concept,
   raptor_default_free_uri,
   raptor_default_uri_equals,
+  raptor_default_uri_compare,
   raptor_default_uri_copy,
   raptor_default_uri_as_string,
   raptor_default_uri_as_counted_string,
