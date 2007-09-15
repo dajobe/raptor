@@ -29,7 +29,7 @@ test-09.ttl test-10.ttl test-11.ttl test-12.ttl test-13.ttl \
 test-14.ttl test-15.ttl test-16.ttl test-17.ttl test-18.ttl \
 test-19.ttl test-20.ttl test-21.ttl test-22.ttl test-23.ttl \
 test-24.ttl test-25.ttl test-26.ttl test-27.ttl \
-test-29.ttl test-30.ttl \
+test-29.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
 rdfq-results.ttl
@@ -46,7 +46,7 @@ test-09.out test-10.out test-11.out test-12.out test-13.out \
 test-14.out test-15.out test-16.out test-17.out test-18.out \
 test-19.out test-20.out test-21.out test-22.out test-23.out \
 test-24.out test-25.out test-26.out test-27.out test-28.out \
-test-29.out test-30.out \
+test-29.out \
 rdf-schema.out \
 rdfs-namespace.out \
 rdfq-results.out
