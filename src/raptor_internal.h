@@ -227,6 +227,12 @@ typedef struct raptor_serializer_factory_s raptor_serializer_factory;
 typedef struct raptor_id_set_s raptor_id_set;
 typedef struct raptor_uri_detail_s raptor_uri_detail;
 
+/* raptor_avltree.c */
+/* AVL data */
+typedef void* raptor_avltree_t;
+/* AVL tree */
+typedef struct raptor_avltree_s raptor_avltree;
+
 
 /* Raptor Namespace Stack node */
 struct raptor_namespace_stack_s {
@@ -828,7 +834,7 @@ void raptor_www_libfetch_init(raptor_www *www);
 void raptor_www_libfetch_free(raptor_www *www);
 int raptor_www_libfetch_fetch(raptor_www *www);
 
-  /* raptor_set.c */
+/* raptor_set.c */
 raptor_id_set* raptor_new_id_set(void);
 void raptor_free_id_set(raptor_id_set* set);
 int raptor_id_set_add(raptor_id_set* set, raptor_uri* base_uri, const unsigned char *item, size_t item_len);
@@ -1117,16 +1123,17 @@ typedef struct {
 
 raptor_abbrev_node* raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
 void raptor_free_abbrev_node(raptor_abbrev_node* node);
+int raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
 int raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
 int raptor_abbrev_node_matches(raptor_abbrev_node* node, raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
-raptor_abbrev_node* raptor_abbrev_node_lookup(raptor_sequence* nodes, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language);
+raptor_abbrev_node* raptor_abbrev_node_lookup(raptor_avltree* nodes, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language);
 
 raptor_abbrev_subject* raptor_new_abbrev_subject(raptor_abbrev_node* node);
 void raptor_free_abbrev_subject(raptor_abbrev_subject* subject);
 int raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject, raptor_abbrev_node* predicate, raptor_abbrev_node* object);
 int raptor_abbrev_subject_add_list_element(raptor_abbrev_subject* subject, int ordinal, raptor_abbrev_node* object);
 raptor_abbrev_subject* raptor_abbrev_subject_find(raptor_sequence *sequence, raptor_identifier_type node_type, const void *node_data, int *idx);
-raptor_abbrev_subject* raptor_abbrev_subject_lookup(raptor_sequence* nodes, raptor_sequence* subjects, raptor_sequence* blanks, raptor_identifier_type node_type, const void *node_data);
+raptor_abbrev_subject* raptor_abbrev_subject_lookup(raptor_avltree* nodes, raptor_sequence* subjects, raptor_sequence* blanks, raptor_identifier_type node_type, const void *node_data);
 
 unsigned char *raptor_unique_id(unsigned char *base);
 
@@ -1162,12 +1169,6 @@ const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_write
 
 /* snprintf.c */
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
-
-/* raptor_avltree.c */
-/* AVL data */
-typedef void* raptor_avltree_t;
-/* AVL tree */
-typedef struct raptor_avltree_s raptor_avltree;
 
 /* user functions */
 typedef int (*raptor_avltree_compare_function)(raptor_avltree_t data1, raptor_avltree_t data2);

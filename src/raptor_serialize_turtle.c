@@ -61,7 +61,7 @@ typedef struct {
   raptor_sequence *namespaces;          /* User declared namespaces */
   raptor_sequence *subjects;            /* subject items */
   raptor_sequence *blanks;              /* blank subject items */
-  raptor_sequence *nodes;               /* nodes */
+  raptor_avltree *nodes;                /* nodes */
   raptor_abbrev_node *rdf_type;         /* rdf:type uri */
 
   /* URI of rdf:XMLLiteral */
@@ -787,7 +787,8 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
   
   context->nodes =
-    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_node, NULL);
+    raptor_new_avltree((raptor_avltree_compare_function)raptor_abbrev_node_cmp,
+			(raptor_avltree_delete_function)raptor_free_abbrev_node, 0);
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
   if(rdf_type_uri) {    
@@ -845,7 +846,7 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
     raptor_free_sequence(context->blanks);
   
   if(context->nodes)
-    raptor_free_sequence(context->nodes);
+    raptor_free_avltree(context->nodes);
   
   if(context->nstack)
     raptor_free_namespaces(context->nstack);

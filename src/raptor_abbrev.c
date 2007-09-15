@@ -165,25 +165,34 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
   RAPTOR_FREE(raptor_abbrev_node, node);
 }
 
-
+/* compare two raptor_abbrev_nodes.
+ *
+ * This needs to be a strong ordering for use by raptor_avltree.
+ * This is very performance critical, anything to make it faster is worth it.
+ */
 int
-raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
+raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 {
   int rv = 0;  
 
-  if(node1->type != node2->type)
+  if(node1 == node2) {
     return 0;
+  } else if(node1->type < node2->type) {
+    return -1;
+  } else if(node1->type > node2->type) {
+    return 1;
+  }
 
   switch (node1->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        rv = raptor_uri_equals(node1->value.resource.uri,
-                               node2->value.resource.uri);
+        rv = strcmp((const char*)node1->value.resource.uri,
+                    (const char*)node2->value.resource.uri);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        rv = !strcmp((const char*)node1->value.blank.string,
-                     (const char*)node2->value.blank.string);
+        rv = strcmp((const char*)node1->value.blank.string,
+                    (const char*)node2->value.blank.string);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
@@ -193,27 +202,36 @@ raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
             (char *)node2->value.literal.string != NULL) {
 
           /* string */
-          rv = (strcmp((char *)node1->value.literal.string,
-                       (char *)node2->value.literal.string) == 0);
+          rv = strcmp((const char*)node1->value.literal.string,
+                       (const char*)node2->value.literal.string);
 
-          /* language */
-          if((char *)node1->value.literal.language != NULL &&
-              (char *)node2->value.literal.language != NULL) {
-            rv &= (strcmp((char *)node1->value.literal.language,
-                          (char *)node2->value.literal.language) == 0);
-          } else if((char *)node1->value.literal.language != NULL ||
-                     (char *)node2->value.literal.language != NULL) {
-            rv = 0;
+          if(rv != 0) {
+            break;
+          /* if string is equal, order by language */
+          } else {
+            if((const char*)node1->value.literal.language != NULL &&
+                (const char*)node2->value.literal.language != NULL) {
+              rv = strcmp((const char*)node1->value.literal.language,
+                    (const char*)node2->value.literal.language);
+            } else if(node1->value.literal.language == NULL) {
+              rv = -1;
+              break;
+            } else {
+              rv = 1;
+              break;
+            }
           }
 
-          /* datatype */
+          /* if string and language are equal, order by datatype */
+          /* (rv == 0 if we get here) */
           if(node1->value.literal.datatype != NULL &&
               node2->value.literal.datatype != NULL) {
-            rv &= (raptor_uri_equals(node1->value.literal.datatype,
-                                     node2->value.literal.datatype) != 0);
-          } else if(node1->value.literal.datatype != NULL ||
-                     node2->value.literal.datatype != NULL) {
-            rv = 0;
+            rv = strcmp((char*)node1->value.literal.datatype,
+                  (char*)node2->value.literal.datatype);
+          } else if(node1->value.literal.datatype == NULL) {
+            rv = -1;
+          } else {
+            rv = 1;
           }
           
         } else {
@@ -224,7 +242,13 @@ raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-        rv = (node1->value.ordinal.ordinal == node2->value.ordinal.ordinal);
+        if(node1->value.ordinal.ordinal == node2->value.ordinal.ordinal)
+          rv = 0;
+        else if(node1->value.ordinal.ordinal < node2->value.ordinal.ordinal)
+          rv = -1;
+        else
+          rv = 1;
+
         break;
         
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
@@ -235,6 +259,12 @@ raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 
   return rv;
   
+}
+
+int
+raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
+{
+  return raptor_abbrev_node_cmp(node1, node2) == 0;
 }
 
 
@@ -331,41 +361,33 @@ raptor_abbrev_node_matches(raptor_abbrev_node* node,
  *   the parameters.
  */
 raptor_abbrev_node* 
-raptor_abbrev_node_lookup(raptor_sequence* nodes,
+raptor_abbrev_node_lookup(raptor_avltree* nodes,
                           raptor_identifier_type node_type,
                           const void *node_value, raptor_uri *datatype,
                           const unsigned char *language)
 {
-  raptor_abbrev_node* rv_node = NULL;
-  int i;
+  /* Create a temporary node for search comparison. */
+  raptor_abbrev_node* lookup_node = raptor_new_abbrev_node(
+		  node_type, node_value, datatype, language);
   
-  /* Search for specified node in array. TODO: this should really be a
-   * hash, not a list. */
-  for(i=0; i < raptor_sequence_size(nodes); i++) {
-    raptor_abbrev_node* node = (raptor_abbrev_node*)raptor_sequence_get_at(nodes, i);
-
-    if(raptor_abbrev_node_matches(node, node_type, node_value, datatype,
-                                  language)) {
-      rv_node = node;
-      break;
-    }
-  }
+  raptor_abbrev_node* rv_node = raptor_avltree_search(nodes, lookup_node);
   
-  /* If not found, create one and insert it */
+  /* If not found, insert/return a new one */
   if(!rv_node) {
-    rv_node = raptor_new_abbrev_node(node_type, node_value, datatype, language);
     
-    if(rv_node) {
-      if(raptor_sequence_push(nodes, rv_node)) {
-        raptor_free_abbrev_node(rv_node);
-        rv_node = NULL;
-      }
-      
+    if(raptor_avltree_add(nodes, lookup_node)) {
+      /* Insert failed */
+      raptor_free_abbrev_node(lookup_node);
+	  return NULL;
+    } else {
+      return lookup_node;
     }
-    
+
+  /* Found */
+  } else {
+    raptor_free_abbrev_node(lookup_node);
+    return rv_node;
   }
-  
-  return rv_node;
 }
 
 /*
@@ -528,7 +550,7 @@ raptor_abbrev_subject_find(raptor_sequence *sequence,
 
 
 raptor_abbrev_subject* 
-raptor_abbrev_subject_lookup(raptor_sequence* nodes,
+raptor_abbrev_subject_lookup(raptor_avltree* nodes,
                              raptor_sequence* subjects,
                              raptor_sequence* blanks,
                              raptor_identifier_type node_type,
