@@ -615,11 +615,11 @@ typedef struct {
   raptor_free_uri_func                    free_uri;
   /* methods */
   raptor_uri_equals_func                  uri_equals;
-  raptor_uri_compare_func                 uri_compare;
   raptor_uri_copy_func                    uri_copy; /* well, copy constructor */
   raptor_uri_as_string_func               uri_as_string;
   raptor_uri_as_counted_string_func       uri_as_counted_string;
   int initialised;
+  raptor_uri_compare_func                 uri_compare;
 } raptor_uri_handler;
 
 

@@ -954,11 +954,11 @@ static const raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_new_uri_for_rdf_concept,
   raptor_default_free_uri,
   raptor_default_uri_equals,
-  raptor_default_uri_compare,
   raptor_default_uri_copy,
   raptor_default_uri_as_string,
   raptor_default_uri_as_counted_string,
-  1
+  1,
+  raptor_default_uri_compare,
 };
 
 
