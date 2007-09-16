@@ -114,16 +114,13 @@ raptor_parsers_init(void)
   raptor_init_parser_rss();
 #endif
 
-#if defined(RAPTOR_PARSER_GRDDL) || defined(RAPTOR_PARSER_RDFA)
+#if defined(RAPTOR_PARSER_GRDDL)
   raptor_init_parser_grddl_common();
 
 #ifdef RAPTOR_PARSER_GRDDL
   raptor_init_parser_grddl();
 #endif
 
-#ifdef RAPTOR_PARSER_RDFA
-  raptor_init_parser_rdfa();
-#endif
 #endif
 
 #ifdef RAPTOR_PARSER_GUESS
@@ -139,7 +136,7 @@ void
 raptor_parsers_finish(void)
 {
   raptor_free_sequence(parsers);
-#if defined(RAPTOR_PARSER_GRDDL) || defined(RAPTOR_PARSER_RDFA)
+#if defined(RAPTOR_PARSER_GRDDL)
   raptor_terminate_parser_grddl_common();
 #endif
   parsers=NULL;

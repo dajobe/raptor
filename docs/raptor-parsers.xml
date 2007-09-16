@@ -125,19 +125,6 @@ for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
 </section>
 
 
-<section id="parser-rdfa">
-<title>RDFa parser (name <literal>rdfa</literal>)</title>
-<para>A parser for the
-<ulink url="http://www.w3.org/TR/2007/WD-xhtml-rdfa-primer-20070312/">RDFa Embedding RDF in XHTML</ulink>,
-W3C Working Draft of 2007-03-12 which allows reading special markup
-in XHTML or XHTML2 as RDF triples in the document.</para>
-
-<para>The parser is alpha quality and may not support the entire RDFa
-specification.</para>
-
-</section>
-
-
 <section id="parser-rdfxml">
 <title>RDF/XML parser - default (name <literal>rdfxml</literal>)</title>
 <para>

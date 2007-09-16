@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_grddl.c - Raptor GRDDL (+microformats) and RDFa Parser implementation
+ * raptor_grddl.c - Raptor GRDDL (+microformats) Parser implementation
  *
  * Copyright (C) 2005-2007, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2005, University of Bristol, UK http://www.bristol.ac.uk/
@@ -28,10 +28,6 @@
  *   http://www.w3.org/TR/2007/PR-grddl-20070716/
  *   http://www.w3.org/TR/grddl/
  *
- *   RDFa Primer 1.0
- *   W3C Working Draft 12 March 2007
- *   http://www.w3.org/TR/2007/WD-xhtml-rdfa-primer-20070312/
- *   http://www.w3.org/TR/xhtml-rdfa-primer/
  */
 
 
@@ -304,23 +300,6 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
 }
 
 
-static int
-raptor_rdfa_parse_init(raptor_parser* rdf_parser, const char *name)
-{
-  raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
-
-  raptor_grddl_parse_init_common(rdf_parser, name);
-
-  /* skip grddl processing */
-  grddl_parser->grddl_processing=0;
-  grddl_parser->xinclude_processing=0;
-  grddl_parser->html_base_processing=1;
-  grddl_parser->html_link_processing=0;
-  
-  return 0;
-}
-
-
 static void
 raptor_grddl_parse_terminate(raptor_parser *rdf_parser)
 {
@@ -388,21 +367,6 @@ raptor_grddl_parse_start(raptor_parser *rdf_parser)
  
   grddl_parser->content_type_check=0;
   grddl_parser->process_this_as_rdfxml=0;
-
-  if(!grddl_parser->grddl_processing) {
-    raptor_uri* uri;
-    grddl_xml_context* xml_context;
-  
-    /* RDFa */
-
-    /* skip content type checking */
-    grddl_parser->content_type_check=1;
-
-    uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/sw/grddl-wg/td/RDFa2RDFXML.xsl");
-    xml_context=raptor_new_xml_context(uri, rdf_parser->base_uri);
-    raptor_sequence_push(grddl_parser->doc_transform_uris, xml_context);
-    raptor_free_uri(uri);
-  }
 
   return 0;
 }
@@ -744,7 +708,6 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
    * Base:
    *   http://www.w3.org/2000/08/w3c-synd/home2rss.xsl
    * url: (optional)
-   *   http://www.w3.org/2001/sw/grddl-wg/td/RDFa2RDFXML.xsl
    */
   quoted_base_uri=(char*)RAPTOR_MALLOC(cstring, base_uri_len+3);
   quoted_base_uri[0]='\'';
@@ -1945,20 +1908,6 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
 }
 
 
-static void
-raptor_rdfa_parser_register_factory(raptor_parser_factory *factory) 
-{
-  factory->context_length     = sizeof(raptor_grddl_parser_context);
-  
-  factory->need_base_uri = 1;
-
-  factory->init      = raptor_rdfa_parse_init;
-  factory->terminate = raptor_grddl_parse_terminate;
-  factory->start     = raptor_grddl_parse_start;
-  factory->chunk     = raptor_grddl_parse_chunk;
-}
-
-
 static xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
 
 void
@@ -1999,14 +1948,6 @@ raptor_init_parser_grddl(void)
   raptor_parser_register_factory("grddl", 
                                  "Gleaning Resource Descriptions from Dialects of Languages",
                                  &raptor_grddl_parser_register_factory);
-}
-
-void
-raptor_init_parser_rdfa(void)
-{
-  raptor_parser_register_factory("rdfa", 
-                                 "RDFa Embedding RDF in XHTML W3C WD 2007-03-12",
-                                 &raptor_rdfa_parser_register_factory);
 }
 
 
