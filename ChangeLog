@@ -1,3 +1,110 @@
+2007-09-15  Dave Robillard <dave@drobilla.net>
+
+	* src/raptor.h, src/raptor_uri.c: (raptor_uri_handler): Move new
+	raptor_uri_compare method to end of struct to limit ABI breakage.
+
+2007-09-15  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_internal.h, src/raptor_parse.c, src/raptor_rdfxml.c,
+	src/raptor_set.c: Make raptor_set_test less chatty
+
+	* tests/turtle/Makefile.am: Re-added test-30 now it's in SVN
+
+	* tests/turtle/test-30.out, tests/turtle/test-30.ttl: test-30 for @base
+
+2007-09-15  Dave Robillard <dave@drobilla.net>
+
+	* docs/tmpl/section-uri.sgml, src/raptor.h, src/raptor_abbrev.c,
+	src/raptor_uri.c: (raptor_uri_compare): Added for librdf
+	overloading (rather than using strcmp directly).
+
+	* tests/turtle/Makefile.am: Remove references to nonexistant test-30
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c: Use
+	AVL tree rather than sequence for abbreviated serialisers (turtle
+	& rdfxmla), significant performance improvement for large
+	serialisations.
+	(raptor_abbrev_node_lookup): Use AVL tree search against
+	abbrev_node instead of linear sequence search.
+	(raptor_abbrev_node_cmp): Adapt old raptor_abbrev_node_equals to
+	provide strcmp-like ordering.
+	(raptor_abbrev_node_equals): Change to trivial wrapper around new
+	raptor_abbrev_node_cmp.
+
+2007-09-14  Dave Robillard <dave@drobilla.net>
+
+	* src/raptor_serialize_turtle.c: Fix unwanted blank line at end of
+	Turtle list abbreviation.  e.g. before:
+	:foo :bar (
+	    1
+	    2
+		3
+
+	) .
+
+	after:
+
+	:foo :bar (
+	    1
+	    2
+	    3
+	) .
+
+2007-09-11  Dave Beckett  <dave@dajobe.org>
+
+	* src/turtle_lexer.l, src/turtle_parser.y: Added turtle @base
+
+	* tests/turtle/Makefile.am: Adde test-30 for @base
+
+2007-09-08  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_sax2.c: (raptor_sax2_finish): Reset libxml error
+	handlers to defaults.
+	Fixes Issue#0000232 http://bugs.librdf.org/mantis/view.php?id=232
+
+2007-09-06  Dave Beckett  <dave@dajobe.org>
+
+	* src/turtle_common.c: docs fix
+
+2007-09-03  Dave Beckett  <dave@dajobe.org>
+
+	* src/turtle_lexer.l: {QUOTEDURI}: Apply turtle escapes to URIs
+
+	* tests/turtle/test-29.out, tests/turtle/test-29.ttl: Fix line
+	endings of test-29
+
+	* tests/turtle/Makefile.am, tests/turtle/test-29.out,
+	tests/turtle/test-29.ttl: test-29: Test all ntriples/turtle
+	escapes U+0001 to U+007F
+
+	* src/snprintf.c: Define __USE_ISOC99 to 1
+
+	* src/raptor_rss.c: (raptor_rss_end_element_handler): Fixed a bug
+	that silently discarded non-empty fields -- oops.
+
+	* src/raptor_rss.c: raptor_rss_uplift_map: copy atom:updated to
+	dc:date
+
+	* configure.ac: Make sure to define HAVE_CURL_CURL_H when
+	curl/curl.h is found
+
+2007-09-01  Dave Beckett  <dave@dajobe.org>
+
+	* docs/libraptor.3: Added RDFa
+
+2007-08-28  Dave Beckett  <dave@dajobe.org>
+
+	* docs/libraptor.3: Added description of new 1.4.16 functions
+
+2007-08-27  Dave Beckett  <dave@dajobe.org>
+
+	* src/raptor_grddl.c: GRDDL and RDFa
+
+	* src/snprintf.c: just leave raptor_format_float for now.
+
+	* docs/rdfcat.c, docs/rdfprint.c, docs/rdfserialize.c: Added C examples
+
 2007-08-26  Dave Beckett  <dave@dajobe.org>
 
 	* docs/raptor-tutorial-parsing.xml: parsing filtering tutorial docs
