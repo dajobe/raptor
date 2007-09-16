@@ -605,7 +605,7 @@ extern void raptor_xml_characters_handler(void *user_data, const unsigned char *
 extern void raptor_xml_cdata_handler(void *user_data, const unsigned char *s, int len);
 void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
 void raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, FILE *stream);
 #endif
 
@@ -838,7 +838,7 @@ int raptor_www_libfetch_fetch(raptor_www *www);
 raptor_id_set* raptor_new_id_set(void);
 void raptor_free_id_set(raptor_id_set* set);
 int raptor_id_set_add(raptor_id_set* set, raptor_uri* base_uri, const unsigned char *item, size_t item_len);
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
 void raptor_id_set_stats_print(raptor_id_set* set, FILE *stream);
 #endif
 

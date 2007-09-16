@@ -3131,7 +3131,7 @@ raptor_init_parser_rdfxml(void)
 }
 
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
 void
 raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, 
                                  FILE *stream)

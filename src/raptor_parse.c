@@ -1711,11 +1711,13 @@ void
 raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 {
 #ifdef RAPTOR_PARSER_RDFXML
+#if RAPTOR_DEBUG > 1
   if(!strcmp(rdf_parser->factory->name, "rdfxml")) {
     raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
     fputs("raptor parser stats\n  ", stream);
     raptor_rdfxml_parser_stats_print(rdf_xml_parser, stream);
   }
+#endif
 #endif
 }
 #endif

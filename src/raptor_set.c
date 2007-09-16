@@ -77,7 +77,7 @@ struct raptor_id_set_s
   /* start of trees, 1 per base URI */
   struct raptor_base_id_set_s* first;
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   int hits;
   int misses;
 #endif
@@ -209,13 +209,13 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 
   /* if already there, error */
   if(item) {
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
     set->misses++;
 #endif
     return 1;
   }
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   set->hits++;
 #endif
   
@@ -229,7 +229,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 }
 
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
 void
 raptor_id_set_stats_print(raptor_id_set* set, FILE *stream) {
   fprintf(stream, "set hits: %d misses: %d\n", set->hits, set->misses);
@@ -300,7 +300,7 @@ if(rc) {
     }
   }
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   raptor_id_set_stats_print(set, stderr);
 #endif
 
