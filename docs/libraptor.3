@@ -6,7 +6,7 @@
 .\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2007-09-01"
+.TH libraptor 3 "2007-09-15"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -1185,9 +1185,13 @@ Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
 .SS 1.4.16
+Added \fBraptor_uri_compare\fP.
+.LP
 Added new features for the 'grddl' parser:
 RAPTOR_FEATURE_HTML_TAG_SOUP, RAPTOR_FEATURE_MICROFORMATS and
 RAPTOR_FEATURE_HTML_LINK.
+.LP
+Added parser feature RAPTOR_FEATURE_WWW_TIMEOUT
 .LP
 Added raptor_graph_handler typedef and \fBraptor_set_graph_handler\fP
 .LP
