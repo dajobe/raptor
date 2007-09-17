@@ -147,6 +147,7 @@ raptor_new_uri_relative_to_base
 raptor_new_uri_from_id
 raptor_new_uri_for_rdf_concept
 raptor_free_uri
+raptor_uri_compare
 raptor_uri_equals
 raptor_uri_copy
 raptor_uri_as_string
@@ -178,6 +179,7 @@ raptor_new_uri_for_rdf_concept_func
 raptor_free_uri_func
 raptor_uri_equals_func
 raptor_uri_copy_func
+raptor_uri_compare_func
 </SECTION>
 
 <SECTION>
