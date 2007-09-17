@@ -67,13 +67,21 @@ static void *raptor_uri_current_uri_context;
  * @context: URI handler context
  * 
  * Change the URI class implementation to the functions provided by the
- * @handler URI implementation.
+ *
+ * The URI interface in @handler->initialised should be either 1
+ * or 2 (if raptor_uri_compare_func is implemented).
+ * API versions are truncated to the range 1..2
  **/
 void
-raptor_uri_set_handler(const raptor_uri_handler *handler, void *context) 
+raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
 {
   raptor_uri_current_uri_handler=(raptor_uri_handler *)handler;
   raptor_uri_current_uri_context=context;
+
+  if(handler->initialised < 1)
+    handler->initialised=1;
+  if(handler->initialised > 2)
+    handler->initialised=2;
 }
 
 /**
@@ -395,10 +403,14 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 int
 raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
 {
-  if(uri1 && uri2)
-    /* string compare */
-    return (*raptor_uri_current_uri_handler->uri_compare)(raptor_uri_current_uri_context, uri1, uri2);
-  else if(uri1)
+  if(uri1 && uri2) {
+    /* string compare function is available in API V2 or newer */
+    if(raptor_uri_current_uri_handler->initialised >= 2)
+      return (*raptor_uri_current_uri_handler->uri_compare)(raptor_uri_current_uri_context, uri1, uri2);
+    else
+      return raptor_default_uri_compare(raptor_uri_current_uri_context, 
+                                        uri1, uri2);
+  } else if(uri1)
     /* uri1 > uri2 (NULL) */
     return 1;
   else
@@ -947,7 +959,7 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
 }
 
 
-static const raptor_uri_handler raptor_uri_default_handler = {
+static raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_new_uri,
   raptor_default_new_uri_from_uri_local_name,
   raptor_default_new_uri_relative_to_base,
@@ -957,8 +969,8 @@ static const raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_uri_copy,
   raptor_default_uri_as_string,
   raptor_default_uri_as_counted_string,
-  1,
-  raptor_default_uri_compare,
+  2, /* URI Interface Version */
+  raptor_default_uri_compare /* URI Interface V2 */
 };
 
 
