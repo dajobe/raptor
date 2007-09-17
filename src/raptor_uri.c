@@ -1469,6 +1469,15 @@ assert_uri_to_relative(const char *base, const char *uri, const char *relative)
 }
 
 
+static int
+raptor_test_uri_compare(void *context, raptor_uri* uri1, raptor_uri* uri2)
+{
+  int* called_p=(int*)context;
+  *called_p=1;
+  return strcmp((char*)uri1, (char*)uri2);
+}
+
+
 int
 main(int argc, char *argv[]) 
 {
@@ -1606,6 +1615,66 @@ main(int argc, char *argv[])
   failures += assert_uri_to_relative("http://example.org", "http://a.example.org/", "http://a.example.org/");
   failures += assert_uri_to_relative("http://example.org", "http://a.example.org", "http://a.example.org");
   failures += assert_uri_to_relative("http://abcdefgh.example.org/foo/bar/", "http://ijklmnop.example.org/", "http://ijklmnop.example.org/");
+
+
+  if(1) {
+    raptor_uri_handler uri_handler = {
+      .new_uri     = raptor_default_new_uri,
+      .free_uri    = raptor_default_free_uri,
+      .uri_compare = raptor_test_uri_compare
+    };
+    int ret;
+    raptor_uri* u1;
+    raptor_uri* u2;
+    int called=0;
+    
+    /* URI Interface V1 */
+    uri_handler.initialised=1;
+    raptor_uri_set_handler(&uri_handler, &called);
+
+    u1=raptor_new_uri((const unsigned char *)"http://example.org/abc");
+    u2=raptor_new_uri((const unsigned char *)"http://example.org/def");
+
+    ret=raptor_uri_compare(u1, u2);
+    if(!(ret < 0)) {
+      fprintf(stderr,
+              "%s: raptor_uri_compare(%s, %s) FAILED V1 gave %d expected <0\n",
+              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2),
+              ret);
+      failures++;
+    }
+
+    if(called) {
+      fprintf(stderr,
+              "%s: raptor_uri_compare(%s, %s) FAILED V1 called user handler\n",
+              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2));
+      failures++;
+    }
+    
+
+    /* URI Interface V2 */
+    uri_handler.initialised=2;
+    raptor_uri_set_handler(&uri_handler, &called);
+
+    ret=raptor_uri_compare(u1, u2);
+    if(!(ret < 0)) {
+      fprintf(stderr,
+              "%s: raptor_uri_compare(%s, %s) FAILED V2 gave %d expected <0\n",
+              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2),
+              ret);
+      failures++;
+    }
+
+    if(!called) {
+      fprintf(stderr,
+              "%s: raptor_uri_compare(%s, %s) FAILED V2 did not call user handler\n",
+              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2));
+      failures++;
+    }
+    
+    raptor_free_uri(u1);
+    raptor_free_uri(u2);
+  }
 
   return failures ;
 }
