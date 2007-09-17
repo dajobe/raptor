@@ -278,10 +278,35 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
   if(ns->prefix)
     raptor_iostream_write_string(turtle_writer->iostr, 
                                  raptor_namespace_get_prefix(ns));
-  raptor_iostream_write_string(turtle_writer->iostr, ": <");
-  raptor_iostream_write_string(turtle_writer->iostr,
-                               raptor_uri_as_string(raptor_namespace_get_uri(ns)));
-  raptor_iostream_write_string(turtle_writer->iostr, "> .\n");
+  raptor_iostream_write_counted_string(turtle_writer->iostr, ": ", 2);
+  raptor_turtle_writer_reference(turtle_writer, raptor_namespace_get_uri(ns));
+  raptor_iostream_write_counted_string(turtle_writer->iostr, " .\n", 3);
+}
+
+
+/**
+ * raptor_turtle_writer_base:
+ * @turtle_writer: Turtle writer object
+ * @base_uri: Namespace to write base declaration for
+ *
+ * Write a base URI declaration (@base)
+ *
+ * Must only be used at the beginning of a document.
+ */
+void
+raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
+                          raptor_uri* base_uri)
+{
+  unsigned char* uri_str;
+  size_t length;
+  
+  uri_str=raptor_uri_to_counted_string(base_uri, &length);
+
+  raptor_iostream_write_counted_string(turtle_writer->iostr, "@base <", 7);
+  if(uri_str)
+    raptor_iostream_write_string_ntriples(turtle_writer->iostr,
+                                          uri_str, length, '>');
+  raptor_iostream_write_counted_string(turtle_writer->iostr, "> .\n", 4);
 }
 
 
@@ -303,7 +328,7 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
   uri_str = raptor_uri_to_relative_counted_uri_string(turtle_writer->base_uri, uri, &length);
 
   raptor_iostream_write_byte(turtle_writer->iostr, '<');
-  if (uri_str)
+  if(uri_str)
     raptor_iostream_write_string_ntriples(turtle_writer->iostr,
                                           uri_str, length, '>');
   raptor_iostream_write_byte(turtle_writer->iostr, '>');
