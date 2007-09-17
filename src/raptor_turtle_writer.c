@@ -171,8 +171,6 @@ raptor_new_turtle_writer(raptor_uri* base_uri,
 
   turtle_writer->nstack_depth=0;
 
-  turtle_writer->base_uri = base_uri;
-
   turtle_writer->uri_handler=uri_handler;
   turtle_writer->uri_context=uri_context;
 
@@ -193,7 +191,10 @@ raptor_new_turtle_writer(raptor_uri* base_uri,
 
   turtle_writer->flags = 0;
   turtle_writer->indent = 2;
-  
+
+  if(base_uri)
+    raptor_turtle_writer_base(turtle_writer, base_uri);
+
   return turtle_writer;
 }
 
@@ -287,26 +288,23 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
 /**
  * raptor_turtle_writer_base:
  * @turtle_writer: Turtle writer object
- * @base_uri: Namespace to write base declaration for
+ * @base_uri: New base URI or NULL
  *
- * Write a base URI declaration (@base)
- *
- * Must only be used at the beginning of a document.
+ * Write a base URI directive (@base) to set the in-scope base URI
  */
 void
 raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
                           raptor_uri* base_uri)
 {
-  unsigned char* uri_str;
-  size_t length;
+  if(base_uri) {
+    raptor_iostream_write_counted_string(turtle_writer->iostr, "@base ", 6);
+    raptor_turtle_writer_reference(turtle_writer, base_uri);
+    raptor_iostream_write_counted_string(turtle_writer->iostr, " .\n", 3);
+  }
   
-  uri_str=raptor_uri_to_counted_string(base_uri, &length);
-
-  raptor_iostream_write_counted_string(turtle_writer->iostr, "@base <", 7);
-  if(uri_str)
-    raptor_iostream_write_string_ntriples(turtle_writer->iostr,
-                                          uri_str, length, '>');
-  raptor_iostream_write_counted_string(turtle_writer->iostr, "> .\n", 4);
+  if(turtle_writer->base_uri)
+    raptor_free_uri(turtle_writer->base_uri);
+  turtle_writer->base_uri=base_uri;
 }
 
 
@@ -875,7 +873,7 @@ const unsigned char *base_uri_string=(const unsigned char*)"http://example.org/b
 
 const unsigned char* longstr=(const unsigned char*)"it's quoted\nand has newlines, \"s <> and\n\ttabbing";
 
-#define OUT_BYTES_COUNT 133
+#define OUT_BYTES_COUNT 149
 
 int
 main(int argc, char *argv[]) 
