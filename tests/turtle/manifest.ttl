@@ -163,6 +163,36 @@
         mf:result  <test-25.out>
      ]
 
+     [  mf:name      "test-26" ;
+        rdfs:comment "no final mewline" ;
+        mf:action [ qt:data   <test-26.ttl> ] ;
+        mf:result  <test-26.out>
+     ]
+
+     [  mf:name      "test-27" ;
+        rdfs:comment "duplicate prefix" ;
+        mf:action [ qt:data   <test-27.ttl> ] ;
+        mf:result  <test-27.out>
+     ]
+
+     [  mf:name      "test-28" ;
+        rdfs:comment "decimal data types (serializing test)" ;
+        mf:action [ qt:data   <test-28.ttl> ] ;
+        mf:result  <test-28.out>
+     ]
+
+     [  mf:name      "test-29" ;
+        rdfs:comment "Escaping U+0001 to U+007F in a URI" ;
+        mf:action [ qt:data   <test-29.ttl> ] ;
+        mf:result  <test-29.out>
+     ]
+
+     [  mf:name      "test-30" ;
+        rdfs:comment "@base" ;
+        mf:action [ qt:data   <test-30.ttl> ] ;
+        mf:result  <test-30.out>
+     ]
+
      [  mf:name      "rdf-schema" ;
         rdfs:comment "RDF Namespace document converted into Turtle" ;
         mf:action [ qt:data   <rdf-schema.ttl> ] ;
