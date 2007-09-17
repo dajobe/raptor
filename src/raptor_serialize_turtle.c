@@ -951,9 +951,6 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
   if(!turtle_writer)
     return 1;
 
-  if(serializer->base_uri)
-    raptor_turtle_writer_base(turtle_writer, serializer->base_uri);
-    
   raptor_turtle_writer_set_feature(turtle_writer,
                                    RAPTOR_FEATURE_WRITER_AUTO_INDENT,1);
   raptor_turtle_writer_set_feature(turtle_writer,
