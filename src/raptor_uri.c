@@ -1626,10 +1626,11 @@ main(int argc, char *argv[])
     int ret;
     raptor_uri* u1;
     raptor_uri* u2;
-    int called=0;
+    int called;
     
     /* URI Interface V1 */
     uri_handler.initialised=1;
+    called=0;
     raptor_uri_set_handler(&uri_handler, &called);
 
     u1=raptor_new_uri((const unsigned char *)"http://example.org/abc");
@@ -1654,6 +1655,7 @@ main(int argc, char *argv[])
 
     /* URI Interface V2 */
     uri_handler.initialised=2;
+    called=0;
     raptor_uri_set_handler(&uri_handler, &called);
 
     ret=raptor_uri_compare(u1, u2);
