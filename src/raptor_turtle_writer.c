@@ -87,6 +87,11 @@ struct raptor_turtle_writer_s {
 
   /* indentation per level if formatting */
   int indent;
+
+  raptor_uri* xsd_boolean_uri;
+  raptor_uri* xsd_decimal_uri;
+  raptor_uri* xsd_double_uri;
+  raptor_uri* xsd_integer_uri;
 };
 
 #define SPACES_BUFFER_SIZE 16
@@ -195,6 +200,11 @@ raptor_new_turtle_writer(raptor_uri* base_uri,
   if(base_uri)
     raptor_turtle_writer_base(turtle_writer, base_uri);
 
+  turtle_writer->xsd_boolean_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  turtle_writer->xsd_decimal_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  turtle_writer->xsd_double_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  turtle_writer->xsd_integer_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  
   return turtle_writer;
 }
 
@@ -211,6 +221,15 @@ raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
 {
   if(turtle_writer->nstack && turtle_writer->my_nstack)
     raptor_free_namespaces(turtle_writer->nstack);
+
+  if(turtle_writer->xsd_boolean_uri)
+    raptor_free_uri(turtle_writer->xsd_boolean_uri);
+  if(turtle_writer->xsd_decimal_uri)
+    raptor_free_uri(turtle_writer->xsd_decimal_uri);
+  if(turtle_writer->xsd_double_uri)
+    raptor_free_uri(turtle_writer->xsd_double_uri);
+  if(turtle_writer->xsd_integer_uri)
+    raptor_free_uri(turtle_writer->xsd_integer_uri);
 
   RAPTOR_FREE(raptor_turtle_writer, turtle_writer);
 }
@@ -430,9 +449,9 @@ raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
  * Returns nonzero on failure (num is unrepresentable) */
 static int
 raptor_turtle_writer_double(raptor_turtle_writer* turtle_writer,
-                                    raptor_namespace_stack *nstack,
-                                    char* buf, size_t buf_len,
-                                    raptor_uri* datatype, double num)
+                            raptor_namespace_stack *nstack,
+                            char* buf, size_t buf_len,
+                            raptor_uri* datatype, double num)
 {
   size_t e_index = 0;
   size_t trailing_zero_start = 0;
@@ -537,10 +556,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
 
   /* typed literal special cases */
   if(datatype) {
-    const char* type_uri_str = (const char*)raptor_uri_as_string(datatype);
-
     /* integer */
-    if(!strcmp(type_uri_str, "http://www.w3.org/2001/XMLSchema#integer")) {
+    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri)) {
       long inum = strtol((const char*)s, NULL, 10);
       if(inum != LONG_MIN && inum != LONG_MAX) {
         snprintf(buf, 20, "%ld", inum);
@@ -549,7 +566,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
     
     /* double */
-    } else if(!strcmp(type_uri_str, "http://www.w3.org/2001/XMLSchema#double")) {
+    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_double_uri)) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
         written= !raptor_turtle_writer_double(turtle_writer, nstack,
@@ -562,7 +579,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
     
     /* decimal */
-    } else if(!strcmp(type_uri_str, "http://www.w3.org/2001/XMLSchema#decimal")) {
+    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
         const char* decimal = strchr((const char*)s, '.');
@@ -573,7 +590,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
     
     /* boolean */
-    } else if(!strcmp(type_uri_str, "http://www.w3.org/2001/XMLSchema#boolean")) {
+    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
         raptor_iostream_write_string(turtle_writer->iostr, "false");
         written = 1;
