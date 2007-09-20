@@ -869,6 +869,9 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
 
   ret=raptor_www_fetch(www, uri);
   
+  if(!rpbc.started && !ret)
+    ret=raptor_start_parse(rdf_parser, base_uri);
+
   if(rpbc.final_uri)
     raptor_free_uri(rpbc.final_uri);
 
