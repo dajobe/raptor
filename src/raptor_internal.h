@@ -92,7 +92,9 @@ void raptor_system_free(void *ptr);
 #define SYSTEM_FREE(ptr)   free(ptr)
 #endif
 
+#ifndef RAPTOR_ASSERT_DIE
 #define RAPTOR_ASSERT_DIE abort();
+#endif
 
 #else
 /* DEBUGGING TURNED OFF */
@@ -108,7 +110,9 @@ void raptor_system_free(void *ptr);
 #define SYSTEM_MALLOC(size)   malloc(size)
 #define SYSTEM_FREE(ptr)   free(ptr)
 
+#ifndef RAPTOR_ASSERT_DIE
 #define RAPTOR_ASSERT_DIE
+#endif
 
 #endif
 
