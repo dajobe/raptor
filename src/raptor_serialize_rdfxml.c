@@ -254,7 +254,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
   raptor_qname *qname;
   raptor_uri *base_uri;
   int i;
-  raptor_qname **attrs;
+  raptor_qname **attrs=NULL;
   int attrs_count=0;
 
   if(context->written_header)
@@ -322,7 +322,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   int free_predicate_ns=0;
   raptor_qname* predicate_qname=NULL;
   raptor_xml_element* predicate_element=NULL;
-  raptor_qname **attrs;
+  raptor_qname **attrs=NULL;
   int attrs_count=0;
   raptor_uri* base_uri=NULL;
   raptor_identifier_type object_type;
