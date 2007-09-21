@@ -346,7 +346,7 @@ raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor_rss_type type)
   raptor_rss_item* item;
   for(item=rss_model->common[type]; 
       item && item->next;
-      item=item->next);
+      item=item->next) ;
   return item;
 }
 
@@ -386,7 +386,7 @@ raptor_rss_item_add_enclosure(raptor_rss_item* item,
     raptor_rss_enclosure* cur;
 
     RAPTOR_DEBUG1("Adding subsequent enclosure\n");
-    for(cur=item->enclosure; cur->next; cur=cur->next);
+    for(cur=item->enclosure; cur->next; cur=cur->next) ;
     cur->next=enclosure;
   }
 }
@@ -404,7 +404,7 @@ raptor_rss_item_add_field(raptor_rss_item* item, int type,
     raptor_rss_field* cur;
 
     RAPTOR_DEBUG1("Adding subsequent field\n");
-    for(cur=item->fields[type]; cur->next; cur=cur->next);
+    for(cur=item->fields[type]; cur->next; cur=cur->next) ;
     cur->next=field;
   }
 }

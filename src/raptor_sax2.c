@@ -712,7 +712,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
     /* Save passed in XML attributes pointers so we can 
      * NULL the pointers when they get handled below (various atts[i]=NULL)
      */
-    for (i = 0; atts[i]; i++);
+    for (i = 0; atts[i]; i++) ;
     xml_atts_size=sizeof(unsigned char*) * i;
     if(xml_atts_size) {
       xml_atts_copy=(unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
