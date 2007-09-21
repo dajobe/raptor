@@ -156,7 +156,7 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
  * @uri_handler: URI handler function
  * @uri_context: URI handler context data
  * @error_handler: error handler function
- * @error_data: erorr handler data
+ * @error_data: error handler data
  * @defaults: namespaces to initialise
  * 
  * Constructor - create a new #raptor_namespace_stack.
