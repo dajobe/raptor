@@ -70,8 +70,10 @@ raptor_free_parser_factory(raptor_parser_factory* factory)
   if(factory->finish_factory)
     factory->finish_factory(factory);
   
-  RAPTOR_FREE(raptor_parser_factory, (void*)factory->name);
-  RAPTOR_FREE(raptor_parser_factory, (void*)factory->label);
+  if(factory->name)
+    RAPTOR_FREE(raptor_parser_factory, (void*)factory->name);
+  if(factory->label)
+    RAPTOR_FREE(raptor_parser_factory, (void*)factory->label);
   if(factory->alias)
     RAPTOR_FREE(raptor_parser_factory, (void*)factory->alias);
   if(factory->mime_types)
@@ -89,6 +91,10 @@ void
 raptor_parsers_init(void)
 {
   parsers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
+  if(!parsers) {
+    raptor_finish();
+    RAPTOR_FATAL1("Out of memory\n");
+  }
   
 #ifdef RAPTOR_PARSER_RDFXML
   raptor_init_parser_rdfxml();
@@ -135,11 +141,13 @@ raptor_parsers_init(void)
 void
 raptor_parsers_finish(void)
 {
-  raptor_free_sequence(parsers);
+  if(parsers) {
+    raptor_free_sequence(parsers);
+    parsers=NULL;
+  }
 #if defined(RAPTOR_PARSER_GRDDL)
   raptor_terminate_parser_grddl_common();
 #endif
-  parsers=NULL;
 }
 
 
@@ -160,7 +168,8 @@ raptor_parser_factory*
 raptor_parser_register_factory(const char *name, const char *label,
                                void (*factory) (raptor_parser_factory*)) 
 {
-  raptor_parser_factory *parser, *h;
+  raptor_parser_factory *parser=NULL;
+  raptor_parser_factory *h;
   char *name_copy, *label_copy;
   int i;
   
@@ -172,6 +181,7 @@ raptor_parser_register_factory(const char *name, const char *label,
       (h=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
       i++) {
     if(!strcmp(h->name, name)) {
+      raptor_finish();
       RAPTOR_FATAL2("parser %s already registered\n", h->name);
       return NULL;
     }
@@ -180,25 +190,26 @@ raptor_parser_register_factory(const char *name, const char *label,
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
                                                sizeof(raptor_parser_factory));
   if(!parser)
-    RAPTOR_FATAL1("Out of memory\n");
+    goto fail_noparser;
 
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
-  if(!name_copy) {
-    RAPTOR_FREE(raptor_parser, parser);
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!name_copy)
+    goto fail;
   strcpy(name_copy, name);
   parser->name=name_copy;
         
   label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
-  if(!label_copy) {
-    RAPTOR_FREE(raptor_parser, parser);
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!label_copy)
+    goto fail;
   strcpy(label_copy, label);
   parser->label=label_copy;
 
   parser->mime_types=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
+  if(!parser->mime_types)
+    goto fail;
+
+  if(raptor_sequence_push(parsers, parser))
+    goto fail_noparser; /* on error, parser is already freed by the sequence */
   
   /* Call the parser registration function on the new object */
   (*factory)(parser);
@@ -207,9 +218,15 @@ raptor_parser_register_factory(const char *name, const char *label,
   RAPTOR_DEBUG3("%s has context size %d\n", name, parser->context_length);
 #endif
 
-  raptor_sequence_push(parsers, parser);
-
   return parser;
+
+  /* Clean up on failure */
+  fail:
+  raptor_free_parser_factory(parser);
+  fail_noparser:
+  raptor_finish();
+  RAPTOR_FATAL1("Out of memory\n");
+  return NULL;
 }
 
 
@@ -225,6 +242,7 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
       (p=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
       i++) {
     if(!strcmp(p->name, alias)) {
+      raptor_finish();
       RAPTOR_FATAL2("parser %s already registered\n", p->name);
       return;
     }
@@ -232,6 +250,7 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
   
   alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
   if(!alias_copy) {
+    raptor_finish();
     RAPTOR_FATAL1("Out of memory\n");
   }
   strcpy(alias_copy, alias);
@@ -267,9 +286,15 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
   size_t len;
   
   type_q=(raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, sizeof(raptor_type_q), 1);
+  if(!type_q) {
+    raptor_finish();
+    RAPTOR_FATAL1("Out of memory\n");
+  }
   len=strlen(mime_type);
   mime_type_copy=(char*)RAPTOR_CALLOC(cstring, len+1, 1);
   if(!mime_type_copy) {
+    raptor_free_type_q(type_q);
+    raptor_finish();
     RAPTOR_FATAL1("Out of memory\n");
   }
   strcpy(mime_type_copy, mime_type);
@@ -283,7 +308,10 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
     q=10;
   type_q->q=q;
 
-  raptor_sequence_push(factory->mime_types, type_q);
+  if(raptor_sequence_push(factory->mime_types, type_q)) {
+    raptor_finish();
+    RAPTOR_FATAL1("Out of memory\n");
+  }
 }
 
 
@@ -305,8 +333,10 @@ raptor_parser_factory_add_uri(raptor_parser_factory* factory,
     return;
   
   uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
-  if(!uri_string_copy)
+  if(!uri_string_copy) {
+    raptor_finish();
     RAPTOR_FATAL1("Out of memory\n");
+  }
 
   strcpy((char*)uri_string_copy, (const char*)uri_string);
   factory->uri_string=uri_string_copy;
@@ -1837,9 +1867,11 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
         ((char*)buffer)[FIRSTN]=c;
     }
 
-    if(i > MAX_PARSERS)
+    if(i > MAX_PARSERS) {
+      raptor_finish();
       RAPTOR_FATAL2("Number of parsers greater than static buffer size %d\n",
                     MAX_PARSERS);
+    }
 
     scores[i].score=score < 10 ? score : 10; scores[i].factory=factory;
 #if RAPTOR_DEBUG > 2
