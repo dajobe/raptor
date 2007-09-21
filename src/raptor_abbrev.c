@@ -463,6 +463,8 @@ raptor_free_abbrev_subject(raptor_abbrev_subject* subject)
  * @object: object node
  * 
  * Add predicate/object pair into properties array of a subject node.
+ * The subject node takes ownership of the predicate/object nodes.
+ * On error, predicate/object are freed immediately.
  * 
  * Return value: non-0 on failure
  **/
@@ -474,12 +476,18 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
   int err;
   
   err = raptor_sequence_push(subject->properties, predicate);
-  if(err)
+  if(err) {
+    /* predicate was already deleted by raptor_sequence on error */
+    raptor_free_abbrev_node(object);
     return err;
+  }
   
   err = raptor_sequence_push(subject->properties, object);
   if(err) {
+    /* pop and delete predicate */
     raptor_sequence_pop(subject->properties);
+    raptor_free_abbrev_node(predicate);
+    /* object was already deleted by raptor_sequence on error */
     return err;
   }
   
