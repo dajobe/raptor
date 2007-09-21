@@ -21,7 +21,7 @@
 # 
 # 
 
-TESTS=raptor_empty_test
+TESTS=raptor_empty_test$(EXEEXT)
 
 AM_CPPFLAGS=-I$(top_srcdir)/src
 AM_CFLAGS= -I$(top_builddir)/src @CFLAGS@ $(MEM)
@@ -139,10 +139,10 @@ SUBDIRS = turtle trig
 
 
 build-rapper:
-	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
+	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
 build-rdfdiff:
-	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff)
+	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
 check-local: build-rapper \
 check-rdf check-mayfail-xml-rdf check-assume-rdf check-scan-rdf \

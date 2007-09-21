@@ -81,10 +81,10 @@ ALL_TEST_FILES= README.txt \
 EXTRA_DIST = $(ALL_TEST_FILES)
 
 build-rapper:
-	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
+	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
 build-rdfdiff:
-	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff)
+	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
 check-local: check-rdf check-bad-rdf check-turtle-serialize \
 check-turtle-serialize-syntax
