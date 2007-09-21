@@ -948,7 +948,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   raptor_qname *qname;
   raptor_uri *base_uri;
   int i;
-  raptor_qname **attrs;
+  raptor_qname **attrs=NULL;
   int attrs_count=0;
 
   if(context->written_header)
