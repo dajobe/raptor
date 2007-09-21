@@ -1781,7 +1781,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
           to=NULL;
           break;
         }
-        *to++=isupper((const char)c) ? (unsigned char)tolower((const char)c): c;
+        *to++=isupper((char)c) ? (unsigned char)tolower((char)c): c;
       }
       if(to)
         *to='\0';
