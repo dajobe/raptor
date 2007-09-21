@@ -825,8 +825,10 @@ raptor_rdfxml_start_element_handler(void *user_data,
       element->content_type=RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PRESERVED;
 
     } else {
-      if(!element->parent->child_state)
-        raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_start_element_handler: no parent element child_state set");      
+      if(!element->parent->child_state) {
+        raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_start_element_handler: no parent element child_state set");
+        return;
+      }
 
       element->state=element->parent->child_state;
       element->parent->xml_element->content_element_seen++;
@@ -2870,6 +2872,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LAST:
           default:
             raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_end_element_grammar: state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)", raptor_rdfxml_element_content_type_as_string(element->content_type), element->content_type);
+            abort();
         } /* end switch */
 
       finished=1;
