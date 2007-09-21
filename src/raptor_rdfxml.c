@@ -1194,7 +1194,7 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
   }
   
   if(mime_type) {
-    if(!strstr((const char*)mime_type, "html"))
+    if(strstr((const char*)mime_type, "html"))
       score-= 4;
     else if(!strcmp((const char*)mime_type, "text/rdf"))
       score+= 7;
