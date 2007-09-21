@@ -760,7 +760,9 @@ int raptor_utf8_is_nfc(const unsigned char *input, size_t length);
 #endif
 
 /* Size of buffer used in various raptor_www places for I/O  */
+#ifndef RAPTOR_WWW_BUFFER_SIZE
 #define RAPTOR_WWW_BUFFER_SIZE 4096
+#endif
 
 /* WWW library state */
 struct  raptor_www_s {
