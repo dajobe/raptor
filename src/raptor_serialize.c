@@ -65,8 +65,10 @@ raptor_free_serializer_factory(raptor_serializer_factory* factory)
   if(factory->finish_factory)
     factory->finish_factory(factory);
   
-  RAPTOR_FREE(raptor_serializer_factory, (void*)factory->name);
-  RAPTOR_FREE(raptor_serializer_factory, (void*)factory->label);
+  if(factory->name)
+    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->name);
+  if(factory->label)
+    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->label);
   if(factory->alias)
     RAPTOR_FREE(raptor_serializer_factory, (void*)factory->alias);
   if(factory->mime_type)
@@ -84,6 +86,10 @@ void
 raptor_serializers_init(void)
 {
   serializers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_serializer_factory, NULL);
+  if(!serializers) {
+    raptor_finish();
+    RAPTOR_FATAL1("Out of memory\n");
+  }
 
   /* raptor_init_serializer_simple(); */
 
@@ -123,8 +129,10 @@ raptor_serializers_init(void)
 void
 raptor_serializers_finish(void)
 {
-  raptor_free_sequence(serializers);
-  serializers=NULL;
+  if(serializers) {
+    raptor_free_sequence(serializers);
+    serializers=NULL;
+  }
 }
 
 
@@ -172,53 +180,46 @@ raptor_serializer_register_factory(const char *name, const char *label,
   serializer=(raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
                                                sizeof(raptor_serializer_factory));
   if(!serializer)
-    RAPTOR_FATAL1("Out of memory\n");
+    goto fail_noserializer;
 
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
-  if(!name_copy) {
-    RAPTOR_FREE(raptor_serializer, serializer);
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!name_copy)
+    goto fail;
   strcpy(name_copy, name);
   serializer->name=name_copy;
         
   label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
-  if(!label_copy) {
-    RAPTOR_FREE(raptor_serializer, serializer);
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!label_copy)
+    goto fail;
   strcpy(label_copy, label);
   serializer->label=label_copy;
 
   if(mime_type) {
     mime_type_copy=(char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
-    if(!mime_type_copy) {
-      RAPTOR_FREE(raptor_serializer, serializer);
-      RAPTOR_FATAL1("Out of memory\n");
-    }
+    if(!mime_type_copy)
+      goto fail;
     strcpy(mime_type_copy, mime_type);
     serializer->mime_type=mime_type_copy;
   }
 
   if(uri_string) {
     uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
-    if(!uri_string_copy) {
-    RAPTOR_FREE(raptor_serializer, serializer);
-    RAPTOR_FATAL1("Out of memory\n");
-    }
+    if(!uri_string_copy)
+      goto fail;
     strcpy((char*)uri_string_copy, (const char*)uri_string);
     serializer->uri_string=uri_string_copy;
   }
         
   if(alias) {
     alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
-    if(!alias_copy) {
-      RAPTOR_FREE(raptor_serializer, serializer);
-      RAPTOR_FATAL1("Out of memory\n");
-    }
+    if(!alias_copy)
+      goto fail;
     strcpy(alias_copy, alias);
     serializer->alias=alias_copy;
   }
+
+  if(raptor_sequence_push(serializers, serializer))
+    goto fail_noserializer; /* on error, serializer is already freed by the sequence */
 
   /* Call the serializer registration function on the new object */
   (*factory)(serializer);
@@ -226,8 +227,15 @@ raptor_serializer_register_factory(const char *name, const char *label,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("%s has context size %d\n", name, serializer->context_length);
 #endif
-  
-  raptor_sequence_push(serializers, serializer);
+
+  return;
+
+  /* Clean up on failure */
+  fail:
+  raptor_free_serializer_factory(serializer);
+  fail_noserializer:
+  raptor_finish();
+  RAPTOR_FATAL1("Out of memory\n");
 }
 
 
