@@ -505,7 +505,7 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
  * Start serializing to a FILE*.
  * 
  * NOTE: This does not fclose the handle when it is finished.
-8
+ *
  * Return value: non-0 on failure.
  **/
 int
