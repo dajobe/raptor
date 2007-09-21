@@ -72,6 +72,8 @@ raptor_new_uri_detail(const unsigned char *uri_string)
   ud=(raptor_uri_detail*)RAPTOR_CALLOC(raptor_uri_detail,
                                        sizeof(raptor_uri_detail)+uri_len+5+1,
                                        1);
+  if(!ud)
+    return NULL;
   ud->uri_len=uri_len;
   ud->buffer=(unsigned char*)((unsigned char*)ud + sizeof(raptor_uri_detail));
   
