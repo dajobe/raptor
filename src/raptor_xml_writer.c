@@ -198,6 +198,8 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
     
     nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count, sizeof(struct nsd));
+    if(!nspace_declarations)
+      return 1;
   }
 
   if(element->name->nspace) {
