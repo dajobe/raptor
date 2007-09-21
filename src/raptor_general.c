@@ -118,6 +118,8 @@ raptor_init(void)
   if(raptor_initialised)
     return;
 
+  raptor_initialised=1;
+
   raptor_sax2_init();
 
   raptor_parsers_init();
@@ -126,8 +128,6 @@ raptor_init(void)
 
   raptor_uri_init();
   raptor_www_init();
-
-  raptor_initialised=1;
 }
 
 
