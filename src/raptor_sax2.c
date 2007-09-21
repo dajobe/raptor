@@ -681,7 +681,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
                                 sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_FATAL],
                                 sax2->error_handlers->user_data[RAPTOR_LOG_LEVEL_FATAL],
                                 sax2->locator, "Out of memory");
-	return;
+        return;
       }
 
       atts[i+1]=dst;
