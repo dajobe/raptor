@@ -119,7 +119,7 @@ update_prog_version() {
 
   save_PATH="$PATH"
 
-  cd $dir
+  cd "$dir"
   PATH=".:$PATH"
 
   names=`ls $prog* 2>/dev/null`
@@ -136,7 +136,7 @@ update_prog_version() {
       if expr $vers '>' $prog_vers >/dev/null; then
         prog_name=$name
         prog_vers=$vers
-        prog_dir=$dir
+        prog_dir="$dir"
       fi
     done
   fi
@@ -193,12 +193,12 @@ here=`pwd`
 while [ $# -ne 0 ] ; do
   dir=$1
   shift
-  if [ ! -d $dir ]; then
+  if [ ! -d "$dir" ]; then
     continue
   fi
 
   for prog in $programs; do
-    update_prog_version $dir $prog
+    update_prog_version "$dir" $prog
   done
 done
 cd $here
@@ -226,12 +226,12 @@ fi
 for coin in `find $SRCDIR -name configure.ac -print`
 do 
   dir=`dirname $coin`
-  if test -f $dir/NO-AUTO-GEN; then
+  if test -f "$dir/NO-AUTO-GEN"; then
     echo $program: Skipping $dir -- flagged as no auto-gen
   else
     echo " "
     echo $program: Processing directory $dir
-    ( cd $dir
+    ( cd "$dir"
 
       # Ensure that these are created by the versions on this system
       # (indirectly via automake)
