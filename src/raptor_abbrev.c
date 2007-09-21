@@ -575,7 +575,6 @@ raptor_abbrev_subject_lookup(raptor_avltree* nodes,
       rv_subject = raptor_new_abbrev_subject(node);
       if(rv_subject) {
         if(raptor_sequence_push(sequence, rv_subject)) {
-          raptor_free_abbrev_subject(rv_subject);
           rv_subject = NULL;
         }      
       }

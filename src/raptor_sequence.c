@@ -161,7 +161,7 @@ raptor_sequence_grow(raptor_sequence *seq)
  * raptor_sequence_size:
  * @seq: sequence object
  * 
- * Get the size of a sequence.
+ * Get the number of items in a sequence.
  * 
  * Return value: the sequence size (>=0)
  **/
@@ -185,8 +185,9 @@ raptor_sequence_size(raptor_sequence* seq)
  * Replace/set an item in a sequence.
  * 
  * The item at the offset @idx in the sequence is replaced with the
- * new item @data (which may be NULL).  Any existing item is freed
- * with the sequence's free_handler.
+ * new item @data (which may be NULL). Any existing item is freed
+ * with the sequence's free_handler. The sequence takes ownership of
+ * the new data item. On failure, the item is freed immediately.
  *
  * Return value: non-0 on failure
  **/
@@ -199,8 +200,11 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
     return 1;
   
   if(idx+1 > seq->capacity) {
-    if(raptor_sequence_ensure(seq, idx+1))
+    if(raptor_sequence_ensure(seq, idx+1)) {
+      if(seq->free_handler && data)
+        seq->free_handler(data);
       return 1;
+    }
   }
     
   if(seq->sequence[idx] && seq->free_handler)
@@ -223,6 +227,9 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
  * This is efficient to perform. #raptor_sequence is optimised
  * to append/remove from the end of the sequence.
  *
+ * The sequence takes ownership of the pushed item and frees it with the
+ * free_handler. On failure, the item is freed immediately.
+ *
  * Return value: non-0 on failure
  **/
 int
@@ -231,8 +238,11 @@ raptor_sequence_push(raptor_sequence* seq, void *data)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(seq->size == seq->capacity) {
-    if(raptor_sequence_grow(seq))
+    if(raptor_sequence_grow(seq)) {
+      if(seq->free_handler && data)
+        seq->free_handler(data);
       return 1;
+    }
   }
 
   seq->sequence[seq->size]=data;
@@ -251,6 +261,9 @@ raptor_sequence_push(raptor_sequence* seq, void *data)
  * This is in-efficient to perform.  #raptor_sequence is optimised
  * to append to the end of the sequence.
  *
+ * The sequence takes ownership of the shifted item and frees it with the
+ * free_handler. On failure, the item is freed immediately.
+ *
  * Return value: non-0 on failure
  **/
 int
@@ -261,8 +274,11 @@ raptor_sequence_shift(raptor_sequence* seq, void *data)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(seq->size == seq->capacity) {
-    if(raptor_sequence_grow(seq))
+    if(raptor_sequence_grow(seq)) {
+      if(seq->free_handler && data)
+        seq->free_handler(data);
       return 1;
+    }
   }
 
   for(i=seq->size; i>0; i--)
@@ -284,6 +300,8 @@ raptor_sequence_shift(raptor_sequence* seq, void *data)
  * This is efficient to perform. #raptor_sequence is optimised
  * to append/remove from the end of the sequence.
  *
+ * After this call the item is still owned by the sequence.
+ *
  * Return value: the object or NULL if @index is out of range (0... sequence size-1)
  **/
 void*
@@ -304,6 +322,9 @@ raptor_sequence_get_at(raptor_sequence* seq, int idx)
  * Retrieve the item at the end of the sequence.
  *
  * This is efficient to perform.
+ * 
+ * Ownership of the item is transferred to the caller,
+ * i.e. caller is responsible of freeing the item.
  *
  * Return value: the object or NULL if the sequence is empty
  **/
@@ -333,6 +354,9 @@ raptor_sequence_pop(raptor_sequence* seq)
  *
  * This is in-efficient to perform. #raptor_sequence is optimised
  * to append/remove from the end of the sequence.
+ *
+ * Ownership of the item is transferred to the caller,
+ * i.e. caller is responsible of freeing the item.
  *
  * Return value: the object or NULL if the sequence is empty
  **/
