@@ -925,11 +925,8 @@ raptor_log_error(raptor_log_level level,
     fputs(message, stderr);
     fputc('\n', stderr);
   }
-  
-  if(level == RAPTOR_LOG_LEVEL_FATAL)
-    abort();
 }
-  
+
 
 
 /**
