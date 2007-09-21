@@ -110,8 +110,10 @@ const unsigned char * const raptor_owl_namespace_uri=(const unsigned char *)"htt
  *
  * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL
  * and XSD (RDQL uses this) or 3+ undefined.
+ *
+ * Return value: non-0 on error
  */
-void
+int
 raptor_namespaces_init(raptor_namespace_stack *nstack,
                        raptor_uri_handler *uri_handler,
                        void *uri_context,
@@ -119,6 +121,8 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
                        void *error_data,
                        int defaults)
 {
+  int failures=0;
+
   nstack->top=NULL;
   nstack->uri_handler=uri_handler;
   nstack->uri_context=uri_context;
@@ -127,27 +131,35 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
   nstack->error_data=error_data;
 
   nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, (const unsigned char*)raptor_rdf_namespace_uri);
+  failures+=!nstack->rdf_ms_uri;
+   
   nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, (const unsigned char*)raptor_rdf_schema_namespace_uri);
+  failures+=!nstack->rdf_schema_uri;
 
-  if(defaults) {
+  /* raptor_new_namespace_from_uri() that eventually gets called by
+   * raptor_new_namespace() in raptor_namespaces_start_namespace_full()
+   * needs rdf_ms_uri and rdf_schema_uri
+   * - do not call if we had failures initializing those uris */
+  if(defaults && !failures) {
     /* defined at level -1 since always 'present' when inside the XML world */
-    raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
+    failures+=raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
                                            raptor_xml_namespace_uri, -1);
     if(defaults >= 2) {
-      raptor_namespaces_start_namespace_full(nstack,
-                                             (const unsigned char*)"rdf",
-                                             raptor_rdf_namespace_uri, 0);
-      raptor_namespaces_start_namespace_full(nstack,
-                                             (const unsigned char*)"rdfs",
-                                             raptor_rdf_schema_namespace_uri, 0);
-      raptor_namespaces_start_namespace_full(nstack,
-                                             (const unsigned char*)"xsd",
-                                             raptor_xmlschema_datatypes_namespace_uri, 0);
-      raptor_namespaces_start_namespace_full(nstack,
-                                             (const unsigned char*)"owl",
-                                             raptor_owl_namespace_uri, 0);
+      failures+=raptor_namespaces_start_namespace_full(nstack,
+                                                       (const unsigned char*)"rdf",
+                                                       raptor_rdf_namespace_uri, 0);
+      failures+=raptor_namespaces_start_namespace_full(nstack,
+                                                       (const unsigned char*)"rdfs",
+                                                       raptor_rdf_schema_namespace_uri, 0);
+      failures+=raptor_namespaces_start_namespace_full(nstack,
+                                                       (const unsigned char*)"xsd",
+                                                       raptor_xmlschema_datatypes_namespace_uri, 0);
+      failures+=raptor_namespaces_start_namespace_full(nstack,
+                                                       (const unsigned char*)"owl",
+                                                       raptor_owl_namespace_uri, 0);
     }
   }
+  return failures;
 }
 
 
@@ -176,10 +188,14 @@ raptor_new_namespaces(raptor_uri_handler *uri_handler,
   if(!nstack)
     return NULL;
                       
-  raptor_namespaces_init(nstack, 
-                         uri_handler, uri_context,
-                         error_handler, error_data,
-                         defaults);
+  if(raptor_namespaces_init(nstack, 
+                            uri_handler, uri_context,
+                            error_handler, error_data,
+                            defaults)) {
+    raptor_free_namespaces(nstack);
+    nstack=NULL;
+  }
+
   return nstack;
 }
  
@@ -258,8 +274,14 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack)
   nstack->top=NULL;
 
   if(nstack->uri_handler) {
-    nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_ms_uri);
-    nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_schema_uri);
+    if(nstack->rdf_ms_uri) {
+      nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_ms_uri);
+      nstack->rdf_ms_uri=NULL;
+    }
+    if(nstack->rdf_schema_uri) {
+      nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_schema_uri);
+      nstack->rdf_schema_uri=NULL;
+    }
   }
 
   nstack->uri_handler=(raptor_uri_handler*)NULL;
@@ -508,8 +530,11 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
   if(ns_uri_string && !*ns_uri_string)
     ns_uri_string=NULL;
 
-  if(ns_uri_string)
+  if(ns_uri_string) {
     ns_uri=raptor_new_uri(ns_uri_string);
+    if(!ns_uri)
+      return NULL;
+  }
   ns=raptor_new_namespace_from_uri(nstack, prefix, ns_uri, depth);
   if(ns_uri)
     raptor_free_uri(ns_uri);
