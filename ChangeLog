@@ -1,9 +1,250 @@
+2007-09-23  Dave Beckett <dave@dajobe.org>
+
+	* examples, tests, docs, docs/tmpl: props
+
+	* docs/tmpl/section-uri-factory.sgml, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-xml-namespace.sgml: Updated gtkdoc templates for
+	raptor_uri_compare
+
+2007-09-21  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_namespace.c:
+	(raptor_new_namespace): Check for alloc failures and clean up on
+	error.
+	(raptor_namespaces_init): Changed to return an error code.
+
+	* src/raptor_parse.c: (raptor_parse): Check for alloc
+	failures. Clean up on failure.
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_start_element_handler)
+	return on fatal error, do not use NULL pointers.
+	(raptor_rdfxml_end_element_grammar) abort() after reporting a
+	fatal error.
+
+	* src/raptor_serialize.c: (raptor_new_serializer): Check for alloc
+	failures. Clean up on failure.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_init):
+	Check for alloc failures. Clean up on failure.
+
+	* src/raptor_namespace.c: raptor_namespace.c: Fix comment typo
+
+	* src/raptor_abbrev.c: (raptor_abbrev_subject_add_property) Free
+	passed in nodes on error.
+
+	* src/raptor_abbrev.c, src/raptor_sequence.c: raptor_sequence:
+	Delete items to be inserted on error.
+	Fixes Issue#0000237 http://bugs.librdf.org/mantis/view.php?id=237
+
+	* src/fix-bison: bison parsers / fix-bison: Fix compiler warning
+	about empty declarations (remove semicolon).
+
+	* src/raptor_parse.c: (raptor_guess_parser_name) Fix compiler
+	warnings about unnecessary const cast
+
+	* src/raptor_rfc2396.c: (raptor_new_uri_detail) Check for alloc
+	failure.
+
+	* src/raptor_serialize_rdfxml.c: raptor_serialize_rdfxml: Fix
+	compiler warnings about uninitialized variables.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_ensure_writen_header)
+	Fix compiler warning about uninitialized variable.
+
+	* src/raptor_xml_writer.c: (raptor_iostream_write_xml_element_start)
+	Check for alloc failure
+
+	* src/raptor_internal.h: raptor_internal.h: Allow
+	RAPTOR_WWW_BUFFER_SIZE to be externally defined. Can save stack
+	space in some resource-constrained environments with smaller
+	buffers.
+
+	* src/raptor_internal.h: raptor_internal.h: Allow
+	RAPTOR_ASSERT_DIE to be externally defined e.g. in a makefile.
+
+	* src/raptor_internal.h: raptor_internal.h: Rearrange include file
+	guards to include stdlib.h without dmalloc.
+
+	* src/raptor_general.c: (raptor_init) Set initialized flag early
+	to allow cleanup with raptor_finish() on init errors.
+
+	* src/raptor_general.c: (raptor_log_error) Do not abort() on fatal
+	messages - leave it up to caller to enable resource cleanup.
+
+	* src/raptor_general.c: (raptor_statement_part_as_counted_string)
+	Fix compiler warnings about uninitialized variables.
+
+	* src/raptor_rss_common.c, src/raptor_sax2.c: Fix compiler
+	warnings about possible unwanted semicolons
+
+	* src/raptor_serialize.c: Fix typos in comments
+
+	* src/raptor_sax2.c: Fix indent
+
+	* Makefile.am, autogen.sh, configure.ac, data/Makefile.am,
+	docs/Makefile.am, examples/Makefile.am, src/Makefile.am,
+	tests/22-rdf-syntax-ns.rdf, tests/Makefile.am,
+	tests/all-escape.rdf, tests/bad-00.rdf, tests/bad-01.rdf,
+	tests/bad-02.rdf, tests/bad-03.rdf, tests/bad-04.rdf,
+	tests/bad-05.rdf, tests/bad-06.rdf, tests/bad-07.rdf,
+	tests/bad-08.rdf, tests/bad-09.rdf, tests/bad-10.rdf,
+	tests/bad-11.rdf, tests/bad-12.rdf, tests/bad-13.rdf,
+	tests/bad-14.rdf, tests/bad-15.rdf, tests/bad-16.rdf,
+	tests/bad-17.rdf, tests/bad-18.rdf, tests/bad-19.rdf,
+	tests/bad-20.rdf, tests/bad-21.rdf, tests/bad-22.rdf,
+	tests/bad-23.rdf, tests/daml-oil.rdf, tests/ex-00.rdf,
+	tests/ex-01.rdf, tests/ex-02.rdf, tests/ex-03.rdf,
+	tests/ex-04.rdf, tests/ex-05.rdf, tests/ex-06.rdf,
+	tests/ex-07.rdf, tests/ex-08.rdf, tests/ex-09.rdf,
+	tests/ex-10.rdf, tests/ex-11.rdf, tests/ex-12.rdf,
+	tests/ex-13.rdf, tests/ex-14.rdf, tests/ex-15.rdf,
+	tests/ex-16.rdf, tests/ex-17.rdf, tests/ex-18.rdf,
+	tests/ex-19.rdf, tests/ex-20.rdf, tests/ex-21.rdf,
+	tests/ex-22.rdf, tests/ex-23.rdf, tests/ex-24.rdf,
+	tests/ex-25.rdf, tests/ex-26.rdf, tests/ex-27.rdf,
+	tests/ex-28.rdf, tests/ex-29.rdf, tests/ex-30.rdf,
+	tests/ex-31.rdf, tests/ex-32.rdf, tests/ex-33.rdf,
+	tests/ex-34.rdf, tests/ex-35.rdf, tests/ex-36.rdf,
+	tests/ex-37.rdf, tests/ex-38.rdf, tests/ex-39.rdf,
+	tests/ex-40.rdf, tests/ex-41.rdf, tests/ex-42.rdf,
+	tests/ex-43.rdf, tests/ex-44.rdf, tests/ex-45.rdf,
+	tests/ex-46.rdf, tests/ex-47.rdf, tests/ex-48.rdf,
+	tests/ex-49.rdf, tests/ex-51.rdf, tests/ex-53.rdf,
+	tests/ex-54.rdf, tests/ex-55.rdf, tests/ex-56.rdf,
+	tests/ex-57.rdf, tests/ex-58.rdf, tests/ex-59.rdf,
+	tests/ex-60.rdf, tests/ex-61.rdf, tests/ex-62.rdf,
+	tests/turtle/Makefile.am, tests/turtle/bad-00.ttl,
+	tests/turtle/bad-01.ttl, tests/turtle/bad-02.ttl,
+	tests/turtle/bad-03.ttl, tests/turtle/bad-04.ttl,
+	tests/turtle/bad-05.ttl, tests/turtle/bad-06.ttl,
+	tests/turtle/bad-07.ttl, tests/turtle/bad-08.ttl,
+	tests/turtle/bad-09.ttl, tests/turtle/bad-10.ttl,
+	tests/turtle/bad-11.ttl, tests/turtle/bad-12.ttl,
+	tests/turtle/bad-13.ttl, tests/turtle/bad-14.ttl,
+	tests/turtle/manifest-bad.ttl, tests/turtle/manifest.ttl,
+	tests/turtle/rdf-schema.out, tests/turtle/rdf-schema.ttl,
+	tests/turtle/rdfq-results.out, tests/turtle/rdfq-results.ttl,
+	tests/turtle/rdfs-namespace.out, tests/turtle/rdfs-namespace.ttl,
+	tests/turtle/test-00.out, tests/turtle/test-00.ttl,
+	tests/turtle/test-01.out, tests/turtle/test-01.ttl,
+	tests/turtle/test-02.out, tests/turtle/test-02.ttl,
+	tests/turtle/test-03.out, tests/turtle/test-03.ttl,
+	tests/turtle/test-04.out, tests/turtle/test-04.ttl,
+	tests/turtle/test-05.out, tests/turtle/test-05.ttl,
+	tests/turtle/test-06.out, tests/turtle/test-06.ttl,
+	tests/turtle/test-07.out, tests/turtle/test-07.ttl,
+	tests/turtle/test-08.out, tests/turtle/test-08.ttl,
+	tests/turtle/test-09.out, tests/turtle/test-09.ttl,
+	tests/turtle/test-10.out, tests/turtle/test-10.ttl,
+	tests/turtle/test-11.out, tests/turtle/test-11.ttl,
+	tests/turtle/test-12.out, tests/turtle/test-12.ttl,
+	tests/turtle/test-13.out, tests/turtle/test-13.ttl,
+	tests/turtle/test-14.out, tests/turtle/test-14.ttl,
+	tests/turtle/test-15.out, tests/turtle/test-15.ttl,
+	tests/turtle/test-16.out, tests/turtle/test-16.ttl,
+	tests/turtle/test-17.out, tests/turtle/test-17.ttl,
+	tests/turtle/test-18.out, tests/turtle/test-18.ttl,
+	tests/turtle/test-19.out, tests/turtle/test-19.ttl,
+	tests/turtle/test-20.out, tests/turtle/test-20.ttl,
+	tests/turtle/test-21.out, tests/turtle/test-21.ttl,
+	tests/turtle/test-22.out, tests/turtle/test-22.ttl,
+	tests/turtle/test-23.out, tests/turtle/test-23.ttl,
+	tests/turtle/test-24.out, tests/turtle/test-24.ttl,
+	tests/turtle/test-25.out, tests/turtle/test-25.ttl,
+	tests/turtle/test-26.out, tests/turtle/test-26.ttl,
+	tests/turtle/test-27.out, tests/turtle/test-27.ttl,
+	tests/turtle/test-28-out.ttl, tests/turtle/test-28.out,
+	tests/turtle/test-28.ttl, tests/turtle/test-29.out,
+	tests/turtle/test-29.ttl, tests/turtle/test-30.out,
+	tests/turtle/test-30.ttl, utils/Makefile.am, win32/Makefile.am:
+	Fix EOL issues when building svn version on cygwin.
+	Partial fix to http://bugs.librdf.org/mantis/view.php?id=236
+
+	* tests/Makefile.am, tests/turtle/Makefile.am: Added $(EXEEXT)s to
+	Makefiles to fix "make clean" on cygwin. Partial fix to
+	Issue#0000235 http://bugs.librdf.org/mantis/view.php?id=235
+
+	* autogen.sh: raptor autogen.sh $dir quoting. Partial fix to
+	Issue#0000234 http://bugs.librdf.org/mantis/view.php?id=234
+
+2007-09-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
+	Check for presence of html in the mime type correctly.
+
+2007-09-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c: (raptor_parse_uri_with_connection): Ensure a
+	parser is started if it wasn't started during WWW retrieval -
+	typically this is only if the file was empty (o bytes).  Some RDF
+	syntaxes are legal as an empty file so can produce a valid empty
+	graph, such as N-Triples and Turtle.
+
+2007-09-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_turtle_writer.c: Add xsd boolean, decimal, double,
+	integer URIs to structure
+	(raptor_turtle_writer_literal): Use raptor_uri_equal instead of
+	strcmps.  In Redland, this means no strcmps.
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_start):
+	Remove call to raptor_turtle_writer_base since
+	raptor_new_turtle_writer will do it if necessary.
+
+	* src/raptor_turtle_writer.c: (raptor_new_turtle_writer): Call
+	raptor_turtle_writer_base with initial base URI if there is one.
+	(raptor_turtle_writer_base): Adedd. Back to possibly generating a
+	relative base, allowing this to be called multiple times and
+	setting the actual writer base URI, potentially to NULL.
+	(main): Adjust expected result to expect an @base
+
+	* tests/turtle/test-28-out.ttl: @base and relative prefix
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c: (raptor_turtle_writer_base): Added to
+	generate @base as an absolute URI.
+	(raptor_turtle_serialize_start): Call it if there is an output
+	base URI.
+
+2007-09-16  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: Add raptor_uri compare_func funcs
+
+	* tests/turtle/manifest.ttl: Added test-26 to test-30 to manifest.
+
+	* src/raptor_uri.c: (main): Ensure called is inited
+
+	* src/raptor_uri.c: (main): Add tests for raptor_uri_compare and
+	interface versioning.
+
+	* src/raptor_uri.c: (raptor_uri_set_handler): Adjust handler to
+	not have to point to const data and to have V1 or V2 declared by
+	setting the initialised field.  Truncate it to 1 or 2.
+	(raptor_uri_compare): Use interface version to decide whether to
+	invoke the uri_compare method.
+	(struct raptor_uri_default_handler): Set URI Interface version to 2.
+
+	* src/raptor.h: (struct raptor_uri_handler): Add URI Interface
+	versions 1 and 2 - adding raptor_uri_compare_func.  Overload the
+	'initialised' field to store the API version.  Existing Redland
+	sets that to 1.
+	(raptor_uri_set_handler): Adjust handler to not have to point to
+	const data.
+
+	* configure.ac, docs/libraptor.3, docs/raptor-parsers.xml,
+	raptor.rdf.in, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_parse.c: Remove RDFa support for now
+
+2007-09-15  Dave Beckett <dave@dajobe.org>
+
+	* docs/libraptor.3: 1.4.16
+
 2007-09-15  Dave Robillard <dave@drobilla.net>
 
 	* src/raptor.h, src/raptor_uri.c: (raptor_uri_handler): Move new
 	raptor_uri_compare method to end of struct to limit ABI breakage.
 
-2007-09-15  Dave Beckett  <dave@dajobe.org>
+2007-09-15  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_internal.h, src/raptor_parse.c, src/raptor_rdfxml.c,
 	src/raptor_set.c: Make raptor_set_test less chatty
@@ -51,23 +292,23 @@
 	    3
 	) .
 
-2007-09-11  Dave Beckett  <dave@dajobe.org>
+2007-09-11  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_lexer.l, src/turtle_parser.y: Added turtle @base
 
 	* tests/turtle/Makefile.am: Adde test-30 for @base
 
-2007-09-08  Dave Beckett  <dave@dajobe.org>
+2007-09-08  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_sax2.c: (raptor_sax2_finish): Reset libxml error
 	handlers to defaults.
 	Fixes Issue#0000232 http://bugs.librdf.org/mantis/view.php?id=232
 
-2007-09-06  Dave Beckett  <dave@dajobe.org>
+2007-09-06  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_common.c: docs fix
 
-2007-09-03  Dave Beckett  <dave@dajobe.org>
+2007-09-03  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_lexer.l: {QUOTEDURI}: Apply turtle escapes to URIs
 
@@ -89,15 +330,15 @@
 	* configure.ac: Make sure to define HAVE_CURL_CURL_H when
 	curl/curl.h is found
 
-2007-09-01  Dave Beckett  <dave@dajobe.org>
+2007-09-01  Dave Beckett <dave@dajobe.org>
 
 	* docs/libraptor.3: Added RDFa
 
-2007-08-28  Dave Beckett  <dave@dajobe.org>
+2007-08-28  Dave Beckett <dave@dajobe.org>
 
 	* docs/libraptor.3: Added description of new 1.4.16 functions
 
-2007-08-27  Dave Beckett  <dave@dajobe.org>
+2007-08-27  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: GRDDL and RDFa
 
@@ -105,7 +346,7 @@
 
 	* docs/rdfcat.c, docs/rdfprint.c, docs/rdfserialize.c: Added C examples
 
-2007-08-26  Dave Beckett  <dave@dajobe.org>
+2007-08-26  Dave Beckett <dave@dajobe.org>
 
 	* docs/raptor-tutorial-parsing.xml: parsing filtering tutorial docs
 
@@ -119,7 +360,7 @@
 	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Added parser
 	feature RAPTOR_FEATURE_WWW_TIMEOUT
 
-2007-08-25  Dave Beckett  <dave@dajobe.org>
+2007-08-25  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_general.c, src/raptor_nfc.c,
 	src/raptor_serialize_ntriples.c, src/raptor_xml.c: Use
@@ -154,7 +395,7 @@
 
 	* docs/libraptor.3: 1.4.16
 
-2007-08-24  Dave Beckett  <dave@dajobe.org>
+2007-08-24  Dave Beckett <dave@dajobe.org>
 
 	* utils/rapper.c: word
 
@@ -162,7 +403,7 @@
 
 	* AUTHORS: Test commit (added undeserving self to AUTHORS).
 
-2007-08-24  Dave Beckett  <dave@dajobe.org>
+2007-08-24  Dave Beckett <dave@dajobe.org>
 
 	* tests/turtle/Makefile.am: (check-turtle-serialize-syntaxs):
 	srcdir added for diff and cmp
@@ -171,7 +412,7 @@
 
 	* AUTHORS: Added Dave Robillard
 
-2007-08-19  Dave Beckett  <dave@dajobe.org>
+2007-08-19  Dave Beckett <dave@dajobe.org>
 
 	* utils/rapper.c: words
 
@@ -184,7 +425,7 @@
 	to mention parser name.  Added a message for the serializer name
 	too.
 
-2007-08-18  Dave Beckett  <dave@dajobe.org>
+2007-08-18  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_parser.y: (raptor_turtle_parser_register_factory):
 	Make default application/x-turtle for now
@@ -196,19 +437,19 @@
 	a missing base URI.
 	Fixes Issue#0000216 http://bugs.librdf.org/mantis/view.php?id=216
 
-2007-08-17  Dave Beckett  <dave@dajobe.org>
+2007-08-17  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor.h: Applied raptor part of symbian portability fix for
 	Issue#0000203 http://bugs.librdf.org/mantis/view.php?id=203
 
-2007-08-14  Dave Beckett  <dave@dajobe.org>
+2007-08-14  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
 	Apply a negative score if html is in the mime type.  Do not
 	recognize as rdf if <html is present or the html namespace is
 	declared.
 
-2007-08-05  Dave Beckett  <dave@dajobe.org>
+2007-08-05  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_xml_writer.c: (main) Quieter unit test
 
@@ -261,7 +502,7 @@
 	tests/turtle/test-28.out: Check test-28 for exact syntax returned
 	as well as triples
 
-2007-08-02  Dave Beckett  <dave@dajobe.org>
+2007-08-02  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_parse.c: (raptor_parse_file_stream): Always NULL
 	terminate the read buffer.
@@ -270,7 +511,7 @@
 	tests/turtle/test-28.ttl: Added test-28.ttl test-28.out for
 	serializing xsd:double
 
-2007-07-29  Dave Beckett  <dave@dajobe.org>
+2007-07-29  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_set.c: (main): Make test silent when successful.
 
@@ -294,11 +535,11 @@
 	* src/Makefile.am, src/raptor_avltree.c, src/raptor_internal.h:
 	Added AVL-Tree code
 
-2007-07-19  Dave Beckett  <dave@dajobe.org>
+2007-07-19  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize.c: docs
 
-2007-07-13  Dave Beckett  <dave@dajobe.org>
+2007-07-13  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_turtle_writer.c: (snprint_turtle_double): Tidy to
 	remove several strlen()s
@@ -308,7 +549,7 @@
 	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_statement):
 	Do not debug die when rdf:Seq node is a blank node.
 
-2007-07-08  Dave Beckett  <dave@dajobe.org>
+2007-07-08  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_start):
 	Pass on the xml declaration feature to the xml writer.
@@ -322,7 +563,7 @@
 	(raptor_grddl_parse_chunk): Check for html <link> available as
 	well as allowed by feature.
 
-2007-07-05  Dave Beckett  <dave@dajobe.org>
+2007-07-05  Dave Beckett <dave@dajobe.org>
 
 	* docs/tmpl/section-feature.sgml, src/raptor.h,
 	src/raptor_feature.c, src/raptor_grddl.c, src/raptor_parse.c,
@@ -331,7 +572,7 @@
 	RAPTOR_FEATURE_HTML_LINK to control GRDDL looking for html <link
 	type="application/rdf+xml" href="uri">
 
-2007-07-04  Dave Beckett  <dave@dajobe.org>
+2007-07-04  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (grddl_free_xml_context): Free the context
 	itself.
@@ -362,7 +603,7 @@
 	multiple type headers appearing, overwriting - such as during an
 	HTTP redirect.
 
-2007-07-03  Dave Beckett  <dave@dajobe.org>
+2007-07-03  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_grddl_discard_message): Report
 	discarded errors when debugging.
@@ -373,7 +614,7 @@
 	* src/raptor_libxml.c: (raptor_libxml_xmlStructuredErrorFunc):
 	Tidy output to say "HTML Parser" not "XML HTML Parser"
 
-2007-07-02  Dave Beckett  <dave@dajobe.org>
+2007-07-02  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: style
 
@@ -393,7 +634,7 @@
 
 	* tests/Makefile.am, tests/ex-62.rdf: Added ex-62 for Issue#0000207
 
-2007-06-23  Dave Beckett  <dave@dajobe.org>
+2007-06-23  Dave Beckett <dave@dajobe.org>
 
 	* src/snprintf.c: style, ANSI C and std headers
 
@@ -401,7 +642,7 @@
 	http://dev.mutt.org/hg/mutt/file/55cd4cb611d9/snprintf.c Last
 	Modified: Tue Aug 08 22:49:12 2006 +0000.
 
-2007-06-20  Dave Beckett  <dave@dajobe.org>
+2007-06-20  Dave Beckett <dave@dajobe.org>
 
 	* raptor.rdf.in: Set Project URI
 	Update syntaxes
@@ -411,7 +652,7 @@
 	creating directories or writing to network.
 	(raptor_terminate_parser_grddl_common): Tidy up xslt security prefs.
 
-2007-06-19  Dave Beckett  <dave@dajobe.org>
+2007-06-19  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor.h: raptor_graph_handler without const uri
 
@@ -465,7 +706,7 @@
 
 	* src/turtle_lexer.l: Add { } and :- for TRiG
 
-2007-06-12  Dave Beckett  <dave@dajobe.org>
+2007-06-12  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_grddl_run_grddl_transform_uri): Hack
 	locator URI so errors with XSLT are reported against that URI not
@@ -498,7 +739,7 @@
 	enable html_base_processing.  Conditionalise XML Include
 	processing with xinclude_processing flag.
 
-2007-06-10  Dave Beckett  <dave@dajobe.org>
+2007-06-10  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Debug message madness!
 	(raptor_grddl_parse_chunk): After xinclude processing, reserialize
@@ -601,7 +842,7 @@
 	(raptor_grddl_run_grddl_transform_uri): Pass on the xml context to
 	the above.
 
-2007-06-09  Dave Beckett  <dave@dajobe.org>
+2007-06-09  Dave Beckett <dave@dajobe.org>
 
 	* docs/tmpl/section-www.sgml: Added
 	raptor_www_set_connection_timeout
@@ -644,7 +885,7 @@
 	(raptor_grddl_run_grddl_transform_uri): Take a grddl_xml_context*
 	arg instead of raptor_uri.
 
-2007-06-06  Dave Beckett  <dave@dajobe.org>
+2007-06-06  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Added grddl_xml_context structure.
 	Transform and profile URI raptor_sequences are now sequences of
@@ -700,7 +941,7 @@
 	tests/turtle/test-27.ttl: Added turtle test test-27 for scope of
 	@prefix
 
-2007-06-04  Dave Beckett  <dave@dajobe.org>
+2007-06-04  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Do an additional RDF/XML parse of content
 	that is found to be RDF/XML by mime type during recursive GRDDL,
@@ -751,18 +992,18 @@
 	(raptor_grddl_filter_triples, raptor_grddl_parse_chunk): Use
 	raptor_grddl_add_transform_uri.
 
-2007-06-03  Dave Beckett  <dave@dajobe.org>
+2007-06-03  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac, src/raptor_grddl.c, src/raptor_internal.h,
 	src/raptor_parse.c: Add RDFa parser
 
-2007-05-27  Dave Beckett  <dave@dajobe.org>
+2007-05-27  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize.c: (raptor_serializer_register_factory):
 	Fix debug call with RAPTOR_DEBUG>1
 	Fixes Issue#0000195 http://bugs.librdf.org/mantis/view.php?id=195
 
-2007-05-26  Dave Beckett  <dave@dajobe.org>
+2007-05-26  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_uri.c: (raptor_uri_filename_to_uri_string): Make
 	path_max bigger *2, not smaller /4.
@@ -777,18 +1018,18 @@
 	* src/raptor.h: Allow _declspec and __declspec
 	Fixes Issue#0000188 http://bugs.librdf.org/mantis/view.php?id=188
 
-2007-05-23  Dave Beckett  <dave@dajobe.org>
+2007-05-23  Dave Beckett <dave@dajobe.org>
 
 	* docs/tmpl/section-feature.sgml: Add RAPTOR_FEATURE_HTML_TAG_SOUP
 
-2007-05-21  Dave Beckett  <dave@dajobe.org>
+2007-05-21  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac: Check for libxml/nanohttp.h only once the
 	xml-config include paths have been setup.
 
 	* configure.ac: Add -Wformat-security
 
-2007-05-14  Dave Beckett  <dave@dajobe.org>
+2007-05-14  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Use
 	HTML_PARSE_RECOVER if available
@@ -824,7 +1065,7 @@
 	parser and if that fails, HTML parser.  HTML parser is run with no
 	errors or warnings.
 
-2007-05-11  Dave Beckett  <dave@dajobe.org>
+2007-05-11  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_parser.y: (raptor_turtle_parse_recognise_syntax):
 	Look for turtle @prefix and rdf namespace use in buffer.
@@ -838,22 +1079,22 @@
 	* tests/turtle/Makefile.am, tests/turtle/test-26.out,
 	tests/turtle/test-26.ttl: Add test-26
 
-2007-05-10  Dave Beckett  <dave@dajobe.org>
+2007-05-10  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rdfxml.c: 's
 
-2007-05-09  Dave Beckett  <dave@dajobe.org>
+2007-05-09  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
 	Recognize rdf entities as namespaces.  Add bonus points for using
 	the words rdf and rdf
 
-2007-05-08  Dave Beckett  <dave@dajobe.org>
+2007-05-08  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_recognise_syntax):
 	Only use first 512 bytes of content for hunting for namespaces.
 
-2007-04-26  Dave Beckett  <dave@dajobe.org>
+2007-04-26  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_internal.h: struct raptor_www_s loses useless
 	old_handler field for www_libxml
@@ -870,7 +1111,7 @@
 
 	* src/parsedate.y: Prototype for raptor_parse_date
 
-2007-04-24  Dave Beckett  <dave@dajobe.org>
+2007-04-24  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_general.c: raptor_log_level_labels make it the right size
 
@@ -894,11 +1135,11 @@
 	of user_data and handlers and a magic field to check that an
 	error_handler pointer is valid.
 
-2007-04-22  Dave Beckett  <dave@dajobe.org>
+2007-04-22  Dave Beckett <dave@dajobe.org>
 
 	* autogen.sh: Update autogen.sh
 
-2007-04-14  Dave Beckett  <dave@dajobe.org>
+2007-04-14  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_turtle.c: (raptor_turtle_emit_literal,
 	raptor_turtle_emit_xml_literal): Send namespace stack to
@@ -914,7 +1155,7 @@
 	* src/raptor_parse.c: (raptor_guess_parser_name): Make suffix
 	decoding work again
 
-2007-04-10  Dave Beckett  <dave@dajobe.org>
+2007-04-10  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rss.c: (raptor_rss_parse_recognise_syntax): One more
 	addition in the neverending guesswork that is rss tag soup.  This
@@ -924,13 +1165,13 @@
 	* src/raptor_parse.c: (raptor_guess_parser_name): Discard suffixes
 	that are not '\.[a-zA-Z0-9]+$'
 
-2007-03-27  Dave Beckett  <dave@dajobe.org>
+2007-03-27  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac: Check for curl header after inserting any cflags
 	from curl-config.  This lets the curl test work when curl the
 	includes are not in the usual places
 
-2007-03-26  Dave Beckett  <dave@dajobe.org>
+2007-03-26  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac, src/win32_raptor_config.h: Bumped version to
 	1.4.16
@@ -945,7 +1186,7 @@
 	type heuristics ignore anything with html in it so XHTML mime type
 	is ignored.
 
-2007-03-25  Dave Beckett  <dave@dajobe.org>
+2007-03-25  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_internal.h: raptor_uri_detail_s gains is_hierarchical
 	flag.
@@ -968,7 +1209,7 @@
 	stderr.  Only results of parsing and the help (-h/--help) message
 	goes to stdout now.
 
-2007-03-22  Dave Beckett  <dave@dajobe.org>
+2007-03-22  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_xml_writer.c, src/ntriples_parse.c,
 	src/raptor_grddl.c, src/raptor_parse.c: Casts for C++
@@ -979,7 +1220,7 @@
 
 	* src/raptor_rss.h: Fix CONTENT_NAMESPACE_URI to correct URI
 
-2007-03-19  Dave Beckett  <dave@dajobe.org>
+2007-03-19  Dave Beckett <dave@dajobe.org>
 
 	* utils/rapper.c: NULL base URI
 
@@ -994,7 +1235,7 @@
 	* src/raptor_www_curl.c: (raptor_www_curl_fetch): Enhance failure
 	error message
 
-2007-03-15  Dave Beckett  <dave@dajobe.org>
+2007-03-15  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_rss.c: Adjust the xml:base attribute adding
 	to put it next to the raptor_xml_writer_start_element of the root
@@ -1016,7 +1257,7 @@
 	URI is given.
 	Addresses Issue #0000174 http://bugs.librdf.org/mantis/view.php?id=174
 
-2007-03-12  Dave Beckett  <dave@dajobe.org>
+2007-03-12  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rss.c, src/raptor_serialize_rss.c: Replace shared
 	nspaces list with one per rss-parser/serializer.
@@ -1026,7 +1267,7 @@
 	* src/raptor_rfc2396.c: (raptor_uri_resolve_uri_reference): In
 	removing ./ do not go past end of buffer.
 
-2007-03-11  Dave Beckett  <dave@dajobe.org>
+2007-03-11  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s gains
 	content_type, content_type_check and stringbuffer for saved
@@ -1047,7 +1288,7 @@
 	* src/raptor_parse.c: (raptor_guess_parser_name): Add any mime
 	type q <10 to the score, don't lose it entirely.
 
-2007-03-02  Dave Beckett  <dave@dajobe.org>
+2007-03-02  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Alter match_table to look for substrings
 	inside html:link@rel and html:a@rel Delete old hard-coded
@@ -1064,7 +1305,7 @@
 	(raptor_grddl_parse_chunk): No longer ignore validation errors
 	http://lists.w3.org/Archives/Public/public-grddl-comments/2007JanMar/0062.html
 
-2007-02-15  Dave Beckett  <dave@dajobe.org>
+2007-02-15  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_grddl_run_grddl_transform_uri):
 	Return a warning and do not fail if XSLT sheet is not found
@@ -1104,7 +1345,7 @@
 	prototypes for raptor_parser_save_content and
 	raptor_parser_get_content
 
-2007-02-12  Dave Beckett  <dave@dajobe.org>
+2007-02-12  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_grddl_parse_init): Update
 	raptor_new_sax2 call. Delete raptor_sax2_set_locator.
@@ -1164,7 +1405,7 @@
 
 	* utils/rapper.c: help text for -t/--trace
 
-2007-02-11  Dave Beckett  <dave@dajobe.org>
+2007-02-11  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_libxml.c: #if LIBXML_VERSION >= not >
 
@@ -1185,7 +1426,7 @@
 	Added for sending libxml structured error messages back to a
 	parser.
 
-2007-02-10  Dave Beckett  <dave@dajobe.org>
+2007-02-10  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: Add XInclude headers
 	(raptor_grddl_filter_triples): Renamed from
@@ -1217,7 +1458,7 @@
 	(raptor_turtle_parser_register_factory): Register low interest in
 	text/rdf+n3 when N3 parser is not around.
 
-2007-02-06  Dave Beckett  <dave@dajobe.org>
+2007-02-06  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Tidy up doc and
 	xpath context on errors or success so that it is initialised next
@@ -1226,14 +1467,14 @@
 	* src/raptor_grddl.c: (raptor_grddl_parser_add_parent): Do not set
 	parent twice
 
-2007-01-31  Dave Beckett  <dave@dajobe.org>
+2007-01-31  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac, src/win32_raptor_config.h: Bumped version to
 	1.4.15
 
 	* Snapshotted raptor_1_4_14 for 1.4.14 release (SVN r11863)
 
-2007-01-28  Dave Beckett  <dave@dajobe.org>
+2007-01-28  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: (raptor_libxslt_error_common): Added.
 	(raptor_grddl_xsltGenericError_handler): Added.
@@ -1254,7 +1495,7 @@
 	processing head profile URIs, strip out the GRDDL profile URI
 	before adding them to the grddl_parser->profile_uris sequence.
 
-2007-01-27  Dave Beckett  <dave@dajobe.org>
+2007-01-27  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac: Add AC_CHECK_FUNC(xsltInit)
 
@@ -1282,7 +1523,7 @@
 	* src/raptor.h: Move raptor_turtle_writer to raptor_internal.h for
 	now.
 
-2007-01-26  Dave Beckett  <dave@dajobe.org>
+2007-01-26  Dave Beckett <dave@dajobe.org>
 
 	* src/n3_parser.y, src/ntriples_parse.c, src/raptor_general.c,
 	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Rename
@@ -1300,11 +1541,11 @@
 	(raptor_parser_internal_generate_id): Renamed from
 	raptor_generate_id.
 
-2007-01-16  Dave Beckett  <dave@dajobe.org>
+2007-01-16  Dave Beckett <dave@dajobe.org>
 
 	* utils/rapper.c: Add a another raptor_finish() before exit
 
-2007-01-14  Dave Beckett  <dave@dajobe.org>
+2007-01-14  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: struct raptor_grddl_parser_context_s loses
 	xpathObj
@@ -1337,7 +1578,7 @@
 
 	* src/raptor_general.c: 2007 and add raptor_license_string
 
-2007-01-07  Dave Beckett  <dave@dajobe.org>
+2007-01-07  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_abbrev.c: (raptor_new_abbrev_node): Initialise with
 	ref_count 1
@@ -1370,7 +1611,7 @@
 	* tests/turtle/Makefile.am: Add check-turtle-serialize to
 	check-local
 
-2007-01-05  Dave Beckett  <dave@dajobe.org>
+2007-01-05  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor-config.1: Document --private-libs and explain what it
 	is under --libs too.
