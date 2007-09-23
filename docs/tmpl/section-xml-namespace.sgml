@@ -63,6 +63,7 @@ XML documents where inner namespaces can override outer ones.
 @error_handler: 
 @error_data: 
 @defaults: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_namespaces_clear ##### -->

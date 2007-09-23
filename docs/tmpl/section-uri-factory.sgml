@@ -91,3 +91,14 @@ Normally used by redland to replace #raptor_uri with #librdf_uri
 @Returns: 
 
 
+<!-- ##### USER_FUNCTION raptor_uri_compare_func ##### -->
+<para>
+
+</para>
+
+@context: 
+@uri1: 
+@uri2: 
+@Returns: 
+
+

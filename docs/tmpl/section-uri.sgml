@@ -37,11 +37,11 @@ current access to internals of URIs such as URI scheme, path, authority.
 @new_uri_for_rdf_concept: 
 @free_uri: 
 @uri_equals: 
-@uri_compare: 
 @uri_copy: 
 @uri_as_string: 
 @uri_as_counted_string: 
 @initialised: 
+@uri_compare: 
 
 <!-- ##### FUNCTION raptor_new_uri ##### -->
 <para>
@@ -97,6 +97,16 @@ current access to internals of URIs such as URI scheme, path, authority.
 </para>
 
 @uri: 
+
+
+<!-- ##### FUNCTION raptor_uri_compare ##### -->
+<para>
+
+</para>
+
+@uri1: 
+@uri2: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_uri_equals ##### -->
