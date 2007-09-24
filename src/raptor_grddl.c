@@ -879,9 +879,8 @@ static void
 raptor_grddl_discard_message(void *user_data, raptor_locator* locator,
                              const char *message)
 {
-#ifdef RAPTOR_DEBUG
-  fprintf(stderr, "Discarded error message: %s\n", message);
-#endif
+  RAPTOR_DEBUG3("%s: Discarded error message: %s\n", 
+                raptor_uri_as_string(locator->uri), message);
   return;
 }
 
