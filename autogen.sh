@@ -57,13 +57,13 @@ fi
 # automake 1.9 requires autoconf 2.58
 # automake 1.8 requires autoconf 2.58
 # automake 1.7 requires autoconf 2.54
-automake_min_vers=1.7
+automake_min_vers=107
 aclocal_min_vers=$automake_min_vers
-autoconf_min_vers=2.54
+autoconf_min_vers=254
 autoheader_min_vers=$autoconf_min_vers
-libtoolize_min_vers=1.4
-gtkdocize_min_vers=1.3
-swig_min_vers=1.3.24
+libtoolize_min_vers=104
+gtkdocize_min_vers=103
+swig_min_vers=324 # last 2 components of 1.3.24
 
 # Default program arguments
 automake_args="--add-missing"
@@ -100,9 +100,9 @@ update_prog_version() {
   eval env=\$${ucprog}
   if test X$env != X; then
     prog_name=$env
-    prog_vers=`$prog_name --version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
+    prog_vers=`$prog_name --version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
     if [ "X$prog_vers" = "X" ]; then
-      prog_vers=`$prog_name -version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
+      prog_vers=`$prog_name -version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
     fi
     eval ${prog}_name=${prog_name}
     eval ${prog}_vers=${prog_vers}
@@ -125,9 +125,9 @@ update_prog_version() {
   names=`ls $prog* 2>/dev/null`
   if [ "X$names" != "X" ]; then
     for name in $names; do
-      vers=`$name --version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
+      vers=`$name --version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
       if [ "X$vers" = "X" ]; then
-        vers=`$name -version 2>&1 | grep -i "^$prog" | awk '{print $NF; exit 0}'`
+        vers=`$name -version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
         if [ "X$vers" = "X" ]; then
           continue
         fi
