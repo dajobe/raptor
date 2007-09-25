@@ -207,6 +207,8 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
       nspace_declarations[0].declaration=
         raptor_namespaces_format(element->name->nspace,
                                  &nspace_declarations[0].length);
+      if(!nspace_declarations[0].declaration)
+        goto error;
       nspace_declarations[0].nspace=element->name->nspace;
       nspace_declarations_count++;
     }
@@ -233,6 +235,8 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
             nspace_declarations[nspace_declarations_count].declaration=
               raptor_namespaces_format(element->attributes[i]->nspace,
                                        &nspace_declarations[nspace_declarations_count].length);
+            if(!nspace_declarations[nspace_declarations_count].declaration)
+              goto error;
             nspace_declarations[nspace_declarations_count].nspace=element->attributes[i]->nspace;
             nspace_declarations_count++;
           }
@@ -259,6 +263,8 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
         nspace_declarations[nspace_declarations_count].declaration=
           raptor_namespaces_format(nspace,
                                    &nspace_declarations[nspace_declarations_count].length);
+        if(!nspace_declarations[nspace_declarations_count].declaration)
+          goto error;
         nspace_declarations[nspace_declarations_count].nspace=nspace;
         nspace_declarations_count++;
       }
@@ -293,9 +299,10 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration=NULL;
 
-      raptor_namespace_copy(nstack,
-                            (raptor_namespace*)nspace_declarations[i].nspace,
-                            depth);
+      if(raptor_namespace_copy(nstack,
+                               (raptor_namespace*)nspace_declarations[i].nspace,
+                               depth))
+        goto error;
     }
   }
 
@@ -335,6 +342,19 @@ raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
     RAPTOR_FREE(stringarray, nspace_declarations);
 
   return 0;
+
+  /* Clean up nspace_declarations on error */
+  error:
+
+  for (i=0; i < nspace_declarations_count; i++) {
+    if(nspace_declarations[i].declaration)
+      RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
+  }
+
+  if(nspace_declarations)
+    RAPTOR_FREE(stringarray, nspace_declarations);
+
+  return 1;
 }
 
 
