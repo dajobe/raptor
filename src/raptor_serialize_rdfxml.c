@@ -398,6 +398,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       
     if(!name || (name == uri_string)) {
       raptor_serializer_error(serializer, "Cannot split predicate URI %s into an XML qname - skipping statement", uri_string);
+      rc=0; /* skip but do not return an error */
       goto tidy;
     }
 
