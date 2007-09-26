@@ -1327,11 +1327,11 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
   if(!string)
     return NULL;
   
-  new_string=(unsigned char*)RAPTOR_MALLOC(cstring, len + sizeof(char*));
+  new_string=(unsigned char*)RAPTOR_MALLOC(cstring, len + 1); /* +1 for NUL termination */
   if(!new_string)
     return NULL;
   
-  memcpy(new_string, uri, len+1);
+  memcpy(new_string, string, len+1);
 
   if(len_p)
     *len_p=len;
