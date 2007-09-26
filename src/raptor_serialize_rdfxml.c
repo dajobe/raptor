@@ -358,6 +358,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   raptor_namespace* predicate_ns=NULL;
   int free_predicate_ns=0;
   raptor_xml_element* predicate_element=NULL;
+  int end_predicate_element=0;
   raptor_qname **attrs=NULL;
   int attrs_count=0;
   raptor_uri* base_uri=NULL;
@@ -381,6 +382,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     /* Do not use raptor_uri_as_counted_string() - we want a modifiable copy */
     uri_string=raptor_uri_to_counted_string((raptor_uri*)statement->predicate,
                                             &uri_len);
+    if(!uri_string)
+      goto oom;
 
     p= uri_string;
     name_len=uri_len;
@@ -400,10 +403,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
     c=*name; *name='\0';
     predicate_ns_uri=raptor_new_uri(uri_string);
-    if(!predicate_ns_uri) {
-      raptor_serializer_error(serializer, "Cannot create URI from string %s", uri_string);
-      goto tidy;
-    }
+    if(!predicate_ns_uri)
+      goto oom;
     *name=c;
     
     predicate_ns=raptor_namespaces_find_namespace_by_uri(context->nstack,
@@ -413,9 +414,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                                  nsprefix,
                                                  predicate_ns_uri, 0);
       if(!predicate_ns) {
-        raptor_serializer_error(serializer, "Cannot create namespace from URI");
         raptor_free_uri(predicate_ns_uri);
-        goto tidy;
+        goto oom;
       }
       free_predicate_ns=1;
     }
@@ -550,6 +550,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
         raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"    ", 4);
         raptor_xml_writer_start_element(xml_writer, predicate_element);
+        end_predicate_element=1;
 
         /* Print without escaping XML */
         if(len)
@@ -569,6 +570,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         raptor_xml_writer_cdata_counted(xml_writer, 
                                         (const unsigned char*)"    ", 4);
         raptor_xml_writer_start_element(xml_writer, predicate_element);
+        end_predicate_element=1;
 
         if(len)
           raptor_xml_writer_cdata_counted(xml_writer,
@@ -576,6 +578,9 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       }
 
       raptor_xml_writer_end_element(xml_writer, predicate_element);
+      end_predicate_element=0;
+      raptor_free_xml_element(predicate_element);
+      predicate_element=NULL;
       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
 
       break;
@@ -645,8 +650,6 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
   raptor_xml_writer_cdata_counted(xml_writer, 
                                   (const unsigned char*)"  ", 2);
-  raptor_xml_writer_end_element(xml_writer, rdf_Description_element);
-  raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
 
   rc=0; /* success */
   goto tidy;
@@ -659,11 +662,17 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   if(attrs)
     RAPTOR_FREE(qnamearray, attrs);
 
-  if(predicate_element)
+  if(predicate_element) {
+    if(end_predicate_element)
+      raptor_xml_writer_end_element(xml_writer, predicate_element);
     raptor_free_xml_element(predicate_element);
+  }
 
-  if(rdf_Description_element)
+  if(rdf_Description_element) {
+    raptor_xml_writer_end_element(xml_writer, rdf_Description_element);
+    raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
     raptor_free_xml_element(rdf_Description_element);
+  }
 
   if(free_predicate_ns)
     raptor_free_namespace(predicate_ns);
@@ -682,14 +691,14 @@ raptor_rdfxml_serialize_end(raptor_serializer* serializer)
   raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context;
   raptor_xml_writer* xml_writer=context->xml_writer;
 
-  if(xml_writer) {
-    raptor_rdfxml_ensure_writen_header(serializer, context); /* ignore ret value */
-
-    raptor_xml_writer_end_element(xml_writer, context->rdf_RDF_element);
-    raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
-  }
-
   if(context->rdf_RDF_element) {
+    if(xml_writer) {
+      raptor_rdfxml_ensure_writen_header(serializer, context); /* ignore ret value */
+
+      raptor_xml_writer_end_element(xml_writer, context->rdf_RDF_element);
+      raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
+    }
+
     raptor_free_xml_element(context->rdf_RDF_element);
     context->rdf_RDF_element=NULL;
   }
