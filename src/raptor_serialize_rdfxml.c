@@ -333,6 +333,8 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
 
   context->written_header=1;
+
+  return 0;
 }
 
 
