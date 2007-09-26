@@ -122,6 +122,8 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
         raptor_uri* new_uri;
 
         new_fragment=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)fragment) + 1 + sizeof(char*));
+        if(!new_fragment)
+          return NULL;
         *new_fragment='#';
         strcpy((char*)new_fragment+1, (const char*)fragment);
         new_uri=raptor_new_uri_relative_to_base(uri, new_fragment);
@@ -804,7 +806,8 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
     if(ud->fragment) {
       len=ud->fragment_len;
       *fragment_p=(unsigned char*)RAPTOR_MALLOC(cstring, len + sizeof(char*));
-      strncpy((char*)*fragment_p, (const char*)ud->fragment, len+1);
+      if(*fragment_p)
+        strncpy((char*)*fragment_p, (const char*)ud->fragment, len+1);
     } else
       *fragment_p=NULL;
   }
@@ -1030,7 +1033,7 @@ raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first
  *
  * Make a relative URI path.
  *
- * Return value: A newly allocated relative path string
+ * Return value: A newly allocated relative path string or NULL on failure.
  **/
 
 static unsigned char *
@@ -1075,6 +1078,8 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
   /* Create the final relative path */
   final_len = up_dirs*3 + to_dir_len + suffix_len; /* 3 for each "../" */
   final_path=(unsigned char*)RAPTOR_MALLOC(cstring, final_len + sizeof(char*));
+  if(!final_path)
+    return NULL;
   *final_path=0;
   
   /* First, add the necessary "../" parts */
@@ -1147,12 +1152,16 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
 
   reference_str=raptor_uri_as_counted_string(reference_uri, &reference_len);
   reference_detail=raptor_new_uri_detail(reference_str);
+  if(!reference_detail)
+    goto err;
   
   if(!base_uri)
     goto buildresult;
   
   base=raptor_uri_as_counted_string(base_uri, &base_len);
   base_detail=raptor_new_uri_detail(base);
+  if(!base_detail)
+    goto err;
   
   /* Check if the whole URIs are equal */
   if(raptor_uri_equals(base_uri, reference_uri)) {
@@ -1212,6 +1221,8 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
     
     /* Assemble the suffix */
     suffix=(unsigned char*)RAPTOR_MALLOC(cstring, suffix_len + sizeof(char*));
+    if(!suffix)
+      return NULL;
     cur_ptr=suffix;
     if(reference_file) {
       memcpy(suffix, reference_file, reference_file_len);
@@ -1248,13 +1259,16 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
      relative URI, so we'll return a full absolute URI instead. */
   if(!result) {
     result=(unsigned char*)RAPTOR_MALLOC(cstring, reference_len + sizeof(char*));
-    if(reference_len)
-      memcpy(result, reference_str, reference_len);
-    result[reference_len] = 0;
-    if(length_p)
-      *length_p=reference_len;
+    if(result) {
+      if(reference_len)
+        memcpy(result, reference_str, reference_len);
+      result[reference_len] = 0;
+      if(length_p)
+        *length_p=reference_len;
+    }
   }
   
+  err:
   if(base_detail)
     raptor_free_uri_detail(base_detail);
   raptor_free_uri_detail(reference_detail);
