@@ -57,13 +57,13 @@ fi
 # automake 1.9 requires autoconf 2.58
 # automake 1.8 requires autoconf 2.58
 # automake 1.7 requires autoconf 2.54
-automake_min_vers=107
+automake_min_vers=010700
 aclocal_min_vers=$automake_min_vers
-autoconf_min_vers=254
+autoconf_min_vers=025400
 autoheader_min_vers=$autoconf_min_vers
-libtoolize_min_vers=104
-gtkdocize_min_vers=103
-swig_min_vers=324 # last 2 components of 1.3.24
+libtoolize_min_vers=010400
+gtkdocize_min_vers=010300
+swig_min_vers=010324
 
 # Default program arguments
 automake_args="--add-missing"
@@ -100,9 +100,9 @@ update_prog_version() {
   eval env=\$${ucprog}
   if test X$env != X; then
     prog_name=$env
-    prog_vers=`$prog_name --version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
+    prog_vers=`$prog_name --version 2>&1 | perl -ne "if(/^$prog.*?(\S+)\$/i) { my \\$l=\\$1; my(@c)=((map { s/\\D//g; \\$_; } split(/\\./, \\$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \\$_) } @c).\"\\n\"; exit 0;}"`
     if [ "X$prog_vers" = "X" ]; then
-      prog_vers=`$prog_name -version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
+      prog_vers=`$prog_name -version 2>&1 | perl -ne "if(/^$prog.*?(\S+)\$/i) { my \$l=\$1; my(@c)=((map { s/\\D//g; \$_; } split(/\\./, \$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \$_) } @c).\"\\n\"; exit 0;}"`
     fi
     eval ${prog}_name=${prog_name}
     eval ${prog}_vers=${prog_vers}
@@ -125,9 +125,9 @@ update_prog_version() {
   names=`ls $prog* 2>/dev/null`
   if [ "X$names" != "X" ]; then
     for name in $names; do
-      vers=`$name --version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
+      vers=`$name --version 2>&1 | perl -ne "if(/^$prog_name.*?(\S+)\$/i) { my \\$l=\\$1; my(@c)=((map { s/\\D//g; \\$_; } split(/\\./, \\$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \\$_) } @c).\"\\n\"; exit 0;}"`
       if [ "X$vers" = "X" ]; then
-        vers=`$name -version 2>&1 | grep -i "^$prog" | awk '{gsub(/\./," "); print $(NF-1)*100+$NF; exit 0}'`
+        vers=`$name -version 2>&1 | perl -ne "if(/^$prog_name.*?(\S+)\$/i) { my \\$l=\\$1; my(@c)=((map { s/\\D//g; \\$_; } split(/\\./, \\$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \\$_) } @c).\"\\n\"; exit 0;}"`
         if [ "X$vers" = "X" ]; then
           continue
         fi
