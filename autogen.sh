@@ -91,6 +91,41 @@ if test "X$DRYRUN" != X; then
   DRYRUN=echo
 fi
 
+cat > autogen-get-version.pl <<EOF
+use File::Basename;
+my \$prog=basename \$0;
+die "\$prog: USAGE PATH PROGRAM-NAME\n  e.g. \$prog /usr/bin/foo-123 foo\n"
+  unless @ARGV==2;
+
+my(\$path,\$name)=@ARGV;
+exit 0 if !-f \$path;
+die "\$prog: \$path not found\n" if !-r \$path;
+
+my(@vnums);
+for my \$varg (qw(--version -version)) {
+  my \$cmd="\$path \$varg";
+  open(PIPE, "\$cmd 2>&1 |") || next;
+  while(<PIPE>) {
+    chomp;
+    next if @vnums; # drain pipe if we got a vnums
+    next unless /^\$name/;
+    my(\$v)=/(\S+)\$/i; \$v =~ s/-.*\$//;
+    @vnums=grep { defined \$_ && !/^\s*\$/} map { s/\D//g; \$_; } split(/\./, \$v);
+  }
+  close(PIPE);
+  last if @vnums;
+}
+
+@vnums=(@vnums, 0, 0, 0)[0..2];
+print join('', map { sprintf('%02d', \$_) } @vnums)."\n";
+exit 0;
+EOF
+
+autogen_get_version="`pwd`/autogen-get-version.pl"
+
+trap "rm -f $autogen_get_version" 0 1 9 15
+
+
 update_prog_version() {
   dir=$1
   prog=$2
@@ -100,10 +135,8 @@ update_prog_version() {
   eval env=\$${ucprog}
   if test X$env != X; then
     prog_name=$env
-    prog_vers=`$prog_name --version 2>&1 | perl -ne "if(/^$prog.*?(\S+)\$/i) { my \\$l=\\$1; my(@c)=((map { s/\\D//g; \\$_; } split(/\\./, \\$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \\$_) } @c).\"\\n\"; exit 0;}"`
-    if [ "X$prog_vers" = "X" ]; then
-      prog_vers=`$prog_name -version 2>&1 | perl -ne "if(/^$prog.*?(\S+)\$/i) { my \$l=\$1; my(@c)=((map { s/\\D//g; \$_; } split(/\\./, \$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \$_) } @c).\"\\n\"; exit 0;}"`
-    fi
+    prog_vers=`perl $autogen_get_version $prog_name $prog`
+
     eval ${prog}_name=${prog_name}
     eval ${prog}_vers=${prog_vers}
     eval ${prog}_dir=environment
@@ -125,12 +158,9 @@ update_prog_version() {
   names=`ls $prog* 2>/dev/null`
   if [ "X$names" != "X" ]; then
     for name in $names; do
-      vers=`$name --version 2>&1 | perl -ne "if(/^$prog_name.*?(\S+)\$/i) { my \\$l=\\$1; my(@c)=((map { s/\\D//g; \\$_; } split(/\\./, \\$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \\$_) } @c).\"\\n\"; exit 0;}"`
+      vers=`perl $autogen_get_version $dir/$name $prog`
       if [ "X$vers" = "X" ]; then
-        vers=`$name -version 2>&1 | perl -ne "if(/^$prog_name.*?(\S+)\$/i) { my \\$l=\\$1; my(@c)=((map { s/\\D//g; \\$_; } split(/\\./, \\$l)), 0, 0)[0..2]; print join('', map { sprintf('%02d', \\$_) } @c).\"\\n\"; exit 0;}"`
-        if [ "X$vers" = "X" ]; then
-          continue
-        fi
+        continue
       fi
 
       if expr $vers '>' $prog_vers >/dev/null; then
