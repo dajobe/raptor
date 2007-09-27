@@ -286,6 +286,8 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
 
   if(context->written_header)
     return 0;
+
+  context->written_header=1;
   
   xml_writer=context->xml_writer;
 
@@ -331,8 +333,6 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
 
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
-
-  context->written_header=1;
 
   return 0;
 }
