@@ -998,9 +998,12 @@ static void
 raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
-  raptor_free_uri(n3_parser->nil_uri);
-  raptor_free_uri(n3_parser->first_uri);
-  raptor_free_uri(n3_parser->rest_uri);
+  if(n3_parser->nil_uri)
+    raptor_free_uri(n3_parser->nil_uri);
+  if(n3_parser->first_uri)
+    raptor_free_uri(n3_parser->first_uri);
+  if(n3_parser->rest_uri)
+    raptor_free_uri(n3_parser->rest_uri);
 
   raptor_namespaces_clear(&n3_parser->namespaces);
 
