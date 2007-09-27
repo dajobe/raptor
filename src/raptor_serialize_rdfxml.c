@@ -283,6 +283,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
   int i;
   raptor_qname **attrs=NULL;
   int attrs_count=0;
+  int rc=1;
 
   if(context->written_header)
     return 0;
@@ -297,7 +298,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
 
   context->rdf_RDF_element=raptor_new_xml_element_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"RDF", base_uri);
   if(!context->rdf_RDF_element)
-    return 1;
+    goto tidy;
 
   /* NOTE: Starts it item 1 as item 0 is the element's namespace (rdf) 
    * and does not need to be declared
@@ -305,7 +306,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
   for(i=1; i< raptor_sequence_size(context->namespaces); i++) {
     raptor_namespace* ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
     if(raptor_xml_element_declare_namespace(context->rdf_RDF_element, ns))
-      return 1;
+      goto tidy;
   }
   
   if(base_uri) {
@@ -313,13 +314,13 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
 
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
     if(!attrs)
-      return 1;
+      goto tidy;
 
     base_uri_string=raptor_uri_as_string(base_uri);
     attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
     if(!attrs[attrs_count]) {
       RAPTOR_FREE(qnamearray, attrs);
-      return 1;
+      goto tidy;
     }
     attrs_count++;
   }
@@ -334,7 +335,13 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
 
-  return 0;
+  rc=0;
+
+  tidy:
+  if(base_uri)
+    raptor_free_uri(base_uri);
+
+  return rc;
 }
 
 
@@ -674,6 +681,9 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
     raptor_free_xml_element(rdf_Description_element);
   }
+
+  if(base_uri)
+    raptor_free_uri(base_uri);
 
   if(free_predicate_ns)
     raptor_free_namespace(predicate_ns);
