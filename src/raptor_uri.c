@@ -1222,7 +1222,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
     /* Assemble the suffix */
     suffix=(unsigned char*)RAPTOR_MALLOC(cstring, suffix_len + sizeof(char*));
     if(!suffix)
-      return NULL;
+      goto err;
     cur_ptr=suffix;
     if(reference_file) {
       memcpy(suffix, reference_file, reference_file_len);
