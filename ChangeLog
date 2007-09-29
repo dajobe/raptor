@@ -1,4 +1,102 @@
+2007-09-27  Lauri Aalto <laalto@iki.fi>
+
+	* src/n3_parser.y: (raptor_n3_parse_terminate) Do not assume the
+	parser is fully initialized.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_ensure_writen_header,
+	raptor_rdfxml_serialize_statement) Memory leak fixes: make sure
+	base_uri is freed.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_ensure_writen_header)
+	Memory leak fix. Set context->written_header flag early to prevent
+	running the function again when a previous call to this function
+	failed.
+
+	* src/raptor_uri.c: (raptor_uri_to_relative_counted_uri_string)
+	Fix memory leak - free uri details if suffix allocation fails.
+
+2007-09-26  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Added an inline perl script to grep out the version
+	from programs.
+
+2007-09-26  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_statement)
+	Skip statements with bad predicate uris, do not return an error.
+
+	* src/raptor_uri.c: (raptor_default_new_uri,
+	raptor_uri_path_make_relative_path,
+	raptor_uri_to_relative_counted_uri_string,
+	raptor_uri_uri_string_to_filename_fragment) Check for alloc
+	failures.
+
+	* src/raptor_serialize_rdfxml.c:
+	(raptor_rdfxml_serialize_statement) Make sure
+	xml_writer->current_element does not become a dangling pointer on
+	error. 
+	(raptor_rdfxml_serialize_end) No-op if context->rdf_RDF_element is NULL.
+
+	* src/raptor_uri.c: (raptor_uri_to_counted_string) Copy uri
+	string, not uri struct - worked previously with raptor_uris but
+	breaks with librdf_uris. No need to allocate +sizeof(char*).
+
+	* src, tests, utils: Props: ignore .exes
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_ensure_writen_header)
+	Forgot to return 0 on success - oops
+
+2007-09-25  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Use 3-part versions with perl to decode them.  Still
+	broken for autoconf
+
+2007-09-25  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_xml_writer.c: (raptor_iostream_write_xml_element_start)
+	Check for alloc failures and clean up nspace_declarations on
+	failure.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_ensure_writen_header)
+	Check for alloc failures. Return an error code on failure.
+	(raptor_rdfxml_serialize_statement) Check for
+	raptor_rdfxml_ensure_writen_header() return code.
+	(raptor_rdfxml_ensure_writen_header) Ignore
+	raptor_rdfxml_ensure_writen_header() return code in a cleanup
+	function.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_statement)
+	Get a copy of predicate uri string for modification. Check for
+	alloc failures and clean up on error. Refactored to use
+	raptor_new_xml_element_from_namespace_local_name().
+
+	* src/raptor.h, src/raptor_xml.c: Refactoring: Added
+	raptor_new_xml_element_from_namespace_local_name(). Pulled from
+	rasqal_query_results_new_xml_element() - the same xml element
+	creation pattern recurs in other serializers as well.
+
+2007-09-24  Lauri Aalto <laalto@iki.fi>
+
+	* autogen.sh: Do not compare versions as decimal, e.g. automake
+	1.10 should be treated newer than 1.7.
+	(update_prog_version) Convert [z.]x.y version strings to 100x+y.
+
 2007-09-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Revert GRDDL to the main algorithm of around
+	12377 which passes the tests again and
+	Fixes Issue#0000239 http://bugs.librdf.org/mantis/view.php?id=239
+
+	(raptor_grddl_parser_add_parent): Restored.
+	(raptor_grddl_copy_state): Removed
+	(raptor_grddl_new_child_parser): Removed.
+	(raptor_grddl_run_recursive): Remove reference to the above -
+	replacing raptor_grddl_new_child_parser with
+	raptor_grddl_ensure_internal_parser and replacing 'nparser'
+	references with grddl_parser->internal_parser.
+
+	* src/raptor_grddl.c: (raptor_grddl_discard_message): debug
+	message tweak.
 
 	* examples, tests, docs, docs/tmpl: props
 
