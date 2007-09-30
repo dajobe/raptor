@@ -2132,6 +2132,17 @@ raptor_parser_set_graph_name(raptor_parser* parser, raptor_uri* uri)
 }
 
 
+int
+raptor_parser_get_current_base_id(raptor_parser* parser)
+{
+  if(parser->factory->get_current_base_id)
+    return parser->factory->get_current_base_id(parser);
+  else
+    return parser->default_generate_id_handler_base;
+}
+
+
+
 /* end not STANDALONE */
 #endif
 

@@ -429,6 +429,9 @@ struct raptor_parser_factory_s {
 
   /* non-0 if this parser needs a base URI */
   int need_base_uri;
+
+  /* get the current generated ID base (OPTIONAL) */
+  int (*get_current_base_id)(raptor_parser* rdf_parser);
 };
 
 
@@ -706,6 +709,7 @@ void raptor_parsers_finish(void);
 void raptor_parser_save_content(raptor_parser* rdf_parser, int save);
 const unsigned char* raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p);
 void raptor_parser_set_graph_name(raptor_parser* parser, raptor_uri* uri);
+int raptor_parser_get_current_base_id(raptor_parser* parser);
 
 /* raptor_rss.c */
 void raptor_init_serializer_rss10(void);
