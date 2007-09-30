@@ -702,14 +702,21 @@ raptor_rdfxml_serialize_end(raptor_serializer* serializer)
   raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context;
   raptor_xml_writer* xml_writer=context->xml_writer;
 
-  if(context->rdf_RDF_element) {
-    if(xml_writer) {
-      raptor_rdfxml_ensure_writen_header(serializer, context); /* ignore ret value */
+  if(xml_writer) {
+    /* Make sure an empty RDF/XML document is written when 0 triples
+     * were seen
+     */
 
+    /* ignore ret value */
+    raptor_rdfxml_ensure_writen_header(serializer, context); 
+
+    if(context->rdf_RDF_element) {
       raptor_xml_writer_end_element(xml_writer, context->rdf_RDF_element);
       raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
     }
+  }
 
+  if(context->rdf_RDF_element) {
     raptor_free_xml_element(context->rdf_RDF_element);
     context->rdf_RDF_element=NULL;
   }
