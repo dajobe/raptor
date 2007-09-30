@@ -432,7 +432,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     if(!xc)
       goto handle_error;
 
-#ifdef XML_PARSE_NONET
+#ifdef RAPTOR_LIBXML_XML_PARSE_NONET
     if(sax2->feature_no_net)
       libxml_options |= XML_PARSE_NONET;
 #endif
