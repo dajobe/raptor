@@ -1,3 +1,83 @@
+2007-09-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Replaced all calls to get parser's current
+	base ID with raptor_parser_get_current_base_id
+
+	* src/raptor_guess.c: (raptor_guess_get_current_base_id): Pass on
+	the call to get the base ID to the internal parser using
+	raptor_parser_get_current_base_id
+
+	* src/raptor_internal.h,
+	src/raptor_parse.c: (raptor_parser_get_current_base_id): Added.
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Remove
+	#ifdef-out old <link> processing
+
+	* src/raptor_grddl.c: (raptor_grddl_ensure_internal_parser):
+	Re-init the guess parser each time so it does a fresh guess.
+	(raptor_grddl_run_grddl_transform_doc): Save and restore the genid
+	around recursive parsers, so blank nodes are numbered across
+	graphs.
+	(raptor_grddl_run_recursive): Switch to parser_name, flags args.
+	Pass on the filter to the internal parser call.  Do not add parent
+	if the parser is not grddl.  Pass on the ignore error flag to
+	raptor_grddl_fetch_uri.  Save and restore the genid around
+	recursive parsers, so blank nodes are numbered across graphs.  Do
+	not call rdfxml parser if selected parser is already rdfxml.
+	Update raptor_grddl_run_recursive calls to use parser name and
+	flags.  Alter the <link> processing to use the guess parser to
+	figure out the mime type during the recursion.  Do not filter the
+	triples.
+	Fixes Issue#0000238 http://bugs.librdf.org/mantis/view.php?id=238
+
+	* src/raptor_www.c: (raptor_www_file_handle_fetch): Ensure the
+	buffer has a NUL after the last byte read, it helps elsewhere when
+	using str*() functions on the results - such as guessing the
+	parser from content.
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Use
+	RAPTOR_LIBXML_HTML_PARSE_NONET to decide whether to enable libxml
+	HTML_PARSE_NONET with the html parser.
+
+	* configure.ac: Add test for libxml HTML_PARSE_NONET since it not
+	a define, it cannot be done at run-time with #ifdef
+	Define RAPTOR_LIBXML_HTML_PARSE_NONET if available
+
+	* src/raptor_grddl.c: Add declaration for libxml_options
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_chunk): Use
+	RAPTOR_LIBXML_XML_PARSE_NONET to set XML nonet option if it was
+	set with raptor feature nonet.
+
+	* tests/grddl/test-01.html: lie about the mime type in order to
+	get the test to work
+
+	* src/raptor_grddl.c: (raptor_grddl_uri_xml_parse_bytes): Use
+	RAPTOR_LIBXML_XML_PARSE_NONET to check for enum value
+	XML_PARSE_NONET
+
+	* src/raptor_sax2.c: (raptor_sax2_parse_chunk): Use
+	RAPTOR_LIBXML_XML_PARSE_NONET to check for XML_PARSE_NONET enum
+	value.
+
+	* tests/grddl/Makefile.am: Call rapper with -f noNet to prevent
+	unnecessary fetches of HTML DTDs
+
+	* configure.ac: Add test for libxml XML_PARSE_NO_NET since it not
+	a define, it cannot be done at run-time with #ifdef
+	Define RAPTOR_LIBXML_XML_PARSE_NONET if available
+
+	* src/raptor_grddl.c: (raptor_grddl_fetch_uri): Reject a URI with
+	feature noNet only if it is not a file URI
+
+	* configure.ac, tests/Makefile.am, tests/grddl,
+	tests/grddl/Makefile.am, tests/grddl/data-01.nt,
+	tests/grddl/data-01.rdf, tests/grddl/data-02.rdf,
+	tests/grddl/test-01.html, tests/grddl/test-01.out: Added
+	tests/grddl dir and test-01
+
+	* AUTHORS: Added Lauri Aalto
+
 2007-09-27  Lauri Aalto <laalto@iki.fi>
 
 	* src/n3_parser.y: (raptor_n3_parse_terminate) Do not assume the
