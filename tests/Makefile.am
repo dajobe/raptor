@@ -135,7 +135,7 @@ EXTRA_DIST = \
 	$(TURTLE_SERIALIZE_TEST_FILES)
 
 
-SUBDIRS = turtle trig
+SUBDIRS = turtle trig grddl
 
 
 build-rapper:
