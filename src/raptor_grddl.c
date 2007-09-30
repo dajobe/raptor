@@ -580,6 +580,7 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
   if(!grddl_parser->internal_parser_name ||
+     !strcmp(parser_name, "guess") ||
      strcmp(grddl_parser->internal_parser_name, parser_name)) {
     /* construct a new parser if none in use or not what is required */
     if(grddl_parser->internal_parser) {
@@ -768,9 +769,15 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     goto cleanup_xslt;
   
   if(grddl_parser->internal_parser) {
+    grddl_parser->internal_parser->default_generate_id_handler_base= 
+      rdf_parser->default_generate_id_handler_base;
+
     /* generate the triples */
     raptor_start_parse(grddl_parser->internal_parser, base_uri);
     raptor_parse_chunk(grddl_parser->internal_parser, doc_txt, doc_txt_len, 1);
+
+    rdf_parser->default_generate_id_handler_base=
+      grddl_parser->internal_parser->default_generate_id_handler_base;
   }
   
   cleanup_xslt:
@@ -1198,18 +1205,22 @@ raptor_grddl_check_recursive_content_type_handler(raptor_www* www, void* userdat
 
 }
 
+#define RECURSIVE_FLAGS_IGNORE_ERRORS 1
+#define RECURSIVE_FLAGS_FILTER        2
 
 static int
 raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
-                           int ignore_errors, int filter)
+                           const char *parser_name, int flags)
 {
   raptor_grddl_parser_context* grddl_parser;
   raptor_www_content_type_handler content_type_handler=NULL;
-  const char *parser_name="grddl";
   int ret=0;
   const unsigned char* ibuffer=NULL;
   size_t ibuffer_len=0;
   raptor_parse_bytes_context rpbc;
+  int ignore_errors=(flags & RECURSIVE_FLAGS_IGNORE_ERRORS) > 0;
+  int filter=(flags & RECURSIVE_FLAGS_FILTER) > 0;
+  int fetch_uri_flags=0;
   
   grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
@@ -1218,24 +1229,31 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
 
   content_type_handler=raptor_grddl_check_recursive_content_type_handler;
   
-  if(raptor_grddl_ensure_internal_parser(rdf_parser, parser_name, 1))
+  if(raptor_grddl_ensure_internal_parser(rdf_parser, parser_name, filter))
     return !ignore_errors;
   
-  RAPTOR_DEBUG2("Running recursive GRDDL operation on URI '%s'\n",
-                raptor_uri_as_string(uri));
+  RAPTOR_DEBUG3("Running recursive %s operation on URI '%s'\n",
+                parser_name, raptor_uri_as_string(uri));
   
-  raptor_grddl_parser_add_parent(grddl_parser->internal_parser, grddl_parser);
+  grddl_parser->internal_parser->default_generate_id_handler_base= 
+    rdf_parser->default_generate_id_handler_base;
+
+  if(!strcmp(parser_name, "grddl"))
+    raptor_grddl_parser_add_parent(grddl_parser->internal_parser, grddl_parser);
   
   rpbc.rdf_parser=grddl_parser->internal_parser;
   rpbc.base_uri=NULL;
   rpbc.final_uri=NULL;
   rpbc.started=0;
   
+  if(ignore_errors)
+    fetch_uri_flags |=FETCH_IGNORE_ERRORS;
+  
   if(raptor_grddl_fetch_uri(grddl_parser->internal_parser,
                             uri,
                             raptor_parse_uri_write_bytes, &rpbc,
                             content_type_handler, grddl_parser->internal_parser,
-                            FETCH_IGNORE_ERRORS)) {
+                            fetch_uri_flags)) {
     if(!ignore_errors)
       raptor_parser_warning(rdf_parser,
                             "Fetching GRDDL document URI '%s' failed\n",
@@ -1252,22 +1270,29 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   }
   
   raptor_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
+  rdf_parser->default_generate_id_handler_base=
+    grddl_parser->internal_parser->default_generate_id_handler_base;
 
   /* If content was saved, process it as RDF/XML */
   ibuffer=raptor_parser_get_content(grddl_parser->internal_parser,
                                     &ibuffer_len);
-  if(ibuffer) {
+  if(ibuffer && strcmp(parser_name, "rdfxml")) {
     RAPTOR_DEBUG2("Running additional RDF/XML parse on URI '%s' content\n",
                   raptor_uri_as_string(uri));
     
     if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 1))
       ret=1;
     else {
+      grddl_parser->internal_parser->default_generate_id_handler_base= 
+        rdf_parser->default_generate_id_handler_base;
       if(raptor_start_parse(grddl_parser->internal_parser, uri))
         ret=1;
-      else
+      else {
         ret=raptor_parse_chunk(grddl_parser->internal_parser, ibuffer, 
                                ibuffer_len, 1);
+        rdf_parser->default_generate_id_handler_base=
+          grddl_parser->internal_parser->default_generate_id_handler_base;
+      }      
     }
     
     RAPTOR_FREE(cstring, ibuffer);
@@ -1575,7 +1600,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         RAPTOR_DEBUG3("Parser %p: Processing GRDDL namespace URI '%s'\n",
                       rdf_parser,
                       raptor_uri_as_string(grddl_parser->root_ns_uri));
-        raptor_grddl_run_recursive(rdf_parser, grddl_parser->root_ns_uri, 1, 0);
+        raptor_grddl_run_recursive(rdf_parser, grddl_parser->root_ns_uri, 
+                                   "grddl",
+                                   RECURSIVE_FLAGS_IGNORE_ERRORS |
+                                   RECURSIVE_FLAGS_FILTER);
       }
       
     }
@@ -1652,14 +1680,17 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         RAPTOR_DEBUG4("Processing <head profile> #%d of URI %s: URI %s\n",
                       i, raptor_uri_as_string(rdf_parser->base_uri),
                         raptor_uri_as_string(uri));
-        ret=raptor_grddl_run_recursive(rdf_parser, uri, 1, 0);
+        ret=raptor_grddl_run_recursive(rdf_parser, uri, 
+                                       "grddl",
+                                       RECURSIVE_FLAGS_IGNORE_ERRORS|
+                                       RECURSIVE_FLAGS_FILTER);
       }
     }
 
   } /* end head profile URIs */
 
 
-  /* Try XHTML document with alternate RDF/XML form
+  /* Try XHTML document with alternate forms
    * <link type="application/rdf+xml" href="URI" />
    * Value of @href is a URI
    */
@@ -1670,7 +1701,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                                         (const xmlChar*)"/html:html/html:head/html:link[@type=\"application/rdf+xml\"]/@href",
                                         0);
     if(result) {
-      RAPTOR_DEBUG4("Parser %p: Found %d <link> RDF/XML URIs in URI '%s'\n",
+      RAPTOR_DEBUG4("Parser %p: Found %d <link> URIs in URI '%s'\n",
                     rdf_parser, raptor_sequence_size(result),
                     raptor_uri_as_string(rdf_parser->base_uri));
 
@@ -1682,14 +1713,37 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         xml_context=(grddl_xml_context*)raptor_sequence_unshift(result);
         if(!xml_context)
           continue;
+
+          /* FIXME. This should really not be used since using the 
+           * URI alone is too weak.  The guess parser will use the
+           * mime type.
+           */
+#undef BAD_LINK_GUESS
         
         uri=xml_context->uri;
         if(uri) {
+#ifdef BAD_LINK_GUESS
+          const char* parser_name;
+#endif
           RAPTOR_DEBUG4("Processing <link> #%d of URI %s: URI %s\n",
                         i, raptor_uri_as_string(rdf_parser->base_uri),
                         raptor_uri_as_string(uri));
           i++;
-          ret=raptor_grddl_run_recursive(rdf_parser, uri, 1, 0);
+#ifdef BAD_LINK_GUESS
+          parser_name=raptor_guess_parser_name(NULL, NULL, NULL, 0, 
+                                               raptor_uri_as_string(uri));
+          if(!parser_name)
+            parser_name="rdfxml";
+          
+          RAPTOR_DEBUG4("Parser %p: Guessed <link> parser %s from uri '%s'\n",
+                        rdf_parser, parser_name, raptor_uri_as_string(uri));
+
+          ret=raptor_grddl_run_recursive(rdf_parser, uri, parser_name,
+                                         RECURSIVE_FLAGS_IGNORE_ERRORS);
+#else
+          ret=raptor_grddl_run_recursive(rdf_parser, uri, "guess",
+                                         RECURSIVE_FLAGS_IGNORE_ERRORS);
+#endif
         }
         grddl_free_xml_context(xml_context);
       }
@@ -1763,12 +1817,17 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 0))
       ret=1;
     else {
+      grddl_parser->internal_parser->default_generate_id_handler_base= 
+        rdf_parser->default_generate_id_handler_base;
       if(raptor_start_parse(grddl_parser->internal_parser, 
                             rdf_parser->base_uri))
         ret=1;
-      else
+      else {
         ret=raptor_parse_chunk(grddl_parser->internal_parser, buffer, 
                                buffer_len, 1);
+        rdf_parser->default_generate_id_handler_base=
+          grddl_parser->internal_parser->default_generate_id_handler_base;
+      }
     }
     
   }
