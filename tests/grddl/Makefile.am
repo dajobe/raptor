@@ -26,9 +26,6 @@ TEST_OUT_FILES=test-01.out
 TEST_DATA_FILES=\
 data-01.rdf data-02.rdf data-01.nt
 
-# Used to make N-triples output consistent
-BASE_URI=http://example.org/base/
-
 ALL_TEST_FILES= \
 	$(TEST_FILES) \
 	$(TEST_BAD_FILES) \
@@ -47,9 +44,8 @@ check-grddl: build-rapper $(TEST_FILES)
 	$(ECHO) "Testing GRDDL"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .html` ; \
-	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i grddl -o ntriples $(srcdir)/$$test > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -f noNet -q -i grddl -o ntriples $(srcdir)/$$test > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(ECHO) FAILED returned status $$status; result=1; \
