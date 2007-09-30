@@ -1422,6 +1422,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 #ifdef HTML_PARSE_RECOVER
         options |= HTML_PARSE_RECOVER;
 #endif
+#ifdef RAPTOR_LIBXML_HTML_PARSE_NONET
+      if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
+        options |= HTML_PARSE_NONET;
+#endif
 
         htmlCtxtUseOptions(grddl_parser->html_ctxt, options);
  
