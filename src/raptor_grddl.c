@@ -866,8 +866,10 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   int ret=0;
   int ignore_errors=(flags & FETCH_IGNORE_ERRORS);
   
-  if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
-    return 1;
+  if(rdf_parser->features[RAPTOR_FEATURE_NO_NET]) {
+    if(!raptor_uri_uri_string_is_file_uri(raptor_uri_as_string(uri)))
+      return 1;
+  }
   
   www=raptor_www_new();
   if(!www)
