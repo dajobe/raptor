@@ -1173,8 +1173,9 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
 
 
 static void
-raptor_grddl_check_recursive_content_type_handler(raptor_www* www, void* userdata, 
-                                            const char* content_type)
+raptor_grddl_check_recursive_content_type_handler(raptor_www* www,
+                                                  void* userdata, 
+                                                  const char* content_type)
 {
   raptor_parser* rdf_parser=(raptor_parser*)userdata;
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
