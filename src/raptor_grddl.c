@@ -1361,6 +1361,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     int rc;
 
     if(loop == 0) { 
+      int libxml_options = 0;
+
       RAPTOR_DEBUG2("Parser %p: Creating an XML parser\n", rdf_parser);
 
       /* try to create an XML parser context */
