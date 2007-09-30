@@ -1222,13 +1222,15 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   int ignore_errors=(flags & RECURSIVE_FLAGS_IGNORE_ERRORS) > 0;
   int filter=(flags & RECURSIVE_FLAGS_FILTER) > 0;
   int fetch_uri_flags=0;
+  int is_grddl=!strcmp(parser_name, "grddl");
   
   grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
   if(raptor_grddl_seen_uri(grddl_parser, uri))
     return 0;
 
-  content_type_handler=raptor_grddl_check_recursive_content_type_handler;
+  if(is_grddl)
+    content_type_handler=raptor_grddl_check_recursive_content_type_handler;
   
   if(raptor_grddl_ensure_internal_parser(rdf_parser, parser_name, filter))
     return !ignore_errors;
@@ -1239,7 +1241,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   grddl_parser->internal_parser->default_generate_id_handler_base= 
     raptor_parser_get_current_base_id(rdf_parser);
 
-  if(!strcmp(parser_name, "grddl"))
+  if(is_grddl)
     raptor_grddl_parser_add_parent(grddl_parser->internal_parser, grddl_parser);
   
   rpbc.rdf_parser=grddl_parser->internal_parser;
