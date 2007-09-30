@@ -282,6 +282,7 @@ raptor_iostream_write_string_turtle
 <FILE>section-xml</FILE>
 raptor_xml_element
 raptor_new_xml_element
+raptor_new_xml_element_from_namespace_local_name
 raptor_free_xml_element
 raptor_xml_element_get_name
 raptor_xml_element_get_attributes
