@@ -1373,6 +1373,15 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         continue;
       }
 
+#ifdef RAPTOR_LIBXML_XML_PARSE_NONET
+      if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
+        libxml_options |= XML_PARSE_NONET;
+#endif
+#ifdef HAVE_XMLCTXTUSEOPTIONS
+      xmlCtxtUseOptions(grddl_parser->xml_ctxt, libxml_options);
+#endif
+
+
       grddl_parser->xml_ctxt->vctxt.warning = raptor_grddl_libxml_discard_error;
       grddl_parser->xml_ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
     
