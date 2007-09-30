@@ -478,13 +478,14 @@ raptor_www_error(raptor_www* www, const char *message, ...)
 static int 
 raptor_www_file_handle_fetch(raptor_www* www, FILE* fh) 
 {
-  unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE];
+  unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE+1];
   
   while(!feof(fh)) {
     int len=fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
     if(len > 0) {
       www->total_bytes += len;
-
+      buffer[len]='\0';
+      
       if(www->write_bytes)
         www->write_bytes(www, www->write_bytes_userdata, buffer, len, 1);
     }
