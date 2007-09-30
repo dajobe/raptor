@@ -296,7 +296,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
   if(base_uri)
     base_uri=raptor_uri_copy(base_uri);
 
-  context->rdf_RDF_element=raptor_new_xml_element_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"RDF", base_uri);
+  context->rdf_RDF_element=raptor_new_xml_element_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"RDF", NULL, base_uri);
   if(!context->rdf_RDF_element)
     goto tidy;
 
@@ -440,263 +440,263 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
   rdf_Description_element=raptor_new_xml_element_from_namespace_local_name(context->rdf_nspace,
                                                                            (unsigned const char*)"Description",
-                                                                           base_uri);
-  if(!rdf_Description_element)
-    goto oom;
+                                                                           NULL, base_uri);
+   if(!rdf_Description_element)
+     goto oom;
 
-  attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
-  if(!attrs)
-    goto oom;
-  attrs_count=0;
+   attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
+   if(!attrs)
+     goto oom;
+   attrs_count=0;
 
-  /* subject */
-  switch(statement->subject_type) {
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"nodeID",  (unsigned char*)statement->subject);
-      if(!attrs[attrs_count])
-        goto oom;
-      attrs_count++;
-      break;
+   /* subject */
+   switch(statement->subject_type) {
+     case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+       attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"nodeID",  (unsigned char*)statement->subject);
+       if(!attrs[attrs_count])
+         goto oom;
+       attrs_count++;
+       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      allocated=1;
-      if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-        subject_uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
-        if(!subject_uri_string)
-          goto oom;
-        sprintf((char*)subject_uri_string, "%s_%d", 
-                raptor_rdf_namespace_uri, *((int*)statement->subject));
-      } else {
-        if(serializer->feature_relative_uris) {
-          subject_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                              (raptor_uri*)statement->subject);
-          if(!subject_uri_string)
-            goto oom;
-        } else {
-          subject_uri_string=raptor_uri_as_string((raptor_uri*)statement->subject);
-          allocated=0;
-        }
-      }
-      
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
-      if(!attrs[attrs_count]) {
-        if(allocated)
-          RAPTOR_FREE(cstring, subject_uri_string);
-        goto oom;
-      }
-      attrs_count++;
+     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+       allocated=1;
+       if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+         subject_uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
+         if(!subject_uri_string)
+           goto oom;
+         sprintf((char*)subject_uri_string, "%s_%d", 
+                 raptor_rdf_namespace_uri, *((int*)statement->subject));
+       } else {
+         if(serializer->feature_relative_uris) {
+           subject_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                               (raptor_uri*)statement->subject);
+           if(!subject_uri_string)
+             goto oom;
+         } else {
+           subject_uri_string=raptor_uri_as_string((raptor_uri*)statement->subject);
+           allocated=0;
+         }
+       }
 
-      if(allocated)
-        RAPTOR_FREE(cstring, subject_uri_string);
+       attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
+       if(!attrs[attrs_count]) {
+         if(allocated)
+           RAPTOR_FREE(cstring, subject_uri_string);
+         goto oom;
+       }
+       attrs_count++;
 
-      break;
-      
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-      raptor_serializer_error(serializer, "Cannot serialize a triple with a literal subject\n");
-      break;
-      
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
-    default:
-      raptor_serializer_error(serializer, "Cannot serialize a triple with subject node type %d\n", statement->subject_type);
-  }
+       if(allocated)
+         RAPTOR_FREE(cstring, subject_uri_string);
 
-  if(attrs_count) {
-    raptor_xml_element_set_attributes(rdf_Description_element, attrs, attrs_count);
-    attrs=NULL; /* attrs ownership transferred to element */
-  }
+       break;
 
-  raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"  ", 2);
-  raptor_xml_writer_start_element(xml_writer, rdf_Description_element);
-  raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
+     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
+       raptor_serializer_error(serializer, "Cannot serialize a triple with a literal subject\n");
+       break;
 
+     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
+     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+     default:
+       raptor_serializer_error(serializer, "Cannot serialize a triple with subject node type %d\n", statement->subject_type);
+   }
 
-  /* predicate */
-  predicate_element=raptor_new_xml_element_from_namespace_local_name(predicate_ns, name, base_uri);
-  if(!predicate_element)
-    goto oom;
+   if(attrs_count) {
+     raptor_xml_element_set_attributes(rdf_Description_element, attrs, attrs_count);
+     attrs=NULL; /* attrs ownership transferred to element */
+   }
 
-  /* object */
-  attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
-  if(!attrs)
-    goto oom;
-  attrs_count=0;
-
-  object_type=statement->object_type;
-  switch(object_type) {
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-      if(statement->object_literal_datatype &&
-         raptor_uri_equals(statement->object_literal_datatype, 
-                           context->rdf_xml_literal_uri))
-        object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
-      
-      /* FALLTHROUGH */
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-
-      if(statement->object_literal_language) {
-        attrs[attrs_count]=raptor_new_qname(context->nstack,
-                                            (unsigned char*)"xml:lang",
-                                            (unsigned char*)statement->object_literal_language,
-                                            (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                            serializer);
-        if(!attrs[attrs_count])
-          goto oom;
-        attrs_count++;
-      }
-      len=strlen((const char*)statement->object);
-
-      if(object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-        attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
-        if(!attrs[attrs_count])
-          goto oom;
-        attrs_count++;
-
-        raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
-        attrs=NULL; /* attrs ownership transferred to element */
-
-        raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"    ", 4);
-        raptor_xml_writer_start_element(xml_writer, predicate_element);
-        end_predicate_element=1;
-
-        /* Print without escaping XML */
-        if(len)
-          raptor_xml_writer_raw_counted(xml_writer,
-                                        (const unsigned char*)statement->object,
-                                        len);
-      } else {
-        if(statement->object_literal_datatype) {
-          attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"datatype", (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->object_literal_datatype));
-          if(!attrs[attrs_count])
-            goto oom;
-          attrs_count++;
-        }
-        raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
-        attrs=NULL; /* attrs ownership transferred to element */
-
-        raptor_xml_writer_cdata_counted(xml_writer, 
-                                        (const unsigned char*)"    ", 4);
-        raptor_xml_writer_start_element(xml_writer, predicate_element);
-        end_predicate_element=1;
-
-        if(len)
-          raptor_xml_writer_cdata_counted(xml_writer,
-                                          (const unsigned char*)statement->object, len);
-      }
-
-      raptor_xml_writer_end_element(xml_writer, predicate_element);
-      end_predicate_element=0;
-      raptor_free_xml_element(predicate_element);
-      predicate_element=NULL;
-      raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
-
-      break;
-
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"nodeID", (unsigned char*)statement->object);
-      if(!attrs[attrs_count])
-        goto oom;
-      attrs_count++;
-
-      raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
-      attrs=NULL; /* attrs ownership transferred to element */
-
-      raptor_xml_writer_cdata_counted(xml_writer,
-                                      (const unsigned char*)"    ", 4);
-      raptor_xml_writer_empty_element(xml_writer, predicate_element);
-      raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
-      break;
-
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      allocated=1;
-      if(object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-        object_uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
-        if(!object_uri_string)
-          goto oom;
-        sprintf((char*)object_uri_string, "%s_%d",
-                raptor_rdf_namespace_uri, *((int*)statement->object));
-      } else {
-        /* must be URI */
-        if(serializer->feature_relative_uris) {
-          object_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                              (raptor_uri*)statement->object);
-          if(!object_uri_string)
-            goto oom;
-        } else {
-          object_uri_string=raptor_uri_to_string((raptor_uri*)statement->object);
-          allocated=0;
-        }
-      }
-      
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
-      if(!attrs[attrs_count]) {
-        if(allocated)
-          RAPTOR_FREE(cstring, object_uri_string);
-        goto oom;
-      }
-      attrs_count++;
-
-      if(allocated)
-        RAPTOR_FREE(cstring, object_uri_string);
-
-      raptor_xml_element_set_attributes(predicate_element, attrs, 1);
-      attrs=NULL; /* attrs ownership transferred to element */
-
-      raptor_xml_writer_cdata_counted(xml_writer,
-                                      (const unsigned char*)"    ", 4);
-      raptor_xml_writer_empty_element(xml_writer, predicate_element);
-      raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
-      break;
-
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
-    default:
-      raptor_serializer_error(serializer, "Cannot serialize a triple with object node type %d\n", object_type);
-  }
-
-  raptor_xml_writer_cdata_counted(xml_writer, 
-                                  (const unsigned char*)"  ", 2);
-
-  rc=0; /* success */
-  goto tidy;
-
-  oom:
-  raptor_serializer_error(serializer, "Out of memory\n");
-
-  tidy:
-
-  if(attrs)
-    RAPTOR_FREE(qnamearray, attrs);
-
-  if(predicate_element) {
-    if(end_predicate_element)
-      raptor_xml_writer_end_element(xml_writer, predicate_element);
-    raptor_free_xml_element(predicate_element);
-  }
-
-  if(rdf_Description_element) {
-    raptor_xml_writer_end_element(xml_writer, rdf_Description_element);
-    raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
-    raptor_free_xml_element(rdf_Description_element);
-  }
-
-  if(base_uri)
-    raptor_free_uri(base_uri);
-
-  if(free_predicate_ns)
-    raptor_free_namespace(predicate_ns);
-
-  if(uri_string)
-    RAPTOR_FREE(cstring, uri_string);
-
-  return rc;
-}
+   raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"  ", 2);
+   raptor_xml_writer_start_element(xml_writer, rdf_Description_element);
+   raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
 
 
-/* end a serialize */
-static int
+   /* predicate */
+   predicate_element=raptor_new_xml_element_from_namespace_local_name(predicate_ns, name, NULL, base_uri);
+   if(!predicate_element)
+     goto oom;
+
+   /* object */
+   attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
+   if(!attrs)
+     goto oom;
+   attrs_count=0;
+
+   object_type=statement->object_type;
+   switch(object_type) {
+     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+       if(statement->object_literal_datatype &&
+          raptor_uri_equals(statement->object_literal_datatype, 
+                            context->rdf_xml_literal_uri))
+         object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
+
+       /* FALLTHROUGH */
+     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
+
+       if(statement->object_literal_language) {
+         attrs[attrs_count]=raptor_new_qname(context->nstack,
+                                             (unsigned char*)"xml:lang",
+                                             (unsigned char*)statement->object_literal_language,
+                                             (raptor_simple_message_handler)raptor_serializer_simple_error,
+                                             serializer);
+         if(!attrs[attrs_count])
+           goto oom;
+         attrs_count++;
+       }
+       len=strlen((const char*)statement->object);
+
+       if(object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+         attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
+         if(!attrs[attrs_count])
+           goto oom;
+         attrs_count++;
+
+         raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
+         attrs=NULL; /* attrs ownership transferred to element */
+
+         raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"    ", 4);
+         raptor_xml_writer_start_element(xml_writer, predicate_element);
+         end_predicate_element=1;
+
+         /* Print without escaping XML */
+         if(len)
+           raptor_xml_writer_raw_counted(xml_writer,
+                                         (const unsigned char*)statement->object,
+                                         len);
+       } else {
+         if(statement->object_literal_datatype) {
+           attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"datatype", (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->object_literal_datatype));
+           if(!attrs[attrs_count])
+             goto oom;
+           attrs_count++;
+         }
+         raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
+         attrs=NULL; /* attrs ownership transferred to element */
+
+         raptor_xml_writer_cdata_counted(xml_writer, 
+                                         (const unsigned char*)"    ", 4);
+         raptor_xml_writer_start_element(xml_writer, predicate_element);
+         end_predicate_element=1;
+
+         if(len)
+           raptor_xml_writer_cdata_counted(xml_writer,
+                                           (const unsigned char*)statement->object, len);
+       }
+
+       raptor_xml_writer_end_element(xml_writer, predicate_element);
+       end_predicate_element=0;
+       raptor_free_xml_element(predicate_element);
+       predicate_element=NULL;
+       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
+
+       break;
+
+     case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+       attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"nodeID", (unsigned char*)statement->object);
+       if(!attrs[attrs_count])
+         goto oom;
+       attrs_count++;
+
+       raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
+       attrs=NULL; /* attrs ownership transferred to element */
+
+       raptor_xml_writer_cdata_counted(xml_writer,
+                                       (const unsigned char*)"    ", 4);
+       raptor_xml_writer_empty_element(xml_writer, predicate_element);
+       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
+       break;
+
+     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
+       allocated=1;
+       if(object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+         object_uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, raptor_rdf_namespace_uri_len+13);
+         if(!object_uri_string)
+           goto oom;
+         sprintf((char*)object_uri_string, "%s_%d",
+                 raptor_rdf_namespace_uri, *((int*)statement->object));
+       } else {
+         /* must be URI */
+         if(serializer->feature_relative_uris) {
+           object_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                               (raptor_uri*)statement->object);
+           if(!object_uri_string)
+             goto oom;
+         } else {
+           object_uri_string=raptor_uri_to_string((raptor_uri*)statement->object);
+           allocated=0;
+         }
+       }
+
+       attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
+       if(!attrs[attrs_count]) {
+         if(allocated)
+           RAPTOR_FREE(cstring, object_uri_string);
+         goto oom;
+       }
+       attrs_count++;
+
+       if(allocated)
+         RAPTOR_FREE(cstring, object_uri_string);
+
+       raptor_xml_element_set_attributes(predicate_element, attrs, 1);
+       attrs=NULL; /* attrs ownership transferred to element */
+
+       raptor_xml_writer_cdata_counted(xml_writer,
+                                       (const unsigned char*)"    ", 4);
+       raptor_xml_writer_empty_element(xml_writer, predicate_element);
+       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
+       break;
+
+     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
+     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+     default:
+       raptor_serializer_error(serializer, "Cannot serialize a triple with object node type %d\n", object_type);
+   }
+
+   raptor_xml_writer_cdata_counted(xml_writer, 
+                                   (const unsigned char*)"  ", 2);
+
+   rc=0; /* success */
+   goto tidy;
+
+   oom:
+   raptor_serializer_error(serializer, "Out of memory\n");
+
+   tidy:
+
+   if(attrs)
+     RAPTOR_FREE(qnamearray, attrs);
+
+   if(predicate_element) {
+     if(end_predicate_element)
+       raptor_xml_writer_end_element(xml_writer, predicate_element);
+     raptor_free_xml_element(predicate_element);
+   }
+
+   if(rdf_Description_element) {
+     raptor_xml_writer_end_element(xml_writer, rdf_Description_element);
+     raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
+     raptor_free_xml_element(rdf_Description_element);
+   }
+
+   if(base_uri)
+     raptor_free_uri(base_uri);
+
+   if(free_predicate_ns)
+     raptor_free_namespace(predicate_ns);
+
+   if(uri_string)
+     RAPTOR_FREE(cstring, uri_string);
+
+   return rc;
+ }
+
+
+ /* end a serialize */
+ static int
 raptor_rdfxml_serialize_end(raptor_serializer* serializer)
 {
   raptor_rdfxml_serializer_context* context=(raptor_rdfxml_serializer_context*)serializer->context;

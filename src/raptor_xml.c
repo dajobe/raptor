@@ -56,7 +56,7 @@
  * @xml_language: the in-scope XML language (or NULL)
  * @xml_base: the in-scope XML base URI (or NULL)
  * 
- * Constructor - create a new XML element
+ * Constructor - create a new XML element from a QName
  * 
  * Return value: a new #raptor_xml_element or NULL on failure
  **/
@@ -85,20 +85,24 @@ raptor_new_xml_element(raptor_qname *name,
 }
 
 
-/*
- * raptor_new_xml_element_from_namespace_local_name
+/**
+ * raptor_new_xml_element_from_namespace_local_name:
  * @ns: namespace
  * @name: the XML element local name
- * @base_uri: base uri or NULL
+ * @xml_language: the in-scope XML language (or NULL)
+ * @xml_base: base uri (or NULL)
  *
- * Constructor - create a new XML element
+ * Constructor - create a new XML element from an XML namespace and a local name
+ *
+ * Added in 1.4.16.
  *
  * Return value: a new #raptor_xml_element or NULL on failure
  */
 raptor_xml_element*
 raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns,
                                                  const unsigned char *name,
-                                                 raptor_uri *base_uri)
+                                                 const unsigned char *xml_language, 
+                                                 raptor_uri *xml_base)
 {
   raptor_uri *base_uri_copy;
   raptor_qname *qname;
@@ -106,8 +110,8 @@ raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns,
 
   qname=raptor_new_qname_from_namespace_local_name(ns, name, NULL);
   if(qname) {
-    base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
-    element=raptor_new_xml_element(qname, /*language=*/NULL, base_uri_copy);
+    base_uri_copy=xml_base ? raptor_uri_copy(xml_base) : NULL;
+    element=raptor_new_xml_element(qname, xml_language, base_uri_copy);
     if(!element) {
       raptor_free_qname(qname);
       if(base_uri_copy)

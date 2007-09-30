@@ -1417,7 +1417,7 @@ int raptor_feature_value_type(const raptor_feature feature);
 RAPTOR_API
 raptor_xml_element* raptor_new_xml_element(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base);
 RAPTOR_API
-raptor_xml_element* raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns, const unsigned char *name, raptor_uri *base_uri);
+raptor_xml_element* raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns, const unsigned char *name, const unsigned char *xml_language, raptor_uri *xml_base);
 RAPTOR_API
 void raptor_free_xml_element(raptor_xml_element *element);
 RAPTOR_API
