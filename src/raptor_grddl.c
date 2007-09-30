@@ -1714,36 +1714,14 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         if(!xml_context)
           continue;
 
-          /* FIXME. This should really not be used since using the 
-           * URI alone is too weak.  The guess parser will use the
-           * mime type.
-           */
-#undef BAD_LINK_GUESS
-        
         uri=xml_context->uri;
         if(uri) {
-#ifdef BAD_LINK_GUESS
-          const char* parser_name;
-#endif
           RAPTOR_DEBUG4("Processing <link> #%d of URI %s: URI %s\n",
                         i, raptor_uri_as_string(rdf_parser->base_uri),
                         raptor_uri_as_string(uri));
           i++;
-#ifdef BAD_LINK_GUESS
-          parser_name=raptor_guess_parser_name(NULL, NULL, NULL, 0, 
-                                               raptor_uri_as_string(uri));
-          if(!parser_name)
-            parser_name="rdfxml";
-          
-          RAPTOR_DEBUG4("Parser %p: Guessed <link> parser %s from uri '%s'\n",
-                        rdf_parser, parser_name, raptor_uri_as_string(uri));
-
-          ret=raptor_grddl_run_recursive(rdf_parser, uri, parser_name,
-                                         RECURSIVE_FLAGS_IGNORE_ERRORS);
-#else
           ret=raptor_grddl_run_recursive(rdf_parser, uri, "guess",
                                          RECURSIVE_FLAGS_IGNORE_ERRORS);
-#endif
         }
         grddl_free_xml_context(xml_context);
       }
