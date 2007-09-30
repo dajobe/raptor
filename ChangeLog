@@ -1,5 +1,12 @@
 2007-09-29  Dave Beckett <dave@dajobe.org>
 
+	* src/raptor_grddl.c: (raptor_grddl_run_recursive): Only set
+	content type handler when recursive parser is grddl.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_end):
+	Make sure an empty legal RDF/XML document is written when 0
+	triples were serialized.
+
 	* src/raptor_grddl.c: Replaced all calls to get parser's current
 	base ID with raptor_parser_get_current_base_id
 
