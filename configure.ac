@@ -592,14 +592,24 @@ if test "X$XML_CONFIG" != X; then
 
     AC_CHECK_FUNCS(xmlSAX2InternalSubset xmlCtxtUseOptions)
 
-    AC_MSG_CHECKING(if libxml has parser option XML_PARSE_NO_NET)
+    AC_MSG_CHECKING(if libxml has parser option XML_PARSE_NONET)
     AC_TRY_LINK([
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
 ], [xmlParserOption foo; foo = XML_PARSE_NONET],
                 AC_MSG_RESULT(yes)
-		AC_DEFINE(RAPTOR_LIBXML_XML_PARSE_NONET, 1, [does libxml have XML_PARSE_NO_NET]),
+		AC_DEFINE(RAPTOR_LIBXML_XML_PARSE_NONET, 1, [does libxml have XML_PARSE_NONET]),
+		AC_MSG_RESULT(no))
+    AC_CHECK_HEADERS(libxml/HTMLparser.h)
+    AC_MSG_CHECKING(if libxml has parser option HTML_PARSE_NONET)
+    AC_TRY_LINK([
+#ifdef HAVE_LIBXML_HTMLPARSER_H
+#include <libxml/HTMLparser.h>
+#endif
+], [htmlParserOption foo; foo = HTML_PARSE_NONET],
+                AC_MSG_RESULT(yes)
+		AC_DEFINE(RAPTOR_LIBXML_HTML_PARSE_NONET, 1, [does libxml have HTML_PARSE_NONET]),
 		AC_MSG_RESULT(no))
   fi
 
