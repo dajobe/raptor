@@ -6,7 +6,7 @@
 .\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2007-09-15"
+.TH libraptor 3 "2007-09-29"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -876,7 +876,7 @@ Intended to match the XML namespace declaring semantics using
 xmlns attributes.
 .SH "NAMESPACE STACK CONSTRUCTORS"
 .IP "\fBraptor_namespace_stack* raptor_new_namespaces(raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults)\fR"
-.IP "\fBvoid raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults)\fR"
+.IP "\fBint raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults)\fR"
 Create or initialise a new raptor_namespace_stack object with the given URI and
 error handlers.  \fBraptor_namespaces_new\fR allocates new memory
 for the namespace stack and \fBraptor_namespaces_init\fR initialises an
@@ -887,6 +887,9 @@ describes which default namespaces are declared in the empty stack.
 At present, 0 is none, 1 for just the XML namespace and 2 is for
 a typical set of namespaces used for RDF, RDFS, Dublin Core, OWL, ...
 that may vary over time.
+.IP
+In versions 1.4.16 or newer this returns an integer result, non-0 on
+failure.
 .SH "NAMESPACE STACK DESTRUCTORS"
 .IP "\fBvoid raptor_free_namespaces(raptor_namespace_stack *nstack)\fR"
 Destroy a namespace stack object, freeing the \fInstack\fR
@@ -1055,10 +1058,14 @@ Write the stringbuffer to an iostream \fIiostr\fP.
 .SH "XML ELEMENT CLASS"
 This class provides an XML element that can be used with the
 XML Writer Class to generate XML documents.
-.SH "XML ELEMENT CONSTRUCTOR"
+.SH "XML ELEMENT CONSTRUCTORS"
 .IP "\fBraptor_xml_element* raptor_new_xml_element(raptor_qname* \fIname\fP, const unsigned char* \fIxml_language\fP, raptor_uri* \fIxml_base\fP)\fR"
-Create a new XML element with the element name \fIname\fP and
-in context of xml:lang \fIxml_language\fP and base URI
+Create a new XML element with the element name \fIname\fP
+in the context of xml:lang \fIxml_language\fP and base URI
+\fIxml_base\fP.
+.IP "\fBraptor_xml_element* raptor_new_xml_element_from_namespace_local_name(raptor_namespace *\fIns\fP, const unsigned char *\fIname\fP, const unsigned char* \fIxml_language\fP, raptor_uri* \fIxml_base\fP\fR"
+Create a new XML element based on the given XML \fInamespace\fP and
+\fIlocalname\fP in the context of xml:lang \fIxml_language\FP and base URI
 \fIxml_base\fP.
 .SH "XML ELEMENT DESTRUCTOR"
 .IP "\fBvoid raptor_free_xml_element(raptor_xml_element *\fIelement\fP)\fR"
@@ -1185,6 +1192,10 @@ Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
 .SS 1.4.16
+\fBraptor_namespaces_init\fP now returns an integer status
+.LP
+Added \FBraptor_new_xml_element_from_namespace_local_name\fP
+.LP
 Added \fBraptor_uri_compare\fP.
 .LP
 Added new features for the 'grddl' parser:
