@@ -9,6 +9,233 @@
   <h1 style="text-align:center">Raptor RDF Parser Library - Release Notes</h1>
 
 
+<h2 id="rel1_4_16"><a name="rel1_4_16">Raptor 1.4.16 Changes</a></h2>
+
+<h3>General Changes</h3>
+
+<p>The main change to this release arwas to provide 100% support of the
+<a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">GRDDL W3C Recommendation of 2007-09-11</a>.
+</p>
+
+<p>The turtle parser and serializer were improved and now support
+<code>@base</code>.
+</p>
+
+<p>There were several API changes and many other improvements.</p>
+
+<p>Two new committers were added to the project: Dave Robillard and
+Lauri Aalto.
+</p>
+
+
+<p>Fixed Issues:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000186">0000186</a>: Add RDFa support to Raptor</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000188">0000188</a>: Wrong RAPTOR_API definition for mingw</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000192">0000192</a>: raptor_uri_filename_to_uri_string() - getcwd() loop error</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000194">0000194</a>: parser and serializer don't recognize the same mime types</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000195">0000195</a>: Compile error in raptor_serialize.c debug code</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000207">0000207</a>: RDF file can be parsed, but not then serialised.</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000210">0000210</a>: RAPTOR_FEATURE_WRITER_XML_DECLARATION broken in Ruby</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000214">0000214</a>: Empty rdf:about, plus base-uri, produces incorrect turtle output</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000216">0000216</a>: flickrdf segfaults at raptor_serialize_end!</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000217">0000217</a>: flickrdf segfaults at raptor_serialize_end!</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000232">0000232</a>: libraptor does not correctly free up libxml error handler, causing crashes in subsequent calls to libxml error handlers</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000237">0000237</a>: raptor_sequence robustness: item ownership on insert error</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000238">0000238</a>: GRDDL parser in SVN overwrites blank nodes when merging graphs</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000239">0000239</a>: GRDDL parser in SVN returns 60 less triples with http://www.w3.org/</li>
+</ul>
+
+
+<h3>API changes</h3>
+
+<p>Defined
+<code>raptor_unichar</code> typedef for Unicode functions
+<code>raptor_unicode_char_to_utf8()</code>,
+<code>raptor_utf8_to_unicode_char()</code>,
+<code>raptor_unicode_is_xml11_namestartchar()</code>,
+<code>raptor_unicode_is_xml10_namestartchar()</code>,
+<code>raptor_unicode_is_xml11_namechar()</code> and
+<code>raptor_unicode_is_xml10_namechar()</code>.
+</p>
+
+<p><code>raptor_namespaces_init()</code> now returns an integer status.
+</p>
+
+<p>Added <code>raptor_uri_compare()</code> and
+<code>raptor_uri_compare_func</code> for implementing it.  The URI
+factory now has a version to trigger the new factory method for uri
+compare.
+</p>
+
+<p>Added
+<code>raptor_new_xml_element_from_namespace_local_name()</code> to
+make an XML element from a local name relative to a
+<code>raptor_namespace</code>.
+</p>
+
+<p>
+Added <code>raptor_graph_handler</code> typedef and
+<code>raptor_set_graph_handler()</code> to return named graph
+identifiers during parsing, initially for the TRiG parser.
+</p>
+
+<p>
+Added <code>raptor_www_set_connection_timeout()</code>
+to set the WWW retrieval connection timeout in seconds.
+</p>
+
+<p>
+Added <code>raptor_www_final_uri_handler</code> typedef and
+<code>raptor_www_set_final_uri_handler()</code> to return
+the final URI seen <em>during</em> WWW retrieval such as after
+redirects.
+</p>
+
+<p>
+Added <code>raptor_www_get_final_uri()</code> to return the final URI
+<em>after</em> a WWW retrieval which might include redirects.
+</p>
+
+<p>Added new features for the GRDDL parser:</p>
+<ul>
+  <li><code>RAPTOR_FEATURE_MICROFORMATS</code> (microformats) to enable
+    hCard and hCal microformats</li>
+  <li><code>RAPTOR_FEATURE_HTML_TAG_SOUP</code> (htmlTagSoup) to use
+    the HTML tag soup parser if the XML parsing fails</li>
+  <li><code>RAPTOR_FEATURE_HTML_LINK</code> (htmlLink) to enable html
+    &lt;link&gt;</li>
+  <li><code>RAPTOR_FEATURE_WWW_TIMEOUT</code> (wwwTimeout) for setting
+    URI retrieval timeouts during processing</li>
+</ul>
+
+<h3>Parser Changes</h3>
+
+<p>GRDDL parser/processor was substantially updated and now
+supports 100% of the
+<a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
+syntax, W3C Recommendation of 2007-09-11:
+</p>
+<ul>
+  <li>Transforming XML with XSLT 1.0</li>
+  <li>Processing XML namespaces.</li>
+  <li>Transforming XHTML with XSLT 1.0</li>
+  <li>Processing HTML profiles.</li>
+  <li>Handling of base URIs and URI redirects.</li>
+  <li>XInclude processing.</li>
+  <li>Parsing as RDF/XML when it is recognised after a transform.</li>
+</ul>
+
+<p>The GRDDL parser also:</p>
+<ul>
+  <li>Handles hCard and hCal microformats when feature
+    <code>RAPTOR_FEATURE_MICROFORMATS</code> is enabled (default
+    enabled).</li>
+  <li>Handles &lt;link type="application/rdf+xml" href="URI" /&gt; to
+    RDF/XML content when feature <code>RAPTOR_FEATURE_HTML_LINK</code> is
+    enabled (default enabled).</li>
+  <li>Attempts parsing with libxml's HTML parser if XML parsing fails,
+    when feature <code>RAPTOR_FEATURE_HTML_TAG_SOUP</code> is enabled
+    (default enabled).</li>
+  <li>Discards errors during recursive processing such as 404s,
+    failure to parse, failure of XSLT processing.</li>
+  <li>Uses XSLT security - denies reading, writing to files,
+    directories or writing to network.</li>
+  <li>Accepts the <code>RAPTOR_FEATURE_NO_NET</code> feature to prevent
+    all networking.</li>
+  <li>Allows fine-grained URI filtering with
+    <code>raptor_parser_set_uri_filter()</code>.</li>
+</ul>
+
+<p>RDF/XML parser recognising was updated to just the start of the
+document for guessing if it should handle content and to try
+to avoid html URLs.
+</p>
+
+<p>RSS Tag soup parser recognising was updated to accept with the
+string 'feed' in the identifier.
+</p>
+
+<p>The TRiG Parser was added based on the Turtle parser, adding named
+graphs.  It returns name graph URis via a callback set with new API
+call <code>raptor_set_graph_handler()</code>
+</p>
+
+<p>The Turtle parser added <code>@base</code> support, fixed turtle
+escapes to URIs.  Recognising was updated to look for
+<code>@prefix</code> early in the document.
+</p>
+
+<h3>Serializer Changes</h3>
+
+<p>Turtle serialiser changes:</p>
+<ul>
+<li>Generate @base when an output base URI is given.</li>
+<li>Properly format Turtle XSD doubles using new snprintf code.</li>
+<li>Fix unwanted blank line at end of Turtle list abbreviation.</li>
+<li>Use AVL tree rather than sequence for significant performance
+improvement for large serialisations.</li>
+</ul>
+
+<p>RDF/XML serialiser was changed to emit a legal empty RDF/XML
+document when no triples are serialised and to skip emitting
+statements with bad predicate uris rather than returning an error.
+</p>
+
+<p>RDF/XML Abbrev serialiser was changed to use an AVL tree rather
+than sequence for significant performance improvement for large
+serialisations.
+</p>
+
+<h3><code>rapper</code> Utility Changes</h3>
+
+<p>Added an <code>--show-graphs</code> option to print named graph
+URIs as seen (such as with TRiG).
+</p>
+
+<p>Added <code>-I</code> / <code>--input-uri</code> and
+<code>-O</code> / <code>--output-uri</code> options to set the
+input / parsing and output / serializing base URIs
+separately. Defaults remain the same - the serializer base URI
+defaults to the input base URI, however it was set.
+</p>
+
+
+<h3>Portability Changes</h3>
+
+<p>Fixes for when building from Subversion on cygwin (EOL issues,
+Makefiles).</p>
+
+<p>Remove unused semicolons for prevention of compiler warnings.</p>
+
+<p>Fix some uninitialized variables that some compilers complain about.</p>
+
+<p>Allow <code>RAPTOR_ASSERT_DIE</code> to be externally defined.</p>
+
+<p>Allow <code>RAPTOR_WWW_BUFFER_SIZE</code> to be externally defined.</p>
+
+
+<h3>Other Changes</h3>
+
+<p><code>autogen.sh</code> was updated to handle program versions
+better using an inline perl helper.
+</p>
+
+<p>Start to add resiliance to memory allocation failures
+and errors inside the library.
+</p>
+
+<p>Added AVL Tree code to make much faster key:value lookups for
+RDF/XML parser ID checks and 'abbrev' serializers - Turtle and
+RDF/XML-Abbrev.
+</p>
+
+<p>Better libxml error messages are now returned, mentioning
+some of the names and values that caused the error.
+</p>
+
+
+
 <h2 id="rel1_4_15"><a name="rel1_4_15">Raptor 1.4.15 Changes</a></h2>
 
 <h3>General Changes</h3>
