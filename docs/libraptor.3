@@ -473,11 +473,11 @@ array of allocated memory for raptor to use, for freeing later, such
 as inside the handler function declared with
 \fBraptor_set_generate_id_handler\fP which returns new memory.
 .SH "UNICODE UTILITY FUNCTIONS"
-.IP "\fBint raptor_unicode_char_to_utf8(unsigned long \fIc\fP, unsigned char *\fIoutput\fP)\fR"
+.IP "\fBint raptor_unicode_char_to_utf8(raptor_unichar \fIc\fP, unsigned char *\fIoutput\fP)\fR"
 Turn a Unicode character into UTF8 bytes in \fIoutput\fP of
 size \fIc\fP bytes which must be of sufficient size.  Returns the
 number of bytes encoded or <0 on failure.
-.IP "\fBint raptor_utf8_to_unicode_char(unsigned long *\fIoutput\fP, const unsigned char *\fIinput\fP, int \fIlength\fP)\fR"
+.IP "\fBint raptor_utf8_to_unicode_char(raptor_unichar *\fIoutput\fP, const unsigned char *\fIinput\fP, int \fIlength\fP)\fR"
 Decode a sequence UTF8 bytes in \fIinput\fP of size \fIlength\fP
 into a Unicode character in \fIoutput\fR returning the number of
 bytes used or <0 on failure.
@@ -485,10 +485,10 @@ bytes used or <0 on failure.
 Check that a given \fIstring\fP is legal UTF-8 encoding and includes
 only legal Unicode characters U+0 to U+0x10ffff inclusive. Returns
 non-0 if the string is good.
-.IP "\fBint raptor_unicode_is_xml11_namestartchar(long \fIc\fP)\fR"
-.IP "\fBint raptor_unicode_is_xml10_namestartchar(long \fIc\fP)\fR"
-.IP "\fBint raptor_unicode_is_xml11_namechar(long \fIc\fP)\fR"
-.IP "\fBint raptor_unicode_is_xml10_namechar(long \fIc\fP)\fR"
+.IP "\fBint raptor_unicode_is_xml11_namestartchar(raptor_unichar \fIc\fP)\fR"
+.IP "\fBint raptor_unicode_is_xml10_namestartchar(raptor_unichar \fIc\fP)\fR"
+.IP "\fBint raptor_unicode_is_xml11_namechar(raptor_unichar \fIc\fP)\fR"
+.IP "\fBint raptor_unicode_is_xml10_namechar(raptor-unichar \fIc\fP)\fR"
 Check that given Unicode characters are allowed as
 XML 1.0 or XML 1.0 names - either as the starting character
 (\fB*_namestartchar\fP) or continuing character (\fB*_namechar\fP).
