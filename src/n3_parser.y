@@ -195,6 +195,8 @@ statement: directive
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      if(!i2)
+        YYERROR;      
       raptor_copy_identifier(i2, $1);
       t2->subject=i2;
       t2->subject->is_malloced=1;
@@ -401,6 +403,8 @@ propertyList: propertyList SEMICOLON verb objectList
     for(i=0; i<raptor_sequence_size($4); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      if(!i2)
+        YYERROR;
       raptor_copy_identifier(i2, $3);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
@@ -457,6 +461,8 @@ propertyList: propertyList SEMICOLON verb objectList
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      if(!i2)
+        YYERROR;
       raptor_copy_identifier(i2, $1);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
@@ -640,6 +646,8 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("resource integer=%d\n", $1);
 #endif
   string=(unsigned char*)RAPTOR_MALLOC(cstring, 32); /* FIXME */
+  if(!string)
+    YYERROR;
   sprintf((char*)string, "%d", $1);
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
@@ -723,6 +731,8 @@ blank: BLANK_LITERAL
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+      if(!i2)
+        YYERROR;
       raptor_copy_identifier(i2, $$);
       t2->subject=i2;
       t2->subject->is_malloced=1;
