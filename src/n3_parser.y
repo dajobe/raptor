@@ -246,6 +246,8 @@ objectList: objectList COMMA object
     $$=NULL;
   else {
     triple=raptor_n3_new_triple(NULL, NULL, $3);
+    if(!triple)
+      YYERROR;
     $$=$1;
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -273,12 +275,16 @@ objectList: objectList COMMA object
     $$=NULL;
   else {
     triple=raptor_n3_new_triple(NULL, NULL, $1);
+    if(!triple)
+      YYERROR;
 #ifdef RAPTOR_DEBUG
     $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_n3_free_triple,
                            (raptor_sequence_print_handler*)raptor_triple_print);
 #else
     $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_n3_free_triple, NULL);
 #endif
+    if(!$$)
+      YYERROR;
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
@@ -313,6 +319,8 @@ itemList: itemList object
     $$=NULL;
   else {
     triple=raptor_n3_new_triple(NULL, NULL, $2);
+    if(!triple)
+      YYERROR;
     $$=$1;
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
@@ -340,12 +348,16 @@ itemList: itemList object
     $$=NULL;
   else {
     triple=raptor_n3_new_triple(NULL, NULL, $1);
+    if(!triple)
+      YYERROR;
 #ifdef RAPTOR_DEBUG
     $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_n3_free_triple,
                            (raptor_sequence_print_handler*)raptor_triple_print);
 #else
     $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_n3_free_triple, NULL);
 #endif
+    if(!$$)
+      YYERROR;
     raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
@@ -375,6 +387,8 @@ verb: predicate
 #endif
 
   uri=raptor_new_uri_for_rdf_concept("type");
+  if(!uri)
+    YYERROR;
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
 }
 ;
@@ -650,6 +664,8 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   sprintf((char*)string, "%d", $1);
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  if(!uri)
+    YYERROR;
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
 }
 | FLOATING_LITERAL
@@ -666,6 +682,8 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("resource decimal=%s\n", $1);
 #endif
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  if(!uri)
+    YYERROR;
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
 }
 ;
@@ -713,6 +731,8 @@ blank: BLANK_LITERAL
   const unsigned char *id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
   
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
+  if(!$$)
+    YYERROR;
 
   if($2 == NULL) {
 #if RAPTOR_DEBUG > 1  
@@ -772,7 +792,11 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 #endif
 
   first_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  if(!first_identifier)
+    YYERROR;
   rest_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  if(!rest_identifier)
+    YYERROR;
   
   /* non-empty property list, handle it  */
 #if RAPTOR_DEBUG > 1  
@@ -782,12 +806,22 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 #endif
 
   object=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  if(!object)
+    YYERROR;
 
   for(i=raptor_sequence_size($2)-1; i>=0; i--) {
     raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-    const unsigned char *blank_id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-    raptor_identifier* blank=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
+    const unsigned char *blank_id;
+    raptor_identifier* blank;
     raptor_identifier* temp;
+
+    blank_id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+    if(!blank_id)
+      YYERROR;
+
+    blank=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
+    if(!blank)
+      YYERROR;
     
     t2->subject=blank;
     t2->predicate=first_identifier;
@@ -983,14 +1017,18 @@ raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
-  raptor_namespaces_init(&n3_parser->namespaces,
-                         uri_handler, uri_context,
-                         (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser, 
-                         0);
+  if(raptor_namespaces_init(&n3_parser->namespaces,
+                            uri_handler, uri_context,
+                            (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser, 
+                            0))
+    return 1;
 
   n3_parser->nil_uri=raptor_new_uri_for_rdf_concept("nil");
   n3_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
   n3_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
+
+  if(!n3_parser->nil_uri || !n3_parser->first_uri || !n3_parser->rest_uri)
+    return 1;
 
   return 0;
 }
