@@ -13,15 +13,19 @@
 
 <h3>General Changes</h3>
 
-<p>The main change to this release arwas to provide 100% support of the
+<p>The main change to this release is to provide 100% support of the
 <a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">GRDDL W3C Recommendation of 2007-09-11</a>.
 </p>
 
-<p>The turtle parser and serializer were improved and now support
+<p>The Turtle parser and serializer were updated to now support
 <code>@base</code>.
 </p>
 
-<p>There were several API changes and many other improvements.</p>
+<p>The Turtle and RDF/XML serializers had performance improvements.
+</p>
+
+<p>There were several API changes and many other bug fixes and
+improvements.</p>
 
 <p>Two new committers were added to the project: Dave Robillard and
 Lauri Aalto.
@@ -47,32 +51,13 @@ Lauri Aalto.
 </ul>
 
 
-<h3>API changes</h3>
+<h3>Namespaces Class Changes</h3>
 
-<p>Defined
-<code>raptor_unichar</code> typedef for Unicode functions
-<code>raptor_unicode_char_to_utf8()</code>,
-<code>raptor_utf8_to_unicode_char()</code>,
-<code>raptor_unicode_is_xml11_namestartchar()</code>,
-<code>raptor_unicode_is_xml10_namestartchar()</code>,
-<code>raptor_unicode_is_xml11_namechar()</code> and
-<code>raptor_unicode_is_xml10_namechar()</code>.
+<p><code>raptor_namespaces_init()</code> now returns an integer
+status.
 </p>
 
-<p><code>raptor_namespaces_init()</code> now returns an integer status.
-</p>
-
-<p>Added <code>raptor_uri_compare()</code> and
-<code>raptor_uri_compare_func</code> for implementing it.  The URI
-factory now has a version to trigger the new factory method for uri
-compare.
-</p>
-
-<p>Added
-<code>raptor_new_xml_element_from_namespace_local_name()</code> to
-make an XML element from a local name relative to a
-<code>raptor_namespace</code>.
-</p>
+<h3>Parser Class Changes</h3>
 
 <p>
 Added <code>raptor_graph_handler</code> typedef and
@@ -80,6 +65,50 @@ Added <code>raptor_graph_handler</code> typedef and
 identifiers during parsing, initially for the TRiG parser.
 </p>
 
+<p>These were added the GRDDL parser:</p>
+<ul>
+  <li><code>RAPTOR_FEATURE_MICROFORMATS</code> (microformats) to enable
+    hCard and hCal microformats</li>
+  <li><code>RAPTOR_FEATURE_HTML_TAG_SOUP</code> (htmlTagSoup) to use
+    the HTML tag soup parser if the XML parsing fails</li>
+  <li><code>RAPTOR_FEATURE_HTML_LINK</code> (htmlLink) to enable html
+    &lt;link&gt;</li>
+  <li><code>RAPTOR_FEATURE_WWW_TIMEOUT</code> (wwwTimeout) for setting
+    URI retrieval timeouts during processing</li>
+</ul>
+
+
+<h3>XML Element Class Changes</h3>
+
+<p>Added
+<code>raptor_new_xml_element_from_namespace_local_name()</code>
+constructor to make an XML element from a local name relative
+to a <code>raptor_namespace</code>.
+</p>
+
+<h3>Unicode Class Changes</h3>
+
+<p>Defined a new <code>raptor_unichar</code> typedef for a Unicode
+codepoint defined as <code>unsigned long</code> which was the
+previous type used.  Altered the Unicode function to take it as a
+parameter.  <code>raptor_unicode_char_to_utf8()</code>,
+<code>raptor_utf8_to_unicode_char()</code>,
+<code>raptor_unicode_is_xml11_namestartchar()</code>,
+<code>raptor_unicode_is_xml10_namestartchar()</code>,
+<code>raptor_unicode_is_xml11_namechar()</code> and
+<code>raptor_unicode_is_xml10_namechar()</code>.
+</p>
+
+<h3>URI Class Changes</h3>
+
+<p>Added <code>raptor_uri_compare()</code> and
+<code>raptor_uri_compare_func</code> function pointer for
+implementing it in the <code>raptor_uri_handler</code>.  The handler
+now has a version field <code>initialised</code> to trigger the new
+factory method for uri compare when the version is 2 or more.
+</p>
+
+<h3>WWW Class Changes</h3>
 <p>
 Added <code>raptor_www_set_connection_timeout()</code>
 to set the WWW retrieval connection timeout in seconds.
@@ -97,21 +126,10 @@ Added <code>raptor_www_get_final_uri()</code> to return the final URI
 <em>after</em> a WWW retrieval which might include redirects.
 </p>
 
-<p>Added new features for the GRDDL parser:</p>
-<ul>
-  <li><code>RAPTOR_FEATURE_MICROFORMATS</code> (microformats) to enable
-    hCard and hCal microformats</li>
-  <li><code>RAPTOR_FEATURE_HTML_TAG_SOUP</code> (htmlTagSoup) to use
-    the HTML tag soup parser if the XML parsing fails</li>
-  <li><code>RAPTOR_FEATURE_HTML_LINK</code> (htmlLink) to enable html
-    &lt;link&gt;</li>
-  <li><code>RAPTOR_FEATURE_WWW_TIMEOUT</code> (wwwTimeout) for setting
-    URI retrieval timeouts during processing</li>
-</ul>
 
 <h3>Parser Changes</h3>
 
-<p>GRDDL parser/processor was substantially updated and now
+<p>The GRDDL parser/processor was substantially updated and now
 supports 100% of the
 <a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
 syntax, W3C Recommendation of 2007-09-11:
@@ -126,7 +144,7 @@ syntax, W3C Recommendation of 2007-09-11:
   <li>Parsing as RDF/XML when it is recognised after a transform.</li>
 </ul>
 
-<p>The GRDDL parser also:</p>
+<p>it also:</p>
 <ul>
   <li>Handles hCard and hCal microformats when feature
     <code>RAPTOR_FEATURE_MICROFORMATS</code> is enabled (default
@@ -156,12 +174,12 @@ to avoid html URLs.
 string 'feed' in the identifier.
 </p>
 
-<p>The TRiG Parser was added based on the Turtle parser, adding named
+<p>TRiG Parser was added based on the Turtle parser, adding named
 graphs.  It returns name graph URis via a callback set with new API
 call <code>raptor_set_graph_handler()</code>
 </p>
 
-<p>The Turtle parser added <code>@base</code> support, fixed turtle
+<p>Turtle parser added <code>@base</code> support, fixed turtle
 escapes to URIs.  Recognising was updated to look for
 <code>@prefix</code> early in the document.
 </p>
