@@ -21,7 +21,7 @@
 <a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
 parser and serializer were updated to support
 <code>@base</code> for specifying a base URI, following
-Turtle 2007-09-11.
+Turtle of 2007-09-11.
 </p>
 
 <p>The Turtle and RDF/XML serializers had performance improvements
@@ -185,10 +185,10 @@ escapes to URIs.  Recognising was updated to look for
 
 <p>Turtle serialiser changes:</p>
 <ul>
-<li>Generate @base when an output base URI is given.</li>
+<li>Generate <code>@base</code> when an output base URI is given.</li>
 <li>Properly format Turtle XSD doubles using new snprintf code.</li>
 <li>Fix unwanted blank line at end of Turtle list abbreviation.</li>
-<li>Use AVL tree rather than sequence for significant performance
+<li>Use AVL Tree rather than sequence for significant performance
 improvement for large serialisations.</li>
 </ul>
 
@@ -240,9 +240,9 @@ better using an inline perl helper.
 and errors inside the library.
 </p>
 
-<p>Added AVL Tree code to make much faster key:value lookups for
-RDF/XML parser ID checks and 'abbrev' serializers - Turtle and
-RDF/XML-Abbrev.
+<p>Added AVL Tree code to make much faster key:value lookups.  This
+is used for RDF/XML parser XML ID checks and in the 'abbrev'
+serializers - Turtle and RDF/XML-Abbrev for looking up nodes.
 </p>
 
 <p>Better libxml error messages are now returned, mentioning
