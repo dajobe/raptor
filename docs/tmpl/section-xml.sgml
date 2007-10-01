@@ -42,6 +42,18 @@ a name is legal in some XML version.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_xml_element_from_namespace_local_name ##### -->
+<para>
+
+</para>
+
+@ns: 
+@name: 
+@xml_language: 
+@xml_base: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_free_xml_element ##### -->
 <para>
 
