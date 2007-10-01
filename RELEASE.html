@@ -11,30 +11,27 @@
 
 <h2 id="rel1_4_16"><a name="rel1_4_16">Raptor 1.4.16 Changes</a></h2>
 
-<h3>General Changes</h3>
+<p>The main changes to this release are:</p>
 
-<p>The main change to this release is to provide 100% support of the
+<p>Provide 100% support for the
 <a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">GRDDL W3C Recommendation of 2007-09-11</a>.
 </p>
 
-<p>The Turtle parser and serializer were updated to now support
-<code>@base</code>.
+<p>The
+<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
+parser and serializer were updated to support
+<code>@base</code> for specifying a base URI, following
+Turtle 2007-09-11.
 </p>
 
-<p>The Turtle and RDF/XML serializers had performance improvements.
+<p>The Turtle and RDF/XML serializers had performance improvements
+for large graphs.
 </p>
 
-<p>There were several API changes and many other bug fixes and
-improvements.</p>
-
-<p>Two new committers were added to the project: Dave Robillard and
-Lauri Aalto.
-</p>
-
+<p>Several other API changes, fixed and improvements were made.</p>
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000186">0000186</a>: Add RDFa support to Raptor</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000188">0000188</a>: Wrong RAPTOR_API definition for mingw</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000192">0000192</a>: raptor_uri_filename_to_uri_string() - getcwd() loop error</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000194">0000194</a>: parser and serializer don't recognize the same mime types</li>
