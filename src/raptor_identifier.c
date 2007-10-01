@@ -75,8 +75,20 @@ raptor_new_identifier(raptor_identifier_type type,
 
   identifier=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1,
                                                sizeof(raptor_identifier));
-  if(!identifier)
+  if(!identifier) {
+    if(uri)
+      raptor_free_uri(uri);
+    if(id)
+      RAPTOR_FREE(cstring, (void*)id);
+    if(literal)
+      RAPTOR_FREE(cstring, (void*)literal);
+    if(literal_datatype)
+      raptor_free_uri(literal_datatype);
+    if(literal_language)
+      RAPTOR_FREE(cstring, (void*)literal_language);
+
     return NULL;
+  }
 
   identifier->type=type;
   identifier->is_malloced=1;
