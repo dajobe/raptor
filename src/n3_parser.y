@@ -890,8 +890,16 @@ raptor_n3_new_triple(raptor_identifier *subject,
   raptor_triple* t;
   
   t=(raptor_triple*)RAPTOR_MALLOC(raptor_triple, sizeof(raptor_triple));
-  if(!t)
+  if(!t) {
+    if(subject)
+      raptor_free_identifier(subject);
+    if(predicate)
+      raptor_free_identifier(predicate);
+    if(object)
+      raptor_free_identifier(object);
+
     return NULL;
+  }
   
   t->subject=subject;
   t->predicate=predicate;
@@ -988,7 +996,8 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   if(!string || !*string)
     return 0;
   
-  n3_lexer_lex_init(&n3_parser->scanner);
+  if(n3_lexer_lex_init(&n3_parser->scanner))
+    return 1;
   n3_parser->scanner_set=1;
 
   n3_lexer_set_extra(rdf_parser, n3_parser->scanner);
