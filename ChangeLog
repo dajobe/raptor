@@ -1,3 +1,24 @@
+2007-10-01  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, configure.ac, src/win32_raptor_config.h: Bumped
+	version to 1.4.17
+
+2007-10-01  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_identifier.c: (raptor_new_identifier) Free owned
+	items on alloc failure.
+
+	* src/n3_parser.y: (raptor_n3_new_triple) Free owned identifiers
+	on alloc error.
+	(n3_parse) Check lexer init return value.
+
+	* src/n3_parser.y: n3 parser YYERROR on alloc failure. Still leaks
+	memory on errors.
+
+	* src/n3_parser.y: n3 parser YYERROR on alloc failure.
+
+	* src/raptor_serialize_rdfxml.c: Fix indent + trim whitespace
+
 2007-09-30  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor_1_4_16 for 1.4.16 release (SVN 12743)
