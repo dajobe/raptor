@@ -155,12 +155,15 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 /* syntax error */
 %token ERROR_TOKEN
 
-/* tidy up tokens after errors */
-%destructor { RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER 
-%destructor { raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
-
 %type <identifier> subject predicate object verb literal resource blank collection
 %type <sequence> objectList itemList propertyList
+
+/* tidy up tokens after errors */
+%destructor { if($$) RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER PREFIX
+%destructor { if($$) raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
+
+%destructor { if($$) raptor_free_identifier($$); } subject predicate object verb literal resource blank collection
+%destructor { if($$) raptor_free_sequence($$); } objectList itemList propertyList
 
 %%
 
@@ -546,6 +549,9 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
   if($2)
     RAPTOR_FREE(cstring, $2);
   raptor_free_uri($3);
+
+  if(!ns)
+    YYERROR;
 }
 ;
 
