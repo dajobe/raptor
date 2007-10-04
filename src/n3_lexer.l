@@ -172,13 +172,19 @@ EXPONENT [eE][+-]?[0-9]+
 
 
 '([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
+                               if(!n3_parser_lval->string)
+                                 yyterminate();
                                return STRING_LITERAL; }
 
 \"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+                                if(!n3_parser_lval->string)
+                                  yyterminate();
                                 return STRING_LITERAL; }
 
 \"\"\"				{ BEGIN(LITERAL); 
                                   n3_parser->sb=raptor_new_stringbuffer();
+                                  if(!n3_parser->sb)
+                                    yyterminate();
                           }
 
 <LITERAL>\"\"\"			{
@@ -187,6 +193,8 @@ EXPONENT [eE][+-]?[0-9]+
 		  BEGIN(INITIAL);
                   len=raptor_stringbuffer_length(n3_parser->sb);
                   n3_parser_lval->string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+                  if(!n3_parser_lval->string)
+                    yyterminate();
                   raptor_stringbuffer_copy_to_string(n3_parser->sb, (unsigned char*)n3_parser_lval->string, len);
                   n3_parser_lval->string[len]='\0';
 
@@ -213,12 +221,16 @@ EXPONENT [eE][+-]?[0-9]+
    }
 
 {BNAME}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
+          if(!n3_parser_lval->string)
+            yyterminate();
                           return BLANK_LITERAL; }
 
 {QNAME}	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+                  if(!n3_parser_lval->string)
+                    yyterminate();
                         return DECIMAL_LITERAL;
 }
 
@@ -240,10 +252,14 @@ EXPONENT [eE][+-]?[0-9]+
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
 <PREF>{NCNAME_PREFIX}":"	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+                            if(!n3_parser_lval->string)
+                              yyterminate();
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>":"	{ BEGIN(INITIAL);
 		  n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, 0);
+      if(!n3_parser_lval->string)
+        yyterminate();
                   return IDENTIFIER; }
 
 <PREF>(.|\n)	{ BEGIN(INITIAL);
@@ -259,10 +275,14 @@ EXPONENT [eE][+-]?[0-9]+
               else {
                 yytext[yyleng-1]='\0';
                 n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
+                if(!n3_parser_lval->uri)
+                  yyterminate();
               }
               return URI_LITERAL; }
 
 {LANGUAGETOKEN}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+                  if(!n3_parser_lval->string)
+                    yyterminate();
                           return IDENTIFIER; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
@@ -295,9 +315,10 @@ n3_copy_token(unsigned char *text, size_t len)
   if(!len)
     len=strlen((const char*)text);
   s=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
-
-  strncpy((char*)s, (const char*)text, len);
-  s[len] = '\0';
+  if(s) {
+    strncpy((char*)s, (const char*)text, len);
+    s[len] = '\0';
+  }
   return s;
 }
 
@@ -326,13 +347,14 @@ n3_copy_string_token(raptor_parser* rdf_parser,
   }
   
   string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  if(string) {
+    if(sb) {
+      raptor_stringbuffer_copy_to_string(sb, string, len+1);
+      raptor_free_stringbuffer(sb);
+    }
+    string[len]='\0';
+  }  
 
-  if(sb) {
-    raptor_stringbuffer_copy_to_string(sb, string, len+1);
-    raptor_free_stringbuffer(sb);
-  }
-  string[len]='\0';
-  
   return string;
 }
 
