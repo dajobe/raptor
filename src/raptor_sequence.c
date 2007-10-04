@@ -216,6 +216,30 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
   return 0;
 }
 
+/**
+ * raptor_sequence_disown_at:
+ * @seq: sequence object
+ * @idx: index into sequence to operate at
+ * 
+ * Clear an item in the sequence by setting it to NULL. Any existing
+ * item at @idx is NOT FREED. This is to facilitate disowning items
+ * that have been accessed with raptor_sequence_get_at().
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_sequence_disown_at(raptor_sequence* seq, int idx)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
+
+  if(idx < 0 || idx > seq->size-1)
+    return 1;
+  
+  seq->sequence[idx]=NULL;
+  return 0;
+}
+
+
 
 /**
  * raptor_sequence_push:

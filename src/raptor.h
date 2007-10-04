@@ -1226,6 +1226,8 @@ int raptor_sequence_size(raptor_sequence* seq);
 RAPTOR_API
 int raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data);
 RAPTOR_API
+int raptor_sequence_disown_at(raptor_sequence* seq, int idx);
+RAPTOR_API
 int raptor_sequence_push(raptor_sequence* seq, void *data);
 RAPTOR_API
 int raptor_sequence_shift(raptor_sequence* seq, void *data);
