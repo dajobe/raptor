@@ -116,58 +116,39 @@ raptor_new_identifier(raptor_identifier_type type,
 int
 raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 {
+  int len;
+
   raptor_free_identifier(dest);
 
   dest->type=src->type;
   dest->uri_source=src->uri_source;
   dest->ordinal=src->ordinal;
 
-  if(src->uri) {
-    dest->uri=raptor_uri_copy(src->uri);
-    if(!dest->uri)
-      return 0;
-  }
+  dest->uri=raptor_uri_copy(src->uri);
 
   if(src->id) {
-    int len=strlen((char*)src->id);
+    len=strlen((char*)src->id);
     
     dest->id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
     if(!dest->id) {
       raptor_free_identifier(dest);
-      return 0;
+      return 1;
     }
     strncpy((char*)dest->id, (char*)src->id, len+1);
   }
 
   if(src->literal_language) {
-    int len=strlen((char*)src->literal_language);
+    len=strlen((char*)src->literal_language);
     
     dest->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
     if(!dest->literal_language) {
       raptor_free_identifier(dest);
-      return 0;
+      return 1;
     }
     strncpy((char*)dest->literal_language, (char*)src->literal_language, len+1);
   }
 
-  if(src->literal_datatype) {
-    dest->literal_datatype=raptor_uri_copy(src->literal_datatype);
-    if(!dest->literal_datatype) {
-      raptor_free_identifier(dest);
-      return 0;
-    }
-  }
-
-  if(src->literal_language) {
-    int len=strlen((char*)src->literal_language);
-    
-    dest->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-    if(!dest->literal_language) {
-      raptor_free_identifier(dest);
-      return 0;
-    }
-    strncpy((char*)dest->literal_language, (char*)src->literal_language, len+1);
-  }
+  dest->literal_datatype=raptor_uri_copy(src->literal_datatype);
 
   return 0;
 }
