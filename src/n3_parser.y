@@ -198,8 +198,11 @@ statement: directive
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-      if(!i2)
-        YYERROR;      
+      if(!i2) {
+        raptor_free_sequence($2);
+        raptor_free_identifier($1);
+        YYERROR;
+      }
       raptor_copy_identifier(i2, $1);
       t2->subject=i2;
       t2->subject->is_malloced=1;
@@ -249,10 +252,15 @@ objectList: objectList COMMA object
     $$=NULL;
   else {
     triple=raptor_n3_new_triple(NULL, NULL, $3);
-    if(!triple)
+    if(!triple) {
+      raptor_free_sequence($1);
       YYERROR;
+    }
+    if(raptor_sequence_push($1, triple)) {
+      raptor_free_sequence($1);
+      YYERROR;
+    }
     $$=$1;
-    raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
@@ -286,9 +294,15 @@ objectList: objectList COMMA object
 #else
     $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_n3_free_triple, NULL);
 #endif
-    if(!$$)
+    if(!$$) {
+      raptor_n3_free_triple(triple);
       YYERROR;
-    raptor_sequence_push($$, triple);
+    }
+    if(raptor_sequence_push($$, triple)) {
+      raptor_free_sequence($$);
+      $$=NULL;
+      YYERROR;
+    }
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
@@ -322,10 +336,15 @@ itemList: itemList object
     $$=NULL;
   else {
     triple=raptor_n3_new_triple(NULL, NULL, $2);
-    if(!triple)
+    if(!triple) {
+      raptor_free_sequence($1);
       YYERROR;
+    }
+    if(raptor_sequence_push($1, triple)) {
+      raptor_free_sequence($1);
+      YYERROR;
+    }
     $$=$1;
-    raptor_sequence_push($$, triple);
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
@@ -359,9 +378,15 @@ itemList: itemList object
 #else
     $$=raptor_new_sequence((raptor_sequence_free_handler*)raptor_n3_free_triple, NULL);
 #endif
-    if(!$$)
+    if(!$$) {
+      raptor_n3_free_triple(triple);
       YYERROR;
-    raptor_sequence_push($$, triple);
+    }
+    if(raptor_sequence_push($$, triple)) {
+      raptor_free_sequence($$);
+      $$=NULL;
+      YYERROR;
+    }
 #if RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
@@ -393,6 +418,8 @@ verb: predicate
   if(!uri)
     YYERROR;
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  if(!$$)
+    YYERROR;
 }
 ;
 
@@ -420,8 +447,13 @@ propertyList: propertyList SEMICOLON verb objectList
     for(i=0; i<raptor_sequence_size($4); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-      if(!i2)
+      if(!i2) {
+        if($1)
+          raptor_free_sequence($1);
+        raptor_free_identifier($3);
+        raptor_free_sequence($4);
         YYERROR;
+      }
       raptor_copy_identifier(i2, $3);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
@@ -441,10 +473,15 @@ propertyList: propertyList SEMICOLON verb objectList
   } else if ($3 && $4 && $1) {
     for(i=0; i<raptor_sequence_size($4); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
-      raptor_sequence_push($1, t2);
+      raptor_sequence_disown_at($4, i); /* t2 no longer owned by $4 */
+      if(raptor_sequence_push($1, t2)) {
+        raptor_free_sequence($1);
+        if($3)
+          raptor_free_identifier($3);
+        raptor_free_sequence($4);
+        YYERROR;
+      }
     }
-    while(raptor_sequence_size($4))
-      raptor_sequence_pop($4);
 
 #if RAPTOR_DEBUG > 1  
     printf(" after appending objectList (reverse order)=");
@@ -478,8 +515,11 @@ propertyList: propertyList SEMICOLON verb objectList
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-      if(!i2)
+      if(!i2) {
+        raptor_free_sequence($2);
+        raptor_free_identifier($1);
         YYERROR;
+      }
       raptor_copy_identifier(i2, $1);
       t2->predicate=i2;
       t2->predicate->is_malloced=1;
@@ -602,6 +642,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, $3);
+  if(!$$)
+    YYERROR;
 }
 | STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
 {
@@ -609,9 +651,11 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
-  if($5)
+  if($5) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
-  else
+    if(!$$)
+      YYERROR;
+  } else
     $$=NULL;
     
 }
@@ -621,9 +665,11 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
-  if($5)
+  if($5) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, (const unsigned char*)$1, $5, $3);
-  else
+    if(!$$)
+      YYERROR;
+  } else
     $$=NULL;
 
 }
@@ -633,9 +679,11 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string($3));
 #endif
 
-  if($3)
+  if($3) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
-  else
+    if(!$$)
+      YYERROR;
+  } else
     $$=NULL;
     
 }
@@ -647,6 +695,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   if($3) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
+    if(!$$)
+      YYERROR;
   } else
     $$=NULL;
 }
@@ -657,6 +707,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, NULL);
+  if(!$$)
+    YYERROR;
 }
 | INTEGER_LITERAL
 {
@@ -673,6 +725,8 @@ literal: STRING_LITERAL AT IDENTIFIER
   if(!uri)
     YYERROR;
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+  if(!$$)
+    YYERROR;
 }
 | FLOATING_LITERAL
 {
@@ -680,6 +734,8 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("resource double=%1g\n", $1);
 #endif
   $$=raptor_new_identifier_from_double($1);
+  if(!$$)
+    YYERROR;
 }
 | DECIMAL_LITERAL
 {
@@ -691,6 +747,8 @@ literal: STRING_LITERAL AT IDENTIFIER
   if(!uri)
     YYERROR;
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
+  if(!$$)
+    YYERROR;
 }
 ;
 
@@ -701,9 +759,11 @@ resource: URI_LITERAL
   printf("resource URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
-  if($1)
+  if($1) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
-  else
+    if(!$$)
+      YYERROR;
+  } else
     $$=NULL;
 }
 | QNAME_LITERAL
@@ -712,9 +772,11 @@ resource: URI_LITERAL
   printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
-  if($1)
+  if($1) {
     $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
-  else
+    if(!$$)
+      YYERROR;
+  } else
     $$=NULL;
 }
 ;
@@ -728,8 +790,12 @@ blank: BLANK_LITERAL
   printf("subject blank=\"%s\"\n", $1);
 #endif
   id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, $1);
+  if(!id)
+    YYERROR;
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
+  if(!$$)
+    YYERROR;
 }
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
@@ -737,8 +803,11 @@ blank: BLANK_LITERAL
   const unsigned char *id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
   
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
-  if(!$$)
+  if(!$$) {
+    if($2)
+      raptor_free_sequence($2);
     YYERROR;
+  }
 
   if($2 == NULL) {
 #if RAPTOR_DEBUG > 1  
@@ -757,8 +826,10 @@ blank: BLANK_LITERAL
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-      if(!i2)
+      if(!i2) {
+        raptor_free_sequence($2);
         YYERROR;
+      }
       raptor_copy_identifier(i2, $$);
       t2->subject=i2;
       t2->subject->is_malloced=1;
@@ -787,9 +858,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 {
   int i;
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
-  raptor_identifier* first_identifier;
-  raptor_identifier* rest_identifier;
-  raptor_identifier* object;
+  raptor_identifier* first_identifier=NULL;
+  raptor_identifier* rest_identifier=NULL;
+  raptor_identifier* object=NULL;
+  raptor_identifier* blank=NULL;
 
 #if RAPTOR_DEBUG > 1  
   printf("collection\n objectList=");
@@ -799,10 +871,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
   first_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!first_identifier)
-    YYERROR;
+    goto err_collection;
   rest_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!rest_identifier)
-    YYERROR;
+    goto err_collection;
   
   /* non-empty property list, handle it  */
 #if RAPTOR_DEBUG > 1  
@@ -813,21 +885,20 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
   object=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!object)
-    YYERROR;
+    goto err_collection;
 
   for(i=raptor_sequence_size($2)-1; i>=0; i--) {
     raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
     const unsigned char *blank_id;
-    raptor_identifier* blank;
     raptor_identifier* temp;
 
     blank_id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
     if(!blank_id)
-      YYERROR;
+      goto err_collection;
 
     blank=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
     if(!blank)
-      YYERROR;
+      goto err_collection;
     
     t2->subject=blank;
     t2->predicate=first_identifier;
@@ -848,6 +919,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     t2->object=temp;
 
     object=blank;
+    blank=NULL;
   }
   
 #if RAPTOR_DEBUG > 1
@@ -862,6 +934,26 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   raptor_free_identifier(rest_identifier);
 
   $$=object;
+
+  break; /* success */
+
+  err_collection:
+
+  if(blank)
+    raptor_free_identifier(blank);
+
+  if(object)
+    raptor_free_identifier(object);
+
+  if(rest_identifier)
+    raptor_free_identifier(rest_identifier);
+
+  if(first_identifier)
+    raptor_free_identifier(first_identifier);
+
+  raptor_free_sequence($2);
+
+  YYERROR;
 }
 |  LEFT_ROUND RIGHT_ROUND 
 {
@@ -872,6 +964,8 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 #endif
 
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  if(!$$)
+    YYERROR;
 }
 ;
 
