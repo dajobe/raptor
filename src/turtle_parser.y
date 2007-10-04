@@ -1063,7 +1063,8 @@ turtle_parse(raptor_parser *rdf_parser, const char *string) {
   if(!string || !*string)
     return 0;
   
-  turtle_lexer_lex_init(&turtle_parser->scanner);
+  if(turtle_lexer_lex_init(&turtle_parser->scanner))
+    return 1;
   turtle_parser->scanner_set=1;
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
@@ -1092,14 +1093,18 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
 
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
-  raptor_namespaces_init(&turtle_parser->namespaces,
-                         uri_handler, uri_context,
-                         (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser, 
-                         0);
+  if(raptor_namespaces_init(&turtle_parser->namespaces,
+                            uri_handler, uri_context,
+                            (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser, 
+                            0))
+    return 1;
 
   turtle_parser->nil_uri=raptor_new_uri_for_rdf_concept("nil");
   turtle_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
   turtle_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
+
+  if(!turtle_parser->nil_uri || !turtle_parser->first_uri || !turtle_parser->rest_uri)
+    return 1;
 
   turtle_parser->trig=!strcmp(name, "trig");
 
