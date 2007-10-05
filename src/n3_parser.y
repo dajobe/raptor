@@ -471,9 +471,8 @@ propertyList: propertyList SEMICOLON verb objectList
     printf(" empty propertyList not copied\n\n");
 #endif
   } else if ($3 && $4 && $1) {
-    for(i=0; i<raptor_sequence_size($4); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
-      raptor_sequence_disown_at($4, i); /* t2 no longer owned by $4 */
+    while(raptor_sequence_size($4)) {
+      raptor_triple* t2=(raptor_triple*)raptor_sequence_unshift($4);
       if(raptor_sequence_push($1, t2)) {
         raptor_free_sequence($1);
         if($3)
