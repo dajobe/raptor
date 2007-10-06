@@ -49,12 +49,38 @@
 
 #ifndef STANDALONE
 
+/*
+ * Sequence of maximum capacity C containing N data items
+ *
+ * array:
+ *    0            <-- N consecutive items -->         C - 1
+ * -----------------------------------------------------------
+ * |      |      | data1 |  .....     data N |  ...  |       |
+ * -----------------------------------------------------------
+ * <----- O -----> offset of first date item
+ *
+ * start    = O
+ * size     = N
+ * capacity = C
+ *
+ */
 struct raptor_sequence_s {
+  /* how many items are in the sequence 0..capacity */
   int size;
+
+  /* length of the 'sequence' array below */
   int capacity;
+
+  /* offset of the first data item in the sequence: 0..capacity-1 */
   int start;
+
+  /* array of size 'capacity' pointing to the data */
   void **sequence;
+
+  /* handler to call to free a data item (or NULL) */
   raptor_sequence_free_handler *free_handler;
+
+  /* handler to call to print a data item (or NULL) */
   raptor_sequence_print_handler *print_handler;
 };
 
