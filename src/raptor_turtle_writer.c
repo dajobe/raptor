@@ -414,12 +414,16 @@ raptor_iostream_write_string_turtle(raptor_iostream *iostr,
  * @s: string to write (SHARED)
  *
  * Write a string raw to the Turtle writer.
+ *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
                             const unsigned char *s)
 {
   raptor_stringbuffer* sb = raptor_new_stringbuffer();
+  if(!s)
+    return 1;
 
   if(raptor_turtle_writer_contains_newline(s)) {
     raptor_iostream_write_string(turtle_writer->iostr, "\"\"\"");
@@ -441,6 +445,7 @@ raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
   }
 
   raptor_free_stringbuffer(sb);
+  return 0;
 }
 
 
@@ -534,8 +539,10 @@ raptor_turtle_writer_double(raptor_turtle_writer* turtle_writer,
  * @datatype: datatype URI (may be NULL)
  *
  * Write a literal (possibly with lang and datatype) to the Turtle writer.
+ *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
                              raptor_namespace_stack *nstack,
                              const unsigned char* s, const unsigned char* lang,
@@ -604,9 +611,10 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   }
 
   if(written)
-    return;
+    return 0;
     
-  raptor_turtle_writer_quoted(turtle_writer, s);
+  if(raptor_turtle_writer_quoted(turtle_writer, s))
+    return 1;
 
   /* typed literal, not a special case */
   if(datatype) {
@@ -624,6 +632,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
     raptor_iostream_write_byte(turtle_writer->iostr, '@');
     raptor_iostream_write_string(turtle_writer->iostr, lang);
   }
+
+  return 0;
 }
 
 

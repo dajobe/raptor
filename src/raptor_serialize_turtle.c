@@ -189,6 +189,7 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
+  int rc=0;
   
   RAPTOR_DEBUG5("Emitting literal node %p refcount %d subject %d object %d\n",
                 node, 
@@ -197,14 +198,14 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
   if(node->type != RAPTOR_IDENTIFIER_TYPE_LITERAL)
     return 1;
   
-  raptor_turtle_writer_literal(turtle_writer, context->nstack,
-                               node->value.literal.string,
-                               node->value.literal.language, 
-                               node->value.literal.datatype);
+  rc=raptor_turtle_writer_literal(turtle_writer, context->nstack,
+                                  node->value.literal.string,
+                                  node->value.literal.language, 
+                                  node->value.literal.datatype);
 
   RAPTOR_DEBUG2("Emitted %p\n", node);
   
-  return 0;
+  return rc;
 }
 
 
@@ -226,7 +227,8 @@ raptor_turtle_emit_xml_literal(raptor_serializer *serializer,
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
   raptor_uri* type_uri;
-
+  int rc=0;
+  
   RAPTOR_DEBUG5("Emitting XML literal node %p refcount %d subject %d object %d\n",
                 node, 
                 node->ref_count, node->count_as_subject, node->count_as_object);
@@ -237,12 +239,12 @@ raptor_turtle_emit_xml_literal(raptor_serializer *serializer,
   type_uri = raptor_new_uri((const unsigned char*)
     "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral");
   
-  raptor_turtle_writer_literal(turtle_writer, context->nstack,
-                               node->value.literal.string, NULL, type_uri);
+  rc=raptor_turtle_writer_literal(turtle_writer, context->nstack,
+                                  node->value.literal.string, NULL, type_uri);
 
   raptor_free_uri(type_uri);
 
-  return 0;  
+  return rc;
 }
 
 
