@@ -209,8 +209,11 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
 
   /* Can only set items in the current range or +1 above it, not further
    * seq->sequence needs to have seq->size consecutive items */
-  if(idx < 0 || idx > seq->size)
+  if(idx < 0 || idx > seq->size) {
+    if(seq->free_handler && data)
+      seq->free_handler(data);
     return 1;
+  }
   
   if(seq->start+idx+1 > seq->capacity) {
     if(raptor_sequence_ensure(seq, seq->capacity*2, 0)) {
