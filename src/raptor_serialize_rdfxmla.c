@@ -1134,12 +1134,12 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       }
 
       if(add_property) {
-	rv = raptor_abbrev_subject_add_property(subject, predicate, object);
-	if(rv) {
-	  raptor_serializer_error(serializer,
-				  "Unable to add properties to subject 0x%p\n",
-				  subject);
-	}
+        rv = raptor_abbrev_subject_add_property(subject, predicate, object);
+        if(rv) {
+          raptor_serializer_error(serializer,
+                                  "Unable to add properties to subject 0x%p\n",
+                                  subject);
+        }
       }
     }
   
