@@ -112,13 +112,17 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
 
-  if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces || !context->rdf_xml_literal_uri) {
+  if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||
+     !context->rdf_xml_literal_uri) {
     raptor_rdfxml_serialize_terminate(serializer);
     return 1;
   }
 
   /* Note: item 0 in the list is rdf:RDF's namespace */
-  raptor_sequence_push(context->namespaces, context->rdf_nspace);
+  if(raptor_sequence_push(context->namespaces, context->rdf_nspace)) {
+    raptor_rdfxml_serialize_terminate(serializer);
+    return 1;
+  }
 
   return 0;
 }
