@@ -739,6 +739,9 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                                         (raptor_simple_message_handler)raptor_serializer_simple_error,
                                         serializer,
                                         1);
+  if(!context->nstack)
+    return 1;
+
   context->xml_nspace=raptor_new_namespace(context->nstack,
                                            (const unsigned char*)"xml",
                                            (const unsigned char*)raptor_xml_namespace_uri,
@@ -750,8 +753,6 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                                            0);
 
   context->namespaces=raptor_new_sequence(NULL, NULL);
-  /* Note: item 0 in the list is rdf:RDF's namespace */
-  raptor_sequence_push(context->namespaces, context->rdf_nspace);
 
   context->subjects =
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
@@ -761,28 +762,33 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
   
   context->nodes =
     raptor_new_avltree((raptor_avltree_compare_function)raptor_abbrev_node_cmp,
-			(raptor_avltree_delete_function)raptor_free_abbrev_node, 0);
+                       (raptor_avltree_delete_function)raptor_free_abbrev_node, 0);
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
   if(rdf_type_uri) {    
     context->rdf_type = raptor_new_abbrev_node(RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                                rdf_type_uri, NULL, NULL);
     raptor_free_uri(rdf_type_uri);
-  } else
-    context->rdf_type = NULL;
-  
-  if(!context->nstack || !context->rdf_nspace || !context->namespaces ||
-     !context->subjects || !context->blanks || !context->nodes ||
-     !context->rdf_type) {
-    raptor_rdfxmla_serialize_terminate(serializer);
-    return 1;
   }
 
   context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
 
+  if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||
+     !context->subjects || !context->blanks || !context->nodes ||
+     !context->rdf_type || !context->rdf_xml_literal_uri) {
+    raptor_rdfxmla_serialize_terminate(serializer);
+    return 1;
+  }
+
   context->is_xmp=!strncmp(name, "rdfxml-xmp", 10);
   if(context->is_xmp)
     serializer->feature_write_xml_declaration=0;
+
+  /* Note: item 0 in the list is rdf:RDF's namespace */
+  if(raptor_sequence_push(context->namespaces, context->rdf_nspace)) {
+    raptor_rdfxmla_serialize_terminate(serializer);
+    return 1;
+  }
 
   return 0;
 }
@@ -794,17 +800,25 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
 
-  if(context->xml_writer)
+  if(context->xml_writer) {
     raptor_free_xml_writer(context->xml_writer);
+    context->xml_writer=NULL;
+  }
 
-  if(context->rdf_RDF_element)
+  if(context->rdf_RDF_element) {
     raptor_free_xml_element(context->rdf_RDF_element);
+    context->rdf_RDF_element=NULL;
+  }
 
-  if(context->rdf_nspace)
+  if(context->rdf_nspace) {
     raptor_free_namespace(context->rdf_nspace);
+    context->rdf_nspace=NULL;
+  }
 
-  if(context->xml_nspace)
+  if(context->xml_nspace) {
     raptor_free_namespace(context->xml_nspace);
+    context->xml_nspace=NULL;
+  }
 
   if(context->namespaces) {
     int i;
@@ -817,28 +831,40 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
         raptor_free_namespace(ns);
     }
     raptor_free_sequence(context->namespaces);
+    context->namespaces=NULL;
   }
 
-  if(context->subjects)
+  if(context->subjects) {
     raptor_free_sequence(context->subjects);
+    context->subjects=NULL;
+  }
   
-  if(context->blanks)
+  if(context->blanks) {
     raptor_free_sequence(context->blanks);
+    context->blanks=NULL;
+  }
   
-  if(context->nodes)
+  if(context->nodes) {
     raptor_free_avltree(context->nodes);
+    context->nodes=NULL;
+  }
   
-  if(context->nstack)
+  if(context->nstack) {
     raptor_free_namespaces(context->nstack);
+    context->nstack=NULL;
+  }
 
-  if(context->rdf_type)
+  if(context->rdf_type) {
     raptor_free_abbrev_node(context->rdf_type);
+    context->rdf_type=NULL;
+  }
   
-  if(context->rdf_xml_literal_uri)
+  if(context->rdf_xml_literal_uri) {
     raptor_free_uri(context->rdf_xml_literal_uri);
-
+    context->rdf_xml_literal_uri=NULL;
+  }
 }
-  
+
 
 #define RDFXMLA_NAMESPACE_DEPTH 0
 
