@@ -14,32 +14,43 @@
 #
 
 my $seen_yyerrlab1=0;
+my $line_offset=1; # #line directives always refer to the NEXT line
 while(<>) {
-   # Fixup pending filename renaming, see above.
-   s/^(\#line \d+) (.*)\.tab\.c/$1 $2.c/;
+  # Remove code that causes a warning
+  if(/Suppress GCC warning that yyerrlab1/) {
+    do {
+      $_=<>;
+      $line_offset--; # skipped a line
+    } while(!/^\#endif/);
+    $line_offset--; # skipped a line
+    next;
+  }
 
-   # Remove code that causes a warning
-   if(/Suppress GCC warning that yyerrlab1/) {
-     do {
-       $_=<>;
-     } while(!/^\#endif/);
-     next;
-   }
+  $seen_yyerrlab1=1 if /goto yyerrlab1/;
 
-   $seen_yyerrlab1=1 if /goto yyerrlab1/;
+  s/^yyerrlab1:// unless $seen_yyerrlab1;
 
-   s/^yyerrlab1:// unless $seen_yyerrlab1;
+  # Do not use macro name for a temporary variable
+  s/unsigned int yylineno = /unsigned int yylineno_tmp = /;
+  s/yyrule - 1, yylineno\)/yyrule - 1, yylineno_tmp\)/;
 
-   # Do not use macro name for a temporary variable
-   s/unsigned int yylineno = /unsigned int yylineno_tmp = /;
-   s/yyrule - 1, yylineno\)/yyrule - 1, yylineno_tmp\)/;
+  # Do not (re)define prototypes that the system did better
+  if(m%^void \*malloc\s*\(%) {
+    $line_offset--; # skipped a line
+    next;
+  }
+  if(m%^void free\s*\(%) {
+    $line_offset--; # skipped a line
+    next; 
+  }
 
-   # Do not (re)define prototypes that the system did better
-   next if m%^void \*malloc\s*\(%;
-   next if m%^void free\s*\(%;
+  # Suppress warnings about empty declarations
+  s/(^static int .*_init_globals.*);$/$1/;
 
-   # Suppress warnings about empty declarations
-   s/(^static int .*_init_globals.*);$/$1/;
+  # Fixup pending filename renaming, see above.
+  # Fix line numbers.
+  my $line=$. +$line_offset;
+  s/^(\#line) \d+ (.*)\.tab\.c/$1 $line $2.c/;
 
   print;
 }

@@ -11,6 +11,8 @@
 # (C) Copyright 2004 University of Bristol
 #
 
+my $line_offset=1; # #line directives always refer to the NEXT line
+
 print <<'EOT';
 #ifdef HAVE_CONFIG_H
 #include <raptor_config.h>
@@ -21,6 +23,7 @@ print <<'EOT';
 #endif
 
 EOT
+$line_offset+=8; # added 8 lines to output
 
 while(<>) {
   # the default parser tries to free(NULL)
@@ -28,11 +31,18 @@ while(<>) {
 
   # flex has %option nounistd however it does not work in 2.5.31
   # It is safe to add yet another wrapper. 
-  $_=<<"EOT" if m%^(\#include \<unistd.h\>)$%;
+  if(m%^(\#include \<unistd.h\>)$%) {
+    $_=<<"EOT"; ;
 #ifndef YY_NO_UNISTD_H
 $1
 #endif
 EOT
+    $line_offset+=2; # added 2 lines to output
+  }
+
+  # Fix .[ch] line references because we have added lines to it
+  my $line = $. +$line_offset;
+  s/^#line \d+ (\".*\.[ch]\")/#line $line $1/;
 
   print;
 }
