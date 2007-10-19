@@ -159,7 +159,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 %type <sequence> objectList itemList propertyList
 
 /* tidy up tokens after errors */
-%destructor { if($$) RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER PREFIX
+%destructor { if($$) RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER
 %destructor { if($$) raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
 
 %destructor { if($$) raptor_free_identifier($$); } subject predicate object verb literal resource blank collection
