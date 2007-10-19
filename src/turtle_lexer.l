@@ -129,6 +129,17 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 #define YY_FATAL_ERROR(msg) turtle_lexer_fatal_error(msg, yyscanner)
 static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
 
+/* Out-of-memory reporting macro.
+ * Do not report as fatal error - we don't want an abort(),
+ * instead return EOF with yyterminate() and let the parser clean up.
+ */
+#define TURTLE_LEXER_OOM() do { \
+  turtle_syntax_error(rdf_parser, turtle_lexer_oom_text); \
+  yyterminate(); \
+} while(0)
+
+static const char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
+
 %}
 
 /* from SPARQL */
@@ -218,7 +229,7 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb=NULL;
-                    yyterminate();
+                    TURTLE_LEXER_OOM();
                   }
                   
    }
@@ -275,7 +286,7 @@ EXPONENT [eE][+-]?[0-9]+
                   sb=raptor_new_stringbuffer();
                   if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-1, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) {
                     raptor_free_stringbuffer(sb);
-                    yyterminate();
+                    TURTLE_LEXER_OOM();
                   }
                   uri_string=raptor_stringbuffer_as_string(sb);
                   turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);

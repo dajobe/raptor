@@ -129,6 +129,17 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 #define YY_FATAL_ERROR(msg) n3_lexer_fatal_error(msg, yyscanner)
 static void n3_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
 
+/* Out-of-memory reporting macro.
+ * Do not report as fatal error - we don't want an abort(),
+ * instead return EOF with yyterminate() and let the parser clean up.
+ */
+#define N3_LEXER_OOM() do { \
+  n3_syntax_error(rdf_parser, n3_lexer_oom_text); \
+  yyterminate(); \
+} while(0)
+
+static const char n3_lexer_oom_text[]="n3_lexer: Out of memory";
+
 %}
 
 /* from SPARQL */
@@ -177,18 +188,18 @@ EXPONENT [eE][+-]?[0-9]+
 
 '([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                if(!n3_parser_lval->string)
-                                 yyterminate();
+                                 N3_LEXER_OOM();
                                return STRING_LITERAL; }
 
 \"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 if(!n3_parser_lval->string)
-                                  yyterminate();
+                                  N3_LEXER_OOM();
                                 return STRING_LITERAL; }
 
 \"\"\"				{ BEGIN(LITERAL); 
                                   n3_parser->sb=raptor_new_stringbuffer();
                                   if(!n3_parser->sb)
-                                    yyterminate();
+                                    N3_LEXER_OOM();
                           }
 
 <LITERAL>\"\"\"			{
@@ -198,7 +209,7 @@ EXPONENT [eE][+-]?[0-9]+
                   len=raptor_stringbuffer_length(n3_parser->sb);
                   n3_parser_lval->string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
                   if(!n3_parser_lval->string)
-                    yyterminate();
+                    N3_LEXER_OOM();
                   raptor_stringbuffer_copy_to_string(n3_parser->sb, (unsigned char*)n3_parser_lval->string, len);
                   n3_parser_lval->string[len]='\0';
 
@@ -219,24 +230,24 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(n3_parser->sb);
                     n3_parser->sb=NULL;
-                    yyterminate();
+                    N3_LEXER_OOM();
                   }
                   
    }
 
 {BNAME}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!n3_parser_lval->string)
-            yyterminate();
+            N3_LEXER_OOM();
                           return BLANK_LITERAL; }
 
 {QNAME}	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
           if(!n3_parser_lval->uri)
-            yyterminate();
+            N3_LEXER_OOM();
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                   if(!n3_parser_lval->string)
-                    yyterminate();
+                    N3_LEXER_OOM();
                         return DECIMAL_LITERAL;
 }
 
@@ -259,13 +270,13 @@ EXPONENT [eE][+-]?[0-9]+
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
 <PREF>{NCNAME_PREFIX}":"	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                             if(!n3_parser_lval->string)
-                              yyterminate();
+                              N3_LEXER_OOM();
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>":"	{ BEGIN(INITIAL);
 		  n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, 0);
       if(!n3_parser_lval->string)
-        yyterminate();
+        N3_LEXER_OOM();
                   return IDENTIFIER; }
 
 <PREF>(.|\n)	{ BEGIN(INITIAL);
@@ -282,13 +293,13 @@ EXPONENT [eE][+-]?[0-9]+
                 yytext[yyleng-1]='\0';
                 n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
                 if(!n3_parser_lval->uri)
-                  yyterminate();
+                  N3_LEXER_OOM();
               }
               return URI_LITERAL; }
 
 {LANGUAGETOKEN}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                   if(!n3_parser_lval->string)
-                    yyterminate();
+                    N3_LEXER_OOM();
                           return IDENTIFIER; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
