@@ -226,6 +226,8 @@ EXPONENT [eE][+-]?[0-9]+
                           return BLANK_LITERAL; }
 
 {QNAME}	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+          if(!n3_parser_lval->uri)
+            yyterminate();
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
