@@ -125,6 +125,10 @@ int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner);
 int turtle_lexer_get_column(yyscan_t yyscanner);
 void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
+/* fatal error handler declaration */
+#define YY_FATAL_ERROR(msg) turtle_lexer_fatal_error(msg, yyscanner)
+static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
+
 %}
 
 /* from SPARQL */
@@ -370,6 +374,32 @@ turtle_lexer_syntax_error(void* ctx, const char *message, ...)
   raptor_parser_error_varargs(((raptor_parser*)rdf_parser), message, arguments);
 
   va_end(arguments);
+}
+
+
+/*
+ * turtle_lexer_fatal_error:
+ * @msg:
+ * @yyscanner:
+ *
+ * INTERNAL - replacement for the generated error handler.
+ */
+static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner)
+{
+  raptor_parser *rdf_parser=NULL;
+
+  if(yyscanner)
+    rdf_parser=(raptor_parser *)turtle_lexer_get_extra(yyscanner);
+
+  if(rdf_parser)
+    /* avoid "format not a string literal and no format arguments" warning with %s */
+    raptor_parser_fatal_error(rdf_parser, "%s", msg); 
+  else {
+    fputs(msg, stderr);
+    fputc('\n', stderr);
+  }
+
+  abort();
 }
 
 
