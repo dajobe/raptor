@@ -1282,9 +1282,7 @@ raptor_n3_parse_chunk(raptor_parser* rdf_parser,
   if(!n3_parser->buffer_length)
     return 0;
   
-  n3_parse(rdf_parser, n3_parser->buffer);
-  
-  return 0;
+  return n3_parse(rdf_parser, n3_parser->buffer);
 }
 
 

@@ -910,7 +910,8 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     return 1;
   }
 
-  raptor_parse_chunk(rdf_parser, NULL, 0, 1);
+  if(raptor_parse_chunk(rdf_parser, NULL, 0, 1))
+    rdf_parser->failed=1;
 
   raptor_www_free(www);
 
