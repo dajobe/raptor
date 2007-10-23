@@ -366,6 +366,9 @@ struct raptor_parser_s {
   void* namespace_handler_user_data;
 
   raptor_stringbuffer* sb;
+
+  /* raptor_www pointer stored here to allow cleanup on error */
+  raptor_www* www;
 };
 
 

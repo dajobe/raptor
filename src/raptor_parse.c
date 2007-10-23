@@ -619,6 +619,9 @@ raptor_free_parser(raptor_parser* rdf_parser)
   if(rdf_parser->factory)
     rdf_parser->factory->terminate(rdf_parser);
 
+  if(rdf_parser->www)
+    raptor_www_free(rdf_parser->www);
+
   if(rdf_parser->context)
     RAPTOR_FREE(raptor_parser_context, rdf_parser->context);
 
@@ -854,24 +857,27 @@ int
 raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                  raptor_uri *base_uri, void *connection)
 {
-  raptor_www *www;
   int ret=0;
   raptor_parse_bytes_context rpbc;
   
   if(connection) {
-    www=raptor_www_new_with_connection(connection);
-    if(!www)
+    if(rdf_parser->www)
+      raptor_www_free(rdf_parser->www);
+    rdf_parser->www=raptor_www_new_with_connection(connection);
+    if(!rdf_parser->www)
       return 1;
   } else {
     const char *accept_h;
     
-    www=raptor_www_new();
-    if(!www)
+    if(rdf_parser->www)
+      raptor_www_free(rdf_parser->www);
+    rdf_parser->www=raptor_www_new();
+    if(!rdf_parser->www)
       return 1;
 
     accept_h=raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
-      raptor_www_set_http_accept(www, accept_h);
+      raptor_www_set_http_accept(rdf_parser->www, accept_h);
       RAPTOR_FREE(cstring, accept_h);
     }
   }
@@ -882,22 +888,22 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   rpbc.started=0;
   
   if(rdf_parser->uri_filter)
-    raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
+    raptor_www_set_uri_filter(rdf_parser->www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
   else if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
-    raptor_www_set_uri_filter(www, raptor_parse_uri_no_net_filter, rdf_parser);
+    raptor_www_set_uri_filter(rdf_parser->www, raptor_parse_uri_no_net_filter, rdf_parser);
   
-  raptor_www_set_error_handler(www,
+  raptor_www_set_error_handler(rdf_parser->www,
                                rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR], 
                                rdf_parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]);
-  raptor_www_set_write_bytes_handler(www, raptor_parse_uri_write_bytes, 
+  raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parse_uri_write_bytes, 
                                      &rpbc);
 
-  raptor_www_set_content_type_handler(www,
+  raptor_www_set_content_type_handler(rdf_parser->www,
                                       raptor_parse_uri_content_type_handler,
                                       rdf_parser);
 
-  ret=raptor_www_fetch(www, uri);
+  ret=raptor_www_fetch(rdf_parser->www, uri);
   
   if(!rpbc.started && !ret)
     ret=raptor_start_parse(rdf_parser, base_uri);
@@ -906,14 +912,16 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     raptor_free_uri(rpbc.final_uri);
 
   if(ret) {
-    raptor_www_free(www);
+    raptor_www_free(rdf_parser->www);
+    rdf_parser->www=NULL;
     return 1;
   }
 
   if(raptor_parse_chunk(rdf_parser, NULL, 0, 1))
     rdf_parser->failed=1;
 
-  raptor_www_free(www);
+  raptor_www_free(rdf_parser->www);
+  rdf_parser->www=NULL;
 
   return rdf_parser->failed;
 }
