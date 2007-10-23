@@ -159,8 +159,11 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
     return 0;
   
   node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
-  if(!node)
+  if(!node) {
+    if(!do_copy)
+      RAPTOR_FREE(cstring, string);
     return 1;
+  }
 
   if(do_copy) {
     /* Note this copy does not include the \0 character - not needed  */
