@@ -207,6 +207,8 @@ EXPONENT [eE][+-]?[0-9]+
 
 \"\"\"				{ BEGIN(LITERAL); 
                                   turtle_parser->sb=raptor_new_stringbuffer();
+                                  if(!turtle_parser->sb)
+                                    TURTLE_LEXER_OOM();
                           }
 
 <LITERAL>\"\"\"			{
@@ -215,6 +217,8 @@ EXPONENT [eE][+-]?[0-9]+
 		  BEGIN(INITIAL);
                   len=raptor_stringbuffer_length(turtle_parser->sb);
                   turtle_parser_lval->string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+                  if(!turtle_parser_lval->string)
+                    TURTLE_LEXER_OOM();
                   raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len);
                   turtle_parser_lval->string[len]='\0';
 
@@ -290,12 +294,16 @@ EXPONENT [eE][+-]?[0-9]+
 
                   yytext[yyleng-1]='\0';
                   sb=raptor_new_stringbuffer();
+                  if(!sb)
+                    TURTLE_LEXER_OOM();
                   if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-1, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) {
                     raptor_free_stringbuffer(sb);
                     TURTLE_LEXER_OOM();
                   }
                   uri_string=raptor_stringbuffer_as_string(sb);
                   turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
+                  if(!turtle_parser_lval->uri)
+                    TURTLE_LEXER_OOM();
                   raptor_free_stringbuffer(sb);
                 }
                 return URI_LITERAL; }
@@ -333,9 +341,10 @@ turtle_copy_token(unsigned char *text, size_t len)
   if(!len)
     len=strlen((const char*)text);
   s=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
-
-  strncpy((char*)s, (const char*)text, len);
-  s[len] = '\0';
+  if(s) {
+    strncpy((char*)s, (const char*)text, len);
+    s[len] = '\0';
+  }
   return s;
 }
 
@@ -364,12 +373,14 @@ turtle_copy_string_token(raptor_parser* rdf_parser,
   }
   
   string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
-
-  if(sb) {
-    raptor_stringbuffer_copy_to_string(sb, string, len+1);
-    raptor_free_stringbuffer(sb);
+  if(string) {
+    if(sb) 
+      raptor_stringbuffer_copy_to_string(sb, string, len+1);
+    string[len]='\0';
   }
-  string[len]='\0';
+
+  if(sb)
+    raptor_free_stringbuffer(sb);
   
   return string;
 }
