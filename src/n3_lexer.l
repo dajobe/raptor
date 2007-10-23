@@ -373,10 +373,12 @@ n3_copy_string_token(raptor_parser* rdf_parser,
   if(string) {
     if(sb) {
       raptor_stringbuffer_copy_to_string(sb, string, len+1);
-      raptor_free_stringbuffer(sb);
     }
     string[len]='\0';
-  }  
+  }
+
+  if(sb)
+    raptor_free_stringbuffer(sb);
 
   return string;
 }
