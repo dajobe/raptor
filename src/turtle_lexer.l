@@ -302,8 +302,10 @@ EXPONENT [eE][+-]?[0-9]+
                   }
                   uri_string=raptor_stringbuffer_as_string(sb);
                   turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
-                  if(!turtle_parser_lval->uri)
+                  if(!turtle_parser_lval->uri) {
+                    raptor_free_stringbuffer(sb);
                     TURTLE_LEXER_OOM();
+                  }
                   raptor_free_stringbuffer(sb);
                 }
                 return URI_LITERAL; }
