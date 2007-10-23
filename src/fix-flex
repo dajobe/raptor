@@ -25,6 +25,8 @@ print <<'EOT';
 EOT
 $line_offset+=8; # added 8 lines to output
 
+my $prefix=undef;
+
 while(<>) {
   # Remove generated yy_fatal_error declaration and definition to avoid warnings about unused/non-defined static function
   # declaration
@@ -57,18 +59,31 @@ EOT
     $line_offset+=3; # added 3 lines to output
   }
 
-  # the default parser tries to free(NULL)
-  s/(^\s+)(free\(.*ptr.*\))/${1}if(ptr) $2/;
-
   # flex has %option nounistd however it does not work in 2.5.31
   # It is safe to add yet another wrapper. 
   if(m%^(\#include \<unistd.h\>)$%) {
-    $_=<<"EOT"; ;
+    $_=<<"EOT";
 #ifndef YY_NO_UNISTD_H
 $1
 #endif
 EOT
     $line_offset+=2; # added 2 lines to output
+  }
+
+  # Add $prefix_cleanup() call at the end of $prefix_lex_destroy()
+  # find the start of lex_destroy function definition and capture prefix
+  if(/^int\s+(\S+)_lex_destroy\s*\(.*\)\s*[^\;]\s*$/) { $prefix=$1; }
+  # look for lexer_free(yyscanner, yyscanner) statement within the function and place the cleanup call before it
+  if($prefix) {
+    if(/(^\s*)(${prefix}_free\s*\(\s*yyscanner\s*,\s*yyscanner\s*\)\s*\;)\s*$/) {
+      $_=<<"EOT";
+$1/* clean up leaks if any before freeing yyscanner */
+$1${prefix}_cleanup(yyscanner);
+$1$2
+EOT
+      $line_offset+=2; # added 2 lines to output
+      $prefix=undef; # lex_destroy() patched
+    }
   }
 
   # Fix .[ch] line references because we have added lines to it

@@ -369,6 +369,9 @@ struct raptor_parser_s {
 
   /* raptor_www pointer stored here to allow cleanup on error */
   raptor_www* www;
+
+  /* internal data for lexers */
+  void* lexer_user_data;
 };
 
 
