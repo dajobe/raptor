@@ -76,6 +76,9 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
   const unsigned char *s;
   unsigned char *d;
   unsigned char *string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  
+  if(!string)
+    return -1;
 
   for(s=text, d=string, i=0; i<len; s++, i++) {
     unsigned char c=*s;
