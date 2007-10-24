@@ -164,12 +164,14 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 /* syntax error */
 %token ERROR_TOKEN
 
+%type <identifier> subject predicate object verb literal resource blank collection graphName
+%type <sequence> objectList itemList propertyList
+
 /* tidy up tokens after errors */
 %destructor { if($$) RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER
 %destructor { if($$) raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
-
-%type <identifier> subject predicate object verb literal resource blank collection graphName
-%type <sequence> objectList itemList propertyList
+%destructor { if($$) raptor_free_identifier($$); } subject predicate object verb literal resource blank collection graphName
+%destructor { if($$) raptor_free_sequence($$); } objectList itemList propertyList
 
 %%
 
@@ -265,8 +267,11 @@ triples: subject propertyList
     for(i=0; i<raptor_sequence_size($2); i++) {
       raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
-      if(!i2)
+      if(!i2) {
+        raptor_free_sequence($2);
+        raptor_free_identifier($1);
         YYERROR;
+      }
       raptor_copy_identifier(i2, $1);
       t2->subject=i2;
       t2->subject->is_malloced=1;
