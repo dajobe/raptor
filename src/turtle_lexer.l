@@ -200,9 +200,13 @@ EXPONENT [eE][+-]?[0-9]+
 
 
 '([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
+                               if(!turtle_parser_lval->string)
+                                 TURTLE_LEXER_OOM();
                                return STRING_LITERAL; }
 
 \"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+                                if(!turtle_parser_lval->string)
+                                  TURTLE_LEXER_OOM();
                                 return STRING_LITERAL; }
 
 \"\"\"				{ BEGIN(LITERAL); 
@@ -245,12 +249,18 @@ EXPONENT [eE][+-]?[0-9]+
    }
 
 {BNAME}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
+          if(!turtle_parser_lval->string)
+            TURTLE_LEXER_OOM();
                           return BLANK_LITERAL; }
 
 {QNAME}	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+          if(!turtle_parser_lval->uri)
+            TURTLE_LEXER_OOM();
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                  if(!turtle_parser_lval->string)
+                    TURTLE_LEXER_OOM();
                         return DECIMAL_LITERAL;
 }
 
@@ -272,10 +282,14 @@ EXPONENT [eE][+-]?[0-9]+
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
 <PREF>{NCNAME_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                            if(!turtle_parser_lval->string)
+                              TURTLE_LEXER_OOM();
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>":"	{ BEGIN(INITIAL);
 		  turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, 0);
+      if(!turtle_parser_lval->string)
+        TURTLE_LEXER_OOM();
                   return IDENTIFIER; }
 
 <PREF>(.|\n)	{ BEGIN(INITIAL);
@@ -311,6 +325,8 @@ EXPONENT [eE][+-]?[0-9]+
                 return URI_LITERAL; }
 
 {LANGUAGETOKEN}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                  if(!turtle_parser_lval->string)
+                    TURTLE_LEXER_OOM();
                           return IDENTIFIER; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
