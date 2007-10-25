@@ -18,6 +18,16 @@
 #define __USE_ISOC99 1
 #include <math.h>
 
+#ifndef HAVE_ROUND
+/* round (C99): round x to the nearest integer, away from zero */
+#define round(x) (((x) < 0) ? (long)((x)-0.5) : (long)((x)+0.5))
+#endif
+
+#ifndef HAVE_TRUNC
+/* trunc (C99): round x to the nearest integer, towards zero */
+#define trunc(x) (((x) < 0) ? ceil((x)) : floor((x)))
+#endif
+
 /* Convert a double to xsd:decimal representation.
  * Returned is a pointer to the first character of the number
  * in buffer (don't free it).
