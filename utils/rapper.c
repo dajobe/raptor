@@ -622,7 +622,7 @@ main(int argc, char *argv[])
          "\n"
          "    Default is INPUT-URI"
          "\n"
-         "    Equivalent to" HELP_ARG_BOTH(I INPUT-BASE-URI, input-uri INPUT-BASE-URI));
+         "    Equivalent to" HELP_ARG_BOTH("I INPUT-BASE-URI", "input-uri INPUT-BASE-URI"));
 
     puts("\nMain options:");
     puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format/parser to one of:"));
