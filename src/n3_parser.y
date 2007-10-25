@@ -799,7 +799,14 @@ blank: BLANK_LITERAL
 | LEFT_SQUARE propertyList RIGHT_SQUARE
 {
   int i;
-  const unsigned char *id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+  const unsigned char *id;
+
+  id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+  if(!id) {
+    if($2)
+      raptor_free_sequence($2);
+    YYERROR;
+  }
   
   $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
   if(!$$) {
@@ -827,9 +834,17 @@ blank: BLANK_LITERAL
       raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       if(!i2) {
         raptor_free_sequence($2);
+        raptor_free_identifier($$);
+        $$=NULL;
         YYERROR;
       }
-      raptor_copy_identifier(i2, $$);
+      if(raptor_copy_identifier(i2, $$)) {
+        RAPTOR_FREE(raptor_identifier, i2);
+        raptor_free_sequence($2);
+        raptor_free_identifier($$);
+        $$=NULL;
+        YYERROR;
+      }
       t2->subject=i2;
       t2->subject->is_malloced=1;
       raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
