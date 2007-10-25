@@ -177,7 +177,7 @@ MAINTAINER_CFLAGS="$warning_cflags"
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h dmalloc.h getopt.h sys/stat.h sys/param.h sys/time.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h math.h dmalloc.h getopt.h sys/stat.h sys/param.h sys/time.h)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
@@ -294,6 +294,33 @@ int main(int argc, char* argv) {
 }], AC_MSG_RESULT(no),
     AC_DEFINE(HAVE_C99_VSNPRINTF, 1, [vsnprint has C99 compatible return value])
     AC_MSG_RESULT(yes))
+fi
+
+need_libm=no
+
+oLIBS="$LIBS"
+LIBS="$LIBS -lm"
+AC_MSG_CHECKING(whether have trunc in libm)
+AC_TRY_LINK([#ifdef HAVE_MATH_H
+#include <math.h>
+#endif], [double d=trunc(1.0);],
+            AC_MSG_RESULT(yes)
+            need_libm=yes
+            AC_DEFINE(HAVE_TRUNC, 1, [have trunc() in libm]),
+            AC_MSG_RESULT(no))
+
+AC_MSG_CHECKING(whether have round in libm)
+AC_TRY_LINK([#ifdef HAVE_MATH_H
+#include <math.h>
+#endif], [double d=round(1.0);],
+            AC_MSG_RESULT(yes)
+            need_libm=yes
+            AC_DEFINE(HAVE_ROUND, 1, [have round() in libm]),
+            AC_MSG_RESULT(no))
+LIBS="$oLIBS"
+
+if test "X$need_libm" = yes; then
+  LIBS="$LIBS -lm"
 fi
 
 
