@@ -125,7 +125,6 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
   raptor_sequence *sequence;
   raptor_uri *uri;
   int integer; /* 0+ for a xsd:integer datatyped RDF literal */
-  double floating;
 }
 
 %expect 0
@@ -157,8 +156,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token <string> PREFIX "@prefix"
 %token <string> BASE "@base"
 %token <string> IDENTIFIER "identifier"
-%token <integer> INTEGER_LITERAL "integer literal"
-%token <floating> FLOATING_LITERAL "floating point literal"
+%token <string> INTEGER_LITERAL "integer literal"
+%token <string> FLOATING_LITERAL "floating point literal"
 %token <string> DECIMAL_LITERAL "decimal literal"
 
 /* syntax error */
@@ -803,30 +802,31 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 | INTEGER_LITERAL
 {
-  unsigned char *string;
   raptor_uri *uri;
 #if RAPTOR_DEBUG > 1  
-  printf("resource integer=%d\n", $1);
+  printf("resource integer=%s\n", $1);
 #endif
-  string=(unsigned char*)RAPTOR_MALLOC(cstring, 32); /* FIXME */
-  if(!string)
-    YYERROR;
-  sprintf((char*)string, "%d", $1);
   uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   if(!uri) {
-    RAPTOR_FREE(cstring, string);
+    RAPTOR_FREE(cstring, $1);
     YYERROR;
   }
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
   if(!$$)
     YYERROR;
 }
 | FLOATING_LITERAL
 {
+  raptor_uri *uri;
 #if RAPTOR_DEBUG > 1  
-  printf("resource double=%1g\n", $1);
+  printf("resource double=%s\n", $1);
 #endif
-  $$=raptor_new_identifier_from_double($1);
+  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  if(!uri) {
+    RAPTOR_FREE(cstring, $1);
+    YYERROR;
+  }
+  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
   if(!$$)
     YYERROR;
 }

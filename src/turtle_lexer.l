@@ -264,20 +264,15 @@ EXPONENT [eE][+-]?[0-9]+
                         return DECIMAL_LITERAL;
 }
 
-[-+]?{DOUBLE} {
-                        double d;
-                        int n;
-                        
-                        n=sscanf((const char*)yytext, "%lf", &d);
-                        if(n != 1) {
-                          turtle_syntax_error(rdf_parser, "TURTLE syntax error - Illegal floating point constant %s", yytext);
-                          yyterminate();
-                        }
-                        turtle_parser_lval->floating=d;
+[-+]?{DOUBLE} { turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                  if(!turtle_parser_lval->string)
+                    TURTLE_LEXER_OOM();
                         return FLOATING_LITERAL;
 }
 
-[-+]?[0-9]+        { turtle_parser_lval->integer=atoi(yytext);
+[-+]?[0-9]+        { turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                  if(!turtle_parser_lval->string)
+                    TURTLE_LEXER_OOM();
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
@@ -753,7 +748,7 @@ turtle_token_print(int token, YYSTYPE *lval)
       return buffer;
 
     case FLOATING_LITERAL:
-      sprintf(buffer, "FLOATING_LITERAL(%1g)", lval->floating);
+      sprintf(buffer, "FLOATING_LITERAL(%s)", lval->string);
       return buffer;
 
     case IDENTIFIER:
