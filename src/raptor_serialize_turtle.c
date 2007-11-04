@@ -661,7 +661,9 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       const unsigned char* genid = subject->node->value.blank.string;
       size_t len = strlen((const char*)genid);
       unsigned char* subject_str = (unsigned char *)RAPTOR_MALLOC(cstring, len+3);
-      snprintf((char*)subject_str, len+3, "_:%s", (const char*)genid);
+      subject_str[0]='_';
+      subject_str[1]=':';
+      strncpy((char*)&subject_str[2], (const char*)genid, len+1);
       raptor_turtle_writer_raw(turtle_writer, subject_str);
       RAPTOR_FREE(cstring, subject_str);
     }
