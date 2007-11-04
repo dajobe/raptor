@@ -264,6 +264,8 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
                          int depth) 
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
+  int rc=0;
+  
   RAPTOR_DEBUG5("Emitting blank node %p refcount %d subject %d object %d\n",
                 node, 
                 node->ref_count, node->count_as_subject, node->count_as_object);
@@ -282,7 +284,7 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
                                        node->type,
                                        node->value.blank.string, &idx);
     if(blank) {
-      raptor_turtle_emit_subject(serializer, blank, depth+1);
+      rc = raptor_turtle_emit_subject(serializer, blank, depth+1);
       raptor_sequence_set_at(context->blanks, idx, NULL);
     }
           
@@ -296,7 +298,7 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
 
   RAPTOR_DEBUG2("Emitted %p\n", node);
   
-  return 0;
+  return rc;
 }
 
 
@@ -366,7 +368,7 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
 
 
 /*
- * raptor_turtle_emit_subject_collection:
+ * raptor_turtle_emit_subject_collection_items:
  * @serializer: #raptor_serializer object
  * @subject: subject node
  * @depth: depth into tree
@@ -605,7 +607,8 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   raptor_turtle_writer* turtle_writer=context->turtle_writer;
   int blank = 1;
   int collection = 0;
-
+  int rc = 0;
+  
   RAPTOR_DEBUG5("Emitting subject node %p refcount %d subject %d object %d\n", 
                 subject->node,
                 subject->node->ref_count, 
@@ -646,7 +649,9 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
   /* emit the subject node */
   if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    raptor_turtle_emit_resource(serializer, subject->node, depth+1);
+    rc= raptor_turtle_emit_resource(serializer, subject->node, depth+1);
+    if(rc)
+      return rc;
     blank = 0;
     
   } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
@@ -691,7 +696,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     
     raptor_turtle_writer_increase_indent(turtle_writer);
     
-    raptor_turtle_emit_subject_collection_items(serializer, subject, depth+1);
+    rc=raptor_turtle_emit_subject_collection_items(serializer, subject, depth+1);
     
     raptor_turtle_writer_decrease_indent(turtle_writer);
     raptor_turtle_writer_newline(turtle_writer);
@@ -726,7 +731,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     raptor_turtle_writer_newline(turtle_writer);
   }
 
-  return 0;
+  return rc;
 }
 
 
@@ -745,18 +750,25 @@ raptor_turtle_emit(raptor_serializer *serializer)
   raptor_abbrev_subject* subject;
   raptor_abbrev_subject* blank;
   int i;
+  int rc;
   
   for(i=0; i < raptor_sequence_size(context->subjects); i++) {
     subject = (raptor_abbrev_subject* )raptor_sequence_get_at(context->subjects, i);
-    if(subject)
-      raptor_turtle_emit_subject(serializer, subject, 0);
+    if(subject) {
+      rc= raptor_turtle_emit_subject(serializer, subject, 0);
+      if(rc)
+        return rc;
+    }
   }
   
   /* Emit any remaining blank nodes */
   for(i=0; i < raptor_sequence_size(context->blanks); i++) {
     blank = (raptor_abbrev_subject* )raptor_sequence_get_at(context->blanks, i);
-    if(blank)
-      raptor_turtle_emit_subject(serializer, blank, 0);
+    if(blank) {
+      rc= raptor_turtle_emit_subject(serializer, blank, 0);
+      if(rc)
+        return rc;
+    }
   }
   
   return 0;
