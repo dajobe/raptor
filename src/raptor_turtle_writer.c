@@ -869,7 +869,7 @@ main(int argc, char *argv[])
 
   datatype=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   raptor_turtle_writer_literal(turtle_writer, nstack,
-                               (const unsigned char*)"10", NULL,
+                               (const unsigned char*)"10.0", NULL,
                                datatype);
   raptor_free_uri(datatype);
 
