@@ -553,49 +553,17 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
 
   /* DBL_EPSILON = 52 digits */
   #define FRAC_MAX_LEN 52
-  
-  const size_t buflen = INT_MAX_LEN + FRAC_MAX_LEN + 3; /* sign, decimal, \0 */
-  char buf[buflen];
 
-  size_t len = 0;
-  char* endptr = (char *)s;
   int written = 0;
 
   /* typed literal special cases */
   if(datatype) {
-    /* integer */
-    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri)) {
-      long inum = strtol((const char*)s, NULL, 10);
-      if(inum != LONG_MIN && inum != LONG_MAX) {
-        snprintf(buf, 20, "%ld", inum);
-        raptor_iostream_write_string(turtle_writer->iostr, buf);
-        written = 1;
-      }
-    
-    /* double */
-    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_double_uri)) {
-      double dnum = strtod((const char*)s, &endptr);
-      if(endptr != (char*)s) {
-        written= !raptor_turtle_writer_double(turtle_writer, nstack,
-                                              buf, 40,
-                                              datatype, dnum);
-        
-        if(!written) {
-          turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:double literal.");
-        }
-      }
-    
-    /* decimal */
-    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
-      double dnum = strtod((const char*)s, &endptr);
-      if(endptr != (char*)s) {
-        const char* decimal = strchr((const char*)s, '.');
-        const size_t max_digits = (decimal ? (endptr - decimal - 2) : 1);
-        char* num_str = raptor_format_float(buf, &len, buflen, dnum, 1, max_digits, 0);
-        raptor_iostream_write_counted_string(turtle_writer->iostr, num_str, len);
-        written = 1;
-      }
-    
+    /* integer, double, decimal */
+    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri) ||
+       raptor_uri_equals(datatype, turtle_writer->xsd_double_uri) ||
+       raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
+      raptor_iostream_write_string(turtle_writer->iostr, s);
+      written = 1;
     /* boolean */
     } else if(raptor_uri_equals(datatype, turtle_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
