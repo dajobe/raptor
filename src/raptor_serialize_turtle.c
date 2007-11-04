@@ -660,7 +660,11 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       /* Referred to (used as an object), so needs a nodeID */
       const unsigned char* genid = subject->node->value.blank.string;
       size_t len = strlen((const char*)genid);
-      unsigned char* subject_str = (unsigned char *)RAPTOR_MALLOC(cstring, len+3);
+      unsigned char* subject_str;
+      subject_str= (unsigned char *)RAPTOR_MALLOC(cstring, len+3);
+      if(!subject_str)
+        return 1;
+
       subject_str[0]='_';
       subject_str[1]=':';
       strncpy((char*)&subject_str[2], (const char*)genid, len+1);
@@ -671,6 +675,9 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     unsigned char* subject_str;
     subject_str = (unsigned char *)RAPTOR_MALLOC(string,
                                                  raptor_rdf_namespace_uri_len + MAX_ASCII_INT_SIZE + 2);
+    if(!subject_str)
+      return 1;
+    
     sprintf((char*)subject, "%s_%d", raptor_rdf_namespace_uri,
             subject->node->value.ordinal.ordinal);
       
