@@ -788,54 +788,62 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_uri_handler *uri_handler;
   raptor_uri *rdf_type_uri;
   void *uri_context;
-  
+
   raptor_uri_get_handler(&uri_handler, &uri_context);
   context->nstack=raptor_new_namespaces(uri_handler, uri_context,
                                         (raptor_simple_message_handler)raptor_serializer_simple_error,
                                         serializer,
                                         1);
+  if(!context->nstack)
+    return 1;
   context->rdf_nspace=raptor_new_namespace(context->nstack,
                                            (const unsigned char*)"rdf",
                                            (const unsigned char*)raptor_rdf_namespace_uri,
                                            0);
 
   context->namespaces=raptor_new_sequence(NULL, NULL);
-  /* Note: item 0 in the list is rdf:RDF's namespace */
-  raptor_sequence_push(context->namespaces, context->rdf_nspace);
 
   context->subjects =
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
 
   context->blanks =
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
-  
+
   context->nodes =
     raptor_new_avltree((raptor_avltree_compare_function)raptor_abbrev_node_cmp,
-			(raptor_avltree_delete_function)raptor_free_abbrev_node, 0);
+                       (raptor_avltree_delete_function)raptor_free_abbrev_node, 0);
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
-  if(rdf_type_uri) {    
+  if(rdf_type_uri) {
     context->rdf_type = raptor_new_abbrev_node(RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                                rdf_type_uri, NULL, NULL);
     raptor_free_uri(rdf_type_uri);
   } else
     context->rdf_type = NULL;
-  
-  if(!context->nstack || !context->rdf_nspace || !context->namespaces ||
-     !context->subjects || !context->blanks || !context->nodes ||
-     !context->rdf_type) {
-    raptor_turtle_serialize_terminate(serializer);
-    return 1;
-  }
 
   context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
   context->rdf_first_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
   context->rdf_rest_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
   context->rdf_nil_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
+  if(!context->rdf_nspace || !context->namespaces ||
+     !context->subjects || !context->blanks || !context->nodes ||
+     !context->rdf_xml_literal_uri || !context->rdf_first_uri ||
+     !context->rdf_rest_uri || !context->rdf_nil_uri)
+  {
+    raptor_turtle_serialize_terminate(serializer);
+    return 1;
+  }
+
+  /* Note: item 0 in the list is rdf:RDF's namespace */
+  if(raptor_sequence_push(context->namespaces, context->rdf_nspace)) {
+    raptor_turtle_serialize_terminate(serializer);
+    return 1;
+  }
+
   return 0;
 }
-  
+
 
 /* destroy a serializer */
 static void
@@ -843,15 +851,19 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
 
-  if(context->turtle_writer)
+  if(context->turtle_writer) {
     raptor_free_turtle_writer(context->turtle_writer);
+    context->turtle_writer=NULL;
+  }
 
-  if(context->rdf_nspace)
+  if(context->rdf_nspace) {
     raptor_free_namespace(context->rdf_nspace);
+    context->rdf_nspace=NULL;
+  }
 
   if(context->namespaces) {
     int i;
-    
+
     /* Note: item 0 in the list is rdf:RDF's namespace and freed above */
     for(i=1; i< raptor_sequence_size(context->namespaces); i++) {
       raptor_namespace* ns;
@@ -860,36 +872,55 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
         raptor_free_namespace(ns);
     }
     raptor_free_sequence(context->namespaces);
+    context->namespaces=NULL;
   }
 
-  if(context->subjects)
+  if(context->subjects) {
     raptor_free_sequence(context->subjects);
-  
-  if(context->blanks)
+    context->subjects=NULL;
+  }
+
+  if(context->blanks) {
     raptor_free_sequence(context->blanks);
-  
-  if(context->nodes)
+    context->blanks=NULL;
+  }
+
+  if(context->nodes) {
     raptor_free_avltree(context->nodes);
-  
-  if(context->nstack)
+    context->nodes=NULL;
+  }
+
+  if(context->nstack) {
     raptor_free_namespaces(context->nstack);
+    context->nstack=NULL;
+  }
 
-  if(context->rdf_type)
+  if(context->rdf_type) {
     raptor_free_abbrev_node(context->rdf_type);
-  
-  if(context->rdf_xml_literal_uri)
-    raptor_free_uri(context->rdf_xml_literal_uri);
-  
-  if(context->rdf_first_uri)
-    raptor_free_uri(context->rdf_first_uri);
-  
-  if(context->rdf_rest_uri)
-    raptor_free_uri(context->rdf_rest_uri);
+    context->rdf_type=NULL;
+  }
 
-  if(context->rdf_nil_uri)
+  if(context->rdf_xml_literal_uri) {
+    raptor_free_uri(context->rdf_xml_literal_uri);
+    context->rdf_xml_literal_uri=NULL;
+  }
+
+  if(context->rdf_first_uri) {
+    raptor_free_uri(context->rdf_first_uri);
+    context->rdf_first_uri=NULL;
+  }
+
+  if(context->rdf_rest_uri) {
+    raptor_free_uri(context->rdf_rest_uri);
+    context->rdf_rest_uri=NULL;
+  }
+
+  if(context->rdf_nil_uri) {
     raptor_free_uri(context->rdf_nil_uri);
+    context->rdf_nil_uri=NULL;
+  }
 }
-  
+
 
 #define TURTLE_NAMESPACE_DEPTH 0
 
