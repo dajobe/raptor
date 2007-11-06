@@ -70,18 +70,12 @@ static void *raptor_uri_current_uri_context;
  *
  * The URI interface in @handler->initialised should be either 1
  * or 2 (if raptor_uri_compare_func is implemented).
- * API versions are truncated to the range 1..2
  **/
 void
 raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
 {
   raptor_uri_current_uri_handler=(raptor_uri_handler *)handler;
   raptor_uri_current_uri_context=context;
-
-  if(handler->initialised < 1)
-    handler->initialised=1;
-  if(handler->initialised > 2)
-    handler->initialised=2;
 }
 
 /**
