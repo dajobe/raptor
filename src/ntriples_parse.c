@@ -113,7 +113,7 @@ raptor_ntriples_parse_terminate(raptor_parser* rdf_parser)
 }
 
 
-static const char *term_type_strings[]={
+static const char * const term_type_strings[]={
   "URIref",
   "bnodeID",
   "Literal"

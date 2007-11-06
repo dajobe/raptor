@@ -42,7 +42,7 @@
 #include "raptor_internal.h"
 
 
-static struct
+static const struct
 {
   raptor_feature feature;
   /* flag bits
@@ -86,7 +86,7 @@ static struct
 };
 
 
-static const char *raptor_feature_uri_prefix="http://feature.librdf.org/raptor-";
+static const char * const raptor_feature_uri_prefix="http://feature.librdf.org/raptor-";
 /* NOTE: this is strlen(raptor_feature_uri_prefix) */
 #define RAPTOR_FEATURE_URI_PREFIX_LEN 33
 
