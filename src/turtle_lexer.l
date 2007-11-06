@@ -195,8 +195,8 @@ EXPONENT [eE][+-]?[0-9]+
 "{"       { return LEFT_CURLY; }
 "}"       { return RIGHT_CURLY; }
 ":-"      { return COLONMINUS; }
-"true"    { return TRUE; }
-"false"   { return FALSE; }
+"true"    { return TRUE_TOKEN; }
+"false"   { return FALSE_TOKEN; }
 
 
 '([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */

@@ -145,8 +145,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %token LEFT_CURLY "{"
 %token RIGHT_CURLY "}"
 %token COLONMINUS ":-"
-%token TRUE "true"
-%token FALSE "false"
+%token TRUE_TOKEN "true"
+%token FALSE_TOKEN "false"
 
 /* literals */
 %token <string> STRING_LITERAL "string literal"
@@ -845,7 +845,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if(!$$)
     YYERROR;
 }
-| TRUE
+| TRUE_TOKEN
 {
   unsigned char *string;
   raptor_uri *uri;
@@ -865,7 +865,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if(!$$)
     YYERROR;
 }
-| FALSE
+| FALSE_TOKEN
 {
   unsigned char *string;
   raptor_uri *uri;
