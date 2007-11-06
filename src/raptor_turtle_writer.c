@@ -94,9 +94,15 @@ struct raptor_turtle_writer_s {
   raptor_uri* xsd_integer_uri;
 };
 
-#define SPACES_BUFFER_SIZE 16
-static unsigned char spaces_buffer[SPACES_BUFFER_SIZE];
-static int spaces_inited = 0;
+
+/* 16 spaces */
+#define SPACES_BUFFER_SIZE sizeof(spaces_buffer)
+static const unsigned char spaces_buffer[] = {
+  ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' '
+};
 
 
 void
@@ -118,14 +124,6 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 {
   int num_spaces;
   
-  if(!spaces_inited) {
-    int i;
-    for(i = 0; i < SPACES_BUFFER_SIZE; i++)
-      spaces_buffer[i] = ' ';
-    
-    spaces_inited = 1;
-  }
-
   raptor_iostream_write_byte(turtle_writer->iostr, '\n');
  
   if(!TURTLE_WRITER_AUTO_INDENT(turtle_writer))

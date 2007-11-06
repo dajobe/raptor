@@ -109,9 +109,15 @@ struct raptor_xml_writer_s {
 };
 
 
-#define SPACES_BUFFER_SIZE 16
-static unsigned char spaces_buffer[SPACES_BUFFER_SIZE];
-static int spaces_inited = 0;
+/* 16 spaces */
+#define SPACES_BUFFER_SIZE sizeof(spaces_buffer)
+static const unsigned char spaces_buffer[] = {
+  ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' '
+};
+
 
 
 /* helper functions */
@@ -119,14 +125,6 @@ static int
 raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
 {
   int num_spaces;
-  
-  if (!spaces_inited) {
-    int i;
-    for (i = 0; i < SPACES_BUFFER_SIZE; i++)
-      spaces_buffer[i] = ' ';
-    
-    spaces_inited = 1;
-  }
   
   num_spaces = xml_writer->depth * xml_writer->indent;
 
