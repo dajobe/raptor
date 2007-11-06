@@ -962,7 +962,7 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
 }
 
 
-static raptor_uri_handler raptor_uri_default_handler = {
+static const raptor_uri_handler raptor_uri_default_handler = {
   raptor_default_new_uri,
   raptor_default_new_uri_from_uri_local_name,
   raptor_default_new_uri_relative_to_base,
@@ -980,7 +980,8 @@ static raptor_uri_handler raptor_uri_default_handler = {
 void
 raptor_uri_init(void)
 {
-  raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
+  /* FIXME: casting away constness */
+  raptor_uri_set_handler((raptor_uri_handler *)&raptor_uri_default_handler, NULL);
 }
 
 
