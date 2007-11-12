@@ -74,7 +74,12 @@ static void *raptor_uri_current_uri_context;
 void
 raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
 {
-  raptor_uri_current_uri_handler=(raptor_uri_handler *)handler;
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(handler, raptor_uri_handler);
+  /* RAPTOR_ASSERT is the negative of ordinary asserts - it fails if the condition is true */
+  RAPTOR_ASSERT(!(handler->initialised >= 1 && handler->initialised <= 2),
+    "raptor_uri_handler->initialised not 1..2");
+
+  raptor_uri_current_uri_handler=handler;
   raptor_uri_current_uri_context=context;
 }
 
