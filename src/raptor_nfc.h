@@ -109,10 +109,10 @@ typedef enum {
 
 
 #define RAPTOR_NFC_CLASSES_COUNT 352
-extern raptor_nfc_key_class raptor_nfc_classes[RAPTOR_NFC_CLASSES_COUNT];
+extern const raptor_nfc_key_class raptor_nfc_classes[RAPTOR_NFC_CLASSES_COUNT];
 
 #define RAPTOR_NFC_RECOMBINERS_COUNT 2177
-extern raptor_nfc_base_follow raptor_nfc_recombiners[RAPTOR_NFC_RECOMBINERS_COUNT];
+extern const raptor_nfc_base_follow raptor_nfc_recombiners[RAPTOR_NFC_RECOMBINERS_COUNT];
 
 #define RAPTOR_NFC_CODE_FLAGS_COUNT 34944
-extern u8 raptor_nfc_flags[RAPTOR_NFC_CODE_FLAGS_COUNT];
+extern const u8 raptor_nfc_flags[RAPTOR_NFC_CODE_FLAGS_COUNT];

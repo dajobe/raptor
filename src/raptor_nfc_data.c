@@ -27,7 +27,7 @@
 /* END QUOTE */
 
 /* pairs of (key, class) in a sparse sequence ordered by key */
-raptor_nfc_key_class raptor_nfc_classes[RAPTOR_NFC_CLASSES_COUNT] = {
+const raptor_nfc_key_class raptor_nfc_classes[RAPTOR_NFC_CLASSES_COUNT] = {
     {0x00300, 230},  {0x00301, 230},  {0x00302, 230},  {0x00303, 230},
     {0x00304, 230},  {0x00305, 230},  {0x00306, 230},  {0x00307, 230},
     {0x00308, 230},  {0x00309, 230},  {0x0030A, 230},  {0x0030B, 230},
@@ -120,7 +120,7 @@ raptor_nfc_key_class raptor_nfc_classes[RAPTOR_NFC_CLASSES_COUNT] = {
 
 
 /* pairs of (base, follow) in a sparse sequence ordered by base */
-raptor_nfc_base_follow raptor_nfc_recombiners[RAPTOR_NFC_RECOMBINERS_COUNT] = {
+const raptor_nfc_base_follow raptor_nfc_recombiners[RAPTOR_NFC_RECOMBINERS_COUNT] = {
     {0x003C, 0x0338},  {0x003D, 0x0338},  {0x003E, 0x0338},  {0x0041, 0x0300},
     {0x0041, 0x0301},  {0x0041, 0x0302},  {0x0041, 0x0303},  {0x0041, 0x0304},
     {0x0041, 0x0306},  {0x0041, 0x0307},  {0x0041, 0x0308},  {0x0041, 0x0309},
@@ -672,7 +672,7 @@ raptor_nfc_base_follow raptor_nfc_recombiners[RAPTOR_NFC_RECOMBINERS_COUNT] = {
 
 /* one 4-bit flag per code U+0 to U+108FF, U+1D000 to U+1D7FF, packed
  * 2 per byte with the flag for the first code in the lower 4 bits */
-u8 raptor_nfc_flags[RAPTOR_NFC_CODE_FLAGS_COUNT] = {
+const u8 raptor_nfc_flags[RAPTOR_NFC_CODE_FLAGS_COUNT] = {
     /* U+0000 */ simp*16+simp,  simp*16+simp,  simp*16+simp,  simp*16+simp,
     /* U+0008 */ simp*16+simp,  simp*16+simp,  simp*16+simp,  simp*16+simp,
     /* U+0010 */ simp*16+simp,  simp*16+simp,  simp*16+simp,  simp*16+simp,
