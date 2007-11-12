@@ -642,7 +642,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
 }
 
 
-static const unsigned char *raptor_rss10_spaces=(const unsigned char*)"          ";
+static const unsigned char * const raptor_rss10_spaces=(const unsigned char*)"          ";
 
 static void
 raptor_rss10_emit_item(raptor_serializer* serializer,
