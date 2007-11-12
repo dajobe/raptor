@@ -785,7 +785,7 @@ static int
 raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   raptor_uri *rdf_type_uri;
   void *uri_context;
 
@@ -989,7 +989,7 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   raptor_turtle_writer* turtle_writer;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 
   raptor_uri_get_handler(&uri_handler, &uri_context);

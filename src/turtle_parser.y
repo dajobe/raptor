@@ -1268,7 +1268,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string) {
 static int
 raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 
   raptor_uri_get_handler(&uri_handler, &uri_context);

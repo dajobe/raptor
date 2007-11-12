@@ -73,7 +73,7 @@ struct raptor_turtle_writer_s {
   raptor_namespace_stack *nstack;
   int nstack_depth;
 
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 
   raptor_simple_message_handler error_handler;
@@ -161,7 +161,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 raptor_turtle_writer*
 raptor_new_turtle_writer(raptor_uri* base_uri,
                          raptor_namespace_stack *nstack,
-                         raptor_uri_handler *uri_handler,
+                         const raptor_uri_handler *uri_handler,
                          void *uri_context,
                          raptor_iostream* iostr,
                          raptor_simple_message_handler error_handler,
@@ -791,7 +791,7 @@ int
 main(int argc, char *argv[]) 
 {
   const char *program=raptor_basename(argv[0]);
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
   raptor_iostream *iostr;
   raptor_namespace_stack *nstack;

@@ -81,7 +81,7 @@ struct raptor_xml_writer_s {
   raptor_namespace_stack *nstack;
   int nstack_depth;
 
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 
   raptor_simple_message_handler error_handler;
@@ -403,7 +403,7 @@ raptor_iostream_write_xml_element_end(raptor_iostream* iostr,
  **/
 raptor_xml_writer*
 raptor_new_xml_writer(raptor_namespace_stack *nstack,
-                      raptor_uri_handler *uri_handler,
+                      const raptor_uri_handler *uri_handler,
                       void *uri_context,
                       raptor_iostream* iostr,
                       raptor_simple_message_handler error_handler,
@@ -1016,7 +1016,7 @@ int
 main(int argc, char *argv[]) 
 {
   const char *program=raptor_basename(argv[0]);
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
   raptor_iostream *iostr;
   raptor_namespace_stack *nstack;

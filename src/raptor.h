@@ -1021,9 +1021,9 @@ RAPTOR_API
 unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
 RAPTOR_API
-void raptor_uri_set_handler(raptor_uri_handler *handler, void *context);
+void raptor_uri_set_handler(const raptor_uri_handler *handler, void *context);
 RAPTOR_API
-void raptor_uri_get_handler(raptor_uri_handler **handler, void **context);
+void raptor_uri_get_handler(const raptor_uri_handler **handler, void **context);
 
 /**
  * RAPTOR_RDF_MS_URI:
@@ -1130,10 +1130,10 @@ const raptor_namespace* raptor_qname_get_namespace(raptor_qname* name);
 RAPTOR_API
 raptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *nstack, const unsigned char *prefix,  raptor_uri* ns_uri, int depth);
 RAPTOR_API
-raptor_namespace_stack* raptor_new_namespaces(raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
+raptor_namespace_stack* raptor_new_namespaces(const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
 
 RAPTOR_API
-int raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
+int raptor_namespaces_init(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
 RAPTOR_API
 void raptor_namespaces_clear(raptor_namespace_stack *nstack);
 RAPTOR_API
@@ -1433,7 +1433,7 @@ int raptor_xml_element_is_empty(raptor_xml_element* xml_element);
 
 /* XML Writer Class (raptor_xml_writer) */
 RAPTOR_API
-raptor_xml_writer* raptor_new_xml_writer(raptor_namespace_stack *nstack, raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
+raptor_xml_writer* raptor_new_xml_writer(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
 RAPTOR_API
 void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
 RAPTOR_API

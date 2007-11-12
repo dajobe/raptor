@@ -348,7 +348,7 @@ raptor_sax2_simple_error(void* user_data, const char *message, ...)
 void
 raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 {
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 
   sax2->depth=0;

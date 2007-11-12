@@ -892,7 +892,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   raptor_rss_model* rss_model;
   int i;
   raptor_xml_writer* xml_writer;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 #ifdef RAPTOR_DEBUG
   int triple_count=0;

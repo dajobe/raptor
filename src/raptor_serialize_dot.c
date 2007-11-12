@@ -331,7 +331,7 @@ static int
 raptor_dot_serializer_init(raptor_serializer *serializer, const char *name)
 {
   raptor_dot_context * context = (raptor_dot_context *)serializer->context;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void* uri_context;
 
   raptor_uri_get_handler(&uri_handler, &uri_context);

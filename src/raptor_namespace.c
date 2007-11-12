@@ -115,7 +115,7 @@ const unsigned char * const raptor_owl_namespace_uri=(const unsigned char *)"htt
  */
 int
 raptor_namespaces_init(raptor_namespace_stack *nstack,
-                       raptor_uri_handler *uri_handler,
+                       const raptor_uri_handler *uri_handler,
                        void *uri_context,
                        raptor_simple_message_handler error_handler,
                        void *error_data,
@@ -178,7 +178,7 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
  * Return value: a new namespace stack or NULL on failure
  **/
 raptor_namespace_stack *
-raptor_new_namespaces(raptor_uri_handler *uri_handler,
+raptor_new_namespaces(const raptor_uri_handler *uri_handler,
                       void *uri_context,
                       raptor_simple_message_handler error_handler,
                       void *error_data,
@@ -284,7 +284,7 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack)
     }
   }
 
-  nstack->uri_handler=(raptor_uri_handler*)NULL;
+  nstack->uri_handler=NULL;
   nstack->uri_context=NULL;
 }
 
@@ -920,7 +920,7 @@ main(int argc, char *argv[])
   const char *program=raptor_basename(argv[0]);
   raptor_namespace_stack namespaces;
   raptor_namespace* ns;
-  raptor_uri_handler *handler;
+  const raptor_uri_handler *handler;
   void *context;
 
   raptor_uri_init();

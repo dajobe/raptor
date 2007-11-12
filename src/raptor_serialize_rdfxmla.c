@@ -730,7 +730,7 @@ static int
 raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   raptor_uri *rdf_type_uri;
   void *uri_context;
   
@@ -934,7 +934,7 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_xml_writer* xml_writer;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 
   raptor_uri_get_handler(&uri_handler, &uri_context);

@@ -2278,7 +2278,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             /* rdf:parseType="Literal" - explicitly or default
              * if the parseType value is not recognised
              */
-            raptor_uri_handler *uri_handler;
+            const raptor_uri_handler *uri_handler;
             void *uri_context;
             
             raptor_uri_get_handler(&uri_handler, &uri_context);

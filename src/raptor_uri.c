@@ -58,7 +58,7 @@
 #endif
 
 
-static raptor_uri_handler *raptor_uri_current_uri_handler;
+static const raptor_uri_handler *raptor_uri_current_uri_handler;
 static void *raptor_uri_current_uri_context;
 
 /**
@@ -72,7 +72,7 @@ static void *raptor_uri_current_uri_context;
  * or 2 (if raptor_uri_compare_func is implemented).
  **/
 void
-raptor_uri_set_handler(raptor_uri_handler *handler, void *context) 
+raptor_uri_set_handler(const raptor_uri_handler *handler, void *context) 
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(handler, raptor_uri_handler);
   /* RAPTOR_ASSERT is the negative of ordinary asserts - it fails if the condition is true */
@@ -91,7 +91,7 @@ raptor_uri_set_handler(raptor_uri_handler *handler, void *context)
  * Return the current raptor URI class implementation @handler and @context
  **/
 void
-raptor_uri_get_handler(raptor_uri_handler **handler, void **context) 
+raptor_uri_get_handler(const raptor_uri_handler **handler, void **context) 
 {
   if(handler)
     *handler=raptor_uri_current_uri_handler;
@@ -979,8 +979,7 @@ static const raptor_uri_handler raptor_uri_default_handler = {
 void
 raptor_uri_init(void)
 {
-  /* FIXME: casting away constness */
-  raptor_uri_set_handler((raptor_uri_handler *)&raptor_uri_default_handler, NULL);
+  raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
 }
 
 

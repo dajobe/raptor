@@ -1135,7 +1135,7 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
 static int
 raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
 
   raptor_uri_get_handler(&uri_handler, &uri_context);

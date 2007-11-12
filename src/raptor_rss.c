@@ -157,7 +157,7 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
 {
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   raptor_sax2* sax2;
-  raptor_uri_handler *uri_handler;
+  const raptor_uri_handler *uri_handler;
   void *uri_context;
   int n;
 
@@ -510,7 +510,7 @@ raptor_rss_start_element_handler(void *user_data,
           if (!strcmp((const char*)attrValue, "xhtml") ||
               !strcmp((const char*)attrValue, "xml") ||
               strstr((const char*)attrValue, "+xml")) {
-            raptor_uri_handler *uri_handler;
+            const raptor_uri_handler *uri_handler;
             void *uri_context;
 
             RAPTOR_DEBUG2("  found type '%s', making an XML writer\n", 
