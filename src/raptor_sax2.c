@@ -404,12 +404,13 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 {
 #ifdef RAPTOR_XML_EXPAT
   XML_Parser xp=sax2->xp;
+  int rc;
 #endif
 #ifdef RAPTOR_XML_LIBXML
   /* parser context */
   xmlParserCtxtPtr xc=sax2->xc;
-#endif
   int rc;
+#endif
   
 #ifdef RAPTOR_XML_LIBXML
   if(!xc) {
@@ -517,7 +518,9 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 
   return 0;
 
+#if defined(RAPTOR_XML_EXPAT) || defined(RAPTOR_XML_LIBXML)
   handle_error:
+#endif
 
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
