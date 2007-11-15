@@ -519,7 +519,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
     if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) {
       /* no object list abbreviation possible, terminate last object */
       if(last_predicate) {
-        raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)";");
+        raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)" ;");
         raptor_turtle_writer_newline(turtle_writer);
       }
 
