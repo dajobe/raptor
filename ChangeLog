@@ -1,4 +1,284 @@
-2007-10-01  Dave Beckett <dave@dajobe.org>
+2007-11-15  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_sax2.c: (raptor_sax2_parse_chunk) Fix compiler
+	warnings: unused variable, unused label.
+
+2007-11-15  Dave Robillard <dave@drobilla.net>
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit_subject_properties): Write ; statement
+	terminators with a leading space for consistency with . terminator
+
+2007-11-12  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_www.c: (raptor_www_init) Pull static initialized flag
+	from function scope to unit scope.
+
+	* src/raptor_nfc.h, src/raptor_nfc_data.c: Make raptor nfc data
+	const - eliminate ~53768 bytes of writable static.
+
+	* src/raptor_serialize_rss.c: Make raptor_rss10_spaces pointer const.
+
+	* src/n3_parser.y, src/raptor.h, src/raptor_internal.h,
+	src/raptor_namespace.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_sax2.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c,
+	src/raptor_xml_writer.c, src/turtle_parser.y: Make
+	raptor_uri_handlers const. SURCE COMPATIBILITY BREAK: Five raptor
+	API function signatures changed:
+	raptor_uri_set_handler()
+	raptor_uri_get_handler()
+	raptor_new_namespaces()
+	raptor_namespaces_init()
+	raptor_new_xml_writer()
+
+	* src/raptor_uri.c: (raptor_uri_set_handler) Assert inputs
+
+2007-11-06  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_turtle.c: fix eol style
+
+	* src/raptor_uri.c: (raptor_uri_set_handler) Treat uri handler as
+	const although the API does not say it is const.
+
+	* src/raptor.h: Allow RAPTOR_API to be externally defined e.g. in
+	a static config.h. Remove __SYMBIAN32__ case.
+
+	* src/turtle_lexer.l, src/turtle_parser.y: Rename
+	turtle {TRUE,FALSE} tokens to {TRUE,FALSE}_TOKEN to prevent
+	potential clashes with system headers.
+
+	* src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Remove
+	writable static data. Refactor turtle/xml writers to use a const
+	spaces_buffer.
+
+	* src/raptor_uri.c: Remove writable static data. Make
+	raptor_uri_handler const
+
+	* src/ntriples_parse.c, src/raptor_feature.c,
+	src/raptor_general.c: Remove writable static data. Make const
+	arrays const.
+
+2007-11-05  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_init)
+	Fix lowmem issues: Do not use a NULL namespaces sequence or
+	nstack.  NULL rdf_type is allowed.  Check for uri creation
+	failures.  Check for sequence push failures.
+	(raptor_turtle_serialize_terminate) Do not leave dangling pointers
+	behind.
+
+2007-11-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_turtle_writer.c: (main): Write a proper double
+
+	* tests/turtle/test-28-out.ttl: Remove canonicalisation
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_emit_blank,
+	raptor_turtle_emit_subject, raptor_turtle_emit): Add more failure
+	pass ons.
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_emit_subject):
+	Fail when out of memory.
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_emit_subject):
+	Remove un-necessary use of snprintf to concat 2 strings.
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_double):
+	Removed, no longer used.
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_literal): Do
+	not canonicalise integer, double or decimal literals.
+
+2007-10-31  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/test-10.out, tests/turtle/test-21.out,
+	tests/turtle/test-22.out: Remove canonicalisation of integer and
+	double (Turtle spec change coming soon)
+
+2007-10-30  Lauri Aalto <laalto@iki.fi>
+
+	* src/turtle_parser.y: Add {INTEGER,FLOATING}_LITERAL %destructors.
+
+2007-10-30  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l, src/turtle_parser.y: Turtle INTEGER_LITERAL
+	and FLOATING_LITERAL now are stored as strings, with no
+	canonicalisation.  This is required for SPARQL compatibility.
+
+2007-10-25  Lauri Aalto <laalto@iki.fi>
+
+	* src/n3_parser.y: (blank) Fix [ propertylist ] lowmem leaks.
+
+	* src/turtle_parser.y: (blank) Fix [ propertylist ] lowmem leaks.
+
+2007-10-25  Dave Beckett <dave@dajobe.org>
+
+	* src/snprintf.c: Define round() and trunc() as macros if they
+	were not found by configure as functions/macros.  They were
+	standardised with C99.
+
+	* configure.ac: Check for trunc and round in libm
+
+	* utils/rapper.c: Quote args to HELP_ARG_BOTH()
+
+2007-10-24  Lauri Aalto <laalto@iki.fi>
+
+	* src/turtle_parser.y: Add destructors for turtle_parser
+	identifiers and sequences.
+	(triples) Free subject and propertylist on alloc failure.
+
+	* src/turtle_lexer.l: turtle_lexer: Check for alloc failures -
+	fail faster and do not pass NULLs to parser.
+
+2007-10-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/turtle_lexer.l: (QUOTEDURI) Always free stringbuffer
+
+	* src/turtle_lexer.l: turtle_lexer: Check for alloc failures
+
+	* src/n3_lexer.l: (n3_copy_string_token) Always free stringbuffer
+	if it is allocated.
+
+	* src/raptor_stringbuffer.c: (raptor_stringbuffer_append_string_common)
+	Free passed in string on alloc error if ownership was transferred.
+
+	* src/turtle_common.c: (raptor_stringbuffer_append_turtle_string)
+	Check for alloc failure.
+
+	* src/fix-flex, src/n3_lexer.l, src/raptor_internal.h,
+	src/turtle_lexer.l: Lowmem leak fixes. Ported experimental lexer
+	leak prevention code from sparql_lexer r12922 to
+	raptor {n3,turtle}_lexer. Flagged with LEXER_ALLOC_TRACKING,
+	disabled by default.
+	(raptor_parser_s) Added lexer_user_data.
+
+	* src/raptor_internal.h,
+	src/raptor_parse.c: (raptor_parse_uri_with_connection) Lowmem leak
+	fixes. Store raptor_www pointer to raptor parser object to allow
+	resource cleanup from client code in case raptor_parse_chunk()
+	fails in a lexer.
+
+	* src/n3_parser.y,
+	src/raptor_parse.c: (raptor_parse_uri_with_connection) Set parser
+	to failed state if raptor_parse_chunk() returned an error.
+	(raptor_n3_parse_chunk) Return error code from n3_parse().
+
+2007-10-19  Lauri Aalto <laalto@iki.fi>
+
+	* src/n3_lexer.l, src/turtle_lexer.l: (n3_lexer, turtle_lexer)
+	Replace out-of-memory yyterminate()s with more informative error
+	reporting.
+
+	* src/fix-flex, src/n3_lexer.l, src/turtle_lexer.l: (fix-flex)
+	Import patches from rasqal fix-flex: remove generated
+	yy_fatal_error(), OOM checks to ensure_buffer_stack().
+	(n3_lexer_fatal_error,turtle_lexer_fatal_error) Added replacement
+	for generated fatal error handler.
+
+	* src/n3_lexer.l: (QNAME) OOM: Terminate instead of returning NULL
+	QNAME literal.
+
+	* src/n3_parser.y: (n3_parser) PREFIX should not be in %destructor list
+
+2007-10-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/fix-bison, src/fix-flex: (fix-bison, fix-flex) Fix #line
+	numbers in generated raptor lexers and parsers.
+
+2007-10-15  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_statement)
+	indent tabs -> spaces
+
+	* src/raptor_serialize_rdfxmla.c: Fix low memory crashes.
+	(raptor_rdfxmla_serialize_init) Check for nstack alloc failure
+	before using it. Alloc independent objects in a batch and check
+	them with one if. Check the return value of raptor_sequence_push()
+	- moved to end since it depends on successful sequence allocation.
+	(raptor_rdfxmla_serialize_terminate) Set pointers to NULL to
+	prevent dangling pointers.
+
+	* src/raptor_serialize_rdfxml.c: (raptor_rdfxml_serialize_init)
+	Check sequence push ret val.
+
+2007-10-12  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_sequence.c: (raptor_sequence_set_at) Free passed in
+	data item also when returning due to invalid index.
+
+2007-10-08  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c: (raptor_turtle_writer_literal,
+	raptor_turtle_writer_quoted): These may fail when out of memory,
+	change to return an int non-0 on failure
+
+2007-10-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_sequence.c: comments on sequence design
+
+2007-10-05  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_sequence.c: (raptor_sequence_disown_at)
+	Removed. Was a hack that should not be in a public API. Functions
+	that needed this have been refactored to use
+	raptor_sequence_unshift() to get the item and its ownership.
+
+	* src/n3_parser.y: (propertyList) Refactored to not use
+	raptor_sequence_disown_at()
+
+	* src/turtle_parser.y: (propertyList) Refactored to not use
+	raptor_sequence_disown_at()
+
+	* src/raptor_sequence.c: Refactor raptor_sequence internals to
+	make shift/unshift as efficient as push/pop.
+	(raptor_free_sequence) Use RAPTOR_FREE macro instead of free() for
+	sequence.
+	(raptor_sequence_ensure) Added grow_at_front flag to describe
+	growth direction.  Do not grow sequence if seq->capacity ==
+	capacity.  Use RAPTOR_CALLOC instead of calloc() for sequence.
+	(raptor_sequence_grow) Removed.
+	(raptor_sequence_set_at) Do not allow setting items over +1
+	current size.
+	(main) Added test code.
+
+2007-10-04  Lauri Aalto <laalto@iki.fi>
+
+	* src/turtle_parser.y: Memory leak fixes: Free allocated resources
+	and YYERROR on alloc failure.
+	(raptor_turtle_new_triple) Free identifiers on error.
+
+	* src/turtle_parser.y: (turtle_parse) Check lexer init return
+	value.
+	(raptor_turtle_parse_init) Return error code on failure.
+
+	* src/raptor_identifier.c: (raptor_copy_identifier) Return
+	non-zero on allocation failure. No need to check for non-null
+	uris: raptor_uri_copy returns NULL if passed in a null
+	uri. Removed duplicate copying of literal_language.
+
+	* src/turtle_parser.y: (triples, propertyList, literal, blank)
+	YYERROR on alloc failure.
+	(raptor_turtle_parse_terminate) Free uris only if not null.
+
+	* src/n3_parser.y: Memory leak fixes: free resources on error.
+	(verb, literal, resource, blank, collection) Additional checks for
+	alloc failures.
+
+	* src/n3_lexer.l: lexer: yyterminate() on alloc failure.
+	(n3_copy_token, n3_copy_string_token) Check for alloc failure.
+
+	* src/raptor.h, src/raptor_sequence.c: Add raptor_sequence_disown_at()
+
+2007-10-02  Lauri Aalto <laalto@iki.fi>
+
+	* src/n3_parser.y: %destructors for %tokens and not just %types.
+	(directive) YYERROR if namespace alloc failed.
+
+2007-10-02  Dave Beckett <dave@dajobe.org>
 
 	* NEWS.html, configure.ac, src/win32_raptor_config.h: Bumped
 	version to 1.4.17
