@@ -52,6 +52,10 @@ fi
 if grep "^AC_CHECK_PROGS.SWIG" $confs >/dev/null; then
   programs="$programs swig"
 fi
+ltdl=
+if grep "^AC_LIBLTDL_" $confs >/dev/null; then
+  ltdl="--ltdl"
+fi
 
 # Some dependencies for autotools:
 # automake 1.9 requires autoconf 2.58
@@ -68,7 +72,7 @@ swig_min_vers=010324
 # Default program arguments
 automake_args="--add-missing"
 autoconf_args=
-libtoolize_args="--force --copy --automake"
+libtoolize_args="$ltdl --force --copy --automake"
 gtkdocize_args="--copy"
 aclocal_args=
 automake_args="--gnu --add-missing --force --copy"
@@ -101,6 +105,8 @@ my(\$path,\$name)=@ARGV;
 exit 0 if !-f \$path;
 die "\$prog: \$path not found\n" if !-r \$path;
 
+my \$mname=\$name; \$mname =~ s/^g(libtoolize)\$/\$1/;
+
 my(@vnums);
 for my \$varg (qw(--version -version)) {
   my \$cmd="\$path \$varg";
@@ -108,7 +114,7 @@ for my \$varg (qw(--version -version)) {
   while(<PIPE>) {
     chomp;
     next if @vnums; # drain pipe if we got a vnums
-    next unless /^\$name/;
+    next unless /^\$mname/;
     my(\$v)=/(\S+)\$/i; \$v =~ s/-.*\$//;
     @vnums=grep { defined \$_ && !/^\s*\$/} map { s/\D//g; \$_; } split(/\./, \$v);
   }
@@ -246,6 +252,9 @@ done
 
 echo "$program: Dependencies satisfied"
 
+if test -d $SRCDIR/libltdl; then
+  touch $SRCDIR/libltdl/NO-AUTO-GEN
+fi
 
 config_dir=
 if test -d $CONFIG_DIR; then
