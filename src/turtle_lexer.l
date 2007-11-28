@@ -199,11 +199,6 @@ EXPONENT [eE][+-]?[0-9]+
 "false"   { return FALSE_TOKEN; }
 
 
-'([^'\\\n\r]|\\[^\n\r])*'    { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
-                               if(!turtle_parser_lval->string)
-                                 TURTLE_LEXER_OOM();
-                               return STRING_LITERAL; }
-
 \"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 if(!turtle_parser_lval->string)
                                   TURTLE_LEXER_OOM();
