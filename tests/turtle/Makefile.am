@@ -36,7 +36,8 @@ rdfq-results.ttl
 
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl \
 bad-04.ttl bad-05.ttl bad-06.ttl bad-07.ttl bad-08.ttl bad-09.ttl \
-bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl
+bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl \
+bad-17.ttl bad-18.ttl
 
 TEST_WARN_FILES=
 
