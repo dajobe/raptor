@@ -421,7 +421,7 @@ this approach, for that see the URI filter in the next section.
   rdf_parser = raptor_new_parser("rdfxml");
 
   /* Disable internal network requests */
-  raptor_set_feature(rdf_parser, RAPTOR_FEATURE_NO_NET);
+  raptor_set_feature(rdf_parser, RAPTOR_FEATURE_NO_NET, 1);
 </programlisting>
 
 </section>
