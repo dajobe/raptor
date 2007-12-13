@@ -61,6 +61,11 @@
 static const raptor_uri_handler *raptor_uri_current_uri_handler;
 static void *raptor_uri_current_uri_context;
 
+/* Symbian OS uses similar path mappings as Windows but does not necessarily have the WIN32 flag defined */
+#if defined(__SYMBIAN32__) && !defined(WIN32)
+#define WIN32
+#endif
+
 /**
  * raptor_uri_set_handler:
  * @handler: URI handler structure
