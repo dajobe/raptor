@@ -1507,6 +1507,7 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
+#ifdef RAPTOR_PARSER_TRIG
 static int
 raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory, 
                                    const unsigned char *buffer, size_t len,
@@ -1556,6 +1557,7 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
   
   return score;
 }
+#endif
 
 
 #ifdef RAPTOR_PARSER_TURTLE
