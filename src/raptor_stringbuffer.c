@@ -84,16 +84,12 @@ static int raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringb
  *
  * Create a new stringbuffer.
  * 
- * Return value: non 0 on failure
+ * Return value: pointer to a raptor_stringbuffer object or NULL on failure
  **/
 raptor_stringbuffer*
 raptor_new_stringbuffer(void) 
 {
-  raptor_stringbuffer* sb=(raptor_stringbuffer*)RAPTOR_CALLOC(raptor_stringbuffer, 1, sizeof(raptor_stringbuffer));
-  if(!sb)
-    return NULL;
-
-  return sb;
+  return (raptor_stringbuffer*)RAPTOR_CALLOC(raptor_stringbuffer, 1, sizeof(raptor_stringbuffer));
 }
 
 
