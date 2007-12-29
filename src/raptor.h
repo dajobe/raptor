@@ -1125,6 +1125,10 @@ RAPTOR_API
 int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
 RAPTOR_API
 const raptor_namespace* raptor_qname_get_namespace(raptor_qname* name);
+RAPTOR_API
+const unsigned char* raptor_qname_get_local_name(raptor_qname* name);
+RAPTOR_API
+const unsigned char* raptor_qname_get_value(raptor_qname* name);
 
 /* raptor_namespace_stack - stack of XML namespaces */
 RAPTOR_API

@@ -521,3 +521,33 @@ raptor_qname_get_namespace(raptor_qname* name)
 {
   return name->nspace;
 }
+
+
+/**
+ * raptor_qname_get_local_name:
+ * @name: #raptor_qname object
+ * 
+ * Get the #raptor_local_name of an XML QName.
+ * 
+ * Return value: the local_name
+ **/
+const unsigned char*
+raptor_qname_get_local_name(raptor_qname* name)
+{
+  return name->local_name;
+}
+
+
+/**
+ * raptor_qname_get_value:
+ * @name: #raptor_qname object
+ * 
+ * Get the #raptor_value of an XML QName.
+ * 
+ * Return value: the value
+ **/
+const unsigned char*
+raptor_qname_get_value(raptor_qname* name)
+{
+  return name->value;
+}
