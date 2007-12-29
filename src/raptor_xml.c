@@ -502,6 +502,21 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
 
 
 /**
+ * raptor_xml_element_get_language:
+ * @xml_element: XML Element
+ * 
+ * Get the XML language of the element.
+ * 
+ * Return value: XML language or NULL if none in scope
+ **/
+const unsigned char*
+raptor_xml_element_get_language(raptor_xml_element* xml_element)
+{
+  return xml_element->xml_language;
+}
+
+
+/**
  * raptor_valid_xml_ID:
  * @rdf_parser: RDF parser
  * @string: The string to check.
