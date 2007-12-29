@@ -218,6 +218,14 @@ typedef struct raptor_namespace_stack_s raptor_namespace_stack;
 typedef raptor_parser raptor_ntriples_parser;
 
 /**
+ * raptor_sax2:
+ *
+ * Raptor SAX2 class
+ */
+typedef struct raptor_sax2_s raptor_sax2;
+
+
+/**
  * raptor_identifier_type:
  * @RAPTOR_IDENTIFIER_TYPE_RESOURCE:    Resource URI (e.g. <literal>rdf:about</literal>)
  * @RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:   <literal>_:foo</literal> N-Triples, or generated
@@ -1470,6 +1478,80 @@ RAPTOR_API
 int raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature feature);
 RAPTOR_API
 const unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature);
+
+/* start of an element */
+typedef void (*raptor_sax2_start_element_handler)(void *user_data, raptor_xml_element *xml_element);
+/* end of an element */
+typedef void (*raptor_sax2_end_element_handler)(void *user_data, raptor_xml_element* xml_element);
+/* characters */
+typedef void (*raptor_sax2_characters_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s, int len);
+/* like <![CDATA[...]> */
+typedef void (*raptor_sax2_cdata_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s, int len);
+/* comment */
+typedef void (*raptor_sax2_comment_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s);
+/* unparsed (NDATA) entity */
+typedef void (*raptor_sax2_unparsed_entity_decl_handler)(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
+/* external entity reference */
+typedef int (*raptor_sax2_external_entity_ref_handler)(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
+
+
+/**
+ * raptor_log_level:
+ * RAPTOR_LOG_LEVEL_NONE: Internal
+ * RAPTOR_LOG_LEVEL_FATAL: Fatal error message
+ * RAPTOR_LOG_LEVEL_ERROR: Error message
+ * RAPTOR_LOG_LEVEL_WARNING: Warning message
+ * RAPTOR_LOG_LEVEL_LAST: Internal
+ *
+ * Log levels
+ */
+typedef enum {
+  RAPTOR_LOG_LEVEL_NONE,
+  RAPTOR_LOG_LEVEL_FATAL,
+  RAPTOR_LOG_LEVEL_ERROR,
+  RAPTOR_LOG_LEVEL_WARNING,
+  RAPTOR_LOG_LEVEL_LAST=RAPTOR_LOG_LEVEL_WARNING
+} raptor_log_level;
+
+
+/**
+ * raptor_error_handlers:
+ * @magic: magic value - must use raptor_error_handlers_init() to set this
+ * @locator: raptor locator of the error
+ * @user_data: user handler data pointers per log level
+ * @handlers: user handlers per log level
+ *
+ * Error handlers structure
+ */
+typedef struct {
+  unsigned int magic;
+
+  raptor_locator* locator;
+
+  void* user_data[RAPTOR_LOG_LEVEL_LAST+1];
+  raptor_message_handler handlers[RAPTOR_LOG_LEVEL_LAST+1];
+} raptor_error_handlers;
+
+void raptor_error_handlers_init(raptor_error_handlers* error_handlers, void *fatal_error_user_data, raptor_message_handler fatal_error_handler, void *error_user_data, raptor_message_handler error_handler, void *warning_user_data, raptor_message_handler warning_handler, raptor_locator* locator);
+
+
+/* SAX2 API */
+raptor_sax2* raptor_new_sax2(void *user_data, raptor_error_handlers* error_handlers);
+void raptor_free_sax2(raptor_sax2 *sax2);
+
+void raptor_sax2_set_start_element_handler(raptor_sax2* sax2, raptor_sax2_start_element_handler handler);
+void raptor_sax2_set_end_element_handler(raptor_sax2* sax2, raptor_sax2_end_element_handler handler);
+void raptor_sax2_set_characters_handler(raptor_sax2* sax2, raptor_sax2_characters_handler handler);
+void raptor_sax2_set_cdata_handler(raptor_sax2* sax2, raptor_sax2_cdata_handler handler);
+void raptor_sax2_set_comment_handler(raptor_sax2* sax2, raptor_sax2_comment_handler handler);
+void raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler);
+void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler);
+void raptor_sax2_set_namespace_handler(raptor_sax2* sax2, raptor_namespace_handler handler);
+void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
+int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
+void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
+const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2* sax2);
+raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
 
 #ifdef __cplusplus
 }
