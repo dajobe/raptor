@@ -133,7 +133,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 
   while(num_spaces > 0) {
     int count;
-    count = (num_spaces > SPACES_BUFFER_SIZE) ? SPACES_BUFFER_SIZE : num_spaces;
+    count = (num_spaces > SPACES_BUFFER_SIZE) ? (int)SPACES_BUFFER_SIZE : num_spaces;
 
     raptor_iostream_write_counted_string(turtle_writer->iostr, spaces_buffer, count);
 
