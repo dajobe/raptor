@@ -476,7 +476,7 @@ raptor_filename_iostream_read_bytes(void *user_data,
                                     void *ptr, size_t size, size_t nmemb)
 {
   FILE* handle=(FILE*)user_data;
-  return (fread(ptr, size, nmemb, handle) == nmemb);
+  return fread(ptr, size, nmemb, handle);
 }
 
 static const raptor_iostream_handler2 raptor_iostream_read_filename_handler={
@@ -920,6 +920,7 @@ raptor_new_iostream_from_string(void *string, size_t length)
 
   iostr->handler=&raptor_iostream_read_string_handler;
   iostr->user_data=(void*)con;
+  raptor_iostream_init_common(iostr);
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
     raptor_free_iostream(iostr);
@@ -940,7 +941,8 @@ int main(int argc, char *argv[]);
 
 #define OUT_FILENAME "out.bin"
 #define OUT_BYTES_COUNT 14
-
+#define TEST_STRING "Hello, world!"
+#define TEST_STRING_LEN 13
 
 int
 main(int argc, char *argv[]) 
@@ -948,13 +950,13 @@ main(int argc, char *argv[])
   const char *program=raptor_basename(argv[0]);
 #define TEST_ITEMS_COUNT 9
   int i;
-
+  FILE *handle=NULL;
+  char buffer[TEST_STRING_LEN+2];
+  
   for(i=0; i<4; i++) {
     raptor_iostream *iostr;
     size_t count;
 
-    /* for _to_file */
-    FILE *handle=NULL;
     /* for _to_string */
     void *string;
     size_t string_len;
@@ -962,11 +964,11 @@ main(int argc, char *argv[])
     switch(i) {
       case 0:
 #ifdef RAPTOR_DEBUG
-        fprintf(stderr, "%s: Creating iostream to filename '%s'\n", program, OUT_FILENAME);
+        fprintf(stderr, "%s: Creating write iostream to filename '%s'\n", program, OUT_FILENAME);
 #endif
         iostr=raptor_new_iostream_to_filename((const char*)OUT_FILENAME);
         if(!iostr) {
-          fprintf(stderr, "%s: Failed to create iostream to filename '%s'\n",
+          fprintf(stderr, "%s: Failed to create write iostream to filename '%s'\n",
                   program, OUT_FILENAME);
           exit(1);
         }
@@ -974,23 +976,23 @@ main(int argc, char *argv[])
 
       case 1:
 #ifdef RAPTOR_DEBUG
-        fprintf(stderr, "%s: Creating iostream to file handle\n", program);
+        fprintf(stderr, "%s: Creating write iostream to file handle\n", program);
 #endif
         handle=fopen((const char*)OUT_FILENAME, "wb");
         iostr=raptor_new_iostream_to_file_handle(handle);
         if(!iostr) {
-          fprintf(stderr, "%s: Failed to create iostream to file handle\n", program);
+          fprintf(stderr, "%s: Failed to create write iostream to file handle\n", program);
           exit(1);
         }
         break;
 
       case 2:
 #ifdef RAPTOR_DEBUG
-        fprintf(stderr, "%s: Creating iostream to a string\n", program);
+        fprintf(stderr, "%s: Creating write iostream to a string\n", program);
 #endif
         iostr=raptor_new_iostream_to_string(&string, &string_len, NULL);
         if(!iostr) {
-          fprintf(stderr, "%s: Failed to create iostream to string\n", program);
+          fprintf(stderr, "%s: Failed to create write iostream to string\n", program);
           exit(1);
         }
         break;
@@ -1025,7 +1027,7 @@ main(int argc, char *argv[])
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, "%s: Freeing iostream\n", program);
 #endif
-    raptor_free_iostream(iostr);
+    raptor_free_iostream(iostr); iostr=NULL;
 
     switch(i) {
       case 0:
@@ -1039,11 +1041,11 @@ main(int argc, char *argv[])
 
       case 2:
         if(!string) {
-          fprintf(stderr, "%s: I/O stream failed to create a string\n", program);
+          fprintf(stderr, "%s: I/O write stream failed to create a string\n", program);
           return 1;
         }
         if(string_len != count) {
-          fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
+          fprintf(stderr, "%s: I/O write stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
           return 1;
         }
         raptor_free_memory(string);
@@ -1058,6 +1060,112 @@ main(int argc, char *argv[])
     }
     
   }
+  
+
+
+  handle=fopen((const char*)OUT_FILENAME, "wb");
+  fwrite(TEST_STRING, 1, TEST_STRING_LEN, handle);
+  fclose(handle);
+
+  /* Read tests */
+  for(i=0; i<4; i++) {
+    raptor_iostream *iostr;
+    size_t count;
+    size_t expected_len=TEST_STRING_LEN;
+    
+    switch(i) {
+      case 0:
+#ifdef RAPTOR_DEBUG
+        fprintf(stderr, "%s: Creating read iostream from filename '%s'\n", program, OUT_FILENAME);
+#endif
+        iostr=raptor_new_iostream_from_filename((const char*)OUT_FILENAME);
+        if(!iostr) {
+          fprintf(stderr, "%s: Failed to create read iostream from filename '%s'\n",
+                  program, OUT_FILENAME);
+          exit(1);
+        }
+        break;
+
+      case 1:
+/* FIXME */
+#if 0
+#ifdef RAPTOR_DEBUG
+        fprintf(stderr, "%s: Creating read iostream from file handle\n", program);
+#endif
+        handle=fopen((const char*)OUT_FILENAME, "rb");
+        iostr=raptor_new_iostream_from_file_handle(handle);
+        if(!iostr) {
+          fprintf(stderr, "%s: Failed to create read iostream from file handle\n", program);
+          exit(1);
+        }
+#endif
+        continue;
+        break;
+
+      case 2:
+#ifdef RAPTOR_DEBUG
+        fprintf(stderr, "%s: Creating read iostream from a string\n", program);
+#endif
+        iostr=raptor_new_iostream_from_string((void*)TEST_STRING, TEST_STRING_LEN);
+        if(!iostr) {
+          fprintf(stderr, "%s: Failed to create read iostream from a string\n", program);
+          exit(1);
+        }
+        break;
+
+      case 3:
+#ifdef RAPTOR_DEBUG
+        fprintf(stderr, "%s: Creating read iostream from sink\n", program);
+#endif
+        expected_len=0;
+        iostr=raptor_new_iostream_from_sink();
+        if(!iostr) {
+          fprintf(stderr, "%s: Failed to create read iostream from sink\n", program);
+          exit(1);
+        }
+        break;
+
+      default:
+        fprintf(stderr, "%s: Unknown test case %d init\n", program, i);
+        exit(1);
+    }
+    
+    count=raptor_iostream_read_bytes(iostr, buffer, 1, TEST_STRING_LEN);
+    if(count != expected_len) {
+      fprintf(stderr, "%s: I/O stream read %d bytes, expected %d\n", program,
+              (int)count, (int)expected_len);
+      return 1;
+    }
+    
+#ifdef RAPTOR_DEBUG
+    fprintf(stderr, "%s: Freeing iostream\n", program);
+#endif
+    raptor_free_iostream(iostr); iostr=NULL;
+
+    switch(i) {
+      case 0:
+        break;
+
+      case 1:
+/* FIXME */
+#if 0
+        fclose(handle);
+#endif
+        break;
+
+      case 2:
+        break;
+
+      case 3:
+        break;
+
+      default:
+        fprintf(stderr, "%s: Unknown test case %d tidy\n", program, i);
+        exit(1);
+    }
+
+  }
+  remove(OUT_FILENAME);
   
   /* keep gcc -Wall happy */
   return(0);
