@@ -1058,7 +1058,7 @@ test_write_to_filename(const char* filename,
                        const unsigned int expected_bytes_count)
 {
   raptor_iostream *iostr=NULL;
-  size_t count;
+  unsigned long count;
   int rc=0;
   const char* const label="write iostream to filename";
   
@@ -1076,7 +1076,7 @@ test_write_to_filename(const char* filename,
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_get_bytes_written_count(iostr);
+  count=raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
@@ -1102,7 +1102,7 @@ test_write_to_file_handle(FILE* handle,
                           const unsigned int expected_bytes_count)
 {
   raptor_iostream *iostr=NULL;
-  size_t count;
+  unsigned long count;
   int rc=0;
   const char* const label="write iostream to file handle";
   
@@ -1120,7 +1120,7 @@ test_write_to_file_handle(FILE* handle,
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_get_bytes_written_count(iostr);
+  count=raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
@@ -1143,7 +1143,7 @@ test_write_to_string(const char* test_string, size_t test_string_len,
                      const unsigned int expected_bytes_count)
 {
   raptor_iostream *iostr=NULL;
-  size_t count;
+  unsigned long count;
   int rc=0;
   void *string=NULL;
   size_t string_len;
@@ -1165,7 +1165,7 @@ test_write_to_string(const char* test_string, size_t test_string_len,
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_get_bytes_written_count(iostr);
+  count=raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
@@ -1202,7 +1202,7 @@ test_write_to_sink(const char* test_string, size_t test_string_len,
                    const unsigned int expected_bytes_count)
 {
   raptor_iostream *iostr=NULL;
-  size_t count;
+  unsigned long count;
   int rc=0;
   const char* const label="write iostream to sink";
 
@@ -1220,7 +1220,7 @@ test_write_to_sink(const char* test_string, size_t test_string_len,
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_get_bytes_written_count(iostr);
+  count=raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
@@ -1246,7 +1246,7 @@ test_read_from_filename(const char* filename,
 {
   raptor_iostream *iostr=NULL;
   char buffer[READ_BUFFER_SIZE];
-  size_t count;
+  unsigned long count;
   int rc=0;
   const char* const label="read iostream from filename";
 
@@ -1308,7 +1308,7 @@ test_read_from_file_handle(FILE* handle,
 {
   raptor_iostream *iostr=NULL;
   char buffer[READ_BUFFER_SIZE];
-  size_t count;
+  unsigned long count;
   int rc=0;
   const char* const label="read iostream from file handle";
   
@@ -1366,7 +1366,7 @@ test_read_from_string(const char* test_string, size_t test_string_len,
 {
   raptor_iostream *iostr=NULL;
   char buffer[READ_BUFFER_SIZE];
-  size_t count;
+  unsigned long count;
   int rc=0;
   const char* const label="read iostream from a string";
   
@@ -1415,7 +1415,7 @@ test_read_from_sink(size_t read_len, size_t expected_len)
 {
   raptor_iostream *iostr=NULL;
   char buffer[READ_BUFFER_SIZE];
-  size_t count;
+  unsigned long count;
   int rc=0;
   const char* const label="read iostream from sink";
   
