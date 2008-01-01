@@ -1410,7 +1410,6 @@ typedef struct {
 /**
  * raptor_iostream_handler2:
  * @version: interface version.  Presently 1 or 2.
- * @private: internal flags - do not set
  * @init:  initialisation handler - optional, called at most once (V1)
  * @finish: finishing handler -  optional, called at most once (V1)
  * @write_byte: write byte handler - required (for writing) (V1)
@@ -1424,8 +1423,6 @@ typedef struct {
 typedef struct {
   int version;
 
-  int private;
-  
   /* V1 functions */
   raptor_iostream_init_func         init;
   raptor_iostream_finish_func       finish;
@@ -1442,7 +1439,7 @@ typedef struct {
 RAPTOR_API RAPTOR_DEPRECATED
 raptor_iostream* raptor_new_iostream_from_handler(void *context, const raptor_iostream_handler *handler);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_handler2(void *context, const raptor_iostream_handler2 *handler2);
+raptor_iostream* raptor_new_iostream_from_handler2(void *context, const raptor_iostream_handler2* const handler2);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_sink(void);
 RAPTOR_API
