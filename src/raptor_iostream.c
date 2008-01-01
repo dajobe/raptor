@@ -66,10 +66,17 @@ static int
 raptor_iostream_calculate_modes(const raptor_iostream_handler2 const *handler2)
 {
   int mode = 0;
-  if(handler2->read_bytes)
+
+  /* API V1 checks */
+  if((handler2->version >= 1) && 
+     handler2->read_bytes)
     mode |= RAPTOR_IOSTREAM_MODE_READ;
-  if(handler2->write_byte || handler2->write_bytes)
+
+  /* API V2 checks */
+  if((handler2->version >= 2) &&
+     (handler2->write_byte || handler2->write_bytes))
     mode |= RAPTOR_IOSTREAM_MODE_WRITE;
+
   return mode;
 }
 
@@ -79,8 +86,12 @@ static int
 raptor_iostream_check_handler(const raptor_iostream_handler2 const *handler2,
                               unsigned int user_mode)
 {
-  int mode = raptor_iostream_calculate_modes(handler2);
+  int mode;
 
+  if(handler2->version < 1 || handler2->version > 2)
+    return 0;
+
+  mode = raptor_iostream_calculate_modes(handler2);
   if(user_mode && !(user_mode & mode))
     return 0;
   
@@ -294,8 +305,9 @@ raptor_new_iostream_to_filename(const char *filename)
   FILE *handle;
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_write_filename_handler;
-
-  if(!raptor_iostream_check_handler(handler2, RAPTOR_IOSTREAM_MODE_WRITE))
+  const unsigned int mode=RAPTOR_IOSTREAM_MODE_WRITE;
+  
+  if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
   handle=fopen(filename, "wb");
@@ -308,6 +320,7 @@ raptor_new_iostream_to_filename(const char *filename)
 
   iostr->handler=handler2;
   iostr->user_data=(void*)handle;
+  iostr->mode=mode;
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
@@ -346,11 +359,12 @@ raptor_new_iostream_to_file_handle(FILE *handle)
 {
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_write_file_handler;
+  const unsigned int mode=RAPTOR_IOSTREAM_MODE_WRITE;
 
   if(!handle)
     return NULL;
 
-  if(!raptor_iostream_check_handler(handler2, RAPTOR_IOSTREAM_MODE_WRITE))
+  if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
   iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
@@ -359,6 +373,7 @@ raptor_new_iostream_to_file_handle(FILE *handle)
 
   iostr->handler=handler2;
   iostr->user_data=(void*)handle;
+  iostr->mode=mode;
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
     RAPTOR_FREE(raptor_iostream, iostr);
@@ -458,8 +473,9 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
   raptor_iostream* iostr;
   struct raptor_write_string_iostream_context* con;
   const raptor_iostream_handler2* handler2=&raptor_iostream_write_string_handler;
+  const unsigned int mode=RAPTOR_IOSTREAM_MODE_WRITE;
   
-  if(!raptor_iostream_check_handler(handler2, RAPTOR_IOSTREAM_MODE_WRITE))
+  if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
   iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
@@ -493,7 +509,7 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
   
   iostr->handler=handler2;
   iostr->user_data=(void*)con;
-  iostr->mode = RAPTOR_IOSTREAM_MODE_WRITE;
+  iostr->mode = mode;
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
     raptor_free_iostream(iostr);
@@ -543,11 +559,12 @@ raptor_new_iostream_from_filename(const char *filename)
   FILE *handle;
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_read_filename_handler;
+  const unsigned int mode=RAPTOR_IOSTREAM_MODE_READ;
 
   if(!filename)
     return NULL;
   
-  if(!raptor_iostream_check_handler(handler2, RAPTOR_IOSTREAM_MODE_READ))
+  if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
   handle=fopen(filename, "rb");
@@ -560,7 +577,7 @@ raptor_new_iostream_from_filename(const char *filename)
 
   iostr->handler=handler2;
   iostr->user_data=(void*)handle;
-  iostr->mode = RAPTOR_IOSTREAM_MODE_READ;
+  iostr->mode = mode;
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
@@ -589,6 +606,9 @@ static const raptor_iostream_handler2 raptor_iostream_read_file_handle_handler={
  *
  * Constructor - create a new iostream reading from a file_handle.
  * 
+ * The @handle must already be open for reading.
+ * NOTE: This does not fclose the @handle when it is finished.
+ *
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
@@ -596,11 +616,12 @@ raptor_new_iostream_from_file_handle(FILE *handle)
 {
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_read_file_handle_handler;
+  const unsigned int mode=RAPTOR_IOSTREAM_MODE_READ;
 
   if(!handle)
     return NULL;
   
-  if(!raptor_iostream_check_handler(handler2, RAPTOR_IOSTREAM_MODE_READ))
+  if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
   iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
@@ -609,7 +630,7 @@ raptor_new_iostream_from_file_handle(FILE *handle)
 
   iostr->handler=handler2;
   iostr->user_data=(void*)handle;
-  iostr->mode = RAPTOR_IOSTREAM_MODE_READ;
+  iostr->mode = mode;
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
@@ -1034,11 +1055,12 @@ raptor_new_iostream_from_string(void *string, size_t length)
   raptor_iostream* iostr;
   struct raptor_read_string_iostream_context* con;
   const raptor_iostream_handler2* handler2=&raptor_iostream_read_string_handler;
+  const unsigned int mode=RAPTOR_IOSTREAM_MODE_READ;
 
   if(!string)
     return NULL;
   
-  if(!raptor_iostream_check_handler(handler2, RAPTOR_IOSTREAM_MODE_READ))
+  if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
   iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
@@ -1056,7 +1078,7 @@ raptor_new_iostream_from_string(void *string, size_t length)
 
   iostr->handler=handler2;
   iostr->user_data=(void*)con;
-  iostr->mode = RAPTOR_IOSTREAM_MODE_READ;
+  iostr->mode = mode;
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
     raptor_free_iostream(iostr);
