@@ -468,6 +468,13 @@ raptor_new_iostream_from_sink(void)
 
 /* Local handlers for reading from a filename */
 
+static void
+raptor_filename_iostream_finish(void *user_data) 
+{
+  FILE* handle=(FILE*)user_data;
+  fclose(handle);
+}
+
 static int
 raptor_filename_iostream_read_bytes(void *user_data,
                                     void *ptr, size_t size, size_t nmemb)
@@ -486,7 +493,7 @@ raptor_filename_iostream_read_eof(void *user_data)
 static const raptor_iostream_handler2 raptor_iostream_read_filename_handler={
   .version = 2,
   .init = NULL,
-  .finish = NULL,
+  .finish = raptor_filename_iostream_finish,
   .write_byte = NULL,
   .write_bytes = NULL,
   .write_end = NULL,
@@ -530,6 +537,46 @@ raptor_new_iostream_from_filename(const char *filename)
 }
 
 
+static const raptor_iostream_handler2 raptor_iostream_read_file_handle_handler={
+  .version = 2,
+  .init = NULL,
+  .finish = NULL,
+  .write_byte = NULL,
+  .write_bytes = NULL,
+  .write_end = NULL,
+  .read_bytes = raptor_filename_iostream_read_bytes,
+  .read_eof = raptor_filename_iostream_read_eof
+};
+
+
+/**
+ * raptor_new_iostream_from_file_handle:
+ * @file_handle: Input file_handle to open and read from
+ *
+ * Constructor - create a new iostream reading from a file_handle.
+ * 
+ * Return value: new #raptor_iostream object or NULL on failure
+ **/
+raptor_iostream*
+raptor_new_iostream_from_file_handle(FILE *handle)
+{
+  raptor_iostream* iostr;
+
+  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  if(!iostr)
+    return NULL;
+
+  iostr->handler=&raptor_iostream_read_file_handle_handler;
+  iostr->user_data=(void*)handle;
+  raptor_iostream_init_common(iostr);
+
+  if(iostr->handler->init && 
+     iostr->handler->init(iostr->user_data)) {
+    RAPTOR_FREE(raptor_iostream, iostr);
+    return NULL;
+  }
+  return iostr;
+}
 
 
 /**
@@ -1175,7 +1222,8 @@ test_write_to_sink(const char* test_string, size_t test_string_len,
 static int
 test_read_from_filename(const char* filename, 
                         const char* test_string, size_t test_string_len,
-                        const unsigned int expected_len)
+                        const unsigned int expected_len,
+                        const unsigned int expected_len2)
 {
   raptor_iostream *iostr=NULL;
   char buffer[READ_BUFFER_SIZE];
@@ -1198,6 +1246,14 @@ test_read_from_filename(const char* filename,
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
+    rc=1;
+    goto tidy;
+  }
+
+  count=raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  if(count != expected_len2) {
+    fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
+            (int)count, (int)expected_len2);
     rc=1;
     goto tidy;
   }
@@ -1228,14 +1284,12 @@ test_read_from_filename(const char* filename,
 static int
 test_read_from_file_handle(FILE* handle,
                            const char* test_string, size_t test_string_len,
-                           const unsigned int expected_len)
+                           const unsigned int expected_len,
+                           const unsigned int expected_len2)
 {
   raptor_iostream *iostr=NULL;
-/* FIXME */
-#if 0
   char buffer[READ_BUFFER_SIZE];
   size_t count;
-#endif
   int rc=0;
   const char* const label="read iostream from file handle";
   
@@ -1243,8 +1297,6 @@ test_read_from_file_handle(FILE* handle,
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-/* FIXME */
-#if 0
   iostr=raptor_new_iostream_from_file_handle(handle);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
@@ -1259,6 +1311,14 @@ test_read_from_file_handle(FILE* handle,
     rc=1;
   }
 
+  count=raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  if(count != expected_len2) {
+    fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
+            (int)count, (int)expected_len2);
+    rc=1;
+    goto tidy;
+  }
+
   if(!raptor_iostream_read_eof(iostr)) {
     fprintf(stderr, "%s: %s not EOF as expected\n", program, label);
     rc=1;
@@ -1270,9 +1330,7 @@ test_read_from_file_handle(FILE* handle,
     rc=1;
   }
   
-  tidy;
-#endif
-  
+  tidy:
   if(iostr)
     raptor_free_iostream(iostr);
 
@@ -1426,7 +1484,7 @@ main(int argc, char *argv[])
 
     failures+= test_read_from_filename((const char*)IN_FILENAME,
                                        TEST_STRING, TEST_STRING_LEN,
-                                       TEST_STRING_LEN);
+                                       TEST_STRING_LEN, 0);
     handle=fopen((const char*)IN_FILENAME, "rb");
     if(!handle) {
       fprintf(stderr, "%s: Failed to create read file handle to file %s\n",
@@ -1435,7 +1493,7 @@ main(int argc, char *argv[])
     } else {
       failures+= test_read_from_file_handle(handle,
                                             TEST_STRING, TEST_STRING_LEN,
-                                            TEST_STRING_LEN);
+                                            TEST_STRING_LEN, 0);
       fclose(handle); handle=NULL;
     }
   }
