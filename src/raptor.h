@@ -1469,8 +1469,10 @@ RAPTOR_API
 int raptor_iostream_write_string(raptor_iostream *iostr, const void *string);
 RAPTOR_API
 int raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *string, size_t len);
-RAPTOR_API
+RAPTOR_API RAPTOR_DEPRECATED
 size_t raptor_iostream_get_bytes_written_count(raptor_iostream *iostr);
+RAPTOR_API
+unsigned long raptor_iostream_tell(raptor_iostream *iostr);
 RAPTOR_API
 int raptor_iostream_write_decimal(raptor_iostream* iostr, int integer);
 RAPTOR_API
