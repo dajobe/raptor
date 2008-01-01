@@ -60,6 +60,17 @@ struct raptor_iostream_s
 
 /* prototypes for local functions */
 
+static void
+raptor_iostream_init_common(raptor_iostream* iostr)
+{
+  iostr->mode = 0;
+  if(iostr->handler->read_bytes)
+    iostr->mode |= RAPTOR_IOSTREAM_MODE_READ;
+  if(iostr->handler->write_byte || iostr->handler->write_bytes ||
+     iostr->handler->write_end)
+  iostr->mode |= RAPTOR_IOSTREAM_MODE_WRITE;
+}
+
 
 /**
  * raptor_new_iostream_from_handler2:
@@ -78,12 +89,7 @@ raptor_new_iostream_from_handler2(void *user_data, const raptor_iostream_handler
 
   iostr->handler=handler2;
   iostr->user_data=(void*)user_data;
-  iostr->mode = 0;
-  if(iostr->handler->read_bytes)
-    iostr->mode |= RAPTOR_IOSTREAM_MODE_READ;
-  if(iostr->handler->write_byte || iostr->handler->write_bytes ||
-     iostr->handler->write_end)
-  iostr->mode |= RAPTOR_IOSTREAM_MODE_WRITE;
+  raptor_iostream_init_common(iostr);
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
@@ -238,6 +244,7 @@ raptor_new_iostream_to_filename(const char *filename)
 
   iostr->handler=&raptor_iostream_write_filename_handler;
   iostr->user_data=(void*)handle;
+  raptor_iostream_init_common(iostr);
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
@@ -285,6 +292,7 @@ raptor_new_iostream_to_file_handle(FILE *handle)
 
   iostr->handler=&raptor_iostream_write_file_handler;
   iostr->user_data=(void*)handle;
+  raptor_iostream_init_common(iostr);
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
     RAPTOR_FREE(raptor_iostream, iostr);
@@ -415,6 +423,7 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
   
   iostr->handler=&raptor_iostream_write_string_handler;
   iostr->user_data=(void*)con;
+  raptor_iostream_init_common(iostr);
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
     raptor_free_iostream(iostr);
@@ -506,6 +515,7 @@ raptor_new_iostream_from_filename(const char *filename)
 
   iostr->handler=&raptor_iostream_read_filename_handler;
   iostr->user_data=(void*)handle;
+  raptor_iostream_init_common(iostr);
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
