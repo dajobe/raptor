@@ -45,16 +45,16 @@
 #define RAPTOR_IOSTREAM_MODE_READ  1
 #define RAPTOR_IOSTREAM_MODE_WRITE 2
 
-#define RAPTOR_IOSTREAM_PRIVATE_FREE_HANDLER  1
+#define RAPTOR_IOSTREAM_FLAGS_EOF           1
+#define RAPTOR_IOSTREAM_FLAGS_FREE_HANDLER  2
 
 struct raptor_iostream_s
 {
   void *user_data;
   const raptor_iostream_handler2* handler;
   size_t bytes;
-  int ended;
   int mode;
-  int private;
+  int flags;
 };
 
 
@@ -138,7 +138,7 @@ raptor_new_iostream_from_handler(void *user_data,
   iostr=raptor_new_iostream_from_handler2(user_data, handler2);
   if(iostr) {
     /* Ensure newly alloced structure is freed on iostream destruction */
-    iostr->private=RAPTOR_IOSTREAM_PRIVATE_FREE_HANDLER;
+    iostr->flags |= RAPTOR_IOSTREAM_FLAGS_FREE_HANDLER;
   } else
     /* failure: so delete it now */
     RAPTOR_FREE(raptor_iostream_handler2, handler2);
@@ -541,13 +541,13 @@ raptor_new_iostream_from_filename(const char *filename)
 void
 raptor_free_iostream(raptor_iostream *iostr)
 {
-  if(!iostr->ended)
+  if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     raptor_iostream_write_end(iostr);
 
   if(iostr->handler->finish)
     iostr->handler->finish(iostr->user_data);
 
-  if((iostr->private & RAPTOR_IOSTREAM_PRIVATE_FREE_HANDLER))
+  if((iostr->flags & RAPTOR_IOSTREAM_FLAGS_FREE_HANDLER))
     RAPTOR_FREE(raptor_iostream_handler2, iostr->handler);
 
   RAPTOR_FREE(raptor_iostream, iostr);
@@ -570,7 +570,7 @@ raptor_iostream_write_byte(raptor_iostream *iostr,
 {
   iostr->bytes++;
 
-  if(iostr->ended)
+  if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     return 1;
   if(!iostr->handler->write_byte)
     return 1;
@@ -597,7 +597,7 @@ raptor_iostream_write_bytes(raptor_iostream *iostr,
 {
   iostr->bytes += (size*nmemb);
   
-  if(iostr->ended)
+  if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     return 1;
   if(!iostr->handler->write_bytes)
     return 0;
@@ -669,11 +669,11 @@ raptor_iostream_write_uri(raptor_iostream* iostr,raptor_uri* uri)
 void
 raptor_iostream_write_end(raptor_iostream *iostr)
 {
-  if(iostr->ended)
+  if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     return;
   if(iostr->handler->write_end)
     iostr->handler->write_end(iostr->user_data);
-  iostr->ended=1;
+  iostr->flags |= RAPTOR_IOSTREAM_FLAGS_EOF;
 }
 
 
@@ -812,7 +812,7 @@ raptor_iostream_format_hexadecimal(raptor_iostream* iostr,
  *
  * Read bytes to the iostream.
  *
- * Return value: number of objects read, 0 less than nmemb on EOF, <0 on failure
+ * Return value: number of objects read, 0 or less than nmemb on EOF, <0 on failure
  **/
 int
 raptor_iostream_read_bytes(raptor_iostream *iostr,
@@ -820,21 +820,22 @@ raptor_iostream_read_bytes(raptor_iostream *iostr,
 {
   int count;
   
-  if(iostr->ended)
-    return 1;
-
   if(!(iostr->mode & RAPTOR_IOSTREAM_MODE_READ))
-    return 1;
+    return -1;
+
+  if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
+    return 0;
 
   if(!iostr->handler->read_bytes)
     count= -1;
   else
     count=iostr->handler->read_bytes(iostr->user_data, ptr, size, nmemb);
 
-  if(count>0)
+  if(count > 0)
     iostr->bytes += (size*count);
-  else
-    iostr->ended=1;
+
+  if(count < (int)nmemb)
+    iostr->flags |= RAPTOR_IOSTREAM_FLAGS_EOF;
   
   return count;
 }
@@ -855,12 +856,12 @@ raptor_iostream_read_eof(raptor_iostream *iostr)
   if(!(iostr->mode & RAPTOR_IOSTREAM_MODE_READ))
     return 1;
   
-  if(!iostr->ended) {
-    if(iostr->handler->read_eof)
-      iostr->ended=iostr->handler->read_eof(iostr->user_data);
-  }
-  
-  return (iostr->ended != 0);
+  if(!(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF) &&
+     iostr->handler->read_eof &&
+     iostr->handler->read_eof(iostr->user_data))
+    iostr->flags |= RAPTOR_IOSTREAM_FLAGS_EOF;
+
+  return ((iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF) != 0);
 }
 
 
