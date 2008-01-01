@@ -109,13 +109,16 @@ raptor_iostream_check_handler(const raptor_iostream_handler2 const *handler2,
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_from_handler2(void *user_data, const raptor_iostream_handler2 const *handler2) {
+raptor_new_iostream_from_handler2(void *user_data,
+                                  const raptor_iostream_handler2 const *handler2)
+{
   raptor_iostream* iostr;
 
   if(!raptor_iostream_check_handler(handler2, 0))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+                                        sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
@@ -367,7 +370,8 @@ raptor_new_iostream_to_file_handle(FILE *handle)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+                                        sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
@@ -397,9 +401,12 @@ struct raptor_write_string_iostream_context {
 static void
 raptor_write_string_iostream_finish(void *user_data) 
 {
-  struct raptor_write_string_iostream_context* con=(struct raptor_write_string_iostream_context*)user_data;
-  size_t len=raptor_stringbuffer_length(con->sb);
+  struct raptor_write_string_iostream_context* con;
+  size_t len;
   void *str=NULL;
+
+  con=(struct raptor_write_string_iostream_context*)user_data;
+  len=raptor_stringbuffer_length(con->sb);
 
   *con->string_p=NULL;
   if(con->length_p)
@@ -425,8 +432,10 @@ raptor_write_string_iostream_finish(void *user_data)
 static int
 raptor_write_string_iostream_write_byte(void *user_data, const int byte)
 {
-  struct raptor_write_string_iostream_context* con=(struct raptor_write_string_iostream_context*)user_data;
+  struct raptor_write_string_iostream_context* con;
   unsigned char buf=(unsigned char)byte;
+
+  con=(struct raptor_write_string_iostream_context*)user_data;
   return raptor_stringbuffer_append_counted_string(con->sb, &buf, 1, 1);
 }
 
@@ -435,9 +444,11 @@ static int
 raptor_write_string_iostream_write_bytes(void *user_data, const void *ptr, 
                                          size_t size, size_t nmemb)
 {
-  struct raptor_write_string_iostream_context* con=(struct raptor_write_string_iostream_context*)user_data;
+  struct raptor_write_string_iostream_context* con;
 
-  return raptor_stringbuffer_append_counted_string(con->sb, (const unsigned char*)ptr, size * nmemb, 1);
+  con=(struct raptor_write_string_iostream_context*)user_data;
+  return raptor_stringbuffer_append_counted_string(con->sb, 
+                 (const unsigned char*)ptr, size * nmemb, 1);
 }
 
 static const raptor_iostream_handler2 raptor_iostream_write_string_handler={
@@ -478,7 +489,8 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+                                        sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
@@ -571,7 +583,8 @@ raptor_new_iostream_from_filename(const char *filename)
   if(!handle)
     return NULL;
   
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+                                        sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
@@ -624,7 +637,8 @@ raptor_new_iostream_from_file_handle(FILE *handle)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+                                        sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
@@ -821,11 +835,12 @@ raptor_iostream_write_stringbuffer(raptor_iostream* iostr,
     return 1;
   
   length=(int)raptor_stringbuffer_length(sb);
-  if(length)
-    return (raptor_iostream_write_bytes(iostr, 
-                                        raptor_stringbuffer_as_string(sb), 1, length)
-            != length);
-  else
+  if(length) {
+    int count=raptor_iostream_write_bytes(iostr,
+                                          raptor_stringbuffer_as_string(sb),
+                                          1, length);
+    return (count != length);
+  } else
     return 0;
 }
 
@@ -849,7 +864,7 @@ raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
   unsigned char *p;
   int i=integer;
   size_t length=1;
-  if(integer<0) {
+  if(integer < 0) {
     length++;
     i= -integer;
   }
@@ -858,13 +873,13 @@ raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
 
   p=buf+length-1;
   i=integer;
-  if(i<0)
+  if(i < 0)
     i= -i;
   do {
     *p-- ='0'+(i %10);
     i /= 10;
   } while(i);
-  if(integer<0)
+  if(integer < 0)
     *p= '-';
   
   return raptor_iostream_write_bytes(iostr, buf, 1, length);
@@ -902,7 +917,7 @@ raptor_iostream_format_hexadecimal(raptor_iostream* iostr,
   do {
     unsigned int digit=(integer & 15);
     *p-- =(digit < 10) ? '0'+digit : 'A'+(digit-10);
-    integer>>=4;
+    integer >>= 4;
   } while(integer);
   while(p >= buf)
     *p-- = '0';
@@ -990,7 +1005,9 @@ struct raptor_read_string_iostream_context {
 static void
 raptor_read_string_iostream_finish(void *user_data) 
 {
-  struct raptor_read_string_iostream_context* con=(struct raptor_read_string_iostream_context*)user_data;
+  struct raptor_read_string_iostream_context* con;
+
+  con=(struct raptor_read_string_iostream_context*)user_data;
   RAPTOR_FREE(raptor_read_string_iostream_context, con);
   return;
 }
@@ -999,13 +1016,14 @@ static int
 raptor_read_string_iostream_read_bytes(void *user_data, void *ptr, 
                                        size_t size, size_t nmemb)
 {
-  struct raptor_read_string_iostream_context* con=(struct raptor_read_string_iostream_context*)user_data;
+  struct raptor_read_string_iostream_context* con;
   size_t avail;
   size_t blen;
 
   if(!ptr || size <= 0 || !nmemb)
     return -1;
   
+  con=(struct raptor_read_string_iostream_context*)user_data;
   if(con->offset >= con->length)
     return 0;
 
@@ -1022,8 +1040,9 @@ raptor_read_string_iostream_read_bytes(void *user_data, void *ptr,
 static int
 raptor_read_string_iostream_read_eof(void *user_data)
 {
-  struct raptor_read_string_iostream_context* con=(struct raptor_read_string_iostream_context*)user_data;
+  struct raptor_read_string_iostream_context* con;
 
+  con=(struct raptor_read_string_iostream_context*)user_data;
   return (con->offset >= con->length);
 }
 
@@ -1063,7 +1082,8 @@ raptor_new_iostream_from_string(void *string, size_t length)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+                                        sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
