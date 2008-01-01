@@ -794,7 +794,7 @@ raptor_iostream_write_end(raptor_iostream *iostr)
  *
  * DEPRECATED: Use raptor_iostream_tell()
  *
- * Return value: number of bytes written or 0 if non written so far
+ * Return value: number of bytes written or 0 if none written so far
  **/
 size_t
 raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
