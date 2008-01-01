@@ -956,7 +956,8 @@ test_write_to_filename(const char* filename,
 {
   raptor_iostream *iostr=NULL;
   size_t count;
-
+  int rc=0;
+  
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Creating write iostream to filename '%s'\n", program,
           filename);
@@ -966,7 +967,8 @@ test_write_to_filename(const char* filename,
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create write iostream to filename '%s'\n",
             program, filename);
-    return(1);
+    rc=1;
+    goto tidy;
   }
 
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
@@ -976,13 +978,16 @@ test_write_to_filename(const char* filename,
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
             (int)count, expected_bytes_count);
-    return 1;
+    rc=1;
+    goto tidy;
   }
-    
-  raptor_free_iostream(iostr);
+
+  tidy:
+  if(iostr)
+    raptor_free_iostream(iostr);
   remove(OUT_FILENAME);
   
-  return 0;
+  return rc;
 }
 
 
@@ -1081,9 +1086,10 @@ test_write_to_string(const char* test_string, size_t test_string_len,
     fprintf(stderr, "%s: I/O write stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
     return 1;
   }
-  raptor_free_memory(string);
 
   tidy:
+  if(string)
+    raptor_free_memory(string);
   if(iostr)
     raptor_free_iostream(iostr);
   
@@ -1293,6 +1299,7 @@ main(int argc, char *argv[])
   
   program=raptor_basename(argv[0]);
 
+  /* Write tests */
   failures+= test_write_to_filename((const char*)OUT_FILENAME,
                          TEST_STRING, TEST_STRING_LEN, (int)OUT_BYTES_COUNT);
   failures+= test_write_to_file_handle((const char*)OUT_FILENAME,
