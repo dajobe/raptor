@@ -1363,15 +1363,30 @@ typedef int (*raptor_iostream_write_bytes_func) (void *context, const void *ptr,
 typedef void (*raptor_iostream_write_end_func) (void *context);
 
 /**
+ * raptor_iostream_read_bytes_func:
+ * @context: stream context data
+ * @ptr: pointer to buffer to read into
+ * @size: size of buffer
+ * @nmemb: number of items
+ *
+ * Handler function for implementing raptor_iostream_read_bytes().
+ *
+ * Return value: number of items read, 0 or < @size on EOF, <0 on failure
+ */
+typedef int (*raptor_iostream_read_bytes_func) (void *context, void *ptr, size_t size, size_t nmemb);
+
+/**
  * raptor_iostream_handler:
  * @init:  initialisation handler - optional, called at most once
  * @finish: finishing handler -  optional, called at most once
- * @write_byte: write byte handler - required
- * @write_bytes: write bytes handler - required
- * @write_end: write end handler - optional, called at most once
+ * @write_byte: write byte handler - required (for writing)
+ * @write_bytes: write bytes handler - required (for writing)
+ * @write_end: write end handler - optional (for writing), called at most once
+ * @read_bytes: read bytes handler - required (for reading)
  *
  * I/O stream implementation handler structure.
- * 
+ *
+ * DEPRECATED: Use #raptor_iostream_handler2
  */
 typedef struct {
   raptor_iostream_init_func         init;
@@ -1382,8 +1397,41 @@ typedef struct {
 } raptor_iostream_handler;
 
 
-RAPTOR_API
+/**
+ * raptor_iostream_handler2:
+ * @version: interface version.  Presently 1 or 2.
+ * @private: internal flags - do not set
+ * @init:  initialisation handler - optional, called at most once (V1)
+ * @finish: finishing handler -  optional, called at most once (V1)
+ * @write_byte: write byte handler - required (for writing) (V1)
+ * @write_bytes: write bytes handler - required (for writing) (V1)
+ * @write_end: write end handler - optional (for writing), called at most once (V1)
+ * @read_bytes: read bytes handler - required (for reading) (V2)
+ *
+ * I/O stream implementation handler structure.
+ * 
+ */
+typedef struct {
+  int version;
+
+  int private;
+  
+  /* V1 functions */
+  raptor_iostream_init_func         init;
+  raptor_iostream_finish_func       finish;
+  raptor_iostream_write_byte_func   write_byte;
+  raptor_iostream_write_bytes_func  write_bytes;
+  raptor_iostream_write_end_func    write_end;
+
+  /* V2 functions */
+  raptor_iostream_read_bytes_func   read_bytes;
+} raptor_iostream_handler2;
+
+
+RAPTOR_API RAPTOR_DEPRECATED
 raptor_iostream* raptor_new_iostream_from_handler(void *context, const raptor_iostream_handler *handler);
+RAPTOR_API
+raptor_iostream* raptor_new_iostream_from_handler2(void *context, const raptor_iostream_handler2 *handler2);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_sink(void);
 RAPTOR_API
@@ -1393,7 +1441,16 @@ raptor_iostream* raptor_new_iostream_to_file_handle(FILE *handle);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_string(void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
 RAPTOR_API
+raptor_iostream* raptor_new_iostream_from_sink(void);
+RAPTOR_API
+raptor_iostream* raptor_new_iostream_from_filename(const char *filename);
+RAPTOR_API
+raptor_iostream* raptor_new_iostream_from_file_handle(FILE *handle);
+RAPTOR_API
+raptor_iostream* raptor_new_iostream_from_string(void *string, size_t length);
+RAPTOR_API
 void raptor_free_iostream(raptor_iostream *iostr);
+
 RAPTOR_API
 int raptor_iostream_write_bytes(raptor_iostream *iostr, const void *ptr, size_t size, size_t nmemb);
 RAPTOR_API
@@ -1414,6 +1471,9 @@ RAPTOR_API
 int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor_stringbuffer *sb);
 RAPTOR_API
 int raptor_iostream_write_uri(raptor_iostream *iostr,  raptor_uri *uri);
+RAPTOR_API
+int raptor_iostream_read_bytes(raptor_iostream* iostr, void *ptr, size_t size, size_t nmemb);
+
 
 /* Parser and Serializer features */
 RAPTOR_API
