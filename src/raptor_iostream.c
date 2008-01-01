@@ -202,7 +202,14 @@ raptor_new_iostream_to_sink(void)
 }
 
 
-/* Local handlers for writing to a filename */
+/* Local handlers for reading/writing from a filename */
+
+static void
+raptor_filename_iostream_finish(void *user_data)
+{
+  FILE* handle=(FILE*)user_data;
+  fclose(handle);
+}
 
 static int
 raptor_filename_iostream_write_byte(void *user_data, const int byte)
@@ -226,11 +233,25 @@ raptor_filename_iostream_write_end(void *user_data)
   fclose(handle);
 }
 
+static int
+raptor_filename_iostream_read_bytes(void *user_data,
+                                    void *ptr, size_t size, size_t nmemb)
+{
+  FILE* handle=(FILE*)user_data;
+  return fread(ptr, size, nmemb, handle);
+}
+
+static int
+raptor_filename_iostream_read_eof(void *user_data)
+{
+  FILE* handle=(FILE*)user_data;
+  return feof(handle);
+}
 
 static const raptor_iostream_handler2 raptor_iostream_write_filename_handler={
   .version = 2,
   .init = NULL,
-  .finish = NULL,
+  .finish = raptor_filename_iostream_finish,
   .write_byte = raptor_filename_iostream_write_byte,
   .write_bytes = raptor_filename_iostream_write_bytes,
   .write_end = raptor_filename_iostream_write_end,
@@ -267,7 +288,7 @@ raptor_new_iostream_to_filename(const char *filename)
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
-    RAPTOR_FREE(raptor_iostream, iostr);
+    raptor_free_iostream(iostr);
     return NULL;
   }
   return iostr;
@@ -466,30 +487,6 @@ raptor_new_iostream_from_sink(void)
 }
 
 
-/* Local handlers for reading from a filename */
-
-static void
-raptor_filename_iostream_finish(void *user_data) 
-{
-  FILE* handle=(FILE*)user_data;
-  fclose(handle);
-}
-
-static int
-raptor_filename_iostream_read_bytes(void *user_data,
-                                    void *ptr, size_t size, size_t nmemb)
-{
-  FILE* handle=(FILE*)user_data;
-  return fread(ptr, size, nmemb, handle);
-}
-
-static int
-raptor_filename_iostream_read_eof(void *user_data)
-{
-  FILE* handle=(FILE*)user_data;
-  return feof(handle);
-}
-
 static const raptor_iostream_handler2 raptor_iostream_read_filename_handler={
   .version = 2,
   .init = NULL,
@@ -530,7 +527,7 @@ raptor_new_iostream_from_filename(const char *filename)
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
-    RAPTOR_FREE(raptor_iostream, iostr);
+    raptor_free_iostream(iostr);
     return NULL;
   }
   return iostr;
