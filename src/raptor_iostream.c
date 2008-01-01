@@ -148,31 +148,43 @@ raptor_new_iostream_from_handler(void *user_data,
 
 
 
-/* Local handlers for writing to a throw-away sink */
+/* Local handlers for reading/writing to/from a sink */
 
 static int
-raptor_write_sink_iostream_write_byte(void *user_data, const int byte)
+raptor_sink_iostream_write_byte(void *user_data, const int byte)
 {
   return 0;
 }
 
 static int
-raptor_write_sink_iostream_write_bytes(void *user_data, const void *ptr,
-                                       size_t size, size_t nmemb)
+raptor_sink_iostream_write_bytes(void *user_data, const void *ptr,
+                                 size_t size, size_t nmemb)
 {
   return 0;
 }
 
+static int
+raptor_sink_iostream_read_bytes(void *user_data, void *ptr,
+                                size_t size, size_t nmemb)
+{
+  return 0;
+}
 
-static const raptor_iostream_handler2 raptor_iostream_write_sink_handler={
+static int
+raptor_sink_iostream_read_eof(void *user_data)
+{
+  return 1; /* EOF always */
+}
+
+static const raptor_iostream_handler2 raptor_iostream_sink_handler={
   .version = 2,
   .init = NULL,
   .finish = NULL,
-  .write_byte = raptor_write_sink_iostream_write_byte,
-  .write_bytes = raptor_write_sink_iostream_write_bytes,
-  .write_end = NULL,
-  .read_bytes = NULL,
-  .read_eof = NULL
+  .write_byte  = raptor_sink_iostream_write_byte,
+  .write_bytes = raptor_sink_iostream_write_bytes,
+  .write_end   = NULL,
+  .read_bytes  = raptor_sink_iostream_read_bytes,
+  .read_eof    = raptor_sink_iostream_read_eof
 };
 
 
@@ -186,8 +198,7 @@ static const raptor_iostream_handler2 raptor_iostream_write_sink_handler={
 raptor_iostream*
 raptor_new_iostream_to_sink(void)
 {
-  return raptor_new_iostream_from_handler2(NULL, 
-                                           &raptor_iostream_write_sink_handler);
+  return raptor_new_iostream_from_handler2(NULL, &raptor_iostream_sink_handler);
 }
 
 
@@ -441,33 +452,6 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
 }
 
 
-/* Local handlers for reading from an empty sink */
-
-static int
-raptor_read_sink_iostream_read_bytes(void *user_data, void *ptr,
-                                     size_t size, size_t nmemb)
-{
-  return 0; /* EOF always */
-}
-
-static int
-raptor_read_sink_iostream_read_eof(void *user_data)
-{
-  return 1; /* EOF always */
-}
-
-static const raptor_iostream_handler2 raptor_iostream_from_sink_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = NULL,
-  .write_byte = NULL,
-  .write_bytes = NULL,
-  .write_end = NULL,
-  .read_bytes = raptor_read_sink_iostream_read_bytes,
-  .read_eof = raptor_read_sink_iostream_read_eof
-};
-
-
 /**
  * raptor_new_iostream_from_sink:
  *
@@ -478,8 +462,7 @@ static const raptor_iostream_handler2 raptor_iostream_from_sink_handler={
 raptor_iostream*
 raptor_new_iostream_from_sink(void)
 {
-  return raptor_new_iostream_from_handler2(NULL,
-                                           &raptor_iostream_from_sink_handler);
+  return raptor_new_iostream_from_handler2(NULL, &raptor_iostream_sink_handler);
 }
 
 
