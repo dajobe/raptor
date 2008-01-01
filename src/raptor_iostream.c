@@ -52,7 +52,7 @@ struct raptor_iostream_s
 {
   void *user_data;
   const raptor_iostream_handler2* handler;
-  size_t bytes;
+  unsigned long offset;
   int mode;
   int flags;
 };
@@ -615,7 +615,7 @@ int
 raptor_iostream_write_byte(raptor_iostream *iostr, 
                            const int byte)
 {
-  iostr->bytes++;
+  iostr->offset++;
 
   if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     return 1;
@@ -642,7 +642,7 @@ int
 raptor_iostream_write_bytes(raptor_iostream *iostr,
                             const void *ptr, size_t size, size_t nmemb)
 {
-  iostr->bytes += (size*nmemb);
+  iostr->offset += (size*nmemb);
   
   if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     return 1;
@@ -735,7 +735,7 @@ raptor_iostream_write_end(raptor_iostream *iostr)
 size_t
 raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
 {
-  return iostr->bytes;
+  return iostr->offset;
 }
 
 
@@ -746,6 +746,8 @@ raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
  *
  * Write a stringbuffer to an iostream.
  * 
+ * DEPRECATED: Use raptor_iostream_tell()
+ *
  * Return value: non-0 on failure
  **/
 int
@@ -879,7 +881,7 @@ raptor_iostream_read_bytes(raptor_iostream *iostr,
     count=iostr->handler->read_bytes(iostr->user_data, ptr, size, nmemb);
 
   if(count > 0)
-    iostr->bytes += (size*count);
+    iostr->offset += (size*count);
 
   if(count < (int)nmemb)
     iostr->flags |= RAPTOR_IOSTREAM_FLAGS_EOF;
@@ -1017,6 +1019,23 @@ raptor_new_iostream_from_string(void *string, size_t length)
   }
   return iostr;
 }
+
+
+/**
+ * raptor_iostream_tell:
+ * @iostr: raptor iostream
+ *
+ * Get the offset in the iostream.
+ *
+ * Return value: offset in iostream
+ **/
+unsigned long
+raptor_iostream_tell(raptor_iostream *iostr)
+{
+  return iostr->offset;
+}
+
+
 
 #endif
 
