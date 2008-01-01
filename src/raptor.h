@@ -2,7 +2,7 @@
  *
  * raptor.h - Redland Parser Toolkit for RDF (Raptor) interfaces and definition
  *
- * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -1376,6 +1376,16 @@ typedef void (*raptor_iostream_write_end_func) (void *context);
 typedef int (*raptor_iostream_read_bytes_func) (void *context, void *ptr, size_t size, size_t nmemb);
 
 /**
+ * raptor_iostream_read_eof_func:
+ * @context: stream context data
+ *
+ * Handler function for implementing raptor_iostream_read_eof().
+ *
+ * Return value: non-0 if EOF
+ */
+typedef int (*raptor_iostream_read_eof_func) (void *context);
+
+/**
  * raptor_iostream_handler:
  * @init:  initialisation handler - optional, called at most once
  * @finish: finishing handler -  optional, called at most once
@@ -1425,6 +1435,7 @@ typedef struct {
 
   /* V2 functions */
   raptor_iostream_read_bytes_func   read_bytes;
+  raptor_iostream_read_eof_func     read_eof;
 } raptor_iostream_handler2;
 
 
@@ -1473,7 +1484,8 @@ RAPTOR_API
 int raptor_iostream_write_uri(raptor_iostream *iostr,  raptor_uri *uri);
 RAPTOR_API
 int raptor_iostream_read_bytes(raptor_iostream* iostr, void *ptr, size_t size, size_t nmemb);
-
+RAPTOR_API
+int raptor_iostream_read_eof(raptor_iostream *iostr);
 
 /* Parser and Serializer features */
 RAPTOR_API
