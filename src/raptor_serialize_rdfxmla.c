@@ -622,7 +622,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;  
   raptor_qname *qname = NULL;    
-  raptor_xml_element *element;
+  raptor_xml_element *element=NULL;
   raptor_qname **attrs;
   unsigned char *attr_name;
   unsigned char *attr_value;
@@ -656,18 +656,26 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
       return 1;
     }
     
-  } else
+  } else {
     qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                        (unsigned const char*)"Description",  NULL);
-    
+    if(!qname)
+      goto oom;    
+  }
 
   if(serializer->base_uri)
     base_uri=raptor_uri_copy(serializer->base_uri);
   element = raptor_new_xml_element(qname, NULL, base_uri);
+  if(!element) {
+    if(base_uri)
+      raptor_free_uri(base_uri);
+    raptor_free_qname(qname);
+    goto oom;
+  }
     
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
   if(!attrs)
-    return 1;
+    goto oom;
     
   attr_name = NULL;
   attr_value = NULL;
@@ -700,6 +708,10 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     attr_name = (unsigned char*)"about";
     attr_value = (unsigned char *)RAPTOR_MALLOC(string,
                                                 raptor_rdf_namespace_uri_len + MAX_ASCII_INT_SIZE + 2);
+    if(!attr_value) {
+      RAPTOR_FREE(qnamearray, attrs);
+      goto oom;
+    }
     sprintf((char*)attr_value, "%s_%d", raptor_rdf_namespace_uri,
             subject->node->value.ordinal.ordinal);
   } 
@@ -712,6 +724,11 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     if(subject->node->type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
       RAPTOR_FREE(cstring, attr_value);
     
+    if(!attrs[0]) {
+      RAPTOR_FREE(qnamearray, attrs);
+      goto oom;  
+    }
+
     /* Note: if we were willing to track the in-scope rdf:lang, we
      * could do the "2.5 Property Attributes" abbreviation here */
     raptor_xml_element_set_attributes(element, attrs, 1);
@@ -728,6 +745,12 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   raptor_free_xml_element(element);
     
   return 0;
+
+  oom:
+  if(element)
+    raptor_free_xml_element(element);
+  raptor_serializer_error(serializer, "Out of memory");
+  return 1;
 }
 
 
