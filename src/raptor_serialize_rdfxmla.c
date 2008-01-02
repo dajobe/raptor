@@ -1270,22 +1270,24 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
 {
 
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  raptor_xml_writer* xml_writer;
-  
-  raptor_rdfxmla_ensure_writen_header(serializer, context);
-  
-  raptor_rdfxmla_emit(serializer);  
+  raptor_xml_writer* xml_writer=context->xml_writer;
 
-  xml_writer=context->xml_writer;
+  if(xml_writer) {
+    raptor_rdfxmla_ensure_writen_header(serializer, context);
 
-  raptor_xml_writer_end_element(xml_writer, context->rdf_RDF_element);
+    raptor_rdfxmla_emit(serializer);  
 
-  raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
-  
-  raptor_free_xml_element(context->rdf_RDF_element);
-  context->rdf_RDF_element=NULL;
+    raptor_xml_writer_end_element(xml_writer, context->rdf_RDF_element);
 
-  if(context->is_xmp)
+    raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
+  }
+
+  if(context->rdf_RDF_element) {
+    raptor_free_xml_element(context->rdf_RDF_element);
+    context->rdf_RDF_element=NULL;
+  }
+
+  if(context->is_xmp && xml_writer)
     raptor_xml_writer_raw(xml_writer, 
                           (const unsigned char*)"</x:xmpmeta>\n<?xpacket end='r'?>\n");
   
