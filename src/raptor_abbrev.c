@@ -766,13 +766,16 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
 
   c=*name; *name='\0';
   ns_uri=raptor_new_uri(uri_string);
+  if(!ns_uri)
+    return NULL;
+  
   *name=c;
   
   ns = raptor_namespaces_find_namespace_by_uri(nstack, ns_uri);
   if(!ns) {
     /* The namespace was not declared, so create one */
     unsigned char prefix[2 + MAX_ASCII_INT_SIZE + 1];
-	*namespace_count = *namespace_count + 1;
+      *namespace_count = *namespace_count + 1;
     sprintf((char *)prefix, "ns%d", *namespace_count);
 
     ns = raptor_new_namespace_from_uri(nstack, prefix, ns_uri, 0);
