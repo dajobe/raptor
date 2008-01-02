@@ -181,6 +181,11 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   if(serializer->feature_relative_uris)
     RAPTOR_FREE(cstring, attr_value);
 
+  if(!attrs[0]) {
+    RAPTOR_FREE(qnamearray, attrs);
+    return 1;
+  }
+
   raptor_xml_element_set_attributes(element, attrs, 1);
 
   raptor_xml_writer_start_element(xml_writer, element);
