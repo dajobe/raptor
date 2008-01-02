@@ -1318,7 +1318,7 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
     turtle_parser->scanner_set=0;
   }
 
-  if(turtle_parser->buffer_length)
+  if(turtle_parser->buffer)
     RAPTOR_FREE(cdata, turtle_parser->buffer);
 }
 
@@ -1391,7 +1391,6 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
                       const unsigned char *s, size_t len,
                       int is_end)
 {
-  char *buffer;
   char *ptr;
   raptor_turtle_parser *turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   
@@ -1400,15 +1399,14 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
 #endif
 
   if(len) {
-    buffer=(char*)RAPTOR_REALLOC(cstring, turtle_parser->buffer, turtle_parser->buffer_length + len + 1);
-    if(!buffer) {
+    turtle_parser->buffer=(char*)RAPTOR_REALLOC(cstring, turtle_parser->buffer, turtle_parser->buffer_length + len + 1);
+    if(!turtle_parser->buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
     }
-    turtle_parser->buffer=buffer;
 
     /* move pointer to end of cdata buffer */
-    ptr=buffer+turtle_parser->buffer_length;
+    ptr=turtle_parser->buffer+turtle_parser->buffer_length;
 
     /* adjust stored length */
     turtle_parser->buffer_length += len;
