@@ -538,6 +538,8 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
 
       qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                          uri_string, NULL);
+      if(!qname)
+        goto oom;
       
     } else {
       qname = raptor_new_qname_from_resource(context->namespaces,
@@ -555,6 +557,12 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
     if(serializer->base_uri)
       base_uri=raptor_uri_copy(serializer->base_uri);
     element = raptor_new_xml_element(qname, NULL, base_uri);
+    if(!element) {
+      if(base_uri)
+        raptor_free_uri(base_uri);
+      raptor_free_qname(qname);
+      goto oom;
+    }
 
     switch (object->type) {
       
@@ -590,6 +598,10 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   }
          
   return rv;
+
+  oom:
+  raptor_serializer_error(serializer, "Out of memory");
+  return 1;
 }
 
 
