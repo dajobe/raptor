@@ -585,8 +585,10 @@ raptor_new_iostream_from_filename(const char *filename)
   
   iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
                                         sizeof(raptor_iostream));
-  if(!iostr)
+  if(!iostr) {
+    fclose(handle);
     return NULL;
+  }
 
   iostr->handler=handler2;
   iostr->user_data=(void*)handle;
