@@ -234,27 +234,34 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
       return 1;
 
     if(node->value.literal.language) {
-      attrs[attrs_count++] = raptor_new_qname(context->nstack,
-                                              (unsigned char*)"xml:lang",
-                                              (unsigned char*)node->value.literal.language,
-                                              (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                              serializer);
+      attrs[attrs_count] = raptor_new_qname(context->nstack,
+                                            (unsigned char*)"xml:lang",
+                                            (unsigned char*)node->value.literal.language,
+                                            (raptor_simple_message_handler)raptor_serializer_simple_error,
+                                            serializer);
+      if(!attrs[attrs_count])
+        goto attrs_oom;
+      attrs_count++;
     }
 
     if(node->value.literal.datatype) {
       unsigned char *datatype_value;
       datatype_value = raptor_uri_as_string(node->value.literal.datatype);
-      attrs[attrs_count++] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"datatype",
-                                                                        datatype_value);
+      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"datatype",
+                                                                      datatype_value);
+      if(!attrs[attrs_count])
+        goto attrs_oom;
+      attrs_count++;
+
       /* SJS Note: raptor_default_uri_as_string simply returns a
        * pointer to the string. Hope this is also true of alternate
        * uri implementations. */
       /* RAPTOR_FREE(cstring, datatype_value); */
-          
+
     }
 
     raptor_xml_element_set_attributes(element, attrs, attrs_count);
-        
+
   }
       
   raptor_xml_writer_start_element(xml_writer, element);
@@ -264,6 +271,20 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
   RAPTOR_DEBUG2("Emitted %p\n", node);
   
   return 0;
+
+  attrs_oom:
+
+  raptor_serializer_error(serializer, "Out of memory");
+
+  /* attrs_count has not been incremented yet
+   * and it points to the qname the allocation of which failed */
+  attrs_count--;
+  while(attrs_count>=0)
+    raptor_free_qname(attrs[attrs_count--]);
+
+  RAPTOR_FREE(qnamearray, attrs);
+
+  return 1;
 }
 
 
