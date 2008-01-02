@@ -63,7 +63,7 @@ struct raptor_iostream_s
 
 
 static int
-raptor_iostream_calculate_modes(const raptor_iostream_handler2 const *handler2)
+raptor_iostream_calculate_modes(const raptor_iostream_handler2 * const handler2)
 {
   int mode = 0;
 
@@ -83,7 +83,7 @@ raptor_iostream_calculate_modes(const raptor_iostream_handler2 const *handler2)
 
 /* Return non-0 if handler is legal and OK for given mode (if not 0=ANY) */
 static int
-raptor_iostream_check_handler(const raptor_iostream_handler2 const *handler2,
+raptor_iostream_check_handler(const raptor_iostream_handler2 * const handler2,
                               unsigned int user_mode)
 {
   int mode;
@@ -110,7 +110,7 @@ raptor_iostream_check_handler(const raptor_iostream_handler2 const *handler2,
  **/
 raptor_iostream*
 raptor_new_iostream_from_handler2(void *user_data,
-                                  const raptor_iostream_handler2 const *handler2)
+                                  const raptor_iostream_handler2 * const handler2)
 {
   raptor_iostream* iostr;
 
