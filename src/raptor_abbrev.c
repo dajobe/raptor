@@ -85,6 +85,8 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
         case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
           string=(unsigned char*)RAPTOR_MALLOC(blank,
                                                strlen((char*)node_data)+1);
+          if(!string)
+            goto oom;
           strcpy((char*)string, (const char*) node_data);
           node->value.blank.string = string;
           break;
@@ -97,6 +99,8 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
         case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
           string = (unsigned char*)RAPTOR_MALLOC(literal,
                                                  strlen((char*)node_data)+1);
+          if(!string)
+            goto oom;
           strcpy((char*)string, (const char*)node_data);
           node->value.literal.string = string;
 
@@ -108,6 +112,10 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
             unsigned char *lang;
             lang=(unsigned char*)RAPTOR_MALLOC(language,
                                                strlen((const char*)language)+1);
+            if(!lang) {
+              RAPTOR_FREE(literal, string);
+              goto oom;
+            }
             strcpy((char*)lang, (const char*)language);
             node->value.literal.language = lang;
           }
@@ -121,6 +129,11 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
   }
 
   return node;
+
+  /* out of memory - clean up and return NULL */
+  oom:
+  RAPTOR_FREE(raptor_abbrev_node, node);
+  return NULL;
 }
 
 
