@@ -1055,10 +1055,18 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   qname=raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                    (const unsigned char*)"RDF",
                                                    NULL);
+  if(!qname)
+    goto oom;
   base_uri=serializer->base_uri;
   if(base_uri)
     base_uri=raptor_uri_copy(base_uri);
   context->rdf_RDF_element=raptor_new_xml_element(qname, NULL, base_uri);
+  if(!context->rdf_RDF_element) {
+    if(base_uri)
+      raptor_free_uri(base_uri);
+    raptor_free_qname(qname);
+    goto oom;
+  }
   
   /* NOTE: Starts at item 1 as item 0 is the element's namespace (rdf) 
    * and does not need to be declared
@@ -1073,6 +1081,8 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
     const unsigned char* base_uri_string;
 
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+    if(!attrs)
+      goto oom;
 
     base_uri_string=raptor_uri_as_string(base_uri);
     attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
@@ -1089,6 +1099,12 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   raptor_xml_writer_start_element(xml_writer, context->rdf_RDF_element);
   
   context->written_header=1;
+
+  return;
+
+  oom:
+  raptor_serializer_error(serializer, "Out of memory");
+  return;
 }
   
 
