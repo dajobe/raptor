@@ -371,7 +371,7 @@ raptor_abbrev_node_matches(raptor_abbrev_node* node,
  * @language: Literal language or NULL
  *
  * Return value: non-zero if @node matches the node described by the rest of
- *   the parameters.
+ *   the parameters or NULL on failure.
  */
 raptor_abbrev_node* 
 raptor_abbrev_node_lookup(raptor_avltree* nodes,
@@ -379,11 +379,16 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
                           const void *node_value, raptor_uri *datatype,
                           const unsigned char *language)
 {
+  raptor_abbrev_node *lookup_node;
+  raptor_abbrev_node *rv_node;
+
   /* Create a temporary node for search comparison. */
-  raptor_abbrev_node* lookup_node = raptor_new_abbrev_node(
-		  node_type, node_value, datatype, language);
+  lookup_node = raptor_new_abbrev_node(node_type, node_value, datatype, language);
   
-  raptor_abbrev_node* rv_node = raptor_avltree_search(nodes, lookup_node);
+  if(!lookup_node)
+    return NULL;
+
+  rv_node = raptor_avltree_search(nodes, lookup_node);
   
   /* If not found, insert/return a new one */
   if(!rv_node) {
@@ -391,7 +396,7 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
     if(raptor_avltree_add(nodes, lookup_node)) {
       /* Insert failed */
       raptor_free_abbrev_node(lookup_node);
-	  return NULL;
+      return NULL;
     } else {
       return lookup_node;
     }
