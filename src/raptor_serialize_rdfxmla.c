@@ -416,6 +416,12 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
     if(serializer->base_uri)
       base_uri=raptor_uri_copy(serializer->base_uri);
     element = raptor_new_xml_element(qname, NULL, base_uri);
+    if(!element) {
+      raptor_serializer_error(serializer, "Out of memory");
+      raptor_free_qname(qname);
+      rv=1; /* error */
+      break;
+    }
 
     switch (object->type) {
       
