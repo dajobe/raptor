@@ -1175,6 +1175,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     predicate = raptor_abbrev_node_lookup(context->nodes,
                                           statement->predicate_type,
                                           statement->predicate, NULL, NULL);
+    if(!predicate)
+      return 1;
 
     if(!subject->node_type && 
        raptor_abbrev_node_equals(predicate, context->rdf_type) &&
@@ -1188,6 +1190,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                                                      object_type,
                                                      statement->object, NULL,
                                                      NULL);
+      if(!subject->node_type)
+        return 1;
       subject->node_type->ref_count++;
       return 0;
     
@@ -1235,6 +1239,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       predicate = raptor_abbrev_node_lookup(context->nodes,
                                             statement->predicate_type,
                                             statement->predicate, NULL, NULL);
+      if(!predicate)
+        return 1;
       rv = raptor_abbrev_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,
