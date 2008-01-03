@@ -1107,7 +1107,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     rv = raptor_abbrev_subject_add_property(subject, predicate, object);
     if(rv) {
       raptor_serializer_error(serializer,
-          "Unable to add properties to subject 0x%p\n",
+          "Unable to add properties to subject %p\n",
           subject);
     }
   
@@ -1124,7 +1124,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
       rv = raptor_abbrev_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,
-                                "Unable to add properties to subject 0x%p\n",
+                                "Unable to add properties to subject %p\n",
                                 subject);
       }
     }
