@@ -1103,12 +1103,15 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     predicate = raptor_abbrev_node_lookup(context->nodes,
                                           statement->predicate_type,
                                           statement->predicate, NULL, NULL);
+    if(!predicate)
+      return 1;
 	      
     rv = raptor_abbrev_subject_add_property(subject, predicate, object);
     if(rv) {
       raptor_serializer_error(serializer,
           "Unable to add properties to subject %p\n",
           subject);
+      return rv;
     }
   
   } else if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
@@ -1121,17 +1124,16 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
       predicate = raptor_abbrev_node_lookup(context->nodes,
                                             statement->predicate_type,
                                             statement->predicate, NULL, NULL);
+      if(!predicate)
+        return 1;
       rv = raptor_abbrev_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,
                                 "Unable to add properties to subject %p\n",
                                 subject);
+        return rv;
       }
     }
-
-    if(rv != 0)
-      return rv;
-    
   } else {
     raptor_serializer_error(serializer,
                             "Do not know how to serialize node type %d\n",
@@ -1140,7 +1142,6 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   }
   
   return 0;
-
 }
 
 
