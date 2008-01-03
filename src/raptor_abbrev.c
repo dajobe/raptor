@@ -784,7 +784,12 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
      * stack.  It will be deleted in
      * raptor_rdfxmla_serialize_terminate
      */
-    raptor_sequence_push(namespaces, ns);
+    if(raptor_sequence_push(namespaces, ns)) {
+      /* namespaces sequence has no free handler so we have to free the ns ourselves on error */
+      raptor_free_namespace(ns);
+      raptor_free_uri(ns_uri);
+      return NULL;
+    }
   }
 
   qname = raptor_new_qname_from_namespace_local_name(ns, name,  NULL);
