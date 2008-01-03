@@ -1226,6 +1226,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
           raptor_serializer_error(serializer,
                                   "Unable to add properties to subject %p\n",
                                   subject);
+          return rv;
         }
       }
     }
@@ -1246,6 +1247,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
         raptor_serializer_error(serializer,
                                 "Unable to add properties to subject %p\n",
                                 subject);
+        return rv;
       }
     }
 
