@@ -1085,7 +1085,12 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
       goto oom;
 
     base_uri_string=raptor_uri_as_string(base_uri);
-    attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
+    attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
+    if(!attrs[attrs_count]) {
+      RAPTOR_FREE(qnamearray, attrs);
+      goto oom;
+    }
+    attrs_count++;
   }
 
   if(attrs_count)
