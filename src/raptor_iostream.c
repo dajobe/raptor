@@ -211,14 +211,14 @@ raptor_sink_iostream_read_eof(void *user_data)
 }
 
 static const raptor_iostream_handler2 raptor_iostream_sink_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = NULL,
-  .write_byte  = raptor_sink_iostream_write_byte,
-  .write_bytes = raptor_sink_iostream_write_bytes,
-  .write_end   = NULL,
-  .read_bytes  = raptor_sink_iostream_read_bytes,
-  .read_eof    = raptor_sink_iostream_read_eof
+  /* .version     = */ 2,
+  /* .init        = */ NULL,
+  /* .finish      = */ NULL,
+  /* .write_byte  = */ raptor_sink_iostream_write_byte,
+  /* .write_bytes = */ raptor_sink_iostream_write_bytes,
+  /* .write_end   = */ NULL,
+  /* .read_bytes  = */ raptor_sink_iostream_read_bytes,
+  /* .read_eof    = */ raptor_sink_iostream_read_eof
 };
 
 
@@ -283,14 +283,14 @@ raptor_filename_iostream_read_eof(void *user_data)
 }
 
 static const raptor_iostream_handler2 raptor_iostream_write_filename_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = raptor_filename_iostream_finish,
-  .write_byte = raptor_filename_iostream_write_byte,
-  .write_bytes = raptor_filename_iostream_write_bytes,
-  .write_end = raptor_filename_iostream_write_end,
-  .read_bytes = NULL,
-  .read_eof = NULL
+  /* .version     = */ 2,
+  /* .init        = */ NULL,
+  /* .finish      = */ raptor_filename_iostream_finish,
+  /* .write_byte  = */ raptor_filename_iostream_write_byte,
+  /* .write_bytes = */ raptor_filename_iostream_write_bytes,
+  /* .write_end   = */ raptor_filename_iostream_write_end,
+  /* .read_bytes  = */ NULL,
+  /* .read_eof    = */ NULL
 };
 
 
@@ -337,14 +337,14 @@ raptor_new_iostream_to_filename(const char *filename)
 
 
 static const raptor_iostream_handler2 raptor_iostream_write_file_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = NULL,
-  .write_byte = raptor_filename_iostream_write_byte,
-  .write_bytes = raptor_filename_iostream_write_bytes,
-  .write_end = NULL,
-  .read_bytes = NULL,
-  .read_eof = NULL
+  /* .version     = */ 2,
+  /* .init        = */ NULL,
+  /* .finish      = */ NULL,
+  /* .write_byte  = */ raptor_filename_iostream_write_byte,
+  /* .write_bytes = */ raptor_filename_iostream_write_bytes,
+  /* .write_end   = */ NULL,
+  /* .read_bytes  = */ NULL,
+  /* .read_eof    = */ NULL
 };
 
 
@@ -454,14 +454,14 @@ raptor_write_string_iostream_write_bytes(void *user_data, const void *ptr,
 }
 
 static const raptor_iostream_handler2 raptor_iostream_write_string_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = raptor_write_string_iostream_finish,
-  .write_byte = raptor_write_string_iostream_write_byte,
-  .write_bytes = raptor_write_string_iostream_write_bytes,
-  .write_end = NULL,
-  .read_bytes = NULL,
-  .read_eof = NULL
+  /* .version     = */ 2,
+  /* .init        = */ NULL,
+  /* .finish      = */ raptor_write_string_iostream_finish,
+  /* .write_byte  = */ raptor_write_string_iostream_write_byte,
+  /* .write_bytes = */ raptor_write_string_iostream_write_bytes,
+  /* .write_end   = */ NULL,
+  /* .read_bytes  = */ NULL,
+  /* .read_eof    = */ NULL
 };
 
 
@@ -548,14 +548,14 @@ raptor_new_iostream_from_sink(void)
 
 
 static const raptor_iostream_handler2 raptor_iostream_read_filename_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = raptor_filename_iostream_finish,
-  .write_byte = NULL,
-  .write_bytes = NULL,
-  .write_end = NULL,
-  .read_bytes = raptor_filename_iostream_read_bytes,
-  .read_eof = raptor_filename_iostream_read_eof
+  /* .version     = */ 2,
+  /* .init        = */ NULL,
+  /* .finish      = */ raptor_filename_iostream_finish,
+  /* .write_byte  = */ NULL,
+  /* .write_bytes = */ NULL,
+  /* .write_end   = */ NULL,
+  /* .read_bytes  = */ raptor_filename_iostream_read_bytes,
+  /* .read_eof    = */ raptor_filename_iostream_read_eof
 };
 
 
@@ -606,14 +606,14 @@ raptor_new_iostream_from_filename(const char *filename)
 
 
 static const raptor_iostream_handler2 raptor_iostream_read_file_handle_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = NULL,
-  .write_byte = NULL,
-  .write_bytes = NULL,
-  .write_end = NULL,
-  .read_bytes = raptor_filename_iostream_read_bytes,
-  .read_eof = raptor_filename_iostream_read_eof
+  /* .version     = */ 2,
+  /* .init        = */ NULL,
+  /* .finish      = */ NULL,
+  /* .write_byte  = */ NULL,
+  /* .write_bytes = */ NULL,
+  /* .write_end   = */ NULL,
+  /* .read_bytes  = */ raptor_filename_iostream_read_bytes,
+  /* .read_eof    = */ raptor_filename_iostream_read_eof
 };
 
 
@@ -1052,14 +1052,14 @@ raptor_read_string_iostream_read_eof(void *user_data)
 
 
 static const raptor_iostream_handler2 raptor_iostream_read_string_handler={
-  .version = 2,
-  .init = NULL,
-  .finish = raptor_read_string_iostream_finish,
-  .write_byte = NULL,
-  .write_bytes = NULL,
-  .write_end = NULL,
-  .read_bytes = raptor_read_string_iostream_read_bytes,
-  .read_eof = raptor_read_string_iostream_read_eof
+  /* .version     = */ 2,
+  /* .init        = */ NULL,
+  /* .finish      = */ raptor_read_string_iostream_finish,
+  /* .write_byte  = */ NULL,
+  /* .write_bytes = */ NULL,
+  /* .write_end   = */ NULL,
+  /* .read_bytes  = */ raptor_read_string_iostream_read_bytes,
+  /* .read_eof    = */ raptor_read_string_iostream_read_eof
 };
 
 
