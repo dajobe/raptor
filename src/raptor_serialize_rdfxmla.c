@@ -1255,10 +1255,6 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
         return rv;
       }
     }
-
-    if(rv != 0)
-      return rv;
-    
   } else {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with predicate node type %d\n",
