@@ -1033,7 +1033,7 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
 }
 
 
-static void
+static int
 raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
                                     raptor_rdfxmla_context* context) 
 {
@@ -1045,7 +1045,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   int attrs_count=0;
 
   if(context->written_header)
-    return;
+    return 0; /* already succeeded */
   
   xml_writer=context->xml_writer;
   if(context->is_xmp)
@@ -1100,11 +1100,11 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   
   context->written_header=1;
 
-  return;
+  return 0;
 
   oom:
   raptor_serializer_error(serializer, "Out of memory");
-  return;
+  return 1;
 }
   
 
@@ -1273,13 +1273,15 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
   raptor_xml_writer* xml_writer=context->xml_writer;
 
   if(xml_writer) {
-    raptor_rdfxmla_ensure_writen_header(serializer, context);
+    if(!raptor_rdfxmla_ensure_writen_header(serializer, context)) {
 
-    raptor_rdfxmla_emit(serializer);  
+      raptor_rdfxmla_emit(serializer);  
 
-    raptor_xml_writer_end_element(xml_writer, context->rdf_RDF_element);
+      /* ensure_writen_header() returned success, can assume context->rdf_RDF_element is non-NULL */
+      raptor_xml_writer_end_element(xml_writer, context->rdf_RDF_element);
 
-    raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
+      raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"\n", 1);
+    }
   }
 
   if(context->rdf_RDF_element) {
