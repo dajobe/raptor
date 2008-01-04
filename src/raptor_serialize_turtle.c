@@ -1024,6 +1024,9 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
   if(context->written_header)
     return;
   
+  if(!context->turtle_writer)
+    return;
+
   for(i=0; i< raptor_sequence_size(context->namespaces); i++) {
     raptor_namespace* ns;
     ns=(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
