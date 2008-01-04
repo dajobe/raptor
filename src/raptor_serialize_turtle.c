@@ -829,7 +829,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   if(!context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||
      !context->rdf_xml_literal_uri || !context->rdf_first_uri ||
-     !context->rdf_rest_uri || !context->rdf_nil_uri)
+     !context->rdf_rest_uri || !context->rdf_nil_uri || !context->rdf_type)
   {
     raptor_turtle_serialize_terminate(serializer);
     return 1;
