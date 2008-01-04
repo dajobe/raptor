@@ -1137,6 +1137,8 @@ RAPTOR_API
 const unsigned char* raptor_qname_get_local_name(raptor_qname* name);
 RAPTOR_API
 const unsigned char* raptor_qname_get_value(raptor_qname* name);
+RAPTOR_API
+const unsigned char* raptor_qname_get_counted_value(raptor_qname* name, size_t* length_p);
 
 /* raptor_namespace_stack - stack of XML namespaces */
 RAPTOR_API

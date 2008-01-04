@@ -551,3 +551,20 @@ raptor_qname_get_value(raptor_qname* name)
 {
   return name->value;
 }
+
+/**
+ * raptor_qname_get_counted_value:
+ * @name: #raptor_qname object
+ * @length_p: pointer to variable to store length of name (or NULL)
+ * 
+ * Get the #raptor_value of an XML QName.
+ * 
+ * Return value: the value
+ **/
+const unsigned char*
+raptor_qname_get_counted_value(raptor_qname* name, size_t* length_p)
+{
+  if(length_p)
+    *length_p=name->value_length;
+  return name->value;
+}
