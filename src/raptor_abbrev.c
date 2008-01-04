@@ -492,14 +492,17 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
                                    raptor_abbrev_node* object) 
 {
   int err;
-  
+
+  predicate->ref_count++;
+  object->ref_count++;
+
   err = raptor_sequence_push(subject->properties, predicate);
   if(err) {
     /* predicate was already deleted by raptor_sequence on error */
     raptor_free_abbrev_node(object);
     return err;
   }
-  
+
   err = raptor_sequence_push(subject->properties, object);
   if(err) {
     /* pop and delete predicate */
@@ -508,10 +511,7 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
     /* object was already deleted by raptor_sequence on error */
     return err;
   }
-  
-  predicate->ref_count++;
-  object->ref_count++;
-  
+
   return 0;
 }
 
