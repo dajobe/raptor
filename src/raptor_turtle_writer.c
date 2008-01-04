@@ -419,8 +419,13 @@ int
 raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
                             const unsigned char *s)
 {
-  raptor_stringbuffer* sb = raptor_new_stringbuffer();
+  raptor_stringbuffer* sb;
+
   if(!s)
+    return 1;
+
+  sb = raptor_new_stringbuffer();
+  if(!sb)
     return 1;
 
   if(raptor_turtle_writer_contains_newline(s)) {
