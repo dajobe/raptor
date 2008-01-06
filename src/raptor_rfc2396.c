@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_rfc2396.c - Raptor URI resolving from RFC2396
+ * raptor_rfc2396.c - Raptor URI resolving from RFC2396 and RFC3986
  *
- * Copyright (C) 2004-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -531,6 +531,21 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
 
   resolve_end:
   
+  /* RFC3986 Appendix C.2 / 5.4.2 Abnormal Examples
+   * Remove leading /../ and /./ 
+   */
+  for(p=result.path; p; ) {
+    if(!strncmp(p, "/../", 4)) {
+      result.path_len -= 3;
+      memcpy(p, p+3, result.path_len+1);
+    } else if(!strncmp(p, "/./", 3)) {
+      result.path_len -= 2;
+      memcpy(p, p+2, result.path_len+1);
+    } else
+      break;
+  }
+  
+
   if(ref->query) {
     result.query=ref->query;
     result.query_len=ref->query_len;
@@ -652,6 +667,7 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Using base URI '%s'\n", program, base_uri);
 
   /* Tests from RFC2396 Appendix C
+   * and RFC3986 Section 5
    *
    * Modifications:
    *  - add 'path' when items are path components to make easier to read
@@ -659,7 +675,7 @@ main(int argc, char *argv[])
    *  - results are against the base_uri above
    */
 
-  /* Appendix C.1 Normal Examples */
+  /* Appendix C.1 / 5.4.1 Normal Examples */
   failures += check_resolve(base_uri, "g:h", "g:h");
   failures += check_resolve(base_uri, "gpath", "http://example.org/bpath/cpath/gpath");
   failures += check_resolve(base_uri, "./gpath", "http://example.org/bpath/cpath/gpath");
@@ -684,14 +700,14 @@ main(int argc, char *argv[])
   failures += check_resolve(base_uri, "../../gpath", "http://example.org/gpath");
 
 
-  /* Appendix C.2 Abnormal Examples */
-  failures += check_resolve(base_uri, "", "http://example.org/bpath/cpath/d;p?querystr");
+  /* Appendix C.2 / 5.4.2 Abnormal Examples */
+  failures += check_resolve(base_uri, "", "http://example.org/bpath/cpath/d;p?querystr"); /* This is a Normal Example in RFC 3986 */
 
-  failures += check_resolve(base_uri, "../../../gpath", "http://example.org/../gpath");
-  failures += check_resolve(base_uri, "../../../../gpath", "http://example.org/../../gpath");
+  failures += check_resolve(base_uri, "../../../gpath", "http://example.org/gpath"); /* RFC 3986 changed the answer here */
+  failures += check_resolve(base_uri, "../../../../gpath", "http://example.org/gpath"); /* RFC 3986 changed the answer here */
 
-  failures += check_resolve(base_uri, "/./gpath", "http://example.org/./gpath");
-  failures += check_resolve(base_uri, "/../gpath", "http://example.org/../gpath");
+  failures += check_resolve(base_uri, "/./gpath", "http://example.org/gpath"); /* RFC 3986 changed the answer here */
+  failures += check_resolve(base_uri, "/../gpath", "http://example.org/gpath"); /* RFC 3986 changed the answer here */
   failures += check_resolve(base_uri, "gpath.", "http://example.org/bpath/cpath/gpath.");
   failures += check_resolve(base_uri, ".gpath", "http://example.org/bpath/cpath/.gpath");
   failures += check_resolve(base_uri, "gpath..", "http://example.org/bpath/cpath/gpath..");
@@ -709,6 +725,10 @@ main(int argc, char *argv[])
   failures += check_resolve(base_uri, "gpath#s/./x", "http://example.org/bpath/cpath/gpath#s/./x");
   failures += check_resolve(base_uri, "gpath#s/../x", "http://example.org/bpath/cpath/gpath#s/../x");
 
+  /* RFC 3986 makes this the strict answer but also allows
+   *   http://example.org/bpath/cpath/gauthority
+   * for backward compatibility
+   */
   failures += check_resolve(base_uri, "http:gauthority", "http:gauthority");
 
 
@@ -729,8 +749,11 @@ main(int argc, char *argv[])
   /* RDF xml:base check that fragments and query strings are removed */
   failures += check_resolve(base_uri, "gpath/../../../hpath", "http://example.org/hpath");
 
-  /* RDF xml:base check that extra ../ are not lost */
-  failures += check_resolve("http://example.org/dir/file", "../../../absfile", "http://example.org/../../absfile");
+  /* RFC3986 changed the answer to this test
+   *    Was "RDF xml:base check that extra ../ are not lost"
+   *    with answer "http://example.org/../../../absfile"
+   */
+  failures += check_resolve("http://example.org/dir/file", "../../../absfile", "http://example.org/absfile");
 
   /* RDF xml:base check that an absolute URI replaces */
   failures += check_resolve("http://example.org/dir/file", "http://another.example.org/dir2/file2", "http://another.example.org/dir2/file2");
