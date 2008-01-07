@@ -535,10 +535,10 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
    * Remove leading /../ and /./ 
    */
   for(p=result.path; p; ) {
-    if(!strncmp(p, "/../", 4)) {
+    if(!strncmp((const char *)p, "/../", 4)) {
       result.path_len -= 3;
       memcpy(p, p+3, result.path_len+1);
-    } else if(!strncmp(p, "/./", 3)) {
+    } else if(!strncmp((const char *)p, "/./", 3)) {
       result.path_len -= 2;
       memcpy(p, p+2, result.path_len+1);
     } else
