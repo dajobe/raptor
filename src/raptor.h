@@ -1605,25 +1605,41 @@ typedef struct {
   raptor_message_handler handlers[RAPTOR_LOG_LEVEL_LAST+1];
 } raptor_error_handlers;
 
+RAPTOR_API
 void raptor_error_handlers_init(raptor_error_handlers* error_handlers, void *fatal_error_user_data, raptor_message_handler fatal_error_handler, void *error_user_data, raptor_message_handler error_handler, void *warning_user_data, raptor_message_handler warning_handler, raptor_locator* locator);
 
 
 /* SAX2 API */
+RAPTOR_API
 raptor_sax2* raptor_new_sax2(void *user_data, raptor_error_handlers* error_handlers);
+RAPTOR_API
 void raptor_free_sax2(raptor_sax2 *sax2);
 
+RAPTOR_API
 void raptor_sax2_set_start_element_handler(raptor_sax2* sax2, raptor_sax2_start_element_handler handler);
+RAPTOR_API
 void raptor_sax2_set_end_element_handler(raptor_sax2* sax2, raptor_sax2_end_element_handler handler);
+RAPTOR_API
 void raptor_sax2_set_characters_handler(raptor_sax2* sax2, raptor_sax2_characters_handler handler);
+RAPTOR_API
 void raptor_sax2_set_cdata_handler(raptor_sax2* sax2, raptor_sax2_cdata_handler handler);
+RAPTOR_API
 void raptor_sax2_set_comment_handler(raptor_sax2* sax2, raptor_sax2_comment_handler handler);
+RAPTOR_API
 void raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler);
+RAPTOR_API
 void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler);
+RAPTOR_API
 void raptor_sax2_set_namespace_handler(raptor_sax2* sax2, raptor_namespace_handler handler);
+RAPTOR_API
 void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
+RAPTOR_API
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
+RAPTOR_API
 void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
+RAPTOR_API
 const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2* sax2);
+RAPTOR_API
 raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
 
 #ifdef __cplusplus
