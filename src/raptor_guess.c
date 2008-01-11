@@ -211,10 +211,10 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
 }
 
 
-void
+int
 raptor_init_parser_guess(void)
 {
-  raptor_parser_register_factory("guess",  
-                                 "Pick the parser to use using content type and URI",
-                                 &raptor_guess_parser_register_factory);
+  return !raptor_parser_register_factory("guess",  
+                                         "Pick the parser to use using content type and URI",
+                                         &raptor_guess_parser_register_factory);
 }

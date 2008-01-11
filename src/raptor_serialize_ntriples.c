@@ -306,13 +306,13 @@ raptor_ntriples_serializer_register_factory(raptor_serializer_factory *factory)
 }
 
 
-void
+int
 raptor_init_serializer_ntriples (void) {
-  raptor_serializer_register_factory("ntriples",  "N-Triples", 
-                                     "text/plain",
-                                     NULL,
-                                     (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples",
-                                     &raptor_ntriples_serializer_register_factory);
+  return raptor_serializer_register_factory("ntriples",  "N-Triples", 
+                                            "text/plain",
+                                            NULL,
+                                            (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples",
+                                            &raptor_ntriples_serializer_register_factory);
 }
 
 

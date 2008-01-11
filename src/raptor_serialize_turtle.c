@@ -1186,13 +1186,13 @@ raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
 }
 
 
-void
+int
 raptor_init_serializer_turtle(void)
 {
-  raptor_serializer_register_factory("turtle", "Turtle", 
-                                     "application/x-turtle",
-                                     NULL,
-                                     (const unsigned char*)"http://www.dajobe.org/2004/01/turtle",
-                                     &raptor_turtle_serializer_register_factory);
+  return raptor_serializer_register_factory("turtle", "Turtle", 
+                                            "application/x-turtle",
+                                            NULL,
+                                            (const unsigned char*)"http://www.dajobe.org/2004/01/turtle",
+                                            &raptor_turtle_serializer_register_factory);
 }
 

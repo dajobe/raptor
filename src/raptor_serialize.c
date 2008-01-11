@@ -82,9 +82,11 @@ raptor_free_serializer_factory(raptor_serializer_factory* factory)
 
 /* class methods */
 
-void
+int
 raptor_serializers_init(void)
 {
+  int rc=0;
+
   serializers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_serializer_factory, NULL);
   if(!serializers) {
     raptor_finish();
@@ -94,32 +96,34 @@ raptor_serializers_init(void)
   /* raptor_init_serializer_simple(); */
 
 #ifdef RAPTOR_SERIALIZER_NTRIPLES
-  raptor_init_serializer_ntriples();
+  rc+= raptor_init_serializer_ntriples() != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_TURTLE
-  raptor_init_serializer_turtle();
+  rc+= raptor_init_serializer_turtle() != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
-  raptor_init_serializer_rdfxmla();
+  rc+= raptor_init_serializer_rdfxmla() != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_RDFXML
-  raptor_init_serializer_rdfxml();
+  rc+= raptor_init_serializer_rdfxml() != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_RSS_1_0
-  raptor_init_serializer_rss10();
+  rc+= raptor_init_serializer_rss10() != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_ATOM
-  raptor_init_serializer_atom();
+  rc+= raptor_init_serializer_atom() != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_DOT
-  raptor_init_serializer_dot();
+  rc+= raptor_init_serializer_dot() != 0;
 #endif
+
+  return rc;
 }
 
 
@@ -146,8 +150,9 @@ raptor_serializers_finish(void)
  * 
  * INTERNAL
  *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_serializer_register_factory(const char *name, const char *label,
                                    const char *mime_type,
                                    const char *alias,
@@ -172,7 +177,7 @@ raptor_serializer_register_factory(const char *name, const char *label,
       i++) {
     if(!strcmp(serializer->name, name)) {
       RAPTOR_FATAL2("serializer %s already registered\n", name);
-      return;
+      return 1;
     }
   }
   
@@ -228,7 +233,7 @@ raptor_serializer_register_factory(const char *name, const char *label,
   RAPTOR_DEBUG3("%s has context size %d\n", name, serializer->context_length);
 #endif
 
-  return;
+  return 0;
 
   /* Clean up on failure */
   fail:
@@ -236,6 +241,7 @@ raptor_serializer_register_factory(const char *name, const char *label,
   fail_noserializer:
   raptor_finish();
   RAPTOR_FATAL1("Out of memory\n");
+  return 1;
 }
 
 

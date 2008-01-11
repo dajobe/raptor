@@ -1368,11 +1368,11 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
 }
 
 
-void
+int
 raptor_init_parser_n3(void)
 {
-  raptor_parser_register_factory("n3",  "Notation 3",
-                                 &raptor_n3_parser_register_factory);
+  return !raptor_parser_register_factory("n3",  "Notation 3",
+                                         &raptor_n3_parser_register_factory);
 }
 
 

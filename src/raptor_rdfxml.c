@@ -3126,11 +3126,11 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
 }
 
 
-void
+int
 raptor_init_parser_rdfxml(void)
 {
-  raptor_parser_register_factory("rdfxml", "RDF/XML",
-                                 &raptor_rdfxml_parser_register_factory);
+  return !raptor_parser_register_factory("rdfxml", "RDF/XML",
+                                         &raptor_rdfxml_parser_register_factory);
 }
 
 

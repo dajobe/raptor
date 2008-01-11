@@ -1930,7 +1930,7 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
 
 static xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
 
-void
+int
 raptor_init_parser_grddl_common(void)
 {
 #ifdef HAVE_XSLTINIT
@@ -1959,15 +1959,16 @@ raptor_init_parser_grddl_common(void)
   xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_WRITE_NETWORK,
                        xsltSecurityForbid);
 
+  return 0;
 }
 
 
-void
+int
 raptor_init_parser_grddl(void)
 {
-  raptor_parser_register_factory("grddl", 
-                                 "Gleaning Resource Descriptions from Dialects of Languages",
-                                 &raptor_grddl_parser_register_factory);
+  return !raptor_parser_register_factory("grddl", 
+                                         "Gleaning Resource Descriptions from Dialects of Languages",
+                                         &raptor_grddl_parser_register_factory);
 }
 
 

@@ -981,10 +981,11 @@ static const raptor_uri_handler raptor_uri_default_handler = {
 };
 
 
-void
+int
 raptor_uri_init(void)
 {
   raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
+  return 0;
 }
 
 

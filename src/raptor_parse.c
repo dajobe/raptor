@@ -87,9 +87,11 @@ raptor_free_parser_factory(raptor_parser_factory* factory)
 
 /* class methods */
 
-void
+int
 raptor_parsers_init(void)
 {
+  int rc=0;
+
   parsers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
   if(!parsers) {
     raptor_finish();
@@ -97,41 +99,43 @@ raptor_parsers_init(void)
   }
   
 #ifdef RAPTOR_PARSER_RDFXML
-  raptor_init_parser_rdfxml();
+  rc+= raptor_init_parser_rdfxml() != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_NTRIPLES
-  raptor_init_parser_ntriples();
+  rc+= raptor_init_parser_ntriples() != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_N3
-  raptor_init_parser_n3();
+  rc+= raptor_init_parser_n3() != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_TURTLE
-  raptor_init_parser_turtle();
+  rc+= raptor_init_parser_turtle() != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_TRIG
-  raptor_init_parser_trig();
+  rc+= raptor_init_parser_trig() != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_RSS
-  raptor_init_parser_rss();
+  rc+= raptor_init_parser_rss() != 0;
 #endif
 
 #if defined(RAPTOR_PARSER_GRDDL)
-  raptor_init_parser_grddl_common();
+  rc+= raptor_init_parser_grddl_common() != 0;
 
 #ifdef RAPTOR_PARSER_GRDDL
-  raptor_init_parser_grddl();
+  rc+= raptor_init_parser_grddl() != 0;
 #endif
 
 #endif
 
 #ifdef RAPTOR_PARSER_GUESS
-  raptor_init_parser_guess();
+  rc+= raptor_init_parser_guess() != 0;
 #endif
+
+  return rc;
 }
 
 

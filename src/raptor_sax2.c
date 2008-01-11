@@ -52,12 +52,13 @@
 #undef RAPTOR_DEBUG_CDATA
 
 
-void
+int
 raptor_sax2_init(void)
 {
 #ifdef RAPTOR_XML_LIBXML
   xmlInitParser();
 #endif
+  return 0;
 }
 
 

@@ -1611,20 +1611,20 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
 
 
 #ifdef RAPTOR_PARSER_TURTLE
-void
+int
 raptor_init_parser_turtle(void)
 {
-  raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
-                                 &raptor_turtle_parser_register_factory);
+  return !raptor_parser_register_factory("turtle", "Turtle Terse RDF Triple Language",
+                                         &raptor_turtle_parser_register_factory);
 }
 #endif
 
 #ifdef RAPTOR_PARSER_TRIG
-void
+int
 raptor_init_parser_trig(void)
 {
-  raptor_parser_register_factory("trig", "TriG - Turtle with Named Graphs",
-                                 &raptor_trig_parser_register_factory);
+  return !raptor_parser_register_factory("trig", "TriG - Turtle with Named Graphs",
+                                         &raptor_trig_parser_register_factory);
 }
 #endif
 

@@ -120,14 +120,25 @@ raptor_init(void)
 
   raptor_initialised=1;
 
-  raptor_sax2_init();
+  if(raptor_sax2_init())
+    goto failure;
 
-  raptor_parsers_init();
+  if(raptor_parsers_init())
+    goto failure;
   
-  raptor_serializers_init();
+  if(raptor_serializers_init())
+    goto failure;
 
-  raptor_uri_init();
-  raptor_www_init();
+  if(raptor_uri_init())
+    goto failure;
+
+  raptor_www_init(); /* raptor_www_init() is part of raptor API, prototype not changed yet to return an error code */
+
+  return;
+
+  failure:
+  raptor_finish();
+  RAPTOR_FATAL1("raptor_init() failed");
 }
 
 

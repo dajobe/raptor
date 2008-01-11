@@ -753,13 +753,13 @@ raptor_rdfxml_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 
-void
+int
 raptor_init_serializer_rdfxml(void) {
-  raptor_serializer_register_factory("rdfxml", "RDF/XML",
-                                     "application/rdf+xml",
-                                     NULL,
-                                     (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
-                                     &raptor_rdfxml_serializer_register_factory);
+  return raptor_serializer_register_factory("rdfxml", "RDF/XML",
+                                            "application/rdf+xml",
+                                            NULL,
+                                            (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
+                                            &raptor_rdfxml_serializer_register_factory);
 }
 
 

@@ -1032,21 +1032,21 @@ raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 
-void
+int
 raptor_init_serializer_rss10(void) {
-  raptor_serializer_register_factory("rss-1.0",  "RSS 1.0",
-                                     NULL, 
-                                     NULL,
-                                     (const unsigned char*)"http://purl.org/rss/1.0/spec",
-                                     &raptor_rss10_serializer_register_factory);
+  return raptor_serializer_register_factory("rss-1.0",  "RSS 1.0",
+                                            NULL, 
+                                            NULL,
+                                            (const unsigned char*)"http://purl.org/rss/1.0/spec",
+                                            &raptor_rss10_serializer_register_factory);
 }
 
-void
+int
 raptor_init_serializer_atom(void) {
-  raptor_serializer_register_factory("atom",  "Atom 1.0",
-                                     "application/atom+xml", 
-                                     NULL,
-                                     NULL,
-                                     &raptor_rss10_serializer_register_factory);
+  return raptor_serializer_register_factory("atom",  "Atom 1.0",
+                                            "application/atom+xml", 
+                                            NULL,
+                                            NULL,
+                                            &raptor_rss10_serializer_register_factory);
 }
 
