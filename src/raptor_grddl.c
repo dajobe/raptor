@@ -1909,9 +1909,11 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
 
 
 
-static void
+static int
 raptor_grddl_parser_register_factory(raptor_parser_factory *factory) 
 {
+  int rc=0;
+
   factory->context_length     = sizeof(raptor_grddl_parser_context);
   
   factory->need_base_uri = 1;
@@ -1923,8 +1925,10 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
   factory->recognise_syntax = raptor_grddl_parse_recognise_syntax;
   factory->content_type_handler= raptor_grddl_parse_content_type_handler;
 
-  raptor_parser_factory_add_mime_type(factory, "text/html", 2);
-  raptor_parser_factory_add_mime_type(factory, "application/xhtml+xml", 4);
+  rc+= raptor_parser_factory_add_mime_type(factory, "text/html", 2) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/xhtml+xml", 4) != 0;
+
+  return rc;
 }
 
 

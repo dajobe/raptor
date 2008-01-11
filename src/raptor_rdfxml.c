@@ -3102,9 +3102,11 @@ raptor_rdfxml_parse_finish_factory(raptor_parser_factory* factory)
 }
 
 
-static void
+static int
 raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory) 
 {
+  int rc=0;
+
   factory->context_length     = sizeof(raptor_rdfxml_parser);
   
   factory->need_base_uri = 1;
@@ -3116,13 +3118,15 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
   factory->finish_factory = raptor_rdfxml_parse_finish_factory;
   factory->recognise_syntax = raptor_rdfxml_parse_recognise_syntax;
 
-  raptor_parser_factory_add_alias(factory, "raptor");
+  rc+= raptor_parser_factory_add_alias(factory, "raptor") != 0;
 
-  raptor_parser_factory_add_uri(factory,
-                                (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar");
+  rc+= raptor_parser_factory_add_uri(factory,
+                                     (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar") != 0;
 
-  raptor_parser_factory_add_mime_type(factory, "application/rdf+xml", 10);
-  raptor_parser_factory_add_mime_type(factory, "text/rdf", 6);
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/rdf+xml", 10) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "text/rdf", 6) != 0;
+
+  return rc;
 }
 
 

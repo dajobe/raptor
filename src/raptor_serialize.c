@@ -88,10 +88,8 @@ raptor_serializers_init(void)
   int rc=0;
 
   serializers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_serializer_factory, NULL);
-  if(!serializers) {
-    raptor_finish();
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!serializers)
+    return 1;
 
   /* raptor_init_serializer_simple(); */
 
@@ -157,7 +155,7 @@ raptor_serializer_register_factory(const char *name, const char *label,
                                    const char *mime_type,
                                    const char *alias,
                                    const unsigned char *uri_string,
-                                   void (*factory) (raptor_serializer_factory*)) 
+                                   int (*factory) (raptor_serializer_factory*)) 
 {
   raptor_serializer_factory *serializer;
   char *name_copy, *label_copy, *mime_type_copy, *alias_copy;
@@ -227,7 +225,8 @@ raptor_serializer_register_factory(const char *name, const char *label,
     return 1; /* on error, serializer is already freed by the sequence */
 
   /* Call the serializer registration function on the new object */
-  (*factory)(serializer);
+  if (factory(serializer))
+    return 1; /* serializer is owned and freed by the serializers sequence */
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("%s has context size %d\n", name, serializer->context_length);

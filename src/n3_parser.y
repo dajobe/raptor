@@ -1350,9 +1350,11 @@ raptor_n3_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
-static void
+static int
 raptor_n3_parser_register_factory(raptor_parser_factory *factory) 
 {
+  int rc=0;
+
   factory->context_length     = sizeof(raptor_n3_parser);
   
   factory->need_base_uri = 1;
@@ -1363,8 +1365,10 @@ raptor_n3_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_n3_parse_chunk;
   factory->recognise_syntax = raptor_n3_parse_recognise_syntax;
 
-  raptor_parser_factory_add_mime_type(factory, "text/n3", 6);
-  raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 6);
+  rc+= raptor_parser_factory_add_mime_type(factory, "text/n3", 6) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 6) != 0;
+
+  return rc;
 }
 
 

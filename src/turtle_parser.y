@@ -1559,9 +1559,11 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
 
 
 #ifdef RAPTOR_PARSER_TURTLE
-static void
+static int
 raptor_turtle_parser_register_factory(raptor_parser_factory *factory) 
 {
+  int rc=0;
+
   factory->context_length     = sizeof(raptor_turtle_parser);
   
   factory->need_base_uri = 1;
@@ -1572,27 +1574,31 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_turtle_parse_chunk;
   factory->recognise_syntax = raptor_turtle_parse_recognise_syntax;
 
-  raptor_parser_factory_add_alias(factory, "ntriples-plus");
+  rc+= raptor_parser_factory_add_alias(factory, "ntriples-plus") != 0;
 
-  raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/");
+  rc+= raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/") != 0;
 
   /* first one is the default */
-  raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10);
-  raptor_parser_factory_add_mime_type(factory, "application/turtle", 10);
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/turtle", 10) != 0;
 
 #ifndef RAPTOR_PARSER_N3
-  raptor_parser_factory_add_mime_type(factory, "text/n3", 3);
-  raptor_parser_factory_add_mime_type(factory, "text/rdf+n3", 3);
-  raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3);
+  rc+= raptor_parser_factory_add_mime_type(factory, "text/n3", 3) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "text/rdf+n3", 3) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3) != 0;
 #endif
+
+  return rc;
 }
 #endif
 
 
 #ifdef RAPTOR_PARSER_TRIG
-static void
+static int
 raptor_trig_parser_register_factory(raptor_parser_factory *factory) 
 {
+  int rc=0;
+
   factory->context_length     = sizeof(raptor_turtle_parser);
   
   factory->need_base_uri = 1;
@@ -1603,9 +1609,11 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_turtle_parse_chunk;
   factory->recognise_syntax = raptor_trig_parse_recognise_syntax;
 
-  raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/");
+  rc+= raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/") != 0;
 
-  raptor_parser_factory_add_mime_type(factory, "application/x-trig", 10);
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/x-trig", 10) != 0;
+
+  return rc;
 }
 #endif
 

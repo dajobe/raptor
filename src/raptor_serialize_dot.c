@@ -798,7 +798,7 @@ raptor_dot_serializer_statement(raptor_serializer* serializer,
 }
 
 
-static void
+static int
 raptor_dot_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->context_length = sizeof(raptor_dot_context);
@@ -812,6 +812,8 @@ raptor_dot_serializer_register_factory(raptor_serializer_factory *factory)
   factory->serialize_end       = raptor_dot_serializer_end;
   factory->finish_factory      = NULL;
   factory->terminate           = raptor_dot_serializer_terminate;
+
+  return 0;
 }
 
 

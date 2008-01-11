@@ -1170,7 +1170,7 @@ raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
-static void
+static int
 raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->context_length     = sizeof(raptor_turtle_context);
@@ -1183,6 +1183,8 @@ raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
   factory->serialize_statement = raptor_turtle_serialize_statement;
   factory->serialize_end       = raptor_turtle_serialize_end;
   factory->finish_factory      = raptor_turtle_serialize_finish_factory;
+
+  return 0;
 }
 
 

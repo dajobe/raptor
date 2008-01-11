@@ -1290,9 +1290,11 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
-static void
+static int
 raptor_rss_parser_register_factory(raptor_parser_factory *factory) 
 {
+  int rc=0;
+
   factory->context_length     = sizeof(raptor_rss_parser);
   
   factory->need_base_uri = 1;
@@ -1303,12 +1305,14 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_rss_parse_chunk;
   factory->recognise_syntax = raptor_rss_parse_recognise_syntax;
 
-  raptor_parser_factory_add_mime_type(factory, "application/rss", 10);
-  raptor_parser_factory_add_mime_type(factory, "application/rss+xml", 10);
-  raptor_parser_factory_add_mime_type(factory, "text/rss", 8);
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/rss", 10) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/rss+xml", 10) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "text/rss", 8) != 0;
 
-  raptor_parser_factory_add_mime_type(factory, "application/xml", 3);
-  raptor_parser_factory_add_mime_type(factory, "text/xml", 3);
+  rc+= raptor_parser_factory_add_mime_type(factory, "application/xml", 3) != 0;
+  rc+= raptor_parser_factory_add_mime_type(factory, "text/xml", 3) != 0;
+
+  return rc;
 }
 
 

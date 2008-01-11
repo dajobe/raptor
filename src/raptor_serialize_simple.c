@@ -153,7 +153,7 @@ raptor_simple_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
-static void
+static int
 raptor_simple_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->context_length     = sizeof(raptor_simple_serializer_context);
@@ -165,6 +165,8 @@ raptor_simple_serializer_register_factory(raptor_serializer_factory *factory)
   factory->serialize_statement = raptor_simple_serialize_statement;
   factory->serialize_end       = NULL;
   factory->finish_factory      = raptor_simple_serialize_finish_factory;
+
+  return 0;
 }
 
 

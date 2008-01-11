@@ -168,7 +168,7 @@ raptor_parsers_finish(void)
  **/
 raptor_parser_factory*
 raptor_parser_register_factory(const char *name, const char *label,
-                               void (*factory) (raptor_parser_factory*)) 
+                               int (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser=NULL;
   raptor_parser_factory *h;
@@ -214,7 +214,8 @@ raptor_parser_register_factory(const char *name, const char *label,
     return NULL; /* on error, parser is already freed by the sequence */
   
   /* Call the parser registration function on the new object */
-  (*factory)(parser);
+  if (factory(parser))
+    return NULL; /* parser is owned and freed by the parsers sequence */
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("%s has context size %d\n", name, parser->context_length);
@@ -229,7 +230,7 @@ raptor_parser_register_factory(const char *name, const char *label,
 }
 
 
-void
+int
 raptor_parser_factory_add_alias(raptor_parser_factory* factory,
                                 const char *alias)
 {
@@ -243,17 +244,17 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
     if(!strcmp(p->name, alias)) {
       raptor_finish();
       RAPTOR_FATAL2("parser %s already registered\n", p->name);
-      return;
+      return 1;
     }
   }
   
   alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
-  if(!alias_copy) {
-    raptor_finish();
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!alias_copy)
+    return 1;
   strcpy(alias_copy, alias);
   factory->alias=alias_copy;
+
+  return 0;
 }
 
 
@@ -275,8 +276,10 @@ raptor_free_type_q(raptor_type_q* type_q)
  *
  * The FIRST added MIME type is the default or main one reported.
  *
+ * Return value: non-0 on failure
+ *
  **/
-void
+int
 raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
                                     const char* mime_type, int q)
 {
@@ -285,16 +288,13 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
   size_t len;
   
   type_q=(raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, sizeof(raptor_type_q), 1);
-  if(!type_q) {
-    raptor_finish();
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!type_q)
+    return 1;
   len=strlen(mime_type);
   mime_type_copy=(char*)RAPTOR_CALLOC(cstring, len+1, 1);
   if(!mime_type_copy) {
     raptor_free_type_q(type_q);
-    raptor_finish();
-    RAPTOR_FATAL1("Out of memory\n");
+    return 1;
   }
   strcpy(mime_type_copy, mime_type);
 
@@ -307,10 +307,7 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
     q=10;
   type_q->q=q;
 
-  if(raptor_sequence_push(factory->mime_types, type_q)) {
-    raptor_finish();
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  return raptor_sequence_push(factory->mime_types, type_q);
 }
 
 
@@ -321,24 +318,25 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
  * 
  * Register an identifying URI as handled by a factory.
  *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_parser_factory_add_uri(raptor_parser_factory* factory,
                               const unsigned char *uri_string)
 {
   unsigned char *uri_string_copy;
 
   if(!uri_string)
-    return;
+    return 1;
   
   uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
-  if(!uri_string_copy) {
-    raptor_finish();
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!uri_string_copy)
+    return 1;
 
   strcpy((char*)uri_string_copy, (const char*)uri_string);
   factory->uri_string=uri_string_copy;
+
+  return 0;
 }
 
 

@@ -736,7 +736,7 @@ raptor_rdfxml_serialize_finish_factory(raptor_serializer_factory* factory)
 
 }
 
-static void
+static int
 raptor_rdfxml_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->context_length     = sizeof(raptor_rdfxml_serializer_context);
@@ -749,6 +749,8 @@ raptor_rdfxml_serializer_register_factory(raptor_serializer_factory *factory)
   factory->serialize_statement = raptor_rdfxml_serialize_statement;
   factory->serialize_end       = raptor_rdfxml_serialize_end;
   factory->finish_factory      = raptor_rdfxml_serialize_finish_factory;
+
+  return 0;
 }
 
 

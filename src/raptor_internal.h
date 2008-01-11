@@ -539,15 +539,15 @@ typedef struct
 
 
 /* raptor_serialize.c */
-int raptor_serializer_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, void (*factory) (raptor_serializer_factory*));
+int raptor_serializer_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, int (*factory) (raptor_serializer_factory*));
 
 
 /* raptor_general.c */
 
-raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, void (*factory) (raptor_parser_factory*));
-void raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
-void raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
-void raptor_parser_factory_add_uri(raptor_parser_factory* factory, const unsigned char *uri_string);
+raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, int (*factory) (raptor_parser_factory*));
+int raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
+int raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
+int raptor_parser_factory_add_uri(raptor_parser_factory* factory, const unsigned char *uri_string);
 
 unsigned char* raptor_parser_internal_generate_id(raptor_parser *rdf_parser, raptor_genid_type type, unsigned char *user_bnodeid);
 

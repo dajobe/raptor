@@ -1016,7 +1016,7 @@ raptor_rss10_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
-static void
+static int
 raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->context_length     = sizeof(raptor_rss10_serializer_context);
@@ -1028,6 +1028,8 @@ raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
   factory->serialize_statement = raptor_rss10_serialize_statement;
   factory->serialize_end       = raptor_rss10_serialize_end;
   factory->finish_factory      = raptor_rss10_serialize_finish_factory;
+
+  return 0;
 }
 
 
