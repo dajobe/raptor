@@ -185,24 +185,24 @@ raptor_serializer_register_factory(const char *name, const char *label,
   serializer=(raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
                                                sizeof(raptor_serializer_factory));
   if(!serializer)
-    goto fail_noserializer;
+    return 1;
 
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy)
-    goto fail;
+    goto tidy;
   strcpy(name_copy, name);
   serializer->name=name_copy;
         
   label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
   if(!label_copy)
-    goto fail;
+    goto tidy;
   strcpy(label_copy, label);
   serializer->label=label_copy;
 
   if(mime_type) {
     mime_type_copy=(char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
     if(!mime_type_copy)
-      goto fail;
+      goto tidy;
     strcpy(mime_type_copy, mime_type);
     serializer->mime_type=mime_type_copy;
   }
@@ -210,7 +210,7 @@ raptor_serializer_register_factory(const char *name, const char *label,
   if(uri_string) {
     uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
     if(!uri_string_copy)
-      goto fail;
+      goto tidy;
     strcpy((char*)uri_string_copy, (const char*)uri_string);
     serializer->uri_string=uri_string_copy;
   }
@@ -218,13 +218,13 @@ raptor_serializer_register_factory(const char *name, const char *label,
   if(alias) {
     alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
     if(!alias_copy)
-      goto fail;
+      goto tidy;
     strcpy(alias_copy, alias);
     serializer->alias=alias_copy;
   }
 
   if(raptor_sequence_push(serializers, serializer))
-    goto fail_noserializer; /* on error, serializer is already freed by the sequence */
+    return 1; /* on error, serializer is already freed by the sequence */
 
   /* Call the serializer registration function on the new object */
   (*factory)(serializer);
@@ -236,11 +236,8 @@ raptor_serializer_register_factory(const char *name, const char *label,
   return 0;
 
   /* Clean up on failure */
-  fail:
+  tidy:
   raptor_free_serializer_factory(serializer);
-  fail_noserializer:
-  raptor_finish();
-  RAPTOR_FATAL1("Out of memory\n");
   return 1;
 }
 

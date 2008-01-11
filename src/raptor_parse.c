@@ -93,10 +93,8 @@ raptor_parsers_init(void)
   int rc=0;
 
   parsers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
-  if(!parsers) {
-    raptor_finish();
-    RAPTOR_FATAL1("Out of memory\n");
-  }
+  if(!parsers)
+    return 1;
   
 #ifdef RAPTOR_PARSER_RDFXML
   rc+= raptor_init_parser_rdfxml() != 0;
@@ -194,26 +192,26 @@ raptor_parser_register_factory(const char *name, const char *label,
   parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
                                                sizeof(raptor_parser_factory));
   if(!parser)
-    goto fail_noparser;
+    return NULL;
 
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy)
-    goto fail;
+    goto tidy;
   strcpy(name_copy, name);
   parser->name=name_copy;
         
   label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
   if(!label_copy)
-    goto fail;
+    goto tidy;
   strcpy(label_copy, label);
   parser->label=label_copy;
 
   parser->mime_types=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
   if(!parser->mime_types)
-    goto fail;
+    goto tidy;
 
   if(raptor_sequence_push(parsers, parser))
-    goto fail_noparser; /* on error, parser is already freed by the sequence */
+    return NULL; /* on error, parser is already freed by the sequence */
   
   /* Call the parser registration function on the new object */
   (*factory)(parser);
@@ -225,11 +223,8 @@ raptor_parser_register_factory(const char *name, const char *label,
   return parser;
 
   /* Clean up on failure */
-  fail:
+  tidy:
   raptor_free_parser_factory(parser);
-  fail_noparser:
-  raptor_finish();
-  RAPTOR_FATAL1("Out of memory\n");
   return NULL;
 }
 
