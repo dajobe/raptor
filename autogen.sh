@@ -58,6 +58,7 @@ if grep "^AC_LIBLTDL_" $confs >/dev/null; then
 fi
 
 # Some dependencies for autotools:
+# automake 1.10 requires autoconf 2.60
 # automake 1.9 requires autoconf 2.58
 # automake 1.8 requires autoconf 2.58
 # automake 1.7 requires autoconf 2.54
