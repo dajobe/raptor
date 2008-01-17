@@ -2,7 +2,7 @@
  *
  * raptor_internal.h - Redland Parser Toolkit for RDF (Raptor) internals
  *
- * Copyright (C) 2002-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -1124,7 +1124,7 @@ void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
 void raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
 int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_namespace_stack *nstack, const unsigned char *s, const unsigned char* lang, raptor_uri* datatype);
 void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
-int raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer, const unsigned char *s);
+int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 int raptor_turtle_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature, int value);
