@@ -730,6 +730,9 @@ int raptor_init_serializer_rdfxmla(void);
 /* raptor_serialize_turtle.c */  
 int raptor_init_serializer_turtle(void);
 
+/* raptor_serialize_json.c */  
+int raptor_init_serializer_json(void);
+
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(raptor_unichar c);
 int raptor_unicode_is_namechar(raptor_unichar c);
@@ -1131,6 +1134,28 @@ int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor
 int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature, const unsigned char *value);
 int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);
 const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature);
+
+
+/**
+ * raptor_json_writer:
+ *
+ * Raptor JSON Writer class
+ */
+typedef struct raptor_json_writer_s raptor_json_writer;
+
+/* raptor_json_writer.c */
+raptor_json_writer* raptor_new_json_writer(raptor_uri* base_uri, const raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data);
+void raptor_free_json_writer(raptor_json_writer* json_writer);
+
+int raptor_json_writer_newline(raptor_json_writer* json_writer);
+int raptor_json_writer_key_value(raptor_json_writer* json_writer, const char* key, size_t key_len, const char* value, size_t value_len);
+int raptor_json_writer_start_block(raptor_json_writer* json_writer, char c);
+int raptor_json_writer_end_block(raptor_json_writer* json_writer, char c);
+int raptor_json_writer_literal_object(raptor_json_writer* json_writer, unsigned char* s, unsigned char* lang, raptor_uri* datatype, const char* key, const char* type_key);
+int raptor_json_writer_blank_object(raptor_json_writer* json_writer, const char* blank);
+int raptor_json_writer_uri_object(raptor_json_writer* json_writer, raptor_uri* uri);
+int raptor_json_writer_key_uri_value(raptor_json_writer* json_writer, const char* key, size_t key_len, raptor_uri* uri);
+
 
 /* snprintf.c */
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);

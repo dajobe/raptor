@@ -845,8 +845,9 @@ turtle_serializer=no
 rss_1_0_serializer=no
 atom_serializer=no
 dot_serializer=no
+json_serializer=no
 
-rdf_serializers_available="rdfxml rdfxml-abbrev turtle ntriples rss-1.0 dot"
+rdf_serializers_available="rdfxml rdfxml-abbrev turtle ntriples rss-1.0 dot json"
 if test "$USE_MAINTAINER_MODE" = yes; then
   rdf_serializers_available="$rdf_serializers_available atom"
 fi
@@ -861,6 +862,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_SERIALIZER_RSS_1_0, 1, [Building RSS 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_ATOM, 1, [Building Atom 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_DOT, 1, [Building GraphViz DOT serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_JSON, 1, [Building JSON serializer])
 fi
 
 AC_MSG_CHECKING(RDF serializers required)
@@ -890,6 +892,7 @@ AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML_ABBREV, test $rdfxml_abbrev_serializer =
 AM_CONDITIONAL(RAPTOR_SERIALIZER_TURTLE, test $turtle_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RSS_1_0, test $rss_1_0_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_DOT, test $dot_serializer = yes)
+AM_CONDITIONAL(RAPTOR_SERIALIZER_JSON, test $json_serializer = yes)
 
 AM_CONDITIONAL(RAPTOR_RSS_COMMON, test $rss_1_0_serializer = yes -o $rss_parser = yes)
 

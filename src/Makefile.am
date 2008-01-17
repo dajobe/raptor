@@ -76,7 +76,8 @@ raptor_www.c \
 raptor_identifier.c \
 raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \
 raptor_xml.c raptor_xml_writer.c raptor_set.c turtle_common.c \
-raptor_turtle_writer.c raptor_xsd.c raptor_avltree.c snprintf.c
+raptor_turtle_writer.c raptor_xsd.c raptor_avltree.c snprintf.c \
+raptor_json_writer.c
 if RAPTOR_PARSER_RDFXML
 if RAPTOR_XML_LIBXML
 libraptor_la_SOURCES += raptor_libxml.c
@@ -140,6 +141,9 @@ libraptor_la_SOURCES += raptor_serialize_rss.c
 endif
 if RAPTOR_SERIALIZER_DOT
 libraptor_la_SOURCES += raptor_serialize_dot.c
+endif
+if RAPTOR_SERIALIZER_JSON
+libraptor_la_SOURCES += raptor_serialize_json.c
 endif
 if RAPTOR_NFC_CHECK
 libraptor_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h

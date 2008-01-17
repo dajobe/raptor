@@ -121,6 +121,10 @@ raptor_serializers_init(void)
   rc+= raptor_init_serializer_dot() != 0;
 #endif
 
+#ifdef RAPTOR_SERIALIZER_JSON
+  rc+= raptor_init_serializer_json() != 0;
+#endif
+
   return rc;
 }
 
