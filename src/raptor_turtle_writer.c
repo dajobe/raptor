@@ -459,12 +459,12 @@ raptor_iostream_write_string_python(raptor_iostream *iostr,
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
 
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
-
     if(flags >= 1 && flags <= 3) {
       /* Turtle and JSON are UTF-8 - no need to escape */
-      raptor_iostream_write_counted_string(iostr, string, len);
+      raptor_iostream_write_counted_string(iostr, string, unichar_len);
     } else {
+      unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
+
       if(unichar < 0x10000) {
         raptor_iostream_write_counted_string(iostr, "\\u", 2);
         raptor_iostream_format_hexadecimal(iostr, unichar, 4);
