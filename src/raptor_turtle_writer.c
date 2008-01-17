@@ -3,7 +3,7 @@
  * raptor_turtle_writer.c - Raptor Turtle Writer
  *
  * Copyright (C) 2006, Dave Robillard
- * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -378,76 +378,150 @@ raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
 
 
 /**
+ * raptor_iostream_write_string_python:
+ * @iostr: #raptor_iostream to write to
+ * @string: UTF-8 string to write
+ * @len: length of UTF-8 string
+ * @delim: Terminating delimiter character for string (such as " or >)
+ * or \0 for no escaping.
+ * @flags: flags 0=N-Triples mode, 1=Turtle (allow raw UTF-8), 2=JSON
+ *
+ * Write a UTF-8 string using Python-style escapes (N-Triples, Turtle, JSON) to an iostream.
+ * 
+ * Return value: non-0 on failure such as bad UTF-8 encoding.
+ **/
+int
+raptor_iostream_write_string_python(raptor_iostream *iostr,
+                                    const unsigned char *string,
+                                    size_t len,
+                                    const char delim,
+                                    int flags)
+{
+  unsigned char c;
+  int unichar_len;
+  raptor_unichar unichar;
+
+  if(flags < 0 || flags > 2)
+    return 1;
+  
+  for(; (c=*string); string++, len--) {
+    if((delim && c == delim && (delim=='\'' || delim == '"')) ||
+       c == '\\') {
+      raptor_iostream_write_byte(iostr, '\\');
+      raptor_iostream_write_byte(iostr, c);
+      continue;
+    }
+    if(delim && c == delim) {
+      raptor_iostream_write_counted_string(iostr, "\\u", 2);
+      raptor_iostream_format_hexadecimal(iostr, c, 4);
+      continue;
+    }
+    
+    /* Note: NTriples is ASCII */
+    if(c == 0x09) {
+      raptor_iostream_write_counted_string(iostr, "\\t", 2);
+      continue;
+    } else if((flags == 2) && c == 0x08) {
+      /* JSON has \b for backspace */
+      raptor_iostream_write_counted_string(iostr, "\\b", 2);
+      continue;
+    } else if(c == 0x0a) {
+      raptor_iostream_write_counted_string(iostr, "\\n", 2);
+      continue;
+    } else if((flags == 2) && c == 0x0b) {
+      /* JSON has \f for formfeed */
+      raptor_iostream_write_counted_string(iostr, "\\f", 2);
+      continue;
+    } else if(c == 0x0d) {
+      raptor_iostream_write_counted_string(iostr, "\\r", 2);
+      continue;
+    } else if(c < 0x20|| c == 0x7f) {
+      raptor_iostream_write_counted_string(iostr, "\\u", 2);
+      raptor_iostream_format_hexadecimal(iostr, c, 4);
+      continue;
+    } else if(c < 0x80) {
+      raptor_iostream_write_byte(iostr, c);
+      continue;
+    }
+    
+    /* It is unicode */
+    
+    unichar_len=raptor_utf8_to_unicode_char(NULL, string, len);
+    if(unichar_len < 0 || unichar_len > (int)len)
+      /* UTF-8 encoding had an error or ended in the middle of a string */
+      return 1;
+
+    unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
+
+    if(flags == 1 || flags == 2) {
+      /* Turtle and JSON are UTF-8 - no need to escape */
+      raptor_iostream_write_counted_string(iostr, string, len);
+    } else {
+      if(unichar < 0x10000) {
+        raptor_iostream_write_counted_string(iostr, "\\u", 2);
+        raptor_iostream_format_hexadecimal(iostr, unichar, 4);
+      } else {
+        raptor_iostream_write_counted_string(iostr, "\\U", 2);
+        raptor_iostream_format_hexadecimal(iostr, unichar, 8);
+      }
+    }
+    
+    unichar_len--; /* since loop does len-- */
+    string += unichar_len; len -= unichar_len;
+
+  }
+
+  return 0;
+}
+
+
+/**
  * raptor_iostream_write_string_turtle:
  * @iostr: #raptor_iostream to write to
  * @string: UTF-8 string to write
  * @len: length of UTF-8 string
  *
- * Write an UTF-8 string using Turtle "longString" triple quoting to an iostream.
+ * Write an UTF-8 string using Turtle "longString" triple quoting to
+ * an iostream.
+ *
  **/
 void
 raptor_iostream_write_string_turtle(raptor_iostream *iostr,
-                                    const unsigned char *string,
-                                    size_t len)
+                                    const unsigned char *string, size_t len)
 {
-  unsigned char c;
-  
-  for(; (c=*string); string++, len--) {
-    if(c == '\"') {
-      raptor_iostream_write_byte(iostr, '\\');
-      raptor_iostream_write_byte(iostr, c);
-    } else if(c == '\\') {
-      raptor_iostream_write_byte(iostr, '\\');
-      raptor_iostream_write_byte(iostr, '\\');
-    } else {
-      raptor_iostream_write_byte(iostr, c);
-    }
-  }
+  raptor_iostream_write_string_python(iostr, string, len, '"', 1);
 }
 
 
+
 /**
- * raptor_turtle_writer_quoted:
+ * raptor_turtle_writer_quoted_counted_string:
  * @turtle_writer: Turtle writer object
- * @s: string to write (SHARED)
+ * @s: string to write
+ * @len: string length
  *
- * Write a string raw to the Turtle writer.
+ * Write a Turtle escaped-string inside double quotes to the writer.
  *
  * Return value: non-0 on failure
  **/
 int
-raptor_turtle_writer_quoted(raptor_turtle_writer* turtle_writer,
-                            const unsigned char *s)
+raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
+                                           const unsigned char *s, size_t len)
 {
-  raptor_stringbuffer* sb;
-
+  const unsigned char *quotes=(const unsigned char *)"\"\"\"\"";
+  const unsigned char *q;
+  size_t q_len;
+  
   if(!s)
     return 1;
+  
+  q=raptor_turtle_writer_contains_newline(s) ? quotes : quotes+2;
+  q_len=(q == quotes) ? 3 : 1;
+  raptor_iostream_write_counted_string(turtle_writer->iostr, q, q_len);
+  raptor_iostream_write_string_python(turtle_writer->iostr,
+                                      s, strlen((const char*)s), '"', 1);
+  raptor_iostream_write_counted_string(turtle_writer->iostr, q, q_len);
 
-  sb = raptor_new_stringbuffer();
-  if(!sb)
-    return 1;
-
-  if(raptor_turtle_writer_contains_newline(s)) {
-    raptor_iostream_write_string(turtle_writer->iostr, "\"\"\"");
-    raptor_iostream_write_string_turtle(turtle_writer->iostr, s, 
-                                        strlen((const char*)s));
-    raptor_iostream_write_string(turtle_writer->iostr, "\"\"\"");
-  } else {
-    raptor_stringbuffer_append_turtle_string(sb, s, strlen((const char*)s),
-                                             (int)'"',
-                                             turtle_writer->error_handler,
-                                             turtle_writer->error_data);
-
-    raptor_iostream_write_byte(turtle_writer->iostr, '\"');
-
-    /* FIXME: over-escapes things because ntriples is ASCII */
-    raptor_iostream_write_string_ntriples(turtle_writer->iostr, s,
-                                          strlen((const char*)s), '"');
-    raptor_iostream_write_byte(turtle_writer->iostr, '\"');
-  }
-
-  raptor_free_stringbuffer(sb);
   return 0;
 }
 
@@ -503,7 +577,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   if(written)
     return 0;
     
-  if(raptor_turtle_writer_quoted(turtle_writer, s))
+  if(raptor_turtle_writer_quoted_counted_string(turtle_writer, s,
+                                                strlen((const char*)s)))
     return 1;
 
   /* typed literal, not a special case */
@@ -856,7 +931,8 @@ main(int argc, char *argv[])
   
   raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"ex:foo ");
 
-  raptor_turtle_writer_quoted(turtle_writer, longstr);
+  raptor_turtle_writer_quoted_counted_string(turtle_writer, longstr,
+                                             strlen(longstr));
   raptor_turtle_writer_raw_counted(turtle_writer,
                                    (const unsigned char*)" ;", 2);
   raptor_turtle_writer_newline(turtle_writer);

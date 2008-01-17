@@ -984,6 +984,8 @@ const char* raptor_ntriples_term_as_string(raptor_ntriples_term_type term);
 RAPTOR_API
 int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
 RAPTOR_API
+int raptor_iostream_write_string_python(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim, int flags);
+RAPTOR_API RAPTOR_DEPRECATED
 void raptor_iostream_write_string_turtle(raptor_iostream *iostr, const unsigned char *string, size_t len);
 RAPTOR_API
 void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);

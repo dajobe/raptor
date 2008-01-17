@@ -2,7 +2,7 @@
  *
  * raptor_serialize_rdfxml.c - N-Triples serializer
  *
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  *
  * This package is Free Software and part of Redland http://librdf.org/
@@ -111,65 +111,7 @@ raptor_iostream_write_string_ntriples(raptor_iostream *iostr,
                                       size_t len,
                                       const char delim)
 {
-  unsigned char c;
-  int unichar_len;
-  raptor_unichar unichar;
-  
-  for(; (c=*string); string++, len--) {
-    if((delim && c == delim && (delim=='\'' || delim == '"')) ||
-       c == '\\') {
-      raptor_iostream_write_byte(iostr, '\\');
-      raptor_iostream_write_byte(iostr, c);
-      continue;
-    }
-    if(delim && c == delim) {
-      raptor_iostream_write_counted_string(iostr, "\\u", 2);
-      raptor_iostream_format_hexadecimal(iostr, c, 4);
-      continue;
-    }
-    
-    /* Note: NTriples is ASCII */
-    if(c == 0x09) {
-      raptor_iostream_write_counted_string(iostr, "\\t", 2);
-      continue;
-    } else if(c == 0x0a) {
-      raptor_iostream_write_counted_string(iostr, "\\n", 2);
-      continue;
-    } else if(c == 0x0d) {
-      raptor_iostream_write_counted_string(iostr, "\\r", 2);
-      continue;
-    } else if(c < 0x20|| c == 0x7f) {
-      raptor_iostream_write_counted_string(iostr, "\\u", 2);
-      raptor_iostream_format_hexadecimal(iostr, c, 4);
-      continue;
-    } else if(c < 0x80) {
-      raptor_iostream_write_byte(iostr, c);
-      continue;
-    }
-    
-    /* It is unicode */
-    
-    unichar_len=raptor_utf8_to_unicode_char(NULL, string, len);
-    if(unichar_len < 0 || unichar_len > (int)len)
-      /* UTF-8 encoding had an error or ended in the middle of a string */
-      return 1;
-
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
-    
-    if(unichar < 0x10000) {
-      raptor_iostream_write_counted_string(iostr, "\\u", 2);
-      raptor_iostream_format_hexadecimal(iostr, unichar, 4);
-    } else {
-      raptor_iostream_write_counted_string(iostr, "\\U", 2);
-      raptor_iostream_format_hexadecimal(iostr, unichar, 8);
-    }
-    
-    unichar_len--; /* since loop does len-- */
-    string += unichar_len; len -= unichar_len;
-
-  }
-
-  return 0;
+  return raptor_iostream_write_string_python(iostr, string, len, delim, 0);
 }
 
 
