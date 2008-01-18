@@ -1025,7 +1025,7 @@ main(int argc, char *argv[])
   raptor_uri* base_uri;
   raptor_qname* el_name;
   raptor_xml_element *element;
-  size_t count;
+  unsigned long offset;
   raptor_qname **attrs;
   raptor_uri* base_uri_copy=NULL;
 
@@ -1114,16 +1114,16 @@ main(int argc, char *argv[])
   raptor_free_uri(base_uri);
 
   
-  count=raptor_iostream_get_bytes_written_count(iostr);
+  offset=raptor_iostream_tell(iostr);
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing iostream\n", program);
 #endif
   raptor_free_iostream(iostr);
 
-  if(count != OUT_BYTES_COUNT) {
+  if(offset != OUT_BYTES_COUNT) {
     fprintf(stderr, "%s: I/O stream wrote %d bytes, expected %d\n", program,
-            (int)count, (int)OUT_BYTES_COUNT);
+            (int)offset, (int)OUT_BYTES_COUNT);
     fputs("[[", stderr);
     (void)fwrite(string, 1, string_len, stderr);
     fputs("]]\n", stderr);
@@ -1135,8 +1135,8 @@ main(int argc, char *argv[])
     return 1;
   }
   string_len=strlen((const char*)string);
-  if(string_len != count) {
-    fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
+  if(string_len != offset) {
+    fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, (int)string_len, (int)offset);
     return 1;
   }
 
