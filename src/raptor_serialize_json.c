@@ -572,18 +572,18 @@ raptor_init_serializer_json(void)
   int rc;
   
   rc=raptor_serializer_register_factory("json-t",
-                                        "RDF JSON Triples", 
-                                        "text/json",
+                                        "RDF/JSON Triples", 
+                                        "application/json",
                                         NULL,
                                         NULL,
                                         &raptor_json_triples_serializer_register_factory);
   if(rc)
     return rc;
   
-  return raptor_serializer_register_factory("json-r",
-                                            "RDF JSON Resource-Centric", 
-                                            "text/json",
-                                            "json",
+  return raptor_serializer_register_factory("json",
+                                            "RDF/JSON Resource-Centric", 
+                                            "application/json",
+                                            "json-r",
                                             (const unsigned char *)"http://n2.talis.com/wiki/RDF_JSON_Specification",
                                             &raptor_json_resource_serializer_register_factory);
 }
