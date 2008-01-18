@@ -1,3 +1,394 @@
+2008-01-17  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_json_writer.c, src/raptor_serialize.c,
+	src/raptor_serialize_json.c: Added JSON serializing support.
+	raptor_json_writer class for formatting JSON.  json-r and json-t
+	serializations based on
+	http://n2.talis.com/wiki/RDF_JSON_Specification
+
+2008-01-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_turtle_writer.c: (raptor_iostream_write_string_python):
+	Do not write too much raw UTF-8
+
+	* src/raptor_turtle_writer.c:
+	(raptor_iostream_write_string_python): Add Long Turtle mode 2,
+	shift JSON to 3.
+	(raptor_turtle_writer_quoted_counted_string): Use mode 2 for
+	triple-quoted long strings
+
+	* src/raptor_internal.h: Add
+	raptor_turtle_writer_quoted_counted_string replacing
+	raptor_turtle_writer_quoted
+
+	* src/raptor.h, src/raptor_serialize_ntriples.c,
+	src/raptor_turtle_writer.c: (raptor_iostream_write_string_python):
+	Added renamed from raptor_iostream_write_string_turtle and
+	replacing raptor_iostream_write_string_ntriples. Handles writing
+	to an iostream with escapes in N-Triples, Turtle and JSON with
+	appropriate escapes which are all python like.
+	(raptor_iostream_write_string_turtle): Changed to use
+	raptor_iostream_write_string_python.
+	(raptor_turtle_writer_quoted_counted_string): Renamed from
+	raptor_turtle_writer_quoted and taking a length
+
+2008-01-14  Lauri Aalto <laalto@iki.fi>
+
+	* autogen.sh: Do not branch autogen.sh scripts but keep them
+	identical
+
+2008-01-12  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: automake 1.10 research
+
+2008-01-11  Lauri Aalto <laalto@iki.fi>
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor_grddl.c,
+	src/raptor_guess.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/turtle_parser.y:
+	(raptor_*_serializer_register_factory,
+	raptor_*_parser_register_factory) Return error codes from parser
+	and serializer factory registration functions.
+	(raptor_serializer_register_factory,
+	raptor_parser_register_factory) Check factory function return
+	code.
+	(raptor_parser_factory_add_alias,
+	raptor_parser_factory_add_mime_type,
+	raptor_parser_factory_add_uri) Added error code returns. Bubble up
+	OOM errors to caller.
+
+	* src/raptor_parse.c, src/raptor_serialize.c: (raptor_parsers_init,
+	raptor_parser_register_factory,
+	raptor_serializer_register_factory): Let raptor_init() handle
+	dying on OOM.
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor_general.c,
+	src/raptor_grddl.c, src/raptor_guess.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_uri.c,
+	src/turtle_parser.y: Changed raptor internal init functions to
+	return error codes.
+
+2008-01-07  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h: Add raptor_error_handlers_init and raptor_sax2
+	RAPTOR_API exports.
+
+	* src/raptor_rfc2396.c: (raptor_uri_resolve_uri_reference): Cast
+	unsigned char -> char. Fixes compilation problems on non-gcc
+	compilers.
+
+2008-01-05  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rfc2396.c: Update URI resolving for RFC3986 - some
+	abnormal examples have different results or have defined possible
+	results.
+	(raptor_uri_resolve_uri_reference): Remove leading /../ and /./
+	(main): Update tests for RFC3986 changes
+
+	* src/raptor_general.c: 2008
+
+2008-01-04  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_ensure_writen_header):
+	Do not assume context->turtle_writer is initialized.
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_init):
+	Require non-NULL rdf:type abbrev node.
+
+	* src/raptor_abbrev.c: (raptor_abbrev_subject_add_property):
+	Prevent low-memory double deletes - increment object reference
+	counts earlier.
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_quoted): Check
+	for stringbuffer alloc failures.
+
+2008-01-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_qname.c: Added
+	raptor_qname_get_counted_value
+
+2008-01-03  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_statement):
+	Return error if raptor_abbrev_node_lookup() or
+	raptor_abbrev_subject_add_property() calls fail.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_statement):
+	Removed redundant conditional.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_ensure_writen_header):
+	Check for qname alloc failure, do not pass NULL attributes to XML
+	element.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_statement):
+	Lowmem fixes. Return raptor_abbrev_subject_add_property() errors
+	to caller.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_ensure_writen_header):
+	Added int return code.
+	(raptor_rdfxmla_serialize_end) Fixed low-memory crash: make sure
+	context->rdf_RDF_element is not used if NULL.
+
+	* src/raptor_abbrev.c: (raptor_new_qname_from_resource): Fixed
+	low-memory leaks.
+
+	* src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	rdfxml-abbrev & turtle serializer error messages: Removed double
+	0x prefixes - %p already gives one.
+
+	* src/raptor_iostream.c: Changed raptor_iostream_handler2
+	initializers from gcc/c99 style to traditional C.
+
+2008-01-02  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_end):
+	Do not assume xml_writer or rdf_RDF_element are initialized.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_statement):
+	Check for raptor_abbrev_node_lookup() errors.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_ensure_writen_header):
+	Check for alloc failures.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_emit_subject):
+	Check for alloc failures.
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_properties): Check for alloc failures.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_emit_literal):
+	Check for qname attribute alloc failures.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_emit_resource):
+	Check for qname attribute alloc failure.
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_list_items): Check for xml element
+	alloc failure.
+
+	* src/raptor_abbrev.c: (raptor_new_qname_from_resource): Check for
+	alloc failure.
+
+	* src/raptor_abbrev.c: (raptor_abbrev_node_lookup): Check for
+	lookup node allocation failures.
+
+	* src/raptor_abbrev.c: (raptor_new_abbrev_node): Check for alloc
+	failures.
+
+	* src/turtle_parser.y: (raptor_turtle_parse_chunk): Do not leave
+	turtle_parser->buffer a dangling pointer if realloc fails.
+	(raptor_turtle_parse_terminate) When freeing
+	turtle_parser->buffer, do not trust turtle_parser->buffer_length
+	to be in sync.
+
+	* src/raptor_iostream.c: (raptor_new_iostream_to_filename): Close
+	file on alloc failure.
+
+	* src/raptor_iostream.c: (raptor_new_iostream_from_filename):
+	Close file on alloc failure.
+
+	* src/raptor_iostream.c: (raptor_iostream_calculate_modes,
+	raptor_iostream_check_handler, raptor_new_iostream_from_handler2):
+	Fix compiler error on some non-gcc compilers - illegal use of
+	const.
+
+2008-01-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_iostream.c: code style
+
+	* src/raptor_iostream.c: docs
+
+	* src/raptor_iostream.c: (raptor_iostream_calculate_modes): Use
+	handler2 version for calculations.
+	(raptor_iostream_check_handler): Check handler API versions.
+	(raptor_new_iostream_from_handler2,
+	raptor_new_iostream_to_filename,
+	raptor_new_iostream_to_file_handle, raptor_new_iostream_to_string,
+	raptor_new_iostream_from_filename,
+	raptor_new_iostream_from_file_handle): Set mode once.
+
+	* src/raptor_iostream.c: Check handler matches requested mode
+	(raptor_iostream_calculate_modes): Added.
+	(raptor_iostream_check_handler): Renamed from
+	raptor_iostream_init_common.
+	(raptor_new_iostream_from_handler2, raptor_new_iostream_to_filename,
+	raptor_new_iostream_to_file_handle, raptor_new_iostream_to_string,
+	raptor_new_iostream_from_filename,
+	raptor_new_iostream_from_file_handle): Use
+	raptor_iostream_check_handler to check things and
+	raptor_iostream_calculate_modes to set mode.
+
+	* src/raptor_iostream.c: Merge read/write filename code Ensure
+	finish is called to fclose(handle)
+
+	* src/raptor_iostream.c: (test_*): Replace uses of
+	raptor_iostream_get_bytes_written_count with raptor_iostream_tell
+
+	* src/raptor_iostream.c: Use unsigned long offset not bytes.
+	(raptor_iostream_get_bytes_written_count): Deprecated for
+	raptor_iostream_tell
+	(raptor_iostream_tell): Added
+
+	* src/raptor.h: Deprecate raptor_iostream_get_bytes_written_count
+	for raptor_iostream_tell
+
+	* src/raptor_iostream.c: (raptor_filename_iostream_finish): Added
+	to close filename file
+	handle. raptor_iostream_read_file_handle_handler struct added
+	(raptor_new_iostream_from_file_handle): Added.
+	(test_read_from_file_handle): Enabled.
+
+	* src/raptor_iostream.c: Put ended EOF into flags
+
+	* src/raptor_iostream.c: Merge read/write sinks
+
+	* src/raptor_iostream.c: Add private field to raptor_iostream_s
+	for handling freeing handler2
+	(raptor_new_iostream_from_handler2): Add const to hamdler2 arg.
+
+	* src/raptor.h: raptor_iostream_handler2 loses private field - it
+	can be part of internals of raptor_iostream Updated
+	raptor_new_iostream_from_handler2 to make handler2 arg
+	constant pointer to constant data.
+
+	* src/raptor.h: Added raptor_iostream_read_eof and typedef
+	raptor_iostream_read_eof_func to raptor_iostream_handler2
+	structure.
+
+	* src/raptor_iostream.c: (raptor_iostream_read_eof): Added.
+	(main) More unit test refactoring and checking.
+
+	* src/raptor_iostream.c: Resource cleanup on test failures
+
+	* src/raptor_iostream.c: Refactor read tests to be units - one
+	function per test.
+
+	* src/raptor_iostream.c: Refactor write tests to be units - one
+	function per test.
+
+	* src/raptor_iostream.c: (main): Tests for iostream reading
+
+2007-12-31  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_iostream.c: (raptor_iostream_init_common): Added to
+	init iostream fields
+
+	* src/raptor_iostream.c: Replaced raptor_iostream_handler
+	structure with raptor_iostream_handler2
+	(raptor_new_iostream_from_handler2): Added.
+	(raptor_new_iostream_from_handler): Rewritten to use
+	raptor_new_iostream_from_handler2 and create an internal
+	raptor_iostream_handler2.
+	(raptor_new_iostream_from_sink, raptor_new_iostream_from_filename
+	raptor_new_iostream_from_file_handle,
+	raptor_new_iostream_from_string): Added for constructing read
+	iostreams.
+	(method raptor_iostream_read_bytes): Added for reading from read
+	iostreams.
+
+
+	* src/raptor.h: Added raptor_iostream_read_bytes_func Added
+	raptor_iostream_handler2 with version, private field and
+	read_bytes field.  Deprecated raptor_iostream_handler structure
+	for raptor_iostream_handler2 structure.  Added
+	raptor_new_iostream_from_handler2 and deprecated
+	raptor_new_iostream_from_handler Added
+	raptor_new_iostream_from_sink, raptor_new_iostream_from_filename
+	raptor_new_iostream_from_file_handle and
+	raptor_new_iostream_from_string for constructing read iostreams.
+	Added method raptor_iostream_read_bytes for read iostreams.
+
+2007-12-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_internal.h: Move SAX2 to public
+	API. Added new raptor_sax2 typedef.  Added XML type handlers
+	raptor_sax2_start_element_handler,
+	raptor_sax2_end_element_handler, raptor_sax2_characters_handler,
+	raptor_sax2_cdata_handler, raptor_sax2_comment_handler,
+	raptor_sax2_unparsed_entity_decl_handler,
+	raptor_sax2_external_entity_ref_handler.  Added functions
+	raptor_new_sax2, raptor_free_sax2,
+	raptor_sax2_set_start_element_handler,
+	raptor_sax2_set_end_element_handler,
+	raptor_sax2_set_characters_handler, raptor_sax2_set_cdata_handler,
+	raptor_sax2_set_comment_handler,
+	raptor_sax2_set_unparsed_entity_decl_handler,
+	raptor_sax2_set_external_entity_ref_handler,
+	raptor_sax2_set_namespace_handler, raptor_sax2_parse_start,
+	raptor_sax2_parse_chunk, raptor_sax2_parse_handle_errors,
+	raptor_sax2_inscope_xml_language, raptor_sax2_inscope_base_uri
+	Moved log API to public API. Added raptor_log_level and
+	raptor_error_handlers typedefs.  Added
+	raptor_error_handlers_init.
+
+	* src/raptor.h, src/raptor_xml.c: Added
+	raptor_xml_element_get_language
+
+	* src/raptor.h, src/raptor_qname.c: Added
+	raptor_qname_get_local_name and raptor_qname_get_value
+
+	* src/raptor_turtle_writer.c: cast
+
+	* src/raptor_xml_writer.c: cast
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_newline): Cast
+	for signed/unsigned int compare.
+
+	* src/raptor_xml_writer.c: (raptor_xml_writer_indent): Cast for
+	signed/unsigned int compare.
+
+	* tests/turtle/Makefile.am: Add bad-19.ttl
+
+	* tests/turtle/bad-19.ttl: bad-19 () in predicate position
+
+2007-12-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor.types: Add gtkdoc file raptor.types
+
+2007-12-19  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_stringbuffer.c: (raptor_new_stringbuffer) Fixed
+	docs. Removed unnecessary local var and conditional.
+
+2007-12-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/turtle_parser.y: (raptor_trig_parse_recognise_syntax): Wrap
+	function in #ifdef RAPTOR_PARSER_TRIG. Used only if
+	RAPTOR_PARSER_TRIG is defined, avoids gcc warning on unused static
+	function.
+
+2007-12-13  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_uri.c: Portability: Use Windows-like path handling on
+	Symbian.
+
+2007-12-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-tutorial-parsing.xml: fix raptor_set_feature() call
+	to have 3 args
+
+2007-11-28  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-17.ttl,
+	tests/turtle/bad-18.ttl, tests/turtle/manifest-bad.ttl: bad tests
+	17 and 18 to Forbid ' and '''-quoted strings
+
+	* src/turtle_lexer.l: Remove '-quoted strings
+
+2007-11-26  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Update to handle OSX glibtoolize and optional ltdl
+
 2007-11-15  Lauri Aalto <laalto@iki.fi>
 
 	* src/raptor_sax2.c: (raptor_sax2_parse_chunk) Fix compiler
