@@ -52,6 +52,10 @@
 
 #ifndef STANDALONE
 
+#ifndef RAPTOR_JSON_WRITER_DATATYPES
+#define RAPTOR_JSON_WRITER_DATATYPES 0
+#endif
+
 struct raptor_json_writer_s {
   raptor_uri* base_uri;
   
@@ -64,10 +68,12 @@ struct raptor_json_writer_s {
   /* outputting to this iostream */
   raptor_iostream *iostr;
 
+#if RAPTOR_JSON_WRITER_DATATYPES == 1
   raptor_uri* xsd_boolean_uri;
   raptor_uri* xsd_decimal_uri;
   raptor_uri* xsd_double_uri;
   raptor_uri* xsd_integer_uri;
+#endif
 
   /* current indent */
   int indent;
@@ -113,10 +119,12 @@ raptor_new_json_writer(raptor_uri* base_uri,
   json_writer->iostr=iostr;
   json_writer->base_uri=base_uri;
 
+#if RAPTOR_JSON_WRITER_DATATYPES == 1
   json_writer->xsd_boolean_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
   json_writer->xsd_decimal_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   json_writer->xsd_double_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
   json_writer->xsd_integer_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+#endif
 
   json_writer->indent_step=2;
   
@@ -135,6 +143,7 @@ void
 raptor_free_json_writer(raptor_json_writer* json_writer)
 {
 
+#if RAPTOR_JSON_WRITER_DATATYPES == 1
   if(json_writer->xsd_boolean_uri)
     raptor_free_uri(json_writer->xsd_boolean_uri);
   if(json_writer->xsd_decimal_uri)
@@ -143,6 +152,7 @@ raptor_free_json_writer(raptor_json_writer* json_writer)
     raptor_free_uri(json_writer->xsd_double_uri);
   if(json_writer->xsd_integer_uri)
     raptor_free_uri(json_writer->xsd_integer_uri);
+#endif
 
   RAPTOR_FREE(raptor_json_writer, json_writer);
 }
@@ -306,7 +316,7 @@ raptor_json_writer_literal_object(raptor_json_writer* json_writer,
 
 /* not used here */
 
-#if 0
+#if RAPTOR_JSON_WRITER_DATATYPES == 1
 int raptor_json_writer_literal_datatype(raptor_json_writer* json_writer, raptor_namespace_stack *nstack, unsigned char* s, unsigned char* lang, raptor_uri* datatype);
 
 
