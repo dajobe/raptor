@@ -584,6 +584,6 @@ raptor_init_serializer_json(void)
                                             "RDF JSON Resource-Centric", 
                                             "text/json",
                                             "json",
-                                            "http://n2.talis.com/wiki/RDF_JSON_Specification",
+                                            (const unsigned char *)"http://n2.talis.com/wiki/RDF_JSON_Specification",
                                             &raptor_json_resource_serializer_register_factory);
 }
