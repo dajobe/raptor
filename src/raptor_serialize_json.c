@@ -86,7 +86,7 @@ raptor_json_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_json_context* context=(raptor_json_context*)serializer->context;
 
-  context->is_resource=!strcmp(name,"json-r");
+  context->is_resource=!strcmp(name,"json");
   
   return 0;
 }
