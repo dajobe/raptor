@@ -2,7 +2,7 @@
  *
  * rdfdiff.c - Raptor RDF diff tool
  *
- * Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
@@ -123,11 +123,11 @@ static int ignore_warnings = 0;
 static int emit_from_header = 1;
 static int emit_to_header = 1;
 
-static rdfdiff_file*from_file = NULL;
+static rdfdiff_file* from_file = NULL;
 static rdfdiff_file*to_file = NULL;
 
 static rdfdiff_file* rdfdiff_new_file(const unsigned char *name, const char *syntax);
-static void rdfdiff_free_file(rdfdiff_file*file);
+static void rdfdiff_free_file(rdfdiff_file* file);
 
 static rdfdiff_blank *rdfdiff_find_blank(rdfdiff_blank *first, char *blank_id);
 static rdfdiff_blank *rdfdiff_new_blank(char *blank_id);
@@ -166,7 +166,7 @@ safe_strcmp(const char *s1, const char *s2)
 
 #ifdef RDFDIFF_DEBUG
 static void
-rdfdiff_print_statements(rdfdiff_file*file)
+rdfdiff_print_statements(rdfdiff_file* file)
 {    
   fprintf(stderr, "Statements in %s\n",  file->name);
   rdfdiff_link *cur = file->first;
@@ -182,7 +182,7 @@ rdfdiff_print_statements(rdfdiff_file*file)
 static rdfdiff_file*
 rdfdiff_new_file(const unsigned char *name, const char *syntax)
 {
-  rdfdiff_file*file = (rdfdiff_file*)RAPTOR_CALLOC(rdfdiff_file, 1, sizeof(rdfdiff_file));
+  rdfdiff_file* file = (rdfdiff_file*)RAPTOR_CALLOC(rdfdiff_file, 1, sizeof(rdfdiff_file));
   if(file) {
     file->name = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)name)+1);
     strcpy((char*)file->name, (const char*)name);
@@ -485,7 +485,7 @@ static void
 rdfdiff_error_handler(void *data, raptor_locator *locator,
                       const char *message)
 {
-  rdfdiff_file*file = (rdfdiff_file*)data;
+  rdfdiff_file* file = (rdfdiff_file*)data;
   
   if(!ignore_errors) {
     fprintf(stderr, "%s: Error - ", program);
@@ -504,7 +504,7 @@ static void
 rdfdiff_warning_handler(void *data, raptor_locator *locator,
                         const char *message) 
 {
-  rdfdiff_file*file = (rdfdiff_file*)data;
+  rdfdiff_file* file = (rdfdiff_file*)data;
 
   if(!ignore_warnings) {
     fprintf(stderr, "%s: Warning - ", program);
@@ -540,7 +540,7 @@ rdfdiff_find_blank(rdfdiff_blank *first, char *blank_id)
 
 
 static rdfdiff_blank *
-rdfdiff_lookup_blank(rdfdiff_file*file, char *blank_id) 
+rdfdiff_lookup_blank(rdfdiff_file* file, char *blank_id) 
 {
   rdfdiff_blank *rv_blank = rdfdiff_find_blank(file->first_blank, blank_id);
   
@@ -564,7 +564,7 @@ rdfdiff_lookup_blank(rdfdiff_file*file, char *blank_id)
 
 
 static int
-rdfdiff_add_blank_statement(rdfdiff_file*file, const raptor_statement *statement)
+rdfdiff_add_blank_statement(rdfdiff_file* file, const raptor_statement *statement)
 {
   int rv = 0;
   
@@ -611,7 +611,7 @@ rdfdiff_add_blank_statement(rdfdiff_file*file, const raptor_statement *statement
 
 
 static int
-rdfdiff_add_blank_statement_owner(rdfdiff_file*file, const raptor_statement *statement)
+rdfdiff_add_blank_statement_owner(rdfdiff_file* file, const raptor_statement *statement)
 {
   int rv = 0;
   
@@ -633,7 +633,7 @@ rdfdiff_add_blank_statement_owner(rdfdiff_file*file, const raptor_statement *sta
 
 
 static int
-rdfdiff_add_statement(rdfdiff_file*file, const raptor_statement *statement) 
+rdfdiff_add_statement(rdfdiff_file* file, const raptor_statement *statement) 
 {
   int rv = 0;
   
@@ -672,6 +672,21 @@ rdfdiff_add_statement(rdfdiff_file*file, const raptor_statement *statement)
 }
 
 
+static int
+rdfdiff_statement_exists(rdfdiff_file* file, const raptor_statement *statement) 
+{
+  rdfdiff_link* cur = file->first;
+  
+  while(cur) {
+    if(rdfdiff_statement_equals(cur->statement, statement))
+      return 1;
+    cur=cur->next;
+  }
+
+  return 0;
+}
+
+
 /*
  * rdfdiff_collect_statements - Called when parsing "from" file to build a
  * list of statements for comparison with those in the "to" file.
@@ -680,8 +695,11 @@ static void
 rdfdiff_collect_statements(void *user_data, const raptor_statement *statement)
 {
   int rv = 0;
+  rdfdiff_file* file = (rdfdiff_file*)user_data;
+
+  if(rdfdiff_statement_exists(file, statement))
+    return;
   
-  rdfdiff_file*file = (rdfdiff_file*)user_data;
   file->statement_count++;
 
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
@@ -713,7 +731,7 @@ rdfdiff_compare_statements(void *user_data, const raptor_statement *statement)
 {
   int rv = 0;
   
-  rdfdiff_file*file = (rdfdiff_file*)user_data; /* file == &to_file */
+  rdfdiff_file* file = (rdfdiff_file*)user_data; /* file == &to_file */
   file->statement_count++;
 
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
