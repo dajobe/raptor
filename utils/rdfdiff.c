@@ -140,7 +140,6 @@ static void rdfdiff_error_handler(void *data, raptor_locator *locator, const cha
 static void rdfdiff_warning_handler(void *data, raptor_locator *locator, const char *message);
 
 static void rdfdiff_collect_statements(void *user_data, const raptor_statement *statement);
-static void rdfdiff_compare_statements(void *user_data, const raptor_statement *statement);
 
 int main(int argc, char *argv[]);
 
@@ -295,30 +294,44 @@ rdfdiff_ordinal_equals_resource(int ordinal, raptor_uri *resource)
 static int
 rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
 {
+  int rv=0;
   
   if(!s1 || !s2)
     return 0;
+
+#if RAPTOR_DEBUG > 2
+  fprintf(stderr, "(rdfdiff_statement_equals) Comparing ");
+  raptor_print_statement(s1, stderr);
+  fprintf(stderr, " to ");
+  raptor_print_statement(s2, stderr);
+#endif
 
   if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL &&
      s2->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
 
     /* check for ordinal/resource equivalence */
     if(!rdfdiff_ordinal_equals_resource(*(int *)s1->subject, 
-                                        (raptor_uri *)s2->subject))
-      return 0;
+                                        (raptor_uri *)s2->subject)) {
+      rv=0;
+      goto done;
+    }
     
   } else if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
             s2->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     /* check for ordinal/resource equivalence */
     if(!rdfdiff_ordinal_equals_resource(*(int *)s2->subject,
-                                        (raptor_uri *)s1->subject))
-      return 0;
+                                        (raptor_uri *)s1->subject)) {
+      rv=0;
+      goto done;
+    }
       
   } else {
     /* normal comparison */
-    if(s1->subject_type != s2->subject_type)
-      return 0;
+    if(s1->subject_type != s2->subject_type) {
+      rv=0;
+      goto done;
+    }
 
     if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
       /* Here for completeness. Anonymous nodes are taken care of
@@ -327,8 +340,10 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
         return 0;*/
     } else {
       if(!raptor_uri_equals((raptor_uri *)s1->subject,
-                            (raptor_uri *)s2->subject))
-        return 0;
+                            (raptor_uri *)s2->subject)) {
+        rv=0;
+        goto done;
+      }
     }
   }
 
@@ -337,34 +352,46 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
 
     /* check for ordinal/resource equivalence */
     if(!rdfdiff_ordinal_equals_resource(*(int *)s1->predicate, 
-                                        (raptor_uri *)s2->predicate))
-      return 0;
+                                        (raptor_uri *)s2->predicate)) {
+      rv=0;
+      goto done;
+    }
 
   } else if(s1->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE &&
             s2->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     /* check for ordinal/resource equivalence */
     if(!rdfdiff_ordinal_equals_resource(*(int *)s2->predicate,
-                                        (raptor_uri *)s1->predicate))
-      return 0;
+                                        (raptor_uri *)s1->predicate)) {
+      rv=0;
+      goto done;
+    }
       
   } else {
     
-    if(s1->predicate_type != s2->predicate_type)
-      return 0;
+    if(s1->predicate_type != s2->predicate_type) {
+      rv=0;
+      goto done;
+    }
   
     if(s1->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-      if(*(int *)s1->predicate != *(int *)s2->predicate)
-        return 0;
+      if(*(int *)s1->predicate != *(int *)s2->predicate) {
+        rv=0;
+        goto done;
+      }
     } else {
       if(!raptor_uri_equals((raptor_uri *)s1->predicate,
-                            (raptor_uri *)s2->predicate))
-        return 0;
+                            (raptor_uri *)s2->predicate)) {
+        rv=0;
+        goto done;
+      }
     }
   }
   
-  if(s1->object_type != s2->object_type)
-    return 0;
+  if(s1->object_type != s2->object_type) {
+    rv=0;
+    goto done;
+  }
   
   if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
      s1->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
@@ -386,21 +413,30 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
                               s2->object_literal_datatype);
     }
 
-    return equal;
+    rv=equal;
+    goto done;
   } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     /* Here for completeness. Anonymous nodes are taken care of
      * elsewhere */
     /* if(strcmp((const char *)s1->object, (const char *)s2->object) != 0)
        return 0; */
   } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    if(*(int *)s1->object != *(int *)s2->object)
-      return 0;
+    if(*(int *)s1->object != *(int *)s2->object) {
+      rv=0;
+      goto done;
+    }
   } else {
     if(!raptor_uri_equals((raptor_uri *)s1->object, (raptor_uri *)s2->object))
-      return 0;
+      rv=0;
   }
 
-  return 1;
+  rv=1;
+  done:
+
+#if RAPTOR_DEBUG > 2
+  fprintf(stderr, " : %s\n", (rv ? "equal" : "not equal"));
+#endif
+  return rv;
 }
 
 
@@ -672,18 +708,34 @@ rdfdiff_add_statement(rdfdiff_file* file, const raptor_statement *statement)
 }
 
 
-static int
-rdfdiff_statement_exists(rdfdiff_file* file, const raptor_statement *statement) 
+static rdfdiff_link*
+rdfdiff_statement_find(rdfdiff_file* file, const raptor_statement *statement,
+                       rdfdiff_link** prev_p)
 {
+  rdfdiff_link* prev = NULL;
   rdfdiff_link* cur = file->first;
   
   while(cur) {
-    if(rdfdiff_statement_equals(cur->statement, statement))
-      return 1;
+    if(rdfdiff_statement_equals(cur->statement, statement)) {
+      if(prev_p)
+        *prev_p=prev;
+      return cur;
+    }
+    prev=cur;
     cur=cur->next;
   }
 
-  return 0;
+  return NULL;
+}
+
+
+static int
+rdfdiff_statement_exists(rdfdiff_file* file, const raptor_statement *statement)
+{
+  rdfdiff_link* node;
+  rdfdiff_link* prev=NULL;
+  node=rdfdiff_statement_find(file, statement, &prev);
+  return (node != NULL);
 }
 
 
@@ -722,81 +774,6 @@ rdfdiff_collect_statements(void *user_data, const raptor_statement *statement)
 }
 
 
-/*
- * rdfdiff_compare_statements - Called when parsing "to" file to compare the
- * statements with those in the "from" file.
- */
-static void
-rdfdiff_compare_statements(void *user_data, const raptor_statement *statement)
-{
-  int rv = 0;
-  
-  rdfdiff_file* file = (rdfdiff_file*)user_data; /* file == &to_file */
-  file->statement_count++;
-
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-      statement->object_type  == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-
-    /* We don't have enough information yet to make the
-     * comparison. We'll have to wait until the parsing is complete.
-     */
-    if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-      rv = rdfdiff_add_blank_statement(file, statement);
-
-    if(rv == 0 && statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-      rv = rdfdiff_add_blank_statement_owner(file, statement);
-
-    if(rv != 0)
-      raptor_parse_abort(file->parser);
-
-  } else {
-
-    rdfdiff_link *prev = 0;
-    rdfdiff_link *cur = from_file->first;
-
-    while (cur) {
-
-      if(rdfdiff_statement_equals(cur->statement, statement)) {
-        /* remove it from the list */
-        if(from_file->first == cur) {
-          from_file->first = cur->next;
-        } else {
-          prev->next = cur->next;
-        }
-
-        raptor_free_statement(cur->statement);
-      
-        RAPTOR_FREE(rdfdiff_link, cur);
-
-        break;
-      
-      } else {
-        prev = cur;
-      }
-    
-      cur = cur->next;
-    
-    }
-
-    if(!cur) {
-
-      if(!brief) {
-
-        if(emit_from_header) {
-          fprintf(stderr, "Statements in %s but not in %s\n",  to_file->name, from_file->name);
-          emit_from_header = 0;
-        }
-    
-        fprintf(stderr, "<    ");
-        raptor_print_statement(statement, stderr);
-        fprintf(stderr, "\n");
-      }
-        
-      file->difference_count++;
-    } 
-  }
-  
-}
 
 int
 main(int argc, char *argv[]) 
@@ -815,6 +792,7 @@ main(int argc, char *argv[])
   char *p;
   int rv = 0;
   rdfdiff_blank *b1;
+  rdfdiff_link *cur;
   
   program=argv[0];
   if((p=strrchr(program, '/')))
@@ -959,7 +937,8 @@ main(int argc, char *argv[])
   }
 
   /* parse the files */
-  raptor_set_statement_handler(from_file->parser, from_file, rdfdiff_collect_statements);
+  raptor_set_statement_handler(from_file->parser, from_file,
+                               rdfdiff_collect_statements);
   
   if(raptor_parse_uri(from_file->parser, from_uri, base_uri)) {
     fprintf(stderr, "%s: Failed to parse URI %s as %s content\n", program, 
@@ -969,7 +948,8 @@ main(int argc, char *argv[])
   } else {
 
     /* Note intentional from_uri as base_uri */
-    raptor_set_statement_handler(to_file->parser, to_file, rdfdiff_compare_statements);
+    raptor_set_statement_handler(to_file->parser, to_file,
+                                 rdfdiff_collect_statements);
     if(raptor_parse_uri(to_file->parser, to_uri, base_uri ? base_uri: from_uri)) {
       fprintf(stderr, "%s: Failed to parse URI %s as %s content\n", program, 
               to_string, to_syntax);
@@ -977,6 +957,41 @@ main(int argc, char *argv[])
       goto exit;
     }
   }
+
+
+  /* Compare triples with no blank nodes */
+  cur = to_file->first;
+  while(cur) {
+    rdfdiff_link* node;
+    rdfdiff_link* prev;
+    node=rdfdiff_statement_find(from_file, cur->statement, &prev);
+    if(node) {
+      /* exists in from file - remove it from the list */
+      if(from_file->first == node) {
+        from_file->first = node->next;
+      } else {
+        prev->next = node->next;
+      }
+      raptor_free_statement(node->statement);
+      RAPTOR_FREE(rdfdiff_link, node);
+    } else {
+      if(!brief) {
+        if(emit_from_header) {
+          fprintf(stderr, "Statements in %s but not in %s\n",
+                  to_file->name, from_file->name);
+          emit_from_header = 0;
+        }
+        
+        fprintf(stderr, "<    ");
+        raptor_print_statement(cur->statement, stderr);
+        fprintf(stderr, "\n");
+      }
+      
+      to_file->difference_count++;
+    }
+    cur=cur->next;
+  }
+
   
   /* Now compare the blank nodes */
   b1 = to_file->first_blank;
@@ -1022,10 +1037,10 @@ main(int argc, char *argv[])
   if(from_file->first) {
     /* The entrys left in from_file have not been found in to_file. */
     if(!brief) {
-      rdfdiff_link* cur;
-      
+
       if(emit_to_header) {
-        fprintf(stderr, "Statements in %s but not in %s\n",  from_file->name, to_file->name);
+        fprintf(stderr, "Statements in %s but not in %s\n",  from_file->name,
+                to_file->name);
         emit_to_header = 0;
       }
       
