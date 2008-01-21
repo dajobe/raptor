@@ -1061,9 +1061,13 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_rdfxml_parser* rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
   raptor_sax2* sax2;
 
+  /* Allocate sax2 object */
   sax2=raptor_new_sax2(rdf_parser, &rdf_parser->error_handlers);
   rdf_xml_parser->sax2=sax2;
+  if(!sax2)
+    return 1;
 
+  /* Initialize sax2 element handlers */
   raptor_sax2_set_start_element_handler(sax2, raptor_rdfxml_start_element_handler);
   raptor_sax2_set_end_element_handler(sax2, raptor_rdfxml_end_element_handler);
   raptor_sax2_set_characters_handler(sax2, raptor_rdfxml_characters_handler);
@@ -1072,7 +1076,8 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_unparsed_entity_decl_handler(sax2, raptor_rdfxml_unparsed_entity_decl_handler);
   raptor_sax2_set_external_entity_ref_handler(sax2, raptor_rdfxml_external_entity_ref_handler);
   raptor_sax2_set_namespace_handler(sax2, raptor_rdfxml_sax2_new_namespace_handler);
-  
+
+  /* Allocate uris */  
   RAPTOR_RDF_type_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("type");
   RAPTOR_RDF_value_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("value");
   RAPTOR_RDF_subject_URI(rdf_xml_parser)=raptor_new_uri_for_rdf_concept("subject");
@@ -1102,8 +1107,37 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
 
   RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser)=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
 
-  rdf_xml_parser->id_set=raptor_new_id_set();
+  /* Check for uri allocation failures */
+  if(!RAPTOR_RDF_type_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_value_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_subject_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_predicate_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_object_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_Statement_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_Seq_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_Bag_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_Alt_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_List_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_first_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_rest_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_nil_URI(rdf_xml_parser) ||
+     !RAPTOR_DAML_NS_URI(rdf_xml_parser) ||
+     !RAPTOR_DAML_List_URI(rdf_xml_parser) ||
+     !RAPTOR_DAML_first_URI(rdf_xml_parser) ||
+     !RAPTOR_DAML_rest_URI(rdf_xml_parser) ||
+     !RAPTOR_DAML_nil_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_RDF_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_Description_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_li_URI(rdf_xml_parser) ||
+     !RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser))
+    return 1;
 
+  /* Create id set object */
+  rdf_xml_parser->id_set=raptor_new_id_set();
+  if(!rdf_xml_parser->id_set)
+    return 1;
+
+  /* Everything succeeded */
   return 0;
 }
 
@@ -1143,7 +1177,10 @@ raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser)
   raptor_rdfxml_element* element;
   int i;
 
-  raptor_free_sax2(rdf_xml_parser->sax2);
+  if(rdf_xml_parser->sax2) {
+    raptor_free_sax2(rdf_xml_parser->sax2);
+    rdf_xml_parser->sax2=NULL;
+  }
   
   while( (element=raptor_rdfxml_element_pop(rdf_xml_parser)) )
     raptor_free_rdfxml_element(element);
@@ -1157,8 +1194,10 @@ raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser)
     }
   }
   
-
-  raptor_free_id_set(rdf_xml_parser->id_set);
+  if(rdf_xml_parser->id_set) {
+    raptor_free_id_set(rdf_xml_parser->id_set);
+    rdf_xml_parser->id_set=NULL;
+  }
 
 }
 
