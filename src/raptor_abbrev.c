@@ -491,7 +491,21 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
                                    raptor_abbrev_node* predicate,
                                    raptor_abbrev_node* object) 
 {
+  int i;
   int err;
+
+  i=0;
+  while (i < raptor_sequence_size(subject->properties)) {
+    raptor_abbrev_node* p = raptor_sequence_get_at(subject->properties, i++);
+    raptor_abbrev_node* o = raptor_sequence_get_at(subject->properties, i++);
+
+    if(raptor_abbrev_node_equals(predicate, p) &&
+       raptor_abbrev_node_equals(object, o)) {
+      /* Already seen this triple */
+      return 0;
+    }
+  }
+  
 
   predicate->ref_count++;
   object->ref_count++;
