@@ -396,7 +396,8 @@ check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; result=1; \
+	    $(ECHO) "FAILED"; \
+	    cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
