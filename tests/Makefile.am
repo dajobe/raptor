@@ -396,7 +396,7 @@ check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 	  if test $$status = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(ECHO) "FAILED"; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
@@ -434,7 +434,7 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    cat $$name.err; \
+	    cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name-rdfxmla.rdf $$name.res $$name.err; \
 	done; \
@@ -454,7 +454,7 @@ check-turtle-serialize: build-rdfdiff build-rapper $(RDF_TEST_FILES) $(TURTLE_SE
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    cat $$name.err; \
+	    cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name-turtle.rdf $$name.res $$name.err; \
 	done; \
