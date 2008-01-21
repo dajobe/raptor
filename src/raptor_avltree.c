@@ -732,6 +732,7 @@ main(int argc, char *argv[])
   }
   for(i=0; items[i]; i++) {
     int rc;
+    raptor_avltree_t node;
 
 #if RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding tree item '%s'\n", program, items[i]);
@@ -742,6 +743,14 @@ main(int argc, char *argv[])
       fprintf(stderr,
               "%s: Adding tree item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
+      exit(1);
+    }
+
+    node=raptor_avltree_search(tree, (void*)items[i]);
+    if(!node) {
+      fprintf(stderr,
+              "%s: Tree did NOT contain item %d '%s' as expected\n",
+              program, i, items[i]);
       exit(1);
     }
   }
