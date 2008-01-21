@@ -528,7 +528,7 @@ raptor_xml_element_get_language(raptor_xml_element* xml_element)
  *
  *   http://www.w3.org/TR/REC-xml-names/#NT-NCName
  * 
- * Returns non-zero if the ID string is valid
+ * Return value: non-zero if the ID string is valid
  **/
 int
 raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)

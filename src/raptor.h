@@ -1572,11 +1572,11 @@ typedef int (*raptor_sax2_external_entity_ref_handler)(void *user_data, const un
 
 /**
  * raptor_log_level:
- * RAPTOR_LOG_LEVEL_NONE: Internal
- * RAPTOR_LOG_LEVEL_FATAL: Fatal error message
- * RAPTOR_LOG_LEVEL_ERROR: Error message
- * RAPTOR_LOG_LEVEL_WARNING: Warning message
- * RAPTOR_LOG_LEVEL_LAST: Internal
+ * @RAPTOR_LOG_LEVEL_NONE: Internal
+ * @RAPTOR_LOG_LEVEL_FATAL: Fatal error message
+ * @RAPTOR_LOG_LEVEL_ERROR: Error message
+ * @RAPTOR_LOG_LEVEL_WARNING: Warning message
+ * @RAPTOR_LOG_LEVEL_LAST: Internal
  *
  * Log levels
  */
