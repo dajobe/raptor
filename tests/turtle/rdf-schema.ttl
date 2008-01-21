@@ -22,8 +22,7 @@ rdf:type     a rdf:Property;
      :subClassOf :ConstraintResource,
             rdf:Property .
 
-:ConstraintResource     a :Class,
-            :Class;
+:ConstraintResource     a :Class;
      :comment "Resources used to express RDF Schema constraints.";
      :label "ConstraintResource"@en,
             "RessourceContrainte"@fr;
@@ -39,8 +38,7 @@ rdf:type     a rdf:Property;
      :label "ContainerMembershipProperty"@en;
      :subClassOf rdf:Property .
 
-:Literal     a :Class,
-            :Class;
+:Literal     a :Class;
      :comment "This represents the set of atomic values, eg. textual strings.";
      :label "Literal"@en,
             "Litt\u00E9ral"@fr .

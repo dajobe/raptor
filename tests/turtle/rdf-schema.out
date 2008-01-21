@@ -15,7 +15,6 @@
 <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
-<http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/2000/01/rdf-schema#comment> "Resources used to express RDF Schema constraints." .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/2000/01/rdf-schema#label> "ConstraintResource"@en .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/2000/01/rdf-schema#label> "RessourceContrainte"@fr .
@@ -28,7 +27,6 @@
 <http://www.w3.org/2000/01/rdf-schema#ContainerMembershipProperty> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#ContainerMembershipProperty> <http://www.w3.org/2000/01/rdf-schema#label> "ContainerMembershipProperty"@en .
 <http://www.w3.org/2000/01/rdf-schema#ContainerMembershipProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
-<http://www.w3.org/2000/01/rdf-schema#Literal> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#Literal> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#Literal> <http://www.w3.org/2000/01/rdf-schema#comment> "This represents the set of atomic values, eg. textual strings." .
 <http://www.w3.org/2000/01/rdf-schema#Literal> <http://www.w3.org/2000/01/rdf-schema#label> "Literal"@en .
