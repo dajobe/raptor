@@ -51,11 +51,6 @@
 #include "raptor_internal.h"
 
 
-#ifdef RAPTOR_DEBUG
-#define QUOTE_FN(name) #name
-#endif
-
-
 #if RAPTOR_DEBUG > 1
 #define RAPTOR_AVLTREE_DEBUG1(msg) RAPTOR_DEBUG1(msg)
 #else
@@ -274,6 +269,7 @@ raptor_avltree_check_node(raptor_avltree* tree, raptor_avltree_node* node,
       fputs("ERROR bad node ", stderr);
       raptor_avltree_print_node(node);
       fputc('\n', stderr);
+      fflush(stderr);
       abort();
     }
     if(node->parent->left != node && node->parent->right != node) {
@@ -284,6 +280,7 @@ raptor_avltree_check_node(raptor_avltree* tree, raptor_avltree_node* node,
       fputs(" has no reference to child node ", stderr);
       raptor_avltree_print_node(node);
       fputc('\n', stderr);
+      fflush(stderr);
       abort();
     }
   }
@@ -386,7 +383,7 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "after");
+  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
   return FALSE;
 }
@@ -488,7 +485,7 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "after");
+  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
   return FALSE;
 }
@@ -618,7 +615,7 @@ raptor_avltree_delete_internal(raptor_avltree* tree,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "after");
+  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
 
   return rc;
@@ -744,7 +741,7 @@ raptor_avltree_balance_left(raptor_avltree* tree,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "after");
+  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
 }
 
