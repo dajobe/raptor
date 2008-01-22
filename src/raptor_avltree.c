@@ -383,7 +383,8 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
+  if(!*rebalancing_p)
+    raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
   return FALSE;
 }
@@ -485,7 +486,8 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
+  if(!*rebalancing_p)
+    raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
   return FALSE;
 }
@@ -615,7 +617,8 @@ raptor_avltree_delete_internal(raptor_avltree* tree,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
+  if(!*rebalancing_p)
+    raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
 
   return rc;
@@ -741,7 +744,8 @@ raptor_avltree_balance_left(raptor_avltree* tree,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp, __func__, "after");
+  if(!*rebalancing_p)
+    raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
 }
 
@@ -828,8 +832,8 @@ raptor_avltree_balance_right(raptor_avltree* tree,
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
 #endif
-  raptor_avltree_check_node(tree, *node_pp,
-                            "raptor_avltree_balance_right", "after");
+  if(!*rebalancing_p)
+    raptor_avltree_check_node(tree, *node_pp, __func__, "after");
 #endif
 }
 
