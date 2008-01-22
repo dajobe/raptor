@@ -302,11 +302,8 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
 
   p_parent=(*node_pp)->parent;
   
-#ifdef RAPTOR_DEBUG
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
-#endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "before");
 #endif
 
   rc=raptor_avltree_sprout(tree, *node_pp, &(*node_pp)->left, p_data,
@@ -407,11 +404,8 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
 
   p_parent=(*node_pp)->parent;
   
-#ifdef RAPTOR_DEBUG
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
-#endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "before");
 #endif
 
   rc=raptor_avltree_sprout(tree, *node_pp, &(*node_pp)->right, p_data,
@@ -568,11 +562,8 @@ raptor_avltree_delete_internal(raptor_avltree* tree,
     return FALSE;
   }
 
-#ifdef RAPTOR_DEBUG
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
-#endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "before");
 #endif
 
   cmp= tree->compare_fn((*node_pp)->data, p_data);
@@ -677,11 +668,8 @@ raptor_avltree_balance_left(raptor_avltree* tree,
 
   p_parent=(*node_pp)->parent;
   
-#ifdef RAPTOR_DEBUG
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
-#endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "before");
 #endif
 
   switch((*node_pp)->balance) {
