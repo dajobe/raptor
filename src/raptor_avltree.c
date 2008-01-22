@@ -528,11 +528,8 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
     return FALSE;
   }
 
-#ifdef RAPTOR_DEBUG
 #if RAPTOR_DEBUG > 1
   raptor_avltree_check(tree);
-#endif
-  raptor_avltree_check_node(tree, *node_pp, QUOTE_FN(__func__), "before");
 #endif
 
   /* compare the data */
