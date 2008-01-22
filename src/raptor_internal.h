@@ -1174,7 +1174,11 @@ int raptor_avltree_add(raptor_avltree* tree, raptor_avltree_t p_user);
 int raptor_avltree_delete(raptor_avltree* tree, raptor_avltree_t);
 raptor_avltree_t raptor_avltree_search(raptor_avltree* tree, raptor_avltree_t p_user);
 int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
-
+int raptor_avltree_size(raptor_avltree* tree);
+#ifdef RAPTOR_DEBUG
+int raptor_avltree_dump(raptor_avltree* tree, FILE* stream);
+void raptor_avltree_check(raptor_avltree* tree);
+#endif
 
 /* end of RAPTOR_INTERNAL */
 #endif
