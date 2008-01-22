@@ -943,7 +943,7 @@ main(int argc, char *argv[])
   raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"ex:foo ");
 
   raptor_turtle_writer_quoted_counted_string(turtle_writer, longstr,
-                                             strlen(longstr));
+                                             strlen((const char*)longstr));
   raptor_turtle_writer_raw_counted(turtle_writer,
                                    (const unsigned char*)" ;", 2);
   raptor_turtle_writer_newline(turtle_writer);
