@@ -1,4 +1,91 @@
+2008-01-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: Added prototypes for raptor_avltree_size,
+	raptor_avltree_dump and raptor_avltree_check
+
+	* src/raptor_avltree.c: raptor_avltree_node gains a parent field
+	raptor_avltree gains a size field
+	(raptor_avltree_sprout): Add a parent node arg for updating parent
+	field on sprouts.
+	(raptor_avltree_add): Call raptor_avltree_sprout with NULL parent.
+	(raptor_avltree_print_node): Added for debugging
+	(raptor_avltree_check_node): Added to check a node for validity of
+	pointers
+	(raptor_avltree_sprout_left, raptor_avltree_sprout_right,
+	raptor_avltree_sprout, raptor_avltree_balance_left,
+	raptor_avltree_balance_right): Update parent pointers and run
+	check functions afterwards.
+	(raptor_avltree_delete_internal): Run check functions
+	(raptor_avltree_size): Added to get tree size.
+	(raptor_avltree_dump_internal, raptor_avltree_dump,
+	raptor_avltree_check_internal, raptor_avltree_check): Added for
+	debugging tree and checking consistency.
+	(main): Added one more test item so tree is not balanced.  Run
+	checks during adds and delete.
+
+2008-01-21  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_parse_init): Check for
+	allocation failures and return error code if necessary.
+	(raptor_rdfxml_parse_terminate): Do not assume sax2, id_set are
+	initialized.
+
+2008-01-21  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c: Changed algorithm - read both files into
+	rdfdiff_file* structures with rdfdiff_collect_statements, removing
+	duplicates for each file then compare afterwards.
+	(rdfdiff_statement_equals): Edited to have one return.
+	(rdfdiff_statement_find): Added
+	(rdfdiff_statement_exists): Uses rdfdiff_statement_find.
+	(rdfdiff_compare_statements): Removed.
+	(main): Use rdfdiff_collect_statements and after both files are
+	read in, walk through and remove common statements from the
+	from_file list.
+
+	* tests/Makefile.am: show results from check-rdfdiff failing
+
+	* utils/rdfdiff.c: (rdfdiff_statement_exists): Added.
+	(rdfdiff_collect_statements): Use rdfdiff_statement_exists to not
+	add duplicate statements.
+
+	* tests/Makefile.am: Set result=1 on errors
+
+2008-01-20  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/rdf-schema.out, tests/turtle/rdf-schema.ttl: Remove
+	duplicate statements from rdf-schema* now that serializer discards
+	them
+
+	* src/raptor_abbrev.c: (raptor_abbrev_subject_add_property): Do
+	not save duplicate statements.
+	Fixes Issue #0000245 http://bugs.librdf.org/mantis/view.php?id=245
+
+	* src/raptor_avltree.c: (main): Add test for raptor_avltree_search
+
+	* src/raptor.h, src/raptor_xml.c: autodocs
+
 2008-01-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_json.c: (raptor_json_serialize_init):
+	Change the test for name "json".
+
+	* src/raptor_serialize_json.c: (raptor_init_serializer_json):
+	Change serializer name 'json-t' to 'json-triples'
+
+	* src/raptor_serialize_json.c: (raptor_init_serializer_json): Set
+	JSON mime type to application/json.  Change serializer name 'json'
+	to resource-centric one and add alias 'json-r'.
+
+	* src/raptor_xml_writer.c: (main): Use raptor_iostream_tell rather
+	than deprecated raptor_iostream_get_bytes_written_count
+
+	* src/raptor_serialize_json.c: (raptor_init_serializer_json): Cast
+
+	* src/raptor_json_writer.c: Added define
+	RAPTOR_JSON_WRITER_DATATYPES to remove unused fields and
+	initialising/freeing supporting commented-out function
+	raptor_json_writer_literal_datatype
 
 	* configure.ac, src/Makefile.am, src/raptor_internal.h,
 	src/raptor_json_writer.c, src/raptor_serialize.c,
