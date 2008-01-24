@@ -997,7 +997,8 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
   if(context->turtle_writer)
     raptor_free_turtle_writer(context->turtle_writer);
 
-  turtle_writer=raptor_new_turtle_writer(serializer->base_uri, context->nstack,
+  turtle_writer=raptor_new_turtle_writer(serializer->base_uri, serializer->feature_write_base_uri,
+                                         context->nstack,
                                          uri_handler, uri_context,
                                          serializer->iostream,
                                          (raptor_simple_message_handler)raptor_serializer_simple_error,

@@ -369,6 +369,7 @@ typedef struct {
  *   for GRDDL parser.
  * @RAPTOR_FEATURE_WWW_TIMEOUT: Set timeout for internal WWW URI requests
  *   for GRDDL parser.
+ * @RAPTOR_FEATURE_WRITE_BASE_URI: Write @base directive for Turtle/N3.
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -402,7 +403,8 @@ typedef enum {
   RAPTOR_FEATURE_MICROFORMATS,
   RAPTOR_FEATURE_HTML_LINK,
   RAPTOR_FEATURE_WWW_TIMEOUT,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WWW_TIMEOUT
+  RAPTOR_FEATURE_WRITE_BASE_URI,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITE_BASE_URI,
 } raptor_feature;
 
 

@@ -625,6 +625,9 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+    
+    /* Turtle serializer feature */
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
 
     default:
       return -1;

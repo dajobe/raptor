@@ -375,6 +375,10 @@ raptor_new_serializer(const char *name)
   rdf_serializer->factory=factory;
 
   /* Default features */
+  
+  /* Emit @base directive or equivalent */
+  rdf_serializer->feature_write_base_uri=1;
+  
   /* Emit relative URIs where possible */
   rdf_serializer->feature_relative_uris=1;
 
@@ -727,6 +731,10 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     return -1;
   
   switch(feature) {
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
+      serializer->feature_write_base_uri=value;
+      break;
+
     case RAPTOR_FEATURE_RELATIVE_URIS:
       serializer->feature_relative_uris=value;
       break;
@@ -836,6 +844,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
         return -1;
       break;
 
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
       /* actually handled above because value_is_string is false */
       return -1;
@@ -922,6 +931,10 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
   int result= -1;
   
   switch(feature) {
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
+      result=(serializer->feature_write_base_uri != 0);
+      break;
+
     case RAPTOR_FEATURE_RELATIVE_URIS:
       result=(serializer->feature_relative_uris != 0);
       break;
@@ -1002,6 +1015,7 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
         return raptor_uri_to_string(serializer->feature_start_uri);
       break;
 
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
       /* actually handled above because value_is_string is false */
       return NULL;

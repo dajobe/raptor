@@ -1344,6 +1344,7 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
       break;
 
 
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_START_URI:
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
@@ -1434,6 +1435,7 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
       break;
 
     /* serializing features */
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_START_URI:
     case RAPTOR_FEATURE_RESOURCE_BORDER:

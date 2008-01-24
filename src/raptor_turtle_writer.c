@@ -159,7 +159,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
  * Return value: a new #raptor_turtle_writer object or NULL on failure
  **/
 raptor_turtle_writer*
-raptor_new_turtle_writer(raptor_uri* base_uri,
+raptor_new_turtle_writer(raptor_uri* base_uri, int write_base_uri,
                          raptor_namespace_stack *nstack,
                          const raptor_uri_handler *uri_handler,
                          void *uri_context,
@@ -195,7 +195,7 @@ raptor_new_turtle_writer(raptor_uri* base_uri,
   turtle_writer->flags = 0;
   turtle_writer->indent = 2;
 
-  if(base_uri)
+  if(base_uri && write_base_uri)
     raptor_turtle_writer_base(turtle_writer, base_uri);
 
   turtle_writer->xsd_boolean_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
@@ -701,7 +701,7 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
       break;
     
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-	case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
       break;
         
@@ -735,6 +735,9 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+    
+    /* Turtle serializer feature */
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
 
     default:
       return -1;
@@ -835,6 +838,9 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+    
+    /* Turtle serializer feature */
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
 
     default:
       break;

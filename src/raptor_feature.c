@@ -82,7 +82,8 @@ static const struct
   { RAPTOR_FEATURE_HTML_TAG_SOUP     , 1,  "htmlTagSoup", "HTML parsing uses a lax HTML parser" },
   { RAPTOR_FEATURE_MICROFORMATS      , 1,  "microformats", "GRDDL parsing looks for microformats" },
   { RAPTOR_FEATURE_HTML_LINK         , 1,  "htmlLink", "GRDDL parsing looks for <link type=\"application/rdf+xml\">" },
-  { RAPTOR_FEATURE_WWW_TIMEOUT       , 1,  "wwwTimeout", "Set internal WWW URI retrieval timeout" }
+  { RAPTOR_FEATURE_WWW_TIMEOUT       , 1,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
+  { RAPTOR_FEATURE_WRITE_BASE_URI    , 2,  "writeBaseURI", "Write @base directive to Turtle files" },
 };
 
 
