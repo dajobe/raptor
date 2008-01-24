@@ -76,8 +76,8 @@ typedef struct {
   /* URI of rdf:nil */
   raptor_uri* rdf_nil_uri;
 
-  /* non zero if rdf:RDF has been written (and thus no new namespaces
-   * can be declared).
+  /* non zero if header is finished being written
+   * (and thus no new namespaces can be declared).
    */
   int written_header;
 
