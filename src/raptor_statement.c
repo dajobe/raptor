@@ -56,7 +56,8 @@ static void raptor_print_statement_part_as_ntriples(FILE* stream, const void *te
  * Return value: a new #raptor_statement or NULL on error
  */
 raptor_statement*
-raptor_statement_copy(const raptor_statement *statement) {
+raptor_statement_copy(const raptor_statement *statement)
+{
   raptor_statement *s;
 
   s=(raptor_statement*)RAPTOR_CALLOC(raptor_statement, 1, sizeof(raptor_statement));
@@ -128,7 +129,8 @@ raptor_statement_copy(const raptor_statement *statement) {
  * Destructor
  */
 void
-raptor_free_statement(raptor_statement *statement) {
+raptor_free_statement(raptor_statement *statement)
+{
   if(statement->subject) {
     if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
       raptor_free_uri((raptor_uri*)statement->subject);
@@ -408,11 +410,12 @@ unsigned char*
 raptor_statement_part_as_string(const void *term, 
                                 raptor_identifier_type type,
                                 raptor_uri* literal_datatype,
-                                const unsigned char *literal_language) {
-     return raptor_statement_part_as_counted_string(term, type,
-                                                    literal_datatype,
-                                                    literal_language,
-                                                    NULL);
+                                const unsigned char *literal_language)
+{
+  return raptor_statement_part_as_counted_string(term, type,
+                                                 literal_datatype,
+                                                 literal_language,
+                                                 NULL);
 }
 
 
