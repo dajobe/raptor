@@ -111,71 +111,9 @@ raptor_json_serialize_terminate(raptor_serializer* serializer)
 
 
 static int
-raptor_json_statement_compare(const raptor_statement *s1,
-                              const raptor_statement *s2)
-{
-  int d;
-  
-  d=s1->subject_type != s2->subject_type;
-  if(d)
-    return d;
-
-  /* subjects are URIs or blank nodes */
-  if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    d=strcmp((char*)s1->subject, (char*)s2->subject);
-  else
-    d=raptor_uri_compare((raptor_uri*)s1->subject, (raptor_uri*)s2->subject);
-  if(d)
-    return d;
-
-  /* predicates are URIs */
-  d=raptor_uri_compare((raptor_uri*)s1->predicate, (raptor_uri*)s2->predicate);
-  if(d)
-    return d;
-
-  /* objects are URIs or blank nodes or literals */
-  if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     s1->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    d=strcmp((char*)s1->object, (char*)s2->object);
-    if(d)
-      return d;
-
-    if(s1->object_literal_language && s2->object_literal_language) {
-      /* both have a language */
-      d=strcmp((char*)s1->object_literal_language,
-               (char*)s2->object_literal_language);
-      if(d)
-        return d;
-    } else if(s1->object_literal_language || s2->object_literal_language) {
-      /* only one has a language; the language-less one is earlier */
-      return (!s1->object_literal_language ? -1 : 1);
-    }
-    
-    if(s1->object_literal_datatype && s2->object_literal_datatype) {
-      /* both have a datatype */
-      d=raptor_uri_compare((raptor_uri*)s1->object_literal_datatype,
-                           (raptor_uri*)s2->object_literal_datatype);
-      if(d)
-        return d;
-    } else if(s1->object_literal_datatype || s2->object_literal_datatype) {
-      /* only one has a datatype; the datatype-less one is earlier */
-      return (!s1->object_literal_datatype ? -1 : 1);
-    }
-    
-  } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    d=strcmp((char*)s1->object, (char*)s2->object);
-  else
-    d=raptor_uri_compare((raptor_uri*)s1->object, (raptor_uri*)s2->object);
-
-  return d;
-}
-
-
-static int
 raptor_statement_avltree_compare(void *s1, void *s2)
 {
-  return raptor_json_statement_compare((raptor_statement*)s1,
-                                       (raptor_statement*)s2);
+  return raptor_statement_compare((raptor_statement*)s1, (raptor_statement*)s2);
 }
 
 static void
