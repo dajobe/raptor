@@ -1,4 +1,53 @@
+2008-01-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_start): Indenting
+
+
+	* src/raptor_serialize_json.c: (raptor_statement_avltree_compare): Use raptor_statement_compare.
+
+
+	* src/Makefile.am, src/raptor.h, src/raptor_general.c, src/raptor_statement.c: Added raptor_statement.c for statement functions.  (raptor_statement_compare): Added, based on raptor_json_statement_compare.
+
+
+	* src/raptor_turtle_writer.c: (main): Use write_base_uri in test.
+
+2008-01-26  Dave Beckett <dave@dajobe.org>
+
+	* RELEASE.html: 1.4.147
+
+
+	* NEWS.html: 1.4.17
+
+2008-01-23  Dave Robillard <dave@drobilla.net>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_context): Fix
+	comment on written_header for Turtle (not XML).
+	Add feature to control writing @base directive to Turtle files.
+	 (RAPTOR_FEATURE_WRITE_BASE_URI): Added.
+	 (raptor_new_turtle_writer): Added write_base_uri parameter.
+
+
+2008-01-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c: Remove most internal checks as they do not
+	hold while sprouting and rebalancing
+	(raptor_avltree_add, raptor_avltree_delete): Check here
+	afterwards.
+
 2008-01-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c: Run raptor_avltree_check_node after only
+	if not rebalancing - node is still being moved.
+
+	* src/raptor_avltree.c: remove QUOTE_FN and flush stderr
+
+	* src/raptor_avltree.c: Remove other raptor_avltree_check_node before
+
+	* src/raptor_avltree.c: (raptor_avltree_sprout): Do not run before
+	check, the node is not consistent while it is moving to the right
+	place.
+
+	* src/raptor_turtle_writer.c: (main) cast for strlen
 
 	* src/raptor_internal.h: Added prototypes for raptor_avltree_size,
 	raptor_avltree_dump and raptor_avltree_check
