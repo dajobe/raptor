@@ -816,6 +816,8 @@ RAPTOR_API
 unsigned char* raptor_statement_part_as_counted_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
 RAPTOR_API
 unsigned char* raptor_statement_part_as_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
+RAPTOR_API
+int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
 
 RAPTOR_API
 raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
