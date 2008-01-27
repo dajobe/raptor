@@ -1,22 +1,18 @@
 2008-01-27  Dave Beckett <dave@dajobe.org>
 
-	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_start): Indenting
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_start):
+	Indenting
 
+	* src/raptor_serialize_json.c: (raptor_statement_avltree_compare):
+	Use raptor_statement_compare.
 
-	* src/raptor_serialize_json.c: (raptor_statement_avltree_compare): Use raptor_statement_compare.
-
-
-	* src/Makefile.am, src/raptor.h, src/raptor_general.c, src/raptor_statement.c: Added raptor_statement.c for statement functions.  (raptor_statement_compare): Added, based on raptor_json_statement_compare.
-
+	* src/Makefile.am, src/raptor.h, src/raptor_general.c,
+	src/raptor_statement.c: Added raptor_statement.c for statement
+	functions.
+	(raptor_statement_compare): Added, based on
+	raptor_json_statement_compare.
 
 	* src/raptor_turtle_writer.c: (main): Use write_base_uri in test.
-
-2008-01-26  Dave Beckett <dave@dajobe.org>
-
-	* RELEASE.html: 1.4.147
-
-
-	* NEWS.html: 1.4.17
 
 2008-01-23  Dave Robillard <dave@drobilla.net>
 
