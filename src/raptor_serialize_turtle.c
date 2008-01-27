@@ -2,10 +2,10 @@
  *
  * raptor_serialize_turtle.c - Turtle serializer
  *
- * Copyright (C) 2006, Dave Robillard
- * Copyright (C) 2004-2007, David Beckett http://purl.org/net/dajobe/
- * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
- * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
+ * Copyright (C) 2006,2008 Dave Robillard
+ * Copyright (C) 2004-2008 David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2005 University of Bristol, UK http://www.bristol.ac.uk/
+ * Copyright (C) 2005 Steve Shepard steveshep@gmail.com
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -997,7 +997,8 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
   if(context->turtle_writer)
     raptor_free_turtle_writer(context->turtle_writer);
 
-  turtle_writer=raptor_new_turtle_writer(serializer->base_uri, serializer->feature_write_base_uri,
+  turtle_writer=raptor_new_turtle_writer(serializer->base_uri,
+                                         serializer->feature_write_base_uri,
                                          context->nstack,
                                          uri_handler, uri_context,
                                          serializer->iostream,
