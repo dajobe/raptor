@@ -147,6 +147,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 /**
  * raptor_new_turtle_writer:
  * @base_uri: Base URI for the writer
+ * @write_base_uri: non-0 to write 'base' in output
  * @nstack: Namespace stack for the writer to start with (or NULL)
  * @uri_handler: URI handler function
  * @uri_context: URI handler context data
@@ -919,7 +920,7 @@ main(int argc, char *argv[])
 
   base_uri=raptor_new_uri(base_uri_string);
 
-  turtle_writer=raptor_new_turtle_writer(base_uri,
+  turtle_writer=raptor_new_turtle_writer(base_uri, 1,
                                          nstack,
                                          uri_handler, uri_context,
                                          iostr,
