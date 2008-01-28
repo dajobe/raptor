@@ -58,6 +58,12 @@
 #endif
 
 
+int raptor_avltree_cursor_first(raptor_avltree* tree);
+int raptor_avltree_cursor_last(raptor_avltree* tree);
+int raptor_avltree_cursor_prev(raptor_avltree* tree);
+int raptor_avltree_cursor_next(raptor_avltree* tree);
+void* raptor_avltree_cursor_get(raptor_avltree* tree);
+
 #ifndef STANDALONE
 typedef struct raptor_avltree_node_s raptor_avltree_node;
 
@@ -99,6 +105,9 @@ struct raptor_avltree_s {
 
   /* number of nodes in tree */
   int size;
+
+  /* cursor node */
+  struct raptor_avltree_node_s *cursor;
 };
 
 
@@ -803,6 +812,129 @@ raptor_avltree_size(raptor_avltree* tree)
 }
 
 
+static raptor_avltree_node*
+raptor_avltree_node_leftmost(raptor_avltree_node* node)
+{
+  while(node && node->left)
+    node=node->left;
+  return node;
+}
+
+
+static raptor_avltree_node*
+raptor_avltree_node_rightmost(raptor_avltree_node* node)
+{
+  while(node && node->right)
+    node=node->right;
+  return node;
+}
+
+
+static raptor_avltree_node*
+raptor_avltree_node_prev(raptor_avltree_node* node)
+{
+  if(node->left) {
+    node=raptor_avltree_node_rightmost(node->left);
+  } else {
+    raptor_avltree_node* last=node;
+    /* Need to go up */
+    node=node->parent;
+    while(node) {
+      /* moving from right subtree to this node */
+      if(node->right && last == node->right)
+        break;
+      
+      /* moved up to find an unvisited left subtree */
+      if(node->left && last != node->left) {
+        node=raptor_avltree_node_rightmost(node->left);
+        break;
+      }
+      last=node;
+      node=node->parent;
+    }
+  }
+    
+  return node;
+}
+
+
+static raptor_avltree_node*
+raptor_avltree_node_next(raptor_avltree_node* node)
+{
+  if(node->right) {
+    node=raptor_avltree_node_leftmost(node->right);
+  } else {
+    raptor_avltree_node* last=node;
+    /* Need to go up */
+    node=node->parent;
+    while(node) {
+      /* moving from left subtree to this node */
+      if(node->left && last == node->left)
+        break;
+      
+      /* moved up to find an unvisited right subtree */
+      if(node->right && last != node->right) {
+        node=raptor_avltree_node_leftmost(node->right);
+        break;
+      }
+      last=node;
+      node=node->parent;
+    }
+  }
+    
+  return node;
+}
+
+
+int
+raptor_avltree_cursor_first(raptor_avltree* tree)
+{
+  tree->cursor=raptor_avltree_node_leftmost(tree->root);
+  return (tree->cursor == NULL);
+}
+
+
+int
+raptor_avltree_cursor_last(raptor_avltree* tree)
+{
+  tree->cursor=raptor_avltree_node_rightmost(tree->root);
+  return (tree->cursor == NULL);
+}
+
+
+int
+raptor_avltree_cursor_prev(raptor_avltree* tree)
+{
+  if(!tree->cursor)
+    raptor_avltree_cursor_first(tree);
+  else
+    tree->cursor=raptor_avltree_node_prev(tree->cursor);
+  return (tree->cursor == NULL);
+}
+
+
+int
+raptor_avltree_cursor_next(raptor_avltree* tree)
+{
+  if(!tree->cursor)
+    raptor_avltree_cursor_last(tree);
+  else
+    tree->cursor=raptor_avltree_node_next(tree->cursor);
+  return (tree->cursor == NULL);
+}
+
+
+void*
+raptor_avltree_cursor_get(raptor_avltree* tree)
+{
+  if(tree->cursor)
+    return tree->cursor->data;
+  return NULL;
+}
+
+
+
+
 #ifdef RAPTOR_DEBUG
 
 static int
@@ -924,9 +1056,12 @@ int
 main(int argc, char *argv[])
 {
   const char *program=raptor_basename(argv[0]);
-  const char *items[9] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", "def", NULL };
-  const char *delete_items[3] = { "jen", "jim", NULL };
-  const char *results[9] = { "amy", "bij", "daj", "def", "jib", "ron", NULL};
+#define ITEM_COUNT 8
+  const char *items[ITEM_COUNT+1] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", "def", NULL };
+#define DELETE_COUNT 2
+  const char *delete_items[DELETE_COUNT+1] = { "jen", "jim", NULL };
+#define RESULT_COUNT (ITEM_COUNT-DELETE_COUNT)
+  const char *results[RESULT_COUNT+1] = { "amy", "bij", "daj", "def", "jib", "ron", NULL};
 
   raptor_avltree* tree;
   visit_state vs;
@@ -978,6 +1113,7 @@ main(int argc, char *argv[])
   raptor_avltree_dump(tree, stderr);
 #endif
 
+
   for(i=0; delete_items[i]; i++) {
     int rc;
 
@@ -997,6 +1133,54 @@ main(int argc, char *argv[])
     raptor_avltree_check(tree);
 #endif
   }
+
+
+#if RAPTOR_DEBUG > 1
+  fprintf(stderr, "%s: Walking tree forwards via cursor\n", program);
+#endif
+  raptor_avltree_cursor_first(tree);
+  for(i=0; 1; i++) {
+    const char* data=(const char*)raptor_avltree_cursor_get(tree);
+    const char* result=results[i];
+    if((!data && data != result) || (data && strcmp(data, result))) {
+      fprintf(stderr, "%3d: Forwards cursoring expected '%s' but found '%s'\n",
+              i, result, data);
+      exit(1);
+    }
+#if RAPTOR_DEBUG > 1
+    fprintf(stderr, "%3d: Got '%s'\n", i, data);
+#endif
+    if(raptor_avltree_cursor_next(tree))
+      break;
+    if(i > RESULT_COUNT) {
+      fprintf(stderr, "Backwards cursor did not end on result %i as expected\n", i);
+      exit(1);
+    }
+  }
+
+#if RAPTOR_DEBUG > 1
+  fprintf(stderr, "%s: Walking tree backwards via cursor\n", program);
+#endif
+  raptor_avltree_cursor_last(tree);
+  for(i=RESULT_COUNT-1; 1; i--) {
+    const char* data=(const char*)raptor_avltree_cursor_get(tree);
+    const char* result=results[i];
+    if((!data && data != result) || (data && strcmp(data, result))) {
+      fprintf(stderr, "%3d: Backwards cursoring expected '%s' but found '%s'\n",
+              i, result, data);
+      exit(1);
+    }
+#if RAPTOR_DEBUG > 1
+    fprintf(stderr, "%3d: Got '%s'\n", i, data);
+#endif
+    if(raptor_avltree_cursor_prev(tree))
+      break;
+    if(i < 0) {
+      fprintf(stderr, "Backwards cursor did not end on result %i as expected\n", i);
+      exit(1);
+    }
+  }
+
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Checking tree\n", program);
