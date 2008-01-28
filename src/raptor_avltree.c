@@ -145,6 +145,8 @@ raptor_new_avltree(raptor_avltree_compare_function compare_fn,
   tree->compare_fn=compare_fn;
   tree->delete_fn=delete_fn;
   tree->flags=flags;
+  tree->size=0;
+  tree->cursor=NULL;
   
   return tree;
 }
