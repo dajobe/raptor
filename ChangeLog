@@ -1,4 +1,48 @@
+2008-02-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c: (compare_strings): update sig
+
+	* src/raptor_avltree.c, src/raptor_internal.h,
+	src/raptor_serialize_json.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c: Change
+	raptor_avltree data from raptor_avltree_t typedef to void*.
+	excessive typedefs.  Rename raptor_avltree_compare_function to
+	raptor_data_compare_function.  Rename
+	raptor_avltree_delete_function to raptor_data_free_function
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_parse.c,
+	src/raptor_www.c: (raptor_error_handlers_init): Remove all args
+	except object pointer.  Add docs.  This is currently not called
+	internally so no need for extra arg soup.  Use to init
+	error_handlers everywhere.
+	(raptor_new_parser, raptor_www_new_with_connection): Use
+	raptor_error_handlers_init rather than set magic directly.
+
+	* src/raptor_statement.c: (raptor_statement_compare): Allow
+	subject, predicate or object to have NULL pointers which always
+	sort earlier than pointers with values.
+
+2008-01-29  Lauri Aalto <laalto@iki.fi>
+
+	* tests/grddl/Makefile.am: Run GRDDL tests only if GRDDL parser is
+	enabled in configuration.
+
 2008-01-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c: (raptor_new_avltree): Init size and cursor
+
+	* src/raptor_avltree.c: struct raptor_avltree gains a cursor
+	field.
+	(raptor_avltree_node_leftmost, raptor_avltree_node_rightmost):
+	Added for code clarity.  Really this could be inlined or a macro.
+	(raptor_avltree_node_prev, raptor_avltree_node_next): Added for
+	moving around tree in order.
+	(raptor_avltree_cursor_first, raptor_avltree_cursor_last,
+	raptor_avltree_cursor_prev, raptor_avltree_cursor_next,
+	raptor_avltree_cursor_get): Added avltree cursor with new methods.
+	(main): Added tests for forwards and backwards cursoring.
+
+	* src/raptor_statement.c: code style
 
 	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_start):
 	Indenting
