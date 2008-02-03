@@ -1083,7 +1083,7 @@ typedef struct {
   raptor_abbrev_node* node;      /* node representing the subject of
                                   * this resource */
   raptor_abbrev_node* node_type; /* the rdf:type of this resource */
-  raptor_sequence *properties;   /* list of properties
+  raptor_avltree *properties;   /* list of properties
                                   * (predicate/object pair) of this
                                   * subject */
   raptor_sequence *list_items;   /* list of container elements if

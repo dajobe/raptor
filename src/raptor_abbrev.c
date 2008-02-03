@@ -3,7 +3,7 @@
  * raptor_abbrev.c - Code common to abbreviating serializers (ttl/rdfxmla)
  *
  * Copyright (C) 2006, Dave Robillard
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
@@ -408,6 +408,73 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
   }
 }
 
+
+static raptor_abbrev_node**
+raptor_new_abbrev_po(raptor_abbrev_node* predicate, raptor_abbrev_node* object)
+{
+  raptor_abbrev_node** nodes=NULL;
+  nodes = (raptor_abbrev_node**)RAPTOR_CALLOC(raptor_abbrev_nodes, 2,
+                                              sizeof(raptor_abbrev_node*));
+  if(!nodes)
+    return NULL;
+  
+  nodes[0]=predicate;
+  nodes[1]=object;
+  
+  return nodes;
+}
+
+
+static void
+raptor_free_abbrev_po(raptor_abbrev_node** nodes)
+{
+  if(nodes[0])
+    raptor_free_abbrev_node(nodes[0]);
+  if(nodes[1])
+    raptor_free_abbrev_node(nodes[1]);
+
+  RAPTOR_FREE(raptor_abbrev_nodes, nodes);
+}
+
+
+static int
+raptor_compare_abbrev_po(raptor_abbrev_node** nodes1,
+                         raptor_abbrev_node** nodes2)
+{
+  int d;
+  d=raptor_abbrev_node_cmp(nodes1[0], nodes2[0]);
+  if(!d)
+    d=raptor_abbrev_node_cmp(nodes1[1], nodes2[1]);
+
+  return d;
+}
+
+
+#ifdef RAPTOR_DEBUG
+static void
+raptor_print_abbrev_po(FILE* handle, raptor_abbrev_node** nodes)
+{
+  raptor_abbrev_node* p = nodes[0];
+  raptor_abbrev_node* o = nodes[1];
+  
+  if(p && o) {
+    unsigned char *pred;
+    unsigned char *obj;
+
+    pred = raptor_statement_part_as_string(p->value.resource.uri, p->type,
+                                           NULL, NULL);
+    obj = raptor_statement_part_as_string(o->value.literal.string,
+                                          o->type,
+                                          o->value.literal.datatype,
+                                          o->value.literal.language);
+    fprintf(handle, "[%s : %s]\n", pred, obj);      
+    RAPTOR_FREE(cstring, pred);
+    RAPTOR_FREE(cstring, obj);
+  }
+}
+#endif
+
+
 /*
  * raptor_abbrev_subject implementation
  *
@@ -436,8 +503,16 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
     subject->node->count_as_subject++;
     
     subject->node_type = NULL;
+
     subject->properties =
-      raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_node, NULL);
+      raptor_new_avltree((raptor_data_compare_function)raptor_compare_abbrev_po,
+                         (raptor_data_free_function)raptor_free_abbrev_po,
+                         0);
+#ifdef RAPTOR_DEBUG
+    raptor_avltree_set_print_handler(subject->properties,
+                                     (raptor_data_print_function)raptor_print_abbrev_po);
+#endif
+
     subject->list_items =
       raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_node, NULL);
 
@@ -463,7 +538,7 @@ raptor_free_abbrev_subject(raptor_abbrev_subject* subject)
       raptor_free_abbrev_node(subject->node_type);
     
     if(subject->properties)
-      raptor_free_sequence(subject->properties);
+      raptor_free_avltree(subject->properties);
 
     if(subject->list_items)
       raptor_free_sequence(subject->list_items);
@@ -491,40 +566,37 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
                                    raptor_abbrev_node* predicate,
                                    raptor_abbrev_node* object) 
 {
-  int i;
   int err;
-
-  i=0;
-  while (i < raptor_sequence_size(subject->properties)) {
-    raptor_abbrev_node* p = raptor_sequence_get_at(subject->properties, i++);
-    raptor_abbrev_node* o = raptor_sequence_get_at(subject->properties, i++);
-
-    if(raptor_abbrev_node_equals(predicate, p) &&
-       raptor_abbrev_node_equals(object, o)) {
-      /* Already seen this triple */
-      return 0;
-    }
-  }
+  raptor_abbrev_node** nodes;
   
-
+  nodes=raptor_new_abbrev_po(predicate, object);
+  if(!nodes)
+    return 1;
+  
   predicate->ref_count++;
   object->ref_count++;
 
-  err = raptor_sequence_push(subject->properties, predicate);
-  if(err) {
-    /* predicate was already deleted by raptor_sequence on error */
-    raptor_free_abbrev_node(object);
-    return err;
-  }
+#if 0
+  fprintf(stderr, "Adding P,O ");
+  raptor_print_abbrev_po(stderr, nodes);
 
-  err = raptor_sequence_push(subject->properties, object);
+  raptor_avltree_dump(subject->properties, stderr);
+#endif
+  err = raptor_avltree_add(subject->properties, nodes);
   if(err) {
-    /* pop and delete predicate */
-    raptor_sequence_pop(subject->properties);
-    raptor_free_abbrev_node(predicate);
-    /* object was already deleted by raptor_sequence on error */
+    raptor_free_abbrev_po(nodes);
     return err;
   }
+#if 0
+  fprintf(stderr, "Result ");
+  raptor_avltree_print(subject->properties, stderr);
+  
+  raptor_avltree_dump(subject->properties, stderr);
+
+  raptor_avltree_check(subject->properties);
+
+  fprintf(stderr, "\n\n");
+#endif
 
   return 0;
 }
@@ -666,24 +738,14 @@ raptor_print_subject(raptor_abbrev_subject* subject)
     
   }
 
-  i=0;
-  while (i < raptor_sequence_size(subject->properties)) {
 
-    raptor_abbrev_node* p = raptor_sequence_get_at(subject->properties, i++);
-    raptor_abbrev_node* o = raptor_sequence_get_at(subject->properties, i++);
+  raptor_avltree_cursor_first(subject->properties);
+  while (1) {
+    raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
+    raptor_print_abbrev_po(stderr, nodes);
 
-    if(p && o) {
-      pred = raptor_statement_part_as_string(p->value.resource.uri, p->type,
-                                             NULL, NULL);
-      obj = raptor_statement_part_as_string(o->value.literal.string,
-                                            o->type,
-                                            o->value.literal.datatype,
-                                            o->value.literal.language);
-      fprintf(stderr,"[%s, %s, %s]\n", subj, pred, obj);      
-      RAPTOR_FREE(cstring, pred);
-      RAPTOR_FREE(cstring, obj);
-    }
-    
+    if(raptor_avltree_cursor_next(tree))
+      break;
   }
   
   RAPTOR_FREE(cstring, subj);

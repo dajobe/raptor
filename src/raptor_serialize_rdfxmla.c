@@ -2,7 +2,7 @@
  *
  * raptor_serialize_rdfxmla.c - RDF/XML with abbreviations serializer
  *
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
@@ -517,16 +517,15 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   if(raptor_sequence_size(subject->list_items) > 0)
     rv = raptor_rdfxmla_emit_subject_list_items(serializer, subject, depth+1);
 
-  i=0;
-  while (!rv && i < raptor_sequence_size(subject->properties)) {
+  for(i=0, raptor_avltree_cursor_first(subject->properties);
+      !rv;
+      i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
     raptor_uri *base_uri=NULL;
-    raptor_abbrev_node* predicate;
-    raptor_abbrev_node* object;
     raptor_qname *qname;
     raptor_xml_element *element;
-    
-    predicate = (raptor_abbrev_node* )raptor_sequence_get_at(subject->properties, i++);
-    object = (raptor_abbrev_node* )raptor_sequence_get_at(subject->properties, i++);
+    raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
+    raptor_abbrev_node* predicate = nodes[0];
+    raptor_abbrev_node* object = nodes[1];
 
     if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
       /* we should only get here in rare cases -- usually when there
@@ -1205,8 +1204,12 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
       if(context->is_xmp && predicate->ref_count > 1) {
         int i;
-        for(i=0; i < raptor_sequence_size(subject->properties); i++) {
-          raptor_abbrev_node* node = (raptor_abbrev_node*)raptor_sequence_get_at(subject->properties, i);
+        for(i=0, raptor_avltree_cursor_first(subject->properties);
+            !rv;
+            i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
+          raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
+          raptor_abbrev_node* node = nodes[0];
+
           if(node == predicate) {
             add_property=0;
             
