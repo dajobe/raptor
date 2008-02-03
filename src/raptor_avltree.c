@@ -1045,7 +1045,7 @@ check_string(int depth, void* data, void *user_data)
 }
 
 static int
-compare_strings(void *l, void *r)
+compare_strings(const void *l, const void *r)
 {
   return strcmp((const char*)l, (const char*)r);
 }
