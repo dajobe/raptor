@@ -111,19 +111,6 @@ raptor_json_serialize_terminate(raptor_serializer* serializer)
 
 
 static int
-raptor_statement_avltree_compare(void *s1, void *s2)
-{
-  return raptor_statement_compare((raptor_statement*)s1, (raptor_statement*)s2);
-}
-
-static void
-raptor_statement_avltree_delete(raptor_avltree_t data)
-{
-  raptor_free_statement((raptor_statement*)data);
-}
-
-
-static int
 raptor_json_serialize_start(raptor_serializer* serializer)
 {
   raptor_json_context* context=(raptor_json_context*)serializer->context;
@@ -140,8 +127,9 @@ raptor_json_serialize_start(raptor_serializer* serializer)
     return 1;
 
   if(context->is_resource) {
-    context->avltree=raptor_new_avltree(raptor_statement_avltree_compare,
-                                        raptor_statement_avltree_delete, 0);
+    context->avltree=raptor_new_avltree((raptor_data_compare_function)raptor_statement_compare,
+                                        (raptor_data_free_function)raptor_free_statement,
+                                        0);
     if(!context->avltree) {
       raptor_free_json_writer(context->json_writer);
       context->json_writer=NULL;
@@ -263,8 +251,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
 
 /* return 0 to abort visit */
 static int
-raptor_json_serialize_avltree_visit(int depth, raptor_avltree_t data,
-                                    void *user_data)
+raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
 {
   raptor_serializer* serializer=(raptor_serializer*)user_data;
   raptor_json_context* context=(raptor_json_context*)serializer->context;

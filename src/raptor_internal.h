@@ -231,8 +231,6 @@ typedef struct raptor_id_set_s raptor_id_set;
 typedef struct raptor_uri_detail_s raptor_uri_detail;
 
 /* raptor_avltree.c */
-/* AVL data */
-typedef void* raptor_avltree_t;
 /* AVL tree */
 typedef struct raptor_avltree_s raptor_avltree;
 
@@ -1166,18 +1164,18 @@ int raptor_json_writer_key_uri_value(raptor_json_writer* json_writer, const char
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
 
 /* user functions */
-typedef int (*raptor_avltree_compare_function)(raptor_avltree_t data1, raptor_avltree_t data2);
-typedef void (*raptor_avltree_delete_function)(raptor_avltree_t data);
-typedef int (*raptor_avltree_visit_function)(int depth, raptor_avltree_t data, void *user_data);
+typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
+typedef void (*raptor_data_free_function)(void* data);
+typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
 
 /* constructor / destructor */
-raptor_avltree* raptor_new_avltree(raptor_avltree_compare_function compare_fn, raptor_avltree_delete_function delete_fn, unsigned int flags);
+raptor_avltree* raptor_new_avltree(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
 void raptor_free_avltree(raptor_avltree* tree);
 
 /* methods */
-int raptor_avltree_add(raptor_avltree* tree, raptor_avltree_t p_user);
-int raptor_avltree_delete(raptor_avltree* tree, raptor_avltree_t);
-raptor_avltree_t raptor_avltree_search(raptor_avltree* tree, raptor_avltree_t p_user);
+int raptor_avltree_add(raptor_avltree* tree, void* p_user);
+int raptor_avltree_delete(raptor_avltree* tree, void* p_user);
+void* raptor_avltree_search(raptor_avltree* tree, const void* p_user);
 int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
 int raptor_avltree_size(raptor_avltree* tree);
 #ifdef RAPTOR_DEBUG

@@ -810,8 +810,8 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
     raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
 
   context->nodes =
-    raptor_new_avltree((raptor_avltree_compare_function)raptor_abbrev_node_cmp,
-                       (raptor_avltree_delete_function)raptor_free_abbrev_node, 0);
+    raptor_new_avltree((raptor_data_compare_function)raptor_abbrev_node_cmp,
+                       (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
   if(rdf_type_uri) {

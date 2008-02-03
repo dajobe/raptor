@@ -181,7 +181,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 
     base->uri=raptor_uri_copy(base_uri);
 
-    base->tree=raptor_new_avltree((raptor_avltree_compare_function)strcmp,
+    base->tree=raptor_new_avltree((raptor_data_compare_function)strcmp,
                                   free, 0);
   
     /* Add to the start of the list */
@@ -205,7 +205,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
     }
   }
   
-  item=raptor_avltree_search(base->tree, (raptor_avltree_t)id);
+  item=raptor_avltree_search(base->tree, id);
 
   /* if already there, error */
   if(item) {
