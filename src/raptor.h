@@ -1612,7 +1612,7 @@ typedef struct {
 } raptor_error_handlers;
 
 RAPTOR_API
-void raptor_error_handlers_init(raptor_error_handlers* error_handlers, void *fatal_error_user_data, raptor_message_handler fatal_error_handler, void *error_user_data, raptor_message_handler error_handler, void *warning_user_data, raptor_message_handler warning_handler, raptor_locator* locator);
+void raptor_error_handlers_init(raptor_error_handlers* error_handlers);
 
 
 /* SAX2 API */

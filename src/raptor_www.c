@@ -165,7 +165,7 @@ raptor_www_new_with_connection(void *connection)
 #endif
 
   www->error_handlers.locator=&www->locator;
-  www->error_handlers.magic = RAPTOR_ERROR_HANDLER_MAGIC;
+  raptor_error_handlers_init(&www->error_handlers);
 
   return www;
 }

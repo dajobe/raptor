@@ -361,28 +361,16 @@ raptor_check_ordinal(const unsigned char *name) {
 }
 
 
-/* internal */
+/**
+ * raptor_error_handlers_init:
+ * @error_handlers: error handlers object
+ *
+ * Initialize #raptor_error_handlers object statically.
+ *
+ */
 void
-raptor_error_handlers_init(raptor_error_handlers* error_handlers,
-                           void *fatal_error_user_data,
-                           raptor_message_handler fatal_error_handler,
-                           void *error_user_data,
-                           raptor_message_handler error_handler,
-                           void *warning_user_data,
-                           raptor_message_handler warning_handler,
-                           raptor_locator* locator)
+raptor_error_handlers_init(raptor_error_handlers* error_handlers)
 {
-  error_handlers->user_data[RAPTOR_LOG_LEVEL_FATAL]=fatal_error_user_data;
-  error_handlers->handlers[RAPTOR_LOG_LEVEL_FATAL]=raptor_parser_fatal_error_message_handler;
-
-  error_handlers->user_data[RAPTOR_LOG_LEVEL_ERROR]=error_user_data;
-  error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR]=raptor_parser_error_message_handler;
-
-  error_handlers->user_data[RAPTOR_LOG_LEVEL_WARNING]=warning_user_data;
-  error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING]=raptor_parser_warning_message_handler;
-
-  error_handlers->locator=locator;
-
   error_handlers->magic=RAPTOR_ERROR_HANDLER_MAGIC;
 }
 
