@@ -120,7 +120,7 @@ static int raptor_avltree_delete_internal(raptor_avltree* tree, raptor_avltree_n
 static void raptor_avltree_delete_internal2(raptor_avltree* tree, raptor_avltree_node** ppr_r, int *rebalancing_p, raptor_avltree_node** ppr_q, int *delete_called_p);
 static void raptor_avltree_balance_left(raptor_avltree* tree, raptor_avltree_node** node_pp, int *rebalancing_p);
 static void raptor_avltree_balance_right(raptor_avltree* tree, raptor_avltree_node** node_pp, int *rebalancing_p);
-static void* raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node, const void* p_data);
+static raptor_avltree_node* raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node, const void* p_data);
 static int raptor_avltree_visit_internal(raptor_avltree* tree, raptor_avltree_node* node, int depth, raptor_avltree_visit_function visit_fn, void* user_data);
 static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_node* node);
 
@@ -177,7 +177,7 @@ raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_node* node)
 
 /* methods */
 
-static void*
+static raptor_avltree_node*
 raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node,
                                const void* p_data)
 {
@@ -190,7 +190,7 @@ raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node,
       return raptor_avltree_search_internal(tree, node->left, p_data);
 
     /* found */
-    return node->data;
+    return node;
   }
 
   /* otherwise not found */
@@ -201,7 +201,9 @@ raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node,
 void*
 raptor_avltree_search(raptor_avltree* tree, const void* p_data)
 {
-  return raptor_avltree_search_internal(tree, tree->root, p_data);
+  raptor_avltree_node* node;
+  node=raptor_avltree_search_internal(tree, tree->root, p_data);
+  return node ? node->data : NULL;
 }
 
 
