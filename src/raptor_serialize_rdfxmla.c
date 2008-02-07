@@ -517,7 +517,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   if(raptor_sequence_size(subject->list_items) > 0)
     rv = raptor_rdfxmla_emit_subject_list_items(serializer, subject, depth+1);
 
-  for(i=0, raptor_avltree_cursor_first(subject->properties);
+  for(i=0, rv=raptor_avltree_cursor_first(subject->properties);
       !rv;
       i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
     raptor_uri *base_uri=NULL;
