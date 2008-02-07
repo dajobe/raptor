@@ -1121,7 +1121,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   raptor_abbrev_subject* subject = NULL;
   raptor_abbrev_node* predicate = NULL;
   raptor_abbrev_node* object = NULL;
-  int rv;
+  int rv = 0;
   raptor_identifier_type object_type;
 
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
