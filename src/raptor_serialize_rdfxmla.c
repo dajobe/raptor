@@ -514,8 +514,11 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
                 subject->node->count_as_object);
 
   /* Emit any rdf:_n properties collected */
-  if(raptor_sequence_size(subject->list_items) > 0)
+  if(raptor_sequence_size(subject->list_items) > 0) {
     rv = raptor_rdfxmla_emit_subject_list_items(serializer, subject, depth+1);
+    if(rv)
+      return rv;
+  }
 
   for(i=0, rv=raptor_avltree_cursor_first(subject->properties);
       !rv;
