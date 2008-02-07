@@ -141,6 +141,7 @@ raptor_new_avltree(raptor_data_compare_function compare_fn,
   tree->root=NULL;
   tree->compare_fn=compare_fn;
   tree->free_fn=free_fn;
+  tree->print_fn=NULL;
   tree->flags=flags;
   tree->size=0;
   tree->cursor=NULL;
