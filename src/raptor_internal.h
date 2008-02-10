@@ -1175,6 +1175,7 @@ void raptor_free_avltree(raptor_avltree* tree);
 
 /* methods */
 int raptor_avltree_add(raptor_avltree* tree, void* p_user);
+void* raptor_avltree_remove(raptor_avltree* tree, void* p_data);
 int raptor_avltree_delete(raptor_avltree* tree, void* p_user);
 void* raptor_avltree_search(raptor_avltree* tree, const void* p_user);
 int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
