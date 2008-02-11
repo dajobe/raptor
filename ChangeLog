@@ -1,4 +1,60 @@
+2008-02-09  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c, src/raptor_internal.h:
+	(raptor_avltree_remove): Added.
+	(raptor_avltree_delete): Rewritten in terms of
+	raptor_avltree_remove.  (main): Add test with
+	raptor_avltree_remove
+
+2008-02-07  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c: (raptor_avltree_search_internal): Alter to
+	return the node. (raptor_avltree_search): Use
+	raptor_avltree_search_internal changed
+
+2008-02-07  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_properties): Do not throw away return
+	value from raptor_rdfxmla_emit_subject_list_items().
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_properties): Check
+	raptor_avltree_cursor_first() return value. Fixes a NULL
+	indirection crash later on.
+
+	* src/raptor_avltree.c: (raptor_new_avltree): Initialize print_fn
+	field to NULL.
+
+2008-02-06  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_statement):
+	Ensure variable rv is initialized before use.
+
 2008-02-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Switch raptor_avltree subject->properties from raptor_sequence to
+	raptor_avltree and use an AVL Tree cursor to iterate it.  This
+	changes the exact ordering of the output from original order, to
+	sorted by raptor_abbrev_node comparison order.
+
+	* src/raptor_avltree.c: Export avltree cursor prototypes.  Added
+	raptor_data_print_function field.
+	(raptor_avltree_set_print_handler, raptor_avltree_print): Added to
+	print an AVL Tree.
+	(raptor_avltree_sprout_right): Fix failure to set parent correctly
+	in RR rebalancing.
+	(raptor_avltree_dump_internal): Print node value if print_fn is
+	defined.
+
+	* src/raptor_internal.h: Added raptor_data_print_function typedef.
+	Added raptor_avltree_set_print_handler and raptor_avltree_print
+	prototypes.  Added avltree cursor prototypes:
+	raptor_avltree_cursor_first, raptor_avltree_cursor_last,
+	raptor_avltree_cursor_prev, raptor_avltree_cursor_next and
+	raptor_avltree_cursor_get
 
 	* src/raptor_avltree.c: (compare_strings): update sig
 
