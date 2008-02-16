@@ -124,7 +124,8 @@ for my \$varg (qw(--version -version)) {
 }
 
 @vnums=(@vnums, 0, 0, 0)[0..2];
-print join('', map { sprintf('%02d', \$_) } @vnums)."\n";
+\$vn=join('', map { sprintf('%02d', \$_) } @vnums);
+print "\$vn\n";
 exit 0;
 EOF
 
@@ -144,6 +145,9 @@ update_prog_version() {
     prog_name=$env
     prog_vers=`perl $autogen_get_version $prog_name $prog`
 
+    if test X$prog_vers = X; then
+      prog_vers=0
+    fi
     eval ${prog}_name=${prog_name}
     eval ${prog}_vers=${prog_vers}
     eval ${prog}_dir=environment
