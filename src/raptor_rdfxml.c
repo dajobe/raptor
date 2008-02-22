@@ -2971,11 +2971,12 @@ raptor_rdfxml_cdata_grammar(raptor_parser *rdf_parser,
     }
 
   element=rdf_xml_parser->current_element;
-  xml_element=element->xml_element;
 
   /* this file is very broke - probably not XML, whatever */
   if(!element)
     return;
+
+  xml_element=element->xml_element;
   
   raptor_rdfxml_update_document_locator(rdf_parser);
 
