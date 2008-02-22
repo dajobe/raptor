@@ -58,12 +58,12 @@ static void raptor_libxml_fatal_error(void *context, const char *msg, ...) RAPTO
 
 
 
-static const char* xml_warning_prefix="XML parser warning - ";
-static const char* xml_error_prefix="XML parser error - ";
-static const char* xml_generic_error_prefix="XML error - ";
-static const char* xml_fatal_error_prefix="XML parser fatal error - ";
-static const char* xml_validation_error_prefix="XML parser validation error - ";
-static const char* xml_validation_warning_prefix="XML parser validation warning - ";
+static const char* const xml_warning_prefix="XML parser warning - ";
+static const char* const xml_error_prefix="XML parser error - ";
+static const char* const xml_generic_error_prefix="XML error - ";
+static const char* const xml_fatal_error_prefix="XML parser fatal error - ";
+static const char* const xml_validation_error_prefix="XML parser validation error - ";
+static const char* const xml_validation_warning_prefix="XML parser validation warning - ";
 
 
 #ifdef HAVE_XMLSAX2INTERNALSUBSET
@@ -527,7 +527,7 @@ raptor_libxml_free(xmlParserCtxtPtr xc) {
  * When the minimum libxml2 version goes up, the #ifdefs for
  * older versions can be removed.
  */
-static const char* raptor_libxml_domain_labels[XML_LAST_DL+2]= {
+static const char* const raptor_libxml_domain_labels[XML_LAST_DL+2]= {
   NULL,                /* XML_FROM_NONE */
   "parser",            /* XML_FROM_PARSER */
   "tree",              /* XML_FROM_TREE */
