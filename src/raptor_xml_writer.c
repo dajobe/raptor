@@ -868,6 +868,10 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
 
+    /* WWW feature */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
     default:
       return -1;
       break;
@@ -978,6 +982,10 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
 
+    /* WWW feature */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
     default:
       break;
   }

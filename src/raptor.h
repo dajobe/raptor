@@ -404,7 +404,9 @@ typedef enum {
   RAPTOR_FEATURE_HTML_LINK,
   RAPTOR_FEATURE_WWW_TIMEOUT,
   RAPTOR_FEATURE_WRITE_BASE_URI,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WRITE_BASE_URI,
+  RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL,
+  RAPTOR_FEATURE_WWW_HTTP_USER_AGENT,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_WWW_HTTP_USER_AGENT
 } raptor_feature;
 
 
@@ -1109,6 +1111,8 @@ RAPTOR_API
 void raptor_www_set_uri_filter(raptor_www* www, raptor_uri_filter_func filter, void* user_data);
 RAPTOR_API
 void raptor_www_set_connection_timeout(raptor_www* www, int timeout);
+RAPTOR_API
+int raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control);
 RAPTOR_API
 int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API

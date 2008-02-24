@@ -740,6 +740,10 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
 
+    /* WWW feature */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
     default:
       return -1;
       break;
@@ -843,6 +847,10 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
 
+    /* WWW feature */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
     default:
       break;
   }

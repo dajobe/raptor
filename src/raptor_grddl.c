@@ -2,7 +2,7 @@
  *
  * raptor_grddl.c - Raptor GRDDL (+microformats) Parser implementation
  *
- * Copyright (C) 2005-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2005-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -910,7 +910,7 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   if(rdf_parser->features[RAPTOR_FEATURE_WWW_TIMEOUT] > 0)
     raptor_www_set_connection_timeout(www, 
                                       rdf_parser->features[RAPTOR_FEATURE_WWW_TIMEOUT]);
-  
+
   ret=raptor_www_fetch(www, uri);
   
   raptor_www_free(www);

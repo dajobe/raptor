@@ -152,6 +152,7 @@ raptor_www_new_with_connection(void *connection)
   www->content_type=NULL;
   www->uri_filter=NULL;
   www->connection_timeout=10;
+  www->cache_control=NULL;
 
 #ifdef RAPTOR_WWW_LIBCURL
   www->curl_handle=(CURL*)connection;
@@ -204,6 +205,11 @@ raptor_www_free(raptor_www* www)
   if(www->user_agent) {
     RAPTOR_FREE(cstring, www->user_agent);
     www->user_agent=NULL;
+  }
+
+  if(www->cache_control) {
+    RAPTOR_FREE(cstring, www->cache_control);
+    www->cache_control=NULL;
   }
 
   if(www->proxy) {
@@ -309,7 +315,14 @@ raptor_www_set_content_type_handler(raptor_www* www,
 void
 raptor_www_set_user_agent(raptor_www* www, const char *user_agent)
 {
-  char *ua_copy=(char*)RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
+  char *ua_copy=NULL;
+
+  if(!user_agent || !*user_agent) {
+    www->user_agent=NULL;
+    return;
+  }
+  
+  ua_copy=(char*)RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
   if(!ua_copy)
     return;
   strcpy(ua_copy, user_agent);
@@ -330,7 +343,12 @@ raptor_www_set_user_agent(raptor_www* www, const char *user_agent)
 void
 raptor_www_set_proxy(raptor_www* www, const char *proxy)
 {
-  char *proxy_copy=(char*)RAPTOR_MALLOC(cstring, strlen(proxy)+1);
+  char *proxy_copy;
+
+  if(!proxy)
+    return;
+  
+  proxy_copy=(char*)RAPTOR_MALLOC(cstring, strlen(proxy)+1);
   if(!proxy_copy)
     return;
   strcpy(proxy_copy, proxy);
@@ -385,6 +403,59 @@ void
 raptor_www_set_connection_timeout(raptor_www* www, int timeout)
 {
   www->connection_timeout=timeout;
+}
+
+
+/**
+ * raptor_www_set_http_cache_control:
+ * @www: WWW object
+ * @cache_control: Cache-Control header value (or NULL to disable)
+ *
+ * Set HTTP Cache-Control:header (default none)
+ *
+ * The @cache_control value can be a string to set it, "" to send
+ * a blank header or NULL to not set the header at all.
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
+{
+  char *cache_control_copy;
+  const char* const header="Cache-Control:";
+  const size_t header_len=14; /* strlen("Cache-Control:") */
+  size_t len;
+  
+  RAPTOR_ASSERT((strlen(header) != header_len), "Cache-Control header length is wrong");
+
+  if(www->cache_control)
+    RAPTOR_FREE(cstring, www->cache_control);
+
+  if(!cache_control) {
+    www->cache_control=NULL;
+    return 0;
+  }
+  
+  len=header_len + 1 +strlen(cache_control); /* header+" "+cache_control+"\0" */
+  
+  cache_control_copy=(char*)RAPTOR_MALLOC(cstring, len);
+  if(!cache_control_copy)
+    return 1;
+  
+  www->cache_control=cache_control_copy;
+
+  strncpy(cache_control_copy, header, header_len);
+  cache_control_copy+= header_len;
+  if(*cache_control) {
+    *cache_control_copy++=' ';
+    strcpy(cache_control_copy, cache_control);
+  }
+  
+#if RAPTOR_DEBUG > 1
+  RAPTOR_DEBUG2("Using Cache-Control header: '%s'\n", www->cache_control);
+#endif
+
+  return 0;
 }
 
 

@@ -784,6 +784,10 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
 
+    /* WWW features */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+
     default:
       return -1;
       break;
@@ -902,6 +906,10 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
         (unsigned char **)&(serializer->feature_bnode_fill), value);
       break;
 
+    /* WWW features */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+
     default:
       return -1;
       break;
@@ -981,6 +989,10 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+
+    /* WWW features */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
 
     default:
       break;
@@ -1066,6 +1078,10 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+
+    /* WWW features */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
 
     default:
       return NULL;

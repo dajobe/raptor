@@ -2,7 +2,7 @@
  *
  * raptor_www_libxml.c - Raptor WWW retrieval via libxml2
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -70,6 +70,7 @@ raptor_www_libxml_fetch(raptor_www *www)
   if(www->http_accept || www->user_agent) {
     size_t accept_len=0;
     size_t ua_len=0;
+    size_t cc_len=0;
     size_t len=0;
     char *p;
     
@@ -81,6 +82,11 @@ raptor_www_libxml_fetch(raptor_www *www)
     if(www->user_agent) {
       ua_len=strlen(www->user_agent);
       len+=12+ua_len+2; /* strlen("User-Agent: ") + \r\n */
+    }
+
+    if(www->cache_control) {
+      cc_len=strlen(www->cache_control);
+      len+=cc_len+2; /* \r\n */
     }
 
     headers=(char*)RAPTOR_MALLOC(cstring, len+1);
@@ -99,6 +105,12 @@ raptor_www_libxml_fetch(raptor_www *www)
       p+=12;
       strncpy(p, www->user_agent, ua_len);
       p+= ua_len;
+      *p++='\r';
+      *p++='\n';
+    }
+    if(www->cache_control) {
+      strncpy(p, www->cache_control, cc_len);
+      p+= cc_len;
       *p++='\r';
       *p++='\n';
     }

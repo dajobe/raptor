@@ -348,6 +348,18 @@ struct raptor_parser_s {
 
   /* internal data for lexers */
   void* lexer_user_data;
+
+  /* FEATURE:
+   * HTTP Cache-Control: header value to send (default NULL)
+   * RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL
+   */
+  const char* cache_control;
+
+  /* FEATURE:
+   * HTTP User-Agent: header value to send (default NULL)
+   * RAPTOR_FEATURE_WWW_HTTP_USER_AGENT
+   */
+  const char* user_agent;
 };
 
 
@@ -816,6 +828,8 @@ struct  raptor_www_s {
 
   void *final_uri_userdata;
   raptor_www_final_uri_handler final_uri_handler;
+
+  char* cache_control;
 };
 
 

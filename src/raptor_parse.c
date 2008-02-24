@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_parse.c - Parsers
+ * raptor_parse.c - Raptor Parser API
  *
- * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -631,6 +631,12 @@ raptor_free_parser(raptor_parser* rdf_parser)
   if(rdf_parser->sb)
     raptor_free_stringbuffer(rdf_parser->sb);
 
+  if(rdf_parser->cache_control)
+    RAPTOR_FREE(cstring, rdf_parser->cache_control);
+
+  if(rdf_parser->user_agent)
+    RAPTOR_FREE(cstring, rdf_parser->user_agent);
+
   RAPTOR_FREE(raptor_parser, rdf_parser);
 }
 
@@ -900,6 +906,11 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                       raptor_parse_uri_content_type_handler,
                                       rdf_parser);
 
+  raptor_www_set_http_cache_control(rdf_parser->www, rdf_parser->cache_control);
+
+  if(rdf_parser->user_agent)
+    raptor_www_set_user_agent(rdf_parser->www, rdf_parser->user_agent);
+  
   ret=raptor_www_fetch(rdf_parser->www, uri);
   
   if(!rpbc.started && !ret)
@@ -1359,6 +1370,9 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
     default:
       return -1;
       break;
@@ -1389,6 +1403,28 @@ raptor_parser_set_feature_string(raptor_parser *parser,
   int value_is_string=(raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
     return raptor_set_feature(parser, feature, atoi((const char*)value));
+
+  if((feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL) ||
+     (feature == RAPTOR_FEATURE_WWW_HTTP_USER_AGENT)) {
+    char *value_copy;
+    size_t len=0;
+    if(value)
+      len=strlen((const char*)value);
+    value_copy=(char*)RAPTOR_MALLOC(cstring, len+1);
+    if(!value_copy)
+      return 1;
+    
+    if(len)
+      strncpy(value_copy, (const char*)value, len);
+    value_copy[len]='\0';
+    
+    if(feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL)
+      parser->cache_control=value_copy;
+    else
+      parser->user_agent=value_copy;
+
+    return 0;
+  }
 
   return -1;
 }
@@ -1452,6 +1488,10 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
 
+    /* WWW features */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
     default:
       break;
   }

@@ -2,7 +2,7 @@
  *
  * raptor_www_curl.c - Raptor WWW retrieval via libcurl
  *
- * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -186,12 +186,16 @@ raptor_www_curl_fetch(raptor_www *www)
   if(www->user_agent)
     curl_easy_setopt(www->curl_handle, CURLOPT_USERAGENT, www->user_agent);
 
-  /* Insert HTTP Accept: header only */
-  if(www->http_accept) {
+  if(www->http_accept)
     slist=curl_slist_append(slist, (const char*)www->http_accept);
+
+  /* ALWAYS disable curl default "Pragma: no-cache" */
+  slist=curl_slist_append(slist, "Pragma:");
+  if(www->cache_control)
+    slist=curl_slist_append(slist, (const char*)www->cache_control);
+
+  if(slist)
     curl_easy_setopt(www->curl_handle, CURLOPT_HTTPHEADER, slist);
-  }
-  
 
   /* specify URL to get */
   curl_easy_setopt(www->curl_handle, CURLOPT_URL, 

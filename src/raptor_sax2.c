@@ -629,6 +629,10 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
 
+    /* WWW feature */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
     default:
       return -1;
       break;
