@@ -1,3 +1,33 @@
+2008-02-23  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-feature.sgml, src/raptor.h,
+	src/raptor_feature.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libxml.c,
+	src/raptor_xml_writer.c: Add RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL
+	and RAPTOR_FEATURE_WWW_HTTP_USER_AGENT to control WWW.  Pass that
+	on in parsers to internal www.  raptor_www struct gains
+	cache_control and user_agent fields.
+	(raptor_www_curl_fetch): Disable curl www Pragma: header always.
+	(raptor_www_set_http_cache_control): Added.
+	(raptor_www_set_user_agent, raptor_www_set_proxy): Error checking
+	on malloc failure.
+	Fixes Issue #0000252 http://bugs.librdf.org/mantis/view.php?id=252
+
+2008-02-22  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_cdata_grammar): Check for
+	null pointer before indirecting it.
+
+	* src/raptor_libxml.c: Removed writable static data from
+	raptor_libxml.c
+
+2008-02-16  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: autogen checks when env prog version is
+	empty. Update all packages to latest autogen.sh
+
 2008-02-09  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_avltree.c, src/raptor_internal.h:
