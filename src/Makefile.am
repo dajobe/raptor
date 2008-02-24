@@ -180,8 +180,6 @@ turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
 	$(PERL) $(srcdir)/fix-flex $@ > turtle_lexer.t
 	mv turtle_lexer.t $@
-	$(PERL) $(srcdir)/fix-flex turtle_lexer.h > turtle_lexer.t
-	mv turtle_lexer.t turtle_lexer.h
 
 turtle_parser.c: $(srcdir)/turtle_parser.y $(srcdir)/fix-bison
 	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
@@ -194,8 +192,6 @@ n3_lexer.c: $(srcdir)/n3_lexer.l n3_parser.c $(srcdir)/fix-flex
 	$(LEX) -o$@ $(srcdir)/n3_lexer.l
 	$(PERL) $(srcdir)/fix-flex $@ > n3_lexer.t
 	mv n3_lexer.t $@
-	$(PERL) $(srcdir)/fix-flex n3_lexer.h > n3_lexer.t
-	mv n3_lexer.t n3_lexer.h
 
 n3_parser.c: $(srcdir)/n3_parser.y  $(srcdir)/fix-bison
 	$(YACC) -b n3_parser -p n3_parser_ -d -v $(srcdir)/n3_parser.y
