@@ -80,6 +80,10 @@ raptor_new_xml_element(raptor_qname *name,
   xml_element->declared_nspaces=NULL;
 
   xml_element->content_cdata_sb=raptor_new_stringbuffer();
+  if(!xml_element->content_cdata_sb) {
+    RAPTOR_FREE(raptor_xml_element, xml_element);
+    xml_element=NULL;
+  }
 
   return xml_element;
 }
