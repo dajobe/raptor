@@ -1628,7 +1628,7 @@ typedef struct {
   /* size of handlers array */
   raptor_log_level last_log_level;
 
-  raptor_message_handler_closure handlers[];
+  raptor_message_handler_closure* handlers;
 } raptor_error_handlers;
 
 RAPTOR_API
