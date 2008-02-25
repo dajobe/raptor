@@ -668,6 +668,20 @@ typedef void (*raptor_simple_message_handler)(void *user_data, const char *messa
  */
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 
+
+/**
+ * raptor_handler_closure:
+ * @user_data: user data for handler invocation
+ * @handler: handler function
+ *
+ * The combination of a message handler and the user data to send to it.
+ */
+typedef struct {
+  void *user_data;
+  raptor_message_handler handler;
+} raptor_message_handler_closure;
+
+
 /**
  * raptor_statement_handler:
  * @user_data: user data
@@ -1601,7 +1615,7 @@ typedef enum {
  * raptor_error_handlers:
  * @magic: magic value - must use raptor_error_handlers_init() to set this
  * @locator: raptor locator of the error
- * @user_data: user handler data pointers per log level
+ * @last_log_level: number of log levels; size of @handlers arrays
  * @handlers: user handlers per log level
  *
  * Error handlers structure
@@ -1611,8 +1625,10 @@ typedef struct {
 
   raptor_locator* locator;
 
-  void* user_data[RAPTOR_LOG_LEVEL_LAST+1];
-  raptor_message_handler handlers[RAPTOR_LOG_LEVEL_LAST+1];
+  /* size of handlers array */
+  raptor_log_level last_log_level;
+
+  raptor_message_handler_closure handlers[];
 } raptor_error_handlers;
 
 RAPTOR_API

@@ -256,11 +256,11 @@ raptor_www_free(raptor_www* www)
  **/
 void
 raptor_www_set_error_handler(raptor_www* www, 
-                             raptor_message_handler error_handler, 
+                             raptor_message_handler error_handler,
                              void *error_data)
 {
-  www->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]=error_data;
-  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR]=error_handler;
+  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data=error_data;
+  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler=error_handler;
 }
 
 
@@ -538,8 +538,8 @@ raptor_www_error(raptor_www* www, const char *message, ...)
   va_start(arguments, message);
 
   raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
-                           www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR],
-                           www->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR],
+                           www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
+                           www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                            &www->locator,
                            message, arguments);
 

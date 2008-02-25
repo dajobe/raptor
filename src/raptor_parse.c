@@ -496,6 +496,7 @@ raptor_new_parser(const char *name) {
   rdf_parser->failed=0;
 
   rdf_parser->error_handlers.locator=&rdf_parser->locator;
+  rdf_parser->error_handlers.last_log_level=RAPTOR_LOG_LEVEL_LAST;
   raptor_error_handlers_init(&rdf_parser->error_handlers);
   
   /* Initialise default (lax) feature values */
@@ -897,8 +898,8 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     raptor_www_set_uri_filter(rdf_parser->www, raptor_parse_uri_no_net_filter, rdf_parser);
   
   raptor_www_set_error_handler(rdf_parser->www,
-                               rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR], 
-                               rdf_parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]);
+                               rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
+                               rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data);
   raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parse_uri_write_bytes, 
                                      &rpbc);
 
@@ -946,8 +947,8 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
   va_start(arguments, message);
   if(parser)
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL,
-                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL], 
-                             parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_FATAL], 
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler, 
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data, 
                              &parser->locator,
                              message, arguments); 
   else
@@ -970,11 +971,9 @@ raptor_parser_fatal_error_message_handler(void *user_data,
   parser->failed=1;
 
   if(parser)
-    raptor_log_error(RAPTOR_LOG_LEVEL_FATAL,
-                     parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL],
-                     parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_FATAL], 
-                     &parser->locator,
-                     message); 
+    raptor_log_error_to_handlers(&parser->error_handlers,
+                                 RAPTOR_LOG_LEVEL_FATAL, &parser->locator,
+                                 message); 
   else
     raptor_log_error(RAPTOR_LOG_LEVEL_FATAL, NULL, NULL, NULL, message); 
 }
@@ -1012,8 +1011,8 @@ raptor_parser_simple_error(void* user_data, const char *message, ...)
 
   if(parser)
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
-                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR],
-                             parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR],
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                              &parser->locator,
                              message, arguments);
   else
@@ -1039,8 +1038,8 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
 {
   if(parser)
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
-                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR],
-                             parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR],
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                              &parser->locator,
                              message, arguments);
   else
@@ -1061,11 +1060,9 @@ raptor_parser_error_message_handler(void *user_data,
   raptor_parser* parser=(raptor_parser*)user_data;
 
   if(parser)
-    raptor_log_error(RAPTOR_LOG_LEVEL_ERROR,
-                     parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR],
-                     parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR],
-                     &parser->locator,
-                     message);
+    raptor_log_error_to_handlers(&parser->error_handlers,
+                                 RAPTOR_LOG_LEVEL_ERROR,
+                                 &parser->locator, message);
   else
     raptor_log_error(RAPTOR_LOG_LEVEL_ERROR, NULL, NULL, NULL, message);
 }
@@ -1083,8 +1080,8 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 
   if(parser)
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
-                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING],
-                             parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_WARNING],
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler,
+                             parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data,
                              &parser->locator,
                              message, arguments);
   else
@@ -1107,11 +1104,9 @@ raptor_parser_warning_message_handler(void *user_data,
   raptor_parser* parser=(raptor_parser*)user_data;
 
   if(parser)
-    raptor_log_error(RAPTOR_LOG_LEVEL_WARNING,
-                     parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING],
-                     parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_WARNING],
-                     &parser->locator,
-                     message);
+    raptor_log_error_to_handlers(&parser->error_handlers,
+                                 RAPTOR_LOG_LEVEL_WARNING,
+                                 &parser->locator, message);
   else
     raptor_log_error(RAPTOR_LOG_LEVEL_WARNING, NULL, NULL, NULL, message);
 }
@@ -1135,8 +1130,8 @@ void
 raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data,
                                raptor_message_handler handler)
 {
-  parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_FATAL]=user_data;
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL]=handler;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data=user_data;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler=handler;
 }
 
 
@@ -1155,8 +1150,8 @@ void
 raptor_set_error_handler(raptor_parser* parser, void *user_data,
                          raptor_message_handler handler)
 {
-  parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]=user_data;
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR]=handler;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data=user_data;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler=handler;
 }
 
 
@@ -1175,8 +1170,8 @@ void
 raptor_set_warning_handler(raptor_parser* parser, void *user_data,
                            raptor_message_handler handler)
 {
-  parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_WARNING]=user_data;
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING]=handler;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data=user_data;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler=handler;
 }
 
 

@@ -900,8 +900,8 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
     raptor_www_set_error_handler(www, raptor_grddl_discard_message, NULL);
   else
     raptor_www_set_error_handler(www,
-                                 rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR], 
-                                 rdf_parser->error_handlers.user_data[RAPTOR_LOG_LEVEL_ERROR]);
+                                 rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler, 
+                                 rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data);
   raptor_www_set_write_bytes_handler(www, write_bytes_handler,
                                      write_bytes_user_data);
   raptor_www_set_content_type_handler(www, content_type_handler,
@@ -1266,10 +1266,13 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   }
 
   if(ignore_errors) {
+    raptor_error_handlers* eh=&grddl_parser->internal_parser->error_handlers;
     int i;
     /* NOTE not setting RAPTOR_LOG_LEVEL_NONE handler */
-    for(i=1; i<= RAPTOR_LOG_LEVEL_LAST; i++)
-      grddl_parser->internal_parser->error_handlers.handlers[i]=raptor_grddl_discard_message;
+    for(i=1; i <= (int)eh->last_log_level; i++) {
+      eh->handlers[i].handler=raptor_grddl_discard_message;
+      eh->handlers[i].user_data=NULL;
+    }
   }
   
   raptor_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
@@ -1374,12 +1377,17 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   uri_string=raptor_uri_as_string(rdf_parser->base_uri);
 
   if(1) {
+    raptor_error_handlers_init(&eh);
+    eh.last_log_level=rdf_parser->error_handlers.last_log_level;
+
     /* Save error handlers and discard parsing errors
      * NOTE not setting RAPTOR_LOG_LEVEL_NONE handler
      */
-    for(i=1; i<= RAPTOR_LOG_LEVEL_LAST; i++) {
-      eh.handlers[i]=rdf_parser->error_handlers.handlers[i];
-      rdf_parser->error_handlers.handlers[i]=raptor_grddl_discard_message;
+    memcpy(&eh.handlers, &rdf_parser->error_handlers,
+           sizeof(raptor_message_handler_closure) * (1+eh.last_log_level));
+    for(i=1; i <= (int)eh.last_log_level; i++) {
+      rdf_parser->error_handlers.handlers[i].handler=raptor_grddl_discard_message;
+      rdf_parser->error_handlers.handlers[i].user_data=NULL;
     }
   }
 
@@ -1501,8 +1509,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   
   if(1) {
     /* Restore error handlers */
-    for(i=1; i<= RAPTOR_LOG_LEVEL_LAST; i++)
-      rdf_parser->error_handlers.handlers[i]=eh.handlers[i];
+    for(i=1; i<= (int)eh.last_log_level; i++)
+      rdf_parser->error_handlers.handlers[i].handler=eh.handlers[i].handler;
+      rdf_parser->error_handlers.handlers[i].user_data=eh.handlers[i].user_data;
   }
 
   if(!grddl_parser->html_ctxt && !grddl_parser->xml_ctxt) {

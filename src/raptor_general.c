@@ -385,19 +385,16 @@ static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
 
 /* internal */
 void
-raptor_log_error_simple(raptor_log_level level,
-                        raptor_message_handler handler, void* handler_data,
-                        raptor_locator* locator, const char* message, ...)
+raptor_log_error_to_handlers(raptor_error_handlers* error_handlers,
+                             raptor_log_level level,
+                             raptor_locator* locator, const char* message)
 {
-  va_list arguments;
-
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
-  va_start(arguments, message);
-  raptor_log_error_varargs(level, handler, handler_data, locator,
-                           message, arguments);
-  va_end(arguments);
+  raptor_log_error(level, error_handlers->handlers[level].handler,
+                   error_handlers->handlers[level].user_data,
+                   locator, message);
 }
 
 
