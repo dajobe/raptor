@@ -436,7 +436,7 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
     return 0;
   }
   
-  len=header_len + 1 +strlen(cache_control); /* header+" "+cache_control+"\0" */
+  len=header_len + 1 +strlen(cache_control) + 1; /* header+" "+cache_control+"\0" */
   
   cache_control_copy=(char*)RAPTOR_MALLOC(cstring, len);
   if(!cache_control_copy)
