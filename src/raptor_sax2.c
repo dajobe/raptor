@@ -697,14 +697,14 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
       while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) 
         src++;
       while (*src) {
-	if (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) {
+        if (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09) {
           while (*src == 0x20 || *src == 0x0d || *src == 0x0a || *src == 0x09)
             src++;
           if (*src)
             *dst++ = 0x20;
-	} else {
+        } else {
           *dst++ = *src++;
-	}
+        }
       }
       *dst = '\0';
       xmlFree(value);
@@ -724,6 +724,8 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
     xml_atts_size=sizeof(unsigned char*) * i;
     if(xml_atts_size) {
       xml_atts_copy=(unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
+      if(!xml_atts_copy)
+        goto fail;
       memcpy(xml_atts_copy, atts, xml_atts_size);
     }
 
@@ -766,7 +768,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
           raptor_log_error_to_handlers(sax2->error_handlers, 
                                        RAPTOR_LOG_LEVEL_FATAL,
                                        sax2->locator, "Out of memory");
-          return;
+          goto fail;
         }
 
         /* optionally normalize language to lowercase */
@@ -802,13 +804,16 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   el_name=raptor_new_qname(&sax2->namespaces, name, NULL,
                            (raptor_simple_message_handler)raptor_sax2_simple_error, sax2);
   if(!el_name)
-    return;
+    goto fail;
 
   xml_element=raptor_new_xml_element(el_name, xml_language, xml_base);
   if(!xml_element) {
     raptor_free_qname(el_name);
-    return;
+    goto fail;
   }
+  /* xml_language,xml_base now owned by xml_element */
+  xml_language = NULL;
+  xml_base = NULL; 
 
   /* Turn string attributes into namespaced-attributes */
   if(ns_attributes_count) {
@@ -823,9 +828,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
       raptor_log_error_to_handlers(sax2->error_handlers, 
                                    RAPTOR_LOG_LEVEL_FATAL,
                                    sax2->locator, "Out of memory");
-      RAPTOR_FREE(raptor_xml_element, xml_element);
-      raptor_free_qname(raptor_xml_element_get_name(xml_element));
-      return;
+      goto fail;
     }
 
     for (i = 0; i < all_atts_count; i++) {
@@ -845,8 +848,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         for (j=0; j < i; j++)
           RAPTOR_FREE(raptor_qname, named_attrs[j]);
         RAPTOR_FREE(raptor_qname_array, named_attrs);
-        raptor_free_xml_element(xml_element);
-        return;
+        goto fail;
       }
 
       named_attrs[offset++]=attr;
@@ -869,6 +871,17 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
     RAPTOR_FREE(cstringpointer, xml_atts_copy);
   }
 
+  return;
+
+  fail:
+  if(xml_atts_copy)
+    RAPTOR_FREE(cstringpointer, xml_atts_copy);
+  if(xml_base)
+    raptor_free_uri(xml_base);
+  if(xml_language)
+    RAPTOR_FREE(cstring, xml_language);
+  if(xml_element)
+    raptor_free_xml_element(xml_element);
 }
 
 
