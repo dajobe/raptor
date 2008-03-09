@@ -1,3 +1,63 @@
+2008-02-25  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rdfxml.c:
+	(raptor_rdfxml_start_element_grammar,raptor_rdfxml_end_element_grammar):
+	Check for alloc failures.
+
+	* src/raptor_xml.c: (raptor_new_xml_element): Check for cdata
+	stringbuffer alloc failure.
+
+	* src/raptor_sax2.c: (raptor_sax2_start_element): Low-memory
+	cleanup fixes.
+
+	* src/raptor.h: (raptor_error_handlers): Quick segfault fix:
+	statically allocate RAPTOR_LOG_LEVEL_LAST+1 error handler slots
+
+	* src/raptor.h: (raptor_error_handlers): Portability fix: avoid
+	"type containing an unknown-size array is not allowed" errors on
+	some compilers.
+
+2008-02-24  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_www.c: (raptor_www_set_http_cache_control): +1 for
+	zero termination
+
+2008-02-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_libxml.c, src/raptor_parse.c,
+	src/raptor_sax2.c, src/raptor_www.c, src/raptor_www_libxml.c:
+	Added struct raptor_message_handler_closure for user data plus an
+	error handler.
+	(raptor_log_error_simple): Removed, only used in raptor_sax2.c
+	(raptor_log_error_to_handlers): Added to log to an
+	raptor_error_handlers object.
+	(raptor_sax2_simple_error): Tidy erorr calling to use closure
+	pointer.
+	(raptor_sax2_parse_chunk, raptor_log_error_to_handlers): Use
+	raptor_log_error_to_handlers
+	(raptor_www_set_error_handler, raptor_www_error): Update for
+	closure struct.
+	(raptor_grddl_fetch_uri, raptor_grddl_parse_chunk): Update for
+	closure struct.  Tidy saving and restoring error handlers
+	(raptor_new_parser): Init last_log_level for error handlers.
+	(raptor_parse_uri_with_connection, raptor_parser_simple_error,
+	raptor_parser_error_varargs, raptor_parser_error_message_handler,
+	raptor_parser_warning, raptor_parser_warning_message_handler,
+	raptor_set_fatal_error_handler, raptor_set_error_handler,
+	raptor_set_warning_handler): Update for closure struct.
+	(raptor_libxml_warning, raptor_libxml_error_common,
+	raptor_libxml_generic_error,
+	raptor_libxml_xmlStructuredErrorFunc): Update for closure struct.
+	(raptor_www_libxml_init): Update for closure struct.
+
+2008-02-24  Lauri Aalto <laalto@iki.fi>
+
+	* src/Makefile.am: flex-generated header file does not need fixing
+	with fix-flex. It already has YY_NO_UNISTD_H guard and all other
+	fix-flex issues are for .c files only.
+	Fixes warnings due to multiple inclusion of raptor_config.h.
+
 2008-02-23  Dave Beckett <dave@dajobe.org>
 
 	* docs/tmpl/section-feature.sgml, src/raptor.h,
