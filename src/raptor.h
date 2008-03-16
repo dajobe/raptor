@@ -1662,8 +1662,6 @@ void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 RAPTOR_API
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API
-void raptor_sax2_parse_handle_errors(raptor_sax2* sax2);
-RAPTOR_API
 const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2* sax2);
 RAPTOR_API
 raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
