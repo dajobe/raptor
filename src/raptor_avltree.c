@@ -1093,7 +1093,7 @@ check_string(int depth, void* data, void *user_data)
   visit_state* vs=(visit_state*)user_data;
   const char* result=vs->results[vs->count];
   
-  if(strcmp(data, result)) {
+  if(strcmp((const char*)data, result)) {
     fprintf(vs->fh, "%3d: Expected '%s' but found '%s'\n", vs->count,
             result, (char*)data);
     vs->failed=1;
@@ -1257,7 +1257,7 @@ main(int argc, char *argv[])
 
   
   for(i=0; results[i]; i++) {
-    const char* result=(void*)results[i];
+    const char* result=results[i];
     char* data=(char*)raptor_avltree_remove(tree, (void*)result);
     if(!data) {
       fprintf(stderr, "%s: remove %i failed at item '%s'\n", program, i,
