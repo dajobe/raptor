@@ -388,7 +388,7 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
   if(!lookup_node)
     return NULL;
 
-  rv_node = raptor_avltree_search(nodes, lookup_node);
+  rv_node=(raptor_abbrev_node*)raptor_avltree_search(nodes, lookup_node);
   
   /* If not found, insert/return a new one */
   if(!rv_node) {
