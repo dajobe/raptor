@@ -553,14 +553,14 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
       strncpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
       strncpy(error_buffer+ERROR_PREFIX_LEN, error_message, error_length+1);
 
-      raptor_log_error_to_handlers(&sax2->error_handlers,
+      raptor_log_error_to_handlers(sax2->error_handlers,
                                    RAPTOR_LOG_LEVEL_ERROR,
                                    sax2->locator, error_buffer);
       RAPTOR_FREE(cstring, error_buffer);
     } else
-      raptor_log_error_to_handler(&sax2->error_handlers,
-                                  RAPTOR_LOG_LEVEL_ERROR,
-                                  sax2->locator, "XML Parsing failed");
+      raptor_log_error_to_handlers(sax2->error_handlers,
+                                   RAPTOR_LOG_LEVEL_ERROR,
+                                   sax2->locator, "XML Parsing failed");
   }
 #endif
 
