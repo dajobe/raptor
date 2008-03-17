@@ -23,10 +23,8 @@ Added initialization function for the structure,
 Added <code>raptor_log_level</code> enum for the log message level.
 </p>
 
-<p>Added two JSON serializers:
-resource-centric 'json' based on
-<a href="http://n2.talis.com/wiki/RDF_JSON_Specification">http://n2.talis.com/wiki/RDF_JSON_Specification</a>
-and triple-centric 'json-triples'.
+<p>Added two JSON serializers: resource-centric 'json' and
+triple-centric 'json-triples'.
 </p>
 
 <p>Made I/O Stream class <code>raptor_iostream</code> support
@@ -84,6 +82,21 @@ and <code>raptor_iostream_read_eof()</code>.
 encoded string to an I/O stream using python / JSON / Turtle /
 N-Triples / SPARQL escaping rules.  (Dave B)
 </pre>
+
+
+<h3>Serializer Class Changes</h3>
+<p>Added two new JSON serializers:</p>
+<ol>
+<li>Resource-centric 'json' based on
+<a href="http://n2.talis.com/wiki/RDF_JSON_Specification">http://n2.talis.com/wiki/RDF_JSON_Specification</a></li>
+<li>Triple-centric 'json-triples' serializer based on SPARQL results in JSON.</li>
+</ol>
+
+<p>Added new serializer feature
+<code>RAPTOR_FEATURE_JSON_CALLBACK</code> (name 'jsonCallback') to
+set the callback function for the JSON output in both JSON
+serializers.
+</p>
 
 
 <h3>Statement Class Changes</h3>
