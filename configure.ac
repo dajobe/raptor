@@ -319,7 +319,7 @@ AC_TRY_LINK([#ifdef HAVE_MATH_H
             AC_MSG_RESULT(no))
 LIBS="$oLIBS"
 
-if test "X$need_libm" = yes; then
+if test "X$need_libm" = Xyes; then
   LIBS="$LIBS -lm"
 fi
 
