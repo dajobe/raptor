@@ -1637,17 +1637,16 @@ main(int argc, char *argv[])
 
 
   if(1) {
-    raptor_uri_handler uri_handler = {
-      .new_uri     = raptor_default_new_uri,
-      .free_uri    = raptor_default_free_uri,
-      .uri_compare = raptor_test_uri_compare
-    };
+    raptor_uri_handler uri_handler;
     int ret;
     raptor_uri* u1;
     raptor_uri* u2;
     int called;
     
     /* URI Interface V1 */
+    uri_handler.new_uri     = raptor_default_new_uri;
+    uri_handler.free_uri    = raptor_default_free_uri;
+    uri_handler.uri_compare = raptor_test_uri_compare;
     uri_handler.initialised=1;
     called=0;
     raptor_uri_set_handler(&uri_handler, &called);
