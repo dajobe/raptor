@@ -1,3 +1,47 @@
+2008-03-16  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: fix check for needing to link with -lm
+
+	* src/raptor_sax2.c: (raptor_sax2_parse_chunk): Fixes to calling
+	raptor_log_error_to_handlers when built with expat.
+
+	* src/raptor_parse.c: (main): Only define program if RAPTOR_DEBUG
+
+	* src/raptor_avltree.c: (check_string, main): Casts for C++
+
+	* src/raptor_turtle_writer.c: (main): Cast for C++
+
+	* src/raptor_uri.c: (main): Remove C99 initializer for C++
+
+	* src/raptor_abbrev.c: (raptor_abbrev_node_lookup): Cast for C++
+
+	* src/raptor_set.c: (raptor_id_set_add): Casts for C++
+
+	* src/raptor_turtle_writer.c: (main): use raptor_iostream_tell
+	instead of deprecated raptor_iostream_get_bytes_written_count
+
+	* tests/turtle/test-28-out.ttl: Update expected exact turtle
+	serializer result due to AVLTree change in re-ordering the triples
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_json.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Added RAPTOR_FEATURE_JSON_CALLBACK
+	serializer feature for the JSON serializer to emit a callback
+	block like callback(...);
+	struct raptor_serializer_s gains feature_json_callback.
+	(raptor_free_serializer): Free all string features.
+	(raptor_serializer_set_feature_string,
+	raptor_serializer_get_feature_string): Store/return JSON callback
+	in feature_json_callback.
+	raptor_features_list array gains new entry for
+	RAPTOR_FEATURE_JSON_CALLBACK with name "jsonCallback".
+	(raptor_json_serialize_start): Write callback before serialize start.
+	(raptor_json_serialize_end): Terminate callback after serialize end.
+
+	* src/raptor.h: Removed raptor_sax2_parse_handle_errors prototype
+	- no such function.
+
 2008-02-25  Lauri Aalto <laalto@iki.fi>
 
 	* src/raptor_rdfxml.c:
