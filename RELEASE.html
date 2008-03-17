@@ -48,51 +48,47 @@ Added <code>raptor_log_level</code> enum for the log message level.
 <h3>I/O Stream class changes</h3>
 
 <p>Made I/O Stream class <code>raptor_iostream</code> provide
-reading. (Dave B)</p>
-
-<p>Deprecated <code>raptor_iostream_handler</code> structure for new
+reading. (Dave B):</p>
+<ul>
+<li>Deprecated <code>raptor_iostream_handler</code> structure for new
 <code>raptor_iostream_handler2</code> structure which contains the
-new factory functions for reading.</p>
-
-<p>Added new Read I/O stream factory handler typedefs
+new factory functions for reading.</li>
+<li>Added new Read I/O stream factory handler typedefs
 <code>raptor_iostream_read_bytes_func</code> and
 <code>raptor_iostream_read_eof_func</code>.
-</p>
-
-<p>Added new <code>raptor_new_iostream_from_handler2()</code> I/O
+</li>
+<li>Added new <code>raptor_new_iostream_from_handler2()</code> I/O
 stream constructor to handle Reading and deprecated
 <code>raptor_new_iostream_from_handler()</code>.
-</p>
-
-<p>Added new <code>raptor_iostream_tell()</code> and deprecated
+</li>
+<li>Added new <code>raptor_iostream_tell()</code> and deprecated
 <code>raptor_iostream_get_bytes_written_count</code>.
-</p>
-
-<p>Added new Read I/O Stream constructors:
+</li>
+<li>Added new Read I/O Stream constructors:
 <code>raptor_new_iostream_from_sink</code>(),
 <code>raptor_new_iostream_from_filename()</code>
 <code>raptor_new_iostream_from_file_handle()</code> and
 <code>raptor_new_iostream_from_string()</code>
-</p>
-
-<p>Added new Read I/O Stream methods
+</li>
+<li>Added new Read I/O Stream methods
 <code>raptor_iostream_read_bytes()</code> and
 and <code>raptor_iostream_read_eof()</code>.
-</p>
+</li>
+</ul>
 
-<pre>Added new Write I/O Stream method
+<p>Added new Write I/O Stream method
 <code>raptor_iostream_write_string_python()</code> to write an
 encoded string to an I/O stream using python / JSON / Turtle /
 N-Triples / SPARQL escaping rules.  (Dave B)
-</pre>
+</p>
 
 
 <h3>Serializer Class Changes</h3>
 <p>Added two new JSON serializers (Dave B):</p>
 <ol>
-<li>Resource-centric 'json' based on
-<a href="http://n2.talis.com/wiki/RDF_JSON_Specification">http://n2.talis.com/wiki/RDF_JSON_Specification</a></li>
-<li>Triple-centric 'json-triples' serializer based on SPARQL results in JSON.</li>
+<li>Resource-centric serializer named <code>json</code> based on
+<a href="http://n2.talis.com/wiki/RDF_JSON_Specification">Talis RDF/JSON Specification</a></li>
+<li>Triple-centric serializer named <code>json-triples</code> based on the SPARQL results in JSON format.</li>
 </ol>
 
 <p>Added new serializer feature
@@ -111,12 +107,17 @@ ordering between <code>raptor_statement</code> objects. (Dave B)
 
 <h3>Parser Class Changes</h3>
 
-<p>Added new parser features <code>RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL</code>
-and <code>RAPTOR_FEATURE_WWW_HTTP_USER_AGENT</code> to control
-sending the <code>Cache-Control</code> and <code>User-Agent</code>
-HTTP headers in web requests. (Dave B, based on a patch in the bug) <br />
+<p>Added new parser features to control HTTP headers in
+web requests (Dave B, based on a patch in the bug):<br />
+Also never <code>Pragma:</code> header with libcurl ever.<br />
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=252">Issue#0000252</a>
 </p>
+<ul>
+<li><code>RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL</code> to control
+sending <code>Cache-Control</code> (default: none)</li>
+<li><code>RAPTOR_FEATURE_WWW_HTTP_USER_AGENT</code> to control
+sending <code>User-Agent</code> (default: none)</li>
+</ul>
 
 <p>Turtle parser: Added tests to forbid <code>'</code> and
 <code>'''</code>-quoted strings and to forbid <code>()</code> in
@@ -184,19 +185,19 @@ libxml2. (Dave B)</p>
 
 <h3>Serializer Class Changes</h3>
 
-<p>Added serializer feature <code>RAPTOR_FEATURE_WRITE_BASE_URI</code> to
-control writing <code>@base</code> directive to Turtle files. (Dave R)
-</p>
-
-<p>Switched abbreviated serializer (Turtle and RDF/XML-Abbrev) from
+<p>Abbreviated serializers (RDF/XML-Abbrev and Turtle) switched from
 using a sequence to using an AVL Tree with cursor to more efficiently
 (faster) sort triples by subject.  This changes the syntax output but
 has no semantic difference.
 </p>
 
-<p>Used AVL Tree to remove duplicate triples on abbreviated syntax
-output. (Dave B)<br />
+<p>Abbreviated serializers (RDF/XML-Abbrev and Turtle): Use AVL Tree
+to remove duplicate triples. (Dave B)<br />
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=245">Issue#0000245</a>
+</p>
+
+<p>Turtle serializer: Feature <code>RAPTOR_FEATURE_WRITE_BASE_URI</code>
+added to control writing <code>@base</code> directive to Turtle. (Dave R)
 </p>
 
 <p>Turtle serializer: Remove canonicalisation of integer and double
@@ -225,8 +226,8 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=252">Issue#0000252</a>
 construction. (Lauri)
 </p>
 
-<p>Abbreviated serializers (RDF/XML-abbrev, Turtle): low memory and
-allocation failure fixes. (Lauri)
+<p>Abbreviated serializers (RDF/XML-abbrev and Turtle): low memory
+and allocation failure fixes. (Lauri)
 </p>
 
 <p>Altered API function signatures of
@@ -250,7 +251,7 @@ writer. (Lauri)
 <code>trunc()</code> that are not always avaialble. (Dave B)
 </p>
 
-<p>RDF/XML-abbrev serializer: low memory fixes. (Lauri)
+<p>RDF/XML-abbrev Serializer: low memory fixes. (Lauri)
 </p>
 
 <p>Turtle/N3 parsers, serializers: many low memory fixes and better out
@@ -261,7 +262,7 @@ of memory errors. (Lauri)
 <h3>XML Class Changes</h3>
 
 <p>Added new method <code>raptor_xml_element_get_language()</code> 
-to get the language associated with an element.
+to get the language associated with an element. (Dave B)
 </p>
 
 
@@ -277,7 +278,7 @@ sequences that need to be walked. (Dave B)
 </p>
 
 <p>Updated <code>rdfdiff</code> utility to handle duplicate triples
-in inputs.
+in inputs. (Dave B)
 </p>
 
 <p><code>raptor_sequence_shift()</code> and
