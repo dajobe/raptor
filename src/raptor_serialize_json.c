@@ -137,6 +137,14 @@ raptor_json_serialize_start(raptor_serializer* serializer)
     }
   }
 
+  /* start callback */
+  if(serializer->feature_json_callback) {
+    raptor_iostream_write_string(serializer->iostream,
+                                 serializer->feature_json_callback);
+    raptor_iostream_write_counted_string(serializer->iostream,
+                                         (const unsigned char*)"(", 1);
+  }
+
   if(!context->is_resource) {
     /* start outer object */
     raptor_json_writer_start_block(context->json_writer, '{');
@@ -429,7 +437,7 @@ raptor_json_serialize_end(raptor_serializer* serializer)
       raptor_json_writer_newline(context->json_writer);
       raptor_json_writer_end_block(context->json_writer, ']');
       raptor_json_writer_newline(context->json_writer);
-
+      
       raptor_json_writer_end_block(context->json_writer, '}');
       raptor_json_writer_newline(context->json_writer);
     }
@@ -442,6 +450,11 @@ raptor_json_serialize_end(raptor_serializer* serializer)
   /* end outer object */
   raptor_json_writer_end_block(context->json_writer, '}');
   raptor_json_writer_newline(context->json_writer);
+
+  /* end callback */
+  if(serializer->feature_json_callback)
+    raptor_iostream_write_counted_string(serializer->iostream,
+                                         (const unsigned char*)");", 2);
 
   return 0;
 }

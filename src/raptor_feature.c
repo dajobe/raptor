@@ -46,7 +46,7 @@ static const struct
 {
   raptor_feature feature;
   /* flag bits
-   *  1=parserfeature
+   *  1=parser feature
    *  2=serializer feature
    *  4=string value (else int)
    *  8=xml writer feature
@@ -85,7 +85,8 @@ static const struct
   { RAPTOR_FEATURE_WWW_TIMEOUT       , 1,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
   { RAPTOR_FEATURE_WRITE_BASE_URI    , 2,  "writeBaseURI", "Write @base directive to Turtle files" },
   { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, 5, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
-  { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 5,  "wwwHttpUserAgent", "Set HTTP User-Agent: header value" }
+  { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 5,  "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
+  { RAPTOR_FEATURE_JSON_CALLBACK     , 6,  "jsonCallback", "JSON serializer callback" }
 };
 
 

@@ -492,6 +492,11 @@ struct raptor_serializer_s {
    * non 0 to write XML 1.0 or 1.1 declaration (default 1)
    */
   int feature_write_xml_declaration;
+
+  /* FEATURE:
+   * JSON serializer callback function name
+   */
+  unsigned char *feature_json_callback;
 };
 
 

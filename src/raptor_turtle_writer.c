@@ -736,6 +736,9 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+
+    /* JSON serializer features */
+    case RAPTOR_FEATURE_JSON_CALLBACK:
     
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
@@ -843,6 +846,9 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+
+    /* JSON serializer features */
+    case RAPTOR_FEATURE_JSON_CALLBACK:
     
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:

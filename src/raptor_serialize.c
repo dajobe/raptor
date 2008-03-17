@@ -395,6 +395,9 @@ raptor_new_serializer(const char *name)
   /* Write XML declaration */
   rdf_serializer->feature_write_xml_declaration=1;
 
+  /* JSON callback function */
+  rdf_serializer->feature_json_callback= NULL;
+
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
     return NULL;
@@ -668,6 +671,27 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
   if(rdf_serializer->feature_start_uri)
     raptor_free_uri(rdf_serializer->feature_start_uri);
 
+  if(rdf_serializer->feature_resource_border)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_resource_border);
+  
+  if(rdf_serializer->feature_literal_border)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_literal_border);
+  
+  if(rdf_serializer->feature_bnode_border)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_bnode_border);
+  
+  if(rdf_serializer->feature_resource_fill)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_resource_fill);
+  
+  if(rdf_serializer->feature_literal_fill)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_literal_fill);
+  
+  if(rdf_serializer->feature_bnode_fill)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_bnode_fill);
+  
+  if(rdf_serializer->feature_json_callback)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_json_callback);
+
   RAPTOR_FREE(raptor_serializer, rdf_serializer);
 }
 
@@ -783,6 +807,7 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+    case RAPTOR_FEATURE_JSON_CALLBACK:
 
     /* WWW features */
     case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
@@ -906,6 +931,12 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
         (unsigned char **)&(serializer->feature_bnode_fill), value);
       break;
 
+    /* JSON serializer features */
+    case RAPTOR_FEATURE_JSON_CALLBACK:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_json_callback), value);
+      break;
+
     /* WWW features */
     case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
     case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
@@ -955,6 +986,7 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_RESOURCE_FILL:
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
+    case RAPTOR_FEATURE_JSON_CALLBACK:
       result= -1;
       break;
 
@@ -1051,6 +1083,9 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
       break;
     case RAPTOR_FEATURE_BNODE_FILL:
       return (unsigned char *)(serializer->feature_bnode_fill);
+      break;
+    case RAPTOR_FEATURE_JSON_CALLBACK:
+      return (unsigned char *)(serializer->feature_json_callback);
       break;
         
     /* parser features */
