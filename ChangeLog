@@ -32,7 +32,7 @@
 	(raptor_log_error_simple): Removed, only used in raptor_sax2.c
 	(raptor_log_error_to_handlers): Added to log to an
 	raptor_error_handlers object.
-	(raptor_sax2_simple_error): Tidy erorr calling to use closure
+	(raptor_sax2_simple_error): Tidy error calling to use closure
 	pointer.
 	(raptor_sax2_parse_chunk, raptor_log_error_to_handlers): Use
 	raptor_log_error_to_handlers
@@ -739,7 +739,7 @@
 	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
 	src/raptor_turtle_writer.c, src/raptor_uri.c,
 	src/raptor_xml_writer.c, src/turtle_parser.y: Make
-	raptor_uri_handlers const. SURCE COMPATIBILITY BREAK: Five raptor
+	raptor_uri_handlers const. SOURCE COMPATIBILITY BREAK: Five raptor
 	API function signatures changed:
 	raptor_uri_set_handler()
 	raptor_uri_get_handler()
