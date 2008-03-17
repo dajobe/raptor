@@ -205,7 +205,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
     }
   }
   
-  item=raptor_avltree_search(base->tree, id);
+  item=(char*)raptor_avltree_search(base->tree, id);
 
   /* if already there, error */
   if(item) {
@@ -219,7 +219,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
   set->hits++;
 #endif
   
-  item=RAPTOR_MALLOC(cstring, id_len+1);
+  item=(char*)RAPTOR_MALLOC(cstring, id_len+1);
   if(!item)
     return 1;
 
