@@ -911,7 +911,7 @@ main(int argc, char *argv[])
   raptor_turtle_writer* turtle_writer;
   raptor_uri* base_uri;
   raptor_qname* el_name;
-  size_t count;
+  unsigned long count;
   raptor_uri* datatype;
   
   /* for raptor_new_iostream_to_string */
@@ -1001,7 +1001,7 @@ main(int argc, char *argv[])
   raptor_free_uri(base_uri);
 
   
-  count=raptor_iostream_get_bytes_written_count(iostr);
+  count=raptor_iostream_tell(iostr);
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing iostream\n", program);
