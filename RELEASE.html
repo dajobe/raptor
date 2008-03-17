@@ -11,6 +11,270 @@
 
 <h2 id="rel1_4_17"><a name="rel1_4_17">Raptor 1.4.17 Changes</a></h2>
 
+<p>Not yet released.</p>
+
+<p>The main changes to this release are:</p>
+
+<p>Added new public error handlers structure
+<code>raptor_error_handlers</code> which contains a set of
+(function, data pointers) pairs called <code>raptor_handler_closure</code>.
+Added initialization function for the structure, 
+<code>raptor_error_handlers_init()</code>. 
+Added <code>raptor_log_level</code> enum for the log message level.
+</p>
+
+<p>Added two JSON serializers:
+resource-centric 'json' based on
+<a href="http://n2.talis.com/wiki/RDF_JSON_Specification">http://n2.talis.com/wiki/RDF_JSON_Specification</a>
+and triple-centric 'json-triples'.
+</p>
+
+<p>Made I/O Stream class <code>raptor_iostream</code> support
+reading as well as writing with new constructors and
+new methods.</p>
+
+<p>Added new public SAX2 API class <code>raptor_sax2</code> exposing the
+existing internal API which has been around since the first release
+of Raptor 8 years ago and runs on top of expat or libxml2.</p>
+
+<p>Fixed Issues:</p>
+<ul>
+<li>FIXME
+Issue #0000252 http://bugs.librdf.org/mantis/view.php?id=252
+</li>
+<li>Used AVL Tree to remove duplicate triples on abbreviated syntax output.
+Issue #0000245 http://bugs.librdf.org/mantis/view.php?id=245
+</li>
+</ul>
+
+
+<h3>I/O Stream class changes</h3>
+
+<p>Made I/O Stream class <code>raptor_iostream</code> provide
+reading. (Dave B)</p>
+
+<p>Deprecated <code>raptor_iostream_handler</code> structure for new
+<code>raptor_iostream_handler2</code> structure which contains the
+new factory functions for reading.</p>
+
+<p>Added new Read I/O stream factory handler typedefs
+<code>raptor_iostream_read_bytes_func</code> and
+<code>raptor_iostream_read_eof_func</code>.
+</p>
+
+<p>Added new <code>raptor_new_iostream_from_handler2()</code> I/O
+stream constructor to handle Reading and deprecated
+<code>raptor_new_iostream_from_handler()</code>.
+</p>
+
+<p>Added new <code>raptor_iostream_tell()</code> and deprecated
+<code>raptor_iostream_get_bytes_written_count</code>.
+</p>
+
+<p>Added new Read I/O Stream constructors:
+<code>raptor_new_iostream_from_sink</code>(),
+<code>raptor_new_iostream_from_filename()</code>
+<code>raptor_new_iostream_from_file_handle()</code> and
+<code>raptor_new_iostream_from_string()</code>
+</p>
+
+<p>Added new Read I/O Stream methods
+<code>raptor_iostream_read_bytes()</code> and
+and <code>raptor_iostream_read_eof()</code>.
+</p>
+
+<pre>Added new Write I/O Stream method
+<code>raptor_iostream_write_string_python()</code> to write an
+encoded string to an I/O stream using python / JSON / Turtle /
+N-Triples / SPARQL escaping rules.  (Dave B)
+</pre>
+
+
+<h3>Statement Class Changes</h3>
+
+<p>Added <code>raptor_statement_compare()</code> to provide an
+ordering between <code>raptor_statement</code> objects.
+</p>
+
+
+<h3>Parser Class Changes</h3>
+
+<p>Added new parser features <code>RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL</code>
+and <code>RAPTOR_FEATURE_WWW_HTTP_USER_AGENT</code> to control
+sending the <code>Cache-Control</code> and <code>User-Agent</code>
+HTTP headers in web requests. (Dave B, based on a patch in the bug) <br />
+Fixes Issue #0000252 http://bugs.librdf.org/mantis/view.php?id=252
+</p>
+
+<p>Turtle parser: Added tests to forbid ' and '''-quoted strings; to
+forbid () in triple predicate position following the updated Turtle
+spec. (Dave B)
+</p>
+
+<p>Turtle parser: Write ';' statement terminators with a leading
+space for consistency with '.' terminator. (Dave R)
+</p>
+
+<p>Turtle parser: Remove canonicalisation of integer and double
+to match Turtle latest spec. (Dave B)
+</p>
+
+
+<h3>QName Class Changes</h3>
+
+<p>Added new methods  <code>raptor_qname_get_local_name()</code>,
+<code>raptor_qname_get_value()</code> and
+<code>raptor_qname_get_counted_value()</code>. (Dave B)
+</p>
+
+
+<h3>SAX2 Class Changes</h3>
+
+<p>Added new public SAX2 API class <code>raptor_sax2</code> exposind th
+existing internal one which has been around since the first release
+of Raptor 8 years ago and runs on top of expat or libxml2. (Dave B)</p>
+
+<ul>
+<li>constructor: <code>raptor_new_sax2()</code></li>
+<li>destructor: <code>raptor_free_sax2()</code></li>
+<li>XML handler methods:
+ <code>raptor_sax2_set_start_element_handler()</code>,
+ <code>raptor_sax2_set_end_element_handler()</code>,
+ <code>raptor_sax2_set_characters_handler()</code>,
+ <code>raptor_sax2_set_cdata_handler()</code>,
+ <code>raptor_sax2_set_comment_handler()</code>,
+ <code>raptor_sax2_set_unparsed_entity_decl_handler()</code> and
+ <code>raptor_sax2_set_external_entity_ref_handler()</code>.
+</li>
+<li>XML handler factory typedefs:
+ <code>raptor_sax2_start_element_handler</code>,
+ <code>raptor_sax2_end_element_handler</code>,
+ <code>raptor_sax2_characters_handler</code>,
+ <code>raptor_sax2_cdata_handler</code>,
+ <code>raptor_sax2_comment_handler</code>,
+ <code>raptor_sax2_unparsed_entity_decl_handler</code> and
+ <code>raptor_sax2_external_entity_ref_handler</code>.
+</li>
+<li>set namespace handler method:
+<code>raptor_sax2_set_namespace_handler()</code>
+</li>
+<li>parsing methods:
+ <code>raptor_sax2_parse_start()</code> and
+ <code>raptor_sax2_parse_chunk()</code>
+</li>
+<li>other methods:
+ <code>raptor_sax2_inscope_xml_language()</code> and
+ <code>raptor_sax2_inscope_base_uri()</code> 
+</li>
+</ul>
+
+
+<h3>Serializer Class Changes</h3>
+
+<p>Added serializer feature <code>RAPTOR_FEATURE_WRITE_BASE_URI</code> to
+control writing <code>@base</code> directive to Turtle files. (Dave R)
+</p>
+
+<p>Switched abbreviated serializer (Turtle and RDF/XML-Abbrev) from
+using a sequence to using an AVL Tree with cursor to more efficiently
+(faster) sort triples by subject.  This changes the syntax output but
+has no semantic difference.
+</p>
+
+<p>Used AVL Tree to remove duplicate triples on abbreviated syntax
+output. (Dave B)
+Fixes Issue #0000245 http://bugs.librdf.org/mantis/view.php?id=245
+</p>
+
+<p>Turtle serializer: Remove canonicalisation of integer and double
+to match Turtle latest spec. (Dave B)
+</p>
+
+
+
+<h3>URI Class Changes</h3>
+
+<p>Update URI resolving for RFC3986 changes (Dave B)
+</p>
+
+
+<h3>WWW Class Changes</h3>
+
+<p>Added new method <code>raptor_www_set_http_cache_control()</code>
+to set the HTTP <code>Cache-Control:</code> header in requests.
+(Dave B, based on a patch in the bug)
+Fixes Issue #0000252 http://bugs.librdf.org/mantis/view.php?id=252
+</p>
+
+<h3>Portability and Resilience Changes</h3>
+
+<p>Pass on error failures in parser and serializer factory
+construction. (Lauri)
+</p>
+
+<p>Abbreviated serializers (RDF/XML-abbrev, Turtle): low memory and
+allocation failure fixes. (Lauri)
+</p>
+
+<p>Altered API function signatures of
+<code>raptor_uri_set_handler()</code>,
+<code>raptor_uri_get_handler()</code>,
+<code>raptor_new_namespaces(),</code>
+<code>raptor_namespaces_init()</code> and
+<code>raptor_new_xml_writer()</code> to add appropriate
+<code>const</code>s. (Lauri)
+</p>
+
+<p>Portability fixes for RAPTOR_API and other macros. (Lauri)
+</p>
+
+<p>Removal of many sets of writable static data in N-Triples parser, URI
+class, Unicode NFC code, libxml support, Turtle writer and XML
+writer. (Lauri)
+</p>
+
+<p>Portability fixes for <code>round()</code> and
+<code>trunc()</code> that are not always avaialble. (Dave B)
+</p>
+
+<p>RDF/XML-abbrev serializer: low memory fixes. (Lauri)
+</p>
+
+<p>Turtle/N3 parsers, serializers: many low memory fixes and better out
+of memory errors. (Lauri)
+</p>
+
+
+<h3>XML Class Changes</h3>
+
+<p>Added new method <code>raptor_xml_element_get_language()</code> 
+to get the language associated with an element.
+</p>
+
+
+<h3>Other Changes</h3>
+
+<p>Rewrote internal error log functions to use new error handlers
+structures and simplify the calls. (Dave B)
+</p>
+
+<p>Expanded internal <code>raptor_avltree</code> datatype support to
+add a cursor, allowing it to be used for creating large ordered
+sequences that need to be walked. (Dave B)
+</p>
+
+<p>Updated <code>rdfdiff</code> utility to handle duplicate triples
+in inputs.
+</p>
+
+<p><code>raptor_sequence_shift()</code> and
+<code>raptor_sequence_unshift()</code> are now as efficient as the
+sequence push and pop operations: O(1). (Lauri)
+</p>
+
+<p><code>autogen.sh</code> was updated.</p>
+
+
 
 <h2 id="rel1_4_16"><a name="rel1_4_16">Raptor 1.4.16 Changes</a></h2>
 
@@ -1798,7 +2062,7 @@ MIME type of the syntax for a parser</p>
 <p><code>raptor_parse_uri_with_connection</code> (which is called by
 <code>raptor_parse_uri</code>) now sets the HTTP <code>Accept:</code>
 header to the MIME type of the parser in WWW requests using the new
-<code>raptor_www_set_http_accept</code>.
+<code>raptor_www_set_http_accept()</code>.
 </p>
 
 
