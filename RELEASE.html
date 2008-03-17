@@ -29,14 +29,15 @@ first release of Raptor 8 years ago and runs on top of either expat
 or libxml2.</p>
 
 <p>Added new public error handlers structure
-<code>raptor_error_handlers</code> which contains a set of
-(function, data pointers) pairs called <code>raptor_handler_closure</code>.
-Added initialization function for the structure, 
+<code>raptor_error_handlers</code> containing a set of
+(function, data pointers) pairs called <code>raptor_handler_closure</code>
+for each error log level.
+Added <code>raptor_log_level</code> enum for the error log level.
+Added an initialization function for the structure,
 <code>raptor_error_handlers_init()</code>. 
-Added <code>raptor_log_level</code> enum for the log message level.
 </p>
 
-<p>Sevearl other API changes, fixes and improvements were made.</p>
+<p>Several other API changes, fixes and improvements were made.</p>
 
 <p>Fixed Issues:</p>
 <ul>
@@ -119,18 +120,16 @@ sending <code>Cache-Control</code> (default: none)</li>
 sending <code>User-Agent</code> (default: none)</li>
 </ul>
 
-<p>Turtle parser: Added tests to forbid <code>'</code> and
+<p>Turtle parser:</p>
+<ul>
+<li>Added tests to forbid <code>'</code> and
 <code>'''</code>-quoted strings and to forbid <code>()</code> in
-triple predicate position following the updated Turtle spec. (Dave B)
-</p>
-
-<p>Turtle parser: Write ';' statement terminators with a leading
-space for consistency with '.' terminator. (Dave R)
-</p>
-
-<p>Turtle parser: Remove canonicalisation of integer and double
-to match Turtle latest spec. (Dave B)
-</p>
+triple predicate position following the updated Turtle spec. (Dave B)</li>
+<li>Write ';' statement terminators with a leading
+space for consistency with '.' terminator. (Dave R)</li>
+<li>Remove canonicalisation of integer and double
+to match Turtle latest spec. (Dave B)</li>
+</ul>
 
 
 <h3>QName Class Changes</h3>
@@ -185,25 +184,25 @@ libxml2. (Dave B)</p>
 
 <h3>Serializer Class Changes</h3>
 
-<p>Abbreviated serializers (RDF/XML-Abbrev and Turtle) switched from
+<p>Abbreviated serializers (RDF/XML-Abbrev and Turtle):</p>
+<ul>
+<li>Switched from
 using a sequence to using an AVL Tree with cursor to more efficiently
 (faster) sort triples by subject.  This changes the syntax output but
 has no semantic difference.
-</p>
-
-<p>Abbreviated serializers (RDF/XML-Abbrev and Turtle): Use AVL Tree
-to remove duplicate triples. (Dave B)<br />
+</li>
+<li>Use AVL Tree to remove duplicate triples. (Dave B)<br />
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=245">Issue#0000245</a>
-</p>
+</li>
+</ul>
 
-<p>Turtle serializer: Feature <code>RAPTOR_FEATURE_WRITE_BASE_URI</code>
-added to control writing <code>@base</code> directive to Turtle. (Dave R)
-</p>
-
-<p>Turtle serializer: Remove canonicalisation of integer and double
-to match Turtle latest spec. (Dave B)
-</p>
-
+<p>Turtle serializer:</p>
+<ul>
+<li>Feature <code>RAPTOR_FEATURE_WRITE_BASE_URI</code>
+added to control writing <code>@base</code> directive to Turtle. (Dave R)</li>
+<li>Remove canonicalisation of integer and double
+to match Turtle latest spec. (Dave B)</li>
+</ul>
 
 
 <h3>URI Class Changes</h3>
@@ -248,14 +247,12 @@ writer. (Lauri)
 </p>
 
 <p>Portability fixes for <code>round()</code> and
-<code>trunc()</code> that are not always avaialble. (Dave B)
+<code>trunc()</code> that are not always available in libc but might
+be in libm. (Dave B)
 </p>
 
-<p>RDF/XML-abbrev Serializer: low memory fixes. (Lauri)
-</p>
-
-<p>Turtle/N3 parsers, serializers: many low memory fixes and better out
-of memory errors. (Lauri)
+<p>Turtle/N3 parsers and serializers, RDF/XML_Abbrev serializer: many
+low memory fixes and better out of memory errors. (Lauri)
 </p>
 
 
@@ -286,7 +283,8 @@ in inputs. (Dave B)
 sequence push and pop operations: O(1). (Lauri)
 </p>
 
-<p><code>autogen.sh</code> was updated.</p>
+<p><code>autogen.sh</code> was updated.
+</p>
 
 
 
