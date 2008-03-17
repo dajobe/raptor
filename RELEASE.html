@@ -15,6 +15,19 @@
 
 <p>The main changes to this release are:</p>
 
+<p>Added two new JSON serializers: resource-centric 'json' and
+triple-centric 'json-triples'.
+</p>
+
+<p>Made I/O Stream class <code>raptor_iostream</code> support
+reading as well as writing with new constructors and
+new methods.</p>
+
+<p>Added a new public SAX2 API class <code>raptor_sax2</code>
+exposing the existing internal API which has been around since the
+first release of Raptor 8 years ago and runs on top of either expat
+or libxml2.</p>
+
 <p>Added new public error handlers structure
 <code>raptor_error_handlers</code> which contains a set of
 (function, data pointers) pairs called <code>raptor_handler_closure</code>.
@@ -23,17 +36,7 @@ Added initialization function for the structure,
 Added <code>raptor_log_level</code> enum for the log message level.
 </p>
 
-<p>Added two JSON serializers: resource-centric 'json' and
-triple-centric 'json-triples'.
-</p>
-
-<p>Made I/O Stream class <code>raptor_iostream</code> support
-reading as well as writing with new constructors and
-new methods.</p>
-
-<p>Added new public SAX2 API class <code>raptor_sax2</code> exposing the
-existing internal API which has been around since the first release
-of Raptor 8 years ago and runs on top of expat or libxml2.</p>
+<p>Sevearl other API changes, fixes and improvements were made.</p>
 
 <p>Fixed Issues:</p>
 <ul>
@@ -85,7 +88,7 @@ N-Triples / SPARQL escaping rules.  (Dave B)
 
 
 <h3>Serializer Class Changes</h3>
-<p>Added two new JSON serializers:</p>
+<p>Added two new JSON serializers (Dave B):</p>
 <ol>
 <li>Resource-centric 'json' based on
 <a href="http://n2.talis.com/wiki/RDF_JSON_Specification">http://n2.talis.com/wiki/RDF_JSON_Specification</a></li>
@@ -95,14 +98,14 @@ N-Triples / SPARQL escaping rules.  (Dave B)
 <p>Added new serializer feature
 <code>RAPTOR_FEATURE_JSON_CALLBACK</code> (name 'jsonCallback') to
 set the callback function for the JSON output in both JSON
-serializers.
+serializers. (Dave B)
 </p>
 
 
 <h3>Statement Class Changes</h3>
 
 <p>Added <code>raptor_statement_compare()</code> to provide an
-ordering between <code>raptor_statement</code> objects.
+ordering between <code>raptor_statement</code> objects. (Dave B)
 </p>
 
 
@@ -112,12 +115,12 @@ ordering between <code>raptor_statement</code> objects.
 and <code>RAPTOR_FEATURE_WWW_HTTP_USER_AGENT</code> to control
 sending the <code>Cache-Control</code> and <code>User-Agent</code>
 HTTP headers in web requests. (Dave B, based on a patch in the bug) <br />
-Fixes Issue #0000252 http://bugs.librdf.org/mantis/view.php?id=252
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=252">Issue#0000252</a>
 </p>
 
-<p>Turtle parser: Added tests to forbid ' and '''-quoted strings; to
-forbid () in triple predicate position following the updated Turtle
-spec. (Dave B)
+<p>Turtle parser: Added tests to forbid <code>'</code> and
+<code>'''</code>-quoted strings and to forbid <code>()</code> in
+triple predicate position following the updated Turtle spec. (Dave B)
 </p>
 
 <p>Turtle parser: Write ';' statement terminators with a leading
@@ -139,13 +142,14 @@ to match Turtle latest spec. (Dave B)
 
 <h3>SAX2 Class Changes</h3>
 
-<p>Added new public SAX2 API class <code>raptor_sax2</code> exposind th
-existing internal one which has been around since the first release
-of Raptor 8 years ago and runs on top of expat or libxml2. (Dave B)</p>
+<p>Added new public SAX2 API class <code>raptor_sax2</code> exposind
+th existing internal one which has been around since the first
+release of Raptor 8 years ago and runs on top of either expat or
+libxml2. (Dave B)</p>
 
 <ul>
-<li>constructor: <code>raptor_new_sax2()</code></li>
-<li>destructor: <code>raptor_free_sax2()</code></li>
+<li>Constructor: <code>raptor_new_sax2()</code></li>
+<li>Destructor: <code>raptor_free_sax2()</code></li>
 <li>XML handler methods:
  <code>raptor_sax2_set_start_element_handler()</code>,
  <code>raptor_sax2_set_end_element_handler()</code>,
@@ -164,14 +168,14 @@ of Raptor 8 years ago and runs on top of expat or libxml2. (Dave B)</p>
  <code>raptor_sax2_unparsed_entity_decl_handler</code> and
  <code>raptor_sax2_external_entity_ref_handler</code>.
 </li>
-<li>set namespace handler method:
+<li>Set XML Namespace handler method:
 <code>raptor_sax2_set_namespace_handler()</code>
 </li>
-<li>parsing methods:
+<li>Parsing methods:
  <code>raptor_sax2_parse_start()</code> and
  <code>raptor_sax2_parse_chunk()</code>
 </li>
-<li>other methods:
+<li>Other methods:
  <code>raptor_sax2_inscope_xml_language()</code> and
  <code>raptor_sax2_inscope_base_uri()</code> 
 </li>
@@ -191,8 +195,8 @@ has no semantic difference.
 </p>
 
 <p>Used AVL Tree to remove duplicate triples on abbreviated syntax
-output. (Dave B)
-Fixes Issue #0000245 http://bugs.librdf.org/mantis/view.php?id=245
+output. (Dave B)<br />
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=245">Issue#0000245</a>
 </p>
 
 <p>Turtle serializer: Remove canonicalisation of integer and double
@@ -211,8 +215,8 @@ to match Turtle latest spec. (Dave B)
 
 <p>Added new method <code>raptor_www_set_http_cache_control()</code>
 to set the HTTP <code>Cache-Control:</code> header in requests.
-(Dave B, based on a patch in the bug)
-Fixes Issue #0000252 http://bugs.librdf.org/mantis/view.php?id=252
+(Dave B, based on a patch in the bug) <br />
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=252">Issue#0000252</a>
 </p>
 
 <h3>Portability and Resilience Changes</h3>
@@ -306,7 +310,7 @@ for large graphs.
 
 <p>Added a TRiG Parser based on Turtle with named graph support.</p>
 
-<p>Several other API changes, fixed and improvements were made.</p>
+<p>Several other API changes, fixes and improvements were made.</p>
 
 <p>Fixed Issues:</p>
 <ul>
@@ -1141,7 +1145,7 @@ systems when looking for the end of string NUL.
 
 <p>Get the curl success status into a long, not an int which causes
 failure on 64 bit.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=75">issue#0000075</a>
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=75">Issue#0000075</a>
 </p>
 
 <p>WWW requests for content to parse now always send an appropriate
