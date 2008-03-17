@@ -2202,7 +2202,9 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[])
 {
+#ifdef RAPTOR_DEBUG
   const char *program=raptor_basename(argv[0]);
+#endif
   int i;
   const char *s;
 
