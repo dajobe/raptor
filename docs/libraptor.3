@@ -3,10 +3,10 @@
 .\"
 .\" $Id$
 .\"
-.\" Copyright (C) 2002-2007 David Beckett - http://purl.org/net/dajobe/
+.\" Copyright (C) 2002-2008 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2007-09-30"
+.TH libraptor 3 "2008-03-25"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -39,7 +39,7 @@ libraptor \- Raptor RDF parser and serializer library
 .br
 .fi
 .SH DESCRIPTION
-The \fIRaptor\fR library provides a high-level interface to a set
+The \fIRaptor\fP library provides a high-level interface to a set
 of parsers and serializers that generate
 Resource Description Framework (RDF) triples
 by parsing syntaxes or serialize the triples into syntaxes.
@@ -47,7 +47,7 @@ by parsing syntaxes or serialize the triples into syntaxes.
 The supported parsing syntaxes are RDF/XML,
 N-Triples, Turtle, RSS tag soup including Atom 0.3 and the
 serializing syntaxes are RDF/XML, N-Triples and RSS 1.0.
-The RDF/XML parser can use either \fIexpat\fR or \fIlibxml\fR
+The RDF/XML parser can use either \fIexpat\fP or \fIlibxml\fP
 XML parsers for providing the SAX event stream.
 The library functions are arranged in an object-oriented style with
 constructors, destructors and method calls.  The statements
@@ -81,11 +81,11 @@ RDF triples - RDF parsing.
 .SH "PARSER CONSTRUCTORS"
 .IP "\fBraptor_parser* raptor_new_parser(name)\fR"
 Create a new raptor parser object for the parser with name
-\fIname\fR currently either "rdfxml", "turtle" or
+\fIname\fP currently either "rdfxml", "turtle" or
 "rss-tag-soup" for the RSS Tag Soup parser.
 .IP "\fBraptor_parser* raptor_new_parser_for_content(raptor_uri *\fIuri\fP, const char *\fImime_type\fP, const unsigned char *\fIbuffer\fP, size_t \fIlen\fP, const unsigned char *\fIidentifier\fP)\fR"
 Create a new raptor parser object for a syntax identified by URI \fIuri\fR,
-MIME type \fImime_type\fR, some initial content \fIbuffer\fR of size \fIlen\fR
+MIME type \fImime_type\fR, some initial content \fIbuffer\fP of size \fIlen\fR
 or content with identifier \fIidentifier\fR.  See
 the raptor_guess_parser_name description for further details.
 .SH "PARSER DESTRUCTOR"
@@ -128,14 +128,14 @@ RSS Tag Soup parser (name "rss-tag-soup") do not use this.
 .IP "\fBint raptor_parse_file(raptor_parser* \fIparser\fB,  raptor_uri *\fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the given filename (a URI like file:filename)
 according to the optional base URI \fIbase_uri\fR.  If \fIuri\fR
-is NULL, read from standard input and \fIbase_uri\fR is then required.
+is NULL, read from standard input and \fIbase_uri\fP is then required.
 .IP "\fBint raptor_parse_file_stream(raptor_parser* \fIparser\fB, FILE* \fIstream\fB, const char* \fIfilename\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the given C FILE* stream according to the base URI
-\fIbase_uri\fR (required).  \fIfilename\fR is optional and
+\fIbase_uri\fP (required).  \fIfilename\fP is optional and
 if given, is used for error messages via the raptor_locator structure.
 .IP "\fBint raptor_parse_uri(raptor_parser* \fIparser\fB,  raptor_uri* \fIuri\fB, raptor_uri *\fIbase_uri\fB)\fR"
 Parse the URI according to the base URI \fIbase_uri\fR, or NULL if
-not needed.  If no base URI is given, the \fIuri\fR is used.
+not needed.  If no base URI is given, the \fIuri\fP is used.
 This method depends on the raptor_www subsystem (see \fBWWW Class\fR
 section below)
 and an existing underlying URI retrieval implementation such as
@@ -153,109 +153,112 @@ and Turtle parser (name "turtle").
 The N-Triples parser (name "ntriples") or RSS Tag Soup parser
 (name "rss-tag-soup") do not use this.
 .IP "\fBint raptor_parse_chunk(raptor_parser* \fIparser\fB,  const unsigned char *buffer, size_t \fIlen\fB, int \fIis_end\fB)\fR"
-Parse the memory at \fIbuffer\fR of size \fIlen\fR returning
+Parse the memory at \fIbuffer\fP of size \fIlen\fP returning
 statements via the statement handler callback.
-If \fIis_end\fR is non-zero, it indicates the end of the parsing stream.
-This method can only be called after raptor_start_parse.
+If \fIis_end\fP is non-zero, it indicates the end of the parsing stream.
+This method can only be called after \fBraptor_start_parse()\fP.
 .SH "PARSER UTILITY METHODS"
 .IP "\fBconst char* raptor_get_mime_type(raptor_parser* \fIrdf_parser\fB)\fR"
 Return the MIME type for the parser.
 .IP "\fBvoid raptor_set_parser_strict(raptor_parser *\fIparser\fB, int \fIis_strict\fB)\fR"
-Set the parser to strict (\fIis_strict\fR not zero)
+Set the parser to strict (\fIis_strict\fP not zero)
 or lax (default) mode.  The detail of the
 strictness can be controlled by raptor_set_feature.
 .IP "\fBint raptor_set_feature(raptor_parser *\fIparser\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
-Set a parser feature \fIfeature\fR to a particular \fIvalue\fR.
+Set a parser feature \fIfeature\fP to a particular \fIvalue\fR.
 Returns non 0 on failure or if the feature is unknown.
 The current defined parser features are:
-  \fIFeature                                 Values\fR
-  \fBRAPTOR_FEATURE_SCANNING\fR                 Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_ASSUME_IS_RDF\fR            Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES\fR  Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES\fR   Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_ALLOW_BAGID\fR              Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fR  Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fR       Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_NON_NFC_FATAL\fR            Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_WARN_OTHER_PARSETYPES\fR    Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_CHECK_RDF_ID\fR             Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_START_URI\fR                Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_NO_NET\fR                   Boolean (non 0 true)
-  \fRAPTOR_FEATURE_HTML_TAG_SOUP\fR             Boolean (non 0 true)
-  \fRAPTOR_FEATURE_MICROFORMATS\fR              Boolean (non 0 true)
-  \fRAPTOR_FEATURE_HTML_LINK\fR                 Boolean (non 0 true)
-  \fRAPTOR_FEATURE_WWW_TIMEOUT\fR               Integer
-  \fBRAPTOR_FEATURE_RESOURCE_BORDER\fR          String
-  \fBRAPTOR_FEATURE_LITERAL_BORDER\fR           String
-  \fBRAPTOR_FEATURE_BNODE_BORDER\fR             String
-  \fBRAPTOR_FEATURE_RESOURCE_FILL\fR            String
-  \fBRAPTOR_FEATURE_LITERAL_FILL\fR             String
-  \fBRAPTOR_FEATURE_BNODE_FILL\fR               String
+  \fIFeature                                 Values\fP
+  \fBRAPTOR_FEATURE_ALLOW_BAGID\fP              Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES\fP  Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES\fP   Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST\fP  Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_ASSUME_IS_RDF\fP            Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_CHECK_RDF_ID\fP             Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_HTML_LINK\fP                Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_HTML_TAG_SOUP\fP            Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_MICROFORMATS\fP             Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_NON_NFC_FATAL\fP            Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_NORMALIZE_LANGUAGE\fP       Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_NO_NET\fP                   Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_RELATIVE_URIS\fP            Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_SCANNING\fP                 Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WARN_OTHER_PARSETYPES\fP    Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WWW_TIMEOUT\fP              Integer
+  \fBRAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL\fP   String
+  \fBRAPTOR_FEATURE_WWW_HTTP_USER_AGENT\fP      String
 .P
-If the \fIscanning\fR
-feature is true (default false), then the RDF/XML parser will look for embedded
-rdf:RDF elements inside the XML content, and not require that the
-XML start with an rdf:RDF root element.
+If the \fIallow_bagid\fP
+feature is true (default true) then the RDF/XML parser will support
+the rdf:bagID attribute that was removed from the RDF/XML language
+when it was revised.  This support may be removed in future.
 .P
-If the \fIassume_is_rdf\fR
-feature is true (default false), then the RDF/XML parser will assume
-the content is RDF/XML, not require that rdf:RDF root element, and
-immediately interpret the content as RDF/XML.
-.P
-If the \fIallow_non_ns_attributes\fR
+If the \fIallow_non_ns_attributes\fP
 feature is true (default true), then the RDF/XML parser will allow
 non-XML namespaced attributes to be accepted
 as well as rdf: namespaced ones.  For example, 'about' and 'ID' will
 be interpreted as if they were rdf:about and rdf:ID respectively.
 .P
-If the \fIallow_other_parsetypes\fR
+If the \fIallow_other_parsetypes\fP
 feature is true (default true) then the RDF/XML parser will allow
 unknown parsetypes to be present and will pass them on to the user.
 Unimplemented at present.
 .P
-If the \fIallow_bagid\fR
-feature is true (default true) then the RDF/XML parser will support
-the rdf:bagID attribute that was removed from the RDF/XML language
-when it was revised.  This support may be removed in future.
-.P
-If the \fIallow_rdf_type_rdf_list\fR
+If the \fIallow_rdf_type_rdf_list\fP
 feature is true (default false) then the RDF/XML parser will generate the
 idList rdf:type rdf:List triple in the handling of
 rdf:parseType="Collection".  This triple was removed during the
 revising of RDF/XML after collections were initially added.
 .P
-If the \fInormalize_language\fR
-feature is true (default true) then XML language values
-such as from xml:lang will be normalized to lowercase.
+If the \fIassume_is_rdf\fP
+feature is true (default false), then the RDF/XML parser will assume
+the content is RDF/XML, not require that rdf:RDF root element, and
+immediately interpret the content as RDF/XML.
 .P
-If the \fInon_nfc_fatal\fR
-feature is true (default false) then illegal Unicode Normal Form C
-in literals will give a fatal error, otherwise it gives a warning.
-.P
-If the \fIcheck_rdf_id\fR
+If the \fIcheck_rdf_id\fP
 feature is true (default true) then rdf:ID values will be
 checked for duplicates and cause an error if found.
 .P
-If the \fIno_net\fR
-feature is true (default false) then network requests are denied.
-.P
-If the \fIhtml_tag_soup\fR
-feature is true (default true), use a lax HTML parser if an XML parser
-fails when read HTML for GRDDL parser.
-.P
-If the \fImicroformats\fR
-feature is true (default true), look for microformats for GRDDL parser.
-.P
-if the \fIhtml_link\fR
+if the \fIhtml_link\fP
 feature is true (default true), look for head &lt;link&gt; to type rdf/xml
 for GRDDL parser
 .P
-If the \fIwww_timeout\fR
+If the \fIhtml_tag_soup\fP
+feature is true (default true), use a lax HTML parser if an XML parser
+fails when read HTML for GRDDL parser.
+.P
+If the \fImicroformats\fP
+feature is true (default true), look for microformats for GRDDL parser.
+.P
+If the \fInon_nfc_fatal\fP
+feature is true (default false) then illegal Unicode Normal Form C
+in literals will give a fatal error, otherwise it gives a warning.
+.P
+If the \fInormalize_language\fP
+feature is true (default true) then XML language values
+such as from xml:lang will be normalized to lowercase.
+.P
+If the \fIno_net\fP
+feature is true (default false) then network requests are denied.
+.P
+If the \fIscanning\fP
+feature is true (default false), then the RDF/XML parser will look for embedded
+rdf:RDF elements inside the XML content, and not require that the
+XML start with an rdf:RDF root element.
+.P
+If the \fIwww_timeout\fP
 feature is set to an integer larger than 0, it sets the timeout in
 seconds for internal WWW URI requests for the GRDDL parser.
+.P
+If the \fIwww_http_cache_control\fP
+feature is set to a string value (default none), it is sent as the
+value of the HTTP Cache-Control: header in requests.
+.P
+If the \fIwww_http_user_agent\fP
+feature is set to a string value, it is sent as the value of the HTTP
+User-Agent: header in requests.
 .IP "\fBraptor_parser_set_feature_string(raptor_parser *\fIparser\fP, raptor_feature \fIfeature\fP, const unsigned char *\fIvalue\fP)\fR"
-Set a parser feature \fIfeature\fR to a particular string \fIvalue\fR.
+Set a parser feature \fIfeature\fP to a particular string \fIvalue\fP.
 Returns non 0 on failure or if the feature is unknown.
 The current defined parser features are given in
 \fBraptor_set_feature\fP and at present only take integer values. If
@@ -267,7 +270,7 @@ and types are given under \fBraptor_features_enumerate\fP.
 .IP "\fBconst unsigned char* raptor_parser_get_feature_string(raptor_parser *\fIparser\fP, raptor_feature \fIfeature\fP)\fR"
 Get parser feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_features_enumerate\fP.
-.IP "\fBunsigned int raptor_get_feature_count(void)\fP"
+.IP "\fBunsigned int raptor_get_feature_count(void)\fR"
 Get the count of features defined.
 Prefered to the compile time-only symbol \fBRAPTOR_FEATURE_LAST\fP
 which returns the maximum value, not the count.
@@ -284,13 +287,13 @@ Return the string short name for the parser.
 Return a string label for the parser.
 .IP "\fBvoid raptor_set_default_generate_id_parameters(raptor_parser* \fIrdf_parser\fB, char *\fIprefix\fB, int \fIbase\fB)\fR"
 Control the default method for generation of IDs for blank nodes and
-bags.  The method uses a short string \fIprefix\fR and an integer
-\fIbase\fR to generate the identifier which is not guaranteed to
-be a strict concatenation.  If \fIprefix\fR is NULL, the
+bags.  The method uses a short string \fIprefix\fP and an integer
+\fIbase\fP to generate the identifier which is not guaranteed to
+be a strict concatenation.  If \fIprefix\fP is NULL, the
 default is used.  If base is less than 1, it is initialised to 1.
 .IP "\fBvoid raptor_set_generate_id_handler(raptor_parser* \fIparser\fB, void *\fIuser_data\fB, raptor_generate_id_handler \fIhandler\fB)\fR"
 Allow full customisation of the generated IDs by setting a callback
-\fIhandler\fR and associated \fIuser_data\fR that is called whenever
+\fIhandler\fP and associated \fIuser_data\fP that is called whenever
 a blank node or bag identifier is required.  The memory returned
 is deallocated inside raptor.  Some systems require this to be
 allocated inside the same library, in which case the 
@@ -298,13 +301,13 @@ allocated inside the same library, in which case the
 .IP "\fBvoid raptor_parser_set_uri_filter(raptor_parser* \fIparser\fP, raptor_uri_filter_func \fIfilter\fP, void* \fIuser_data\fP)\fR"
 Set the URI filter function \fIfilter\fP for URIs retrieved
 during parsing by the the raptor_parser.
-.IP "\fBint raptor_get_need_base_uri(raptor_parser* \fIrdf_parser\fP)\fP"
+.IP "\fBint raptor_get_need_base_uri(raptor_parser* \fIrdf_parser\fP)\fR"
 Get a boolean whether this parser needs a base URI to start parsing.
-.IP "\fBunsigned char* raptor_parser_generate_id(raptor_parser* \fIrdf_parser\fP, raptor_genid_type \fItype\fP)\fP"
+.IP "\fBunsigned char* raptor_parser_generate_id(raptor_parser* \fIrdf_parser\fP, raptor_genid_type \fItype\fP)\fR"
 Generate an ID for a parser of type \fItype\fP, either
 \fBRAPTOR_GENID_TYPE_BNODEID\fP or \fBRAPTOR_GENID_TYPE_BAGID\fP.
 This uses any configuration set by \fBraptor_set_generate_id_handler\fP.
-.IP "\fBvoid raptor_set_graph_handler(raptor_parser* \fIparser\fP, void* \fIuser_data\fP, raptor_graph_handler \fIhandler\fP)\fP"
+.IP "\fBvoid raptor_set_graph_handler(raptor_parser* \fIparser\fP, void* \fIuser_data\fP, raptor_graph_handler \fIhandler\fP)\fR"
 Set the graph handler callback.
 .SH "PARSER UTILITY FUNCTIONS"
 .IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **\fIname\fB, const char **\fIlabel\fB)\fR"
@@ -329,15 +332,17 @@ has URI \fIhttp://feature.librdf.org/raptor-scanForRDF\fP
 .IP "\fBint raptor_syntax_name_check(const char *\fIname\fP)\fR"
 Check \fIname\fP is a known syntax name.
 .IP "\fBconst char* raptor_guess_parser_name(raptor_uri *\fIuri\fP, const char *\fImime_type\fP, const unsigned char *\fIbuffer\fP, size_t \fIlen\fP, const unsigned char *\fIidentifier\fP)\fR"
-Guess a parser name for a syntax identified by URI \fIuri\fR,
-MIME type \fImime_type\fR, some initial content \fIbuffer\fR of size \fIlen\fR
-or with content identifier \fIidentifier\fR.  All of these
+Guess a parser name for a syntax identified by URI \fIuri\fP,
+MIME type \fImime_type\fP, some initial content \fIbuffer\fP of size \fIlen\fP
+or with content identifier \fIidentifier\fP.  All of these
 parameters are optional and only used if not NULL.  The parser is
 chosen by scoring the hints that are given.
 .IP "\fBraptor_feature raptor_feature_from_uri(raptor_uri *\fIuri\fP)\fR"
-Turn a URI \fIuri\fR into a raptor feature identifier, or <0 if the
+Turn a URI \fIuri\fP into a raptor feature identifier, or <0 if the
 feature is unknown.  The URIs are described below raptor_set_feature.
 .SH "STATEMENT UTILITY FUNCTIONS"
+.IP "\fBint raptor_statement_compare(const raptor_statement *\fIs1\fP, const raptor_statement *\fIs2\fP)\fR"
+Compare two statements and return an ordering between them.
 .IP "\fBvoid raptor_print_statement(const raptor_statement* const \fIstatement\fB, FILE *\fIstream\fB)\fR"
 Print a raptor statement object in a simple format for debugging only.
 The format of this output is not guaranteed to remain the same
@@ -356,32 +361,32 @@ escapes as defined in
 http://www.w3.org/TR/rdf-testcases/#ntriples
 .UE
 The part (subject, predicate, object) of the raptor_statement is
-passed in as \fIterm\fR, the part type (subject_type, predicate_type,
-object_type) is passed in as \fItype\fR.  When the part is a literal,
-the \fIliteral_datatype\fR and \fIliteral_language\fR fields are set,
+passed in as \fIterm\fP, the part type (subject_type, predicate_type,
+object_type) is passed in as \fItype\fP.  When the part is a literal,
+the \fIliteral_datatype\fP and \fIliteral_language\fP fields are set,
 otherwise NULL (usually object_datatype, object_literal_language).
 .IP
-If \fBraptor_statement_part_as_counted_string\fR is used,
-the length of the returned string is stored in *\fIlen_p\fR if not NULL.
+If \fBraptor_statement_part_as_counted_string\fP is used,
+the length of the returned string is stored in *\fIlen_p\fP if not NULL.
 .SH "LOCATOR UTILITY FUNCTIONS"
 .IP "\fBint raptor_format_locator(char *\fIbuffer\fB, size_t \fIlength\fB, raptor_locator* \fIlocator\fB)\fR"
-This method takes a \fIraptor_locator\fR object as passed to an
+This method takes a \fIraptor_locator\fP object as passed to an
 error, warning or other handler callback and formats it into the
-\fIbuffer\fR of size \fIlength\fR bytes.  If \fIbuffer\fR is NULL or
-\fIlength\fR is insufficient for the size of the formatted locator,
+\fIbuffer\fP of size \fIlength\fP bytes.  If \fIbuffer\fP is NULL or
+\fIlength\fP is insufficient for the size of the formatted locator,
 returns the number of additional bytes required in the buffer to
 write the locator.
 
 In particular, if this form is used:
   length=raptor_format_locator(NULL, 0, locator)
-it will return in \fIlength\fR the size of a buffer that can be allocated for
-\fIlocator\fR and a second call will perform the formatting:
+it will return in \fIlength\fP the size of a buffer that can be allocated for
+\fIlocator\fP and a second call will perform the formatting:
   raptor_format_locator(buffer, length, locator)
 
 .IP "\fBvoid raptor_print_locator(FILE *\fIstream\fB, raptor_locator* \fIlocator\fB)\fR"
-This method takes a \fIraptor_locator\fR object as passed to an
+This method takes a \fIraptor_locator\fP object as passed to an
 error, warning or other handler callback, formats and prints it to
-the given stdio \fIstream\fR.
+the given stdio \fIstream\fP.
 .IP "\fBint raptor_locator_line(raptor_locator *locator)\fR"
 Returns the line number in a locator structure or <0 if not available.
 .IP "\fBint raptor_locator_column(raptor_locator *locator)\fR"
@@ -399,7 +404,7 @@ the returned pointer is to a shared string that must be copied if needed.
 .IP "\fBvoid raptor_print_ntriples_string(FILE* \fIstream\fB, const char* \fIstring\fB, const char \fIdelim\fB)\fR"
 This is a standalone function that prints the given string
 according to N-Triples escaping rules, expecting to be terminated
-by delimiter \fIdelim\fR which is usually either ', \(dq or <.  If
+by delimiter \fIdelim\fP which is usually either ', \(dq or <.  If
 a null delimiter \\0 is given, no extra escaping is performed.
 .IP "\fBint raptor_iostream_write_string_ntriples(raptor_iostream *\fIiostr\fP, const unsigned char *\fIstring\fP, size_t \fIlen\fP, const char \fIdelim\fP)\fR"
 Write an N-Triples encoded version of the given string to iostream
@@ -407,10 +412,16 @@ Write an N-Triples encoded version of the given string to iostream
 encoded string and it will be escaped in the output as appropriate.
 Useful delim values are ', \(dq and >.  If
 a null delimiter \\0 is given, no extra escaping is performed.
+.IP "int raptor_iostream_write_string_python(raptor_iostream *\fIiostr\fP, const unsigned char *\fIstring\fP, size_t \fIlen\fP, const char \fIdelim\fP, int \fIflags\fP)\fR"
+Write \fIstring\fP encoded to an iostream according to the delimeter
+\fIdelim\fP and encoding flags.  The \fIflag\fP value selects formatting
+according to the appropriate Python-related languages such as
+N-Triples (0), Turtle (1), Turtle long quoted string (2), JSON (3).
 .IP "\fBvoid raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement)\fR"
 Write an N-Triples encoded version of the raptor_statement
 \fIstatement\fP to iostream \fIiostr\fP.
-.IP "\fBvoid raptor_iostream_write_string_turtle(raptor_iostream* \fIiostr\fP, const unsigned char* \fIstring\fP, size_t \fIlen\fP)\fP"
+.IP "\fBvoid raptor_iostream_write_string_turtle(raptor_iostream* \fIiostr\fP, const unsigned char* \fIstring\fP, size_t \fIlen\fP)\fR"
+DEPRECATED in 1.4.17 - use raptor_iostream_write_string_python instead.
 Write an UTF-8 \fIstring\fP of length \fIlen\fP using the Turtle
 "longString" triple quoting format to the iostream \fIiostr\fP.
 .IP "\fBconst char* raptor_ntriples_term_as_string (raptor_ntriples_term_type \fIterm\fP)\fR"
@@ -422,8 +433,8 @@ Apply the XML escaping rules to the string given in (string, len)
 into the \fIbuffer\fP of size \fIlength\fP.  If \fIquote\fP
 is given, the escaped content is for an XML attribute and the
 appropriate quote character \" or \' is used, otherwise it is
-XML element content (CDATA).   The \fIerror_handler\fR method along
-with \fIerror_data\fR allow error reporting to be given.
+XML element content (CDATA).   The \fIerror_handler\fP method along
+with \fIerror_data\fP allow error reporting to be given.
 If buffer is NULL, returns the size of the buffer required to escape.
 Otherwise the return value is the number of bytes used or <0 on
 failure.
@@ -437,7 +448,7 @@ Write an XML-escaped version of the string given in (string, len) to
 iostream \fIiostr\fP.  If \fIquote\fP is given, the escaped content
 is for an XML attribute and the appropriate quote character \" or \'
 is used, otherwise it is XML element content (CDATA).  The
-\fIerror_handler\fR method along with \fIerror_data\fR allow error
+\fIerror_handler\fP method along with \fIerror_data\fP allow error
 reporting to be given.
 .IP
 When an \fIxml_version\fP argument is present and has a value 10 (XML
@@ -479,7 +490,7 @@ size \fIc\fP bytes which must be of sufficient size.  Returns the
 number of bytes encoded or <0 on failure.
 .IP "\fBint raptor_utf8_to_unicode_char(raptor_unichar *\fIoutput\fP, const unsigned char *\fIinput\fP, int \fIlength\fP)\fR"
 Decode a sequence UTF8 bytes in \fIinput\fP of size \fIlength\fP
-into a Unicode character in \fIoutput\fR returning the number of
+into a Unicode character in \fIoutput\fP returning the number of
 bytes used or <0 on failure.
 .IP "\fBint raptor_utf8_check(const unsigned char *\fIstring\fP, size_t \fIlen\fPgth)\fR"
 Check that a given \fIstring\fP is legal UTF-8 encoding and includes
@@ -493,6 +504,10 @@ Check that given Unicode characters are allowed as
 XML 1.0 or XML 1.0 names - either as the starting character
 (\fB*_namestartchar\fP) or continuing character (\fB*_namechar\fP).
 Returns non-0 if the character is allowed.
+.SH "ERROR UTILITY FUNCTIONS"
+.IP "\fBvoid raptor_error_handlers_init(raptor_error_handlers* \fIerror_handlers\fP)\fR"
+Initialise an error_handlers structure after the log level handlers
+and user data pointers have been set.
 .SH "MISCELLANEOUS UTILITY FUNCTIONS"
 .IP "\fBchar* raptor_vsnprintf(const char *message, va_list arguments)\fR"
 Compatibility wrapper around vsnprintf.
@@ -529,22 +544,22 @@ or "rss-1.0" for the RSS 1.0 serializer.
 Destroy a Raptor serializer object.
 .SH "SERIALIZER SERIALIZING METHODS"
 .IP "\fBint raptor_serialize_start(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, raptor_iostream *\fIiostream\fP)\fR"
-Start to serialize content using the given \fIiostream\fR to write
-to with optional base URI \fIuri\fR. Note that
+Start to serialize content using the given \fIiostream\fP to write
+to with optional base URI \fIuri\fP. Note that
 some syntaxes may refuse to serialize without a base URI, such as RDF/XML.
 .IP "\fBint raptor_serialize_start_to_filename(raptor_serializer* \fIrdf_serializer\fB, const char *\fIfilename\fP)\fR"
-Start to serialize content to the file \fIfilename\fR which is opened
+Start to serialize content to the file \fIfilename\fP which is opened
 for writing. The base URI is calculated from the file name.
 .IP "\fBint raptor_serialize_start_to_string(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, void **\fIstring_p\fP, size_t *\fIlength_p\fP)\fR"
 Start to serialize content to a string.  \fIstring_p\fP must point
 to a void* pointer that will be used at the end of serializing to store
 the newly allocated string.  \fIlength_p\fP if not NULL, it will
 be used to store the length of the new string.
-The serializing is done with optional base URI \fIuri\fR however
+The serializing is done with optional base URI \fIuri\fP however
 some syntaxes may refuse to serialize without a base URI, such as RDF/XML.
 .IP "\fBint raptor_serialize_start_to_file_handle(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, FILE *\fIhandle\fP)\fR"
 Start to serialize content to the already open C Standard I/O FILE*
-\fIhandle\fR with the base URI \fIuri\fR, which is optional and may be
+\fIhandle\fP with the base URI \fIuri\fP, which is optional and may be
 NULL.  Note that some syntaxes may refuse to serialize without a base URI, such
 as RDF/XML.
 .IP "\fBint raptor_serialize_statement(raptor_serializer* \fIrdf_serializer\fB, const raptor_statement *\fIstatement\fP)\fR"
@@ -567,19 +582,59 @@ Return the current raptor_locator object for the serializer.
 This is a public structure defined in raptor.h that can be
 used directly, or formatted via raptor_print_locator.
 .IP "\fBint raptor_serializer_set_feature(raptor_serializer *\fIserializer\fB, raptor_feature \fIfeature\fB, int \fIvalue\fB)\fR"
-Set a serializer feature \fIfeature\fR to a particular \fIvalue\fR.
+Set a serializer feature \fIfeature\fP to a particular \fIvalue\fP.
 Returns non 0 on failure or if the feature is unknown.
 The current defined serializer features are:
-  \fIFeature                                 Values\fR
-  \fBRAPTOR_FEATURE_RELATIVE_URIS\fR            Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_START_URI\fR                URI String
+  \fIFeature                                 Values\fP
+  \fBRAPTOR_FEATURE_RELATIVE_URIS\fP            Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WRITE_BASE_URI\fP           Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_START_URI\fP                URI String
+  \fBRAPTOR_FEATURE_BNODE_BORDER\fP             String
+  \fBRAPTOR_FEATURE_BNODE_FILL\fP               String
+  \fBRAPTOR_FEATURE_JSON_CALLBACK\fP            String
+  \fBRAPTOR_FEATURE_JSON_EXTRA_DATA\fP          String
+  \fBRAPTOR_FEATURE_LITERAL_BORDER\fP           String
+  \fBRAPTOR_FEATURE_LITERAL_FILL\fP             String
+  \fBRAPTOR_FEATURE_RESOURCE_BORDER\fP          String
+  \fBRAPTOR_FEATURE_RESOURCE_FILL\fP            String
 .P
-If the \fIrelative_uris\fR
+If the \fIrelative_uris\fP
 feature is true (default false) then when serialising, preference
 is given to generating relative URIs where possible. 
 .P
-If the \fIstart_uri\fR
-feature is set to a URI it is used by the serializer to start serializing from.
+If the \fIwrite_base_uri\fP
+feature is true (default true) then the turtle serializer will write
+an @base directive in the output.
+.P
+If the \fIstart_uri\fP
+feature is set to a URI it is used by the serializer to start
+serializing from.
+.P
+If the \fIbnode_border\fP
+feature is set, the DOT serializer uses it as the bnode border colour.
+.P
+If the \fIbnode_fill\fP
+feature is set, the DOT serializer uses it as the bnode fill colour.
+.P
+If the \fIjson_callback\fP
+feature is set, the JSON serializers use it as the name of the
+callback to wrap the outer JSON object.
+.P
+If the \fIjson_extra_data\fP
+feature is set, the JSON serializers use it as extra data inside
+the outer JSON object.
+.P
+If the \fIliteral_border\fP
+feature is set, the DOT serializer uses it as the literal border colour.
+.P
+If the \fIliteral_fill\fP
+feature is set, the DOT serializer uses it as the literal fill colour.
+.P
+If the \fIresource_border\fP
+feature is set, the DOT serializer uses it as the resource border colour.
+.P
+If the \fIresource_fill\fP
+feature is set, the DOT serializer uses it as the resource fill colour.
 .IP "\fBint raptor_serializer_get_feature(raptor_serializer* \fIserializer\fB, raptor_feature \fIfeature\fB)\fR"
 Get serializer features, the allowed \fIfeature\fP values are available
 .SH "SERIALIZER UTILITY FUNCTIONS"
@@ -596,36 +651,35 @@ passing URI references.  The default internal implementation
 uses char* strings for URIs, manipulating them and constructing them.
 This URI implementation can be replaced by any other that provides the
 equivalent functionality, using the \fBraptor_uri_set_handler\fP function.
-
 .SH "URI CONSTRUCTORS"
 There a several constructors for raptor_uri to build them from
 char* strings and existing raptor_uri objects.
 .IP "\fBraptor_uri* raptor_new_uri(const unsigned char* \fIuri_string\fB)\fR"
 Create a raptor URI from a string URI-reference
-\fIuri_string\fR.
+\fIuri_string\fP.
 .IP "\fBraptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri* \fIuri\fB, const unsigned char* \fIlocal_name\fB)\fR"
 Create a raptor URI from a string URI-reference
-\fIlocal_name\fR
+\fIlocal_name\fP
 relative to an existing URI-reference.  This performs concatenation of the 
-\fIlocal_name\fR
+\fIlocal_name\fP
 to the
-\fIuri\fR
+\fIuri\fP
 and not relative URI resolution, which is done by the
 raptor_new_uri_relative_to_base constructor.
 .IP "\fBraptor_uri* raptor_new_uri_relative_to_base(raptor_uri* \fIbase_uri, const unsigned char* \fIuri_string\fB)\fR"
 Create a raptor URI from a string URI-reference
-\fIuri_string\fR
+\fIuri_string\fP
 using relative URI resolution to the
-\fIbase_uri\fR.
+\fIbase_uri\fP.
 .IP "\fBraptor_uri* raptor_new_uri_from_id(raptor_uri* \fIbase_uri\fB, const unsigned char* \fIid\fB)\fR"
 Create a raptor URI from a string RDF ID
-\fIid\fR
+\fIid\fP
 concatenated to the
-\fIbase_uri\fR
+\fIbase_uri\fP
 base URI.
 .IP "\fBraptor_uri* raptor_new_uri_for_rdf_concept(const char* \fIname\fB)\fR"
 Create a raptor URI for the RDF namespace concept
-\fIname\fR.
+\fIname\fP.
 .IP "\fBraptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* \fIold_uri\fB))\fR"
 Create a raptor URI suitable for use with xml:base (throw away fragment)
 .SH "URI DESTRUCTOR"
@@ -639,21 +693,21 @@ Return a copy of the given raptor URI \fIuri\fP.
 .IP "\fBunsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)\fR"
 .IP "\fBunsigned char* raptor_uri_as_string(raptor_uri* \fIuri\fB)\fR"
 Return a shared pointer to a string representation of the given raptor URI
-\fIuri\fR.  This string is shared and must not be freed (otherwise
+\fIuri\fP.  This string is shared and must not be freed (otherwise
 see the \fBraptor_uri_to_*\fP methods below).  If
 \fBraptor_uri_as_counted_string\fP is used, the length of the returned
 string is stored in *\fIlen_p\fP if not NULL.
 .IP "\fBunsigned char* raptor_uri_to_counted_string(raptor_uri *\fIuri\fP, size_t *\fIlen_p\fP)\fR"
 .IP "\fBunsigned char* raptor_uri_to_string(raptor_uri *\fIuri\fP)\fR"
 Return a to a newly alloced string representation of the given raptor URI
-\fIuri\fR.  This string must be freed by the caller using
+\fIuri\fP.  This string must be freed by the caller using
 \fBraptor_free_memory\fP.  If
 \fBraptor_uri_to_counted_string\fP is used, the length of the returned
 string is stored in *\fIlen_p\fP if not NULL.
 .IP "\fBunsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *\fIbase_uri\fB, raptor_uri *\fIreference_uri\fB, size_t *\fIlength_p\fB)\fR"
 .IP "\fBunsigned char* raptor_uri_to_relative_uri_string(raptor_uri *\fIbase_uri\fB, raptor_uri *\fIreference_uri\fB)\fR"
 Return a new relative URI string of a URI \fIreference_uri\fI against
-a base URI \fIbase_uri\fR.  The returned string must be freed 
+a base URI \fIbase_uri\fP.  The returned string must be freed 
 with \fBraptor_free_memory\fP.
 If \fBraptor_uri_to_relative_counted_string\fP is used, the length of
 the returned string is stored in *\fIlen_p\fP if not NULL.
@@ -664,9 +718,9 @@ Write the raptor_uri \fIuri\fP to the iostream \fIostr\fP.
 .SH "URI UTILITY FUNCTIONS"
 .IP "\fBvoid raptor_uri_resolve_uri_reference (const unsigned char* \fIbase_uri\fB, const unsigned char* \fIreference_uri\fB, char unsigned* \fIbuffer\fB, size_t \fIlength\fB)\fR"
 This is a standalone function that resolves the relative URI
-\fIreference_uri\fR against the base URI \fIbase_uri\fR
+\fIreference_uri\fP against the base URI \fIbase_uri\fP
 according to the URI resolution rules in RFC2396.
-The resulting URI is stored in \fIbuffer\fR which is of \fIlength\fR
+The resulting URI is stored in \fIbuffer\fP which is of \fIlength\fP
 bytes.  If this is too small, no work will be done.
 .IP "\fBchar *raptor_uri_filename_to_uri_string(const unsigned char* \fIfilename\fB)\fR"
 This is a standalone function that turns a local filename (Windows
@@ -692,16 +746,16 @@ Returns non-zero if the given URI string represents a filename.
 .SH "URI CLASS IMPLEMENTATION"
 .IP "\fBvoid raptor_uri_set_handler(const raptor_uri_handler *\fIhandler\fB, void *\fIcontext\fB)\fR"
 Change the URI class implementation to the functions provided by the
-\fIhandler\fR
+\fIhandler\fP
 URI implementation.
 The
-\fIcontext\fR
+\fIcontext\fP
 user data is passed in to the handler URI implementation calls.
 .IP "\fBvoid raptor_uri_get_handler(raptor_uri_handler **\fIhandler\fB, void **\fIcontext\fB)\fR"
 Return the current raptor URI class implementation
-\fIhandler\fR
+\fIhandler\fP
 and
-\fIcontext\fR
+\fIcontext\fP
 
 .SH "WWW CLASS"
 This is a small wrapper class around existing WWW libraries in
@@ -717,21 +771,21 @@ respecitively, otherwise must be called once each.
 Several of the WWW library implementations require once-only
 initialisation and termination functions to be called, however raptor
 cannot determine whether this is already done before the library
-is initialised in \fBraptor_www_init\fR or terminated in 
-\fBraptor_www_finish\fR, so always performs it.
-This can be changed by \fBraptor_www_no_www_library_init_finish\fR.
+is initialised in \fBraptor_www_init\fP or terminated in 
+\fBraptor_www_finish\fP, so always performs it.
+This can be changed by \fBraptor_www_no_www_library_init_finish\fP.
 .IP "\fBvoid raptor_www_no_www_library_init_finish(void)\fR"
-If this is called before \fBraptor_www_init\fR, it will not call
+If this is called before \fBraptor_www_init\fP, it will not call
 the underlying WWW library global initialise or terminate functions.
 The application code must perform both operations.
 .IP
 For example with curl, after this function is called, neither
-\fBcurl_global_init\fR nor \fBcurl_global_cleanup\fR will be called
-during \fBraptor_www_init\fR or \fBraptor_www_finish\fR respectively.
+\fBcurl_global_init\fP nor \fBcurl_global_cleanup\fP will be called
+during \fBraptor_www_init\fP or \fBraptor_www_finish\fP respectively.
 .SH "WWW CONSTRUCTORS"
 .IP "\fBraptor_www *raptor_www_new(void)\fR"
 .IP "\fBraptor_www *raptor_www_new_with_connection(void* \fIconnection\fB)\fR"
-Create a raptor WWW object capable of URI retrieval.  If \fIconnection\fR
+Create a raptor WWW object capable of URI retrieval.  If \fIconnection\fP
 is given, it must match the connection object of the underlying WWW
 implementation.  At present, this is only for libcurl, and allows you
 to re-use an existing curl handle, or use one which has been set up
@@ -741,7 +795,9 @@ with some desired qualities.
 Destroy a raptor WWW object.
 .SH "WWW METHODS"
 .IP "\fBvoid raptor_www_set_user_agent(raptor_www *\fIwww\fB, const char *\fIuser_agent\fB)\fR"
-Set the user agent, for HTTP requests typically.
+Set the HTTP User-Agent header value.
+.IP "\fBint raptor_www_set_http_cache_control(raptor_www* \fIwww\fP, const char* \fIcache_control\fP)\fR"
+Set the HTTP Cache-Control header value.
 .IP "\fBvoid raptor_www_set_proxy(raptor_www *\fIwww\fB, const char *\fIproxy\fB)\fR"
 Set the HTTP proxy - usually a string of the form http://server:port
 .IP "\fBraptor_www_set_write_bytes_handler(raptor_www *\fIwww\fB, raptor_www_write_bytes_handler \fIhandler\fB, void *\fIuser_data\fB)\fR"
@@ -761,9 +817,9 @@ the raptor_www object.
 .IP "\fBvoid* raptor_www_get_connection(raptor_www *\fIwww\fB)\fR"
 Return the underlying WWW library connection object.  For example,
 for libcurl this is the curl_handle.
-.IP "\fBvoid raptor_www_set_connection_timeout(raptor_www* \fIwww\fP, int \fItimeout\fP)\fP"
+.IP "\fBvoid raptor_www_set_connection_timeout(raptor_www* \fIwww\fP, int \fItimeout\fP)\fR"
 Set the WWW connection \fItimeout\fP in seconds.
-.IP "\fBraptor_uri* raptor_www_get_final_uri(raptor_www* \fIwww\fP)\fP"
+.IP "\fBraptor_uri* raptor_www_get_final_uri(raptor_www* \fIwww\fP)\fR"
 Get the final URI from a WWW retrieval, which may include redirections.
 .SH "WWW ACTION METHODS"
 .IP "\fBint raptor_www_fetch(raptor_www *www, raptor_uri *uri)\fR"
@@ -786,15 +842,15 @@ stack of raptor_namespace that build on raptor_qname.
 There are two constructors for raptor_qname to build qnames
 with optional values on a stack of names.
 .IP "\fBraptor_qname* raptor_new_qname(raptor_namespace_stack *\fInstack\fB, const unsigned char *\fIname\fB, const unsigned char *\fIvalue\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
-Create a raptor QName \fIname\fR (a possibly :-separated name) with
-name to be resolved against the given \fInstack\fR namespace stack.
-An optional \fIvalue\fR can be given, and if there is an error,
-the \fIerror_handler\fB and \fIerror_data\fR will be used to invoke
+Create a raptor QName \fIname\fP (a possibly :-separated name) with
+name to be resolved against the given \fInstack\fP namespace stack.
+An optional \fIvalue\fP can be given, and if there is an error,
+the \fIerror_handler\fB and \fIerror_data\fP will be used to invoke
 the callback.
 .IP "\fBraptor_qname* raptor_new_qname_from_namespace_local_name (raptor_namespace *\fIns\fB, const unsigned char *\fIlocal_name\fB, const unsigned char *\fIvalue\fB)\fR"
 Create a raptor QName using the namespace name of the
-raptor_namespace \fIns\fR and the local name \fIlocal_name\fR, along
-with optional value \fIvalue\fR.  Errors are reported using
+raptor_namespace \fIns\fP and the local name \fIlocal_name\fP, along
+with optional value \fIvalue\fP.  Errors are reported using
 the error handling and data of the namespace.
 .IP "\fBraptor_qname* raptor_qname_copy(raptor_qname *\fIqname\fP)\fR"
 Create a raptor QName from an existing one, returning NULL on failure.
@@ -806,11 +862,18 @@ Destroy a raptor qname object.
 Return non-zero if the given QNames are equal.
 .IP "\fBint raptor_iostream_write_qname(raptor_iostream* \fIiostr\fP, raptor_qname *\fIqname\fP)\fR"
 Write the raptor_qname \fIqname\fP to the iostream \fIostr\fP.
+.IP "\fBconst unsigned char* raptor_qname_get_local_name(raptor_qname* \fIname\fP)\fR"
+Get the local name of the QName.
+.IP "\fBconst unsigned char* raptor_qname_get_value(raptor_qname* \fIname\fP)\fR"
+Get the value of the QName for an XML attribute QName.
+.IP "\fBconst unsigned char* raptor_qname_get_counted_value(raptor_qname* \fIname\fP, size_t* \fIlength_p\fP)\fR"
+Get the value fo the QName along with the length (if \fIlength_p\fP
+is not NULL) for an XML attribute QName.
 .SH "QNAME UTILITY FUNCTIONS"
 .IP "\fBraptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *\fInstack\fB,  const unsigned char *\fIname\fB, size_t \fIname_len\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Return the URI corresponding to the QName according to the RDF
 method; concatenating the namespace's name (URI) with the local
-name.  Takes the same arguments as \fBraptor_new_qname\fR but
+name.  Takes the same arguments as \fBraptor_new_qname\fP but
 does not create a raptor_qname object.
 .IP "\fBraptor_namespace* raptor_qname_get_namespace(raptor_qname* \fIname\fB)\fR"
 Return the raptor_namespace used by the QName.  Will never be NULL
@@ -825,20 +888,20 @@ the name is empty, it undefines the given prefix.
 .IP "\fBraptor_namespace* raptor_new_namespace(raptor_namespace_stack *\fInstack\fP, const unsigned char *\fIprefix\fP, const unsigned char *\fIns_uri_string\fP, int \fIdepth\fP)\fR"
 .IP "\fBraptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *\fInstack\fP, const unsigned char *\fIprefix\fP, raptor_uri* \fIns_uri\fP, int \fIdepth\fP)\fR"
 Create a new raptor_namespace object on the given namespace stack
-\fInstack\fR with prefix \fIprefix\fR and namespace name either
-from URI string \fIns_uri_string\fR or from copying URI \fIns_uri\fP.
+\fInstack\fP with prefix \fIprefix\fP and namespace name either
+from URI string \fIns_uri_string\fP or from copying URI \fIns_uri\fP.
 .P
-If \fIprefix\fR is NULL, it defines the URI for the default namespace
+If \fIprefix\fP is NULL, it defines the URI for the default namespace
 prefix.  If the namespace name (\fIns_uri_string\fP or \fIns_uri\fP)
-is NULL, it undefines the given \fIprefix\fR in the current scope.
+is NULL, it undefines the given \fIprefix\fP in the current scope.
 Both prefix and URI may be NULL to undefine the default namespace.
-\fIdepth\fR signifies the position of the namespace on the stack; 0
+\fIdepth\fP signifies the position of the namespace on the stack; 0
 is the bottom of the stack and generally the first depth for user
 namespace declarations.
 .P
 Namespaces declared on the same
 depth (such as on the same XML element, typically) can be handily
-freed with \fIraptor_namespaces_end_for_depth\fR method on
+freed with \fIraptor_namespaces_end_for_depth\fP method on
 the namespace stack class.
 .SH "NAMESPACE DESTRUCTOR"
 .IP "\fBvoid raptor_free_namespace(raptor_namespace *ns)\fR"
@@ -853,7 +916,7 @@ Return the prefix of the namespace as a string with optional count stored in
 the variable address \fIlength_p\fP if it is not NULL.
 .IP "\fBunsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)\fR"
 Format the namespace as a string and return it as a new string, returning the
-length of the resulting string in \fIlength_p\fR if it is not NULL.
+length of the resulting string in \fIlength_p\fP if it is not NULL.
 The string format is suitable for emitting in XML to declare the
 namespace.
 .IP "\fBint raptor_iostream_write_namespace(raptor_iostream* \fIiostr\fP, raptor_namespace *\fIns\fP)\fR"
@@ -862,9 +925,9 @@ iostream \fIiostr\fP.
 .SH "NAMESPACE UTILITY FUNCTIONS"
 .IP "\fBint raptor_namespace_copy(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)\fR"
 Copy the namespace from the current stack to the new one,
-\fInstack\fR at depth \fInew_depth\fR.
+\fInstack\fP at depth \fInew_depth\fP.
 .IP "\fBint raptor_new_namespace_parts_from_string(unsigned char *\fIstring\fP, unsigned char **\fIprefix\fP, unsigned char **\fIuri_string\fP)\fR"
-Parse \fIstring\fR with an XML-style namespace declaration like
+Parse \fIstring\fP with an XML-style namespace declaration like
 xmlns="", xmlns="uri", xmlns:prefix="" or xmlns:prefix="uri"
 into the strings pointed to by \fIprefix\fP string and a \fIuri_string\fP.
 Empty prefixes or namespace names return NULL pointers.  Returned
@@ -878,11 +941,11 @@ xmlns attributes.
 .IP "\fBraptor_namespace_stack* raptor_new_namespaces(raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults)\fR"
 .IP "\fBint raptor_namespaces_init(raptor_namespace_stack *nstack, raptor_uri_handler *handler, void *context, raptor_simple_message_handler error_handler, void *error_data, int defaults)\fR"
 Create or initialise a new raptor_namespace_stack object with the given URI and
-error handlers.  \fBraptor_namespaces_new\fR allocates new memory
-for the namespace stack and \fBraptor_namespaces_init\fR initialises an
-existing declared \fInstack\fR, which could be statically allocated.
-Note that \fBraptor_uri_get_handler\fR can be useful to return the
-current raptor URI handler/context.  The \fIdefaults\fR argument
+error handlers.  \fBraptor_namespaces_new\fP allocates new memory
+for the namespace stack and \fBraptor_namespaces_init\fP initialises an
+existing declared \fInstack\fP, which could be statically allocated.
+Note that \fBraptor_uri_get_handler\fP can be useful to return the
+current raptor URI handler/context.  The \fIdefaults\fP argument
 describes which default namespaces are declared in the empty stack.
 At present, 0 is none, 1 for just the XML namespace and 2 is for
 a typical set of namespaces used for RDF, RDFS, Dublin Core, OWL, ...
@@ -892,30 +955,30 @@ In versions 1.4.16 or newer this returns an integer result, non-0 on
 failure.
 .SH "NAMESPACE STACK DESTRUCTORS"
 .IP "\fBvoid raptor_free_namespaces(raptor_namespace_stack *nstack)\fR"
-Destroy a namespace stack object, freeing the \fInstack\fR
-(goes with \fBraptor_new_namespaces\fR).
+Destroy a namespace stack object, freeing the \fInstack\fP
+(goes with \fBraptor_new_namespaces\fP).
 .IP "\fBvoid raptor_namespaces_clear(raptor_namespace_stack *nstack)\fR"
-Clear a statically allocated namespace stack; does not free the \fInstack\fR.
-(goes with \fBraptor_namespaces_init\fR).
+Clear a statically allocated namespace stack; does not free the \fInstack\fP.
+(goes with \fBraptor_namespaces_init\fP).
 .SH "NAMESPACE STACK METHODS"
 .IP "\fBvoid raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *nspace)\fR"
 Start the given \fInspace\fR on the stack, at the depth already defined.
 .IP "\fBint raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *nspace, int depth)\fR"
 Create a new raptor_namespace and start it on the stack.
-See \fBraptor_new_namespace\fR for the meaning of the argumens.
+See \fBraptor_new_namespace\fP for the meaning of the argumens.
 .IP "\fBvoid raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)\fR"
-End (and free) all namespaces on the stack at the given \fIdepth\fR.
+End (and free) all namespaces on the stack at the given \fIdepth\fP.
 .IP "\fBraptor_namespace* raptor_namespaces_get_default_namespace (raptor_namespace_stack *nstack)\fR"
 Return the current default raptor_namespace of the namespace stack
 or NULL if there is none.
 .IP "\fBraptor_namespace* raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *\fInstack\fP, raptor_uri *\fIns_uri\fP)\fR"
-Find the first namespace on the stack with the given uri \fIns_uri\fR
+Find the first namespace on the stack with the given uri \fIns_uri\fP
 or NULL if there is none.
 .IP "\fBraptor_namespace *raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length)\fR"
-Find the first namespace on the stack with the given namespace \fIprefix\fR
+Find the first namespace on the stack with the given namespace \fIprefix\fP
 or NULL if there is none.
 .IP "\fBint raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace)\fR"
-Return non-zero if the raptor_namespace \fInspace\fR is declared
+Return non-zero if the raptor_namespace \fInspace\fP is declared
 on the stack; i.e. in scope if this is a stack of XML namespaces.
 .SH "NAMESPACE STACK UTILITY FUNCTIONS"
 .IP "\fBraptor_qname* raptor_namespaces_qname_from_uri(raptor_namespace_stack* \fInstack\fP,  raptor_uri* \fIuri\fP, int \fIxml_version\fP)\fR"
@@ -1012,24 +1075,41 @@ size \fIlength\fP.  Returns non-0 on failure.
 This class provides an I/O stream that can write to filenames, FILE*,
 strings and user-defined output via callbacks.
 .SH "IOSTREAM CONSTRUCTOR"
+.IP "\fBraptor_iostream* raptor_new_iostream_from_handler2(void* \fIcontext\fB, const raptor_iostream_handler2 *\fIhandler\fP)\fR"
+Create a new raptor read or write iostream from a user-defined
+raptor_iostream_handler2 \fIhandler\fP that is called with the
+passed-in \fIcontext\fP for the write operations.
 .IP "\fBraptor_iostream* raptor_new_iostream_from_handler(void* \fIcontext\fB, const raptor_iostream_handler *\fIhandler\fB)\fR"
-Create a new raptor iostream from a user-defined
+DEPRECATED in 1.4.17 - use \fBraptor_new_iostream_from_handler2()\fP
+with the new handler format.
+Create a new raptor read iostream from a user-defined
 raptor_iostream_handler \fIhandler\fP that is called with the
 passed-in \fIcontext\fP for the write operations.
 .IP "\fBraptor_iostream* raptor_new_iostream_to_sink(void)\fR"
-Create a new raptor iostream that discards all written output.
+Create a new raptor write iostream that discards all written output.
 .IP "\fBraptor_iostream* raptor_new_iostream_to_filename(const char *\fIfilename\fB)\fR"
-Create a new raptor iostream that creates and writes to a new file
+Create a new raptor write iostream that creates and writes to a new file
 \fIfilename\fP.
 .IP "\fBraptor_iostream* raptor_new_iostream_to_file_handle(FILE *\fIhandle\fB)\fR"
-Create a new raptor iostream that creates and writes to an existing,
+Create a new raptor write iostream that creates and writes to an existing,
 already opened, C Standard I/O handle FILE* \fIhandle\fP.
 .IP "\fBraptor_iostream* raptor_new_iostream_to_string(void **\fIstring_p\fB, size_t *\fIlength_p\fB, void *(*\fImalloc_handler\fB)(size_t size))\fR"
-Create a new raptor iostream which creates a new string
+Create a new raptor write iostream which creates a new string
 once raptor_free_iostream is called.  The new string pointer
 is written in \fIstring\fP, the length in \fIlength_p\fP (if not
 NULL) and the memory allocation is made using the
 \fImalloc_handler\fP, or if NULL, raptor's default memory allocator.
+.IP "\fBraptor_iostream* raptor_new_iostream_from_sink(void)\fR"
+Create a new raptor read iostream that is immediately finished and
+returns end of file.
+.IP "\fBraptor_iostream* raptor_new_iostream_from_filename(const char *\fIfilename\fP)\fR"
+Create a new raptor read iostream from an existing file \fIfilename\fP.
+.IP "\fBraptor_iostream* raptor_new_iostream_from_file_handle(FILE *\fIhandle\fP)\fR"
+Create a new raptor read iostream from an already opened, C Standard
+I/O handle FILE* \fIhandler\fP.
+.IP "\fBraptor_iostream* raptor_new_iostream_from_string(void *\fIstring\fP, size_t \fIlength\fP)\fR"
+Create a new raptor read iostream reading from an existing
+\fIstring\fP of \fIlength\fP bytes.
 .SH "IOSTREAM DESTRUCTOR"
 .IP "\fBvoid raptor_free_iostream(raptor_iostream *\fIiostr\fB)\fR"
 Destroy a Raptor iostream object.
@@ -1046,7 +1126,10 @@ Finish writing to an iostream.
 Write a NUL-terminated \fIstring\fP to an iostream.  Similar to fputs(3).
 .IP "\fBint raptor_iostream_write_counted_string(raptor_iostream *\fIiostr\fB, const void *\fIstring\fB, size_t \fIlen\fB)\fR"
 Write a \fIstring\fP of length \fIlen\fP to an iostream.
+.IP "\fBunsigned long raptor_iostream_tell(raptor_iostream *\fIiostr\fP)\fR"
+Return the byte offset into the iostream.
 .IP "\fBsize_t raptor_iostream_get_bytes_written_count(raptor_iostream *\fIiostr\fB)\fR"
+DEPRECATED in 1.4.17 for \fBraptor_iostream_tell()\fP.
 Return the number of bytes written so far to the iostream.
 .IP "\fBint raptor_iostream_write_decimal(raptor_iostream *\fIiostr\fB, int \fIinteger\fB)\fR"
 Write a decimal formatted integer \fIinteger\fP to the iostream.
@@ -1055,6 +1138,51 @@ Write a hexadecimal formatted unsigned \fIinteger\fP to the iostream,
 left-padded with '0's to \fIwidth\fR columns.
 .IP "\fBint raptor_iostream_write_stringbuffer(raptor_iostream* \fIiostr\fB, raptor_stringbuffer *\fIsb\fB)\fR"
 Write the stringbuffer to an iostream \fIiostr\fP.
+.IP "\fBint raptor_iostream_read_bytes(raptor_iostream* \fIiostr\fP, void *\fIptr\fP, size_t \fIsize\fP, size_t \fInmemb\fP)\fR"
+Read bytes from the iostream into buffer \fIptr\fP up to \fInmemb\fP
+elements of size \fIsize\fP.
+.IP "\fBint raptor_iostream_read_eof(raptor_iostream *\fIiostr\fP)\fR"
+Return non-0 if the iostream is finished.
+.SH "XML SAX2 READER CLASS"
+This class provides the functionality to generate SAX2 events from
+parsing XML content, including XML namespace support.
+.SH "XML SAX2 CONSTRUCTOR"
+.IP "\fBraptor_sax2* raptor_new_sax2(void *\fIuser_data\fP, raptor_error_handlers* \fIerror_handlers\fP)\fR"
+Create a new SAX2 XML reader with the given error handler object.
+.SH "XML WRITER DESTRUCTOR"
+.IP "\fBvoid raptor_free_sax2(raptor_sax2 *\fIsax2\fP)\fR"
+Destroy a SAX2 XML reader object.
+.SH "SAX2 SET HANDLER METHODS"
+.IP "\fBvoid raptor_sax2_set_start_element_handler(raptor_sax2 *\fIsax2\fP, raptor_sax2_start_element_handler \fIhandler\fP)\fR"
+Set the SAX2 start element \fIhandler\fP.
+.IP "\fBvoid raptor_sax2_set_end_element_handler(raptor_sax2 *\fIsax2\fP, raptor_sax2_end_element_handler \fIhandler\fP)\fR"
+Set the SAX2 end element \fIhandler\fP.
+.IP "\fBvoid raptor_sax2_set_characters_handler(raptor_sax2 *\fIsax2\fP, raptor_sax2_characters_handler \fIhandler\fP)\fR"
+Set the SAX2 character data element \fIhandler\fP.
+.IP "\fBvoid raptor_sax2_set_cdata_handler(raptor_sax2 *\fIsax2\fP, raptor_sax2_cdata_handler \fIhandler\fP)\fR"
+Set the SAX2 CDATA section element \fIhandler\fP.
+.IP "\fBvoid raptor_sax2_set_comment_handler(raptor_sax2 *\fIsax2\fP, raptor_sax2_comment_handler \fIhandler\fP)\fR"
+Set the SAX2 XML comment \fIhandler\fP.
+.IP "\fBvoid raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2 *\fIsax2\fP, raptor_sax2_unparsed_entity_decl_handler \fIhandler\fP)\fR"
+Set the SAX2 XML unparsed entity declaration \fIhandler\fP.
+.IP "\fBvoid raptor_sax2_set_external_entity_ref_handler(raptor_sax2 *\fIsax2\fP, raptor_sax2_external_entity_ref_handler \fIhandler\fP)\fR"
+Set the SAX2 XML external entity reference \fIhandler\fP.
+.IP "\fBvoid raptor_sax2_set_namespace_handler(raptor_sax2 *\fIsax2\fP, raptor_namespace_handler \fIhandler\fP)\fR"
+Set the SAX2 XML namespace declaration \fIhandler\fP when an XML namespace
+is declared.
+.SH "SAX2 PARSING METHODS"
+.IP "\fBvoid raptor_sax2_parse_start(raptor_sax2 *\fIsax2\fP, raptor_uri *\fIbase_uri\fP)\fR"
+Start a SAX2 parse of XML content with the base URI \fIuri\fR.
+.IP "\fBint raptor_sax2_parse_chunk(raptor_sax2 *\fIsax2\fP, const unsigned char *\fIbuffer\fP, size_t \fIlen\fP, int \fIis_end\fP)\fR"
+Parse the XML content in \fIbuffer\fP of size \fIlen\fP returning
+SAX2 events via handlers.  If \fIis_end\fP is non-zero, it indicates
+the end of the parsing.  This method can only be called after
+\fBraptor_sax2_parse_start()\fP.
+.SH "SAX2 SCOPE METHODS"
+.IP "\fBconst unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2 *\fIsax2\fP)\fR"
+Get the current in-scope XML language (xml:lang) value.
+.IP "\fBraptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2 *\fIsax2\fP)\fR"
+Get the current in-scope Base URI (xml:base or document or protocol) value.
 .SH "XML ELEMENT CLASS"
 This class provides an XML element that can be used with the
 XML Writer Class to generate XML documents.
@@ -1096,8 +1224,10 @@ at depth \fIdepth\fP in the stack (see Namespace class constructors).
 .IP
 The element may be an empty element if \fIis_empty\fP is non-zero or may
 be a close element if \fIis_end\fP is non-zero (else is a start
-element).  The \fIerror_handler\fR method along
-with \fIerror_data\fR allow error reporting to be given.
+element).  The \fIerror_handler\fP method along
+with \fIerror_data\fP allow error reporting to be given.
+.IP "\fBconst unsigned char* raptor_xml_element_get_language(raptor_xml_element* \fIxml_element\fP)\fR"b
+Get the xml:lang language of the XML element.
 .SH "XML WRITER CLASS"
 This class provides the functionality to generate simple XML documents
 consisting of elements with attributes, character data and
@@ -1105,11 +1235,11 @@ comments. The documents can be written to an iostream.
 .SH "XML WRITER CONSTRUCTOR"
 .IP "\fBraptor_xml_writer* raptor_new_xml_writer(raptor_namespace_stack* \fInstack\fP, raptor_uri_handler* \fIuri_handler\fP, void* \fIuri_context\fP, raptor_iostream* \fIiostr\fP, raptor_simple_message_handler \fIerror_handler\fP, void *\fIerror_data\fP, int \fIcanonicalize\fP)\fR"
 Create a new XML Writer writing to iostream \fIiostr\fP.
-The \fIerror_handler\fR method along
-with \fIerror_data\fR allow error reporting to be given.
+The \fIerror_handler\fP method along
+with \fIerror_data\fP allow error reporting to be given.
 \fInstack\fP is either an existing namespace stack to be used or if
 NULL, a new one with only the XML namespace defined is created.
-Note that \fBraptor_uri_get_handler\fR can be useful to return the
+Note that \fBraptor_uri_get_handler\fP can be useful to return the
 current raptor URI handler/context.  \fIcanonicalize\fP is currently
 unused and should be set to 1 but may allow non-canonical XML writing
 to be allowed in future.
@@ -1153,32 +1283,32 @@ Raptor features have URIs that are constructed from the URI
 so for example feature \fIscanForRDF\fP
 has URI \fIhttp://feature.librdf.org/raptor-scanForRDF\fP
 .IP "\fBint raptor_xml_writer_set_feature(raptor_xml_writer* \fIxml_writer\fP, raptor_feature \fIfeature\fP, int \fIvalue\fP)\fR"
-Set an XML writer feature \fIfeature\fR to a particular \fIvalue\fR.
+Set an XML writer feature \fIfeature\fP to a particular \fIvalue\fP.
 Returns non 0 on failure or if the feature is unknown.
 The current defined writer features are:
-  \fIFeature                                 Values\fR
-  \fBRAPTOR_FEATURE_WRITER_AUTO_INDENT\fR       Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_WRITER_AUTO_EMPTY\fR        Boolean (non 0 true)
-  \fBRAPTOR_FEATURE_WRITER_INDENT_WIDTH\fR      Integer
-  \fBRAPTOR_FEATURE_WRITER_XML_DECLARATION\fR   Boolean (non 0 true)
+  \fIFeature                                 Values\fP
+  \fBRAPTOR_FEATURE_WRITER_AUTO_INDENT\fP       Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WRITER_AUTO_EMPTY\fP        Boolean (non 0 true)
+  \fBRAPTOR_FEATURE_WRITER_INDENT_WIDTH\fP      Integer
+  \fBRAPTOR_FEATURE_WRITER_XML_DECLARATION\fP   Boolean (non 0 true)
 .P
-If the \fIwriter_auto_indent\fR
+If the \fIwriter_auto_indent\fP
 feature is set (default true), the XML writer will automatically
 indent the output.
 .P
-If the \fIwriter_auto_empty\fR
+If the \fIwriter_auto_empty\fP
 feature is set (default true), the XML writer will automatically
 generate empty elements if a start/end element sequence has no content.
 .P
-If the \fIwriter_indent_width\fR
+If the \fIwriter_indent_width\fP
 feature is set (default 2) if the XML writer is outputing indented
 XML, it will use that many spaces.
 .P
-If the \fIwriter_xml_declaration\fR
+If the \fIwriter_xml_declaration\fP
 feature is set (default true) the XML declaration is written at the
 start of serialized XML.
 .IP "\fBint raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char *value)\fR"
-Set an XML writer feature \fIfeature\fR to a particular string \fIvalue\fR.
+Set an XML writer feature \fIfeature\fP to a particular string \fIvalue\fP.
 Returns non 0 on failure or if the feature is unknown.
 The current defined XML writer features are given in
 \fBraptor_xml_writer_set_feature\fP and at present only take integer values. If
@@ -1191,6 +1321,84 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .SH API CHANGES
+.SS 1.4.17
+Added SAX2 class \fBraptor_sax2\fP.
+Added new SAX2 API typedefs:
+\fBraptor_sax2_start_element_handler\fP,
+\fBraptor_sax2_end_element_handler\fP,
+\fBraptor_sax2_characters_handler\fP,
+\fBraptor_sax2_cdata_handler\fP,
+\fBraptor_sax2_comment_handler\fP,
+\fBraptor_sax2_unparsed_entity_decl_handler\fP and
+\fBraptor_sax2_external_entity_ref_handler\fP.
+Added new SAX2 API functions:
+\fBraptor_new_sax2()\fP,
+\fBraptor_free_sax2()\fP,
+\fBraptor_sax2_set_start_element_handler()\fP,
+\fBraptor_sax2_set_end_element_handler()\fP,
+\fBraptor_sax2_set_characters_handler()\fP,
+\fBraptor_sax2_set_cdata_handler()\fP,
+\fBraptor_sax2_set_comment_handler()\fP,
+\fBraptor_sax2_set_unparsed_entity_decl_handler()\fP,
+\fBraptor_sax2_set_external_entity_ref_handler()\fP,
+\fBraptor_sax2_set_namespace_handler()\fP,
+\fBraptor_sax2_parse_start()\fP,
+\fBraptor_sax2_parse_chunk()\fP,
+\fBraptor_sax2_inscope_xml_language()\fP and
+\fBraptor_sax2_inscope_base_uri()\fP
+.LP
+Added features
+\fBRAPTOR_FEATURE_WRITE_BASE_URI\fP,
+\fBRAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL\fP,
+\fBRAPTOR_FEATURE_WWW_HTTP_USER_AGENT\fP,
+\fBRAPTOR_FEATURE_JSON_CALLBACK\fP and
+\fBRAPTOR_FEATURE_JSON_EXTRA_DATA\fP
+.LP
+Added \fBraptor_handler_closure\fP structure for error handlers.
+.LP
+Added \fBraptor_statement_compare()\fP
+.LP
+Added \fBraptor_iostream_write_string_python()\fP
+and deprecated \fBraptor_iostream_write_string_turtle()\fP
+.LP
+\fBraptor_uri_set_handler()\fP, \fBraptor_uri_get_handler()\fP,
+\fBraptor_new_namespaces()\fP, \fBraptor_namespaces_init()\fP
+and \fBraptor_new_xml_writer()\fP now take const handler pointers.
+.LP
+Added \fBraptor_www_set_http_cache_control()\fP
+.LP
+Added QName class methods:
+\fBraptor_qname_get_local_name()\fP,
+\fBraptor_qname_get_value()\fP and
+\fBraptor_qname_get_counted_value()\fP
+.LP
+Added \fBraptor_iostream\fP read handler typedefs 
+\fBraptor_iostream_read_bytes_func\fP,
+\fBraptor_iostream_read_eof_func\fP and
+added new structure \fBraptor_iostream_handler2\fP
+replacing deprecated \fBraptor_iostream_handler\fP.
+.LP
+Added \fBraptor_new_iostream_from_handler2()\fP replacing
+deprecated \fBraptor_new_iostream_from_handler()\fP
+.LP
+Added
+\fBraptor_new_iostream_from_sink()\fP,
+\fBraptor_new_iostream_from_filename()\fP,
+\fBraptor_new_iostream_from_file_handle()\fP and
+\fBraptor_new_iostream_from_string()\fP.
+.LP
+Added \fBraptor_iostream_tell\fP deprecating
+\fBraptor_iostream_get_bytes_written_count()\fP.
+.LP
+Added \fBraptor_iostream_read_bytes()\fP and
+\fBraptor_iostream_read_eof()\fP.
+.LP
+Added \fBraptor_xml_element_get_language()\fP.
+.LP
+Added new enum \fBraptor_log_level\fP.
+.LP
+Added new typedef \fBraptor_error_handlers\fP.
+and new function \fBraptor_error_handlers_init()\fP.
 .SS 1.4.16
 \fBraptor_namespaces_init\fP now returns an integer status
 .LP
@@ -1353,81 +1561,81 @@ Added UTF8-checking utility function \fBraptor_utf8_check\fP.
 .SS 1.4.2
 No changes.
 .SS 1.4.1
-The \fBraptor_xml_escape_string\fR now returns <0 on failure rather
+The \fBraptor_xml_escape_string\fP now returns <0 on failure rather
 than 0, so that if an empty string is escaped, 0 bytes required is
 returned.
 .SS 1.4.0
-Added new \fBraptor_serializer\fR class supporting RDF/XML (name
+Added new \fBraptor_serializer\fP class supporting RDF/XML (name
 \fBrdfxml\fP) and N-Triples (name \fBntriples\fP).
 .br
-Added new \fBraptor_iostream\fR class
+Added new \fBraptor_iostream\fP class
 .br
-Added \fBraptor_stringbuffer_copy_to_string\fR to allow efficient
+Added \fBraptor_stringbuffer_copy_to_string\fP to allow efficient
 copy-out of a constructed string.
 .br
-Added \fBraptor_www_fetch_to_string\fR to allow retrieving of
+Added \fBraptor_www_fetch_to_string\fP to allow retrieving of
 web content as a single string.
 .SS 1.3.3
-Added \fBraptor_calloc_memory\fR to provide a calloc inside raptor.
+Added \fBraptor_calloc_memory\fP to provide a calloc inside raptor.
 .br
 Added feature check_rdf_id (see raptor_set_feature documentation).
 .SS 1.3.2
-Added \fBraptor_alloc_memory\fR to allocate memory inside raptor.
+Added \fBraptor_alloc_memory\fP to allocate memory inside raptor.
 .LP
 Added accessor functions for the public raptor_locator structure:
 .LP
-\fBraptor_locator_line\fR
+\fBraptor_locator_line\fP
 .br
-\fBraptor_locator_column\fR
+\fBraptor_locator_column\fP
 .br
-\fBraptor_locator_byte\fR
+\fBraptor_locator_byte\fP
 .br
-\fBraptor_locator_file\fR
+\fBraptor_locator_file\fP
 .br
-\fBraptor_locator_uri\fR
+\fBraptor_locator_uri\fP
 .SS 1.3.1
 Correct raptor_print_statement declaration argument statement to have
 one less 'const', to match the code.
 .SS 1.3.0
 Added the following parser methods, utility methods and helper functions:
 .LP
-\fBraptor_new_parser_for_content (Parser class constructor)\fR
+\fBraptor_new_parser_for_content (Parser class constructor)\fP
 .br
-\fBraptor_get_mime_type\fR
+\fBraptor_get_mime_type\fP
 .br
-\fBraptor_get_feature\fR
+\fBraptor_get_feature\fP
 .br
-\fBraptor_syntax_name_check\fR
+\fBraptor_syntax_name_check\fP
 .br
-\fBraptor_guess_parser_name\fR
+\fBraptor_guess_parser_name\fP
 .br
-\fBraptor_features_enumerate\fR
+\fBraptor_features_enumerate\fP
 .br
-\fBraptor_feature_from_uri\fR
+\fBraptor_feature_from_uri\fP
 .br
-\fBraptor_www_set_http_accept (WWW class)\fR
+\fBraptor_www_set_http_accept (WWW class)\fP
 .LP
 Changed \fBraptor_set_feature\fP to now return an int success or failure.
 .LP
 Added the following functions:
 .br
-\fBraptor_free_memory\fR
+\fBraptor_free_memory\fP
 .br
-\fBraptor_unicode_char_to_utf8\fR
+\fBraptor_unicode_char_to_utf8\fP
 .br
-\fBraptor_utf8_to_unicode_char\fR
+\fBraptor_utf8_to_unicode_char\fP
 .br
-\fBraptor_vsnprintf\fR
+\fBraptor_vsnprintf\fP
 .LP
 Added the raptor_sequence class, its constructor, destructor, methods
 and helper functions.
 .LP
 Added the raptor_stringbuffer class and constructor, destructor and methods.
 .LP
-Deprecated \fBraptor_print_statement_detailed\fR always intended to
+Deprecated \fBraptor_print_statement_detailed\fP always intended to
 be internal.
 .SS 1.2.0
-Added \fBraptor_syntaxes_enumerate\fR to get full information
+Added \fBraptor_syntaxes_enumerate\fP to get full information
 on syntax mime type and URIs as well as name and label.
 .LP
 N-Triples Plus parser renamed to Turtle (name turtle)
@@ -1441,54 +1649,54 @@ literals take unsigned char* rather than char*.  The affected calls are:
 URI factory methods changed to all take/return unsigned char* for URI
 strings:
 .br
-\fBraptor_new_uri_func\fR
+\fBraptor_new_uri_func\fP
 .br
-\fBraptor_new_uri_from_local_name_func\fR
+\fBraptor_new_uri_from_local_name_func\fP
 .br
-\fBraptor_new_uri_relative_to_base_func\fR
+\fBraptor_new_uri_relative_to_base_func\fP
 .br
-\fBraptor_uri_as_string_func\fR
+\fBraptor_uri_as_string_func\fP
 .br
-\fBraptor_uri_as_counted_string_func\fR
+\fBraptor_uri_as_counted_string_func\fP
 .LP
 Constructors and methods changed to take/return unsigned char* for
 URI strings:
 .br
-\fBraptor_statement_part_as_counted_string\fR
+\fBraptor_statement_part_as_counted_string\fP
 .br
-\fBraptor_statement_part_as_string\fR
+\fBraptor_statement_part_as_string\fP
 .br
-\fBraptor_new_uri\fR
+\fBraptor_new_uri\fP
 .br
-\fBraptor_new_uri_from_uri_local_name\fR
+\fBraptor_new_uri_from_uri_local_name\fP
 .br
-\fBraptor_new_uri_relative_to_base\fR
+\fBraptor_new_uri_relative_to_base\fP
 .br
-\fBraptor_uri_as_string\fR
+\fBraptor_uri_as_string\fP
 .br
-\fBraptor_uri_as_counted_string\fR
+\fBraptor_uri_as_counted_string\fP
 .br
-\fBraptor_print_ntriples_string\fR
+\fBraptor_print_ntriples_string\fP
 .LP
 Changed to use unsigned char* for URI strings, char* for filenames:
 .br
-\fBraptor_uri_resolve_uri_reference\fR
+\fBraptor_uri_resolve_uri_reference\fP
 .br
-\fBraptor_uri_filename_to_uri_string\fR
+\fBraptor_uri_filename_to_uri_string\fP
 .br
-\fBraptor_uri_uri_string_to_filename\fR
+\fBraptor_uri_uri_string_to_filename\fP
 .br
-\fBraptor_uri_uri_string_to_filename_fragment\fR
+\fBraptor_uri_uri_string_to_filename_fragment\fP
 .br
-\fBraptor_uri_is_file_uri\fR
+\fBraptor_uri_is_file_uri\fP
 .LP
 Changed to return unsigned char* for UTF8 string:
 .br
-\fBraptor_ntriples_string_as_utf8_string\fR
+\fBraptor_ntriples_string_as_utf8_string\fP
 .LP
-Added \fBraptor_parsers_enumerate\fR to discover supported parsers.
+Added \fBraptor_parsers_enumerate\fP to discover supported parsers.
 .LP
-Added \fBraptor_uri_uri_string_to_filename_fragment\fR with fragment arg to
+Added \fBraptor_uri_uri_string_to_filename_fragment\fP with fragment arg to
 return the URI fragment.
 .LP
 Made the raptor_namespace, raptor_namespace_stack and raptor_qname
@@ -1499,81 +1707,81 @@ Added feature non_nfc_fatal (see raptor_set_feature documentation).
 Removed the following deprecated methods and functions (see 0.9.6
 changes for the new names):
 .br
-\fBraptor_free\fR, \fBraptor_new\fR, \fBraptor_ntriples_free\fR,
-\fBraptor_ntriples_new\fR, \fBraptor_ntriples_parse_file\fR,
-\fBraptor_ntriples_set_error_handler\fR,
-\fBraptor_ntriples_set_fatal_error_handler\fR,
-\fBraptor_ntriples_set_statement_handler\fR and \fBraptor_parser_abort\fR.
+\fBraptor_free\fP, \fBraptor_new\fP, \fBraptor_ntriples_free\fP,
+\fBraptor_ntriples_new\fP, \fBraptor_ntriples_parse_file\fP,
+\fBraptor_ntriples_set_error_handler\fP,
+\fBraptor_ntriples_set_fatal_error_handler\fP,
+\fBraptor_ntriples_set_statement_handler\fP and \fBraptor_parser_abort\fP.
 .LP
-Added \fBraptor_parse_file_stream\fR
+Added \fBraptor_parse_file_stream\fP
 for reading FILE* streams without necessarily having a file.
 .SS 0.9.12
-Added \fBraptor_new_uri_for_retrieval\fR
+Added \fBraptor_new_uri_for_retrieval\fP
 to turn URI references into URIs suitable for retrieval (no fragments).
 .SS 0.9.11
-Added \fBraptor_get_name\fR and \fBraptor_get_label\fR.
+Added \fBraptor_get_name\fP and \fBraptor_get_label\fP.
 .LP
-\fBraptor_xml_escape_string\fR now takes error message handler, data
+\fBraptor_xml_escape_string\fP now takes error message handler, data
 pointer, loses parser argument.
 .LP
-Added \fBraptor_set_default_generate_id_parameters\fR and
-\fBraptor_set_generate_id_handler\fR to control the default
+Added \fBraptor_set_default_generate_id_parameters\fP and
+\fBraptor_set_generate_id_handler\fP to control the default
 generation of IDs, allow full customisation.
 .SS 0.9.10
-Added \fBraptor_set_parser_strict\fR
-and \fBraptor_www_no_www_library_init_finish\fR.
+Added \fBraptor_set_parser_strict\fP
+and \fBraptor_www_no_www_library_init_finish\fP.
 .LP
-\fBraptor_xml_escape_string\fR now takes an output string length pointer.
+\fBraptor_xml_escape_string\fP now takes an output string length pointer.
 .LP
-Added \fBraptor_statement_part_as_counted_string\fR,
-\fBraptor_statement_part_as_string and \fBraptor_parse_abort\fR.
+Added \fBraptor_statement_part_as_counted_string\fP,
+\fBraptor_statement_part_as_string and \fBraptor_parse_abort\fP.
 .LP
-Deprecated \fBraptor_parser_abort\fR.
+Deprecated \fBraptor_parser_abort\fP.
 .SS 0.9.9
 Added raptor_www class and all its constructors, destructor, methods, calls.
 .LP
-Added \fBraptor_parse_uri\fR, \fBraptor_parser_abort\fR, \fBraptor_ntriples_term_as_string\fR and \fBraptor_xml_escape_string\fR.
+Added \fBraptor_parse_uri\fP, \fBraptor_parser_abort\fP, \fBraptor_ntriples_term_as_string\fP and \fBraptor_xml_escape_string\fP.
 .SS 0.9.7
-\fBraptor_parse_chunk, \fBraptor_new_uri_from_id\fR, arguments are now unsigned char.
+\fBraptor_parse_chunk, \fBraptor_new_uri_from_id\fP, arguments are now unsigned char.
 .LP
-Added \fBraptor_new_uri_for_xmlbase\fR.
+Added \fBraptor_new_uri_for_xmlbase\fP.
 .SS 0.9.6
 In this version, the raptor/ntriples parser calling APIs were
 modified.  The following table lists the changes:
 .ta \w'raptor_ntriples_set_fatal_error_handler  'u+\n(Spu
 .LP
-\fIOLD API	NEW API (0.9.6+)\fR
+\fIOLD API	NEW API (0.9.6+)\fP
 .br
-\fBraptor_new()\fR	\fBraptor_new_parser("rdfxml")\fR
+\fBraptor_new()\fP	\fBraptor_new_parser("rdfxml")\fP
 .br
-\fBntriples_new()\fR	\fBraptor_new_parser("ntriples")\fR
+\fBntriples_new()\fP	\fBraptor_new_parser("ntriples")\fP
 .br
-\fBraptor_free\fR	\fBraptor_free_parser\fR
+\fBraptor_free\fP	\fBraptor_free_parser\fP
 .br
-\fBntriples_free\fR	\fBraptor_ntriples_parser\fR
+\fBntriples_free\fP	\fBraptor_ntriples_parser\fP
 .br
-\fBraptor_ntriples_parse_file\fR	\fBraptor_parse_file\fR
+\fBraptor_ntriples_parse_file\fP	\fBraptor_parse_file\fP
 .br
-\fBraptor_ntriples_set_error_handler\fR	\fBraptor_set_error_handler\fR
+\fBraptor_ntriples_set_error_handler\fP	\fBraptor_set_error_handler\fP
 .br
-\fBraptor_ntriples_set_fatal_error_handler\fR	\fBraptor_set_fatal_error_handler\fR
+\fBraptor_ntriples_set_fatal_error_handler\fP	\fBraptor_set_fatal_error_handler\fP
 .br
-\fBraptor_ntriples_set_statement_handler\fR	\fBraptor_set_statement_handler\fR
+\fBraptor_ntriples_set_statement_handler\fP	\fBraptor_set_statement_handler\fP
 .br
 .SH "CONFORMING TO"
-\fIRDF/XML Syntax (Revised)\fR, Dave Beckett (ed.)
+\fIRDF/XML Syntax (Revised)\fP, Dave Beckett (ed.)
 W3C Recommendation,
 .UR http://www.w3.org/TR/rdf-syntax-grammar/
 http://www.w3.org/TR/rdf-syntax-grammar/
 .UE
 
-\fIN-Triples\fR, in \fIRDF Test Cases\fR, Jan Grant and Dave Beckett (eds.)
+\fIN-Triples\fP, in \fIRDF Test Cases\fP, Jan Grant and Dave Beckett (eds.)
 W3C Recommendation,
 .UR http://www.w3.org/TR/rdf-testcases/#ntriples
 http://www.w3.org/TR/rdf-testcases/#ntriples
 .UE
 
-\fITurtle - Terse RDF Triple Language\fR, Dave Beckett,
+\fITurtle - Terse RDF Triple Language\fP, Dave Beckett,
 .UR http://www.dajobe.org/2004/01/turtle/
 http://www.dajobe.org/2004/01/turtle/
 .UE
