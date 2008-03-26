@@ -193,8 +193,7 @@ raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2,
 
 /**
  * raptor_sax2_set_namespace_handler:
- * @parser: #raptor_sax2 object
- * @user_data: user data pointer for callback
+ * @sax2: #raptor_sax2 object
  * @handler: new namespace callback function
  *
  * Set the XML namespace handler function.
