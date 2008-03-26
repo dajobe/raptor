@@ -395,8 +395,11 @@ raptor_new_serializer(const char *name)
   /* Write XML declaration */
   rdf_serializer->feature_write_xml_declaration=1;
 
-  /* JSON callback function */
+  /* JSON callback function name */
   rdf_serializer->feature_json_callback= NULL;
+
+  /* JSON extra data */
+  rdf_serializer->feature_json_extra_data= NULL;
 
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
@@ -692,6 +695,9 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
   if(rdf_serializer->feature_json_callback)
     RAPTOR_FREE(cstring, rdf_serializer->feature_json_callback);
 
+  if(rdf_serializer->feature_json_extra_data)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_json_extra_data);
+
   RAPTOR_FREE(raptor_serializer, rdf_serializer);
 }
 
@@ -808,6 +814,7 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
     case RAPTOR_FEATURE_JSON_CALLBACK:
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
 
     /* WWW features */
     case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
@@ -937,6 +944,11 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
         (unsigned char **)&(serializer->feature_json_callback), value);
       break;
 
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_json_extra_data), value);
+      break;
+
     /* WWW features */
     case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
     case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
@@ -987,6 +999,7 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_LITERAL_FILL:
     case RAPTOR_FEATURE_BNODE_FILL:
     case RAPTOR_FEATURE_JSON_CALLBACK:
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
       result= -1;
       break;
 
@@ -1086,6 +1099,9 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
       break;
     case RAPTOR_FEATURE_JSON_CALLBACK:
       return (unsigned char *)(serializer->feature_json_callback);
+      break;
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
+      return (unsigned char *)(serializer->feature_json_extra_data);
       break;
         
     /* parser features */

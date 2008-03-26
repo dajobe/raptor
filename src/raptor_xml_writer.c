@@ -867,6 +867,7 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
 
     /* JSON serializer features */
     case RAPTOR_FEATURE_JSON_CALLBACK:
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
     
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
@@ -984,6 +985,7 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
 
     /* JSON serializer features */
     case RAPTOR_FEATURE_JSON_CALLBACK:
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
     
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:

@@ -141,8 +141,7 @@ raptor_json_serialize_start(raptor_serializer* serializer)
   if(serializer->feature_json_callback) {
     raptor_iostream_write_string(serializer->iostream,
                                  serializer->feature_json_callback);
-    raptor_iostream_write_counted_string(serializer->iostream,
-                                         (const unsigned char*)"(", 1);
+    raptor_iostream_write_byte(serializer->iostream, ')');
   }
 
   if(!context->is_resource) {
@@ -351,7 +350,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       if(new_predicate) {
         raptor_json_writer_newline(context->json_writer);
         raptor_json_writer_end_block(context->json_writer, ']');
-        raptor_iostream_write_counted_string(serializer->iostream, ",", 1);
+        raptor_iostream_write_byte(serializer->iostream, ',');
         raptor_json_writer_newline(context->json_writer);
       }
     }
@@ -446,6 +445,16 @@ raptor_json_serialize_end(raptor_serializer* serializer)
     raptor_json_writer_end_block(context->json_writer, ']');
     raptor_json_writer_newline(context->json_writer);
   }
+
+
+  if(serializer->feature_json_extra_data) {
+    raptor_iostream_write_byte(serializer->iostream, ',');
+    raptor_json_writer_newline(context->json_writer);
+    raptor_iostream_write_string(serializer->iostream,
+                                 serializer->feature_json_extra_data);
+    raptor_json_writer_newline(context->json_writer);
+  }
+
 
   /* end outer object */
   raptor_json_writer_end_block(context->json_writer, '}');

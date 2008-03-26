@@ -626,6 +626,7 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
 
     /* JSON serializer features */
     case RAPTOR_FEATURE_JSON_CALLBACK:
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
     
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:

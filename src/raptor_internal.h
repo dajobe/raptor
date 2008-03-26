@@ -497,6 +497,11 @@ struct raptor_serializer_s {
    * JSON serializer callback function name
    */
   unsigned char *feature_json_callback;
+
+  /* FEATURE:
+   * JSON serializer extra data
+   */
+  unsigned char *feature_json_extra_data;
 };
 
 
