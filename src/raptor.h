@@ -1424,7 +1424,6 @@ typedef int (*raptor_iostream_read_eof_func) (void *context);
  * @write_byte: write byte handler - required (for writing)
  * @write_bytes: write bytes handler - required (for writing)
  * @write_end: write end handler - optional (for writing), called at most once
- * @read_bytes: read bytes handler - required (for reading)
  *
  * I/O stream implementation handler structure.
  *
@@ -1448,6 +1447,7 @@ typedef struct {
  * @write_bytes: write bytes handler - required (for writing) (V1)
  * @write_end: write end handler - optional (for writing), called at most once (V1)
  * @read_bytes: read bytes handler - required (for reading) (V2)
+ * @read_eof: read EOF handler - required (for reading) (V2)
  *
  * I/O stream implementation handler structure.
  * 
