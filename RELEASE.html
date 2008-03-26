@@ -92,10 +92,11 @@ N-Triples / SPARQL escaping rules.  (Dave B)
 <li>Triple-centric serializer named <code>json-triples</code> based on the SPARQL results in JSON format.</li>
 </ol>
 
-<p>Added new serializer feature
+<p>Added new serializer features for the JSON serializers (DaveB):<br />
 <code>RAPTOR_FEATURE_JSON_CALLBACK</code> (name 'jsonCallback') to
-set the callback function for the JSON output in both JSON
-serializers. (Dave B)
+set the top-level callback function name wrapper above the outer object and
+<code>RAPTOR_FEATURE_JSON_EXTRA_DATA</code> (name 'jsonExtraData') to
+add extra top-level JSON object data.
 </p>
 
 
