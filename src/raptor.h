@@ -1654,6 +1654,8 @@ typedef void (*raptor_sax2_unparsed_entity_decl_handler)(void *user_data, const 
  * @publicId: public ID
  *
  * SAX2 external entity reference handler
+ *
+ * Return value: ignored
  */
 typedef int (*raptor_sax2_external_entity_ref_handler)(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
 
