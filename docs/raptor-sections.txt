@@ -20,6 +20,8 @@ raptor_ntriples_string_as_utf8_string
 raptor_ntriples_term_as_string
 raptor_vsnprintf
 raptor_log_level
+raptor_message_handler_closure
+raptor_error_handlers
 raptor_error_handlers_init
 </SECTION>
 
@@ -261,6 +263,8 @@ raptor_iostream_finish_func
 raptor_iostream_write_byte_func
 raptor_iostream_write_bytes_func
 raptor_iostream_write_end_func
+raptor_iostream_read_bytes_func
+raptor_iostream_read_eof_func
 raptor_iostream_handler
 raptor_iostream_handler2
 raptor_new_iostream_from_handler2
