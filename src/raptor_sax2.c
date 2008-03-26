@@ -81,7 +81,7 @@ raptor_sax2_finish(void)
  * Constructor - Create a new SAX2 with error handlers
  *
  * Return value: new #raptor_sax2 object or NULL on failure
- **/
+ */
 raptor_sax2*
 raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
 {
@@ -118,7 +118,7 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
  * @sax2: SAX2 object
  *
  * Destructor - destroy a SAX2 object
- **/
+ */
 void
 raptor_free_sax2(raptor_sax2 *sax2) {
   raptor_xml_element *xml_element;
@@ -155,7 +155,7 @@ raptor_free_sax2(raptor_sax2 *sax2) {
  * @handler: start element handler
  *
  * Set SAX2 start element handler.
- **/
+ */
 void
 raptor_sax2_set_start_element_handler(raptor_sax2* sax2,
                                       raptor_sax2_start_element_handler handler)
@@ -170,7 +170,7 @@ raptor_sax2_set_start_element_handler(raptor_sax2* sax2,
  * @handler: end element handler
  *
  * Set SAX2 end element handler.
- **/
+ */
 void
 raptor_sax2_set_end_element_handler(raptor_sax2* sax2,
                                     raptor_sax2_end_element_handler handler)
@@ -185,7 +185,7 @@ raptor_sax2_set_end_element_handler(raptor_sax2* sax2,
  * @handler: characters handler
  *
  * Set SAX2 characters handler.
- **/
+ */
 void
 raptor_sax2_set_characters_handler(raptor_sax2* sax2,
                                    raptor_sax2_characters_handler handler)
@@ -200,7 +200,7 @@ raptor_sax2_set_characters_handler(raptor_sax2* sax2,
  * @handler: CDATA handler
  *
  * Set SAX2 CDATA handler.
- **/
+ */
 void
 raptor_sax2_set_cdata_handler(raptor_sax2* sax2,
                               raptor_sax2_cdata_handler handler)
@@ -215,7 +215,7 @@ raptor_sax2_set_cdata_handler(raptor_sax2* sax2,
  * @handler: comment handler
  *
  * Set SAX2 XML comment handler.
- **/
+ */
 void
 raptor_sax2_set_comment_handler(raptor_sax2* sax2,
                                 raptor_sax2_comment_handler handler)
@@ -230,7 +230,7 @@ raptor_sax2_set_comment_handler(raptor_sax2* sax2,
  * @handler: unparsed entity declaration handler
  *
  * Set SAX2 XML unparsed entity declaration handler.
- **/
+ */
 void
 raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2,
                                              raptor_sax2_unparsed_entity_decl_handler handler)
@@ -245,7 +245,7 @@ raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2,
  * @handler: entity reference handler
  *
  * Set SAX2 XML entity reference handler.
- **/
+ */
 void
 raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2,
                                             raptor_sax2_external_entity_ref_handler handler)
@@ -269,7 +269,7 @@ raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2,
  * namespace may be declared multiple times when a namespace is seen
  * in different parts of a document.
  * 
- **/
+ */
 void
 raptor_sax2_set_namespace_handler(raptor_sax2* sax2,
                                   raptor_namespace_handler handler)
@@ -311,7 +311,7 @@ raptor_xml_element_push(raptor_sax2 *sax2, raptor_xml_element* element)
  * Check if an XML Element is empty.
  * 
  * Return value: non-0 if the element is empty.
- **/
+ */
 int
 raptor_xml_element_is_empty(raptor_xml_element* xml_element)
 {
@@ -327,7 +327,7 @@ raptor_xml_element_is_empty(raptor_xml_element* xml_element)
  * Get the in-scope XML language
  * 
  * Return value: the XML language or NULL if none is in scope.
- **/
+ */
 const unsigned char*
 raptor_sax2_inscope_xml_language(raptor_sax2 *sax2)
 {
@@ -354,7 +354,7 @@ raptor_sax2_inscope_xml_language(raptor_sax2 *sax2)
  * Get the in-scope base URI
  * 
  * Return value: the in-scope base URI shared object or NULL if none is in scope.
- **/
+ */
 raptor_uri*
 raptor_sax2_inscope_base_uri(raptor_sax2 *sax2)
 {
@@ -396,7 +396,7 @@ static void raptor_sax2_simple_error(void* user_data, const char *message, ...) 
  *
  * Matches the raptor_simple_message_handler API but calls
  * the sax2 error_handler
- **/
+ */
 static void
 raptor_sax2_simple_error(void* user_data, const char *message, ...)
 {
@@ -425,7 +425,7 @@ raptor_sax2_simple_error(void* user_data, const char *message, ...)
  * @base_uri: base URI
  *
  * Start an XML SAX2 parse.
- **/
+ */
 void
 raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 {
@@ -480,7 +480,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 
 
 /**
- * raptor_sax2_parse_start:
+ * raptor_sax2_parse_chunk:
  * @sax2: sax2 object
  * @buffer: input buffer
  * @len: input buffer lenght
@@ -489,7 +489,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
  * Parse a chunk of XML data generating SAX2 events
  *
  * Return value: non-0 on failure
- **/
+ */
 int
 raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
                         size_t len, int is_end) 
@@ -668,7 +668,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
  * The allowed features are available via raptor_sax2_features_enumerate().
  *
  * Return value: non 0 on failure or if the feature is unknown
- **/
+ */
 int
 raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
 {

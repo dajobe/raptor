@@ -676,7 +676,7 @@ typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator,
 
 
 /**
- * raptor_handler_closure:
+ * raptor_message_handler_closure:
  * @user_data: user data for handler invocation
  * @handler: handler function
  *
@@ -1471,7 +1471,7 @@ typedef struct {
 RAPTOR_API RAPTOR_DEPRECATED
 raptor_iostream* raptor_new_iostream_from_handler(void *context, const raptor_iostream_handler *handler);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_handler2(void *context, const raptor_iostream_handler2* const handler2);
+raptor_iostream* raptor_new_iostream_from_handler2(void *user_data, const raptor_iostream_handler2* const handler2);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_sink(void);
 RAPTOR_API
@@ -1582,19 +1582,78 @@ int raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature 
 RAPTOR_API
 const unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature);
 
-/* start of an element */
+/**
+ * raptor_sax2_start_element_handler:
+ * @user_data: user data
+ * @xml_element: XML element
+ *
+ * SAX2 start element handler
+ */
 typedef void (*raptor_sax2_start_element_handler)(void *user_data, raptor_xml_element *xml_element);
-/* end of an element */
+
+/**
+ * raptor_sax2_end_element_handler:
+ * @user_data: user data
+ * @xml_element: XML element
+ *
+ * SAX2 end element handler
+ */
 typedef void (*raptor_sax2_end_element_handler)(void *user_data, raptor_xml_element* xml_element);
-/* characters */
+
+/**
+ * raptor_sax2_characters_handler:
+ * @user_data: user data
+ * @xml_element: XML element
+ * @s: string
+ * @len: string len
+ *
+ * SAX2 characters handler
+ */
 typedef void (*raptor_sax2_characters_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s, int len);
-/* like <![CDATA[...]> */
+
+/**
+ * raptor_sax2_cdata_handler:
+ * @user_data: user data
+ * @xml_element: XML element
+ * @s: string
+ * @len: string len
+
+ * SAX2 CDATA section handler
+ */
 typedef void (*raptor_sax2_cdata_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s, int len);
-/* comment */
+
+/**
+ * raptor_sax2_comment_handler:
+ * @user_data: user data
+ * @xml_element: XML element
+ * @s: string
+ *
+ * SAX2 XML comment handler
+ */
 typedef void (*raptor_sax2_comment_handler)(void *user_data, raptor_xml_element* xml_element, const unsigned char *s);
-/* unparsed (NDATA) entity */
+
+/**
+ * raptor_sax2_unparsed_entity_decl_handler:
+ * @user_data: user data
+ * @entityName: entity name
+ * @base: base URI
+ * @systemId: system ID
+ * @publicId: public ID
+ * @notationName: notation name
+ *
+ * SAX2 unparsed entity (NDATA) handler
+ */
 typedef void (*raptor_sax2_unparsed_entity_decl_handler)(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
-/* external entity reference */
+
+/**
+ * raptor_sax2_external_entity_ref_handler:
+ * @user_data: user data
+ * @base: base URI
+ * @systemId: system ID
+ * @publicId: public ID
+ *
+ * SAX2 external entity reference handler
+ */
 typedef int (*raptor_sax2_external_entity_ref_handler)(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
 
 
