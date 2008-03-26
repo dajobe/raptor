@@ -101,8 +101,8 @@ raptor_iostream_check_handler(const raptor_iostream_handler2 * const handler2,
 
 /**
  * raptor_new_iostream_from_handler2:
- * @context: pointer to context information to pass in to calls
- * @handler: pointer to handler methods
+ * @user_data: pointer to context information to pass in to calls
+ * @handler2: pointer to handler methods
  *
  * Create a new iostream over a user-defined handler
  *
@@ -619,7 +619,7 @@ static const raptor_iostream_handler2 raptor_iostream_read_file_handle_handler={
 
 /**
  * raptor_new_iostream_from_file_handle:
- * @file_handle: Input file_handle to open and read from
+ * @handle: Input file_handle to open and read from
  *
  * Constructor - create a new iostream reading from a file_handle.
  * 
