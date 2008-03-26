@@ -2,7 +2,7 @@
  *
  * raptor_rdfxml.c - Raptor RDF/XML Parser
  *
- * Copyright (C) 2000-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -987,43 +987,6 @@ raptor_rdfxml_cdata_handler(void *user_data, raptor_xml_element* xml_element,
   raptor_rdfxml_cdata_grammar(rdf_parser, s, len, 1);
 }
 
-/* This is called for a declaration of an unparsed (NDATA) entity */
-static void
-raptor_rdfxml_unparsed_entity_decl_handler(void *user_data,
-                                           const unsigned char* entityName,
-                                           const unsigned char* base,
-                                           const unsigned char* systemId,
-                                           const unsigned char* publicId,
-                                           const unsigned char* notationName) 
-{
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
-
-  raptor_parser_error(rdf_parser, "Failed to handle unparsed entity declaration (NOTATION) with entityName %s base %s systemId %s publicId %s notationName %s",
-                      entityName, (base ? (const char*)base : "(None)"), 
-                      systemId, (publicId ?  (const char*)publicId: "(None)"),
-                      (const char*)notationName);
-}
-
-
-static int 
-raptor_rdfxml_external_entity_ref_handler(void *user_data,
-                                          const unsigned char* context,
-                                          const unsigned char* base,
-                                          const unsigned char* systemId,
-                                          const unsigned char* publicId)
-{
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
-
-  raptor_parser_error(rdf_parser,
-                      "Failed to handle external entity reference with base %s systemId %s publicId %s",
-                      (base ?  (const char*)base : "(None)"), 
-                      systemId, (publicId ?  (const char*)publicId: "(None)"));
-  /* "The handler should return 0 if processing should not continue
-   * because of a fatal error in the handling of the external entity."
-   */
-  return 1;
-}
-
 
 /* comment handler
  * s is 0 terminated
@@ -1073,8 +1036,6 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_characters_handler(sax2, raptor_rdfxml_characters_handler);
   raptor_sax2_set_cdata_handler(sax2, raptor_rdfxml_cdata_handler);
   raptor_sax2_set_comment_handler(sax2, raptor_rdfxml_comment_handler);
-  raptor_sax2_set_unparsed_entity_decl_handler(sax2, raptor_rdfxml_unparsed_entity_decl_handler);
-  raptor_sax2_set_external_entity_ref_handler(sax2, raptor_rdfxml_external_entity_ref_handler);
   raptor_sax2_set_namespace_handler(sax2, raptor_rdfxml_sax2_new_namespace_handler);
 
   /* Allocate uris */  
