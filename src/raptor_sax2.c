@@ -1065,14 +1065,6 @@ raptor_sax2_unparsed_entity_decl(void* user_data,
     sax2->unparsed_entity_decl_handler(sax2->user_data,
                                        entityName, base, systemId, 
                                        publicId, notationName);
-  else
-    raptor_sax2_simple_error((void*)sax2,
-                             "Failed to handle unparsed entity declaration (NOTATION) with entityName %s base %s systemId %s publicId %s notationName %s",
-                             entityName,
-                             (base ? (const char*)base : "(None)"), 
-                             systemId,
-                             (publicId ?  (const char*)publicId: "(None)"),
-                             (const char*)notationName);
 }
 
 
@@ -1088,12 +1080,12 @@ raptor_sax2_external_entity_ref(void* user_data,
   if(sax2->external_entity_ref_handler)
     return sax2->external_entity_ref_handler(sax2->user_data,
                                              context, base, systemId, publicId);
-  else
-    raptor_sax2_simple_error((void*)sax2,
-                             "Failed to handle external entity reference with base %s systemId %s publicId %s",
-                             (base ?  (const char*)base : "(None)"), 
-                             systemId,
-                             (publicId ?  (const char*)publicId: "(None)"));
+
+  raptor_sax2_simple_error((void*)sax2,
+                           "Failed to handle external entity reference with base %s systemId %s publicId %s",
+                           (base ?  (const char*)base : "(None)"), 
+                           systemId,
+                           (publicId ?  (const char*)publicId: "(None)"));
   
   /* Failed to handle external entity reference */
   return 0;
