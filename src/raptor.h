@@ -1648,6 +1648,7 @@ typedef void (*raptor_sax2_unparsed_entity_decl_handler)(void *user_data, const 
 /**
  * raptor_sax2_external_entity_ref_handler:
  * @user_data: user data
+ * @context: context
  * @base: base URI
  * @systemId: system ID
  * @publicId: public ID
