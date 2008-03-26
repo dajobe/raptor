@@ -1080,5 +1080,7 @@ raptor_sax2_external_entity_ref(void* user_data,
   if(sax2->external_entity_ref_handler)
     return sax2->external_entity_ref_handler(sax2->user_data,
                                              context, base, systemId, publicId);
+
+  /* Failed to handle external entity reference */
   return 0;
 }
