@@ -240,7 +240,7 @@ raptor_sax2_set_unparsed_entity_decl_handler(raptor_sax2* sax2,
 
 
 /**
- * raptor_sax2_set_entity_ref_handler:
+ * raptor_sax2_set_external_entity_ref_handler:
  * @sax2: SAX2 object
  * @handler: entity reference handler
  *
