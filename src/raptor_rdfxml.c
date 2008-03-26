@@ -996,12 +996,12 @@ raptor_rdfxml_unparsed_entity_decl_handler(void *user_data,
                                            const unsigned char* publicId,
                                            const unsigned char* notationName) 
 {
-/*  raptor_parser* rdf_parser=(raptor_parser*)user_data; */
-  fprintf(stderr,
-          "raptor_rdfxml_unparsed_entity_decl_handler: entityName %s base %s systemId %s publicId %s notationName %s\n",
-          entityName, (base ? (const char*)base : "(None)"), 
-          systemId, (publicId ?  (const char*)publicId: "(None)"),
-          (const char*)notationName);
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+
+  raptor_parser_error(rdf_parser, "Failed to handle unparsed entity declaration (NOTATION) with entityName %s base %s systemId %s publicId %s notationName %s",
+                      entityName, (base ? (const char*)base : "(None)"), 
+                      systemId, (publicId ?  (const char*)publicId: "(None)"),
+                      (const char*)notationName);
 }
 
 
@@ -1012,12 +1012,12 @@ raptor_rdfxml_external_entity_ref_handler(void *user_data,
                                           const unsigned char* systemId,
                                           const unsigned char* publicId)
 {
-/*  raptor_rdfxml_parser* rdf_parser=(raptor_rdfxml_parser*)user_data; */
-  fprintf(stderr,
-          "raptor_rdfxml_external_entity_ref_handler: base %s systemId %s publicId %s\n",
-          (base ?  (const char*)base : "(None)"), 
-          systemId, (publicId ?  (const char*)publicId: "(None)"));
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
 
+  raptor_parser_error(rdf_parser,
+                      "Failed to handle external entity reference with base %s systemId %s publicId %s",
+                      (base ?  (const char*)base : "(None)"), 
+                      systemId, (publicId ?  (const char*)publicId: "(None)"));
   /* "The handler should return 0 if processing should not continue
    * because of a fatal error in the handling of the external entity."
    */
