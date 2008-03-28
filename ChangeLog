@@ -1,3 +1,45 @@
+2008-03-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_sax2.c: (raptor_sax2_unparsed_entity_decl): Do not
+	return error when there is no handler.
+	(raptor_sax2_external_entity_ref): Error out when there is no
+	handler as the XML cannot be parsed with unknown external entity
+	references.
+
+	* src/raptor_rdfxml.c, src/raptor_sax2.c:
+	(raptor_sax2_unparsed_entity_decl,
+	raptor_sax2_external_entity_ref): Moved unparsed entity and
+	external entity reference error messages to sax2 class.
+	(raptor_rdfxml_unparsed_entity_decl_handler,
+	raptor_rdfxml_external_entity_ref_handler): Deleted.
+	(raptor_rdfxml_parse_init): Remove setting handlers
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_unparsed_entity_decl_handler,
+	raptor_rdfxml_external_entity_ref_handler): Turn
+	fprintf(stderr...) calls into real raptor_parser_error calls
+
+	* src/raptor_sax2.c: (raptor_sax2_external_entity_ref): Note
+	failure is happening with 'return 0'
+
+	* src/raptor.h: raptor_sax2_external_entity_ref_handler autodocs
+
+2008-03-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_sax2.c, src/raptor_iostream.c: autodocs
+
+	* docs/libraptor.3: 1.4.17 and lots of formatting tidying
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_json.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Added RAPTOR_FEATURE_JSON_EXTRA_DATA name
+	jsonExtraData that allows adding data to the end of the top level
+	JSON object on output
+
+2008-03-23  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-feature.sgml: add json callback feature
+
 2008-03-16  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac: fix check for needing to link with -lm
