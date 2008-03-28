@@ -141,7 +141,7 @@ raptor_json_serialize_start(raptor_serializer* serializer)
   if(serializer->feature_json_callback) {
     raptor_iostream_write_string(serializer->iostream,
                                  serializer->feature_json_callback);
-    raptor_iostream_write_byte(serializer->iostream, ')');
+    raptor_iostream_write_byte(serializer->iostream, '(');
   }
 
   if(!context->is_resource) {
