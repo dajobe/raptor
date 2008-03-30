@@ -1,4 +1,6 @@
-2008-03-29  Dave Beckett <dave@dajobe.org>
+2008-03-29  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor_1_4_17 for 1.4.17 release (SVN 13771)
 
 	* utils/rapper.c: adjust feature pops
 
