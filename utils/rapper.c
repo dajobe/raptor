@@ -799,6 +799,7 @@ main(int argc, char *argv[])
         raptor_parser_set_feature_string(rdf_parser, fv->feature, fv->s_value);
       else
         raptor_set_feature(rdf_parser, fv->feature, fv->i_value);
+      raptor_free_memory(fv);
     }
     raptor_free_sequence(parser_features);
     parser_features=NULL;
@@ -879,6 +880,7 @@ main(int argc, char *argv[])
                                                fv->s_value);
         else
           raptor_serializer_set_feature(serializer, fv->feature, fv->i_value);
+        raptor_free_memory(fv);
       }
       raptor_free_sequence(serializer_features);
       serializer_features=NULL;
