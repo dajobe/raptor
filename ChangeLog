@@ -1,5 +1,9 @@
 2008-03-29  Dave Beckett <dave@dajobe.org>
 
+	* utils/rapper.c: adjust feature pops
+
+	* utils/rapper.c: free features
+
 	* utils/rapper.c: Allow multiple features to be set with
 	-f/--feature by storing them away in two raptor_sequence* lists,
 	one for parser and one for serializer.
