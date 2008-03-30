@@ -274,6 +274,15 @@ rapper_uri_trace(void *user_data, raptor_uri* uri)
 }
 
 
+typedef struct
+{
+  raptor_feature feature;
+  int i_value;
+  unsigned char* s_value;
+} feature_value;
+
+
+
 int
 main(int argc, char *argv[]) 
 {
@@ -295,12 +304,8 @@ main(int argc, char *argv[])
   raptor_uri *uri;
   char *p;
   char *filename=NULL;
-  raptor_feature parser_feature=(raptor_feature)-1;
-  int parser_feature_value= -1;
-  unsigned char* parser_feature_string_value=NULL;
-  raptor_feature serializer_feature=(raptor_feature)-1;
-  int serializer_feature_value= -1;
-  unsigned char* serializer_feature_string_value=NULL;
+  raptor_sequence* parser_features=NULL;
+  raptor_sequence* serializer_features=NULL;
   raptor_sequence *namespace_declarations=NULL;
 
   program=argv[0];
@@ -389,27 +394,38 @@ main(int argc, char *argv[])
           } else {
             int i;
             size_t arg_len=strlen(optarg);
+            feature_value* fv;
+            int ok=0;
             
+            /* parser features */
             for(i=0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
               if(raptor_features_enumerate((raptor_feature)i, &feature_name, NULL, NULL))
                 continue;
+
               len=strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
-                parser_feature=(raptor_feature)i;
-                if(raptor_feature_value_type(parser_feature) == 0) {
+                fv=(feature_value*)raptor_alloc_memory(sizeof(feature_value));
+
+                fv->feature=(raptor_feature)i;
+                if(raptor_feature_value_type(fv->feature) == 0) {
                   if(len < arg_len && optarg[len] == '=')
-                    parser_feature_value=atoi(&optarg[len+1]);
+                    fv->i_value=atoi(&optarg[len+1]);
                   else if(len == arg_len)
-                    parser_feature_value=1;
+                    fv->i_value=1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    parser_feature_string_value=(unsigned char*)&optarg[len+1];
+                    fv->s_value=(unsigned char*)&optarg[len+1];
                   else if(len == arg_len)
-                    parser_feature_string_value=(unsigned char*)"";
+                    fv->s_value=(unsigned char*)"";
                 }
+
+                if(!parser_features)
+                  parser_features=raptor_new_sequence(raptor_free_memory, NULL);
+                raptor_sequence_push(parser_features, fv);
+                ok=1;
                 break;
               }
             }
@@ -420,26 +436,33 @@ main(int argc, char *argv[])
               
               if(raptor_serializer_features_enumerate((raptor_feature)i, &feature_name, NULL, NULL))
                 continue;
+
               len=strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
-                serializer_feature=(raptor_feature)i;
-                if(raptor_feature_value_type(serializer_feature) == 0) {
+                fv=(feature_value*)raptor_alloc_memory(sizeof(feature_value));
+
+                fv->feature=(raptor_feature)i;
+                if(raptor_feature_value_type(fv->feature) == 0) {
                   if(len < arg_len && optarg[len] == '=')
-                    serializer_feature_value=atoi(&optarg[len+1]);
+                    fv->i_value=atoi(&optarg[len+1]);
                   else if(len == arg_len)
-                    serializer_feature_value=1;
+                    fv->i_value=1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    serializer_feature_string_value=(unsigned char*)&optarg[len+1];
+                    fv->s_value=(unsigned char*)&optarg[len+1];
                   else if(len == arg_len)
-                    serializer_feature_string_value=(unsigned char*)"";
+                    fv->s_value=(unsigned char*)"";
                 }
+
+                if(!serializer_features)
+                  serializer_features=raptor_new_sequence(raptor_free_memory, NULL);
+                raptor_sequence_push(serializer_features, fv);
+                ok=1;
                 break;
               }
             }
             
-            if(parser_feature_value < 0 && !parser_feature_string_value &&
-               serializer_feature_value < 0 && !serializer_feature_string_value) {
+            if(!ok) {
               fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s " HELP_ARG(f, feature) " help' for a list of valid features\n",
                       program, optarg, program);
               usage=1;
@@ -768,13 +791,18 @@ main(int argc, char *argv[])
   if(scanning)
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
 
-  if(parser_feature_value >= 0)
-    raptor_set_feature(rdf_parser, 
-                       parser_feature, parser_feature_value);
-  if(parser_feature_string_value)
-    raptor_parser_set_feature_string(rdf_parser, 
-                                     parser_feature,
-                                     parser_feature_string_value);
+  if(parser_features) {
+    while(raptor_sequence_size(parser_features)) {
+      feature_value *fv;
+      fv=(feature_value*)raptor_sequence_pop(parser_features);
+      if(fv->s_value)
+        raptor_parser_set_feature_string(rdf_parser, fv->feature, fv->s_value);
+      else
+        raptor_set_feature(rdf_parser, fv->feature, fv->i_value);
+    }
+    raptor_free_sequence(parser_features);
+    parser_features=NULL;
+  }
 
   if(trace)
     raptor_parser_set_uri_filter(rdf_parser, rapper_uri_trace, NULL);
@@ -842,13 +870,19 @@ main(int argc, char *argv[])
       namespace_declarations=NULL;
     }
     
-    if(serializer_feature_value >= 0)
-      raptor_serializer_set_feature(serializer, 
-                                    serializer_feature, serializer_feature_value);
-    if(serializer_feature_string_value)
-      raptor_serializer_set_feature_string(serializer, 
-                                           serializer_feature,
-                                           serializer_feature_string_value);
+    if(serializer_features) {
+      while(raptor_sequence_size(serializer_features)) {
+        feature_value *fv;
+        fv=(feature_value*)raptor_sequence_pop(serializer_features);
+        if(fv->s_value)
+          raptor_serializer_set_feature_string(serializer, fv->feature,
+                                               fv->s_value);
+        else
+          raptor_serializer_set_feature(serializer, fv->feature, fv->i_value);
+      }
+      raptor_free_sequence(serializer_features);
+      serializer_features=NULL;
+    }
 
     raptor_serialize_start_to_file_handle(serializer, 
                                           output_base_uri, stdout);
@@ -897,6 +931,10 @@ main(int argc, char *argv[])
 
   if(namespace_declarations)
     raptor_free_sequence(namespace_declarations);
+  if(parser_features)
+    raptor_free_sequence(parser_features);
+  if(serializer_features)
+    raptor_free_sequence(serializer_features);
 
   raptor_finish();
 
