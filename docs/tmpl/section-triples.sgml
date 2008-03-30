@@ -105,6 +105,16 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @object_literal_datatype: 
 @object_literal_language: 
 
+<!-- ##### FUNCTION raptor_statement_compare ##### -->
+<para>
+
+</para>
+
+@s1: 
+@s2: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_print_statement ##### -->
 <para>
 

@@ -99,7 +99,35 @@ for XML element and attribute names.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_qname_get_counted_value ##### -->
+<para>
+
+</para>
+
+@name: 
+@length_p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_qname_get_local_name ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_qname_get_namespace ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_qname_get_value ##### -->
 <para>
 
 </para>

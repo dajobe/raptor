@@ -122,6 +122,16 @@ chunks of byte content.
 @value: 
 
 
+<!-- ##### FUNCTION raptor_www_set_http_cache_control ##### -->
+<para>
+
+</para>
+
+@www: 
+@cache_control: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_www_set_write_bytes_handler ##### -->
 <para>
 

@@ -73,6 +73,27 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @context: 
 
 
+<!-- ##### USER_FUNCTION raptor_iostream_read_bytes_func ##### -->
+<para>
+
+</para>
+
+@context: 
+@ptr: 
+@size: 
+@nmemb: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION raptor_iostream_read_eof_func ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
 <!-- ##### STRUCT raptor_iostream_handler ##### -->
 <para>
 
@@ -84,6 +105,30 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @write_bytes: 
 @write_end: 
 
+<!-- ##### STRUCT raptor_iostream_handler2 ##### -->
+<para>
+
+</para>
+
+@version: 
+@init: 
+@finish: 
+@write_byte: 
+@write_bytes: 
+@write_end: 
+@read_bytes: 
+@read_eof: 
+
+<!-- ##### FUNCTION raptor_new_iostream_from_handler2 ##### -->
+<para>
+
+</para>
+
+@user_data: 
+@handler2: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_iostream_from_handler ##### -->
 <para>
 
@@ -91,6 +136,42 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 @context: 
 @handler: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_iostream_from_sink ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_iostream_from_filename ##### -->
+<para>
+
+</para>
+
+@filename: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_iostream_from_file_handle ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_iostream_from_string ##### -->
+<para>
+
+</para>
+
+@string: 
+@length: 
 @Returns: 
 
 
@@ -139,7 +220,27 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @iostr: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_bytes ##### -->
+<!-- ##### FUNCTION raptor_iostream_format_hexadecimal ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@integer: 
+@width: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_iostream_get_bytes_written_count ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_iostream_read_bytes ##### -->
 <para>
 
 </para>
@@ -148,6 +249,24 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @ptr: 
 @size: 
 @nmemb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_iostream_read_eof ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_iostream_tell ##### -->
+<para>
+
+</para>
+
+@iostr: 
 @Returns: 
 
 
@@ -161,21 +280,15 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_end ##### -->
+<!-- ##### FUNCTION raptor_iostream_write_bytes ##### -->
 <para>
 
 </para>
 
 @iostr: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_string ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@string: 
+@ptr: 
+@size: 
+@nmemb: 
 @Returns: 
 
 
@@ -190,15 +303,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_get_bytes_written_count ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_iostream_write_decimal ##### -->
 <para>
 
@@ -209,24 +313,30 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_format_hexadecimal ##### -->
+<!-- ##### FUNCTION raptor_iostream_write_end ##### -->
 <para>
 
 </para>
 
 @iostr: 
-@integer: 
-@width: 
-@Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_stringbuffer ##### -->
+<!-- ##### FUNCTION raptor_iostream_write_statement_ntriples ##### -->
 <para>
 
 </para>
 
 @iostr: 
-@sb: 
+@statement: 
+
+
+<!-- ##### FUNCTION raptor_iostream_write_string ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@string: 
 @Returns: 
 
 
@@ -242,13 +352,17 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_statement_ntriples ##### -->
+<!-- ##### FUNCTION raptor_iostream_write_string_python ##### -->
 <para>
 
 </para>
 
 @iostr: 
-@statement: 
+@string: 
+@len: 
+@delim: 
+@flags: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_iostream_write_string_turtle ##### -->
@@ -259,5 +373,15 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @iostr: 
 @string: 
 @len: 
+
+
+<!-- ##### FUNCTION raptor_iostream_write_stringbuffer ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@sb: 
+@Returns: 
 
 
