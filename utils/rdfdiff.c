@@ -2,7 +2,7 @@
  *
  * rdfdiff.c - Raptor RDF diff tool
  *
- * Copyright (C) 2000-2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
