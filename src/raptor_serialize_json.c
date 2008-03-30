@@ -87,6 +87,9 @@ raptor_json_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_json_context* context=(raptor_json_context*)serializer->context;
 
   context->is_resource=!strcmp(name,"json");
+
+  /* Default for JSON serializer is absolute URIs */
+  serializer->feature_relative_uris=0;
   
   return 0;
 }
@@ -116,9 +119,13 @@ raptor_json_serialize_start(raptor_serializer* serializer)
   raptor_json_context* context=(raptor_json_context*)serializer->context;
   const raptor_uri_handler *uri_handler;
   void *uri_context;
-
+  raptor_uri* base_uri;
+  
   raptor_uri_get_handler(&uri_handler, &uri_context);
-  context->json_writer=raptor_new_json_writer(serializer->base_uri,
+
+  base_uri=(serializer->feature_relative_uris) ? serializer->base_uri : NULL;
+  
+  context->json_writer=raptor_new_json_writer(base_uri,
                                               uri_handler, uri_context,
                                               serializer->iostream,
                                               (raptor_simple_message_handler)raptor_serializer_simple_error,
