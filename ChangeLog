@@ -1,3 +1,23 @@
+2008-03-29  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c: Allow multiple features to be set with
+	-f/--feature by storing them away in two raptor_sequence* lists,
+	one for parser and one for serializer.
+
+	Then such things like
+	 rapper -q -o json -f jsonCallback=foo -f 'jsonExtraData="foo":"bar"' -f relativeURIs ...
+	can be called.
+
+	* src/raptor_serialize_json.c: (raptor_json_serialize_init): Alter
+	default to serialize with absolute URIs for JSON.
+	(raptor_json_serialize_start): Use feature_relative_uris to decide
+	what base uri to send to JSON writer.
+
+2008-03-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_json.c: (raptor_json_serialize_start): Make
+	callback start with '(' again.
+
 2008-03-26  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_sax2.c: (raptor_sax2_unparsed_entity_decl): Do not
