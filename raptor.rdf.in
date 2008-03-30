@@ -17,7 +17,8 @@
     soup including all versions of RSS, Atom 1.0 and 0.3, GRDDL and
     microformats for HTML, XHTML and XML.  The
     serializing syntaxes are RDF/XML (regular, and abbreviated),
-    N-Triples, RSS 1.0, Atom 1.0 and Adobe XMP.</description>
+    N-Triples, RSS 1.0, Atom 1.0, XMP, Turtle, GraphViz DOT and
+    JSON.</description>
 
     <maintainer>
       <foaf:Person>

@@ -22,7 +22,7 @@ The supported parsing syntaxes are RDF/XML, N-Triples, TRiG, Turtle,
 RSS tag soup including all versions of RSS, Atom 1.0 and 0.3, GRDDL
 and microformats for HTML, XHTML and XML.  The
 serializing syntaxes are RDF/XML (regular, and abbreviated),
-N-Triples, RSS 1.0, Atom 1.0 and Adobe XMP.</p>
+Atom 1.0, GraphViz, JSON, N-Triples, RSS 1.0 and XMP.</p>
 
 <p>Raptor was designed to work closely with the
 <a href="http://librdf.org/">Redland RDF library</a>
@@ -35,14 +35,14 @@ win32).  Raptor has no memory leaks and is fast.
 <p>This is a mature and stable library.  A summary
 of the changes can be found in the <a href="NEWS.html">NEWS</a> file,
 detailed API changes in the <a href="RELEASE.html">release notes</a>
-and file-by-file changes in the CVS <a href="ChangeLog">ChangeLog</a>.</p>
+and file-by-file changes in the <a href="ChangeLog">ChangeLog</a>.</p>
 
 <ul>
 <li>Designed to integrate well with <a href="http://librdf.org/">Redland</a></li>
 <li>Parses content on the web if <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://xmlsoft.org/">libxml2</a> or BSD libfetch is available.</li>
 <li>Supports all RDF terms including datatyped and XML literals</li>
 <li>Optional features including parsers and serialisers can be selected at configure time.</li>
-<li>C#, Java, Perl, PHP, Python, Ruby, Tcl interfaces when used via Redland</li>
+<li>Language bindings to Perl, PHP, Python and Ruby when used via Redland</li>
 <li>No memory leaks</li>
 <li>Fast</li>
 <li>Standalone <a href="rapper.html">rapper</a> RDF parser utility program</li>
@@ -155,14 +155,6 @@ for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 </p>
 
 
-<h3>RSS 1.0 Serializer</h3>
-
-<p>A serializer to the
-<a href="http://purl.org/rss/1.0/spec">RDF Site Summary (RSS) 1.0</a>
-format.
-</p>
-
-
 <h3>Atom 1.0 Serializer</h3>
 
 <p>A serializer to the Atom 1.0 syndication format defined in IETF
@@ -170,10 +162,14 @@ format.
 </p>
 
 
-<h3>Adobe XMP Serializer</h3>
+<h3>JSON Serializers</h3>
 
-<p>An alpha quality serializer to the Adobe XMP profile of RDF/XML
-suitable for embedding inside an external document.
+<p>Two serializers for to write triples encoded in JSON, one
+(<code>json</code>) in a resource-centric abbreviated form <a
+href="http://n2.talis.com/wiki/RDF_JSON_Specification">RDF/JSON</a>
+like Turtle or RDF/XML-Abbreviated; the other a triple-centric format
+(<code>json-triples</code>) based on the SPARQL results in JSON
+format.  Beta quality.
 </p>
 
 
@@ -185,6 +181,14 @@ which aids visualising RDF graphs.
 </p>
 
 
+<h3>RSS 1.0 Serializer</h3>
+
+<p>A serializer to the
+<a href="http://purl.org/rss/1.0/spec">RDF Site Summary (RSS) 1.0</a>
+format.
+</p>
+
+
 <h3>Turtle Serializer</h3>
 
 <p>A serializer for the
@@ -192,7 +196,11 @@ which aids visualising RDF graphs.
 syntax.
 </p>
 
+<h3>XMP Serializer</h3>
 
+<p>An alpha quality serializer to the Adobe XMP profile of RDF/XML
+suitable for embedding inside an external document.
+</p>
 
 
 <h2>Documentation</h2>

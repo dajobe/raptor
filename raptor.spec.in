@@ -22,9 +22,10 @@ Docdir: %{_docdir}
 Raptor is the RDF Parser Toolkit for Redland that provides a set of
 Resource Description Framework (RDF) parsers and serializers,
 generating RDF triples from the following syntaxes: RDF/XML,
-N-Triples, Turtle, several XML RSS tag soup formats, Atom 0.3 and
-Atom 1.0 and serializing RDF triples to syntaxes: RDF/XML, RSS 1.0,
-Atom 1.0, N-Triples, Adobe XMP, Turtle and GraphViz DOT.
+N-Triples, TRiG, Turtle, RSS tag soup including all versions of RSS,
+Atom 1.0 and 0.3, GRDDL and microformats for HTML, XHTML and XML. The
+serializing RDF triples to syntaxes are: RDF/XML, RSS 1.0, Atom 1.0,
+N-Triples, XMP, Turtle, GraphViz DOT and JSON.
 
 %package devel
 Summary: Libraries, includes etc to develop with Raptor RDF parser library
