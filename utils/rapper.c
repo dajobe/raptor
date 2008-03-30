@@ -792,9 +792,8 @@ main(int argc, char *argv[])
     raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
 
   if(parser_features) {
-    while(raptor_sequence_size(parser_features)) {
-      feature_value *fv;
-      fv=(feature_value*)raptor_sequence_pop(parser_features);
+    feature_value *fv;
+    while((fv=(feature_value*)raptor_sequence_pop(parser_features))) {
       if(fv->s_value)
         raptor_parser_set_feature_string(rdf_parser, fv->feature, fv->s_value);
       else
@@ -872,9 +871,8 @@ main(int argc, char *argv[])
     }
     
     if(serializer_features) {
-      while(raptor_sequence_size(serializer_features)) {
-        feature_value *fv;
-        fv=(feature_value*)raptor_sequence_pop(serializer_features);
+      feature_value *fv;
+      while((fv=(feature_value*)raptor_sequence_pop(serializer_features))) {
         if(fv->s_value)
           raptor_serializer_set_feature_string(serializer, fv->feature,
                                                fv->s_value);
