@@ -1,3 +1,8 @@
+2008-04-01  Dave Beckett  <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html configure.ac, src/win32_raptor_config.h:
+	Bumped version to 1.4.18
+
 2008-03-29  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor_1_4_17 for 1.4.17 release (SVN 13771)

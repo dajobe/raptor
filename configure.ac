@@ -3,7 +3,7 @@ dnl
 dnl configure.in - autoconf file for Raptor
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
-dnl Copyright (C) 2000-2006 David Beckett http://purl.org/net/dajobe/
+dnl Copyright (C) 2000-2008 David Beckett http://www.dajobe.org/
 dnl Copyright (C) 2000-2005 University of Bristol, UK http://www.bristol.ac.uk/
 dnl 
 dnl This package is Free Software and part of Redland http://librdf.org/
@@ -23,7 +23,7 @@ dnl
 dnl 
 
 
-AC_INIT(Raptor RDF Parser, 1.4.17, http://bugs.librdf.org/, raptor)
+AC_INIT(Raptor RDF Parser, 1.4.18, http://bugs.librdf.org/, raptor)
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(src/raptor_general.c)
 AC_REVISION($Revision$)

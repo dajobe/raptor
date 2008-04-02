@@ -2,7 +2,7 @@
  *
  * win32_config.h - Raptor WIN32 hard-coded config
  *
- * Copyright (C) 2002-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -90,7 +90,7 @@ extern "C" {
  */
 
 /* Release version as a decimal */
-#define RAPTOR_VERSION_DECIMAL 10417
+#define RAPTOR_VERSION_DECIMAL 10418
 
 /* Major version number */
 #define RAPTOR_VERSION_MAJOR 1
@@ -99,10 +99,10 @@ extern "C" {
 #define RAPTOR_VERSION_MINOR 4
 
 /* Release version number */
-#define RAPTOR_VERSION_RELEASE 17
+#define RAPTOR_VERSION_RELEASE 18
 
 /* Version number of package */
-#define VERSION "1.4.17"
+#define VERSION "1.4.18"
 
 
 #ifdef RAPTOR_XML_LIBXML
