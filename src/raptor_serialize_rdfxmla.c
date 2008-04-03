@@ -1207,7 +1207,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
       if(context->is_xmp && predicate->ref_count > 1) {
         int i;
-        for(i=0, raptor_avltree_cursor_first(subject->properties);
+        for(i=0, (rv=raptor_avltree_cursor_first(subject->properties));
             !rv;
             i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
           raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
