@@ -1301,6 +1301,8 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
   if(context->is_xmp && xml_writer)
     raptor_xml_writer_raw(xml_writer, 
                           (const unsigned char*)"</x:xmpmeta>\n<?xpacket end='r'?>\n");
+
+  context->written_header=0;
   
   return 0;
 }
