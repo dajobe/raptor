@@ -32,6 +32,21 @@ At present this only serializes the RDF triples that describe an RSS
 </section>
 
 
+<section id="serializer-json">
+<title>JSON serializers (name <literal>json</literal> and name <literal>json-triples</literal>)</title>
+
+<para>Two serializers that write JSON in either a resource-centric
+format with name <literal>json</literal> and in a triple-dump format
+with name <literal>json-triples</literal>.  The resource-centric
+format is based on the Talis
+<ulink url="http://n2.talis.com/wiki/RDF_JSON_Specification">RDF/JSON</ulink>
+design and the triple-dump format based on the SPARQL query results in JSON
+design.
+</para>
+
+</section>
+
+
 <section id="serializer-ntriples">
 <title>N-Triples serializer - default (name <literal>ntriples</literal>)</title>
 
