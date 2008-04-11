@@ -111,10 +111,8 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 void
 raptor_init(void) 
 {
-  if(raptor_initialised)
+  if(raptor_initialised++)
     return;
-
-  raptor_initialised=1;
 
   if(raptor_sax2_init())
     goto failure;
@@ -149,7 +147,7 @@ raptor_init(void)
 void
 raptor_finish(void) 
 {
-  if(!raptor_initialised)
+  if(--raptor_initialised)
     return;
 
   raptor_www_finish();
@@ -159,8 +157,6 @@ raptor_finish(void)
   raptor_serializers_finish();
 
   raptor_sax2_finish();
-  
-  raptor_initialised=0;
 }
 
 
