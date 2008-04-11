@@ -2,7 +2,7 @@
  *
  * raptor_serialize_rss.c - Raptor RSS 1.0 and Atom 1.0 serializers
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * Contributions:
