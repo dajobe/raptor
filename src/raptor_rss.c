@@ -2,7 +2,7 @@
  *
  * raptor_rss.c - Raptor RSS tag soup parser
  *
- * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * Contributions:
@@ -57,6 +57,7 @@ static void raptor_rss_start_element_handler(void *user_data, raptor_xml_element
 static void raptor_rss_end_element_handler(void *user_data, raptor_xml_element* xml_element);
 static void raptor_rss_cdata_handler(void *user_data, raptor_xml_element* xml_element, const unsigned char *s, int len);
 static void raptor_rss_comment_handler(void *user_data, raptor_xml_element* xml_element, const unsigned char *s);
+static void raptor_rss_sax2_new_namespace_handler(void *user_data, raptor_namespace* nspace);
 
 /*
  * RSS parser object
@@ -200,6 +201,7 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_characters_handler(sax2, raptor_rss_cdata_handler);
   raptor_sax2_set_cdata_handler(sax2, raptor_rss_cdata_handler);
   raptor_sax2_set_comment_handler(sax2, raptor_rss_comment_handler);
+  raptor_sax2_set_namespace_handler(sax2, raptor_rss_sax2_new_namespace_handler);
 
   return 0;
 }
@@ -216,7 +218,6 @@ raptor_rss_parse_terminate(raptor_parser *rdf_parser)
 
   raptor_rss_model_clear(&rss_parser->model);
 
-  /* Initialise the namespaces */
   for(n=0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++) {
     if(rss_parser->nspaces[n])
       raptor_free_namespace(rss_parser->nspaces[n]);
@@ -729,6 +730,17 @@ raptor_rss_comment_handler(void *user_data, raptor_xml_element* xml_element,
     return;
   }
 }
+
+
+static void
+raptor_rss_sax2_new_namespace_handler(void *user_data,
+                                      raptor_namespace* nspace)
+{
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+
+  raptor_parser_start_namespace(rdf_parser, nspace);
+}
+
 
 
 static void
