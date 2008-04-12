@@ -96,6 +96,8 @@ struct raptor_rss_parser_s {
 
   /* namespaces declared here */
   raptor_namespace* nspaces[RAPTOR_RSS_NAMESPACES_SIZE];
+
+  char nspaces_seen[RAPTOR_RSS_NAMESPACES_SIZE];
 };
 
 typedef struct raptor_rss_parser_s raptor_rss_parser;
@@ -235,10 +237,14 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
 {
   raptor_uri *uri=rdf_parser->base_uri;
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
+  int n;
   
   /* base URI required for RSS */
   if(!uri)
     return 1;
+
+  for(n=0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++)
+    rss_parser->nspaces_seen[n]='N';
 
   /* Optionally forbid network requests in the XML parser */
   raptor_sax2_set_feature(rss_parser->sax2, 
@@ -737,8 +743,21 @@ raptor_rss_sax2_new_namespace_handler(void *user_data,
                                       raptor_namespace* nspace)
 {
   raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_rss_parser* rss_parser;
+  int n;
+  
+  rss_parser=(raptor_rss_parser*)rdf_parser->context;
+  for(n=0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++) {
+    raptor_uri* ns_uri=raptor_rss_namespaces_info[n].uri;
+    if(!ns_uri)
+      continue;
+    
+    if(!raptor_uri_equals(ns_uri, nspace->uri))  {
+       rss_parser->nspaces_seen[n]='Y';
+       break;
+    }
+  }
 
-  raptor_parser_start_namespace(rdf_parser, nspace);
 }
 
 
@@ -1226,6 +1245,7 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
                        int is_end)
 {
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
+  int i, n;
   
   if(rdf_parser->failed)
     return 1;
@@ -1244,6 +1264,35 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
   /* add some new fields  */
   raptor_rss_uplift_items(rdf_parser);
   
+  /* for each item type (channel, item, ...) */
+  for (i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    raptor_rss_item* item;
+    
+    /* for each item instance of a type */
+    for (item=rss_parser->model.common[i]; item; item=item->next) {
+      int f;
+      if(!item->fields_count)
+        continue;
+      
+      /* for each field */
+      for(f=0; f< RAPTOR_RSS_FIELDS_SIZE; f++) {
+        raptor_rss_field* field;
+        /* for each field value */
+        for (field=item->fields[f]; field; field=field->next) {
+          rss_info_namespace ns_index=raptor_rss_fields_info[f].nspace;
+          rss_parser->nspaces_seen[ns_index]='Y';
+          /* knowing there is one value is enough */
+          break;
+        }
+      }
+    }
+  }
+  
+  for(n=0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++) {
+    if(rss_parser->nspaces_seen[n]=='Y')
+      raptor_parser_start_namespace(rdf_parser, rss_parser->nspaces[n]);
+  }
+
   /* generate the triples */
   raptor_rss_emit(rdf_parser);
 
