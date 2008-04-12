@@ -97,6 +97,7 @@ struct raptor_rss_parser_s {
   /* namespaces declared here */
   raptor_namespace* nspaces[RAPTOR_RSS_NAMESPACES_SIZE];
 
+  /* namespaces seen during parsing or creating output model */
   char nspaces_seen[RAPTOR_RSS_NAMESPACES_SIZE];
 };
 
@@ -1239,31 +1240,13 @@ raptor_rss_uplift_items(raptor_parser* rdf_parser)
 }
 
 
-static int
-raptor_rss_parse_chunk(raptor_parser* rdf_parser, 
-                       const unsigned char *s, size_t len,
-                       int is_end)
+static void
+raptor_rss_start_namespaces(raptor_parser* rdf_parser)
 {
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
-  int i, n;
-  
-  if(rdf_parser->failed)
-    return 1;
+  int i;
+  int n;
 
-  raptor_sax2_parse_chunk(rss_parser->sax2, s, len, is_end);
-
-  if(!is_end)
-    return 0;
-
-  if(rdf_parser->failed)
-    return 1;
-
-  /* turn strings into URIs, move things around if needed */
-  raptor_rss_insert_identifiers(rdf_parser);
-  
-  /* add some new fields  */
-  raptor_rss_uplift_items(rdf_parser);
-  
   /* for each item type (channel, item, ...) */
   for (i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
     raptor_rss_item* item;
@@ -1287,12 +1270,42 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
       }
     }
   }
-  
+
+  /* start the namespaces */
   for(n=0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++) {
-    if(rss_parser->nspaces_seen[n]=='Y')
+    if(rss_parser->nspaces[n] && rss_parser->nspaces_seen[n]=='Y')
       raptor_parser_start_namespace(rdf_parser, rss_parser->nspaces[n]);
   }
+}
 
+
+static int
+raptor_rss_parse_chunk(raptor_parser* rdf_parser, 
+                       const unsigned char *s, size_t len,
+                       int is_end)
+{
+  raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
+  
+  if(rdf_parser->failed)
+    return 1;
+
+  raptor_sax2_parse_chunk(rss_parser->sax2, s, len, is_end);
+
+  if(!is_end)
+    return 0;
+
+  if(rdf_parser->failed)
+    return 1;
+
+  /* turn strings into URIs, move things around if needed */
+  raptor_rss_insert_identifiers(rdf_parser);
+  
+  /* add some new fields  */
+  raptor_rss_uplift_items(rdf_parser);
+
+  /* find out what namespaces to declare and start them */
+  raptor_rss_start_namespaces(rdf_parser);
+  
   /* generate the triples */
   raptor_rss_emit(rdf_parser);
 
