@@ -1985,10 +1985,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
               /* Free any existing object URI still around
                * I suspect this can never happen.
                */
-              if(element->parent->object.uri) {
-                abort();
+              if(element->parent->object.uri)
                 raptor_free_uri(element->parent->object.uri);
-              }
 
               len=strlen((char*)idList);
               new_id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
@@ -2886,9 +2884,6 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_COLLECTION:
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION:
-            abort();
-            
-            break;
 
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_NODES:
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES:
@@ -2897,8 +2892,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_UNKNOWN:
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LAST:
           default:
-            raptor_parser_fatal_error(rdf_parser, "raptor_rdfxml_end_element_grammar: state RAPTOR_STATE_PROPERTYELT - unexpected content type %s (%d)", raptor_rdfxml_element_content_type_as_string(element->content_type), element->content_type);
-            abort();
+            raptor_parser_fatal_error(rdf_parser, "%s: Internal error in state RAPTOR_STATE_PROPERTYELT - got unexpected content type %s (%d)", __func__, raptor_rdfxml_element_content_type_as_string(element->content_type), element->content_type);
         } /* end switch */
 
       finished=1;

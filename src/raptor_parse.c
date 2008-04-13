@@ -944,6 +944,8 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
 
+  parser->failed=1;
+
   va_start(arguments, message);
   if(parser)
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL,
@@ -955,27 +957,6 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
     raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL, NULL, NULL, NULL, 
                              message, arguments); 
   va_end(arguments);
-}
-
-
-/*
- * raptor_parser_fatal_error_message_handler - Error from a parser - Internal
- */
-void
-raptor_parser_fatal_error_message_handler(void *user_data,
-                                          raptor_locator* locator,
-                                          const char *message)
-{
-  raptor_parser* parser=(raptor_parser*)user_data;
-
-  parser->failed=1;
-
-  if(parser)
-    raptor_log_error_to_handlers(&parser->error_handlers,
-                                 RAPTOR_LOG_LEVEL_FATAL, &parser->locator,
-                                 message); 
-  else
-    raptor_log_error(RAPTOR_LOG_LEVEL_FATAL, NULL, NULL, NULL, message); 
 }
 
 
@@ -1050,25 +1031,6 @@ raptor_parser_error_varargs(raptor_parser* parser, const char *message,
 
 
 /*
- * raptor_parser_error_message_handler - Error from a parser - Internal
- */
-void
-raptor_parser_error_message_handler(void *user_data,
-                                    raptor_locator* locator,
-                                    const char *message)
-{
-  raptor_parser* parser=(raptor_parser*)user_data;
-
-  if(parser)
-    raptor_log_error_to_handlers(&parser->error_handlers,
-                                 RAPTOR_LOG_LEVEL_ERROR,
-                                 &parser->locator, message);
-  else
-    raptor_log_error(RAPTOR_LOG_LEVEL_ERROR, NULL, NULL, NULL, message);
-}
-
-
-/*
  * raptor_parser_warning - Warning from a parser - Internal
  */
 void
@@ -1090,25 +1052,6 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
                              message, arguments);
   
   va_end(arguments);
-}
-
-
-/*
- * raptor_parser_warning_message_handler - Warning from a parser - Internal
- */
-void
-raptor_parser_warning_message_handler(void *user_data,
-                                      raptor_locator* locator,
-                                      const char *message) 
-{
-  raptor_parser* parser=(raptor_parser*)user_data;
-
-  if(parser)
-    raptor_log_error_to_handlers(&parser->error_handlers,
-                                 RAPTOR_LOG_LEVEL_WARNING,
-                                 &parser->locator, message);
-  else
-    raptor_log_error(RAPTOR_LOG_LEVEL_WARNING, NULL, NULL, NULL, message);
 }
 
 

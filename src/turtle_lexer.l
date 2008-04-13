@@ -2,7 +2,7 @@
  *
  * turtle_lexer.l - Raptor Turtle lexer - making tokens for turtle grammar generator
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -434,8 +434,6 @@ static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner)
     fputs(msg, stderr);
     fputc('\n', stderr);
   }
-
-  abort();
 }
 
 
@@ -759,8 +757,8 @@ turtle_token_print(int token, YYSTYPE *lval)
       return "ERROR";
 
    default:
-     fprintf(stderr, "turtle_token_print: UNKNOWN token %d - add a new case\n", token);
-     abort();
+     RAPTOR_DEBUG2("UNKNOWN token %d - add a new case\n", token);
+     return "(UNKNOWN)";
   }
 }
 #endif

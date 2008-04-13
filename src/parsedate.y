@@ -807,7 +807,11 @@ ToHour(int Hours, MERIDIAN Meridian)
 	Hours = 0;
       return Hours + 12;
     default:
-      abort ();
+#ifdef RAPTOR_DEBUG
+      fprintf(stderr, "%s:%d:%s: UNKNOWN Meridian %d - add a new case", 
+              __FILE__, __LINE__, __func__, (int)Meridian);
+#endif
+      return -1;
     }
   /* NOTREACHED */
 }
