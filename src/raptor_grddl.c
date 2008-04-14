@@ -599,14 +599,15 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
       raptor_parser_error(rdf_parser, "Failed to create %s parser",
                           parser_name);
       return 1;
-    } else {
-      /* initialise the new parser with the outer state */
-      grddl_parser->internal_parser_name=parser_name;
-      raptor_parser_copy_user_state(grddl_parser->internal_parser,
-                                    rdf_parser);
-      grddl_parser->saved_user_data=rdf_parser->user_data;
-      grddl_parser->saved_statement_handler=rdf_parser->statement_handler;
     }
+
+    /* initialise the new parser with the outer state */
+    grddl_parser->internal_parser_name=parser_name;
+    if(raptor_parser_copy_user_state(grddl_parser->internal_parser, rdf_parser))
+       return 1;
+
+    grddl_parser->saved_user_data=rdf_parser->user_data;
+    grddl_parser->saved_statement_handler=rdf_parser->statement_handler;
   }
 
   /* Filter the triples for profile/namespace URIs */
