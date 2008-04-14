@@ -177,7 +177,7 @@ MAINTAINER_CFLAGS="$warning_cflags"
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h math.h dmalloc.h getopt.h sys/stat.h sys/param.h sys/time.h)
+AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h math.h dmalloc.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
@@ -259,7 +259,7 @@ AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(getopt getopt_long stricmp strcasecmp vsnprintf isascii)
+AC_CHECK_FUNCS(getopt getopt_long stricmp strcasecmp vsnprintf isascii setjmp)
 
 AM_CONDITIONAL(STRCASECMP, test $ac_cv_func_stricmp = no -a $ac_cv_func_stricmp = no)
 AM_CONDITIONAL(GETOPT, test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long = no)
