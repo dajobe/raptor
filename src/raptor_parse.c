@@ -1907,17 +1907,38 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->default_generate_id_handler_base= from_parser->default_generate_id_handler_base;
   /* copy over non-shared user state - generate ID prefix string */
   if(from_parser->default_generate_id_handler_prefix) {
-    to_parser->default_generate_id_handler_prefix=(char*)RAPTOR_MALLOC(cstring,
-                    from_parser->default_generate_id_handler_prefix_length+1);
-    strncpy((char*)to_parser->default_generate_id_handler_prefix, 
-            (const char*)from_parser->default_generate_id_handler_prefix,
-            from_parser->default_generate_id_handler_prefix_length+1);
+    size_t len=from_parser->default_generate_id_handler_prefix_length;
+    to_parser->default_generate_id_handler_prefix=(char*)RAPTOR_MALLOC(cstring, len+1);
+    if(to_parser->default_generate_id_handler_prefix)
+      strncpy((char*)to_parser->default_generate_id_handler_prefix, 
+              (const char*)from_parser->default_generate_id_handler_prefix,
+              len+1);
   }
   to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
   to_parser->namespace_handler= from_parser->namespace_handler;
   to_parser->namespace_handler_user_data= from_parser->namespace_handler_user_data;
   to_parser->uri_filter= from_parser->uri_filter;
   to_parser->uri_filter_user_data= from_parser->uri_filter_user_data;
+
+  /* copy over Cache-Control: header */
+  if(from_parser->cache_control) {
+    size_t len=strlen(from_parser->cache_control);
+    to_parser->cache_control=(char*)RAPTOR_MALLOC(cstring, len+1);
+    if(to_parser->cache_control)
+      strncpy((char*)to_parser->cache_control, 
+              (const char*)from_parser->cache_control,
+              len+1);
+  }
+
+  /* copy over User-Agent: header */
+  if(from_parser->user_agent) {
+    size_t len=strlen(from_parser->user_agent);
+    to_parser->user_agent=(char*)RAPTOR_MALLOC(cstring, len+1);
+    if(to_parser->user_agent)
+      strncpy((char*)to_parser->user_agent, 
+              (const char*)from_parser->user_agent,
+              len+1);
+  }
 
   /* copy features */
   for(i=0; i<= RAPTOR_FEATURE_LAST; i++)
