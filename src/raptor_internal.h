@@ -360,6 +360,10 @@ struct raptor_parser_s {
    * RAPTOR_FEATURE_WWW_HTTP_USER_AGENT
    */
   const char* user_agent;
+
+  /* NOTE: if anything a user can set is added here check that
+   * raptor_parser_copy_user_state() is updated to copy it.
+   */
 };
 
 
