@@ -590,18 +590,11 @@ void raptor_free_type_q(raptor_type_q* type_q);
 const char* raptor_parser_get_accept_header_all(void);
 int raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri);
 void raptor_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
-
-/* raptor_general.c */
-extern void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-extern void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-extern void raptor_parser_simple_error(void* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-extern void raptor_parser_error_message_handler(void *user_data, raptor_locator* locator, const char *message);
-extern void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-extern void raptor_parser_fatal_error_varargs(raptor_parser* parser, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
-extern void raptor_parser_fatal_error_message_handler(void *user_data, raptor_locator* locator, const char *message);
-extern void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
-extern void raptor_parser_warning_varargs(raptor_parser* parser, const char *message, va_list arguments)  RAPTOR_PRINTF_FORMAT(2, 0);
-void raptor_parser_warning_message_handler(void *user_data, raptor_locator* locator, const char *message);
+void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+void raptor_parser_simple_error(void* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
+void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 /* logging */
 #define RAPTOR_ERROR_HANDLER_MAGIC 0xD00DB1FF
