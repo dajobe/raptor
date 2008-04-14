@@ -1686,8 +1686,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             break;
           }
           if(raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
-	    state=RAPTOR_STATE_DESCRIPTION;
-	    element->content_type=RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES;
+            state=RAPTOR_STATE_DESCRIPTION;
+            element->content_type=RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES;
             /* Yes - found something so move immediately to description */
             break;
           }
@@ -1838,6 +1838,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         } else if (element->rdf_attr[RDF_ATTR_nodeID]) {
           element->subject.id=raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
           element->rdf_attr[RDF_ATTR_nodeID]=NULL;
+          if(!element->subject.id)
+            goto oom;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
           element->subject.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
           if(!raptor_valid_xml_ID(rdf_parser, element->subject.id)) {
@@ -1855,6 +1857,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           raptor_copy_identifier(&element->subject, &element->parent->object);
         } else {
           element->subject.id=raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+          if(!element->subject.id)
+            goto oom;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
           element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
         }
@@ -1929,6 +1933,9 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             
             /* <idList> rdf:type rdf:List */
             raptor_uri *collection_uri=(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_List_URI(rdf_xml_parser) : RAPTOR_RDF_List_URI(rdf_xml_parser);
+
+            if(!idList)
+              goto oom;
 
             if((element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ||
                rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST])
@@ -2261,6 +2268,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
             /* create a node for the subject of the contained properties */
             element->subject.id=raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+            if(!element->subject.id)
+              goto oom;
             element->subject.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
             element->subject.uri_source=RAPTOR_URI_SOURCE_GENERATED;
           } else if(!strcmp((char*)parse_type, "Collection")) {
@@ -2629,6 +2638,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               } else if(element->rdf_attr[RDF_ATTR_nodeID]) {
                 element->object.id=raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
                 element->rdf_attr[RDF_ATTR_nodeID]=NULL;
+                if(!element->object.id)
+                  goto oom;
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
                 element->object.uri_source=RAPTOR_URI_SOURCE_BLANK_ID;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
@@ -2641,6 +2652,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 }
               } else {
                 element->object.id=raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+                if(!element->object.id)
+                  goto oom;
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
                 element->object.uri_source=RAPTOR_URI_SOURCE_GENERATED;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
@@ -2713,6 +2726,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                  raptor_rdfxml_element_has_property_attributes(element) &&
                  !element->object.uri) {
                 element->object.id=raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+                if(!element->object.id)
+                  goto oom;
                 element->object.type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
                 element->object.uri_source=RAPTOR_URI_SOURCE_GENERATED;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
