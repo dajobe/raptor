@@ -95,7 +95,15 @@ typedef struct {
 
 
 
-/* create a new serializer */
+/**
+ * raptor_rss10_serialize_init:
+ * @serializer: serializer object
+ * @name: serializer name
+ *
+ * INTERNAL (raptor_serializer_factory API) - create a new serializer 
+ *
+ * Return value: non-0 on failure
+ */
 static int
 raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
 {
@@ -115,7 +123,12 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
 }
   
 
-/* destroy a serializer */
+/**
+ * raptor_rss10_serialize_terminate:
+ * @serializer: serializer object
+ *
+ * INTERNAL (raptor_serializer_factory API) - destroy a serializer
+ */
 static void
 raptor_rss10_serialize_terminate(raptor_serializer* serializer)
 {
@@ -167,6 +180,16 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
 }
   
 
+/**
+ * raptor_rss10_move_statements:
+ * @rss_serializer: serializer object
+ * @type: item type
+ * @item: item object
+ *
+ * INTERNAL - Move statements from the stored triples into item @item
+ * that match @item's URI as subject.
+ *
+ */
 static int
 raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
                              raptor_rss_type type,
@@ -235,6 +258,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       }
       
       if(f < RAPTOR_RSS_FIELDS_SIZE) {
+        /* triple matched a known field */
         raptor_sequence_set_at(rss_serializer->triples, t, NULL);
 #ifdef RAPTOR_DEBUG
         moved_count++;
@@ -260,6 +284,15 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
 }
 
 
+/**
+ * raptor_rss10_store_statement:
+ * @rss_serializer: serializer object
+ * @s: statement
+ *
+ * INTERNAL - decide where to store a statement in an item or keep pending
+ *
+ * Return value: non-0 if handled (stored)
+ */
 static int
 raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
                              raptor_statement *s)
@@ -378,7 +411,15 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
 }
 
 
-/* serialize a statement */
+/**
+ * raptor_rss10_serialize_statement:
+ * @serializer: serializer object
+ * @statement: statement
+ *
+ * INTERNAL (raptor_serializer_factory API) - Serialize a statement
+ *
+ * Return value: non-0 if handled (stored)
+ */
 static int
 raptor_rss10_serialize_statement(raptor_serializer* serializer, 
                                  const raptor_statement *statement)
@@ -467,6 +508,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
           identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           identifier->uri_source=RAPTOR_URI_SOURCE_URI;
 
+          /* Move any existing statements to the newly discovered item */
           raptor_rss10_move_statements(rss_serializer, type, item);
 
           handled=1;
@@ -495,7 +537,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
       RAPTOR_FREE(cstring, blank);
     }
 
-    raptor_rss10_store_statement(rss_serializer, t);
+    handled=raptor_rss10_store_statement(rss_serializer, t);
 
   }
   return 0;
@@ -543,6 +585,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
 
         raptor_sequence_set_at(rss_serializer->triples, i, NULL);
 
+        /* Move any existing statements to the newly discovered item */
         raptor_rss10_move_statements(rss_serializer, RAPTOR_RSS_ITEM, item);
       }
     }
@@ -886,6 +929,14 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
 }
 
 
+/**
+ * raptor_rss10_serialize_end:
+ * @serializer: serializer object
+ *
+ * INTERNAL (raptor_serializer_factory API) - End a serializing
+ *
+ * Return value: non-0 on failure
+ */
 static int
 raptor_rss10_serialize_end(raptor_serializer* serializer) {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
@@ -1008,7 +1059,12 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
 
   
-/* finish the serializer factory */
+/**
+ * raptor_rss10_serialize_finish_factory:
+ * @factory: serializer factory
+ *
+ * INTERNAL (raptor_serializer_factory API) - finish the serializer factory
+ */
 static void
 raptor_rss10_serialize_finish_factory(raptor_serializer_factory* factory)
 {
