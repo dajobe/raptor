@@ -1,4 +1,120 @@
-2008-04-01  Dave Beckett  <dave@dajobe.org>
+2008-04-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.h,
+	src/raptor_rss_common.c: (raptor_rss_model_add_item,
+	raptor_free_rss_item): Add triples, free it.
+	(raptor_clear_rss_item): Deleted, not used.
+
+	* src/raptor_serialize_rss.c: comments
+	(raptor_rss10_serialize_statement): pass on handled flag from
+	raptor_rss10_store_statement()
+
+	* src/raptor_guess.c: (raptor_guess_parse_chunk):: Check for
+	raptor_parser_copy_user_state failure and pass on.
+
+	* src/raptor_grddl.c: (raptor_grddl_ensure_internal_parser): Check
+	for raptor_parser_copy_user_state failure and pass on. Slightly
+	adjust nearby code to remove else.
+
+	* src/raptor_internal.h,
+	src/raptor_parse.c: (raptor_parser_copy_user_state): Add a return
+	value on failure of allocs.
+
+	* src/raptor_parse.c: (raptor_parser_copy_user_state): Copy
+	Cache-Control: header and User-Agent: header values to destination
+	parser
+
+	* src/raptor_internal.h: Note about code changes needed when
+	adding user data to raptor_parser
+
+	* src/raptor_internal.h: Removed prototypes for removed functions:
+	raptor_parser_error_message_handler,
+	raptor_parser_fatal_error_message_handler,
+	raptor_parser_warning_message_handler,
+	raptor_parser_fatal_error_varargs, raptor_parser_warning_varargs
+
+	* src/n3_lexer.l, src/parsedate.y, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/turtle_lexer.l: Remove calls to abort()
+	in mainline code (some aborts still exist in test code for
+	consistency failures in avltree but they are only compiled in with
+	RAPTOR_DEBUG)
+
+	(raptor_parser_fatal_error): Set parsing failed flag on fatal error.
+	(raptor_parser_fatal_error_message_handler,
+	raptor_parser_error_message_handler,
+	raptor_parser_warning_message_handler): Removed, no longer used.
+
+	(raptor_rdfxml_start_element_grammar):
+	case RAPTOR_STATE_PARSETYPE_DESCRIPTION...
+	RAPTOR_STATE_PARSETYPE_COLLECTION
+	Remove use of abort() for an ancient check for an object URI that can
+	be worked around.
+	case RAPTOR_STATE_MEMBER_PROPERTYELT:
+	With content type RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_XML_LITERAL,
+	remove use of abort() for unknown content types related to
+	daml/collections - it will fall through to a fatal error anyway.
+	With default content type, remove abort() and tidy the error
+	message.
+	Parsing will still fail in this case.
+
+	(n3_lexer_fatal_error, turtle_lexer_fatal_error): Do not call abort.
+
+	(ToHour): Do not call abort, print message when debugging and return
+	invalid value.
+
+2008-04-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c: (raptor_rss_start_namespaces): Added, pulling
+	namespace scanning out of raptor_rss_parse_chunk.
+	(raptor_rss_parse_chunk): Call above.
+
+	* src/raptor_rss.c: Add a nspaces_seen[] array in raptor_rss and
+	track namespaces declared either in input (xmlns seen via SAX) or
+	output, when writing a field in RSS1.0 schema.  Save them all up
+	and generate before emitting.
+	(raptor_rss_parse_start): Reset nspaces_seen array to none seen.
+	(raptor_rss_sax2_new_namespace_handler): Mark namespace seen, do
+	not pass on to rdf namespace handler just yet.
+	(raptor_rss_parse_chunk): On finish, scan all fields of all items
+	for namespaces and mark those that need declaring.  Then call
+	raptor_parser_start_namespace() to start them for the client.
+
+2008-04-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c: (raptor_rss_sax2_new_namespace_handler): Added.
+	(raptor_rss_parse_init): Register
+	raptor_rss_sax2_new_namespace_handler to pass on SAX2 namespace
+	events to the rdf parser.
+	Fixes Issue #0000255 http://bugs.librdf.org/mantis/view.php?id=255
+
+	* docs/tmpl/section-triples.sgml: sgml docs
+
+	* src/raptor_serialize_rss.c: 2008
+
+2008-04-11  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_general.c: (raptor_init,raptor_finish): Changed
+	raptor_initialised flag to a reference count.
+
+2008-04-05  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-serializers.xml: Add JSON serializers section
+
+2008-04-03  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_end):
+	Fixed crash when reusing serializer objects. Reset
+	context->written_header flag so that when
+	raptor_rdfxmla_ensure_writen_header() returns success,
+	context->rdf_RDF_element is always non-null.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_statement):
+	Fixed rdfxml-xmp segfault. Make sure avltree cursor points to
+	something before trying to indirect it.
+	
+2008-04-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor-config.1: remove undefined macro .l other fixes
 
 	* NEWS.html, RELEASE.html configure.ac, src/win32_raptor_config.h:
 	Bumped version to 1.4.18
