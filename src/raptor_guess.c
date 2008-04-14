@@ -166,7 +166,8 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
       }
 
       /* copy any user data to the grddl parser */
-      raptor_parser_copy_user_state(guess_parser->parser, rdf_parser);
+      if(raptor_parser_copy_user_state(guess_parser->parser, rdf_parser))
+        return 1;
       
       if(raptor_start_parse(guess_parser->parser, rdf_parser->base_uri))
         return 1;
