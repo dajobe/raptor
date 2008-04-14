@@ -434,6 +434,8 @@ static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner)
     fputs(msg, stderr);
     fputc('\n', stderr);
   }
+
+  abort();
 }
 
 
