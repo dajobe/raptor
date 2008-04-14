@@ -1891,11 +1891,13 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
  * 
  * Copy user state between parsers - INTERNAL.
  *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_parser_copy_user_state(raptor_parser *to_parser, 
                               raptor_parser *from_parser)
 {
+  int rc=0;
   int i;
   
   to_parser->user_data= from_parser->user_data;
@@ -1913,6 +1915,8 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
       strncpy((char*)to_parser->default_generate_id_handler_prefix, 
               (const char*)from_parser->default_generate_id_handler_prefix,
               len+1);
+    else
+      rc=1;
   }
   to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
   to_parser->namespace_handler= from_parser->namespace_handler;
@@ -1921,29 +1925,34 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->uri_filter_user_data= from_parser->uri_filter_user_data;
 
   /* copy over Cache-Control: header */
-  if(from_parser->cache_control) {
+  if(!rc && from_parser->cache_control) {
     size_t len=strlen(from_parser->cache_control);
     to_parser->cache_control=(char*)RAPTOR_MALLOC(cstring, len+1);
     if(to_parser->cache_control)
       strncpy((char*)to_parser->cache_control, 
               (const char*)from_parser->cache_control,
               len+1);
+    else
+      rc=1;
   }
 
   /* copy over User-Agent: header */
-  if(from_parser->user_agent) {
+  if(!rc && from_parser->user_agent) {
     size_t len=strlen(from_parser->user_agent);
     to_parser->user_agent=(char*)RAPTOR_MALLOC(cstring, len+1);
     if(to_parser->user_agent)
       strncpy((char*)to_parser->user_agent, 
               (const char*)from_parser->user_agent,
               len+1);
+    else
+      rc=1;
   }
 
   /* copy features */
   for(i=0; i<= RAPTOR_FEATURE_LAST; i++)
     to_parser->features[i]= from_parser->features[i];
 
+  return rc;
 }
 
 
