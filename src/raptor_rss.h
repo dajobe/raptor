@@ -2,7 +2,7 @@
  *
  * raptor_rss.h - Redland Parser Toolkit Internal RSS Model and API
  *
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -251,6 +251,8 @@ struct raptor_rss_item_s
   raptor_rss_enclosure* enclosure;
   int fields_count;
   struct raptor_rss_item_s* next;
+  /* Triples with this item as subject and do not fit in @fields */
+  raptor_sequence* triples;
 };
 typedef struct raptor_rss_item_s raptor_rss_item;
 
@@ -289,7 +291,7 @@ void raptor_rss_common_terminate(void);
 void raptor_rss_model_init(raptor_rss_model* rss_model);
 void raptor_rss_model_clear(raptor_rss_model* rss_model);
 
-void raptor_rss_model_add_item(raptor_rss_model* rss_model);
+int raptor_rss_model_add_item(raptor_rss_model* rss_model);
 raptor_rss_item* raptor_rss_model_add_common(raptor_rss_model* rss_model, raptor_rss_type type);
 raptor_rss_item* raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor_rss_type type);
 

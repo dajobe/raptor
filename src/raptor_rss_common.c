@@ -296,11 +296,21 @@ raptor_rss_model_clear(raptor_rss_model* rss_model)
 }
 
 
-void
+int
 raptor_rss_model_add_item(raptor_rss_model* rss_model)
 {
   raptor_rss_item* item=(raptor_rss_item*)RAPTOR_CALLOC(raptor_rss_item, 1, sizeof(raptor_rss_item));
+
+  if(!item)
+    return 1;
   
+  item->triples=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, (raptor_sequence_print_handler*)raptor_print_statement);
+  if(!item->triples) {
+    RAPTOR_FREE(raptor_rss_item, item);
+    return 1;
+  }
+  
+
   /* new list */
   if(!rss_model->items)
     rss_model->items=item;
@@ -314,6 +324,8 @@ raptor_rss_model_add_item(raptor_rss_model* rss_model)
   rss_model->items_count++;
 
   RAPTOR_DEBUG2("Added item %d\n", rss_model->items_count);
+
+  return 0;
 }
 
 
@@ -352,7 +364,7 @@ raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor_rss_type type)
 
 
 void
-raptor_clear_rss_item(raptor_rss_item* item)
+raptor_free_rss_item(raptor_rss_item* item)
 {
   int i;
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
@@ -364,13 +376,9 @@ raptor_clear_rss_item(raptor_rss_item* item)
   if(item->uri)
     raptor_free_uri(item->uri);
   raptor_free_identifier(&item->identifier);
-}
+  if(item->triples)
+    raptor_free_sequence(item->triples);
 
-
-void
-raptor_free_rss_item(raptor_rss_item* item)
-{
-  raptor_clear_rss_item(item);
   RAPTOR_FREE(raptor_rss_item, item);
 }
 
