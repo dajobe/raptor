@@ -162,14 +162,18 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else {
     subject_uri=raptor_new_uri(subject);
+    if(!subject_uri)
+      goto cleanup;
     statement->subject=subject_uri;
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
 
- if(object_literal_datatype) {
-   datatype_uri=raptor_new_uri(object_literal_datatype);
-   object_literal_language=NULL;
- }
+  if(object_literal_datatype) {
+    datatype_uri=raptor_new_uri(object_literal_datatype);
+    if(!datatype_uri)
+      goto cleanup;
+    object_literal_language=NULL;
+  }
 
   /* Predicates in N-Triples are URIs but check for bad ordinals */
   if(!strncmp((const char*)predicate, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
@@ -179,6 +183,8 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   }
   
   predicate_uri=raptor_new_uri(predicate);
+  if(!predicate_uri)
+    goto cleanup;
   statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   statement->predicate=predicate_uri;
   
@@ -187,6 +193,8 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   statement->object_literal_datatype=NULL;
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
     object_uri=raptor_new_uri((const unsigned char*)object);
+    if(!object_uri)
+      goto cleanup;
     statement->object=object_uri;
     statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
@@ -200,11 +208,12 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   }
 
   if(!parser->statement_handler)
-    return;
+    goto cleanup;
 
   /* Generate the statement; or is it fact? */
   (*parser->statement_handler)(parser->user_data, statement);
 
+  cleanup:
   if(subject_uri)
     raptor_free_uri(subject_uri);
   if(predicate_uri)
@@ -488,9 +497,14 @@ raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser,
 {
   const unsigned char *start=src;
   size_t length=len;
-  unsigned char *dest=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  unsigned char *dest;
+  int rc;
+  
+  dest=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  if(!dest)
+    return NULL;
 
-  int rc=raptor_ntriples_term(rdf_parser, &start, dest, &length, dest_lenp,
+  rc=raptor_ntriples_term(rdf_parser, &start, dest, &length, dest_lenp,
                               '\0', RAPTOR_TERM_CLASS_FULL, 1);
   if(rc) {
     RAPTOR_FREE(cstring, dest);
