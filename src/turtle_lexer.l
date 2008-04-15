@@ -135,12 +135,12 @@ void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
 static void turtle_lexer_cleanup(yyscan_t yyscanner);
 
 #ifdef HAVE_SETJMP
-static jmp_buf fatal_error_longjmp_env;
+static jmp_buf turtle_lexer_fatal_error_longjmp_env;
 
 /* fatal error handler declaration */
 #define YY_FATAL_ERROR(msg) do {		\
     turtle_lexer_fatal_error(msg, yyscanner);   \
-    longjmp(fatal_error_longjmp_env, 1);        \
+    longjmp(turtle_lexer_fatal_error_longjmp_env, 1);        \
 } while(0)
 #else
 #define YY_FATAL_ERROR(msg) do {		\
@@ -192,7 +192,7 @@ EXPONENT [eE][+-]?[0-9]+
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
 
 #ifdef HAVE_SETJMP
-  if(setjmp(fatal_error_longjmp_env))
+  if(setjmp(turtle_lexer_fatal_error_longjmp_env))
     return 1;
 #endif
 %}
