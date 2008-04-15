@@ -69,6 +69,9 @@ struct raptor_turtle_parser_s {
 
   /* Allow TRIG extensions */
   int trig;
+
+  /* count of errors in current parse */
+  int error_count;
 };
 
 

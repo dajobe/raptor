@@ -66,6 +66,9 @@ struct raptor_n3_parser_s {
 
   /* for creating long literals */
   raptor_stringbuffer* sb;
+
+  /* count of errors in current parse */
+  int error_count;
 };
 
 

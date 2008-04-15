@@ -1054,6 +1054,9 @@ n3_parser_error(void* ctx, const char *msg)
   raptor_parser* rdf_parser=(raptor_parser *)ctx;
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
   
+  if(n3_parser->error_count++)
+    return 0;
+
   rdf_parser->locator.line=n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
   rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
@@ -1070,6 +1073,9 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
   va_list arguments;
 
+  if(n3_parser->error_count++)
+    return 0;
+
   rdf_parser->locator.line=n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
   rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
@@ -1081,7 +1087,7 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 
   va_end(arguments);
 
-  return (0);
+  return 0;
 }
 
 
@@ -1455,6 +1461,8 @@ main(int argc, char *argv[])
   raptor_set_statement_handler(&rdf_parser, stdout, n3_parser_print_statement);
   raptor_n3_parse_init(&rdf_parser, "n3");
   
+  n3_parser.error_count=0;
+
   n3_parse(&rdf_parser, string);
 
   raptor_free_uri(rdf_parser.base_uri);

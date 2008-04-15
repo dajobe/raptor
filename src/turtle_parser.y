@@ -1187,6 +1187,9 @@ turtle_parser_error(void* ctx, const char *msg)
   raptor_parser* rdf_parser=(raptor_parser *)ctx;
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   
+  if(turtle_parser->error_count++)
+    return 0;
+
   rdf_parser->locator.line=turtle_parser->lineno;
 #ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
   rdf_parser->locator.column=turtle_lexer_get_column(yyscanner);
@@ -1203,6 +1206,9 @@ turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   va_list arguments;
 
+  if(turtle_parser->error_count++)
+    return 0;
+
   rdf_parser->locator.line=turtle_parser->lineno;
 #ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
   rdf_parser->locator.column=turtle_lexer_get_column(yyscanner);
@@ -1214,7 +1220,7 @@ turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 
   va_end(arguments);
 
-  return (0);
+  return 0;
 }
 
 
@@ -1711,6 +1717,8 @@ main(int argc, char *argv[])
   raptor_set_statement_handler(&rdf_parser, stdout, turtle_parser_print_statement);
   raptor_turtle_parse_init(&rdf_parser, "turtle");
   
+  turtle_parser.error_count=0;
+
   turtle_parse(&rdf_parser, string);
 
   raptor_free_uri(rdf_parser.base_uri);
