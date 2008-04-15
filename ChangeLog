@@ -1,4 +1,45 @@
+2008-04-14  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Rename fatal_error_longjmp_env to
+	turtle_lexer_fatal_error_longjmp_env
+
+	* src/n3_lexer.l: Use setjmp/longjmp to return fatal error
+	messages to caller without abort()
+	(n3_lexer_fatal_error): Remove abort() call.
+	main code: setjmp before starting parse.  Move code to inside %{
+	%} block.
+
+	* src/n3_common.h, src/n3_parser.y, src/turtle_common.h,
+	src/turtle_parser.y: Count errors in syntax parsing and do not
+	report errors after the first one.  A workaround instead of adding
+	full bison error parser recovery.
+
+	* configure.ac, src/turtle_lexer.l: Use setjmp/longjmp to return
+	fatal error messages to caller without abort()
+	(turtle_lexer_fatal_error): Remove abort() call.
+	main code: setjmp before starting parse.  Move code to inside %{
+	%} block.
+
+2008-04-14  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_end_element_grammar):
+	Resiliency fixes: check raptor_parser_internal_generate_id()
+	return value
+
+	* src/raptor_libxml.c: (raptor_libxml_free): Resiliency fix: make
+	sure myDoc is always freed.
+
+	* src/n3_lexer.l, src/turtle_lexer.l: Reverted from r13787 abort()
+	calls back to *_lexer_fatal_error() - it is assumed that these
+	functions never return.
+
+	* src/ntriples_parse.c: (raptor_ntriples_generate_statement,
+	raptor_ntriples_string_as_utf8_string): Resiliency fixes: check
+	for alloc failures.
+
 2008-04-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: 2008
 
 	* src/raptor_rss.h,
 	src/raptor_rss_common.c: (raptor_rss_model_add_item,
