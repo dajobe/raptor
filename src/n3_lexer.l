@@ -97,6 +97,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_SETJMP_H
+#include <setjmp.h>
+#endif
 
 #include <raptor.h>
 #include <raptor_internal.h>
@@ -131,8 +134,21 @@ void n3_lexer_set_column(int  column_no , yyscan_t yyscanner);
 
 static void n3_lexer_cleanup(yyscan_t yyscanner);
 
+#ifdef HAVE_SETJMP
+static jmp_buf n3_lexer_fatal_error_longjmp_env;
+
 /* fatal error handler declaration */
-#define YY_FATAL_ERROR(msg) n3_lexer_fatal_error(msg, yyscanner)
+#define YY_FATAL_ERROR(msg) do {		\
+    n3_lexer_fatal_error(msg, yyscanner);   \
+    longjmp(n3_lexer_fatal_error_longjmp_env, 1);        \
+} while(0)
+#else
+#define YY_FATAL_ERROR(msg) do {		\
+    n3_lexer_fatal_error(msg, yyscanner);   \
+    abort();                                    \
+} while(0)
+#endif
+ 
 static void n3_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
 
 /* Out-of-memory reporting macro.
@@ -171,8 +187,16 @@ EXPONENT [eE][+-]?[0-9]+
 %%
   /* rules */
 
+%{
   raptor_parser *rdf_parser=(raptor_parser*)yyextra;
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+
+#ifdef HAVE_SETJMP
+  if(setjmp(n3_lexer_fatal_error_longjmp_env))
+    return 1;
+#endif
+%}
+    
 
 \r\n|\r|\n   { n3_parser->lineno++; }
  
@@ -425,8 +449,6 @@ static void n3_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner)
     fputs(msg, stderr);
     fputc('\n', stderr);
   }
-
-  abort();
 }
 
 
