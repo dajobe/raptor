@@ -1167,6 +1167,9 @@ raptor_turtle_serialize_end(raptor_serializer* serializer)
   
   raptor_turtle_emit(serializer);  
 
+  /* reset serializer for reuse */
+  context->written_header=0;
+
   return 0;
 }
 
