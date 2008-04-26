@@ -1,3 +1,22 @@
+2008-04-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c, src/raptor_general.c,
+	src/raptor_identifier.c, src/raptor_internal.h,
+	src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_namespace.c, src/raptor_parse.c, src/raptor_qname.c,
+	src/raptor_sax2.c, src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_uri.c, src/raptor_xml.c, src/raptor_xml_writer.c,
+	src/raptor_abbrev.c: Use RAPTOR_ASSERT_OBJECT_POINTER_RETURN on
+	destructor object arg.  Code comments 2008
+
+2008-04-16  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_end):
+	Reset context->written_header flag to enable serializer object
+	reuse.
+
 2008-04-14  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_lexer.l: Rename fatal_error_longjmp_env to
