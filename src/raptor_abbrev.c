@@ -3,7 +3,7 @@
  * raptor_abbrev.c - Code common to abbreviating serializers (ttl/rdfxmla)
  *
  * Copyright (C) 2006, Dave Robillard
- * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
@@ -140,8 +140,7 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
 void
 raptor_free_abbrev_node(raptor_abbrev_node* node)
 {
-  if(!node)
-    return;
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(node, raptor_abbrev_node);
 
   if(--node->ref_count)
     return;
@@ -178,10 +177,19 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
   RAPTOR_FREE(raptor_abbrev_node, node);
 }
 
-/* compare two raptor_abbrev_nodes.
+
+/**
+ * raptor_abbrev_node_cmp:
+ * @node1: node 1
+ * @node2: node 2
+ *
+ * INTERNAL -compare two raptor_abbrev_nodes.
  *
  * This needs to be a strong ordering for use by raptor_avltree.
  * This is very performance critical, anything to make it faster is worth it.
+ *
+ * Return value: <0, 0 or 1 if @node1 less than, equal or greater
+ * than @node2 respectively
  */
 int
 raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
@@ -281,7 +289,7 @@ raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 }
 
 
-/*
+/**
  * raptor_abbrev_node_matches:
  * @node: #raptor_abbrev_node to compare
  * @node_type: Raptor identifier type
@@ -289,6 +297,9 @@ raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
  *             ordinal.
  * @datatype: Literal datatype or NULL
  * @language: Literal language or NULL
+ *
+ * INTERNAL - Compare an existing abbrev node against node described by
+ * parameters
  *
  * Return value: non-zero if @node matches the node described by the rest of
  *   the parameters.
@@ -362,16 +373,18 @@ raptor_abbrev_node_matches(raptor_abbrev_node* node,
 }
 
 
-/*
+/**
  * raptor_abbrev_node_lookup:
  * @nodes: Sequence of nodes to search
  * @node_type: Raptor identifier type
- * @node_value: Node value to search with (using raptor_abbrev_node_matches).
+ * @node_value: Node value to search with using raptor_abbrev_node_matches().
  * @datatype: Literal datatype or NULL
  * @language: Literal language or NULL
  *
- * Return value: non-zero if @node matches the node described by the rest of
- *   the parameters or NULL on failure.
+ * INTERNAL - Look in an avltree of nodes for a node described by parameters
+ *   and if present create it, add it and return it
+ *
+ * Return value: the node found/created or NULL on failure
  */
 raptor_abbrev_node* 
 raptor_abbrev_node_lookup(raptor_avltree* nodes,
@@ -428,6 +441,8 @@ raptor_new_abbrev_po(raptor_abbrev_node* predicate, raptor_abbrev_node* object)
 static void
 raptor_free_abbrev_po(raptor_abbrev_node** nodes)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(nodes, raptor_abbrev_node_pair);
+  
   if(nodes[0])
     raptor_free_abbrev_node(nodes[0]);
   if(nodes[1])
@@ -482,6 +497,8 @@ raptor_print_abbrev_po(FILE* handle, raptor_abbrev_node** nodes)
  * linked from them.
  *
  **/
+
+
 raptor_abbrev_subject*
 raptor_new_abbrev_subject(raptor_abbrev_node* node)
 {
@@ -530,32 +547,32 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
 void
 raptor_free_abbrev_subject(raptor_abbrev_subject* subject) 
 {
-  if(subject) {
-    if(subject->node)
-      raptor_free_abbrev_node(subject->node);
-    
-    if(subject->node_type)
-      raptor_free_abbrev_node(subject->node_type);
-    
-    if(subject->properties)
-      raptor_free_avltree(subject->properties);
-
-    if(subject->list_items)
-      raptor_free_sequence(subject->list_items);
-
-    RAPTOR_FREE(raptor_subject, subject);
-  }
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(subject, raptor_abbrev_subject);
   
+  if(subject->node)
+    raptor_free_abbrev_node(subject->node);
+  
+  if(subject->node_type)
+    raptor_free_abbrev_node(subject->node_type);
+  
+  if(subject->properties)
+    raptor_free_avltree(subject->properties);
+  
+  if(subject->list_items)
+    raptor_free_sequence(subject->list_items);
+  
+  RAPTOR_FREE(raptor_subject, subject);
 }
 
 
-/*
+/**
  * raptor_subject_add_property:
  * @subject: subject node to add to
  * @predicate: predicate node
  * @object: object node
- * 
- * Add predicate/object pair into properties array of a subject node.
+ *
+ * INTERNAL - Add predicate/object pair into properties array of a subject node.
+ *
  * The subject node takes ownership of the predicate/object nodes.
  * On error, predicate/object are freed immediately.
  * 
@@ -608,9 +625,9 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
  * @ordinal: ordinal index
  * @object: object node
  * 
- * Add rdf:li into list element array of a #raptor_abbrev_subject node.
+ * INTERNAL - Add rdf:li into list element array of a #raptor_abbrev_subject node.
  * 
- * Return value: 
+ * Return value: non-0 on failure
  **/
 int
 raptor_abbrev_subject_add_list_element(raptor_abbrev_subject* subject, 
@@ -756,11 +773,11 @@ raptor_print_subject(raptor_abbrev_subject* subject)
 
 /* helper functions */
 
-/*
+/**
  * raptor_unique_id:
  * @base: base ID
  * 
- * Generate a node ID for serializing
+ * INTERNAL - Generate a node ID for serializing
  *
  * Raptor doesn't check that blank IDs it generates are unique from
  * any specified by rdf:nodeID. Here, we need to emit IDs that are
@@ -788,14 +805,14 @@ raptor_unique_id(unsigned char *base)
 }
 
 
-/*
+/**
  * raptor_new_qname_from_resource:
  * @namespaces: sequence of namespaces (corresponding to nstack)
  * @nstack: #raptor_namespace_stack to use/update
  * @namespace_count: size of nstack (may be modified)
  * @node: #raptor_abbrev_node to use 
  * 
- * Make an XML QName from the URI associated with the node.
+ * INTERNAL - Make an XML QName from the URI associated with the node.
  * 
  * Return value: the QName or NULL on failure
  **/
@@ -857,11 +874,12 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     ns = raptor_new_namespace_from_uri(nstack, prefix, ns_uri, 0);
 
     /* We'll most likely need this namespace again. Push it on our
-     * stack.  It will be deleted in
-     * raptor_rdfxmla_serialize_terminate
+     * stack.  It will be deleted in raptor_rdfxmla_serialize_terminate()
      */
     if(raptor_sequence_push(namespaces, ns)) {
-      /* namespaces sequence has no free handler so we have to free the ns ourselves on error */
+      /* namespaces sequence has no free handler so we have to free
+       * the ns ourselves on error
+       */
       raptor_free_namespace(ns);
       raptor_free_uri(ns_uri);
       return NULL;
