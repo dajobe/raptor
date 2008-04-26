@@ -1484,7 +1484,8 @@ assert_uri_to_relative(const char *base, const char *uri, const char *relative)
     return 1;
   }
   RAPTOR_FREE(cstring, output);
-  raptor_free_uri(base_uri);
+  if(base_uri)
+    raptor_free_uri(base_uri);
   raptor_free_uri(reference_uri);
   return 0;
 }
