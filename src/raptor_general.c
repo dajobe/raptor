@@ -482,6 +482,8 @@ raptor_log_error(raptor_log_level level,
 void
 raptor_free_memory(void *ptr)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(ptr, memory);
+  
   RAPTOR_FREE(void, ptr);
 }
 

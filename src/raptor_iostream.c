@@ -2,7 +2,7 @@
  *
  * raptor_iostream.c - Raptor I/O-stream class for abstracting I/O
  *
- * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -668,6 +668,8 @@ raptor_new_iostream_from_file_handle(FILE *handle)
 void
 raptor_free_iostream(raptor_iostream *iostr)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(iostr, raptor_iostream);
+  
   if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     raptor_iostream_write_end(iostr);
 

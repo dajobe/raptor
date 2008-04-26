@@ -2,7 +2,7 @@
  *
  * raptor_xml_writer.c - Raptor XML Writer for SAX2 events API
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -456,6 +456,8 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
 void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(xml_writer, raptor_xml_writer);
+
   if(xml_writer->nstack && xml_writer->my_nstack)
     raptor_free_namespaces(xml_writer->nstack);
 

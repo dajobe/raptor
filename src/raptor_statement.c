@@ -2,7 +2,7 @@
  *
  * raptor_statement.c - Raptor statements
  *
- * Copyright (C) 2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2008, David Beckett http://www.dajobe.org/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -131,6 +131,8 @@ raptor_statement_copy(const raptor_statement *statement)
 void
 raptor_free_statement(raptor_statement *statement)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(statement, raptor_statement);
+
   if(statement->subject) {
     if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
       raptor_free_uri((raptor_uri*)statement->subject);

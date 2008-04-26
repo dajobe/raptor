@@ -154,6 +154,8 @@ raptor_new_avltree(raptor_data_compare_function compare_fn,
 void
 raptor_free_avltree(raptor_avltree* tree)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(tree, raptor_avltree);
+  
   raptor_free_avltree_internal(tree, tree->root);
   RAPTOR_FREE(raptor_avltree, tree);
 }

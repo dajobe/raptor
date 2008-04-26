@@ -128,7 +128,10 @@ void raptor_system_free(void *ptr);
 
 #define RAPTOR_ASSERT(condition, msg) 
 #define RAPTOR_ASSERT_RETURN(condition, msg, ret) 
-#define RAPTOR_ASSERT_OBJECT_POINTER_RETURN(pointer, type)
+#define RAPTOR_ASSERT_OBJECT_POINTER_RETURN(pointer, type) do { \
+  if(!pointer) \
+    return; \
+} while(0)
 #define RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(pointer, type, ret)
 
 #else
@@ -590,7 +593,6 @@ void raptor_free_statement(raptor_statement *statement);
 /* raptor_parse.c */
 raptor_parser_factory* raptor_get_parser_factory(const char *name);  
 void raptor_delete_parser_factories(void);
-void raptor_free_type_q(raptor_type_q* type_q);
 const char* raptor_parser_get_accept_header_all(void);
 int raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri);
 void raptor_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);

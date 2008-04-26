@@ -2,7 +2,7 @@
  *
  * raptor_serialize.c - Serializers
  *
- * Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -62,6 +62,8 @@ static raptor_sequence* serializers=NULL;
 static void
 raptor_free_serializer_factory(raptor_serializer_factory* factory)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(factory, raptor_serializer_factory);
+
   if(factory->finish_factory)
     factory->finish_factory(factory);
   
@@ -662,6 +664,8 @@ raptor_serialize_end(raptor_serializer *rdf_serializer)
 void
 raptor_free_serializer(raptor_serializer* rdf_serializer) 
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(rdf_serializer, raptor_serializer);
+
   if(rdf_serializer->factory)
     rdf_serializer->factory->terminate(rdf_serializer);
 

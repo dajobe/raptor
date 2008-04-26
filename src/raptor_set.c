@@ -2,7 +2,7 @@
  *
  * raptor_set.c - Sets for checking IDs
  *
- * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -89,7 +89,7 @@ struct raptor_id_set_s
 /**
  * raptor_new_id_set:
  *
- * Constructor - create a new ID set.
+ * INTERNAL - Constructor - create a new ID set.
  * 
  * Return value: non 0 on failure
  **/
@@ -109,7 +109,7 @@ raptor_new_id_set(void)
  * raptor_free_base_id_set:
  * @set: #raptor_base_id_set
  *
- * Destructor - destroy an raptor_base_id_set.
+ * INTERNAL - Destructor - Free a Base ID Set.
  *
  **/
 static void
@@ -127,13 +127,17 @@ raptor_free_base_id_set(raptor_base_id_set *base)
  * raptor_free_id_set:
  * @set: #raptor_id_set
  *
- * Destroy a set.
+ * INTERNAL - Destructor - Free ID Set.
  *
  **/
 void
 raptor_free_id_set(raptor_id_set *set) 
 {
-  raptor_base_id_set *base=set->first;
+  raptor_base_id_set *base;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(set, raptor_id_set);
+
+  base=set->first;
   while(base) {
     raptor_base_id_set *next=base->next;
     raptor_free_base_id_set(base);
@@ -151,7 +155,7 @@ raptor_free_id_set(raptor_id_set *set)
  * @id: identifier name
  * @id_len: length of identifier
  *
- * Add an item to the set.
+ * INTERNAL - Add an item to the set.
  * 
  * Return value: <0 on failure, 0 on success, 1 if already present
  **/

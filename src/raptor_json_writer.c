@@ -2,7 +2,7 @@
  *
  * raptor_json_writer.c - Raptor JSON Writer
  *
- * Copyright (C) 2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2008, David Beckett http://www.dajobe.org/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -93,7 +93,7 @@ struct raptor_json_writer_s {
  * @error_handler: error handler function
  * @error_data: error handler data
  * 
- * Constructor - Create a new JSON writer writing to a raptor_iostream
+ * INTERNAL - Constructor - Create a new JSON writer writing to a raptor_iostream
  * 
  * Return value: a new #raptor_json_writer object or NULL on failure
  **/
@@ -136,12 +136,13 @@ raptor_new_json_writer(raptor_uri* base_uri,
  * raptor_free_json_writer:
  * @json_writer: JSON writer object
  *
- * Destructor - Free JSON Writer
+ * INTERNAL - Destructor - Free JSON Writer
  * 
  **/
 void
 raptor_free_json_writer(raptor_json_writer* json_writer)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(json_writer, raptor_json_writer);
 
 #if RAPTOR_JSON_WRITER_DATATYPES == 1
   if(json_writer->xsd_boolean_uri)

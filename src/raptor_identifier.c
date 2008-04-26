@@ -2,7 +2,7 @@
  *
  * raptor_identifier.c - Raptor identifier classes
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -164,6 +164,8 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 void
 raptor_free_identifier(raptor_identifier *identifier) 
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(identifier, raptor_identifier);
+  
   if(identifier->uri) {
     raptor_free_uri(identifier->uri);
     identifier->uri=NULL;

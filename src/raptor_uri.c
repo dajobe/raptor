@@ -2,7 +2,7 @@
  *
  * raptor_uri.c - Raptor URI resolving implementation
  *
- * Copyright (C) 2002-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -351,6 +351,8 @@ raptor_default_free_uri(void *context, raptor_uri *uri)
 void
 raptor_free_uri(raptor_uri *uri)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(uri, raptor_uri);
+
   (*raptor_uri_current_uri_handler->free_uri)(raptor_uri_current_uri_context, uri);
 }
 

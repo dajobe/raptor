@@ -2,7 +2,7 @@
  *
  * raptor_parse.c - Raptor Parser API
  *
- * Copyright (C) 2000-2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -54,7 +54,7 @@
 #ifndef STANDALONE
 
 /* prototypes for helper functions */
-
+static void raptor_free_type_q(raptor_type_q* type_q);
 
 /* statics */
 
@@ -67,6 +67,8 @@ static raptor_sequence* parsers=NULL;
 static void
 raptor_free_parser_factory(raptor_parser_factory* factory)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(factory, raptor_parser_factory);
+  
   if(factory->finish_factory)
     factory->finish_factory(factory);
   
@@ -258,7 +260,7 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
 }
 
 
-void
+static void
 raptor_free_type_q(raptor_type_q* type_q)
 {
   RAPTOR_FREE(cstring, (void*)type_q->mime_type);
@@ -614,6 +616,8 @@ raptor_parse_chunk(raptor_parser* rdf_parser,
 void
 raptor_free_parser(raptor_parser* rdf_parser) 
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(rdf_parser, raptor_parser);
+
   if(rdf_parser->factory)
     rdf_parser->factory->terminate(rdf_parser);
 

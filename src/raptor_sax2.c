@@ -120,8 +120,11 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
  * Destructor - destroy a SAX2 object
  */
 void
-raptor_free_sax2(raptor_sax2 *sax2) {
+raptor_free_sax2(raptor_sax2 *sax2)
+{
   raptor_xml_element *xml_element;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(sax2, raptor_sax2);
 
 #ifdef RAPTOR_XML_EXPAT
   if(sax2->xp) {

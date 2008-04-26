@@ -2,7 +2,7 @@
  *
  * raptor_xml.c - Raptor XML routines
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -136,6 +136,8 @@ void
 raptor_free_xml_element(raptor_xml_element *element)
 {
   unsigned int i;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(element, raptor_xml_element);
 
   for (i=0; i < element->attribute_count; i++)
     if(element->attributes[i])

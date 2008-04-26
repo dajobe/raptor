@@ -2,7 +2,7 @@
  *
  * raptor_stringbuffer.c - Stringbuffer class for growing strings
  *
- * Copyright (C) 2003-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -103,6 +103,8 @@ raptor_new_stringbuffer(void)
 void
 raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer) 
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(stringbuffer, raptor_stringbuffer);
+
   if(stringbuffer->head) {
     raptor_stringbuffer_node *node=stringbuffer->head;
   

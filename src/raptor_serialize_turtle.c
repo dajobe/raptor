@@ -3,7 +3,7 @@
  * raptor_serialize_turtle.c - Turtle serializer
  *
  * Copyright (C) 2006,2008 Dave Robillard
- * Copyright (C) 2004-2008 David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008 David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005 University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005 Steve Shepard steveshep@gmail.com
  * 

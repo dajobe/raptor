@@ -2,7 +2,7 @@
  *
  * raptor_namespace.c - Raptor XML namespace classes
  *
- * Copyright (C) 2002-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -298,6 +298,9 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack)
 void
 raptor_free_namespaces(raptor_namespace_stack *nstack)
 {
+  if(!nstack)
+    return;
+  
   raptor_namespaces_clear(nstack);
   RAPTOR_FREE(raptor_namespace_stack, nstack);
 }
@@ -578,6 +581,8 @@ raptor_namespace_copy(raptor_namespace_stack *nstack,
 void 
 raptor_free_namespace(raptor_namespace *ns)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(ns, raptor_namespace);
+
   if(ns->uri)
     ns->nstack->uri_handler->free_uri(ns->nstack->uri_context, ns->uri);
 
