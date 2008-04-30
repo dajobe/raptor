@@ -63,8 +63,6 @@ typedef enum {
 #define TURTLE_WRITER_AUTO_INDENT(turtle_writer) ((turtle_writer->flags & TURTLE_WRITER_AUTO_INDENT) != 0)
 
 struct raptor_turtle_writer_s {
-  int canonicalize;
-
   int depth;
  
   raptor_uri* base_uri;
@@ -147,7 +145,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 /**
  * raptor_new_turtle_writer:
  * @base_uri: Base URI for the writer
- * @write_base_uri: non-0 to write 'base' in output
+ * @write_base_uri: non-0 to write '@base' directive to output
  * @nstack: Namespace stack for the writer to start with (or NULL)
  * @uri_handler: URI handler function
  * @uri_context: URI handler context data
@@ -195,6 +193,7 @@ raptor_new_turtle_writer(raptor_uri* base_uri, int write_base_uri,
 
   turtle_writer->flags = 0;
   turtle_writer->indent = 2;
+  turtle_writer->base_uri = base_uri;
 
   if(base_uri && write_base_uri)
     raptor_turtle_writer_base(turtle_writer, base_uri);
@@ -319,10 +318,6 @@ raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
     raptor_turtle_writer_reference(turtle_writer, base_uri);
     raptor_iostream_write_counted_string(turtle_writer->iostr, " .\n", 3);
   }
-  
-  if(turtle_writer->base_uri)
-    raptor_free_uri(turtle_writer->base_uri);
-  turtle_writer->base_uri=base_uri;
 }
 
 
