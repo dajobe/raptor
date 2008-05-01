@@ -322,6 +322,37 @@ raptor_sequence_get_at(raptor_sequence* seq, int idx)
 
 
 /**
+ * raptor_sequence_delete_at:
+ * @seq: sequence object
+ * @idx: index into sequence to operate at
+ * 
+ * Remove an item from a position a sequence, returning it
+ * 
+ * The item at the offset @idx in the sequence is replaced with a
+ * NULL pointer and any existing item is returned.  The caller
+ * owns the resulting item.
+ *
+ * Return value: NULL on failure
+ **/
+void*
+raptor_sequence_delete_at(raptor_sequence* seq, int idx)
+{
+  void* data;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, NULL);
+
+  if(idx < 0 || idx > seq->size-1)
+    return NULL;
+
+  data=seq->sequence[seq->start+idx];
+  seq->sequence[seq->start+idx]=NULL;
+  
+  return data;
+}
+
+
+
+/**
  * raptor_sequence_pop:
  * @seq: sequence to use
  * 
