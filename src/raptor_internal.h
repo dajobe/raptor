@@ -489,6 +489,9 @@ struct raptor_serializer_s {
 
   /* destination stream for the serialization */
   raptor_iostream *iostream;
+
+  /* if true, iostream was made here so free it */
+  int free_iostream_on_end;
   
   struct raptor_serializer_factory_s* factory;
 
@@ -1182,6 +1185,9 @@ int raptor_json_writer_blank_object(raptor_json_writer* json_writer, const char*
 int raptor_json_writer_uri_object(raptor_json_writer* json_writer, raptor_uri* uri);
 int raptor_json_writer_key_uri_value(raptor_json_writer* json_writer, const char* key, size_t key_len, raptor_uri* uri);
 
+/* raptor_serialize_rdfxmla.c special functions for embedding rdf/xml */
+int raptor_rdfxmla_serialize_set_write_rdf_RDF(raptor_serializer* serializer, int value);
+int raptor_rdfxmla_serialize_set_xml_writer(raptor_serializer* serializer, raptor_xml_writer* xml_writer, raptor_namespace_stack *nstack);
 
 /* snprintf.c */
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
