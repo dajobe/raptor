@@ -851,10 +851,10 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       } else {
         /* not a URI, must be a literal */
         if(is_atom && f == RAPTOR_RSS_FIELD_ATOM_SUMMARY) {
-          raptor_qname **attrs=NULL;
-          attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-          attrs[0]=raptor_new_qname_from_namespace_local_name(NULL, (const unsigned char*)"type",  "xhtml");
-          raptor_xml_element_set_attributes(predicate, attrs, 1);
+          raptor_qname **predicate_attrs=NULL;
+          predicate_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+          predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(NULL, (const unsigned char*)"type",  (const unsigned char*)"xhtml");
+          raptor_xml_element_set_attributes(predicate, predicate_attrs, 1);
         }
 
         raptor_xml_writer_start_element(xml_writer, predicate);
