@@ -1275,6 +1275,8 @@ RAPTOR_API
 void* raptor_sequence_pop(raptor_sequence* seq);
 RAPTOR_API
 void* raptor_sequence_unshift(raptor_sequence* seq);
+RAPTOR_API
+void* raptor_sequence_delete_at(raptor_sequence* seq, int idx);
 
 RAPTOR_API
 int raptor_compare_strings(const void *a, const void *b);
@@ -1581,6 +1583,8 @@ RAPTOR_API
 int raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature feature);
 RAPTOR_API
 const unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature);
+RAPTOR_API
+int raptor_xml_writer_get_depth(raptor_xml_writer *xml_writer);
 
 /**
  * raptor_sax2_start_element_handler:
