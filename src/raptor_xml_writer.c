@@ -1022,6 +1022,14 @@ raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer,
   return NULL;
 }
 
+
+int
+raptor_xml_writer_get_depth(raptor_xml_writer *xml_writer)
+{
+  return xml_writer->depth;
+}
+
+
 #endif
 
 
