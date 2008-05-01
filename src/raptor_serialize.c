@@ -477,6 +477,8 @@ raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
   if(!rdf_serializer->iostream)
     return 1;
 
+  rdf_serializer->free_iostream_on_end=1;
+
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
   return 0;
@@ -516,6 +518,8 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
   if(!rdf_serializer->iostream)
     return 1;
 
+  rdf_serializer->free_iostream_on_end=1;
+
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
   return 0;
@@ -551,6 +555,8 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
   rdf_serializer->iostream=raptor_new_iostream_to_file_handle(fh);
   if(!rdf_serializer->iostream)
     return 1;
+
+  rdf_serializer->free_iostream_on_end=1;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -646,7 +652,8 @@ raptor_serialize_end(raptor_serializer *rdf_serializer)
     rc=0;
 
   if(rdf_serializer->iostream) {
-    raptor_free_iostream(rdf_serializer->iostream);
+    if(rdf_serializer->free_iostream_on_end)
+      raptor_free_iostream(rdf_serializer->iostream);
     rdf_serializer->iostream=NULL;
   }
   return rc;
