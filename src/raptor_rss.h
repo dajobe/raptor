@@ -291,6 +291,7 @@ void raptor_rss_common_terminate(void);
 void raptor_rss_model_init(raptor_rss_model* rss_model);
 void raptor_rss_model_clear(raptor_rss_model* rss_model);
 
+raptor_rss_item* raptor_new_rss_item(void);
 int raptor_rss_model_add_item(raptor_rss_model* rss_model);
 raptor_rss_item* raptor_rss_model_add_common(raptor_rss_model* rss_model, raptor_rss_type type);
 raptor_rss_item* raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor_rss_type type);
