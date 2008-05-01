@@ -221,7 +221,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
 /**
  * raptor_new_qname_from_namespace_local_name:
- * @ns: namespace of qname
+ * @ns: namespace of qname (or NULL)
  * @local_name: element or attribute name
  * @value: attribute value (else is an element)
  *
@@ -241,7 +241,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
   unsigned char* new_name;
   int local_name_length=strlen((char*)local_name);
 
-  if(!ns || !local_name)
+  if(!local_name)
     return NULL;
 
   qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
@@ -272,9 +272,11 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
 
   qname->nspace=ns;
 
-  qname->uri=raptor_namespace_get_uri(qname->nspace);
-  if(qname->uri)
-    qname->uri=raptor_new_uri_from_uri_local_name(qname->uri, new_name);
+  if(qname->nspace) {
+    qname->uri=raptor_namespace_get_uri(qname->nspace);
+    if(qname->uri)
+      qname->uri=raptor_new_uri_from_uri_local_name(qname->uri, new_name);
+  }
   
   return qname;
 }
