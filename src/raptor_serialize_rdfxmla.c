@@ -1270,11 +1270,6 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     if(!predicate)
       return 1;
 
-    if(!subject_created && !predicate_created && !object_created) {
-      /* duplicate triple - ignore */
-      return 0;
-    }
-    
     if(!subject->node_type && 
        raptor_abbrev_node_equals(predicate, context->rdf_type) &&
        statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
@@ -1344,11 +1339,6 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                                             &predicate_created);
       if(!predicate)
         return 1;
-
-      if(!subject_created && !predicate_created && !object_created) {
-        /* duplicate triple - ignore */
-        return 0;
-      }
 
       rv = raptor_abbrev_subject_add_property(subject, predicate, object);
       if(rv) {
