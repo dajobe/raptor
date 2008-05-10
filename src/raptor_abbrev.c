@@ -599,15 +599,15 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
   if(!nodes)
     return -1;
 
+  predicate->ref_count++;
+  object->ref_count++;
+
   if(raptor_avltree_search(subject->properties, nodes)) {
     /* Already present - do not add a duplicate triple (s->[p o]) */
     raptor_free_abbrev_po(nodes);
     return 1;
   }
   
-  predicate->ref_count++;
-  object->ref_count++;
-
 #if 0
   fprintf(stderr, "Adding P,O ");
   raptor_print_abbrev_po(stderr, nodes);
