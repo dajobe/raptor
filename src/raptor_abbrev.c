@@ -225,28 +225,31 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
           /* string */
           rv = strcmp((const char*)node1->value.literal.string,
                        (const char*)node2->value.literal.string);
-
-          if(rv != 0) {
+          if(rv != 0) 
             break;
-          /* if string is equal, order by language */
-          } else {
-            if((const char*)node1->value.literal.language != NULL &&
-                (const char*)node2->value.literal.language != NULL) {
-              rv = strcmp((const char*)node1->value.literal.language,
-                    (const char*)node2->value.literal.language);
-            } else if(node1->value.literal.language == NULL) {
-              rv = -1;
-              break;
-            } else {
-              rv = 1;
-              break;
-            }
-          }
 
-          /* if string and language are equal, order by datatype */
-          /* (rv == 0 if we get here) */
-          if(node1->value.literal.datatype != NULL &&
-              node2->value.literal.datatype != NULL) {
+          /* if strings are equal, compare language */
+          if(node1->value.literal.language == NULL &&
+             node2->value.literal.language == NULL) {
+            rv = 0;
+          } else if(node1->value.literal.language != NULL &&
+                    node2->value.literal.language != NULL) {
+            rv = strcmp((const char*)node1->value.literal.language,
+                        (const char*)node2->value.literal.language);
+          } else if(node1->value.literal.language == NULL) {
+            rv = -1;
+          } else {
+            rv = 1;
+          }
+          if(rv != 0) 
+            break;
+
+          /* if string and language are equal, compare datatype */
+          if(node1->value.literal.datatype == NULL &&
+             node2->value.literal.datatype == NULL ) {
+            rv = 0;
+          } else if(node1->value.literal.datatype != NULL &&
+                    node2->value.literal.datatype != NULL) {
             rv = strcmp((char*)node1->value.literal.datatype,
                   (char*)node2->value.literal.datatype);
           } else if(node1->value.literal.datatype == NULL) {
@@ -255,6 +258,8 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
             rv = 1;
           }
           
+          /* if rv = 0 here then the nodes are completely equal */
+
         } else {
           RAPTOR_FATAL1("string must be non-NULL for literal or xml literal\n");
           rv = 0;
@@ -580,7 +585,7 @@ raptor_free_abbrev_subject(raptor_abbrev_subject* subject)
  * The subject node takes ownership of the predicate/object nodes.
  * On error, predicate/object are freed immediately.
  * 
- * Return value: non-0 on failure
+ * Return value: <0 on failure, >0 if pair is a duplicate and it was not added
  **/
 int
 raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
@@ -592,7 +597,13 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
   
   nodes=raptor_new_abbrev_po(predicate, object);
   if(!nodes)
+    return -1;
+
+  if(raptor_avltree_search(subject->properties, nodes)) {
+    /* Already present - do not add a duplicate triple (s->[p o]) */
+    raptor_free_abbrev_po(nodes);
     return 1;
+  }
   
   predicate->ref_count++;
   object->ref_count++;
@@ -606,7 +617,7 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
   err = raptor_avltree_add(subject->properties, nodes);
   if(err) {
     raptor_free_abbrev_po(nodes);
-    return err;
+    return -1;
   }
 #if 0
   fprintf(stderr, "Result ");
