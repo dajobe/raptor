@@ -193,10 +193,12 @@ raptor_new_turtle_writer(raptor_uri* base_uri, int write_base_uri,
 
   turtle_writer->flags = 0;
   turtle_writer->indent = 2;
-  turtle_writer->base_uri = base_uri;
 
+  turtle_writer->base_uri = NULL;
+  /* Ensure any initial base URI is not written relative */
   if(base_uri && write_base_uri)
     raptor_turtle_writer_base(turtle_writer, base_uri);
+  turtle_writer->base_uri = base_uri;
 
   turtle_writer->xsd_boolean_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
   turtle_writer->xsd_decimal_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
