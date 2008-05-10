@@ -184,7 +184,6 @@ check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
 	  else \
 	    $(ECHO) "FAILED"; \
 	    echo "rapper output:"; cat $$name-turtle.ttl; cat $$name.err; result=1; \
-	    break; \
 	  fi; \
 	  rm -f $$name-turtle.ttl $$name.res $$name.err; \
 	done; \
