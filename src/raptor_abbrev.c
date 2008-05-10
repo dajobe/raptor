@@ -380,6 +380,7 @@ raptor_abbrev_node_matches(raptor_abbrev_node* node,
  * @node_value: Node value to search with using raptor_abbrev_node_matches().
  * @datatype: Literal datatype or NULL
  * @language: Literal language or NULL
+ * @created_p: (output parameter) set to non-0 if a node was created
  *
  * INTERNAL - Look in an avltree of nodes for a node described by parameters
  *   and if present create it, add it and return it
@@ -390,7 +391,7 @@ raptor_abbrev_node*
 raptor_abbrev_node_lookup(raptor_avltree* nodes,
                           raptor_identifier_type node_type,
                           const void *node_value, raptor_uri *datatype,
-                          const unsigned char *language)
+                          const unsigned char *language, int* created_p)
 {
   raptor_abbrev_node *lookup_node;
   raptor_abbrev_node *rv_node;
@@ -402,6 +403,9 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
     return NULL;
 
   rv_node=(raptor_abbrev_node*)raptor_avltree_search(nodes, lookup_node);
+  
+  if(created_p)
+    *created_p=(!rv_node);
   
   /* If not found, insert/return a new one */
   if(!rv_node) {
@@ -683,7 +687,8 @@ raptor_abbrev_subject_lookup(raptor_avltree* nodes,
                              raptor_sequence* subjects,
                              raptor_sequence* blanks,
                              raptor_identifier_type node_type,
-                             const void *node_data)
+                             const void *node_data,
+                             int* created_p)
 {
   raptor_sequence *sequence;
   raptor_abbrev_subject* rv_subject;
@@ -696,10 +701,14 @@ raptor_abbrev_subject_lookup(raptor_avltree* nodes,
   rv_subject= raptor_abbrev_subject_find(sequence, node_type,
                                          node_data, NULL);
 
+  if(created_p)
+    *created_p=(!rv_subject);
+  
   /* If not found, create one and insert it */
   if(!rv_subject) {
     raptor_abbrev_node* node = raptor_abbrev_node_lookup(nodes, node_type,
-                                                         node_data, NULL, NULL);
+                                                         node_data, NULL, NULL,
+                                                         NULL);
     if(node) {      
       rv_subject = raptor_new_abbrev_subject(node);
       if(rv_subject) {
