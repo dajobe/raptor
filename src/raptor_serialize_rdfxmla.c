@@ -1211,24 +1211,26 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   raptor_abbrev_node* object = NULL;
   int rv = 0;
   raptor_identifier_type object_type;
-
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-     statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-     statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-
-    subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
-                                           context->blanks,
-                                           statement->subject_type,
-                                           statement->subject);
-    if(!subject)
-      return 1;
-
-  } else {
+  int subject_created = 0;
+  int predicate_created = 0;
+  int object_created = 0;
+  
+  if(!(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+       statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
+       statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with subject node type %d\n",
                             statement->subject_type);
     return 1;
   }  
+
+  subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
+                                         context->blanks,
+                                         statement->subject_type,
+                                         statement->subject,
+                                         &subject_created);
+  if(!subject)
+    return 1;
   
   object_type=statement->object_type;
   if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
@@ -1238,38 +1240,41 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
   }
 
-  if(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-     object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-     object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
-     object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
-     object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
-    object = raptor_abbrev_node_lookup(context->nodes, object_type,
-                                       statement->object,
-                                       statement->object_literal_datatype,
-                                       statement->object_literal_language);
-    if(!object)
-      return 1;          
-
-    if(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-       object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-      object->count_as_object++;
-    
-  } else {
+  if(!(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+       object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
+       object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
+       object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
+       object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with object node type %d\n",
                             object_type);
     return 1;
   }
+  
+  object = raptor_abbrev_node_lookup(context->nodes, object_type,
+                                     statement->object,
+                                     statement->object_literal_datatype,
+                                     statement->object_literal_language,
+                                     &object_created);
+  if(!object)
+    return 1;          
+
 
   if((statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
      (statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
     predicate = raptor_abbrev_node_lookup(context->nodes,
                                           statement->predicate_type,
-                                          statement->predicate, NULL, NULL);
+                                          statement->predicate, NULL, NULL,
+                                          &predicate_created);
     if(!predicate)
       return 1;
 
+    if(!subject_created && !predicate_created && !object_created) {
+      /* duplicate triple - ignore */
+      return 0;
+    }
+    
     if(!subject->node_type && 
        raptor_abbrev_node_equals(predicate, context->rdf_type) &&
        statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
@@ -1281,7 +1286,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       subject->node_type = raptor_abbrev_node_lookup(context->nodes,
                                                      object_type,
                                                      statement->object, NULL,
-                                                     NULL);
+                                                     NULL, NULL);
       if(!subject->node_type)
         return 1;
       subject->node_type->ref_count++;
@@ -1335,9 +1340,16 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
        * is to just put in the properties list */
       predicate = raptor_abbrev_node_lookup(context->nodes,
                                             statement->predicate_type,
-                                            statement->predicate, NULL, NULL);
+                                            statement->predicate, NULL, NULL,
+                                            &predicate_created);
       if(!predicate)
         return 1;
+
+      if(!subject_created && !predicate_created && !object_created) {
+        /* duplicate triple - ignore */
+        return 0;
+      }
+
       rv = raptor_abbrev_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,
@@ -1353,6 +1365,11 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     return 1;
   }
   
+  if(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+     object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    object->count_as_object++;
+    
+
   return 0;
 
 }
