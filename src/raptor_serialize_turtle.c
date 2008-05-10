@@ -1118,11 +1118,6 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     if(!predicate)
       return 1;
 	      
-    if(!subject_created && !predicate_created && !object_created) {
-      /* duplicate triple - ignore */
-      return 0;
-    }
-    
     rv = raptor_abbrev_subject_add_property(subject, predicate, object);
     if(rv) {
       raptor_serializer_error(serializer,
@@ -1144,11 +1139,6 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
       if(!predicate)
         return 1;
 
-      if(!subject_created && !predicate_created && !object_created) {
-        /* duplicate triple - ignore */
-        return 0;
-      }
-    
       rv = raptor_abbrev_subject_add_property(subject, predicate, object);
       if(rv) {
         raptor_serializer_error(serializer,
