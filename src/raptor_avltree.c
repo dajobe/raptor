@@ -1344,8 +1344,13 @@ raptor_avltree_iterator_get(raptor_avltree_iterator* iterator)
 int
 raptor_avltree_cursor_first(raptor_avltree* tree)
 {
-  if(tree->cursor_iterator)
+  if(tree->cursor_iterator) {
     raptor_free_avltree_iterator(tree->cursor_iterator);
+    tree->cursor_iterator=NULL;
+  }
+
+  if(!tree->size)
+    return 1;
   
   tree->cursor_iterator=raptor_new_avltree_iterator(tree, NULL, NULL, 1);
   return (tree->cursor_iterator == NULL);
@@ -1356,8 +1361,13 @@ raptor_avltree_cursor_first(raptor_avltree* tree)
 int
 raptor_avltree_cursor_last(raptor_avltree* tree)
 {
-  if(tree->cursor_iterator)
+  if(tree->cursor_iterator) {
     raptor_free_avltree_iterator(tree->cursor_iterator);
+    tree->cursor_iterator=NULL;
+  }
+  
+  if(!tree->size)
+    return 1;
   
   tree->cursor_iterator=raptor_new_avltree_iterator(tree, NULL, NULL, -1);
   return (tree->cursor_iterator == NULL);
