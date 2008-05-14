@@ -429,13 +429,17 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$name-rdfxmla.rdf 2> $$name.err; \
+	  status1=$$?; \
 	  $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
-	  status=$$?; \
-	  if test $$status = 0; then \
+	  status2=$$?; \
+	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    cat $$name.err; result=1; \
+	    echo $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri '>' $$name-rdfxmla.rdf; \
+	  status1=$$?; \
+	    echo $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf '>' $$name.res; \
+	    echo "rapper + rdfdiff output:"; cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name-rdfxmla.rdf $$name.res $$name.err; \
 	done; \
@@ -449,13 +453,14 @@ check-turtle-serialize: build-rdfdiff build-rapper $(RDF_TEST_FILES) $(TURTLE_SE
 	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.rdf 2> $$name.err; \
+	  status1=$$?; \
 	  $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.rdf > $$name.res 2> $$name.err; \
-	  status=$$?; \
-	  if test $$status = 0; then \
+	  status2=$$?; \
+	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    cat $$name.err; result=1; \
+	    echo "rapper + rdfdiff output:"; cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name-turtle.rdf $$name.res $$name.err; \
 	done; \
