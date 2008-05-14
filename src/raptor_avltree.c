@@ -1331,6 +1331,10 @@ raptor_avltree_iterator_get(raptor_avltree_iterator* iterator)
 
   if(iterator->is_finished)
     return NULL;
+
+  iterator->is_finished=(node == NULL);
+  if(iterator->is_finished)
+    return NULL;
   
   return node->data;
 }
