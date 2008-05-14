@@ -58,6 +58,10 @@
 #endif
 
 
+#define RAPTOR_AVLTREE_ENOMEM -1
+#define RAPTOR_AVLTREE_EXISTS 1
+
+
 #ifndef STANDALONE
 typedef struct raptor_avltree_node_s raptor_avltree_node;
 
@@ -76,7 +80,7 @@ struct raptor_avltree_node_s {
    *   height of the right tree minus the height of the left tree
    * i.e. equal: 0  left larger: -1  right larger: 1
    */
-  short balance;
+  signed char balance;
 
   /* actual data */
   void* data;
@@ -101,10 +105,10 @@ struct raptor_avltree_s {
   unsigned int flags;
 
   /* number of nodes in tree */
-  int size;
+  unsigned int size;
 
-  /* cursor node */
-  struct raptor_avltree_node_s *cursor;
+  /* legacy iterator used for cursor methods */
+  raptor_avltree_iterator* cursor_iterator;
 };
 
 
@@ -126,7 +130,19 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
 
 
 
-/* avltree constructor */
+/**
+ * raptor_new_avltree:
+ * @compare_fn: item comparison function for ordering
+ * @free_fn: item free function (or NULL)
+ * @flags: AVLTree flags - bitmask of
+ *    RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES - raptor_avltree_add()
+ *    will replace any duplicate items (default is to ignore them and
+ *    return >0 on duplicates)
+ *
+ * INTERNAL - AVL Tree Constructor
+ *
+ * Return value: new AVL Tree or NULL on failure
+ */
 raptor_avltree*
 raptor_new_avltree(raptor_data_compare_function compare_fn,
                    raptor_data_free_function free_fn,
@@ -144,19 +160,27 @@ raptor_new_avltree(raptor_data_compare_function compare_fn,
   tree->print_fn=NULL;
   tree->flags=flags;
   tree->size=0;
-  tree->cursor=NULL;
   
   return tree;
 }
 
 
-/* avltree destructor */
+/**
+ * raptor_free_avltree:
+ * @tree: AVLTree object
+ *
+ * INTERNAL - AVL Tree destructor
+ */
 void
 raptor_free_avltree(raptor_avltree* tree)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(tree, raptor_avltree);
   
   raptor_free_avltree_internal(tree, tree->root);
+
+  if(tree->cursor_iterator)
+    raptor_free_avltree_iterator(tree->cursor_iterator);
+
   RAPTOR_FREE(raptor_avltree, tree);
 }
 
@@ -200,7 +224,15 @@ raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node,
 }
 
 
-/* find an item and return shared pointer to it (still owned by avltree) */
+/**
+ * raptor_avltree_search:
+ * @tree: AVL Tree object
+ * @p_data: pointer to data item
+ *
+ * INTERNAL - find an item in an AVL Tree
+ *
+ * Return value: shared pointer to item (still owned by AVL Tree) or NULL on failure or if not found
+ */
 void*
 raptor_avltree_search(raptor_avltree* tree, const void* p_data)
 {
@@ -210,7 +242,17 @@ raptor_avltree_search(raptor_avltree* tree, const void* p_data)
 }
 
 
-/* add an item (becomes owned by avltree) */
+/**
+ * @tree: AVL Tree object
+ * @p_data: pointer to data item
+ *
+ * INTERNAL - add an item to an AVL Tree
+ *
+ * The item added becomes owned by the AVL Tree, and will be freed by
+ * the free_fn argument given to raptor_new_avltree().
+ *
+ * Return value: 0 on success, >0 if equivalent item exists (and the old element remains in the tree), <0 on failure
+ */
 int
 raptor_avltree_add(raptor_avltree* tree, void* p_data)
 {
@@ -227,7 +269,18 @@ raptor_avltree_add(raptor_avltree* tree, void* p_data)
 }
 
 
-/* remove an item and return it (no longer owned by avltree) */
+/**
+ * raptor_avltree_remove:
+ * @tree: AVL Tree object
+ * @p_data: pointer to data item
+ *
+ * INTERNAL - remove an item from an AVL Tree and return it
+ *
+ * The item removed is  no longer owned by the AVL Tree and is
+ * owned by the caller.
+ *
+ * Return value: object or NULL on failure or if not found
+ */
 void*
 raptor_avltree_remove(raptor_avltree* tree, void* p_data)
 {
@@ -247,7 +300,13 @@ raptor_avltree_remove(raptor_avltree* tree, void* p_data)
 }
 
 
-/* remove an item and free it */
+/**
+ * raptor_avltree_delete:
+ * @tree: AVL Tree object
+ * @p_data: pointer to data item
+ *
+ * INTERNAL - remove an item from an AVL Tree and free it
+ */
 int
 raptor_avltree_delete(raptor_avltree* tree, void* p_data)
 {
@@ -287,7 +346,16 @@ raptor_avltree_visit_internal(raptor_avltree* tree, raptor_avltree_node* node,
 }
 
 
-/* perform an in-order visit of the items in the tree */
+/**
+ * raptor_avltree_visit:
+ * @tree: AVL Tree object
+ * @visit_fn: visit function to call at each item
+ * @user_data: user data pointer fo visit function
+ *
+ * INTERNAL - perform an in-order visit of the items in the AVL Tree
+ *
+ * Return value: non-0 if traversal was terminated early by @visit_fn
+*/
 int
 raptor_avltree_visit(raptor_avltree* tree,
                      raptor_avltree_visit_function visit_fn,
@@ -359,7 +427,7 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
   /* left branch has grown longer */
   RAPTOR_AVLTREE_DEBUG1("LESS: left branch has grown\n");
   switch((*node_pp)->balance) {
-    case 1:		
+    case 1:
       /* right branch WAS longer; balance is ok now */
       RAPTOR_AVLTREE_DEBUG1("LESS: case 1.. balance restored implicitly\n");
       (*node_pp)->balance= 0;
@@ -520,6 +588,13 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
 }
 
 
+/* grow a tree by sprouting with a new node
+ *
+ * Return values:
+ *   0 on success
+ *   >0 if equivalent item exists (and the old element remains in the tree)
+ *   <0 if memory is exhausted.
+ */
 static int
 raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
                       raptor_avltree_node** node_pp, void* p_data,
@@ -534,7 +609,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
     RAPTOR_AVLTREE_DEBUG1("grounded. adding new node, setting rebalancing flag true\n");
     *node_pp= (raptor_avltree_node*)RAPTOR_MALLOC(raptor_avltree_node, sizeof(**node_pp));
     if(!*node_pp)
-      return TRUE;
+      return RAPTOR_AVLTREE_ENOMEM;
     
     (*node_pp)->parent= parent;
     (*node_pp)->left= NULL;
@@ -557,14 +632,21 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
     /* if MORE, prepare to move to the right. */
     return raptor_avltree_sprout_right(tree, node_pp, p_data, rebalancing_p);
 
-  /* otherwise same key - replace */
+  /* otherwise equivalent key */
   *rebalancing_p= FALSE;
 
-  if(tree->free_fn)
-    tree->free_fn((*node_pp)->data);
-  (*node_pp)->data= p_data;
+  if(tree->flags & RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES) {
+    /* replace item with equivalent key */
+    if(tree->free_fn)
+      tree->free_fn((*node_pp)->data);
+    (*node_pp)->data= p_data;
 
-  return FALSE;
+    return FALSE;
+  } else {
+    /* ignore item with equivalent key */
+    tree->free_fn(p_data);
+    return RAPTOR_AVLTREE_EXISTS;
+  }
 }
 
 
@@ -621,7 +703,7 @@ raptor_avltree_delete_internal(raptor_avltree* tree,
       rdata=raptor_avltree_delete_internal2(tree, &pr_q->left, rebalancing_p,
                                             &pr_q);
       if(*rebalancing_p)
-	raptor_avltree_balance_left(tree, node_pp, rebalancing_p);
+        raptor_avltree_balance_left(tree, node_pp, rebalancing_p);
     }
 
     RAPTOR_FREE(raptor_avltree_node, pr_q);
@@ -691,52 +773,52 @@ raptor_avltree_balance_left(raptor_avltree* tree,
       b1= p1->balance;
 
       if(b1 >= 0) {
-	RAPTOR_AVLTREE_DEBUG1("single RR\n");
+        RAPTOR_AVLTREE_DEBUG1("single RR\n");
         (*node_pp)->right= p1->left;
         if((*node_pp)->right)
           (*node_pp)->right->parent= (*node_pp);
-	p1->left= *node_pp;
+        p1->left= *node_pp;
         if(p1->left)
           p1->left->parent= p1;
-	if(b1 == 0) {
-	  RAPTOR_AVLTREE_DEBUG1("b1 == 0\n");
+        if(b1 == 0) {
+          RAPTOR_AVLTREE_DEBUG1("b1 == 0\n");
           (*node_pp)->balance= 1;
-	  p1->balance= -1;
-	  *rebalancing_p= FALSE;
-	} else {
-	  RAPTOR_AVLTREE_DEBUG1("b1 != 0\n");
+          p1->balance= -1;
+          *rebalancing_p= FALSE;
+        } else {
+          RAPTOR_AVLTREE_DEBUG1("b1 != 0\n");
           (*node_pp)->balance= 0;
-	  p1->balance= 0;
-	}
-	*node_pp= p1;
+          p1->balance= 0;
+        }
+        *node_pp= p1;
         (*node_pp)->parent=p_parent;
       } else {
-	RAPTOR_AVLTREE_DEBUG1("double RL\n");
+        RAPTOR_AVLTREE_DEBUG1("double RL\n");
         p2= p1->left;
-	b2= p2->balance;
-	p1->left= p2->right;
+        b2= p2->balance;
+        p1->left= p2->right;
         if(p1->left)
           p1->left->parent=p1;
-	p2->right= p1;
+        p2->right= p1;
         if(p2->right)
           p2->right->parent=p2;
-	(*node_pp)->right= p2->left;
-	if((*node_pp)->right)
+        (*node_pp)->right= p2->left;
+        if((*node_pp)->right)
           (*node_pp)->right->parent= (*node_pp);
-	p2->left= *node_pp;
-	if(p2->left)
+        p2->left= *node_pp;
+        if(p2->left)
           p2->left->parent= p2;
-	if(b2 == 1)
-	  (*node_pp)->balance= -1;
-	else
-	  (*node_pp)->balance= 0;
-	if(b2 == -1)
-	  p1->balance= 1;
-	else
-	  p1->balance= 0;
-	*node_pp= p2;
+        if(b2 == 1)
+          (*node_pp)->balance= -1;
+        else
+          (*node_pp)->balance= 0;
+        if(b2 == -1)
+          p1->balance= 1;
+        else
+          p1->balance= 0;
+        *node_pp= p2;
         (*node_pp)->parent=p_parent;
-	p2->balance= 0;
+        p2->balance= 0;
       }
       break;
   } /* end switch */
@@ -754,7 +836,7 @@ raptor_avltree_balance_right(raptor_avltree* tree,
   RAPTOR_AVLTREE_DEBUG1("right branch has shrunk\n");
 
   p_parent=(*node_pp)->parent;
-  
+
   switch((*node_pp)->balance) {
     case 1:
       RAPTOR_AVLTREE_DEBUG1("was imbalanced, fixed implicitly\n");
@@ -773,59 +855,66 @@ raptor_avltree_balance_right(raptor_avltree* tree,
       b1= p1->balance;
 
       if(b1 <= 0) {
-	RAPTOR_AVLTREE_DEBUG1("single LL\n");
+        RAPTOR_AVLTREE_DEBUG1("single LL\n");
         (*node_pp)->left= p1->right;
         if((*node_pp)->left)
           (*node_pp)->left->parent= (*node_pp);
-	p1->right= *node_pp;
-	if(p1->right)
+        p1->right= *node_pp;
+        if(p1->right)
           p1->right->parent= p1;
-	if(b1 == 0) {
-	  RAPTOR_AVLTREE_DEBUG1("b1 == 0\n");
+        if(b1 == 0) {
+          RAPTOR_AVLTREE_DEBUG1("b1 == 0\n");
           (*node_pp)->balance= -1;
-	  p1->balance= 1;
-	  *rebalancing_p= FALSE;
-	} else {
-	  RAPTOR_AVLTREE_DEBUG1("b1 != 0\n");
+          p1->balance= 1;
+          *rebalancing_p= FALSE;
+        } else {
+          RAPTOR_AVLTREE_DEBUG1("b1 != 0\n");
           (*node_pp)->balance= 0;
-	  p1->balance= 0;
-	}
-	*node_pp= p1;
+          p1->balance= 0;
+        }
+        *node_pp= p1;
         (*node_pp)->parent=p_parent;
       } else {
-	RAPTOR_AVLTREE_DEBUG1("double LR\n");
+        RAPTOR_AVLTREE_DEBUG1("double LR\n");
         p2= p1->right;
-	b2= p2->balance;
-	p1->right= p2->left;
-	if(p1->right)
+        b2= p2->balance;
+        p1->right= p2->left;
+        if(p1->right)
           p1->right->parent= p1;
-	p2->left= p1;
-	if(p2->left)
+        p2->left= p1;
+        if(p2->left)
           p2->left->parent= p2;
-	(*node_pp)->left= p2->right;
-	if((*node_pp)->left)
+        (*node_pp)->left= p2->right;
+        if((*node_pp)->left)
           (*node_pp)->left->parent= (*node_pp);
-	p2->right= *node_pp;
-	if(p2->right)
+        p2->right= *node_pp;
+        if(p2->right)
           p2->right->parent= p2;
-	if(b2 == -1)
-	  (*node_pp)->balance= 1;
-	else
-	  (*node_pp)->balance= 0;
-	if(b2 == 1)
-	  p1->balance= -1;
-	else
-	  p1->balance= 0;
-	*node_pp= p2;
+        if(b2 == -1)
+          (*node_pp)->balance= 1;
+        else
+          (*node_pp)->balance= 0;
+        if(b2 == 1)
+          p1->balance= -1;
+        else
+          p1->balance= 0;
+        *node_pp= p2;
         (*node_pp)->parent=p_parent;
-	p2->balance= 0;
+        p2->balance= 0;
       }
   } /* end switch */
 
 }
 
 
-/* get the number of items in the tree */
+/**
+ * raptor_avltree_size:
+ * @tree; AVL Tree object
+ *
+ * INTERNAL - Get the number of items in the AVL Tree
+ *
+ * Return value: number of items in tree
+ */
 int
 raptor_avltree_size(raptor_avltree* tree)
 {
@@ -833,7 +922,14 @@ raptor_avltree_size(raptor_avltree* tree)
 }
 
 
-/* set the handler for printing an item in a tree */
+/**
+ * raptor_avltree_set_print_handler
+ * @tree: AVL Tree object
+ * @print_fn: print function
+ *
+ * INTERNAL - set the handler for printing an item in a tree
+ *
+ */
 void
 raptor_avltree_set_print_handler(raptor_avltree* tree,
                                  raptor_data_print_function print_fn)
@@ -842,77 +938,400 @@ raptor_avltree_set_print_handler(raptor_avltree* tree,
 }
 
 
+/* Follow left children until a match for range is found (if range not NULL) */
 static raptor_avltree_node*
-raptor_avltree_node_leftmost(raptor_avltree_node* node)
+raptor_avltree_node_leftmost(raptor_avltree* tree, raptor_avltree_node* node,
+                             void* range)
 {
-  while(node && node->left)
-    node=node->left;
+  /*assert(node);
+  assert(!range || tree->compare_fn(range, node->data) == 0);*/
+  if(range)
+    while(node && node->left && 
+          tree->compare_fn(range, node->left->data) == 0)
+      node=node->left;
+  else
+    while(node && node->left)
+      node=node->left;
+  
   return node;
 }
 
 
 static raptor_avltree_node*
-raptor_avltree_node_rightmost(raptor_avltree_node* node)
+raptor_avltree_node_rightmost(raptor_avltree* tree, raptor_avltree_node* node,
+                              void* range)
 {
-  while(node && node->right)
-    node=node->right;
+  /*assert(node);
+  assert(!range || tree->compare_fn(range, node->data) == 0);*/
+  if(range)
+    while(node && node->right && 
+          tree->compare_fn(range, node->right->data) == 0)
+      node=node->right;
+  else
+    while(node && node->right)
+      node=node->right;
+  return node;
+}
+
+
+/* Follow right children until a match for range is found (range required) */
+static raptor_avltree_node*
+raptor_avltree_node_search_right(raptor_avltree* tree,
+                                 raptor_avltree_node* node, void* range)
+{
+  raptor_avltree_node* result;
+  
+  if(node == NULL)
+    return NULL;
+
+  result=node->right;
+  while(result) {
+    if(tree->compare_fn(range, result->data) == 0) {
+      return result;
+    } else {
+      result = result->right;
+    }
+  }
+
+  return node;
+}
+
+
+/* Follow left children until a match for range is found (range required) */
+static raptor_avltree_node*
+raptor_avltree_node_search_left(raptor_avltree* tree,
+                                raptor_avltree_node* node, void* range)
+{
+  raptor_avltree_node* result;
+  
+  if(node == NULL)
+    return NULL;
+
+  result=node->left;
+  while(result) {
+    if(tree->compare_fn(range, result->data) == 0) {
+      return result;
+    } else {
+      result = result->left;
+    }
+  }
+
   return node;
 }
 
 
 static raptor_avltree_node*
-raptor_avltree_node_prev(raptor_avltree_node* node)
+raptor_avltree_node_prev(raptor_avltree* tree, raptor_avltree_node* node,
+                         void* range)
 {
+  int up=0;
+
+  /*assert(!range || tree->compare_fn(range, node->data) == 0);*/
+
   if(node->left) {
-    node=raptor_avltree_node_rightmost(node->left);
+    /* Should never go left if the current node is already < range */
+    raptor_avltree_node* prev;
+    prev=raptor_avltree_node_rightmost(tree, node->left, NULL);
+    /*assert(!range ||tree->compare_fn(range, node->data) <= 0);*/
+    if(range) {
+      if(tree->compare_fn(range, prev->data) == 0) {
+        up = 0;
+        node = prev;
+      } else {
+        up = 1;
+      }
+    } else {
+      node = prev;
+      up = 0;
+    }
   } else {
+    up = 1;
+  }
+  
+  if(up) {
     raptor_avltree_node* last=node;
     /* Need to go up */
     node=node->parent;
     while(node) {
+    
       /* moving from right subtree to this node */
-      if(node->right && last == node->right)
+      if(node->right && last == node->right) {
         break;
+      }
       
       /* moved up to find an unvisited left subtree */
       if(node->left && last != node->left) {
-        node=raptor_avltree_node_rightmost(node->left);
+        /* Should never go left if the current node is already > range */
+        /*assert(!range ||tree->compare_fn(range, node->data) <= 0);*/
+        node=raptor_avltree_node_rightmost(tree, node->left, range);
         break;
       }
       last=node;
       node=node->parent;
     }
   }
-    
-  return node;
+
+  if (node && range) {
+    if (tree->compare_fn(range, node->data) == 0)
+      return node;
+    else
+      return NULL;
+  } else {
+    return node;
+  }
 }
 
 
+/* Follow right children until a match for range is found (if range not NULL) */
 static raptor_avltree_node*
-raptor_avltree_node_next(raptor_avltree_node* node)
+raptor_avltree_node_next(raptor_avltree* tree, raptor_avltree_node* node,
+                         void* range)
 {
+  int up=0;
+
+  /*assert(!range || tree->compare_fn(range, node->data) == 0);*/
+
   if(node->right) {
-    node=raptor_avltree_node_leftmost(node->right);
+    /* Should never go right if the current node is already > range */
+    raptor_avltree_node* next;
+    next=raptor_avltree_node_leftmost(tree, node->right, NULL);
+    /*assert(!range ||tree->compare_fn(range, node->data) <= 0);*/
+    if(range) {
+      if(tree->compare_fn(range, next->data) == 0) {
+        up = 0;
+        node = next;
+      } else {
+        up = 1;
+      }
+    } else {
+      node = next;
+      up = 0;
+    }
   } else {
+    up = 1;
+  }
+  
+  if(up) {
     raptor_avltree_node* last=node;
     /* Need to go up */
     node=node->parent;
     while(node) {
+    
       /* moving from left subtree to this node */
-      if(node->left && last == node->left)
+      if(node->left && last == node->left) {
         break;
+      }
       
       /* moved up to find an unvisited right subtree */
       if(node->right && last != node->right) {
-        node=raptor_avltree_node_leftmost(node->right);
+        /* Should never go right if the current node is already > range */
+        /*assert(!range ||tree->compare_fn(range, node->data) <= 0);*/
+        node=raptor_avltree_node_leftmost(tree, node->right, range);
         break;
       }
       last=node;
       node=node->parent;
     }
   }
-    
-  return node;
+
+  if (node && range) {
+    if (tree->compare_fn(range, node->data) == 0)
+      return node;
+    else
+      return NULL;
+  } else {
+    return node;
+  }
+}
+
+
+struct raptor_avltree_iterator_s {
+  raptor_avltree* tree;
+  raptor_avltree_node* root;
+  raptor_avltree_node* current;
+  void* range;
+  raptor_data_free_function range_free_fn;
+  int direction;
+  int is_finished;
+};
+
+
+/**
+ * raptor_new_avltree_iterator:
+ * @tree: #raptor_avltree object
+ * @range: range
+ * @range_free_fn: function to free @range object
+ * @direction: <0 to go 'backwards' otherwise 'forwards'
+ *
+ * INTERNAL - Get an in-order iterator for the start of a range, or the entire contents
+ *
+ * If range is NULL, the entire tree is walked in order.  If range
+ * specifies a range (i.e. the tree comparison function will 'match'
+ * (return 0 for) range and /several/ nodes), the iterator will be
+ * placed at the leftmost child matching range, and
+ * raptor_avltree_iterator_next will iterate over all nodes (and only
+ * nodes) that match range.
+ * 
+ * Return value: a new #raptor_avltree_iterator object or NULL on failure
+ **/
+raptor_avltree_iterator*
+raptor_new_avltree_iterator(raptor_avltree* tree, void* range,
+                            raptor_data_free_function range_free_fn,
+                            int direction)
+{
+  raptor_avltree_iterator* iterator;
+
+  iterator=(raptor_avltree_iterator*)RAPTOR_CALLOC(raptor_avltree_iterator,
+                                                   1, sizeof(raptor_avltree_iterator));
+  if(!iterator)
+    return NULL;
+
+  iterator->is_finished=0;
+  iterator->current=NULL;
+
+  iterator->tree = tree;
+  iterator->range = range;
+  iterator->range_free_fn = range_free_fn;
+  iterator->direction = direction;
+
+  if(range) {
+    /* find the topmost match (range is contained entirely in tree
+     * rooted here) 
+     */
+    iterator->current=raptor_avltree_search_internal(tree, tree->root, range);
+  } else {
+    iterator->current=tree->root;
+  }
+
+  iterator->root = iterator->current;
+  
+  if(iterator->current) {
+    if(iterator->direction < 0) {
+      /* go down to find END of range (or tree) */
+      while (1) {
+        raptor_avltree_node* pred;
+        iterator->current=raptor_avltree_node_rightmost(tree, iterator->current,
+                                                       range);
+        /* move left until a match is found */
+        pred=raptor_avltree_node_search_left(tree, iterator->current->right,
+                                             range);
+        
+        if(pred && tree->compare_fn(range, pred->data) == 0)
+          iterator->current = pred;
+        else
+          break;
+      }
+    } else {
+      /* go down to find START of range (or tree) */
+      while (1) {
+        raptor_avltree_node* pred;
+        iterator->current=raptor_avltree_node_leftmost(tree, iterator->current,
+                                                       range);
+        /* move right until a match is found */
+        pred=raptor_avltree_node_search_right(tree, iterator->current->left,
+                                              range);
+        
+        if(pred && tree->compare_fn(range, pred->data) == 0)
+          iterator->current = pred;
+        else
+          break;
+      }
+    }
+  }
+
+  return iterator;
+}
+
+
+/**
+ * raptor_free_avltree_iterator:
+ * @iterator: AVL Tree iterator object
+ *
+ * INTERNAL - AVL Tree Iterator destructor
+ */
+void
+raptor_free_avltree_iterator(raptor_avltree_iterator* iterator) 
+{
+  if(!iterator)
+    return;
+  
+  if(iterator->range && iterator->range_free_fn)
+    iterator->range_free_fn(iterator->range);
+
+  RAPTOR_FREE(raptor_avltree_iterator, iterator);
+}
+
+
+/**
+ * raptor_avltree_iterator_end:
+ * @iterator: AVL Tree iterator object
+ *
+ * INTERNAL - test if an iteration is finished
+ *
+ * Return value: non-0 if iteration is finished
+ */
+int
+raptor_avltree_iterator_end(raptor_avltree_iterator* iterator)
+{
+  raptor_avltree_node *node=iterator->current;
+  
+  if(iterator->is_finished)
+    return 1;
+  iterator->is_finished=(node == NULL);
+
+  return iterator->is_finished;
+}
+
+
+/**
+ * raptor_avltree_iterator_next:
+ * @iterator: AVL Tree iterator object
+ *
+ * INTERNAL - move iteration to next/prev object
+ *
+ * Return value: non-0 if iteration is finished
+ */
+int
+raptor_avltree_iterator_next(raptor_avltree_iterator* iterator)
+{
+  raptor_avltree_node *node=iterator->current;
+  
+  if(!node || iterator->is_finished)
+    return 1;
+  
+  if(iterator->direction < 0)
+    iterator->current=raptor_avltree_node_prev(iterator->tree, node,
+                                               iterator->range);
+  else
+    iterator->current=raptor_avltree_node_next(iterator->tree, node,
+                                               iterator->range);
+  /* Stay within rooted subtree */
+  if (iterator->root->parent == iterator->current)
+    iterator->current = NULL;
+
+  iterator->is_finished=(iterator->current == NULL);
+
+  return iterator->is_finished;
+}
+
+
+/**
+ * raptor_avltree_iterator_get:
+ * @iterator: AVL Tree iterator object
+ *
+ * INTERNAL - get current iteration object
+ *
+ * Return value: object or NULL if iteration is finished
+ */
+void*
+raptor_avltree_iterator_get(raptor_avltree_iterator* iterator)
+{
+  raptor_avltree_node *node=iterator->current;
+
+  if(iterator->is_finished)
+    return NULL;
+  
+  return node->data;
 }
 
 
@@ -920,8 +1339,11 @@ raptor_avltree_node_next(raptor_avltree_node* node)
 int
 raptor_avltree_cursor_first(raptor_avltree* tree)
 {
-  tree->cursor=raptor_avltree_node_leftmost(tree->root);
-  return (tree->cursor == NULL);
+  if(tree->cursor_iterator)
+    raptor_free_avltree_iterator(tree->cursor_iterator);
+  
+  tree->cursor_iterator=raptor_new_avltree_iterator(tree, NULL, NULL, 1);
+  return (tree->cursor_iterator == NULL);
 }
 
 
@@ -929,8 +1351,11 @@ raptor_avltree_cursor_first(raptor_avltree* tree)
 int
 raptor_avltree_cursor_last(raptor_avltree* tree)
 {
-  tree->cursor=raptor_avltree_node_rightmost(tree->root);
-  return (tree->cursor == NULL);
+  if(tree->cursor_iterator)
+    raptor_free_avltree_iterator(tree->cursor_iterator);
+  
+  tree->cursor_iterator=raptor_new_avltree_iterator(tree, NULL, NULL, -1);
+  return (tree->cursor_iterator == NULL);
 }
 
 
@@ -938,11 +1363,12 @@ raptor_avltree_cursor_last(raptor_avltree* tree)
 int
 raptor_avltree_cursor_prev(raptor_avltree* tree)
 {
-  if(!tree->cursor)
-    raptor_avltree_cursor_first(tree);
+  int rc;
+  if(!tree->cursor_iterator)
+    rc=raptor_avltree_cursor_last(tree);
   else
-    tree->cursor=raptor_avltree_node_prev(tree->cursor);
-  return (tree->cursor == NULL);
+    rc=raptor_avltree_iterator_next(tree->cursor_iterator);
+  return rc;
 }
 
 
@@ -950,11 +1376,12 @@ raptor_avltree_cursor_prev(raptor_avltree* tree)
 int
 raptor_avltree_cursor_next(raptor_avltree* tree)
 {
-  if(!tree->cursor)
-    raptor_avltree_cursor_last(tree);
+  int rc;
+  if(!tree->cursor_iterator)
+    rc=raptor_avltree_cursor_first(tree);
   else
-    tree->cursor=raptor_avltree_node_next(tree->cursor);
-  return (tree->cursor == NULL);
+    rc=raptor_avltree_iterator_next(tree->cursor_iterator);
+  return rc;
 }
 
 
@@ -962,8 +1389,8 @@ raptor_avltree_cursor_next(raptor_avltree* tree)
 void*
 raptor_avltree_cursor_get(raptor_avltree* tree)
 {
-  if(tree->cursor)
-    return tree->cursor->data;
+  if(tree->cursor_iterator)
+    return raptor_avltree_iterator_get(tree->cursor_iterator);
   return NULL;
 }
 
@@ -973,13 +1400,14 @@ void
 raptor_avltree_print(raptor_avltree* tree, FILE* stream)
 {
   int i;
-  int rv;
+  int rv=0;
+  raptor_avltree_iterator* iter;
 
-  fprintf(stream, "AVL Tree size %d\n", tree->size);
-  for(i=0, (rv=raptor_avltree_cursor_first(tree));
-      !rv;
-      i++, (rv=raptor_avltree_cursor_next(tree))) {
-    const void* data=raptor_avltree_cursor_get(tree);
+  fprintf(stream, "AVL Tree size %u\n", tree->size);
+  for(i=0, (iter=raptor_new_avltree_iterator(tree, NULL, NULL, 1));
+      iter && !rv;
+      i++, (rv=raptor_avltree_iterator_next(iter))) {
+    const void* data=raptor_avltree_iterator_get(iter);
     if(!data)
       continue;
     fprintf(stream, "%d) ", i);
@@ -988,6 +1416,7 @@ raptor_avltree_print(raptor_avltree* tree, FILE* stream)
     else
       fprintf(stream, "Data Node %p\n", data);
   }
+  /*assert(i == tree->size);*/
 }
 
 
@@ -1025,14 +1454,14 @@ raptor_avltree_dump_internal(raptor_avltree* tree, raptor_avltree_node* node,
 int
 raptor_avltree_dump(raptor_avltree* tree, FILE* stream)
 {
-  fprintf(stream, "Dumping avltree %p  size %d\n", tree, tree->size);
+  fprintf(stream, "Dumping avltree %p size %u\n", tree, tree->size);
   return raptor_avltree_dump_internal(tree, tree->root, 0, stream);
 }
 
 
 static void
 raptor_avltree_check_internal(raptor_avltree* tree, raptor_avltree_node* node,
-                              int* count_p)
+                              unsigned int* count_p)
 {
   if(!node)
     return;
@@ -1050,11 +1479,11 @@ raptor_avltree_check_internal(raptor_avltree* tree, raptor_avltree_node* node,
 void
 raptor_avltree_check(raptor_avltree* tree)
 {
-  int count=0;
+  unsigned int count=0;
   
   raptor_avltree_check_internal(tree, tree->root, &count);
   if(count != tree->size) {
-    fprintf(stderr, "Tree %p nodes count is %d.  actual count %d\n",
+    fprintf(stderr, "Tree %p nodes count is %u.  actual count %d\n",
             tree, tree->size, count);
     abort();
   }
@@ -1127,6 +1556,7 @@ main(int argc, char *argv[])
   const char *results[RESULT_COUNT+1] = { "amy", "bij", "daj", "def", "jib", "ron", NULL};
 
   raptor_avltree* tree;
+  raptor_avltree_iterator* iter;
   visit_state vs;
   int i;
   
@@ -1176,6 +1606,8 @@ main(int argc, char *argv[])
   raptor_avltree_dump(tree, stderr);
 #endif
 
+  raptor_avltree_print(tree, stdout);
+
 
   for(i=0; delete_items[i]; i++) {
     int rc;
@@ -1199,27 +1631,29 @@ main(int argc, char *argv[])
 
 
 #if RAPTOR_DEBUG > 1
-  fprintf(stderr, "%s: Walking tree forwards via cursor\n", program);
+  fprintf(stderr, "%s: Walking tree forwards via iterator\n", program);
 #endif
-  raptor_avltree_cursor_first(tree);
+  iter=raptor_new_avltree_iterator(tree, NULL, NULL, 1);
   for(i=0; 1; i++) {
-    const char* data=(const char*)raptor_avltree_cursor_get(tree);
+    const char* data=(const char*)raptor_avltree_iterator_get(iter);
     const char* result=results[i];
     if((!data && data != result) || (data && strcmp(data, result))) {
-      fprintf(stderr, "%3d: Forwards cursoring expected '%s' but found '%s'\n",
+      fprintf(stderr, "%3d: Forwards iterator expected '%s' but found '%s'\n",
               i, result, data);
       exit(1);
     }
 #if RAPTOR_DEBUG > 1
     fprintf(stderr, "%3d: Got '%s'\n", i, data);
 #endif
-    if(raptor_avltree_cursor_next(tree))
+    if(raptor_avltree_iterator_next(iter))
       break;
     if(i > RESULT_COUNT) {
-      fprintf(stderr, "Backwards cursor did not end on result %i as expected\n", i);
+      fprintf(stderr, "Forward iterator did not end on result %i as expected\n", i);
       exit(1);
     }
   }
+  raptor_free_avltree_iterator(iter);
+
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Walking tree backwards via cursor\n", program);
