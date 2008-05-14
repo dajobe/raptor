@@ -160,6 +160,7 @@ raptor_new_avltree(raptor_data_compare_function compare_fn,
   tree->print_fn=NULL;
   tree->flags=flags;
   tree->size=0;
+  tree->cursor_iterator=NULL;
   
   return tree;
 }
