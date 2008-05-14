@@ -177,13 +177,14 @@ check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
 	  fi; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
+	  status1=$$?; \
 	  $(top_builddir)/utils/rdfdiff -f turtle -u $$baseuri -t turtle $(srcdir)/$$test $$name-turtle.ttl > $$name.res 2> $$name.err; \
-	  status=$$?; \
-	  if test $$status = 0; then \
+	  status2=$$?; \
+	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    echo "rapper output:"; cat $$name-turtle.ttl; cat $$name.err; result=1; \
+	    echo "rapper + rdfdiff output:"; cat $$name-turtle.ttl; cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name-turtle.ttl $$name.res $$name.err; \
 	done; \
