@@ -236,6 +236,7 @@ typedef struct raptor_uri_detail_s raptor_uri_detail;
 /* raptor_avltree.c */
 /* AVL tree */
 typedef struct raptor_avltree_s raptor_avltree;
+typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
 
 
 /* Raptor Namespace Stack node */
@@ -1199,6 +1200,9 @@ typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_d
 typedef void (*raptor_data_print_function)(FILE* handle, const void* data);
 
 /* constructor / destructor */
+
+#define RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES 1
+
 raptor_avltree* raptor_new_avltree(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
 void raptor_free_avltree(raptor_avltree* tree);
 
@@ -1216,12 +1220,19 @@ void raptor_avltree_print(raptor_avltree* tree, FILE* stream);
 int raptor_avltree_dump(raptor_avltree* tree, FILE* stream);
 void raptor_avltree_check(raptor_avltree* tree);
 #endif
+
 int raptor_avltree_cursor_first(raptor_avltree* tree);
 int raptor_avltree_cursor_last(raptor_avltree* tree);
 int raptor_avltree_cursor_prev(raptor_avltree* tree);
 int raptor_avltree_cursor_next(raptor_avltree* tree);
 void* raptor_avltree_cursor_get(raptor_avltree* tree);
 
+raptor_avltree_iterator* raptor_new_avltree_iterator(raptor_avltree* tree, void* range,  raptor_data_free_function range_free_fn, int direction);
+void raptor_free_avltree_iterator(raptor_avltree_iterator* iterator);
+
+int raptor_avltree_iterator_end(raptor_avltree_iterator* iterator);
+int raptor_avltree_iterator_next(raptor_avltree_iterator* iterator);
+void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
 
 /* end of RAPTOR_INTERNAL */
 #endif
