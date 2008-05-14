@@ -385,6 +385,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   int rv = 0;
   int idx;
+  raptor_avltree_iterator* iter=NULL;
   int i;
 
   RAPTOR_DEBUG5("Emitting subject collection items for node %p refcount %d subject %d object %d\n", 
@@ -393,12 +394,18 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
                 subject->node->count_as_object);
 
   
-  for(i=0, (rv=raptor_avltree_cursor_first(subject->properties));
-      !rv;
-      i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
-    raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
-    raptor_abbrev_node* predicate = nodes[0];
-    raptor_abbrev_node* object = nodes[1];
+  for(i=0, (iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
+      iter && !rv;
+      i++, (rv=raptor_avltree_iterator_next(iter))) {
+    raptor_abbrev_node** nodes;
+    raptor_abbrev_node* predicate;
+    raptor_abbrev_node* object;
+
+    nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
+    if(!nodes)
+      break;
+    predicate= nodes[0];
+    object= nodes[1];
     
     if(!raptor_uri_equals(predicate->value.resource.uri, 
                           context->rdf_first_uri)) {
@@ -441,11 +448,11 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     }
 
     /* last item */
-    rv=raptor_avltree_cursor_next(subject->properties);
+    rv=raptor_avltree_iterator_next(iter);
     if(rv)
       break;
 
-    nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
+    nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
     predicate = nodes[0];
     object = nodes[1];
 
@@ -474,6 +481,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       break;
     }
   }
+  if(iter)
+    raptor_free_avltree_iterator(iter);
   
   return rv;
 }
@@ -499,6 +508,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
   raptor_abbrev_node* last_predicate=NULL;
   int rv = 0;  
+  raptor_avltree_iterator* iter=NULL;
   int i;
 
   RAPTOR_DEBUG5("Emitting subject properties for node %p refcount %d subject %d object %d\n", 
@@ -510,13 +520,19 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
   if(raptor_sequence_size(subject->list_items) > 0)
     rv = raptor_turtle_emit_subject_list_items(serializer, subject, depth+1);
 
-  for(i=0, (rv=raptor_avltree_cursor_first(subject->properties));
-      !rv;
-      i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
-    raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
-    raptor_abbrev_node* predicate = nodes[0];
-    raptor_abbrev_node* object = nodes[1];
+  for(i=0, (iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
+      iter && !rv;
+      i++, (rv=raptor_avltree_iterator_next(iter))) {
+    raptor_abbrev_node** nodes;
+    raptor_abbrev_node* predicate;
+    raptor_abbrev_node* object;
     raptor_qname *qname;
+
+    nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
+    if(!nodes)
+      break;
+    predicate= nodes[0];
+    object= nodes[1];
 
     if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) {
       /* no object list abbreviation possible, terminate last object */
@@ -632,13 +648,15 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
   /* check if we can do collection abbreviation */
   if(raptor_avltree_size(subject->properties) >= 4) {
+    raptor_avltree_iterator* iter=NULL;
     raptor_abbrev_node* pred1;
     raptor_abbrev_node* pred2;
 
-    raptor_avltree_cursor_first(subject->properties);
-    pred1=((raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties))[0];
-    raptor_avltree_cursor_next(subject->properties);
-    pred2=((raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties))[0];
+    iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
+    pred1=((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
+    raptor_avltree_iterator_next(iter);
+    pred2=((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
+    raptor_free_avltree_iterator(iter);
 
     if(pred1->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
        pred2->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&

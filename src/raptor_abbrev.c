@@ -742,6 +742,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   unsigned char *subj;
   unsigned char *pred;
   unsigned char *obj;
+  raptor_avltree_iterator* iter=NULL;
 
   /* Note: The raptor_abbrev_node field passed as the first argument for
    * raptor_statement_part_as_string() is somewhat arbitrary, since as
@@ -776,14 +777,19 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   }
 
 
-  raptor_avltree_cursor_first(subject->properties);
-  while (1) {
-    raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
+  iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
+  while(iter) {
+    raptor_abbrev_node** nodes;
+    nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
+    if(!nodes)
+      break;
     raptor_print_abbrev_po(stderr, nodes);
 
-    if(raptor_avltree_cursor_next(tree))
+    if(raptor_avltree_iterator_next(iter))
       break;
   }
+  if(iter)
+    raptor_free_avltree_iterator(iter);
   
   RAPTOR_FREE(cstring, subj);
   

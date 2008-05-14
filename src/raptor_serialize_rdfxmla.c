@@ -519,6 +519,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   int rv = 0;  
   int i;
+  raptor_avltree_iterator* iter=NULL;
   
   RAPTOR_DEBUG5("Emitting subject properties for node %p refcount %d subject %d object %d\n", 
                 subject->node, subject->node->ref_count, 
@@ -532,16 +533,23 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
       return rv;
   }
 
-  for(i=0, rv=raptor_avltree_cursor_first(subject->properties);
-      !rv;
-      i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
+  
+  for(i=0, iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
+      iter && !rv;
+      i++, (rv=raptor_avltree_iterator_next(iter))) {
     raptor_uri *base_uri=NULL;
     raptor_qname *qname;
     raptor_xml_element *element;
-    raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
-    raptor_abbrev_node* predicate = nodes[0];
-    raptor_abbrev_node* object = nodes[1];
+    raptor_abbrev_node** nodes;
+    raptor_abbrev_node* predicate;
+    raptor_abbrev_node* object;
 
+    nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
+    if(!nodes)
+      break;
+    predicate= nodes[0];
+    object= nodes[1];
+    
     if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
       /* we should only get here in rare cases -- usually when there
        * are multiple ordinals with the same value. */
@@ -610,7 +618,9 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
     raptor_free_xml_element(element);
     
   }
-         
+  if(iter)
+    raptor_free_avltree_iterator(iter);
+  
   return rv;
 
   oom:
@@ -1291,13 +1301,19 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       int add_property=1;
 
       if(context->is_xmp && predicate->ref_count > 1) {
+        raptor_avltree_iterator* iter=NULL;
         int i;
-        for(i=0, (rv=raptor_avltree_cursor_first(subject->properties));
-            !rv;
-            i++, (rv=raptor_avltree_cursor_next(subject->properties))) {
-          raptor_abbrev_node** nodes=(raptor_abbrev_node**)raptor_avltree_cursor_get(subject->properties);
-          raptor_abbrev_node* node = nodes[0];
+        for(i=0, (iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
+            iter && !rv;
+            i++, (rv=raptor_avltree_iterator_next(iter))) {
+          raptor_abbrev_node** nodes;
+          raptor_abbrev_node* node;
 
+          nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
+          if(!nodes)
+            break;
+          node= nodes[0];
+          
           if(node == predicate) {
             add_property=0;
             
@@ -1314,6 +1330,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
             break;
           }
         }
+        if(iter)
+          raptor_free_avltree_iterator(iter);
       }
 
       if(add_property) {
