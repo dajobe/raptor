@@ -130,7 +130,7 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
 
 
 
-/**
+/*
  * raptor_new_avltree:
  * @compare_fn: item comparison function for ordering
  * @free_fn: item free function (or NULL)
@@ -166,7 +166,7 @@ raptor_new_avltree(raptor_data_compare_function compare_fn,
 }
 
 
-/**
+/*
  * raptor_free_avltree:
  * @tree: AVLTree object
  *
@@ -225,7 +225,7 @@ raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node,
 }
 
 
-/**
+/*
  * raptor_avltree_search:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
@@ -243,7 +243,8 @@ raptor_avltree_search(raptor_avltree* tree, const void* p_data)
 }
 
 
-/**
+/*
+ * raptor_avltree_add:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
  *
@@ -270,7 +271,7 @@ raptor_avltree_add(raptor_avltree* tree, void* p_data)
 }
 
 
-/**
+/*
  * raptor_avltree_remove:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
@@ -301,7 +302,7 @@ raptor_avltree_remove(raptor_avltree* tree, void* p_data)
 }
 
 
-/**
+/*
  * raptor_avltree_delete:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
@@ -347,7 +348,7 @@ raptor_avltree_visit_internal(raptor_avltree* tree, raptor_avltree_node* node,
 }
 
 
-/**
+/*
  * raptor_avltree_visit:
  * @tree: AVL Tree object
  * @visit_fn: visit function to call at each item
@@ -908,9 +909,9 @@ raptor_avltree_balance_right(raptor_avltree* tree,
 }
 
 
-/**
+/*
  * raptor_avltree_size:
- * @tree; AVL Tree object
+ * @tree: AVL Tree object
  *
  * INTERNAL - Get the number of items in the AVL Tree
  *
@@ -923,8 +924,8 @@ raptor_avltree_size(raptor_avltree* tree)
 }
 
 
-/**
- * raptor_avltree_set_print_handler
+/*
+ * raptor_avltree_set_print_handler:
  * @tree: AVL Tree object
  * @print_fn: print function
  *
@@ -1157,7 +1158,7 @@ struct raptor_avltree_iterator_s {
 };
 
 
-/**
+/*
  * raptor_new_avltree_iterator:
  * @tree: #raptor_avltree object
  * @range: range
@@ -1244,7 +1245,7 @@ raptor_new_avltree_iterator(raptor_avltree* tree, void* range,
 }
 
 
-/**
+/*
  * raptor_free_avltree_iterator:
  * @iterator: AVL Tree iterator object
  *
@@ -1263,7 +1264,7 @@ raptor_free_avltree_iterator(raptor_avltree_iterator* iterator)
 }
 
 
-/**
+/*
  * raptor_avltree_iterator_end:
  * @iterator: AVL Tree iterator object
  *
@@ -1284,7 +1285,7 @@ raptor_avltree_iterator_end(raptor_avltree_iterator* iterator)
 }
 
 
-/**
+/*
  * raptor_avltree_iterator_next:
  * @iterator: AVL Tree iterator object
  *
@@ -1316,7 +1317,7 @@ raptor_avltree_iterator_next(raptor_avltree_iterator* iterator)
 }
 
 
-/**
+/*
  * raptor_avltree_iterator_get:
  * @iterator: AVL Tree iterator object
  *
