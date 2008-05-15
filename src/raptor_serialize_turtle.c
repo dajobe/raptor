@@ -656,6 +656,8 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     raptor_abbrev_node* pred2;
 
     iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
+    if(!iter)
+      return 1;
     pred1=((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
     raptor_avltree_iterator_next(iter);
     pred2=((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
