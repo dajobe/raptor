@@ -346,7 +346,9 @@ static void XMLCALL
    rdfalist* context_stack = user_data;
    rdfacontext* context = rdfa_create_new_element_context(context_stack);
    const char** aptr = attributes;
+#ifndef LIBRDFA_IN_RAPTOR
    const char* xml_lang = NULL;
+#endif
    const char* about_curie = NULL;
    char* about = NULL;
    const char* src_curie = NULL;
@@ -465,11 +467,11 @@ static void XMLCALL
             datatype = rdfa_resolve_curie(context, datatype_curie,
                CURIE_PARSE_INSTANCEOF_DATATYPE);
          }
+#ifndef LIBRDFA_IN_RAPTOR
          else if(strcmp(attr, "xml:lang") == 0)
          {
             xml_lang = value;
          }
-#ifdef LIBRDFA_IN_RAPTOR
          else if(strstr(attr, "xmlns") != NULL)
          {
             // 2. Next the [current element] is parsed for
