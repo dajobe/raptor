@@ -209,6 +209,7 @@ raptor_stringbuffer_copy_to_string
 raptor_sequence
 raptor_new_sequence
 raptor_free_sequence
+raptor_sequence_delete_at
 raptor_sequence_size
 raptor_sequence_set_at
 raptor_sequence_push
@@ -348,6 +349,7 @@ raptor_xml_writer_raw_counted
 raptor_xml_writer_comment
 raptor_xml_writer_comment_counted
 raptor_xml_writer_features_enumerate
+raptor_xml_writer_get_depth
 raptor_xml_writer_set_feature
 raptor_xml_writer_set_feature_string
 raptor_xml_writer_get_feature
