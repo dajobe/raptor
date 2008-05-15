@@ -602,6 +602,9 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
     
     last_predicate = predicate;
   }
+
+  if (iter)
+    raptor_free_avltree_iterator(iter);
          
   return rv;
 }
