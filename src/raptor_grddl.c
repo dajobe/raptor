@@ -1890,11 +1890,9 @@ raptor_grddl_parse_recognise_syntax(raptor_parser_factory* factory,
       score=7;
     if(!strcmp((const char*)suffix, "html"))
       score=2;
-  }
-  
-  if(identifier) {
+  } else if(identifier) {
     if(strstr((const char*)identifier, "xhtml"))
-      score+=5;
+      score=5;
   }
   
   return score;
