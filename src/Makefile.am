@@ -112,6 +112,9 @@ endif
 if RAPTOR_PARSER_GUESS
 libraptor_la_SOURCES += raptor_guess.c
 endif
+if RAPTOR_PARSER_RDFA
+libraptor_la_SOURCES += raptor_librdfa.c
+endif
 # Always available
 libraptor_la_SOURCES += raptor_serialize_simple.c
 if RAPTOR_SERIALIZER_RDFXML
@@ -153,6 +156,20 @@ libraptor_la_SOURCES += strcasecmp.c
 endif
 if PARSEDATE
 libraptor_la_SOURCES += parsedate.c
+endif
+
+if LIBRDFA
+libraptor_la_SOURCES += \
+$(top_srcdir)/librdfa/curie.c \
+$(top_srcdir)/librdfa/language.c\
+$(top_srcdir)/librdfa/rdfa.c \
+$(top_srcdir)/librdfa/rdfa_utils.c \
+$(top_srcdir)/librdfa/subject.c \
+$(top_srcdir)/librdfa/triple.c \
+$(top_srcdir)/librdfa/rdfa.h \
+$(top_srcdir)/librdfa/rdfa_utils.h 
+
+AM_CFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
 endif
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@

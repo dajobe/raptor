@@ -712,6 +712,7 @@ int raptor_init_parser_grddl_common(void);
 int raptor_init_parser_grddl(void);
 int raptor_init_parser_guess(void);
 int raptor_init_parser_rss(void);
+int raptor_init_parser_rdfa(void);
 
 void raptor_terminate_parser_grddl_common(void);
 

@@ -135,6 +135,10 @@ raptor_parsers_init(void)
   rc+= raptor_init_parser_guess() != 0;
 #endif
 
+#ifdef RAPTOR_PARSER_RDFA
+  rc+= raptor_init_parser_rdfa() != 0;
+#endif
+
   return rc;
 }
 

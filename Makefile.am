@@ -24,7 +24,7 @@
 
 noinst_SCRIPTS = raptor-src-config
 
-SUBDIRS= src utils docs data tests win32 examples
+SUBDIRS= src utils docs data tests win32 examples librdfa
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor.pc
