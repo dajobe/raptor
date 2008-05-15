@@ -246,6 +246,15 @@ a name is legal in some XML version.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_xml_writer_get_depth ##### -->
+<para>
+
+</para>
+
+@xml_writer: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_xml_writer_set_feature ##### -->
 <para>
 

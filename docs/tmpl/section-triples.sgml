@@ -51,9 +51,12 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @type: 
 @uri: 
 @uri_source: 
+@id: 
 @ordinal: 
 @is_malloced: 
+@literal: 
 @literal_datatype: 
+@literal_language: 
 
 <!-- ##### FUNCTION raptor_new_identifier ##### -->
 <para>
@@ -100,6 +103,7 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @object: 
 @object_type: 
 @object_literal_datatype: 
+@object_literal_language: 
 
 <!-- ##### FUNCTION raptor_statement_compare ##### -->
 <para>

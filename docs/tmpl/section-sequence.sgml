@@ -44,6 +44,16 @@ where the items are added and removed from the end.
 @seq: 
 
 
+<!-- ##### FUNCTION raptor_sequence_delete_at ##### -->
+<para>
+
+</para>
+
+@seq: 
+@idx: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_sequence_size ##### -->
 <para>
 
