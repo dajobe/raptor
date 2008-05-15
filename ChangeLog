@@ -1,3 +1,305 @@
+2008-05-15  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-sequence.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-xml.sgml: gtk docs
+
+	* src/raptor_xml_writer.c: autodocs
+
+	* src/raptor_avltree.c: de-autodoc internal functions
+
+	* docs/raptor-sections.txt: Added raptor_sequence_delete_at and
+	raptor_xml_writer_get_depth
+
+	* librdfa/rdfa.c: Do not call rdfa_update_uri_mappings with
+	LIBRDFA_IN_RAPTOR
+
+	* tests/rdfa/0060.out, tests/rdfa/Makefile.am: Fix 0060.out to
+	make 4 tests expected to fail
+
+	* tests/rdfa/Makefile.am: annotate expected test failures
+
+	* tests/rdfa/Makefile.am: Expect failures: 0011.xhtml 0052.xhtml
+	0053.xhtml 0058.xhtml 0060.xhtml
+
+	* configure.ac, tests/Makefile.am, tests/rdfa,
+	tests/rdfa/0001.out, tests/rdfa/0001.xhtml, tests/rdfa/0006.out,
+	tests/rdfa/0006.xhtml, tests/rdfa/0007.out, tests/rdfa/0007.xhtml,
+	tests/rdfa/0008.out, tests/rdfa/0008.xhtml, tests/rdfa/0009.out,
+	tests/rdfa/0009.xhtml, tests/rdfa/0010.out, tests/rdfa/0010.xhtml,
+	tests/rdfa/0011.out, tests/rdfa/0011.xhtml, tests/rdfa/0012.out,
+	tests/rdfa/0012.xhtml, tests/rdfa/0013.out, tests/rdfa/0013.xhtml,
+	tests/rdfa/0014.out, tests/rdfa/0014.xhtml, tests/rdfa/0015.out,
+	tests/rdfa/0015.xhtml, tests/rdfa/0018.out, tests/rdfa/0018.xhtml,
+	tests/rdfa/0019.out, tests/rdfa/0019.xhtml, tests/rdfa/0020.out,
+	tests/rdfa/0020.xhtml, tests/rdfa/0021.out, tests/rdfa/0021.xhtml,
+	tests/rdfa/0023.out, tests/rdfa/0023.xhtml, tests/rdfa/0025.out,
+	tests/rdfa/0025.xhtml, tests/rdfa/0026.out, tests/rdfa/0026.xhtml,
+	tests/rdfa/0027.out, tests/rdfa/0027.xhtml, tests/rdfa/0029.out,
+	tests/rdfa/0029.xhtml, tests/rdfa/0030.out, tests/rdfa/0030.xhtml,
+	tests/rdfa/0031.out, tests/rdfa/0031.xhtml, tests/rdfa/0032.out,
+	tests/rdfa/0032.xhtml, tests/rdfa/0033.out, tests/rdfa/0033.xhtml,
+	tests/rdfa/0034.out, tests/rdfa/0034.xhtml, tests/rdfa/0035.out,
+	tests/rdfa/0035.xhtml, tests/rdfa/0036.out, tests/rdfa/0036.xhtml,
+	tests/rdfa/0037.out, tests/rdfa/0037.xhtml, tests/rdfa/0038.out,
+	tests/rdfa/0038.xhtml, tests/rdfa/0041.out, tests/rdfa/0041.xhtml,
+	tests/rdfa/0046.out, tests/rdfa/0046.xhtml, tests/rdfa/0047.out,
+	tests/rdfa/0047.xhtml, tests/rdfa/0048.out, tests/rdfa/0048.xhtml,
+	tests/rdfa/0049.out, tests/rdfa/0049.xhtml, tests/rdfa/0050.out,
+	tests/rdfa/0050.xhtml, tests/rdfa/0051.out, tests/rdfa/0051.xhtml,
+	tests/rdfa/0052.out, tests/rdfa/0052.xhtml, tests/rdfa/0053.out,
+	tests/rdfa/0053.xhtml, tests/rdfa/0054.out, tests/rdfa/0054.xhtml,
+	tests/rdfa/0055.out, tests/rdfa/0055.xhtml, tests/rdfa/0056.out,
+	tests/rdfa/0056.xhtml, tests/rdfa/0057.out, tests/rdfa/0057.xhtml,
+	tests/rdfa/0058.out, tests/rdfa/0058.xhtml, tests/rdfa/0059.out,
+	tests/rdfa/0059.xhtml, tests/rdfa/0060.out, tests/rdfa/0060.xhtml,
+	tests/rdfa/0061.out, tests/rdfa/0061.xhtml, tests/rdfa/0062.out,
+	tests/rdfa/0062.xhtml, tests/rdfa/0063.out, tests/rdfa/0063.xhtml,
+	tests/rdfa/0064.out, tests/rdfa/0064.xhtml, tests/rdfa/0065.out,
+	tests/rdfa/0065.xhtml, tests/rdfa/0066.out, tests/rdfa/0066.xhtml,
+	tests/rdfa/0067.out, tests/rdfa/0067.xhtml, tests/rdfa/0068.out,
+	tests/rdfa/0068.xhtml, tests/rdfa/0069.out, tests/rdfa/0069.xhtml,
+	tests/rdfa/0070.out, tests/rdfa/0070.xhtml, tests/rdfa/0071.out,
+	tests/rdfa/0071.xhtml, tests/rdfa/0072.out, tests/rdfa/0072.xhtml,
+	tests/rdfa/0073.out, tests/rdfa/0073.xhtml, tests/rdfa/0074.out,
+	tests/rdfa/0074.xhtml, tests/rdfa/0075.out, tests/rdfa/0075.xhtml,
+	tests/rdfa/0076.out, tests/rdfa/0076.xhtml, tests/rdfa/0077.out,
+	tests/rdfa/0077.xhtml, tests/rdfa/0078.out, tests/rdfa/0078.xhtml,
+	tests/rdfa/0079.out, tests/rdfa/0079.xhtml, tests/rdfa/0080.out,
+	tests/rdfa/0080.xhtml, tests/rdfa/0081.out, tests/rdfa/0081.xhtml,
+	tests/rdfa/0082.out, tests/rdfa/0082.xhtml, tests/rdfa/0083.out,
+	tests/rdfa/0083.xhtml, tests/rdfa/0084.out, tests/rdfa/0084.xhtml,
+	tests/rdfa/0086.out, tests/rdfa/0086.xhtml, tests/rdfa/0087.out,
+	tests/rdfa/0087.xhtml, tests/rdfa/0089.out, tests/rdfa/0089.xhtml,
+	tests/rdfa/0090.out, tests/rdfa/0090.xhtml, tests/rdfa/1001.out,
+	tests/rdfa/1001.xhtml, tests/rdfa/Makefile.am: Added RDFA test
+	cases from
+	http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/
+
+	* librdfa/curie.c: (rdfa_resolve_curie): Handle undefined
+	namespaces prefix
+
+	* src/raptor_librdfa.c: (raptor_librdfa_generate_statement):
+	Generate correct bnodes
+
+	* Makefile.am, configure.ac, librdfa, librdfa/Makefile.am,
+	librdfa/curie.c, librdfa/language.c, librdfa/rdfa.c,
+	librdfa/rdfa.h, librdfa/rdfa_utils.c, librdfa/rdfa_utils.h,
+	librdfa/subject.c, librdfa/triple.c, src/Makefile.am,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_parse.c:
+	Added RDFA support via a copy of librdfa linked inside Raptor
+
+	librdfa/ directory contains a copy of (part of) librdfa
+	http://rdfa.digitalbazaar.com/librdfa/ by Manu Sporny
+
+	"librdfa is licensed under the GNU Lesser General Public License v2.1
+	(or newer), GNU General Public License v2.0 (or newer), or the Apache
+	2.0 License (or newer). Each license is an alternative, and if you
+	select one license, that one alone applies."
+
+	(same license as raptor)
+
+	The sources were taken from GIT at
+	http://rdfa.digitalbazaar.com/librdfa.git
+	and patched to work inside raptor.
+
+	src/raptor_librdfa.c: New raptor parser 'rdfa'
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_recognise_syntax): Lower
+	scores for xhtml since the mime type gets added in too
+
+	* src/raptor_grddl.c: (raptor_grddl_parse_recognise_syntax): Do
+	not guess using "xhtml" suffix twice
+
+2008-05-15  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_emit_subject):
+	Resiliency fix. Check raptor_new_avltree_iterator() return value.
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit_subject_properties): Free avltree iterator
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_properties): Resiliency fix: do not
+	leak iterator on OOM.
+
+2008-05-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_turtle.c: Switch raptor_avltree_cursor_*
+	functions to use raptor_avltree_iterator
+
+	* tests/Makefile.am: check-rdfxmla, check-turtle-serialize: check
+	status from rapper & rdfdiff
+
+	* src/raptor_avltree.c: (raptor_avltree_cursor_first,
+	raptor_avltree_cursor_last): Return failure/finished if tree was
+	empty.
+
+	* src/raptor_avltree.c: (raptor_avltree_iterator_get): finished if
+	no current node
+
+	* tests/turtle/Makefile.am: check-turtle-serialize: check status
+	from rapper & rdfdiff
+
+	* src/raptor_avltree.c: (raptor_new_avltree): Zap cursor_iterator
+
+	* src/raptor_internal.h: Added raptor_avltree_iterator typedef.
+	Added RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES flag Added prototypes
+	for raptor_new_avltree_iterator, raptor_free_avltree_iterator,
+	raptor_avltree_iterator_end, raptor_avltree_iterator_next and
+	raptor_avltree_iterator_get.
+
+	* src/raptor_avltree.c: Autodocs for (still internal) AVL Tree
+	functions Some whitespace/indenting fixes.
+	(raptor_avltree_add,raptor_avltree_sprout): Will either replace or
+	ignore updates to a duplicate - equivalent - item depending on the
+	new raptor_new_avltree constructor flags arg value
+	RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES.
+	(raptor_avltree_node_leftmost, raptor_avltree_node_rightmost):
+	Accept a range argument to use for searching in a range.
+	(raptor_avltree_node_search_right,
+	raptor_avltree_node_search_left): Added for searching for a node
+	in a direction in a range.
+	(raptor_avltree_node_prev, raptor_avltree_node_next): Handle
+	moving with ranges.
+	(raptor_new_avltree_iterator): Added iterator constructor with
+	direction arg to indicate prev/next direction of iteration,
+	optionally in a range.
+	(raptor_free_avltree_iterator): Added iterator destructor.
+	(raptor_avltree_iterator_end): Added iterator done check method.
+	(raptor_avltree_iterator_next): Added iterator move method.
+	(raptor_avltree_iterator_get): Added iterator get current method.
+	(raptor_avltree_cursor_first, raptor_avltree_cursor_last,
+	raptor_avltree_cursor_prev, raptor_avltree_cursor_next,
+	raptor_avltree_cursor_get): Rewritten in terms of a
+	tree->cursor_iterator iterator.
+	(raptor_avltree_print): Rewritten using an iterator.
+	(raptor_avltree_check_internal, raptor_avltree_check): Use an
+	unsigned int count.
+	(main): Use iterator for going forward check.
+	
+2008-05-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c: (raptor_abbrev_subject_add_property): Do
+	not lose reference count for inner nodes.
+
+	* src/raptor_serialize_turtle.c: (raptor_turtl_serialize_statement):
+	use raptor_abbrev_subject_add_property to ignore duplicate triples
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_serialize_statement): use
+	raptor_abbrev_subject_add_property to ignore duplicate triples
+
+	* src/raptor_abbrev.c: (raptor_abbrev_node_cmp): Fix comparison to
+	properly return 0 when literals are truly equal
+	(raptor_abbrev_subject_add_property): Catch duplicates and do not
+	add them.
+
+	* src/raptor_serialize_turtle.c: (raptor_turtle_serialize_statement):
+	Revert bogus dup triple test.
+
+	* src/raptor_serialize_rdfxmla.c: (raptor_rdfxmla_serialize_statement):
+	Revert bogus dup triple test.
+
+	* tests/turtle/Makefile.am: check-turtle-serialize: do not break
+	on first error; still return failure
+
+	* src/raptor_turtle_writer.c: (raptor_new_turtle_writer): Make
+	first @base be absolute since there is no base URI at that point.
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_serialize_statement): Check whether no new subject,
+	predicate or object nodes were created, in which case this is a
+	duplicate statement that can be ignored.
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_serialize_statement): Check whether no new
+	subject, predicate or object nodes were created, in which case
+	this is a duplicate statement that can be ignored.
+
+	* src/raptor_abbrev.c: (raptor_abbrev_node_lookup,
+	raptor_abbrev_subject_lookup): Added a created_p output parameter
+	which is set to non-0 if a node was created.
+
+	* src/raptor_internal.h: raptor_abbrev_node_lookup and
+	raptor_abbrev_subject_lookup gain a created_p output parameter.
+
+2008-05-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_item): Fix attrs
+	re-declared warning
+
+	* src/raptor_serialize_rss.c: Removed indent arg from
+	raptor_rss10_emit_item and comment out indent lines
+	(raptor_rss10_emit_item): Loose indent
+
+	* src/raptor_serialize_rss.c: With the atom serializer, write any
+	remaining triples for an item as an <atom:content
+	type="application/rdf+xml">...</> block using the rdf/xml-abbrev
+	serializer.  Use auto-indenting XML writer, do not manage indent
+	here anymore.
+	(raptor_rss10_emit_item): Write atom:content block for atom
+	serializer and when triples present.
+	(raptor_rss10_serialize_end) Init auto indent and auto empty xml
+	elements.
+
+	* src/raptor_serialize_rdfxmla.c: Added new flags to allow an
+	external xml_writer to be given, not write rdf:RDF, initialise the
+	starting xml writer depth and allow an external namespace stack.
+	(raptor_rdfxmla_emit,
+	raptor_rdfxmla_serialize_declare_namespace_from_namespace): Set
+	starting xml writer depth.
+	(raptor_rdfxmla_serialize_init_nstack): Added to separate out
+	stack initialising from raptor_rdfxmla_serialize_init.
+	(raptor_rdfxmla_serialize_init): Call
+	raptor_rdfxmla_serialize_init_nstack() and set rdf:RDF writing to
+	true by default.
+	(raptor_rdfxmla_serialize_terminate): Conditionalise freeing the
+	xml writer and namespaces stack.
+	(raptor_rdfxmla_serialize_set_write_rdf_RDF): Added
+	(raptor_rdfxmla_serialize_set_xml_writer): Added
+	(raptor_rdfxmla_serialize_start): Do not init local xml_writer if
+	one was passed in.
+	(raptor_rdfxmla_ensure_writen_header): Do not write rdf:RDF if not
+	wanted.
+
+	* src/raptor_rss_common.c: (raptor_new_rss_item): Added,
+	refactoring raptor_rss_model_add_item and
+	raptor_rss_model_add_common content and ensuring triples field is
+	always initialised.
+
+	* src/raptor_rss.h: Added raptor_new_rss_item prototype.
+
+	* src/raptor_qname.c:
+	(raptor_new_qname_from_namespace_local_name): Accept NULL
+	namespace to make a namespace-less qname.
+
+	* src/raptor_xml_writer.c: (raptor_xml_writer_get_depth): Added.
+
+	* src/raptor_sequence.c: (raptor_sequence_delete_at): Added
+
+	* src/raptor.h: Added raptor_sequence_delete_at and
+	raptor_xml_writer_get_depth
+
+	* src/raptor_serialize.c: (raptor_serialize_end): use
+	free_iostream_on_end field to free iostream only if it was
+	internal, not passed in
+
+	* src/raptor_internal.h: iostream gets free_iostream_on_end field
+	Added raptor_rdfxmla_serialize_set_write_rdf_RDF and
+	raptor_rdfxmla_serialize_set_xml_writer prototypes
+
+2008-04-30  Dave Robillard <dave@drobilla.net>
+
+	* src/raptor_turtle_writer.c: (raptor_new_turtle_writer,
+	raptor_turtle_writer_base): Set base URI even if not writing @base
+	directive, so relative URI writing works correctly when @base is
+	disabled.
+
+2008-04-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: (assert_uri_to_relative): Free base_uri if not NULL
+
 2008-04-25  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_avltree.c, src/raptor_general.c,
