@@ -916,7 +916,7 @@ raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer,
 
 /**
  * raptor_xml_writer_get_feature:
- * @xml_writer: #raptor_xml_writer serializer object
+ * @xml_writer: #raptor_xml_writer xml writer object
  * @feature: feature to get value
  *
  * Get various xml_writer features.
@@ -1006,7 +1006,7 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
 
 /**
  * raptor_xml_writer_get_feature_string:
- * @xml_writer: #raptor_xml_writer serializer object
+ * @xml_writer: #raptor_xml_writer xml writer object
  * @feature: feature to get value
  *
  * Get xml_writer features with string values.
@@ -1023,6 +1023,14 @@ raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer,
 }
 
 
+/**
+ * raptor_xml_writer_get_depth:
+ * @xml_writer: #raptor_xml_writer xml writer object
+ *
+ * Get the current XML Writer element depth
+ *
+ * Return value: element stack depth
+ */
 int
 raptor_xml_writer_get_depth(raptor_xml_writer *xml_writer)
 {
