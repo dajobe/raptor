@@ -62,9 +62,8 @@ ALL_TEST_FILES= \
 #   0052.xhtml - result is wrong?  The subject of triple should be URI
 #   0053.xhtml - result is wrong?  The subject of triple should be URI
 #   0058.xhtml - bnode generation is wrong, same _:bnode1 is used twice
-#   0060.xhtml - result data was badly converted from SPARQL UTF-8
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0011.xhtml 0052.xhtml 0053.xhtml 0058.xhtml 0060.xhtml"
+EXPECTED_FAILURES=" 0011.xhtml 0052.xhtml 0053.xhtml 0058.xhtml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
