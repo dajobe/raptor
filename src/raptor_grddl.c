@@ -1887,12 +1887,12 @@ raptor_grddl_parse_recognise_syntax(raptor_parser_factory* factory,
   
   if(suffix) {
     if(!strcmp((const char*)suffix, "xhtml"))
-      score=7;
+      score=4;
     if(!strcmp((const char*)suffix, "html"))
       score=2;
   } else if(identifier) {
     if(strstr((const char*)identifier, "xhtml"))
-      score=5;
+      score=4;
   }
   
   return score;
