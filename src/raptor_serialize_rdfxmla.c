@@ -624,6 +624,8 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   return rv;
 
   oom:
+  if(iter)
+    raptor_free_avltree_iterator(iter);
   raptor_serializer_error(serializer, "Out of memory");
   return 1;
 }
