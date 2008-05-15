@@ -104,7 +104,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   
   if((triple->subject[0] == '_') && (triple->subject[1] == ':')) {
     s->subject_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-    s->subject=triple->subject;
+    s->subject= (triple->subject + 2);
   } else {
     s->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     subject_uri=raptor_new_uri((const unsigned char*)triple->subject);
@@ -124,9 +124,10 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   s->object_literal_datatype=NULL;
   s->object_literal_language=NULL;
   if(triple->object_type == RDF_TYPE_IRI) {
-    if((triple->object[0] == '_') && (triple->object[1] == ':'))
+    if((triple->object[0] == '_') && (triple->object[1] == ':')) {
       s->object_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-    else {
+      s->object = (triple->object + 2);
+    } else {
       s->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
       object_uri=raptor_new_uri((const unsigned char*)triple->object);
       if(!object_uri)
