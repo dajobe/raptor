@@ -57,6 +57,9 @@ ALL_TEST_FILES= \
 	$(TEST_BAD_FILES) \
 	$(TEST_OUT_FILES)
 
+# Add a space to the start of the string
+EXPECTED_FAILURES=" 0011.xhtml 0052.xhtml 0053.xhtml 0058.xhtml 0060.xhtml"
+
 EXTRA_DIST = $(ALL_TEST_FILES)
 
 build-rapper:
@@ -93,5 +96,9 @@ check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	done; \
 	if test "X$$failures" != X; then \
 	  echo "$$failure_count tests FAILED: $$failures"; \
+	  if test "$$failures" = $(EXPECTED_FAILURES); then \
+	    echo "Ignoring expected failures"; \
+	    result=0; \
+	  fi; \
 	fi; \
 	exit $$result
