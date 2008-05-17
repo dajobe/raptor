@@ -56,11 +56,12 @@ char* rdfa_create_bnode(rdfacontext* context)
  * @param src the full IRI for src, or NULL if there isn't one.
  * @param resource the full IRI for resource, or NULL if there isn't one.
  * @param href the full IRI for href, or NULL if there isn't one.
- * @param type_of the full IRI for type_of, or NULL if there isn't one.
+ * @param type_of The list of IRIs for type_of, or NULL if there was
+ *                no type_of specified.
  */
 void rdfa_establish_new_subject(
    rdfacontext* context, const char* name, const char* about, const char* src,
-   const char* resource, const char* href, const char* type_of)
+   const char* resource, const char* href, const rdfalist* type_of)
 {
    // 4. If the [current element] contains no valid @rel or @rev
    // URI, obtained according to the section on CURIE and URI
@@ -107,7 +108,7 @@ void rdfa_establish_new_subject(
       context->new_subject =
          rdfa_replace_string(context->new_subject, context->base);
    }
-   else if(type_of != NULL)
+   else if((type_of != NULL) && (type_of->num_items > 0))
    {
       // * if @type_of is present, obtained according to the
       // section on CURIE and URI Processing, then [new subject] is
@@ -137,11 +138,12 @@ void rdfa_establish_new_subject(
  * @param src the full IRI for src, or NULL if there isn't one.
  * @param resource the full IRI for resource, or NULL if there isn't one.
  * @param href the full IRI for href, or NULL if there isn't one.
- * @param type_of the full IRI for type_of, or NULL if there isn't one.
+ * @param type_of the list of IRIs for type_of, or NULL if type_of
+ *                wasn't specified on the current element.
  */
 void rdfa_establish_new_subject_with_relrev(
    rdfacontext* context, const char* name, const char* about, const char* src,
-   const char* resource, const char* href, const char* type_of)
+   const char* resource, const char* href, const rdfalist* type_of)
 {
    // 5. If the [current element] does contain a valid @rel or @rev
    // URI, obtained according to the section on CURIE and URI
@@ -175,7 +177,7 @@ void rdfa_establish_new_subject_with_relrev(
       context->new_subject =
          rdfa_replace_string(context->new_subject, context->base);
    }
-   else if(type_of != NULL)
+   else if((type_of != NULL) && (type_of->num_items > 0))
    {
       // * if @type_of is present, obtained according to the
       // section on CURIE and URI Processing, then [new subject] is

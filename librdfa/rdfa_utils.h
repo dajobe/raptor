@@ -66,7 +66,6 @@ typedef enum
    RDFALIST_FLAG_LAST = (1 << 5)
 } liflag_t;
 
-#ifdef LIBRDFA_IN_RAPTOR
 /**
  * Initializes a mapping given the number of elements the mapping is
  * expected to hold.
@@ -124,7 +123,6 @@ void rdfa_print_mapping(char** mapping);
  * @param mapping the mapping to free.
  */
 void rdfa_free_mapping(char** mapping);
-#endif
 
 /**
  * Creates a list and initializes it to the given size.
@@ -318,10 +316,10 @@ char* rdfa_create_bnode(rdfacontext* context);
 void rdfa_update_uri_mappings(rdfacontext* context, const char* attr, const char* value);
 void rdfa_establish_new_subject(
    rdfacontext* context, const char* name, const char* about, const char* src,
-   const char* resource, const char* href, const char* type_of);
+   const char* resource, const char* href, const rdfalist* type_of);
 void rdfa_establish_new_subject_with_relrev(
    rdfacontext* context, const char* name, const char* about, const char* src,
-   const char* resource, const char* href, const char* type_of);
+   const char* resource, const char* href, const rdfalist* type_of);
 void rdfa_complete_incomplete_triples(rdfacontext* context);
 void rdfa_complete_type_triples(rdfacontext* context, const rdfalist* type_of);
 void rdfa_complete_relrev_triples(

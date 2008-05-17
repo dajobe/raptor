@@ -43,8 +43,8 @@
 
 #define READ_BUFFER_SIZE 4096
 
-static void rdfa_init_context(rdfacontext* context)
-{   
+void rdfa_init_context(rdfacontext* context)
+{
    // the [parent subject] is set to the [base] value;
    context->parent_subject = NULL;
    if(context->base != NULL)
