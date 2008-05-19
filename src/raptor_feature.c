@@ -2,7 +2,7 @@
  *
  * raptor_feature.c - Parser and Serializer features
  *
- * Copyright (C) 2004-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -87,7 +87,8 @@ static const struct
   { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, 5, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
   { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 5,  "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
   { RAPTOR_FEATURE_JSON_CALLBACK     , 6,  "jsonCallback", "JSON serializer callback" },
-  { RAPTOR_FEATURE_JSON_EXTRA_DATA   , 6,  "jsonExtraData", "JSON serializer extra data" }
+  { RAPTOR_FEATURE_JSON_EXTRA_DATA   , 6,  "jsonExtraData", "JSON serializer extra data" },
+  { RAPTOR_FEATURE_RSS_TRIPLES       , 6,  "rssTriples", "Atom/RSS serializer writes extra RDF triples it finds" }
 };
 
 

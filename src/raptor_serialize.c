@@ -403,6 +403,9 @@ raptor_new_serializer(const char *name)
   /* JSON extra data */
   rdf_serializer->feature_json_extra_data= NULL;
 
+  /* RSS triples */
+  rdf_serializer->feature_rss_triples= NULL;
+
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
     return NULL;
@@ -709,6 +712,9 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
   if(rdf_serializer->feature_json_extra_data)
     RAPTOR_FREE(cstring, rdf_serializer->feature_json_extra_data);
 
+  if(rdf_serializer->feature_rss_triples)
+    RAPTOR_FREE(cstring, rdf_serializer->feature_rss_triples);
+
   RAPTOR_FREE(raptor_serializer, rdf_serializer);
 }
 
@@ -826,6 +832,7 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_BNODE_FILL:
     case RAPTOR_FEATURE_JSON_CALLBACK:
     case RAPTOR_FEATURE_JSON_EXTRA_DATA:
+    case RAPTOR_FEATURE_RSS_TRIPLES:
 
     /* WWW features */
     case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
@@ -960,6 +967,11 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
         (unsigned char **)&(serializer->feature_json_extra_data), value);
       break;
 
+    case RAPTOR_FEATURE_RSS_TRIPLES:
+      return raptor_serializer_copy_string(
+        (unsigned char **)&(serializer->feature_rss_triples), value);
+      break;
+
     /* WWW features */
     case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
     case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
@@ -1011,6 +1023,7 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
     case RAPTOR_FEATURE_BNODE_FILL:
     case RAPTOR_FEATURE_JSON_CALLBACK:
     case RAPTOR_FEATURE_JSON_EXTRA_DATA:
+    case RAPTOR_FEATURE_RSS_TRIPLES:
       result= -1;
       break;
 
@@ -1113,6 +1126,9 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
       break;
     case RAPTOR_FEATURE_JSON_EXTRA_DATA:
       return (unsigned char *)(serializer->feature_json_extra_data);
+      break;
+    case RAPTOR_FEATURE_RSS_TRIPLES:
+      return (unsigned char *)(serializer->feature_rss_triples);
       break;
         
     /* parser features */

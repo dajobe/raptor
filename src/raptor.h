@@ -374,6 +374,7 @@ typedef struct {
  * @RAPTOR_FEATURE_WWW_HTTP_USER_AGENT: HTTP User-Agent: header
  * @RAPTOR_FEATURE_JSON_CALLBACK: JSON serializer callback function.
  * @RAPTOR_FEATURE_JSON_EXTRA_DATA: JSON serializer extra top-level data
+ * @RAPTOR_FEATURE_RSS_TRIPLES: Atom/RSS serializer writes extra RDF triples it finds (none, rdf-xml, atom-triples)
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -412,7 +413,8 @@ typedef enum {
   RAPTOR_FEATURE_WWW_HTTP_USER_AGENT,
   RAPTOR_FEATURE_JSON_CALLBACK,
   RAPTOR_FEATURE_JSON_EXTRA_DATA,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_JSON_EXTRA_DATA
+  RAPTOR_FEATURE_RSS_TRIPLES,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_RSS_TRIPLES
 } raptor_feature;
 
 
