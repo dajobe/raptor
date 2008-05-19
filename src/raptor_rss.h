@@ -74,6 +74,7 @@ typedef enum {
 #define CONTENT_NAMESPACE_URI    "http://purl.org/rss/1.0/modules/content/"
 #define ATOM1_0_NAMESPACE_URI    "http://www.w3.org/2005/Atom"
 #define RDF_NAMESPACE_URI        "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+#define ATOMTRIPLES_NAMESPACE_URI "http://purl.org/fixme/at"
 
 /* Old netscape namespace, turn into RSS 1.0 */
 #define RSS0_9_NAMESPACE_URI  "http://my.netscape.com/rdf/simple/0.9/"
@@ -93,8 +94,9 @@ typedef enum {
   CONTENT_NS     = 9,
   ATOM1_0_NS     = 10,
   RDF_NS         = 11,
+  ATOMTRIPLES_NS = 12,
 
-  RAPTOR_RSS_NAMESPACES_SIZE = RDF_NS + 1
+  RAPTOR_RSS_NAMESPACES_SIZE = ATOMTRIPLES_NS + 1
 } rss_info_namespace;
 
 

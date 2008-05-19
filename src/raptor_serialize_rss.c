@@ -50,6 +50,15 @@
 #include "raptor_rss.h"
 
 
+typedef struct {
+  /* owned by this: URI OR bnode if starts with _: */
+  raptor_uri* uri;
+  /* shared pointer */
+  raptor_rss_item* item;
+} raptor_rss_group_map;
+
+
+
 /*
  * Raptor 'RSS 1.0' serializer object
  */
@@ -90,15 +99,68 @@ typedef struct {
   int is_atom;
 
   /* 0 = none
-   * 1 = atom:content element containing rdfxml in an rdf:Description block
-   * 2 = at:md element containing rdfxml property elements about URI
+   * 1 = atom:content element containing rdfxml in rdf:Description/typed node block
+   * 2 = atom:content element containing rdfxml property elements about URI
    */
   int rss_triples_mode;
   
   /* namespaces declared here */
   raptor_namespace* nspaces[RAPTOR_RSS_NAMESPACES_SIZE];
+
+  /* Map of group URI (key, owned) : rss item object (value, shared) */
+  raptor_avltree *group_map;
+
 } raptor_rss10_serializer_context;
 
+
+static void
+raptor_free_group_map(raptor_rss_group_map* gm) 
+{
+  if(gm->uri)
+    raptor_free_uri(gm->uri);
+  RAPTOR_FREE(raptor_rss_group_map, gm);
+}
+
+
+static int
+raptor_rss_group_map_compare(raptor_rss_group_map* gm1,
+                         raptor_rss_group_map* gm2)
+{
+  return raptor_uri_compare(gm1->uri, gm2->uri);
+}
+
+
+static raptor_rss_item*
+raptor_rss10_get_group_item(raptor_rss10_serializer_context *rss_serializer,
+                            raptor_uri* uri)
+{
+  raptor_rss_group_map search_gm;
+  raptor_rss_group_map* gm;
+
+  search_gm.uri=uri;
+  gm=raptor_avltree_search(rss_serializer->group_map, (void*)&search_gm);
+
+  return gm ? gm->item : NULL;
+}
+
+
+static int
+raptor_rss10_set_item_group(raptor_rss10_serializer_context *rss_serializer,
+                            raptor_uri* uri, raptor_rss_item *item)
+{
+  raptor_rss_group_map* gm;
+
+  if(raptor_rss10_get_group_item(rss_serializer, uri))
+    return 0;
+ 
+  gm=(raptor_rss_group_map*)RAPTOR_CALLOC(raptor_rss_group_map, 1,
+                                          sizeof(raptor_rss_group_map));
+  gm->uri=raptor_uri_copy(uri);
+  gm->item=item;
+  
+  raptor_avltree_add(rss_serializer->group_map, gm);
+  return 0;
+}
 
 
 /**
@@ -123,6 +185,9 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   rss_serializer->items=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_rss_item, (raptor_sequence_print_handler*)NULL);
 
   rss_serializer->enclosures=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_rss_item, (raptor_sequence_print_handler*)NULL);
+
+  rss_serializer->group_map=raptor_new_avltree((raptor_data_compare_function)raptor_rss_group_map_compare,
+                                               (raptor_data_free_function)raptor_free_group_map, 0);
 
   rss_serializer->is_atom=!(strcmp(name,"atom"));
   return 0;
@@ -173,6 +238,9 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   if(rss_serializer->nstack)
     raptor_free_namespaces(rss_serializer->nstack);
 
+  if(rss_serializer->group_map)
+    raptor_free_avltree(rss_serializer->group_map);
+  
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     if(raptor_rss_fields_info[i].qname)
       raptor_free_qname(raptor_rss_fields_info[i].qname);
@@ -218,12 +286,31 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       /* subject is item URI */
       int f;
 
+      if(s->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+        raptor_uri* fake_uri=raptor_new_uri(s->object);
+        raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
+        raptor_free_uri(fake_uri);
+
+        RAPTOR_DEBUG4("Moved anonymous value property URI <%s> for typed node %i - %s\n",
+                      raptor_uri_as_string((raptor_uri*)s->predicate),
+                      type, raptor_rss_types_info[type].name);
+        s=(raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
+                                                       t);
+        raptor_sequence_push(item->triples, s);
+#ifdef RAPTOR_DEBUG
+        moved_count++;
+#endif
+        handled=1;
+
+      }
+
       for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
         if(!raptor_rss_fields_info[f].uri)
           continue;
         
         if((s->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
             s->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) &&
+            s->object_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
            raptor_uri_equals((raptor_uri*)s->predicate,
                              raptor_rss_fields_info[f].uri)) {
            raptor_rss_field* field=raptor_rss_new_field();
@@ -284,7 +371,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       }
       
     } /* end if subject matched item URI */
-    
+
   } /* end for all triples */
 
 #ifdef RAPTOR_DEBUG
@@ -295,6 +382,72 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
 #endif
 
   return handled;
+}
+
+
+/**
+ * raptor_rss10_move_anonymous_statements:
+ * @rss_serializer: serializer object
+ *
+ * INTERNAL - Move statements with a blank node subject to the appropriate item
+ *
+ */
+static int
+raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_serializer)
+{
+  int t;
+  int handled=1;
+  int round=0;
+#ifdef RAPTOR_DEBUG
+  int moved_count=0;
+#endif
+
+  for(round=0; handled; round++) {
+    handled=0;
+    
+    for(t=0; t< raptor_sequence_size(rss_serializer->triples); t++) {
+      raptor_statement* s;
+      raptor_uri* fake_uri;
+      raptor_rss_item* item;
+      
+      s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, t);
+      if(!s)
+        continue;
+      
+      if(s->subject_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+        continue;
+      
+      fake_uri=raptor_new_uri(s->subject);
+      item=raptor_rss10_get_group_item(rss_serializer, fake_uri);
+      raptor_free_uri(fake_uri);
+      
+      if(item) {
+        /* triple matched an existing item */
+        s=(raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
+                                                       t);
+        raptor_sequence_push(item->triples, s);
+#ifdef RAPTOR_DEBUG
+        moved_count++;
+#endif
+
+        if(s->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+          fake_uri=raptor_new_uri(s->object);
+          raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
+          raptor_free_uri(fake_uri);
+        }
+        
+
+        handled=1;
+      }
+    } /* end for all triples */
+    
+#ifdef RAPTOR_DEBUG
+    if(moved_count > 0)
+      RAPTOR_DEBUG3("Round %d: Moved %d triples\n", round, moved_count);
+#endif
+  }
+  
+  return 0;
 }
 
 
@@ -311,59 +464,23 @@ static int
 raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
                              raptor_statement *s)
 {
-  raptor_rss_model* rss_model=&rss_serializer->model;
   raptor_rss_item *item=NULL;
-  int type;
   int handled=0;
   int is_atom=rss_serializer->is_atom;
+  raptor_uri* fake_uri;
   
-  for(type=0; type< RAPTOR_RSS_COMMON_SIZE; type++) {
-    int found=0;
-    for(item=rss_model->common[type]; item; item=item->next) {
-      raptor_uri *item_uri=item->uri;
-      if(item_uri && raptor_uri_equals((raptor_uri*)s->subject, item_uri)) {
-        found=1;
-        break;
-      }
-    }
+  fake_uri=raptor_new_uri(s->subject);
+  item=raptor_rss10_get_group_item(rss_serializer, fake_uri);
+  raptor_free_uri(fake_uri);
 
-    if (found) 
-      break;	
-  }
-
-  if(!item) {
-    int i;
-    
-    for(i=0; i < raptor_sequence_size(rss_serializer->items); i++) {
-      item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
-      if(item->uri && raptor_uri_equals((raptor_uri*)s->subject, item->uri))
-        break;
-    }
-    if(i < raptor_sequence_size(rss_serializer->items))
-      type=RAPTOR_RSS_ITEM;
-    else {
-      for(i=0; i < raptor_sequence_size(rss_serializer->enclosures); i++) {
-        item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->enclosures, i);
-        if(item->uri &&
-           raptor_uri_equals((raptor_uri*)s->subject, item->uri))
-          break;
-        
-      }
-      if(i < raptor_sequence_size(rss_serializer->enclosures))
-        type=RAPTOR_RSS_ENCLOSURE;
-      else
-        item=NULL;
-    }
-  }
-  
-
-  if(item) {
+  if(item && s->object_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     int f;
 
     for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
       raptor_rss_field* field;
       if(!raptor_rss_fields_info[f].uri)
         continue;
+
       if((s->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
           s->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) &&
          raptor_uri_equals((raptor_uri*)s->predicate,
@@ -374,11 +491,10 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
         field=raptor_rss_new_field();
         if(s->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
           field->uri=(raptor_uri*)s->object;
-          s->object=NULL;
         } else {
           field->value=(unsigned char*)s->object;
-          s->object=NULL;
         }
+        s->object=NULL;
 
         if(is_atom) { 
           int i;
@@ -403,8 +519,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
         RAPTOR_DEBUG1("fa5 - ");
         raptor_rss_item_add_field(item, f, field);
         raptor_free_statement(s);
-        RAPTOR_DEBUG3("Stored statement under typed node %i - %s\n",
-                      type, raptor_rss_types_info[type].name);
+        RAPTOR_DEBUG2("Stored statement under typed node %p\n", item);
+
         handled=1;
         break;
       }
@@ -548,6 +664,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
           /* Move any existing statements to the newly discovered item */
           raptor_rss10_move_statements(rss_serializer, type, item);
 
+          raptor_rss10_set_item_group(rss_serializer, item->uri, item);
+
           handled=1;
         }
       } else
@@ -559,23 +677,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 
   if(!handled) {
     raptor_statement *t=raptor_statement_copy(statement);
-
-    /* outside RDF land we don't need to distinguish URIs and blank nodes */
-    if(t->subject_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-      unsigned char *blank=(unsigned char*)t->subject;
-      t->subject=raptor_new_uri(blank);
-      t->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-      RAPTOR_FREE(cstring, blank);
-    }
-    if(t->object_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-      unsigned char *blank=(unsigned char*)t->object;
-      t->object=raptor_new_uri(blank);
-      t->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-      RAPTOR_FREE(cstring, blank);
-    }
-
-    handled=raptor_rss10_store_statement(rss_serializer, t);
-
+    if(t)
+      handled=raptor_rss10_store_statement(rss_serializer, t);
   }
   return 0;
 }
@@ -628,6 +731,8 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
 
         /* Move any existing statements to the newly discovered item */
         raptor_rss10_move_statements(rss_serializer, RAPTOR_RSS_ITEM, item);
+
+        raptor_rss10_set_item_group(rss_serializer, item->uri, item);
       }
     }
   }
@@ -960,9 +1065,15 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     int t_count=raptor_sequence_size(item->triples);
     int t;
 
-    root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
-                                                          (const unsigned char*)"content",
-                                                          NULL);
+    if(rss_serializer->rss_triples_mode == 2) {
+      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
+                                                            (const unsigned char*)"md",
+                                                            NULL);
+    } else {
+      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
+                                                            (const unsigned char*)"content",
+                                                            NULL);
+    }
     if(!root_qname)
       goto oom;
 
@@ -980,15 +1091,18 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     }
     root_qname=NULL;
 
-    root_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
-    if(!root_attrs)
-      goto oom;
-    root_attrs[0] = raptor_new_qname_from_namespace_local_name(NULL,
-                                                               (const unsigned char*)"type", 
-                                                               (const unsigned char*)"application/rdf+xml");
-    /* after this element owns root_attrs */
-    raptor_xml_element_set_attributes(root_element, root_attrs, 1);
-    root_attrs=NULL;
+    if(rss_serializer->rss_triples_mode != 2) {
+      root_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 
+                                                  sizeof(raptor_qname *));
+      if(!root_attrs)
+        goto oom;
+      root_attrs[0] = raptor_new_qname_from_namespace_local_name(NULL,
+                                                                 (const unsigned char*)"type", 
+                                                                 (const unsigned char*)"application/rdf+xml");
+      /* after this element owns root_attrs */
+      raptor_xml_element_set_attributes(root_element, root_attrs, 1);
+      root_attrs=NULL;
+    }
 
     raptor_xml_writer_start_element(xml_writer, root_element);
 
@@ -1000,8 +1114,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
                                             rss_serializer->nstack);
     raptor_rdfxmla_serialize_set_write_rdf_RDF(ser, 0);
     if(rss_serializer->rss_triples_mode == 2) {
-      raptor_rdfxmla_serialize_set_write_node_elements(ser, 0);
-      raptor_rdfxmla_serialize_set_write_typed_nodes(ser, 0);
+      /* raptor_rdfxmla_serialize_set_write_typed_nodes(ser, 0); */
       raptor_rdfxmla_serialize_set_single_node(ser, item->uri);
     }
 
@@ -1013,7 +1126,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     for(t=0; t < t_count; t++) {
       raptor_statement* s;
       s=(raptor_statement*)raptor_sequence_get_at(item->triples, t);
-      raptor_serialize_statement(ser, s);
+      if(s)
+        raptor_serialize_statement(ser, s);
     }
 
     raptor_serialize_end(ser);
@@ -1070,6 +1184,8 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
   raptor_rss10_build_items(rss_serializer);
 
+  raptor_rss10_move_anonymous_statements(rss_serializer);
+
 #ifdef RAPTOR_DEBUG
   for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++) {
     raptor_statement* t=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
@@ -1100,7 +1216,6 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
   xml_writer=raptor_new_xml_writer(rss_serializer->nstack,
                                    uri_handler, uri_context,
-
                                    serializer->iostream,
                                    NULL, NULL, /* errors */
                                    1);

@@ -61,6 +61,7 @@ raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE]
   { CONTENT_NAMESPACE_URI,    "content", },
   { ATOM1_0_NAMESPACE_URI,    "atom",    },
   { RDF_NAMESPACE_URI,        "rdf",     },
+  { ATOMTRIPLES_NAMESPACE_URI, "at",     },
 };
 
 
@@ -421,7 +422,7 @@ raptor_rss_item_add_field(raptor_rss_item* item, int type,
                           raptor_rss_field* field)
 {
   if(!item->fields[type]) {
-    RAPTOR_DEBUG1("Adding first field\n");
+    RAPTOR_DEBUG3("Adding first type %d field %s\n", type, raptor_rss_fields_info[type].name);
     item->fields_count++;	
     item->fields[type]=field;
   } else { 

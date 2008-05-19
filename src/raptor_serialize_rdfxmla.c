@@ -98,9 +98,6 @@ typedef struct {
    * from property elements */
   raptor_uri* single_node;
 
-  /* If non-0, emit node elements */
-  int write_node_elements;
-
   /* If non-0, emit typed nodes */
   int write_typed_nodes;
 } raptor_rdfxmla_context;
@@ -729,8 +726,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
 
   subject_is_single_node=(context->single_node &&
                           subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-                          !raptor_uri_equals(subject->node->value.resource.uri,
-                                             context->single_node));
+                          raptor_uri_equals(subject->node->value.resource.uri,
+                                            context->single_node));
   
 
   RAPTOR_DEBUG5("Emitting subject node %p refcount %d subject %d object %d\n", 
@@ -842,7 +839,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     RAPTOR_FREE(qnamearray, attrs);
   }
     
-  if(context->write_node_elements) {
+  if(!subject_is_single_node) {
     raptor_xml_writer_start_element(context->xml_writer, element);
     raptor_rdfxmla_emit_subject_properties(serializer, subject, depth+1);
     raptor_xml_writer_end_element(context->xml_writer, element);
@@ -982,7 +979,6 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
   context->write_rdf_RDF=1;
   context->starting_depth=0;
   context->single_node=NULL;
-  context->write_node_elements=1;
   context->write_typed_nodes=1;
   
   return 0;
@@ -1216,32 +1212,6 @@ raptor_rdfxmla_serialize_set_single_node(raptor_serializer* serializer,
     raptor_free_uri(context->single_node);
   
   context->single_node=raptor_uri_copy(uri);
-
-  return 0;
-}
-
-
-/*
- * raptor_rdfxmla_serialize_set_write_nodes_elements:
- * @serializer:
- * @value:
- *
- * INTERNAL - Set flag to write typed node elements
- *
- * Return value: non-0 on failure
- */
-int
-raptor_rdfxmla_serialize_set_write_node_elements(raptor_serializer* serializer,
-                                               int value)
-{
-  raptor_rdfxmla_context* context;
-
-  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
-    return 1;
-  
-  context=(raptor_rdfxmla_context*)serializer->context;
-
-  context->write_node_elements=value;
 
   return 0;
 }
