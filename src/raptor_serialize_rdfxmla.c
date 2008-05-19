@@ -93,6 +93,16 @@ typedef struct {
 
   /* namespaces stack was passed in andn not owned by us */
   int external_nstack;
+
+  /* If not NULL, the URI of the single node to serialize - starting
+   * from property elements */
+  raptor_uri* single_node;
+
+  /* If non-0, emit node elements */
+  int write_node_elements;
+
+  /* If non-0, emit typed nodes */
+  int write_typed_nodes;
 } raptor_rdfxmla_context;
 
 
@@ -144,10 +154,10 @@ static void raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* f
 
 
 /*
- * raptor_rdfxmla_emit_resource:
+ * raptor_rdfxmla_emit_resource_uri:
  * @serializer: #raptor_serializer object
  * @element: XML Element
- * @node: resource node
+ * @uri: URI object
  * @depth: depth into tree
  * 
  * Emit a description of a resource using an XML Element
@@ -155,10 +165,10 @@ static void raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* f
  * Return value: non-0 on failure
  **/
 static int
-raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
-                             raptor_xml_element *element,
-                             raptor_abbrev_node* node,
-                             int depth) 
+raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
+                                 raptor_xml_element *element,
+                                 raptor_uri* uri,
+                                 int depth) 
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_xml_writer *xml_writer = context->xml_writer;
@@ -166,12 +176,7 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   unsigned char *attr_name;
   unsigned char *attr_value;
   
-  RAPTOR_DEBUG5("Emitting resource node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
-
-  if(node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE)
-    return 1;
+  RAPTOR_DEBUG2("Emitting resource predicate URI %s\n", raptor_uri_as_string(uri));
 
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
   if(!attrs)
@@ -181,10 +186,9 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
 
   if(serializer->feature_relative_uris)
     /* newly allocated string */
-    attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                   node->value.resource.uri);
+    attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri, uri);
   else
-    attr_value = raptor_uri_as_string(node->value.resource.uri);
+    attr_value = raptor_uri_as_string(uri);
 
   attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                         attr_name, 
@@ -203,9 +207,44 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   raptor_xml_writer_start_element(xml_writer, element);
   raptor_xml_writer_end_element(context->xml_writer, element);
 
-  RAPTOR_DEBUG2("Emitted %p\n", node);
+  RAPTOR_DEBUG2("Emitted resource predicate URI %s\n", raptor_uri_as_string(uri));
   
   return 0;
+}
+
+
+/*
+ * raptor_rdfxmla_emit_resource:
+ * @serializer: #raptor_serializer object
+ * @element: XML Element
+ * @node: resource node
+ * @depth: depth into tree
+ * 
+ * Emit a description of a resource using an XML Element
+ * 
+ * Return value: non-0 on failure
+ **/
+static int
+raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
+                             raptor_xml_element *element,
+                             raptor_abbrev_node* node,
+                             int depth) 
+{
+  int rc;
+  
+  RAPTOR_DEBUG5("Emitting resource node %p refcount %d subject %d object %d\n",
+                node, 
+                node->ref_count, node->count_as_subject, node->count_as_object);
+
+  if(node->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    return 1;
+
+  rc = raptor_rdfxmla_emit_resource_uri(serializer, element, 
+                                        node->value.resource.uri, depth);
+  
+  RAPTOR_DEBUG2("Emitted resource node %p\n", node);
+
+  return rc;
 }
 
 
@@ -517,7 +556,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
                                        int depth)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  int rv = 0;  
+  int rv = 0;
   int i;
   raptor_avltree_iterator* iter=NULL;
   
@@ -534,6 +573,39 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   }
 
   
+  if(subject->node_type && !context->write_typed_nodes) {
+    raptor_uri *base_uri=NULL;
+    raptor_qname *qname=NULL;
+    raptor_xml_element *element=NULL;
+
+    /* if rdf:type was associated with this subject and do not want
+     * a typed node, emit it as a property element 
+     */
+    qname = raptor_new_qname_from_resource(context->namespaces,
+                                           context->nstack,
+                                           &context->namespace_count,
+                                           context->rdf_type);
+    if(!qname)
+      goto oom;
+      
+    if(serializer->base_uri)
+      base_uri=raptor_uri_copy(serializer->base_uri);
+
+    element = raptor_new_xml_element(qname, NULL, base_uri);
+    if(!element) {
+      if(base_uri)
+        raptor_free_uri(base_uri);
+      raptor_free_qname(qname);
+      goto oom;
+    }
+
+    rv=raptor_rdfxmla_emit_resource_uri(serializer, element, 
+                                        subject->node_type->value.resource.uri,
+                                        depth+1);
+    raptor_free_xml_element(element);
+  }
+
+
   for(i=0, iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
       iter && !rv;
       i++, (rv=raptor_avltree_iterator_next(iter))) {
@@ -653,6 +725,13 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   unsigned char *attr_name;
   unsigned char *attr_value;
   raptor_uri *base_uri=NULL;
+  int subject_is_single_node;
+
+  subject_is_single_node=(context->single_node &&
+                          subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+                          !raptor_uri_equals(subject->node->value.resource.uri,
+                                             context->single_node));
+  
 
   RAPTOR_DEBUG5("Emitting subject node %p refcount %d subject %d object %d\n", 
                 subject->node,
@@ -669,7 +748,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   }
   
 
-  if(subject->node_type) { /* if rdf:type was associated with this subject */
+  if(subject->node_type && context->write_typed_nodes) {
+    /* if rdf:type was associated with this subject */
     qname = raptor_new_qname_from_resource(context->namespaces,
                                            context->nstack,
                                            &context->namespace_count,
@@ -762,11 +842,12 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     RAPTOR_FREE(qnamearray, attrs);
   }
     
-  raptor_xml_writer_start_element(context->xml_writer, element);
-    
-  raptor_rdfxmla_emit_subject_properties(serializer, subject, depth+1);
-    
-  raptor_xml_writer_end_element(context->xml_writer, element);
+  if(context->write_node_elements) {
+    raptor_xml_writer_start_element(context->xml_writer, element);
+    raptor_rdfxmla_emit_subject_properties(serializer, subject, depth+1);
+    raptor_xml_writer_end_element(context->xml_writer, element);
+  } else
+    raptor_rdfxmla_emit_subject_properties(serializer, subject, depth);
     
   raptor_free_xml_element(element);
     
@@ -801,13 +882,17 @@ raptor_rdfxmla_emit(raptor_serializer *serializer)
     if(subject)
       raptor_rdfxmla_emit_subject(serializer, subject, context->starting_depth);
   }
-    
-  /* Emit any remaining blank nodes */
-  for(i=0; i < raptor_sequence_size(context->blanks); i++) {
-    blank = (raptor_abbrev_subject* )raptor_sequence_get_at(context->blanks, i);
-    if(blank)
-      raptor_rdfxmla_emit_subject(serializer, blank, context->starting_depth);
+
+
+  if(!context->single_node) {
+    /* Emit any remaining blank nodes */
+    for(i=0; i < raptor_sequence_size(context->blanks); i++) {
+      blank = (raptor_abbrev_subject* )raptor_sequence_get_at(context->blanks, i);
+      if(blank)
+        raptor_rdfxmla_emit_subject(serializer, blank, context->starting_depth);
+    }
   }
+
     
   return 0;
 }
@@ -896,6 +981,9 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->write_rdf_RDF=1;
   context->starting_depth=0;
+  context->single_node=NULL;
+  context->write_node_elements=1;
+  context->write_typed_nodes=1;
   
   return 0;
 }
@@ -1038,6 +1126,15 @@ raptor_rdfxmla_serialize_declare_namespace(raptor_serializer* serializer,
 }
 
 
+/*
+ * raptor_rdfxmla_serialize_set_write_rdf_RDF:
+ * @serializer: serializer object
+ * @value: value
+ *
+ * INTERNAL - Set flag to write rdf:RDF root element
+ *
+ * Return value: non-0 on failure
+ */
 int
 raptor_rdfxmla_serialize_set_write_rdf_RDF(raptor_serializer* serializer,
                                            int value)
@@ -1055,6 +1152,16 @@ raptor_rdfxmla_serialize_set_write_rdf_RDF(raptor_serializer* serializer,
 }
 
 
+/*
+ * raptor_rdfxmla_serialize_set_xml_writer:
+ * @serializer: serializer object
+ * @xml_writer: XML writer
+ * @nstack: namespace stack
+ *
+ * INTERNAL - Set an existing created XML writer to write the serializing to
+ *
+ * Return value: non-0 on failure
+ */
 int
 raptor_rdfxmla_serialize_set_xml_writer(raptor_serializer* serializer,
                                         raptor_xml_writer* xml_writer,
@@ -1077,6 +1184,90 @@ raptor_rdfxmla_serialize_set_xml_writer(raptor_serializer* serializer,
   context->nstack=nstack;
   context->external_nstack=1;
   raptor_rdfxmla_serialize_init_nstack(serializer, context->nstack);
+
+  return 0;
+}
+
+
+/*
+ * raptor_rdfxmla_serialize_set_single_node:
+ * @serializer:
+ * @uri:
+ *
+ * INTERNAL - Set a single node to serialize the contents
+ *
+ * The outer node element with this URI is not serialized, the inner
+ * property elements are written.  @uri is copied
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_rdfxmla_serialize_set_single_node(raptor_serializer* serializer,
+                                         raptor_uri* uri)
+{
+  raptor_rdfxmla_context* context;
+
+  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
+    return 1;
+  
+  context=(raptor_rdfxmla_context*)serializer->context;
+
+  if(context->single_node)
+    raptor_free_uri(context->single_node);
+  
+  context->single_node=raptor_uri_copy(uri);
+
+  return 0;
+}
+
+
+/*
+ * raptor_rdfxmla_serialize_set_write_nodes_elements:
+ * @serializer:
+ * @value:
+ *
+ * INTERNAL - Set flag to write typed node elements
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_rdfxmla_serialize_set_write_node_elements(raptor_serializer* serializer,
+                                               int value)
+{
+  raptor_rdfxmla_context* context;
+
+  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
+    return 1;
+  
+  context=(raptor_rdfxmla_context*)serializer->context;
+
+  context->write_node_elements=value;
+
+  return 0;
+}
+
+
+/*
+ * raptor_rdfxmla_serialize_set_write_typed_nodes:
+ * @serializer:
+ * @value:
+ *
+ * INTERNAL - Set flag to write typed node elements
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer,
+                                               int value)
+{
+  raptor_rdfxmla_context* context;
+
+  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
+    return 1;
+  
+  context=(raptor_rdfxmla_context*)serializer->context;
+
+  context->write_typed_nodes=value;
 
   return 0;
 }
@@ -1415,6 +1606,9 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
   if(context->is_xmp && xml_writer)
     raptor_xml_writer_raw(xml_writer, 
                           (const unsigned char*)"</x:xmpmeta>\n<?xpacket end='r'?>\n");
+
+  if(context->single_node)
+    raptor_free_uri(context->single_node);
 
   context->written_header=0;
   
