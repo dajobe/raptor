@@ -89,6 +89,12 @@ typedef struct {
   /* non-0 if this is an atom 1.0 serializer */
   int is_atom;
 
+  /* 0 = none
+   * 1 = atom:content element containing rdfxml in an rdf:Description block
+   * 2 = at:md element containing rdfxml property elements about URI
+   */
+  int rss_triples_mode;
+  
   /* namespaces declared here */
   raptor_namespace* nspaces[RAPTOR_RSS_NAMESPACES_SIZE];
 } raptor_rss10_serializer_context;
@@ -416,6 +422,29 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   }
 
   return handled;
+}
+
+
+static int
+raptor_rss10_serialize_start(raptor_serializer* serializer)
+{
+  raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
+
+  if(serializer->feature_rss_triples) {
+    if(!strcmp((const char*)serializer->feature_rss_triples,
+               "none"))
+      rss_serializer->rss_triples_mode=0;
+    else if(!strcmp((const char*)serializer->feature_rss_triples,
+               "rdf-xml"))
+      rss_serializer->rss_triples_mode=1;
+    else if(!strcmp((const char*)serializer->feature_rss_triples, 
+                    "atom-triples"))
+      rss_serializer->rss_triples_mode=2;
+    else
+      rss_serializer->rss_triples_mode=0;
+  }
+
+  return 0;
 }
 
 
@@ -922,7 +951,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
 
 
   /* Add an RDF/XML block with remaining triples if Atom */
-  if(rss_serializer->is_atom && 
+  if(rss_serializer->rss_triples_mode > 0  && 
      item->triples && raptor_sequence_size(item->triples)) {
     raptor_qname* root_qname;
     raptor_qname **root_attrs=NULL;
@@ -970,6 +999,11 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     raptor_rdfxmla_serialize_set_xml_writer(ser, xml_writer,
                                             rss_serializer->nstack);
     raptor_rdfxmla_serialize_set_write_rdf_RDF(ser, 0);
+    if(rss_serializer->rss_triples_mode == 2) {
+      raptor_rdfxmla_serialize_set_write_node_elements(ser, 0);
+      raptor_rdfxmla_serialize_set_write_typed_nodes(ser, 0);
+      raptor_rdfxmla_serialize_set_single_node(ser, item->uri);
+    }
 
     if(base_uri)
       base_uri=raptor_uri_copy(base_uri);
@@ -1160,7 +1194,7 @@ raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
   factory->init                = raptor_rss10_serialize_init;
   factory->terminate           = raptor_rss10_serialize_terminate;
   factory->declare_namespace   = NULL;
-  factory->serialize_start     = NULL;
+  factory->serialize_start     = raptor_rss10_serialize_start;
   factory->serialize_statement = raptor_rss10_serialize_statement;
   factory->serialize_end       = raptor_rss10_serialize_end;
   factory->finish_factory      = raptor_rss10_serialize_finish_factory;
