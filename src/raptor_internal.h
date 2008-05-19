@@ -513,6 +513,11 @@ struct raptor_serializer_s {
    * JSON serializer extra data
    */
   unsigned char *feature_json_extra_data;
+
+  /* FEATURE:
+   * RSS serializer triples
+   */
+  unsigned char *feature_rss_triples;
 };
 
 
@@ -1190,6 +1195,9 @@ int raptor_json_writer_key_uri_value(raptor_json_writer* json_writer, const char
 /* raptor_serialize_rdfxmla.c special functions for embedding rdf/xml */
 int raptor_rdfxmla_serialize_set_write_rdf_RDF(raptor_serializer* serializer, int value);
 int raptor_rdfxmla_serialize_set_xml_writer(raptor_serializer* serializer, raptor_xml_writer* xml_writer, raptor_namespace_stack *nstack);
+int raptor_rdfxmla_serialize_set_single_node(raptor_serializer* serializer, raptor_uri* uri);
+int raptor_rdfxmla_serialize_set_write_node_elements(raptor_serializer* serializer, int value);
+int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer, int value);
 
 /* snprintf.c */
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
