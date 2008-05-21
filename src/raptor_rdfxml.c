@@ -2821,6 +2821,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               unsigned int length;
               
               if(rdf_xml_parser->xml_writer) {
+                raptor_xml_writer_flush(rdf_xml_parser->xml_writer);
+
                 raptor_free_iostream(rdf_xml_parser->iostream);
                 rdf_xml_parser->iostream=NULL;
                 

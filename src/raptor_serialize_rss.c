@@ -483,9 +483,9 @@ raptor_rss10_remove_mapped_item_fields(raptor_rss10_serializer_context *rss_seri
     }
     
     if(saw_mapped && saw_non_mapped) {
+      raptor_rss_field* last_field=NULL;
       RAPTOR_DEBUG6("Item %p Field %d - %s: %d mapped %d non-mapped\n", item, f, raptor_rss_fields_info[f].name, saw_mapped, saw_non_mapped);
     
-      raptor_rss_field* last_field=NULL;
       field=item->fields[f];
       while(field) {
         raptor_rss_field* next=field->next;
@@ -1104,8 +1104,9 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     }
   }
 
-  if(!is_atom &&
-     item_type == RAPTOR_RSS_CHANNEL && item->fields[RAPTOR_RSS_FIELD_ITEMS]) {
+  if(!is_atom && 
+     item_type == RAPTOR_RSS_CHANNEL && 
+     raptor_sequence_size(rss_serializer->items)) {
     raptor_xml_element* rss_items_predicate;
     int i;
     raptor_qname *rdf_Seq_qname;
@@ -1138,6 +1139,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       raptor_xml_element_set_attributes(rdf_li_element, attrs, 1);
       
       raptor_xml_writer_empty_element(xml_writer, rdf_li_element);
+
+      raptor_xml_writer_newline(xml_writer);
       
       raptor_free_xml_element(rdf_li_element);
     }
@@ -1250,6 +1253,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     raptor_xml_writer_end_element(xml_writer, element);
 
     raptor_free_xml_element(element);
+
   }
 }
 
@@ -1384,6 +1388,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
   raptor_free_xml_element(rss_serializer->root_element);
 
+  raptor_xml_writer_newline(xml_writer);
+
+  raptor_xml_writer_flush(xml_writer);
   return 0;
 }
 

@@ -1577,6 +1577,9 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
     raptor_xml_writer_raw(xml_writer, 
                           (const unsigned char*)"</x:xmpmeta>\n<?xpacket end='r'?>\n");
 
+  if(xml_writer)
+    raptor_xml_writer_flush(xml_writer);
+
   if(context->single_node)
     raptor_free_uri(context->single_node);
 
