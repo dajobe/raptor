@@ -338,6 +338,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
               
               if(f == from_f) {
                 f= to_f;
+                field->is_mapped=1;
                 RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
                 break;
               }
@@ -452,6 +453,102 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
 
 
 /**
+ * raptor_rss10_remove_mapped_item_fields:
+ * @rss_serializer: serializer object
+ * @item: rss item
+ * @type: item type
+ *
+ * INTERNAL - Remvoe mapepd fields for an item
+ *
+ */
+static int
+raptor_rss10_remove_mapped_item_fields(raptor_rss10_serializer_context *rss_serializer,
+                                       raptor_rss_item* item, int type)
+{
+  int f;
+  
+  if(!item->fields_count)
+    return 0;
+      
+  for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
+    raptor_rss_field* field;
+    int saw_mapped=0;
+    int saw_non_mapped=0;
+        
+    for (field=item->fields[f]; field; field=field->next) {
+      if(field->is_mapped)
+        saw_mapped++;
+      else
+        saw_non_mapped++;
+    }
+    
+    if(saw_mapped && saw_non_mapped) {
+      RAPTOR_DEBUG6("Item %p Field %d - %s: %d mapped %d non-mapped\n", item, f, raptor_rss_fields_info[f].name, saw_mapped, saw_non_mapped);
+    
+      raptor_rss_field* last_field=NULL;
+      field=item->fields[f];
+      while(field) {
+        raptor_rss_field* next=field->next;
+        field->next=NULL;
+        if(field->is_mapped)
+          raptor_rss_field_free(field);
+        else {
+          if(!last_field)
+            item->fields[f]=field;
+          else
+            last_field->next=field;
+          last_field=field;
+        }
+        field=next;
+      }
+    }
+
+  }
+
+  return 0;
+}
+
+
+/**
+ * raptor_rss10_remove_mapped_fields:
+ * @rss_serializer: serializer object
+ *
+ * INTERNAL - Move statements with a blank node subject to the appropriate item
+ *
+ */
+static int
+raptor_rss10_remove_mapped_fields(raptor_rss10_serializer_context *rss_serializer)
+{
+  raptor_rss_model* rss_model;
+  int is_atom;
+  int i;
+  
+  rss_model=&rss_serializer->model;
+  is_atom=rss_serializer->is_atom;
+
+  if(!is_atom)
+    return 0;
+
+  if(rss_model->items_count) {
+    for(i=0; i < raptor_sequence_size(rss_serializer->items); i++) {
+      raptor_rss_item* item;
+      item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
+      raptor_rss10_remove_mapped_item_fields(rss_serializer, item,
+                                             RAPTOR_RSS_ITEM);
+    }
+  }
+  
+  for(i=RAPTOR_RSS_CHANNEL; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    raptor_rss_item* item;
+    for (item=rss_model->common[i]; item; item=item->next) {
+      raptor_rss10_remove_mapped_item_fields(rss_serializer, item, i);
+    }
+  }
+
+  return 0;
+}
+
+/**
  * raptor_rss10_store_statement:
  * @rss_serializer: serializer object
  * @s: statement
@@ -510,6 +607,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
             
             if(f == from_f) {
               f= to_f;
+              field->is_mapped=1;
               RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
               break;
             }
@@ -1185,6 +1283,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   raptor_rss10_build_items(rss_serializer);
 
   raptor_rss10_move_anonymous_statements(rss_serializer);
+
+  if(is_atom)
+    raptor_rss10_remove_mapped_fields(rss_serializer);
 
 #ifdef RAPTOR_DEBUG
   for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++) {
