@@ -1192,6 +1192,7 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
       if(item->fields[to_field] && item->fields[to_field]->value)
         continue;
       field=raptor_rss_new_field();
+      field->is_mapped=1;
       raptor_rss_item_add_field(item, to_field, field);
     }
 
