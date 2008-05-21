@@ -1564,6 +1564,8 @@ void raptor_xml_writer_start_element(raptor_xml_writer* xml_writer, raptor_xml_e
 RAPTOR_API
 void raptor_xml_writer_end_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
 RAPTOR_API
+void raptor_xml_writer_newline(raptor_xml_writer* xml_writer);
+RAPTOR_API
 void raptor_xml_writer_cdata(raptor_xml_writer* xml_writer, const unsigned char *s);
 RAPTOR_API
 void raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer, const unsigned char *s, unsigned int len);
@@ -1575,6 +1577,8 @@ RAPTOR_API
 void raptor_xml_writer_comment(raptor_xml_writer* xml_writer, const unsigned char *s);
 RAPTOR_API
 void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsigned char *s, unsigned int len);
+RAPTOR_API
+void raptor_xml_writer_flush(raptor_xml_writer* xml_writer);
 RAPTOR_API
 int raptor_xml_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
