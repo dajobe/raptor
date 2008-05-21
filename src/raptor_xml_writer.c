@@ -106,6 +106,9 @@ struct raptor_xml_writer_s {
 
   /* Has writing the XML declaration writing been checked? */
   int xml_declaration_checked;
+
+  /* An extra newline is wanted */
+  int pending_newline;
 };
 
 
@@ -121,10 +124,23 @@ static const unsigned char spaces_buffer[] = {
 
 
 /* helper functions */
+
+/* Handle printing a pending newline OR newline with indenting */
 static int
 raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
 {
   int num_spaces;
+
+  if(!XML_WRITER_AUTO_INDENT(xml_writer)) {
+    if(xml_writer->pending_newline) {
+      raptor_iostream_write_byte(xml_writer->iostr, '\n');
+      xml_writer->pending_newline=0;
+
+      if(xml_writer->current_element)
+        xml_writer->current_element->content_cdata_seen=1;
+    }
+    return 0;
+  }
   
   num_spaces = xml_writer->depth * xml_writer->indent;
 
@@ -134,8 +150,10 @@ raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
    */
   if(xml_writer->xml_declaration_checked == 1)
     xml_writer->xml_declaration_checked++;
-  else
+  else {
     raptor_iostream_write_byte(xml_writer->iostr, '\n');
+    xml_writer->pending_newline=0;
+  }
   
   while (num_spaces > 0) {
 
@@ -506,6 +524,9 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
+  if(xml_writer->pending_newline || XML_WRITER_AUTO_INDENT(xml_writer))
+    raptor_xml_writer_indent(xml_writer);
+  
   raptor_iostream_write_xml_element_start(xml_writer->iostr,
                                           element, 
                                           xml_writer->nstack,
@@ -541,7 +562,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  if(XML_WRITER_AUTO_INDENT(xml_writer))
+  if(xml_writer->pending_newline || XML_WRITER_AUTO_INDENT(xml_writer))
     raptor_xml_writer_indent(xml_writer);
   
   raptor_iostream_write_xml_element_start(xml_writer->iostr,
@@ -562,7 +583,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
    * test to fail. Subsequent calls to this function set
    * element->parent to its existing value. 
    */
-  if (xml_writer->current_element)
+  if(xml_writer->current_element)
     element->parent = xml_writer->current_element;
   
   xml_writer->current_element=element;
@@ -588,7 +609,8 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
 
   xml_writer->depth--;
   
-  if (XML_WRITER_AUTO_INDENT(xml_writer) && element->content_element_seen)
+  if(xml_writer->pending_newline ||
+     (XML_WRITER_AUTO_INDENT(xml_writer) && element->content_element_seen))
     raptor_xml_writer_indent(xml_writer);
 
   is_empty = XML_WRITER_AUTO_EMPTY(xml_writer) ?
@@ -600,6 +622,21 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
 
   if(xml_writer->current_element)
     xml_writer->current_element = xml_writer->current_element->parent;
+}
+
+
+/**
+ * raptor_xml_writer_newline:
+ * @xml_writer: XML writer object
+ *
+ * Write a newline to the XML writer.
+ *
+ * Indents the next line if XML writer feature AUTO_INDENT is enabled.
+ **/
+void
+raptor_xml_writer_newline(raptor_xml_writer* xml_writer)
+{
+  xml_writer->pending_newline=1;
 }
 
 
@@ -786,6 +823,23 @@ raptor_xml_writer_features_enumerate(const raptor_feature feature,
                                      raptor_uri **uri, const char **label)
 {
   return raptor_features_enumerate_common(feature, name, uri, label, 8);
+}
+
+
+/**
+ * raptor_xml_writer_flush:
+ * @xml_writer: XML writer object
+ *
+ * Finish the XML writer.
+ *
+ **/
+void
+raptor_xml_writer_flush(raptor_xml_writer* xml_writer)
+{
+  if(xml_writer->pending_newline) {
+    raptor_iostream_write_byte(xml_writer->iostr, '\n');
+    xml_writer->pending_newline=0;
+  }
 }
 
 
