@@ -240,6 +240,8 @@ struct raptor_rss_field_s
   unsigned char* value;
   raptor_uri* uri;
   struct raptor_rss_field_s* next;
+  /* this field was mapped from another vocab */
+  int is_mapped;
 };
 typedef struct raptor_rss_field_s raptor_rss_field;
 
