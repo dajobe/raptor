@@ -151,15 +151,15 @@ static jmp_buf n3_lexer_fatal_error_longjmp_env;
  
 static void n3_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
 
-/* Out-of-memory reporting macro.
- * Do not report as fatal error - we don't want an abort(),
- * instead return EOF with yyterminate() and let the parser clean up.
- */
-#define N3_LEXER_OOM() do { \
-  n3_syntax_error(rdf_parser, n3_lexer_oom_text); \
-  yyterminate(); \
+/* Fatal error handler that returns EOF instead of abort()/longjmp()
+ * so that parser can clean up properly */
+#define YY_FATAL_ERROR_EOF(msg) do { \
+    n3_lexer_fatal_error(msg, yyscanner); \
+    yyterminate(); \
 } while(0)
 
+/* Out-of-memory reporting macro */
+#define N3_LEXER_OOM() YY_FATAL_ERROR_EOF(n3_lexer_oom_text)
 static const char n3_lexer_oom_text[]="n3_lexer: Out of memory";
 
 %}
@@ -218,12 +218,12 @@ EXPONENT [eE][+-]?[0-9]+
 
 '([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                if(!n3_parser_lval->string)
-                                 N3_LEXER_OOM();
+                                 YY_FATAL_ERROR_EOF("n3_copy_string_token failed");
                                return STRING_LITERAL; }
 
 \"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 if(!n3_parser_lval->string)
-                                  N3_LEXER_OOM();
+                                  YY_FATAL_ERROR_EOF("n3_copy_string_token failed");
                                 return STRING_LITERAL; }
 
 \"\"\"				{ BEGIN(LITERAL); 
@@ -260,24 +260,24 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(n3_parser->sb);
                     n3_parser->sb=NULL;
-                    N3_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   
    }
 
 {BNAME}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!n3_parser_lval->string)
-            N3_LEXER_OOM();
+            YY_FATAL_ERROR_EOF("n3_copy_token failed");
                           return BLANK_LITERAL; }
 
 {QNAME}	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
           if(!n3_parser_lval->uri)
-            N3_LEXER_OOM();
+            YY_FATAL_ERROR_EOF("n3_qname_to_uri failed");
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                   if(!n3_parser_lval->string)
-                    N3_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("n3_copy_token failed");
                         return DECIMAL_LITERAL;
 }
 
@@ -300,13 +300,13 @@ EXPONENT [eE][+-]?[0-9]+
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
 <PREF>{NCNAME_PREFIX}":"	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                             if(!n3_parser_lval->string)
-                              N3_LEXER_OOM();
+                              YY_FATAL_ERROR_EOF("n3_copy_token failed");
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>":"	{ BEGIN(INITIAL);
 		  n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, 0);
       if(!n3_parser_lval->string)
-        N3_LEXER_OOM();
+        YY_FATAL_ERROR_EOF("n3_copy_token failed");
                   return IDENTIFIER; }
 
 <PREF>(.|\n)	{ BEGIN(INITIAL);
@@ -323,13 +323,13 @@ EXPONENT [eE][+-]?[0-9]+
                 yytext[yyleng-1]='\0';
                 n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
                 if(!n3_parser_lval->uri)
-                  N3_LEXER_OOM();
+                  YY_FATAL_ERROR_EOF("raptor_new_uri_relative_to_base failed");
               }
               return URI_LITERAL; }
 
 {LANGUAGETOKEN}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
                   if(!n3_parser_lval->string)
-                    N3_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("n3_copy_token failed");
                           return IDENTIFIER; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */

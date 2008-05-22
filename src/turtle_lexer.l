@@ -151,15 +151,15 @@ static jmp_buf turtle_lexer_fatal_error_longjmp_env;
  
 static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
 
-/* Out-of-memory reporting macro.
- * Do not report as fatal error - we don't want an abort(),
- * instead return EOF with yyterminate() and let the parser clean up.
- */
-#define TURTLE_LEXER_OOM() do { \
-  turtle_syntax_error(rdf_parser, turtle_lexer_oom_text); \
-  yyterminate(); \
+/* Fatal error handler that returns EOF instead of abort()/longjmp()
+ * so that parser can clean up properly */
+#define YY_FATAL_ERROR_EOF(msg) do { \
+    turtle_lexer_fatal_error(msg, yyscanner); \
+    yyterminate(); \
 } while(0)
 
+/* Out-of-memory reporting macro */
+#define TURTLE_LEXER_OOM() YY_FATAL_ERROR_EOF(turtle_lexer_oom_text)
 static const char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 
 %}
@@ -225,7 +225,7 @@ EXPONENT [eE][+-]?[0-9]+
 
 \"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string=turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 if(!turtle_parser_lval->string)
-                                  TURTLE_LEXER_OOM();
+                                  YY_FATAL_ERROR_EOF("turtle_copy_string_token failed");
                                 return STRING_LITERAL; }
 
 \"\"\"				{ BEGIN(LITERAL); 
@@ -262,48 +262,48 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb=NULL;
-                    TURTLE_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   
    }
 
 {BNAME}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!turtle_parser_lval->string)
-            TURTLE_LEXER_OOM();
+            YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return BLANK_LITERAL; }
 
 {QNAME}	{ turtle_parser_lval->uri=turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
           if(!turtle_parser_lval->uri)
-            TURTLE_LEXER_OOM();
+            YY_FATAL_ERROR_EOF("turtle_qname_to_uri failed");
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
-                    TURTLE_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return DECIMAL_LITERAL;
 }
 
 [-+]?{DOUBLE} { turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
-                    TURTLE_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return FLOATING_LITERAL;
 }
 
 [-+]?[0-9]+        { turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
-                    TURTLE_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
 <PREF>{NCNAME_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                             if(!turtle_parser_lval->string)
-                              TURTLE_LEXER_OOM();
+                              YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>":"	{ BEGIN(INITIAL);
 		  turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, 0);
       if(!turtle_parser_lval->string)
-        TURTLE_LEXER_OOM();
+        YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                   return IDENTIFIER; }
 
 <PREF>(.|\n)	{ BEGIN(INITIAL);
@@ -326,7 +326,7 @@ EXPONENT [eE][+-]?[0-9]+
                     TURTLE_LEXER_OOM();
                   if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-1, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) {
                     raptor_free_stringbuffer(sb);
-                    TURTLE_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   uri_string=raptor_stringbuffer_as_string(sb);
                   turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
@@ -340,7 +340,7 @@ EXPONENT [eE][+-]?[0-9]+
 
 {LANGUAGETOKEN}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
-                    TURTLE_LEXER_OOM();
+                    YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return IDENTIFIER; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
