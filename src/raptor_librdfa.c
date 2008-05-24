@@ -46,6 +46,7 @@
 #include "raptor_internal.h"
 
 #include "rdfa.h"
+#include "rdfa_utils.h"
 
 
 
