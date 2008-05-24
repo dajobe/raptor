@@ -94,11 +94,13 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
 
   if(!triple->subject || !triple->predicate || !triple->object) {
     RAPTOR_FATAL1("Triple has NULL parts\n");
+    rdfa_free_triple(triple);
     return;
   }
   
   if(triple->object_type == RDF_TYPE_NAMESPACE_PREFIX) {
     RAPTOR_FATAL1("Triple has namespace object type\n");
+    rdfa_free_triple(triple);
     return;
   }
   
@@ -164,6 +166,8 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   (*parser->statement_handler)(parser->user_data, s);
 
   cleanup:
+  rdfa_free_triple(triple);
+  
   if(subject_uri)
     raptor_free_uri(subject_uri);
   if(predicate_uri)
