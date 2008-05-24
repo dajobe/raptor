@@ -78,8 +78,11 @@ raptor_librdfa_parse_terminate(raptor_parser* rdf_parser)
 {
   raptor_librdfa_parser_context *librdfa_parser=(raptor_librdfa_parser_context*)rdf_parser->context;
 
-  if(librdfa_parser->context)
+  if(librdfa_parser->context) {
     rdfa_parse_end(librdfa_parser->context);
+    rdfa_free_context(librdfa_parser->context);
+    librdfa_parser->context=NULL;
+  }
 }
 
 
@@ -205,6 +208,9 @@ raptor_librdfa_parse_start(raptor_parser* rdf_parser)
 
   if(rdf_parser->base_uri)
     base_uri_string=(char*)raptor_uri_as_string(rdf_parser->base_uri);
+
+  if(librdfa_parser->context)
+    rdfa_free_context(librdfa_parser->context);
   librdfa_parser->context=rdfa_create_context(base_uri_string);
   if(!librdfa_parser->context)
     return 1;
