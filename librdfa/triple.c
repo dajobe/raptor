@@ -158,6 +158,8 @@ void rdfa_free_triple(rdftriple* triple)
    free(triple->object);
    free(triple->datatype);
    free(triple->language);
+
+   free(triple);
 }
 
 #ifndef LIBRDFA_IN_RAPTOR
