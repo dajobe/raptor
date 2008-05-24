@@ -982,8 +982,7 @@ void rdfa_free_context(rdfacontext* context)
 
    if(context->context_stack != NULL)
    {
-      // TODO: This leaks memory! Must be fixed!
-      //rdfa_free_list(context->context_stack);
+      rdfa_free_list(context->context_stack);
    }
 
    if(context->working_buffer != NULL)
