@@ -513,6 +513,46 @@ raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname)
 
 
 /**
+ * raptor_qname_to_counted_name:
+ * @qname: QName to write
+ * @length_p: pointer to variable to store length of name (or NULL)
+ * 
+ * Get the string form of a QName name
+ * 
+ * Return value: string or NULL on failure
+ **/
+unsigned char*
+raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
+{
+  size_t len=qname->local_name_length;
+  unsigned char* s;
+  unsigned char *p;
+
+  if(qname->nspace && qname->nspace->prefix_length > 0)
+    len+= 1 + qname->nspace->prefix_length;
+
+  if(length_p)
+    *length_p=len;
+  
+  s=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  if(!s)
+    return NULL;
+
+  p=s;
+  if(qname->nspace && qname->nspace->prefix_length > 0) {
+    strncpy((char*)p, (const char*)qname->nspace->prefix,
+            qname->nspace->prefix_length);
+    p+= qname->nspace->prefix_length;
+    *p++ = ':';
+  }
+  
+  strncpy((char*)p, (const char*)qname->local_name, qname->local_name_length+1);
+
+  return s;
+}
+
+
+/**
  * raptor_qname_get_namespace:
  * @name: #raptor_qname object
  * 
