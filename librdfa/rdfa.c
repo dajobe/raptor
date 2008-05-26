@@ -353,9 +353,7 @@ static void XMLCALL
    rdfalist* context_stack = user_data;
    rdfacontext* context = rdfa_create_new_element_context(context_stack);
    const char** aptr = attributes;
-#ifndef LIBRDFA_IN_RAPTOR
    const char* xml_lang = NULL;
-#endif
    const char* about_curie = NULL;
    char* about = NULL;
    const char* src_curie = NULL;
@@ -577,6 +575,10 @@ static void XMLCALL
       }
    }
 
+#ifdef LIBRDFA_IN_RAPTOR
+   if(context->sax2)
+      xml_lang=(const char*)raptor_sax2_inscope_xml_language(context->sax2);
+#endif
    // check to see if we should append an xml:lang to the XML Literal
    // if one is defined in the context and does not exist on the element.
    if((xml_lang == NULL) && (context->language != NULL) &&
@@ -596,12 +598,7 @@ static void XMLCALL
    // 3. The [current element] is also parsed for any language
    //    information, and [language] is set in the [current
    //    evaluation context];
-#ifdef LIBRDFA_IN_RAPTOR
-   if(context->sax2)
-      rdfa_update_language(context, (const char*)raptor_sax2_inscope_xml_language(context->sax2));
-#else
    rdfa_update_language(context, xml_lang);
-#endif
 
    /***************** FOR DEBUGGING PURPOSES ONLY ******************/
    if(DEBUG)
