@@ -1164,6 +1164,8 @@ raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const un
 RAPTOR_API
 int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
 RAPTOR_API
+unsigned char* raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p);
+RAPTOR_API
 const raptor_namespace* raptor_qname_get_namespace(raptor_qname* name);
 RAPTOR_API
 const unsigned char* raptor_qname_get_local_name(raptor_qname* name);
