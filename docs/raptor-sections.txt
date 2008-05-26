@@ -348,6 +348,8 @@ raptor_xml_writer_raw
 raptor_xml_writer_raw_counted
 raptor_xml_writer_comment
 raptor_xml_writer_comment_counted
+raptor_xml_writer_flush
+raptor_xml_writer_newline
 raptor_xml_writer_features_enumerate
 raptor_xml_writer_get_depth
 raptor_xml_writer_set_feature
@@ -377,6 +379,7 @@ raptor_qname_get_counted_value
 raptor_qname_get_local_name
 raptor_qname_get_namespace
 raptor_qname_get_value
+raptor_qname_to_counted_name
 </SECTION>
 
 <SECTION>
