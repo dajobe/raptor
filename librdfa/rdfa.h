@@ -65,6 +65,8 @@ extern "C"
 #define MAX_URI_MAPPINGS 512
 #define MAX_INCOMPLETE_TRIPLES 1024
 
+#define XMLNS_DEFAULT_MAPPING "XMLNS_DEFAULT"
+
 /**
  * An RDF resource type is used to denote the content of a triple's
  * object value.
@@ -150,7 +152,6 @@ typedef struct rdfacontext
    triple_handler_fp triple_callback;
    buffer_filler_fp buffer_filler_callback;
 
-   size_t bnode_count;
    unsigned char recurse;
    unsigned char skip_element;
    char* new_subject;
@@ -167,6 +168,9 @@ typedef struct rdfacontext
    void* callback_data;
 
    /* parse state */
+   size_t bnode_count;
+   char* underscore_colon_bnode_name;
+   unsigned char xml_literal_namespaces_inserted;
    size_t wb_allocated;
    char* working_buffer;
    size_t wb_offset;

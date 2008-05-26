@@ -334,6 +334,18 @@ const char* rdfa_get_mapping(char** mapping, const char* key)
    return rval;
 }
 
+void rdfa_next_mapping(char** mapping, char** key, char** value)
+{
+   *key = NULL;
+   *value = NULL;
+   
+   if(*mapping != NULL)
+   {
+      *key = *mapping++;
+      *value = *mapping++;
+   }
+}
+
 void rdfa_print_mapping(char** mapping)
 {
    char** mptr = mapping;

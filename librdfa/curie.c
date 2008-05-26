@@ -154,7 +154,7 @@ char* rdfa_resolve_curie(
    }
    else if((ctype == CURIE_TYPE_IRI_OR_UNSAFE) &&
            ((mode == CURIE_PARSE_HREF_SRC) ||
-            (mode ==CURIE_PARSE_ABOUT_RESOURCE)))
+            (mode == CURIE_PARSE_ABOUT_RESOURCE)))
    {
       // If we are parsing something that can take either a CURIE or a
       // URI, and the type is either IRI or UNSAFE, assume that it is
@@ -198,7 +198,13 @@ char* rdfa_resolve_curie(
 
       // if a colon was found, but no prefix, use the context->base as
       // the prefix IRI
-      if(uri[0] == ':' || ((strlen(uri) > 2) && uri[1] == ':'))
+      if(uri[0] == ':')
+      {
+         expanded_prefix = "http://www.w3.org/1999/xhtml/vocab#";
+         curie_reference = prefix;
+         prefix = NULL;
+      }
+      else if((strlen(uri) > 2) && (uri[1] == ':'))
       {
          expanded_prefix = context->base;
          curie_reference = prefix;
@@ -212,6 +218,10 @@ char* rdfa_resolve_curie(
             // use the blank node prefix
             expanded_prefix = "_";
          }
+         //else if(strcmp(prefix, "rdf") == 0)
+         //{
+         //   expanded_prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+         //}
          else
          {
             // if the prefix was defined, get it from the set of URI mappings.
@@ -255,6 +265,19 @@ char* rdfa_resolve_curie(
       free(working_copy);
    }
 
+   // if we're NULL at this point, the CURIE might be the special
+   // unnamed bnode specified by _:
+   if((rval == NULL) &&
+      ((strcmp(uri, "[_:]") == 0) ||
+       (strcmp(uri, "_:") == 0)))
+   {
+      if(context->underscore_colon_bnode_name == NULL)
+      {
+         context->underscore_colon_bnode_name = rdfa_create_bnode(context);
+      }
+      rval = rdfa_replace_string(rval, context->underscore_colon_bnode_name);
+   }
+   
    // even though a reference-only CURIE is valid, it does not
    // generate a triple in XHTML+RDFa. If we're NULL at this point,
    // the given value wasn't valid in XHTML+RDFa.
@@ -335,6 +358,8 @@ char* rdfa_resolve_property_curie(rdfacontext* context, const char* uri)
    
    // TODO: Is it clear that property has predefined values in the
    //       Syntax doc?
+   // TODO: THIS IS A BUG AND SHOULD BE REMOVED - there are no
+   //       predefined values for @property
    // search all of the XHTML @property reserved words for a match
    // against the given URI
    for(i = 0; i < XHTML_PROPERTY_RESERVED_WORDS_SIZE; i++)

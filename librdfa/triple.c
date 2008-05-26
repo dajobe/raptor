@@ -42,6 +42,12 @@ rdftriple* rdfa_create_triple(const char* subject, const char* predicate,
    rval->datatype = NULL;
    rval->language = NULL;
 
+   //printf("SUBJECT  : %s\n", subject);
+   //printf("PREDICATE: %s\n", predicate);
+   //printf("OBJECT   : %s\n", object);
+   //printf("DATATYPE : %s\n", datatype);
+   //printf("LANG     : %s\n", language);
+   
    // a triple needs a subject, predicate and object at minimum to be
    // considered a triple.
    if((subject != NULL) && (predicate != NULL) && (object != NULL))
@@ -158,8 +164,6 @@ void rdfa_free_triple(rdftriple* triple)
    free(triple->object);
    free(triple->datatype);
    free(triple->language);
-
-   free(triple);
 }
 
 #ifndef LIBRDFA_IN_RAPTOR
@@ -473,7 +477,8 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    if((current_object_literal == NULL) &&
       (index(context->xml_literal, '<') != NULL) &&
       ((context->datatype == NULL) ||
-       (strcmp(context->datatype, "rdf:XMLLiteral") == 0)))
+       (strcmp(context->datatype,
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral") == 0)))
    {
       current_object_literal = context->xml_literal;
       type = RDF_TYPE_XML_LITERAL;
@@ -489,11 +494,19 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    // includes the datatype URI, as described in [RDF-CONCEPTS], which
    // will have been obtained according to the section on CURIE and
    // URI Processing.
-   if((context->content != NULL) && (context->datatype != NULL) &&
-      (strlen(context->datatype) > 0))
+   if((context->datatype != NULL) && (strlen(context->datatype) > 0))
    {
-      current_object_literal = context->content;
-      type = RDF_TYPE_TYPED_LITERAL;
+      if(context->content != NULL)
+      {
+         current_object_literal = context->content;
+         type = RDF_TYPE_TYPED_LITERAL;
+      }
+      else if(strcmp(context->datatype,
+               "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral") != 0)
+      {
+         current_object_literal = context->plain_literal;
+         type = RDF_TYPE_TYPED_LITERAL;
+      }
    }
 
    // TODO: Setting the current object literal to the plain literal in

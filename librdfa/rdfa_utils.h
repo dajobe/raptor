@@ -111,6 +111,18 @@ void rdfa_update_mapping(char** mapping, const char* key, const char* value);
 const char* rdfa_get_mapping(char** mapping, const char* key);
 
 /**
+ * Gets the current mapping for the given mapping and increments the
+ * mapping to the next value in the chain. 
+ *
+ * @param mapping the mapping to use and increment.
+ * @param key the key that will be retrieved, NULL if the mapping is
+ *            blank or you are at the end of the mapping.
+ * @param value the value that is associated with the key. NULL if the
+ *              mapping is blank or you are at the end of the mapping.
+ */
+void rdfa_next_mapping(char** mapping, char** key, char** value);
+
+/**
  * Prints the mapping to the screen in a human-readable way.
  *
  * @param mapping the mapping to print to the screen.
