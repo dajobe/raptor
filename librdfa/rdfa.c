@@ -395,21 +395,41 @@ static void XMLCALL
 
    if(!context->xml_literal_namespaces_inserted)
    {
-      insert_xml_lang_in_xml_literal = 1;
-      
       // append namespaces to XML Literal
+#ifdef LIBRDFA_IN_RAPTOR
+      raptor_namespace_stack* nstack = &context->sax2->namespaces;
+      raptor_namespace* ns;
+#else
       char** umap = context->uri_mappings;
+#endif
       char* umap_key = NULL;
       char* umap_value = NULL;
+
+      insert_xml_lang_in_xml_literal = 1;
+      
+#ifdef LIBRDFA_IN_RAPTOR
+      for(ns=nstack->top; ns; ns=ns->next)
+#else
       while(*umap != NULL)
+#endif
       {
          unsigned char namespace_already_defined = 0;
          const char* predefined_namespace = NULL;
          const char* predefined_namespace_value = NULL;
 
          // get the next mapping to process
+#ifdef LIBRDFA_IN_RAPTOR
+         if(ns->depth < 0)
+           continue;
+         
+         umap_key = (char*)raptor_namespace_get_prefix(ns);
+         if(!umap_key)
+           umap_key=(char*)XMLNS_DEFAULT_MAPPING;
+         umap_value = (char*)raptor_uri_as_string(raptor_namespace_get_uri(ns));
+#else
          rdfa_next_mapping(umap++, &umap_key, &umap_value);
          umap++;
+#endif
          
          // check to make sure that the namespace isn't already
          // defined in the current element.         
@@ -927,30 +947,35 @@ static void raptor_rdfa_start_element(void *user_data,
   raptor_qname* qname=raptor_xml_element_get_name(xml_element);
   int attr_count=raptor_xml_element_get_attributes_count(xml_element);
   raptor_qname** attrs=raptor_xml_element_get_attributes(xml_element);
-  const char* name=(const char*)raptor_qname_get_local_name(qname);
+  unsigned char* qname_string=raptor_qname_to_counted_name(qname, NULL);
   char** attr=NULL;
   int i;
 
   if(attr_count > 0) {
     attr=(char**)malloc(sizeof(char*) * (1+(attr_count*2)));
     for(i=0; i<attr_count; i++) {
-      attr[2*i]=(char*)raptor_qname_get_local_name(attrs[i]);
+      attr[2*i]=(char*)raptor_qname_to_counted_name(attrs[i], NULL);
       attr[1+(2*i)]=(char*)raptor_qname_get_value(attrs[i]);
     }
     attr[2*i]=NULL;
   }
-  start_element(user_data, name, (const char**)attr);
-  if(attr)
+  start_element(user_data, (char*)qname_string, (const char**)attr);
+  raptor_free_memory(qname_string);
+  if(attr) {
+    for(i=0; i<attr_count; i++)
+      raptor_free_memory(attr[2*i]);
     free(attr);
+  }
 }
 
 static void raptor_rdfa_end_element(void *user_data,
                                     raptor_xml_element* xml_element) 
 {
   raptor_qname* qname=raptor_xml_element_get_name(xml_element);
-  const char* name=(const char*)raptor_qname_get_local_name(qname);
+  unsigned char* qname_string=raptor_qname_to_counted_name(qname, NULL);
 
-  end_element(user_data, name);
+  end_element(user_data, qname_string);
+  raptor_free_memory(qname_string);
 }
 
 static void raptor_rdfa_character_data(void *user_data, 
