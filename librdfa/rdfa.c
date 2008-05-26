@@ -399,6 +399,8 @@ static void XMLCALL
 #ifdef LIBRDFA_IN_RAPTOR
       raptor_namespace_stack* nstack = &context->sax2->namespaces;
       raptor_namespace* ns;
+      raptor_namespace* ns_list[32];
+      int ns_size;
 #else
       char** umap = context->uri_mappings;
 #endif
@@ -408,7 +410,14 @@ static void XMLCALL
       insert_xml_lang_in_xml_literal = 1;
       
 #ifdef LIBRDFA_IN_RAPTOR
-      for(ns=nstack->top; ns; ns=ns->next)
+      ns_size=0;
+      for(ns=nstack->top; ns; ns=ns->next) {
+        if(ns->depth < 1)
+          continue;
+        ns_list[ns_size++]=ns;
+      }
+
+      while(ns_size > 0)
 #else
       while(*umap != NULL)
 #endif
@@ -419,9 +428,8 @@ static void XMLCALL
 
          // get the next mapping to process
 #ifdef LIBRDFA_IN_RAPTOR
-         if(ns->depth < 0)
-           continue;
-         
+         ns=ns_list[--ns_size];
+
          umap_key = (char*)raptor_namespace_get_prefix(ns);
          if(!umap_key)
            umap_key=(char*)XMLNS_DEFAULT_MAPPING;
@@ -974,7 +982,7 @@ static void raptor_rdfa_end_element(void *user_data,
   raptor_qname* qname=raptor_xml_element_get_name(xml_element);
   unsigned char* qname_string=raptor_qname_to_counted_name(qname, NULL);
 
-  end_element(user_data, qname_string);
+  end_element(user_data, (const char*)qname_string);
   raptor_free_memory(qname_string);
 }
 
