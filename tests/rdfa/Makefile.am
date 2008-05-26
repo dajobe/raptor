@@ -64,22 +64,16 @@ ALL_TEST_FILES= \
 	$(TEST_OUT_FILES)
 
 # Expected test failures:
-#   0011.xhtml - XML literal output is not generating the namespace decl
-#   0042.xhtml - no triples found
-#   0052.xhtml - blank nodes wrong
-#   0053.xhtml - blank nodes wrong
-#   0058.xhtml - blank nodes wrong
-#   0088.xhtml - blank nodes wrong
-#   0091.xhtml - predicate URIs (:foo curies) wrong
-#   0092.xhtml - generates triple with NULL parts / XML literal
-#   0093.xhtml - generates triple with NULL parts / XML literal
-#   0094.xhtml - generates triple with NULL parts / XML literal
-#   0100.xhtml - generates triple with NULL parts / XML literal
-#   0101.xhtml - generates triple with NULL parts / XML literal
-#   0102.xhtml - generates triple with NULL parts / XML literal
-#   0103.xhtml - generates triple with NULL parts / XML literal
+#   0011.xhtml - generating too many XML ns decls
+#   0058.xhtml - blank nodes wrong - generating same bnode twice
+#   0092.xhtml - generating too many XML ns decls
+#   0094.xhtml - generating too many XML ns decls
+#   0100.xhtml - generating too many XML ns decls
+#   0101.xhtml - generating too many XML ns decls
+#   0102.xhtml - generating too many XML ns decls
+#   0103.xhtml - generating too many XML ns decls
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0011.xhtml 0042.xhtml 0052.xhtml 0053.xhtml 0058.xhtml 0088.xhtml 0091.xhtml 0092.xhtml 0093.xhtml 0094.xhtml 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
+EXPECTED_FAILURES=" 0011.xhtml 0058.xhtml 0092.xhtml 0094.xhtml 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
