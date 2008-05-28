@@ -965,14 +965,36 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
 
 /* atom-specific feed XML elements */
 static void
-raptor_rss10_emit_atom_feed(raptor_serializer *serializer)
+raptor_rss10_emit_atom_feed(raptor_serializer *serializer, raptor_rss_item *item)
 {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
   raptor_xml_writer* xml_writer;
   raptor_uri *base_uri=serializer->base_uri;
   raptor_uri* base_uri_copy=NULL;
+  raptor_xml_element* atom_link_element;
+  raptor_qname *atom_link_qname;
+  raptor_qname** atom_link_attrs;
 
   xml_writer=rss_serializer->xml_writer;
+
+  atom_link_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"link",  NULL);
+  base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
+  atom_link_element=raptor_new_xml_element(atom_link_qname, NULL, base_uri_copy);
+
+  atom_link_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, sizeof(raptor_qname*));
+  atom_link_attrs[0]=raptor_new_qname(rss_serializer->nstack, 
+                                      (const unsigned char*)"href", 
+                                      raptor_uri_as_string(item->uri),
+                                      NULL, NULL); /* errors */
+  atom_link_attrs[1]=raptor_new_qname(rss_serializer->nstack, 
+                                      (const unsigned char*)"rel", 
+                                      (const unsigned char*)"self",
+                                      NULL, NULL); /* errors */
+  raptor_xml_element_set_attributes(atom_link_element, atom_link_attrs, 2);
+  
+  raptor_xml_writer_empty_element(xml_writer, atom_link_element);
+
+  raptor_free_xml_element(atom_link_element);
 
   if(rss_serializer->rss_triples_mode == 2) {
     /* atom triples map */ 
@@ -1274,7 +1296,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
 
   if(item_type == RAPTOR_RSS_CHANNEL) {
     if(is_atom)
-      raptor_rss10_emit_atom_feed(serializer);
+      raptor_rss10_emit_atom_feed(serializer, item);
 
     if(!is_atom)
       raptor_rss10_emit_rss_items(serializer);
