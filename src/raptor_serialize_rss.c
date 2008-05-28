@@ -1179,9 +1179,8 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
         raptor_free_uri(base_uri);
       raptor_free_qname(root_qname); root_qname=NULL;
       goto oom;
-      root_qname=NULL;
-  }
-  
+    }
+    root_qname=NULL;
 
     if(rss_serializer->rss_triples_mode != 2) {
       root_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 
