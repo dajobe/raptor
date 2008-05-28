@@ -1076,6 +1076,8 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
   if(!raptor_sequence_size(rss_serializer->items))
     return;
   
+  xml_writer=rss_serializer->xml_writer;
+
   rdf_Seq_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"Seq",  NULL);
   
   base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
@@ -1117,6 +1119,126 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
   raptor_xml_writer_end_element(xml_writer, rss_items_predicate);
   
   raptor_free_xml_element(rss_items_predicate);
+}
+
+
+/* emit a block of RDF/XML depending on the rssTriples feature mode */
+static void
+raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
+                                      raptor_rss_item *item)
+{
+  raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
+  raptor_xml_writer* xml_writer;
+  raptor_qname* root_qname;
+  raptor_qname **root_attrs=NULL;
+  raptor_xml_element* root_element=NULL;
+  raptor_serializer* ser=NULL;
+  raptor_uri* base_uri=NULL;
+  int t_count=raptor_sequence_size(item->triples);
+  int t;
+  int is_atom;
+  
+  if(rss_serializer->rss_triples_mode == 0 ||
+     !item->triples || !raptor_sequence_size(item->triples))
+    return;
+  
+  xml_writer=rss_serializer->xml_writer;
+  is_atom=rss_serializer->is_atom;
+
+  /* can only use atom-triples with atom serializer */
+  if(rss_serializer->rss_triples_mode == 2 && !is_atom)
+    return;
+  
+  /* can only use rdf-xml with rss-1.0 serializer */
+  if(rss_serializer->rss_triples_mode == 1 && is_atom)
+    return;
+  
+  if(is_atom) {
+    if(rss_serializer->rss_triples_mode == 2) {
+      /* atom:md with no attribute */
+      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
+                                                            (const unsigned char*)"md",
+                                                            NULL);
+    } else {
+      /* atom:content with type={mime type} attribute */
+      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
+                                                            (const unsigned char*)"content",
+                                                            NULL);
+    }
+    if(!root_qname)
+      goto oom;
+    
+    base_uri=serializer->base_uri;
+    if(base_uri)
+      base_uri=raptor_uri_copy(base_uri);
+    
+    /* after this root_element owns root_qname and (this copy of) base_uri */
+    root_element=raptor_new_xml_element(root_qname, NULL, base_uri);
+    if(!root_element) {
+      if(base_uri)
+        raptor_free_uri(base_uri);
+      raptor_free_qname(root_qname); root_qname=NULL;
+      goto oom;
+      root_qname=NULL;
+  }
+  
+
+    if(rss_serializer->rss_triples_mode != 2) {
+      root_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 
+                                                  sizeof(raptor_qname *));
+      if(!root_attrs)
+        goto oom;
+      root_attrs[0] = raptor_new_qname_from_namespace_local_name(NULL,
+                                                                 (const unsigned char*)"type", 
+                                                                 (const unsigned char*)"application/rdf+xml");
+      /* after this element owns root_attrs */
+      raptor_xml_element_set_attributes(root_element, root_attrs, 1);
+      root_attrs=NULL;
+    }
+    
+    raptor_xml_writer_start_element(xml_writer, root_element);
+  }
+  
+  ser=raptor_new_serializer("rdfxml-abbrev");
+  if(!ser)
+    goto oom;
+  
+  raptor_rdfxmla_serialize_set_xml_writer(ser, xml_writer,
+                                          rss_serializer->nstack);
+  raptor_rdfxmla_serialize_set_write_rdf_RDF(ser, 0);
+  raptor_rdfxmla_serialize_set_single_node(ser, item->uri);
+  if(rss_serializer->rss_triples_mode == 2) {
+    /* raptor_rdfxmla_serialize_set_write_typed_nodes(ser, 0); */
+  }
+  
+  if(base_uri)
+    base_uri=raptor_uri_copy(base_uri);
+  /* after this ser owns (this copy of) base_uri */
+  raptor_serialize_start(ser, base_uri, serializer->iostream);
+  
+  for(t=0; t < t_count; t++) {
+    raptor_statement* s;
+    s=(raptor_statement*)raptor_sequence_get_at(item->triples, t);
+    if(s)
+      raptor_serialize_statement(ser, s);
+  }
+  
+  raptor_serialize_end(ser);
+  
+  raptor_free_serializer(ser); ser=NULL;
+
+  if(is_atom)
+    raptor_xml_writer_end_element(xml_writer, root_element);
+  
+  oom:
+  if(ser)
+    raptor_free_serializer(ser);
+  if(root_attrs)
+    RAPTOR_FREE(qnamearray, root_attrs);
+  if(root_qname)
+    raptor_free_qname(root_qname);
+  if(root_element)
+    raptor_free_xml_element(root_element);
 }
 
 
@@ -1303,104 +1425,14 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   }
     
   /* Add an RDF/XML block with remaining triples if Atom */
-  if(rss_serializer->rss_triples_mode > 0  && 
-     item->triples && raptor_sequence_size(item->triples)) {
-    raptor_qname* root_qname;
-    raptor_qname **root_attrs=NULL;
-    raptor_xml_element* root_element=NULL;
-    raptor_serializer* ser=NULL;
-    int t_count=raptor_sequence_size(item->triples);
-    int t;
-
-    if(rss_serializer->rss_triples_mode == 2) {
-      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
-                                                            (const unsigned char*)"md",
-                                                            NULL);
-    } else {
-      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
-                                                            (const unsigned char*)"content",
-                                                            NULL);
-    }
-    if(!root_qname)
-      goto oom;
-
-    base_uri=serializer->base_uri;
-    if(base_uri)
-      base_uri=raptor_uri_copy(base_uri);
-
-    /* after this root_element owns root_qname and (this copy of) base_uri */
-    root_element=raptor_new_xml_element(root_qname, NULL, base_uri);
-    if(!root_element) {
-      if(base_uri)
-        raptor_free_uri(base_uri);
-      raptor_free_qname(root_qname); root_qname=NULL;
-      goto oom;
-    }
-    root_qname=NULL;
-
-    if(rss_serializer->rss_triples_mode != 2) {
-      root_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 
-                                                  sizeof(raptor_qname *));
-      if(!root_attrs)
-        goto oom;
-      root_attrs[0] = raptor_new_qname_from_namespace_local_name(NULL,
-                                                                 (const unsigned char*)"type", 
-                                                                 (const unsigned char*)"application/rdf+xml");
-      /* after this element owns root_attrs */
-      raptor_xml_element_set_attributes(root_element, root_attrs, 1);
-      root_attrs=NULL;
-    }
-
-    raptor_xml_writer_start_element(xml_writer, root_element);
-
-    ser=raptor_new_serializer("rdfxml-abbrev");
-    if(!ser)
-      goto oom;
-    
-    raptor_rdfxmla_serialize_set_xml_writer(ser, xml_writer,
-                                            rss_serializer->nstack);
-    raptor_rdfxmla_serialize_set_write_rdf_RDF(ser, 0);
-    if(rss_serializer->rss_triples_mode == 2) {
-      /* raptor_rdfxmla_serialize_set_write_typed_nodes(ser, 0); */
-      raptor_rdfxmla_serialize_set_single_node(ser, item->uri);
-    }
-
-    if(base_uri)
-      base_uri=raptor_uri_copy(base_uri);
-    /* after this ser owns (this copy of) base_uri */
-    raptor_serialize_start(ser, base_uri, serializer->iostream);
-    
-    for(t=0; t < t_count; t++) {
-      raptor_statement* s;
-      s=(raptor_statement*)raptor_sequence_get_at(item->triples, t);
-      if(s)
-        raptor_serialize_statement(ser, s);
-    }
-
-    raptor_serialize_end(ser);
-  
-    raptor_free_serializer(ser); ser=NULL;
-
-    raptor_xml_writer_end_element(xml_writer, root_element);
-
-    oom:
-    if(ser)
-      raptor_free_serializer(ser);
-    if(root_attrs)
-      RAPTOR_FREE(qnamearray, root_attrs);
-    if(root_qname)
-      raptor_free_qname(root_qname);
-    if(root_element)
-      raptor_free_xml_element(root_element);
-
-  }
+  if(item->triples && raptor_sequence_size(item->triples))
+    raptor_rss10_emit_rdfxml_item_triples(serializer, item);
 
   if(emit_container) {
     raptor_xml_writer_end_element(xml_writer, element);
-
     raptor_free_xml_element(element);
-
   }
+
 }
 
 
