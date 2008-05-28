@@ -186,6 +186,8 @@ raptor_xml_element_get_name(raptor_xml_element *xml_element)
  * @count: Length of array
  * 
  * Set the attributes on an XML element.
+ *
+ * The @attributes array becomes owned by the element after this function.
  **/
 void
 raptor_xml_element_set_attributes(raptor_xml_element* xml_element,
