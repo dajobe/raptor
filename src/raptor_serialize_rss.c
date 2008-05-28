@@ -617,7 +617,9 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
         RAPTOR_DEBUG1("fa5 - ");
         raptor_rss_item_add_field(item, f, field);
         raptor_free_statement(s);
+#if RAPTOR_DEBUG > 1
         RAPTOR_DEBUG2("Stored statement under typed node %p\n", item);
+#endif
 
         handled=1;
         break;
@@ -627,7 +629,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   
   if(!handled) {
     raptor_sequence_push(rss_serializer->triples, s);
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
     fprintf(stderr,"Stored statement: ");
     raptor_print_statement_as_ntriples(s, stderr);
     fprintf(stderr,"\n");
@@ -1103,6 +1105,70 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       raptor_free_xml_element(predicate);
     }
   }
+
+
+  if(is_atom && rss_serializer->rss_triples_mode == 2 &&
+     item_type == RAPTOR_RSS_CHANNEL) {
+    /* atom triples map */ 
+    raptor_namespace* at_nspace=rss_serializer->nspaces[ATOMTRIPLES_NS];
+    raptor_xml_element* at_entrymap_element;
+    raptor_qname *at_entrymap_qname;
+    int i;
+    
+    at_entrymap_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
+                                                                 (const unsigned char*)"entrymap",  NULL);
+    base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
+    at_entrymap_element=raptor_new_xml_element(at_entrymap_qname, NULL, base_uri_copy);
+
+    raptor_xml_writer_start_element(xml_writer, at_entrymap_element);
+
+    /* Walk list of fields mapped atom to rss */
+    for(i=0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
+      int from_f=raptor_atom_to_rss[i].from;
+      int to_f=raptor_atom_to_rss[i].to;
+      raptor_rss_info* from_field_info=&raptor_rss_fields_info[from_f];
+      raptor_rss_info* to_field_info=&raptor_rss_fields_info[to_f];
+      raptor_xml_element* at_map_element;
+      raptor_qname *at_map_qname;
+      raptor_qname** at_map_attrs;
+      const char* predicate_prefix;
+      
+      /* Do not rewrite to atom0.3 terms */
+      if(to_field_info->nspace == ATOM0_3_NS)
+        continue;
+
+      predicate_prefix=raptor_rss_namespaces_info[from_field_info->nspace].prefix;
+      if(!predicate_prefix)
+        continue;
+
+      /* <at:map property="{property URI}">{atom element}</at:map> */
+      at_map_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
+                                                 (const unsigned char*)"map",  NULL);
+      base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
+      at_map_element=raptor_new_xml_element(at_map_qname, NULL, base_uri_copy);
+      
+
+      at_map_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+      at_map_attrs[0]=raptor_new_qname(rss_serializer->nstack, 
+                                       (const unsigned char*)"property", 
+                                       raptor_uri_as_string(to_field_info->uri),
+                                       NULL, NULL); /* errors */
+      raptor_xml_element_set_attributes(at_map_element, at_map_attrs, 1);
+
+      raptor_xml_writer_start_element(xml_writer, at_map_element);
+      raptor_xml_writer_cdata(xml_writer, (const unsigned char*)predicate_prefix);
+      raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)":", 1);
+      raptor_xml_writer_cdata(xml_writer, (const unsigned char*)from_field_info->name);
+      raptor_xml_writer_end_element(xml_writer, at_map_element);
+
+      raptor_free_xml_element(at_map_element);
+    }
+
+    raptor_xml_writer_end_element(xml_writer, at_entrymap_element);
+
+    raptor_free_xml_element(at_entrymap_element);
+  }
+
 
   if(!is_atom && 
      item_type == RAPTOR_RSS_CHANNEL && 
