@@ -110,6 +110,9 @@ typedef struct {
   /* Map of group URI (key, owned) : rss item object (value, shared) */
   raptor_avltree *group_map;
 
+  /* User declared namespaces */
+  raptor_sequence *user_namespaces;
+
 } raptor_rss10_serializer_context;
 
 
@@ -176,6 +179,8 @@ static int
 raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
+  const raptor_uri_handler *uri_handler;
+  void *uri_context;
 
   raptor_rss_common_init();
   raptor_rss_model_init(&rss_serializer->model);
@@ -189,7 +194,16 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   rss_serializer->group_map=raptor_new_avltree((raptor_data_compare_function)raptor_rss_group_map_compare,
                                                (raptor_data_free_function)raptor_free_group_map, 0);
 
+  rss_serializer->user_namespaces=raptor_new_sequence(NULL, NULL);
+
   rss_serializer->is_atom=!(strcmp(name,"atom"));
+
+  raptor_uri_get_handler(&uri_handler, &uri_context);
+
+  rss_serializer->nstack=raptor_new_namespaces(uri_handler, uri_context,
+                                               NULL, NULL, /* errors */
+                                               1);
+
   return 0;
 }
   
@@ -249,6 +263,17 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
     if(raptor_rss_types_info[i].qname)
       raptor_free_qname(raptor_rss_types_info[i].qname);
+  }
+
+  if(rss_serializer->user_namespaces) {
+    for(i=0; i< raptor_sequence_size(rss_serializer->user_namespaces); i++) {
+      raptor_namespace* ns;
+      ns=(raptor_namespace*)raptor_sequence_get_at(rss_serializer->user_namespaces, i);
+      if(ns)
+        raptor_free_namespace(ns);
+    }
+    raptor_free_sequence(rss_serializer->user_namespaces);
+    rss_serializer->user_namespaces=NULL;
   }
 
 }
@@ -888,6 +913,13 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer)
     }
   }
 
+  for(i=1; i< raptor_sequence_size(rss_serializer->user_namespaces); i++) {
+    raptor_namespace* nspace;
+    nspace=(raptor_namespace*)raptor_sequence_get_at(rss_serializer->user_namespaces, i);
+    raptor_xml_element_declare_namespace(element, nspace);
+  }
+
+
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     int n=raptor_rss_fields_info[i].nspace;
     raptor_namespace* nspace=rss_serializer->nspaces[n];
@@ -1378,10 +1410,6 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
-  rss_serializer->nstack=raptor_new_namespaces(uri_handler, uri_context,
-                                               NULL, NULL, /* errors */
-                                               1);
-
   if(rss_serializer->xml_writer)
     raptor_free_xml_writer(rss_serializer->xml_writer);
 
@@ -1457,11 +1485,71 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   raptor_xml_writer_newline(xml_writer);
 
   raptor_xml_writer_flush(xml_writer);
+
+  if(rss_serializer->nstack) {
+    raptor_free_namespaces(rss_serializer->nstack);
+    rss_serializer->nstack=NULL;
+  }
+
   return 0;
 }
 
 
-  
+/* add a namespace */
+static int
+raptor_rss10_serialize_declare_namespace_from_namespace(raptor_serializer* serializer,
+                                                         raptor_namespace *nspace)
+{
+  raptor_rss10_serializer_context* rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
+  int i;
+
+  for(i=0; i< raptor_sequence_size(rss_serializer->user_namespaces); i++) {
+    raptor_namespace* ns;
+    ns=(raptor_namespace*)raptor_sequence_get_at(rss_serializer->user_namespaces, i);
+
+    /* If prefix is already declared, ignore it */
+    if(!ns->prefix && !nspace->prefix)
+      return 1;
+
+    if(ns->prefix && nspace->prefix &&
+       !strcmp((const char*)ns->prefix, (const char*)nspace->prefix))
+      return 1;
+
+    if(ns->uri && nspace->uri &&
+       raptor_uri_equals(ns->uri, nspace->uri))
+      return 1;
+  }
+
+  nspace=raptor_new_namespace_from_uri(rss_serializer->nstack,
+                                       nspace->prefix, nspace->uri,
+                                       0);
+  if(!nspace)
+    return 1;
+
+  raptor_sequence_push(rss_serializer->user_namespaces, nspace);
+  return 0;
+}
+
+
+/* add a namespace */
+static int
+raptor_rss10_serialize_declare_namespace(raptor_serializer* serializer,
+                                          raptor_uri *uri,
+                                          const unsigned char *prefix)
+{
+  raptor_rss10_serializer_context* rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
+  raptor_namespace *ns;
+  int rc;
+
+  ns=raptor_new_namespace_from_uri(rss_serializer->nstack, prefix, uri, 0);
+  rc=raptor_rss10_serialize_declare_namespace_from_namespace(serializer, ns);
+  raptor_free_namespace(ns);
+
+  return rc;
+}
+
+
+
 /**
  * raptor_rss10_serialize_finish_factory:
  * @factory: serializer factory
@@ -1482,7 +1570,8 @@ raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
   
   factory->init                = raptor_rss10_serialize_init;
   factory->terminate           = raptor_rss10_serialize_terminate;
-  factory->declare_namespace   = NULL;
+  factory->declare_namespace   = raptor_rss10_serialize_declare_namespace;
+  factory->declare_namespace_from_namespace   = raptor_rss10_serialize_declare_namespace_from_namespace;
   factory->serialize_start     = raptor_rss10_serialize_start;
   factory->serialize_statement = raptor_rss10_serialize_statement;
   factory->serialize_end       = raptor_rss10_serialize_end;
