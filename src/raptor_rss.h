@@ -74,7 +74,7 @@ typedef enum {
 #define CONTENT_NAMESPACE_URI    "http://purl.org/rss/1.0/modules/content/"
 #define ATOM1_0_NAMESPACE_URI    "http://www.w3.org/2005/Atom"
 #define RDF_NAMESPACE_URI        "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-#define ATOMTRIPLES_NAMESPACE_URI "http://purl.org/fixme/at"
+#define ATOMTRIPLES_NAMESPACE_URI "http://purl.org/syndication/atomtriples/1"
 
 /* Old netscape namespace, turn into RSS 1.0 */
 #define RSS0_9_NAMESPACE_URI  "http://my.netscape.com/rdf/simple/0.9/"
