@@ -1281,12 +1281,27 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
   item=rss_model->common[RAPTOR_RSS_CHANNEL];
   if(item) {
     int f;
-    
+
+    /* atom:updated is required */
     f=RAPTOR_RSS_FIELD_ATOM_UPDATED;
     if(!item->fields[f]) {
       raptor_rss_field* field=raptor_rss_new_field();
       raptor_rss_set_date_field(field, now);
       raptor_rss_item_add_field(item, f, field);
+    }
+
+    /* atom:content is forbidden in feed */
+    f=RAPTOR_RSS_FIELD_ATOM_CONTENT;
+    if(!item->fields[f]) {
+      raptor_rss_field_free(item->fields[f]);
+      item->fields[f]=NULL;
+    }
+
+    /* atom:summary is forbidden in feed */
+    f=RAPTOR_RSS_FIELD_ATOM_SUMMARY;
+    if(!item->fields[f]) {
+      raptor_rss_field_free(item->fields[f]);
+      item->fields[f]=NULL;
     }
   }
   
