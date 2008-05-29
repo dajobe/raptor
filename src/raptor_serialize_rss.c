@@ -975,10 +975,11 @@ raptor_rss10_emit_atom_feed(raptor_serializer *serializer, raptor_rss_item *item
   raptor_xml_element* atom_link_element;
   raptor_qname *atom_link_qname;
   raptor_qname** atom_link_attrs;
+  raptor_namespace* atom_nspace=rss_serializer->nspaces[ATOM1_0_NS];
 
   xml_writer=rss_serializer->xml_writer;
 
-  atom_link_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"link",  NULL);
+  atom_link_qname=raptor_new_qname_from_namespace_local_name(atom_nspace, (const unsigned char*)"link",  NULL);
   base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
   atom_link_element=raptor_new_xml_element(atom_link_qname, NULL, base_uri_copy);
 
