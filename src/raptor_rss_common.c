@@ -173,7 +173,7 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
 /* Crude and unofficial mappings from atom fields to RSS */
 const raptor_field_pair raptor_atom_to_rss[]={
   /* atom clone of rss fields */
-  { RAPTOR_RSS_FIELD_ATOM_CONTENT,   RAPTOR_RSS_FIELD_DESCRIPTION },
+  { RAPTOR_RSS_FIELD_ATOM_SUMMARY,   RAPTOR_RSS_FIELD_DESCRIPTION },
   { RAPTOR_RSS_FIELD_ATOM_ID,        RAPTOR_RSS_FIELD_LINK },
   { RAPTOR_RSS_FIELD_ATOM_UPDATED,   RAPTOR_RSS_FIELD_DC_DATE },
   { RAPTOR_RSS_FIELD_ATOM_RIGHTS,    RAPTOR_RSS_FIELD_DC_RIGHTS },
