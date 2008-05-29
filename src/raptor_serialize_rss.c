@@ -1742,7 +1742,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 /* add a namespace */
 static int
 raptor_rss10_serialize_declare_namespace_from_namespace(raptor_serializer* serializer,
-                                                         raptor_namespace *nspace)
+                                                        raptor_namespace *nspace)
 {
   raptor_rss10_serializer_context* rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
   int i;
@@ -1778,8 +1778,8 @@ raptor_rss10_serialize_declare_namespace_from_namespace(raptor_serializer* seria
 /* add a namespace */
 static int
 raptor_rss10_serialize_declare_namespace(raptor_serializer* serializer,
-                                          raptor_uri *uri,
-                                          const unsigned char *prefix)
+                                         raptor_uri *uri,
+                                         const unsigned char *prefix)
 {
   raptor_rss10_serializer_context* rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
   raptor_namespace *ns;
