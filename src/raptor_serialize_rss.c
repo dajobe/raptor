@@ -201,7 +201,8 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_uri_get_handler(&uri_handler, &uri_context);
 
   rss_serializer->nstack=raptor_new_namespaces(uri_handler, uri_context,
-                                               NULL, NULL, /* errors */
+                                               (raptor_simple_message_handler)raptor_serializer_simple_error,
+                                               serializer,
                                                1);
 
   return 0;
