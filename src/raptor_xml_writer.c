@@ -194,15 +194,17 @@ raptor_xml_writer_nsd_compare(const void *a, const void *b)
 
 
 static int
-raptor_iostream_write_xml_element_start(raptor_iostream* iostr,
-                                        raptor_xml_element *element,
-                                        raptor_namespace_stack *nstack,
-                                        raptor_simple_message_handler error_handler,
-                                        void *error_data,
-                                        int auto_empty,
-                                        int depth,
-                                        int xml_version)
+raptor_iostream_write_xml_element_start(raptor_xml_writer* xml_writer,
+                                        raptor_xml_element* element,
+                                        int auto_empty)
 {
+  raptor_iostream* iostr=xml_writer->iostr;
+  raptor_namespace_stack *nstack=xml_writer->nstack;
+  raptor_simple_message_handler error_handler=xml_writer->error_handler;
+  void *error_data=xml_writer->error_data;
+  int depth=xml_writer->depth;
+  int auto_indent=XML_WRITER_AUTO_INDENT(xml_writer);
+  int xml_version=xml_writer->xml_version;
   struct nsd *nspace_declarations=NULL;
   size_t nspace_declarations_count=0;  
   unsigned int i;
@@ -527,14 +529,7 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
   if(xml_writer->pending_newline || XML_WRITER_AUTO_INDENT(xml_writer))
     raptor_xml_writer_indent(xml_writer);
   
-  raptor_iostream_write_xml_element_start(xml_writer->iostr,
-                                          element, 
-                                          xml_writer->nstack,
-                                          xml_writer->error_handler,
-                                          xml_writer->error_data,
-                                          1,
-                                          xml_writer->depth,
-                                          xml_writer->xml_version);
+  raptor_iostream_write_xml_element_start(xml_writer, element, 1);
 
   raptor_iostream_write_xml_element_end(xml_writer->iostr, element, 1);
   
@@ -565,14 +560,8 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
   if(xml_writer->pending_newline || XML_WRITER_AUTO_INDENT(xml_writer))
     raptor_xml_writer_indent(xml_writer);
   
-  raptor_iostream_write_xml_element_start(xml_writer->iostr,
-                                          element, 
-                                          xml_writer->nstack,
-                                          xml_writer->error_handler,
-                                          xml_writer->error_data,
-                                          XML_WRITER_AUTO_EMPTY(xml_writer),
-                                          xml_writer->depth,
-                                          xml_writer->xml_version);
+  raptor_iostream_write_xml_element_start(xml_writer, element,
+                                          XML_WRITER_AUTO_EMPTY(xml_writer));
 
   xml_writer->depth++;
 
