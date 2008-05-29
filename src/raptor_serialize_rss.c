@@ -1155,9 +1155,11 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
     return;
   
   if(is_atom) {
+    raptor_namespace* at_nspace=rss_serializer->nspaces[ATOMTRIPLES_NS];
+
     if(rss_serializer->rss_triples_mode == 2) {
       /* atom:md with no attribute */
-      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
+      root_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
                                                             (const unsigned char*)"md",
                                                             NULL);
     } else {
