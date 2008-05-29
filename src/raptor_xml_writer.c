@@ -194,9 +194,9 @@ raptor_xml_writer_nsd_compare(const void *a, const void *b)
 
 
 static int
-raptor_iostream_write_xml_element_start(raptor_xml_writer* xml_writer,
-                                        raptor_xml_element* element,
-                                        int auto_empty)
+raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
+                                       raptor_xml_element* element,
+                                       int auto_empty)
 {
   raptor_iostream* iostr=xml_writer->iostr;
   raptor_namespace_stack *nstack=xml_writer->nstack;
@@ -310,6 +310,13 @@ raptor_iostream_write_xml_element_start(raptor_xml_writer* xml_writer,
           raptor_xml_writer_nsd_compare);
     /* add them */
     for (i=0; i < nspace_declarations_count; i++) {
+      if(auto_indent && nspace_declarations_count > 1) {
+        /* indent xmlns namespace attributes */
+        raptor_xml_writer_newline(xml_writer);
+        xml_writer->depth++;
+        raptor_xml_writer_indent(xml_writer);
+        xml_writer->depth--;
+      }
       raptor_iostream_write_byte(iostr, ' ');
       raptor_iostream_write_counted_string(iostr, 
                                            (const char*)nspace_declarations[i].declaration,
@@ -377,10 +384,12 @@ raptor_iostream_write_xml_element_start(raptor_xml_writer* xml_writer,
 
 
 static int
-raptor_iostream_write_xml_element_end(raptor_iostream* iostr,
-                                      raptor_xml_element *element,
-                                      int is_empty)
+raptor_xml_writer_end_element_common(raptor_xml_writer* xml_writer,
+                                     raptor_xml_element *element,
+                                     int is_empty)
 {
+  raptor_iostream* iostr=xml_writer->iostr;
+
   if (is_empty)
     raptor_iostream_write_byte(iostr, '/');
   else {
@@ -529,9 +538,9 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
   if(xml_writer->pending_newline || XML_WRITER_AUTO_INDENT(xml_writer))
     raptor_xml_writer_indent(xml_writer);
   
-  raptor_iostream_write_xml_element_start(xml_writer, element, 1);
+  raptor_xml_writer_start_element_common(xml_writer, element, 1);
 
-  raptor_iostream_write_xml_element_end(xml_writer->iostr, element, 1);
+  raptor_xml_writer_end_element_common(xml_writer, element, 1);
   
   raptor_namespaces_end_for_depth(xml_writer->nstack, xml_writer->depth);
 }
@@ -560,8 +569,8 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
   if(xml_writer->pending_newline || XML_WRITER_AUTO_INDENT(xml_writer))
     raptor_xml_writer_indent(xml_writer);
   
-  raptor_iostream_write_xml_element_start(xml_writer, element,
-                                          XML_WRITER_AUTO_EMPTY(xml_writer));
+  raptor_xml_writer_start_element_common(xml_writer, element,
+                                         XML_WRITER_AUTO_EMPTY(xml_writer));
 
   xml_writer->depth++;
 
@@ -605,7 +614,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
   is_empty = XML_WRITER_AUTO_EMPTY(xml_writer) ?
     !(element->content_cdata_seen || element->content_element_seen) : 0;
   
-  raptor_iostream_write_xml_element_end(xml_writer->iostr, element, is_empty);
+  raptor_xml_writer_end_element_common(xml_writer, element, is_empty);
   
   raptor_namespaces_end_for_depth(xml_writer->nstack, xml_writer->depth);
 
