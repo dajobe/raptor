@@ -64,13 +64,12 @@ ALL_TEST_FILES= \
 	$(TEST_OUT_FILES)
 
 # Expected test failures:
-#   0058.xhtml - blank nodes wrong - generating same bnode twice
-#   0100.xhtml - generating too many XML ns decls
-#   0101.xhtml - generating too many XML ns decls
-#   0102.xhtml - generating too many XML ns decls
-#   0103.xhtml - generating too many XML ns decls
+#   0100.xhtml - XML namespaces are in a different order to expected output
+#   0101.xhtml - XML namespaces are in a different order to expected output
+#   0102.xhtml - XML namespaces are in a different order to expected output
+#   0103.xhtml - XML namespaces are in a different order to expected output
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0058.xhtml 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
+EXPECTED_FAILURES=" 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
