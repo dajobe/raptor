@@ -1,4 +1,330 @@
+2008-05-29  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, librdfa/subject.c: Merge with GIT
+	8adf69fff952d069e4f6da472d9d8e0acf8fea28 that fixes test case
+	#0058
+
+	* src/raptor_serialize_rss.c: Get atom author blank node ID from
+	atom:author string value.
+
+2008-05-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.h: Re-order atom fields so that required ones are
+	generated first when going in sequential field order.
+
+	* src/raptor_rss_common.c, src/raptor_serialize_rss.c: Re-order
+	atom fields so that required ones are generated first when going
+	in sequential field order.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_terminate):
+	Comment out raptor_free_namespace calls - crashes worse than leaks
+	for now.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_atom_feed): Use
+	atom_namespace not default for 'link'.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rdfxml_item_triples):
+	use at:md not atom:md
+
+	* docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	added raptor_xml_writer_flush raptor_xml_writer_newline to
+	templates
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_init): Init
+	namespaces with error reporting.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rdfxml_item_triples):
+	Fix root_qname double free
+
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rss_items): Set
+	xml-writer
+	(raptor_rss10_emit_rdfxml_item_triples): Added, pulled rdf/xml
+	block writing out of raptor_rss10_emit_item. Validate you can only
+	use rdf-xml with rss-1.0 serializer and atom-triples with atom
+	serializer.
+	(raptor_rss10_emit_item): Call raptor_rss10_emit_rdfxml_item_triples
+
+	* src/raptor_rss_common.c: Turn dc:date into atom:updated
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_atom_feed): Add
+	<link href="{uri}" rel="self" />
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rss_items):
+	Added, pulled RSS 1.0-specific channel XML out of
+	raptor_rss10_emit_item
+	(raptor_rss10_emit_item): Call raptor_rss10_emit_rss_items for RSS
+	1.0 rdf:Seq and rss:items
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_atom_feed):
+	Added, pulled atom-specific entry fields out of
+	raptor_rss10_emit_item
+	(raptor_rss10_emit_item): Call raptor_rss10_emit_item for atom and
+	channel: atom feed.
+
+	* src/raptor_xml.c: (raptor_xml_element_set_attributes): note
+	@attributes become owned
+
+	* src/raptor_serialize_rss.c: RSS 1.0 / Atom serializers now
+	support user namespace declarations
+	raptor_rss10_serializer_context gains user_namespaces
+	(raptor_rss10_serialize_init): Init user_namespaces
+	(raptor_rss10_serialize_declare_namespace,
+	raptor_rss10_serialize_declare_namespace_from_namespace): Added.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_item): Added
+	at:entrymap and at:map in the atom fee when
+	rssTriples=atom-triples.
+
+2008-05-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.h: Update ATOMTRIPLES_NAMESPACE_URI
+
+	* librdfa/curie.c: (rdfa_resolve_curie): Protect strtok_r with
+	NULL string from using a NULL wcptr.
+
+2008-05-26  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: Added raptor_qname_to_counted_name,
+	raptor_xml_writer_flush and raptor_xml_writer_newline
+
+	* tests/rdfa/Makefile.am: Update failures to remove those now passing:
+	+ 0092: expected XML result corrected
+	+ 0094: expected XML result corrected
+
+	* tests/rdfa/0011.out, tests/rdfa/0092.out, tests/rdfa/0094.out,
+	tests/rdfa/0100.out, tests/rdfa/0101.out, tests/rdfa/0102.out,
+	tests/rdfa/0103.out, tests/rdfa/Makefile.am: update xml results
+
+	* librdfa/rdfa.c: (start_element): Reverse raptor stack namespace
+	order to match that which librdfa uses. GIT
+	46929dc0822aa55553d61df5127b2695b8c7acf8
+
+	* tests/rdfa/Makefile.am: Update failures to remove those now passing:
+	+ 0042: no triples is correct; expected result corrected
+	+ 0052: expected result corrected
+	+ 0053: expected result corrected
+	+ 0091: fixed
+	0058 still wrong; sparql test case is inadequate
+
+	* src/raptor.h: Added prototype for raptor_qname_to_counted_name
+
+	* src/raptor_qname.c: (raptor_qname_to_counted_name): Added.
+
+	* librdfa/rdfa.c: (start_element): Walk raptor namespace stack to
+	figure out xml literal ns declarations.
+	(raptor_rdfa_start_element, raptor_rdfa_end_element): Pass in
+	qname string. GIT c1313ac3de0dee9903e7b132cb4626708f3df257
+
+	* tests/rdfa/0053.out: Update test result for 0053 to correct
+	subject for first triple
+
+	* tests/rdfa/0083.xhtml, tests/rdfa/0102.xhtml: Update inputs for
+	tests 0083 0102
+
+	* tests/rdfa/0052.out: Update test result for 0052 to correct
+	subject
+
+	* tests/rdfa/0042.out: Update test result for 0042 to expect no
+	triples
+
+	* tests/rdfa/0011.out, tests/rdfa/0092.out, tests/rdfa/0094.out:
+	Update test results for 0011 0092 0094 to use xmlns with double
+	quotes
+
+	* librdfa/rdfa.c: (start_element): set xml_lang variable when
+	inside raptor GIT aeac34493258ecf53374b6cbda5eec03f10b841e
+
+	* librdfa/triple.c: (rdfa_free_triple): Free triple.  GIT
+	a64e1f00a53d6858a818156a9115d10b7ecec036
+
+2008-05-25  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/curie.c, librdfa/rdfa.c, librdfa/rdfa.h,
+	librdfa/rdfa_utils.c, librdfa/rdfa_utils.h, librdfa/triple.c:
+	Merge to GIT f82c0941956254847e8d51654759b2b45dc00088
+
+	* tests/rdfa/Makefile.am: Update expected test failures to add new
+	approved & failing tests:
+	0042.xhtml 0088.xhtml 0091.xhtml 0092.xhtml 0093.xhtml 0094.xhtml
+	0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml
+	Add triple counts to failure message
+
+	* tests/rdfa/0017.out, tests/rdfa/0017.xhtml, tests/rdfa/0039.out,
+	tests/rdfa/0039.xhtml, tests/rdfa/0040.out, tests/rdfa/0040.xhtml,
+	tests/rdfa/0042.out, tests/rdfa/0042.xhtml, tests/rdfa/0085.out,
+	tests/rdfa/0085.xhtml, tests/rdfa/0088.out, tests/rdfa/0088.xhtml,
+	tests/rdfa/0091.out, tests/rdfa/0091.xhtml, tests/rdfa/0092.out,
+	tests/rdfa/0092.xhtml, tests/rdfa/0093.out, tests/rdfa/0093.xhtml,
+	tests/rdfa/0094.out, tests/rdfa/0094.xhtml, tests/rdfa/0099.out,
+	tests/rdfa/0099.xhtml, tests/rdfa/0100.out, tests/rdfa/0100.xhtml,
+	tests/rdfa/0101.out, tests/rdfa/0101.xhtml, tests/rdfa/0102.out,
+	tests/rdfa/0102.xhtml, tests/rdfa/0103.out, tests/rdfa/0103.xhtml,
+	tests/rdfa/0104.out, tests/rdfa/0104.xhtml, tests/rdfa/0107.out,
+	tests/rdfa/0107.xhtml, tests/rdfa/0108.out, tests/rdfa/0108.xhtml,
+	tests/rdfa/0109.out, tests/rdfa/0109.xhtml,
+	tests/rdfa/Makefile.am: Added RDFa approved tests
+	0017 0039 0040 0042 0085 0088 0091 0092 0093 0094 0099 0100 0101 0102
+	0103 0104 0107 0108 0109
+	where approved tests are given by the SPARQL:
+	  BASE <http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/>
+	  PREFIX : <http://www.w3.org/2006/03/test-description#>
+	  SELECT ?test
+	  FROM <rdfa-xhtml1-test-manifest.rdf>
+	  WHERE { ?test :reviewStatus :approved }
+	and
+	http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/rdfa-xhtml1-test-manifest.rdf
+	Last-Modified: Mon, 19 May 2008 10:47:38 GMT
+
+2008-05-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-feature.sgml, docs/tmpl/section-triples.sgml:
+	update docs
+
+	* librdfa/rdfa.c: (rdfa_free_context): Revert change in GIT
+	d0f2401a9b914f70fff262be602fe92cf5a2e93e.  Memory leak remains
+
+	* src/raptor_librdfa.c: (raptor_librdfa_parse_start): Free any old
+	context.
+	(raptor_librdfa_parse_terminate): Free context.
+
+	* librdfa/rdfa.c: Declare rdfa_init_context as static since it is
+	only used in rdfa.c. GIT 71dd65d38f70120a205abf73e0cf8fd0bf6f0f27
+
+	* librdfa/rdfa.c: (rdfa_free_context): Free context_stack and
+	remove TODO. GIT d0f2401a9b914f70fff262be602fe92cf5a2e93e
+
+	* librdfa/triple.c: (rdfa_free_triple): free triple. GIT
+	402f883bfc2d7157eb6f13018ad141450ed47944
+
+	* src/raptor_librdfa.c: include rdfa_utils.h
+
+	* src/raptor_librdfa.c: (raptor_librdfa_generate_statement): free
+	incoming triple
+
+2008-05-22  Lauri Aalto <laalto@iki.fi>
+
+	* src/n3_lexer.l, src/turtle_lexer.l: Fixed n3/turtle lexer error
+	handling. Do not report OOM for failed function calls that can
+	fail for other reasons besides OOM, e.g. qname expansion fails due
+	to undeclared prefix.
+
+2008-05-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c: Use
+	raptor_xml_writer_flush for xml writer
+
+	* src/raptor.h: Added prototypes for raptor_xml_writer_newline
+	and raptor_xml_writer_flush
+
+	* src/raptor_xml_writer.c: raptor_xml_writer gains pending_newline
+	flag
+	(raptor_xml_writer_indent): Handle pending_newline feature as well
+	as indenting.
+	(raptor_xml_writer_empty_element, raptor_xml_writer_start_element,
+	raptor_xml_writer_end_element): Call indent if pending_newline.
+	(raptor_xml_writer_newline): Added.
+	(raptor_xml_writer_flush): Added to tidy up at the end of an XML
+	writer.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_move_statements,
+	raptor_rss10_store_statement, ): Set is_mapped when going from rss
+	to atom fields.
+	(raptor_rss10_remove_mapped_item_fields,
+	raptor_rss10_remove_mapped_fields): Added to delete field values
+	that were mapped when there is an non-mapped value.
+	(raptor_rss10_serialize_end): Call
+	raptor_rss10_remove_mapped_fields for atom.
+
+	* src/raptor_rss.c: (raptor_rss_uplift_fields): Set is_mapped when
+	uplifting
+
+	* src/raptor_rss.h: raptor_rss_field gains is_mapped field
+
+2008-05-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h, src/raptor_rss.h,
+	src/raptor_rss_common.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c: Added grouping of triples by
+	key (uri/fakeuri(bnode)) to item using an avltree of
+	raptor_rss_group_map
+	(raptor_free_group_map, raptor_rss_group_map_compare,
+	raptor_rss10_get_group_item, raptor_rss10_set_item_group): Added.
+	(raptor_rss10_serialize_init, raptor_rss10_serialize_terminate):
+	init / free group_map avl tree
+	(raptor_rss10_move_statements): If a statement object is
+	anonymous, move it to the item triples, do not search for a field.
+	Do not move any other fields with anonymous objects.
+	(raptor_rss10_move_anonymous_statements): Added to move blank node
+	closure triples to their item.
+	(raptor_rss10_store_statement): Use avl tree to find an item for a
+	triple
+	(raptor_rss10_serialize_statement): Do not discard blank nodes on
+	input.  Set blank node/URI to item mapping.
+	(raptor_rss10_emit_item): Emit different triple block elements,
+	attributes only for atom;content
+	(raptor_rss10_serialize_end): Call
+	raptor_rss10_move_anonymous_statements
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_turtle_writer.c: 2008
+
+	* src/raptor_feature.c: RAPTOR_FEATURE_RSS_TRIPLES label shorter
+
+	* src/raptor_serialize_rss.c: raptor_rss10_serializer_context
+	gains rss_triples_mode
+	(raptor_rss10_serialize_start): Added to set rss_triples_mode from
+	feature_rss_triples.  1 is "rdf-xml" value, 2 is "atom-triples"
+	(raptor_rss10_emit_item): Emit triples when enabled by feature
+	Remove node elements, typed nodes and emit a single node for rss
+	triples mode 2
+	(raptor_rss10_serializer_register_factory): Init
+	raptor_rss10_serialize_start
+
+	* src/raptor_serialize_rdfxmla.c: raptor_rdfxmla_context gains
+	fields single_node, write_node_elements, write_typed_nodes
+	(raptor_rdfxmla_emit_resource_uri): Added.
+	(raptor_rdfxmla_emit_resource): Use
+	raptor_rdfxmla_emit_resource_uri
+	(raptor_rdfxmla_emit_subject_properties): Use write_typed_nodes
+	flag to write rdf:type <subject node type URI> property element.
+	(raptor_rdfxmla_emit_subject): Handle write_typed_nodes to skip
+	typed node element.  Handle write_node_elements flag.
+	(raptor_rdfxmla_emit): Do not emit any top-level blank nodes if
+	single_node is set.
+	(raptor_rdfxmla_serialize_init): Init defaults for
+	write_node_elements and write_typed_nodes: true/1.
+	(raptor_rdfxmla_serialize_set_write_rdf_RDF,
+	raptor_rdfxmla_serialize_set_xml_writer): autodocs
+	(raptor_rdfxmla_serialize_set_single_node,
+	raptor_rdfxmla_serialize_set_write_node_elements,
+	raptor_rdfxmla_serialize_set_write_typed_nodes): Added to set
+	internal flags.
+	(raptor_rdfxmla_serialize_end): Free single node URI if present.
+
+	* src/raptor_internal.h: raptor_serializer_s gains feature_rss_triples
+	Added prototypes for raptor_rdfxmla_serialize_set_single_node,
+	raptor_rdfxmla_serialize_set_write_node_elements and
+	raptor_rdfxmla_serialize_set_write_typed_nodes
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_parse.c,
+	src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Added feature
+	rss_triples (RAPTOR_FEATURE_RSS_TRIPLES) for rss-1.0/atom serializers
+
+2008-05-18  Lauri Aalto <laalto@iki.fi>
+
+	* tests/rdfa: props
+
+2008-05-17  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, librdfa/rdfa_utils.h, librdfa/subject.c: Update
+	to GIT 402f883bfc2d7157eb6f13018ad141450ed47944
+
 2008-05-15  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.h: Remove uri_mappings field if LIBRDFA_IN_RAPTOR is defined
 
 	* docs/tmpl/section-sequence.sgml, docs/tmpl/section-triples.sgml,
 	docs/tmpl/section-xml.sgml: gtk docs
