@@ -136,3 +136,13 @@ for XML element and attribute names.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_qname_to_counted_name ##### -->
+<para>
+
+</para>
+
+@qname: 
+@length_p: 
+@Returns: 
+
+

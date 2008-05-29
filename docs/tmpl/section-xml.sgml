@@ -234,6 +234,22 @@ a name is legal in some XML version.
 @len: 
 
 
+<!-- ##### FUNCTION raptor_xml_writer_flush ##### -->
+<para>
+
+</para>
+
+@xml_writer: 
+
+
+<!-- ##### FUNCTION raptor_xml_writer_newline ##### -->
+<para>
+
+</para>
+
+@xml_writer: 
+
+
 <!-- ##### FUNCTION raptor_xml_writer_features_enumerate ##### -->
 <para>
 
