@@ -1292,14 +1292,14 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
 
     /* atom:content is forbidden in feed */
     f=RAPTOR_RSS_FIELD_ATOM_CONTENT;
-    if(!item->fields[f]) {
+    if(item->fields[f]) {
       raptor_rss_field_free(item->fields[f]);
       item->fields[f]=NULL;
     }
 
     /* atom:summary is forbidden in feed */
     f=RAPTOR_RSS_FIELD_ATOM_SUMMARY;
-    if(!item->fields[f]) {
+    if(item->fields[f]) {
       raptor_rss_field_free(item->fields[f]);
       item->fields[f]=NULL;
     }
