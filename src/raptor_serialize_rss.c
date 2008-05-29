@@ -239,6 +239,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   if(rss_serializer->xml_writer)
     raptor_free_xml_writer(rss_serializer->xml_writer);
 
+#if 0
   for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
     if(rss_serializer->nspaces[i])
       raptor_free_namespace(rss_serializer->nspaces[i]);
@@ -249,6 +250,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
 
   if(rss_serializer->xml_nspace)
     raptor_free_namespace(rss_serializer->xml_nspace);
+#endif
 
   if(rss_serializer->nstack)
     raptor_free_namespaces(rss_serializer->nstack);
@@ -266,6 +268,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
       raptor_free_qname(raptor_rss_types_info[i].qname);
   }
 
+#if 0
   if(rss_serializer->user_namespaces) {
     for(i=0; i< raptor_sequence_size(rss_serializer->user_namespaces); i++) {
       raptor_namespace* ns;
@@ -276,6 +279,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
     raptor_free_sequence(rss_serializer->user_namespaces);
     rss_serializer->user_namespaces=NULL;
   }
+#endif
 
 }
   
