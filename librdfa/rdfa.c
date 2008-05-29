@@ -245,7 +245,8 @@ static rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
    // of the xml_literal_namespace_insertion
    rval->bnode_count = parent_context->bnode_count;
    rval->underscore_colon_bnode_name =
-      parent_context->underscore_colon_bnode_name;
+      rdfa_replace_string(rval->underscore_colon_bnode_name,
+                          parent_context->underscore_colon_bnode_name);
    rval->recurse = parent_context->recurse;
    rval->skip_element = 0;
    rval->callback_data = parent_context->callback_data;
@@ -915,8 +916,12 @@ static void XMLCALL
       }
    }
 
+   // preserve the bnode count by copying it to the parent_context
+   parent_context->bnode_count = context->bnode_count;
+   parent_context->underscore_colon_bnode_name = \
+      rdfa_replace_string(parent_context->underscore_colon_bnode_name,
+                          context->underscore_colon_bnode_name);
 
-   
    // 11. If the [skip element] flag is 'false', and either: the
    // previous step resulted in a 'true' flag, or [new subject] was
    // set to a non-null value, then any [incomplete triple]s within
