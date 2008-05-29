@@ -166,6 +166,11 @@ typedef enum {
   RAPTOR_RSS_FIELD_ATOM_MODIFIED,  /* atom 0.3 modified */
   RAPTOR_RSS_FIELD_ATOM_TAGLINE,   /* atom 0.3 tagline */
 
+  /* atom 1.0 required fields */
+  RAPTOR_RSS_FIELD_ATOM_ID,          /* atom 1.0 id */
+  RAPTOR_RSS_FIELD_ATOM_TITLE,       /* atom 1.0 title */
+  RAPTOR_RSS_FIELD_ATOM_UPDATED,     /* atom 1.0 updated */
+  /* atom 1.0 optional fields */
   RAPTOR_RSS_FIELD_ATOM_AUTHOR,      /* atom 1.0 author */
   RAPTOR_RSS_FIELD_ATOM_CATEGORY,    /* atom 1.0 category */
   RAPTOR_RSS_FIELD_ATOM_CONTENT,     /* atom 1.0 content */
@@ -175,7 +180,6 @@ typedef enum {
   RAPTOR_RSS_FIELD_ATOM_FEED,        /* atom 1.0 feed */
   RAPTOR_RSS_FIELD_ATOM_GENERATOR,   /* atom 1.0 generator */
   RAPTOR_RSS_FIELD_ATOM_ICON,        /* atom 1.0 icon */
-  RAPTOR_RSS_FIELD_ATOM_ID,          /* atom 1.0 id */
   RAPTOR_RSS_FIELD_ATOM_LINK,        /* atom 1.0 link */
   RAPTOR_RSS_FIELD_ATOM_LOGO,        /* atom 1.0 logo */
   RAPTOR_RSS_FIELD_ATOM_NAME,        /* atom 1.0 name */
@@ -184,8 +188,6 @@ typedef enum {
   RAPTOR_RSS_FIELD_ATOM_SOURCE,      /* atom 1.0 source */
   RAPTOR_RSS_FIELD_ATOM_SUBTITLE,    /* atom 1.0 subtitle */
   RAPTOR_RSS_FIELD_ATOM_SUMMARY,     /* atom 1.0 summary */
-  RAPTOR_RSS_FIELD_ATOM_TITLE,       /* atom 1.0 title */
-  RAPTOR_RSS_FIELD_ATOM_UPDATED,     /* atom 1.0 updated */
   RAPTOR_RSS_FIELD_ATOM_URI,         /* atom 1.0 uri */
 
   RAPTOR_RSS_FIELD_DC_TITLE,       /* DC title */
