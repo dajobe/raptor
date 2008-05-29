@@ -1249,6 +1249,89 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
 }
 
 
+/**
+ * raptor_rss10_ensure_atom_items_valid:
+ * @rss_serializer: serializer object
+ *
+ * INTERNAL - Ensure the atom items have all the fields they need:
+ *   <id> & <title> & <updated>
+ * plus:
+ *   <link rel='alternate' ...> OR <content>..
+ *
+ */
+static int
+raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_serializer)
+{
+  int is_atom;
+  int i;
+  raptor_rss_item* item;
+  raptor_rss_model* rss_model;
+  struct timeval tv;
+  time_t now;
+  
+  gettimeofday(&tv, NULL);
+  now=tv.tv_sec;
+  
+  is_atom=rss_serializer->is_atom;
+  rss_model=&rss_serializer->model;
+
+  if(!is_atom)
+    return 0;
+
+  item=rss_model->common[RAPTOR_RSS_CHANNEL];
+  if(item) {
+    int f;
+    
+    f=RAPTOR_RSS_FIELD_ATOM_UPDATED;
+    if(!item->fields[f]) {
+      raptor_rss_field* field=raptor_rss_new_field();
+      raptor_rss_set_date_field(field, now);
+      raptor_rss_item_add_field(item, f, field);
+    }
+  }
+  
+
+  for(i=0; i < raptor_sequence_size(rss_serializer->items); i++) {
+    item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
+
+    /* atom:id - defaults to item URI */
+    if(!item->fields[RAPTOR_RSS_FIELD_ATOM_ID]) {
+      raptor_rss_field* field=raptor_rss_new_field();
+      field->uri=raptor_uri_copy(item->uri);
+      raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_ID, field);
+    }
+
+    /* atom:title - defaults to "untitled" */
+    if(!item->fields[RAPTOR_RSS_FIELD_ATOM_TITLE]) {
+      raptor_rss_field* field=raptor_rss_new_field();
+      field->value=(unsigned char*)RAPTOR_MALLOC(cstring, 9);
+      strncpy((char*)field->value, "untitled", 9);
+      raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_TITLE, field);
+    }
+    
+    /* atom:updated - defaults to now time */
+    if(!item->fields[RAPTOR_RSS_FIELD_ATOM_UPDATED]) {
+      raptor_rss_field* field=raptor_rss_new_field();
+      raptor_rss_set_date_field(field, now);
+      raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_UPDATED, field);
+    }
+    
+    /* enforce there is either an atom:content OR atom:link (rel=alternate) 
+     * by adding a link to {item URI} if missing
+     */
+    if(!item->fields[RAPTOR_RSS_FIELD_ATOM_CONTENT] &&
+       !item->fields[RAPTOR_RSS_FIELD_ATOM_LINK]) {
+      raptor_rss_field* field=raptor_rss_new_field();
+      field->uri=raptor_uri_copy(item->uri);
+      raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_LINK, field);
+    }
+    
+  }
+  
+  return 0;
+}
+
+
 static void
 raptor_rss10_emit_item(raptor_serializer* serializer,
                        raptor_rss_item *item, int item_type,
@@ -1322,7 +1405,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     raptor_rss_field* field;
 
     if(f == RAPTOR_RSS_FIELD_ITEMS)
-      /* Done after loop for RSS */
+      /* emitting the RSS items rdf:Seq block is done after this loop */
       continue;
 
     if(!raptor_rss_fields_info[f].uri)
@@ -1406,16 +1489,31 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       raptor_xml_element* predicate;
 
       base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
-      predicate=raptor_new_xml_element(raptor_qname_copy(raptor_rss_fields_info[f].qname), NULL, base_uri_copy);    
+      predicate=raptor_new_xml_element(raptor_qname_copy(raptor_rss_fields_info[f].qname), NULL, base_uri_copy);
       if (is_atom && field->uri) {
         unsigned char* uri_string;
         size_t len;
-        
         uri_string=raptor_uri_as_counted_string(field->uri, &len);
 
-        raptor_xml_writer_start_element(xml_writer, predicate);
-        raptor_xml_writer_cdata_counted(xml_writer, uri_string, len);
-        raptor_xml_writer_end_element(xml_writer, predicate);		
+        if(f == RAPTOR_RSS_FIELD_ATOM_LINK &&
+           !item->fields[RAPTOR_RSS_FIELD_ATOM_CONTENT]) {
+          raptor_qname **predicate_attrs=NULL;
+          predicate_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, 
+                                                         sizeof(raptor_qname*));
+          predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(NULL,
+                                           (const unsigned char*)"href",  uri_string);
+          predicate_attrs[1]=raptor_new_qname_from_namespace_local_name(NULL, 
+                                           (const unsigned char*)"rel", 
+                                           (const unsigned char*)"alternate");
+          field->value=NULL;
+          raptor_xml_element_set_attributes(predicate, predicate_attrs, 2);
+          raptor_xml_writer_empty_element(xml_writer, predicate);
+        } else {
+          raptor_xml_writer_start_element(xml_writer, predicate);
+          raptor_xml_writer_cdata_counted(xml_writer, uri_string, len);
+          raptor_xml_writer_end_element(xml_writer, predicate);
+        }
+        
       } else if (field->uri) {
         raptor_uri* enclosure_uri=field->uri;
         raptor_rss_item *enclosure_item=NULL;
@@ -1529,8 +1627,11 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
   raptor_rss10_move_anonymous_statements(rss_serializer);
 
-  if(is_atom)
+  if(is_atom) {
+    raptor_rss10_ensure_atom_feed_valid(rss_serializer);
+
     raptor_rss10_remove_mapped_fields(rss_serializer);
+  }
 
 #ifdef RAPTOR_DEBUG
   for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++) {
