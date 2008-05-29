@@ -482,31 +482,55 @@ raptor_rss_field_free(raptor_rss_field* field)
 }
 
 
+#define RAPTOR_ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
+
+int
+raptor_rss_format_iso_date(char* buffer, size_t len, time_t unix_time) 
+{
+  struct tm* structured_time;
+
+  if(len < RAPTOR_ISO_DATE_LEN)
+    return 1;
+
+  structured_time=gmtime(&unix_time);
+  strftime(buffer, len+1, RAPTOR_ISO_DATE_FORMAT, structured_time);
+
+  return 0;
+}
+
+
+int
+raptor_rss_set_date_field(raptor_rss_field* field, time_t unix_time)
+{
+  size_t len=RAPTOR_ISO_DATE_LEN;
+  
+  if(field->value)
+    RAPTOR_FREE(cstring, field->value);
+  field->value=(unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  if(!field->value)
+    return 1;
+  
+  if(raptor_rss_format_iso_date(field->value, len, unix_time)) {
+    RAPTOR_FREE(cstring, field->value);
+    return 1;
+  }
+
+  return 0;
+}
+
+
 int
 raptor_rss_date_uplift(raptor_rss_field* to_field, 
                        const unsigned char *date_string)
 {
 #ifdef RAPTOR_PARSEDATE_FUNCTION
   time_t unix_time;
-  struct tm* structured_time;
-#define ISO_DATE_FORMAT "%Y-%m-%dT%H:%M:%SZ"
-#define ISO_DATE_LEN 20
-  static char date_buffer[ISO_DATE_LEN + 1];
-  size_t len;
-  
+
   unix_time=RAPTOR_PARSEDATE_FUNCTION((const char*)date_string, NULL);
   if(unix_time < 0)
     return 1;
-  
-  structured_time=gmtime(&unix_time);
-  len=ISO_DATE_LEN;
-  strftime(date_buffer, len+1, ISO_DATE_FORMAT, structured_time);
-  
-  if(to_field->value)
-    RAPTOR_FREE(cstring, to_field->value);
-  to_field->value=(unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
-  strncpy((char*)to_field->value, date_buffer, len+1);
-  return 0;
+
+  return raptor_rss_set_date_field(to_field, unix_time);
 #else
   return 1;
 #endif

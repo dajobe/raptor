@@ -313,6 +313,9 @@ void raptor_enclosure_free(raptor_rss_enclosure* enclosure);
 raptor_rss_field* raptor_rss_new_field(void);
 void raptor_rss_field_free(raptor_rss_field* field);
 
+#define RAPTOR_ISO_DATE_LEN 20
+int raptor_rss_format_iso_date(char* buffer, size_t len, time_t unix_time);
+int raptor_rss_set_date_field(raptor_rss_field* field, time_t unix_time);
 int raptor_rss_date_uplift(raptor_rss_field* to_field, const unsigned char *date_string);
 
 #ifdef __cplusplus
