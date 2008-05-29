@@ -1350,14 +1350,18 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         identifier=&(author_item->identifier);
 
         author_item->node_type=&raptor_rss_types_info[typei];
-        /* FIXME - should make a new genid for each author node */
-        identifier->id=(const unsigned char*)RAPTOR_MALLOC(cstring, 7);
-        strncpy((char*)identifier->id, "author", 7);
+        /* FIXME - uses atom:author as bnode name - should make a new
+         * genid for each author node
+         */
+        identifier->id=item->fields[f]->value;
+        item->fields[f]->value=NULL;
+
         identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
         identifier->uri_source=RAPTOR_URI_SOURCE_GENERATED;
 
+        /* Move atom:name author field, or create a dummy one */
+        f=RAPTOR_RSS_FIELD_ATOM_NAME;
         if(item->fields[f]) {
-          /* Move field from 'item' to 'author_item' */
           field=item->fields[f];
           item->fields[f]=NULL;
         } else {
@@ -1365,10 +1369,9 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           field->value=(unsigned char*)RAPTOR_MALLOC(cstring, 8);
           strncpy((char*)field->value, "unknown", 8);
         }
-
         raptor_rss_item_add_field(author_item, RAPTOR_RSS_FIELD_ATOM_NAME, field);
 
-        /* Move atom authors fields if found: atom:uri and atom:email
+        /* Move atom author fields if found: atom:uri and atom:email
          * are only used inside Person constructs
          */
         f=RAPTOR_RSS_FIELD_ATOM_URI;
@@ -1442,7 +1445,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           raptor_xml_element_set_attributes(predicate, attrs, 1);
         }
         raptor_xml_writer_empty_element(xml_writer, predicate);		
-      } else {
+      } else if(field->value) {
         /* not a URI, must be a literal */
         if(is_atom && f == RAPTOR_RSS_FIELD_ATOM_SUMMARY) {
           raptor_qname **predicate_attrs=NULL;
@@ -1461,6 +1464,9 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         } else
           raptor_xml_writer_cdata(xml_writer, (const unsigned char*)field->value);
         raptor_xml_writer_end_element(xml_writer, predicate);
+      } else {
+        RAPTOR_DEBUG3("Field %d - %s had no URI or literal value\n",
+                      f, raptor_rss_fields_info[f].name);
       }
       raptor_free_xml_element(predicate);
     }
