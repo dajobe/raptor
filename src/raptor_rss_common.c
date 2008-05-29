@@ -123,6 +123,11 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "modified",       ATOM0_3_NS },
   { "tagline",        ATOM0_3_NS },
 
+  /* atom 1.0 required fields */
+  { "id",             ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
+  { "title",          ATOM1_0_NS },
+  { "updated",        ATOM1_0_NS },
+  /* atom 1.0 optional fields */
   { "author",         ATOM1_0_NS },
   { "category",       ATOM1_0_NS },
   { "content",        ATOM1_0_NS },
@@ -132,7 +137,6 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "feed",           ATOM1_0_NS },
   { "generator",      ATOM1_0_NS },
   { "icon",           ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
-  { "id",             ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "link",           ATOM1_0_NS },
   { "logo",           ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "name",           ATOM1_0_NS },
@@ -141,8 +145,6 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "source",         ATOM1_0_NS },
   { "subtitle",       ATOM1_0_NS },
   { "summary",        ATOM1_0_NS },
-  { "title",          ATOM1_0_NS },
-  { "updated",        ATOM1_0_NS },
   { "uri",            ATOM1_0_NS },
 
   { "title",          DC_NS },

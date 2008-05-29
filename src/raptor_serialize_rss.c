@@ -1338,8 +1338,52 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         continue;
       
       typei=RAPTOR_ATOM_AUTHOR;
-      if(!rss_model->common[typei])
-        continue;
+      if(!rss_model->common[typei]) {
+        raptor_rss_item* author_item;
+        raptor_identifier* identifier;
+
+        /* No atom author was present so make a new atom:author item
+         * then either promote the string to an atom:name field OR
+         * use "unknown"
+         */
+        author_item=raptor_rss_model_add_common(rss_model, typei);
+        identifier=&(author_item->identifier);
+
+        author_item->node_type=&raptor_rss_types_info[typei];
+        /* FIXME - should make a new genid for each author node */
+        identifier->id=(const unsigned char*)RAPTOR_MALLOC(cstring, 7);
+        strncpy((char*)identifier->id, "author", 7);
+        identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+        identifier->uri_source=RAPTOR_URI_SOURCE_GENERATED;
+
+        if(item->fields[f]) {
+          /* Move field from 'item' to 'author_item' */
+          field=item->fields[f];
+          item->fields[f]=NULL;
+        } else {
+          field=raptor_rss_new_field();
+          field->value=(unsigned char*)RAPTOR_MALLOC(cstring, 8);
+          strncpy((char*)field->value, "unknown", 8);
+        }
+
+        raptor_rss_item_add_field(author_item, RAPTOR_RSS_FIELD_ATOM_NAME, field);
+
+        /* Move atom authors fields if found: atom:uri and atom:email
+         * are only used inside Person constructs
+         */
+        f=RAPTOR_RSS_FIELD_ATOM_URI;
+        if(item->fields[f]) {
+          field=item->fields[f];
+          raptor_rss_item_add_field(author_item, f, field);
+          item->fields[f]=NULL;
+        }
+        f=RAPTOR_RSS_FIELD_ATOM_EMAIL;
+        if(item->fields[f]) {
+          field=item->fields[f];
+          raptor_rss_item_add_field(author_item, f, field);
+          item->fields[f]=NULL;
+        }
+      }
       
       RAPTOR_DEBUG3("Emitting type %i - %s\n", typei, 
                     raptor_rss_types_info[typei].name);
