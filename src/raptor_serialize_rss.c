@@ -1136,18 +1136,17 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
   raptor_xml_writer* xml_writer;
   raptor_qname* root_qname;
-  raptor_qname **root_attrs=NULL;
   raptor_xml_element* root_element=NULL;
   raptor_serializer* ser=NULL;
   raptor_uri* base_uri=NULL;
-  int t_count=raptor_sequence_size(item->triples);
+  int t_max_count=raptor_sequence_size(item->triples);
+  int t_count;
   int t;
   int is_atom;
   
-  if(rss_serializer->rss_triples_mode == 0 ||
-     !item->triples || !raptor_sequence_size(item->triples))
+  if(rss_serializer->rss_triples_mode == 0 || !item->triples)
     return;
-  
+
   xml_writer=rss_serializer->xml_writer;
   is_atom=rss_serializer->is_atom;
 
@@ -1159,20 +1158,23 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   if(rss_serializer->rss_triples_mode == 1 && is_atom)
     return;
   
+  t_count=0;
+  for(t=0; t < t_max_count; t++) {
+    if(raptor_sequence_get_at(item->triples, t))
+      t_count++;
+  }
+  if(!t_count)
+    return;
+
+  RAPTOR_DEBUG2("Serializing %d triples\n", t_count);
+  
   if(is_atom) {
     raptor_namespace* at_nspace=rss_serializer->nspaces[ATOMTRIPLES_NS];
 
-    if(rss_serializer->rss_triples_mode == 2) {
-      /* atom:md with no attribute */
-      root_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
-                                                            (const unsigned char*)"md",
-                                                            NULL);
-    } else {
-      /* atom:content with type={mime type} attribute */
-      root_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace,
-                                                            (const unsigned char*)"content",
-                                                            NULL);
-    }
+    /* atom:md with no attribute */
+    root_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
+                                                          (const unsigned char*)"md",
+                                                          NULL);
     if(!root_qname)
       goto oom;
     
@@ -1190,19 +1192,6 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
     }
     root_qname=NULL;
 
-    if(rss_serializer->rss_triples_mode != 2) {
-      root_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 
-                                                  sizeof(raptor_qname *));
-      if(!root_attrs)
-        goto oom;
-      root_attrs[0] = raptor_new_qname_from_namespace_local_name(NULL,
-                                                                 (const unsigned char*)"type", 
-                                                                 (const unsigned char*)"application/rdf+xml");
-      /* after this element owns root_attrs */
-      raptor_xml_element_set_attributes(root_element, root_attrs, 1);
-      root_attrs=NULL;
-    }
-    
     raptor_xml_writer_start_element(xml_writer, root_element);
   }
   
@@ -1223,7 +1212,7 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   /* after this ser owns (this copy of) base_uri */
   raptor_serialize_start(ser, base_uri, serializer->iostream);
   
-  for(t=0; t < t_count; t++) {
+  for(t=0; t < t_max_count; t++) {
     raptor_statement* s;
     s=(raptor_statement*)raptor_sequence_get_at(item->triples, t);
     if(s)
@@ -1240,8 +1229,6 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   oom:
   if(ser)
     raptor_free_serializer(ser);
-  if(root_attrs)
-    RAPTOR_FREE(qnamearray, root_attrs);
   if(root_qname)
     raptor_free_qname(root_qname);
   if(root_element)
