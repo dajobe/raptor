@@ -375,6 +375,7 @@ typedef struct {
  * @RAPTOR_FEATURE_JSON_CALLBACK: JSON serializer callback function.
  * @RAPTOR_FEATURE_JSON_EXTRA_DATA: JSON serializer extra top-level data
  * @RAPTOR_FEATURE_RSS_TRIPLES: Atom/RSS serializer writes extra RDF triples it finds (none, rdf-xml, atom-triples)
+ * @RAPTOR_FEATURE_ATOM_ENTRY_URI: Atom entry URI.  If given, generate an Atom Entry Document with the item having the given URI, otherwise generate an Atom Feed Document with any items found.
  * @RAPTOR_FEATURE_LAST: Internal
  *
  * Raptor parser, serializer or XML writer features.
@@ -414,7 +415,8 @@ typedef enum {
   RAPTOR_FEATURE_JSON_CALLBACK,
   RAPTOR_FEATURE_JSON_EXTRA_DATA,
   RAPTOR_FEATURE_RSS_TRIPLES,
-  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_RSS_TRIPLES
+  RAPTOR_FEATURE_ATOM_ENTRY_URI,
+  RAPTOR_FEATURE_LAST=RAPTOR_FEATURE_ATOM_ENTRY_URI
 } raptor_feature;
 
 

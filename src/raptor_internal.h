@@ -518,6 +518,11 @@ struct raptor_serializer_s {
    * RSS serializer triples
    */
   unsigned char *feature_rss_triples;
+
+  /* FEATURE:
+   * Atom serializer entry URI string
+   */
+  unsigned char *feature_atom_entry_uri;
 };
 
 
