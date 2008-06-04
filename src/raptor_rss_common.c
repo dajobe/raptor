@@ -510,7 +510,7 @@ raptor_rss_set_date_field(raptor_rss_field* field, time_t unix_time)
   if(!field->value)
     return 1;
   
-  if(raptor_rss_format_iso_date(field->value, len, unix_time)) {
+  if(raptor_rss_format_iso_date((char*)field->value, len, unix_time)) {
     RAPTOR_FREE(cstring, field->value);
     return 1;
   }
