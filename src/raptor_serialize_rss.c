@@ -1142,7 +1142,7 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
 {
   raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
   raptor_xml_writer* xml_writer;
-  raptor_qname* root_qname;
+  raptor_qname* root_qname=NULL;
   raptor_xml_element* root_element=NULL;
   raptor_serializer* ser=NULL;
   raptor_uri* base_uri=NULL;
@@ -1438,7 +1438,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
          * then either promote the string to an atom:name field OR
          * use "unknown"
          */
-        author_item=raptor_rss_model_add_common(rss_model, typei);
+        author_item=raptor_rss_model_add_common(rss_model, (raptor_rss_type)typei);
         identifier=&(author_item->identifier);
 
         author_item->node_type=&raptor_rss_types_info[typei];
@@ -1626,7 +1626,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   int triple_count=0;
 #endif
   int is_atom;
-  raptor_qname **attrs;
+  raptor_qname **attrs=NULL;
   int attrs_count=0;
   raptor_uri* entry_uri=NULL;
   raptor_rss_item* entry_item=NULL;
