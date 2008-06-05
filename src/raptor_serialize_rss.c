@@ -1795,7 +1795,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
   raptor_rss10_build_xml_names(serializer, (is_atom && entry_uri));
 
-  if(serializer->base_uri) {
+  if(serializer->base_uri && serializer->feature_write_base_uri) {
     const unsigned char* base_uri_string;
 
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
