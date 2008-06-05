@@ -1150,7 +1150,8 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   unsigned char *suffix, *cur_ptr;
   size_t base_len, reference_len, reference_file_len, suffix_len;
   unsigned char *result=NULL;
-
+  int suffix_is_result=0;
+  
   if(!reference_uri)
     return NULL;
     
@@ -1186,8 +1187,19 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
               (const char*)reference_detail->authority,
               base_detail->authority_len)) {
     
-    if(!base_detail->path)
+    if(!base_detail->path) {
+      if(reference_detail->path) {
+        /* if base has no path then the relative URI is relative
+         * to scheme+authority so assemble that in the suffix
+         * buffer (adding any query part or fragment needed)
+         */
+        reference_file=reference_detail->path;
+        reference_file_len=reference_detail->path_len;
+        suffix_is_result=1;
+        goto addqueryfragment;
+      }
       goto buildresult;
+    }
     
     /* Find the file name components */
     base_file = (const unsigned char*)strrchr((const char*)base_detail->path, '/');
@@ -1216,7 +1228,8 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
       reference_file=(const unsigned char*)".";
       reference_file_len=1;
     }
-    
+
+  addqueryfragment:
     /* Calculate the length of the suffix (file name + query + fragment) */
     suffix_len=reference_file_len + reference_detail->query_len + 
                reference_detail->fragment_len;
@@ -1249,15 +1262,22 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
     }
     *cur_ptr=0;
     
-    /* Finally, create the full relative path */
-    result = raptor_uri_path_make_relative_path(base_detail->path,
-                                                base_detail->path_len,
-                                                reference_detail->path,
-                                                reference_detail->path_len,
-                                                suffix,
-                                                suffix_len,
-                                                length_p);
-    RAPTOR_FREE(cstring, suffix);
+    if(suffix_is_result) {
+      /* If suffix is what we need, just use that as the result */
+      result=suffix;
+      if(length_p)
+        *length_p=suffix_len;
+    } else {
+      /* Otherwise create the full relative path */
+      result = raptor_uri_path_make_relative_path(base_detail->path,
+                                                  base_detail->path_len,
+                                                  reference_detail->path,
+                                                  reference_detail->path_len,
+                                                  suffix,
+                                                  suffix_len,
+                                                  length_p);
+      RAPTOR_FREE(cstring, suffix);
+    }
   }
 
   
@@ -1637,7 +1657,7 @@ main(int argc, char *argv[])
   failures += assert_uri_to_relative("http://example.org", "http://a.example.org/", "http://a.example.org/");
   failures += assert_uri_to_relative("http://example.org", "http://a.example.org", "http://a.example.org");
   failures += assert_uri_to_relative("http://abcdefgh.example.org/foo/bar/", "http://ijklmnop.example.org/", "http://ijklmnop.example.org/");
-
+  failures += assert_uri_to_relative("http://example.org", "http://example.org/a/b/c/d/efgh", "/a/b/c/d/efgh");
 
   if(1) {
     raptor_uri_handler uri_handler;
