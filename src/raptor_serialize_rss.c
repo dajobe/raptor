@@ -364,6 +364,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
                raptor_uri_equals(s->object_literal_datatype,
                                  rss_serializer->xml_literal_dt))
                field->is_xml=1;
+            if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
+               field->is_xml=1;
           }
           s->object=NULL;
 
@@ -637,6 +639,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
              raptor_uri_equals(s->object_literal_datatype,
                                rss_serializer->xml_literal_dt))
              field->is_xml=1;
+          if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
+            field->is_xml=1;
         }
         s->object=NULL;
 
@@ -1653,22 +1657,28 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         raptor_xml_writer_empty_element(xml_writer, predicate);		
       } else if(field->value) {
         /* not a URI, must be a literal */
-        int is_xhtml_content=is_atom && field->is_xml;
-
-        if(is_xhtml_content) {
+        int is_xhtml_content=field->is_xml;
+        int prefer_cdata=(!is_atom && f == RAPTOR_RSS_FIELD_CONTENT_ENCODED);
+        
+        if(is_xhtml_content && !prefer_cdata) {
           raptor_qname **predicate_attrs=NULL;
           predicate_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-          predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(NULL, (const unsigned char*)"type",  (const unsigned char*)"xhtml");
+          if(is_atom)
+            predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(NULL, (const unsigned char*)"type",  (const unsigned char*)"xhtml");
+          else
+            predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"parseType",  (const unsigned char*)"Literal");
           raptor_xml_element_set_attributes(predicate, predicate_attrs, 1);
         }
 
         raptor_xml_writer_start_element(xml_writer, predicate);
-        if(!is_atom && f == RAPTOR_RSS_FIELD_CONTENT_ENCODED) {
-          raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"<![CDATA[", 9);
+        if(is_xhtml_content) {
+          if(prefer_cdata)
+            raptor_xml_writer_raw_counted(xml_writer,
+                                          (const unsigned char*)"<![CDATA[", 9);
           raptor_xml_writer_raw(xml_writer, (const unsigned char*)field->value);
-          raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)"]]>", 3);
-        } else if(is_xhtml_content) {
-          raptor_xml_writer_raw(xml_writer, (const unsigned char*)field->value);
+          if(prefer_cdata)
+            raptor_xml_writer_raw_counted(xml_writer, 
+                                          (const unsigned char*)"]]>", 3);
         } else
           raptor_xml_writer_cdata(xml_writer, (const unsigned char*)field->value);
         raptor_xml_writer_end_element(xml_writer, predicate);
