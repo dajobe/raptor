@@ -165,6 +165,8 @@ raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
 
   { "encoded",        CONTENT_NS },
 
+  { "contentType",    ATOMTRIPLES_NS },
+
   { "<unknown>",      RSS_UNKNOWN_NS },
   { "<none>",         RSS_UNKNOWN_NS }
 };

@@ -209,6 +209,8 @@ typedef enum {
 
   RAPTOR_RSS_FIELD_CONTENT_ENCODED,  /* rss 1.0 module content:encoded */
 
+  RAPTOR_RSS_FIELD_AT_CONTENT_TYPE,  /* at:contentType */
+
   RAPTOR_RSS_FIELD_UNKNOWN,
 
   RAPTOR_RSS_FIELD_NONE,
@@ -243,9 +245,13 @@ struct raptor_rss_field_s
   raptor_uri* uri;
   struct raptor_rss_field_s* next;
   /* this field was mapped from another vocab */
-  int is_mapped;
+  int is_mapped:1;
+  /* value is XML */
+  int is_xml:1;
 };
 typedef struct raptor_rss_field_s raptor_rss_field;
+
+#define RAPTOR_RSS_FIELD_MAPPED
 
 /* RSS items (instances of typed nodes) containing fields */
 struct raptor_rss_item_s
