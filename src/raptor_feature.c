@@ -83,7 +83,7 @@ static const struct
   { RAPTOR_FEATURE_MICROFORMATS      , 1,  "microformats", "GRDDL parsing looks for microformats" },
   { RAPTOR_FEATURE_HTML_LINK         , 1,  "htmlLink", "GRDDL parsing looks for <link type=\"application/rdf+xml\">" },
   { RAPTOR_FEATURE_WWW_TIMEOUT       , 1,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
-  { RAPTOR_FEATURE_WRITE_BASE_URI    , 2,  "writeBaseURI", "Write @base directive to Turtle files" },
+  { RAPTOR_FEATURE_WRITE_BASE_URI    , 2,  "writeBaseURI", "Write @base / xml:base directive in serializer output" },
   { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, 5, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
   { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 5,  "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
   { RAPTOR_FEATURE_JSON_CALLBACK     , 6,  "jsonCallback", "JSON serializer callback" },
