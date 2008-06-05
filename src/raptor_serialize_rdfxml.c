@@ -313,7 +313,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
       goto tidy;
   }
 
-  if(base_uri) {
+  if(base_uri && serializer->feature_write_base_uri) {
     const unsigned char* base_uri_string;
 
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));

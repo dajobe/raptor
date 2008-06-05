@@ -1337,7 +1337,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
     raptor_xml_element_declare_namespace(context->rdf_RDF_element, ns);
   }
 
-  if(base_uri) {
+  if(base_uri && serializer->feature_write_base_uri) {
     const unsigned char* base_uri_string;
 
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
