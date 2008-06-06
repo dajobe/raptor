@@ -597,14 +597,18 @@ The current defined serializer features are:
   \fBRAPTOR_FEATURE_LITERAL_FILL\fP             String
   \fBRAPTOR_FEATURE_RESOURCE_BORDER\fP          String
   \fBRAPTOR_FEATURE_RESOURCE_FILL\fP            String
+  \fBRAPTOR_FEATURE_RSS_TRIPLES\fP              String
+  \fBRAPTOR_FEATURE_ATOM_ENTRY_URI\fP           String
+
 .P
 If the \fIrelative_uris\fP
 feature is true (default false) then when serialising, preference
 is given to generating relative URIs where possible. 
 .P
 If the \fIwrite_base_uri\fP
-feature is true (default true) then the turtle serializer will write
-an @base directive in the output.
+feature is true (default true) then the atom, rdfxml, rdfxml-abbrev
+and turtle serializers will write an @base or xml:base directive in
+the output.
 .P
 If the \fIstart_uri\fP
 feature is set to a URI it is used by the serializer to start
@@ -635,6 +639,14 @@ feature is set, the DOT serializer uses it as the resource border colour.
 .P
 If the \fIresource_fill\fP
 feature is set, the DOT serializer uses it as the resource fill colour.
+.P
+If the \fIrss_triples\fP feature is set to the string "rdf-xml" for
+the rss-1.0 serializer or "atom-triples" for the atom serializer, it
+writes extra rdf triples into the serialized output.
+.P
+If the \fIatom_entry_uri\fP feature is set to a URI string, it is
+used to trigger generation of an atom entry document for the atom
+serializer.
 .IP "\fBint raptor_serializer_get_feature(raptor_serializer* \fIserializer\fB, raptor_feature \fIfeature\fB)\fR"
 Get serializer features, the allowed \fIfeature\fP values are available
 .SH "SERIALIZER UTILITY FUNCTIONS"
@@ -869,6 +881,9 @@ Get the value of the QName for an XML attribute QName.
 .IP "\fBconst unsigned char* raptor_qname_get_counted_value(raptor_qname* \fIname\fP, size_t* \fIlength_p\fP)\fR"
 Get the value fo the QName along with the length (if \fIlength_p\fP
 is not NULL) for an XML attribute QName.
+.IP "\fBunsigned char* raptor_qname_to_counted_name(raptor_qname* \fIqname\fP, size_t* \fIlength_p\fP)\fR"
+Get the formatted QName as a newly allocated counted string (if
+\fIlength_p\fP is not NULL).
 .SH "QNAME UTILITY FUNCTIONS"
 .IP "\fBraptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *\fInstack\fB,  const unsigned char *\fIname\fB, size_t \fIname_len\fB, raptor_simple_message_handler \fIerror_handler\fB, void *\fIerror_data\fB)\fR"
 Return the URI corresponding to the QName according to the RDF
@@ -1037,6 +1052,8 @@ Join two sequences moving all items from sequence \fIsrc\fP to the
 end of sequence \fIdest\fP.  After this operation, sequence \fIsrc\fP
 will be empty (zero size) but will have the same item capacity as
 before.
+.IP "\fBvoid* raptor_sequence_delete_at(raptor_sequence* \fIseq\fP, int \fIidx\fP)\fR"
+Remove an item from position \fIidx\fP in the sequence, returning it.
 .SH "STRINGBUFFER CLASS"
 A class for growing strings, small chunks at a time.
 .SH "STRINGBUFFER CONSTRUCTOR"
@@ -1320,7 +1337,31 @@ and types are given under \fBraptor_xml_writer_features_enumerate\fP.
 .IP "\fBconst unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer* \fIxml_writer\fP, raptor_feature \fIfeature\fP)\fR"
 Get XML writer feature string values. The allowed \fIfeature\fP values
 and types are given under \fBraptor_xml_writer_features_enumerate\fP.
+.IP "\fBint raptor_xml_writer_get_depth(raptor_xml_writer* \fIxml_writer\fP)\fR"
+Get the current XML writer element stack depth.
+.IP "\fBvoid raptor_xml_writer_flush(raptor_xml_writer* \fIxml_writer\fP)\fR"
+Flush the XML writer output for any pending writes.
+.IP "\fBvoid raptor_xml_writer_newline(raptor_xml_writer* \fIxml_writer\fP)\fR"
+Write a newline to the XML writer (which may trigger indenting before
+the next item).
 .SH API CHANGES
+.SS 1.4.18
+Added atom serializer
+.LP
+Added rdfa parser
+.LP
+Added serializer features RAPTOR_FEATURE_RSS_TRIPLES and
+RAPTOR_FEATURE_ATOM_ENTRY_URI
+.LP
+Added raptor_qname_to_counted_name
+.LP
+Added raptor_sequence_delete_at
+.LP
+Added raptor_xml_writer_newline
+.LP
+Added raptor_xml_writer_flush
+.LP
+Added raptor_xml_writer_get_depth
 .SS 1.4.17
 Added SAX2 class \fBraptor_sax2\fP.
 Added new SAX2 API typedefs:
