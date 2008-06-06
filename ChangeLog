@@ -1,4 +1,147 @@
+2008-06-05  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c: update the parser/serializer name length to 14
+	for 'rss-tag-soup' & 'json-triples' which are at the previous max
+	12
+
+	* configure.ac: enable atom serializer for everyone
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_atom_triples_map,
+	raptor_rss10_emit_atom_feed): Adjust
+	raptor_rss10_emit_atom_triples_map calling convention to add
+	element name and code tidy.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_atom_triples_map):
+	Added, pulled out of raptor_rss10_emit_atom_feed.  Skip maps that
+	do not apply to feed element.
+	(raptor_rss10_emit_atom_feed): Call above twice, to generate
+	at:feedmap and at:entrymap.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_move_statements,
+	raptor_rss10_store_statement): Set is_xml field when field is
+	content:encoded
+	(raptor_rss10_emit_item): Select rdf:parseType="Literal" for rss
+	output with XML valued literals but prefer CDATA block for
+	content:encoded.
+
+2008-06-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c:
+	Make rdfxml and rdfxml-abbrev serializers respect feature
+	writeBaseURI.
+
+	* src/raptor_feature.c: Adjust RAPTOR_FEATURE_WRITE_BASE_URI description
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_end):
+	Respect feature writeBaseURI
+
+	* src/raptor_serialize_rss.c: raptor_rss10_serializer_context
+	gains xml_literal_dt URI field.
+	(raptor_rss10_serialize_init, raptor_rss10_serialize_terminate):
+	Free xml_literal_dt field.
+	(raptor_rss10_move_statements, raptor_rss10_store_statement): Set
+	is_xml field when an XML literal.
+	(raptor_rss10_emit_atom_feed, raptor_rss10_emit_rss_items): Emit
+	relative URIs.
+	(raptor_rss10_ensure_atom_feed_valid): Set atom:id if not present,
+	to item URI.
+	(raptor_rss10_emit_item): Emit relative URIs except for atom:id
+	For atom:content with a URI value, write <atom:content src="{uri
+	value}" type="{type}" /> and take the type from at:contentType
+	When writing a literal value and it is xml, write an atom type='xhtml'.
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: raptor_rss_field
+	gains is_xml field.  Added at:contentType /
+	RAPTOR_RSS_FIELD_AT_CONTENT_TYPE field
+
+	* src/raptor_uri.c: (raptor_uri_to_relative_counted_uri_string):
+	Add support for a base URI with scheme and authority but no path,
+	so the result can be a relative URI starting with '/'.
+	(main): Add a test for the above
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_build_xml_names): Tidy
+	is_atom/not code.
+
+2008-06-04  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize_rss.c: Fixed warnings.
+	(raptor_rss10_emit_rdfxml_item_triples,raptor_rss10_serialize_end):
+	Init variables to NULL for some optimizing compilers that warn
+	about possible use-before-init.
+	(raptor_rss10_emit_item): Cast int to enum.
+
+2008-06-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_build_xml_names): Add
+	is_entry flag and use it to decide root name atom:feed or
+	atom:entry for atom serializer.
+	(raptor_rss10_serialize_end): When a feature atom_entry_uri is
+	set, look for a matching item and if found, emit just that as an
+	atom entry document.
+
+2008-06-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: (raptor_rss_set_date_field): cast
+
+2008-06-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Added
+	RAPTOR_FEATURE_ATOM_ENTRY_URI to set the Atom Entry document URI
+	for the atom serializer
+
 2008-05-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_rdfxml_item_triples): Remove rdf-xml
+	atom:content for; it's not used.
+	Check for 0 triples and end if nothing to emit.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_ensure_atom_feed_valid): !
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_ensure_atom_feed_valid): Remove any atom:content or
+	atom:summary in feed
+
+	* src/raptor_rss_common.c: raptor_atom_to_rss: rss:description
+	maps to atom:summary
+
+	* tests/rdfa/Makefile.am: 0058 now passes and the others pass if
+	you re-order the xml namespaces
+
+	* src/raptor_serialize_rss.c: ws
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_ensure_atom_items_valid):
+	Added to check and correct atom id, title, updated and link OR
+	content.
+	(raptor_rss10_emit_item): Handle atom:link being written as
+	<atom:link href="{uri}" rel="alternate"> - no choice for now on
+	rel.
+	(raptor_rss10_serialize_end): Call
+	raptor_rss10_ensure_atom_items_valid
+
+	* src/raptor_xml_writer.c: (raptor_xml_writer_start_element_common):
+	Renamed from raptor_iostream_write_xml_element_start.  Add
+	indenting of xml namespace declaration attributes when auto
+	indenting is on and there are more than 1.
+	(raptor_xml_writer_end_element_common): Renamed from
+	raptor_iostream_write_xml_element_end
+	(raptor_xml_writer_empty_element, raptor_xml_writer_start_element,
+	raptor_xml_writer_end_element): Update to use new names.
+
+	* src/raptor_xml_writer.c: (raptor_iostream_write_xml_element_start):
+	Remove all args that can be found in xml_writer.
+	(raptor_xml_writer_empty_element,
+	raptor_xml_writer_start_element): Update to use new
+	raptor_iostream_write_xml_element_start
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Added
+	raptor_rss_format_iso_date and raptor_rss_set_date_field.
+	(raptor_rss_date_uplift): Use above
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_item): Generate
+	bnode for author if not present.
 
 	* librdfa/rdfa.c, librdfa/subject.c: Merge with GIT
 	8adf69fff952d069e4f6da472d9d8e0acf8fea28 that fixes test case
