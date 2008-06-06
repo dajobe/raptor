@@ -14,6 +14,123 @@
 <p>Not yet released.
 </p>
 
+<p>Fixed Issues:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=255">0000255</a>: FIXME</li>
+</ul>
+
+
+<h3>Parser Changes</h3>
+
+<p>A new RDF/A parser was added (name <code>rdfa</code>) using
+<a href="http://rdfa.digitalbazaar.com/librdfa/">librdfa</a> to
+implement it.  librdfa is linked as part of Raptor and
+written by Manu Sporny of Digital Bazaar, licensed with the
+same license as Raptor.</p>
+
+<p>The RDF/A
+<a href="http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/">test suite</a>
+was added to the test and (via librdfa) Raptor passes all but 3
+tests.</p>
+
+
+<h3>Serializer Changes</h3>
+
+<p>A new Atom 1.0 serializer was added (name <code>atom</code>)
+using the RSS 1.0 RDF triple model with mapping to atom terms
+and consideration of atom output format conditions.
+.</p>
+
+<p>RSS 1.0 serializer</p>
+<ul>
+<li>Allow setting output namespaces for the serializer</li>
+<li>Allow writing extra RDF triples as RDF/XML attached to RSS items.</li>
+<li>Recognize predicates with XML Literal and emit as
+<code>parseType="Literal"</code> or when <code>content:encoded</code>,
+as a CDATA block, by RSS 1.0 convention.</li>
+</ul>
+
+<p>Turtle serializer respects the writeBaseURI feature to control
+generating <code>@base</code></p>
+
+<p>Abbreviated serializers (RDF/XML Abbrev and Turtle) now remove
+duplicate triples.</p>
+
+<p>Added feature <code>RAPTOR_FEATURE_RSS_TRIPLES</code> to add RDF
+triples to RSS 1.0 or Atom serializer output with values 'rdfxml' or
+'atom-triples'.  Atom triples writes <code>at:map</code> sections for
+the <code>atom:entry</code> elements and at:feedmap and
+<code>at:entrymap</code> sections to the <code>atom:feed</code>
+elements.  <code>at:contentType</code> is used to provide a
+<code>type</code> attribute value for an <code>atom:content</code>
+that has a URI value.
+</p>
+
+<p>Added <code>RAPTOR_FEATURE_ATOM_ENTRY_URI</code> for the Atom
+serializer to set the URI of an atom entry.  If the URI matches the
+URI of an entry item in the RDF mode of the channel, then an Atom
+Entry document is generated rather than an Atom Feed document.
+</p>
+
+
+<h3>Internal Changes</h3>
+
+<p><code>raptor_uri_to_relative_counted_uri_string()</code> now
+has support for a base URI with scheme and authority but no path,
+so the result can be a relative URI starting with '/'.
+</p>
+
+<p>Internal AVL Tree class gains an iterator helper class for walking
+ranges of indexes of the tree or all items forward or backwards.  The
+AVL Tree constructor gains a flag
+<code>RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES</code> to decide
+how to deal with duplicates.
+</p>
+
+<h3>Other Changes</h3>
+
+<p>Added <code>raptor_qname_to_counted_name()</code> to get
+a formatted qname for a name.
+</p>
+
+<p>XML Writer allows adding newlines via
+<code>raptor_xml_writer_newline()</code> which
+requires use of <code>raptor_xml_writer_flush()</code> to indicate
+when XML writer output is finished.
+</p>
+
+<p>Many more resiliance checks were added.
+</p>
+
+<p><code>raptor_new_qname_from_namespace_local_name()</code> will
+accept a NULL namespace to construct a namespace-less qname.
+</p>
+
+<p>Added <code>raptor_sequence_delete_at()</code> to delete an item
+at a position in a sequence and return it.
+</p>
+
+<p>Adde <code>raptor_xml_writer_get_depth()</code> to get the current
+XML writer element stack depth.
+</p>
+
+<p>Serializing may be done to an iostream without closing it at the
+end of serializing.  Only when the iostream was created inside
+a serializing function is it closed.
+</p>
+
+<p>Turtle writer may optionally generate @base depending on flags.
+</p>
+
+<p>Remove all calls to abort() in code on fatal errors.  This
+requires using setjmp/longjmp inside parsers using flex and bison.
+</p>
+
+<p>raptor_init() and raptor_finish() use a reference count to handle
+initialising.
+</p>
+
+
 <h2 id="rel1_4_17"><a name="rel1_4_17">Raptor 1.4.17 Changes</a></h2>
 
 <p>The main changes to this release are:</p>
