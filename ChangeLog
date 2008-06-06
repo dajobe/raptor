@@ -171,14 +171,13 @@
 
 	* docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
 	added raptor_xml_writer_flush raptor_xml_writer_newline to
-	templates
+	templates.
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_init): Init
 	namespaces with error reporting.
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rdfxml_item_triples):
 	Fix root_qname double free
-
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rss_items): Set
 	xml-writer
@@ -194,14 +193,12 @@
 	<link href="{uri}" rel="self" />
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rss_items):
-	Added, pulled RSS 1.0-specific channel XML out of
-	raptor_rss10_emit_item
+	Added, pulled RSS 1.0-specific channel XML out of raptor_rss10_emit_item
 	(raptor_rss10_emit_item): Call raptor_rss10_emit_rss_items for RSS
 	1.0 rdf:Seq and rss:items
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_emit_atom_feed):
-	Added, pulled atom-specific entry fields out of
-	raptor_rss10_emit_item
+	Added, pulled atom-specific entry fields out of raptor_rss10_emit_item
 	(raptor_rss10_emit_item): Call raptor_rss10_emit_item for atom and
 	channel: atom feed.
 
