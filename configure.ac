@@ -857,10 +857,7 @@ atom_serializer=no
 dot_serializer=no
 json_serializer=no
 
-rdf_serializers_available="rdfxml rdfxml-abbrev turtle ntriples rss-1.0 dot json"
-if test "$USE_MAINTAINER_MODE" = yes; then
-  rdf_serializers_available="$rdf_serializers_available atom"
-fi
+rdf_serializers_available="rdfxml rdfxml-abbrev turtle ntriples rss-1.0 dot json atom"
 
 # This is needed because autoheader can't work out which computed
 # symbols must be pulled from acconfig.h into config.h.in
