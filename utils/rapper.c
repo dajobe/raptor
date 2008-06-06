@@ -529,7 +529,7 @@ main(int argc, char *argv[])
               const char *help_label;
               if(raptor_serializers_enumerate(i, &help_name, &help_label, NULL, NULL))
                 break;
-              fprintf(stderr, "  %-12s for %s\n", help_name, help_label);
+              fprintf(stderr, "  %-14s for %s\n", help_name, help_label);
             }
             usage=1;
             break;
@@ -558,7 +558,7 @@ main(int argc, char *argv[])
               const char *help_label;
               if(raptor_syntaxes_enumerate(i, &help_name, &help_label, NULL, NULL))
                 break;
-              fprintf(stderr, "  %-12s for %s\n", help_name, help_label);
+              fprintf(stderr, "  %-14s for %s\n", help_name, help_label);
             }
             usage=1;
             break;
