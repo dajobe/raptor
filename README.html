@@ -20,7 +20,7 @@ generate Resource Description Framework (RDF) triples
 by parsing syntaxes or serialize the triples into a syntax.
 The supported parsing syntaxes are RDF/XML, N-Triples, TRiG, Turtle,
 RSS tag soup including all versions of RSS, Atom 1.0 and 0.3, GRDDL
-and microformats for HTML, XHTML and XML.  The
+and microformats for HTML, XHTML and XML and RDFA.  The
 serializing syntaxes are RDF/XML (regular, and abbreviated),
 Atom 1.0, GraphViz, JSON, N-Triples, RSS 1.0 and XMP.</p>
 
@@ -128,6 +128,20 @@ a lax HTML parser to allow HTML tag soup to be read.</p>
 <p>The parser also handles hCard and hReview using public XSL sheets.</p>
 
 
+<h3>RDFa parser</h3>
+
+<p>A parser for
+<a href="http://www.w3.org/TR/2008/WD-rdfa-syntax-20080221">RDFa</a>
+(W3C Working Draft 2008-02-21) implemented via
+<a href="http://rdfa.digitalbazaar.com/librdfa/">librdfa</a>
+linked inside Raptor, written by Manu Sporny of Digital Bazaar,
+licensed with the same license as Raptor.</p>
+
+<p>As of Raptor 1.4.18 the RDFa parser passes all of the RDFa
+<a href="http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/">test suite</a>
+except for 4 tests.</p>
+
+
 <h2>Serializers</h2>
 
 <h3>RDF/XML Serializer</h3>
@@ -158,7 +172,8 @@ for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 <h3>Atom 1.0 Serializer</h3>
 
 <p>A serializer to the Atom 1.0 syndication format defined in IETF
-<a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</a>
+<a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</a>.
+Beta quality.
 </p>
 
 
