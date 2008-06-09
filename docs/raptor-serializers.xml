@@ -25,7 +25,7 @@ function.</para>
 
 <para>A serializer to the Atom 1.0 syndication format defined in IETF
 <ulink url="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</ulink>.
-This serialies an RDF graph written in the RSS 1.0 data model
+This serializes an RDF graph written in the RSS 1.0 data model
 to Atom 1.0 plus optionally writes extra RDF triples.
 </para>
 <para>
