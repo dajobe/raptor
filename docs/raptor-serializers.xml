@@ -25,8 +25,15 @@ function.</para>
 
 <para>A serializer to the Atom 1.0 syndication format defined in IETF
 <ulink url="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</ulink>.
-At present this only serializes the RDF triples that describe an RSS
-1.0 channel into Atom.
+This serialies an RDF graph written in the RSS 1.0 data model
+to Atom 1.0 plus optionally writes extra RDF triples.
+</para>
+<para>
+The extra RDF triples are written into an at:md metadata block, along
+with at:feedmap and at:entrymap elements to describe the RSS 1.0
+predicate to Atom 1.0 elements mappings for the feed and entry blocks
+respecively.  The extra triples are enabled when serializer feature
+'rssTriples' is set to string value 'atom-triples'.
 </para>
 
 </section>
@@ -111,8 +118,13 @@ syntax, designed as a useful subset of
 <title>RSS 1.0 serializer (name <literal>rss-1.0</literal>)</title>
 <para>A serializer to the
 <ulink url="http://purl.org/rss/1.0/spec">RDF Site Summary (RSS) 1.0</ulink>
-format for describing a syndication feed of items.  It only serializes
-the RDF triples that describe the RSS channel found.
+format for describing a syndication feed of items.
+</para>
+
+<para>By default this only serializes the RDF triples that describe
+the RSS channel and items found.  If serialiser feature 'rssTriples'
+is set to value 'rdf-xml' then any additional triples found will
+be included in the channel or item output.
 </para>
 
 </section>
