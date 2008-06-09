@@ -23,16 +23,19 @@
 
 <h3>Parser Changes</h3>
 
-<p>A new RDF/A parser was added (name <code>rdfa</code>) using
+<p>A new 
+<a href="http://www.w3.org/TR/2008/WD-rdfa-syntax-20080221">RDFa</a>
+parser was added (name <code>rdfa</code>) using
 <a href="http://rdfa.digitalbazaar.com/librdfa/">librdfa</a> to
 implement it.  librdfa is linked as part of Raptor and
 written by Manu Sporny of Digital Bazaar, licensed with the
 same license as Raptor.</p>
 
-<p>The RDF/A
+<p>The RDFa
 <a href="http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/">test suite</a>
-was added to the test and (via librdfa) Raptor passes all but 3
-tests.</p>
+was added to the test and (via librdfa) Raptor passes all but 4 tests
+which fail due to different output xmlns attribute ordering (which
+does not matter to XML parsers).</p>
 
 
 <h3>Serializer Changes</h3>
