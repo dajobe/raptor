@@ -125,6 +125,27 @@ for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
 </section>
 
 
+<section id="parser-rdfa">
+<title>RDFa parser - (name <literal>rdfa</literal>)</title>
+<para>
+A parser for the
+<ulink url="http://www.w3.org/TR/2008/WD-rdfa-syntax-20080221">RDFa syntax</ulink>
+syntax, W3C Working Draft 2008-02-21 which allows reading XHTML
+and XML as RDF triples by interpreting attributes on elements to
+describe which ones have RDF semantics.   This is implemented via
+<ulink url="http://rdfa.digitalbazaar.com/librdfa/">librdfa</ulink>
+linked inside Raptor, written by Manu Sporny of Digital Bazaar,
+and licensed with the same license as Raptor.
+</para>
+
+<para>
+This parser is beta quality and passes all but 4 of the RDFa tests as
+of Raptor 1.4.18.
+</para>
+
+</section>
+
+
 <section id="parser-rdfxml">
 <title>RDF/XML parser - default (name <literal>rdfxml</literal>)</title>
 <para>
