@@ -245,7 +245,6 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   if(rss_serializer->xml_writer)
     raptor_free_xml_writer(rss_serializer->xml_writer);
 
-#if 0
   for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
     if(rss_serializer->nspaces[i])
       raptor_free_namespace(rss_serializer->nspaces[i]);
@@ -256,7 +255,6 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
 
   if(rss_serializer->xml_nspace)
     raptor_free_namespace(rss_serializer->xml_nspace);
-#endif
 
   if(rss_serializer->user_namespaces)
     raptor_free_sequence(rss_serializer->user_namespaces);
