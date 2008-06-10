@@ -1042,6 +1042,7 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
     context->nodes=NULL;
   }
   
+  /* always free raptor_namespace* before stack */
   if(context->nstack) {
     if(!context->external_nstack)
       raptor_free_namespaces(context->nstack);
@@ -1174,6 +1175,11 @@ raptor_rdfxmla_serialize_set_xml_writer(raptor_serializer* serializer,
   context->starting_depth= raptor_xml_writer_get_depth(xml_writer) + 1;
   context->external_xml_writer= (xml_writer != NULL);
 
+  if(context->xml_nspace)
+    raptor_free_namespace(context->xml_nspace);
+  if(context->rdf_nspace)
+    raptor_free_namespace(context->rdf_nspace);
+  /* always free raptor_namespace* before stack */
   if(context->nstack)
     raptor_free_namespaces(context->nstack);
 
