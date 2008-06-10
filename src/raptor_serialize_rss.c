@@ -198,7 +198,7 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   rss_serializer->group_map=raptor_new_avltree((raptor_data_compare_function)raptor_rss_group_map_compare,
                                                (raptor_data_free_function)raptor_free_group_map, 0);
 
-  rss_serializer->user_namespaces=raptor_new_sequence(NULL, NULL);
+  rss_serializer->user_namespaces=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_namespace, NULL);
 
   rss_serializer->is_atom=!(strcmp(name,"atom"));
 
@@ -258,6 +258,11 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
     raptor_free_namespace(rss_serializer->xml_nspace);
 #endif
 
+  if(rss_serializer->user_namespaces)
+    raptor_free_sequence(rss_serializer->user_namespaces);
+
+  /* all raptor_namespace* objects must be freed BEFORE the stack
+   * they are attached to here: */
   if(rss_serializer->nstack)
     raptor_free_namespaces(rss_serializer->nstack);
 
@@ -273,19 +278,6 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
     if(raptor_rss_types_info[i].qname)
       raptor_free_qname(raptor_rss_types_info[i].qname);
   }
-
-#if 0
-  if(rss_serializer->user_namespaces) {
-    for(i=0; i< raptor_sequence_size(rss_serializer->user_namespaces); i++) {
-      raptor_namespace* ns;
-      ns=(raptor_namespace*)raptor_sequence_get_at(rss_serializer->user_namespaces, i);
-      if(ns)
-        raptor_free_namespace(ns);
-    }
-    raptor_free_sequence(rss_serializer->user_namespaces);
-    rss_serializer->user_namespaces=NULL;
-  }
-#endif
 
   if(rss_serializer->xml_literal_dt)
     raptor_free_uri(rss_serializer->xml_literal_dt);
@@ -1907,11 +1899,6 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   raptor_xml_writer_newline(xml_writer);
 
   raptor_xml_writer_flush(xml_writer);
-
-  if(rss_serializer->nstack) {
-    raptor_free_namespaces(rss_serializer->nstack);
-    rss_serializer->nstack=NULL;
-  }
 
   return 0;
 }
