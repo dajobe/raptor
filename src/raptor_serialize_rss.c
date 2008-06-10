@@ -846,11 +846,19 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
   
   for(i=0; i < raptor_sequence_size(rss_serializer->triples); i++) {
     int ordinal= -1;
-    raptor_statement* s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
+    raptor_uri* fake_uri=NULL;
+    raptor_statement* s;
+
+    s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
     if(!s)
       continue;
 
-    if(raptor_uri_equals((raptor_uri*)s->subject, rss_serializer->seq_uri)) {
+    if(s->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+      fake_uri=raptor_new_uri((unsigned char*)s->subject);
+    else
+      fake_uri=raptor_uri_copy((raptor_uri*)s->subject);
+      
+    if(raptor_uri_equals(fake_uri, rss_serializer->seq_uri)) {
       if(s->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
         ordinal= *((int*)s->predicate);
       else { /* predicate is a resource */
@@ -886,6 +894,8 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
         raptor_rss10_set_item_group(rss_serializer, item->uri, item);
       }
     }
+
+    raptor_free_uri(fake_uri);
   }
 
   rss_model->items_count=raptor_sequence_size(rss_serializer->items);
