@@ -955,7 +955,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
     }
   }
 
-  for(i=1; i< raptor_sequence_size(rss_serializer->user_namespaces); i++) {
+  for(i=0; i< raptor_sequence_size(rss_serializer->user_namespaces); i++) {
     raptor_namespace* nspace;
     nspace=(raptor_namespace*)raptor_sequence_get_at(rss_serializer->user_namespaces, i);
     raptor_xml_element_declare_namespace(element, nspace);
