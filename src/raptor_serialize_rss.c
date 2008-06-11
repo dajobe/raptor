@@ -711,7 +711,7 @@ raptor_rss10_serialize_start(raptor_serializer* serializer)
  *
  * INTERNAL (raptor_serializer_factory API) - Serialize a statement
  *
- * Return value: non-0 if handled (stored)
+ * Return value: non-0 on failure
  */
 static int
 raptor_rss10_serialize_statement(raptor_serializer* serializer, 
