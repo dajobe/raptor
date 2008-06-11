@@ -589,10 +589,6 @@ main(int argc, char *argv[])
   char *s;
   int i;
 
-  if(!raptor_sequence_set_at(seq1, 1, (void*)"dummy")) {
-    fprintf(stderr, "%s: should not be able to set an item at sequence->size+1\n", program);
-    exit(1);
-  }
   if(raptor_sequence_pop(seq1) || raptor_sequence_unshift(seq1)) {
     fprintf(stderr, "%s: should not be able to pop/unshift from an empty sequence\n", program);
     exit(1);
