@@ -854,13 +854,13 @@ static void XMLCALL
    {
       // save the current xml literal
       char* saved_xml_literal = context->xml_literal;
+      char* content_start = NULL;
+      char* content_end = NULL;
 
       // ensure to mark only the inner-content of the XML node for
       // processing the object literal.
       buffer = NULL;
       
-      char* content_start = NULL;
-      char* content_end = NULL;
       if(context->xml_literal != NULL)
       {
          // get the data between the first tag and the last tag

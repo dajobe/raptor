@@ -232,6 +232,8 @@ int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done);
 
 void rdfa_parse_end(rdfacontext* context);
 
+void rdfa_init_context(rdfacontext* context);
+
 /**
  * Destroys the given rdfa context by freeing all memory associated
  * with the context.
