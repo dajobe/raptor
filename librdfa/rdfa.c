@@ -340,6 +340,22 @@ static rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
    return rval;
 }
 
+
+#ifdef LIBRDFA_IN_RAPTOR
+static int
+raptor_nspace_compare(const void *a, const void *b) 
+{
+  raptor_namespace* ns_a=*(raptor_namespace**)a;
+  raptor_namespace* ns_b=*(raptor_namespace**)b;
+  if(!ns_a->prefix)
+    return 1;
+  else if(!ns_b->prefix)
+    return -1;
+  else
+    return strcmp((const char*)ns_b->prefix, (const char*)ns_a->prefix);
+}
+#endif
+
 /**
  * Handles the start_element call
  */
@@ -412,10 +428,27 @@ static void XMLCALL
 #ifdef LIBRDFA_IN_RAPTOR
       ns_size=0;
       for(ns=nstack->top; ns; ns=ns->next) {
+        int skip=0;
+        int i;
         if(ns->depth < 1)
           continue;
-        ns_list[ns_size++]=ns;
+
+        for(i=0; i< ns_size; i++) {
+          raptor_namespace* ns2=ns_list[i];
+          if((!ns->prefix && !ns2->prefix) ||
+             (ns->prefix && ns2->prefix && 
+              !strcmp((const char*)ns->prefix, (const char*)ns2->prefix))) {
+               /* this prefix was seen (overridden) earlier so skip */
+               skip=1;
+               break;
+             }
+        }
+        if(!skip)
+          ns_list[ns_size++]=ns;
       }
+
+      qsort((void*)ns_list, ns_size, sizeof(raptor_namespace*),
+            raptor_nspace_compare);
 
       while(ns_size > 0)
 #else
