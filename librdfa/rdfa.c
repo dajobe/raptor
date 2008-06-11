@@ -1308,6 +1308,9 @@ int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done)
 
 void rdfa_parse_end(rdfacontext* context)
 {
+   // deinitialize context stack
+   rdfa_pop_item(context->context_stack);
+
    // Free the expat parser and the like
 #ifdef LIBRDFA_IN_RAPTOR
    if(context->base_uri)
@@ -1315,8 +1318,7 @@ void rdfa_parse_end(rdfacontext* context)
    raptor_free_sax2(context->sax2);
    context->sax2=NULL;
 #else
-   // deinitialize context stack and free parser
-   rdfa_pop_item(context->context_stack);
+   // free parser
    XML_ParserFree(context->parser);
 #endif
 }
