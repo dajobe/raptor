@@ -419,18 +419,23 @@ raptor_new_serializer(const char *name)
 
 
 /**
- * raptor_serialize_start:
+ * raptor_serialize_start_to_iostream:
  * @rdf_serializer:  the #raptor_serializer
  * @uri: base URI or NULL if no base URI is required
  * @iostream: #raptor_iostream to write serialization to
  * 
- * Start serialization with given base URI
+ * Start serialization to an iostream with given base URI
+ *
+ * The passed in @iostream does not becomes owned by the serializer
+ * and can be used by the caller after serializing is done.  It
+ * must be destroyed by the caller.  Compare to
+ * raptor_serialize_start() which will be deprecated in future.
  *
  * Return value: non-0 on failure.
  **/
 int
-raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri,
-                       raptor_iostream *iostream) 
+raptor_serialize_start_to_iostream(raptor_serializer *rdf_serializer,
+                                   raptor_uri *uri, raptor_iostream *iostream) 
 {
   if(rdf_serializer->base_uri)
     raptor_free_uri(rdf_serializer->base_uri);
@@ -450,6 +455,34 @@ raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri,
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
   return 0;
+}
+
+
+/**
+ * raptor_serialize_start:
+ * @rdf_serializer:  the #raptor_serializer
+ * @uri: base URI or NULL if no base URI is required
+ * @iostream: #raptor_iostream to write serialization to
+ * 
+ * Start serialization with given base URI
+ *
+ * The passed in @iostream becomes owned by the serializer and will
+ * be destroyed when the serializing is complete.  Compare to
+ * raptor_serialize_start_to_iostream().   This function
+ * will be deprecated for raptor_serialize_start_to_iostream() in future.
+ *
+ * Return value: non-0 on failure.
+ **/
+int
+raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri,
+                       raptor_iostream *iostream) 
+{
+  int rc;
+  rc=raptor_serialize_start_to_iostream(rdf_serializer, uri, iostream);
+  if(!rc)
+    rdf_serializer->free_iostream_on_end=1;
+
+  return rc;
 }
 
 
