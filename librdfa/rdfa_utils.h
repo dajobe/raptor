@@ -212,14 +212,19 @@ char* rdfa_replace_string(char* old_string, const char* new_string);
 
 /**
  * Appends a new string to the old string, expanding the old string's
- * memory area if needed.
- *
+ * memory area if needed. The old string's size must be provided and
+ * will be updated to the new length.
+ * 
  * @param old_string the old string to reallocate if needed.
+ * @param string_size the old string's length, to be updated.
  * @param suffix the string to append to the old_string.
+ * @param suffix_size the size of the suffix string.
  *
  * @return a pointer to the newly re-allocated string.
  */
-char* rdfa_append_string(char* old_string, const char* suffix);
+char* rdfa_n_append_string(
+   char* old_string, size_t* string_size,
+   const char* suffix, size_t suffix_size);
 
 /**
  * Joins two strings together and returns a newly allocated string

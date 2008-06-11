@@ -164,7 +164,6 @@ void rdfa_free_triple(rdftriple* triple)
    free(triple->object);
    free(triple->datatype);
    free(triple->language);
-
    free(triple);
 }
 
@@ -196,23 +195,20 @@ void rdfa_generate_namespace_triple(
  */
 void rdfa_complete_incomplete_triples(rdfacontext* context)
 {
-   // 11. If the [skip element] flag is 'false', and either: the
-   // previous step resulted in a 'true' flag, or [new subject] was
-   // set to a non-null and non-bnode value, then any
-   // [incomplete triple]s within the current context should be completed:
-   //   
-   // The [list of incomplete triples] from the current
-   // [evaluation context] (not the [local list of incomplete triples])
-   // will contain zero or more predicate URIs. This list is iterated,
-   // and each of the predicates is used with [parent subject] and
-   // [new subject] to generate a triple. Note that if [new subject]
-   // is a bnode, then the process of completion will only happen if
-   // triples were created during the course of processing descendant
-   // elements. Note also that at each level there are two, lists of
-   // [incomplete triple]s; one for the current processing level
-   // (which is passed to each child element in the previous step),
-   // and one that was received as part of the [evaluation
-   // context]. It is the latter that is used in processing during this step.
+   // 10. If the [ skip element ] flag is 'false', and [ new subject ]
+   //     was set to a non-null value, then any [ incomplete triple ]s
+   //     within the current context should be completed:
+   //
+   // The [ list of incomplete triples ] from the current [ evaluation
+   // context ] ( not the [ local list of incomplete triples ]) will
+   // contain zero or more predicate URIs. This list is iterated, and
+   // each of the predicates is used with [ parent subject ] and
+   // [ new subject ] to generate a triple. Note that at each level
+   // there are two , lists of [ incomplete triple ]s; one for the
+   // current processing level (which is passed to each child element
+   // in the previous step), and one that was received as part of the
+   // [ evaluation context ]. It is the latter that is used in
+   // processing during this step.
    unsigned int i;
    for(i = 0; i < context->incomplete_triples->num_items; i++)
    {
@@ -254,8 +250,6 @@ void rdfa_complete_incomplete_triples(rdfacontext* context)
       free(incomplete_triple);
    }
    context->incomplete_triples->num_items = 0;
-
-   context->triples_generated = 1;
 }
 
 void rdfa_complete_type_triples(
@@ -286,8 +280,6 @@ void rdfa_complete_type_triples(
       context->triple_callback(triple, context->callback_data);
       iptr++;
    }
-
-   context->triples_generated = 1;
 }
 
 void rdfa_complete_relrev_triples(
@@ -351,8 +343,6 @@ void rdfa_complete_relrev_triples(
          revptr++;
       }
    }
-
-   context->triples_generated = 1;
 }
 
 void rdfa_save_incomplete_triples(
@@ -546,8 +536,6 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       pptr++;
    }
 
-   context->triples_generated = 1;
-   
    // TODO: Implement recurse flag being set to false
    //
    // Once the triple has been created, if the [datatype] of the

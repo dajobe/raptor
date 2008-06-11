@@ -161,9 +161,9 @@ typedef struct rdfacontext
    char* datatype;
    rdfalist* property;
    char* plain_literal;
+   size_t plain_literal_size;
    char* xml_literal;
-   unsigned char triples_generated;
-   unsigned char complete_incomplete_triples;
+   size_t xml_literal_size;
 
    void* callback_data;
 

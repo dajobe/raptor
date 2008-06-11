@@ -42,15 +42,14 @@ char* rdfa_join_string(const char* prefix, const char* suffix)
    return rval;
 }
 
-char* rdfa_append_string(char* old_string, const char* suffix)
+char* rdfa_n_append_string(
+   char* old_string, size_t* string_size,
+   const char* suffix, size_t suffix_size)
 {
    char* rval = NULL;
-   size_t old_string_size = strlen(old_string);
-   size_t suffix_size = strlen(suffix);
-   rval = realloc(old_string, old_string_size + suffix_size + 1);
-   
-   memcpy(rval + old_string_size, suffix, suffix_size + 1);
-
+   rval = realloc(old_string, *string_size + suffix_size + 1);
+   memcpy(rval + *string_size, suffix, suffix_size + 1);
+   *string_size = *string_size + suffix_size;
    return rval;
 }
 
@@ -60,8 +59,6 @@ char* rdfa_replace_string(char* old_string, const char* new_string)
    
    if(new_string != NULL)
    {
-      size_t new_string_length = strlen(new_string);
-
       // free the memory associated with the old string if it exists.
       if(old_string != NULL)
       {
@@ -69,8 +66,7 @@ char* rdfa_replace_string(char* old_string, const char* new_string)
       }
 
       // copy the new string
-      rval = malloc(new_string_length + 1);
-      strcpy(rval, new_string);
+      rval = strdup(new_string);
    }
    
    return rval;
@@ -116,8 +112,7 @@ rdfalist* rdfa_create_list(size_t size)
 
    rval->max_items = size;
    rval->num_items = 0;
-   rval->items = NULL;
-   rval->items = realloc(rval->items, sizeof(rdfalistitem) * rval->max_items);
+   rval->items = malloc(sizeof(rdfalistitem) * rval->max_items);
 
    return rval;
 }
@@ -188,12 +183,11 @@ void rdfa_free_list(rdfalist* list)
          free(list->items[i]->data);
          free(list->items[i]);
       }
-
+      
       free(list->items);
       free(list);
    }
 }
-
 
 void rdfa_push_item(rdfalist* stack, void* data, liflag_t flags)
 {

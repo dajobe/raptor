@@ -135,6 +135,7 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
             *end_index2 = '\0';
 
             rval = rdfa_join_string(tmpstr, uri);
+            free(tmpstr);
          }
       }
    }
