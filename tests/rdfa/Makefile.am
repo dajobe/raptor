@@ -64,12 +64,13 @@ ALL_TEST_FILES= \
 	$(TEST_OUT_FILES)
 
 # Expected test failures:
+#   0094.xhtml - XML namespaces are in a different order to expected output
 #   0100.xhtml - XML namespaces are in a different order to expected output
 #   0101.xhtml - XML namespaces are in a different order to expected output
 #   0102.xhtml - XML namespaces are in a different order to expected output
 #   0103.xhtml - XML namespaces are in a different order to expected output
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
+EXPECTED_FAILURES=" 0094.xhtml 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
