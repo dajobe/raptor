@@ -1622,7 +1622,6 @@ main(int argc, char *argv[])
   raptor_avltree_dump(tree, stderr);
 #endif
 
-  raptor_avltree_print(tree, stdout);
 
 
   for(i=0; delete_items[i]; i++) {
