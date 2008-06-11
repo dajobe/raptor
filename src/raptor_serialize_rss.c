@@ -291,6 +291,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
  * INTERNAL - Move statements from the stored triples into item @item
  * that match @item's URI as subject.
  *
+ * Return value: count of number of triples moved
  */
 static int
 raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
@@ -298,126 +299,124 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
                              raptor_rss_item *item)
 {
   int t;
-  int handled=0;
-#ifdef RAPTOR_DEBUG
-  int moved_count=0;
-#endif
+  int count=0;
   int is_atom=rss_serializer->is_atom;
   
   for(t=0; t< raptor_sequence_size(rss_serializer->triples); t++) {
-    raptor_statement* s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, t);
+    raptor_statement* s;
+    int f;
+
+    s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, t);
     if(!s)
       continue;
+
+    if(s->subject_type != RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+       !raptor_uri_equals((raptor_uri*)s->subject, item->uri))
+       continue;
     
-    if(s->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-       raptor_uri_equals((raptor_uri*)s->subject, item->uri)) {
-      /* subject is item URI */
-      int f;
+    /* now we know this triple is associated with the item URI
+     * and can count the relevant triples */
+    count++;
+    
+    /* add triples with anonymous object to the general triples sequence
+     * for this item, and to the group map (blank node closure)
+     */
+    if(s->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+      raptor_uri* fake_uri=raptor_new_uri(s->object);
+      raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
+      raptor_free_uri(fake_uri);
 
-      if(s->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-        raptor_uri* fake_uri=raptor_new_uri(s->object);
-        raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
-        raptor_free_uri(fake_uri);
+      RAPTOR_DEBUG4("Moved anonymous value property URI <%s> for typed node %i - %s\n",
+                    raptor_uri_as_string((raptor_uri*)s->predicate),
+                    type, raptor_rss_types_info[type].name);
+      s=(raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
+                                                     t);
+      raptor_sequence_push(item->triples, s);
+      continue;
+    }
 
-        RAPTOR_DEBUG4("Moved anonymous value property URI <%s> for typed node %i - %s\n",
-                      raptor_uri_as_string((raptor_uri*)s->predicate),
-                      type, raptor_rss_types_info[type].name);
-        s=(raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
-                                                       t);
-        raptor_sequence_push(item->triples, s);
-#ifdef RAPTOR_DEBUG
-        moved_count++;
-#endif
-        handled=1;
 
-      }
+    /* otherwise process object value types resource or literal */
+    for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
+      if(!raptor_rss_fields_info[f].uri)
+        continue;
+      
+      if((s->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+          s->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) &&
+          s->object_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
+         raptor_uri_equals((raptor_uri*)s->predicate,
+                           raptor_rss_fields_info[f].uri)) {
+         raptor_rss_field* field=raptor_rss_new_field();
 
-      for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
-        if(!raptor_rss_fields_info[f].uri)
-          continue;
-        
-        if((s->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-            s->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) &&
-            s->object_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
-           raptor_uri_equals((raptor_uri*)s->predicate,
-                             raptor_rss_fields_info[f].uri)) {
-           raptor_rss_field* field=raptor_rss_new_field();
+        /* found field this triple to go in 'item' so move the
+         * object value over 
+         */
+        if(s->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+          field->uri=(raptor_uri*)s->object;
+        else {
+          field->value=(unsigned char*)s->object;
+          if(s->object_literal_datatype &&
+             raptor_uri_equals(s->object_literal_datatype,
+                               rss_serializer->xml_literal_dt))
+             field->is_xml=1;
+          if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
+             field->is_xml=1;
+        }
+        s->object=NULL;
 
-          /* found field this triple to go in 'item' so move the
-           * object value over 
-           */
-          if(s->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
-            field->uri=(raptor_uri*)s->object;
-          else {
-            field->value=(unsigned char*)s->object;
-            if(s->object_literal_datatype &&
-               raptor_uri_equals(s->object_literal_datatype,
-                                 rss_serializer->xml_literal_dt))
-               field->is_xml=1;
-            if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
-               field->is_xml=1;
-          }
-          s->object=NULL;
-
-          if(is_atom) { 
-            int i;
+        if(is_atom) { 
+          int i;
+          
+          /* Rewrite item fields rss->atom */
+          for(i=0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
+            int from_f=raptor_atom_to_rss[i].to;
+            int to_f=raptor_atom_to_rss[i].from;
             
-            /* Rewrite item fields rss->atom */
-            for(i=0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
-              int from_f=raptor_atom_to_rss[i].to;
-              int to_f=raptor_atom_to_rss[i].from;
-              
-              /* Do not rewrite to atom0.3 terms */
-              if(raptor_rss_fields_info[to_f].nspace == ATOM0_3_NS)
-                continue;
-              
-              if(f == from_f) {
-                f= to_f;
-                field->is_mapped=1;
-                RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
-                break;
-              }
+            /* Do not rewrite to atom0.3 terms */
+            if(raptor_rss_fields_info[to_f].nspace == ATOM0_3_NS)
+              continue;
+
+            if(f == from_f) {
+              f= to_f;
+              field->is_mapped=1;
+              RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
+              break;
             }
           }
+        } /* end is atom field to map */
 
-          RAPTOR_DEBUG1("fa4 - ");
-          raptor_rss_item_add_field(item, f, field);
-          break;
-        }
-      }
-      
-      if(f < RAPTOR_RSS_FIELDS_SIZE) {
-        /* triple matched a known field */
+        RAPTOR_DEBUG1("fa4 - ");
+        raptor_rss_item_add_field(item, f, field);
         raptor_sequence_set_at(rss_serializer->triples, t, NULL);
-#ifdef RAPTOR_DEBUG
-        moved_count++;
-#endif
-        handled=1;
-      } else {
-        RAPTOR_DEBUG4("UNKNOWN property URI <%s> for typed node %i - %s\n",
-                      raptor_uri_as_string((raptor_uri*)s->predicate),
-                      type, raptor_rss_types_info[type].name);
-        s=(raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
-                                                       t);
-        raptor_sequence_push(item->triples, s);
-#ifdef RAPTOR_DEBUG
-        moved_count++;
-#endif
-        handled=1;
+        break;
       }
-      
-    } /* end if subject matched item URI */
+    } /* end for field loop */
+
+    /* loop ended early so triple was assocated with a field - continue */
+    if(f < RAPTOR_RSS_FIELDS_SIZE)
+      continue;
+
+
+    /* otherwise triple was not found as a field so store in triples
+     * sequence 
+     */
+    RAPTOR_DEBUG4("UNKNOWN property URI <%s> for typed node %i - %s\n",
+                  raptor_uri_as_string((raptor_uri*)s->predicate),
+                  type, raptor_rss_types_info[type].name);
+    s=(raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
+                                                   t);
+    raptor_sequence_push(item->triples, s);
 
   } /* end for all triples */
 
 #ifdef RAPTOR_DEBUG
-  if(moved_count > 0)
+  if(count > 0)
     RAPTOR_DEBUG5("Moved %d triples to typed node %i - %s with uri <%s>\n",
-                  moved_count, type, raptor_rss_types_info[type].name,
+                  count, type, raptor_rss_types_info[type].name,
                   raptor_uri_as_string((raptor_uri*)item->uri));
 #endif
 
-  return handled;
+  return count;
 }
 
 
