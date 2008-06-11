@@ -197,8 +197,11 @@ raptor_sequence_size(raptor_sequence* seq)
  * 
  * The item at the offset @idx in the sequence is replaced with the
  * new item @data (which may be NULL). Any existing item is freed
- * with the sequence's free_handler. The sequence takes ownership of
- * the new data item. On failure, the item is freed immediately.
+ * with the sequence's free_handler.  If necessary the sequence
+ * is extended (with NULLs) to handle a larger offset.
+ *
+ * The sequence takes ownership of the new data item.  On failure, the
+ * item is freed immediately.
  *
  * Return value: non-0 on failure
  **/
@@ -207,16 +210,17 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
-  /* Can only set items in the current range or +1 above it, not further
-   * seq->sequence needs to have seq->size consecutive items */
-  if(idx < 0 || idx > seq->size) {
+  /* Cannot provide a negative index */
+  if(idx < 0) {
     if(seq->free_handler && data)
       seq->free_handler(data);
     return 1;
   }
   
   if(seq->start+idx+1 > seq->capacity) {
-    if(raptor_sequence_ensure(seq, seq->capacity*2, 0)) {
+    int new_capacity=((seq->start+idx+1) > seq->capacity*2) ?
+                     (seq->start+idx+1) : seq->capacity*2;
+    if(raptor_sequence_ensure(seq, new_capacity, 0)) {
       if(seq->free_handler && data)
         seq->free_handler(data);
       return 1;
