@@ -722,9 +722,16 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   int handled=0;
   
   if(raptor_uri_equals((raptor_uri*)statement->predicate, 
+                       RAPTOR_RSS_RDF_items_URI(rss_model))) {
+    /* ignore any triple (? rss:items ?) - is infered */
+    return 0;
+  }
+
+  if(raptor_uri_equals((raptor_uri*)statement->predicate, 
                        RAPTOR_RSS_RDF_type_URI(rss_model))) {
 
-    if(raptor_uri_equals((raptor_uri*)statement->object, 
+    if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+       raptor_uri_equals((raptor_uri*)statement->object, 
                          RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
 
       /* triple (?resource rdf:type rdf:Seq) */
@@ -813,7 +820,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
                       raptor_uri_as_string((raptor_uri*)statement->object));
 
     }
-  }
+  } /* if was a triple (? rdf:type ?) */
 
   if(!handled) {
     raptor_statement *t=raptor_statement_copy(statement);
