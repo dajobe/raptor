@@ -841,6 +841,10 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     s=(raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
     if(!s)
       continue;
+    
+    /* skip triples that are not ? ? <uri> */
+    if(s->object_type != RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+      continue;
 
     if(s->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
       fake_uri=raptor_new_uri((unsigned char*)s->subject);
@@ -848,6 +852,8 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
       fake_uri=raptor_uri_copy((raptor_uri*)s->subject);
       
     if(raptor_uri_equals(fake_uri, rss_serializer->seq_uri)) {
+      /* found <seq URI> <some predicate> <some URI> triple */
+
       if(s->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
         ordinal= *((int*)s->predicate);
       else { /* predicate is a resource */
