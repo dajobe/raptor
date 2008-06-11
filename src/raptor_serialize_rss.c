@@ -1293,8 +1293,12 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   
   if(base_uri)
     base_uri=raptor_uri_copy(base_uri);
-  /* after this ser owns (this copy of) base_uri */
-  raptor_serialize_start(ser, base_uri, serializer->iostream);
+
+  /* after this call, ser owns (this copy of) base_uri and does
+   * NOT own serializer->iostream and will not destroy it
+   * when raptor_free_serializer(ser) is called.
+   */
+  raptor_serialize_start_to_iostream(ser, base_uri, serializer->iostream);
   
   for(t=0; t < t_max_count; t++) {
     raptor_statement* s;
