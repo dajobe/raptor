@@ -264,6 +264,7 @@ raptor_rss_model_init(raptor_rss_model* rss_model)
 
   RAPTOR_RSS_RDF_type_URI(rss_model)=raptor_new_uri_for_rdf_concept("type");
   RAPTOR_RSS_RDF_Seq_URI(rss_model)=raptor_new_uri_for_rdf_concept("Seq");
+  RAPTOR_RSS_RDF_items_URI(rss_model)=raptor_new_uri_for_rdf_concept("items");
 }
   
 
