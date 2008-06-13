@@ -722,7 +722,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   int handled=0;
   
   if(raptor_uri_equals((raptor_uri*)statement->predicate, 
-                       RAPTOR_RSS_RDF_items_URI(rss_model))) {
+                       RAPTOR_RSS_RSS_items_URI(rss_model))) {
     /* ignore any triple (? rss:items ?) - is infered */
     return 0;
   }
