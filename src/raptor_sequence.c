@@ -208,6 +208,8 @@ raptor_sequence_size(raptor_sequence* seq)
 int
 raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
 {
+  int need_capacity;
+  
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   /* Cannot provide a negative index */
@@ -217,10 +219,11 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
     return 1;
   }
   
-  if(seq->start+idx+1 > seq->capacity) {
-    int new_capacity=((seq->start+idx+1) > seq->capacity*2) ?
-                     (seq->start+idx+1) : seq->capacity*2;
-    if(raptor_sequence_ensure(seq, new_capacity, 0)) {
+  need_capacity=seq->start+idx+1;
+  if(need_capacity > seq->capacity) {
+    if(seq->capacity*2 > need_capacity)
+      need_capacity = seq->capacity*2;
+    if(raptor_sequence_ensure(seq, need_capacity, 0)) {
       if(seq->free_handler && data)
         seq->free_handler(data);
       return 1;
