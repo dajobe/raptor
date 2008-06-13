@@ -1,3 +1,91 @@
+2008-06-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rdfxml_item_triples):
+	Use raptor_serialize_start_to_iostream() with no destroying
+	iostream instead of raptor_serialize_start().
+
+	* src/raptor.h: Added raptor_serialize_start_to_iostream prototype
+
+	* src/raptor_serialize.c: (raptor_serialize_start_to_iostream):
+	Added to have the new semantics of not owning and destroying the
+	passed-in iostream
+
+	* tests/rdfa/Makefile.am: 0094.xhtml fails now
+
+	* librdfa/rdfa.c: GIT commit
+	c2ca66384c2e201023e0ca7cb4d9e38450459c93
+	(rdfa_parse_end): Ensure rdfa_pop_item() is called when in raptor
+	too
+
+	* librdfa/rdfa.c: GIT commit
+	346046a980aee3ed84f69f482a74f95e2414c267
+	(start_element): Sort namespaces by prefix and hide overriden ones
+
+2008-06-10  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, librdfa/rdfa.h: Merge to GIT
+	fd8d211db142e14007ea6b3ac3eab090adf0a793
+
+	* librdfa/curie.c, librdfa/rdfa.c, librdfa/rdfa.h,
+	librdfa/rdfa_utils.c, librdfa/rdfa_utils.h, librdfa/triple.c:
+	Merge to GIT a119a5ea0f215ec6036e79de30bb1131d9ca5647
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_statement):
+	correct docs
+
+	* src/raptor_avltree.c: (main): Do not call an internal debug
+	function raptor_avltree_print() in unit testing.
+
+	* src/raptor_sequence.c: (main): Remove test for preventing
+	raptor_sequence_set_at() at size+1; this is now allowed.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_statement):
+	Ignore any triple with predicate rss:items as it can be infered
+	later for RSS 1.0 and ignore for Atom 1.0
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Added rss:items to
+	raptor_rss_model concepts with macro RAPTOR_RSS_RDF_items_URI
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_build_items): Skip
+	triples that have no URI value.
+
+	* src/raptor_sequence.c: (raptor_sequence_set_at): Handle
+	extending the sequence beyond capacity+1
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_move_statements):
+	Handled anonymous triples twice and the handled flag did not help
+	- removed.  Improved the logic to clearly 'continue' loop when a
+	triple is handled; added comments to say why.  Changed signature
+	to return number of triples used, not presently used by callers.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_build_xml_names): Off
+	by 1 in declaring user namespaces.
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_serialize_set_xml_writer): Free any namespaces
+	declared on the old stack, before freeing the stack.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_terminate):
+	Free all allocated namespaces now it doesn't crash things.
+
+	* src/raptor_serialize_rss.c: Ensure namespaces are freed before
+	the stack they are associated with, so that URI destructor handler
+	calls work.
+	(raptor_rss10_serialize_init, raptor_rss10_serialize_terminate):
+	Add raptor_free_namespace to user_namespaces sequence and call it
+	early.
+	(raptor_rss10_serialize_end): Do not free namespace stack here, as
+	it refers to namespaces that are still alive.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_build_items): Make a
+	fake triple subject URI for comparison with seq node ID.
+
+2008-06-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-parsers.xml: Added RDFa parser
+
+	* docs/raptor-serializers.xml: rss 1.0 and atom 1.0 serializer notes
+
 2008-06-05  Dave Beckett <dave@dajobe.org>
 
 	* utils/rapper.c: update the parser/serializer name length to 14
