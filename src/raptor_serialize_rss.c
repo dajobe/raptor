@@ -487,6 +487,38 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
 
 
 /**
+ * raptor_rss10_move_leftover_statements:
+ * @rss_serializer: serializer object
+ *
+ * INTERNAL - Move any statements in the serializer pool to items or channel
+ *
+ */
+static int
+raptor_rss10_move_leftover_statements(raptor_rss10_serializer_context *rss_serializer) {
+  raptor_rss_model* rss_model;
+  int i;
+  int type;
+  raptor_rss_item* item;
+
+  rss_model=&rss_serializer->model;
+
+  type=RAPTOR_RSS_ITEM;
+  for(i=0; i < raptor_sequence_size(rss_serializer->items); i++) {
+    item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
+    raptor_rss10_move_statements(rss_serializer, type, item);
+  }
+  
+  type=RAPTOR_RSS_CHANNEL;
+  if(rss_model->common[type]) {
+    item=rss_model->common[type];
+    raptor_rss10_move_statements(rss_serializer, type, item);
+  }
+
+  return 0;
+}
+
+
+/**
  * raptor_rss10_remove_mapped_item_fields:
  * @rss_serializer: serializer object
  * @item: rss item
@@ -1783,6 +1815,8 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   is_atom=rss_serializer->is_atom;
 
   raptor_rss10_build_items(rss_serializer);
+
+  raptor_rss10_move_leftover_statements(rss_serializer);
 
   raptor_rss10_move_anonymous_statements(rss_serializer);
 
