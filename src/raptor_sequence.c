@@ -226,13 +226,15 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
       return 1;
     }
   }
-    
+
   if(seq->sequence[seq->start+idx] && seq->free_handler)
+    /* if there is old data, delete it and size is the same */
     seq->free_handler(seq->sequence[seq->start+idx]);
+  else
+    /* if there is no old data, size is increasing */
+    seq->size++;
   
   seq->sequence[seq->start+idx]=data;
-  if(idx+1 > seq->size)
-    seq->size++;
   return 0;
 }
 
