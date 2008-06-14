@@ -106,7 +106,7 @@ main (int argc, char *argv[])
   me->count=0;
   me->max=5;
 
-  uri=raptor_new_uri(argv[1]);
+  uri=raptor_new_uri((const unsigned char*)argv[1]);
   rdf_parser=raptor_new_parser("rdfxml");
 
   me->parser=rdf_parser;
