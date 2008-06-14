@@ -286,27 +286,37 @@ typedef struct
 int
 main(int argc, char *argv[]) 
 {
+  /* input variables - parser
+   * 'uri_string' is set to a URI otherwise 'filename' is file name
+   * or if NULL, stdin.  Base URI in 'base_uri_string' is required for stdin.
+   */
   raptor_parser* rdf_parser=NULL;
+  char *filename=NULL;
+#define FILENAME_LABEL(name) ((name) ? (name) : "<stdin>")
   unsigned char *uri_string=NULL;
   int free_uri_string=0;
-  unsigned char *base_uri_string=NULL;
-  unsigned char *output_base_uri_string=NULL;
-  int rc;
-  int scanning=0;
-  const char *syntax_name="rdfxml";
-  const char *serializer_syntax_name="ntriples";
-  int strict_mode=0;
-  int usage=0;
-  int help=0;
-  int trace=0;
-  raptor_uri *base_uri=NULL;
-  raptor_uri *output_base_uri=NULL;
   raptor_uri *uri;
-  char *p;
-  char *filename=NULL;
+  unsigned char *base_uri_string=NULL;
+  raptor_uri *base_uri=NULL;
+  const char *syntax_name="rdfxml";
   raptor_sequence* parser_features=NULL;
+  int scanning=0;
+  int strict_mode=0;
+  int trace=0;
+
+  /* output variables - serializer */
+  /* 'serializer' object variable is a global */
+  const char *serializer_syntax_name="ntriples";
+  unsigned char *output_base_uri_string=NULL;
+  raptor_uri *output_base_uri=NULL;
   raptor_sequence* serializer_features=NULL;
   raptor_sequence *namespace_declarations=NULL;
+
+  /* other variables */
+  int rc;
+  int usage=0;
+  int help=0;
+  char *p;
 
   program=argv[0];
   if((p=strrchr(program, '/')))
@@ -809,20 +819,20 @@ main(int argc, char *argv[])
 
 
   if(!quiet) {
-    if (filename) {
-      if(base_uri_string)
-        fprintf(stderr, "%s: Parsing file %s with parser %s and base URI %s\n", program,
-                filename, syntax_name, base_uri_string);
-      else
-        fprintf(stderr, "%s: Parsing file %s with parser %s\n", program,
-                filename, syntax_name);
-    } else {
+    if(uri_string) {
       if(base_uri_string)
         fprintf(stderr, "%s: Parsing URI %s with parser %s and base URI %s\n",
                 program, uri_string, syntax_name, base_uri_string);
       else
         fprintf(stderr, "%s: Parsing URI %s with parser %s\n", program,
                 uri_string, syntax_name);
+    } else {
+      if(base_uri_string)
+        fprintf(stderr, "%s: Parsing file %s with parser %s and base URI %s\n", program,
+                FILENAME_LABEL(filename), syntax_name, base_uri_string);
+      else
+        fprintf(stderr, "%s: Parsing file %s with parser %s\n", program,
+                FILENAME_LABEL(filename), syntax_name);
     }
   }
   
@@ -897,7 +907,7 @@ main(int argc, char *argv[])
   if(!uri || filename) {
     if(raptor_parse_file(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse file %s %s content\n", program, 
-              filename, syntax_name);
+              FILENAME_LABEL(filename), syntax_name);
       rc=1;
     }
   } else {
