@@ -1,4 +1,46 @@
-2008-06-11  Dave Beckett <dave@dajobe.org>
+2008-06-13  Dave Beckett <dave@dajobe.org>
+
+	* src/n3_common.h, src/ntriples_parse.c, src/raptor_expat.c,
+	src/raptor_grddl.c, src/raptor_guess.c, src/raptor_librdfa.c,
+	src/raptor_libxml.c, src/raptor_locator.c, src/raptor_nfc.c,
+	src/raptor_nfc.h, src/raptor_nfc_test.c, src/raptor_rfc2396.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_simple.c, src/raptor_utf8.c,
+	src/raptor_win32.c, src/raptor_www.c, src/raptor_www_curl.c,
+	src/raptor_www_libfetch.c, src/raptor_www_libxml.c,
+	src/raptor_www_test.c, src/raptor_xsd.c, src/turtle_common.c,
+	src/turtle_common.h: 2008
+
+	* utils/rapper.c: Tidy variables into parser, serializer, other
+	blocks. Output <stdin> in error, info messages when filename is
+	NULL
+
+	* src/raptor_sequence.c: (raptor_sequence_set_at): Tidy tortured test.
+
+	* src/raptor_sequence.c: (raptor_sequence_set_at): Update size
+	when not over-writing an existing item.
+
+2008-06-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_move_leftover_statements): Added to move any
+	remaining triples after initial serialize_statement scan, to items
+	or channel.
+	(raptor_rss10_serialize_end): Call
+	raptor_rss10_move_leftover_statements.
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_statement):
+	Use correct URI for rss:items with new macro
+	RAPTOR_RSS_RSS_items_URI replacing RAPTOR_RSS_RDF_items_URI
+
+	* src/raptor_rss_common.c: (raptor_rss_model_init): Init
+	RAPTOR_RSS_RSS_items_URI against rss: (rss 1.0) namespace, not
+	rdf:
+
+	* src/raptor_rss.h: RAPTOR_RSS_RDF_items_URI renamed to
+	RAPTOR_RSS_RSS_items_URI since it is in the rss: (rss 1.0)
+	namespace
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_emit_rdfxml_item_triples):
 	Use raptor_serialize_start_to_iostream() with no destroying
