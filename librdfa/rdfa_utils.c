@@ -33,7 +33,7 @@ char* rdfa_join_string(const char* prefix, const char* suffix)
    char* rval = NULL;
    size_t prefix_size = strlen(prefix);
    size_t suffix_size = strlen(suffix);
-   rval = malloc(prefix_size + suffix_size + 1);
+   rval = (char*)malloc(prefix_size + suffix_size + 1);
    
    memcpy(rval, prefix, prefix_size);
    memcpy(rval+prefix_size, suffix, suffix_size + 1);
@@ -47,7 +47,7 @@ char* rdfa_n_append_string(
    const char* suffix, size_t suffix_size)
 {
    char* rval = NULL;
-   rval = realloc(old_string, *string_size + suffix_size + 1);
+   rval = (char*)realloc(old_string, *string_size + suffix_size + 1);
    memcpy(rval + *string_size, suffix, suffix_size + 1);
    *string_size = *string_size + suffix_size;
    return rval;
@@ -74,7 +74,7 @@ char* rdfa_replace_string(char* old_string, const char* new_string)
 
 char* rdfa_canonicalize_string(const char* str)
 {
-   char* rval = malloc(sizeof(char) * (strlen(str) + 2));
+   char* rval = (char*)malloc(sizeof(char) * (strlen(str) + 2));
    char* working_string = NULL;
    char* token = NULL;
    char* wptr = NULL;
@@ -108,25 +108,25 @@ char* rdfa_canonicalize_string(const char* str)
 
 rdfalist* rdfa_create_list(size_t size)
 {
-   rdfalist* rval = malloc(sizeof(rdfalist));
+   rdfalist* rval = (rdfalist*)malloc(sizeof(rdfalist));
 
    rval->max_items = size;
    rval->num_items = 0;
-   rval->items = malloc(sizeof(rdfalistitem) * rval->max_items);
+   rval->items = (rdfalistitem**)malloc(sizeof(rdfalistitem) * rval->max_items);
 
    return rval;
 }
 
 rdfalist* rdfa_copy_list(rdfalist* list)
 {
-   rdfalist* rval = malloc(sizeof(rdfalist));
+   rdfalist* rval = (rdfalist*)malloc(sizeof(rdfalist));
    unsigned int i;
 
    // copy the base list variables over
    rval->max_items = list->max_items;
    rval->num_items = list->num_items;
    rval->items = NULL;
-   rval->items = realloc(rval->items, sizeof(void*) * rval->max_items);
+   rval->items = (rdfalistitem**)realloc(rval->items, sizeof(void*) * rval->max_items);
 
    // copy the data of every list member along with all of the flags
    // for each list member.
@@ -138,10 +138,10 @@ rdfalist* rdfa_copy_list(rdfalist* list)
       {
          if(list->items[i]->flags & RDFALIST_FLAG_TEXT)
          {
-            rval->items[i] = malloc(sizeof(rdfalistitem));
+            rval->items[i] = (rdfalistitem*)malloc(sizeof(rdfalistitem));
             rval->items[i]->data = NULL;
-            rval->items[i]->data = 
-               rdfa_replace_string(rval->items[i]->data, list->items[i]->data);
+            rval->items[i]->data =  (char*)
+               rdfa_replace_string((char*)rval->items[i]->data, (const char*)list->items[i]->data);
             rval->items[i]->flags = list->items[i]->flags;
          }
       }
@@ -167,7 +167,7 @@ void rdfa_print_list(rdfalist* list)
          printf(", ");
       }
       
-      puts(list->items[i]->data);
+      puts((const char*)list->items[i]->data);
    }
 
    printf(" ]\n");
@@ -211,7 +211,7 @@ void* rdfa_pop_item(rdfalist* stack)
 
 void rdfa_add_item(rdfalist* list, void* data, liflag_t flags)
 {
-   rdfalistitem* item = malloc(sizeof(rdfalistitem));
+   rdfalistitem* item = (rdfalistitem*)malloc(sizeof(rdfalistitem));
 
    item->data = NULL;
 
@@ -221,7 +221,7 @@ void rdfa_add_item(rdfalist* list, void* data, liflag_t flags)
    }
    else
    {
-      item->data = rdfa_replace_string(item->data, data);
+      item->data = (char*)rdfa_replace_string((char*)item->data, (const char*)data);
    }   
    
    item->flags = flags;
@@ -229,7 +229,7 @@ void rdfa_add_item(rdfalist* list, void* data, liflag_t flags)
    if(list->num_items == list->max_items)
    {
       list->max_items = 1 + (list->max_items * 2);
-      list->items =
+      list->items = (rdfalistitem**)
          realloc(list->items, sizeof(rdfalistitem) * list->max_items);
    }
 

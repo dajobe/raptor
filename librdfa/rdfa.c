@@ -170,7 +170,7 @@ static size_t rdfa_init_base(
             if(*uri_start != '"')
             {
                size_t uri_size = uri_end - uri_start;
-               char* temp_uri = malloc(sizeof(char) * uri_size + 1);
+               char* temp_uri = (char*)malloc(sizeof(char) * uri_size + 1);
                strncpy(temp_uri, uri_start, uri_size);
                temp_uri[uri_size] = '\0';
 
@@ -362,7 +362,7 @@ raptor_nspace_compare(const void *a, const void *b)
 static void XMLCALL
    start_element(void* user_data, const char* name, const char** attributes)
 {
-   rdfalist* context_stack = user_data;
+   rdfalist* context_stack = (rdfalist*) user_data;
    rdfacontext* context = rdfa_create_new_element_context(context_stack);
    const char** aptr = attributes;
    const char* xml_lang = NULL;
@@ -554,7 +554,7 @@ static void XMLCALL
          value = *aptr++;
 
          // append the attribute-value pair to the XML literal
-         literal_text = malloc(strlen(attr) + strlen(value) + 5);
+         literal_text = (char*)malloc(strlen(attr) + strlen(value) + 5);
          sprintf(literal_text, " %s=\"%s\"", attr, value);
          if(strstr("xmlns", attr) == NULL)
          {
@@ -808,11 +808,11 @@ static void XMLCALL
 
 static void XMLCALL character_data(void *user_data, const char *s, int len)
 {
-   rdfalist* context_stack = user_data;
+   rdfalist* context_stack = (rdfalist*)user_data;
    rdfacontext* context = (rdfacontext*)
       context_stack->items[context_stack->num_items - 1]->data;
    
-   char *buffer = malloc(len + 1);
+   char *buffer = (char*)malloc(len + 1);
    memset(buffer, 0, len + 1);
    memcpy(buffer, s, len);   
 
@@ -851,13 +851,13 @@ static void XMLCALL character_data(void *user_data, const char *s, int len)
 static void XMLCALL
    end_element(void *user_data, const char *name)
 {
-   rdfalist* context_stack = user_data;
+   rdfalist* context_stack = (rdfalist*)user_data;
    rdfacontext* context = (rdfacontext*)rdfa_pop_item(context_stack);
    rdfacontext* parent_context = (rdfacontext*)
       context_stack->items[context_stack->num_items - 1]->data;
    
    // append the text to the current context's XML literal
-   char* buffer = malloc(strlen(name) + 4);
+   char* buffer = (char*)malloc(strlen(name) + 4);
    
    if(DEBUG)
    {
@@ -1035,7 +1035,7 @@ static void raptor_rdfa_character_data(void *user_data,
 static void raptor_rdfa_namespace_handler(void *user_data,
                                           raptor_namespace* nspace)
 {
-  rdfalist* context_stack = user_data;
+  rdfalist* context_stack = (rdfalist*)user_data;
   rdfacontext* context = (rdfacontext*)
     context_stack->items[context_stack->num_items - 1]->data;
 
@@ -1057,7 +1057,7 @@ rdfacontext* rdfa_create_context(const char* base)
    // if the base isn't specified, don't create a context
    if(base_length > 0)
    {
-      rval = malloc(sizeof(rdfacontext));
+      rval = (rdfacontext*)malloc(sizeof(rdfacontext));
       rval->base = NULL;
       rval->base = rdfa_replace_string(rval->base, base);
 
@@ -1195,7 +1195,7 @@ int rdfa_parse_start(rdfacontext* context)
    int rval = RDFA_PARSE_SUCCESS;
    
    context->wb_allocated = sizeof(char) * READ_BUFFER_SIZE;
-   context->working_buffer = calloc(context->wb_allocated, sizeof(char));
+   context->working_buffer = (char*)calloc(context->wb_allocated, sizeof(char));
 
 #ifdef LIBRDFA_IN_RAPTOR
    raptor_error_handlers_init(&context->error_handlers);

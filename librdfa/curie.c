@@ -180,7 +180,7 @@ char* rdfa_resolve_curie(
       const char* expanded_prefix = NULL;
       size_t expanded_prefix_length = 0;
 
-      working_copy = malloc(strlen(uri) + 1);
+      working_copy = (char*)malloc(strlen(uri) + 1);
       strcpy(working_copy, uri);//rdfa_replace_string(working_copy, uri);
 
       // if this is a safe CURIE, chop off the beginning and the end
