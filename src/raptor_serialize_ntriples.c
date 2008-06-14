@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_serialize_rdfxml.c - N-Triples serializer
+ * raptor_serialize_ntriples.c - N-Triples serializer
  *
- * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  *
  * This package is Free Software and part of Redland http://librdf.org/

@@ -2,7 +2,7 @@
  *
  * raptor_rfc2396.c - Raptor URI resolving from RFC2396 and RFC3986
  *
- * Copyright (C) 2004-2008, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/

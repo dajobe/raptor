@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_xs.c - Raptor XSD code
+ * raptor_xsd.c - Raptor XML Schema Datatypes (XSD) code
  *
- * Copyright (C) 2005-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2005-2006, David Beckett http://www.dajobe.org/
  * Copyright (C) 2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/

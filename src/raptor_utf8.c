@@ -2,7 +2,7 @@
  *
  * raptor_utf8.c - Raptor UTF-8 and Unicode support
  *
- * Copyright (C) 2002-2006, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2007, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/

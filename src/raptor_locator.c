@@ -2,7 +2,7 @@
  *
  * raptor_locator.c - Raptor parsing locator functions
  *
- * Copyright (C) 2002-2004, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2002-2006, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2006, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
