@@ -65,7 +65,7 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
   raptor_abbrev_node* node=NULL;
   
   if(node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
-    return 0;
+    return NULL;
 
   node = (raptor_abbrev_node*)RAPTOR_CALLOC(raptor_abbrev_node, 1,
                                             sizeof(raptor_abbrev_node));
