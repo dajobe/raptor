@@ -630,7 +630,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 #endif
 #endif /* EXPAT */
 
-#if RAPTOR_XML_EXPAT
+#ifdef RAPTOR_XML_EXPAT
   if(1) {
     const char *error_prefix="XML Parsing failed - "; /* 21 chars */
     #define ERROR_PREFIX_LEN 21
