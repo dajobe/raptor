@@ -902,7 +902,9 @@ main(int argc, char *argv[])
   }
   
 
-  /* PARSE the URI as RDF/XML */
+  /* Begin the parsing of the content from file or URI,
+   * sending it to serializer via callback print_triples()
+   */
   rc=0;
   if(!uri || filename) {
     if(raptor_parse_file(rdf_parser, uri, base_uri)) {
