@@ -165,13 +165,13 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #define HELP_TEXT(short, long, description) "  -" short ", --" long "  " description
 #define HELP_TEXT_LONG(long, description) "      --" long "  " description
 #define HELP_ARG(short, long) "--" #long
-#define HELP_ARG_BOTH(short, long) " -" #short ", --" #long
+#define HELP_ARG_BOTH(short, long) " \"-" short "\" or \"--" long "\""
 #define HELP_PAD "\n                          "
 #else
 #define HELP_TEXT(short, long, description) "  -" short "  " description
 #define HELP_TEXT_LONG(long, description)
 #define HELP_ARG(short, long) "-" #short
-#define HELP_ARG_BOTH(short, long) "-" short
+#define HELP_ARG_BOTH(short, long) "\"-" short "\""
 #define HELP_PAD "\n      "
 #endif
 
