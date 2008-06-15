@@ -748,7 +748,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
               element->rdf_attr[j]=attr->value;
               element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
-#if RAPTOR_DEBUG_VERBOSE
+#ifdef RAPTOR_DEBUG_VERBOSE
               RAPTOR_DEBUG3("Found RDF namespace attribute '%s' URI %s\n", (char*)attr_name, attr->value);
 #endif
               /* make sure value isn't deleted from qname structure */
