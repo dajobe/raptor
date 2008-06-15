@@ -220,7 +220,7 @@ raptor_dot_serializer_new_node(raptor_identifier_type node_type,
   raptor_dot_serializer_node* node;
   
   if(node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
-    return 0;
+    return NULL;
 
   node = (raptor_dot_serializer_node *)RAPTOR_CALLOC(raptor_dot_serializer_node, 1, sizeof(raptor_dot_serializer_node));
 
