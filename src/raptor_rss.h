@@ -245,9 +245,9 @@ struct raptor_rss_field_s
   raptor_uri* uri;
   struct raptor_rss_field_s* next;
   /* this field was mapped from another vocab */
-  int is_mapped:1;
+  unsigned int is_mapped:1;
   /* value is XML */
-  int is_xml:1;
+  unsigned int is_xml:1;
 };
 typedef struct raptor_rss_field_s raptor_rss_field;
 
