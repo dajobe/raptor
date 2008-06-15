@@ -82,11 +82,11 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
     fprintf(stderr, "U+%04lX ", c);
 #endif
 
-    p=(unsigned char*)endptr;
+    p=(const char*)endptr;
     
     u+= raptor_unicode_char_to_utf8(c, u);
     
-    if((u-utf8_string) > utf8_string_length) {
+    if((u-utf8_string) > (int)utf8_string_length) {
       fprintf(stderr,
               "decode_to_utf8 overwote utf8_string buffer at byte %d\n",
               (u-utf8_string));
