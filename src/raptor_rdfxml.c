@@ -2082,7 +2082,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
                                     &element->reified,
                                     element);
 
-        raptor_rdfxml_process_property_attributes(rdf_parser, element, element, 0);
+        raptor_rdfxml_process_property_attributes(rdf_parser, element, element, NULL);
 
         /* for both productions now need some more content or
          * property elements before can do any more work.
