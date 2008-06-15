@@ -460,7 +460,7 @@ static struct {
   { 
     NULL,
     0,
-    0
+    NULL
   }
 };
 
