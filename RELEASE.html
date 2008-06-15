@@ -40,10 +40,18 @@ does not matter to XML parsers).</p>
 
 <h3>Serializer Changes</h3>
 
+<p>Added new function
+<code>raptor_serialize_start_to_iostream()</code> to have the new
+semantics of not owning and destroying the passed-in iostream.  This
+allows the caller to serialize to an existing iostream and then
+to continue to write to it.  <code>raptor_serialize_start()</code>
+owns and then closes the iostream that is passed in.
+</p>
+
 <p>A new Atom 1.0 serializer was added (name <code>atom</code>)
 using the RSS 1.0 RDF triple model with mapping to atom terms
 and consideration of atom output format conditions.
-.</p>
+</p>
 
 <p>RSS 1.0 serializer</p>
 <ul>
@@ -52,13 +60,17 @@ and consideration of atom output format conditions.
 <li>Recognize predicates with XML Literal and emit as
 <code>parseType="Literal"</code> or when <code>content:encoded</code>,
 as a CDATA block, by RSS 1.0 convention.</li>
+<li>Removed code assumptions about triples appearing in a certain order.</li>
+<li>Free namespaces and stack in correct order</li>
 </ul>
 
 <p>Turtle serializer respects the writeBaseURI feature to control
-generating <code>@base</code></p>
+generating <code>@base</code>
+</p>
 
 <p>Abbreviated serializers (RDF/XML Abbrev and Turtle) now remove
-duplicate triples.</p>
+duplicate triples.
+</p>
 
 <p>Added feature <code>RAPTOR_FEATURE_RSS_TRIPLES</code> to add RDF
 triples to RSS 1.0 or Atom serializer output with values 'rdfxml' or
@@ -77,25 +89,35 @@ Entry document is generated rather than an Atom Feed document.
 </p>
 
 
-<h3>Internal Changes</h3>
+<h3>QName Class Changes</h3>
+
+<p>Added <code>raptor_qname_to_counted_name()</code> to get
+a formatted qname for a name.
+</p>
+
+<p><code>raptor_new_qname_from_namespace_local_name()</code> will
+accept a NULL namespace to construct a namespace-less qname.
+</p>
+
+<h3>Sequence Class Changes</h3>
+
+<p><code>raptor_sequence_set_at()</code> now handles
+setting an item at an index in the sequence beyond capacity+1
+to automatically extend.
+</p>
+
+<p>Added <code>raptor_sequence_delete_at()</code> to delete an item
+at a position in a sequence and return it.
+</p>
+
+<h3>URI Class Changes</h3>
 
 <p><code>raptor_uri_to_relative_counted_uri_string()</code> now
 has support for a base URI with scheme and authority but no path,
 so the result can be a relative URI starting with '/'.
 </p>
 
-<p>Internal AVL Tree class gains an iterator helper class for walking
-ranges of indexes of the tree or all items forward or backwards.  The
-AVL Tree constructor gains a flag
-<code>RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES</code> to decide
-how to deal with duplicates.
-</p>
-
-<h3>Other Changes</h3>
-
-<p>Added <code>raptor_qname_to_counted_name()</code> to get
-a formatted qname for a name.
-</p>
+<h3>XML Writer Class Changes</h3>
 
 <p>XML Writer allows adding newlines via
 <code>raptor_xml_writer_newline()</code> which
@@ -103,36 +125,33 @@ requires use of <code>raptor_xml_writer_flush()</code> to indicate
 when XML writer output is finished.
 </p>
 
-<p>Many more resiliance checks were added.
-</p>
-
-<p><code>raptor_new_qname_from_namespace_local_name()</code> will
-accept a NULL namespace to construct a namespace-less qname.
-</p>
-
-<p>Added <code>raptor_sequence_delete_at()</code> to delete an item
-at a position in a sequence and return it.
-</p>
-
-<p>Adde <code>raptor_xml_writer_get_depth()</code> to get the current
+<p>Added <code>raptor_xml_writer_get_depth()</code> to get the current
 XML writer element stack depth.
 </p>
 
-<p>Serializing may be done to an iostream without closing it at the
-end of serializing.  Only when the iostream was created inside
-a serializing function is it closed.
+<h3>Other Changes</h3>
+
+<p>Many more resiliance checks were added.
 </p>
 
-<p>Turtle writer may optionally generate @base depending on flags.
+<p>Removed all calls to abort() in code on fatal errors.  This
+requires using setjmp and longjmp inside parsers built with
+flex and bison.
 </p>
 
-<p>Remove all calls to abort() in code on fatal errors.  This
-requires using setjmp/longjmp inside parsers using flex and bison.
+<p>The Turtle writer may optionally generate @base depending on
+flags.  (This is used by Turtle serializer to handle the writeBaseURI
+feature)
 </p>
 
-<p>raptor_init() and raptor_finish() use a reference count to handle
-initialising.
+<p>Tidied error messages for <code>rapper(1)</code> when parsing stdin.
 </p>
+
+<p>raptor_init() and raptor_finish() use a reference count to ensure
+initialising and terminating happen at most once each.
+</p>
+
+
 
 
 <h2 id="rel1_4_17"><a name="rel1_4_17">Raptor 1.4.17 Changes</a></h2>
