@@ -193,7 +193,9 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_BIGENDIAN
 
-AC_CHECK_TYPE([u8 u16 u32])
+dnl for raptor_nfc.c
+AC_CHECK_TYPES([u8])
+AC_CHECK_TYPES([u16])
 
 AC_CHECK_SIZEOF(unsigned char, 1)
 AC_CHECK_SIZEOF(unsigned short, 2)

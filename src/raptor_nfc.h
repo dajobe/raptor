@@ -25,8 +25,7 @@
 
 #include <sys/types.h>
 
-#if u16 == MISSING
-  #undef u16
+#ifndef HAVE_U16
   #if SIZEOF_UNSIGNED_SHORT == 2
     typedef unsigned int u16;
   #elif SIZEOF_UNSIGNED_INT == 2
@@ -37,8 +36,7 @@
 #endif
 
 
-#if u8 == MISSING
-  #undef u8
+#ifndef HAVE_U8
   #if SIZEOF_UNSIGNED_CHAR == 1
     typedef unsigned char u8;
   #else
