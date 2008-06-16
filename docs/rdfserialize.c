@@ -21,7 +21,7 @@ main(int argc, char *argv[])
   raptor_serialize_start_to_file_handle(rdf_serializer, base_uri, stdout);
   
   /* Make a triple with URI subject, URI predicate, literal object */
-  triple=malloc(sizeof(raptor_statement));
+  triple=(raptor_statement*)malloc(sizeof(raptor_statement));
   triple->subject=(void*)raptor_new_uri((const unsigned char*)"http://example.org/subject");
   triple->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   triple->predicate=(void*)raptor_new_uri((const unsigned char*)"http://example.org/predicate");
