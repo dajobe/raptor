@@ -175,7 +175,9 @@ typedef struct rdfacontext
    char* working_buffer;
    size_t wb_offset;
 #ifdef LIBRDFA_IN_RAPTOR
-   raptor_error_handlers error_handlers;
+   /* a pointer (in every context) to the error_handlers structure
+    * held in the raptor_parser object */
+   raptor_error_handlers *error_handlers;
    raptor_uri* base_uri;
    raptor_sax2* sax2;
    raptor_namespace_handler namespace_handler;

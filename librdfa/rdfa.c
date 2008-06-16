@@ -335,6 +335,7 @@ static rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
    rval->sax2     = parent_context->sax2;
    rval->namespace_handler = parent_context->namespace_handler;
    rval->namespace_handler_user_data = parent_context->namespace_handler_user_data;
+   rval->error_handlers = parent_context->error_handlers;
 #endif
    
    return rval;
@@ -1197,9 +1198,7 @@ int rdfa_parse_start(rdfacontext* context)
    context->wb_allocated = sizeof(char) * READ_BUFFER_SIZE;
    context->working_buffer = (char*)calloc(context->wb_allocated, sizeof(char));
 
-#ifdef LIBRDFA_IN_RAPTOR
-   raptor_error_handlers_init(&context->error_handlers);
-#else
+#ifndef LIBRDFA_IN_RAPTOR
    context->parser = XML_ParserCreate(NULL);
 #endif
    context->done = 0;
@@ -1210,7 +1209,7 @@ int rdfa_parse_start(rdfacontext* context)
    
 #ifdef LIBRDFA_IN_RAPTOR
    context->sax2 = raptor_new_sax2(context->context_stack,
-                                   &context->error_handlers);
+                                   context->error_handlers);
 #else
 #endif
 
