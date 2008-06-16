@@ -1,4 +1,64 @@
+2008-06-15  Dave Beckett <dave@dajobe.org>
+
+	* docs/rdfserialize.c: Casts for C++
+
+	* librdfa/rdfa.c: GIT commit 8892f4056d9486d7bdd0cc89fe12b3a863a4d418
+	(rdfa_free_context): rewrite
+	rdfa_free_list(context->context_stack) call to look and do a
+	proper rdfa_free_context() on each returned item that is not
+	ourself.  Still leaks one malloc but does not crash parser on error.
+
+	* src/raptor_librdfa.c: (raptor_librdfa_parse_start): Init librdfa
+	context->error_handlers from static field in raptor_parser
+	structure so that error handlers are passed correctly to librdfa
+	and raptor_sax2
+
+	* librdfa/rdfa.c, librdfa/rdfa.h: GIT commit
+	1a4f7d0352017cf6d55ecbcf7d355badb0c777f9.  Do not make a new
+	error_handlers structure for the rdfa context, use the one passed
+	in from the top-level rdfacontext, set by raptor as error_handlers
+	static in the raptor_parser structure
+
+	* src/raptor_serialize_dot.c: (raptor_dot_serializer_new_node):
+	Return NULL [sparse]
+
+	* src/raptor_rdfxml.c: (raptor_rdfxml_start_element_grammar): Call
+	raptor_rdfxml_process_property_attributes with NULL not 0 [sparse]
+
+	* src/raptor_grddl.c: match_table: Use NULL for pointer in
+	sentinal. [sparse]
+
+	* src/raptor_abbrev.c: (raptor_new_abbrev_node): Return NULL [sparse]
+
+	* src/raptor_rss.h: raptor_rss_field bitfields should be
+	unsigned [sparse]
+
+	* src/raptor_sax2.c: #ifdef RAPTOR_XML_EXPAT
+
+	* src/raptor_rdfxml.c: #ifdef RAPTOR_DEBUG_VERBOSE
+
+	* src/raptor_nfc_test.c: casts
+
+	* configure.ac, src/raptor_nfc.h: Use autoconf 2.5.x
+	AC_CHECK_TYPES for u8 and u16
+
+2008-06-14  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c: fix comment
+
+	* utils/rapper.c: Fix HELP_ARG_BOTH quoting as used in help message.
+
 2008-06-13  Dave Beckett <dave@dajobe.org>
+
+	* examples/raptor_abort.c, examples/rdfserialize.c: Casts for C++
+
+	* src/raptor_serialize_rss.c: Casts to remove warnings when
+	compiling with C++
+
+	* librdfa/curie.c, librdfa/rdfa.c, librdfa/rdfa_utils.c,
+	librdfa/triple.c: GIT commit
+	aefb63f96141d64e1a9f5845600feebac6aefa45
+	librdfa casts to remove warnings when compiling with C++
 
 	* src/n3_common.h, src/ntriples_parse.c, src/raptor_expat.c,
 	src/raptor_grddl.c, src/raptor_guess.c, src/raptor_librdfa.c,
