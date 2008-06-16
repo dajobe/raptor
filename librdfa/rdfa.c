@@ -1167,9 +1167,19 @@ void rdfa_free_context(rdfacontext* context)
       rdfa_free_list(context->local_incomplete_triples);
    }
 
+   // this field is not NULL only on the rdfacontext* at the top of the stack
    if(context->context_stack != NULL)
    {
-      rdfa_free_list(context->context_stack);
+      void* rval;
+      // free the stack ensuring that we do not delete this context if
+      // it is in the list (which it may be, if parsing ended on error)
+      do {
+        rval=rdfa_pop_item(context->context_stack);
+        if(rval && rval != context)
+          rdfa_free_context(rval);
+      } while(rval);
+      free(context->context_stack->items);
+      free(context->context_stack);
    }
 
    if(context->working_buffer != NULL)
