@@ -1618,17 +1618,12 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         identifier=&(author_item->identifier);
 
         author_item->node_type=&raptor_rss_types_info[typei];
-        /* FIXME - uses atom:author as bnode name - should make a new
+        /* FIXME - uses _:author as bnode name - should make a new
          * genid for each author node.  This is OK because there
          * is a check above that there is only 1 author per FEED.
          */
-        if(item->fields[f]) {
-          identifier->id=item->fields[f]->value;
-          item->fields[f]->value=NULL;
-        } else {
-          identifier->id=(const unsigned char*)RAPTOR_MALLOC(cstring, 7);
-          strncpy((char*)identifier->id, "author", 7);
-        }
+        identifier->id=(const unsigned char*)RAPTOR_MALLOC(cstring, 7);
+        strncpy((char*)identifier->id, "author", 7);
 
         identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
         identifier->uri_source=RAPTOR_URI_SOURCE_GENERATED;
