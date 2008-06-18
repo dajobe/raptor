@@ -1,3 +1,15 @@
+2008-06-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_emit_item): Use
+	_:author for atom author bnode always since atom:author may not be
+	a valid bnode ID.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_ensure_atom_field_zero_one): Added.
+	(raptor_rss10_ensure_atom_feed_valid): Use
+	raptor_rss10_ensure_atom_field_zero_one to ensure that fields
+	appear 0 or 1 times for atom feed and entry.
+
 2008-06-15  Dave Beckett <dave@dajobe.org>
 
 	* docs/rdfserialize.c: Casts for C++
