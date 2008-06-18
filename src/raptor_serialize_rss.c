@@ -1358,6 +1358,38 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
 
 
 /**
+ * raptor_rss10_ensure_atom_field_zero_one:
+ * @item: RSS item object
+ * @f: ATOM field type
+ *
+ * INTERNAL - Check that the given item @field appears 0 or 1 times
+ */
+static void
+raptor_rss10_ensure_atom_field_zero_one(raptor_rss_item* item, 
+                                        raptor_rss_fields_type f)
+{
+  raptor_rss_field* field=field=item->fields[f];
+  if(!field)
+    return;
+
+  if(field->next) {
+    /* more than 1 value so delete rest of values */
+    raptor_rss_field* next=field->next;
+    field->next=NULL;
+
+    do {
+      field=next;
+
+      next=field->next;
+      field->next=NULL;
+      raptor_rss_field_free(field);
+    } while(next);
+  }
+
+}
+
+
+/**
  * raptor_rss10_ensure_atom_items_valid:
  * @rss_serializer: serializer object
  *
@@ -1419,6 +1451,16 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
       raptor_rss_field_free(item->fields[f]);
       item->fields[f]=NULL;
     }
+
+    /* These fields can appear 0 or 1 times on a feed */ 
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_ICON);
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_LOGO);
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_RIGHTS);
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_SUBTITLE);
   }
   
 
@@ -1456,7 +1498,16 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
       field->uri=raptor_uri_copy(item->uri);
       raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_LINK, field);
     }
-    
+
+    /* These fields can appear 0 or 1 times on an entry */ 
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_PUBLISHED);
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_RIGHTS);
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_SOURCE);
+    raptor_rss10_ensure_atom_field_zero_one(item,
+                                            RAPTOR_RSS_FIELD_ATOM_SUMMARY);
   }
   
   return 0;
