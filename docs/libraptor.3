@@ -6,7 +6,7 @@
 .\" Copyright (C) 2002-2008 David Beckett - http://purl.org/net/dajobe/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2008-03-25"
+.TH libraptor 3 "2008-06-19"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -545,7 +545,16 @@ Destroy a Raptor serializer object.
 .SH "SERIALIZER SERIALIZING METHODS"
 .IP "\fBint raptor_serialize_start(raptor_serializer* \fIrdf_serializer\fB, raptor_uri *\fIuri\fP, raptor_iostream *\fIiostream\fP)\fR"
 Start to serialize content using the given \fIiostream\fP to write
-to with optional base URI \fIuri\fP. Note that
+to with optional base URI \fIuri\fP. The \fIiostream\fP becomes
+owned by the serializer object and is destroyed at the end of
+serializing when raptor_serialize_end() is called.
+Note that  some syntaxes may refuse to serialize
+without a base URI, such as RDF/XML.
+.IP "\fBint raptor_serialize_start_to_iostream(raptor_serializer* \fIrdf_serializer\fP, raptor_uri* \fIuri\fP, raptor_iostream* \fIiostream\fP)\fR"
+Start to serialize content using the given \fIiostream\fP to write
+to with optional base URI \fIuri\fP.  The \fIiostream\fP does NOT
+become owned by the serializer object and the caller may continue
+to write to it after serializing is finished.  Note that
 some syntaxes may refuse to serialize without a base URI, such as RDF/XML.
 .IP "\fBint raptor_serialize_start_to_filename(raptor_serializer* \fIrdf_serializer\fB, const char *\fIfilename\fP)\fR"
 Start to serialize content to the file \fIfilename\fP which is opened
@@ -1354,6 +1363,8 @@ Added serializer features RAPTOR_FEATURE_RSS_TRIPLES and
 RAPTOR_FEATURE_ATOM_ENTRY_URI
 .LP
 Added raptor_qname_to_counted_name
+.LP
+Added raptor_serialize_start_to_iostream
 .LP
 Added raptor_sequence_delete_at
 .LP
