@@ -143,7 +143,7 @@ raptor_new_iostream_from_handler2(void *user_data,
  *
  * Create a new iostream over a user-defined handler.
  *
- * DEPRECATED: Use raptor_new_iosteram_from_handler2()
+ * DEPRECATED: Use raptor_new_iostream_from_handler2()
  *
  * Return value: new #raptor_iostream object or NULL on failure
  **/
