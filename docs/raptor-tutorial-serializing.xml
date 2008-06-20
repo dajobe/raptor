@@ -232,6 +232,8 @@ to write to it after the serializing is finished (after
   raptor_free_iostream(iostream);
 </programlisting>
 </para>
+</section>
+
 
 <section id="serialize-to-iostream-old">
 <title>Serialize to an <link linkend="raptor-iostream"><type>raptor_iostream</type></link> and close iostream (<link linkend="raptor-serialize-start"><function>raptor_serialize_start()</function></link>)</title>
@@ -244,7 +246,6 @@ but it becomes the owner of the passed in
 and destroys it at the end of serializing, so no further use of the
 iostream can be made by the caller.
 </para>
-
 </section>
 
 
