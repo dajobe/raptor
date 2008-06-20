@@ -204,21 +204,45 @@ takes an optional base URI but may be required by some serializers.
 </section>
 
 <section id="serialize-to-iostream">
-<title>Serialize to an <link linkend="raptor-iostream"><type>raptor_iostream</type></link> (<link linkend="raptor-serialize-start"><function>raptor_serialize_start()</function></link>)</title>
+<title>Serialize to an <link linkend="raptor-iostream"><type>raptor_iostream</type></link> (<link linkend="raptor-serialize-start-to-iostream"><function>raptor_serialize_start_to_iostream()</function></link>)</title>
 
 <para>This is the most flexible serializing method as it allows
 writing to any 
 <link linkend="raptor-iostream"><type>raptor_iostream</type></link>
 which can be constructed to build any form of user-generated structure
-via callbacks.
+via callbacks.  The iostream remains owned by the caller that can continue
+to write to it after the serializing is finished (after
+<link linkend="raptor-serialize-end"><function>raptor_serialize_end()</function></link>) is called).
 <programlisting>
   raptor_uri* uri=raptor_new_uri("http://example.org/base");
-  raptor_iostream* iostream;
+  raptor_iostream* iostream = /* iostream initialized by some means */ ;
 
-  /* iostream initialized by some means */
+  raptor_serialize_start_to_iostream(rdf_serializer, uri, iostream);
 
-  raptor_serialize_start(rdf_serializer, uri, iostream);
+  while( /* got RDF triples */ ) {
+    raptor_statement* triple = /* ... triple made from somewhere ... */ ;
+    raptor_serialize_statement(rdf_serializer,  triple);
+  }
+  raptor_serialize_end(rdf_serializer);
+
+  raptor_free_serializer(rdf_serializer);
+
+  /* ... write other stuff to iostream ... */
+
+  raptor_free_iostream(iostream);
 </programlisting>
+</para>
+
+<section id="serialize-to-iostream-old">
+<title>Serialize to an <link linkend="raptor-iostream"><type>raptor_iostream</type></link> and close iostream (<link linkend="raptor-serialize-start"><function>raptor_serialize_start()</function></link>)</title>
+
+<para><link linkend="raptor-serialize-start"><function>raptor_serialize_start()</function></link>
+also serializes to an iostream like
+<link linkend="raptor-serialize-start-to-iostream"><function>raptor_serialize_start_to_iostream()</function></link>
+but it becomes the owner of the passed in 
+<link linkend="raptor-iostream"><type>raptor_iostream</type></link>
+and destroys it at the end of serializing, so no further use of the
+iostream can be made by the caller.
 </para>
 
 </section>
