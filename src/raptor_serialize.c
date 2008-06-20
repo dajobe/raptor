@@ -617,6 +617,9 @@ int
 raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
                                raptor_uri *uri, const unsigned char *prefix) 
 {
+  if(prefix && !*prefix)
+    prefix=NULL;
+  
   if(rdf_serializer->factory->declare_namespace)
     return rdf_serializer->factory->declare_namespace(rdf_serializer, 
                                                       uri, prefix);
