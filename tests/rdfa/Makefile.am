@@ -37,24 +37,24 @@ TEST_FILES= 0001.xhtml 0006.xhtml 0007.xhtml 0008.xhtml 0009.xhtml	\
 0083.xhtml 0084.xhtml 0085.xhtml 0086.xhtml 0087.xhtml 0088.xhtml	\
 0089.xhtml 0090.xhtml 0091.xhtml 0092.xhtml 0093.xhtml 0094.xhtml	\
 0099.xhtml 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml 0104.xhtml	\
-0107.xhtml 0108.xhtml 0109.xhtml 1001.xhtml
+0105.xhtml 0106.xhtml 0107.xhtml 0108.xhtml 0109.xhtml 0110.xhtml	\
+0111.xhtml 0112.xhtml 1001.xhtml
 
 TEST_OUT_FILES = 0001.out 0006.out 0007.out 0008.out 0009.out	\
-0010.out 0011.out 0012.out 0013.out 0014.out 0015.out	\
-0017.out 0018.out 0019.out 0020.out 0021.out 0023.out	\
-0025.out 0026.out 0027.out 0029.out 0030.out 0031.out	\
-0032.out 0033.out 0034.out 0035.out 0036.out 0037.out	\
-0038.out 0039.out 0040.out 0041.out 0042.out 0046.out	\
-0047.out 0048.out 0049.out 0050.out 0051.out 0052.out	\
-0053.out 0054.out 0055.out 0056.out 0057.out 0058.out	\
-0059.out 0060.out 0061.out 0062.out 0063.out 0064.out	\
-0065.out 0066.out 0067.out 0068.out 0069.out 0070.out	\
-0071.out 0072.out 0073.out 0074.out 0075.out 0076.out	\
-0077.out 0078.out 0079.out 0080.out 0081.out 0082.out	\
-0083.out 0084.out 0085.out 0086.out 0087.out 0088.out	\
-0089.out 0090.out 0091.out 0092.out 0093.out 0094.out	\
-0099.out 0100.out 0101.out 0102.out 0103.out 0104.out	\
-0107.out 0108.out 0109.out 1001.out
+0010.out 0011.out 0012.out 0013.out 0014.out 0015.out 0017.out	\
+0018.out 0019.out 0020.out 0021.out 0023.out 0025.out 0026.out	\
+0027.out 0029.out 0030.out 0031.out 0032.out 0033.out 0034.out	\
+0035.out 0036.out 0037.out 0038.out 0039.out 0040.out 0041.out	\
+0042.out 0046.out 0047.out 0048.out 0049.out 0050.out 0051.out	\
+0052.out 0053.out 0054.out 0055.out 0056.out 0057.out 0058.out	\
+0059.out 0060.out 0061.out 0062.out 0063.out 0064.out 0065.out	\
+0066.out 0067.out 0068.out 0069.out 0070.out 0071.out 0072.out	\
+0073.out 0074.out 0075.out 0076.out 0077.out 0078.out 0079.out	\
+0080.out 0081.out 0082.out 0083.out 0084.out 0085.out 0086.out	\
+0087.out 0088.out 0089.out 0090.out 0091.out 0092.out 0093.out	\
+0094.out 0099.out 0100.out 0101.out 0102.out 0103.out 0104.out	\
+0105.out 0106.out 0107.out 0108.out 0109.out 0110.out 0111.out	\
+0112.out 1001.out
 
 TEST_BAD_FILES=
 
@@ -65,12 +65,11 @@ ALL_TEST_FILES= \
 
 # Expected test failures:
 #   0094.xhtml - XML namespaces are in a different order to expected output
-#   0100.xhtml - XML namespaces are in a different order to expected output
 #   0101.xhtml - XML namespaces are in a different order to expected output
 #   0102.xhtml - XML namespaces are in a different order to expected output
 #   0103.xhtml - XML namespaces are in a different order to expected output
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0094.xhtml 0100.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
+EXPECTED_FAILURES=" 0094.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
