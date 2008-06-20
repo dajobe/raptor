@@ -29,7 +29,7 @@ DOC_MODULE=raptor
 DOC_MAIN_SGML_FILE=raptor-docs.xml
 
 # Extra options to supply to gtkdoc-scan
-SCAN_OPTIONS=
+SCAN_OPTIONS= --deprecated-guards="RAPTOR_DISABLE_DEPRECATED"
 
 # The directory containing the source code. Relative to $(srcdir)
 DOC_SOURCE_DIR=../src
