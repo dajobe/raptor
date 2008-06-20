@@ -59,6 +59,17 @@ that can adjust how serializing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_serialize_start_to_iostream ##### -->
+<para>
+
+</para>
+
+@rdf_serializer: 
+@uri: 
+@iostream: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_serialize_start_to_filename ##### -->
 <para>
 
