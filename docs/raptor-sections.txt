@@ -124,6 +124,7 @@ raptor_serializer
 raptor_new_serializer
 raptor_free_serializer
 raptor_serialize_start
+raptor_serialize_start_to_iostream
 raptor_serialize_start_to_filename
 raptor_serialize_start_to_string
 raptor_serialize_start_to_file_handle
