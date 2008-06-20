@@ -120,14 +120,15 @@ static const char * const term_type_strings[]={
 };
 
 
+#ifndef RAPTOR_DISABLE_DEPRECATED
 /**
  * raptor_ntriples_term_as_string:
  * @term: N-Triples term.
  * 
- * @Deprecated: an internal debug function, do not use.
- *
  * Get a label for a #raptor_ntriples_term_type.
  * 
+ * @deprecated: an internal debug function, do not use.
+ *
  * Return value: a pointer to a constant string.
  **/
 const char *
@@ -135,7 +136,7 @@ raptor_ntriples_term_as_string(raptor_ntriples_term_type term)
 {
   return term_type_strings[(int)term];
 }
-
+#endif
 
 
 static void
@@ -477,6 +478,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 }
 
 
+#ifndef RAPTOR_DISABLE_DEPRECATED
 /**
  * raptor_ntriples_string_as_utf8_string:
  * @rdf_parser: parser object
@@ -486,7 +488,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
  * 
  * Turn an N-Triples string with escapes into a UTF-8 string.
  *
- * @Deprecated: This requires use of parser internals and was never in the public API header.
+ * @deprecated: This requires use of parser internals and was never in the public API header.
  * 
  * Return value: a new UTF-8 string
  **/
@@ -512,7 +514,7 @@ raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser,
   }
   return dest;
 }
-
+#endif
 
 
 static int

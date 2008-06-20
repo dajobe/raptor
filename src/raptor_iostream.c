@@ -136,6 +136,7 @@ raptor_new_iostream_from_handler2(void *user_data,
 
 
 
+#ifndef RAPTOR_DISABLE_DEPRECATED
 /**
  * raptor_new_iostream_from_handler:
  * @context: pointer to context information to pass in to calls
@@ -143,7 +144,7 @@ raptor_new_iostream_from_handler2(void *user_data,
  *
  * Create a new iostream over a user-defined handler.
  *
- * DEPRECATED: Use raptor_new_iostream_from_handler2()
+ * @deprecated: Use raptor_new_iostream_from_handler2() instead
  *
  * Return value: new #raptor_iostream object or NULL on failure
  **/
@@ -179,7 +180,7 @@ raptor_new_iostream_from_handler(void *user_data,
 
   return iostr;
 }
-
+#endif
 
 
 /* Local handlers for reading/writing to/from a sink */
@@ -806,13 +807,14 @@ raptor_iostream_write_end(raptor_iostream *iostr)
 }
 
 
+#ifndef RAPTOR_DISABLE_DEPRECATED
 /**
  * raptor_iostream_get_bytes_written_count:
  * @iostr: raptor iostream
  *
  * Get the number of bytes written to the iostream.
  *
- * DEPRECATED: Use raptor_iostream_tell()
+ * @deprecated: Use raptor_iostream_tell() instead
  *
  * Return value: number of bytes written or 0 if none written so far
  **/
@@ -821,6 +823,7 @@ raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
 {
   return iostr->offset;
 }
+#endif
 
 
 /**

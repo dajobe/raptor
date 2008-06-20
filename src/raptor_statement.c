@@ -232,6 +232,7 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 }
 
 
+#ifndef RAPTOR_DISABLE_DEPRECATED
 /**
  * raptor_print_statement_detailed:
  * @statement: #raptor_statement object to print
@@ -239,6 +240,8 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
  * @stream: #FILE* stream
  *
  * Print a raptor_statement to a stream in a detailed fashion.
+ *
+ * @deprecated: an internal function, do not use.
  *
  * No current difference from calling raptor_print_statement().
  *
@@ -249,7 +252,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
 {
   raptor_print_statement(statement, stream);
 }
-
+#endif
 
 /**
  * raptor_statement_part_as_counted_string:
