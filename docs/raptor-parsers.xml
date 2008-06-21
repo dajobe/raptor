@@ -129,8 +129,8 @@ for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
 <title>RDFa parser - (name <literal>rdfa</literal>)</title>
 <para>
 A parser for the
-<ulink url="http://www.w3.org/TR/2008/WD-rdfa-syntax-20080221">RDFa syntax</ulink>
-syntax, W3C Working Draft 2008-02-21 which allows reading XHTML
+<ulink url="http://www.w3.org/TR/2008/CR-rdfa-syntax-20080620/">RDFa</ulink>
+syntax, W3C Candidate Recommendation 20 June 2008 which allows reading XHTML
 and XML as RDF triples by interpreting attributes on elements to
 describe which ones have RDF semantics.   This is implemented via
 <ulink url="http://rdfa.digitalbazaar.com/librdfa/">librdfa</ulink>
