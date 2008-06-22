@@ -1,3 +1,53 @@
+2008-06-20  Dave Beckett <dave@dajobe.org>
+
+	* README.html, RELEASE.html, docs/raptor-parsers.xml,
+	utils/rapper.1: Update RDFa pointers to
+	http://www.w3.org/TR/2008/CR-rdfa-syntax-20080620/ caniddate rec
+
+	* src/raptor_sequence.c: (raptor_sequence_set_at): Correct
+	counting when there is old data but no free handler.
+
+	* tests/rdfa/0011.out, tests/rdfa/0092.out, tests/rdfa/0094.out,
+	tests/rdfa/0099.xhtml, tests/rdfa/0100.out, tests/rdfa/0100.xhtml,
+	tests/rdfa/0101.out, tests/rdfa/0101.xhtml, tests/rdfa/0102.out,
+	tests/rdfa/0102.xhtml, tests/rdfa/0103.out, tests/rdfa/0103.xhtml,
+	tests/rdfa/0104.xhtml, tests/rdfa/0105.out, tests/rdfa/0105.xhtml,
+	tests/rdfa/0106.out, tests/rdfa/0106.xhtml, tests/rdfa/0107.out,
+	tests/rdfa/0107.xhtml, tests/rdfa/0110.out, tests/rdfa/0110.xhtml,
+	tests/rdfa/0111.out, tests/rdfa/0111.xhtml, tests/rdfa/0112.out,
+	tests/rdfa/0112.xhtml, tests/rdfa/Makefile.am: Update approved
+	tests from
+	http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/ as
+	of now
+
+2008-06-19  Dave Beckett <dave@dajobe.org>
+
+	* docs/libraptor.3: Added raptor_serialize_start_to_iostream for
+	1.4.18
+
+	* docs/raptor-tutorial-serializing.xml: xml
+
+	* docs/raptor-tutorial-serializing.xml: Explain
+	raptor_serialize_start and raptor_serialize_start_to_iostream,
+	recommending the latter.
+
+	* docs/Makefile.am: Call gtkdoc-scan with
+	--deprecated-guards="RAPTOR_DISABLE_DEPRECATED"
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_iostream.c,
+	src/raptor_statement.c, src/raptor_turtle_writer.c,
+	src/raptor_uri.c: Use RAPTOR_DISABLE_DEPRECATED macro to wrap
+	disabling deprecated functions and prototypes
+
+	* docs/tmpl/section-feature.sgml, docs/tmpl/section-serializer.sgml: docs tmp
+
+	* src/raptor_iostream.c: typo
+
+	* docs/raptor-sections.txt: Added raptor_serialize_start_to_iostream
+
+	* src/raptor_serialize.c: (raptor_serialize_set_namespace): Allow
+	"" as a synonym for NULL prefix.
+
 2008-06-18  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_rss.c: (raptor_rss10_emit_item): Use
