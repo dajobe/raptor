@@ -107,7 +107,7 @@ version.xml.in
 
 if MAINTAINER_MODE
 libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/../fix-groff-xhtml
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | perl $(srcdir)/../fix-groff-xhtml $@
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../fix-groff-xhtml $@
 
 rdfcat.c: $(srcdir)/../examples/rdfcat.c
 	$(install_sh_DATA) $? $@
