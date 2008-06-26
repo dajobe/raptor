@@ -11,9 +11,6 @@
 
 <h2 id="rel1_4_18"><a name="rel1_4_18">Raptor 1.4.18 Changes</a></h2>
 
-<p>Not yet released.
-</p>
-
 <p>Fixed Issues:</p>
 <ul>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=186">0000186</a>: Add RDFa support to Raptor</li>
@@ -48,7 +45,7 @@ to continue to write to it.  <code>raptor_serialize_start()</code>
 owns and then closes the iostream that is passed in.
 </p>
 
-<p>A new Atom 1.0 serializer was added (name <code>atom</code>)
+<p>A new Atom Syndication Format 1.0 (<a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</a>) serializer was added (name <code>atom</code>)
 using the RSS 1.0 RDF triple model with mapping to atom terms
 and consideration of atom output format conditions.
 </p>
@@ -64,8 +61,8 @@ as a CDATA block, by RSS 1.0 convention.</li>
 <li>Free namespaces and stack in correct order</li>
 </ul>
 
-<p>Turtle serializer respects the writeBaseURI feature to control
-generating <code>@base</code>
+<p>Turtle serializer now respects the <code>writeBaseURI</code>
+feature to control generating the <code>@base</code> directive.
 </p>
 
 <p>Abbreviated serializers (RDF/XML Abbrev and Turtle) now remove
