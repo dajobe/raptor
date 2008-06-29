@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rdf:RDF  xml:base="http://example.org/news/NEWS.rdf"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/rss/1.0/">
+  <channel rdf:about="http://example.org/news/">
+    <title>Example News</title>
+    <link>http://example.org/news/</link>
+    <description>Example News feed.</description>
+    <dc:date>2008-03-30T05:52:06Z</dc:date>
+    <items>
+      <rdf:Seq>
+        <rdf:li rdf:resource="http://example.org/news/2008-03-30"/>
+        <rdf:li rdf:resource="http://example.org/news/2007-10-01"/>
+      </rdf:Seq>
+    </items>
+  </channel>
+
+  <item rdf:about="http://example.org/news/2008-03-30">
+    <link>http://example.org/news/2008-03-30</link>
+    <title>News for 2008-03-30</title>
+    <content:encoded><![CDATA[<div xmlns="http://www.w3.org/1999/xhtml">
+html description 1
+</div>]]></content:encoded>
+    <description>&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;&lt;ul&gt;
+html description 2
+&lt;/div&gt;</description>
+    <dc:date>2008-03-30T06:07:28Z</dc:date>
+  </item>
+
+  <item rdf:about="http://example.org/news/2007-10-01">
+    <link>http://example.org/news/2007-10-01</link>
+    <title>News for 2007-10-01</title>
+    <content:encoded><![CDATA[<div xmlns="http://www.w3.org/1999/xhtml">
+html description 3
+</div>]]></content:encoded>
+    <description>&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;&lt;ul&gt;
+html description 4
+&lt;/div&gt;</description>
+    <dc:date>2007-10-01T06:56:58Z</dc:date>
+  </item>
+
+</rdf:RDF>

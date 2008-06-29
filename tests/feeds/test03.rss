@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:atom="http://www.w3.org/2005/Atom"
+   xmlns:content="http://purl.org/rss/1.0/modules/content/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:at="http://purl.org/syndication/atomtriples/1"
+   xmlns="http://purl.org/rss/1.0/">
+  <channel rdf:about="http://example.org/whatsnew">
+    <title>example feed with 3 items</title>
+    <atom:updated>2006-03-28T20:57:15Z</atom:updated>
+    <atom:author>bob</atom:author>
+    <atom:email>bob@bob.com</atom:email>
+    <atom:uri>http://bob.com/</atom:uri>
+    <dc:date>2006-03-28T17:05:01-05:00</dc:date>
+    <items>
+      <rdf:Seq>
+	<rdf:li rdf:resource="http://example.org/2006/03/03/blog-item"/>
+	<rdf:li rdf:resource="http://example.org/2006/02/02/blog-item"/>
+	<rdf:li rdf:resource="http://example.org/2006/01/01/blog-item"/>
+	<rdf:li rdf:resource="http://example.org/2005/12/12/blog-item"/>
+      </rdf:Seq>
+    </items>
+  </channel>
+
+  <item rdf:about="http://example.org/2006/03/03/blog-item">
+    <!-- this is used as atom:title -->
+    <title>blog item title 2006-02</title>
+    <!-- this is used as atom:summary -->
+    <description>the summary of the item</description>
+    <atom:content rdf:parseType="Literal"><div xmlns="http://www.w3.org/1999/xhtml">a literal XML atom:content with
+<b xmlns="http://www.w3.org/1999/xhtml">tags</b> and
+newlines</div></atom:content>
+    <!-- this overrides the dc:date -->
+    <atom:updated>2006-03-03T23:59:59Z</atom:updated>
+    <dc:date>2006-03-03T12:00:005Z</dc:date>
+  </item>
+
+  <!-- recommended rss & atom form with no content -->
+  <item rdf:about="http://example.org/2006/02/02/blog-item">
+    <title>blog item title 2006-02</title>
+    <!-- this is used as atom:summary -->
+    <content:encoded><![CDATA[<div xmlns="http://www.w3.org/1999/xhtml">a content:encoded description with
+<b xmlns="http://www.w3.org/1999/xhtml">tags</b> and
+newlines</div>]]></content:encoded>
+    <dc:date>2006-02-02T00:00:02Z</dc:date>
+    <!-- content is link to URI of item/@rdf:about -->
+  </item>
+
+
+  <item rdf:about="http://example.org/2006/01/01/blog-item">
+    <title>blog item title 2006-01</title>
+    <atom:summary rdf:parseType="Literal"><div xmlns="http://www.w3.org/1999/xhtml">The atom:summary description including
+<b>tags</b>
+over several lines.</div></atom:summary>
+    <dc:date>2006-01-01T00:00:01Z</dc:date>
+    <!-- content is link to URI of item/@rdf:about -->
+  </item>
+
+
+  <!-- atom only form with external content -->
+  <item rdf:about="http://example.org/2005/12/12/blog-item">
+    <title>blog item title 2005-12</title>
+    <!-- this is used as atom:summary -->
+    <description>the rss description</description>
+    <!-- external content -->
+    <atom:content rdf:resource="http://external.example.org/"/>
+    <at:contentType>text/html</at:contentType>
+    <dc:date>2005-12-12T00:00:00Z</dc:date>
+  </item>
+
+</rdf:RDF>

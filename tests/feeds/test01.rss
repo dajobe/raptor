@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:atom="http://www.w3.org/2005/Atom"
+   xmlns:content="http://purl.org/rss/1.0/modules/content/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:enc="http://purl.oclc.org/net/rss_2.0/enc#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rss091="http://purl.org/rss/1.0/modules/rss091#"
+   xmlns="http://purl.org/rss/1.0/">
+  <channel rdf:about="http://example.org/whatsnew">
+    <title>example feed with 1 item</title>
+    <atom:title>atomic title</atom:title>
+    <atom:updated>2006-03-28T20:57:15Z</atom:updated>
+    <atom:author>example</atom:author>
+    <atom:email>example@example.com</atom:email>
+    <atom:uri>http://example.com/</atom:uri>
+    <link>http://example.org/whatsnew</link>
+    <dc:date>2006-03-28T17:05:01-05:00</dc:date>
+    <items>
+      <rdf:Seq>
+	<rdf:li rdf:resource="http://example.org/2006/03/28/blog-item"/>
+      </rdf:Seq>
+    </items>
+  </channel>
+
+  <item rdf:about="http://example.org/2006/03/28/blog-item">
+    <title>Original blog item title 2006-03</title>
+    <description>rss:description here</description>
+    <atom:summary rdf:parseType="Literal"><div xmlns="http://www.w3.org/1999/xhtml">The atom:summary description including
+<b>tags</b>
+over several lines.
+</div></atom:summary>
+    <atom:title>atomic blog item title</atom:title>
+    <link>http://example.org/2006/03/28/blog-item</link>
+    <atom:updated>2006-03-28T20:57:15Z</atom:updated>
+    <dc:date>2006-03-28T20:57:15Z</dc:date>
+    <dc:creator>
+      <dc:Person>
+        <dc:title>Example</dc:title>
+      </dc:Person>
+    </dc:creator>
+  </item>
+
+</rdf:RDF>
