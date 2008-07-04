@@ -58,7 +58,8 @@ AC_SUBST(RPM_RELEASE)
 dnl Checks for programs.
 AC_CANONICAL_HOST
 AM_SANITY_CHECK
-AM_PROG_CC_STDC
+AC_PROG_CC
+AM_PROG_CC_C_O
 
 m4_undefine([AC_PROG_CXX])
 m4_defun([AC_PROG_CXX],[])
