@@ -561,16 +561,32 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   /* DBL_EPSILON = 52 digits */
   #define FRAC_MAX_LEN 52
 
+  char* endptr = (char *)s;
   int written = 0;
 
   /* typed literal special cases */
   if(datatype) {
-    /* integer, double, decimal */
-    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri) ||
-       raptor_uri_equals(datatype, turtle_writer->xsd_double_uri) ||
-       raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
-      raptor_iostream_write_string(turtle_writer->iostr, s);
-      written = 1;
+    /* integer */
+    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri)) {
+      strtol((const char*)s, &endptr, 10);
+      if(endptr != (char*)s && !*endptr) {
+        raptor_iostream_write_string(turtle_writer->iostr, s);
+        written = 1;
+      } else {
+        turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:integer literal.");
+      }
+
+    /* double, decimal */
+    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_double_uri) ||
+      raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
+      strtod((const char*)s, &endptr);
+      if(endptr != (char*)s && !*endptr) {
+        raptor_iostream_write_string(turtle_writer->iostr, s);
+        written = 1;
+      } else {
+        turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:double or xsd:decimal literal.");
+      }
+
     /* boolean */
     } else if(raptor_uri_equals(datatype, turtle_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
