@@ -1,3 +1,46 @@
+2008-07-04  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Use AC_PROG_CC AM_PROG_CC_C_O
+
+2008-07-04  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_turtle_writer.c: (raptor_turtle_writer_literal):
+	Validate XSD integer, decimal and double literal output. Emit
+	special short forms only if the whole literal value is consumed by
+	strtol() (for integers) or strtod() (for decimals and
+	doubles). Otherwise produce a warning and emit literal in the
+	normal "value"^^<datatype_uri> format.
+	Fixes Issue #0000263 http://bugs.librdf.org/mantis/view.php?id=263
+
+2008-07-03  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac,
+	src/win32_raptor_config.h: Bumped version to 1.4.19
+
+	* docs: props
+
+2008-07-02  Dave Beckett <dave@dajobe.org>
+
+	* docs/libraptor.3: 2008
+
+2008-07-02  Lauri Aalto <laalto@iki.fi>
+
+	* src/ntriples_parse.c: (raptor_ntriples_generate_statement):
+	Produce error messages when raptor_new_uri() fails.
+	Fixes Issue #0000262 http://bugs.librdf.org/mantis/view.php?id=262
+
+2008-06-29  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile: fix
+
+	* tests/feeds/Makefile, tests/feeds/atom.rnc,
+	tests/feeds/atom.rng, tests/feeds/test01.atom,
+	tests/feeds/test01.rss, tests/feeds/test02.atom,
+	tests/feeds/test02.rss, tests/feeds/test03.atom,
+	tests/feeds/test03.rss: Feed examples
+
+	* tests/feeds: Add feeds
+
 2008-06-25  Dave Beckett <dave@dajobe.org>
 
 	* Snapshotted raptor_1_4_18 for 1.4.18 release (SVN 14104)
