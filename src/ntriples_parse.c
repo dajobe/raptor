@@ -201,7 +201,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
     object_uri=raptor_new_uri((const unsigned char*)object);
     if(!object_uri) {
-      raptor_parser_error(parser, "Could not create object uri '%s', skipping", object);
+      raptor_parser_error(parser, "Could not create object uri '%s', skipping", (const char *)object);
       goto cleanup;
     }
     statement->object=object_uri;
