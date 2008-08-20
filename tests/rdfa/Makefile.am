@@ -83,7 +83,7 @@ check-local:
 @RAPTOR_PARSER_RDFA_TRUE@check-local: check-rdfa
 
 check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
-	@result=0; failures=; failure_count=0; \
+	@set +e; result=0; failures=; failure_count=0; \
 	$(ECHO) "Testing RDFA"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .xhtml` ; \
@@ -113,4 +113,4 @@ check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	    result=0; \
 	  fi; \
 	fi; \
-	exit $$result
+	set -e; exit $$result
