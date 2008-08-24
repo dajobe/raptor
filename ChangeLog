@@ -1,3 +1,21 @@
+2008-08-24  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c: (main): Make printing triples count at least
+	potentially localizable.
+
+	* src/raptor_uri.c: Added tests for
+	Issue#0000268 http://bugs.librdf.org/mantis/view.php?id=268
+	which pass.
+
+2008-08-20  Lauri Aalto <laalto@iki.fi>
+
+	* tests/rdfa/Makefile.am: Run tests inside set +e ... set -e
+
+2008-07-10  Lauri Aalto <laalto@iki.fi>
+
+	* src/ntriples_parse.c: (raptor_ntriples_generate_statement): Cast
+	to eliminate compiler printf-like format arg warning.
+
 2008-07-04  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac: Use AC_PROG_CC AM_PROG_CC_C_O
