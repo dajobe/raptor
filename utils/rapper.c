@@ -928,10 +928,14 @@ main(int argc, char *argv[])
   }
   
 
-  if(!quiet)
-    fprintf(stderr, "%s: Parsing returned %d triple%s\n", program,
-            triple_count, (triple_count == 1 ? "" : "s"));
-
+  if(!quiet) {
+    if(triple_count == 1)
+      fprintf(stderr, "%s: Parsing returned 1 triple\n", program);
+    else
+      fprintf(stderr, "%s: Parsing returned %d triples\n", program,
+              triple_count);
+  }
+  
   if(output_base_uri)
     raptor_free_uri(output_base_uri);
   if(base_uri)
