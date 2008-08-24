@@ -1578,6 +1578,10 @@ main(int argc, char *argv[])
   failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
   failures += assert_uri_to_filename ("file:///path/to/file%20with%20spaces", "/path/to/file with spaces");
 
+  /* Tests for Issue#0000268 http://bugs.librdf.org/mantis/view.php?id=268 */
+  failures += assert_uri_to_filename ("file:///path/to/http%253A%252F%252Fwww.example.org%252Fa%252Fb%252Fc", "/path/to/http%3A%2F%2Fwww.example.org%2Fa%2Fb%2Fc");
+  failures += assert_filename_to_uri ("/path/to/http%3A%2F%2Fwww.example.org%2Fa%2Fb%2Fc", "file:///path/to/http%253A%252F%252Fwww.example.org%252Fa%252Fb%252Fc");
+
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   /* Need to test this with a real dir (preferably not /)
    * This is just a test so pretty likely to work on all development systems
