@@ -47,18 +47,6 @@ while(<>) {
   # Replace calls to yy_fatal_error("msg", yyscanner) to YY_FATAL_ERROR("msg") macro
   s/(^\s*)yy_fatal_error\s*\(\s*(\".*\")\s*,\s*yyscanner\s*\)/$1YY_FATAL_ERROR($2)/;
 
-  # Generated ensure_buffer_stack() does not check for alloc failures
-  # Allocs are followed by a memset - add alloc failure check before the memset
-  if(/(^\s*)(memset\(yyg->yy_buffer_stack.*)$/) {
-    $_=<<"EOT";
-$1if(!yyg->yy_buffer_stack)
-$1  YY_FATAL_ERROR(\"ouf of memory - lexer yy_buffer_stack\");
-
-$1$2
-EOT
-    $line_offset+=3; # added 3 lines to output
-  }
-
   # flex has %option nounistd however it does not work in 2.5.31
   # It is safe to add yet another wrapper. 
   if(m%^(\#include \<unistd.h\>)$%) {
