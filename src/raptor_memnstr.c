@@ -33,9 +33,6 @@
 
 #include <string.h>
 
-/* prototype */
-const char* raptor_memnstr(const char *haystack, size_t haystack_len, const char *needle);
-
 
 /*
  * raptor_memnstr:
@@ -54,7 +51,7 @@ const char*
 raptor_memnstr(const char *haystack, size_t haystack_len, const char *needle)
 {
   char c;
-  size_t needle_len;;
+  size_t needle_len;
   const char *p;
   
   if(!haystack || !needle)
