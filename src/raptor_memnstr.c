@@ -33,6 +33,10 @@
 
 #include <string.h>
 
+/* Raptor includes */
+#include "raptor.h"
+#include "raptor_internal.h"
+
 
 /*
  * raptor_memnstr:
