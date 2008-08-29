@@ -1208,24 +1208,24 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
     /* Check it's an XML namespace declared and not N3 or Turtle which
      * mention the namespace URI but not in this form.
      */
-#define  HAS_RDF_XMLNS1 (strstr((const char*)buffer, "xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
-#define  HAS_RDF_XMLNS2 (strstr((const char*)buffer, "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
-#define  HAS_RDF_XMLNS3 (strstr((const char*)buffer, "xmlns=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
-#define  HAS_RDF_XMLNS4 (strstr((const char*)buffer, "xmlns='http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
-#define  HAS_RDF_ENTITY1 (strstr((const char*)buffer, "<!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>") != NULL)
-#define  HAS_RDF_ENTITY2 (strstr((const char*)buffer, "<!ENTITY rdf \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">") != NULL)
-#define  HAS_RDF_ENTITY3 (strstr((const char*)buffer, "xmlns:rdf=\"&rdf;\"") != NULL)
-#define  HAS_RDF_ENTITY4 (strstr((const char*)buffer, "xmlns:rdf='&rdf;'") != NULL)
-#define  HAS_HTML_NS (strstr((const char*)buffer, "http://www.w3.org/1999/xhtml") != NULL)
-#define  HAS_HTML_ROOT (strstr((const char*)buffer, "<html") != NULL)
+#define  HAS_RDF_XMLNS1 (raptor_memstr((const char*)buffer, len, "xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS2 (raptor_memstr((const char*)buffer, len, "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS3 (raptor_memstr((const char*)buffer, len, "xmlns=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_XMLNS4 (raptor_memstr((const char*)buffer, len, "xmlns='http://www.w3.org/1999/02/22-rdf-syntax-ns#") != NULL)
+#define  HAS_RDF_ENTITY1 (raptor_memstr((const char*)buffer, len, "<!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>") != NULL)
+#define  HAS_RDF_ENTITY2 (raptor_memstr((const char*)buffer, len, "<!ENTITY rdf \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">") != NULL)
+#define  HAS_RDF_ENTITY3 (raptor_memstr((const char*)buffer, len, "xmlns:rdf=\"&rdf;\"") != NULL)
+#define  HAS_RDF_ENTITY4 (raptor_memstr((const char*)buffer, len, "xmlns:rdf='&rdf;'") != NULL)
+#define  HAS_HTML_NS (raptor_memstr((const char*)buffer, len, "http://www.w3.org/1999/xhtml") != NULL)
+#define  HAS_HTML_ROOT (raptor_memstr((const char*)buffer, len, "<html") != NULL)
 
     if(!HAS_HTML_NS && !HAS_HTML_ROOT &&
        (HAS_RDF_XMLNS1 || HAS_RDF_XMLNS2 || HAS_RDF_XMLNS3 || HAS_RDF_XMLNS4 ||
         HAS_RDF_ENTITY1 || HAS_RDF_ENTITY2 || HAS_RDF_ENTITY3 || HAS_RDF_ENTITY4)
       ) {
-      int has_rdf_RDF=(strstr((const char*)buffer, "<rdf:RDF") != NULL);
-      int has_rdf_Description=(strstr((const char*)buffer, "rdf:Description") != NULL);
-      int has_rdf_about=(strstr((const char*)buffer, "rdf:about") != NULL);
+      int has_rdf_RDF=(raptor_memstr((const char*)buffer, len, "<rdf:RDF") != NULL);
+      int has_rdf_Description=(raptor_memstr((const char*)buffer, len, "rdf:Description") != NULL);
+      int has_rdf_about=(raptor_memstr((const char*)buffer, len, "rdf:about") != NULL);
 
       score+= 7;
       if(has_rdf_RDF)
