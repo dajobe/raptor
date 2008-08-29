@@ -1496,9 +1496,9 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
   /* FIXME: Should do this as long as N3 is not also present since
    * shares the same syntax */
   if(buffer && len) {
-#define  HAS_TURTLE_PREFIX (strstr((const char*)buffer, "@prefix ") != NULL)
+#define  HAS_TURTLE_PREFIX (raptor_memstr((const char*)buffer, len, "@prefix ") != NULL)
 /* The following could also be found with N-Triples but not with @prefix */
-#define  HAS_TURTLE_RDF_URI (strstr((const char*)buffer, ": <http://www.w3.org/1999/02/22-rdf-syntax-ns#>") != NULL)
+#define  HAS_TURTLE_RDF_URI (raptor_memstr((const char*)buffer, len, ": <http://www.w3.org/1999/02/22-rdf-syntax-ns#>") != NULL)
 
     if(HAS_TURTLE_PREFIX) {
       score=6;
@@ -1547,9 +1547,9 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
   /* FIXME: Should do this as long as N3 is not also present since
    * shares the same syntax */
   if(buffer && len) {
-#define  HAS_TRIG_PREFIX (strstr((const char*)buffer, "@prefix ") != NULL)
+#define  HAS_TRIG_PREFIX (raptor_memstr((const char*)buffer, len, "@prefix ") != NULL)
 /* The following could also be found with N-Triples but not with @prefix */
-#define  HAS_TRIG_RDF_URI (strstr((const char*)buffer, ": <http://www.w3.org/1999/02/22-rdf-syntax-ns#>") != NULL)
+#define  HAS_TRIG_RDF_URI (raptor_memstr((const char*)buffer, len, ": <http://www.w3.org/1999/02/22-rdf-syntax-ns#>") != NULL)
 
     if(HAS_TRIG_PREFIX) {
       score=6;
