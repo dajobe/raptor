@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_memnstr.c - search for a string in a block of memory
+ * raptor_memstr.c - search for a string in a block of memory
  *
  * Copyright (C) 2008, David Beckett http://www.dajobe.org/
  * 
@@ -39,7 +39,7 @@
 
 
 /*
- * raptor_memnstr:
+ * raptor_memstr:
  * @haystack: memory block to search in
  * @haystack_len: size of memory block
  * @needle: string to search with
@@ -52,7 +52,7 @@
  * Return value: pointer to match string or NULL on failure or failed to find
  */
 const char*
-raptor_memnstr(const char *haystack, size_t haystack_len, const char *needle)
+raptor_memstr(const char *haystack, size_t haystack_len, const char *needle)
 {
   char c;
   size_t needle_len;
