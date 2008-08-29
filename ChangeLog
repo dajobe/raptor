@@ -22,8 +22,8 @@
 	/raptor/trunk/src/raptor_memnstr.c:14406): Renamed
 	raptor_memnstr.c to raptor_memnstr.c
 
-	* src/raptor_internal.h, src/raptor_memnstr.c: (raptor_memnstr):
-	Renamed from raptor_memstr
+	* src/raptor_internal.h, src/raptor_memnstr.c: (raptor_memstr):
+	Renamed from raptor_memnstr
 
 2008-08-27  Dave Beckett <dave@dajobe.org>
 
