@@ -256,8 +256,8 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
   }
   
   if(buffer && len) {
-#define  HAS_RDFA_1 (strstr((const char*)buffer, "-//W3C//DTD XHTML+RDFa 1.0//EN") != NULL)
-#define  HAS_RDFA_2 (strstr((const char*)buffer, "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd") != NULL)
+#define  HAS_RDFA_1 (raptor_memstr((const char*)buffer, len, "-//W3C//DTD XHTML+RDFa 1.0//EN") != NULL)
+#define  HAS_RDFA_2 (raptor_memstr((const char*)buffer, len, "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd") != NULL)
 
     if(HAS_RDFA_1 || HAS_RDFA_2)
       score=10;
