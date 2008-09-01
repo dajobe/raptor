@@ -53,7 +53,7 @@
 
 
 int
-raptor_sax2_init(void)
+raptor_sax2_init(raptor_world* world)
 {
 #ifdef RAPTOR_XML_LIBXML
   xmlInitParser();
@@ -63,7 +63,7 @@ raptor_sax2_init(void)
 
 
 void
-raptor_sax2_finish(void)
+raptor_sax2_finish(raptor_world* world)
 {
 #ifdef RAPTOR_XML_LIBXML
   xmlCleanupParser();

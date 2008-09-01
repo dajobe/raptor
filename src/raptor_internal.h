@@ -992,8 +992,8 @@ struct raptor_sax2_s {
   raptor_uri* base_uri;
 };
 
-int raptor_sax2_init(void);
-void raptor_sax2_finish(void);
+int raptor_sax2_init(raptor_world* world);
+void raptor_sax2_finish(raptor_world* world);
 
 
 raptor_xml_element* raptor_xml_element_pop(raptor_sax2* sax2);
