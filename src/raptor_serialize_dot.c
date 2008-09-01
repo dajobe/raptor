@@ -818,9 +818,10 @@ raptor_dot_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_dot (void)
+raptor_init_serializer_dot(raptor_world* world)
 {
-  return raptor_serializer_register_factory("dot",
+  return raptor_serializer_register_factory(world,
+                                            "dot",
                                             "GraphViz DOT format",
                                             "text/x-graphviz",
                                             NULL,

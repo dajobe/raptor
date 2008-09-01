@@ -1229,9 +1229,10 @@ raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_turtle(void)
+raptor_init_serializer_turtle(raptor_world* world)
 {
-  return raptor_serializer_register_factory("turtle", "Turtle", 
+  return raptor_serializer_register_factory(world,
+                                            "turtle", "Turtle", 
                                             "application/x-turtle",
                                             NULL,
                                             (const unsigned char*)"http://www.dajobe.org/2004/01/turtle",

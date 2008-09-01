@@ -1622,16 +1622,18 @@ raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_rdfxmla(void)
+raptor_init_serializer_rdfxmla(raptor_world* world)
 {
   return 
-    raptor_serializer_register_factory("rdfxml-xmp", "RDF/XML (XMP Profile)", 
+    raptor_serializer_register_factory(world,
+                                       "rdfxml-xmp", "RDF/XML (XMP Profile)", 
                                        "application/rdf+xml",
                                        NULL,
                                        (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
                                        &raptor_rdfxmla_serializer_register_factory)
     ||
-    raptor_serializer_register_factory("rdfxml-abbrev", "RDF/XML (Abbreviated)", 
+    raptor_serializer_register_factory(world,
+                                       "rdfxml-abbrev", "RDF/XML (Abbreviated)", 
                                        "application/rdf+xml",
                                        NULL,
                                        (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",

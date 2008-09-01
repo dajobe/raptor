@@ -171,8 +171,9 @@ raptor_simple_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_simple (void) {
-  return raptor_serializer_register_factory("simple",  "A simple format", 
+raptor_init_serializer_simple(raptor_world* world) {
+  return raptor_serializer_register_factory(world,
+                                            "simple", "A simple format", 
                                             NULL,
                                             NULL,
                                             NULL,

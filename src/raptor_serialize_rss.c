@@ -2087,8 +2087,9 @@ raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_rss10(void) {
-  return raptor_serializer_register_factory("rss-1.0",  "RSS 1.0",
+raptor_init_serializer_rss10(raptor_world* world) {
+  return raptor_serializer_register_factory(world,
+                                            "rss-1.0", "RSS 1.0",
                                             NULL, 
                                             NULL,
                                             (const unsigned char*)"http://purl.org/rss/1.0/spec",
@@ -2096,8 +2097,9 @@ raptor_init_serializer_rss10(void) {
 }
 
 int
-raptor_init_serializer_atom(void) {
-  return raptor_serializer_register_factory("atom",  "Atom 1.0",
+raptor_init_serializer_atom(raptor_world* world) {
+  return raptor_serializer_register_factory(world,
+                                            "atom", "Atom 1.0",
                                             "application/atom+xml", 
                                             NULL,
                                             NULL,

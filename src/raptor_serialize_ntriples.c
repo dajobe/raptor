@@ -251,8 +251,9 @@ raptor_ntriples_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_ntriples (void) {
-  return raptor_serializer_register_factory("ntriples",  "N-Triples", 
+raptor_init_serializer_ntriples(raptor_world* world) {
+  return raptor_serializer_register_factory(world,
+                                            "ntriples", "N-Triples", 
                                             "text/plain",
                                             NULL,
                                             (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples",

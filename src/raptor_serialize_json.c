@@ -521,11 +521,12 @@ raptor_json_resource_serializer_register_factory(raptor_serializer_factory *fact
 
 
 int
-raptor_init_serializer_json(void)
+raptor_init_serializer_json(raptor_world* world)
 {
   int rc;
   
-  rc=raptor_serializer_register_factory("json-triples",
+  rc=raptor_serializer_register_factory(world,
+                                        "json-triples",
                                         "RDF/JSON Triples", 
                                         "application/json",
                                         NULL,
@@ -534,7 +535,8 @@ raptor_init_serializer_json(void)
   if(rc)
     return rc;
   
-  return raptor_serializer_register_factory("json",
+  return raptor_serializer_register_factory(world,
+                                            "json",
                                             "RDF/JSON Resource-Centric", 
                                             "application/json",
                                             NULL,

@@ -445,6 +445,8 @@ struct raptor_parser_factory_s {
  * Raptor serializer object
  */
 struct raptor_serializer_s {
+  raptor_world* world;
+
   /* can be filled with error location information */
   raptor_locator locator;
   
@@ -532,6 +534,8 @@ struct raptor_serializer_s {
 
 /** A Serializer Factory for a syntax */
 struct raptor_serializer_factory_s {
+  raptor_world* world;
+
   struct raptor_serializer_factory_s* next;
 
   /* syntax name */
@@ -589,7 +593,7 @@ typedef struct
 
 
 /* raptor_serialize.c */
-int raptor_serializer_register_factory(const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, int (*factory) (raptor_serializer_factory*));
+int raptor_serializer_register_factory(raptor_world* world, const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, int (*factory) (raptor_serializer_factory*));
 
 
 /* raptor_general.c */
@@ -740,8 +744,8 @@ void raptor_parser_set_graph_name(raptor_parser* parser, raptor_uri* uri);
 int raptor_parser_get_current_base_id(raptor_parser* parser);
 
 /* raptor_rss.c */
-int raptor_init_serializer_rss10(void);
-int raptor_init_serializer_atom(void);
+int raptor_init_serializer_rss10(raptor_world* world);
+int raptor_init_serializer_atom(raptor_world* world);
 
 extern const unsigned char * const raptor_atom_namespace_uri;
 
@@ -751,15 +755,14 @@ void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
 unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p);
 
 /* serializers */
-int raptor_init_serializer_rdfxml(void);
-int raptor_init_serializer_ntriples(void);
-int raptor_init_serializer_dot(void);
-int raptor_init_serializer_simple(void);
-void raptor_delete_serializer_factories(void);
+int raptor_init_serializer_rdfxml(raptor_world* world);
+int raptor_init_serializer_ntriples(raptor_world* world);
+int raptor_init_serializer_dot(raptor_world* world);
+int raptor_init_serializer_simple(raptor_world* world);
 
 /* raptor_serializer.c */
-int raptor_serializers_init(void);
-void raptor_serializers_finish(void);
+int raptor_serializers_init(raptor_world* world);
+void raptor_serializers_finish(raptor_world* world);
 
 void raptor_serializer_error(raptor_serializer* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_serializer_simple_error(void* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
@@ -768,13 +771,13 @@ void raptor_serializer_warning(raptor_serializer* serializer, const char *messag
 void raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
 
 /* raptor_serialize_rdfxmla.c */  
-int raptor_init_serializer_rdfxmla(void);
+int raptor_init_serializer_rdfxmla(raptor_world* world);
 
 /* raptor_serialize_turtle.c */  
-int raptor_init_serializer_turtle(void);
+int raptor_init_serializer_turtle(raptor_world* world);
 
 /* raptor_serialize_json.c */  
-int raptor_init_serializer_json(void);
+int raptor_init_serializer_json(raptor_world* world);
 
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(raptor_unichar c);
@@ -1261,6 +1264,9 @@ struct raptor_world_s {
 
   /* sequence of parser factories */
   raptor_sequence *parsers;
+
+  /* sequence of serializer factories */
+  raptor_sequence *serializers;
 };
 
 /* raptor_world legacy accessor */

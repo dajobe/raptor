@@ -937,11 +937,17 @@ unsigned char* raptor_parser_generate_id(raptor_parser *rdf_parser, raptor_genid
 RAPTOR_API
 int raptor_serializers_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
 RAPTOR_API
+int raptor_serializers_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+RAPTOR_API
 int raptor_serializer_syntax_name_check(const char *name);
+RAPTOR_API
+int raptor_serializer_syntax_name_check_v2(raptor_world* world, const char *name);
 
 /* Serializing */
 RAPTOR_API
 raptor_serializer* raptor_new_serializer(const char *name);
+RAPTOR_API
+raptor_serializer* raptor_new_serializer_v2(raptor_world* world, const char *name);
 RAPTOR_API
 void raptor_free_serializer(raptor_serializer* rdf_serializer);
 
