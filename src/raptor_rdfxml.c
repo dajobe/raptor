@@ -3174,9 +3174,9 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
 
 
 int
-raptor_init_parser_rdfxml(void)
+raptor_init_parser_rdfxml(raptor_world* world)
 {
-  return !raptor_parser_register_factory("rdfxml", "RDF/XML",
+  return !raptor_parser_register_factory(world, "rdfxml", "RDF/XML",
                                          &raptor_rdfxml_parser_register_factory);
 }
 

@@ -291,6 +291,8 @@ struct raptor_namespace_s {
  * Raptor parser object
  */
 struct raptor_parser_s {
+  raptor_world* world;
+
 #ifdef RAPTOR_XML_LIBXML
   int magic;
 #endif
@@ -382,6 +384,8 @@ typedef struct raptor_type_q_s raptor_type_q;
 
 /** A Parser Factory for a syntax */
 struct raptor_parser_factory_s {
+  raptor_world* world;
+
   struct raptor_parser_factory_s* next;
 
   /* syntax name */
@@ -590,7 +594,7 @@ int raptor_serializer_register_factory(const char *name, const char *label, cons
 
 /* raptor_general.c */
 
-raptor_parser_factory* raptor_parser_register_factory(const char *name, const char *label, int (*factory) (raptor_parser_factory*));
+raptor_parser_factory* raptor_parser_register_factory(raptor_world* world, const char *name, const char *label, int (*factory) (raptor_parser_factory*));
 int raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
 int raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
 int raptor_parser_factory_add_uri(raptor_parser_factory* factory, const unsigned char *uri_string);
@@ -605,9 +609,9 @@ raptor_statement* raptor_statement_copy(const raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);
 
 /* raptor_parse.c */
-raptor_parser_factory* raptor_get_parser_factory(const char *name);  
+raptor_parser_factory* raptor_get_parser_factory(raptor_world* world, const char *name);  
 void raptor_delete_parser_factories(void);
-const char* raptor_parser_get_accept_header_all(void);
+const char* raptor_parser_get_accept_header_all(raptor_world* world);
 int raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri);
 void raptor_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
@@ -713,22 +717,22 @@ int raptor_uri_init(void);
 raptor_uri* raptor_new_uri_from_rdf_ordinal(int ordinal);
 
 /* parsers */
-int raptor_init_parser_rdfxml(void);
-int raptor_init_parser_ntriples(void);
-int raptor_init_parser_turtle(void);
-int raptor_init_parser_trig(void);
-int raptor_init_parser_n3(void);
-int raptor_init_parser_grddl_common(void);
-int raptor_init_parser_grddl(void);
-int raptor_init_parser_guess(void);
-int raptor_init_parser_rss(void);
-int raptor_init_parser_rdfa(void);
+int raptor_init_parser_rdfxml(raptor_world* world);
+int raptor_init_parser_ntriples(raptor_world* world);
+int raptor_init_parser_turtle(raptor_world* world);
+int raptor_init_parser_trig(raptor_world* world);
+int raptor_init_parser_n3(raptor_world* world);
+int raptor_init_parser_grddl_common(raptor_world* world);
+int raptor_init_parser_grddl(raptor_world* world);
+int raptor_init_parser_guess(raptor_world* world);
+int raptor_init_parser_rss(raptor_world* world);
+int raptor_init_parser_rdfa(raptor_world* world);
 
 void raptor_terminate_parser_grddl_common(void);
 
 /* raptor_parse.c */
-int raptor_parsers_init(void);
-void raptor_parsers_finish(void);
+int raptor_parsers_init(raptor_world* world);
+void raptor_parsers_finish(raptor_world *world);
 
 void raptor_parser_save_content(raptor_parser* rdf_parser, int save);
 const unsigned char* raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p);
@@ -1249,6 +1253,18 @@ void raptor_free_avltree_iterator(raptor_avltree_iterator* iterator);
 int raptor_avltree_iterator_end(raptor_avltree_iterator* iterator);
 int raptor_avltree_iterator_next(raptor_avltree_iterator* iterator);
 void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
+
+/* raptor_world structure */
+struct raptor_world_s {
+  /* raptor_init(), raptor_finish() balance */
+  int static_usage;
+
+  /* sequence of parser factories */
+  raptor_sequence *parsers;
+};
+
+/* raptor_world legacy accessor */
+raptor_world* raptor_world_instance(void);
 
 /* end of RAPTOR_INTERNAL */
 #endif

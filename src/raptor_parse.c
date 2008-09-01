@@ -56,11 +56,6 @@
 /* prototypes for helper functions */
 static void raptor_free_type_q(raptor_type_q* type_q);
 
-/* statics */
-
-/* list of parser factories */
-static raptor_sequence* parsers=NULL;
-
 
 /* helper methods */
 
@@ -90,53 +85,53 @@ raptor_free_parser_factory(raptor_parser_factory* factory)
 /* class methods */
 
 int
-raptor_parsers_init(void)
+raptor_parsers_init(raptor_world *world)
 {
   int rc=0;
 
-  parsers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
-  if(!parsers)
+  world->parsers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
+  if(!world->parsers)
     return 1;
   
 #ifdef RAPTOR_PARSER_RDFXML
-  rc+= raptor_init_parser_rdfxml() != 0;
+  rc+= raptor_init_parser_rdfxml(world) != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_NTRIPLES
-  rc+= raptor_init_parser_ntriples() != 0;
+  rc+= raptor_init_parser_ntriples(world) != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_N3
-  rc+= raptor_init_parser_n3() != 0;
+  rc+= raptor_init_parser_n3(world) != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_TURTLE
-  rc+= raptor_init_parser_turtle() != 0;
+  rc+= raptor_init_parser_turtle(world) != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_TRIG
-  rc+= raptor_init_parser_trig() != 0;
+  rc+= raptor_init_parser_trig(world) != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_RSS
-  rc+= raptor_init_parser_rss() != 0;
+  rc+= raptor_init_parser_rss(world) != 0;
 #endif
 
 #if defined(RAPTOR_PARSER_GRDDL)
-  rc+= raptor_init_parser_grddl_common() != 0;
+  rc+= raptor_init_parser_grddl_common(world) != 0;
 
 #ifdef RAPTOR_PARSER_GRDDL
-  rc+= raptor_init_parser_grddl() != 0;
+  rc+= raptor_init_parser_grddl(world) != 0;
 #endif
 
 #endif
 
 #ifdef RAPTOR_PARSER_GUESS
-  rc+= raptor_init_parser_guess() != 0;
+  rc+= raptor_init_parser_guess(world) != 0;
 #endif
 
 #ifdef RAPTOR_PARSER_RDFA
-  rc+= raptor_init_parser_rdfa() != 0;
+  rc+= raptor_init_parser_rdfa(world) != 0;
 #endif
 
   return rc;
@@ -147,11 +142,11 @@ raptor_parsers_init(void)
  * raptor_finish_parsers - delete all the registered parsers
  */
 void
-raptor_parsers_finish(void)
+raptor_parsers_finish(raptor_world *world)
 {
-  if(parsers) {
-    raptor_free_sequence(parsers);
-    parsers=NULL;
+  if(world->parsers) {
+    raptor_free_sequence(world->parsers);
+    world->parsers=NULL;
   }
 #if defined(RAPTOR_PARSER_GRDDL)
   raptor_terminate_parser_grddl_common();
@@ -173,7 +168,8 @@ raptor_parsers_finish(void)
  *
  **/
 raptor_parser_factory*
-raptor_parser_register_factory(const char *name, const char *label,
+raptor_parser_register_factory(raptor_world* world,
+                               const char *name, const char *label,
                                int (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser=NULL;
@@ -186,7 +182,7 @@ raptor_parser_register_factory(const char *name, const char *label,
 #endif
   
   for(i=0;
-      (h=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      (h=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     if(!strcmp(h->name, name)) {
       raptor_finish();
@@ -199,6 +195,8 @@ raptor_parser_register_factory(const char *name, const char *label,
                                                sizeof(raptor_parser_factory));
   if(!parser)
     return NULL;
+
+  parser->world=world;
 
   name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy)
@@ -216,7 +214,7 @@ raptor_parser_register_factory(const char *name, const char *label,
   if(!parser->mime_types)
     goto tidy;
 
-  if(raptor_sequence_push(parsers, parser))
+  if(raptor_sequence_push(world->parsers, parser))
     return NULL; /* on error, parser is already freed by the sequence */
   
   /* Call the parser registration function on the new object */
@@ -245,7 +243,7 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
   int i;
   
   for(i=0;
-      (p=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      (p=(raptor_parser_factory*)raptor_sequence_get_at(factory->world->parsers, i));
       i++) {
     if(!strcmp(p->name, alias)) {
       raptor_finish();
@@ -348,6 +346,7 @@ raptor_parser_factory_add_uri(raptor_parser_factory* factory,
 
 /**
  * raptor_get_parser_factory:
+ * @world: raptor_world object
  * @name: the factory name or NULL for the default factory
  *
  * Get a parser factory by name.
@@ -355,13 +354,13 @@ raptor_parser_factory_add_uri(raptor_parser_factory* factory,
  * Return value: the factory object or NULL if there is no such factory
  **/
 raptor_parser_factory*
-raptor_get_parser_factory(const char *name) 
+raptor_get_parser_factory(raptor_world *world, const char *name) 
 {
   raptor_parser_factory *factory;
 
   /* return 1st parser if no particular one wanted - why? */
   if(!name) {
-    factory=(raptor_parser_factory *)raptor_sequence_get_at(parsers, 0);
+    factory=(raptor_parser_factory *)raptor_sequence_get_at(world->parsers, 0);
     if(!factory) {
       RAPTOR_DEBUG1("No (default) parsers registered\n");
       return NULL;
@@ -370,7 +369,7 @@ raptor_get_parser_factory(const char *name)
     int i;
     
     for(i=0;
-        (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+        (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
         i++) {
       if(!strcmp(factory->name, name) ||
          (factory->alias && !strcmp(factory->alias, name)))
@@ -396,6 +395,9 @@ raptor_get_parser_factory(const char *name)
  * @uri_string: pointer to store syntax URI string (or NULL)
  *
  * Get information on syntaxes.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_syntaxes_enumerate_v2() if using raptor_world APIs.
  * 
  * Return value: non 0 on failure of if counter is out of range
  **/
@@ -405,9 +407,34 @@ raptor_syntaxes_enumerate(const unsigned int counter,
                           const char **mime_type,
                           const unsigned char **uri_string)
 {
+  return raptor_syntaxes_enumerate_v2(raptor_world_instance(),
+    counter, name, label, mime_type, uri_string);
+}
+
+
+/**
+ * raptor_syntaxes_enumerate_v2:
+ * @world: raptor_world object
+ * @counter: index into the list of syntaxes
+ * @name: pointer to store the name of the syntax (or NULL)
+ * @label: pointer to store syntax readable label (or NULL)
+ * @mime_type: pointer to store syntax MIME Type (or NULL)
+ * @uri_string: pointer to store syntax URI string (or NULL)
+ *
+ * Get information on syntaxes.
+ * 
+ * Return value: non 0 on failure of if counter is out of range
+ **/
+int
+raptor_syntaxes_enumerate_v2(raptor_world* world,
+                             const unsigned int counter,
+                             const char **name, const char **label,
+                             const char **mime_type,
+                             const unsigned char **uri_string)
+{
   raptor_parser_factory *factory;
 
-  factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers,
+  factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers,
                                                          counter);
 
   if(!factory)
@@ -457,11 +484,29 @@ raptor_parsers_enumerate(const unsigned int counter,
  *
  * Check name of a parser.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_syntax_name_check_v2() if using raptor_world APIs.
+ *
  * Return value: non 0 if name is a known syntax name
  */
 int
 raptor_syntax_name_check(const char *name) {
-  return (raptor_get_parser_factory(name) != NULL);
+  return raptor_syntax_name_check_v2(raptor_world_instance(), name);
+}
+
+
+/**
+ * raptor_syntax_name_check_v2:
+ * @world: raptor_world object
+ * @name: the syntax name
+ *
+ * Check name of a parser.
+ *
+ * Return value: non 0 if name is a known syntax name
+ */
+int
+raptor_syntax_name_check_v2(raptor_world* world, const char *name) {
+  return (raptor_get_parser_factory(world, name) != NULL);
 }
 
 
@@ -471,14 +516,32 @@ raptor_syntax_name_check(const char *name) {
  *
  * Constructor - create a new raptor_parser object.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_parser_v2() if using raptor_world APIs.
+ *
  * Return value: a new #raptor_parser object or NULL on failure
  */
 raptor_parser*
 raptor_new_parser(const char *name) {
+  return raptor_new_parser_v2(raptor_world_instance(), name);
+}
+
+
+/**
+ * raptor_new_parser_v2:
+ * @world: raptor_world object
+ * @name: the parser name
+ *
+ * Constructor - create a new raptor_parser object.
+ *
+ * Return value: a new #raptor_parser object or NULL on failure
+ */
+raptor_parser*
+raptor_new_parser_v2(raptor_world* world, const char *name) {
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
 
-  factory=raptor_get_parser_factory(name);
+  factory=raptor_get_parser_factory(world, name);
   if(!factory)
     return NULL;
 
@@ -486,6 +549,8 @@ raptor_new_parser(const char *name) {
                                            sizeof(raptor_parser));
   if(!rdf_parser)
     return NULL;
+
+  rdf_parser->world=world;
   
   rdf_parser->context=(char*)RAPTOR_CALLOC(raptor_parser_context, 1,
                                            factory->context_length);
@@ -1782,6 +1847,9 @@ compare_syntax_score(const void *a, const void *b) {
  * Find a parser by scoring recognition of the syntax by a block of
  * characters, the content identifier or a mime type.  The content
  * identifier is typically a filename or URI or some other identifier.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_guess_parser_name_v2() if using raptor_world APIs.
  * 
  * Return value: a parser name or NULL if no guess could be made
  **/
@@ -1789,6 +1857,34 @@ const char*
 raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
                          const unsigned char *buffer, size_t len,
                          const unsigned char *identifier)
+{
+  return raptor_guess_parser_name_v2(raptor_world_instance(),
+    uri, mime_type, buffer, len, identifier);
+}
+
+
+/**
+ * raptor_guess_parser_name_v2:
+ * @world: raptor_world object
+ * @uri: URI identifying the syntax (or NULL)
+ * @mime_type: mime type identifying the content (or NULL)
+ * @buffer: buffer of content to guess (or NULL)
+ * @len: length of buffer
+ * @identifier: identifier of content (or NULL)
+ *
+ * Guess a parser name for content.
+ * 
+ * Find a parser by scoring recognition of the syntax by a block of
+ * characters, the content identifier or a mime type.  The content
+ * identifier is typically a filename or URI or some other identifier.
+ * 
+ * Return value: a parser name or NULL if no guess could be made
+ **/
+const char*
+raptor_guess_parser_name_v2(raptor_world* world,
+                            raptor_uri *uri, const char *mime_type,
+                            const unsigned char *buffer, size_t len,
+                            const unsigned char *identifier)
 {
   unsigned int i;
   raptor_parser_factory *factory;
@@ -1822,7 +1918,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
   }
 
   for(i=0;
-      (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     int score= -1;
     raptor_type_q* type_q=NULL;
@@ -2058,7 +2154,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
 
 
 const char*
-raptor_parser_get_accept_header_all(void)
+raptor_parser_get_accept_header_all(raptor_world* world)
 {
   raptor_parser_factory *factory;
   char *accept_header=NULL;
@@ -2068,7 +2164,7 @@ raptor_parser_get_accept_header_all(void)
   
   len=0;
   for(i=0;
-      (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     raptor_type_q* type_q;
     int j;
@@ -2091,7 +2187,7 @@ raptor_parser_get_accept_header_all(void)
 
   p=accept_header;
   for(i=0;
-      (factory=(raptor_parser_factory*)raptor_sequence_get_at(parsers, i));
+      (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     raptor_type_q* type_q;
     int j;
@@ -2222,7 +2318,7 @@ main(int argc, char *argv[])
     raptor_free_uri(feature_uri);
   }
 
-  s=raptor_parser_get_accept_header_all();
+  s=raptor_parser_get_accept_header_all(raptor_world_instance());
   fprintf(stderr, "Default HTTP accept header: '%s'\n", s);
   RAPTOR_FREE(cstring, s);
 

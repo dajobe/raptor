@@ -49,7 +49,7 @@
 
 
 /* statics */
-static int raptor_initialised=0;
+static raptor_world* Raptor_World=NULL;
 
 
 const char * const raptor_short_copyright_string = "Copyright 2000-2008 David Beckett. Copyright 2000-2005 University of Bristol";
@@ -100,6 +100,57 @@ const unsigned int raptor_version_release = RAPTOR_VERSION_RELEASE;
 const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 
 
+/**
+ * raptor_new_world:
+ *
+ * Initialise the raptor library.
+ *
+ * Creates a raptor_world object and initializes it.
+ *
+ * The returned world object is used with subsequent raptor API calls.
+ *
+ * FIXME: Does not initialize the whole library yet. Use raptor_init() instead.
+ *
+ * Return value: raptor_world object or NULL on failure
+ */
+raptor_world *
+raptor_new_world(void)
+{
+  raptor_world *world;
+
+  world=(raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(raptor_world), 1);
+  if(!world)
+    return NULL;
+
+  if(raptor_parsers_init(world))
+    goto failure;
+
+  return world;
+
+  failure:
+  raptor_free_world(world);
+  return NULL;
+}
+
+
+/**
+ * raptor_free_world:
+ * @world: raptor_world object
+ *
+ * Terminate the raptor library.
+ *
+ * Destroys the raptor_world object and all related information.
+ */
+void
+raptor_free_world(raptor_world* world)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+
+  raptor_parsers_finish(world);
+
+  RAPTOR_FREE(raptor_world, world);
+}
+
 
 /**
  * raptor_init:
@@ -111,15 +162,20 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 void
 raptor_init(void) 
 {
-  if(raptor_initialised++)
+
+  if(Raptor_World) {
+    Raptor_World->static_usage++;
     return;
+  }
+
+  Raptor_World=raptor_new_world();
+  if(!Raptor_World)
+    goto failure;
+  Raptor_World->static_usage=1;
 
   if(raptor_sax2_init())
     goto failure;
 
-  if(raptor_parsers_init())
-    goto failure;
-  
   if(raptor_serializers_init())
     goto failure;
 
@@ -147,18 +203,33 @@ raptor_init(void)
 void
 raptor_finish(void) 
 {
-  if(--raptor_initialised)
+  if(!Raptor_World || --Raptor_World->static_usage)
     return;
 
   raptor_www_finish();
 
-  raptor_parsers_finish();
-
   raptor_serializers_finish();
 
   raptor_sax2_finish();
+
+  raptor_free_world(Raptor_World);
+  Raptor_World=NULL;
 }
 
+
+/*
+ * raptor_world_instance:
+ * Accessor for static raptor_world object.
+ *
+ * INTERNAL
+ *
+ * Return value: raptor_world object or NULL if not initialized
+ */
+raptor_world*
+raptor_world_instance(void)
+{
+  return Raptor_World;
+}
 
 
 /* 

@@ -153,6 +153,12 @@ extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
 
 /* Public structure */
 /**
+ * raptor_world:
+ *
+ * Raptor world class.
+ */
+typedef struct raptor_world_s raptor_world;
+/**
  * raptor_parser:
  *
  * Raptor Parser class
@@ -787,6 +793,11 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 /* Public functions */
 
 RAPTOR_API
+raptor_world* raptor_new_world(void);
+RAPTOR_API
+void raptor_free_world(raptor_world* world);
+
+RAPTOR_API
 void raptor_init(void);
 RAPTOR_API
 void raptor_finish(void);
@@ -795,15 +806,25 @@ void raptor_finish(void);
 RAPTOR_API
 int raptor_parsers_enumerate(const unsigned int counter, const char **name, const char **label);
 RAPTOR_API
+int raptor_parsers_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label);
+RAPTOR_API
 int raptor_syntaxes_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+RAPTOR_API
+int raptor_syntaxes_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
 RAPTOR_API
 int raptor_syntax_name_check(const char *name);
 RAPTOR_API
+int raptor_syntax_name_check_v2(raptor_world* world, const char *name);
+RAPTOR_API
 const char* raptor_guess_parser_name(raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
+RAPTOR_API
+const char* raptor_guess_parser_name_v2(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
 /* Create */
 RAPTOR_API
 raptor_parser* raptor_new_parser(const char *name);
+RAPTOR_API
+raptor_parser* raptor_new_parser_v2(raptor_world* world, const char *name);
 RAPTOR_API
 raptor_parser* raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 

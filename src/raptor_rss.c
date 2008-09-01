@@ -1392,8 +1392,8 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
 
 
 int
-raptor_init_parser_rss(void)
+raptor_init_parser_rss(raptor_world* world)
 {
-  return !raptor_parser_register_factory("rss-tag-soup",  "RSS Tag Soup",
+  return !raptor_parser_register_factory(world, "rss-tag-soup",  "RSS Tag Soup",
                                          &raptor_rss_parser_register_factory);
 }

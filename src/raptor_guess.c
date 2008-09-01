@@ -151,7 +151,7 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
 #endif
       
       if(guess_parser->parser) {
-        raptor_parser_factory* factory=raptor_get_parser_factory(name);
+        raptor_parser_factory* factory=raptor_get_parser_factory(rdf_parser->world, name);
 
         if(guess_parser->parser->factory != factory) {
           raptor_free_parser(guess_parser->parser);
@@ -183,7 +183,7 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
 static const char*
 raptor_guess_accept_header(raptor_parser* rdf_parser)
 {
-  return raptor_parser_get_accept_header_all();
+  return raptor_parser_get_accept_header_all(rdf_parser->world);
 }
 
 
@@ -215,9 +215,10 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
 
 
 int
-raptor_init_parser_guess(void)
+raptor_init_parser_guess(raptor_world* world)
 {
-  return !raptor_parser_register_factory("guess",  
+  return !raptor_parser_register_factory(world,
+                                         "guess",  
                                          "Pick the parser to use using content type and URI",
                                          &raptor_guess_parser_register_factory);
 }

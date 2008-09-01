@@ -290,8 +290,8 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
 
 
 int
-raptor_init_parser_rdfa(void)
+raptor_init_parser_rdfa(raptor_world* world)
 {
-  return !raptor_parser_register_factory("rdfa",  "RDF/A via librdfa",
+  return !raptor_parser_register_factory(world, "rdfa",  "RDF/A via librdfa",
                                          &raptor_librdfa_parser_register_factory);
 }
