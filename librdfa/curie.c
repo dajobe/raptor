@@ -111,6 +111,58 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
       // if a fragment ID is given, concatenate it with the base URI
       rval = rdfa_join_string(context->base, uri);
    }
+   else if(uri[0] == '/')
+   {
+      // if a relative URI is given, but it starts with a '/', use the
+      // host part concatenated to the given URI
+      char* tmp = NULL;
+      char* end_index = NULL;
+
+      // initialize the working-set data
+      tmp = rdfa_replace_string(tmp, context->base);
+      end_index = strchr(tmp, '/');
+
+
+      // find the final '/' character after the host part of the context base.
+      if(end_index != NULL)
+      {
+	 end_index = strchr(end_index + 1, '/');
+	
+	 if(end_index != NULL)
+	 {
+	    end_index = strchr(end_index + 1, '/');
+         }
+      }
+
+      // if the '/' character after the host part was found, copy the host
+      // part and append the given URI to the URI, otherwise, append the
+      // host part and the URI part as-is, ensuring that a '/' exists at the
+      // end of the host part.
+      if(end_index != NULL)
+      {
+	 *end_index = '\0';
+	 
+	 // if the '/' character after the host part was found, copy the host
+	 // part and append the given URI to the URI.
+	 rval = rdfa_replace_string(rval, tmp);
+	 rval = rdfa_join_string(rval, uri);
+      }
+      else
+      {
+         // append the host part and the URI part as-is, ensuring that a 
+	 // '/' exists at the end of the host part.
+ 	 unsigned int tlen = strlen(tmp) - 1;
+	 rval = rdfa_replace_string(rval, tmp);
+
+	 if(rval[tlen] == '/')
+	 {
+	    rval[tlen] = '\0';
+	 }
+	 rval = rdfa_join_string(rval, uri);
+      }
+
+      free(tmp);
+   }
    else
    {
       if((char)context->base[base_length - 1] == '/')
