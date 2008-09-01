@@ -1445,7 +1445,7 @@ main(int argc, char *argv[])
   if(argc>1)
     fclose(fh);
 
-  raptor_uri_init();
+  raptor_init();
 
   memset(&rdf_parser, 0, sizeof(raptor_parser));
   memset(&n3_parser, 0, sizeof(raptor_n3_parser));
@@ -1466,6 +1466,8 @@ main(int argc, char *argv[])
   n3_parse(&rdf_parser, string);
 
   raptor_free_uri(rdf_parser.base_uri);
+
+  raptor_finish();
 
   return (0);
 }

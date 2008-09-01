@@ -58,9 +58,6 @@
 #endif
 
 
-static const raptor_uri_handler *raptor_uri_current_uri_handler;
-static void *raptor_uri_current_uri_context;
-
 /* Symbian OS uses similar path mappings as Windows but does not necessarily have the WIN32 flag defined */
 #if defined(__SYMBIAN32__) && !defined(WIN32)
 #define WIN32
@@ -75,18 +72,40 @@ static void *raptor_uri_current_uri_context;
  *
  * The URI interface in @handler->initialised should be either 1
  * or 2 (if raptor_uri_compare_func is implemented).
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_set_handler_v2() if using raptor_world APIs.
  **/
 void
 raptor_uri_set_handler(const raptor_uri_handler *handler, void *context) 
+{
+  raptor_uri_set_handler_v2(raptor_world_instance(), handler, context);
+}
+
+
+/**
+ * raptor_uri_set_handler_v2:
+ * @world: raptor_world object
+ * @handler: URI handler structure
+ * @context: URI handler context
+ * 
+ * Change the URI class implementation to the functions provided by the
+ *
+ * The URI interface in @handler->initialised should be either 1
+ * or 2 (if raptor_uri_compare_func is implemented).
+ **/
+void
+raptor_uri_set_handler_v2(raptor_world* world, const raptor_uri_handler *handler, void *context) 
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(handler, raptor_uri_handler);
   /* RAPTOR_ASSERT is the negative of ordinary asserts - it fails if the condition is true */
   RAPTOR_ASSERT(!(handler->initialised >= 1 && handler->initialised <= 2),
     "raptor_uri_handler->initialised not 1..2");
 
-  raptor_uri_current_uri_handler=handler;
-  raptor_uri_current_uri_context=context;
+  world->uri_handler=handler;
+  world->uri_handler_context=context;
 }
+
 
 /**
  * raptor_uri_get_handler:
@@ -94,14 +113,31 @@ raptor_uri_set_handler(const raptor_uri_handler *handler, void *context)
  * @context: URI context to return
  * 
  * Return the current raptor URI class implementation @handler and @context
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_get_handler_v2() if using raptor_world APIs.
  **/
 void
 raptor_uri_get_handler(const raptor_uri_handler **handler, void **context) 
 {
+  raptor_uri_get_handler_v2(raptor_world_instance(), handler, context);
+}
+
+
+/**
+ * raptor_uri_get_handler_v2:
+ * @handler: URI handler to return
+ * @context: URI context to return
+ * 
+ * Return the current raptor URI class implementation @handler and @context
+ **/
+void
+raptor_uri_get_handler_v2(raptor_world* world, const raptor_uri_handler **handler, void **context) 
+{
   if(handler)
-    *handler=raptor_uri_current_uri_handler;
+    *handler=world->uri_handler;
   if(context)
-    *context=raptor_uri_current_uri_context;
+    *context=world->uri_handler_context;
 }
 
 
@@ -159,15 +195,34 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
  * 
  * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
  * 
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_uri_v2() if using raptor_world APIs.
+ *
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri(const unsigned char *uri_string) 
 {
+  return raptor_new_uri_v2(raptor_world_instance(), uri_string);
+}
+
+
+/**
+ * raptor_new_uri_v2:
+ * @world: raptor_world object
+ * @uri_string: URI string.
+ * 
+ * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string) 
+{
   if(!uri_string || !*uri_string)
     return NULL;
   
-  return (*raptor_uri_current_uri_handler->new_uri)(raptor_uri_current_uri_context, uri_string);
+  return (*world->uri_handler->new_uri)(world->uri_handler_context, uri_string);
 }
 
 
@@ -199,16 +254,40 @@ raptor_default_new_uri_from_uri_local_name(void *context,
  * Creates a new URI from the concatenation of the @local_name to the
  * @uri.  This is NOT relative URI resolution, which is done by the
  * raptor_new_uri_relative_to_base() constructor.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_uri_from_uri_local_name_v2() if using raptor_world APIs.
  * 
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_name)
 {
+  return raptor_new_uri_from_uri_local_name_v2(raptor_world_instance(), uri, local_name);
+}
+
+
+/**
+ * raptor_new_uri_from_uri_local_name_v2:
+ * @world: raptor_world object
+ * @uri: existing #raptor_uri
+ * @local_name: local name
+ * 
+ * Constructor - create a raptor URI from an existing URI and a local name.
+ *
+ * Creates a new URI from the concatenation of the @local_name to the
+ * @uri.  This is NOT relative URI resolution, which is done by the
+ * raptor_new_uri_relative_to_base() constructor.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, const unsigned char *local_name)
+{
   if(!uri || !local_name)
     return NULL;
   
-  return (*raptor_uri_current_uri_handler->new_uri_from_uri_local_name)(raptor_uri_current_uri_context, uri, local_name);
+  return (*world->uri_handler->new_uri_from_uri_local_name)(world->uri_handler_context, uri, local_name);
 }
 
 
@@ -244,16 +323,39 @@ raptor_default_new_uri_relative_to_base(void *context,
  * 
  * Constructor - create a raptor URI from a base URI and a relative URI string.
  * 
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_uri_relative_to_base_v2() if using raptor_world APIs.
+ * 
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri_relative_to_base(raptor_uri *base_uri, 
                                 const unsigned char *uri_string) 
 {
+  return raptor_new_uri_relative_to_base_v2(raptor_world_instance(),
+                                            base_uri, uri_string);
+}
+
+
+/**
+ * raptor_new_uri_relative_to_base_v2:
+ * @world: raptor_world object
+ * @base_uri: existing base URI
+ * @uri_string: relative URI string
+ * 
+ * Constructor - create a raptor URI from a base URI and a relative URI string.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_relative_to_base_v2(raptor_world* world,
+                                   raptor_uri *base_uri, 
+                                   const unsigned char *uri_string) 
+{
   if(!base_uri || !uri_string)
     return NULL;
 
-  return (*raptor_uri_current_uri_handler->new_uri_relative_to_base)(raptor_uri_current_uri_context, base_uri, uri_string);
+  return (*world->uri_handler->new_uri_relative_to_base)(world->uri_handler_context, base_uri, uri_string);
 }
 
 
@@ -323,15 +425,37 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
  * Example: u=raptor_new_uri_for_rdf_concept("value") creates a new
  * URI for the rdf:value term.
  * 
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_uri_for_rdf_concept_v2() if using raptor_world APIs.
+ *
  * Return value: a new #raptor_uri object or NULL on failure
  **/
 raptor_uri*
 raptor_new_uri_for_rdf_concept(const char *name) 
 {
+  return raptor_new_uri_for_rdf_concept_v2(raptor_world_instance(), name);
+}
+
+
+/**
+ * raptor_new_uri_for_rdf_concept_v2:
+ * @world: raptor_world object
+ * @name: RDF namespace concept
+ * 
+ * Constructor - create a raptor URI for the RDF namespace concept name.
+ *
+ * Example: u=raptor_new_uri_for_rdf_concept("value") creates a new
+ * URI for the rdf:value term.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure
+ **/
+raptor_uri*
+raptor_new_uri_for_rdf_concept_v2(raptor_world* world, const char *name) 
+{
   if(!name)
     return NULL;
   
-  return (*raptor_uri_current_uri_handler->new_uri_for_rdf_concept)(raptor_uri_current_uri_context, name);
+  return (*world->uri_handler->new_uri_for_rdf_concept)(world->uri_handler_context, name);
 }
 
 
@@ -345,15 +469,33 @@ raptor_default_free_uri(void *context, raptor_uri *uri)
 /**
  * raptor_free_uri:
  * @uri: URI to destroy
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_free_uri_v2() if using raptor_world APIs.
  * 
  * Destructor - destroy a #raptor_uri object
  **/
 void
 raptor_free_uri(raptor_uri *uri)
 {
+  raptor_free_uri_v2(raptor_world_instance(), uri);
+}
+
+/* FIXME: Refactor the uri abstraction so that raptor_world* can be stored there. */
+
+/**
+ * raptor_free_uri_v2:
+ * @world: raptor_world object
+ * @uri: URI to destroy
+ *
+ * Destructor - destroy a #raptor_uri object
+ **/
+void
+raptor_free_uri_v2(raptor_world* world, raptor_uri *uri)
+{
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(uri, raptor_uri);
 
-  (*raptor_uri_current_uri_handler->free_uri)(raptor_uri_current_uri_context, uri);
+  (*world->uri_handler->free_uri)(world->uri_handler_context, uri);
 }
 
 
@@ -380,14 +522,36 @@ raptor_default_uri_compare(void *context, raptor_uri* uri1, raptor_uri* uri2)
  * 
  * A NULL URI is not equal to a non-NULL URI.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_equals_v2() if using raptor_world APIs.
+ *
  * Return value: non-0 if the URIs are equal
  **/
 int
 raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 {
+  return raptor_uri_equals_v2(raptor_world_instance(), uri1, uri2);
+}
+
+
+/**
+ * raptor_uri_equals_v2:
+ * @world: raptor_world object
+ * @uri1: URI 1 (may be NULL)
+ * @uri2: URI 2 (may be NULL)
+ * 
+ * Check if two URIs are equal.
+ * 
+ * A NULL URI is not equal to a non-NULL URI.
+ *
+ * Return value: non-0 if the URIs are equal
+ **/
+int
+raptor_uri_equals_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)
+{
   if(uri1 && uri2)
     /* Both not-NULL - check with handler */
-    return (*raptor_uri_current_uri_handler->uri_equals)(raptor_uri_current_uri_context, uri1, uri2);
+    return (*world->uri_handler->uri_equals)(world->uri_handler_context, uri1, uri2);
   else if(uri1 || uri2)
     /* Only one is NULL - not equal */
     return 0;
@@ -406,17 +570,39 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
  * 
  * A NULL URI is always less than (never equal to) a non-NULL URI.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_compare_v2() if using raptor_world APIs.
+ *
  * Return value: -1 if uri1 < uri2, 0 if equal, 1 if uri1 > uri2
  **/
 int
 raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
 {
+  return raptor_uri_compare_v2(raptor_world_instance(), uri1, uri2);
+}
+
+
+/**
+ * raptor_uri_compare_v2:
+ * @world: raptor_world object
+ * @uri1: URI 1 (may be NULL)
+ * @uri2: URI 2 (may be NULL)
+ * 
+ * Compare two URIs, ala strcmp.
+ * 
+ * A NULL URI is always less than (never equal to) a non-NULL URI.
+ *
+ * Return value: -1 if uri1 < uri2, 0 if equal, 1 if uri1 > uri2
+ **/
+int
+raptor_uri_compare_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)
+{
   if(uri1 && uri2) {
     /* string compare function is available in API V2 or newer */
-    if(raptor_uri_current_uri_handler->initialised >= 2)
-      return (*raptor_uri_current_uri_handler->uri_compare)(raptor_uri_current_uri_context, uri1, uri2);
+    if(world->uri_handler->initialised >= 2)
+      return (*world->uri_handler->uri_compare)(world->uri_handler_context, uri1, uri2);
     else
-      return raptor_default_uri_compare(raptor_uri_current_uri_context, 
+      return raptor_default_uri_compare(world->uri_handler_context, 
                                         uri1, uri2);
   } else if(uri1)
     /* uri1 > uri2 (NULL) */
@@ -444,16 +630,34 @@ raptor_default_uri_copy(void *context, raptor_uri *uri)
  * 
  * Constructor - get a copy of a URI.
  * 
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_copy_v2() if using raptor_world APIs.
  *
  * Return value: a new #raptor_uri object or NULL on failure
  **/
 raptor_uri*
 raptor_uri_copy(raptor_uri *uri) 
 {
+  return raptor_uri_copy_v2(raptor_world_instance(), uri);
+}
+
+
+/**
+ * raptor_uri_copy_v2:
+ * @world: raptor_world object
+ * @uri: URI object
+ * 
+ * Constructor - get a copy of a URI.
+ *
+ * Return value: a new #raptor_uri object or NULL on failure
+ **/
+raptor_uri*
+raptor_uri_copy_v2(raptor_world* world, raptor_uri *uri) 
+{
   if(!uri)
     return NULL;
   
-  return (*raptor_uri_current_uri_handler->uri_copy)(raptor_uri_current_uri_context, uri);
+  return (*world->uri_handler->uri_copy)(world->uri_handler_context, uri);
 }
 
 
@@ -473,16 +677,39 @@ raptor_default_uri_as_string(void *context, raptor_uri *uri)
  * Returns a shared pointer to a string representation of @uri.  This
  * string is shared and must not be freed, otherwise see use the
  * raptor_uri_to_string() or raptor_uri_to_counted_string() methods.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_as_string_v2() if using raptor_world APIs.
  * 
  * Return value: shared string representation of URI
  **/
 unsigned char*
 raptor_uri_as_string(raptor_uri *uri) 
 {
+  return raptor_uri_as_string_v2(raptor_world_instance(), uri);
+}
+
+
+/**
+ * raptor_uri_as_string_v2:
+ * @world: raptor_world object
+ * @uri: #raptor_uri object
+ * 
+ * Get a string representation of a URI.
+ *
+ * Returns a shared pointer to a string representation of @uri.  This
+ * string is shared and must not be freed, otherwise see use the
+ * raptor_uri_to_string() or raptor_uri_to_counted_string() methods.
+ * 
+ * Return value: shared string representation of URI
+ **/
+unsigned char*
+raptor_uri_as_string_v2(raptor_world* world, raptor_uri *uri) 
+{
   if(!uri)
     return NULL;
   
-  return (*raptor_uri_current_uri_handler->uri_as_string)(raptor_uri_current_uri_context, uri);
+  return (*world->uri_handler->uri_as_string)(world->uri_handler_context, uri);
 }
 
 
@@ -507,18 +734,42 @@ raptor_default_uri_as_counted_string(void *context, raptor_uri *uri,
  * with the length of the string in @len_p, if not NULL.  This
  * string is shared and must not be freed, otherwise see use the
  * raptor_uri_to_string() or raptor_uri_to_counted_string() methods.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_as_counted_string_v2() if using raptor_world APIs.
  * 
  * Return value: shared string representation of URI
  **/
 unsigned char*
 raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p) 
 {
+  return raptor_uri_as_counted_string_v2(raptor_world_instance(), uri, len_p);
+}
+
+
+/**
+ * raptor_uri_as_counted_string_v2:
+ * @world: raptor_world object
+ * @uri: URI object
+ * @len_p: address of length variable or NULL
+ * 
+ * Get a string representation of a URI with count.
+ *
+ * Returns a shared pointer to a string representation of @uri along
+ * with the length of the string in @len_p, if not NULL.  This
+ * string is shared and must not be freed, otherwise see use the
+ * raptor_uri_to_string() or raptor_uri_to_counted_string() methods.
+ * 
+ * Return value: shared string representation of URI
+ **/
+unsigned char*
+raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t* len_p) 
+{
   if(!uri)
     return NULL;
   
-  return (*raptor_uri_current_uri_handler->uri_as_counted_string)(raptor_uri_current_uri_context, uri, len_p);
+  return (*world->uri_handler->uri_as_counted_string)(world->uri_handler_context, uri, len_p);
 }
-
 
 
 /**
@@ -986,9 +1237,9 @@ static const raptor_uri_handler raptor_uri_default_handler = {
 
 
 int
-raptor_uri_init(void)
+raptor_uri_init(raptor_world* world)
 {
-  raptor_uri_set_handler(&raptor_uri_default_handler, NULL);
+  raptor_uri_set_handler_v2(world, &raptor_uri_default_handler, NULL);
   return 0;
 }
 
@@ -1610,7 +1861,7 @@ main(int argc, char *argv[])
  
 #endif
 
-  raptor_uri_init();
+  raptor_init();
   
   uri1=raptor_new_uri((const unsigned char*)base_uri);
 
@@ -1724,6 +1975,8 @@ main(int argc, char *argv[])
     raptor_free_uri(u1);
     raptor_free_uri(u2);
   }
+
+  raptor_finish();
 
   return failures ;
 }

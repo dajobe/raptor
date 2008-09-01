@@ -1000,25 +1000,45 @@ void* raptor_calloc_memory(size_t nmemb, size_t size);
 RAPTOR_API
 raptor_uri* raptor_new_uri(const unsigned char *uri_string);
 RAPTOR_API
+raptor_uri* raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string);
+RAPTOR_API
 raptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_name);
 RAPTOR_API
+raptor_uri* raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, const unsigned char *local_name);
+RAPTOR_API
 raptor_uri* raptor_new_uri_relative_to_base(raptor_uri *base_uri, const unsigned char *uri_string);
+RAPTOR_API
+raptor_uri* raptor_new_uri_relative_to_base_v2(raptor_world* world, raptor_uri *base_uri, const unsigned char *uri_string);
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept(const char *name);
 RAPTOR_API
+raptor_uri* raptor_new_uri_for_rdf_concept_v2(raptor_world* world, const char *name);
+RAPTOR_API
 void raptor_free_uri(raptor_uri *uri);
+RAPTOR_API
+void raptor_free_uri_v2(raptor_world* world, raptor_uri *uri);
 RAPTOR_API
 int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API
+int raptor_uri_equals_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2);
+RAPTOR_API
 int raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2);
+RAPTOR_API
+int raptor_uri_compare_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API
 raptor_uri* raptor_uri_copy(raptor_uri *uri);
 RAPTOR_API
+raptor_uri* raptor_uri_copy_v2(raptor_world* world, raptor_uri *uri);
+RAPTOR_API
 unsigned char* raptor_uri_as_string(raptor_uri *uri);
 RAPTOR_API
+unsigned char* raptor_uri_as_string_v2(raptor_world* world, raptor_uri *uri);
+RAPTOR_API
 unsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p);
+RAPTOR_API
+unsigned char* raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t* len_p);
 
 /* Make an xml:base-compatible URI from an existing one */
 RAPTOR_API
@@ -1102,7 +1122,11 @@ unsigned char* raptor_uri_to_string(raptor_uri *uri);
 RAPTOR_API
 void raptor_uri_set_handler(const raptor_uri_handler *handler, void *context);
 RAPTOR_API
+void raptor_uri_set_handler_v2(raptor_world* world, const raptor_uri_handler *handler, void *context);
+RAPTOR_API
 void raptor_uri_get_handler(const raptor_uri_handler **handler, void **context);
+RAPTOR_API
+void raptor_uri_get_handler_v2(raptor_world* world, const raptor_uri_handler **handler, void **context);
 
 /**
  * RAPTOR_RDF_MS_URI:

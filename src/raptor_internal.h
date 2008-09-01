@@ -717,7 +717,7 @@ void raptor_qname_print(FILE *stream, raptor_qname* name);
 
 
 /* raptor_uri.c */
-int raptor_uri_init(void);
+int raptor_uri_init(raptor_world* world);
 raptor_uri* raptor_new_uri_from_rdf_ordinal(int ordinal);
 
 /* parsers */
@@ -1267,6 +1267,10 @@ struct raptor_world_s {
 
   /* sequence of serializer factories */
   raptor_sequence *serializers;
+
+  /* current uri handler and its data */
+  const raptor_uri_handler *uri_handler;
+  void *uri_handler_context;
 };
 
 /* raptor_world legacy accessor */

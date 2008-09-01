@@ -62,8 +62,7 @@ int main (int argc, char *argv[])
   else
     uri_string="http://librdf.org/";
 
-  raptor_uri_init();
-  raptor_www_init();
+  raptor_init();
 
   uri=raptor_new_uri((const unsigned char*)uri_string);
   if(!uri) {
@@ -93,7 +92,7 @@ int main (int argc, char *argv[])
 
   raptor_free_uri(uri);
 
-  raptor_www_finish();
+  raptor_finish();
   
   return 0;
 }

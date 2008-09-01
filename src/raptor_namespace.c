@@ -928,7 +928,7 @@ main(int argc, char *argv[])
   const raptor_uri_handler *handler;
   void *context;
 
-  raptor_uri_init();
+  raptor_init();
 
   /* Use whatever the raptor_uri class has */
   raptor_uri_get_handler(&handler, &context);
@@ -977,6 +977,8 @@ main(int argc, char *argv[])
   raptor_namespaces_end_for_depth(&namespaces, 0);
 
   raptor_namespaces_clear(&namespaces);
+
+  raptor_finish();
 
   /* keep gcc -Wall happy */
   return(0);

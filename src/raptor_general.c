@@ -128,6 +128,9 @@ raptor_new_world(void)
   if(raptor_serializers_init(world))
     goto failure;
 
+  if(raptor_uri_init(world))
+    goto failure;
+
   return world;
 
   failure:
@@ -179,9 +182,6 @@ raptor_init(void)
   Raptor_World->static_usage=1;
 
   if(raptor_sax2_init())
-    goto failure;
-
-  if(raptor_uri_init())
     goto failure;
 
   raptor_www_init(); /* raptor_www_init() is part of raptor API, prototype not changed yet to return an error code */
