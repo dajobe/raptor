@@ -1943,7 +1943,7 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
 static xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
 
 int
-raptor_init_parser_grddl_common(void)
+raptor_init_parser_grddl_common(raptor_world* world)
 {
 #ifdef HAVE_XSLTINIT
   xsltInit();
