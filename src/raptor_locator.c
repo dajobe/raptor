@@ -54,16 +54,34 @@
  * @locator: #raptor_locator to print
  *
  * Print a raptor locator to a stream.
- * 
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_print_locator_v2() if using raptor_world APIs.
  **/
 void
 raptor_print_locator(FILE *stream, raptor_locator* locator) 
+{
+  raptor_print_locator_v2(raptor_world_instance(), stream, locator);
+}
+
+
+/**
+ * raptor_print_locator_v2:
+ * @world: raptor_world object
+ * @stream: stream to print to
+ * @locator: #raptor_locator to print
+ *
+ * Print a raptor locator to a stream.
+ * 
+ **/
+void
+raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locator) 
 {
   if(!locator)
     return;
 
   if(locator->uri)
-    fprintf(stream, "URI %s", raptor_uri_as_string(locator->uri));
+    fprintf(stream, "URI %s", raptor_uri_as_string_v2(world, locator->uri));
   else if (locator->file)
     fprintf(stream, "file %s", locator->file);
   else
@@ -74,7 +92,6 @@ raptor_print_locator(FILE *stream, raptor_locator* locator)
       fprintf(stream, " column %d", locator->column);
   }
 }
-
 
 
 /**
@@ -88,11 +105,36 @@ raptor_print_locator(FILE *stream, raptor_locator* locator)
  * If buffer is NULL or length is insufficient for the size of
  * the locator, returns the number of additional bytes required
  * in the buffer to write the locator.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_format_locator_v2() if using raptor_world APIs.
  * 
  * Return value: 0 on success, >0 if additional bytes required in buffer, <0 on failure
  **/
 int
 raptor_format_locator(char *buffer, size_t length, raptor_locator* locator) 
+{
+  return raptor_format_locator_v2(raptor_world_instance(), buffer, length, locator);
+}
+
+
+/**
+ * raptor_format_locator_v2:
+ * @world: raptor_world object
+ * @buffer: buffer to store format
+ * @length: size of buffer
+ * @locator: #raptor_locator to format
+ *
+ * Format a raptor locator as a string.
+ * 
+ * If buffer is NULL or length is insufficient for the size of
+ * the locator, returns the number of additional bytes required
+ * in the buffer to write the locator.
+ * 
+ * Return value: 0 on success, >0 if additional bytes required in buffer, <0 on failure
+ **/
+int
+raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, raptor_locator* locator) 
 {
   size_t bufsize=0;
   int count;
@@ -102,7 +144,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
 
   if(locator->uri) {
     size_t uri_len;
-    (void)raptor_uri_as_counted_string(locator->uri, &uri_len);
+    (void)raptor_uri_as_counted_string_v2(world, locator->uri, &uri_len);
     bufsize= 4 + uri_len; /* "URI " */
   } else if (locator->file)
     bufsize= 5 + strlen(locator->file); /* "file " */
@@ -120,7 +162,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
   
 
   if(locator->uri)
-    count=sprintf(buffer, "URI %s", raptor_uri_as_string(locator->uri));
+    count=sprintf(buffer, "URI %s", raptor_uri_as_string_v2(world, locator->uri));
   else if (locator->file)
     count=sprintf(buffer, "file %s", locator->file);
   else
@@ -211,12 +253,34 @@ raptor_locator_file(raptor_locator *locator)
  * Returns a pointer to a shared string version of the URI in
  * the locator.  This must be copied if it is needed.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_locator_uri_v2() if using raptor_world APIs.
+ *
  * Return value: string URI, or NULL if there is no URI available
  **/
 const char *
 raptor_locator_uri(raptor_locator *locator)
 {
+  return raptor_locator_uri_v2(raptor_world_instance(), locator);
+}
+
+
+/**
+ * raptor_locator_uri_v2:
+ * @world: raptor_world object
+ * @locator: locator
+ *
+ * Get URI from locator.
+ *
+ * Returns a pointer to a shared string version of the URI in
+ * the locator.  This must be copied if it is needed.
+ *
+ * Return value: string URI, or NULL if there is no URI available
+ **/
+const char *
+raptor_locator_uri_v2(raptor_world* world, raptor_locator *locator)
+{
   if (!locator)
     return NULL;
-  return (const char*)raptor_uri_as_string(locator->uri);
+  return (const char*)raptor_uri_as_string_v2(world, locator->uri);
 }

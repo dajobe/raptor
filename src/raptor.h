@@ -894,7 +894,11 @@ void raptor_parse_abort(raptor_parser* rdf_parser);
 RAPTOR_API
 void raptor_print_locator(FILE *stream, raptor_locator* locator);
 RAPTOR_API
+void raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locator);
+RAPTOR_API
 int raptor_format_locator(char *buffer, size_t length, raptor_locator* locator);
+RAPTOR_API
+int raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, raptor_locator* locator);
 RAPTOR_API
 int raptor_locator_line(raptor_locator *locator);
 RAPTOR_API
@@ -905,6 +909,8 @@ RAPTOR_API
 const char * raptor_locator_file(raptor_locator *locator);
 RAPTOR_API
 const char * raptor_locator_uri(raptor_locator *locator);
+RAPTOR_API
+const char * raptor_locator_uri_v2(raptor_world* world, raptor_locator *locator);
 
 
 RAPTOR_API
