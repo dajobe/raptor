@@ -508,13 +508,13 @@ raptor_serialize_start_to_iostream(raptor_serializer *rdf_serializer,
                                    raptor_uri *uri, raptor_iostream *iostream) 
 {
   if(rdf_serializer->base_uri)
-    raptor_free_uri(rdf_serializer->base_uri);
+    raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
   if(!iostream)
     return 1;
   
   if(uri)
-    uri=raptor_uri_copy(uri);
+    uri=raptor_uri_copy_v2(rdf_serializer->world, uri);
   
   rdf_serializer->base_uri=uri;
   rdf_serializer->locator.uri=uri;
@@ -574,9 +574,9 @@ raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
     return 1;
 
   if(rdf_serializer->base_uri)
-    raptor_free_uri(rdf_serializer->base_uri);
+    raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
-  rdf_serializer->base_uri=raptor_new_uri(uri_string);
+  rdf_serializer->base_uri=raptor_new_uri_v2(rdf_serializer->world, uri_string);
   rdf_serializer->locator.uri=rdf_serializer->base_uri;
   rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
 
@@ -612,10 +612,10 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
                                  void **string_p, size_t *length_p) 
 {
   if(rdf_serializer->base_uri)
-    raptor_free_uri(rdf_serializer->base_uri);
+    raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
   if(uri)
-    rdf_serializer->base_uri=raptor_uri_copy(uri);
+    rdf_serializer->base_uri=raptor_uri_copy_v2(rdf_serializer->world, uri);
   else
     rdf_serializer->base_uri=NULL;
   rdf_serializer->locator.uri=rdf_serializer->base_uri;
@@ -652,10 +652,10 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
                                       raptor_uri *uri, FILE *fh) 
 {
   if(rdf_serializer->base_uri)
-    raptor_free_uri(rdf_serializer->base_uri);
+    raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
   if(uri)
-    rdf_serializer->base_uri=raptor_uri_copy(uri);
+    rdf_serializer->base_uri=raptor_uri_copy_v2(rdf_serializer->world, uri);
   else
     rdf_serializer->base_uri=NULL;
   rdf_serializer->locator.uri=rdf_serializer->base_uri;
@@ -792,10 +792,10 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
     RAPTOR_FREE(raptor_serializer_context, rdf_serializer->context);
 
   if(rdf_serializer->base_uri)
-    raptor_free_uri(rdf_serializer->base_uri);
+    raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
   if(rdf_serializer->feature_start_uri)
-    raptor_free_uri(rdf_serializer->feature_start_uri);
+    raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->feature_start_uri);
 
   if(rdf_serializer->feature_resource_border)
     RAPTOR_FREE(cstring, rdf_serializer->feature_resource_border);
@@ -1006,7 +1006,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
   switch(feature) {
     case RAPTOR_FEATURE_START_URI:
       if(value)
-        serializer->feature_start_uri=raptor_new_uri(value);
+        serializer->feature_start_uri=raptor_new_uri_v2(serializer->world, value);
       else
         return -1;
       break;
