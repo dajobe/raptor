@@ -50,6 +50,10 @@
 static int raptor_www_file_fetch(raptor_www* www);
 
 
+/* FIXME: Figure out a way to eliminate these statics (e.g. move to raptor_world)
+ * without breaking API compatibility.
+ */
+
 /* should raptor_www do initializing and cleanup of the WWW library */
 static int raptor_www_do_www_init_finish=1;
 

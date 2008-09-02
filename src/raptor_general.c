@@ -134,6 +134,9 @@ raptor_new_world(void)
   if(raptor_sax2_init(world))
     goto failure;
 
+  /* raptor_www_init() is part of raptor API, prototype not changed yet to return an error code or accept a raptor_world object */
+  raptor_www_init(); 
+
   return world;
 
   failure:
@@ -154,6 +157,8 @@ void
 raptor_free_world(raptor_world* world)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+
+  raptor_www_finish();
 
   raptor_sax2_finish(world);
 
@@ -186,8 +191,6 @@ raptor_init(void)
     goto failure;
   Raptor_World->static_usage=1;
 
-  raptor_www_init(); /* raptor_www_init() is part of raptor API, prototype not changed yet to return an error code */
-
   return;
 
   failure:
@@ -209,8 +212,6 @@ raptor_finish(void)
 {
   if(!Raptor_World || --Raptor_World->static_usage)
     return;
-
-  raptor_www_finish();
 
   raptor_free_world(Raptor_World);
   Raptor_World=NULL;
