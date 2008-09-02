@@ -19,7 +19,17 @@
  * complete terms and further detail along with the license texts for
  * the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
  * 
- * 
+ * It operates over the Unicode NormalizationTest.txt
+ * which tests normalization the process, NOT normalization checking.
+ * It says:
+ * " CONFORMANCE:
+ *   1. The following invariants must be true for all conformant implementations
+ *      NFC
+ *        c2 ==  NFC(c1) ==  NFC(c2) ==  NFC(c3)
+ *        c4 ==  NFC(c4) ==  NFC(c5)
+ * "
+ *
+ * It does NOT require that c1, c3 and c5 are NFC.
  */
 
 
@@ -159,9 +169,9 @@ main (int argc, char *argv[])
   for(;!feof(fh); line++) {
     char buffer[LINE_BUFFER_SIZE];
     char *p, *start;
-    unsigned char nfc1[UNISTR_SIZE];
-    unsigned char nfc2[UNISTR_SIZE];
-    size_t nfc1_len, nfc2_len;
+    unsigned char column2[UNISTR_SIZE];
+    unsigned char column4[UNISTR_SIZE];
+    size_t column2_len, column4_len;
     int nfc_rc;
     int error;
     
@@ -184,75 +194,82 @@ main (int argc, char *argv[])
     /* skip lines */
     if(*p == '@' || *p == '#')
       continue;
+
+    if(line != 56)
+      continue;
     
+
     /* skip column 1 */
     while(*p++ != ';')
       ;
-      
+
+    /* read column 2 into column2, column2_len */
     start=p;
     /* find end column 2 */
     while(*p++ != ';')
       ;
 
-    nfc1_len=decode_to_utf8(nfc1, UNISTR_SIZE, start, p-1);
-    if(nfc1_len > max_c2_len)
-      max_c2_len=nfc1_len;
+    column2_len=decode_to_utf8(column2, UNISTR_SIZE, start, p-1);
+    if(column2_len > max_c2_len)
+      max_c2_len=column2_len;
     
     /* skip column 3 */
     while(*p++ != ';')
       ;
 
+    /* read column 4 into column4, column4_len */
     start=p;
     /* find end column 4 */
     while(*p++ != ';')
       ;
 
-    nfc2_len=decode_to_utf8(nfc2, UNISTR_SIZE, start, p-1);
-    if(nfc2_len > max_c4_len)
-      max_c4_len=nfc2_len;
+    column4_len=decode_to_utf8(column4, UNISTR_SIZE, start, p-1);
+    if(column4_len > max_c4_len)
+      max_c4_len=column4_len;
 
-    if(!raptor_utf8_check(nfc1, nfc1_len)) {
-      fprintf(stderr, "%s:%d: UTF8 check 1 failed on: '", filename, line);
-      utf8_print(nfc1, nfc1_len, stderr);
+    if(!raptor_utf8_check(column2, column2_len)) {
+      fprintf(stderr, "%s:%d: UTF8 column 2 failed on: '", filename, line);
+      utf8_print(column2, column2_len, stderr);
       fputs("'\n", stderr);
       fails++;
     } else
       passes++;
 
-    nfc_rc=raptor_nfc_check(nfc1, nfc1_len, &error);
+    /* Column 2 must be NFC */
+    nfc_rc=raptor_nfc_check(column2, column2_len, &error);
     if(!nfc_rc) {
-      fprintf(stderr, "%s:%d: NFC check 1 failed on: '", filename, line);
-      utf8_print(nfc1, nfc1_len, stderr);
-      fprintf(stderr, "' at byte %d of %d\n", error, (int)nfc1_len);
+      fprintf(stderr, "%s:%d: NFC column 2 failed on: '", filename, line);
+      utf8_print(column2, column2_len, stderr);
+      fprintf(stderr, "' at byte %d of %d\n", error, (int)column2_len);
       fails++;
     } else
       passes++;
 
-    if(nfc1_len == nfc2_len && !memcmp(nfc1, nfc2, nfc1_len))
+    if(column2_len == column4_len && !memcmp(column2, column4, column2_len))
       continue;
 
-    if(!raptor_utf8_check(nfc2, nfc2_len)) {
-      fprintf(stderr, "%s:%d: UTF8 check 2 failed on: '", filename, line);
-      utf8_print(nfc2, nfc2_len, stderr);
+    if(!raptor_utf8_check(column4, column4_len)) {
+      fprintf(stderr, "%s:%d: UTF8 column 4 failed on: '", filename, line);
+      utf8_print(column4, column4_len, stderr);
       fputs("'\n", stderr);
       fails++;
     } else
       passes++;
 
-    nfc_rc=raptor_nfc_check(nfc2, nfc2_len, &error);
+    /* Column 4 must be in NFC */
+    nfc_rc=raptor_nfc_check(column4, column4_len, &error);
     if(!nfc_rc) {
-      fprintf(stderr, "%s:%d: NFC check 2 failed on: '", filename, line);
-      utf8_print(nfc2, nfc2_len, stderr);
-      fprintf(stderr, "' at byte %d of %d\n", error, (int)nfc2_len);
+      fprintf(stderr, "%s:%d: NFC column 4 failed on: '", filename, line);
+      utf8_print(column4, column4_len, stderr);
+      fprintf(stderr, "' at byte %d of %d\n", error, (int)column4_len);
       fails++;
     } else
       passes++;
-    
   }
 
   fclose(fh);
 
-  fprintf(stderr, "%s: max c2 len: %d,  max c4 len: %d\n", program,
+  fprintf(stderr, "%s: max column 2 len: %d,  max column 4 len: %d\n", program,
           (int)max_c2_len, (int)max_c4_len);
   fprintf(stderr, "%s: passes: %d fails: %d\n", program,
           passes, fails);
