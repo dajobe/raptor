@@ -139,7 +139,7 @@ main (int argc, char *argv[])
     fprintf(stderr,
             "USAGE %s [path to NormalizationTest.txt]\n"
             "Get it at http://unicode.org/Public/UNIDATA/NormalizationTest.txt\n",
-            program, program);
+            program);
     return 1;
   }
   
