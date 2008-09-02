@@ -144,6 +144,7 @@ raptor_uri_get_handler_v2(raptor_world* world, const raptor_uri_handler **handle
 static raptor_uri*
 raptor_default_new_uri(void *context, const unsigned char *uri_string) 
 {
+  raptor_world* world=(raptor_world*)context;
   unsigned char *p;
   size_t len;
   
@@ -166,9 +167,9 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
           return NULL;
         *new_fragment='#';
         strcpy((char*)new_fragment+1, (const char*)fragment);
-        new_uri=raptor_new_uri_relative_to_base(uri, new_fragment);
+        new_uri=raptor_new_uri_relative_to_base_v2(world, uri, new_fragment);
         RAPTOR_FREE(cstring, new_fragment);
-        raptor_free_uri(uri);
+        raptor_free_uri_v2(world, uri);
         uri=new_uri;
       }
     }
@@ -1239,7 +1240,7 @@ static const raptor_uri_handler raptor_uri_default_handler = {
 int
 raptor_uri_init(raptor_world* world)
 {
-  raptor_uri_set_handler_v2(world, &raptor_uri_default_handler, NULL);
+  raptor_uri_set_handler_v2(world, &raptor_uri_default_handler, world);
   return 0;
 }
 
