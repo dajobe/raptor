@@ -1351,7 +1351,7 @@ raptor_serializer_error_varargs(raptor_serializer* serializer,
     return;
   }
 
-  raptor_print_locator(stderr, &serializer->locator);
+  raptor_print_locator_v2(serializer->world, stderr, &serializer->locator);
   fprintf(stderr, " raptor error - ");
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
@@ -1398,7 +1398,7 @@ raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *mes
     return;
   }
 
-  raptor_print_locator(stderr, &serializer->locator);
+  raptor_print_locator_v2(serializer->world, stderr, &serializer->locator);
   fprintf(stderr, " raptor warning - ");
   vfprintf(stderr, message, arguments);
   fputc('\n', stderr);
