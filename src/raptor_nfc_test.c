@@ -2,7 +2,7 @@
  *
  * raptor_nfc_test.c - Raptor Unicode NFC validation check
  *
- * Copyright (C) 2004-2006, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -126,7 +126,7 @@ int
 main (int argc, char *argv[]) 
 {
   const char *program=raptor_basename(argv[0]);
-  static const char *filename="NormalizationTest.txt";
+  const char *filename;
   FILE *fh;
   int rc=0;
   unsigned int line=1;
@@ -135,6 +135,15 @@ main (int argc, char *argv[])
   int passes=0;
   int fails=0;
 
+  if(argc != 2) {
+    fprintf(stderr,
+            "USAGE %s [path to NormalizationTest.txt]\n"
+            "Get it at http://unicode.org/Public/UNIDATA/NormalizationTest.txt\n",
+            program, program);
+    return 1;
+  }
+  
+  filename=argv[1];
   fh=fopen(filename, "r");
   if(!fh) {
     fprintf(stderr, "%s: file '%s' open failed - %s\n",
