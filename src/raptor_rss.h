@@ -103,11 +103,10 @@ typedef enum {
 typedef struct {
   const char *const uri_string;
   const char *prefix;
-  raptor_uri* uri;
 } raptor_rss_namespace_info;
 
 
-extern raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE];
+extern const raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE];
   
 #define RAPTOR_RSS_INFO_FLAG_URI_VALUE 1
 
@@ -116,11 +115,9 @@ typedef struct {
   const char* name;
   rss_info_namespace nspace;
   int flags;
-  raptor_uri* uri;
-  raptor_qname* qname;
 } raptor_rss_info;
 
-extern raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE];
+extern const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE];
 
 /* Fields of typed nodes used in RSS */
 typedef enum {
@@ -218,7 +215,7 @@ typedef enum {
   RAPTOR_RSS_FIELDS_SIZE=RAPTOR_RSS_FIELD_UNKNOWN
 } raptor_rss_fields_type;
 
-extern raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2];
+extern const raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2];
 
 typedef struct {
   raptor_rss_fields_type from;
@@ -258,7 +255,8 @@ struct raptor_rss_item_s
 {
   raptor_uri *uri;
   raptor_identifier identifier;
-  raptor_rss_info *node_type;
+  const raptor_rss_info *node_type;
+  int node_typei;
   raptor_rss_field* fields[RAPTOR_RSS_FIELDS_SIZE];
   raptor_rss_enclosure* enclosure;
   int fields_count;
@@ -298,10 +296,10 @@ typedef struct {
 
 
 /* raptor_rss_common.c */
-void raptor_rss_common_init(void);
-void raptor_rss_common_terminate(void);
+int raptor_rss_common_init(raptor_world* world);
+void raptor_rss_common_terminate(raptor_world* world);
 
-void raptor_rss_model_init(raptor_rss_model* rss_model);
+void raptor_rss_model_init(raptor_world* world, raptor_rss_model* rss_model);
 void raptor_rss_model_clear(raptor_rss_model* rss_model);
 
 raptor_rss_item* raptor_new_rss_item(void);

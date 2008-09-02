@@ -1271,6 +1271,16 @@ struct raptor_world_s {
   /* current uri handler and its data */
   const raptor_uri_handler *uri_handler;
   void *uri_handler_context;
+
+  /* raptor_rss_common initialisation counter */
+  int rss_common_initialised;
+
+  /* raptor_rss_{namespaces,types,fields}_info const data initialized to raptor_uri,raptor_qname objects */
+  raptor_uri **rss_namespaces_info_uris;
+  raptor_uri **rss_types_info_uris;
+  raptor_qname **rss_types_info_qnames;
+  raptor_uri **rss_fields_info_uris;
+  raptor_qname **rss_fields_info_qnames;
 };
 
 /* raptor_world legacy accessor */
