@@ -827,6 +827,8 @@ RAPTOR_API
 raptor_parser* raptor_new_parser_v2(raptor_world* world, const char *name);
 RAPTOR_API
 raptor_parser* raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
+RAPTOR_API
+raptor_parser* raptor_new_parser_for_content_v2(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
 RAPTOR_API
 int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);

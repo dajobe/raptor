@@ -185,8 +185,7 @@ raptor_parser_register_factory(raptor_world* world,
       (h=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     if(!strcmp(h->name, name)) {
-      raptor_finish();
-      RAPTOR_FATAL2("parser %s already registered\n", h->name);
+      RAPTOR_DEBUG2("parser %s already registered\n", h->name);
       return NULL;
     }
   }
@@ -246,8 +245,7 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
       (p=(raptor_parser_factory*)raptor_sequence_get_at(factory->world->parsers, i));
       i++) {
     if(!strcmp(p->name, alias)) {
-      raptor_finish();
-      RAPTOR_FATAL2("parser %s already registered\n", p->name);
+      RAPTOR_DEBUG2("parser %s already registered\n", p->name);
       return 1;
     }
   }
@@ -596,6 +594,9 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
  * recognition of the syntax by a block of characters, the content
  * identifier or a mime type.  The content identifier is typically a
  * filename or URI or some other identifier.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_parser_for_content_v2() if using raptor_world APIs.
  * 
  * Return value: a new #raptor_parser object or NULL on failure
  **/
@@ -604,9 +605,40 @@ raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
                               const unsigned char *buffer, size_t len,
                               const unsigned char *identifier)
 {
-  return raptor_new_parser(raptor_guess_parser_name(uri, mime_type, buffer, len, identifier));
+  return raptor_new_parser_for_content_v2(raptor_world_instance(),
+                                          uri, mime_type,
+                                          buffer, len,
+                                          identifier);
 }
 
+
+/**
+ * raptor_new_parser_for_content_v2:
+ * @world: raptor_world object
+ * @uri: URI identifying the syntax (or NULL)
+ * @mime_type: mime type identifying the content (or NULL)
+ * @buffer: buffer of content to guess (or NULL)
+ * @len: length of buffer
+ * @identifier: identifier of content (or NULL)
+ * 
+ * Constructor - create a new raptor_parser.
+ *
+ * Uses raptor_guess_parser_name() to find a parser by scoring
+ * recognition of the syntax by a block of characters, the content
+ * identifier or a mime type.  The content identifier is typically a
+ * filename or URI or some other identifier.
+ * 
+ * Return value: a new #raptor_parser object or NULL on failure
+ **/
+raptor_parser*
+raptor_new_parser_for_content_v2(raptor_world* world,
+                                 raptor_uri *uri, const char *mime_type,
+                                 const unsigned char *buffer, size_t len,
+                                 const unsigned char *identifier)
+{
+  return raptor_new_parser_v2(world,
+                              raptor_guess_parser_name_v2(world, uri, mime_type, buffer, len, identifier));
+}
 
 
 /**
@@ -630,10 +662,10 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
   }
 
   if(uri)
-    uri=raptor_uri_copy(uri);
+    uri=raptor_uri_copy_v2(rdf_parser->world, uri);
   
   if(rdf_parser->base_uri)
-    raptor_free_uri(rdf_parser->base_uri);
+    raptor_free_uri_v2(rdf_parser->world, rdf_parser->base_uri);
   rdf_parser->base_uri=uri;
 
   rdf_parser->locator.uri    = uri;
@@ -697,7 +729,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
     RAPTOR_FREE(raptor_parser_context, rdf_parser->context);
 
   if(rdf_parser->base_uri)
-    raptor_free_uri(rdf_parser->base_uri);
+    raptor_free_uri_v2(rdf_parser->world, rdf_parser->base_uri);
 
   if(rdf_parser->default_generate_id_handler_prefix)
     RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
@@ -789,7 +821,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 #endif
 
   if(uri) {
-    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
+    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string_v2(rdf_parser->world, uri));
     if(!filename)
       return 1;
 
@@ -808,7 +840,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
       goto cleanup;
     }
     if(!base_uri) {
-      base_uri=raptor_uri_copy(uri);
+      base_uri=raptor_uri_copy_v2(rdf_parser->world, uri);
       free_base_uri=1;
     }
   } else {
@@ -826,7 +858,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
     RAPTOR_FREE(cstring, (void*)filename);
   }
   if(free_base_uri)
-    raptor_free_uri(base_uri);
+    raptor_free_uri_v2(rdf_parser->world, base_uri);
 
   return rc;
 }
@@ -872,7 +904,8 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
 int
 raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri)
 {
-  unsigned char* uri_string=raptor_uri_as_string(uri);
+  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  unsigned char* uri_string=raptor_uri_as_string_v2(rdf_parser->world, uri);
   
   if(raptor_uri_uri_string_is_file_uri(uri_string))
     return 0;
@@ -991,7 +1024,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     ret=raptor_start_parse(rdf_parser, base_uri);
 
   if(rpbc.final_uri)
-    raptor_free_uri(rpbc.final_uri);
+    raptor_free_uri_v2(rdf_parser->world, rpbc.final_uri);
 
   if(ret) {
     raptor_www_free(rdf_parser->www);
@@ -1941,7 +1974,7 @@ raptor_guess_parser_name_v2(raptor_world* world,
       break;
     
     if(uri && factory->uri_string &&
-       !strcmp((const char*)raptor_uri_as_string(uri), 
+       !strcmp((const char*)raptor_uri_as_string_v2(world, uri), 
                (const char*)factory->uri_string))
       /* got an exact match syntax for URI - return result */
       break;
@@ -1967,9 +2000,11 @@ raptor_guess_parser_name_v2(raptor_world* world,
     }
 
     if(i > MAX_PARSERS) {
-      raptor_finish();
-      RAPTOR_FATAL2("Number of parsers greater than static buffer size %d\n",
+      RAPTOR_DEBUG2("Number of parsers greater than static buffer size %d\n",
                     MAX_PARSERS);
+      if(suffix)
+        RAPTOR_FREE(cstring, suffix);
+      return NULL;
     }
 
     scores[i].score=score < 10 ? score : 10; scores[i].factory=factory;
