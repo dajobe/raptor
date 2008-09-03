@@ -100,8 +100,46 @@ const unsigned char * const raptor_owl_namespace_uri=(const unsigned char *)"htt
 /**
  * raptor_namespaces_init:
  * @nstack: #raptor_namespace_stack to initialise
- * @uri_handler: URI handler function
- * @uri_context: context for URI handler
+ * @uri_handler: URI handler function (ignored)
+ * @uri_context: context for URI handler (ignored)
+ * @error_handler: error handler function
+ * @error_data: context for error handler
+ * @defaults: namespaces to initialise.
+ *
+ * Initialise a namespaces stack some optional common namespaces.
+ *
+ * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL
+ * and XSD (RDQL uses this) or 3+ undefined.
+ *
+ * @uri_handler and @uri_context parameters are ignored but are retained
+ * in the API for backwards compatibility. Internally the same uri handler
+ * as returned by raptor_uri_get_handler() will be used.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_namespaces_init_v2() if using raptor_world APIs.
+ *
+ * Return value: non-0 on error
+ */
+int
+raptor_namespaces_init(raptor_namespace_stack *nstack,
+                       const raptor_uri_handler *uri_handler,
+                       void *uri_context,
+                       raptor_simple_message_handler error_handler,
+                       void *error_data,
+                       int defaults)
+{
+  return raptor_namespaces_init_v2(raptor_world_instance(),
+                                   nstack,
+                                   error_handler,
+                                   error_data,
+                                   defaults);
+}
+
+
+/**
+ * raptor_namespaces_init_v2:
+ * @world: raptor_world object
+ * @nstack: #raptor_namespace_stack to initialise
  * @error_handler: error handler function
  * @error_data: context for error handler
  * @defaults: namespaces to initialise.
@@ -114,26 +152,25 @@ const unsigned char * const raptor_owl_namespace_uri=(const unsigned char *)"htt
  * Return value: non-0 on error
  */
 int
-raptor_namespaces_init(raptor_namespace_stack *nstack,
-                       const raptor_uri_handler *uri_handler,
-                       void *uri_context,
-                       raptor_simple_message_handler error_handler,
-                       void *error_data,
-                       int defaults)
+raptor_namespaces_init_v2(raptor_world* world,
+                          raptor_namespace_stack *nstack,
+                          raptor_simple_message_handler error_handler,
+                          void *error_data,
+                          int defaults)
 {
   int failures=0;
 
+  nstack->world=world;
+
   nstack->top=NULL;
-  nstack->uri_handler=uri_handler;
-  nstack->uri_context=uri_context;
 
   nstack->error_handler=error_handler;
   nstack->error_data=error_data;
 
-  nstack->rdf_ms_uri    = uri_handler->new_uri(uri_context, (const unsigned char*)raptor_rdf_namespace_uri);
+  nstack->rdf_ms_uri    = world->uri_handler->new_uri(world->uri_handler_context, (const unsigned char*)raptor_rdf_namespace_uri);
   failures+=!nstack->rdf_ms_uri;
    
-  nstack->rdf_schema_uri= uri_handler->new_uri(uri_context, (const unsigned char*)raptor_rdf_schema_namespace_uri);
+  nstack->rdf_schema_uri= world->uri_handler->new_uri(world->uri_handler_context, (const unsigned char*)raptor_rdf_schema_namespace_uri);
   failures+=!nstack->rdf_schema_uri;
 
   /* raptor_new_namespace_from_uri() that eventually gets called by
@@ -165,15 +202,22 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
 
 /**
  * raptor_new_namespaces:
- * @uri_handler: URI handler function
- * @uri_context: URI handler context data
+ * @uri_handler: URI handler function (ignored)
+ * @uri_context: URI handler context data (ignored)
  * @error_handler: error handler function
  * @error_data: error handler data
  * @defaults: namespaces to initialise
  * 
  * Constructor - create a new #raptor_namespace_stack.
  *
- * See raptor_namespaces_init() fo the values of @defaults.
+ * See raptor_namespaces_init() for the values of @defaults.
+ *
+ * @uri_handler and @uri_context parameters are ignored but are retained
+ * in the API for backwards compatibility. Internally the same uri handler
+ * as returned by raptor_uri_get_handler() will be used.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_namespaces_v2() if using raptor_world APIs.
  * 
  * Return value: a new namespace stack or NULL on failure
  **/
@@ -184,14 +228,40 @@ raptor_new_namespaces(const raptor_uri_handler *uri_handler,
                       void *error_data,
                       int defaults) 
 {
+  return raptor_new_namespaces_v2(raptor_world_instance(),
+                                  error_handler,
+                                  error_data,
+                                  defaults);
+}
+
+
+/**
+ * raptor_new_namespaces_v2:
+ * @world: raptor_world object
+ * @error_handler: error handler function
+ * @error_data: error handler data
+ * @defaults: namespaces to initialise
+ * 
+ * Constructor - create a new #raptor_namespace_stack.
+ *
+ * See raptor_namespaces_init() for the values of @defaults.
+ * 
+ * Return value: a new namespace stack or NULL on failure
+ **/
+raptor_namespace_stack *
+raptor_new_namespaces_v2(raptor_world* world,
+                         raptor_simple_message_handler error_handler,
+                         void *error_data,
+                         int defaults) 
+{
   raptor_namespace_stack *nstack=(raptor_namespace_stack *)RAPTOR_MALLOC(raptor_namespace_stack, sizeof(raptor_namespace_stack));
   if(!nstack)
     return NULL;
                       
-  if(raptor_namespaces_init(nstack, 
-                            uri_handler, uri_context,
-                            error_handler, error_data,
-                            defaults)) {
+  if(raptor_namespaces_init_v2(world,
+                               nstack, 
+                               error_handler, error_data,
+                               defaults)) {
     raptor_free_namespaces(nstack);
     nstack=NULL;
   }
@@ -273,19 +343,18 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack)
   }
   nstack->top=NULL;
 
-  if(nstack->uri_handler) {
+  if(nstack->world && nstack->world->uri_handler) {
     if(nstack->rdf_ms_uri) {
-      nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_ms_uri);
+      nstack->world->uri_handler->free_uri(nstack->world->uri_handler_context, nstack->rdf_ms_uri);
       nstack->rdf_ms_uri=NULL;
     }
     if(nstack->rdf_schema_uri) {
-      nstack->uri_handler->free_uri(nstack->uri_context, nstack->rdf_schema_uri);
+      nstack->world->uri_handler->free_uri(nstack->world->uri_handler_context, nstack->rdf_schema_uri);
       nstack->rdf_schema_uri=NULL;
     }
   }
 
-  nstack->uri_handler=NULL;
-  nstack->uri_context=NULL;
+  nstack->world=NULL;
 }
 
 
@@ -404,7 +473,7 @@ raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack,
     return NULL;
   
   for(ns=nstack->top; ns ; ns=ns->next)
-    if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, ns_uri))
+    if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, ns_uri))
       return ns;
 
   return NULL;
@@ -427,7 +496,7 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
   raptor_namespace* ns;
   
   for(ns=nstack->top; ns ; ns=ns->next)
-    if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nspace->uri))
+    if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, nspace->uri))
       return 1;
   return 0;
 }
@@ -481,7 +550,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   p=(unsigned char*)ns+sizeof(raptor_namespace);
   if(ns_uri) {
-    ns->uri=(*nstack->uri_handler->uri_copy)(nstack->uri_context, ns_uri);
+    ns->uri=(*nstack->world->uri_handler->uri_copy)(nstack->world->uri_handler_context, ns_uri);
     if(!ns->uri) {
       RAPTOR_FREE(raptor_namespace, ns);
       return NULL;
@@ -498,9 +567,9 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   /* set convienience flags when there is a defined namespace URI */
   if(ns->uri) {
-    if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nstack->rdf_ms_uri))
+    if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, nstack->rdf_ms_uri))
       ns->is_rdf_ms=1;
-    else if(nstack->uri_handler->uri_equals(nstack->uri_context, ns->uri, nstack->rdf_schema_uri))
+    else if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, nstack->rdf_schema_uri))
       ns->is_rdf_schema=1;
   }
 
@@ -534,13 +603,13 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
     ns_uri_string=NULL;
 
   if(ns_uri_string) {
-    ns_uri=raptor_new_uri(ns_uri_string);
+    ns_uri=raptor_new_uri_v2(nstack->world, ns_uri_string);
     if(!ns_uri)
       return NULL;
   }
   ns=raptor_new_namespace_from_uri(nstack, prefix, ns_uri, depth);
   if(ns_uri)
-    raptor_free_uri(ns_uri);
+    raptor_free_uri_v2(nstack->world, ns_uri);
 
   return ns;
 }
@@ -584,7 +653,7 @@ raptor_free_namespace(raptor_namespace *ns)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(ns, raptor_namespace);
 
   if(ns->uri)
-    ns->nstack->uri_handler->free_uri(ns->nstack->uri_context, ns->uri);
+    ns->nstack->world->uri_handler->free_uri(ns->nstack->world->uri_handler_context, ns->uri);
 
   RAPTOR_FREE(raptor_namespace, ns);
 }
@@ -668,7 +737,7 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
   unsigned char *p;
 
   if(ns->uri) {
-    uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
+    uri_string=raptor_uri_as_counted_string_v2(ns->nstack->world, ns->uri, &uri_length);
     xml_uri_length=raptor_xml_escape_string(uri_string, uri_length,
                                             NULL, 0, quote, NULL, NULL);
   }
@@ -729,7 +798,7 @@ raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
     return 1;
   
   if(ns->uri)
-    uri_string=raptor_uri_as_counted_string(ns->uri, &uri_length);
+    uri_string=raptor_uri_as_counted_string_v2(ns->nstack->world, ns->uri, &uri_length);
   
   raptor_iostream_write_counted_string(iostr, "xmlns", 5);
   if(ns->prefix) {
@@ -869,13 +938,13 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
   if(!uri)
     return NULL;
   
-  uri_string = raptor_uri_as_counted_string(uri, &uri_len);
+  uri_string = raptor_uri_as_counted_string_v2(nstack->world, uri, &uri_len);
 
   for(ns=nstack->top; ns ; ns=ns->next) {
     if(!ns->uri)
       continue;
     
-    ns_uri_string= nstack->uri_handler->uri_as_counted_string(nstack->uri_context, ns->uri, &ns_uri_len);
+    ns_uri_string= nstack->world->uri_handler->uri_as_counted_string(nstack->world->uri_handler_context, ns->uri, &ns_uri_len);
     if(ns_uri_len >= uri_len)
       continue;
     if(strncmp((const char*)uri_string, (const char*)ns_uri_string, ns_uri_len))
@@ -902,7 +971,7 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
 void
 raptor_namespace_print(FILE *stream, raptor_namespace* ns) 
 {
-  const unsigned char *uri_string=raptor_uri_as_string(ns->uri);
+  const unsigned char *uri_string=raptor_uri_as_string_v2(ns->nstack->world, ns->uri);
   if(ns->prefix)
     fprintf(stream, "%s:%s", ns->prefix, uri_string);
   else

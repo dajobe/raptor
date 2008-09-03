@@ -241,9 +241,8 @@ typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
 
 /* Raptor Namespace Stack node */
 struct raptor_namespace_stack_s {
+  raptor_world* world;
   raptor_namespace* top;
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
   raptor_simple_message_handler error_handler;
   void *error_data;
 

@@ -1252,9 +1252,13 @@ RAPTOR_API
 raptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *nstack, const unsigned char *prefix,  raptor_uri* ns_uri, int depth);
 RAPTOR_API
 raptor_namespace_stack* raptor_new_namespaces(const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
+RAPTOR_API
+raptor_namespace_stack* raptor_new_namespaces_v2(raptor_world* world, raptor_simple_message_handler error_handler, void *error_data, int defaults);
 
 RAPTOR_API
 int raptor_namespaces_init(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
+RAPTOR_API
+int raptor_namespaces_init_v2(raptor_world* world, raptor_namespace_stack *nstack, raptor_simple_message_handler error_handler, void *error_data, int defaults);
 RAPTOR_API
 void raptor_namespaces_clear(raptor_namespace_stack *nstack);
 RAPTOR_API
