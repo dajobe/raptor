@@ -209,7 +209,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   if(qname->nspace && local_name_length) {
     raptor_uri *uri=raptor_namespace_get_uri(qname->nspace);
     if(uri)
-      uri=raptor_new_uri_from_uri_local_name(uri, new_name);
+      uri=raptor_new_uri_from_uri_local_name_v2(nstack->world, uri, new_name);
 
     qname->uri=uri;
   }
@@ -275,7 +275,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
   if(qname->nspace) {
     qname->uri=raptor_namespace_get_uri(qname->nspace);
     if(qname->uri)
-      qname->uri=raptor_new_uri_from_uri_local_name(qname->uri, new_name);
+      qname->uri=raptor_new_uri_from_uri_local_name_v2(ns->nstack->world, qname->uri, new_name);
   }
   
   return qname;
@@ -325,7 +325,7 @@ raptor_qname_copy(raptor_qname *qname) {
 
   new_qname->uri=raptor_namespace_get_uri(new_qname->nspace);
   if(new_qname->uri)
-    new_qname->uri=raptor_new_uri_from_uri_local_name(new_qname->uri, new_name);
+    new_qname->uri=raptor_new_uri_from_uri_local_name_v2(qname->nspace->nstack->world, new_qname->uri, new_name);
   
   return new_qname;
 }
@@ -361,8 +361,8 @@ raptor_free_qname(raptor_qname* name)
   if(name->local_name)
     RAPTOR_FREE(cstring, (void*)name->local_name);
 
-  if(name->uri)
-    raptor_free_uri(name->uri);
+  if(name->uri && name->nspace)
+    raptor_free_uri_v2(name->nspace->nstack->world, name->uri);
 
   if(name->value)
     RAPTOR_FREE(cstring, (void*)name->value);
@@ -479,9 +479,9 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
    */
   if(ns && (uri=raptor_namespace_get_uri(ns))) {
     if(local_name_length)
-      uri=raptor_new_uri_from_uri_local_name(uri, local_name);
+      uri=raptor_new_uri_from_uri_local_name_v2(nstack->world, uri, local_name);
     else
-      uri=raptor_uri_copy(uri);
+      uri=raptor_uri_copy_v2(nstack->world, uri);
   }
 
   return uri;
