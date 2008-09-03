@@ -925,6 +925,8 @@ int raptor_get_need_base_uri(raptor_parser *rdf_parser);
 RAPTOR_API
 int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API
+int raptor_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
+RAPTOR_API
 int raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 RAPTOR_API
 int raptor_parser_set_feature_string(raptor_parser *parser, raptor_feature feature, const unsigned char *value);
@@ -987,6 +989,8 @@ RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 RAPTOR_API
 int raptor_serializer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+RAPTOR_API
+int raptor_serializer_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_serializer_set_feature(raptor_serializer *serializer, raptor_feature feature, int value);
 RAPTOR_API
@@ -1610,6 +1614,8 @@ int raptor_iostream_read_eof(raptor_iostream *iostr);
 RAPTOR_API
 raptor_feature raptor_feature_from_uri(raptor_uri *uri);
 RAPTOR_API
+raptor_feature raptor_feature_from_uri_v2(raptor_world* world, raptor_uri *uri);
+RAPTOR_API
 int raptor_feature_value_type(const raptor_feature feature);
 
 /* SAX2 element Class (raptor_xml_element) */
@@ -1665,6 +1671,8 @@ RAPTOR_API
 void raptor_xml_writer_flush(raptor_xml_writer* xml_writer);
 RAPTOR_API
 int raptor_xml_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+RAPTOR_API
+int raptor_xml_writer_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer, raptor_feature feature, int value);
 RAPTOR_API

@@ -650,7 +650,7 @@ void raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, FILE
 int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_parser);
 
 /* raptor_feature.c */
-int raptor_features_enumerate_common(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, int flags);
+int raptor_features_enumerate_common(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, int flags);
 
 /* raptor_general.c */
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
@@ -1176,7 +1176,7 @@ int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_nam
 void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
 int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-int raptor_turtle_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_turtle_writer_features_enumerate(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature, int value);
 int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature, const unsigned char *value);
 int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);

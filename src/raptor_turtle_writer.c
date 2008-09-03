@@ -664,6 +664,7 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
 
 /**
  * raptor_turtle_writer_features_enumerate:
+ * @world: raptor_world object
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
  * @uri: pointer to store feature URI (or NULL)
@@ -672,16 +673,17 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
  * Get list of turtle_writer features.
  * 
  * If uri is not NULL, a pointer to a new raptor_uri is returned
- * that must be freed by the caller with raptor_free_uri().
+ * that must be freed by the caller with raptor_free_uri_v2().
  *
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_turtle_writer_features_enumerate(const raptor_feature feature,
+raptor_turtle_writer_features_enumerate(raptor_world* world,
+                                        const raptor_feature feature,
                                         const char **name, 
                                         raptor_uri **uri, const char **label)
 {
-  return raptor_features_enumerate_common(feature, name, uri, label, 8);
+  return raptor_features_enumerate_common(world, feature, name, uri, label, 8);
 }
 
 

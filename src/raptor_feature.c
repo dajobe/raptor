@@ -100,6 +100,7 @@ static const char * const raptor_feature_uri_prefix="http://feature.librdf.org/r
 
 /*
  * raptor_features_enumerate_common:
+ * @world: raptor_world object
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
  * @uri: pointer to store feature URI (or NULL)
@@ -114,7 +115,8 @@ static const char * const raptor_feature_uri_prefix="http://feature.librdf.org/r
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_features_enumerate_common(const raptor_feature feature,
+raptor_features_enumerate_common(raptor_world* world,
+                                 const raptor_feature feature,
                                  const char **name, 
                                  raptor_uri **uri, const char **label,
                                  int flags)
@@ -128,13 +130,14 @@ raptor_features_enumerate_common(const raptor_feature feature,
         *name=raptor_features_list[i].name;
       
       if(uri) {
-        raptor_uri *base_uri=raptor_new_uri((const unsigned char*)raptor_feature_uri_prefix);
+        raptor_uri *base_uri=raptor_new_uri_v2(world, (const unsigned char*)raptor_feature_uri_prefix);
         if(!base_uri)
           return -1;
         
-        *uri=raptor_new_uri_from_uri_local_name(base_uri,
-                                                (const unsigned char*)raptor_features_list[i].name);
-        raptor_free_uri(base_uri);
+        *uri=raptor_new_uri_from_uri_local_name_v2(world,
+                                                   base_uri,
+                                                   (const unsigned char*)raptor_features_list[i].name);
+        raptor_free_uri_v2(world, base_uri);
       }
       if(label)
         *label=raptor_features_list[i].label;
@@ -180,10 +183,30 @@ raptor_feature_value_type(const raptor_feature feature) {
  * 
  * The allowed feature URIs are available via raptor_features_enumerate().
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_feature_from_uri_v2() if using raptor_world APIs.
+ *
  * Return value: < 0 if the feature is unknown
  **/
 raptor_feature
 raptor_feature_from_uri(raptor_uri *uri)
+{
+  return raptor_feature_from_uri_v2(raptor_world_instance(), uri);
+}
+
+/**
+ * raptor_feature_from_uri_v2:
+ * @world: raptor_world instance
+ * @uri: feature URI
+ *
+ * Turn a feature URI into an feature enum.
+ * 
+ * The allowed feature URIs are available via raptor_features_enumerate().
+ *
+ * Return value: < 0 if the feature is unknown
+ **/
+raptor_feature
+raptor_feature_from_uri_v2(raptor_world* world, raptor_uri *uri)
 {
   unsigned char *uri_string;
   int i;
@@ -192,7 +215,7 @@ raptor_feature_from_uri(raptor_uri *uri)
   if(!uri)
     return feature;
   
-  uri_string=raptor_uri_as_string(uri);
+  uri_string=raptor_uri_as_string_v2(world, uri);
   if(strncmp((const char*)uri_string, raptor_feature_uri_prefix,
              RAPTOR_FEATURE_URI_PREFIX_LEN))
     return feature;
