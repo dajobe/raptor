@@ -270,7 +270,8 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
       nmsg[length-2]='\0';
   }
   
-  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
+  raptor_log_error_varargs(sax2->world,
+                           RAPTOR_LOG_LEVEL_WARNING,
                            sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING].handler,
                            sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING].user_data,
                            sax2->locator, 
@@ -315,14 +316,16 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
   }
 
   if(is_fatal)
-    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_FATAL,
+    raptor_log_error_varargs(sax2->world,
+                             RAPTOR_LOG_LEVEL_FATAL,
                              sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_FATAL].handler, 
                              sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_FATAL].user_data,
                              sax2->locator, 
                              nmsg ? nmsg : msg, 
                              args);
   else
-    raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+    raptor_log_error_varargs(sax2->world,
+                             RAPTOR_LOG_LEVEL_ERROR,
                              sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
                              sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                              sax2->locator, 
@@ -369,7 +372,8 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
       nmsg[length-1]='\0';
   }
 
-  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_ERROR,
+  raptor_log_error_varargs(error_handlers->world,
+                           RAPTOR_LOG_LEVEL_ERROR,
                            error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
                            error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                            error_handlers->locator,
@@ -428,7 +432,8 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
       nmsg[length-2]='\0';
   }
 
-  raptor_log_error_varargs(RAPTOR_LOG_LEVEL_WARNING,
+  raptor_log_error_varargs(sax2->world,
+                           RAPTOR_LOG_LEVEL_WARNING,
                            sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING].handler,
                            sax2->error_handlers->handlers[RAPTOR_LOG_LEVEL_WARNING].user_data,
                            sax2->locator, 
@@ -689,9 +694,13 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
     handler_data=error_handlers->handlers[level].user_data;
   }
 
-  raptor_log_error(level, handler, handler_data,
-                   (error_handlers ? error_handlers->locator : NULL),
-                   nmsg);
+  if(error_handlers)
+    raptor_log_error(error_handlers->world,
+                     level, handler, handler_data,
+                     error_handlers->locator,
+                     nmsg);
+  else
+    fprintf(stderr, nmsg);
 
   
   raptor_free_stringbuffer(sb);

@@ -1378,7 +1378,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   uri_string=raptor_uri_as_string(rdf_parser->base_uri);
 
   if(1) {
-    raptor_error_handlers_init(&eh);
+    raptor_error_handlers_init_v2(rdf_parser->world, &eh);
     eh.last_log_level=rdf_parser->error_handlers.last_log_level;
 
     /* Save error handlers and discard parsing errors

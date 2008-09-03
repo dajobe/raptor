@@ -1785,6 +1785,7 @@ typedef enum {
 /**
  * raptor_error_handlers:
  * @magic: magic value - must use raptor_error_handlers_init() to set this
+ * @world: raptor_world object
  * @locator: raptor locator of the error
  * @last_log_level: number of log levels; size of @handlers arrays
  * @handlers: user handlers per log level
@@ -1793,6 +1794,7 @@ typedef enum {
  */
 typedef struct {
   unsigned int magic;
+  raptor_world* world;
 
   raptor_locator* locator;
 
@@ -1804,6 +1806,8 @@ typedef struct {
 
 RAPTOR_API
 void raptor_error_handlers_init(raptor_error_handlers* error_handlers);
+RAPTOR_API
+void raptor_error_handlers_init_v2(raptor_world* world, raptor_error_handlers* error_handlers);
 
 
 /* SAX2 API */

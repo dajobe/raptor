@@ -435,11 +435,29 @@ raptor_check_ordinal(const unsigned char *name) {
  *
  * Initialize #raptor_error_handlers object statically.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_error_handlers_init_v2() if using raptor_world APIs.
  */
 void
 raptor_error_handlers_init(raptor_error_handlers* error_handlers)
 {
+  raptor_error_handlers_init_v2(raptor_world_instance(), error_handlers);
+}
+
+
+/**
+ * raptor_error_handlers_init_v2:
+ * @world: raptor_world object
+ * @error_handlers: error handlers object
+ *
+ * Initialize #raptor_error_handlers object statically.
+ *
+ */
+void
+raptor_error_handlers_init_v2(raptor_world *world, raptor_error_handlers* error_handlers)
+{
   error_handlers->magic=RAPTOR_ERROR_HANDLER_MAGIC;
+  error_handlers->world=world;
 }
 
 
@@ -453,21 +471,23 @@ static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
 
 /* internal */
 void
-raptor_log_error_to_handlers(raptor_error_handlers* error_handlers,
+raptor_log_error_to_handlers(raptor_world* world,
+                             raptor_error_handlers* error_handlers,
                              raptor_log_level level,
                              raptor_locator* locator, const char* message)
 {
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
-  raptor_log_error(level, error_handlers->handlers[level].handler,
+  raptor_log_error(world, level, error_handlers->handlers[level].handler,
                    error_handlers->handlers[level].user_data,
                    locator, message);
 }
 
 
 void
-raptor_log_error_varargs(raptor_log_level level,
+raptor_log_error_varargs(raptor_world* world,
+                         raptor_log_level level,
                          raptor_message_handler handler, void* handler_data,
                          raptor_locator* locator,
                          const char* message, va_list arguments)
@@ -480,8 +500,8 @@ raptor_log_error_varargs(raptor_log_level level,
 
   buffer=raptor_vsnprintf(message, arguments);
   if(!buffer) {
-    if(locator) {
-      raptor_print_locator(stderr, locator);
+    if(locator && world) {
+      raptor_print_locator_v2(world, stderr, locator);
       fputc(' ', stderr);
     }
     fputs("raptor ", stderr);
@@ -496,7 +516,7 @@ raptor_log_error_varargs(raptor_log_level level,
   if(buffer[length-1]=='\n')
     buffer[length-1]='\0';
   
-  raptor_log_error(level, handler, handler_data, locator, buffer);
+  raptor_log_error(world, level, handler, handler_data, locator, buffer);
 
   RAPTOR_FREE(cstring, buffer);
 }
@@ -504,7 +524,8 @@ raptor_log_error_varargs(raptor_log_level level,
 
 /* internal */
 void
-raptor_log_error(raptor_log_level level,
+raptor_log_error(raptor_world* world,
+                 raptor_log_level level,
                  raptor_message_handler handler, void* handler_data,
                  raptor_locator* locator, const char* message)
 {
@@ -521,8 +542,8 @@ raptor_log_error(raptor_log_level level,
      */
     handler(handler_data, locator, message);
   else {
-    if(locator) {
-      raptor_print_locator(stderr, locator);
+    if(locator && world) {
+      raptor_print_locator_v2(world, stderr, locator);
       fputc(' ', stderr);
     }
     fputs("raptor ", stderr);
