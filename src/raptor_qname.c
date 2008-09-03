@@ -119,7 +119,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!qname)
     return NULL;
-
+  qname->world=nstack->world;
 
   if(value) {
     int value_length=strlen((char*)value);
@@ -209,7 +209,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   if(qname->nspace && local_name_length) {
     raptor_uri *uri=raptor_namespace_get_uri(qname->nspace);
     if(uri)
-      uri=raptor_new_uri_from_uri_local_name_v2(nstack->world, uri, new_name);
+      uri=raptor_new_uri_from_uri_local_name_v2(qname->world, uri, new_name);
 
     qname->uri=uri;
   }
@@ -247,6 +247,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
   qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!qname)
     return NULL;
+  qname->world=ns->nstack->world;
 
   if(value) {
     int value_length=strlen((char*)value);
@@ -275,7 +276,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
   if(qname->nspace) {
     qname->uri=raptor_namespace_get_uri(qname->nspace);
     if(qname->uri)
-      qname->uri=raptor_new_uri_from_uri_local_name_v2(ns->nstack->world, qname->uri, new_name);
+      qname->uri=raptor_new_uri_from_uri_local_name_v2(qname->world, qname->uri, new_name);
   }
   
   return qname;
@@ -325,7 +326,7 @@ raptor_qname_copy(raptor_qname *qname) {
 
   new_qname->uri=raptor_namespace_get_uri(new_qname->nspace);
   if(new_qname->uri)
-    new_qname->uri=raptor_new_uri_from_uri_local_name_v2(qname->nspace->nstack->world, new_qname->uri, new_name);
+    new_qname->uri=raptor_new_uri_from_uri_local_name_v2(qname->world, new_qname->uri, new_name);
   
   return new_qname;
 }
@@ -362,7 +363,7 @@ raptor_free_qname(raptor_qname* name)
     RAPTOR_FREE(cstring, (void*)name->local_name);
 
   if(name->uri && name->nspace)
-    raptor_free_uri_v2(name->nspace->nstack->world, name->uri);
+    raptor_free_uri_v2(name->world, name->uri);
 
   if(name->value)
     RAPTOR_FREE(cstring, (void*)name->value);

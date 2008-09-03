@@ -695,6 +695,7 @@ void raptor_parser_start_namespace(raptor_parser* rdf_parser, raptor_namespace* 
  * only then is uri also given.
  */
 struct raptor_qname_s {
+  raptor_world* world;
   /* Name - always present */
   const unsigned char *local_name;
   int local_name_length;
