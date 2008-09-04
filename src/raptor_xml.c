@@ -114,12 +114,12 @@ raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns,
 
   qname=raptor_new_qname_from_namespace_local_name(ns, name, NULL);
   if(qname) {
-    base_uri_copy=xml_base ? raptor_uri_copy(xml_base) : NULL;
+    base_uri_copy=xml_base ? raptor_uri_copy_v2(ns->nstack->world, xml_base) : NULL;
     element=raptor_new_xml_element(qname, xml_language, base_uri_copy);
     if(!element) {
       raptor_free_qname(qname);
       if(base_uri_copy)
-        raptor_free_uri(base_uri_copy);
+        raptor_free_uri_v2(ns->nstack->world, base_uri_copy);
     }
   }
   return element;
@@ -150,7 +150,7 @@ raptor_free_xml_element(raptor_xml_element *element)
     raptor_free_stringbuffer(element->content_cdata_sb);
 
   if(element->base_uri)
-    raptor_free_uri(element->base_uri);
+    raptor_free_uri_v2(element->name->world, element->base_uri);
 
   if(element->xml_language)
     RAPTOR_FREE(cstring, (void*)element->xml_language);
