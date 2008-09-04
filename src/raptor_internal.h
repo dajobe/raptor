@@ -804,6 +804,7 @@ int raptor_utf8_is_nfc(const unsigned char *input, size_t length);
 
 /* WWW library state */
 struct  raptor_www_s {
+  raptor_world* world;
   char *type;
   int free_type;
   int total_bytes;

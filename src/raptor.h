@@ -1189,7 +1189,11 @@ void raptor_www_no_www_library_init_finish(void);
 RAPTOR_API
 raptor_www *raptor_www_new(void);
 RAPTOR_API
+raptor_www *raptor_www_new_v2(raptor_world* world);
+RAPTOR_API
 raptor_www *raptor_www_new_with_connection(void* connection);
+RAPTOR_API
+raptor_www *raptor_www_new_with_connection_v2(raptor_world* world, void* connection);
 RAPTOR_API
 void raptor_www_free(raptor_www *www);
 RAPTOR_API
