@@ -405,7 +405,7 @@ raptor_rss_start_element_handler(void *user_data,
       RAPTOR_DEBUG1("FOUND new enclosure\n");
       if(rss_parser->current_type == RAPTOR_RSS_ITEM) {
         update_item=rss_parser->model.last;
-        enclosure=raptor_rss_new_enclosure();
+        enclosure=raptor_rss_new_enclosure(rdf_parser->world);
         raptor_rss_item_add_enclosure(update_item, enclosure);
       }
     } else {

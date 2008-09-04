@@ -312,7 +312,7 @@ void raptor_free_rss_item(raptor_rss_item* item);
 void raptor_rss_item_add_enclosure(raptor_rss_item* item, raptor_rss_enclosure* enclosure);
 void raptor_rss_item_add_field(raptor_rss_item* item, int type, raptor_rss_field* field);
 
-raptor_rss_enclosure* raptor_rss_new_enclosure(void);
+raptor_rss_enclosure* raptor_rss_new_enclosure(raptor_world* world);
 void raptor_enclosure_free(raptor_rss_enclosure* enclosure);
 
 raptor_rss_field* raptor_rss_new_field(void);

@@ -694,6 +694,13 @@ raptor_rdfxml_start_element_handler(void *user_data,
   } 
   element->xml_element=xml_element;
 
+  /* init world fields in identifiers not created with raptor_new_identifier() */
+  element->reified.world=
+    element->bag.world=
+    element->subject.world=
+    element->predicate.world=
+    element->object.world=
+    rdf_parser->world;
 
   raptor_rdfxml_element_push(rdf_xml_parser, element);
 
