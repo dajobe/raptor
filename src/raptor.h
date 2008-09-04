@@ -455,6 +455,7 @@ typedef enum {
  *   %RAPTOR_IDENTIFIER_TYPE_LITERAL and %RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
  * @literal_language: RDF literal language for type
  *   %RAPTOR_IDENTIFIER_TYPE_LITERAL
+ * @world: raptor_world object
  *
  * Raptor RDF term identifier.
 */
@@ -468,6 +469,7 @@ typedef struct {
   const unsigned char *literal;
   raptor_uri *literal_datatype;
   const unsigned char *literal_language;
+  raptor_world *world;
 } raptor_identifier;
 
 
@@ -1062,6 +1064,8 @@ raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
 /* Identifier functions */
 RAPTOR_API
 raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
+RAPTOR_API
+raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
 RAPTOR_API
 int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API

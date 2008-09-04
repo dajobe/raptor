@@ -60,6 +60,9 @@
  * Constructs a new identifier copying the URI, ID fields.
  * SHARED means raptor_new_identifier owns this argument after calling.
  * 
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_identifier_v2() if using raptor_world APIs.
+ *
  * Return value: a new raptor_identifier object or NULL on failure
  **/
 raptor_identifier*
@@ -71,25 +74,64 @@ raptor_new_identifier(raptor_identifier_type type,
                       raptor_uri *literal_datatype,
                       const unsigned char *literal_language)
 {
+  return raptor_new_identifier_v2(raptor_world_instance(),
+                                  type,
+                                  uri,
+                                  uri_source,
+                                  id,
+                                  literal,
+                                  literal_datatype,
+                                  literal_language);
+}
+
+/**
+ * raptor_new_identifier_v2:
+ * @world: raptor_world object
+ * @type: raptor_identifier_type of identifier
+ * @uri: #raptor_uri of identifier (if relevant) (SHARED)
+ * @uri_source: raptor_uri_source of URI (if relevant)
+ * @id: string for ID or genid (if relevant) (SHARED)
+ * @literal: string for literal (SHARED)
+ * @literal_datatype: #raptor_uri of identifier (SHARED)
+ * @literal_language: literal language (SHARED)
+ *
+ * Constructor - create a raptor_identifier.
+ * 
+ * Constructs a new identifier copying the URI, ID fields.
+ * SHARED means raptor_new_identifier owns this argument after calling.
+ * 
+ * Return value: a new raptor_identifier object or NULL on failure
+ **/
+raptor_identifier*
+raptor_new_identifier_v2(raptor_world* world,
+                         raptor_identifier_type type,
+                         raptor_uri *uri,
+                         raptor_uri_source uri_source,
+                         const unsigned char *id,
+                         const unsigned char *literal,
+                         raptor_uri *literal_datatype,
+                         const unsigned char *literal_language)
+{
   raptor_identifier *identifier;
 
   identifier=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1,
                                                sizeof(raptor_identifier));
   if(!identifier) {
     if(uri)
-      raptor_free_uri(uri);
+      raptor_free_uri_v2(world, uri);
     if(id)
       RAPTOR_FREE(cstring, (void*)id);
     if(literal)
       RAPTOR_FREE(cstring, (void*)literal);
     if(literal_datatype)
-      raptor_free_uri(literal_datatype);
+      raptor_free_uri_v2(world, literal_datatype);
     if(literal_language)
       RAPTOR_FREE(cstring, (void*)literal_language);
 
     return NULL;
   }
 
+  identifier->world=world;
   identifier->type=type;
   identifier->is_malloced=1;
 
@@ -120,11 +162,12 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 
   raptor_free_identifier(dest);
 
+  dest->world=src->world;
   dest->type=src->type;
   dest->uri_source=src->uri_source;
   dest->ordinal=src->ordinal;
 
-  dest->uri=raptor_uri_copy(src->uri);
+  dest->uri=raptor_uri_copy_v2(src->world, src->uri);
 
   if(src->id) {
     len=strlen((char*)src->id);
@@ -148,7 +191,7 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
     strncpy((char*)dest->literal_language, (char*)src->literal_language, len+1);
   }
 
-  dest->literal_datatype=raptor_uri_copy(src->literal_datatype);
+  dest->literal_datatype=raptor_uri_copy_v2(src->world, src->literal_datatype);
 
   return 0;
 }
@@ -167,7 +210,7 @@ raptor_free_identifier(raptor_identifier *identifier)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(identifier, raptor_identifier);
   
   if(identifier->uri) {
-    raptor_free_uri(identifier->uri);
+    raptor_free_uri_v2(identifier->world, identifier->uri);
     identifier->uri=NULL;
   }
 
@@ -182,7 +225,7 @@ raptor_free_identifier(raptor_identifier *identifier)
   }
 
   if(identifier->literal_datatype) {
-    raptor_free_uri(identifier->literal_datatype);
+    raptor_free_uri_v2(identifier->world, identifier->literal_datatype);
     identifier->literal_datatype=NULL;
   }
 
@@ -216,14 +259,14 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
     if(identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
       fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
     else if(identifier->literal_datatype)
-      fputs((const char*)raptor_uri_as_string(identifier->literal_datatype), stream);
+      fputs((const char*)raptor_uri_as_string_v2(identifier->world, identifier->literal_datatype), stream);
     fputc('>', stream);
   } else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fputs((const char*)identifier->id, stream);
   else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
     fprintf(stream, "[rdf:_%d]", identifier->ordinal);
   else {
-    fprintf(stream, "%s", raptor_uri_as_string(identifier->uri));
+    fprintf(stream, "%s", raptor_uri_as_string_v2(identifier->world, identifier->uri));
   }
 }
 #endif
