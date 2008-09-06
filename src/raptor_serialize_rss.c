@@ -1023,7 +1023,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
     raptor_xml_element_declare_namespace(element, nspace);
   }
 
-  world->rss_fields_info_qnames=RAPTOR_CALLOC(raptor_qname* array, RAPTOR_RSS_FIELDS_SIZE, sizeof(raptor_qname*));
+  world->rss_fields_info_qnames=(raptor_qname**)RAPTOR_CALLOC(raptor_qname* array, RAPTOR_RSS_FIELDS_SIZE, sizeof(raptor_qname*));
   if(!world->rss_fields_info_qnames)
     return;
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
@@ -1034,7 +1034,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
       return;
   }
 
-  world->rss_types_info_qnames=RAPTOR_CALLOC(raptor_qname* array, RAPTOR_RSS_COMMON_SIZE, sizeof(raptor_qname*));
+  world->rss_types_info_qnames=(raptor_qname**)RAPTOR_CALLOC(raptor_qname* array, RAPTOR_RSS_COMMON_SIZE, sizeof(raptor_qname*));
   if(!world->rss_types_info_qnames)
     return;
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {

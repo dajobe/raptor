@@ -208,7 +208,7 @@ raptor_rss_common_init(raptor_world* world) {
   if(world->rss_common_initialised++)
     return 0;
 
-  world->rss_namespaces_info_uris=RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_NAMESPACES_SIZE, sizeof(raptor_uri*));
+  world->rss_namespaces_info_uris=(raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_NAMESPACES_SIZE, sizeof(raptor_uri*));
   if(!world->rss_namespaces_info_uris)
     return -1;
   for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
@@ -220,7 +220,7 @@ raptor_rss_common_init(raptor_world* world) {
     }
   }
 
-  world->rss_types_info_uris=RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_COMMON_SIZE, sizeof(raptor_uri*));
+  world->rss_types_info_uris=(raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_COMMON_SIZE, sizeof(raptor_uri*));
   if(!world->rss_types_info_uris)
     return -1;
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
@@ -233,7 +233,7 @@ raptor_rss_common_init(raptor_world* world) {
     }
   }
 
-  world->rss_fields_info_uris=RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_FIELDS_SIZE, sizeof(raptor_uri*));
+  world->rss_fields_info_uris=(raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_FIELDS_SIZE, sizeof(raptor_uri*));
   if(!world->rss_fields_info_uris)
     return -1;
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {

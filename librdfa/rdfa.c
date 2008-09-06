@@ -1176,7 +1176,7 @@ void rdfa_free_context(rdfacontext* context)
       do {
         rval=rdfa_pop_item(context->context_stack);
         if(rval && rval != context)
-          rdfa_free_context(rval);
+          rdfa_free_context((rdfacontext*)rval);
       } while(rval);
       free(context->context_stack->items);
       free(context->context_stack);
