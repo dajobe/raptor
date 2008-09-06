@@ -700,7 +700,7 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
                      error_handlers->locator,
                      nmsg);
   else
-    fprintf(stderr, nmsg);
+    fputs(nmsg, stderr);
 
   
   raptor_free_stringbuffer(sb);
