@@ -1398,7 +1398,7 @@ static void
 raptor_rss10_ensure_atom_field_zero_one(raptor_rss_item* item, 
                                         raptor_rss_fields_type f)
 {
-  raptor_rss_field* field=field=item->fields[f];
+  raptor_rss_field* field=item->fields[f];
   if(!field)
     return;
 
