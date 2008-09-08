@@ -30,9 +30,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#define RAPTOR_EXTERN_C extern "C"
-#else
-#define RAPTOR_EXTERN_C
 #endif
 
 #include <stdio.h>
