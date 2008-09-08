@@ -227,11 +227,11 @@ typedef enum {
  */
 
 static const struct { 
-  const char * const name;            /* term name */
+  const char *name;            /* term name */
   int forbidden_as_nodeElement;
   int forbidden_as_propertyElement;
   int forbidden_as_propertyAttribute;
-  const raptor_identifier_type type;  /* statement value */
+  raptor_identifier_type type;  /* statement value */
   int allowed_unprefixed_on_attribute;
 } rdf_syntax_terms_info[]={
   /* syntax only */
@@ -378,14 +378,14 @@ typedef enum {
 
 
 static const struct {
-  const char * const name;
-  const int whitespace_significant;
+  const char * name;
+  int whitespace_significant;
   /* non-blank cdata */
-  const int cdata_allowed;
+  int cdata_allowed;
   /* XML element content */
-  const int element_allowed;
+  int element_allowed;
   /* Do RDF-specific processing? (property attributes, rdf: attributes, ...) */
-  const int rdf_processing;
+  int rdf_processing;
 } rdf_content_type_info[RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LAST]={
   {"Unknown",         1, 1, 1, 0 },
   {"Literal",         1, 1, 0, 0 },
