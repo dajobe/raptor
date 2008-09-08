@@ -544,7 +544,7 @@ void *turtle_lexer_alloc(yy_size_t size, yyscan_t yyscanner)
   tracker=(lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
   if(!tracker) {
     /* allocate tracker header + array of void* slots */
-    tracker=calloc(1, sizeof(lexer_alloc_tracker_header)+initial_lexer_allocs_size*sizeof(void*));
+    tracker=(lexer_alloc_tracker_header*)calloc(1, sizeof(lexer_alloc_tracker_header)+initial_lexer_allocs_size*sizeof(void*));
     if(!tracker)
       YY_FATAL_ERROR("lexer_alloc: cannot allocate tracker");
     tracker->lexer_allocs_size=initial_lexer_allocs_size;
@@ -567,7 +567,7 @@ void *turtle_lexer_alloc(yy_size_t size, yyscan_t yyscanner)
   if(i>=tracker->lexer_allocs_size) {
     int j;
     void **dest;
-    tracker=calloc(1, sizeof(lexer_alloc_tracker_header)+i*2*sizeof(void*));
+    tracker=(lexer_alloc_tracker_header*)calloc(1, sizeof(lexer_alloc_tracker_header)+i*2*sizeof(void*));
     if(!tracker) {
       if(ptr)
         free(ptr);
