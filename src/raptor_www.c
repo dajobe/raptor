@@ -752,6 +752,7 @@ raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
  * 
  * Return value: non-0 on failure
  **/
+RAPTOR_EXTERN_C
 int
 raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
                            void **string_p, size_t *length_p,

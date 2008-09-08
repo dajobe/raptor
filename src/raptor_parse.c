@@ -167,6 +167,7 @@ raptor_parsers_finish(raptor_world *world)
  * INTERNAL
  *
  **/
+RAPTOR_EXTERN_C
 raptor_parser_factory*
 raptor_parser_register_factory(raptor_world* world,
                                const char *name, const char *label,

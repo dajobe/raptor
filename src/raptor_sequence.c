@@ -452,6 +452,7 @@ raptor_compare_strings(const void *a, const void *b)
  * must be dereferenced to get to the stored sequence data.
  * 
  **/
+RAPTOR_EXTERN_C
 void
 raptor_sequence_sort(raptor_sequence* seq, 
                      int(*compare)(const void *, const void *))

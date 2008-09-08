@@ -151,6 +151,7 @@ raptor_serializers_finish(raptor_world* world)
  *
  * Return value: non-0 on failure
  **/
+RAPTOR_EXTERN_C
 int
 raptor_serializer_register_factory(raptor_world* world,
                                    const char *name, const char *label,

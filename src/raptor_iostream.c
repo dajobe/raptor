@@ -480,6 +480,7 @@ static const raptor_iostream_handler2 raptor_iostream_write_string_handler={
  * 
  * Return value: new #raptor_iostream object or NULL on failure
  **/
+RAPTOR_EXTERN_C
 raptor_iostream*
 raptor_new_iostream_to_string(void **string_p, size_t *length_p,
                               void *(*malloc_handler)(size_t size))
