@@ -101,7 +101,7 @@ typedef enum {
 
 
 typedef struct {
-  const char *const uri_string;
+  const char *uri_string;
   const char *prefix;
 } raptor_rss_namespace_info;
 
