@@ -1286,6 +1286,9 @@ struct raptor_world_s {
   raptor_qname **rss_types_info_qnames;
   raptor_uri **rss_fields_info_uris;
   raptor_qname **rss_fields_info_qnames;
+
+  /* raptor_sax2 init count to work around issues in xml parser init/cleanup */
+  int sax2_initialized;
 };
 
 /* raptor_world legacy accessor */
