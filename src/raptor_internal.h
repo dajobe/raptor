@@ -1094,7 +1094,7 @@ int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, 
 
 
 /* raptor_xsd.c */
-raptor_identifier* raptor_new_identifier_from_double(double d);
+raptor_identifier* raptor_new_identifier_from_double(raptor_world* world, double d);
 
 
 /* raptor_abbrev.c */

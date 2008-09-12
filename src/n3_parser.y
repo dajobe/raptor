@@ -732,7 +732,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   printf("resource double=%1g\n", $1);
 #endif
-  $$=raptor_new_identifier_from_double($1);
+  $$=raptor_new_identifier_from_double(rdf_parser->world, $1);
   if(!$$)
     YYERROR;
 }
