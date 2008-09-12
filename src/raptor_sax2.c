@@ -155,7 +155,7 @@ raptor_free_sax2(raptor_sax2 *sax2)
   raptor_namespaces_clear(&sax2->namespaces);
 
   if(sax2->base_uri)
-    raptor_free_uri(sax2->base_uri);
+    raptor_free_uri_v2(sax2->world, sax2->base_uri);
 
   RAPTOR_FREE(raptor_sax2, sax2);
 }
@@ -442,17 +442,14 @@ raptor_sax2_simple_error(void* user_data, const char *message, ...)
 void
 raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 {
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
-
   sax2->depth=0;
   sax2->root_element=NULL;
   sax2->current_element=NULL;
 
   if(sax2->base_uri)
-    raptor_free_uri(sax2->base_uri);
+    raptor_free_uri_v2(sax2->world, sax2->base_uri);
   if(base_uri)
-    sax2->base_uri=raptor_uri_copy(base_uri);
+    sax2->base_uri=raptor_uri_copy_v2(sax2->world, base_uri);
   else
     sax2->base_uri=NULL;
 
@@ -483,11 +480,10 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 
   raptor_namespaces_clear(&sax2->namespaces);
 
-  raptor_uri_get_handler(&uri_handler, &uri_context);
-  raptor_namespaces_init(&sax2->namespaces,
-                         uri_handler, uri_context,
-                         (raptor_simple_message_handler)raptor_sax2_simple_error, sax2, 
-                         1);
+  raptor_namespaces_init_v2(sax2->world,
+                            &sax2->namespaces,
+                            (raptor_simple_message_handler)raptor_sax2_simple_error, sax2, 
+                            1);
 
 }
 
@@ -900,9 +896,9 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         raptor_uri* base_uri;
         raptor_uri* xuri;
         base_uri=raptor_sax2_inscope_base_uri(sax2);
-        xuri=raptor_new_uri_relative_to_base(base_uri, atts[i+1]);
-        xml_base=raptor_new_uri_for_xmlbase(xuri);
-        raptor_free_uri(xuri);
+        xuri=raptor_new_uri_relative_to_base_v2(sax2->world, base_uri, atts[i+1]);
+        xml_base=raptor_new_uri_for_xmlbase_v2(sax2->world, xuri);
+        raptor_free_uri_v2(sax2->world, xuri);
       }
 
       /* delete all xml attributes whether processed above or not */
@@ -989,7 +985,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   if(xml_atts_copy)
     RAPTOR_FREE(cstringpointer, xml_atts_copy);
   if(xml_base)
-    raptor_free_uri(xml_base);
+    raptor_free_uri_v2(sax2->world, xml_base);
   if(xml_language)
     RAPTOR_FREE(cstring, xml_language);
   if(xml_element)
