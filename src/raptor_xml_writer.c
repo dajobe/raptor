@@ -419,14 +419,21 @@ raptor_xml_writer_end_element_common(raptor_xml_writer* xml_writer,
 /**
  * raptor_new_xml_writer:
  * @nstack: Namespace stack for the writer to start with (or NULL)
- * @uri_handler: URI handler function
- * @uri_context: URI handler context data
+ * @uri_handler: URI handler function (ignored)
+ * @uri_context: URI handler context data (ignored)
  * @iostr: I/O stream to write to
  * @error_handler: error handler function
  * @error_data: error handler data
  * @canonicalize: unused
  * 
  * Constructor - Create a new XML Writer writing XML to a raptor_iostream
+ *
+ * @uri_handler and @uri_context parameters are ignored but are retained
+ * in the API for backwards compatibility. Internally the same uri handler
+ * as returned by raptor_uri_get_handler() will be used.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_xml_writer_v2() if using raptor_world APIs.
  * 
  * Return value: a new #raptor_xml_writer object or NULL on failure
  **/
@@ -439,6 +446,36 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
                       void *error_data,
                       int canonicalize)
 {
+  return raptor_new_xml_writer_v2(raptor_world_instance(),
+                                  nstack,
+                                  iostr,
+                                  error_handler,
+                                  error_data,
+                                  canonicalize);
+}
+
+
+/**
+ * raptor_new_xml_writer_v2:
+ * @world: raptor_world object
+ * @nstack: Namespace stack for the writer to start with (or NULL)
+ * @iostr: I/O stream to write to
+ * @error_handler: error handler function
+ * @error_data: error handler data
+ * @canonicalize: unused
+ * 
+ * Constructor - Create a new XML Writer writing XML to a raptor_iostream
+ * 
+ * Return value: a new #raptor_xml_writer object or NULL on failure
+ **/
+raptor_xml_writer*
+raptor_new_xml_writer_v2(raptor_world* world,
+                         raptor_namespace_stack *nstack,
+                         raptor_iostream* iostr,
+                         raptor_simple_message_handler error_handler,
+                         void *error_data,
+                         int canonicalize)
+{
   raptor_xml_writer* xml_writer;
   
   xml_writer=(raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1, sizeof(raptor_xml_writer)+1);
@@ -447,17 +484,14 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
 
   xml_writer->nstack_depth=0;
 
-  xml_writer->uri_handler=uri_handler;
-  xml_writer->uri_context=uri_context;
-
   xml_writer->error_handler=error_handler;
   xml_writer->error_data=error_data;
 
   xml_writer->nstack=nstack;
   if(!xml_writer->nstack) {
-    xml_writer->nstack=nstack=raptor_new_namespaces(uri_handler, uri_context,
-                                                    error_handler, error_data,
-                                                    1);
+    xml_writer->nstack=nstack=raptor_new_namespaces_v2(world,
+                                                       error_handler, error_data,
+                                                       1);
     xml_writer->my_nstack=1;
   }
 
