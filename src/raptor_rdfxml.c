@@ -1819,7 +1819,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           element->subject.id=element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID]=NULL;
-          element->subject.uri=raptor_new_uri_from_id(base_uri, element->subject.id);
+          element->subject.uri=raptor_new_uri_from_id_v2(rdf_parser->world, base_uri, element->subject.id);
           if(!element->subject.uri)
             goto oom;
           element->subject.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -1879,7 +1879,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]) {
             element->bag.id=element->rdf_attr[RDF_ATTR_bagID];
             element->rdf_attr[RDF_ATTR_bagID]=NULL;
-            element->bag.uri=raptor_new_uri_from_id(base_uri, element->bag.id);
+            element->bag.uri=raptor_new_uri_from_id_v2(rdf_parser->world, base_uri, element->bag.id);
             if(!element->bag.uri)
               goto oom;
             element->bag.type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
