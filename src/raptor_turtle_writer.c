@@ -955,9 +955,9 @@ main(int argc, char *argv[])
 
   base_uri=raptor_new_uri(base_uri_string);
 
-  turtle_writer=raptor_new_turtle_writer(base_uri, 1,
+  turtle_writer=raptor_new_turtle_writer(raptor_world_instance(), /* FIXME */
+                                         base_uri, 1,
                                          nstack,
-                                         uri_handler, uri_context,
                                          iostr,
                                          NULL, NULL /* errors */
                                          );
