@@ -885,7 +885,7 @@ void raptor_www_libfetch_free(raptor_www *www);
 int raptor_www_libfetch_fetch(raptor_www *www);
 
 /* raptor_set.c */
-raptor_id_set* raptor_new_id_set(void);
+raptor_id_set* raptor_new_id_set(raptor_world* world);
 void raptor_free_id_set(raptor_id_set* set);
 int raptor_id_set_add(raptor_id_set* set, raptor_uri* base_uri, const unsigned char *item, size_t item_len);
 #if RAPTOR_DEBUG > 1

@@ -1101,7 +1101,7 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
     return 1;
 
   /* Create id set object */
-  rdf_xml_parser->id_set=raptor_new_id_set();
+  rdf_xml_parser->id_set=raptor_new_id_set(rdf_parser->world);
   if(!rdf_xml_parser->id_set)
     return 1;
 

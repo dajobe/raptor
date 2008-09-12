@@ -59,6 +59,8 @@
 
 struct raptor_base_id_set_s
 {
+  raptor_world* world;
+
   /* The base URI of this set of IDs */
   raptor_uri *uri;
   
@@ -74,6 +76,8 @@ typedef struct raptor_base_id_set_s raptor_base_id_set;
 
 struct raptor_id_set_s
 {
+  raptor_world* world;
+
   /* start of trees, 1 per base URI */
   struct raptor_base_id_set_s* first;
 
@@ -88,19 +92,22 @@ struct raptor_id_set_s
 
 /**
  * raptor_new_id_set:
+ * @world: raptor_world object
  *
  * INTERNAL - Constructor - create a new ID set.
  * 
  * Return value: non 0 on failure
  **/
 raptor_id_set*
-raptor_new_id_set(void) 
+raptor_new_id_set(raptor_world* world)
 {
   raptor_id_set* set=(raptor_id_set*)RAPTOR_CALLOC(raptor_id_set, 1, 
                                                    sizeof(raptor_id_set));
   if(!set)
     return NULL;
-  
+
+  set->world=world;
+
   return set;
 }
 
@@ -118,7 +125,7 @@ raptor_free_base_id_set(raptor_base_id_set *base)
   if(base->tree)
     raptor_free_avltree(base->tree);
   if(base->uri)
-    raptor_free_uri(base->uri);
+    raptor_free_uri_v2(base->world, base->uri);
   RAPTOR_FREE(raptor_base_id_set, base);
 }
 
@@ -171,7 +178,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 
   base=set->first;
   while(base) {
-    if(raptor_uri_equals(base->uri, base_uri))
+    if(raptor_uri_equals_v2(set->world, base->uri, base_uri))
       break;
     base=base->next;
   }
@@ -183,7 +190,9 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
     if(!base)
       return -1;
 
-    base->uri=raptor_uri_copy(base_uri);
+    base->world=set->world;
+
+    base->uri=raptor_uri_copy_v2(set->world, base_uri);
 
     base->tree=raptor_new_avltree((raptor_data_compare_function)strcmp,
                                   free, 0);
