@@ -115,7 +115,7 @@ static unsigned char *turtle_copy_string_token(raptor_parser* rdf_parser, unsign
 void turtle_lexer_syntax_error(void* ctx, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 #ifdef RAPTOR_DEBUG
-const char * turtle_token_print(int token, YYSTYPE *lval);
+const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #endif
 
 int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner);
@@ -315,7 +315,7 @@ EXPONENT [eE][+-]?[0-9]+
 
 
 {QUOTEDURI}   { if(yyleng == 2) 
-                  turtle_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
+                  turtle_parser_lval->uri=raptor_uri_copy_v2(rdf_parser->world, rdf_parser->base_uri);
                 else {
                   raptor_stringbuffer* sb;
                   unsigned char* uri_string;
@@ -329,7 +329,7 @@ EXPONENT [eE][+-]?[0-9]+
                     YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   uri_string=raptor_stringbuffer_as_string(sb);
-                  turtle_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
+                  turtle_parser_lval->uri=raptor_new_uri_relative_to_base_v2(rdf_parser->world, rdf_parser->base_uri, uri_string);
                   if(!turtle_parser_lval->uri) {
                     raptor_free_stringbuffer(sb);
                     TURTLE_LEXER_OOM();
@@ -704,7 +704,7 @@ void turtle_lexer_free(void *ptr, yyscan_t yyscanner)
 #ifdef RAPTOR_DEBUG
 
 const char *
-turtle_token_print(int token, YYSTYPE *lval)
+turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 {
   static char buffer[2048];
 
@@ -748,7 +748,7 @@ turtle_token_print(int token, YYSTYPE *lval)
 
     case URI_LITERAL:
       sprintf(buffer, "URI_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string_v2(world, lval->uri) : ""));
       return buffer;
 
     case BLANK_LITERAL:
@@ -757,7 +757,7 @@ turtle_token_print(int token, YYSTYPE *lval)
 
     case QNAME_LITERAL:
       sprintf(buffer, "QNAME_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string_v2(world, lval->uri) : ""));
       return buffer;
 
     case INTEGER_LITERAL:
@@ -792,7 +792,7 @@ turtle_token_print(int token, YYSTYPE *lval)
 #ifdef STANDALONE
 
 static void
-turtle_token_free(int token, YYSTYPE *lval)
+turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
 {
   if(!token)
     return;
@@ -808,7 +808,7 @@ turtle_token_free(int token, YYSTYPE *lval)
     case URI_LITERAL:
     case QNAME_LITERAL:
       if(lval->uri)
-        raptor_free_uri(lval->uri);
+        raptor_free_uri_v2(world, lval->uri);
       break;
     default:
       break;
@@ -867,11 +867,11 @@ main(int argc, char *argv[])
       printf("yyinput '%s'\n", turtle_lexer_get_text(scanner));
     token=yylex(&lval, scanner);
 #ifdef RAPTOR_DEBUG
-    printf("token %s\n", turtle_token_print(token, &lval));
+    printf("token %s\n", turtle_token_print(raptor_world_instance(), token, &lval)); /* FIXME */
 #else
     printf("token %d\n", token);
 #endif
-    turtle_token_free(token, &lval);
+    turtle_token_free(raptor_world_instance(), token, &lval); /* FIXME */
     if(!token || token == EOF || token == ERROR_TOKEN)
       break;
   }
