@@ -681,7 +681,7 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 {
   int status=1;
   
-  www->uri=raptor_new_uri_for_retrieval(uri);
+  www->uri=raptor_new_uri_for_retrieval_v2(www->world, uri);
   
   www->locator.uri=uri;
   www->locator.line= -1;
