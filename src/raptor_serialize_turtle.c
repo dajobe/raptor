@@ -1019,18 +1019,14 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
   raptor_turtle_writer* turtle_writer;
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
-
-  raptor_uri_get_handler(&uri_handler, &uri_context);
 
   if(context->turtle_writer)
     raptor_free_turtle_writer(context->turtle_writer);
 
-  turtle_writer=raptor_new_turtle_writer(serializer->base_uri,
+  turtle_writer=raptor_new_turtle_writer(serializer->world,
+                                         serializer->base_uri,
                                          serializer->feature_write_base_uri,
                                          context->nstack,
-                                         uri_handler, uri_context,
                                          serializer->iostream,
                                          (raptor_simple_message_handler)raptor_serializer_simple_error,
                                          serializer);

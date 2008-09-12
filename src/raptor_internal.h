@@ -1168,7 +1168,7 @@ raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor
 typedef struct raptor_turtle_writer_s raptor_turtle_writer;
 
 /* Turtle Writer Class (raptor_turtle_writer) */
-raptor_turtle_writer* raptor_new_turtle_writer(raptor_uri* base_uri, int write_base_uri, raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data);
+raptor_turtle_writer* raptor_new_turtle_writer(raptor_world* world, raptor_uri* base_uri, int write_base_uri, raptor_namespace_stack *nstack, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data);
 void raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer);
 void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);

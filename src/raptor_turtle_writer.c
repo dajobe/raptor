@@ -63,6 +63,8 @@ typedef enum {
 #define TURTLE_WRITER_AUTO_INDENT(turtle_writer) ((turtle_writer->flags & TURTLE_WRITER_AUTO_INDENT) != 0)
 
 struct raptor_turtle_writer_s {
+  raptor_world* world;
+
   int depth;
  
   raptor_uri* base_uri;
@@ -144,11 +146,10 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 
 /**
  * raptor_new_turtle_writer:
+ * @world: raptor_world object
  * @base_uri: Base URI for the writer
  * @write_base_uri: non-0 to write '@base' directive to output
  * @nstack: Namespace stack for the writer to start with (or NULL)
- * @uri_handler: URI handler function
- * @uri_context: URI handler context data
  * @iostr: I/O stream to write to
  * @error_handler: error handler function
  * @error_data: error handler data
@@ -158,10 +159,9 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
  * Return value: a new #raptor_turtle_writer object or NULL on failure
  **/
 raptor_turtle_writer*
-raptor_new_turtle_writer(raptor_uri* base_uri, int write_base_uri,
+raptor_new_turtle_writer(raptor_world* world,
+                         raptor_uri* base_uri, int write_base_uri,
                          raptor_namespace_stack *nstack,
-                         const raptor_uri_handler *uri_handler,
-                         void *uri_context,
                          raptor_iostream* iostr,
                          raptor_simple_message_handler error_handler,
                          void *error_data)
@@ -171,21 +171,19 @@ raptor_new_turtle_writer(raptor_uri* base_uri, int write_base_uri,
   if(!turtle_writer)
     return NULL;
 
-  turtle_writer->nstack_depth=0;
+  turtle_writer->world=world;
 
-  turtle_writer->uri_handler=uri_handler;
-  turtle_writer->uri_context=uri_context;
+  turtle_writer->nstack_depth=0;
 
   turtle_writer->error_handler=error_handler;
   turtle_writer->error_data=error_data;
 
   turtle_writer->nstack=nstack;
   if(!turtle_writer->nstack) {
-    turtle_writer->nstack=nstack=raptor_new_namespaces(uri_handler,
-                                                       uri_context,
-                                                       error_handler,
-                                                       error_data,
-                                                       1);
+    turtle_writer->nstack=nstack=raptor_new_namespaces_v2(world,
+                                                          error_handler,
+                                                          error_data,
+                                                          1);
     turtle_writer->my_nstack=1;
   }
 
@@ -200,10 +198,10 @@ raptor_new_turtle_writer(raptor_uri* base_uri, int write_base_uri,
     raptor_turtle_writer_base(turtle_writer, base_uri);
   turtle_writer->base_uri = base_uri;
 
-  turtle_writer->xsd_boolean_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  turtle_writer->xsd_decimal_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
-  turtle_writer->xsd_double_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  turtle_writer->xsd_integer_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  turtle_writer->xsd_boolean_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  turtle_writer->xsd_decimal_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  turtle_writer->xsd_double_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  turtle_writer->xsd_integer_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   
   return turtle_writer;
 }
@@ -223,13 +221,13 @@ raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
     raptor_free_namespaces(turtle_writer->nstack);
 
   if(turtle_writer->xsd_boolean_uri)
-    raptor_free_uri(turtle_writer->xsd_boolean_uri);
+    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_boolean_uri);
   if(turtle_writer->xsd_decimal_uri)
-    raptor_free_uri(turtle_writer->xsd_decimal_uri);
+    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_decimal_uri);
   if(turtle_writer->xsd_double_uri)
-    raptor_free_uri(turtle_writer->xsd_double_uri);
+    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_double_uri);
   if(turtle_writer->xsd_integer_uri)
-    raptor_free_uri(turtle_writer->xsd_integer_uri);
+    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_integer_uri);
 
   RAPTOR_FREE(raptor_turtle_writer, turtle_writer);
 }
@@ -567,7 +565,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   /* typed literal special cases */
   if(datatype) {
     /* integer */
-    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri)) {
+    if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_integer_uri)) {
       strtol((const char*)s, &endptr, 10);
       if(endptr != (char*)s && !*endptr) {
         raptor_iostream_write_string(turtle_writer->iostr, s);
@@ -577,8 +575,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
 
     /* double, decimal */
-    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_double_uri) ||
-      raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
+    } else if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_double_uri) ||
+      raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_decimal_uri)) {
       strtod((const char*)s, &endptr);
       if(endptr != (char*)s && !*endptr) {
         raptor_iostream_write_string(turtle_writer->iostr, s);
@@ -588,7 +586,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
 
     /* boolean */
-    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_boolean_uri)) {
+    } else if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
         raptor_iostream_write_string(turtle_writer->iostr, "false");
         written = 1;
