@@ -275,7 +275,7 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Creating set\n", program);
 #endif
 
-  set=raptor_new_id_set();
+  set=raptor_new_id_set(raptor_world_instance()); /* FIXME */
   if(!set) {
     fprintf(stderr, "%s: Failed to create set\n", program);
     exit(1);
