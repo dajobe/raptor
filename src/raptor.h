@@ -1026,6 +1026,8 @@ raptor_uri* raptor_new_uri_relative_to_base_v2(raptor_world* world, raptor_uri *
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API
+raptor_uri* raptor_new_uri_from_id_v2(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
+RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept(const char *name);
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept_v2(raptor_world* world, const char *name);

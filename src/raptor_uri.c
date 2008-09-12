@@ -369,11 +369,34 @@ raptor_new_uri_relative_to_base_v2(raptor_world* world,
  *
  * This creates a URI equivalent to concatenating @base_uri with
  * ## and @id.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_uri_from_id_v2() if using raptor_world APIs.
  * 
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id) 
+{
+  return raptor_new_uri_from_id_v2(raptor_world_instance(), base_uri, id);
+}
+
+
+/**
+ * raptor_new_uri_from_id_v2:
+ * @world: raptor_world object
+ * @base_uri: existing base URI
+ * @id: RDF ID
+ * 
+ * Constructor - create a new URI from a base URI and RDF ID.
+ *
+ * This creates a URI equivalent to concatenating @base_uri with
+ * ## and @id.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_from_id_v2(raptor_world *world, raptor_uri *base_uri, const unsigned char *id) 
 {
   raptor_uri *new_uri;
   unsigned char *local_name;
@@ -393,7 +416,7 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id)
     return NULL;
   *local_name='#';
   strcpy((char*)local_name+1, (char*)id);
-  new_uri=raptor_new_uri_relative_to_base(base_uri, local_name);
+  new_uri=raptor_new_uri_relative_to_base_v2(world, base_uri, local_name);
   RAPTOR_FREE(cstring, local_name);
   return new_uri;
 }
