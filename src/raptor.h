@@ -1059,9 +1059,13 @@ unsigned char* raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *
 /* Make an xml:base-compatible URI from an existing one */
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
+RAPTOR_API
+raptor_uri* raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri);
 /* Make a URI suitable for retrieval (no fragment, has path) from an existing one */
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
+RAPTOR_API
+raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri);
 
 /* Identifier functions */
 RAPTOR_API

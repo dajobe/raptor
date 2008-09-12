@@ -1160,11 +1160,32 @@ raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
  * 
  * Takes an existing URI and ensures it has a path (default /) and has
  * no fragment or query arguments - XML base does not use these.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_uri_for_xmlbase_v2() if using raptor_world APIs.
  * 
  * Return value: new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
+{
+  return raptor_new_uri_for_xmlbase_v2(raptor_world_instance(), old_uri);
+}
+
+/**
+ * raptor_new_uri_for_xmlbase_v2:
+ * @world: raptor_world object
+ * @old_uri: URI to transform
+ *
+ * Constructor - create a URI suitable for use as an XML Base.
+ * 
+ * Takes an existing URI and ensures it has a path (default /) and has
+ * no fragment or query arguments - XML base does not use these.
+ * 
+ * Return value: new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri)
 {
   unsigned char *uri_string;
   unsigned char *new_uri_string;
@@ -1174,7 +1195,7 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
   if(!old_uri)
     return NULL;
 
-  uri_string=raptor_uri_as_string(old_uri);
+  uri_string=raptor_uri_as_string_v2(world, old_uri);
 
   ud=raptor_new_uri_detail(uri_string);
   if(!ud)
@@ -1192,7 +1213,7 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
   if(!new_uri_string)
     return NULL;
   
-  new_uri=raptor_new_uri(new_uri_string);
+  new_uri=raptor_new_uri_v2(world, new_uri_string);
   RAPTOR_FREE(cstring, new_uri_string);
 
   return new_uri;
@@ -1207,11 +1228,33 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
  * 
  * Takes an existing URI and ensures it has a path (default /) and has
  * no fragment - URI retrieval does not use the fragment part.
- * 
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_uri_for_retrieval_v2() if using raptor_world APIs.
+ *
  * Return value: new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
 raptor_new_uri_for_retrieval(raptor_uri* old_uri)
+{
+  return raptor_new_uri_for_retrieval_v2(raptor_world_instance(), old_uri);
+}
+
+
+/**
+ * raptor_new_uri_for_retrieval_v2:
+ * @world: raptor_world object
+ * @old_uri: URI to transform
+ *
+ * Constructor - create a URI suitable for retrieval.
+ * 
+ * Takes an existing URI and ensures it has a path (default /) and has
+ * no fragment - URI retrieval does not use the fragment part.
+ *
+ * Return value: new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri)
 {
   unsigned char *uri_string;
   unsigned char *new_uri_string;
@@ -1221,7 +1264,7 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
   if(!old_uri)
     return NULL;
 
-  uri_string=raptor_uri_as_string(old_uri);
+  uri_string=raptor_uri_as_string_v2(world, old_uri);
 
   ud=raptor_new_uri_detail(uri_string);
   if(!ud)
@@ -1238,7 +1281,7 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
   if(!new_uri_string)
     return NULL;
   
-  new_uri=raptor_new_uri(new_uri_string);
+  new_uri=raptor_new_uri_v2(world, new_uri_string);
   RAPTOR_FREE(cstring, new_uri_string);
 
   return new_uri;
