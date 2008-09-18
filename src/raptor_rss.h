@@ -238,6 +238,7 @@ typedef struct raptor_rss_enclosure_s raptor_rss_enclosure;
 
 struct raptor_rss_field_s
 {
+  raptor_world* world;
   unsigned char* value;
   raptor_uri* uri;
   struct raptor_rss_field_s* next;
@@ -253,6 +254,7 @@ typedef struct raptor_rss_field_s raptor_rss_field;
 /* RSS items (instances of typed nodes) containing fields */
 struct raptor_rss_item_s
 {
+  raptor_world* world;
   raptor_uri *uri;
   raptor_identifier identifier;
   const raptor_rss_info *node_type;
@@ -276,6 +278,8 @@ typedef struct raptor_rss_item_s raptor_rss_item;
 
 
 typedef struct {
+  raptor_world* world;
+
   /* RAPTOR_RSS_CHANNEL, RAPTOR_RSS_IMAGE, RAPTOR_RSS_TEXTINPUT */
   raptor_rss_item* common[RAPTOR_RSS_COMMON_SIZE];
 
@@ -302,7 +306,7 @@ void raptor_rss_common_terminate(raptor_world* world);
 void raptor_rss_model_init(raptor_world* world, raptor_rss_model* rss_model);
 void raptor_rss_model_clear(raptor_rss_model* rss_model);
 
-raptor_rss_item* raptor_new_rss_item(void);
+raptor_rss_item* raptor_new_rss_item(raptor_world* world);
 int raptor_rss_model_add_item(raptor_rss_model* rss_model);
 raptor_rss_item* raptor_rss_model_add_common(raptor_rss_model* rss_model, raptor_rss_type type);
 raptor_rss_item* raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor_rss_type type);
@@ -315,7 +319,7 @@ void raptor_rss_item_add_field(raptor_rss_item* item, int type, raptor_rss_field
 raptor_rss_enclosure* raptor_rss_new_enclosure(raptor_world* world);
 void raptor_enclosure_free(raptor_rss_enclosure* enclosure);
 
-raptor_rss_field* raptor_rss_new_field(void);
+raptor_rss_field* raptor_rss_new_field(raptor_world* world);
 void raptor_rss_field_free(raptor_rss_field* field);
 
 #define RAPTOR_ISO_DATE_LEN 20
