@@ -113,14 +113,14 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     s->subject= (triple->subject + 2);
   } else {
     s->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-    subject_uri=raptor_new_uri((const unsigned char*)triple->subject);
+    subject_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->subject);
     if(!subject_uri)
       goto cleanup;
     s->subject=subject_uri;
   }
   
 
-  predicate_uri=raptor_new_uri((const unsigned char*)triple->predicate);
+  predicate_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->predicate);
   if(!predicate_uri)
     goto cleanup;
   s->predicate=predicate_uri;
@@ -135,7 +135,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
       s->object = (triple->object + 2);
     } else {
       s->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-      object_uri=raptor_new_uri((const unsigned char*)triple->object);
+      object_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->object);
       if(!object_uri)
         goto cleanup;
       s->object=object_uri;
@@ -151,7 +151,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     if(triple->language)
       s->object_literal_language=(const unsigned char*)triple->language;
     if(triple->datatype) {
-      datatype_uri=raptor_new_uri((const unsigned char*)triple->datatype);
+      datatype_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->datatype);
       if(!datatype_uri)
         goto cleanup;
       s->object_literal_datatype=datatype_uri;
@@ -173,13 +173,13 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   rdfa_free_triple(triple);
   
   if(subject_uri)
-    raptor_free_uri(subject_uri);
+    raptor_free_uri_v2(parser->world, subject_uri);
   if(predicate_uri)
-    raptor_free_uri(predicate_uri);
+    raptor_free_uri_v2(parser->world, predicate_uri);
   if(object_uri)
-    raptor_free_uri(object_uri);
+    raptor_free_uri_v2(parser->world, object_uri);
   if(datatype_uri)
-    raptor_free_uri(datatype_uri);
+    raptor_free_uri_v2(parser->world, datatype_uri);
 }
 
 
@@ -207,7 +207,7 @@ raptor_librdfa_parse_start(raptor_parser* rdf_parser)
   locator->byte=0;
 
   if(rdf_parser->base_uri)
-    base_uri_string=(char*)raptor_uri_as_string(rdf_parser->base_uri);
+    base_uri_string=(char*)raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
 
   if(librdfa_parser->context)
     rdfa_free_context(librdfa_parser->context);
