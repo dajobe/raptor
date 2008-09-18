@@ -162,7 +162,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     statement->subject=subject;
     statement->subject_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else {
-    subject_uri=raptor_new_uri(subject);
+    subject_uri=raptor_new_uri_v2(parser->world, subject);
     if(!subject_uri) {
       raptor_parser_error(parser, "Could not create subject uri '%s', skipping", subject);
       goto cleanup;
@@ -172,7 +172,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   }
 
   if(object_literal_datatype) {
-    datatype_uri=raptor_new_uri(object_literal_datatype);
+    datatype_uri=raptor_new_uri_v2(parser->world, object_literal_datatype);
     if(!datatype_uri) {
       raptor_parser_error(parser, "Could not create object literal datatype uri '%s', skipping", object_literal_datatype);
       goto cleanup;
@@ -187,7 +187,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate);
   }
   
-  predicate_uri=raptor_new_uri(predicate);
+  predicate_uri=raptor_new_uri_v2(parser->world, predicate);
   if(!predicate_uri) {
     raptor_parser_error(parser, "Could not create predicate uri '%s', skipping", predicate);
     goto cleanup;
@@ -199,7 +199,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   statement->object_literal_language=NULL;
   statement->object_literal_datatype=NULL;
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
-    object_uri=raptor_new_uri((const unsigned char*)object);
+    object_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)object);
     if(!object_uri) {
       raptor_parser_error(parser, "Could not create object uri '%s', skipping", (const char *)object);
       goto cleanup;
@@ -224,13 +224,13 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 
   cleanup:
   if(subject_uri)
-    raptor_free_uri(subject_uri);
+    raptor_free_uri_v2(parser->world, subject_uri);
   if(predicate_uri)
-    raptor_free_uri(predicate_uri);
+    raptor_free_uri_v2(parser->world, predicate_uri);
   if(object_uri)
-    raptor_free_uri(object_uri);
+    raptor_free_uri_v2(parser->world, object_uri);
   if(datatype_uri)
-    raptor_free_uri(datatype_uri);
+    raptor_free_uri_v2(parser->world, datatype_uri);
 }
 
 
