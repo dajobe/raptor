@@ -160,7 +160,7 @@ static void raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t
 
 /* tidy up tokens after errors */
 %destructor { if($$) RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL DECIMAL_LITERAL IDENTIFIER
-%destructor { if($$) raptor_free_uri($$); } URI_LITERAL QNAME_LITERAL
+%destructor { if($$) raptor_free_uri_v2(raptor_world_instance(), $$); } URI_LITERAL QNAME_LITERAL /* FIXME */
 
 %destructor { if($$) raptor_free_identifier($$); } subject predicate object verb literal resource blank collection
 %destructor { if($$) raptor_free_sequence($$); } objectList itemList propertyList
@@ -414,10 +414,10 @@ verb: predicate
   printf("verb predicate=rdf:type (a)\n");
 #endif
 
-  uri=raptor_new_uri_for_rdf_concept("type");
+  uri=raptor_new_uri_for_rdf_concept_v2(((raptor_parser*)rdf_parser)->world, "type");
   if(!uri)
     YYERROR;
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -565,7 +565,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
 #endif
 
 #if RAPTOR_DEBUG > 1  
-  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string($3));
+  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
 #endif
 
   if(prefix) {
@@ -587,7 +587,7 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
 
   if($2)
     RAPTOR_FREE(cstring, $2);
-  raptor_free_uri($3);
+  raptor_free_uri_v2(((raptor_parser*)rdf_parser)->world, $3);
 
   if(!ns)
     YYERROR;
@@ -640,18 +640,18 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language string=\"%s\"\n", $1);
 #endif
 
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, $3);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, $3);
   if(!$$)
     YYERROR;
 }
 | STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $5));
 #endif
 
   if($5) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
     if(!$$)
       YYERROR;
   } else
@@ -661,11 +661,11 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $5));
 #endif
 
   if($5) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, (const unsigned char*)$1, $5, $3);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, (const unsigned char*)$1, $5, $3);
     if(!$$)
       YYERROR;
   } else
@@ -675,11 +675,11 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL HAT URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string($3));
+  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
 #endif
 
   if($3) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -689,11 +689,11 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL HAT QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string($3));
+  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
 #endif
 
   if($3) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -705,7 +705,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal string=\"%s\"\n", $1);
 #endif
 
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -720,10 +720,10 @@ literal: STRING_LITERAL AT IDENTIFIER
   if(!string)
     YYERROR;
   sprintf((char*)string, "%d", $1);
-  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  uri=raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   if(!uri)
     YYERROR;
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -742,10 +742,10 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   printf("resource decimal=%s\n", $1);
 #endif
-  uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  uri=raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   if(!uri)
     YYERROR;
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -755,11 +755,11 @@ literal: STRING_LITERAL AT IDENTIFIER
 resource: URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
+  printf("resource URI=<%s>\n", raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $1));
 #endif
 
   if($1) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -768,11 +768,11 @@ resource: URI_LITERAL
 | QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
+  printf("resource qname URI=<%s>\n", raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $1));
 #endif
 
   if($1) {
-    $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -792,7 +792,7 @@ blank: BLANK_LITERAL
   if(!id)
     YYERROR;
 
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -808,7 +808,7 @@ blank: BLANK_LITERAL
     YYERROR;
   }
   
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
   if(!$$) {
     if($2)
       raptor_free_sequence($2);
@@ -883,10 +883,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  first_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  first_identifier=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!first_identifier)
     goto err_collection;
-  rest_identifier=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  rest_identifier=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!rest_identifier)
     goto err_collection;
   
@@ -897,7 +897,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  object=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  object=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!object)
     goto err_collection;
 
@@ -910,7 +910,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     if(!blank_id)
       goto err_collection;
 
-    blank=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
+    blank=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
     if(!blank)
       goto err_collection;
     
@@ -977,7 +977,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("collection\n empty\n");
 #endif
 
-  $$=raptor_new_identifier(RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy(n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -1141,20 +1141,16 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
 static int
 raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
   raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
 
-  raptor_uri_get_handler(&uri_handler, &uri_context);
-
-  if(raptor_namespaces_init(&n3_parser->namespaces,
-                            uri_handler, uri_context,
-                            (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser, 
-                            0))
+  if(raptor_namespaces_init_v2(rdf_parser->world,
+                               &n3_parser->namespaces,
+                               (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser, 
+                               0))
     return 1;
 
-  n3_parser->nil_uri=raptor_new_uri_for_rdf_concept("nil");
-  n3_parser->first_uri=raptor_new_uri_for_rdf_concept("first");
-  n3_parser->rest_uri=raptor_new_uri_for_rdf_concept("rest");
+  n3_parser->nil_uri=raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "nil");
+  n3_parser->first_uri=raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "first");
+  n3_parser->rest_uri=raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "rest");
 
   if(!n3_parser->nil_uri || !n3_parser->first_uri || !n3_parser->rest_uri)
     return 1;
@@ -1176,11 +1172,11 @@ raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
   raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
 
   if(n3_parser->nil_uri)
-    raptor_free_uri(n3_parser->nil_uri);
+    raptor_free_uri_v2(rdf_parser->world, n3_parser->nil_uri);
   if(n3_parser->first_uri)
-    raptor_free_uri(n3_parser->first_uri);
+    raptor_free_uri_v2(rdf_parser->world, n3_parser->first_uri);
   if(n3_parser->rest_uri)
-    raptor_free_uri(n3_parser->rest_uri);
+    raptor_free_uri_v2(rdf_parser->world, n3_parser->rest_uri);
 
   raptor_namespaces_clear(&n3_parser->namespaces);
 
@@ -1215,9 +1211,9 @@ raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
   }
 
   /* Predicates are URIs but check for bad ordinals */
-  if(!strncmp((const char*)raptor_uri_as_string(t->predicate->uri),
+  if(!strncmp((const char*)raptor_uri_as_string_v2(parser->world, t->predicate->uri),
               "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    unsigned char* predicate_uri_string=raptor_uri_as_string(t->predicate->uri);
+    unsigned char* predicate_uri_string=raptor_uri_as_string_v2(parser->world, t->predicate->uri);
     int predicate_ordinal=raptor_check_ordinal(predicate_uri_string+44);
     if(predicate_ordinal <= 0)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);

@@ -115,7 +115,7 @@ static unsigned char *n3_copy_string_token(raptor_parser* rdf_parser, unsigned c
 void n3_lexer_syntax_error(void* rdf_parser, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 #ifdef RAPTOR_DEBUG
-const char * n3_token_print(int token, YYSTYPE *lval);
+const char * n3_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #endif
 
 int n3_lexer_lex (YYSTYPE *n3_parser_lval, yyscan_t yyscanner);
@@ -318,10 +318,10 @@ EXPONENT [eE][+-]?[0-9]+
 
 
 {QUOTEDURI}   { if(yyleng == 2) 
-                n3_parser_lval->uri=raptor_uri_copy(rdf_parser->base_uri);
+                n3_parser_lval->uri=raptor_uri_copy_v2(rdf_parser->world, rdf_parser->base_uri);
               else {
                 yytext[yyleng-1]='\0';
-                n3_parser_lval->uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, (const unsigned char*)yytext+1);
+                n3_parser_lval->uri=raptor_new_uri_relative_to_base_v2(rdf_parser->world, rdf_parser->base_uri, (const unsigned char*)yytext+1);
                 if(!n3_parser_lval->uri)
                   YY_FATAL_ERROR_EOF("raptor_new_uri_relative_to_base failed");
               }
@@ -695,7 +695,7 @@ void n3_lexer_free(void *ptr, yyscan_t yyscanner)
 #ifdef RAPTOR_DEBUG
 
 const char *
-n3_token_print(int token, YYSTYPE *lval)
+n3_token_print(raptor_world* world, int token, YYSTYPE *lval)
 {
   static char buffer[2048];
 
@@ -736,7 +736,7 @@ n3_token_print(int token, YYSTYPE *lval)
 
     case URI_LITERAL:
       sprintf(buffer, "URI_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string_v2(world, lval->uri) : ""));
       return buffer;
 
     case BLANK_LITERAL:
@@ -745,7 +745,7 @@ n3_token_print(int token, YYSTYPE *lval)
 
     case QNAME_LITERAL:
       sprintf(buffer, "QNAME_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string_v2(world, lval->uri) : ""));
       return buffer;
 
     case INTEGER_LITERAL:
@@ -855,7 +855,7 @@ main(int argc, char *argv[])
       printf("yyinput '%s'\n", n3_lexer_get_text(scanner));
     token=yylex(&lval, scanner);
 #ifdef RAPTOR_DEBUG
-    printf("token %s\n", n3_token_print(token, &lval));
+    printf("token %s\n", n3_token_print(raptor_world_instance(), token, &lval)); /* FIXME */
 #else
     printf("token %d\n", token);
 #endif
