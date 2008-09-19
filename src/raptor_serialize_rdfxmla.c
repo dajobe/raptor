@@ -173,7 +173,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
   unsigned char *attr_name;
   unsigned char *attr_value;
   
-  RAPTOR_DEBUG2("Emitting resource predicate URI %s\n", raptor_uri_as_string(uri));
+  RAPTOR_DEBUG2("Emitting resource predicate URI %s\n", raptor_uri_as_string_v2(serializer->world, uri));
 
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
   if(!attrs)
@@ -185,7 +185,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
     /* newly allocated string */
     attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri, uri);
   else
-    attr_value = raptor_uri_as_string(uri);
+    attr_value = raptor_uri_as_string_v2(serializer->world, uri);
 
   attrs[0] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
                                                         attr_name, 
@@ -204,7 +204,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
   raptor_xml_writer_start_element(xml_writer, element);
   raptor_xml_writer_end_element(context->xml_writer, element);
 
-  RAPTOR_DEBUG2("Emitted resource predicate URI %s\n", raptor_uri_as_string(uri));
+  RAPTOR_DEBUG2("Emitted resource predicate URI %s\n", raptor_uri_as_string_v2(serializer->world, uri));
   
   return 0;
 }
@@ -294,7 +294,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
 
     if(node->value.literal.datatype) {
       unsigned char *datatype_value;
-      datatype_value = raptor_uri_as_string(node->value.literal.datatype);
+      datatype_value = raptor_uri_as_string_v2(serializer->world, node->value.literal.datatype);
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"datatype",
                                                                       datatype_value);
       if(!attrs[attrs_count])
@@ -488,7 +488,7 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
                                                        NULL);
     
     if(serializer->base_uri)
-      base_uri=raptor_uri_copy(serializer->base_uri);
+      base_uri=raptor_uri_copy_v2(serializer->world, serializer->base_uri);
     element = raptor_new_xml_element(qname, NULL, base_uri);
     if(!element) {
       raptor_serializer_error(serializer, "Out of memory");
@@ -586,12 +586,12 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
       goto oom;
       
     if(serializer->base_uri)
-      base_uri=raptor_uri_copy(serializer->base_uri);
+      base_uri=raptor_uri_copy_v2(serializer->world, serializer->base_uri);
 
     element = raptor_new_xml_element(qname, NULL, base_uri);
     if(!element) {
       if(base_uri)
-        raptor_free_uri(base_uri);
+        raptor_free_uri_v2(serializer->world, base_uri);
       raptor_free_qname(qname);
       goto oom;
     }
@@ -640,17 +640,17 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
       if(!qname) {
         raptor_serializer_error(serializer,
                                 "Cannot split URI '%s' into an XML qname",
-                                raptor_uri_as_string(predicate->value.resource.uri));
+                                raptor_uri_as_string_v2(serializer->world, predicate->value.resource.uri));
         continue;
       }
     }
     
     if(serializer->base_uri)
-      base_uri=raptor_uri_copy(serializer->base_uri);
+      base_uri=raptor_uri_copy_v2(serializer->world, serializer->base_uri);
     element = raptor_new_xml_element(qname, NULL, base_uri);
     if(!element) {
       if(base_uri)
-        raptor_free_uri(base_uri);
+        raptor_free_uri_v2(serializer->world, base_uri);
       raptor_free_qname(qname);
       goto oom;
     }
@@ -726,8 +726,9 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
 
   subject_is_single_node=(context->single_node &&
                           subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-                          raptor_uri_equals(subject->node->value.resource.uri,
-                                            context->single_node));
+                          raptor_uri_equals_v2(serializer->world,
+                                               subject->node->value.resource.uri,
+                                               context->single_node));
   
 
   RAPTOR_DEBUG5("Emitting subject node %p refcount %d subject %d object %d\n", 
@@ -755,7 +756,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     if(!qname) {
       raptor_serializer_error(serializer,
                               "Cannot split URI '%s' into an XML qname",
-                              raptor_uri_as_string(subject->node_type->value.resource.uri));
+                              raptor_uri_as_string_v2(serializer->world,
+                                                      subject->node_type->value.resource.uri));
       return 1;
     }
     
@@ -767,11 +769,11 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   }
 
   if(serializer->base_uri)
-    base_uri=raptor_uri_copy(serializer->base_uri);
+    base_uri=raptor_uri_copy_v2(serializer->world, serializer->base_uri);
   element = raptor_new_xml_element(qname, NULL, base_uri);
   if(!element) {
     if(base_uri)
-      raptor_free_uri(base_uri);
+      raptor_free_uri_v2(serializer->world, base_uri);
     raptor_free_qname(qname);
     goto oom;
   }
@@ -794,7 +796,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                      subject->node->value.resource.uri);
     else
-      attr_value = raptor_uri_to_string(subject->node->value.resource.uri);
+      attr_value = raptor_uri_to_string_v2(serializer->world,
+                                           subject->node->value.resource.uri);
     
   } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     if(subject->node->count_as_subject &&
@@ -924,15 +927,12 @@ static int
 raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
-  const raptor_uri_handler *uri_handler;
   raptor_uri *rdf_type_uri;
-  void *uri_context;
   
-  raptor_uri_get_handler(&uri_handler, &uri_context);
-  context->nstack=raptor_new_namespaces(uri_handler, uri_context,
-                                        (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                        serializer,
-                                        1);
+  context->nstack=raptor_new_namespaces_v2(serializer->world,
+                                           (raptor_simple_message_handler)raptor_serializer_simple_error,
+                                           serializer,
+                                           1);
   if(!context->nstack)
     return 1;
 
@@ -951,15 +951,15 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                        (raptor_data_compare_function)raptor_abbrev_node_cmp,
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
-  rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
+  rdf_type_uri = raptor_new_uri_for_rdf_concept_v2(serializer->world, "type");
   if(rdf_type_uri) {    
     context->rdf_type = raptor_new_abbrev_node(serializer->world,
                                                RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                                rdf_type_uri, NULL, NULL);
-    raptor_free_uri(rdf_type_uri);
+    raptor_free_uri_v2(serializer->world, rdf_type_uri);
   }
 
-  context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
+  context->rdf_xml_literal_uri=raptor_new_uri_v2(serializer->world, raptor_xml_literal_datatype_uri_string);
 
   if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||
@@ -1057,7 +1057,7 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
   }
   
   if(context->rdf_xml_literal_uri) {
-    raptor_free_uri(context->rdf_xml_literal_uri);
+    raptor_free_uri_v2(serializer->world, context->rdf_xml_literal_uri);
     context->rdf_xml_literal_uri=NULL;
   }
 }
@@ -1089,7 +1089,7 @@ raptor_rdfxmla_serialize_declare_namespace_from_namespace(raptor_serializer* ser
       return 1;
 
     if(ns->uri && nspace->uri &&
-       raptor_uri_equals(ns->uri, nspace->uri))
+       raptor_uri_equals_v2(serializer->world, ns->uri, nspace->uri))
       return 1;
   }
 
@@ -1217,9 +1217,9 @@ raptor_rdfxmla_serialize_set_single_node(raptor_serializer* serializer,
   context=(raptor_rdfxmla_context*)serializer->context;
 
   if(context->single_node)
-    raptor_free_uri(context->single_node);
+    raptor_free_uri_v2(serializer->world, context->single_node);
   
-  context->single_node=raptor_uri_copy(uri);
+  context->single_node=raptor_uri_copy_v2(serializer->world, uri);
 
   return 0;
 }
@@ -1259,20 +1259,16 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
 
   if(!context->external_xml_writer) {
     raptor_xml_writer* xml_writer;
-    const raptor_uri_handler *uri_handler;
-    void *uri_context;
-
-    raptor_uri_get_handler(&uri_handler, &uri_context);
 
     if(context->xml_writer)
       raptor_free_xml_writer(context->xml_writer);
 
-    xml_writer=raptor_new_xml_writer(context->nstack,
-                                     uri_handler, uri_context,
-                                     serializer->iostream,
-                                     (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                     serializer,
-                                     1);
+    xml_writer=raptor_new_xml_writer_v2(serializer->world, 
+                                        context->nstack,
+                                        serializer->iostream,
+                                        (raptor_simple_message_handler)raptor_serializer_simple_error,
+                                        serializer,
+                                        1);
     if(!xml_writer)
       return 1;
 
@@ -1327,11 +1323,11 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
     goto oom;
   base_uri=serializer->base_uri;
   if(base_uri)
-    base_uri=raptor_uri_copy(base_uri);
+    base_uri=raptor_uri_copy_v2(serializer->world, base_uri);
   context->rdf_RDF_element=raptor_new_xml_element(qname, NULL, base_uri);
   if(!context->rdf_RDF_element) {
     if(base_uri)
-      raptor_free_uri(base_uri);
+      raptor_free_uri_v2(serializer->world, base_uri);
     raptor_free_qname(qname);
     goto oom;
   }
@@ -1352,7 +1348,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
     if(!attrs)
       goto oom;
 
-    base_uri_string=raptor_uri_as_string(base_uri);
+    base_uri_string=raptor_uri_as_string_v2(serializer->world, base_uri);
     attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
     if(!attrs[attrs_count]) {
       RAPTOR_FREE(qnamearray, attrs);
@@ -1416,8 +1412,9 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   object_type=statement->object_type;
   if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     if(statement->object_literal_datatype &&
-       raptor_uri_equals(statement->object_literal_datatype, 
-                         context->rdf_xml_literal_uri))
+       raptor_uri_equals_v2(serializer->world,
+                            statement->object_literal_datatype, 
+                            context->rdf_xml_literal_uri))
       object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
   }
 
@@ -1589,7 +1586,7 @@ raptor_rdfxmla_serialize_end(raptor_serializer* serializer)
     raptor_xml_writer_flush(xml_writer);
 
   if(context->single_node)
-    raptor_free_uri(context->single_node);
+    raptor_free_uri_v2(serializer->world, context->single_node);
 
   context->written_header=0;
   
