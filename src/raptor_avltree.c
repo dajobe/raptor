@@ -130,7 +130,7 @@ raptor_new_avltree(raptor_world* world,
   if(!tree)
     return NULL;
 
-  tree->world=NULL;  
+  tree->world=world;  
   tree->root=NULL;
   tree->compare_fn=compare_fn;
   tree->free_fn=free_fn;
