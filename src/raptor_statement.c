@@ -59,6 +59,7 @@ raptor_statement*
 raptor_statement_copy(const raptor_statement *statement)
 {
   raptor_statement *s;
+  raptor_world* world=raptor_world_instance(); /* FIXME */
 
   s=(raptor_statement*)RAPTOR_CALLOC(raptor_statement, 1, sizeof(raptor_statement));
   if(!s)
@@ -70,14 +71,14 @@ raptor_statement_copy(const raptor_statement *statement)
     strcpy((char*)new_blank, (const char*)statement->subject);
     s->subject=new_blank;
   } else if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->subject=raptor_new_uri_from_rdf_ordinal(*((int*)statement->subject));
+    s->subject=raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->subject));
     s->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else
     s->subject=raptor_uri_copy((raptor_uri*)statement->subject);
 
   s->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    s->predicate=raptor_new_uri_from_rdf_ordinal(*((int*)statement->predicate));
+    s->predicate=raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->predicate));
   else
     s->predicate=raptor_uri_copy((raptor_uri*)statement->predicate);
 
@@ -111,7 +112,7 @@ raptor_statement_copy(const raptor_statement *statement)
     strcpy((char*)new_blank, (const char*)blank);
     s->object=new_blank;
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->object=raptor_new_uri_from_rdf_ordinal(*((int*)statement->object));
+    s->object=raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->object));
     s->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else {
     raptor_uri *uri=raptor_uri_copy((raptor_uri*)statement->object);

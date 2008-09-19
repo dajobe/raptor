@@ -1458,13 +1458,39 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
  *
  * Get the counted relative URI string of a URI against a base URI.
  * 
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_to_relative_counted_uri_string_v2() if using raptor_world APIs.
+ * 
+ * Return value: A newly allocated relative URI string or NULL on failure
+ **/
+unsigned char*
+raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, 
+                                          raptor_uri *reference_uri,
+                                          size_t *length_p)
+{
+  return raptor_uri_to_relative_counted_uri_string_v2(raptor_world_instance(),
+                                                      base_uri,
+                                                      reference_uri,
+                                                      length_p);
+}
+
+/**
+ * raptor_uri_to_relative_counted_uri_string_v2:
+ * @world: raptor_world object
+ * @base_uri: The base absolute URI to resolve against (or NULL)
+ * @reference_uri: The reference absolute URI to use
+ * @length_p: Location to store the length of the relative URI string or NULL
+ *
+ * Get the counted relative URI string of a URI against a base URI.
+ * 
  * Return value: A newly allocated relative URI string or NULL on failure
  **/
 
 unsigned char*
-raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, 
-                                          raptor_uri *reference_uri,
-                                          size_t *length_p) {
+raptor_uri_to_relative_counted_uri_string_v2(raptor_world* world,
+                                             raptor_uri *base_uri, 
+                                             raptor_uri *reference_uri,
+                                             size_t *length_p) {
   raptor_uri_detail *base_detail=NULL, *reference_detail;
   const unsigned char *base, *reference_str, *base_file, *reference_file;
   unsigned char *suffix, *cur_ptr;
@@ -1478,7 +1504,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   if(length_p)
     *length_p=0;
 
-  reference_str=raptor_uri_as_counted_string(reference_uri, &reference_len);
+  reference_str=raptor_uri_as_counted_string_v2(world, reference_uri, &reference_len);
   reference_detail=raptor_new_uri_detail(reference_str);
   if(!reference_detail)
     goto err;
@@ -1486,13 +1512,13 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   if(!base_uri)
     goto buildresult;
   
-  base=raptor_uri_as_counted_string(base_uri, &base_len);
+  base=raptor_uri_as_counted_string_v2(world, base_uri, &base_len);
   base_detail=raptor_new_uri_detail(base);
   if(!base_detail)
     goto err;
   
   /* Check if the whole URIs are equal */
-  if(raptor_uri_equals(base_uri, reference_uri)) {
+  if(raptor_uri_equals_v2(world, base_uri, reference_uri)) {
     reference_len=0;
     goto buildresult;
   }
@@ -1648,12 +1674,30 @@ raptor_uri_to_relative_uri_string(raptor_uri *base_uri,
  *
  * Print a URI to a file handle.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_print_v2() if using raptor_world APIs.
+ *
  **/
 void
 raptor_uri_print(const raptor_uri* uri, FILE *stream) {
+  raptor_uri_print_v2(raptor_world_instance(), uri, stream);
+}
+
+
+/**
+ * raptor_uri_print_v2:
+ * @world: raptor_world object
+ * @uri: URI to print
+ * @stream: The file handle to print to
+ *
+ * Print a URI to a file handle.
+ *
+ **/
+void
+raptor_uri_print_v2(raptor_world* world, const raptor_uri* uri, FILE *stream) {
   if(uri) {
     size_t len;
-    unsigned char *string=raptor_uri_as_counted_string((raptor_uri*)uri, &len);
+    unsigned char *string=raptor_uri_as_counted_string_v2(world, (raptor_uri*)uri, &len);
     (void)fwrite(string, len, 1, stream);
   } else 
     (void)fwrite("(NULL URI)", 10, 1, stream);
@@ -1672,10 +1716,35 @@ raptor_uri_print(const raptor_uri* uri, FILE *stream) {
  * The memory allocated must be freed by the caller and
  * raptor_free_memory() should be used for best portability.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_to_counted_string_v2() if using raptor_world APIs.
+ *
  * Return value: new string or NULL on failure
  **/
 unsigned char*
 raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
+{
+  return raptor_uri_to_counted_string_v2(raptor_world_instance(), uri, len_p);
+}
+
+
+/**
+ * raptor_uri_to_counted_string_v2:
+ * @world: raptor_world object
+ * @uri: #raptor_uri object
+ * @len_p: Pointer to length (or NULL)
+ *
+ * Get a new counted string for a URI.
+ *
+ * If @len_p is not NULL, the length of the string is stored in it.
+ *
+ * The memory allocated must be freed by the caller and
+ * raptor_free_memory() should be used for best portability.
+ *
+ * Return value: new string or NULL on failure
+ **/
+unsigned char*
+raptor_uri_to_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t *len_p)
 {
   size_t len;
   unsigned char *string;
@@ -1684,7 +1753,7 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
   if(!uri)
     return NULL;
   
-  string=raptor_uri_as_counted_string(uri, &len);
+  string=raptor_uri_as_counted_string_v2(world, uri, &len);
   if(!string)
     return NULL;
   
@@ -1709,17 +1778,40 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
  * The memory allocated must be freed by the caller and
  * raptor_free_memory() should be used for best portability.
  *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_to_string_v2() if using raptor_world APIs.
+ *
  * Return value: new string or NULL on failure
  **/
 unsigned char*
 raptor_uri_to_string(raptor_uri *uri)
 {
-  return raptor_uri_to_counted_string(uri, NULL);
+  return raptor_uri_to_string_v2(raptor_world_instance(), uri);
+}
+
+
+/**
+ * raptor_uri_to_string_v2:
+ * @world: raptor_world object
+ * @uri: #raptor_uri object
+ *
+ * Get a new string for a URI.
+ *
+ * The memory allocated must be freed by the caller and
+ * raptor_free_memory() should be used for best portability.
+ *
+ * Return value: new string or NULL on failure
+ **/
+unsigned char*
+raptor_uri_to_string_v2(raptor_world* world, raptor_uri *uri)
+{
+  return raptor_uri_to_counted_string_v2(world, uri, NULL);
 }
 
 
 /**
  * raptor_new_uri_from_rdf_ordinal:
+ * @world: raptor_world object
  * @ordinal: integer rdf:_n
  * 
  * Internal - convert an integer rdf:_n ordinal to the resource URI
@@ -1727,7 +1819,7 @@ raptor_uri_to_string(raptor_uri *uri)
  * Return value: new URI object or NULL on failure
  **/
 raptor_uri*
-raptor_new_uri_from_rdf_ordinal(int ordinal)
+raptor_new_uri_from_rdf_ordinal(raptor_world* world, int ordinal)
 {
   /* 55 = strlen(rdf namespace URI) + _ + 10-digit number + \0 */
   unsigned char uri_string[55];
@@ -1735,7 +1827,7 @@ raptor_new_uri_from_rdf_ordinal(int ordinal)
           raptor_rdf_namespace_uri_len);
   sprintf((char*)uri_string+raptor_rdf_namespace_uri_len, "_%d",
           ordinal);
-  return raptor_new_uri(uri_string);
+  return raptor_new_uri_v2(world, uri_string);
 }
 
 

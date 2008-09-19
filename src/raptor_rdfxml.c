@@ -1309,7 +1309,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
   statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   if(predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     /* new URI object */
-    uri1=raptor_new_uri_from_rdf_ordinal(predicate_ordinal);
+    uri1=raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
     predicate_uri=uri1;
     predicate_id=NULL;
   }
@@ -1356,7 +1356,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
     bag_element->last_bag_ordinal++;
 
     /* new URI object */
-    uri2=raptor_new_uri_from_rdf_ordinal(bag_element->last_bag_ordinal);
+    uri2=raptor_new_uri_from_rdf_ordinal(rdf_parser->world, bag_element->last_bag_ordinal);
     statement->predicate=uri2;
 
     if(reified && (reified->uri || reified->id)) {
