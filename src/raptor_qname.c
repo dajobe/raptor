@@ -230,12 +230,42 @@ raptor_new_qname(raptor_namespace_stack *nstack,
  * Create a new qname from the namespace and local element/attribute name,
  * with optional (attribute) value.
  * 
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_new_qname_from_namespace_local_name_v2() if using raptor_world APIs.
+ *
  * Return value: a new #raptor_qname object or NULL on failure
  **/
 raptor_qname*
 raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, 
                                            const unsigned char *local_name,
                                            const unsigned char *value)
+{
+  return raptor_new_qname_from_namespace_local_name_v2(raptor_world_instance(),
+                                                       ns,
+                                                       local_name,
+                                                       value);
+}
+
+
+/**
+ * raptor_new_qname_from_namespace_local_name_v2:
+ * @world: raptor_world object
+ * @ns: namespace of qname (or NULL)
+ * @local_name: element or attribute name
+ * @value: attribute value (else is an element)
+ *
+ * Constructor - create a new XML qname.
+ * 
+ * Create a new qname from the namespace and local element/attribute name,
+ * with optional (attribute) value.
+ * 
+ * Return value: a new #raptor_qname object or NULL on failure
+ **/
+raptor_qname*
+raptor_new_qname_from_namespace_local_name_v2(raptor_world* world,
+                                              raptor_namespace *ns, 
+                                              const unsigned char *local_name,
+                                              const unsigned char *value)
 {
   raptor_qname* qname;
   unsigned char* new_name;
@@ -247,7 +277,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
   qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!qname)
     return NULL;
-  qname->world=ns->nstack->world;
+  qname->world=world;
 
   if(value) {
     int value_length=strlen((char*)value);
@@ -299,6 +329,7 @@ raptor_qname_copy(raptor_qname *qname) {
   new_qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!new_qname)
     return NULL;
+  new_qname->world=qname->world;
 
   if(qname->value) {
     int value_length=qname->value_length;

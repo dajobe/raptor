@@ -1252,6 +1252,8 @@ raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned ch
 RAPTOR_API
 raptor_qname* raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
 RAPTOR_API
+raptor_qname* raptor_new_qname_from_namespace_local_name_v2(raptor_world* world, raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
+RAPTOR_API
 raptor_qname* raptor_qname_copy(raptor_qname *qname);
 RAPTOR_API
 void raptor_free_qname(raptor_qname* name);
