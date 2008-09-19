@@ -51,6 +51,7 @@
 
 
 typedef struct {
+  raptor_world* world;
   /* owned by this: URI OR bnode if starts with _: */
   raptor_uri* uri;
   /* shared pointer */
@@ -126,7 +127,7 @@ static void
 raptor_free_group_map(raptor_rss_group_map* gm) 
 {
   if(gm->uri)
-    raptor_free_uri_v2(gm->item->world, gm->uri);
+    raptor_free_uri_v2(gm->world, gm->uri);
   RAPTOR_FREE(raptor_rss_group_map, gm);
 }
 
@@ -135,7 +136,7 @@ static int
 raptor_rss_group_map_compare(raptor_rss_group_map* gm1,
                              raptor_rss_group_map* gm2)
 {
-  return raptor_uri_compare_v2(gm1->item->world, gm1->uri, gm2->uri);
+  return raptor_uri_compare_v2(gm1->world, gm1->uri, gm2->uri);
 }
 
 
@@ -146,6 +147,7 @@ raptor_rss10_get_group_item(raptor_rss10_serializer_context *rss_serializer,
   raptor_rss_group_map search_gm;
   raptor_rss_group_map* gm;
 
+  search_gm.world=rss_serializer->world;
   search_gm.uri=uri;
   gm=(raptor_rss_group_map*)raptor_avltree_search(rss_serializer->group_map,
                                                   (void*)&search_gm);
@@ -165,6 +167,7 @@ raptor_rss10_set_item_group(raptor_rss10_serializer_context *rss_serializer,
  
   gm=(raptor_rss_group_map*)RAPTOR_CALLOC(raptor_rss_group_map, 1,
                                           sizeof(raptor_rss_group_map));
+  gm->world=rss_serializer->world;
   gm->uri=raptor_uri_copy_v2(rss_serializer->world, uri);
   gm->item=item;
   
