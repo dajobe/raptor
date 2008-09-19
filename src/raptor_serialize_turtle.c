@@ -236,13 +236,13 @@ raptor_turtle_emit_xml_literal(raptor_serializer *serializer,
   if(node->type != RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
     return 1;
 
-  type_uri = raptor_new_uri((const unsigned char*)
+  type_uri = raptor_new_uri_v2(serializer->world, (const unsigned char*)
     "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral");
   
   rc=raptor_turtle_writer_literal(turtle_writer, context->nstack,
                                   node->value.literal.string, NULL, type_uri);
 
-  raptor_free_uri(type_uri);
+  raptor_free_uri_v2(serializer->world, type_uri);
 
   return rc;
 }
@@ -407,8 +407,9 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     predicate= nodes[0];
     object= nodes[1];
     
-    if(!raptor_uri_equals(predicate->value.resource.uri, 
-                          context->rdf_first_uri)) {
+    if(!raptor_uri_equals_v2(serializer->world,
+                             predicate->value.resource.uri, 
+                             context->rdf_first_uri)) {
       raptor_serializer_error(serializer,
                               "Malformed collection - first predicate is not rdf:first");
       return 1;
@@ -456,7 +457,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     predicate = nodes[0];
     object = nodes[1];
 
-    if(!raptor_uri_equals(predicate->value.resource.uri, context->rdf_rest_uri)) {
+    if(!raptor_uri_equals_v2(serializer->world, predicate->value.resource.uri, context->rdf_rest_uri)) {
       raptor_serializer_error(serializer,
                               "Malformed collection - second predicate is not rdf:rest");
       return 1;
@@ -473,7 +474,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       }
     } else {
       if(object->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-         !raptor_uri_equals(object->value.resource.uri, context->rdf_nil_uri)) {
+         !raptor_uri_equals_v2(serializer->world, object->value.resource.uri, context->rdf_nil_uri)) {
         raptor_serializer_error(serializer,
                                 "Malformed collection - last rdf:rest resource is not rdf:nil");
         return 1;
@@ -666,11 +667,11 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     if(pred1->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
        pred2->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
        (
-        (raptor_uri_equals(pred1->value.resource.uri, context->rdf_first_uri) &&
-         raptor_uri_equals(pred2->value.resource.uri, context->rdf_rest_uri))
+        (raptor_uri_equals_v2(serializer->world, pred1->value.resource.uri, context->rdf_first_uri) &&
+         raptor_uri_equals_v2(serializer->world, pred2->value.resource.uri, context->rdf_rest_uri))
         ||
-        (raptor_uri_equals(pred2->value.resource.uri, context->rdf_first_uri) &&
-         raptor_uri_equals(pred1->value.resource.uri, context->rdf_rest_uri))
+        (raptor_uri_equals_v2(serializer->world, pred2->value.resource.uri, context->rdf_first_uri) &&
+         raptor_uri_equals_v2(serializer->world, pred1->value.resource.uri, context->rdf_rest_uri))
         )
        ) {
       collection = 1;
@@ -815,15 +816,12 @@ static int
 raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_turtle_context* context=(raptor_turtle_context*)serializer->context;
-  const raptor_uri_handler *uri_handler;
   raptor_uri *rdf_type_uri;
-  void *uri_context;
 
-  raptor_uri_get_handler(&uri_handler, &uri_context);
-  context->nstack=raptor_new_namespaces(uri_handler, uri_context,
-                                        (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                        serializer,
-                                        1);
+  context->nstack=raptor_new_namespaces_v2(serializer->world,
+                                           (raptor_simple_message_handler)raptor_serializer_simple_error,
+                                           serializer,
+                                           1);
   if(!context->nstack)
     return 1;
   context->rdf_nspace=raptor_new_namespace(context->nstack,
@@ -844,19 +842,19 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
                        (raptor_data_compare_function)raptor_abbrev_node_cmp,
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
-  rdf_type_uri = raptor_new_uri_for_rdf_concept("type");
+  rdf_type_uri = raptor_new_uri_for_rdf_concept_v2(serializer->world, "type");
   if(rdf_type_uri) {
     context->rdf_type = raptor_new_abbrev_node(serializer->world,
                                                RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                                                rdf_type_uri, NULL, NULL);
-    raptor_free_uri(rdf_type_uri);
+    raptor_free_uri_v2(serializer->world, rdf_type_uri);
   } else
     context->rdf_type = NULL;
 
-  context->rdf_xml_literal_uri=raptor_new_uri(raptor_xml_literal_datatype_uri_string);
-  context->rdf_first_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
-  context->rdf_rest_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
-  context->rdf_nil_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+  context->rdf_xml_literal_uri=raptor_new_uri_v2(serializer->world, raptor_xml_literal_datatype_uri_string);
+  context->rdf_first_uri=raptor_new_uri_v2(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+  context->rdf_rest_uri=raptor_new_uri_v2(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+  context->rdf_nil_uri=raptor_new_uri_v2(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
   if(!context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||
@@ -933,22 +931,22 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
   }
 
   if(context->rdf_xml_literal_uri) {
-    raptor_free_uri(context->rdf_xml_literal_uri);
+    raptor_free_uri_v2(serializer->world, context->rdf_xml_literal_uri);
     context->rdf_xml_literal_uri=NULL;
   }
 
   if(context->rdf_first_uri) {
-    raptor_free_uri(context->rdf_first_uri);
+    raptor_free_uri_v2(serializer->world, context->rdf_first_uri);
     context->rdf_first_uri=NULL;
   }
 
   if(context->rdf_rest_uri) {
-    raptor_free_uri(context->rdf_rest_uri);
+    raptor_free_uri_v2(serializer->world, context->rdf_rest_uri);
     context->rdf_rest_uri=NULL;
   }
 
   if(context->rdf_nil_uri) {
-    raptor_free_uri(context->rdf_nil_uri);
+    raptor_free_uri_v2(serializer->world, context->rdf_nil_uri);
     context->rdf_nil_uri=NULL;
   }
 }
@@ -980,7 +978,7 @@ raptor_turtle_serialize_declare_namespace_from_namespace(raptor_serializer* seri
       return 1;
 
     if(ns->uri && nspace->uri &&
-       raptor_uri_equals(ns->uri, nspace->uri))
+       raptor_uri_equals_v2(serializer->world, ns->uri, nspace->uri))
       return 1;
   }
 
@@ -1104,8 +1102,9 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   object_type=statement->object_type;
   if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     if(statement->object_literal_datatype &&
-       raptor_uri_equals(statement->object_literal_datatype, 
-                         context->rdf_xml_literal_uri))
+       raptor_uri_equals_v2(serializer->world, 
+                            statement->object_literal_datatype, 
+                            context->rdf_xml_literal_uri))
       object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
   }
 
