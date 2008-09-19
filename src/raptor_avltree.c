@@ -63,7 +63,6 @@
 
 
 #ifndef STANDALONE
-typedef struct raptor_avltree_node_s raptor_avltree_node;
 
 /* AVL-tree node */
 struct raptor_avltree_node_s {
@@ -87,31 +86,6 @@ struct raptor_avltree_node_s {
 };
 
 
-/* AVL-tree */
-struct raptor_avltree_s {
-  /* root node of tree */
-  raptor_avltree_node* root;
-
-  /* node comparison function (optional) */
-  raptor_data_compare_function compare_fn;
-
-  /* node deletion function (optional) */
-  raptor_data_free_function free_fn;
-
-  /* node print function (optional) */
-  raptor_data_print_function print_fn;
-
-  /* tree flags (none defined at present) */
-  unsigned int flags;
-
-  /* number of nodes in tree */
-  unsigned int size;
-
-  /* legacy iterator used for cursor methods */
-  raptor_avltree_iterator* cursor_iterator;
-};
-
-
 #ifndef TRUE
 #define	TRUE		1
 #define	FALSE		0
@@ -132,6 +106,7 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
 
 /*
  * raptor_new_avltree:
+ * @world: raptor_world object
  * @compare_fn: item comparison function for ordering
  * @free_fn: item free function (or NULL)
  * @flags: AVLTree flags - bitmask of
@@ -144,7 +119,8 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
  * Return value: new AVL Tree or NULL on failure
  */
 raptor_avltree*
-raptor_new_avltree(raptor_data_compare_function compare_fn,
+raptor_new_avltree(raptor_world* world,
+                   raptor_data_compare_function compare_fn,
                    raptor_data_free_function free_fn,
                    unsigned int flags)
 {
@@ -153,7 +129,8 @@ raptor_new_avltree(raptor_data_compare_function compare_fn,
   tree=(raptor_avltree*)RAPTOR_MALLOC(raptor_avltree, sizeof(*tree));
   if(!tree)
     return NULL;
-  
+
+  tree->world=NULL;  
   tree->root=NULL;
   tree->compare_fn=compare_fn;
   tree->free_fn=free_fn;
@@ -1575,8 +1552,11 @@ main(int argc, char *argv[])
   raptor_avltree_iterator* iter;
   visit_state vs;
   int i;
+
+  raptor_init();
   
-  tree=raptor_new_avltree(compare_strings,
+  tree=raptor_new_avltree(raptor_world_instance(), /* FIXME */
+                          compare_strings,
                           NULL, /* no free as they are static pointers above */
                           0);
   if(!tree) {
@@ -1727,6 +1707,8 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Freeing tree\n", program);
 #endif
   raptor_free_avltree(tree);
+
+  raptor_finish();
 
   /* keep gcc -Wall happy */
   return(0);

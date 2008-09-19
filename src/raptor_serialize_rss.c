@@ -200,7 +200,8 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
 
   rss_serializer->enclosures=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_rss_item, (raptor_sequence_print_handler*)NULL);
 
-  rss_serializer->group_map=raptor_new_avltree((raptor_data_compare_function)raptor_rss_group_map_compare,
+  rss_serializer->group_map=raptor_new_avltree(serializer->world,
+                                               (raptor_data_compare_function)raptor_rss_group_map_compare,
                                                (raptor_data_free_function)raptor_free_group_map, 0);
 
   rss_serializer->user_namespaces=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_namespace, NULL);

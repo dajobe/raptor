@@ -130,7 +130,8 @@ raptor_json_serialize_start(raptor_serializer* serializer)
     return 1;
 
   if(context->is_resource) {
-    context->avltree=raptor_new_avltree((raptor_data_compare_function)raptor_statement_compare,
+    context->avltree=raptor_new_avltree(serializer->world,
+                                        (raptor_data_compare_function)raptor_statement_compare,
                                         (raptor_data_free_function)raptor_free_statement,
                                         0);
     if(!context->avltree) {

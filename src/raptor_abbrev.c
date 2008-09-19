@@ -58,7 +58,8 @@
  **/
 
 raptor_abbrev_node* 
-raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
+raptor_new_abbrev_node(raptor_world* world,
+                       raptor_identifier_type node_type, const void *node_data,
                        raptor_uri *datatype, const unsigned char *language)
 {
   unsigned char *string;
@@ -71,6 +72,7 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
                                             sizeof(raptor_abbrev_node));
 
   if(node) {
+    node->world = world;
     node->ref_count = 1;
     node->type = node_type;
     
@@ -79,7 +81,7 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
           node->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
           /* intentional fall through */
         case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-          node->value.resource.uri = raptor_uri_copy((raptor_uri*)node_data);
+          node->value.resource.uri = raptor_uri_copy_v2(world, (raptor_uri*)node_data);
           break;
           
         case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
@@ -105,7 +107,7 @@ raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data,
           node->value.literal.string = string;
 
           if(datatype) {
-            node->value.literal.datatype = raptor_uri_copy(datatype);
+            node->value.literal.datatype = raptor_uri_copy_v2(world, datatype);
           }
 
           if(language) {
@@ -148,7 +150,7 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
   switch (node->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        raptor_free_uri(node->value.resource.uri);
+        raptor_free_uri_v2(node->world, node->value.resource.uri);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
@@ -160,7 +162,7 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
         RAPTOR_FREE(literal, node->value.literal.string);
 
         if(node->value.literal.datatype)
-          raptor_free_uri(node->value.literal.datatype);
+          raptor_free_uri_v2(node->world, node->value.literal.datatype);
 
         if(node->value.literal.language)
           RAPTOR_FREE(language, node->value.literal.language);
@@ -207,8 +209,9 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
   switch (node1->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        rv = raptor_uri_compare(node1->value.resource.uri,
-                                node2->value.resource.uri);
+        rv = raptor_uri_compare_v2(node1->world,
+                                   node1->value.resource.uri,
+                                   node2->value.resource.uri);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
@@ -323,8 +326,8 @@ raptor_abbrev_node_matches(raptor_abbrev_node* node,
   switch (node->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        rv = raptor_uri_equals(node->value.resource.uri,
-                               (raptor_uri *)node_data);
+        rv = raptor_uri_equals_v2(node->world, node->value.resource.uri,
+                                  (raptor_uri *)node_data);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
@@ -353,7 +356,7 @@ raptor_abbrev_node_matches(raptor_abbrev_node* node,
 
           /* datatype */
           if(node->value.literal.datatype != NULL && datatype != NULL)
-            rv &= (raptor_uri_equals(node->value.literal.datatype,datatype) !=0);
+            rv &= (raptor_uri_equals_v2(node->world, node->value.literal.datatype,datatype) !=0);
           else if(node->value.literal.datatype != NULL || datatype != NULL)
             rv = 0;
           
@@ -402,7 +405,7 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
   raptor_abbrev_node *rv_node;
 
   /* Create a temporary node for search comparison. */
-  lookup_node = raptor_new_abbrev_node(node_type, node_value, datatype, language);
+  lookup_node = raptor_new_abbrev_node(nodes->world, node_type, node_value, datatype, language);
   
   if(!lookup_node)
     return NULL;
@@ -531,7 +534,8 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
     subject->node_type = NULL;
 
     subject->properties =
-      raptor_new_avltree((raptor_data_compare_function)raptor_compare_abbrev_po,
+      raptor_new_avltree(node->world,
+                         (raptor_data_compare_function)raptor_compare_abbrev_po,
                          (raptor_data_free_function)raptor_free_abbrev_po,
                          0);
 #ifdef RAPTOR_DEBUG
@@ -868,7 +872,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   if(qname)
     return qname;
   
-  uri_string = raptor_uri_as_counted_string(node->value.resource.uri, &uri_len);
+  uri_string = raptor_uri_as_counted_string_v2(node->world, node->value.resource.uri, &uri_len);
 
   p= uri_string;
   name_len=uri_len;
@@ -884,7 +888,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     return NULL;
 
   c=*name; *name='\0';
-  ns_uri=raptor_new_uri(uri_string);
+  ns_uri=raptor_new_uri_v2(node->world, uri_string);
   if(!ns_uri)
     return NULL;
   
@@ -907,14 +911,14 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
        * the ns ourselves on error
        */
       raptor_free_namespace(ns);
-      raptor_free_uri(ns_uri);
+      raptor_free_uri_v2(node->world, ns_uri);
       return NULL;
     }
   }
 
   qname = raptor_new_qname_from_namespace_local_name(ns, name,  NULL);
   
-  raptor_free_uri(ns_uri);
+  raptor_free_uri_v2(node->world, ns_uri);
 
   return qname;
 }

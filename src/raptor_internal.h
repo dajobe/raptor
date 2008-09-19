@@ -241,6 +241,41 @@ typedef struct raptor_uri_detail_s raptor_uri_detail;
 typedef struct raptor_avltree_s raptor_avltree;
 typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
 
+typedef struct raptor_avltree_node_s raptor_avltree_node;
+
+/* user functions */
+typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
+typedef void (*raptor_data_free_function)(void* data);
+typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
+typedef void (*raptor_data_print_function)(FILE* handle, const void* data);
+
+/* AVL-tree */
+struct raptor_avltree_s {
+  /* raptor_world object */
+  raptor_world* world;
+
+  /* root node of tree */
+  raptor_avltree_node* root;
+
+  /* node comparison function (optional) */
+  raptor_data_compare_function compare_fn;
+
+  /* node deletion function (optional) */
+  raptor_data_free_function free_fn;
+
+  /* node print function (optional) */
+  raptor_data_print_function print_fn;
+
+  /* tree flags (none defined at present) */
+  unsigned int flags;
+
+  /* number of nodes in tree */
+  unsigned int size;
+
+  /* legacy iterator used for cursor methods */
+  raptor_avltree_iterator* cursor_iterator;
+};
+
 
 /* Raptor Namespace Stack node */
 struct raptor_namespace_stack_s {
@@ -1100,6 +1135,7 @@ raptor_identifier* raptor_new_identifier_from_double(raptor_world* world, double
 /* raptor_abbrev.c */
 
 typedef struct {
+  raptor_world* world;
   int ref_count;         /* count of references to this node */
   int count_as_subject;  /* count of this blank/resource node as subject */
   int count_as_object;   /* count of this blank/resource node as object */
@@ -1141,7 +1177,7 @@ typedef struct {
 } raptor_abbrev_subject;
 
 
-raptor_abbrev_node* raptor_new_abbrev_node(raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
+raptor_abbrev_node* raptor_new_abbrev_node(raptor_world* world, raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
 void raptor_free_abbrev_node(raptor_abbrev_node* node);
 int raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
 int raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
@@ -1221,17 +1257,11 @@ int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer
 /* snprintf.c */
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
 
-/* user functions */
-typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
-typedef void (*raptor_data_free_function)(void* data);
-typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
-typedef void (*raptor_data_print_function)(FILE* handle, const void* data);
-
 /* constructor / destructor */
 
 #define RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES 1
 
-raptor_avltree* raptor_new_avltree(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
+raptor_avltree* raptor_new_avltree(raptor_world* world, raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
 void raptor_free_avltree(raptor_avltree* tree);
 
 /* methods */
