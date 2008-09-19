@@ -1241,7 +1241,7 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
   switch(feature) {
     case RAPTOR_FEATURE_START_URI:
       if(serializer->feature_start_uri)
-        return raptor_uri_to_string(serializer->feature_start_uri);
+        return raptor_uri_to_string_v2(serializer->world, serializer->feature_start_uri);
       break;
 
     case RAPTOR_FEATURE_WRITE_BASE_URI:

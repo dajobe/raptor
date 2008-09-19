@@ -117,13 +117,15 @@ raptor_iostream_write_string_ntriples(raptor_iostream *iostr,
 
 static void
 raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
-                                               const void *term, 
-                                               raptor_identifier_type type,
-                                               raptor_uri* literal_datatype,
-                                               const unsigned char *literal_language) 
+                                              const void *term, 
+                                              raptor_identifier_type type,
+                                              raptor_uri* literal_datatype,
+                                              const unsigned char *literal_language) 
 {
   size_t len;
   
+  raptor_world* world=raptor_world_instance(); /* FIXME */
+
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
@@ -140,7 +142,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
         raptor_iostream_write_byte(iostr, '>');
       } else if(literal_datatype) {
         raptor_iostream_write_counted_string(iostr, "^^<", 3);
-        raptor_iostream_write_string(iostr, raptor_uri_as_string((raptor_uri*)literal_datatype));
+        raptor_iostream_write_string(iostr, raptor_uri_as_string_v2(world, (raptor_uri*)literal_datatype));
         raptor_iostream_write_byte(iostr, '>');
       }
 
@@ -163,7 +165,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_iostream_write_byte(iostr, '<');
-      term=raptor_uri_as_counted_string((raptor_uri*)term, &len);
+      term=raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &len);
       raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, len, '>');
       raptor_iostream_write_byte(iostr, '>');
       break;

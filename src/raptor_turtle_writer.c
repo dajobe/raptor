@@ -73,9 +73,6 @@ struct raptor_turtle_writer_s {
   raptor_namespace_stack *nstack;
   int nstack_depth;
 
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
-
   raptor_simple_message_handler error_handler;
   void *error_data;
 
@@ -336,7 +333,7 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
   unsigned char* uri_str;
   size_t length;
   
-  uri_str = raptor_uri_to_relative_counted_uri_string(turtle_writer->base_uri, uri, &length);
+  uri_str = raptor_uri_to_relative_counted_uri_string_v2(turtle_writer->world, turtle_writer->base_uri, uri, &length);
 
   raptor_iostream_write_byte(turtle_writer->iostr, '<');
   if(uri_str)

@@ -384,8 +384,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     unsigned char c;
 
     /* Do not use raptor_uri_as_counted_string() - we want a modifiable copy */
-    uri_string=raptor_uri_to_counted_string((raptor_uri*)statement->predicate,
-                                            &uri_len);
+    uri_string=raptor_uri_to_counted_string_v2(serializer->world, (raptor_uri*)statement->predicate,
+                                               &uri_len);
     if(!uri_string)
       goto oom;
 
@@ -622,7 +622,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
           if(!object_uri_string)
             goto oom;
         } else {
-          object_uri_string=raptor_uri_to_string((raptor_uri*)statement->object);
+          object_uri_string=raptor_uri_to_string_v2(serializer->world, (raptor_uri*)statement->object);
           allocated=0;
         }
       }
