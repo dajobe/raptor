@@ -117,7 +117,7 @@ static int
 raptor_json_serialize_start(raptor_serializer* serializer)
 {
   raptor_json_context* context=(raptor_json_context*)serializer->context;
-  const raptor_uri_handler *uri_handler;
+  raptor_uri* base_uri;
 
   base_uri=(serializer->feature_relative_uris) ? serializer->base_uri : NULL;
   
