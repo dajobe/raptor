@@ -57,11 +57,10 @@
 #endif
 
 struct raptor_json_writer_s {
+  raptor_world* world;
+
   raptor_uri* base_uri;
   
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
-
   raptor_simple_message_handler error_handler;
   void *error_data;
 
@@ -86,9 +85,8 @@ struct raptor_json_writer_s {
 
 /**
  * raptor_new_json_writer:
+ * @world: raptor_world object
  * @base_uri: Base URI for the writer
- * @uri_handler: URI handler function
- * @uri_context: URI handler context data
  * @iostr: I/O stream to write to
  * @error_handler: error handler function
  * @error_data: error handler data
@@ -98,9 +96,8 @@ struct raptor_json_writer_s {
  * Return value: a new #raptor_json_writer object or NULL on failure
  **/
 raptor_json_writer*
-raptor_new_json_writer(raptor_uri* base_uri,
-                       const raptor_uri_handler *uri_handler,
-                       void *uri_context,
+raptor_new_json_writer(raptor_world* world,
+                       raptor_uri* base_uri,
                        raptor_iostream* iostr,
                        raptor_simple_message_handler error_handler,
                        void *error_data)
@@ -112,18 +109,17 @@ raptor_new_json_writer(raptor_uri* base_uri,
   if(!json_writer)
     return NULL;
 
-  json_writer->uri_handler=uri_handler;
-  json_writer->uri_context=uri_context;
+  json_writer->world=world;
   json_writer->error_handler=error_handler;
   json_writer->error_data=error_data;
   json_writer->iostr=iostr;
   json_writer->base_uri=base_uri;
 
 #if RAPTOR_JSON_WRITER_DATATYPES == 1
-  json_writer->xsd_boolean_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  json_writer->xsd_decimal_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
-  json_writer->xsd_double_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  json_writer->xsd_integer_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  json_writer->xsd_boolean_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  json_writer->xsd_decimal_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  json_writer->xsd_double_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  json_writer->xsd_integer_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
 #endif
 
   json_writer->indent_step=2;
@@ -146,13 +142,13 @@ raptor_free_json_writer(raptor_json_writer* json_writer)
 
 #if RAPTOR_JSON_WRITER_DATATYPES == 1
   if(json_writer->xsd_boolean_uri)
-    raptor_free_uri(json_writer->xsd_boolean_uri);
+    raptor_free_uri_v2(json_writer->world, json_writer->xsd_boolean_uri);
   if(json_writer->xsd_decimal_uri)
-    raptor_free_uri(json_writer->xsd_decimal_uri);
+    raptor_free_uri_v2(json_writer->world, json_writer->xsd_decimal_uri);
   if(json_writer->xsd_double_uri)
-    raptor_free_uri(json_writer->xsd_double_uri);
+    raptor_free_uri_v2(json_writer->world, json_writer->xsd_double_uri);
   if(json_writer->xsd_integer_uri)
-    raptor_free_uri(json_writer->xsd_integer_uri);
+    raptor_free_uri_v2(json_writer->world, json_writer->xsd_integer_uri);
 #endif
 
   RAPTOR_FREE(raptor_json_writer, json_writer);
@@ -227,7 +223,7 @@ raptor_json_writer_key_uri_value(raptor_json_writer* json_writer,
   size_t value_len;
   int rc=0;
   
-  value=(const char*)raptor_uri_to_relative_counted_uri_string(json_writer->base_uri, uri, &value_len);
+  value=(const char*)raptor_uri_to_relative_counted_uri_string_v2(json_writer->world, json_writer->base_uri, uri, &value_len);
   if(!value)
     return 1;
 
@@ -343,7 +339,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
   /* typed literal special cases */
   if(datatype) {
     /* integer */
-    if(raptor_uri_equals(datatype, json_writer->xsd_integer_uri)) {
+    if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_integer_uri)) {
       long inum = strtol((const char*)s, NULL, 10);
       if(inum != LONG_MIN && inum != LONG_MAX) {
         raptor_iostream_write_decimal(json_writer->iostr, inum);
@@ -351,7 +347,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
       }
     
     /* double */
-    } else if(raptor_uri_equals(datatype, json_writer->xsd_double_uri)) {
+    } else if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_double_uri)) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
         const char* decimal = strchr((const char*)s, '.');
@@ -364,7 +360,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
       }
 
     /* decimal */
-    } else if(raptor_uri_equals(datatype, json_writer->xsd_decimal_uri)) {
+    } else if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_decimal_uri)) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
         snprintf(buf, 20, "%.1lf", dnum);
@@ -373,7 +369,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
       }
     
     /* boolean */
-    } else if(raptor_uri_equals(datatype, json_writer->xsd_boolean_uri)) {
+    } else if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
         raptor_iostream_write_string(json_writer->iostr, "false");
         written = 1;

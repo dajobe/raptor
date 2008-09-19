@@ -1197,7 +1197,7 @@ const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_write
 typedef struct raptor_json_writer_s raptor_json_writer;
 
 /* raptor_json_writer.c */
-raptor_json_writer* raptor_new_json_writer(raptor_uri* base_uri, const raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data);
+raptor_json_writer* raptor_new_json_writer(raptor_world* world, raptor_uri* base_uri, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data);
 void raptor_free_json_writer(raptor_json_writer* json_writer);
 
 int raptor_json_writer_newline(raptor_json_writer* json_writer);
