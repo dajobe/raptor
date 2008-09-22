@@ -963,7 +963,7 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
   if(!ns)
     return NULL;
 
-  return raptor_new_qname_from_namespace_local_name(ns, name,  NULL);
+  return raptor_new_qname_from_namespace_local_name_v2(nstack->world, ns, name,  NULL);
 }
 
 

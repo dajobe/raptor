@@ -550,8 +550,10 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
 
         sprintf((char*)uri_string, "_%d", predicate->value.ordinal.ordinal);
 
-        qname = raptor_new_qname_from_namespace_local_name(context->rdf_nspace,
-                                                           uri_string, NULL);
+        qname = raptor_new_qname_from_namespace_local_name_v2(serializer->world,
+                                                              context->rdf_nspace,
+                                                              uri_string,
+                                                              NULL);
 
       } else {
         qname = raptor_namespaces_qname_from_uri(context->nstack,

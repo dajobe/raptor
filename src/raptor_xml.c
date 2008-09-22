@@ -112,7 +112,7 @@ raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns,
   raptor_qname *qname;
   raptor_xml_element *element=NULL;
 
-  qname=raptor_new_qname_from_namespace_local_name(ns, name, NULL);
+  qname=raptor_new_qname_from_namespace_local_name_v2(ns->nstack->world, ns, name, NULL);
   if(qname) {
     base_uri_copy=xml_base ? raptor_uri_copy_v2(ns->nstack->world, xml_base) : NULL;
     element=raptor_new_xml_element(qname, xml_language, base_uri_copy);

@@ -314,7 +314,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
       goto tidy;
 
     base_uri_string=raptor_uri_as_string_v2(serializer->world, base_uri);
-    attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
+    attrs[attrs_count]=raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
     if(!attrs[attrs_count]) {
       RAPTOR_FREE(qnamearray, attrs);
       goto tidy;
@@ -449,7 +449,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   /* subject */
   switch(statement->subject_type) {
     case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"nodeID",  (unsigned char*)statement->subject);
+      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID",  (unsigned char*)statement->subject);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;
@@ -476,7 +476,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         }
       }
 
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
+      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
       if(!attrs[attrs_count]) {
         if(allocated)
           RAPTOR_FREE(cstring, subject_uri_string);
@@ -545,7 +545,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       len=strlen((const char*)statement->object);
 
       if(object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-        attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
+        attrs[attrs_count]=raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
         if(!attrs[attrs_count])
           goto oom;
         attrs_count++;
@@ -564,7 +564,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                         len);
       } else {
         if(statement->object_literal_datatype) {
-          attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"datatype", (unsigned char*)raptor_uri_as_string_v2(serializer->world, (raptor_uri*)statement->object_literal_datatype));
+          attrs[attrs_count]=raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", (unsigned char*)raptor_uri_as_string_v2(serializer->world, (raptor_uri*)statement->object_literal_datatype));
           if(!attrs[attrs_count])
             goto oom;
           attrs_count++;
@@ -591,7 +591,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"nodeID", (unsigned char*)statement->object);
+      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID", (unsigned char*)statement->object);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;
@@ -627,7 +627,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         }
       }
 
-      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
+      attrs[attrs_count]=raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
       if(!attrs[attrs_count]) {
         if(allocated)
           RAPTOR_FREE(cstring, object_uri_string);

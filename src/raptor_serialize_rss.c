@@ -997,7 +997,10 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
                                                   (const unsigned char*)raptor_xml_namespace_uri,
                                                   0);
 
-  qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, root_local_name,  NULL);
+  qname=raptor_new_qname_from_namespace_local_name_v2(serializer->world,
+                                                      rss_serializer->default_nspace,
+                                                      root_local_name,
+                                                      NULL);
   if(base_uri)
     base_uri=raptor_uri_copy_v2(rss_serializer->world, base_uri);
   element=raptor_new_xml_element(qname, NULL, base_uri);
@@ -1036,7 +1039,10 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
   for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     int n=raptor_rss_fields_info[i].nspace;
     raptor_namespace* nspace=rss_serializer->nspaces[n];
-    world->rss_fields_info_qnames[i]=raptor_new_qname_from_namespace_local_name(nspace, (const unsigned char*)raptor_rss_fields_info[i].name, NULL);
+    world->rss_fields_info_qnames[i]=raptor_new_qname_from_namespace_local_name_v2(serializer->world,
+                                                                                   nspace,
+                                                                                   (const unsigned char*)raptor_rss_fields_info[i].name,
+                                                                                   NULL);
     if(!world->rss_fields_info_qnames[i])
       return;
   }
@@ -1048,7 +1054,10 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
     int n=raptor_rss_types_info[i].nspace;
     raptor_namespace* nspace=rss_serializer->nspaces[n];
     if(nspace) {
-      world->rss_types_info_qnames[i]=raptor_new_qname_from_namespace_local_name(nspace, (const unsigned char*)raptor_rss_types_info[i].name, NULL);
+      world->rss_types_info_qnames[i]=raptor_new_qname_from_namespace_local_name_v2(serializer->world,
+                                                                                    nspace,
+                                                                                    (const unsigned char*)raptor_rss_types_info[i].name,
+                                                                                    NULL);
       if(!world->rss_types_info_qnames[i])
         return;
     }
@@ -1103,8 +1112,8 @@ raptor_rss10_emit_atom_triples_map(raptor_serializer *serializer, int is_feed,
   
   xml_writer=rss_serializer->xml_writer;
 
-  at_map_root_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
-                                                               (const unsigned char*)map_element_name,  NULL);
+  at_map_root_qname=raptor_new_qname_from_namespace_local_name_v2(serializer->world, at_nspace,
+                                                                  (const unsigned char*)map_element_name,  NULL);
   base_uri_copy=base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
   at_map_root_element=raptor_new_xml_element(at_map_root_qname, NULL,
                                              base_uri_copy);
@@ -1139,9 +1148,10 @@ raptor_rss10_emit_atom_triples_map(raptor_serializer *serializer, int is_feed,
       continue;
     
     /* <at:map property="{property URI}">{atom element}</at:map> */
-    at_map_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
-                                                            map_element_name,
-                                                            NULL);
+    at_map_qname=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                               at_nspace,
+                                                               map_element_name,
+                                                               NULL);
     base_uri_copy=base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
     at_map_element=raptor_new_xml_element(at_map_qname, NULL, base_uri_copy);
     
@@ -1189,7 +1199,10 @@ raptor_rss10_emit_atom_feed(raptor_serializer *serializer,
 
   xml_writer=rss_serializer->xml_writer;
 
-  atom_link_qname=raptor_new_qname_from_namespace_local_name(atom_nspace, (const unsigned char*)"link",  NULL);
+  atom_link_qname=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                atom_nspace,
+                                                                (const unsigned char*)"link",
+                                                                NULL);
   base_uri_copy=base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
   atom_link_element=raptor_new_xml_element(atom_link_qname, NULL, base_uri_copy);
 
@@ -1235,7 +1248,10 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
   
   xml_writer=rss_serializer->xml_writer;
 
-  rdf_Seq_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"Seq",  NULL);
+  rdf_Seq_qname=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                              rss_serializer->default_nspace,
+                                                              (const unsigned char*)"Seq",
+                                                              NULL);
   
   base_uri_copy=base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
   rdf_Seq_element=raptor_new_xml_element(rdf_Seq_qname, NULL, base_uri_copy);
@@ -1256,12 +1272,18 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
     raptor_qname **attrs;
     unsigned char* ruri_string;
     
-    rdf_li_qname=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"li",  NULL);
+    rdf_li_qname=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                               rss_serializer->default_nspace,
+                                                               (const unsigned char*)"li",
+                                                               NULL);
     base_uri_copy=base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
     rdf_li_element=raptor_new_xml_element(rdf_li_qname, NULL, base_uri_copy);
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
     ruri_string=raptor_uri_to_relative_uri_string(base_uri, item_item->uri);
-    attrs[0]=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"resource",  ruri_string);
+    attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                           rss_serializer->default_nspace,
+                                                           (const unsigned char*)"resource",
+                                                           ruri_string);
     raptor_free_memory(ruri_string);
     raptor_xml_element_set_attributes(rdf_li_element, attrs, 1);
     
@@ -1326,9 +1348,10 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
     raptor_namespace* at_nspace=rss_serializer->nspaces[ATOMTRIPLES_NS];
 
     /* atom:md with no attribute */
-    root_qname=raptor_new_qname_from_namespace_local_name(at_nspace,
-                                                          (const unsigned char*)"md",
-                                                          NULL);
+    root_qname=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                             at_nspace,
+                                                             (const unsigned char*)"md",
+                                                             NULL);
     if(!root_qname)
       goto oom;
     
@@ -1614,7 +1637,10 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       unsigned char* ruri_string;
       attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
       ruri_string=raptor_uri_to_relative_uri_string(base_uri, item->uri);
-      attrs[0]=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"about",  ruri_string);
+      attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                             rss_serializer->default_nspace,
+                                                             (const unsigned char*)"about",
+                                                             ruri_string);
       raptor_free_memory(ruri_string);
       raptor_xml_element_set_attributes(element, attrs, 1);
     }
@@ -1727,12 +1753,14 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           raptor_qname **predicate_attrs=NULL;
           predicate_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, 
                                                          sizeof(raptor_qname*));
-          predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(NULL,
-                                           (const unsigned char*)"href",
-                                           ruri_string);
-          predicate_attrs[1]=raptor_new_qname_from_namespace_local_name(NULL, 
-                                           (const unsigned char*)"rel", 
-                                           (const unsigned char*)"alternate");
+          predicate_attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                           NULL,
+                                                                           (const unsigned char*)"href",
+                                                                           ruri_string);
+          predicate_attrs[1]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                           NULL, 
+                                                                           (const unsigned char*)"rel", 
+                                                                           (const unsigned char*)"alternate");
           field->value=NULL;
           raptor_xml_element_set_attributes(predicate, predicate_attrs, 2);
           raptor_xml_writer_empty_element(xml_writer, predicate);
@@ -1752,12 +1780,14 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
 
           predicate_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, 
                                                          sizeof(raptor_qname*));
-          predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(NULL,
-                                           (const unsigned char*)"src",
-                                           ruri_string);
-          predicate_attrs[1]=raptor_new_qname_from_namespace_local_name(NULL, 
-                                           (const unsigned char*)"type", 
-                                           (const unsigned char*)content_type);
+          predicate_attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                           NULL,
+                                                                           (const unsigned char*)"src",
+                                                                           ruri_string);
+          predicate_attrs[1]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                           NULL, 
+                                                                           (const unsigned char*)"type", 
+                                                                           (const unsigned char*)content_type);
           /* free at:contentType field - no need to emit it */
           if(content_type_field) {
             raptor_rss_field_free(content_type_field);
@@ -1790,15 +1820,24 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
 
             attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
             ruri_string=raptor_uri_to_relative_uri_string(base_uri, field->uri);
-            attrs[attr_count]=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"resource",  ruri_string);
+            attrs[attr_count]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                            rss_serializer->default_nspace,
+                                                                            (const unsigned char*)"resource",
+                                                                            ruri_string);
             raptor_free_memory(ruri_string);
             attr_count++;
             if (enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE] && enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE]->value) {
-              attrs[attr_count]=raptor_new_qname_from_namespace_local_name(rss_serializer->nspaces[RSS2_0_ENC_NS], (const unsigned char*)raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_TYPE].name, (const unsigned char*)enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE]->value);
+              attrs[attr_count]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                              rss_serializer->nspaces[RSS2_0_ENC_NS],
+                                                                              (const unsigned char*)raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_TYPE].name,
+                                                                              (const unsigned char*)enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_TYPE]->value);
               attr_count++;
             }
             if (enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH] && enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH]->value) {
-              attrs[attr_count]=raptor_new_qname_from_namespace_local_name(rss_serializer->nspaces[RSS2_0_ENC_NS], (const unsigned char*)raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH].name, (const unsigned char*)enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH]->value);
+              attrs[attr_count]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                              rss_serializer->nspaces[RSS2_0_ENC_NS],
+                                                                              (const unsigned char*)raptor_rss_fields_info[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH].name,
+                                                                              (const unsigned char*)enclosure_item->fields[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH]->value);
               attr_count++;
             }
             raptor_xml_element_set_attributes(predicate, attrs, attr_count);
@@ -1811,7 +1850,10 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           /* not an rss:item with an rss:enclosure field */
           attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
           ruri_string=raptor_uri_to_relative_uri_string(base_uri, field->uri);
-          attrs[0]=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"resource",  ruri_string);
+          attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                 rss_serializer->default_nspace,
+                                                                 (const unsigned char*)"resource",
+                                                                 ruri_string);
           raptor_free_memory(ruri_string);
           raptor_xml_element_set_attributes(predicate, attrs, 1);
         }
@@ -1825,9 +1867,15 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           raptor_qname **predicate_attrs=NULL;
           predicate_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
           if(is_atom)
-            predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(NULL, (const unsigned char*)"type",  (const unsigned char*)"xhtml");
+            predicate_attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                             NULL,
+                                                                             (const unsigned char*)"type",
+                                                                             (const unsigned char*)"xhtml");
           else
-            predicate_attrs[0]=raptor_new_qname_from_namespace_local_name(rss_serializer->default_nspace, (const unsigned char*)"parseType",  (const unsigned char*)"Literal");
+            predicate_attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                             rss_serializer->default_nspace,
+                                                                             (const unsigned char*)"parseType",
+                                                                             (const unsigned char*)"Literal");
           raptor_xml_element_set_attributes(predicate, predicate_attrs, 1);
         }
 
@@ -1970,7 +2018,10 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
 
     base_uri_string=raptor_uri_as_string_v2(rss_serializer->world, serializer->base_uri);
-    attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name(rss_serializer->xml_nspace, (const unsigned char*)"base",  base_uri_string);
+    attrs[attrs_count++]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
+                                                                       rss_serializer->xml_nspace,
+                                                                       (const unsigned char*)"base",
+                                                                       base_uri_string);
   }
 
   if(attrs_count)
