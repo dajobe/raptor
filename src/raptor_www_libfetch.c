@@ -72,7 +72,7 @@ raptor_www_libfetch_fetch(raptor_www *www)
   if(www->user_agent)
     setenv("HTTP_USER_AGENT", www->user_agent, 0);
 
-  stream=fetchXGetURL((const char*)raptor_uri_as_string(www->uri), NULL, NULL);
+  stream=fetchXGetURL((const char*)raptor_uri_as_string_v2(www->world, www->uri), NULL, NULL);
   if(!stream) {
     www->failed=1;
     raptor_www_error(www, "%s", fetchLastErrString);
