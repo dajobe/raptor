@@ -488,12 +488,14 @@ raptor_print_abbrev_po(FILE* handle, raptor_abbrev_node** nodes)
     unsigned char *pred;
     unsigned char *obj;
 
-    pred = raptor_statement_part_as_string(p->value.resource.uri, p->type,
-                                           NULL, NULL);
-    obj = raptor_statement_part_as_string(o->value.literal.string,
-                                          o->type,
-                                          o->value.literal.datatype,
-                                          o->value.literal.language);
+    pred = raptor_statement_part_as_string_v2(p->world,
+                                              p->value.resource.uri, p->type,
+                                              NULL, NULL);
+    obj = raptor_statement_part_as_string_v2(o->world,
+                                             o->value.literal.string,
+                                             o->type,
+                                             o->value.literal.datatype,
+                                             o->value.literal.language);
     fprintf(handle, "[%s : %s]\n", pred, obj);      
     RAPTOR_FREE(cstring, pred);
     RAPTOR_FREE(cstring, obj);

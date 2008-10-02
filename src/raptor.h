@@ -488,6 +488,8 @@ typedef struct {
  *
  * See #raptor_identifier for a description of how the fields may be used.
  * As returned by a parser statement_handler.
+ *
+ * See also #raptor_statement_v2.
  */
 typedef struct {
   const void *subject;
@@ -499,6 +501,21 @@ typedef struct {
   raptor_uri *object_literal_datatype;
   const unsigned char *object_literal_language;
 } raptor_statement;
+
+
+/**
+ * raptor_statement_v2:
+ * @world: raptor_world object
+ * @s: #raptor_statement
+ *
+ * An RDF triple wrapper for raptor v2 statement API.
+ *
+ * See #raptor_statement.
+ */
+typedef struct {
+  raptor_world* world;
+  raptor_statement *s;
+} raptor_statement_v2;
 
 
 /**
@@ -860,7 +877,11 @@ void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_uri_filter_func 
 RAPTOR_API
 void raptor_print_statement(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
+void raptor_print_statement_v2(const raptor_statement_v2 * statement, FILE *stream);
+RAPTOR_API
 void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
+RAPTOR_API
+void raptor_print_statement_as_ntriples_v2(const raptor_statement_v2 * statement, FILE *stream);
 #ifndef RAPTOR_DISABLE_DEPRECATED
 RAPTOR_API RAPTOR_DEPRECATED
 void raptor_print_statement_detailed(const raptor_statement * statement, int detailed, FILE *stream);
@@ -868,9 +889,16 @@ void raptor_print_statement_detailed(const raptor_statement * statement, int det
 RAPTOR_API
 unsigned char* raptor_statement_part_as_counted_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
 RAPTOR_API
+unsigned char* raptor_statement_part_as_counted_string_v2(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
+RAPTOR_API
 unsigned char* raptor_statement_part_as_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
 RAPTOR_API
+unsigned char* raptor_statement_part_as_string_v2(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
+RAPTOR_API
 int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
+RAPTOR_API
+int raptor_statement_compare_v2(const raptor_statement_v2 *s1, const raptor_statement_v2 *s2);
+
 
 RAPTOR_API
 raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);

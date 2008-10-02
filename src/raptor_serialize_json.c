@@ -131,8 +131,8 @@ raptor_json_serialize_start(raptor_serializer* serializer)
 
   if(context->is_resource) {
     context->avltree=raptor_new_avltree(serializer->world,
-                                        (raptor_data_compare_function)raptor_statement_compare,
-                                        (raptor_data_free_function)raptor_free_statement,
+                                        (raptor_data_compare_function)raptor_statement_compare_v2,
+                                        (raptor_data_free_function)raptor_free_statement_v2,
                                         0);
     if(!context->avltree) {
       raptor_free_json_writer(context->json_writer);
@@ -171,7 +171,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   raptor_json_context* context=(raptor_json_context*)serializer->context;
 
   if(context->is_resource) {
-    raptor_statement* s=raptor_statement_copy(statement);
+    raptor_statement_v2* s=raptor_statement_copy_v2_from_v1(serializer->world, statement);
     if(!s)
       return 1;
     return raptor_avltree_add(context->avltree, s);

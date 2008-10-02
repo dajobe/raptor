@@ -647,7 +647,10 @@ void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 const char* raptor_basename(const char *name);
 raptor_statement* raptor_statement_copy(const raptor_statement *statement);
+raptor_statement_v2* raptor_statement_copy_v2(const raptor_statement_v2 *statement);
+raptor_statement_v2* raptor_statement_copy_v2_from_v1(raptor_world* world, const raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);
+void raptor_free_statement_v2(raptor_statement_v2 *statement);
 
 /* raptor_parse.c */
 raptor_parser_factory* raptor_get_parser_factory(raptor_world* world, const char *name);  
