@@ -467,7 +467,7 @@ static void XMLCALL
          umap_key = (char*)raptor_namespace_get_prefix(ns);
          if(!umap_key)
            umap_key=(char*)XMLNS_DEFAULT_MAPPING;
-         umap_value = (char*)raptor_uri_as_string(raptor_namespace_get_uri(ns));
+         umap_value = (char*)raptor_uri_as_string_v2(context->sax2->world, raptor_namespace_get_uri(ns));
 #else
          rdfa_next_mapping(umap++, &umap_key, &umap_value);
          umap++;
@@ -1242,7 +1242,7 @@ int rdfa_parse_start(rdfacontext* context)
    rdfa_init_context(context);
 
 #ifdef LIBRDFA_IN_RAPTOR
-   context->base_uri=raptor_new_uri((const unsigned char*)context->base);
+   context->base_uri=raptor_new_uri_v2(context->sax2->world, (const unsigned char*)context->base);
    raptor_sax2_parse_start(context->sax2, context->base_uri);
 #endif
 
@@ -1323,7 +1323,7 @@ void rdfa_parse_end(rdfacontext* context)
    // Free the expat parser and the like
 #ifdef LIBRDFA_IN_RAPTOR
    if(context->base_uri)
-      raptor_free_uri(context->base_uri);
+      raptor_free_uri_v2(context->sax2->world, context->base_uri);
    raptor_free_sax2(context->sax2);
    context->sax2=NULL;
 #else

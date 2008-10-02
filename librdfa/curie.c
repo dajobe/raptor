@@ -288,7 +288,7 @@ char* rdfa_resolve_curie(
             if(nspace) {
                ns_uri = raptor_namespace_get_uri(nspace);
                if(ns_uri)
-                  expanded_prefix = (const char*)raptor_uri_as_string(ns_uri);
+                  expanded_prefix = (const char*)raptor_uri_as_string_v2(context->sax2->world, ns_uri);
             }
 #else
             expanded_prefix =
