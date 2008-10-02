@@ -47,7 +47,7 @@ static void raptor_print_statement_part_as_ntriples(raptor_world* world, FILE* s
 static raptor_statement *raptor_statement_copy_common(raptor_world* world, const raptor_statement *statement);
 static void raptor_free_statement_common(raptor_world *world, raptor_statement *statement);
 static void raptor_print_statement_common(raptor_world* world, const raptor_statement * statement, FILE *stream);
-static void raptor_print_statement_as_ntriples_common(raptor_world* world, raptor_statement *statement, FILE *stream);
+static void raptor_print_statement_as_ntriples_common(raptor_world* world, const raptor_statement *statement, FILE *stream);
 static int raptor_statement_compare_common(raptor_world* world, const raptor_statement *s1, const raptor_statement *s2);
 
 
@@ -722,7 +722,7 @@ raptor_print_statement_as_ntriples_v2(const raptor_statement_v2 * statement,
 
 static void
 raptor_print_statement_as_ntriples_common(raptor_world* world,
-                                          raptor_statement *statement,
+                                          const raptor_statement *statement,
                                           FILE *stream)
 {
   raptor_print_statement_part_as_ntriples(world,
