@@ -793,7 +793,7 @@ int
 raptor_statement_compare_v2(const raptor_statement_v2 *s1,
                             const raptor_statement_v2 *s2)
 {
-  return raptor_statement_compare_common(s1->world, s1, s2);
+  return raptor_statement_compare_common(s1->world, s1->s, s2->s);
 }
 
 
