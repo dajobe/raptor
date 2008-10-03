@@ -32,7 +32,7 @@
 // should generate triples.
 #define XHTML_PROPERTY_RESERVED_WORDS_SIZE 6
 static
-   const char* g_property_reserved_words[XHTML_PROPERTY_RESERVED_WORDS_SIZE] =
+   const char * const g_property_reserved_words[XHTML_PROPERTY_RESERVED_WORDS_SIZE] =
 {
    "description", "generator", "keywords", "reference", "robots", "title"
 };
@@ -40,7 +40,7 @@ static
 // These are all of the @rel/@rev reserved words in XHTML 1.1 that
 // should generate triples.
 #define XHTML_RELREV_RESERVED_WORDS_SIZE 23
-static const char* g_relrev_reserved_words[XHTML_RELREV_RESERVED_WORDS_SIZE] =
+static const char * const g_relrev_reserved_words[XHTML_RELREV_RESERVED_WORDS_SIZE] =
 {
    "alternate", "appendix", "bookmark", "chapter", "cite", "contents",
    "copyright", "glossary", "help", "icon", "index", "meta", "next", "p3pv1",
