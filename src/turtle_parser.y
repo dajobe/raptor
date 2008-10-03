@@ -645,7 +645,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 #endif
 
 #if RAPTOR_DEBUG > 1  
-  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"),raptor_uri_as_string($3));
+  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
 #endif
 
   if(prefix) {
@@ -738,7 +738,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $5));
 #endif
 
   if($5) {
@@ -752,7 +752,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $5));
 #endif
 
   if($5) {
@@ -766,7 +766,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL HAT URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string($3));
+  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
 #endif
 
   if($3) {
@@ -780,7 +780,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL HAT QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string($3));
+  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
 #endif
 
   if($3) {
@@ -891,7 +891,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 resource: URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
+  printf("resource URI=<%s>\n", raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $1));
 #endif
 
   if($1) {
@@ -904,7 +904,7 @@ resource: URI_LITERAL
 | QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
+  printf("resource qname URI=<%s>\n", raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $1));
 #endif
 
   if($1) {

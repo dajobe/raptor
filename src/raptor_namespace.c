@@ -525,7 +525,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
 #ifndef STANDALONE
 #if RAPTOR_DEBUG >1
-  RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n", prefix ? (char*)prefix : "(default)", ns_uri ? (char*)raptor_uri_as_string(ns_uri) : "(none)", depth);
+  RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n", prefix ? (char*)prefix : "(default)", ns_uri ? (char*)raptor_uri_as_string_v2(nstack->world, ns_uri) : "(none)", depth);
 #endif
 #endif
 
