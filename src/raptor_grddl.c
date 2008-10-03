@@ -100,6 +100,7 @@ typedef struct
  * XSLT parser object
  */
 struct raptor_grddl_parser_context_s {
+  raptor_world* world;
   raptor_parser* rdf_parser;
   
   xmlSAXHandler sax;
@@ -221,15 +222,15 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
 
 
 static grddl_xml_context*
-raptor_new_xml_context(raptor_uri* uri, raptor_uri* base_uri)
+raptor_new_xml_context(raptor_world* world, raptor_uri* uri, raptor_uri* base_uri)
 {
   grddl_xml_context* xml_context;
 
   xml_context=(grddl_xml_context*)RAPTOR_MALLOC(xml_context, sizeof(grddl_xml_context));
   if(uri)
-    uri=raptor_uri_copy(uri);
+    uri=raptor_uri_copy_v2(world, uri);
   if(base_uri)
-    base_uri=raptor_uri_copy(base_uri);
+    base_uri=raptor_uri_copy_v2(world, base_uri);
   xml_context->uri=uri;
   xml_context->base_uri=base_uri;
 
@@ -238,14 +239,15 @@ raptor_new_xml_context(raptor_uri* uri, raptor_uri* base_uri)
 
 
 static void
-grddl_free_xml_context(void* userdata) 
+grddl_free_xml_context(void *context, void* userdata) 
 {
+  raptor_world* world=(raptor_world*)context;
   grddl_xml_context* xml_context=(grddl_xml_context*)userdata;
   
   if(xml_context->uri)
-    raptor_free_uri(xml_context->uri);
+    raptor_free_uri_v2(world, xml_context->uri);
   if(xml_context->base_uri)
-    raptor_free_uri(xml_context->base_uri);
+    raptor_free_uri_v2(world, xml_context->base_uri);
   RAPTOR_FREE(grddl_xml_context, xml_context);
 }
 
@@ -255,6 +257,7 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
 {
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
 
+  grddl_parser->world=rdf_parser->world;
   grddl_parser->rdf_parser=rdf_parser;
   
   /* sax2 structure - only for recording error pointers */
@@ -267,7 +270,7 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   raptor_libxml_init_sax_error_handlers(&grddl_parser->sax);
 
   /* Sequence of URIs of XSLT sheets to transform the document */
-  grddl_parser->doc_transform_uris=raptor_new_sequence((raptor_sequence_free_handler*)grddl_free_xml_context, NULL);
+  grddl_parser->doc_transform_uris=raptor_new_sequence_with_handler_context((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, rdf_parser->world);
 
   grddl_parser->grddl_processing=1;
   grddl_parser->xinclude_processing=1;
@@ -282,19 +285,20 @@ static int
 raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
 {
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_world* world=rdf_parser->world;
 
   raptor_grddl_parse_init_common(rdf_parser, name);
 
   /* Sequence of URIs from <head profile> */
-  grddl_parser->profile_uris=raptor_new_sequence((raptor_sequence_free_handler*)grddl_free_xml_context, NULL);
+  grddl_parser->profile_uris=raptor_new_sequence_with_handler_context((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, (void*)world);
 
-  grddl_parser->namespace_transformation_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2003/g/data-view#namespaceTransformation");
-  grddl_parser->profile_transformation_uri=raptor_new_uri((const unsigned char*)"http://www.w3.org/2003/g/data-view#profileTransformation");
+  grddl_parser->namespace_transformation_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#namespaceTransformation");
+  grddl_parser->profile_transformation_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#profileTransformation");
 
   /* Sequence of URIs visited - may be overwritten if this is not
    * the depth 0 grddl parser
    */
-  grddl_parser->visited_uris=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_uri, (raptor_sequence_print_handler*)raptor_sequence_print_uri);
+  grddl_parser->visited_uris=raptor_new_sequence_with_handler_context((raptor_sequence_free_handler_v2*)raptor_free_uri_v2, (raptor_sequence_print_handler_v2*)raptor_uri_print_v2, (void*)world);
 
   return 0;
 }
@@ -330,7 +334,7 @@ raptor_grddl_parse_terminate(raptor_parser *rdf_parser)
     raptor_free_sax2(grddl_parser->sax2);
 
   if(grddl_parser->root_ns_uri)
-    raptor_free_uri(grddl_parser->root_ns_uri);
+    raptor_free_uri_v2(rdf_parser->world, grddl_parser->root_ns_uri);
 
   if(grddl_parser->doc_transform_uris)
     raptor_free_sequence(grddl_parser->doc_transform_uris);
@@ -339,10 +343,10 @@ raptor_grddl_parse_terminate(raptor_parser *rdf_parser)
     raptor_free_sequence(grddl_parser->profile_uris);
 
   if(grddl_parser->namespace_transformation_uri)
-    raptor_free_uri(grddl_parser->namespace_transformation_uri);
+    raptor_free_uri_v2(rdf_parser->world, grddl_parser->namespace_transformation_uri);
 
   if(grddl_parser->profile_transformation_uri)
-    raptor_free_uri(grddl_parser->profile_transformation_uri);
+    raptor_free_uri_v2(rdf_parser->world, grddl_parser->profile_transformation_uri);
 
   if(!grddl_parser->grddl_depth) {
     if(grddl_parser->visited_uris)
@@ -483,23 +487,23 @@ raptor_grddl_add_transform_xml_context(raptor_grddl_parser_context* grddl_parser
   
 #if RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Found document transformation URI '%s'\n",
-                raptor_uri_as_string(uri));
+                raptor_uri_as_string_v2(grddl_parser->world, uri));
 #endif
 
   for(i=0; i < raptor_sequence_size(grddl_parser->doc_transform_uris); i++) {
     grddl_xml_context* xc=(grddl_xml_context*)raptor_sequence_get_at(grddl_parser->doc_transform_uris, i);
-    if(raptor_uri_equals(uri, xc->uri)) {
+    if(raptor_uri_equals_v2(grddl_parser->world, uri, xc->uri)) {
 #if RAPTOR_DEBUG > 1
-      RAPTOR_DEBUG2("Already seen XSLT URI '%s'\n", raptor_uri_as_string(uri));
+      RAPTOR_DEBUG2("Already seen XSLT URI '%s'\n", raptor_uri_as_string_v2(grddl_parser->world, uri));
 #endif
-      grddl_free_xml_context(xml_context);
+      grddl_free_xml_context(grddl_parser->world, xml_context);
       return;
     }
   }
 
   RAPTOR_DEBUG3("Adding new document transformation XSLT URI %s with base URI %s\n",
-                (uri ? (const char*)raptor_uri_as_string(uri): "(NONE)"),
-                (xml_context->base_uri ? (const char*)raptor_uri_as_string(xml_context->base_uri) : "(NONE)"));
+                (uri ? (const char*)raptor_uri_as_string_v2(grddl_parser->world, uri): "(NONE)"),
+                (xml_context->base_uri ? (const char*)raptor_uri_as_string_v2(grddl_parser->world, xml_context->base_uri) : "(NONE)"));
 
   raptor_sequence_push(grddl_parser->doc_transform_uris, xml_context);
 }
@@ -550,21 +554,21 @@ raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
     if(!profile_uri)
       continue;
     
-    if(raptor_uri_equals((raptor_uri*)statement->subject, profile_uri) &&
-       raptor_uri_equals((raptor_uri*)statement->predicate, predicate_uri)) {
+    if(raptor_uri_equals_v2(rdf_parser->world, (raptor_uri*)statement->subject, profile_uri) &&
+       raptor_uri_equals_v2(rdf_parser->world, (raptor_uri*)statement->predicate, predicate_uri)) {
       raptor_uri* uri=(raptor_uri*)statement->object;
       
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Matches profile URI #%d '%s'\n",
-                    rdf_parser, i, raptor_uri_as_string(profile_uri));
+                    rdf_parser, i, raptor_uri_as_string_v2(rdf_parser->world, profile_uri));
 #endif
       
-      new_xml_context=raptor_new_xml_context(uri, rdf_parser->base_uri);
+      new_xml_context=raptor_new_xml_context(rdf_parser->world, uri, rdf_parser->base_uri);
       raptor_grddl_add_transform_xml_context(grddl_parser, new_xml_context);
     } else {
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Failed to match profile URI #%d '%s'\n",
-                    rdf_parser, i, raptor_uri_as_string(profile_uri));
+                    rdf_parser, i, raptor_uri_as_string_v2(rdf_parser->world, profile_uri));
 #endif
     }
     
@@ -594,7 +598,7 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
     
     RAPTOR_DEBUG3("Parser %p: Allocating new internal %s parser.\n",
                   rdf_parser, parser_name);
-    grddl_parser->internal_parser=raptor_new_parser(parser_name);
+    grddl_parser->internal_parser=raptor_new_parser_v2(rdf_parser->world, parser_name);
     if(!grddl_parser->internal_parser) {
       raptor_parser_error(rdf_parser, "Failed to create %s parser",
                           parser_name);
@@ -649,16 +653,16 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   xslt_uri=xml_context->uri;
   base_uri=xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
 
-  base_uri_string=raptor_uri_as_counted_string(base_uri, &base_uri_len);
+  base_uri_string=raptor_uri_as_counted_string_v2(rdf_parser->world, base_uri, &base_uri_len);
 
   RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI '%s' with doc base URI '%s'\n",
-                raptor_uri_as_string(xslt_uri),
+                raptor_uri_as_string_v2(rdf_parser->world, xslt_uri),
                 base_uri_string);
   
   sheet = xsltParseStylesheetDoc(xslt_doc);
   if(!sheet) {
     raptor_parser_error(rdf_parser, "Failed to parse stylesheet in '%s'",
-                        raptor_uri_as_string(xslt_uri));
+                        raptor_uri_as_string_v2(rdf_parser->world, xslt_uri));
     ret=1;
     goto cleanup_xslt;
   }
@@ -695,7 +699,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
 #endif
   if(!res) {
     raptor_parser_error(rdf_parser, "Failed to apply stylesheet in '%s'",
-                        raptor_uri_as_string(xslt_uri));
+                        raptor_uri_as_string_v2(rdf_parser->world, xslt_uri));
     ret=1;
     goto cleanup_xslt;
   }
@@ -748,8 +752,9 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     strncpy((char*)sheet->mediaType, "application/rdf+xml",20);
   }
   
-  parser_name=raptor_guess_parser_name(NULL, (const char*)sheet->mediaType,
-                                       doc_txt, doc_txt_len, NULL);
+  parser_name=raptor_guess_parser_name_v2(rdf_parser->world,
+                                          NULL, (const char*)sheet->mediaType,
+                                          doc_txt, doc_txt_len, NULL);
   if(!parser_name) {
     RAPTOR_DEBUG3("Parser %p: Guessed no parser from mime type '%s' and content - ending",
                   rdf_parser, sheet->mediaType);
@@ -821,7 +826,7 @@ raptor_grddl_uri_xml_parse_bytes(raptor_www* www,
     
     xc = xmlCreatePushParserCtxt(NULL, NULL,
                                  (const char*)ptr, len,
-                                 (const char*)raptor_uri_as_string(xpbc->base_uri));
+                                 (const char*)raptor_uri_as_string_v2(www->world, xpbc->base_uri));
     if(!xc)
       rc=1;
     else {
@@ -851,8 +856,11 @@ static void
 raptor_grddl_discard_message(void *user_data, raptor_locator* locator,
                              const char *message)
 {
+#ifdef RAPTOR_DEBUG
+  raptor_world* world=(raptor_world*)user_data;
   RAPTOR_DEBUG3("%s: Discarded error message: %s\n", 
-                raptor_uri_as_string(locator->uri), message);
+                raptor_uri_as_string_v2(world, locator->uri), message);
+#endif
   return;
 }
 
@@ -875,11 +883,11 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   int ignore_errors=(flags & FETCH_IGNORE_ERRORS);
   
   if(rdf_parser->features[RAPTOR_FEATURE_NO_NET]) {
-    if(!raptor_uri_uri_string_is_file_uri(raptor_uri_as_string(uri)))
+    if(!raptor_uri_uri_string_is_file_uri(raptor_uri_as_string_v2(rdf_parser->world, uri)))
       return 1;
   }
   
-  www=raptor_www_new();
+  www=raptor_www_new_v2(rdf_parser->world);
   if(!www)
     return 1;
   
@@ -898,7 +906,7 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
   if(ignore_errors)
-    raptor_www_set_error_handler(www, raptor_grddl_discard_message, NULL);
+    raptor_www_set_error_handler(www, raptor_grddl_discard_message, rdf_parser->world);
   else
     raptor_www_set_error_handler(www,
                                  rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler, 
@@ -941,8 +949,8 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
   grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
   
   RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI %s and base URI %s\n",
-                raptor_uri_as_string(xslt_uri),
-                raptor_uri_as_string(base_uri));
+                raptor_uri_as_string_v2(rdf_parser->world, xslt_uri),
+                raptor_uri_as_string_v2(rdf_parser->world, base_uri));
   
   /* make an xsltStylesheetPtr via the raptor_grddl_uri_xml_parse_bytes 
    * callback as bytes are returned
@@ -961,7 +969,7 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
   if(ret) {
     locator->uri=old_locator_uri;
     raptor_parser_warning(rdf_parser, "Fetching XSLT document URI '%s' failed",
-                          raptor_uri_as_string(xslt_uri));
+                          raptor_uri_as_string_v2(rdf_parser->world, xslt_uri));
     ret=0;
   } else {
     xslt_ctxt=xpbc.xc;
@@ -991,14 +999,14 @@ raptor_grddl_seen_uri(raptor_grddl_parser_context* grddl_parser,
   
   for(i=0; i < raptor_sequence_size(seq); i++) {
     raptor_uri* vuri=(raptor_uri*)raptor_sequence_get_at(seq, i);
-    if(raptor_uri_equals(uri, vuri)) {
+    if(raptor_uri_equals_v2(grddl_parser->world, uri, vuri)) {
       seen=1;
       break;
     }
   }
 
   if(seen)
-    RAPTOR_DEBUG2("Already seen URI '%s'\n", raptor_uri_as_string(uri));
+    RAPTOR_DEBUG2("Already seen URI '%s'\n", raptor_uri_as_string_v2(grddl_parser->world, uri));
   
   return seen;
 }
@@ -1013,7 +1021,7 @@ raptor_grddl_done_uri(raptor_grddl_parser_context* grddl_parser,
   
   if(!raptor_grddl_seen_uri(grddl_parser, uri)) {
     raptor_sequence* seq=grddl_parser->visited_uris;
-    raptor_sequence_push(seq, raptor_uri_copy(uri));
+    raptor_sequence_push(seq, raptor_uri_copy_v2(grddl_parser->world, uri));
   }
 }
 
@@ -1050,7 +1058,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
   if(!nodes || xmlXPathNodeSetIsEmpty(nodes)) {
 #if RAPTOR_DEBUG > 1
     RAPTOR_DEBUG3("No match found with XPath expression \"%s\" over '%s'\n",
-                  xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
+                  xpathExpr, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
 #endif
     raptor_free_sequence(seq); seq=NULL;
     goto cleanup_xpath_match;
@@ -1058,7 +1066,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
 
 #if RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Found match with XPath expression \"%s\" over '%s'\n",
-                xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
+                xpathExpr, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
 #endif
   
   for(i=0; i < xmlXPathNodeSetGetLength(nodes); i++) {
@@ -1097,13 +1105,13 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
     
     
     if(base_uri_string) {
-      base_uri=raptor_new_uri(base_uri_string);
+      base_uri=raptor_new_uri_v2(rdf_parser->world, base_uri_string);
       xmlFree(base_uri_string);
 #if RAPTOR_DEBUG > 1
-      RAPTOR_DEBUG2("XML base URI of match is '%s'\n", raptor_uri_as_string(base_uri));
+      RAPTOR_DEBUG2("XML base URI of match is '%s'\n", raptor_uri_as_string_v2(rdf_parser->world, base_uri));
 #endif
     } else if(rdf_parser->base_uri)
-      base_uri=raptor_uri_copy(rdf_parser->base_uri);
+      base_uri=raptor_uri_copy_v2(rdf_parser->world, rdf_parser->base_uri);
     else
       base_uri=NULL;
     
@@ -1130,16 +1138,17 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
         RAPTOR_DEBUG2("Got list match URI '%s'\n", start);
 #endif
         
-        uri=raptor_new_uri_relative_to_base(base_uri,
-                                            (const unsigned char*)start);
+        uri=raptor_new_uri_relative_to_base_v2(rdf_parser->world,
+                                               base_uri,
+                                               (const unsigned char*)start);
         if(flags & MATCH_IS_PROFILE &&
-           !strcmp((const char*)raptor_uri_as_string(uri),
+           !strcmp((const char*)raptor_uri_as_string_v2(rdf_parser->world, uri),
                    "http://www.w3.org/2003/g/data-view'")) {
-          raptor_free_uri(uri);
+          raptor_free_uri_v2(rdf_parser->world, uri);
           continue;
         }
 
-        xml_context=raptor_new_xml_context(uri, base_uri);
+        xml_context=raptor_new_xml_context(rdf_parser->world, uri, base_uri);
         raptor_sequence_push(seq, xml_context);
       }
       RAPTOR_FREE(cstring, buffer);
@@ -1155,14 +1164,14 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       RAPTOR_DEBUG2("Got single match URI '%s'\n", uri_string);
 #endif
 
-      uri=raptor_new_uri_relative_to_base(base_uri, uri_string);
-      xml_context=raptor_new_xml_context(uri, base_uri);
+      uri=raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri, uri_string);
+      xml_context=raptor_new_xml_context(rdf_parser->world, uri, base_uri);
       raptor_sequence_push(seq, xml_context);
-      raptor_free_uri(uri);
+      raptor_free_uri_v2(rdf_parser->world, uri);
     }
     
     if(base_uri)
-      raptor_free_uri(base_uri);
+      raptor_free_uri_v2(rdf_parser->world, base_uri);
   }
 
   cleanup_xpath_match:
@@ -1237,7 +1246,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
     return !ignore_errors;
   
   RAPTOR_DEBUG3("Running recursive %s operation on URI '%s'\n",
-                parser_name, raptor_uri_as_string(uri));
+                parser_name, raptor_uri_as_string_v2(rdf_parser->world, uri));
   
   grddl_parser->internal_parser->default_generate_id_handler_base= 
     raptor_parser_get_current_base_id(rdf_parser);
@@ -1261,7 +1270,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
     if(!ignore_errors)
       raptor_parser_warning(rdf_parser,
                             "Fetching GRDDL document URI '%s' failed\n",
-                            raptor_uri_as_string(uri));
+                            raptor_uri_as_string_v2(rdf_parser->world, uri));
     ret=0;
     goto tidy;
   }
@@ -1272,7 +1281,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
     /* NOTE not setting RAPTOR_LOG_LEVEL_NONE handler */
     for(i=1; i <= (int)eh->last_log_level; i++) {
       eh->handlers[i].handler=raptor_grddl_discard_message;
-      eh->handlers[i].user_data=NULL;
+      eh->handlers[i].user_data=rdf_parser->world;
     }
   }
   
@@ -1285,7 +1294,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
                                     &ibuffer_len);
   if(ibuffer && strcmp(parser_name, "rdfxml")) {
     RAPTOR_DEBUG2("Running additional RDF/XML parse on URI '%s' content\n",
-                  raptor_uri_as_string(uri));
+                  raptor_uri_as_string_v2(rdf_parser->world, uri));
     
     if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 1))
       ret=1;
@@ -1308,7 +1317,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   }
 
   if(rpbc.final_uri)
-    raptor_free_uri(rpbc.final_uri);
+    raptor_free_uri_v2(rdf_parser->world, rpbc.final_uri);
 
   if(ignore_errors)
     ret=0;
@@ -1375,7 +1384,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                                        (unsigned char*)buffer, buffer_len);
   
 
-  uri_string=raptor_uri_as_string(rdf_parser->base_uri);
+  uri_string=raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
 
   if(1) {
     raptor_error_handlers_init_v2(rdf_parser->world, &eh);
@@ -1388,7 +1397,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
            sizeof(raptor_message_handler_closure) * (1+eh.last_log_level));
     for(i=1; i <= (int)eh.last_log_level; i++) {
       rdf_parser->error_handlers.handlers[i].handler=raptor_grddl_discard_message;
-      rdf_parser->error_handlers.handlers[i].user_data=NULL;
+      rdf_parser->error_handlers.handlers[i].user_data=rdf_parser->world;
     }
   }
 
@@ -1540,7 +1549,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   if(grddl_parser->xinclude_processing) {
     RAPTOR_DEBUG3("Parser %p: Running XInclude processing on URI '%s'\n",
-                  rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
+                  rdf_parser, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
     if(xmlXIncludeProcess(doc) < 0) {
       raptor_parser_error(rdf_parser, 
                           "XInclude processing failed for GRDDL document");
@@ -1563,7 +1572,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
 
   RAPTOR_DEBUG3("Parser %p: Running top-level GRDDL on URI '%s'\n",
-                rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
+                rdf_parser, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
 
   /* Work out if there is a root namespace URI */
   if(1) {
@@ -1588,7 +1597,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                  (const char*)raptor_rdf_namespace_uri) &&
          !strcmp((const char*)xnp->name, "RDF")) {
         RAPTOR_DEBUG3("Parser %p: Root element of %s is rdf:RDF - process this as RDF/XML later\n",
-                      rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
+                      rdf_parser, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
         grddl_parser->process_this_as_rdfxml=1;
       }
 
@@ -1605,15 +1614,17 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       if(ns_uri_string) {
         grddl_xml_context* xml_context;
 
-        grddl_parser->root_ns_uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, 
-                                                                  ns_uri_string);
-        xml_context=raptor_new_xml_context(grddl_parser->root_ns_uri,
+        grddl_parser->root_ns_uri=raptor_new_uri_relative_to_base_v2(rdf_parser->world,
+                                                                     rdf_parser->base_uri, 
+                                                                     ns_uri_string);
+        xml_context=raptor_new_xml_context(rdf_parser->world,
+                                           grddl_parser->root_ns_uri,
                                            rdf_parser->base_uri);
         raptor_sequence_push(grddl_parser->profile_uris, xml_context);
 
         RAPTOR_DEBUG3("Parser %p: Processing GRDDL namespace URI '%s'\n",
                       rdf_parser,
-                      raptor_uri_as_string(grddl_parser->root_ns_uri));
+                      raptor_uri_as_string_v2(rdf_parser->world, grddl_parser->root_ns_uri));
         raptor_grddl_run_recursive(rdf_parser, grddl_parser->root_ns_uri, 
                                    "grddl",
                                    RECURSIVE_FLAGS_IGNORE_ERRORS |
@@ -1628,7 +1639,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
    */
   if(!grddl_parser->root_ns_uri) {
     grddl_xml_context* xml_context;
-    xml_context=raptor_new_xml_context(NULL, NULL);
+    xml_context=raptor_new_xml_context(rdf_parser->world, NULL, NULL);
     raptor_sequence_push(grddl_parser->profile_uris, xml_context);
   }
 
@@ -1660,7 +1671,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     if(result) {
       RAPTOR_DEBUG4("Parser %p: Found %d <head profile> URIs in URI '%s'\n",
                     rdf_parser, raptor_sequence_size(result),
-                    raptor_uri_as_string(rdf_parser->base_uri));
+                    raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
 
 
       /* Store profile URIs, skipping NULLs or the GRDDL profile itself */
@@ -1672,11 +1683,11 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
           continue;
         uri=xml_context->uri;
         if(!strcmp("http://www.w3.org/2003/g/data-view",
-                   (const char*)raptor_uri_as_string(uri))) {
+                   (const char*)raptor_uri_as_string_v2(rdf_parser->world, uri))) {
           RAPTOR_DEBUG3("Ignoring <head profile> of URI %s: URI %s\n",
-                        raptor_uri_as_string(rdf_parser->base_uri),
-                        raptor_uri_as_string(uri));
-          grddl_free_xml_context(xml_context);
+                        raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri),
+                        raptor_uri_as_string_v2(rdf_parser->world, uri));
+          grddl_free_xml_context(rdf_parser->world, xml_context);
           continue;
         }
         raptor_sequence_push(grddl_parser->profile_uris, xml_context);
@@ -1692,8 +1703,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
           continue;
 
         RAPTOR_DEBUG4("Processing <head profile> #%d of URI %s: URI %s\n",
-                      i, raptor_uri_as_string(rdf_parser->base_uri),
-                        raptor_uri_as_string(uri));
+                      i, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri),
+                      raptor_uri_as_string_v2(rdf_parser->world, uri));
         ret=raptor_grddl_run_recursive(rdf_parser, uri, 
                                        "grddl",
                                        RECURSIVE_FLAGS_IGNORE_ERRORS|
@@ -1717,7 +1728,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     if(result) {
       RAPTOR_DEBUG4("Parser %p: Found %d <link> URIs in URI '%s'\n",
                     rdf_parser, raptor_sequence_size(result),
-                    raptor_uri_as_string(rdf_parser->base_uri));
+                    raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
 
       /* Recursively parse all the <link> URIs, skipping NULLs */
       i=0;
@@ -1731,13 +1742,13 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         uri=xml_context->uri;
         if(uri) {
           RAPTOR_DEBUG4("Processing <link> #%d of URI %s: URI %s\n",
-                        i, raptor_uri_as_string(rdf_parser->base_uri),
-                        raptor_uri_as_string(uri));
+                        i, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri),
+                        raptor_uri_as_string_v2(rdf_parser->world, uri));
           i++;
           ret=raptor_grddl_run_recursive(rdf_parser, uri, "guess",
                                          RECURSIVE_FLAGS_IGNORE_ERRORS);
         }
-        grddl_free_xml_context(xml_context);
+        grddl_free_xml_context(rdf_parser->world, xml_context);
       }
 
       raptor_free_sequence(result);
@@ -1768,12 +1779,12 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         raptor_free_sequence(result);
         result=raptor_new_sequence((raptor_sequence_free_handler*)grddl_free_xml_context, NULL);
         
-        uri=raptor_new_uri_relative_to_base(rdf_parser->base_uri, uri_string);
+        uri=raptor_new_uri_relative_to_base_v2(rdf_parser->world, rdf_parser->base_uri, uri_string);
 
-        xml_context=raptor_new_xml_context(uri, rdf_parser->base_uri);
+        xml_context=raptor_new_xml_context(rdf_parser->world, uri, rdf_parser->base_uri);
         raptor_sequence_push(result, xml_context);
 
-        raptor_free_uri(uri);
+        raptor_free_uri_v2(rdf_parser->world, uri);
       }
       
       while(raptor_sequence_size(result)) {
@@ -1804,7 +1815,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   /* Process this document's content buffer as RDF/XML */
   if(grddl_parser->process_this_as_rdfxml && buffer) {
     RAPTOR_DEBUG3("Parser %p: Running additional RDF/XML parse on root document URI '%s' content\n",
-                  rdf_parser, raptor_uri_as_string(rdf_parser->base_uri));
+                  rdf_parser, raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri));
     
     if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 0))
       ret=1;
@@ -1831,7 +1842,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   while(raptor_sequence_size(grddl_parser->doc_transform_uris)) {
     grddl_xml_context* xml_context=(grddl_xml_context*)raptor_sequence_unshift(grddl_parser->doc_transform_uris);
     ret=raptor_grddl_run_grddl_transform_uri(rdf_parser, xml_context, doc);
-    grddl_free_xml_context(xml_context);
+    grddl_free_xml_context(rdf_parser->world, xml_context);
     if(ret)
       break;
   }
