@@ -79,9 +79,14 @@ struct raptor_sequence_s {
 
   /* handler to call to free a data item (or NULL) */
   raptor_sequence_free_handler *free_handler;
+  raptor_sequence_free_handler_v2 *free_handler_v2;
 
   /* handler to call to print a data item (or NULL) */
   raptor_sequence_print_handler *print_handler;
+  raptor_sequence_print_handler_v2 *print_handler_v2;
+
+  /* free/print handler context data */
+  void *handler_context;
 };
 
 
@@ -111,6 +116,32 @@ raptor_new_sequence(raptor_sequence_free_handler *free_handler,
 
 
 /**
+ * raptor_new_sequence_with_handler_context:
+ * @free_handler: handler to free a sequence item
+ * @print_handler: handler to print a sequence item to a FILE*
+ * @handler_context: context information to pass to free/print handlers
+ * 
+ * Constructor - create a new sequence with the given handlers and handler context.
+ * 
+ * Return value: a new #raptor_sequence or NULL on failure 
+ **/
+raptor_sequence*
+raptor_new_sequence_with_handler_context(raptor_sequence_free_handler_v2 *free_handler,
+                                         raptor_sequence_print_handler_v2 *print_handler,
+                                         void *handler_context)
+{
+  raptor_sequence* seq=(raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
+  if(!seq)
+    return NULL;
+  seq->free_handler_v2=free_handler;
+  seq->print_handler_v2=print_handler;
+  seq->handler_context=handler_context;
+  
+  return seq;
+}
+
+
+/**
  * raptor_free_sequence:
  * @seq: sequence to destroy
  * 
@@ -124,10 +155,15 @@ raptor_free_sequence(raptor_sequence* seq)
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
 
-  if(seq->free_handler)
+  if(seq->free_handler) {
     for(i=seq->start, j=seq->start+seq->size; i<j; i++)
       if(seq->sequence[i])
         seq->free_handler(seq->sequence[i]);
+  } else if(seq->free_handler_v2) {
+    for(i=seq->start, j=seq->start+seq->size; i<j; i++)
+      if(seq->sequence[i])
+        seq->free_handler_v2(seq->handler_context, seq->sequence[i]);
+  }
 
   if(seq->sequence)
     RAPTOR_FREE(ptrarray, seq->sequence);
@@ -214,8 +250,12 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
 
   /* Cannot provide a negative index */
   if(idx < 0) {
-    if(seq->free_handler && data)
-      seq->free_handler(data);
+    if(data) {
+      if(seq->free_handler)
+        seq->free_handler(data);
+      else if(seq->free_handler_v2)
+        seq->free_handler_v2(seq->handler_context, data);
+    }
     return 1;
   }
   
@@ -224,16 +264,24 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
     if(seq->capacity*2 > need_capacity)
       need_capacity = seq->capacity*2;
     if(raptor_sequence_ensure(seq, need_capacity, 0)) {
-      if(seq->free_handler && data)
-        seq->free_handler(data);
+      if(data) {
+        if(seq->free_handler)
+          seq->free_handler(data);
+        else if(seq->free_handler_v2)
+          seq->free_handler_v2(seq->handler_context, data);
+      }
       return 1;
     }
   }
 
   if(idx < seq->size) {
     /* if there is old data, delete it if there is a free handler */
-    if(seq->sequence[seq->start+idx] && seq->free_handler)
-      seq->free_handler(seq->sequence[seq->start+idx]);
+    if(seq->sequence[seq->start+idx]) {
+      if(seq->free_handler)
+        seq->free_handler(seq->sequence[seq->start+idx]);
+      else if(seq->free_handler_v2)
+        seq->free_handler_v2(seq->handler_context, seq->sequence[seq->start+idx]);
+    }      
     /*  size remains the same */
   } else {
     /* if there is no old data, size is increasing */
@@ -266,8 +314,12 @@ raptor_sequence_push(raptor_sequence* seq, void *data)
 
   if(seq->start+seq->size == seq->capacity) {
     if(raptor_sequence_ensure(seq, seq->capacity*2, 0)) {
-      if(seq->free_handler && data)
-        seq->free_handler(data);
+      if(data) {
+        if(seq->free_handler)
+          seq->free_handler(data);
+        else if(seq->free_handler_v2)
+          seq->free_handler_v2(seq->handler_context, data);
+      }
       return 1;
     }
   }
@@ -297,8 +349,12 @@ raptor_sequence_shift(raptor_sequence* seq, void *data)
 
   if(!seq->start) {
     if(raptor_sequence_ensure(seq, seq->capacity*2, 1)) {
-      if(seq->free_handler && data)
-        seq->free_handler(data);
+      if(data) {
+        if(seq->free_handler)
+          seq->free_handler(data);
+        else if(seq->free_handler_v2)
+          seq->free_handler_v2(seq->handler_context, data);
+      }
       return 1;
     }
   }
@@ -484,6 +540,7 @@ raptor_sequence_print_string(char *data, FILE *fh)
 }
 
 
+#ifndef RAPTOR_DISABLE_DEPRECATED
 /**
  * raptor_sequence_print_uri:
  * @data: data item (a #raptor_uri)
@@ -493,13 +550,18 @@ raptor_sequence_print_string(char *data, FILE *fh)
  *
  * Intended for use as a #raptor_sequence_print_handler passed into
  * raptor_new_sequence().
+ *
+ * raptor_init() MUST have been called before calling this function.
+ *
+ * @deprecated: Use raptor_uri_print() instead.
  */
 void
 raptor_sequence_print_uri(char *data, FILE *fh) 
 {
   raptor_uri* uri=(raptor_uri*)data;
-  fputs((const char*)raptor_uri_as_string(uri), fh);
+  fputs((const char*)raptor_uri_as_string_v2(raptor_world_instance(), uri), fh);
 }
+#endif
 
 
 /**
@@ -522,6 +584,25 @@ raptor_sequence_set_print_handler(raptor_sequence *seq,
 
 
 /**
+ * raptor_sequence_set_print_handler_v2:
+ * @seq: sequence
+ * @print_handler: print handler
+ *
+ * Set the print handler for the sequence.
+ *
+ * This is set in the raptor_new_sequence_v2() constructor and can be
+ * overridden here.
+ */
+void
+raptor_sequence_set_print_handler_v2(raptor_sequence *seq,
+                                     raptor_sequence_print_handler_v2 *print_handler) {
+  if(!seq)
+    return;
+  seq->print_handler_v2=print_handler;
+}
+
+
+/**
  * raptor_sequence_print:
  * @seq: sequence to sort
  * @fh: file handle
@@ -539,9 +620,12 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
   for(i=0; i<seq->size; i++) {
     if(i)
       fputs(", ", fh);
-    if(seq->sequence[seq->start+i])
-      seq->print_handler(seq->sequence[seq->start+i], fh);
-    else
+    if(seq->sequence[seq->start+i]) {
+      if(seq->print_handler)
+        seq->print_handler(seq->sequence[seq->start+i], fh);
+      else if(seq->print_handler_v2)
+        seq->print_handler_v2(seq->handler_context, seq->sequence[seq->start+i], fh);
+    } else
       fputs("(empty)", fh);
   }
   fputc(']', fh);

@@ -1380,6 +1380,18 @@ typedef struct raptor_sequence_s raptor_sequence;
  * Set by raptor_new_sequence().
 */
 typedef void (raptor_sequence_free_handler(void* object));
+
+/**
+ * raptor_sequence_free_handler_v2:
+ * @context: context data for the free handler
+ * @object: object to free
+ *
+ * Handler function for freeing a sequence item.
+ *
+ * Set by raptor_new_sequence_v2().
+*/
+typedef void (raptor_sequence_free_handler_v2(void* context, void* object));
+
 /**
  * raptor_sequence_print_handler:
  * @object: object to print
@@ -1391,9 +1403,23 @@ typedef void (raptor_sequence_free_handler(void* object));
  */
 typedef void (raptor_sequence_print_handler(void *object, FILE *fh));
 
+/**
+ * raptor_sequence_print_handler_v2:
+ * @context: context data for the print handler
+ * @object: object to print
+ * @fh: FILE* to print to
+ *
+ * Handler function for printing a sequence item.
+ *
+ * Set by raptor_new_sequence_v2() or raptor_sequence_set_print_handler_v2().
+ */
+typedef void (raptor_sequence_print_handler_v2(void *context, void *object, FILE *fh));
+
 /* Create */
 RAPTOR_API
 raptor_sequence* raptor_new_sequence(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler);
+RAPTOR_API
+raptor_sequence* raptor_new_sequence_with_handler_context(raptor_sequence_free_handler_v2* free_handler, raptor_sequence_print_handler_v2* print_handler, void* handler_context);
 /* Destroy */
 RAPTOR_API
 void raptor_free_sequence(raptor_sequence* seq);
@@ -1424,10 +1450,12 @@ void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, cons
 /* helper for printing sequences of strings */ 
 RAPTOR_API
 void raptor_sequence_print_string(char *data, FILE *fh);
-RAPTOR_API
+RAPTOR_API RAPTOR_DEPRECATED
 void raptor_sequence_print_uri(char *data, FILE *fh);
 RAPTOR_API
 void raptor_sequence_set_print_handler(raptor_sequence *seq, raptor_sequence_print_handler *print_handler);
+RAPTOR_API
+void raptor_sequence_set_print_handler_v2(raptor_sequence *seq, raptor_sequence_print_handler_v2 *print_handler);
 RAPTOR_API
 void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API
