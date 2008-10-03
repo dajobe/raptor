@@ -170,7 +170,7 @@ raptor_serializer_register_factory(raptor_world* world,
                 name, label, (alias ? alias : "none"));
   RAPTOR_DEBUG3("MIME type %s, URI %s\n", 
                 (mime_type ? mime_type : "none"),
-                (uri_string ? uri_string : "none"));
+                (uri_string ? (const char *)uri_string : "none"));
 #endif
   
   for(i=0;
