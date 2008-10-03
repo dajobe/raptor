@@ -58,7 +58,7 @@ raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
   /* create a new parser in the specified encoding */
   XML_SetUserData(xp, sax2);
 
-  XML_SetBase(xp, (XML_Char*)raptor_uri_as_string(base_uri));
+  XML_SetBase(xp, (XML_Char*)raptor_uri_as_string_v2(sax2->world, base_uri));
 
   /* XML_SetEncoding(xp, "..."); */
 
