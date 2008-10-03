@@ -55,7 +55,7 @@ static int raptor_www_file_fetch(raptor_www* www);
  */
 
 /* should raptor_www do initializing and cleanup of the WWW library */
-static int raptor_www_do_www_init_finish=1;
+static int raptor_www_skip_www_init_finish=0;
 
 static int raptor_www_initialized=0;
 
@@ -73,7 +73,7 @@ raptor_www_init(void)
   if(raptor_www_initialized)
     return;
 
-  if(raptor_www_do_www_init_finish) {
+  if(!raptor_www_skip_www_init_finish) {
 #ifdef RAPTOR_WWW_LIBCURL
     curl_global_init(CURL_GLOBAL_ALL);
 #endif
@@ -104,7 +104,7 @@ raptor_www_init(void)
 void
 raptor_www_no_www_library_init_finish(void)
 {
-  raptor_www_do_www_init_finish=0;
+  raptor_www_skip_www_init_finish=1;
 }
 
 
@@ -118,7 +118,7 @@ raptor_www_no_www_library_init_finish(void)
 void
 raptor_www_finish(void)
 {
-  if(raptor_www_do_www_init_finish) {
+  if(!raptor_www_skip_www_init_finish) {
 #ifdef RAPTOR_WWW_LIBCURL
     curl_global_cleanup();
 #endif
