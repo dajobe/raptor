@@ -182,7 +182,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #define SHOW_NAMESPACES_FLAG 0x100
 #define SHOW_GRAPHS_FLAG 0x200
 
-static struct option long_options[] =
+static const struct option long_options[] =
 {
   /* name, has_arg, flag, val */
   {"count", 0, 0, 'c'},
@@ -215,7 +215,7 @@ static int warning_count=0;
 static int ignore_warnings=0;
 static int ignore_errors=0;
 
-static const char *title_format_string="Raptor RDF syntax parsing and serializing utility %s\n";
+static const char * const title_format_string="Raptor RDF syntax parsing and serializing utility %s\n";
 
 
 static void
