@@ -66,7 +66,7 @@ extern char *optarg;
 #define GETOPT_STRING "bhf:t:u:"
 
 #ifdef HAVE_GETOPT_LONG
-static struct option long_options[] =
+static const struct option long_options[] =
 {
   /* name, has_arg, flag, val */
   {"brief"       , 0, 0, 'b'},
@@ -117,7 +117,7 @@ typedef struct {
 
 static int brief = 0;
 static char *program=NULL;
-static const char *title_format_string="Raptor RDF diff utility %s\n";
+static const char * const title_format_string="Raptor RDF diff utility %s\n";
 static int ignore_errors = 0;
 static int ignore_warnings = 0;
 static int emit_from_header = 1;
