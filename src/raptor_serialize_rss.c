@@ -721,7 +721,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
     raptor_sequence_push(rss_serializer->triples, s);
 #if RAPTOR_DEBUG > 1
     fprintf(stderr,"Stored statement: ");
-    raptor_print_statement_as_ntriples(s, stderr);
+    raptor_print_statement_as_ntriples_v2(s, stderr);
     fprintf(stderr,"\n");
 #endif
     handled=1;
