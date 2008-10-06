@@ -1127,6 +1127,8 @@ void raptor_iostream_write_string_turtle(raptor_iostream *iostr, const unsigned 
 RAPTOR_API
 void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
 RAPTOR_API
+void raptor_iostream_write_statement_ntriples_v2(raptor_world* world, raptor_iostream* iostr, const raptor_statement *statement);
+RAPTOR_API
 int raptor_xml_any_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API
 int raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);

@@ -116,15 +116,14 @@ raptor_iostream_write_string_ntriples(raptor_iostream *iostr,
 
 
 static void
-raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
+raptor_iostream_write_statement_part_ntriples(raptor_world* world,
+                                              raptor_iostream* iostr,
                                               const void *term, 
                                               raptor_identifier_type type,
                                               raptor_uri* literal_datatype,
                                               const unsigned char *literal_language) 
 {
   size_t len;
-  
-  raptor_world* world=raptor_world_instance(); /* FIXME */
 
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
@@ -179,27 +178,52 @@ raptor_iostream_write_statement_part_ntriples(raptor_iostream* iostr,
 
 /**
  * raptor_iostream_write_statement_ntriples:
- * @iostr: raptor iosteram
+ * @iostr: raptor iostream
  * @statement: statement to write
  * 
  * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_iostream_write_statement_ntriples_v2() if using raptor_world APIs.
  * 
  **/
 void
 raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
                                          const raptor_statement *statement)
 {
-  raptor_iostream_write_statement_part_ntriples(iostr,
+  raptor_iostream_write_statement_ntriples_v2(raptor_world_instance(),
+                                              iostr,
+                                              statement);
+}
+
+/**
+ * raptor_iostream_write_statement_ntriples_v2:
+ * @world: raptor_world object
+ * @iostr: raptor iostream
+ * @statement: statement to write
+ * 
+ * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
+ * 
+ **/
+void
+raptor_iostream_write_statement_ntriples_v2(raptor_world* world,
+                                            raptor_iostream* iostr,
+                                            const raptor_statement *statement)
+{
+  raptor_iostream_write_statement_part_ntriples(world,
+                                                iostr,
                                                 statement->subject,
                                                 statement->subject_type,
                                                 NULL, NULL);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_statement_part_ntriples(iostr,
+  raptor_iostream_write_statement_part_ntriples(world,
+                                                iostr,
                                                 statement->predicate,
                                                 statement->predicate_type,
                                                 NULL, NULL);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_statement_part_ntriples(iostr,
+  raptor_iostream_write_statement_part_ntriples(world,
+                                                iostr,
                                                 statement->object,
                                                 statement->object_type,
                                                 statement->object_literal_datatype,
@@ -213,7 +237,7 @@ static int
 raptor_ntriples_serialize_statement(raptor_serializer* serializer, 
                                     const raptor_statement *statement)
 {
-  raptor_iostream_write_statement_ntriples(serializer->iostream, statement);
+  raptor_iostream_write_statement_ntriples_v2(serializer->world, serializer->iostream, statement);
   return 0;
 }
 
