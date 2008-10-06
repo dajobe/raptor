@@ -1299,6 +1299,9 @@ void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
 
 /* raptor_world structure */
 struct raptor_world_s {
+  /* world has been initialized with raptor_world_open() */
+  int opened;
+
   /* raptor_init(), raptor_finish() balance */
   int static_usage;
 

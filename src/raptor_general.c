@@ -105,43 +105,68 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 /**
  * raptor_new_world:
  *
- * Initialise the raptor library.
+ * Allocate a new raptor_world object.
  *
- * Creates a raptor_world object and initializes it.
+ * The raptor_world is initialized with raptor_world_open().
+ * Allocation and initialization are decoupled to allow
+ * setting flags etc. on the world object before init.
  *
- * The returned world object is used with subsequent raptor API calls.
- *
- * Return value: raptor_world object or NULL on failure
+ * Return value: uninitialized raptor_world object or NULL on failure
  */
 raptor_world *
 raptor_new_world(void)
 {
-  raptor_world *world;
+  return (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(raptor_world), 1);
+}
 
-  world=(raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(raptor_world), 1);
+
+/**
+ * raptor_world_open:
+ * @world: raptor_world object
+ *
+ * Initialise the raptor library.
+ *
+ * Initialized a #raptor_world object created by raptor_new_world().
+ * Allocation and initialization are decoupled to allow
+ * setting flags etc. on the world object before init.
+ *
+ * The returned world object is used with subsequent raptor API calls.
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_world_open(raptor_world* world)
+{
+  int rc;
+
   if(!world)
-    return NULL;
+    return -1;
 
-  if(raptor_parsers_init(world))
-    goto failure;
+  if(world->opened)
+    return 0; /* not an error */
 
-  if(raptor_serializers_init(world))
-    goto failure;
+  rc = raptor_parsers_init(world);
+  if(rc)
+    return rc;
 
-  if(raptor_uri_init(world))
-    goto failure;
+  rc = raptor_serializers_init(world);
+  if(rc)
+    return rc;
 
-  if(raptor_sax2_init(world))
-    goto failure;
+  rc = raptor_uri_init(world);
+  if(rc)
+    return rc;
+
+  rc = raptor_sax2_init(world);
+  if(rc)
+    return rc;
 
   /* raptor_www_init() is part of raptor API, prototype not changed yet to return an error code or accept a raptor_world object */
   raptor_www_init(); 
 
-  return world;
+  world->opened = 1;
 
-  failure:
-  raptor_free_world(world);
-  return NULL;
+  return world;
 }
 
 
@@ -188,6 +213,8 @@ raptor_init(void)
 
   Raptor_World=raptor_new_world();
   if(!Raptor_World)
+    goto failure;
+  if(raptor_world_open(Raptor_World))
     goto failure;
   Raptor_World->static_usage=1;
 

@@ -822,6 +822,8 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 RAPTOR_API
 raptor_world* raptor_new_world(void);
 RAPTOR_API
+int raptor_world_open(raptor_world* world);
+RAPTOR_API
 void raptor_free_world(raptor_world* world);
 
 #ifndef RAPTOR_DISABLE_V1
