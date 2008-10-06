@@ -16,6 +16,11 @@
 my $seen_yyerrlab1=0;
 my $line_offset=1; # #line directives always refer to the NEXT line
 while(<>) {
+  # HACK: Pass YYPARSE_PARAM* to %destructors
+  s/(yydestruct\s*\()const/$1void *YYPARSE_PARAM, const/; # yydestruct() definition sig 1
+  s/(yydestruct\s*\()yymsg(.*)$/$1YYPARSE_PARAM, yymsg$2\n    void *YYPARSE_PARAM\;/; # yydestruct() defintion sig 2
+  s/(yydestruct\s*\()(".*)$/$1YYPARSE_PARAM, $2/; # yydestruct() calls
+
   # Remove code that causes a warning
   if(/Suppress GCC warning that yyerrlab1/) {
     do {

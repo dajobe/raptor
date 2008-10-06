@@ -167,10 +167,27 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %type <sequence> objectList itemList propertyList
 
 /* tidy up tokens after errors */
-%destructor { if($$) RAPTOR_FREE(cstring, $$); } STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER
-%destructor { if($$) raptor_free_uri_v2(raptor_world_instance(), $$); } URI_LITERAL QNAME_LITERAL /* FIXME */
-%destructor { if($$) raptor_free_identifier($$); } subject predicate object verb literal resource blank collection graphName
-%destructor { if($$) raptor_free_sequence($$); } objectList itemList propertyList
+
+%destructor {
+  if($$)
+    RAPTOR_FREE(cstring, $$);
+} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER
+
+%destructor {
+  /* HACK: fix-bison adds rdf_parser param to yydestruct() */
+  if($$)
+    raptor_free_uri_v2(((raptor_parser*)rdf_parser)->world, $$);
+} URI_LITERAL QNAME_LITERAL
+
+%destructor {
+  if($$)
+    raptor_free_identifier($$);
+} subject predicate object verb literal resource blank collection graphName
+
+%destructor {
+  if($$)
+    raptor_free_sequence($$);
+} objectList itemList propertyList
 
 %%
 
