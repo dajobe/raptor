@@ -95,6 +95,7 @@ typedef struct rdfdiff_link_s {
 
 typedef struct rdfdiff_blank_s {
   struct rdfdiff_blank_s *next;
+  raptor_world *world;
   char *blank_id;
   raptor_statement *owner;
   rdfdiff_link *first;
@@ -103,6 +104,7 @@ typedef struct rdfdiff_blank_s {
 } rdfdiff_blank;
 
 typedef struct {
+  raptor_world *world;
   char *name;
   raptor_parser *parser;
   rdfdiff_link *first;
@@ -126,11 +128,11 @@ static int emit_to_header = 1;
 static rdfdiff_file* from_file = NULL;
 static rdfdiff_file*to_file = NULL;
 
-static rdfdiff_file* rdfdiff_new_file(const unsigned char *name, const char *syntax);
+static rdfdiff_file* rdfdiff_new_file(raptor_world* world, const unsigned char *name, const char *syntax);
 static void rdfdiff_free_file(rdfdiff_file* file);
 
 static rdfdiff_blank *rdfdiff_find_blank(rdfdiff_blank *first, char *blank_id);
-static rdfdiff_blank *rdfdiff_new_blank(char *blank_id);
+static rdfdiff_blank *rdfdiff_new_blank(raptor_world *world, char *blank_id);
 static void rdfdiff_free_blank(rdfdiff_blank *blank);
 
 static int  rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
@@ -179,14 +181,15 @@ rdfdiff_print_statements(rdfdiff_file* file)
 
 
 static rdfdiff_file*
-rdfdiff_new_file(const unsigned char *name, const char *syntax)
+rdfdiff_new_file(raptor_world *world, const unsigned char *name, const char *syntax)
 {
   rdfdiff_file* file = (rdfdiff_file*)RAPTOR_CALLOC(rdfdiff_file, 1, sizeof(rdfdiff_file));
   if(file) {
+    file->world = world;
     file->name = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)name)+1);
     strcpy((char*)file->name, (const char*)name);
     
-    file->parser = raptor_new_parser(syntax);
+    file->parser = raptor_new_parser_v2(world, syntax);
     if(file->parser) {
       raptor_set_error_handler(file->parser, file, rdfdiff_error_handler);
       raptor_set_warning_handler(file->parser, file, rdfdiff_warning_handler);
@@ -219,7 +222,7 @@ rdfdiff_free_file(rdfdiff_file* file)
   for(cur = file->first; cur; cur = next) {
     next = cur->next;
 
-    raptor_free_statement(cur->statement);
+    raptor_free_statement(file->world, cur->statement);
     RAPTOR_FREE(rdfdiff_link, cur);
   }
 
@@ -235,11 +238,12 @@ rdfdiff_free_file(rdfdiff_file* file)
 
 
 static rdfdiff_blank *
-rdfdiff_new_blank(char *blank_id) 
+rdfdiff_new_blank(raptor_world* world, char *blank_id) 
 {
   rdfdiff_blank *blank = (rdfdiff_blank *)RAPTOR_CALLOC(rdfdiff_blank, 1, sizeof(rdfdiff_blank));
 
   if(blank) {
+    blank->world = world;
     blank->blank_id = (char*)RAPTOR_MALLOC(cstring, strlen(blank_id)+1);
     strcpy((char*)blank->blank_id, (const char*)blank_id);
   }
@@ -257,12 +261,12 @@ rdfdiff_free_blank(rdfdiff_blank *blank)
     RAPTOR_FREE(cstring, blank->blank_id);
 
   if(blank->owner)
-    raptor_free_statement(blank->owner);
+    raptor_free_statement(blank->world, blank->owner);
   
   for(cur = blank->first; cur; cur = next) {
     next = cur->next;
 
-    raptor_free_statement(cur->statement);
+    raptor_free_statement(blank->world, cur->statement);
     RAPTOR_FREE(rdfdiff_link, cur);
   }
 
@@ -272,7 +276,7 @@ rdfdiff_free_blank(rdfdiff_blank *blank)
 
 
 static int
-rdfdiff_ordinal_equals_resource(int ordinal, raptor_uri *resource) 
+rdfdiff_ordinal_equals_resource(raptor_world* world, int ordinal, raptor_uri *resource) 
 {
   unsigned char ordinal_string[ORDINAL_STRING_LEN + 1];
   raptor_uri *ordinal_uri;
@@ -281,18 +285,18 @@ rdfdiff_ordinal_equals_resource(int ordinal, raptor_uri *resource)
   snprintf((char *)ordinal_string, ORDINAL_STRING_LEN, "%s_%d",
            raptor_rdf_namespace_uri, ordinal);
   
-  ordinal_uri = raptor_new_uri(ordinal_string);
+  ordinal_uri = raptor_new_uri_v2(world, ordinal_string);
 
-  equal = raptor_uri_equals(ordinal_uri, resource);
+  equal = raptor_uri_equals_v2(world, ordinal_uri, resource);
     
-  raptor_free_uri(ordinal_uri);
+  raptor_free_uri_v2(world, ordinal_uri);
 
   return equal;
 }
 
 
 static int
-rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
+rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const raptor_statement *s2)
 {
   int rv=0;
   
@@ -310,7 +314,8 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
      s2->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s1->subject, 
+    if(!rdfdiff_ordinal_equals_resource(world,
+                                        *(int *)s1->subject, 
                                         (raptor_uri *)s2->subject)) {
       rv=0;
       goto done;
@@ -320,7 +325,8 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
             s2->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s2->subject,
+    if(!rdfdiff_ordinal_equals_resource(world,
+                                        *(int *)s2->subject,
                                         (raptor_uri *)s1->subject)) {
       rv=0;
       goto done;
@@ -339,8 +345,9 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
       /*if(strcmp((const char *)s1->subject, (const char *)s2->subject) != 0)
         return 0;*/
     } else {
-      if(!raptor_uri_equals((raptor_uri *)s1->subject,
-                            (raptor_uri *)s2->subject)) {
+      if(!raptor_uri_equals_v2(world,
+                               (raptor_uri *)s1->subject,
+                               (raptor_uri *)s2->subject)) {
         rv=0;
         goto done;
       }
@@ -348,10 +355,11 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
   }
 
   if(s1->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL &&
-      s2->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) {
+     s2->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s1->predicate, 
+    if(!rdfdiff_ordinal_equals_resource(world,
+                                        *(int *)s1->predicate, 
                                         (raptor_uri *)s2->predicate)) {
       rv=0;
       goto done;
@@ -361,7 +369,8 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
             s2->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
 
     /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(*(int *)s2->predicate,
+    if(!rdfdiff_ordinal_equals_resource(world,
+                                        *(int *)s2->predicate,
                                         (raptor_uri *)s1->predicate)) {
       rv=0;
       goto done;
@@ -380,8 +389,9 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
         goto done;
       }
     } else {
-      if(!raptor_uri_equals((raptor_uri *)s1->predicate,
-                            (raptor_uri *)s2->predicate)) {
+      if(!raptor_uri_equals_v2(world,
+                               (raptor_uri *)s1->predicate,
+                               (raptor_uri *)s2->predicate)) {
         rv=0;
         goto done;
       }
@@ -409,8 +419,9 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
         equal=1;
 
       if(equal)
-        equal=raptor_uri_equals(s1->object_literal_datatype, 
-                              s2->object_literal_datatype);
+        equal=raptor_uri_equals_v2(world,
+                                   s1->object_literal_datatype, 
+                                   s2->object_literal_datatype);
     }
 
     rv=equal;
@@ -426,7 +437,7 @@ rdfdiff_statement_equals(const raptor_statement *s1, const raptor_statement *s2)
       goto done;
     }
   } else {
-    if(!raptor_uri_equals((raptor_uri *)s1->object, (raptor_uri *)s2->object))
+    if(!raptor_uri_equals_v2(world, (raptor_uri *)s1->object, (raptor_uri *)s2->object))
       rv=0;
   }
 
@@ -460,7 +471,7 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
     /* Neither are anonymous. Normal comparison. This will return
      * false if both the subject and the predicates don't match. We
      * know the objects are blank nodes. */
-    equal = rdfdiff_statement_equals(b1->owner, b2->owner);
+    equal = rdfdiff_statement_equals(b1->world, b1->owner, b2->owner);
     
   } else if(b1->owner->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
              b2->owner->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
@@ -495,7 +506,7 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
       rdfdiff_link *s2 = b2->first;
       while (s2) {
 
-        if(rdfdiff_statement_equals(s1->statement, s2->statement))
+        if(rdfdiff_statement_equals(b1->world, s1->statement, s2->statement))
           break;
           
         s2 = s2->next;
@@ -525,7 +536,7 @@ rdfdiff_error_handler(void *data, raptor_locator *locator,
   
   if(!ignore_errors) {
     fprintf(stderr, "%s: Error - ", program);
-    raptor_print_locator(stderr, locator);
+    raptor_print_locator_v2(file->world, stderr, locator);
     fprintf(stderr, " - %s\n", message);
     
     raptor_parse_abort(file->parser);
@@ -544,7 +555,7 @@ rdfdiff_warning_handler(void *data, raptor_locator *locator,
 
   if(!ignore_warnings) {
     fprintf(stderr, "%s: Warning - ", program);
-    raptor_print_locator(stderr, locator);
+    raptor_print_locator_v2(file->world, stderr, locator);
     fprintf(stderr, " - %s\n", message);
   }
 
@@ -581,7 +592,7 @@ rdfdiff_lookup_blank(rdfdiff_file* file, char *blank_id)
   rdfdiff_blank *rv_blank = rdfdiff_find_blank(file->first_blank, blank_id);
   
   if(rv_blank == NULL) {
-    rv_blank = rdfdiff_new_blank(blank_id);
+    rv_blank = rdfdiff_new_blank(file->world, blank_id);
     if(rv_blank) {
 
       if(!file->first_blank) {
@@ -611,7 +622,7 @@ rdfdiff_add_blank_statement(rdfdiff_file* file, const raptor_statement *statemen
 
     if(dlink) {
 
-      dlink->statement = raptor_statement_copy(statement);
+      dlink->statement = raptor_statement_copy(file->world, statement);
 
       if(dlink->statement) {
     
@@ -653,7 +664,7 @@ rdfdiff_add_blank_statement_owner(rdfdiff_file* file, const raptor_statement *st
   
   rdfdiff_blank *blank = rdfdiff_lookup_blank(file, (char *)statement->object);
   if(blank) {
-    blank->owner = raptor_statement_copy(statement);
+    blank->owner = raptor_statement_copy(file->world, statement);
 
     if(!blank->owner)
       rv = 1;
@@ -677,7 +688,7 @@ rdfdiff_add_statement(rdfdiff_file* file, const raptor_statement *statement)
 
   if(dlink) {
 
-    dlink->statement = raptor_statement_copy(statement);
+    dlink->statement = raptor_statement_copy(file->world, statement);
 
     if(dlink->statement) {
       
@@ -716,7 +727,7 @@ rdfdiff_statement_find(rdfdiff_file* file, const raptor_statement *statement,
   rdfdiff_link* cur = file->first;
   
   while(cur) {
-    if(rdfdiff_statement_equals(cur->statement, statement)) {
+    if(rdfdiff_statement_equals(file->world, cur->statement, statement)) {
       if(prev_p)
         *prev_p=prev;
       return cur;
@@ -778,6 +789,7 @@ rdfdiff_collect_statements(void *user_data, const raptor_statement *statement)
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world = NULL;
   unsigned char *from_string=NULL;
   unsigned char *to_string=NULL;
   raptor_uri *from_uri=NULL;
@@ -801,7 +813,12 @@ main(int argc, char *argv[])
     program=p+1;
   argv[0]=program;
 
-  raptor_init();
+  world = raptor_new_world();
+  if(!world)
+    exit(1);
+  rv = raptor_world_open(world);
+  if(rv)
+    exit(1);
 
   while (!usage && !help)
   {
@@ -842,7 +859,7 @@ main(int argc, char *argv[])
 
       case 'u':
         if(optarg)
-          base_uri = raptor_new_uri((const unsigned char*)optarg);
+          base_uri = raptor_new_uri_v2(world, (const unsigned char*)optarg);
         break;
 
     }
@@ -905,7 +922,7 @@ main(int argc, char *argv[])
   }
   
   if(from_string) {
-    from_uri = raptor_new_uri(from_string);
+    from_uri = raptor_new_uri_v2(world, from_string);
     if(!from_uri) {
       fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
       rv = 2;
@@ -914,7 +931,7 @@ main(int argc, char *argv[])
   }
   
   if(to_string) {
-    to_uri = raptor_new_uri(to_string);
+    to_uri = raptor_new_uri_v2(world, to_string);
     if(!to_uri) {
       fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
       rv = 2;
@@ -923,14 +940,14 @@ main(int argc, char *argv[])
   }
 
   /* create and init "from" data structures */
-  from_file = rdfdiff_new_file(from_string, from_syntax);
+  from_file = rdfdiff_new_file(world, from_string, from_syntax);
   if(!from_file) {
     rv = 2;
     goto exit;
   }
   
   /* create and init "to" data structures */
-  to_file = rdfdiff_new_file(to_string, to_syntax);
+  to_file = rdfdiff_new_file(world, to_string, to_syntax);
   if(!to_file) {
     rv = 2;
     goto exit;
@@ -972,7 +989,7 @@ main(int argc, char *argv[])
       } else {
         prev->next = node->next;
       }
-      raptor_free_statement(node->statement);
+      raptor_free_statement(world, node->statement);
       RAPTOR_FREE(rdfdiff_link, node);
     } else {
       if(!brief) {
@@ -983,7 +1000,7 @@ main(int argc, char *argv[])
         }
         
         fprintf(stderr, "<    ");
-        raptor_print_statement(cur->statement, stderr);
+        raptor_print_statement_v1(world, cur->statement, stderr);
         fprintf(stderr, "\n");
       }
       
@@ -1048,7 +1065,7 @@ main(int argc, char *argv[])
       while (cur) {
         if(!brief) {
           fprintf(stderr, ">    ");
-          raptor_print_statement(cur->statement, stderr);
+          raptor_print_statement_v1(world, cur->statement, stderr);
           fprintf(stderr, "\n");
         }
       
@@ -1098,7 +1115,7 @@ main(int argc, char *argv[])
 exit:
 
   if(base_uri)
-    raptor_free_uri(base_uri);
+    raptor_free_uri_v2(world, base_uri);
   
   if(from_file)
     rdfdiff_free_file(from_file);
@@ -1113,12 +1130,12 @@ exit:
     raptor_free_memory(to_string);
 
   if(from_uri)
-    raptor_free_uri(from_uri);
+    raptor_free_uri_v2(world, from_uri);
 
   if(to_uri)
-    raptor_free_uri(to_uri);
+    raptor_free_uri_v2(world, to_uri);
 
-  raptor_finish();
+  raptor_free_world(world);
 
   return rv;
   
