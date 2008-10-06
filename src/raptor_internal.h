@@ -1327,6 +1327,10 @@ struct raptor_world_s {
 
   /* raptor_sax2 init count to work around issues in xml parser init/cleanup */
   int sax2_initialized;
+
+  /* raptor_www v2 flags */
+  int www_skip_www_init_finish;
+  int www_initialized;
 };
 
 /* raptor_world legacy accessor */

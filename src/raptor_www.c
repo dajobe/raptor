@@ -46,42 +46,86 @@
 #include "raptor_internal.h"
 
 
-
+static int raptor_www_init_common(int skip_www_init_finish, int *www_initialized);
+static void raptor_www_finish_common(int skip_www_init_finish);
 static int raptor_www_file_fetch(raptor_www* www);
 
 
-/* FIXME: Figure out a way to eliminate these statics (e.g. move to raptor_world)
- * without breaking API compatibility.
- */
 
+#ifndef RAPTOR_DISABLE_V1
 /* should raptor_www do initializing and cleanup of the WWW library */
 static int raptor_www_skip_www_init_finish=0;
-
 static int raptor_www_initialized=0;
+#endif
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_www_init:
  * 
  * Initialise the WWW class.
  *
  * Must be called before creating any #raptor_www object.
+ *
+ * See also: raptor_www_init_v2()
  **/
 void
 raptor_www_init(void)
 {
-  if(raptor_www_initialized)
-    return;
-
-  if(!raptor_www_skip_www_init_finish) {
-#ifdef RAPTOR_WWW_LIBCURL
-    curl_global_init(CURL_GLOBAL_ALL);
+  raptor_www_init_common(raptor_www_skip_www_init_finish, &raptor_www_initialized);
+}
 #endif
-  }
-  raptor_www_initialized=1;
+
+
+/**
+ * raptor_www_init_v2:
+ * @world: raptor_world object
+ * 
+ * Initialise the WWW class.
+ *
+ * Must be called before creating any #raptor_www object.
+ *
+ * See also: raptor_www_init()
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_www_init_v2(raptor_world* world)
+{
+#ifndef RAPTOR_DISABLE_V1
+  /* support legacy v1 raptor_www_no_www_library_init_finish() */
+  if(raptor_www_skip_www_init_finish)
+    world->www_skip_www_init_finish = raptor_www_skip_www_init_finish;
+
+  /* skip init if already inited with legacy init() */
+  if(raptor_www_initialized)
+    return 0;
+#endif
+
+  return raptor_www_init_common(world->www_skip_www_init_finish, &world->www_initialized);
 }
 
 
+static int
+raptor_www_init_common(int skip_www_init_finish, int *www_initialized)
+{
+  int rc = 0;
+
+  if(*www_initialized)
+    return 0;
+
+  if(!skip_www_init_finish) {
+#ifdef RAPTOR_WWW_LIBCURL
+    rc = curl_global_init(CURL_GLOBAL_ALL);
+#endif
+  }
+
+  *www_initialized = 1;
+  return rc;
+}
+
+
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_www_no_www_library_init_finish:
  *
@@ -100,25 +144,83 @@ raptor_www_init(void)
  * 
  * This function must be called before raptor_init.
  *
+ * See also: raptor_www_no_www_library_init_finish_v2()
+ *
  **/
 void
 raptor_www_no_www_library_init_finish(void)
 {
-  raptor_www_skip_www_init_finish=1;
+  raptor_www_skip_www_init_finish = 1;
+}
+#endif
+
+
+/**
+ * raptor_www_no_www_library_init_finish_v2:
+ * @world: raptor_world object
+ *
+ * Do not initialise or finish the lower level WWW library.
+ *
+ * If this is called then the raptor_www library will neither
+ * initialise or terminate the lower level WWW library.  Usually in
+ * raptor_world_open() either curl_global_init (for libcurl)
+ * are called and in raptor_finish curl_global_cleanup is called.
+ *
+ * This allows the application finer control over these libraries such
+ * as setting other global options or potentially calling and terminating
+ * raptor several times.  It does mean that applications which use
+ * this call must do their own extra work in order to allocate and free
+ * all resources to the system.
+ * 
+ * This function must be called before raptor_world_open().
+ *
+ **/
+void
+raptor_www_no_www_library_init_finish_v2(raptor_world* world)
+{
+  world->www_skip_www_init_finish = 1;
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_www_finish:
  * 
  * Terminate the WWW class.
  *
  * Must be called to clean any resources used by the WWW implementation.
+ *
+ * See also: raptor_www_finish_v2()
  **/
 void
 raptor_www_finish(void)
 {
-  if(!raptor_www_skip_www_init_finish) {
+  raptor_www_finish_common(raptor_www_skip_www_init_finish);
+}
+#endif
+
+
+/**
+ * raptor_www_finish_v2:
+ * @world: raptor_world object
+ * 
+ * Terminate the WWW class.
+ *
+ * Must be called to clean any resources used by the WWW implementation.
+ *
+ * See also: raptor_www_finish()
+ **/
+void
+raptor_www_finish_v2(raptor_world* world)
+{
+  raptor_www_finish_common(world->www_skip_www_init_finish);
+}
+
+
+static void
+raptor_www_finish_common(int skip_www_init_finish)
+{
+  if(!skip_www_init_finish) {
 #ifdef RAPTOR_WWW_LIBCURL
     curl_global_cleanup();
 #endif

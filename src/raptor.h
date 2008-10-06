@@ -1275,13 +1275,21 @@ void raptor_uri_get_handler_v2(raptor_world* world, const raptor_uri_handler **h
 
 
 /* raptor_www */
-RAPTOR_API
+#ifndef RAPOR_DISABLE_V1
+RAPTOR_API RAPTOR_V1
 void raptor_www_init(void);
-RAPTOR_API
+RAPTOR_API RAPTOR_V1
 void raptor_www_finish(void);
-
-RAPTOR_API
+RAPTOR_API RAPTOR_V1
 void raptor_www_no_www_library_init_finish(void);
+#endif
+RAPTOR_API
+int raptor_www_init_v2(raptor_world* world);
+RAPTOR_API
+void raptor_www_finish_v2(raptor_world* world);
+RAPTOR_API
+void raptor_www_no_www_library_init_finish_v2(raptor_world* world);
+
 
 #ifndef RAPTOR_DISABLE_V1
 RAPTOR_API RAPTOR_V1

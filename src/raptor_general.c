@@ -161,8 +161,9 @@ raptor_world_open(raptor_world* world)
   if(rc)
     return rc;
 
-  /* raptor_www_init() is part of raptor API, prototype not changed yet to return an error code or accept a raptor_world object */
-  raptor_www_init(); 
+  rc = raptor_www_init_v2(world); 
+  if(rc)
+    return rc;
 
   world->opened = 1;
 
@@ -183,7 +184,7 @@ raptor_free_world(raptor_world* world)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
 
-  raptor_www_finish();
+  raptor_www_finish_v2(world);
 
   raptor_sax2_finish(world);
 
