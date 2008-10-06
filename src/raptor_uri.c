@@ -1965,19 +1965,20 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 
 
 static int
-assert_uri_to_relative(const char *base, const char *uri, const char *relative)
+assert_uri_to_relative(raptor_world *world, const char *base, const char *uri, const char *relative)
 {
   unsigned char *output;
   int result;
   raptor_uri* base_uri=NULL;
-  raptor_uri* reference_uri=raptor_new_uri((const unsigned char*)uri);
+  raptor_uri* reference_uri=raptor_new_uri_v2(world, (const unsigned char*)uri);
   size_t length=0;
 
   if(base)
-    base_uri=raptor_new_uri((const unsigned char*)base);
+    base_uri=raptor_new_uri_v2(world, (const unsigned char*)base);
   
-  output=raptor_uri_to_relative_counted_uri_string(base_uri, reference_uri, 
-                                                   &length);
+  output=raptor_uri_to_relative_counted_uri_string_v2(world,
+                                                      base_uri, reference_uri, 
+                                                      &length);
   result=strcmp(relative, (const char*)output);
   if (result) {
     fprintf(stderr,
@@ -1988,8 +1989,8 @@ assert_uri_to_relative(const char *base, const char *uri, const char *relative)
   }
   RAPTOR_FREE(cstring, output);
   if(base_uri)
-    raptor_free_uri(base_uri);
-  raptor_free_uri(reference_uri);
+    raptor_free_uri_v2(world, base_uri);
+  raptor_free_uri_v2(world, reference_uri);
   return 0;
 }
 
@@ -2006,6 +2007,7 @@ raptor_test_uri_compare(void *context, raptor_uri* uri1, raptor_uri* uri2)
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world;
   const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr#frag";
   const char *base_uri_xmlbase = "http://example.org/bpath/cpath/d;p";
   const char *base_uri_retrievable = "http://example.org/bpath/cpath/d;p?querystr";
@@ -2021,6 +2023,10 @@ main(int argc, char *argv[])
   raptor_uri *uri1, *uri2, *uri3;
 
   int failures=0;
+
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
 
   if((program=strrchr(argv[0], '/')))
     program++;
@@ -2091,11 +2097,9 @@ main(int argc, char *argv[])
  
 #endif
 
-  raptor_init();
-  
-  uri1=raptor_new_uri((const unsigned char*)base_uri);
+  uri1=raptor_new_uri_v2(world, (const unsigned char*)base_uri);
 
-  str=raptor_uri_as_string(uri1);
+  str=raptor_uri_as_string_v2(world, uri1);
   if(strcmp((const char*)str, base_uri)) {
     fprintf(stderr,
             "%s: raptor_uri_as_string(%s) FAILED gaving %s != %s\n",
@@ -2103,8 +2107,8 @@ main(int argc, char *argv[])
     failures++;
   }
   
-  uri2=raptor_new_uri_for_xmlbase(uri1);
-  str=raptor_uri_as_string(uri2);
+  uri2=raptor_new_uri_for_xmlbase_v2(world, uri1);
+  str=raptor_uri_as_string_v2(world, uri2);
   if(strcmp((const char*)str, base_uri_xmlbase)) {
     fprintf(stderr, 
             "%s: raptor_new_uri_for_xmlbase(URI %s) FAILED giving %s != %s\n",
@@ -2112,9 +2116,9 @@ main(int argc, char *argv[])
     failures++;
   }
   
-  uri3=raptor_new_uri_for_retrieval(uri1);
+  uri3=raptor_new_uri_for_retrieval_v2(world, uri1);
 
-  str=raptor_uri_as_string(uri3);
+  str=raptor_uri_as_string_v2(world, uri3);
   if(strcmp((const char*)str, base_uri_retrievable)) {
     fprintf(stderr,
             "%s: raptor_new_uri_for_retrievable(%s) FAILED gaving %s != %s\n",
@@ -2122,29 +2126,29 @@ main(int argc, char *argv[])
     failures++;
   }
   
-  raptor_free_uri(uri3);
-  raptor_free_uri(uri2);
-  raptor_free_uri(uri1);
+  raptor_free_uri_v2(world, uri3);
+  raptor_free_uri_v2(world, uri2);
+  raptor_free_uri_v2(world, uri1);
   
-  failures += assert_uri_to_relative(NULL, "http://example.com/foo/bar", "http://example.com/foo/bar");
-  failures += assert_uri_to_relative("", "http://example.com/foo/bar", "http://example.com/foo/bar");
-  failures += assert_uri_to_relative("foo:", "http://example.com/foo/bar", "http://example.com/foo/bar");
-  failures += assert_uri_to_relative("http://example.com/base/foo?foo#foo", "http://example.com/base/bar?bar#bar", "bar?bar#bar");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/base/foo/", "foo/");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/base/foo/.foo", "foo/.foo");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/base/foo/.foo#bar", "foo/.foo#bar");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/base/foo/bar", "foo/bar");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/base/foo#bar", "#bar");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/base/bar#foo", "bar#foo");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/otherbase/bar", "../otherbase/bar");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example.com/base/#foo", ".#foo");
-  failures += assert_uri_to_relative("http://example.com/base/foo", "http://example2.com/base/bar", "http://example2.com/base/bar");
-  failures += assert_uri_to_relative("http://example.com/base/one?path=/should/be/ignored", "http://example.com/base/two?path=/should/be/ignored", "two?path=/should/be/ignored");
-  failures += assert_uri_to_relative("http://example.org/base#", "http://www.foo.org", "http://www.foo.org");
-  failures += assert_uri_to_relative("http://example.org", "http://a.example.org/", "http://a.example.org/");
-  failures += assert_uri_to_relative("http://example.org", "http://a.example.org", "http://a.example.org");
-  failures += assert_uri_to_relative("http://abcdefgh.example.org/foo/bar/", "http://ijklmnop.example.org/", "http://ijklmnop.example.org/");
-  failures += assert_uri_to_relative("http://example.org", "http://example.org/a/b/c/d/efgh", "/a/b/c/d/efgh");
+  failures += assert_uri_to_relative(world, NULL, "http://example.com/foo/bar", "http://example.com/foo/bar");
+  failures += assert_uri_to_relative(world, "", "http://example.com/foo/bar", "http://example.com/foo/bar");
+  failures += assert_uri_to_relative(world, "foo:", "http://example.com/foo/bar", "http://example.com/foo/bar");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo?foo#foo", "http://example.com/base/bar?bar#bar", "bar?bar#bar");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/foo/", "foo/");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/foo/.foo", "foo/.foo");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/foo/.foo#bar", "foo/.foo#bar");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/foo/bar", "foo/bar");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/foo#bar", "#bar");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/bar#foo", "bar#foo");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/otherbase/bar", "../otherbase/bar");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/#foo", ".#foo");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example2.com/base/bar", "http://example2.com/base/bar");
+  failures += assert_uri_to_relative(world, "http://example.com/base/one?path=/should/be/ignored", "http://example.com/base/two?path=/should/be/ignored", "two?path=/should/be/ignored");
+  failures += assert_uri_to_relative(world, "http://example.org/base#", "http://www.foo.org", "http://www.foo.org");
+  failures += assert_uri_to_relative(world, "http://example.org", "http://a.example.org/", "http://a.example.org/");
+  failures += assert_uri_to_relative(world, "http://example.org", "http://a.example.org", "http://a.example.org");
+  failures += assert_uri_to_relative(world, "http://abcdefgh.example.org/foo/bar/", "http://ijklmnop.example.org/", "http://ijklmnop.example.org/");
+  failures += assert_uri_to_relative(world, "http://example.org", "http://example.org/a/b/c/d/efgh", "/a/b/c/d/efgh");
 
   if(1) {
     raptor_uri_handler uri_handler;
@@ -2159,16 +2163,16 @@ main(int argc, char *argv[])
     uri_handler.uri_compare = raptor_test_uri_compare;
     uri_handler.initialised=1;
     called=0;
-    raptor_uri_set_handler(&uri_handler, &called);
+    raptor_uri_set_handler_v2(world, &uri_handler, &called);
 
-    u1=raptor_new_uri((const unsigned char *)"http://example.org/abc");
-    u2=raptor_new_uri((const unsigned char *)"http://example.org/def");
+    u1=raptor_new_uri_v2(world, (const unsigned char *)"http://example.org/abc");
+    u2=raptor_new_uri_v2(world, (const unsigned char *)"http://example.org/def");
 
-    ret=raptor_uri_compare(u1, u2);
+    ret=raptor_uri_compare_v2(world, u1, u2);
     if(!(ret < 0)) {
       fprintf(stderr,
               "%s: raptor_uri_compare(%s, %s) FAILED V1 gave %d expected <0\n",
-              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2),
+              program, raptor_uri_as_string_v2(world, u1), raptor_uri_as_string_v2(world, u2),
               ret);
       failures++;
     }
@@ -2176,7 +2180,7 @@ main(int argc, char *argv[])
     if(called) {
       fprintf(stderr,
               "%s: raptor_uri_compare(%s, %s) FAILED V1 called user handler\n",
-              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2));
+              program, raptor_uri_as_string_v2(world, u1), raptor_uri_as_string_v2(world, u2));
       failures++;
     }
     
@@ -2184,13 +2188,13 @@ main(int argc, char *argv[])
     /* URI Interface V2 */
     uri_handler.initialised=2;
     called=0;
-    raptor_uri_set_handler(&uri_handler, &called);
+    raptor_uri_set_handler_v2(world, &uri_handler, &called);
 
-    ret=raptor_uri_compare(u1, u2);
+    ret=raptor_uri_compare_v2(world, u1, u2);
     if(!(ret < 0)) {
       fprintf(stderr,
               "%s: raptor_uri_compare(%s, %s) FAILED V2 gave %d expected <0\n",
-              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2),
+              program, raptor_uri_as_string_v2(world, u1), raptor_uri_as_string_v2(world, u2),
               ret);
       failures++;
     }
@@ -2198,15 +2202,15 @@ main(int argc, char *argv[])
     if(!called) {
       fprintf(stderr,
               "%s: raptor_uri_compare(%s, %s) FAILED V2 did not call user handler\n",
-              program, raptor_uri_as_string(u1), raptor_uri_as_string(u2));
+              program, raptor_uri_as_string_v2(world, u1), raptor_uri_as_string_v2(world, u2));
       failures++;
     }
     
-    raptor_free_uri(u1);
-    raptor_free_uri(u2);
+    raptor_free_uri_v2(world, u1);
+    raptor_free_uri_v2(world, u2);
   }
 
-  raptor_finish();
+  raptor_free_world(world);
 
   return failures ;
 }
