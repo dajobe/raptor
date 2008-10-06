@@ -44,31 +44,8 @@
 
 /* prototypes for helper functions */
 static void raptor_print_statement_part_as_ntriples(raptor_world* world, FILE* stream, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);
-static raptor_statement *raptor_statement_copy_common(raptor_world* world, const raptor_statement *statement);
-static void raptor_free_statement_common(raptor_world *world, raptor_statement *statement);
-static void raptor_print_statement_common(raptor_world* world, const raptor_statement * statement, FILE *stream);
 static void raptor_print_statement_as_ntriples_common(raptor_world* world, const raptor_statement *statement, FILE *stream);
 static int raptor_statement_compare_common(raptor_world* world, const raptor_statement *s1, const raptor_statement *s2);
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_statement_copy:
- * @statement: statement to copy
- *
- * Copy a #raptor_statement.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_statement_copy_v2() if using raptor_world APIs.
- * 
- * Return value: a new #raptor_statement or NULL on error
- */
-raptor_statement*
-raptor_statement_copy(const raptor_statement *statement)
-{
-  return raptor_statement_copy_common(raptor_world_instance(), statement);
-}
-#endif
 
 
 /**
@@ -105,7 +82,7 @@ raptor_statement_copy_v2_from_v1(raptor_world* world, const raptor_statement *st
     return NULL;
 
   s->world=world;
-  s->s=raptor_statement_copy_common(world, statement);
+  s->s=raptor_statement_copy(world, statement);
   if(!s->s) {
     raptor_free_statement_v2(s);
     s=NULL;
@@ -115,8 +92,17 @@ raptor_statement_copy_v2_from_v1(raptor_world* world, const raptor_statement *st
 }
 
 
-static raptor_statement *
-raptor_statement_copy_common(raptor_world* world, const raptor_statement *statement)
+/**
+ * raptor_statement_copy:
+ * @world: raptor_world object
+ * @statement: statement to copy
+ *
+ * Copy a #raptor_statement.
+ *
+ * Return value: a new #raptor_statement or NULL on error
+ */
+raptor_statement*
+raptor_statement_copy(raptor_world* world, const raptor_statement *statement)
 {
   raptor_statement *s;
 
@@ -189,29 +175,9 @@ raptor_statement_copy_common(raptor_world* world, const raptor_statement *statem
   return s;
 
   oom:
-  raptor_free_statement_common(world, s);
+  raptor_free_statement(world, s);
   return NULL;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_free_statement:
- * @statement: statement
- *
- * Destructor.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_free_statement_v2() if using raptor_world APIs.
- */
-void
-raptor_free_statement(raptor_statement *statement)
-{
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(statement, raptor_statement);
-  raptor_free_statement_common(raptor_world_instance(), statement);
-  RAPTOR_FREE(raptor_statement, statement);
-}
-#endif
 
 
 /**
@@ -225,13 +191,20 @@ void
 raptor_free_statement_v2(raptor_statement_v2 *statement)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(statement, raptor_statement);
-  raptor_free_statement_common(statement->world, statement->s);
+  raptor_free_statement(statement->world, statement->s);
   RAPTOR_FREE(raptor_statement_v2, statement);
 }
 
 
-static void
-raptor_free_statement_common(raptor_world *world, raptor_statement *statement)
+/**
+ * raptor_free_statement:
+ * @statement: statement
+ *
+ * Destructor
+ *
+ */
+void
+raptor_free_statement(raptor_world *world, raptor_statement *statement)
 {
   if(statement->subject) {
     if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
@@ -277,14 +250,14 @@ raptor_free_statement_common(raptor_world *world, raptor_statement *statement)
 void
 raptor_print_statement(const raptor_statement * statement, FILE *stream) 
 {
-  raptor_print_statement_common(raptor_world_instance(), statement, stream);
+  raptor_print_statement_v1(raptor_world_instance(), statement, stream);
 }
 #endif
 
 
 /**
  * raptor_print_statement_v2:
- * @statement: #raptor_statement object to print
+ * @statement: #raptor_statement_v2 object to print
  * @stream: #FILE* stream
  *
  * Print a raptor_statement to a stream.
@@ -292,12 +265,20 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 void
 raptor_print_statement_v2(const raptor_statement_v2 * statement, FILE *stream) 
 {
-  raptor_print_statement_common(statement->world, statement->s, stream);
+  raptor_print_statement_v1(statement->world, statement->s, stream);
 }
 
 
-static void
-raptor_print_statement_common(raptor_world* world, const raptor_statement * statement, FILE *stream) 
+/**
+ * raptor_print_statement_v1:
+ * @world: raptor_world object
+ * @statement: #raptor_statement object to print
+ * @stream: #FILE* stream
+ *
+ * Print a raptor_statement to a stream.
+ **/
+void
+raptor_print_statement_v1(raptor_world* world, const raptor_statement * statement, FILE *stream) 
 {
   fputc('[', stream);
 
