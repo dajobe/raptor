@@ -262,21 +262,24 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world;
   const char *program=raptor_basename(argv[0]);
   const char *items[8] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", NULL };
   raptor_id_set *set;
   raptor_uri *base_uri;
   int i=0;
   
-  raptor_init();
-  
-  base_uri=raptor_new_uri((const unsigned char*)"http://example.org/base#");
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
+    
+  base_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://example.org/base#");
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating set\n", program);
 #endif
 
-  set=raptor_new_id_set(raptor_world_instance()); /* FIXME */
+  set=raptor_new_id_set(world);
   if(!set) {
     fprintf(stderr, "%s: Failed to create set\n", program);
     exit(1);
@@ -323,9 +326,9 @@ if(rc) {
 #endif
   raptor_free_id_set(set);
 
-  raptor_free_uri(base_uri);
+  raptor_free_uri_v2(world, base_uri);
   
-  raptor_finish();
+  raptor_free_world(world);
   
   /* keep gcc -Wall happy */
   return(0);
