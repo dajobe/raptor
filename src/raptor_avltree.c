@@ -1540,6 +1540,7 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[])
 {
+  raptor_world *world;
   const char *program=raptor_basename(argv[0]);
 #define ITEM_COUNT 8
   const char *items[ITEM_COUNT+1] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", "def", NULL };
@@ -1553,9 +1554,11 @@ main(int argc, char *argv[])
   visit_state vs;
   int i;
 
-  raptor_init();
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
   
-  tree=raptor_new_avltree(raptor_world_instance(), /* FIXME */
+  tree=raptor_new_avltree(world,
                           compare_strings,
                           NULL, /* no free as they are static pointers above */
                           0);
@@ -1708,7 +1711,7 @@ main(int argc, char *argv[])
 #endif
   raptor_free_avltree(tree);
 
-  raptor_finish();
+  raptor_free_world(world);
 
   /* keep gcc -Wall happy */
   return(0);
