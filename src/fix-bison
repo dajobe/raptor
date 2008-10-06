@@ -18,7 +18,11 @@ my $line_offset=1; # #line directives always refer to the NEXT line
 while(<>) {
   # HACK: Pass YYPARSE_PARAM* to %destructors
   s/(yydestruct\s*\()const/$1void *YYPARSE_PARAM, const/; # yydestruct() definition sig 1
-  s/(yydestruct\s*\()yymsg(.*)$/$1YYPARSE_PARAM, yymsg$2\n    void *YYPARSE_PARAM\;/; # yydestruct() defintion sig 2
+  if(/(yydestruct\s*\()yymsg(.*)$/) { # yydestruct() defintion sig 2
+    print "$1YYPARSE_PARAM, yymsg$2\n    void *YYPARSE_PARAM;\n";
+    $line_offset++; # added a line
+    next;
+  }
   s/(yydestruct\s*\()(".*)$/$1YYPARSE_PARAM, $2/; # yydestruct() calls
 
   # Remove code that causes a warning
