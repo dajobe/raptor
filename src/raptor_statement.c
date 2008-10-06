@@ -51,6 +51,7 @@ static void raptor_print_statement_as_ntriples_common(raptor_world* world, const
 static int raptor_statement_compare_common(raptor_world* world, const raptor_statement *s1, const raptor_statement *s2);
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_statement_copy:
  * @statement: statement to copy
@@ -67,6 +68,7 @@ raptor_statement_copy(const raptor_statement *statement)
 {
   return raptor_statement_copy_common(raptor_world_instance(), statement);
 }
+#endif
 
 
 /**
@@ -192,6 +194,7 @@ raptor_statement_copy_common(raptor_world* world, const raptor_statement *statem
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_free_statement:
  * @statement: statement
@@ -208,6 +211,7 @@ raptor_free_statement(raptor_statement *statement)
   raptor_free_statement_common(raptor_world_instance(), statement);
   RAPTOR_FREE(raptor_statement, statement);
 }
+#endif
 
 
 /**
@@ -259,6 +263,7 @@ raptor_free_statement_common(raptor_world *world, raptor_statement *statement)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_print_statement:
  * @statement: #raptor_statement object to print
@@ -274,6 +279,7 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 {
   raptor_print_statement_common(raptor_world_instance(), statement, stream);
 }
+#endif
 
 
 /**
@@ -349,7 +355,7 @@ raptor_print_statement_common(raptor_world* world, const raptor_statement * stat
 }
 
 
-#ifndef RAPTOR_DISABLE_DEPRECATED
+#if !defined(RAPTOR_DISABLE_DEPRECATED) && !defined(RAPTOR_DISABLE_V1)
 /**
  * raptor_print_statement_detailed:
  * @statement: #raptor_statement object to print
@@ -374,6 +380,7 @@ raptor_print_statement_detailed(const raptor_statement * statement,
 #endif
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_statement_part_as_counted_string:
  * @term: #raptor_statement part (subject, predicate, object)
@@ -414,6 +421,8 @@ raptor_statement_part_as_counted_string(const void *term,
                                                     literal_language,
                                                     len_p);
 }
+#endif
+
 
 /**
  * raptor_statement_part_as_counted_string_v2:
@@ -553,6 +562,7 @@ raptor_statement_part_as_counted_string_v2(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_statement_part_as_string:
  * @term: #raptor_statement part (subject, predicate, object)
@@ -589,6 +599,7 @@ raptor_statement_part_as_string(const void *term,
                                             literal_datatype,
                                             literal_language);
 }
+#endif
 
 
 /**
@@ -681,6 +692,7 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_print_statement_as_ntriples:
  * @statement: #raptor_statement to print
@@ -700,6 +712,7 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
                                             statement,
                                             stream);
 }
+#endif
 
 
 /**
@@ -747,7 +760,7 @@ raptor_print_statement_as_ntriples_common(raptor_world* world,
 }
 
  
-
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_statement_compare:
  * @s1: first statement
@@ -772,6 +785,7 @@ raptor_statement_compare(const raptor_statement *s1,
 {
   return raptor_statement_compare_common(raptor_world_instance(), s1, s2);
 }
+#endif
 
 
 /**

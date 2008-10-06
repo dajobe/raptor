@@ -45,6 +45,7 @@
 #include "raptor_internal.h"
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_identifier:
  * @type: raptor_identifier_type of identifier
@@ -83,6 +84,8 @@ raptor_new_identifier(raptor_identifier_type type,
                                   literal_datatype,
                                   literal_language);
 }
+#endif
+
 
 /**
  * raptor_new_identifier_v2:

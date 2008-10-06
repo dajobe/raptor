@@ -49,7 +49,9 @@
 
 
 /* statics */
+#ifndef RAPTOR_DISABLE_V1
 static raptor_world* Raptor_World=NULL;
+#endif
 
 
 const char * const raptor_short_copyright_string = "Copyright 2000-2008 David Beckett. Copyright 2000-2005 University of Bristol";
@@ -108,8 +110,6 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
  * Creates a raptor_world object and initializes it.
  *
  * The returned world object is used with subsequent raptor API calls.
- *
- * FIXME: Does not initialize the whole library yet. Use raptor_init() instead.
  *
  * Return value: raptor_world object or NULL on failure
  */
@@ -170,6 +170,7 @@ raptor_free_world(raptor_world* world)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_init:
  *
@@ -180,7 +181,6 @@ raptor_free_world(raptor_world* world)
 void
 raptor_init(void) 
 {
-
   if(Raptor_World) {
     Raptor_World->static_usage++;
     return;
@@ -231,6 +231,7 @@ raptor_world_instance(void)
 {
   return Raptor_World;
 }
+#endif
 
 
 /* 
@@ -429,6 +430,7 @@ raptor_check_ordinal(const unsigned char *name) {
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_error_handlers_init:
  * @error_handlers: error handlers object
@@ -443,6 +445,7 @@ raptor_error_handlers_init(raptor_error_handlers* error_handlers)
 {
   raptor_error_handlers_init_v2(raptor_world_instance(), error_handlers);
 }
+#endif
 
 
 /**

@@ -385,6 +385,7 @@ raptor_get_parser_factory(raptor_world *world, const char *name)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_syntaxes_enumerate:
  * @counter: index into the list of syntaxes
@@ -409,6 +410,7 @@ raptor_syntaxes_enumerate(const unsigned int counter,
   return raptor_syntaxes_enumerate_v2(raptor_world_instance(),
     counter, name, label, mime_type, uri_string);
 }
+#endif
 
 
 /**
@@ -459,6 +461,7 @@ raptor_syntaxes_enumerate_v2(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_parsers_enumerate:
  * @counter: index to list of parsers
@@ -492,6 +495,7 @@ int
 raptor_syntax_name_check(const char *name) {
   return raptor_syntax_name_check_v2(raptor_world_instance(), name);
 }
+#endif
 
 
 /**
@@ -509,6 +513,7 @@ raptor_syntax_name_check_v2(raptor_world* world, const char *name) {
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_parser:
  * @name: the parser name
@@ -524,6 +529,7 @@ raptor_parser*
 raptor_new_parser(const char *name) {
   return raptor_new_parser_v2(raptor_world_instance(), name);
 }
+#endif
 
 
 /**
@@ -581,6 +587,7 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_parser_for_content:
  * @uri: URI identifying the syntax (or NULL)
@@ -611,6 +618,7 @@ raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
                                           buffer, len,
                                           identifier);
 }
+#endif
 
 
 /**
@@ -1345,6 +1353,7 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_features_enumerate:
  * @feature: feature enumeration (0+)
@@ -1370,6 +1379,7 @@ raptor_features_enumerate(const raptor_feature feature,
   return raptor_features_enumerate_v2(raptor_world_instance(),
                                       feature, name, uri, label);
 }
+#endif
 
 
 /**
@@ -1905,6 +1915,7 @@ compare_syntax_score(const void *a, const void *b) {
 }
   
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_guess_parser_name:
  * @uri: URI identifying the syntax (or NULL)
@@ -1932,6 +1943,7 @@ raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
   return raptor_guess_parser_name_v2(raptor_world_instance(),
     uri, mime_type, buffer, len, identifier);
 }
+#endif
 
 
 /**

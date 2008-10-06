@@ -97,6 +97,7 @@ const unsigned char * const raptor_xmlschema_datatypes_namespace_uri=(const unsi
 const unsigned char * const raptor_owl_namespace_uri=(const unsigned char *)"http://www.w3.org/2002/07/owl#";
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_namespaces_init:
  * @nstack: #raptor_namespace_stack to initialise
@@ -134,6 +135,7 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
                                    error_data,
                                    defaults);
 }
+#endif
 
 
 /**
@@ -200,6 +202,7 @@ raptor_namespaces_init_v2(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_namespaces:
  * @uri_handler: URI handler function (ignored)
@@ -233,6 +236,7 @@ raptor_new_namespaces(const raptor_uri_handler *uri_handler,
                                   error_data,
                                   defaults);
 }
+#endif
 
 
 /**

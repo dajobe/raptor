@@ -63,6 +63,8 @@
 #define WIN32
 #endif
 
+
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_set_handler:
  * @handler: URI handler structure
@@ -81,6 +83,7 @@ raptor_uri_set_handler(const raptor_uri_handler *handler, void *context)
 {
   raptor_uri_set_handler_v2(raptor_world_instance(), handler, context);
 }
+#endif
 
 
 /**
@@ -107,6 +110,7 @@ raptor_uri_set_handler_v2(raptor_world* world, const raptor_uri_handler *handler
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_get_handler:
  * @handler: URI handler to return
@@ -122,6 +126,7 @@ raptor_uri_get_handler(const raptor_uri_handler **handler, void **context)
 {
   raptor_uri_get_handler_v2(raptor_world_instance(), handler, context);
 }
+#endif
 
 
 /**
@@ -190,6 +195,7 @@ raptor_default_new_uri(void *context, const unsigned char *uri_string)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_uri:
  * @uri_string: URI string.
@@ -206,6 +212,7 @@ raptor_new_uri(const unsigned char *uri_string)
 {
   return raptor_new_uri_v2(raptor_world_instance(), uri_string);
 }
+#endif
 
 
 /**
@@ -245,6 +252,7 @@ raptor_default_new_uri_from_uri_local_name(void *context,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_uri_from_uri_local_name:
  * @uri: existing #raptor_uri
@@ -266,6 +274,7 @@ raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_n
 {
   return raptor_new_uri_from_uri_local_name_v2(raptor_world_instance(), uri, local_name);
 }
+#endif
 
 
 /**
@@ -317,6 +326,7 @@ raptor_default_new_uri_relative_to_base(void *context,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_uri_relative_to_base:
  * @base_uri: existing base URI
@@ -336,6 +346,7 @@ raptor_new_uri_relative_to_base(raptor_uri *base_uri,
   return raptor_new_uri_relative_to_base_v2(raptor_world_instance(),
                                             base_uri, uri_string);
 }
+#endif
 
 
 /**
@@ -360,6 +371,7 @@ raptor_new_uri_relative_to_base_v2(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_uri_from_id:
  * @base_uri: existing base URI
@@ -380,6 +392,7 @@ raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id)
 {
   return raptor_new_uri_from_id_v2(raptor_world_instance(), base_uri, id);
 }
+#endif
 
 
 /**
@@ -440,6 +453,7 @@ raptor_default_new_uri_for_rdf_concept(void *context, const char *name)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_uri_for_rdf_concept:
  * @name: RDF namespace concept
@@ -459,6 +473,7 @@ raptor_new_uri_for_rdf_concept(const char *name)
 {
   return raptor_new_uri_for_rdf_concept_v2(raptor_world_instance(), name);
 }
+#endif
 
 
 /**
@@ -490,6 +505,7 @@ raptor_default_free_uri(void *context, raptor_uri *uri)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_free_uri:
  * @uri: URI to destroy
@@ -504,6 +520,8 @@ raptor_free_uri(raptor_uri *uri)
 {
   raptor_free_uri_v2(raptor_world_instance(), uri);
 }
+#endif
+
 
 /* FIXME: Refactor the uri abstraction so that raptor_world* can be stored there. */
 
@@ -537,6 +555,7 @@ raptor_default_uri_compare(void *context, raptor_uri* uri1, raptor_uri* uri2)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_equals:
  * @uri1: URI 1 (may be NULL)
@@ -556,6 +575,7 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 {
   return raptor_uri_equals_v2(raptor_world_instance(), uri1, uri2);
 }
+#endif
 
 
 /**
@@ -585,6 +605,7 @@ raptor_uri_equals_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_compare:
  * @uri1: URI 1 (may be NULL)
@@ -604,6 +625,7 @@ raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
 {
   return raptor_uri_compare_v2(raptor_world_instance(), uri1, uri2);
 }
+#endif
 
 
 /**
@@ -648,6 +670,7 @@ raptor_default_uri_copy(void *context, raptor_uri *uri)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_copy:
  * @uri: URI object
@@ -664,6 +687,7 @@ raptor_uri_copy(raptor_uri *uri)
 {
   return raptor_uri_copy_v2(raptor_world_instance(), uri);
 }
+#endif
 
 
 /**
@@ -692,6 +716,7 @@ raptor_default_uri_as_string(void *context, raptor_uri *uri)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_as_string:
  * @uri: #raptor_uri object
@@ -712,6 +737,7 @@ raptor_uri_as_string(raptor_uri *uri)
 {
   return raptor_uri_as_string_v2(raptor_world_instance(), uri);
 }
+#endif
 
 
 /**
@@ -747,6 +773,7 @@ raptor_default_uri_as_counted_string(void *context, raptor_uri *uri,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_as_counted_string:
  * @uri: URI object
@@ -769,6 +796,7 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
 {
   return raptor_uri_as_counted_string_v2(raptor_world_instance(), uri, len_p);
 }
+#endif
 
 
 /**
@@ -1152,6 +1180,7 @@ raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_uri_for_xmlbase:
  * @old_uri: URI to transform
@@ -1171,6 +1200,8 @@ raptor_new_uri_for_xmlbase(raptor_uri* old_uri)
 {
   return raptor_new_uri_for_xmlbase_v2(raptor_world_instance(), old_uri);
 }
+#endif
+
 
 /**
  * raptor_new_uri_for_xmlbase_v2:
@@ -1220,6 +1251,7 @@ raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_uri_for_retrieval:
  * @old_uri: URI to transform
@@ -1239,6 +1271,7 @@ raptor_new_uri_for_retrieval(raptor_uri* old_uri)
 {
   return raptor_new_uri_for_retrieval_v2(raptor_world_instance(), old_uri);
 }
+#endif
 
 
 /**
@@ -1450,6 +1483,7 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_to_relative_counted_uri_string:
  * @base_uri: The base absolute URI to resolve against (or NULL)
@@ -1473,6 +1507,8 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
                                                       reference_uri,
                                                       length_p);
 }
+#endif
+
 
 /**
  * raptor_uri_to_relative_counted_uri_string_v2:
@@ -1650,6 +1686,7 @@ raptor_uri_to_relative_counted_uri_string_v2(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_to_relative_uri_string:
  * @base_uri: The base absolute URI to resolve against
@@ -1682,6 +1719,7 @@ void
 raptor_uri_print(const raptor_uri* uri, FILE *stream) {
   raptor_uri_print_v2(raptor_world_instance(), uri, stream);
 }
+#endif
 
 
 /**
@@ -1704,6 +1742,7 @@ raptor_uri_print_v2(raptor_world* world, const raptor_uri* uri, FILE *stream) {
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_to_counted_string:
  * @uri: #raptor_uri object
@@ -1726,6 +1765,7 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
 {
   return raptor_uri_to_counted_string_v2(raptor_world_instance(), uri, len_p);
 }
+#endif
 
 
 /**
@@ -1769,6 +1809,7 @@ raptor_uri_to_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t *le
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_to_string:
  * @uri: #raptor_uri object
@@ -1788,6 +1829,7 @@ raptor_uri_to_string(raptor_uri *uri)
 {
   return raptor_uri_to_string_v2(raptor_world_instance(), uri);
 }
+#endif
 
 
 /**

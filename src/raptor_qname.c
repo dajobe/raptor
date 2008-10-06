@@ -219,6 +219,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_qname_from_namespace_local_name:
  * @ns: namespace of qname (or NULL)
@@ -245,6 +246,7 @@ raptor_new_qname_from_namespace_local_name(raptor_namespace *ns,
                                                        local_name,
                                                        value);
 }
+#endif
 
 
 /**

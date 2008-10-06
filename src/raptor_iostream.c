@@ -773,6 +773,7 @@ raptor_iostream_write_counted_string(raptor_iostream *iostr,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_iostream_write_uri:
  * @iostr: raptor iostream
@@ -790,6 +791,7 @@ raptor_iostream_write_uri(raptor_iostream* iostr, raptor_uri* uri)
 {
   return raptor_iostream_write_uri_v2(raptor_world_instance(), iostr, uri);
 }
+#endif
 
 
 /**

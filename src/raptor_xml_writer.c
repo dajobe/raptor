@@ -416,6 +416,7 @@ raptor_xml_writer_end_element_common(raptor_xml_writer* xml_writer,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_xml_writer:
  * @nstack: Namespace stack for the writer to start with (or NULL)
@@ -453,6 +454,7 @@ raptor_new_xml_writer(raptor_namespace_stack *nstack,
                                   error_data,
                                   canonicalize);
 }
+#endif
 
 
 /**
@@ -835,6 +837,7 @@ raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_xml_writer_features_enumerate:
  * @feature: feature enumeration (0+)
@@ -860,6 +863,7 @@ raptor_xml_writer_features_enumerate(const raptor_feature feature,
   return raptor_xml_writer_features_enumerate_v2(raptor_world_instance(),
                                                  feature, name, uri, label);
 }
+#endif
 
 
 /**

@@ -48,6 +48,7 @@
 #include "raptor_internal.h"
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_print_locator:
  * @stream: stream to print to
@@ -63,6 +64,7 @@ raptor_print_locator(FILE *stream, raptor_locator* locator)
 {
   raptor_print_locator_v2(raptor_world_instance(), stream, locator);
 }
+#endif
 
 
 /**
@@ -94,6 +96,7 @@ raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locat
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_format_locator:
  * @buffer: buffer to store format
@@ -116,6 +119,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
 {
   return raptor_format_locator_v2(raptor_world_instance(), buffer, length, locator);
 }
+#endif
 
 
 /**
@@ -244,6 +248,8 @@ raptor_locator_file(raptor_locator *locator)
   return locator->file;
 }
 
+
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_locator_uri:
  * @locator: locator
@@ -263,6 +269,7 @@ raptor_locator_uri(raptor_locator *locator)
 {
   return raptor_locator_uri_v2(raptor_world_instance(), locator);
 }
+#endif
 
 
 /**

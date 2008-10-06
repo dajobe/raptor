@@ -175,6 +175,7 @@ raptor_feature_value_type(const raptor_feature feature) {
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_feature_from_uri:
  * @uri: feature URI
@@ -193,6 +194,8 @@ raptor_feature_from_uri(raptor_uri *uri)
 {
   return raptor_feature_from_uri_v2(raptor_world_instance(), uri);
 }
+#endif
+
 
 /**
  * raptor_feature_from_uri_v2:

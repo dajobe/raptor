@@ -649,7 +649,9 @@ const char* raptor_basename(const char *name);
 raptor_statement* raptor_statement_copy(const raptor_statement *statement);
 raptor_statement_v2* raptor_statement_copy_v2(const raptor_statement_v2 *statement);
 raptor_statement_v2* raptor_statement_copy_v2_from_v1(raptor_world* world, const raptor_statement *statement);
+#ifdef RAPTOR_DISABLE_V1
 void raptor_free_statement(raptor_statement *statement);
+#endif
 void raptor_free_statement_v2(raptor_statement_v2 *statement);
 
 /* raptor_parse.c */
@@ -1325,7 +1327,9 @@ struct raptor_world_s {
 };
 
 /* raptor_world legacy accessor */
+#ifndef RAPTOR_DISABLE_V1
 raptor_world* raptor_world_instance(void);
+#endif
 
 /* end of RAPTOR_INTERNAL */
 #endif

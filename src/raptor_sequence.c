@@ -540,7 +540,7 @@ raptor_sequence_print_string(char *data, FILE *fh)
 }
 
 
-#ifndef RAPTOR_DISABLE_DEPRECATED
+#if !defined(RAPTOR_DISABLE_DEPRECATED) && !defined(RAPTOR_DISABLE_V1)
 /**
  * raptor_sequence_print_uri:
  * @data: data item (a #raptor_uri)

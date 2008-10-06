@@ -176,6 +176,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_iostream_write_statement_ntriples:
  * @iostr: raptor iostream
@@ -195,6 +196,8 @@ raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
                                               iostr,
                                               statement);
 }
+#endif
+
 
 /**
  * raptor_iostream_write_statement_ntriples_v2:

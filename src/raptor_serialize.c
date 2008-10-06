@@ -290,6 +290,7 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_serializers_enumerate:
  * @counter: index into the list of syntaxes
@@ -317,6 +318,7 @@ raptor_serializers_enumerate(const unsigned int counter,
                                          mime_type,
                                          uri_string);
 }
+#endif
 
 
 /**
@@ -360,6 +362,7 @@ raptor_serializers_enumerate_v2(raptor_world* world,
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_serializer_syntax_name_check:
  * @name: the syntax name
@@ -377,6 +380,8 @@ raptor_serializer_syntax_name_check(const char *name)
   return raptor_serializer_syntax_name_check_v2(raptor_world_instance(),
                                                 name);
 }
+#endif
+
 
 /**
  * raptor_serializer_syntax_name_check_v2:
@@ -394,6 +399,7 @@ raptor_serializer_syntax_name_check_v2(raptor_world* world, const char *name)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_new_serializer:
  * @name: the serializer name
@@ -410,6 +416,7 @@ raptor_new_serializer(const char *name)
 {
   return raptor_new_serializer_v2(raptor_world_instance(), name);
 }
+#endif
 
 
 /**
@@ -847,7 +854,7 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
 }
 
 
-
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_serializer_features_enumerate:
  * @feature: feature enumeration (0+)
@@ -873,6 +880,8 @@ raptor_serializer_features_enumerate(const raptor_feature feature,
   return raptor_serializer_features_enumerate_v2(raptor_world_instance(),
                                                  feature, name, uri, label);
 }
+#endif
+
 
 /**
  * raptor_serializer_features_enumerate_v2:

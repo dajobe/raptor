@@ -126,6 +126,7 @@ raptor_www_finish(void)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_www_new_with_connection:
  * @connection: external WWW connection object.
@@ -147,6 +148,7 @@ raptor_www_new_with_connection(void *connection)
 {
   return raptor_www_new_with_connection_v2(raptor_world_instance(), connection);
 }
+#endif
 
 
 /**
@@ -200,6 +202,7 @@ raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_www_new:
  * 
@@ -215,6 +218,7 @@ raptor_www_new(void)
 {
   return raptor_www_new_v2(raptor_world_instance());
 }
+#endif
 
 
 /**
