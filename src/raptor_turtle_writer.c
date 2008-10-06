@@ -920,9 +920,8 @@ const unsigned char* longstr=(const unsigned char*)"it's quoted\nand has newline
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world;
   const char *program=raptor_basename(argv[0]);
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
   raptor_iostream *iostr;
   raptor_namespace_stack *nstack;
   raptor_namespace* ex_ns;
@@ -936,7 +935,9 @@ main(int argc, char *argv[])
   void *string=NULL;
   size_t string_len=0;
 
-  raptor_init();
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
   
   iostr=raptor_new_iostream_to_string(&string, &string_len, NULL);
   if(!iostr) {
@@ -944,15 +945,13 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  raptor_uri_get_handler(&uri_handler, &uri_context);
+  nstack=raptor_new_namespaces_v2(world,
+                                  NULL, NULL, /* errors */
+                                  1);
 
-  nstack=raptor_new_namespaces(uri_handler, uri_context,
-                               NULL, NULL, /* errors */
-                               1);
+  base_uri=raptor_new_uri_v2(world, base_uri_string);
 
-  base_uri=raptor_new_uri(base_uri_string);
-
-  turtle_writer=raptor_new_turtle_writer(raptor_world_instance(), /* FIXME */
+  turtle_writer=raptor_new_turtle_writer(world,
                                          base_uri, 1,
                                          nstack,
                                          iostr,
@@ -987,20 +986,21 @@ main(int argc, char *argv[])
                                    (const unsigned char*)" ;", 2);
   raptor_turtle_writer_newline(turtle_writer);
 
-  el_name=raptor_new_qname_from_namespace_local_name(ex_ns,
-                                                     (const unsigned char*)"bar", 
-                                                     NULL);
+  el_name=raptor_new_qname_from_namespace_local_name_v2(world,
+                                                        ex_ns,
+                                                        (const unsigned char*)"bar", 
+                                                        NULL);
 
   raptor_turtle_writer_qname(turtle_writer, el_name);
   raptor_free_qname(el_name);
 
   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
 
-  datatype=raptor_new_uri((const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  datatype=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   raptor_turtle_writer_literal(turtle_writer, nstack,
                                (const unsigned char*)"10.0", NULL,
                                datatype);
-  raptor_free_uri(datatype);
+  raptor_free_uri_v2(world, datatype);
 
   raptor_turtle_writer_newline(turtle_writer);
 
@@ -1016,7 +1016,7 @@ main(int argc, char *argv[])
 
   raptor_free_namespaces(nstack);
 
-  raptor_free_uri(base_uri);
+  raptor_free_uri_v2(world, base_uri);
 
   
   count=raptor_iostream_tell(iostr);
@@ -1053,9 +1053,8 @@ main(int argc, char *argv[])
 #endif
 
   raptor_free_memory(string);
-  
 
-  raptor_finish();
+  raptor_free_world(world);
 
   /* keep gcc -Wall happy */
   return(0);
