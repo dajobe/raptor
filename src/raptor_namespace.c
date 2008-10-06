@@ -995,18 +995,16 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world;
   const char *program=raptor_basename(argv[0]);
   raptor_namespace_stack namespaces;
   raptor_namespace* ns;
-  const raptor_uri_handler *handler;
-  void *context;
 
-  raptor_init();
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
 
-  /* Use whatever the raptor_uri class has */
-  raptor_uri_get_handler(&handler, &context);
-
-  raptor_namespaces_init(&namespaces, handler, context, NULL, NULL, 1);
+  raptor_namespaces_init_v2(world, &namespaces, NULL, NULL, 1);
   
   raptor_namespaces_start_namespace_full(&namespaces,
                                          (const unsigned char*)"ex1",
@@ -1051,7 +1049,7 @@ main(int argc, char *argv[])
 
   raptor_namespaces_clear(&namespaces);
 
-  raptor_finish();
+  raptor_free_world(world);
 
   /* keep gcc -Wall happy */
   return(0);
