@@ -466,8 +466,9 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                 raptor_rdf_namespace_uri, *((int*)statement->subject));
       } else {
         if(serializer->feature_relative_uris) {
-          subject_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                              (raptor_uri*)statement->subject);
+          subject_uri_string=raptor_uri_to_relative_uri_string_v2(serializer->world,
+                                                                  serializer->base_uri,
+                                                                  (raptor_uri*)statement->subject);
           if(!subject_uri_string)
             goto oom;
         } else {
@@ -617,8 +618,9 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       } else {
         /* must be URI */
         if(serializer->feature_relative_uris) {
-          object_uri_string=raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                              (raptor_uri*)statement->object);
+          object_uri_string=raptor_uri_to_relative_uri_string_v2(serializer->world,
+                                                                 serializer->base_uri,
+                                                                 (raptor_uri*)statement->object);
           if(!object_uri_string)
             goto oom;
         } else {

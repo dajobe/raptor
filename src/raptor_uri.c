@@ -1693,17 +1693,46 @@ raptor_uri_to_relative_counted_uri_string_v2(raptor_world* world,
  * @reference_uri: The reference absolute URI to use
  *
  * Get the relative URI string of a URI against a base URI.
+ *
+ * raptor_init() MUST have been called before calling this function.
+ * Use raptor_uri_to_relative_uri_string_v2() if using raptor_world APIs.
  * 
  * Return value: A newly allocated relative URI string or NULL on failure
  **/
 unsigned char*
 raptor_uri_to_relative_uri_string(raptor_uri *base_uri, 
-                                  raptor_uri *reference_uri) {
-  return raptor_uri_to_relative_counted_uri_string(base_uri,
-                                                   reference_uri, NULL);
+                                  raptor_uri *reference_uri)
+{
+  return raptor_uri_to_relative_uri_string_v2(raptor_world_instance(),
+                                              base_uri,
+                                              reference_uri);
+}
+#endif
+
+
+/**
+ * raptor_uri_to_relative_uri_string_v2:
+ * @world: raptor_world instance
+ * @base_uri: The base absolute URI to resolve against
+ * @reference_uri: The reference absolute URI to use
+ *
+ * Get the relative URI string of a URI against a base URI.
+ * 
+ * Return value: A newly allocated relative URI string or NULL on failure
+ **/
+unsigned char*
+raptor_uri_to_relative_uri_string_v2(raptor_world *world,
+                                     raptor_uri *base_uri, 
+                                     raptor_uri *reference_uri)
+{
+  return raptor_uri_to_relative_counted_uri_string_v2(world,
+                                                      base_uri,
+                                                      reference_uri,
+                                                      NULL);
 }
 
 
+#ifndef RAPTOR_DISABLE_V1
 /**
  * raptor_uri_print:
  * @uri: URI to print

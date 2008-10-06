@@ -1158,7 +1158,7 @@ raptor_rss10_emit_atom_triples_map(raptor_serializer *serializer, int is_feed,
     
     at_map_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1,
                                                 sizeof(raptor_qname*));
-    ruri_string=raptor_uri_to_relative_uri_string(base_uri, serializer->world->rss_fields_info_uris[to_f]);
+    ruri_string=raptor_uri_to_relative_uri_string_v2(serializer->world, base_uri, serializer->world->rss_fields_info_uris[to_f]);
     at_map_attrs[0]=raptor_new_qname(rss_serializer->nstack, 
                                      (const unsigned char*)"property", 
                                      ruri_string,
@@ -1279,7 +1279,7 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
     base_uri_copy=base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
     rdf_li_element=raptor_new_xml_element(rdf_li_qname, NULL, base_uri_copy);
     attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-    ruri_string=raptor_uri_to_relative_uri_string(base_uri, item_item->uri);
+    ruri_string=raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, item_item->uri);
     attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                            rss_serializer->default_nspace,
                                                            (const unsigned char*)"resource",
@@ -1636,7 +1636,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     if(!is_atom && item->uri) {
       unsigned char* ruri_string;
       attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-      ruri_string=raptor_uri_to_relative_uri_string(base_uri, item->uri);
+      ruri_string=raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, item->uri);
       attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                              rss_serializer->default_nspace,
                                                              (const unsigned char*)"about",
@@ -1819,7 +1819,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
             unsigned char* ruri_string;
 
             attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
-            ruri_string=raptor_uri_to_relative_uri_string(base_uri, field->uri);
+            ruri_string=raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, field->uri);
             attrs[attr_count]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                             rss_serializer->default_nspace,
                                                                             (const unsigned char*)"resource",
@@ -1849,7 +1849,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
 
           /* not an rss:item with an rss:enclosure field */
           attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-          ruri_string=raptor_uri_to_relative_uri_string(base_uri, field->uri);
+          ruri_string=raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, field->uri);
           attrs[0]=raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                  rss_serializer->default_nspace,
                                                                  (const unsigned char*)"resource",

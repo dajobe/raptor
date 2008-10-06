@@ -183,7 +183,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
 
   if(serializer->feature_relative_uris)
     /* newly allocated string */
-    attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri, uri);
+    attr_value = raptor_uri_to_relative_uri_string_v2(serializer->world, serializer->base_uri, uri);
   else
     attr_value = raptor_uri_as_string_v2(serializer->world, uri);
 
@@ -803,8 +803,9 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
       attr_value = (unsigned char *)RAPTOR_CALLOC(string, 1, 
                                                   sizeof(unsigned char*));
     } else if(serializer->feature_relative_uris)
-      attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
-                                                     subject->node->value.resource.uri);
+      attr_value = raptor_uri_to_relative_uri_string_v2(serializer->world,
+                                                        serializer->base_uri,
+                                                        subject->node->value.resource.uri);
     else
       attr_value = raptor_uri_to_string_v2(serializer->world,
                                            subject->node->value.resource.uri);
