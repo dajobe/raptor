@@ -2384,13 +2384,16 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[])
 {
+  raptor_world *world;
 #ifdef RAPTOR_DEBUG
   const char *program=raptor_basename(argv[0]);
 #endif
   int i;
   const char *s;
 
-  raptor_init();
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Known features:\n", program);
@@ -2402,26 +2405,26 @@ main(int argc, char *argv[])
     raptor_uri *feature_uri;
     int fn;
     
-    if(raptor_features_enumerate((raptor_feature)i,
-                                 &feature_name, &feature_uri, &feature_label))
+    if(raptor_features_enumerate_v2(world, (raptor_feature)i,
+                                    &feature_name, &feature_uri, &feature_label))
       continue;
 
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, " %2d %-20s %s\n", i, feature_name, feature_label);
 #endif
-    fn=raptor_feature_from_uri(feature_uri);
+    fn=raptor_feature_from_uri_v2(world, feature_uri);
     if(fn != i) {
       fprintf(stderr, "raptor_feature_from_uri returned %d expected %d\n", fn, i);
       return 1;
     }
-    raptor_free_uri(feature_uri);
+    raptor_free_uri_v2(world, feature_uri);
   }
 
-  s=raptor_parser_get_accept_header_all(raptor_world_instance());
+  s=raptor_parser_get_accept_header_all(world);
   fprintf(stderr, "Default HTTP accept header: '%s'\n", s);
   RAPTOR_FREE(cstring, s);
 
-  raptor_finish();
+  raptor_free_world(world);
   
   return 0;
 }
