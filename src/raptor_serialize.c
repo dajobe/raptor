@@ -1498,3 +1498,18 @@ raptor_serializer_get_locator(raptor_serializer *rdf_serializer)
 {
   return &rdf_serializer->locator;
 }
+
+
+/**
+ * raptor_serializer_get_world:
+ * @rdf_serializer: raptor serializer
+ * 
+ * Get the #raptor_world object associated with a serializer.
+ *
+ * Return value: raptor_world* pointer
+ **/
+raptor_world *
+raptor_serializer_get_world(raptor_serializer* rdf_serializer)
+{
+  return rdf_serializer->world;
+}

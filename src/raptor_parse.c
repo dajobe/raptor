@@ -2356,6 +2356,20 @@ raptor_parser_get_current_base_id(raptor_parser* parser)
 }
 
 
+/**
+ * raptor_parser_get_world:
+ * @rdf_parser: parser
+ * 
+ * Get the #raptor_world object associated with a parser.
+ *
+ * Return value: raptor_world* pointer
+ **/
+raptor_world *
+raptor_parser_get_world(raptor_parser* rdf_parser)
+{
+  return rdf_parser->world;
+}
+
 
 /* end not STANDALONE */
 #endif

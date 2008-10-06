@@ -996,6 +996,9 @@ const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
 
 unsigned char* raptor_parser_generate_id(raptor_parser *rdf_parser, raptor_genid_type type);
 
+RAPTOR_API
+raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
+
 /* Get serializer names */
 #ifndef RAPTOR_DISABLE_V1
 RAPTOR_API RAPTOR_V1
@@ -1058,6 +1061,9 @@ RAPTOR_API
 int raptor_serializer_get_feature(raptor_serializer *serializer, raptor_feature feature);
 RAPTOR_API
 const unsigned char *raptor_serializer_get_feature_string(raptor_serializer *serializer, raptor_feature feature);
+
+RAPTOR_API
+raptor_world* raptor_serializer_get_world(raptor_serializer* rdf_serializer);
 
 /* memory functions */
 RAPTOR_API
