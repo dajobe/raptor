@@ -1139,7 +1139,7 @@ RAPTOR_API
 raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri);
 
 /* Identifier functions */
-#ifndef RAPTOR_DISBALE_V1
+#ifndef RAPTOR_DISABLE_V1
 RAPTOR_API RAPTOR_V1
 raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
 #endif
