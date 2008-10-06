@@ -167,7 +167,7 @@ raptor_world_open(raptor_world* world)
 
   world->opened = 1;
 
-  return world;
+  return 0;
 }
 
 
