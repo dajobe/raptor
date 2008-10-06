@@ -1178,9 +1178,8 @@ const unsigned char *base_uri_string=(const unsigned char*)"http://example.org/b
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world;
   const char *program=raptor_basename(argv[0]);
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
   raptor_iostream *iostr;
   raptor_namespace_stack *nstack;
   raptor_namespace* foo_ns;
@@ -1196,7 +1195,9 @@ main(int argc, char *argv[])
   void *string=NULL;
   size_t string_len=0;
 
-  raptor_init();
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
   
   iostr=raptor_new_iostream_to_string(&string, &string_len, NULL);
   if(!iostr) {
@@ -1204,23 +1205,21 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  raptor_uri_get_handler(&uri_handler, &uri_context);
+  nstack=raptor_new_namespaces_v2(world,
+                                  NULL, NULL, /* errors */
+                                  1);
 
-  nstack=raptor_new_namespaces(uri_handler, uri_context,
-                               NULL, NULL, /* errors */
-                               1);
-
-  xml_writer=raptor_new_xml_writer(nstack,
-                                   uri_handler, uri_context,
-                                   iostr,
-                                   NULL, NULL, /* errors */
-                                   1);
+  xml_writer=raptor_new_xml_writer_v2(world,
+                                      nstack,
+                                      iostr,
+                                      NULL, NULL, /* errors */
+                                      1);
   if(!xml_writer) {
     fprintf(stderr, "%s: Failed to create xml_writer to iostream\n", program);
     exit(1);
   }
 
-  base_uri=raptor_new_uri(base_uri_string);
+  base_uri=raptor_new_uri_v2(world, base_uri_string);
 
   foo_ns=raptor_new_namespace(nstack,
                               (const unsigned char*)"foo",
@@ -1228,10 +1227,11 @@ main(int argc, char *argv[])
                               0);
 
 
-  el_name=raptor_new_qname_from_namespace_local_name(foo_ns,
-                                                     (const unsigned char*)"bar", 
-                                                     NULL);
-  base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
+  el_name=raptor_new_qname_from_namespace_local_name_v2(world,
+                                                        foo_ns,
+                                                        (const unsigned char*)"bar", 
+                                                        NULL);
+  base_uri_copy=base_uri ? raptor_uri_copy_v2(world, base_uri) : NULL;
   element=raptor_new_xml_element(el_name,
                                   NULL, /* language */
                                   base_uri_copy);
@@ -1250,7 +1250,7 @@ main(int argc, char *argv[])
                            (const unsigned char*)"blah", 
                            NULL, /* no attribute value - element */
                            NULL, NULL); /* errors */
-  base_uri_copy=base_uri ? raptor_uri_copy(base_uri) : NULL;
+  base_uri_copy=base_uri ? raptor_uri_copy_v2(world, base_uri) : NULL;
   element=raptor_new_xml_element(el_name,
                                   NULL, /* language */
                                   base_uri_copy);
@@ -1274,7 +1274,7 @@ main(int argc, char *argv[])
 
   raptor_free_namespaces(nstack);
 
-  raptor_free_uri(base_uri);
+  raptor_free_uri_v2(world, base_uri);
 
   
   offset=raptor_iostream_tell(iostr);
@@ -1312,8 +1312,7 @@ main(int argc, char *argv[])
 
   raptor_free_memory(string);
   
-
-  raptor_finish();
+  raptor_free_world(world);
   
   /* keep gcc -Wall happy */
   return(0);
