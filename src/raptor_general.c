@@ -109,7 +109,7 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
  *
  * The raptor_world is initialized with raptor_world_open().
  * Allocation and initialization are decoupled to allow
- * setting flags etc. on the world object before init.
+ * changing settings on the world object before init.
  *
  * Return value: uninitialized raptor_world object or NULL on failure
  */
@@ -126,11 +126,11 @@ raptor_new_world(void)
  *
  * Initialise the raptor library.
  *
- * Initialized a #raptor_world object created by raptor_new_world().
+ * Initializes a #raptor_world object created by raptor_new_world().
  * Allocation and initialization are decoupled to allow
- * setting flags etc. on the world object before init.
+ * changing settings on the world object before init.
  *
- * The returned world object is used with subsequent raptor API calls.
+ * The initialized world object is used with subsequent raptor API calls.
  *
  * Return value: non-0 on failure
  */
