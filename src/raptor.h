@@ -160,12 +160,15 @@ extern const unsigned int raptor_xml_literal_datatype_uri_string_len;
 
 
 /* Public structure */
+#ifndef RAPTOR_WORLD_DECLARED
+#define RAPTOR_WORLD_DECLARED 1
 /**
  * raptor_world:
  *
  * Raptor world class.
  */
 typedef struct raptor_world_s raptor_world;
+#endif
 /**
  * raptor_parser:
  *
