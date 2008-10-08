@@ -1332,10 +1332,6 @@ struct raptor_world_s {
   int www_initialized;
 };
 
-/* raptor_world legacy accessor */
-#ifndef RAPTOR_DISABLE_V1
-raptor_world* raptor_world_instance(void);
-#endif
 
 /* end of RAPTOR_INTERNAL */
 #endif

@@ -834,6 +834,10 @@ RAPTOR_API RAPTOR_V1
 void raptor_init(void);
 RAPTOR_API RAPTOR_V1
 void raptor_finish(void);
+
+/* raptor_world legacy accessor */
+RAPTOR_API RAPTOR_V1
+raptor_world* raptor_world_instance(void);
 #endif
 
 /* Get parser names */
