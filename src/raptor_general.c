@@ -246,13 +246,14 @@ raptor_finish(void)
 }
 
 
-/**
+/*
  * raptor_world_instance:
+ * Accessor for static raptor_world object.
  *
- * Access static raptor_world object.
+ * INTERNAL
  *
  * Return value: raptor_world object or NULL if not initialized
- **/
+ */
 raptor_world*
 raptor_world_instance(void)
 {
