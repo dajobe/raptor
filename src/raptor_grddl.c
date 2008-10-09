@@ -2001,7 +2001,8 @@ raptor_terminate_parser_grddl_common(void)
 {
   xsltCleanupGlobals();
 
-  if(raptor_xslt_sec)
+  if(raptor_xslt_sec) {
     xsltFreeSecurityPrefs(raptor_xslt_sec);
+    raptor_xslt_sec = NULL;
+  }
 }
-
