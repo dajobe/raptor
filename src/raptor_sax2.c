@@ -55,6 +55,9 @@
 int
 raptor_sax2_init(raptor_world* world)
 {
+  if(world->sax2_initialized++)
+    return 0;
+
 #ifdef RAPTOR_XML_LIBXML
   xmlInitParser();
 #endif
@@ -65,6 +68,9 @@ raptor_sax2_init(raptor_world* world)
 void
 raptor_sax2_finish(raptor_world* world)
 {
+  if(--world->sax2_initialized)
+    return;
+
 #ifdef RAPTOR_XML_LIBXML
   xmlCleanupParser();
   xmlSetStructuredErrorFunc(NULL, NULL);
