@@ -71,7 +71,7 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 AC_PROG_LEX
-if test $LEX != : ; then
+if test "X$LEX" != "X:" ; then
   if echo "$LEX" | grep flex >/dev/null 2>&1; then
     :
   else
