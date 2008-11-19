@@ -894,7 +894,8 @@ static void XMLCALL
       // ensure to mark only the inner-content of the XML node for
       // processing the object literal.
       buffer = NULL;
-      
+
+            
       if(context->xml_literal != NULL)
       {
          // get the data between the first tag and the last tag
@@ -907,6 +908,13 @@ static void XMLCALL
             context->xml_literal = ++content_start;
             *content_end = '\0';
          }
+      }
+
+      // update the plain literal if the XML Literal is an empty string
+      if(strlen(context->xml_literal) == 0)
+      {
+         context->plain_literal = 
+            rdfa_replace_string(context->plain_literal, "");
       }
 
       // process data between first tag and last tag
