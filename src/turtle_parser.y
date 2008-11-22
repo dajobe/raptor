@@ -1259,7 +1259,7 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 
 
 static int
-turtle_parse(raptor_parser *rdf_parser, const char *string) {
+turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length) {
   raptor_turtle_parser* turtle_parser=(raptor_turtle_parser*)rdf_parser->context;
   void *buffer;
   
@@ -1271,7 +1271,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string) {
   turtle_parser->scanner_set=1;
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  buffer= turtle_lexer__scan_string(string, turtle_parser->scanner);
+  buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
 
   turtle_parser_parse(rdf_parser);
 
@@ -1449,7 +1449,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
   if(!turtle_parser->buffer_length)
     return 0;
   
-  turtle_parse(rdf_parser, turtle_parser->buffer);
+  turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
   
   return 0;
 }
