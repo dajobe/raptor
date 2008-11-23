@@ -140,6 +140,9 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
   }
   *d='\0';
 
+  /* calculate output string size */
+  len = d-string;
+  
   /* string gets owned by the stringbuffer after this */
   return raptor_stringbuffer_append_counted_string(stringbuffer, 
                                                    string, len, 0);
