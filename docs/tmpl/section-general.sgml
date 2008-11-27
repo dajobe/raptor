@@ -221,6 +221,7 @@ and various other utility functions.
 </para>
 
 @magic: 
+@world: 
 @locator: 
 @last_log_level: 
 @handlers: 

@@ -54,6 +54,7 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @ordinal: 
 @is_malloced: 
 @literal_datatype: 
+@world: 
 
 <!-- ##### FUNCTION raptor_new_identifier ##### -->
 <para>
