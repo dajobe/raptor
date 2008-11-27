@@ -2,9 +2,7 @@
 #
 # Makefile.am - automake file for Raptor Turtle tests
 #
-# $Id$
-#
-# Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
 # Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -22,6 +20,9 @@
 # the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
 # 
 # 
+
+RDFXML_DIR = ../rdfxml
+NTRIPLES_DIR = ../ntriples
 
 TEST_FILES=test-00.ttl test-01.ttl test-02.ttl test-03.ttl \
 test-04.ttl test-05.ttl test-06.ttl test-07.ttl test-08.ttl \
@@ -58,6 +59,9 @@ test-28.ttl
 TEST_SERIALIZE_OUT_FILES= \
 test-28-out.ttl
 
+TURTLE_SERIALIZE_RDF_FILES=ex-62.rdf
+
+
 TEST_WARN_OUT_FILES=
 
 TEST_MANIFEST_FILES=manifest.ttl manifest-bad.ttl
@@ -77,7 +81,8 @@ ALL_TEST_FILES= README.txt \
 	$(TEST_WARN_OUT_FILES) \
 	$(TEST_MANIFEST_FILES) \
 	$(TEST_SERIALIZE_FILES) \
-	$(TEST_SERIALIZE_OUT_FILES)
+	$(TEST_SERIALIZE_OUT_FILES) \
+	$(TURTLE_SERIALIZE_RDF_TEST_FILES)
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
@@ -88,7 +93,9 @@ build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
 check-local: check-rdf check-bad-rdf check-turtle-serialize \
-check-turtle-serialize-syntax
+check-turtle-serialize-syntax check-turtle-parse-ntriples \
+check-turtle-serialize-rdf
+
 # check-warn-rdf
 
 check-rdf: build-rapper $(TEST_FILES)
@@ -216,6 +223,47 @@ check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
 	done; \
 	set -e; exit $$result
 
+check-turtle-parse-ntriples: build-rapper
+	@set +e; result=0; \
+	$(ECHO) "Testing Turtle parsing with N-Triples tests"; \
+	NT_TEST_FILES=`cd $(srcdir)/$(NTRIPLES_DIR) && make print-nt-test-files | sed -e 's,^,$(NTRIPLES_DIR)/,'`; \
+	for test in $$NT_TEST_FILES; do \
+	  name=`basename $$test .nt` ; \
+	  baseuri=-; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  test_expected=$(srcdir)/$(NTRIPLES_DIR)/$$name.out; \
+	  if cmp $$test_expected $$name.res >/dev/null 2>&1; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    diff $$test_expected $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res ; \
+	done; \
+	set -e; exit $$result
+
+check-turtle-serialize-rdf: build-rdfdiff build-rapper $(TURTLE_SERIALIZE_TEST_FILES)
+	@set +e; result=0; \
+	RDF_TEST_FILES=`cd $(srcdir)/$(RDFXML_DIR) && make print-rdf-test-files | sed -e 's,^,$(RDFXML_DIR)/,'`; \
+	$(ECHO) "Testing turtle serialization with legal rdf/xml"; \
+	for test in $$RDF_TEST_FILES $(TURTLE_SERIALIZE_TEST_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  baseuri=-; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.rdf 2> $$name.err; \
+	  status1=$$?; \
+	  $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.rdf > $$name.res 2> $$name.err; \
+	  status2=$$?; \
+	  if test $$status1 = 0 -a $$status2 = 0; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    echo "rapper + rdfdiff output:"; cat $$name.err; result=1; \
+	  fi; \
+	  rm -f $$name-turtle.rdf $$name.res $$name.err; \
+	done; \
+	set -e; exit $$result
 
 
 if MAINTAINER_MODE
