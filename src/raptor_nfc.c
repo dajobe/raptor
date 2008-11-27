@@ -286,7 +286,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
          */
         if(prev_class < combining_class && 
            prev_char < 0x10000 && unichar < 0x10000 &&
-           raptor_nfc_check_combiners(prev_char, unichar)) {
+           !raptor_nfc_check_combiners(prev_char, unichar)) {
           if(error)
             *error=offset;
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo and combiners check failed");
