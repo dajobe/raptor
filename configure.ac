@@ -1261,6 +1261,7 @@ examples/Makefile
 src/Makefile
 tests/Makefile
 tests/grddl/Makefile
+tests/ntriples/Makefile
 tests/rdfa/Makefile
 tests/rdfxml/Makefile
 tests/turtle/Makefile

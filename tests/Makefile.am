@@ -33,13 +33,6 @@ CLEANFILES=$(TESTS)
 
 raptor_empty_test_SOURCES=empty.c
 
-NT_TEST_FILES=test.nt
-
-NT_OUT_FILES=test.out
-
-NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt bad-04.nt \
-bad-05.nt bad-06.nt
-
 TURTLE_SERIALIZE_TEST_FILES=ex-62.rdf
 
 
@@ -47,14 +40,12 @@ TURTLE_SERIALIZE_TEST_FILES=ex-62.rdf
 BASE_URI=http://librdf.org/raptor/tests/
 
 EXTRA_DIST = \
-	$(NT_TEST_FILES) \
-	$(NT_OUT_FILES) \
-	$(NT_BAD_TEST_FILES) \
 	$(TURTLE_SERIALIZE_TEST_FILES)
 
 RDFXML_DIR = rdfxml
+NTRIPLES_DIR = ntriples
 
-SUBDIRS = $(RDFXML_DIR) turtle trig grddl rdfa
+SUBDIRS = $(RDFXML_DIR) $(NTRIPLES_DIR) turtle trig grddl rdfa
 
 
 build-rapper:
@@ -64,63 +55,24 @@ build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
 check-local: build-rapper \
-check-nt check-bad-nt check-turtle check-turtle-serialize
+check-turtle check-turtle-serialize
 
-check-nt: build-rapper $(NT_TEST_FILES)
-	@set +e; result=0; \
-	$(ECHO) "Testing N-Triples"; \
-	for test in $(NT_TEST_FILES); do \
-	  name=`basename $$test .nt` ; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o ntriples -n file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
-	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
-	  else \
-	    $(ECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
-	  fi; \
-	  rm -f $$name.res ; \
-	done; \
-	set -e; exit $$result
 
-check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
-	@set +e; result=0; \
-	$(ECHO) "Testing that bad N-Triples fails"; \
-	for test in $(NT_BAD_TEST_FILES); do \
-	  name=`basename $$test .nt` ; \
-	  baseuri=$(BASE_URI)$$name.nt; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o ntriples -n file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
-	  status=$$?; \
-	  if test $$status -eq 1 ; then \
-	    $(ECHO) "ok"; \
-	  elif test $$status -eq 2 ; then \
-	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
-	    cat $$name.res; grep Warning $$name.err; result=1; \
-	  elif test $$status -eq 0 ; then \
-	    $(ECHO) "FAILED - parsing succeeded but should have failed"; \
-	    cat $$name.res; result=1; \
-	  else \
-	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
-	    cat $$name.res; result=1; \
-	  fi; \
-	  rm -f $$name.res $$name.err ; \
-	done; \
-	set -e; exit $$result
-
-check-turtle: build-rapper $(NT_TEST_FILES)
+check-turtle: build-rapper
 	@set +e; result=0; \
 	$(ECHO) "Testing Turtle with N-Triples tests"; \
-	for test in $(NT_TEST_FILES); do \
+	NT_TEST_FILES=`cd $(srcdir)/$(NTRIPLES_DIR) && make print-nt-test-files | sed -e 's,^,$(NTRIPLES_DIR)/,'`; \
+	for test in $$NT_TEST_FILES; do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
-	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  test_expected=$(srcdir)/$(NTRIPLES_DIR)/$$name.out; \
+	  if cmp $$test_expected $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $$test_expected $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
 	done; \
