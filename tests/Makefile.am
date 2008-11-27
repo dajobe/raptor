@@ -46,12 +46,6 @@ TURTLE_SERIALIZE_TEST_FILES=ex-62.rdf
 # Used to make N-triples output consistent
 BASE_URI=http://librdf.org/raptor/tests/
 
-OWL_DOC_URI="http://www.w3.org/2002/07/owl"
-
-DAML_OIL_DOC_URI="http://www.daml.org/2001/03/daml+oil"
-
-OWL_WINE_URI="http://www.w3.org/TR/owl-guide/wine.rdf"
-
 EXTRA_DIST = \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES) \
