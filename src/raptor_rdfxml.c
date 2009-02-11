@@ -1312,6 +1312,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
     uri1=raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
     predicate_uri=uri1;
     predicate_id=NULL;
+    predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
   statement->predicate=predicate_uri;
   
