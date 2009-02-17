@@ -416,8 +416,8 @@ static void XMLCALL
 #ifdef LIBRDFA_IN_RAPTOR
       raptor_namespace_stack* nstack = &context->sax2->namespaces;
       raptor_namespace* ns;
-      raptor_namespace* ns_list[32];
-      int ns_size;
+      raptor_namespace** ns_list = NULL;
+      size_t ns_size;
 #else
       char** umap = context->uri_mappings;
 #endif
@@ -427,27 +427,8 @@ static void XMLCALL
       insert_xml_lang_in_xml_literal = 1;
       
 #ifdef LIBRDFA_IN_RAPTOR
-      ns_size=0;
-      for(ns=nstack->top; ns; ns=ns->next) {
-        int skip=0;
-        int i;
-        if(ns->depth < 1)
-          continue;
-
-        for(i=0; i< ns_size; i++) {
-          raptor_namespace* ns2=ns_list[i];
-          if((!ns->prefix && !ns2->prefix) ||
-             (ns->prefix && ns2->prefix && 
-              !strcmp((const char*)ns->prefix, (const char*)ns2->prefix))) {
-               /* this prefix was seen (overridden) earlier so skip */
-               skip=1;
-               break;
-             }
-        }
-        if(!skip)
-          ns_list[ns_size++]=ns;
-      }
-
+      ns_size = 0;
+      ns_list = raptor_namespace_stack_to_array(nstack, &ns_size);
       qsort((void*)ns_list, ns_size, sizeof(raptor_namespace*),
             raptor_nspace_compare);
 
@@ -537,9 +518,15 @@ static void XMLCALL
                context->xml_literal, &context->xml_literal_size, "\"", 1);
          }
          namespace_already_defined = 0;         
-      }
+      } /* end while umap not NULL */
       context->xml_literal_namespaces_inserted = 1;
-   }
+
+#ifdef LIBRDFA_IN_RAPTOR
+      if(ns_list)
+        raptor_free_memory(ns_list);
+#endif
+   } /* end if namespaces inserted */
+
    
    // prepare all of the RDFa-specific attributes we are looking for.
    // scan all of the attributes for the RDFa-specific attributes

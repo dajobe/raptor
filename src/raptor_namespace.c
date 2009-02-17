@@ -2,7 +2,7 @@
  *
  * raptor_namespace.c - Raptor XML namespace classes
  *
- * Copyright (C) 2002-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2002-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -138,6 +138,25 @@ raptor_namespaces_init(raptor_namespace_stack *nstack,
 #endif
 
 
+/* hash function to hash namespace prefix strings (usually short strings)
+ *
+ * Uses DJ Bernstein original hash function - good on short text keys.
+ */
+static unsigned int
+raptor_hash_ns_string(const unsigned char *str, int length)
+{
+  unsigned int hash = 5381;
+  int c;
+  
+  for(; length && (c = *str++); length--) {
+    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+  }
+
+  return hash;
+}
+
+
+#define RAPTOR_NAMESPACES_HASHTABLE_SIZE 1024
 /**
  * raptor_namespaces_init_v2:
  * @world: raptor_world object
@@ -164,16 +183,24 @@ raptor_namespaces_init_v2(raptor_world* world,
 
   nstack->world=world;
 
-  nstack->top=NULL;
-
   nstack->error_handler=error_handler;
   nstack->error_data=error_data;
 
-  nstack->rdf_ms_uri    = world->uri_handler->new_uri(world->uri_handler_context, (const unsigned char*)raptor_rdf_namespace_uri);
-  failures+=!nstack->rdf_ms_uri;
+  nstack->size = 0;
+  
+  nstack->table_size = RAPTOR_NAMESPACES_HASHTABLE_SIZE;
+  nstack->table = RAPTOR_CALLOC(raptor_namespaces,
+                                RAPTOR_NAMESPACES_HASHTABLE_SIZE,
+                                sizeof(raptor_namespace*));
+  nstack->def_namespace = NULL;
+
+  nstack->rdf_ms_uri = raptor_new_uri_v2(nstack->world,
+                                         (const unsigned char*)raptor_rdf_namespace_uri);
+  failures += !nstack->rdf_ms_uri;
    
-  nstack->rdf_schema_uri= world->uri_handler->new_uri(world->uri_handler_context, (const unsigned char*)raptor_rdf_schema_namespace_uri);
-  failures+=!nstack->rdf_schema_uri;
+  nstack->rdf_schema_uri = raptor_new_uri_v2(nstack->world,
+                                             (const unsigned char*)raptor_rdf_schema_namespace_uri);
+  failures += !nstack->rdf_schema_uri;
 
   /* raptor_new_namespace_from_uri() that eventually gets called by
    * raptor_new_namespace() in raptor_namespaces_start_namespace_full()
@@ -181,21 +208,22 @@ raptor_namespaces_init_v2(raptor_world* world,
    * - do not call if we had failures initializing those uris */
   if(defaults && !failures) {
     /* defined at level -1 since always 'present' when inside the XML world */
-    failures+=raptor_namespaces_start_namespace_full(nstack, (const unsigned char*)"xml",
-                                           raptor_xml_namespace_uri, -1);
+    failures += raptor_namespaces_start_namespace_full(nstack,
+                                                       (const unsigned char*)"xml",
+                                                       raptor_xml_namespace_uri, -1);
     if(defaults >= 2) {
-      failures+=raptor_namespaces_start_namespace_full(nstack,
-                                                       (const unsigned char*)"rdf",
-                                                       raptor_rdf_namespace_uri, 0);
-      failures+=raptor_namespaces_start_namespace_full(nstack,
-                                                       (const unsigned char*)"rdfs",
-                                                       raptor_rdf_schema_namespace_uri, 0);
-      failures+=raptor_namespaces_start_namespace_full(nstack,
-                                                       (const unsigned char*)"xsd",
-                                                       raptor_xmlschema_datatypes_namespace_uri, 0);
-      failures+=raptor_namespaces_start_namespace_full(nstack,
-                                                       (const unsigned char*)"owl",
-                                                       raptor_owl_namespace_uri, 0);
+      failures += raptor_namespaces_start_namespace_full(nstack,
+                                                         (const unsigned char*)"rdf",
+                                                         raptor_rdf_namespace_uri, 0);
+      failures += raptor_namespaces_start_namespace_full(nstack,
+                                                         (const unsigned char*)"rdfs",
+                                                         raptor_rdf_schema_namespace_uri, 0);
+      failures += raptor_namespaces_start_namespace_full(nstack,
+                                                         (const unsigned char*)"xsd",
+                                                         raptor_xmlschema_datatypes_namespace_uri, 0);
+      failures += raptor_namespaces_start_namespace_full(nstack,
+                                                         (const unsigned char*)"owl",
+                                                         raptor_owl_namespace_uri, 0);
     }
   }
   return failures;
@@ -285,9 +313,18 @@ void
 raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, 
                                   raptor_namespace *nspace)
 {
-  if(nstack->top)
-    nspace->next=nstack->top;
-  nstack->top=nspace;
+  unsigned int hash = raptor_hash_ns_string(nspace->prefix,
+                                            nspace->prefix_length);
+  const int bucket = hash % nstack->table_size;
+
+  nstack->size++;
+  
+  if(nstack->table[bucket])
+    nspace->next = nstack->table[bucket];
+  nstack->table[bucket] = nspace;
+
+  if(!nstack->def_namespace)
+    nstack->def_namespace = nspace;
 
 #ifndef STANDALONE
 #ifdef RAPTOR_DEBUG_VERBOSE
@@ -320,7 +357,7 @@ raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack,
 {
   raptor_namespace *ns;
 
-  ns=raptor_new_namespace(nstack, prefix, ns_uri_string, depth);
+  ns = raptor_new_namespace(nstack, prefix, ns_uri_string, depth);
   if(!ns)
     return 1;
   
@@ -338,27 +375,40 @@ raptor_namespaces_start_namespace_full(raptor_namespace_stack *nstack,
 void
 raptor_namespaces_clear(raptor_namespace_stack *nstack)
 {
-  raptor_namespace *ns=nstack->top;
-  while(ns) {
-    raptor_namespace* next_ns=ns->next;
+  if(nstack->table) {
+    int bucket;
 
-    raptor_free_namespace(ns);
-    ns=next_ns;
+    for(bucket = 0; bucket < nstack->table_size; bucket++) {
+      raptor_namespace *ns = nstack->table[bucket];
+      while(ns) {
+        raptor_namespace* next_ns = ns->next;
+        
+        raptor_free_namespace(ns);
+        nstack->size--;
+        ns = next_ns;
+      }
+      nstack->table[bucket] = NULL;
+    }
+
+    RAPTOR_FREE(raptor_namespaces, nstack->table);
+    nstack->table = NULL;
+    nstack->table_size = 0;
   }
-  nstack->top=NULL;
 
-  if(nstack->world && nstack->world->uri_handler) {
+  if(nstack->world) {
     if(nstack->rdf_ms_uri) {
-      nstack->world->uri_handler->free_uri(nstack->world->uri_handler_context, nstack->rdf_ms_uri);
-      nstack->rdf_ms_uri=NULL;
+      raptor_free_uri_v2(nstack->world, nstack->rdf_ms_uri);
+      nstack->rdf_ms_uri = NULL;
     }
     if(nstack->rdf_schema_uri) {
-      nstack->world->uri_handler->free_uri(nstack->world->uri_handler_context, nstack->rdf_schema_uri);
-      nstack->rdf_schema_uri=NULL;
+      raptor_free_uri_v2(nstack->world, nstack->rdf_schema_uri);
+      nstack->rdf_schema_uri = NULL;
     }
   }
 
-  nstack->world=NULL;
+  nstack->size = 0;
+
+  nstack->world = NULL;
 }
 
 
@@ -375,6 +425,7 @@ raptor_free_namespaces(raptor_namespace_stack *nstack)
     return;
   
   raptor_namespaces_clear(nstack);
+
   RAPTOR_FREE(raptor_namespace_stack, nstack);
 }
 
@@ -389,21 +440,25 @@ raptor_free_namespaces(raptor_namespace_stack *nstack)
 void 
 raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
 {
-  while(nstack->top &&
-        nstack->top->depth == depth) {
-    raptor_namespace* ns=nstack->top;
-    raptor_namespace* next=ns->next;
+  int bucket;
+  for(bucket = 0; bucket < nstack->table_size; bucket++) {
+    while(nstack->table[bucket] &&
+          nstack->table[bucket]->depth == depth) {
+      raptor_namespace* ns = nstack->table[bucket];
+      raptor_namespace* next_ns = ns->next;
 
 #ifndef STANDALONE
 #ifdef RAPTOR_DEBUG_VERBOSE
-    RAPTOR_DEBUG3("namespace prefix %s depth %d\n", ns->prefix ? (char*)ns->prefix : "(default)", depth);
+      RAPTOR_DEBUG3("namespace prefix %s depth %d\n",
+                    ns->prefix ? (char*)ns->prefix : "(default)", depth);
 #endif
 #endif
-    raptor_free_namespace(ns);
+      raptor_free_namespace(ns);
+      nstack->size--;
 
-    nstack->top=next;
+      nstack->table[bucket] = next_ns;
+    }
   }
-
 }
 
 
@@ -419,8 +474,8 @@ raptor_namespace*
 raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)
 {
   raptor_namespace* ns;
-  
-  for(ns=nstack->top; ns && ns->prefix; ns=ns->next)
+
+  for(ns = nstack->table[0]; ns && ns->prefix; ns = ns->next)
     ;
   return ns;
 }
@@ -445,8 +500,10 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
                                  const unsigned char *prefix, int prefix_length)
 {
   raptor_namespace* ns;
-  
-  for(ns=nstack->top; ns ; ns=ns->next) {
+  unsigned int hash = raptor_hash_ns_string(prefix, prefix_length);
+  const int bucket = hash % (nstack->table_size);
+
+  for(ns = nstack->table[bucket]; ns ; ns = ns->next) {
     if(!prefix && !ns->prefix)
       break;
     
@@ -454,6 +511,7 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
        !strncmp((char*)prefix, (char*)ns->prefix, prefix_length))
       break;
   }
+
   return ns;
 }
 
@@ -471,15 +529,18 @@ raptor_namespace*
 raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, 
                                         raptor_uri *ns_uri)
 {
-  raptor_namespace* ns;
+  int bucket;
 
   if(!ns_uri)
     return NULL;
   
-  for(ns=nstack->top; ns ; ns=ns->next)
-    if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, ns_uri))
-      return ns;
-
+  for (bucket = 0; bucket < nstack->table_size; bucket++) {
+    raptor_namespace* ns;
+    for(ns = nstack->table[bucket]; ns ; ns = ns->next)
+      if(raptor_uri_equals_v2(nstack->world, ns->uri, ns_uri))
+        return ns;
+   }
+  
   return NULL;
 }
 
@@ -498,10 +559,13 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
                                      const raptor_namespace *nspace)
 {
   raptor_namespace* ns;
+  int bucket;
   
-  for(ns=nstack->top; ns ; ns=ns->next)
-    if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, nspace->uri))
-      return 1;
+  for(bucket = 0; bucket < nstack->table_size; bucket++) {
+    for(ns = nstack->table[bucket]; ns ; ns = ns->next)
+      if(raptor_uri_equals_v2(nstack->world, ns->uri, nspace->uri))
+        return 1;
+  }
   return 0;
 }
 
@@ -529,7 +593,10 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
 #ifndef STANDALONE
 #if RAPTOR_DEBUG >1
-  RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n", prefix ? (char*)prefix : "(default)", ns_uri ? (char*)raptor_uri_as_string_v2(nstack->world, ns_uri) : "(none)", depth);
+  RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n",
+                prefix ? (char*)prefix : "(default)",
+                ns_uri ? (char*)raptor_uri_as_string_v2(nstack->world, ns_uri) : "(none)",
+                depth);
 #endif
 #endif
 
@@ -554,7 +621,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   p=(unsigned char*)ns+sizeof(raptor_namespace);
   if(ns_uri) {
-    ns->uri=(*nstack->world->uri_handler->uri_copy)(nstack->world->uri_handler_context, ns_uri);
+    ns->uri = raptor_uri_copy_v2(nstack->world, ns_uri);
     if(!ns->uri) {
       RAPTOR_FREE(raptor_namespace, ns);
       return NULL;
@@ -571,9 +638,9 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   /* set convienience flags when there is a defined namespace URI */
   if(ns->uri) {
-    if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, nstack->rdf_ms_uri))
-      ns->is_rdf_ms=1;
-    else if(nstack->world->uri_handler->uri_equals(nstack->world->uri_handler_context, ns->uri, nstack->rdf_schema_uri))
+    if(raptor_uri_equals_v2(nstack->world, ns->uri, nstack->rdf_ms_uri))
+      ns->is_rdf_ms = 1;
+    else if(raptor_uri_equals_v2(nstack->world, ns->uri, nstack->rdf_schema_uri))
       ns->is_rdf_schema=1;
   }
 
@@ -657,7 +724,7 @@ raptor_free_namespace(raptor_namespace *ns)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(ns, raptor_namespace);
 
   if(ns->uri)
-    ns->nstack->world->uri_handler->free_uri(ns->nstack->world->uri_handler_context, ns->uri);
+    raptor_free_uri_v2(ns->nstack->world, ns->uri);
 
   RAPTOR_FREE(raptor_namespace, ns);
 }
@@ -937,29 +1004,36 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
   raptor_namespace* ns;
   unsigned char *ns_uri_string;
   size_t ns_uri_len;
-  unsigned char *name=NULL;
+  unsigned char *name = NULL;
+  int bucket;
 
   if(!uri)
     return NULL;
   
   uri_string = raptor_uri_as_counted_string_v2(nstack->world, uri, &uri_len);
 
-  for(ns=nstack->top; ns ; ns=ns->next) {
-    if(!ns->uri)
-      continue;
-    
-    ns_uri_string= nstack->world->uri_handler->uri_as_counted_string(nstack->world->uri_handler_context, ns->uri, &ns_uri_len);
-    if(ns_uri_len >= uri_len)
-      continue;
-    if(strncmp((const char*)uri_string, (const char*)ns_uri_string, ns_uri_len))
-      continue;
-
-    /* uri_string is a prefix of ns_uri_string */
-    name=uri_string+ns_uri_len;
-    if(!raptor_xml_name_check(name, uri_len-ns_uri_len, xml_version))
-      name=NULL;
-  
-  /* If name is set, we've found a prefix with a legal XML name value */
+  for(bucket = 0; bucket < nstack->table_size; bucket++) {
+    for(ns = nstack->table[bucket]; ns ; ns = ns->next) {
+      if(!ns->uri)
+        continue;
+      
+      ns_uri_string = raptor_uri_as_counted_string_v2(nstack->world, ns->uri,
+                                                      &ns_uri_len);
+      if(ns_uri_len >= uri_len)
+        continue;
+      if(strncmp((const char*)uri_string, (const char*)ns_uri_string,
+                 ns_uri_len))
+        continue;
+      
+      /* uri_string is a prefix of ns_uri_string */
+      name = uri_string + ns_uri_len;
+      if(!raptor_xml_name_check(name, uri_len-ns_uri_len, xml_version))
+        name = NULL;
+      
+      /* If name is set, we've found a prefix with a legal XML name value */
+      if(name)
+        break;
+    }
     if(name)
       break;
   }
@@ -967,7 +1041,8 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
   if(!ns)
     return NULL;
 
-  return raptor_new_qname_from_namespace_local_name_v2(nstack->world, ns, name,  NULL);
+  return raptor_new_qname_from_namespace_local_name_v2(nstack->world, ns,
+                                                       name,  NULL);
 }
 
 
@@ -975,7 +1050,9 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
 void
 raptor_namespace_print(FILE *stream, raptor_namespace* ns) 
 {
-  const unsigned char *uri_string=raptor_uri_as_string_v2(ns->nstack->world, ns->uri);
+  const unsigned char *uri_string;
+
+  uri_string = raptor_uri_as_string_v2(ns->nstack->world, ns->uri);
   if(ns->prefix)
     fprintf(stream, "%s:%s", ns->prefix, uri_string);
   else
@@ -983,6 +1060,49 @@ raptor_namespace_print(FILE *stream, raptor_namespace* ns)
 }
 #endif
 
+
+raptor_namespace**
+raptor_namespace_stack_to_array(raptor_namespace_stack *nstack,
+                                size_t *size_p)
+{
+  raptor_namespace** ns_list;
+  size_t size = 0;
+  int bucket;
+  
+  ns_list = RAPTOR_CALLOC(namespace_stack, nstack->size,
+                          sizeof(raptor_namespace*));
+  if(!ns_list)
+    return NULL;
+  
+  for(bucket = 0; bucket < nstack->table_size; bucket++) {
+    raptor_namespace* ns;
+
+    for(ns = nstack->table[bucket]; ns; ns = ns->next) {
+      int skip = 0;
+      unsigned int i;
+      if(ns->depth < 1)
+        continue;
+      
+      for(i = 0; i < size; i++) {
+        raptor_namespace* ns2 = ns_list[i];
+        if((!ns->prefix && !ns2->prefix) ||
+           (ns->prefix && ns2->prefix && 
+            !strcmp((const char*)ns->prefix, (const char*)ns2->prefix))) {
+          /* this prefix was seen (overridden) earlier so skip */
+          skip = 1;
+          break;
+        }
+      }
+      if(!skip)
+        ns_list[size++] = ns;
+    }
+  }
+  
+  if(size_p)
+    *size_p = size;
+
+  return ns_list;
+}
 
 
 #ifdef STANDALONE

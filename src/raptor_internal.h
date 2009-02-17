@@ -280,7 +280,11 @@ struct raptor_avltree_s {
 /* Raptor Namespace Stack node */
 struct raptor_namespace_stack_s {
   raptor_world* world;
-  raptor_namespace* top;
+  int size;
+
+  int table_size;
+  raptor_namespace** table;
+  raptor_namespace* def_namespace;
   raptor_simple_message_handler error_handler;
   void *error_data;
 
@@ -318,6 +322,7 @@ struct raptor_namespace_s {
   int is_rdf_schema;
 };
 
+raptor_namespace** raptor_namespace_stack_to_array(raptor_namespace_stack *nstack, size_t *size_p);
 
 #ifdef RAPTOR_XML_LIBXML
 #define RAPTOR_LIBXML_MAGIC 0x8AF108
