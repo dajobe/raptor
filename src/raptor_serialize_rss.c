@@ -120,6 +120,8 @@ typedef struct {
 
   /* URI of XML Literal datatype */
   raptor_uri* xml_literal_dt;
+
+  int free_default_nspace;
 } raptor_rss10_serializer_context;
 
 
@@ -256,7 +258,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
       raptor_free_namespace(rss_serializer->nspaces[i]);
   }
   
-  if(rss_serializer->default_nspace)
+  if(rss_serializer->free_default_nspace && rss_serializer->default_nspace)
     raptor_free_namespace(rss_serializer->default_nspace);
 
   if(rss_serializer->xml_nspace)
@@ -970,27 +972,25 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
   int is_atom=rss_serializer->is_atom;
   const raptor_rss_info* item_node_type;
   int item_node_typei;
-  const unsigned char* ns_prefix;
   const unsigned char* ns_uri;
   raptor_world* world=serializer->world;
 
   if(is_atom) {
-    ns_prefix=(const unsigned char*)"atom";
-    ns_uri=raptor_atom_namespace_uri;
+    ns_uri = raptor_atom_namespace_uri;
     root_local_name=(is_entry ? (const unsigned char*)"entry" :
                                 (const unsigned char*)"feed");
     item_node_type= &raptor_rss_types_info[RAPTOR_ATOM_ENTRY];
     item_node_typei=RAPTOR_ATOM_ENTRY;
   } else {
-    ns_prefix=(const unsigned char*)"rdf";
-    ns_uri=raptor_rdf_namespace_uri;
+    ns_uri = raptor_rdf_namespace_uri;
     root_local_name=(const unsigned char*)"RDF";
     item_node_type= &raptor_rss_types_info[RAPTOR_RSS_ITEM];
     item_node_typei=RAPTOR_RSS_ITEM;
   }
 
   rss_serializer->default_nspace=raptor_new_namespace(rss_serializer->nstack,
-                                                      ns_prefix, ns_uri, 0);
+                                                      NULL, ns_uri, 0);
+  rss_serializer->free_default_nspace = 1;
   
   rss_serializer->xml_nspace=raptor_new_namespace(rss_serializer->nstack,
                                                   (const unsigned char*)"xml",
@@ -1010,18 +1010,27 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
 
   /* Now we have a namespace stack, declare the namespaces */
   for(i=0; i < RAPTOR_RSS_NAMESPACES_SIZE;i++) {
-    raptor_uri* uri=serializer->world->rss_namespaces_info_uris[i];
-    const unsigned char *prefix=(const unsigned char*)raptor_rss_namespaces_info[i].prefix;
-    int is_default_ns=(!is_atom && i == RSS1_0_NS) || (is_atom && i == ATOM1_0_NS);
+    raptor_uri* uri = serializer->world->rss_namespaces_info_uris[i];
+    const unsigned char *prefix;
+    int is_default_ns;
 
-    if((prefix && uri) || is_default_ns) {
+    prefix = (const unsigned char*)raptor_rss_namespaces_info[i].prefix;
+    is_default_ns = (!is_atom && i == RSS1_0_NS) || (is_atom && i == ATOM1_0_NS);
+
+    if(!serializer->feature_alias_default_namespace
+       && is_default_ns && rss_serializer->default_nspace) {
+      /* default namespace was declared above */
+      rss_serializer->nspaces[i] = rss_serializer->default_nspace;
+      rss_serializer->free_default_nspace = 0;
+      continue;
+    }
+    
+    if(prefix && uri) {
       raptor_namespace* nspace;
 
-      if(is_default_ns)
-        prefix=NULL;
-      nspace=raptor_new_namespace(rss_serializer->nstack, prefix,
-                                  raptor_uri_as_string_v2(rss_serializer->world, uri), 0);
-      rss_serializer->nspaces[i]=nspace;
+      nspace = raptor_new_namespace_from_uri(rss_serializer->nstack, prefix,
+                                             uri, 0);
+      rss_serializer->nspaces[i] = nspace;
       
       raptor_xml_element_declare_namespace(element, nspace);
     }

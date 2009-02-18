@@ -571,6 +571,11 @@ struct raptor_serializer_s {
    * Atom serializer entry URI string
    */
   unsigned char *feature_atom_entry_uri;
+
+  /* FEATURE:
+   * Alias default namespace with a prefixed declaration too.
+   */
+  int feature_alias_default_namespace;
 };
 
 

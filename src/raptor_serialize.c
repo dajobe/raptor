@@ -487,6 +487,9 @@ raptor_new_serializer_v2(raptor_world* world, const char *name)
   /* Atom entry URI */
   rdf_serializer->feature_atom_entry_uri= NULL;
 
+  /* Declare default namespace with a prefix too */
+  rdf_serializer->feature_alias_default_namespace = 1;
+
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
     return NULL;
@@ -949,6 +952,10 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
       serializer->feature_write_xml_declaration = value;
       break;
 
+    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
+      serializer->feature_alias_default_namespace = value;
+      break;
+
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
@@ -1051,6 +1058,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
 
     case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
+    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
       /* actually handled above because value_is_string is false */
       return -1;
       break;
@@ -1184,6 +1192,10 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
       result= -1;
       break;
 
+    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
+      result = serializer->feature_alias_default_namespace;
+      break;
+      
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
       result=serializer->xml_version;
       break;
@@ -1289,6 +1301,9 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
       break;
     case RAPTOR_FEATURE_ATOM_ENTRY_URI:
       return (unsigned char *)(serializer->feature_atom_entry_uri);
+      break;
+    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
+      return NULL;
       break;
         
     /* parser features */

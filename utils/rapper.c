@@ -376,7 +376,7 @@ main(int argc, char *argv[])
               const char *feature_label;
               if(!raptor_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
                 const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
-                fprintf(stderr, "  %-20s  %s%s\n", feature_name, feature_label, 
+                fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
             }
@@ -386,7 +386,7 @@ main(int argc, char *argv[])
               const char *feature_label;
               if(!raptor_serializer_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
                 const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
-                fprintf(stderr, "  %-20s  %s%s\n", feature_name, feature_label, 
+                fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
             }

@@ -991,6 +991,7 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
     case RAPTOR_FEATURE_JSON_EXTRA_DATA:
     case RAPTOR_FEATURE_RSS_TRIPLES:
     case RAPTOR_FEATURE_ATOM_ENTRY_URI:
+    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
     
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
@@ -1111,6 +1112,7 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
     case RAPTOR_FEATURE_JSON_EXTRA_DATA:
     case RAPTOR_FEATURE_RSS_TRIPLES:
     case RAPTOR_FEATURE_ATOM_ENTRY_URI:
+    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
     
     /* Turtle serializer feature */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
