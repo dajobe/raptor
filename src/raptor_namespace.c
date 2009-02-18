@@ -473,9 +473,11 @@ raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth)
 raptor_namespace*
 raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack)
 {
+  unsigned int hash = raptor_hash_ns_string((const unsigned char *)"", 0);
+  const int bucket = hash % nstack->table_size;
   raptor_namespace* ns;
 
-  for(ns = nstack->table[0]; ns && ns->prefix; ns = ns->next)
+  for(ns = nstack->table[bucket]; ns && ns->prefix; ns = ns->next)
     ;
   return ns;
 }
