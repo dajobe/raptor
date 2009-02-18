@@ -479,11 +479,18 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 
   raptor_namespaces_clear(&sax2->namespaces);
 
-  raptor_namespaces_init_v2(sax2->world,
-                            &sax2->namespaces,
-                            (raptor_simple_message_handler)raptor_sax2_simple_error, sax2, 
-                            1);
-
+  if(raptor_namespaces_init_v2(sax2->world,
+                               &sax2->namespaces,
+                               (raptor_simple_message_handler)raptor_sax2_simple_error, sax2, 
+                               1)) {
+    /* log a fatal error and set sax2 to failed state
+       since the function signature does not currently support returning an error */
+    raptor_log_error_to_handlers(sax2->world,
+                                 sax2->error_handlers,
+                                 RAPTOR_LOG_LEVEL_FATAL, sax2->locator,
+                                 "raptor_namespaces_init_v2() failed");
+    sax2->failed = 1;
+  }
 }
 
 
@@ -775,6 +782,9 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   unsigned char *xml_language=NULL;
   raptor_uri *xml_base=NULL;
 
+  if(sax2->failed)
+    return;
+
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   sax2->tokens_count++;
@@ -1001,6 +1011,9 @@ raptor_sax2_end_element(void* user_data, const unsigned char *name)
   raptor_sax2* sax2=(raptor_sax2*)user_data;
   raptor_xml_element* xml_element;
 
+  if(sax2->failed)
+    return;
+
 #ifdef RAPTOR_XML_EXPAT
 #ifdef EXPAT_UTF8_BOM_CRASH
   sax2->tokens_count++;
@@ -1036,7 +1049,7 @@ void
 raptor_sax2_characters(void* user_data, const unsigned char *s, int len)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
-  if(sax2->characters_handler)
+  if(!sax2->failed && sax2->characters_handler)
     sax2->characters_handler(sax2->user_data, sax2->current_element, s, len);
 }
 
@@ -1052,7 +1065,7 @@ raptor_sax2_cdata(void* user_data, const unsigned char *s, int len)
 #endif
 #endif
 
-  if(sax2->cdata_handler)
+  if(!sax2->failed && sax2->cdata_handler)
     sax2->cdata_handler(sax2->user_data, sax2->current_element, s, len);
 }
 
@@ -1062,7 +1075,7 @@ void
 raptor_sax2_comment(void* user_data, const unsigned char *s)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
-  if(sax2->comment_handler)
+  if(!sax2->failed && sax2->comment_handler)
     sax2->comment_handler(sax2->user_data, sax2->current_element, s);
 }
 
@@ -1077,7 +1090,7 @@ raptor_sax2_unparsed_entity_decl(void* user_data,
                                  const unsigned char* notationName)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
-  if(sax2->unparsed_entity_decl_handler)
+  if(!sax2->failed && sax2->unparsed_entity_decl_handler)
     sax2->unparsed_entity_decl_handler(sax2->user_data,
                                        entityName, base, systemId, 
                                        publicId, notationName);
@@ -1093,6 +1106,10 @@ raptor_sax2_external_entity_ref(void* user_data,
                                 const unsigned char* publicId)
 {
   raptor_sax2* sax2=(raptor_sax2*)user_data;
+
+  if(sax2->failed)
+    return 0;
+
   if(sax2->external_entity_ref_handler)
     return sax2->external_entity_ref_handler(sax2->user_data,
                                              context, base, systemId, publicId);

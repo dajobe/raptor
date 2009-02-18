@@ -1039,6 +1039,9 @@ struct raptor_sax2_s {
 
   /* base URI for resolving relative URIs or xml:base URIs */
   raptor_uri* base_uri;
+
+  /* sax2 init failed - do not try to do anything with it */
+  int failed;
 };
 
 int raptor_sax2_init(raptor_world* world);
