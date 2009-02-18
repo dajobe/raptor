@@ -192,6 +192,9 @@ raptor_namespaces_init_v2(raptor_world* world,
   nstack->table = RAPTOR_CALLOC(raptor_namespaces,
                                 RAPTOR_NAMESPACES_HASHTABLE_SIZE,
                                 sizeof(raptor_namespace*));
+  if(!nstack->table)
+    return -1;
+
   nstack->def_namespace = NULL;
 
   nstack->rdf_ms_uri = raptor_new_uri_v2(nstack->world,
