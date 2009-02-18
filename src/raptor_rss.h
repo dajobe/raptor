@@ -227,11 +227,17 @@ extern const raptor_field_pair raptor_atom_to_rss[];
 /* RSS enclosure support */
 struct raptor_rss_enclosure_s
 {
+  /* enclosure: subject node URI/blank node */
   raptor_identifier identifier;
+  /* enclosure: node RAPTOR_RSS_ENCLOSURE */
   raptor_uri *node_type;
+  /* enclosure: @enclosure attr */
   raptor_uri *url; 
+  /* enclosure: content length @length attr */
   char *length;
+  /* enclosure: content type @type attr */
   char *type;
+  /* next in list */
   struct raptor_rss_enclosure_s* next;
 };
 typedef struct raptor_rss_enclosure_s raptor_rss_enclosure;
