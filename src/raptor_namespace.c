@@ -1003,7 +1003,7 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
 {
   unsigned char *uri_string;
   size_t uri_len;
-  raptor_namespace* ns;
+  raptor_namespace* ns = NULL;
   unsigned char *ns_uri_string;
   size_t ns_uri_len;
   unsigned char *name = NULL;
