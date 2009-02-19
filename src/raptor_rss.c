@@ -308,6 +308,27 @@ raptor_rss_add_container(raptor_rss_parser *rss_parser, const char *name)
 }
 
 
+static raptor_uri*
+raptor_rss_promote_namespace_uri(raptor_world *world, raptor_uri* nspace_URI) 
+{
+  /* RSS 0.9 and RSS 1.1 namespaces => RSS 1.0 namespace */
+  if((raptor_uri_equals_v2(world, nspace_URI,
+                           world->rss_namespaces_info_uris[RSS0_9_NS]) ||
+      raptor_uri_equals_v2(world, nspace_URI,
+                           world->rss_namespaces_info_uris[RSS1_1_NS]))) {
+    nspace_URI = world->rss_namespaces_info_uris[RSS1_0_NS];
+  }
+  
+  /* Atom 0.3 namespace => Atom 1.0 namespace */
+  if(raptor_uri_equals_v2(world, nspace_URI,
+                          world->rss_namespaces_info_uris[ATOM0_3_NS])) {
+    nspace_URI = world->rss_namespaces_info_uris[ATOM1_0_NS];
+  }
+
+  return nspace_URI;
+}
+
+
 static void
 raptor_rss_start_element_handler(void *user_data,
                                  raptor_xml_element* xml_element)
@@ -389,37 +410,32 @@ raptor_rss_start_element_handler(void *user_data,
   if(1) {
     int i;
 
-    rss_parser->current_field=RAPTOR_RSS_FIELD_UNKNOWN;
-    for(i=0; i<RAPTOR_RSS_FIELDS_SIZE; i++)
-      if(!strcmp((const char*)name, raptor_rss_fields_info[i].name)) {
-        raptor_uri* nspace_URI=el_nspace ? raptor_namespace_get_uri(el_nspace) : NULL;
-
-        /* RSS 0.9 and RSS 1.1 namespaces => RSS 1.0 namespace */
-        if(nspace_URI &&
-           (raptor_uri_equals_v2(rdf_parser->world, nspace_URI, rdf_parser->world->rss_namespaces_info_uris[RSS0_9_NS]) ||
-            raptor_uri_equals_v2(rdf_parser->world, nspace_URI, rdf_parser->world->rss_namespaces_info_uris[RSS1_1_NS]))) {
-          nspace_URI=rdf_parser->world->rss_namespaces_info_uris[RSS1_0_NS];
-        }
+    rss_parser->current_field = RAPTOR_RSS_FIELD_UNKNOWN;
+    for(i = 0; i < RAPTOR_RSS_FIELDS_SIZE; i++) {
+      raptor_uri* nspace_URI;
+      raptor_uri* field_nspace_URI;
         
-        /* Atom 0.3 namespace => Atom 1.0 namespace */
-        if(nspace_URI &&
-           raptor_uri_equals_v2(rdf_parser->world, nspace_URI, rdf_parser->world->rss_namespaces_info_uris[ATOM0_3_NS])) {
-          nspace_URI=rdf_parser->world->rss_namespaces_info_uris[ATOM1_0_NS];
-        }
-        
-        if(nspace_URI && raptor_rss_fields_info[i].nspace != RSS_NO_NS) {
-          raptor_uri* field_nspace_URI=rdf_parser->world->rss_namespaces_info_uris[raptor_rss_fields_info[i].nspace];
-
-          if(raptor_uri_equals_v2(rdf_parser->world, nspace_URI, field_nspace_URI)) {
-            rss_parser->current_field=(raptor_rss_fields_type)i;
-            break;
-          }
-        } else {
-          rss_parser->current_field=(raptor_rss_fields_type)i;
-          break;
-        }
+      if(strcmp((const char*)name, raptor_rss_fields_info[i].name))
+        continue;
+      
+      if(!el_nspace || raptor_rss_fields_info[i].nspace == RSS_NO_NS) {
+        /* Matches if either the element or field has no namespace */
+        rss_parser->current_field = (raptor_rss_fields_type)i;
+        break;
       }
-    
+        
+      /* Promote element namespaces */
+      nspace_URI = raptor_rss_promote_namespace_uri(rdf_parser->world,
+                                          raptor_namespace_get_uri(el_nspace));
+      field_nspace_URI = rdf_parser->world->rss_namespaces_info_uris[raptor_rss_fields_info[i].nspace];
+      
+      if(raptor_uri_equals_v2(rdf_parser->world, nspace_URI,
+                              field_nspace_URI)) {
+        rss_parser->current_field = (raptor_rss_fields_type)i;
+        break;
+      }
+    }
+
     if(rss_parser->current_field==RAPTOR_RSS_FIELD_UNKNOWN) {
       RAPTOR_DEBUG3("Unknown field element named %s inside type %s\n", name, raptor_rss_types_info[rss_parser->current_type].name);
     } else if (rss_parser->current_field == RAPTOR_RSS_FIELD_ENCLOSURE ){
