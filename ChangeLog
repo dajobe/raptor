@@ -1,5 +1,33 @@
 2009-02-18  Dave Beckett <dave@dajobe.org>
 
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c, utils/rapper.c:
+	Added serializer feature
+	RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE (aliasDefaultNamespace) for
+	atom and rss 1.0 serializers to prevent declaring the default
+	namespace twice with a prefix and without.  raptor_feature gains
+	RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE raptor_features_list gains
+	new feature
+
+	(raptor_turtle_writer_set_feature, raptor_sax2_set_feature,
+	raptor_xml_writer_set_feature, raptor_set_feature,
+	raptor_get_feature, raptor_serializer_set_feature_string,
+	raptor_serializer_get_feature_string): enum extensions for
+	raptor_feature switches.  struct raptor_serializer_s gains int
+	field feature_alias_default_namespace
+	raptor_rss10_serializer_context gains a flag free_default_nspace
+	to know when to free default namespace now that it may not be
+	needed.
+	(raptor_rss10_serialize_terminate): Use the free_default_nspace
+	flag.
+	(raptor_rss10_build_xml_names): Implement altered namespace
+	declaration rules.
+	(raptor_new_serializer_v2): Initialise default namespace aliasing
+	to true by default.
+	(raptor_serializer_set_feature): Set flag.
+
 	* src/raptor_rss.h: document struct raptor_rss_enclosure_s fields
 
 2009-02-18  Lauri Aalto <laalto@iki.fi>
