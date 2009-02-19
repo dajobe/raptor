@@ -263,7 +263,7 @@ raptor_rss_start_element_handler(void *user_data,
 {
   raptor_parser *rdf_parser;
   raptor_rss_parser *rss_parser;
-  raptor_rss_enclosure *enclosure=NULL;
+  raptor_rss_block *enclosure = NULL;
   raptor_uri* base_uri;
   raptor_qname *el_qname;
   const unsigned char *name;
@@ -404,8 +404,8 @@ raptor_rss_start_element_handler(void *user_data,
       RAPTOR_DEBUG1("FOUND new enclosure\n");
       if(rss_parser->current_type == RAPTOR_RSS_ITEM) {
         update_item=rss_parser->model.last;
-        enclosure=raptor_rss_new_enclosure(rdf_parser->world);
-        raptor_rss_item_add_enclosure(update_item, enclosure);
+        enclosure = raptor_new_rss_block(rdf_parser->world);
+        raptor_rss_item_add_block(update_item, enclosure);
       }
     } else {
       RAPTOR_DEBUG4("FOUND field %d - %s inside type %s\n", rss_parser->current_field, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
@@ -761,7 +761,7 @@ raptor_rss_sax2_new_namespace_handler(void *user_data,
 
 static void
 raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser, 
-                                        raptor_rss_enclosure *enclosure)
+                                        raptor_rss_block *enclosure)
 {
   raptor_identifier* identifier=&enclosure->identifier;
   if (enclosure->url) { 
@@ -845,7 +845,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
   /* sequence of rss:item */
   for(item=rss_parser->model.items; item; item=item->next) {
     raptor_identifier* identifier=&item->identifier;
-    raptor_rss_enclosure* enclosure;
+    raptor_rss_block *enclosure;
     
     if(item->uri) {
       identifier->uri=raptor_uri_copy_v2(rdf_parser->world, item->uri);
@@ -920,7 +920,7 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
 
 static int
 raptor_rss_emit_enclosure(raptor_parser* rdf_parser, 
-                          raptor_rss_enclosure *enclosure)
+                          raptor_rss_block *enclosure)
 {
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   raptor_identifier* identifier=&enclosure->identifier;
@@ -983,7 +983,7 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int f;
   raptor_identifier* identifier=&item->identifier;
-  raptor_rss_enclosure* enclosure;
+  raptor_rss_block *enclosure;
     
   if(!item->fields_count)
     return 0;

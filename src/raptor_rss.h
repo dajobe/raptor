@@ -225,7 +225,7 @@ typedef struct {
 extern const raptor_field_pair raptor_atom_to_rss[];
 
 /* RSS enclosure support */
-struct raptor_rss_enclosure_s
+struct raptor_rss_block_s
 {
   /* enclosure: subject node URI/blank node */
   raptor_identifier identifier;
@@ -238,9 +238,9 @@ struct raptor_rss_enclosure_s
   /* enclosure: content type @type attr */
   char *type;
   /* next in list */
-  struct raptor_rss_enclosure_s* next;
+  struct raptor_rss_block_s* next;
 };
-typedef struct raptor_rss_enclosure_s raptor_rss_enclosure;
+typedef struct raptor_rss_block_s raptor_rss_block;
 
 struct raptor_rss_field_s
 {
@@ -266,7 +266,7 @@ struct raptor_rss_item_s
   const raptor_rss_info *node_type;
   int node_typei;
   raptor_rss_field* fields[RAPTOR_RSS_FIELDS_SIZE];
-  raptor_rss_enclosure* enclosure;
+  raptor_rss_block * enclosure;
   int fields_count;
   struct raptor_rss_item_s* next;
   /* Triples with this item as subject and do not fit in @fields */
@@ -319,11 +319,11 @@ raptor_rss_item* raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor
 
 void raptor_clear_rss_item(raptor_rss_item* item);
 void raptor_free_rss_item(raptor_rss_item* item);
-void raptor_rss_item_add_enclosure(raptor_rss_item* item, raptor_rss_enclosure* enclosure);
+void raptor_rss_item_add_block(raptor_rss_item* item, raptor_rss_block *enclosure);
 void raptor_rss_item_add_field(raptor_rss_item* item, int type, raptor_rss_field* field);
 
-raptor_rss_enclosure* raptor_rss_new_enclosure(raptor_world* world);
-void raptor_enclosure_free(raptor_rss_enclosure* enclosure);
+raptor_rss_block *raptor_new_rss_block(raptor_world *world);
+void raptor_free_rss_block(raptor_rss_block *block);
 
 raptor_rss_field* raptor_rss_new_field(raptor_world* world);
 void raptor_rss_field_free(raptor_rss_field* field);

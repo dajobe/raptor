@@ -429,7 +429,7 @@ raptor_free_rss_item(raptor_rss_item* item)
       raptor_rss_field_free(item->fields[i]);
   }
   if(item->enclosure) 
-    raptor_enclosure_free(item->enclosure);
+    raptor_free_rss_block(item->enclosure);
   if(item->uri)
     raptor_free_uri_v2(item->world, item->uri);
   raptor_free_identifier(&item->identifier);
@@ -441,18 +441,19 @@ raptor_free_rss_item(raptor_rss_item* item)
 
 
 void
-raptor_rss_item_add_enclosure(raptor_rss_item* item, 
-                              raptor_rss_enclosure* enclosure)
+raptor_rss_item_add_block(raptor_rss_item* item, 
+                          raptor_rss_block *block)
 {
-  if (!item->enclosure) {
-    RAPTOR_DEBUG1("Adding first enclosure\n");
-    item->enclosure=enclosure;
+  if(!item->enclosure) {
+    RAPTOR_DEBUG1("Adding first block\n");
+    item->enclosure = block;
   } else {
-    raptor_rss_enclosure* cur;
+    raptor_rss_block *cur;
 
-    RAPTOR_DEBUG1("Adding subsequent enclosure\n");
-    for(cur=item->enclosure; cur->next; cur=cur->next) ;
-    cur->next=enclosure;
+    RAPTOR_DEBUG1("Adding subsequent block\n");
+    for(cur = item->enclosure; cur->next; cur = cur->next)
+      ;
+    cur->next = block;
   }
 }
 
@@ -475,30 +476,32 @@ raptor_rss_item_add_field(raptor_rss_item* item, int type,
 }
 
 
-raptor_rss_enclosure*
-raptor_rss_new_enclosure(raptor_world* world)
+raptor_rss_block*
+raptor_new_rss_block(raptor_world* world)
 {
-  raptor_rss_enclosure* enclosure=(raptor_rss_enclosure*)RAPTOR_CALLOC(raptor_rss_enclosure, 1, sizeof(raptor_rss_enclosure));
+  raptor_rss_block *block;
+  block = (raptor_rss_block*)RAPTOR_CALLOC(raptor_rss_block, 1,
+                                           sizeof(raptor_rss_block));
   /* init world field in identifier not created with raptor_new_identifier() */
-  if(enclosure)
-    enclosure->identifier.world=world;
-  return enclosure;
+  if(block)
+    block->identifier.world = world;
+  return block;
 }
 
 
 void
-raptor_enclosure_free(raptor_rss_enclosure* enclosure)
+raptor_free_rss_block(raptor_rss_block *block)
 {
-  if(enclosure->length)
-    RAPTOR_FREE(cstring, enclosure->length);
-  if(enclosure->type)
-    RAPTOR_FREE(cstring, enclosure->type);
-  if(enclosure->url)
-    raptor_free_uri_v2(enclosure->identifier.world, enclosure->url);
-  if(enclosure->next)
-    raptor_enclosure_free(enclosure->next);
-  raptor_free_identifier(&(enclosure->identifier));
-  RAPTOR_FREE(raptor_rss_enclosure, enclosure);
+  if(block->length)
+    RAPTOR_FREE(cstring, block->length);
+  if(block->type)
+    RAPTOR_FREE(cstring, block->type);
+  if(block->url)
+    raptor_free_uri_v2(block->identifier.world, block->url);
+  if(block->next)
+    raptor_free_rss_block(block->next);
+  raptor_free_identifier(&(block->identifier));
+  RAPTOR_FREE(raptor_rss_block, block);
 }
 
 
