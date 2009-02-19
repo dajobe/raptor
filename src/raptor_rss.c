@@ -845,7 +845,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
   /* sequence of rss:item */
   for(item=rss_parser->model.items; item; item=item->next) {
     raptor_identifier* identifier=&item->identifier;
-    raptor_rss_block *enclosure;
+    raptor_rss_block *block;
     
     if(item->uri) {
       identifier->uri=raptor_uri_copy_v2(rdf_parser->world, item->uri);
@@ -880,8 +880,8 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
       }
     }
     
-    for(enclosure=item->enclosure; enclosure; enclosure=enclosure->next)
-      raptor_rss_insert_enclosure_identifiers(rdf_parser, enclosure);
+    for(block = item->blocks; block; block = block->next)
+      raptor_rss_insert_enclosure_identifiers(rdf_parser, block);
     
     item->node_type=&raptor_rss_types_info[RAPTOR_RSS_ITEM];
     item->node_typei=RAPTOR_RSS_ITEM;
@@ -983,7 +983,7 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
   raptor_rss_parser* rss_parser=(raptor_rss_parser*)rdf_parser->context;
   int f;
   raptor_identifier* identifier=&item->identifier;
-  raptor_rss_block *enclosure;
+  raptor_rss_block *block;
     
   if(!item->fields_count)
     return 0;
@@ -1021,8 +1021,8 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
     }
   }
 
-  for(enclosure=item->enclosure; enclosure; enclosure=enclosure->next) {
-    raptor_rss_emit_enclosure(rdf_parser, enclosure);
+  for(block = item->blocks; block; block = block->next) {
+    raptor_rss_emit_enclosure(rdf_parser, block);
   }
 
   return 0;

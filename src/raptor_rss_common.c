@@ -428,8 +428,8 @@ raptor_free_rss_item(raptor_rss_item* item)
     if(item->fields[i])
       raptor_rss_field_free(item->fields[i]);
   }
-  if(item->enclosure) 
-    raptor_free_rss_block(item->enclosure);
+  if(item->blocks) 
+    raptor_free_rss_block(item->blocks);
   if(item->uri)
     raptor_free_uri_v2(item->world, item->uri);
   raptor_free_identifier(&item->identifier);
@@ -444,14 +444,14 @@ void
 raptor_rss_item_add_block(raptor_rss_item* item, 
                           raptor_rss_block *block)
 {
-  if(!item->enclosure) {
+  if(!item->blocks) {
     RAPTOR_DEBUG1("Adding first block\n");
-    item->enclosure = block;
+    item->blocks = block;
   } else {
     raptor_rss_block *cur;
 
     RAPTOR_DEBUG1("Adding subsequent block\n");
-    for(cur = item->enclosure; cur->next; cur = cur->next)
+    for(cur = item->blocks; cur->next; cur = cur->next)
       ;
     cur->next = block;
   }

@@ -266,7 +266,7 @@ struct raptor_rss_item_s
   const raptor_rss_info *node_type;
   int node_typei;
   raptor_rss_field* fields[RAPTOR_RSS_FIELDS_SIZE];
-  raptor_rss_block * enclosure;
+  raptor_rss_block* blocks;
   int fields_count;
   struct raptor_rss_item_s* next;
   /* Triples with this item as subject and do not fit in @fields */
