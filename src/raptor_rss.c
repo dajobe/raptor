@@ -404,7 +404,8 @@ raptor_rss_start_element_handler(void *user_data,
       RAPTOR_DEBUG1("FOUND new enclosure\n");
       if(rss_parser->current_type == RAPTOR_RSS_ITEM) {
         update_item=rss_parser->model.last;
-        enclosure = raptor_new_rss_block(rdf_parser->world);
+        enclosure = raptor_new_rss_block(rdf_parser->world,
+                                         RAPTOR_RSS_ENCLOSURE);
         raptor_rss_item_add_block(update_item, enclosure);
       }
     } else {
@@ -775,7 +776,6 @@ raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser,
     identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
     identifier->uri_source=RAPTOR_URI_SOURCE_GENERATED;
   }
-  enclosure->node_type=rdf_parser->world->rss_types_info_uris[RAPTOR_RSS_ENCLOSURE];
 }
 
 

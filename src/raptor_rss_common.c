@@ -477,14 +477,18 @@ raptor_rss_item_add_field(raptor_rss_item* item, int type,
 
 
 raptor_rss_block*
-raptor_new_rss_block(raptor_world* world)
+raptor_new_rss_block(raptor_world* world, raptor_rss_type type)
 {
   raptor_rss_block *block;
   block = (raptor_rss_block*)RAPTOR_CALLOC(raptor_rss_block, 1,
                                            sizeof(raptor_rss_block));
   /* init world field in identifier not created with raptor_new_identifier() */
-  if(block)
+  if(block) {
     block->identifier.world = world;
+    block->rss_type = type;
+    block->node_type = world->rss_types_info_uris[type];
+  }
+  
   return block;
 }
 

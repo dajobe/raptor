@@ -224,9 +224,10 @@ typedef struct {
 
 extern const raptor_field_pair raptor_atom_to_rss[];
 
-/* RSS enclosure support */
+/* Feed metadata blocks support (was raptor_rss_enclosure) */
 struct raptor_rss_block_s
 {
+  raptor_rss_type rss_type;
   /* enclosure: subject node URI/blank node */
   raptor_identifier identifier;
   /* enclosure: node RAPTOR_RSS_ENCLOSURE */
@@ -322,7 +323,7 @@ void raptor_free_rss_item(raptor_rss_item* item);
 void raptor_rss_item_add_block(raptor_rss_item* item, raptor_rss_block *block);
 void raptor_rss_item_add_field(raptor_rss_item* item, int type, raptor_rss_field* field);
 
-raptor_rss_block *raptor_new_rss_block(raptor_world *world);
+raptor_rss_block *raptor_new_rss_block(raptor_world *world, raptor_rss_type rss_type);
 void raptor_free_rss_block(raptor_rss_block *block);
 
 raptor_rss_field* raptor_rss_new_field(raptor_world* world);
