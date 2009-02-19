@@ -282,8 +282,12 @@ raptor_rss_add_container(raptor_rss_parser *rss_parser, const char *name)
     int i;
     for(i = 0; i < RAPTOR_RSS_COMMON_SIZE; i++)
       if(!strcmp(name, raptor_rss_types_info[i].name)) {
-        type = (raptor_rss_type)i;
-        break;
+        /* rss and atom clash on the author name field (rss) or type (atom) */
+        if(i != RAPTOR_ATOM_AUTHOR ||
+           (i == RAPTOR_ATOM_AUTHOR && rss_parser->is_atom)) {
+          type = (raptor_rss_type)i;
+          break;
+        }
       }
   }
     
@@ -293,6 +297,10 @@ raptor_rss_add_container(raptor_rss_parser *rss_parser, const char *name)
     else
       raptor_rss_model_add_common(&rss_parser->model, type);
 
+    /* Inner container - push the current type onto a 1-place stack */
+    if(rss_parser->current_type != RAPTOR_RSS_NONE)
+      rss_parser->prev_type = rss_parser->current_type;
+      
     rss_parser->current_type = type;
   }
   
@@ -343,51 +351,44 @@ raptor_rss_start_element_handler(void *user_data,
   base_uri=raptor_sax2_inscope_base_uri(rss_parser->sax2);
 
 
-  /* No container type - identify and record in rss_parser->current_type) */
+  /* No container type - identify and record in rss_parser->current_type)
+   * either as a top-level container or an inner-container */
   if(rss_parser->current_type == RAPTOR_RSS_NONE) {
     if(raptor_rss_add_container(rss_parser, (const char*)name)) {
       RAPTOR_DEBUG2("Unknown container element named %s\n", name);
       /* Nothing more that can be done with unknown element - skip it */
       return;
-    } else
-      RAPTOR_DEBUG3("FOUND container type %d - %s\n", rss_parser->current_type,
-                    raptor_rss_types_info[rss_parser->current_type].name);
-
+    }
+#ifdef RAPTOR_DEBUG
+    else {
+      raptor_rss_type old_type = rss_parser->prev_type;
+      if(old_type != rss_parser->current_type)
+        RAPTOR_DEBUG5("FOUND inner container type %d - %s INSIDE current container type %d - %s\n", rss_parser->current_type,
+                      raptor_rss_types_info[rss_parser->current_type].name,
+                      old_type, raptor_rss_types_info[old_type].name);
+      else
+        RAPTOR_DEBUG3("FOUND container type %d - %s\n",
+                      rss_parser->current_type,
+                      raptor_rss_types_info[rss_parser->current_type].name);
+    }
+#endif
+    
     /* have got type so move on to attributes */
     goto check_attributes;
   }
 
 
-  /* have container (current_type) so this element is inside it - a field */
+  /* have container (current_type) so this element is inside it is either:
+   *   1. a metadata block element (such as rss:enclosure)
+   *   2. a field (such as atom:title)
+   */
+
+  /* Look up the element in the list of blocks - FIXME */
+
+  /* Look up the element in the list of fields */
   if(1) {
     int i;
-    raptor_rss_type old_type=rss_parser->current_type;
-    
-    /* check it is not a type here */
-    if(!strcmp((const char*)name, "item") ||
-       !strcmp((const char*)name, "entry")) {
-      raptor_rss_model_add_item(&rss_parser->model);
-      rss_parser->current_type=RAPTOR_RSS_ITEM;
-    } else {
-      for(i=0; i<RAPTOR_RSS_COMMON_SIZE; i++)
-        if(!strcmp((const char*)name, raptor_rss_types_info[i].name)) {
-          /* rss and atom clash on the author name field (rss) or type (atom) */
-          if(i != RAPTOR_ATOM_AUTHOR ||
-             (i == RAPTOR_ATOM_AUTHOR && rss_parser->is_atom)) {
-            rss_parser->current_type=(raptor_rss_type)i;
-            break;
-          }
-        }
-    }
-    
-    if(rss_parser->current_type != old_type) {
-      RAPTOR_DEBUG6("FOUND element %s for type %d - %s INSIDE current type %d - %s\n", name, rss_parser->current_type, raptor_rss_types_info[rss_parser->current_type].name, old_type, raptor_rss_types_info[old_type].name);
-      raptor_rss_model_add_common(&rss_parser->model,
-                                  rss_parser->current_type);
-      rss_parser->prev_type=old_type;
-      goto check_attributes;
-    }
-    
+
     rss_parser->current_field=RAPTOR_RSS_FIELD_UNKNOWN;
     for(i=0; i<RAPTOR_RSS_FIELDS_SIZE; i++)
       if(!strcmp((const char*)name, raptor_rss_fields_info[i].name)) {
