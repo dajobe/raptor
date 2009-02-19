@@ -49,6 +49,8 @@
 
 
 /* local prototypes */
+
+static void raptor_rss_block_make_blank_node(raptor_parser* rdf_parser,  raptor_rss_block *block);
 static void raptor_rss_insert_identifiers(raptor_parser* rdf_parser);
 static void raptor_rss_uplift_items(raptor_parser* rdf_parser);
 static int raptor_rss_emit(raptor_parser* rdf_parser);
@@ -761,6 +763,19 @@ raptor_rss_sax2_new_namespace_handler(void *user_data,
 
 
 static void
+raptor_rss_block_make_blank_node(raptor_parser* rdf_parser, 
+                                 raptor_rss_block *block)
+{
+  raptor_identifier* identifier = &block->identifier;
+
+  identifier->id = raptor_parser_internal_generate_id(rdf_parser,
+                                                      RAPTOR_GENID_TYPE_BNODEID, NULL);
+  identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+  identifier->uri_source = RAPTOR_URI_SOURCE_GENERATED;
+}
+
+
+static void
 raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser, 
                                         raptor_rss_block *enclosure)
 {
@@ -770,12 +785,8 @@ raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser,
     identifier->uri=raptor_uri_copy_v2(rdf_parser->world, enclosure->url);
     identifier->type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     identifier->uri_source=RAPTOR_URI_SOURCE_URI;
-  } else { 
-    /* emit as blank node */
-    identifier->id=raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-    identifier->type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-    identifier->uri_source=RAPTOR_URI_SOURCE_GENERATED;
-  }
+  } else
+    raptor_rss_block_make_blank_node(rdf_parser, enclosure);
 }
 
 
