@@ -329,6 +329,21 @@ raptor_rss_promote_namespace_uri(raptor_world *world, raptor_uri* nspace_URI)
 }
 
 
+
+static raptor_rss_item*
+raptor_rss_get_current_item(raptor_rss_parser *rss_parser)
+{
+  raptor_rss_item* item;
+  
+  if(rss_parser->current_type == RAPTOR_RSS_ITEM)
+    item = rss_parser->model.last;
+  else
+    item = raptor_rss_model_get_common(&rss_parser->model,
+                                       rss_parser->current_type);
+  return item;
+}
+
+
 static void
 raptor_rss_start_element_handler(void *user_data,
                                  raptor_xml_element* xml_element)
@@ -370,10 +385,13 @@ raptor_rss_start_element_handler(void *user_data,
   name=el_qname->local_name;
   el_nspace=el_qname->nspace;
 
+  named_attrs = raptor_xml_element_get_attributes(xml_element);
+  ns_attributes_count = raptor_xml_element_get_attributes_count(xml_element);
+  
   base_uri=raptor_sax2_inscope_base_uri(rss_parser->sax2);
 
 
-  /* No container type - identify and record in rss_parser->current_type)
+  /* No container type - identify and record in rss_parser->current_type
    * either as a top-level container or an inner-container */
   if(rss_parser->current_type == RAPTOR_RSS_NONE) {
     if(raptor_rss_add_container(rss_parser, (const char*)name)) {
@@ -384,7 +402,8 @@ raptor_rss_start_element_handler(void *user_data,
 #ifdef RAPTOR_DEBUG
     else {
       raptor_rss_type old_type = rss_parser->prev_type;
-      if(old_type != rss_parser->current_type)
+
+      if(old_type != rss_parser->current_type && old_type != RAPTOR_RSS_NONE)
         RAPTOR_DEBUG5("FOUND inner container type %d - %s INSIDE current container type %d - %s\n", rss_parser->current_type,
                       raptor_rss_types_info[rss_parser->current_type].name,
                       old_type, raptor_rss_types_info[old_type].name);
@@ -395,8 +414,22 @@ raptor_rss_start_element_handler(void *user_data,
     }
 #endif
     
-    /* have got type so move on to attributes */
-    goto check_attributes;
+    /* check a few container attributes */
+    if(named_attrs) {
+      for (i = 0; i < ns_attributes_count; i++) {
+        raptor_qname* attr=named_attrs[i];
+        const char* attrName = (const char*)attr->local_name;
+        const unsigned char* attrValue = attr->value;
+
+        RAPTOR_DEBUG3("  container attribute %s=%s\n", attrName, attrValue);
+        if(!strcmp(attrName, "about")) {
+          raptor_rss_item* update_item = raptor_rss_get_current_item(rss_parser);
+          if(update_item)
+            update_item->uri = raptor_new_uri_v2(rdf_parser->world, attrValue);
+        }
+      }
+    }
+    return;
   }
 
 
@@ -405,9 +438,7 @@ raptor_rss_start_element_handler(void *user_data,
    *   2. a field (such as atom:title)
    */
 
-  /* Look up the element in the list of blocks - FIXME */
-
-  /* Look up the element in the list of fields */
+  /* Find field ID */
   rss_parser->current_field = RAPTOR_RSS_FIELD_UNKNOWN;
   for(i = 0; i < RAPTOR_RSS_FIELDS_SIZE; i++) {
     raptor_uri* nspace_URI;
@@ -435,42 +466,50 @@ raptor_rss_start_element_handler(void *user_data,
   }
 
   if(rss_parser->current_field==RAPTOR_RSS_FIELD_UNKNOWN) {
-    RAPTOR_DEBUG3("Unknown field element named %s inside type %s\n", name, raptor_rss_types_info[rss_parser->current_type].name);
-  } else if (rss_parser->current_field == RAPTOR_RSS_FIELD_ENCLOSURE ){
+    RAPTOR_DEBUG3("Unknown field element named %s inside type %s\n", name, 
+                  raptor_rss_types_info[rss_parser->current_type].name);
+    return;
+  }
+
+
+  /* Look up the element in the list of blocks */
+  if(rss_parser->current_field == RAPTOR_RSS_FIELD_ENCLOSURE) {
     raptor_rss_item* update_item;
-    RAPTOR_DEBUG1("FOUND new enclosure\n");
     if(rss_parser->current_type == RAPTOR_RSS_ITEM) {
-      update_item=rss_parser->model.last;
-      enclosure = raptor_new_rss_block(rdf_parser->world,
-                                       RAPTOR_RSS_ENCLOSURE);
+      RAPTOR_DEBUG1("FOUND new enclosure\n");
+      update_item = rss_parser->model.last;
+      enclosure = raptor_new_rss_block(rdf_parser->world, RAPTOR_RSS_ENCLOSURE);
       raptor_rss_item_add_block(update_item, enclosure);
+      return;
     }
-  } else {
-    RAPTOR_DEBUG4("FOUND field %d - %s inside type %s\n", rss_parser->current_field, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_types_info[rss_parser->current_type].name);
-    
-    /* Rewrite item fields */
-    for(i=0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
-      if(raptor_atom_to_rss[i].from == rss_parser->current_field) {
-        rss_parser->current_field=raptor_atom_to_rss[i].to;
-        
-        RAPTOR_DEBUG3("Rewrote into field %d - %s\n", rss_parser->current_field, raptor_rss_fields_info[rss_parser->current_field].name);
-        break;
-      }
+  }
+
+
+  /* Process field */
+  RAPTOR_DEBUG4("FOUND field %d - %s inside type %s\n",
+                rss_parser->current_field,
+                raptor_rss_fields_info[rss_parser->current_field].name,
+                raptor_rss_types_info[rss_parser->current_type].name);
+  
+  /* Rewrite item fields */
+  for(i = 0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
+    if(raptor_atom_to_rss[i].from == rss_parser->current_field) {
+      rss_parser->current_field = raptor_atom_to_rss[i].to;
+      
+      RAPTOR_DEBUG3("Rewrote into field %d - %s\n", rss_parser->current_field,
+                    raptor_rss_fields_info[rss_parser->current_field].name);
+      break;
     }
-    
   }
 
   
- check_attributes:
-  named_attrs=raptor_xml_element_get_attributes(xml_element);
-  ns_attributes_count=raptor_xml_element_get_attributes_count(xml_element);
-
-  /* Now check for attributes */
-  if(named_attrs && ns_attributes_count) {
+  /* Now check for field attributes */
+  if(named_attrs) {
     for (i = 0; i < ns_attributes_count; i++) {
       raptor_qname* attr=named_attrs[i];
       const unsigned char* attrName = attr->local_name;
       const unsigned char* attrValue = attr->value;
+
       RAPTOR_DEBUG3("  attribute %s=%s\n", attrName, attrValue);
 
       /* Pick a few attributes to care about */
@@ -648,14 +687,8 @@ raptor_rss_end_element_handler(void *user_data,
       /* skipHours, skipDays common but IGNORED */ 
       RAPTOR_DEBUG2("Ignoring fields for type %s\n", raptor_rss_types_info[rss_parser->current_type].name);
     } else {
-      raptor_rss_item* update_item;
-      raptor_rss_field* field=raptor_rss_new_field(rdf_parser->world);
-
-      if(rss_parser->current_type == RAPTOR_RSS_ITEM)
-        update_item=rss_parser->model.last;
-      else
-        update_item=raptor_rss_model_get_common(&rss_parser->model,
-                                                rss_parser->current_type);
+      raptor_rss_item* update_item = raptor_rss_get_current_item(rss_parser);
+      raptor_rss_field* field = raptor_rss_new_field(rdf_parser->world);
 
       /* if value is always an uri, make it so */
       if(raptor_rss_fields_info[rss_parser->current_field].flags & 
