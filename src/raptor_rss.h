@@ -319,7 +319,7 @@ raptor_rss_item* raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor
 
 void raptor_clear_rss_item(raptor_rss_item* item);
 void raptor_free_rss_item(raptor_rss_item* item);
-void raptor_rss_item_add_block(raptor_rss_item* item, raptor_rss_block *enclosure);
+void raptor_rss_item_add_block(raptor_rss_item* item, raptor_rss_block *block);
 void raptor_rss_item_add_field(raptor_rss_item* item, int type, raptor_rss_field* field);
 
 raptor_rss_block *raptor_new_rss_block(raptor_world *world);
