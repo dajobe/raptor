@@ -65,7 +65,7 @@ const raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES
 };
 
 
-const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
+const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE+1]={
   { "channel",    RSS1_0_NS, 0 },
   { "image",      RSS1_0_NS, 0 },
   { "textinput",  RSS1_0_NS, 0 },
@@ -77,6 +77,7 @@ const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE]={
   { "feed",       ATOM1_0_NS, 0 },
   { "entry",      ATOM1_0_NS, 0 },
   { "<unknown>",  RSS_UNKNOWN_NS, 0 },
+  { "<none>",  RSS_UNKNOWN_NS, 0 }
 };
 
 

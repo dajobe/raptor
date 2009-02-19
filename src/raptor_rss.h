@@ -117,7 +117,7 @@ typedef struct {
   int flags;
 } raptor_rss_info;
 
-extern const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE];
+extern const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE+1];
 
 /* Fields of typed nodes used in RSS */
 typedef enum {
