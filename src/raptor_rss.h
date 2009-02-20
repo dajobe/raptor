@@ -284,13 +284,19 @@ typedef struct raptor_rss_block_s raptor_rss_block;
 #define RAPTOR_RSS_BLOCKS_SIZE 10
 /* Metadata blocks info */
 typedef struct {
+  /* metadata block type it applies to */
   raptor_rss_type type;
-  const char *field_name;
-  int field_type;
+  /* XML attribute */
+  const char *attribute;
+  /* How that attribute should be interpreted: url or string */
+  int attribute_type;
+  /* Index into urls/strings array to store it */
   int offset;
-} raptor_rss_block_info;
+  /* RDF predicate this maps to */
+  raptor_rss_fields_type field;
+} raptor_rss_block_field_info;
 
-extern const raptor_rss_block_info raptor_rss_blocks_info[RAPTOR_RSS_BLOCKS_SIZE+1];
+extern const raptor_rss_block_field_info raptor_rss_block_fields_info[RAPTOR_RSS_BLOCKS_SIZE+1];
 
 
 struct raptor_rss_field_s

@@ -2,12 +2,9 @@
  *
  * raptor_serialize_rss.c - Raptor RSS 1.0 and Atom 1.0 serializers
  *
- * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
- * Contributions:
- *   Copyright (C) 2004-2005, Suzan Foster <su@islief.nl>
- *
  * This package is Free Software and part of Redland http://librdf.org/
  * 
  * It is licensed under the following three licenses as alternatives:

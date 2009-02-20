@@ -1,13 +1,10 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_rss.c - Raptor RSS tag soup parser
+ * raptor_rss.c - Raptor Feeds (RSS and Atom) tag soup parser
  *
- * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
- * Contributions:
- *   Copyright (C) 2004-2005, Suzan Foster <su@islief.nl>
- *
  * This package is Free Software and part of Redland http://librdf.org/
  * 
  * It is licensed under the following three licenses as alternatives:
@@ -493,24 +490,41 @@ raptor_rss_start_element_handler(void *user_data,
         raptor_qname* attr = named_attrs[i];
         const char* attrName = (const char*)attr->local_name;
         const unsigned char* attrValue = attr->value;
-
-        RAPTOR_DEBUG3("  block attribute %s=%s\n", attrName, attrValue);
-
-        if(!strcmp(attrName, "url")) {
-          RAPTOR_DEBUG2("  setting enclosure URL %s\n", attrValue);
-          block->urls[0] = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
-                                                              (const unsigned char*)attrValue);
-        } else if (!strcmp(attrName, "length")) {
-          size_t len = strlen((const char*)attrValue);
-          RAPTOR_DEBUG2("  setting enclosure length %s\n", attrValue);
-          block->strings[0] = (char*)RAPTOR_MALLOC(cstring, len+1);
-          strncpy(block->strings[0], (char*)attrValue, len+1);
-        } else if (!strcmp(attrName, "type")) {
-          size_t len = strlen((const char*)attrValue);
-          RAPTOR_DEBUG2("  setting enclosure type %s\n", attrValue);
-          block->strings[1] = (char*)RAPTOR_MALLOC(cstring, len+1);
-          strncpy(block->strings[1], (char*)attrValue, len+1);
+        const raptor_rss_block_field_info *bfi;
+        int attribute_type = -1;
+        int offset = -1;
+        
+        for(bfi = &raptor_rss_block_fields_info[0];
+            bfi->type != RAPTOR_RSS_NONE;
+            bfi++) {
+          if(bfi->type == block_type && !strcmp(attrName, bfi->attribute)) {
+            attribute_type = bfi->attribute_type;
+            offset = bfi->offset;
+            break;
+          }
         }
+
+        if(offset < 0)
+          continue;
+        
+        /* Found attribute for this block type */
+        RAPTOR_DEBUG3("  found block attribute %s=%s\n", attrName, attrValue);
+
+        if(attribute_type == RSS_BLOCK_FIELD_TYPE_URL) {
+          raptor_uri* uri;
+          uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world,
+                                                   base_uri, attrValue);
+          block->urls[offset] = uri;
+        } else if (attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
+          size_t len = strlen((const char*)attrValue);
+          block->strings[offset] = (char*)RAPTOR_MALLOC(cstring, len+1);
+          strncpy(block->strings[offset], (char*)attrValue, len+1);
+        } else {
+#ifdef RAPTOR_DEBUG
+          RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
+#endif
+        }
+
       }
 
     }
@@ -855,17 +869,18 @@ raptor_rss_block_make_blank_node(raptor_parser* rdf_parser,
 
 
 static void
-raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser, 
-                                        raptor_rss_block *enclosure)
+raptor_rss_insert_block_identifiers(raptor_parser* rdf_parser, 
+                                    raptor_rss_block *block)
 {
-  raptor_identifier* identifier = &enclosure->identifier;
-  if (enclosure->urls[0]) { 
+  raptor_identifier* identifier = &block->identifier;
+
+  if(block->rss_type == RAPTOR_RSS_ENCLOSURE && block->urls[0]) { 
     /* emit as URI resource */
-    identifier->uri = raptor_uri_copy_v2(rdf_parser->world, enclosure->urls[0]);
+    identifier->uri = raptor_uri_copy_v2(rdf_parser->world, block->urls[0]);
     identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     identifier->uri_source = RAPTOR_URI_SOURCE_URI;
   } else
-    raptor_rss_block_make_blank_node(rdf_parser, enclosure);
+    raptor_rss_block_make_blank_node(rdf_parser, block);
 }
 
 
@@ -971,7 +986,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
     }
     
     for(block = item->blocks; block; block = block->next)
-      raptor_rss_insert_enclosure_identifiers(rdf_parser, block);
+      raptor_rss_insert_block_identifiers(rdf_parser, block);
     
     item->node_type = &raptor_rss_types_info[RAPTOR_RSS_ITEM];
     item->node_typei = RAPTOR_RSS_ITEM;
@@ -1014,16 +1029,21 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
   raptor_rss_parser* rss_parser = (raptor_rss_parser*)rdf_parser->context;
   raptor_identifier* identifier = &block->identifier;
   const void* subject = rss_parser->statement.subject;
+  raptor_rss_type block_type = block->rss_type;
+
+  /* FIXME - enclosure only for now */
+  if(block_type != RAPTOR_RSS_ENCLOSURE)
+    return 0;
 
   if(!identifier->uri && !identifier->id) {
-    raptor_parser_error(rdf_parser, "Enclosure has no identifier");
+    raptor_parser_error(rdf_parser, "Block has no identifier");
     return 1;
   }
 
   rss_parser->statement.predicate = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ENCLOSURE];
   rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   
-  if (identifier->uri) { 
+  if(identifier->uri) { 
     /* emit as resource */
     rss_parser->statement.object = identifier->uri;
     rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;	  

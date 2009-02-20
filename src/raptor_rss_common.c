@@ -1,13 +1,10 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_rss_common.c - Raptor RSS common code
+ * raptor_rss_common.c - Raptor Feeds (RSS and Atom) common code
  *
- * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
- * Contributions:
- *   Copyright (C) 2004-2005, Suzan Foster <su@islief.nl>
- *
  * This package is Free Software and part of Redland http://librdf.org/
  * 
  * It is licensed under the following three licenses as alternatives:
@@ -200,7 +197,7 @@ const raptor_field_pair raptor_atom_to_rss[]={
 };
 
 
-const raptor_rss_block_info raptor_rss_blocks_info[RAPTOR_RSS_BLOCKS_SIZE+1] = {
+const raptor_rss_block_field_info raptor_rss_block_fields_info[RAPTOR_RSS_BLOCKS_SIZE+1] = {
   /*
   RSS 2 <enclosure> - optional element inside <item>
   attributes:
@@ -209,9 +206,9 @@ const raptor_rss_block_info raptor_rss_blocks_info[RAPTOR_RSS_BLOCKS_SIZE+1] = {
     type (required):   what enclosure type is as a standard MIME type. string
   content: empty
   */
-  { RAPTOR_RSS_ENCLOSURE, "url",    RSS_BLOCK_FIELD_TYPE_URL,    0 },
-  { RAPTOR_RSS_ENCLOSURE, "length", RSS_BLOCK_FIELD_TYPE_STRING, 0 },
-  { RAPTOR_RSS_ENCLOSURE, "type",   RSS_BLOCK_FIELD_TYPE_STRING, 1 },
+  { RAPTOR_RSS_ENCLOSURE, "url",    RSS_BLOCK_FIELD_TYPE_URL,    0, RAPTOR_RSS_RDF_ENCLOSURE_URL },
+  { RAPTOR_RSS_ENCLOSURE, "length", RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_RDF_ENCLOSURE_LENGTH },
+  { RAPTOR_RSS_ENCLOSURE, "type",   RSS_BLOCK_FIELD_TYPE_STRING, 1, RAPTOR_RSS_RDF_ENCLOSURE_TYPE },
 
   /*
   RSS 2 <category> - optional element inside <item>
