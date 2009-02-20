@@ -47,7 +47,12 @@ typedef enum {
   /* also common, but IGNORED */
   RAPTOR_RSS_SKIPHOURS,
   RAPTOR_RSS_SKIPDAYS,
+
+  /* metadata blocks */
   RAPTOR_RSS_ENCLOSURE,
+  RAPTOR_ATOM_CATEGORY,
+  RAPTOR_RSS_CATEGORY,
+  RAPTOR_RSS_SOURCE,
 
   RAPTOR_ATOM_FEED,
   RAPTOR_ATOM_ENTRY,
@@ -224,24 +229,67 @@ typedef struct {
 
 extern const raptor_field_pair raptor_atom_to_rss[];
 
+
+#define RSS_BLOCK_FIELD_TYPE_URL 0
+#define RSS_BLOCK_FIELD_TYPE_STRING 1
+
+#define RSS_BLOCK_MAX_URLS 1
+#define RSS_BLOCK_MAX_STRINGS 5
+
 /* Feed metadata blocks support (was raptor_rss_enclosure) */
 struct raptor_rss_block_s
 {
   raptor_rss_type rss_type;
-  /* enclosure: subject node URI/blank node */
+ 
+ /* enclosure: subject node URI/blank node */
   raptor_identifier identifier;
-  /* enclosure: node RAPTOR_RSS_ENCLOSURE */
+
+  /* enclosure: node RAPTOR_RSS_ENCLOSURE
+     category: node RAPTOR_ATOM_CATEGORY 
+     person: node RAPTOR_ATOM_AUTHOR or RAPTOR_ATOM_CONTRIBUTOR
+     link: node RAPTOR_ATOM_LINK
+   */
   raptor_uri *node_type;
-  /* enclosure: @enclosure attr */
-  raptor_uri *url; 
-  /* enclosure: content length @length attr */
-  char *length;
-  /* enclosure: content type @type attr */
-  char *type;
+
+  /* enclosure: 0: where enclosure is located - @url attr (required)
+     atom category: 0: @scheme attr (optional) 
+     rss category: 0: @domain attr (optional)
+     rss source: 0: @url attr (required)
+     person: 0: @atom:uri attr (optional)
+     link: 0: @href attr (required)
+   */
+  raptor_uri *urls[RSS_BLOCK_MAX_URLS];
+
+  /* enclosure: 0: content length @length attr (required)
+                1: content type @type attr (required)
+     atom category:  0: @term attr (required)
+                     1: @label attr (optional)
+     person:    0: @atom:name attr (required)
+                1: @atom:email attr (optional)
+     link:      0: @length attr (optional)
+                1: @type attr (optional)
+                2: @rel attr (optional)
+                3: @hreflang attr (optional)
+                4: @title attr (optional)
+   */
+  char *strings[RSS_BLOCK_MAX_STRINGS];
+
   /* next in list */
   struct raptor_rss_block_s* next;
 };
 typedef struct raptor_rss_block_s raptor_rss_block;
+
+#define RAPTOR_RSS_BLOCKS_SIZE 10
+/* Metadata blocks info */
+typedef struct {
+  raptor_rss_type type;
+  const char *field_name;
+  int field_type;
+  int offset;
+} raptor_rss_block_info;
+
+extern const raptor_rss_block_info raptor_rss_blocks_info[RAPTOR_RSS_BLOCKS_SIZE+1];
+
 
 struct raptor_rss_field_s
 {

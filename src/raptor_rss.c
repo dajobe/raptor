@@ -546,8 +546,8 @@ raptor_rss_start_element_handler(void *user_data,
           }
         } else if (!strcmp((const char*)name, "enclosure") && enclosure) {
           RAPTOR_DEBUG2("  setting enclosure URL %s\n", attrValue);
-          enclosure->url = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
-                                                              (const unsigned char*)attrValue);
+          enclosure->urls[0] = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
+                                                                  (const unsigned char*)attrValue);
         }
       } else if(!strcmp((const char*)attrName, "domain")) {
         if(!strcmp((const char*)name, "category")) {
@@ -578,15 +578,15 @@ raptor_rss_start_element_handler(void *user_data,
         if (!strcmp((const char*)name, "enclosure") && enclosure) {
           size_t len = strlen((const char*)attrValue);
           RAPTOR_DEBUG2("  setting enclosure length %s\n", attrValue);
-          enclosure->length = (char*)RAPTOR_MALLOC(cstring, len+1);
-          strncpy(enclosure->length, (char*)attrValue, len+1);
+          enclosure->strings[0] = (char*)RAPTOR_MALLOC(cstring, len+1);
+          strncpy(enclosure->strings[0], (char*)attrValue, len+1);
         }
       } else if (!strcmp((const char*)attrName, "type")) {
         if (!strcmp((const char*)name, "enclosure") && enclosure) {
           size_t len = strlen((const char*)attrValue);
           RAPTOR_DEBUG2("  setting enclosure type %s\n", attrValue);
-          enclosure->type = (char*)RAPTOR_MALLOC(cstring, len+1);
-          strncpy(enclosure->type, (char*)attrValue, len+1);
+          enclosure->strings[1] = (char*)RAPTOR_MALLOC(cstring, len+1);
+          strncpy(enclosure->strings[1], (char*)attrValue, len+1);
         } else if(rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
           /* do nothing with atom link attribute type */
         } else if(rss_parser->is_atom) {
@@ -842,9 +842,9 @@ raptor_rss_insert_enclosure_identifiers(raptor_parser* rdf_parser,
                                         raptor_rss_block *enclosure)
 {
   raptor_identifier* identifier = &enclosure->identifier;
-  if (enclosure->url) { 
+  if (enclosure->urls[0]) { 
     /* emit as URI resource */
-    identifier->uri = raptor_uri_copy_v2(rdf_parser->world, enclosure->url);
+    identifier->uri = raptor_uri_copy_v2(rdf_parser->world, enclosure->urls[0]);
     identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     identifier->uri_source = RAPTOR_URI_SOURCE_URI;
   } else
@@ -1024,25 +1024,25 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
   if(raptor_rss_emit_type_triple(rdf_parser, identifier, block->node_type))
     return 1;
 
-  if (block->url) {
+  if(block->urls[0]) {
     rss_parser->statement.predicate = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ENCLOSURE_URL];
-    rss_parser->statement.object = block->url;
+    rss_parser->statement.object = block->urls[0];
     rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
     (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                      &rss_parser->statement);
   }
 
-  if (block->type) {
+  if(block->strings[1]) {
     rss_parser->statement.predicate = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ENCLOSURE_TYPE];
-    rss_parser->statement.object = block->type;
+    rss_parser->statement.object = block->strings[1];
     rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
     (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                      &rss_parser->statement);
   }
 
-  if (block->length) {
+  if(block->strings[0]) {
     rss_parser->statement.predicate = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ENCLOSURE_LENGTH];
-    rss_parser->statement.object = block->length;
+    rss_parser->statement.object = block->strings[0];
     rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
     (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                      &rss_parser->statement);

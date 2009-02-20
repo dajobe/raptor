@@ -74,6 +74,9 @@ const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE+1]={
   { "skipHours",  RSS0_91_NS, 0 },
   { "skipDays",   RSS0_91_NS, 0 },
   { "Enclosure",  RSS2_0_ENC_NS, 0 }, /* Enclosure class in RDF output */
+  { "category",   ATOM1_0_NS, 0 },
+  { "category",   RSS2_0_NS, 0 },
+  { "source"  ,   RSS2_0_NS, 0 },
   { "feed",       ATOM1_0_NS, 0 },
   { "entry",      ATOM1_0_NS, 0 },
   { "<unknown>",  RSS_UNKNOWN_NS, 0 },
@@ -195,7 +198,50 @@ const raptor_field_pair raptor_atom_to_rss[]={
 
   { RAPTOR_RSS_FIELD_UNKNOWN,       RAPTOR_RSS_FIELD_UNKNOWN }
 };
-  
+
+
+const raptor_rss_block_info raptor_rss_blocks_info[RAPTOR_RSS_BLOCKS_SIZE+1] = {
+  /*
+  RSS 2 <enclosure> - optional element inside <item>
+  attributes:
+    url (required):    where the enclosure is located.  url
+    length (required): how big enclosure it is in bytes. integer
+    type (required):   what enclosure type is as a standard MIME type. string
+  content: empty
+  */
+  { RAPTOR_RSS_ENCLOSURE, "url",    RSS_BLOCK_FIELD_TYPE_URL,    0 },
+  { RAPTOR_RSS_ENCLOSURE, "length", RSS_BLOCK_FIELD_TYPE_STRING, 0 },
+  { RAPTOR_RSS_ENCLOSURE, "type",   RSS_BLOCK_FIELD_TYPE_STRING, 1 },
+
+  /*
+  RSS 2 <category> - optional element inside <item>
+  attributes:
+    domain (optional): the domain. url
+  content: category. string
+  */
+  { RAPTOR_RSS_CATEGORY, "domain",    RSS_BLOCK_FIELD_TYPE_URL,    0 },
+
+  /*
+  RSS 2 <source> - optional element inside <item>
+  attributes:
+    url (required): location of source. url
+  content: source name. string
+  */
+  { RAPTOR_RSS_SOURCE, "url",    RSS_BLOCK_FIELD_TYPE_URL,    0 },
+
+  /*
+  Atom <category> - optional element inside <entry>
+  attributes:
+    term (required):   the category. string
+    scheme (optional): categorization scheme. url
+    label (optional):  human-readable label. string
+  content: empty
+  */
+  { RAPTOR_ATOM_CATEGORY, "term",   RSS_BLOCK_FIELD_TYPE_STRING, 0 },
+  { RAPTOR_ATOM_CATEGORY, "scheme", RSS_BLOCK_FIELD_TYPE_URL, 0 },
+  { RAPTOR_ATOM_CATEGORY, "label",  RSS_BLOCK_FIELD_TYPE_STRING, 1 },
+};
+
 
 const unsigned char * const raptor_atom_namespace_uri=(const unsigned char *)"http://www.w3.org/2005/Atom";
 
@@ -497,15 +543,23 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type)
 void
 raptor_free_rss_block(raptor_rss_block *block)
 {
-  if(block->length)
-    RAPTOR_FREE(cstring, block->length);
-  if(block->type)
-    RAPTOR_FREE(cstring, block->type);
-  if(block->url)
-    raptor_free_uri_v2(block->identifier.world, block->url);
+  int i;
+
+  for(i = 0; i < RSS_BLOCK_MAX_URLS; i++) {
+    if(block->urls[i])
+      raptor_free_uri_v2(block->identifier.world, block->urls[i]);
+  }
+
+  for(i = 0; i < RSS_BLOCK_MAX_STRINGS; i++) {
+    if(block->strings[i])
+      RAPTOR_FREE(cstring, block->strings[i]);
+  }
+
   if(block->next)
     raptor_free_rss_block(block->next);
+
   raptor_free_identifier(&(block->identifier));
+
   RAPTOR_FREE(raptor_rss_block, block);
 }
 
