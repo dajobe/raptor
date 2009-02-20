@@ -240,6 +240,9 @@ const raptor_rss_block_info raptor_rss_blocks_info[RAPTOR_RSS_BLOCKS_SIZE+1] = {
   { RAPTOR_ATOM_CATEGORY, "term",   RSS_BLOCK_FIELD_TYPE_STRING, 0 },
   { RAPTOR_ATOM_CATEGORY, "scheme", RSS_BLOCK_FIELD_TYPE_URL, 0 },
   { RAPTOR_ATOM_CATEGORY, "label",  RSS_BLOCK_FIELD_TYPE_STRING, 1 },
+
+  /* sentinel */
+  { RAPTOR_RSS_NONE, NULL, 0, 0 }
 };
 
 
