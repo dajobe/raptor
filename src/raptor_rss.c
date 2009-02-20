@@ -350,7 +350,7 @@ raptor_rss_start_element_handler(void *user_data,
 {
   raptor_parser *rdf_parser;
   raptor_rss_parser *rss_parser;
-  raptor_rss_block *enclosure = NULL;
+  raptor_rss_block *block = NULL;
   raptor_uri* base_uri;
   raptor_qname *el_qname;
   const unsigned char *name;
@@ -473,16 +473,49 @@ raptor_rss_start_element_handler(void *user_data,
   }
 
 
-  /* Look up the element in the list of blocks */
-  if(rss_parser->current_field == RAPTOR_RSS_FIELD_ENCLOSURE) {
+  /* Found a block element to process */
+  if(raptor_rss_fields_info[rss_parser->current_field].flags & 
+     RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE) {
+    raptor_rss_type block_type;
     raptor_rss_item* update_item;
-    if(rss_parser->current_type == RAPTOR_RSS_ITEM) {
-      RAPTOR_DEBUG1("FOUND new enclosure\n");
-      update_item = rss_parser->model.last;
-      enclosure = raptor_new_rss_block(rdf_parser->world, RAPTOR_RSS_ENCLOSURE);
-      raptor_rss_item_add_block(update_item, enclosure);
-      return;
+
+    block_type = raptor_rss_fields_info[rss_parser->current_field].block_type;
+
+    RAPTOR_DEBUG3("FOUND new block type %d - %s\n", block_type,
+                  raptor_rss_types_info[block_type].name);
+    update_item = rss_parser->model.last;
+    block = raptor_new_rss_block(rdf_parser->world, block_type);
+    raptor_rss_item_add_block(update_item, block);
+
+    /* Now check block attributes */
+    if(named_attrs) {
+      for (i = 0; i < ns_attributes_count; i++) {
+        raptor_qname* attr = named_attrs[i];
+        const char* attrName = (const char*)attr->local_name;
+        const unsigned char* attrValue = attr->value;
+
+        RAPTOR_DEBUG3("  block attribute %s=%s\n", attrName, attrValue);
+
+        if(!strcmp(attrName, "url")) {
+          RAPTOR_DEBUG2("  setting enclosure URL %s\n", attrValue);
+          block->urls[0] = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
+                                                              (const unsigned char*)attrValue);
+        } else if (!strcmp(attrName, "length")) {
+          size_t len = strlen((const char*)attrValue);
+          RAPTOR_DEBUG2("  setting enclosure length %s\n", attrValue);
+          block->strings[0] = (char*)RAPTOR_MALLOC(cstring, len+1);
+          strncpy(block->strings[0], (char*)attrValue, len+1);
+        } else if (!strcmp(attrName, "type")) {
+          size_t len = strlen((const char*)attrValue);
+          RAPTOR_DEBUG2("  setting enclosure type %s\n", attrValue);
+          block->strings[1] = (char*)RAPTOR_MALLOC(cstring, len+1);
+          strncpy(block->strings[1], (char*)attrValue, len+1);
+        }
+      }
+
     }
+
+    return;
   }
 
 
@@ -543,10 +576,6 @@ raptor_rss_start_element_handler(void *user_data,
               attrValue = NULL;
             */
           }
-        } else if (!strcmp((const char*)name, "enclosure") && enclosure) {
-          RAPTOR_DEBUG2("  setting enclosure URL %s\n", attrValue);
-          enclosure->urls[0] = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
-                                                                  (const unsigned char*)attrValue);
         }
       } else if(!strcmp((const char*)attrName, "domain")) {
         if(!strcmp((const char*)name, "category")) {
@@ -573,20 +602,8 @@ raptor_rss_start_element_handler(void *user_data,
           rss_element->uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
                                                                 (const unsigned char*)attrValue);
         }
-      } else if (!strcmp((const char*)attrName, "length")) {
-        if (!strcmp((const char*)name, "enclosure") && enclosure) {
-          size_t len = strlen((const char*)attrValue);
-          RAPTOR_DEBUG2("  setting enclosure length %s\n", attrValue);
-          enclosure->strings[0] = (char*)RAPTOR_MALLOC(cstring, len+1);
-          strncpy(enclosure->strings[0], (char*)attrValue, len+1);
-        }
       } else if (!strcmp((const char*)attrName, "type")) {
-        if (!strcmp((const char*)name, "enclosure") && enclosure) {
-          size_t len = strlen((const char*)attrValue);
-          RAPTOR_DEBUG2("  setting enclosure type %s\n", attrValue);
-          enclosure->strings[1] = (char*)RAPTOR_MALLOC(cstring, len+1);
-          strncpy(enclosure->strings[1], (char*)attrValue, len+1);
-        } else if(rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
+        if(rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
           /* do nothing with atom link attribute type */
         } else if(rss_parser->is_atom) {
           /* Atom only typing */
@@ -619,7 +636,8 @@ raptor_rss_start_element_handler(void *user_data,
         }
       }
     }
-  } /* if have attributes */
+  } /* if have field attributes */
+
 }
 
 
