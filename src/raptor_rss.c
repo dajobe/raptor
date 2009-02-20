@@ -995,7 +995,7 @@ static int
 raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
 {
   raptor_rss_parser* rss_parser = (raptor_rss_parser*)rdf_parser->context;
-  raptor_identifier* identifier = &enclosure->identifier;
+  raptor_identifier* identifier = &block->identifier;
   const void* subject = rss_parser->statement.subject;
 
   if(!identifier->uri && !identifier->id) {
