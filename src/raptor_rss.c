@@ -395,14 +395,9 @@ raptor_rss_start_element_handler(void *user_data,
 
   /* No container type - identify and record in rss_parser->current_type
    * either as a top-level container or an inner-container */
-  if(rss_parser->current_type == RAPTOR_RSS_NONE) {
-    if(raptor_rss_add_container(rss_parser, (const char*)name)) {
-      RAPTOR_DEBUG2("Unknown container element named %s\n", name);
-      /* Nothing more that can be done with unknown element - skip it */
-      return;
-    }
+  if(!raptor_rss_add_container(rss_parser, (const char*)name)) {
 #ifdef RAPTOR_DEBUG
-    else {
+    if(1) {
       raptor_rss_type old_type = rss_parser->prev_type;
 
       if(old_type != rss_parser->current_type && old_type != RAPTOR_RSS_NONE)
@@ -431,6 +426,10 @@ raptor_rss_start_element_handler(void *user_data,
         }
       }
     }
+    return;
+  } else if(rss_parser->current_type == RAPTOR_RSS_NONE) {
+    RAPTOR_DEBUG2("Unknown container element named %s\n", name);
+    /* Nothing more that can be done with unknown element - skip it */
     return;
   }
 
