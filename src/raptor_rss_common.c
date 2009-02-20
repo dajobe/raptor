@@ -108,14 +108,14 @@ const raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "source",         RSS0_92_NS, 0 },
   { "author",         RSS2_0_NS, 0 },
   { "guid",           RSS2_0_NS, 0 },
-  { "enclosure",      RSS2_0_NS, 0 },     /* enclosure in RSS */
+  { "enclosure",      RSS2_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_RSS_ENCLOSURE },     /* enclosure in RSS */
   { "enclosure",      RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "url",            RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "length",         RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "type",           RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "length",         RSS2_0_NS, 0 },
   { "type",           RSS2_0_NS, 0 },
-  { "category",       RSS0_92_NS, 0 },
+  { "category",       RSS0_92_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_RSS_CATEGORY },
   { "comments",       RSS0_92_NS, 0 },
   { "items",          RSS1_0_NS, 0 },
   { "image",          RSS1_0_NS, 0 },
@@ -133,7 +133,7 @@ const raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "updated",        ATOM1_0_NS, 0 },
   /* atom 1.0 optional fields */
   { "author",         ATOM1_0_NS, 0 },
-  { "category",       ATOM1_0_NS, 0 },
+  { "category",       ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_ATOM_CATEGORY },
   { "content",        ATOM1_0_NS, 0 },
   { "contributor",    ATOM1_0_NS, 0 },
   { "email",          ATOM1_0_NS, 0 },
@@ -146,7 +146,7 @@ const raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "name",           ATOM1_0_NS, 0 },
   { "published",      ATOM1_0_NS, 0 },
   { "rights",         ATOM1_0_NS, 0 },
-  { "source",         ATOM1_0_NS, 0 },
+  { "source",         ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_RSS_SOURCE },
   { "subtitle",       ATOM1_0_NS, 0 },
   { "summary",        ATOM1_0_NS, 0 },
   { "uri",            ATOM1_0_NS, 0 },

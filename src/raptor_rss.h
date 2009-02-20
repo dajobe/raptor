@@ -114,12 +114,14 @@ typedef struct {
 extern const raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE];
   
 #define RAPTOR_RSS_INFO_FLAG_URI_VALUE 1
+#define RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE 2
 
 /* Typed nodes used in RSS */
 typedef struct {
   const char* name;
   rss_info_namespace nspace;
   int flags;
+  raptor_rss_type block_type;
 } raptor_rss_info;
 
 extern const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE+1];
