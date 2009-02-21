@@ -877,9 +877,9 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
       RAPTOR_DEBUG3("Inserting identifiers in common type %d - %s\n", i, raptor_rss_types_info[i].name);
     
       if(item->uri) {
-        identifier->uri = raptor_uri_copy_v2(rdf_parser->world, item->uri);
-        identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-        identifier->uri_source = RAPTOR_URI_SOURCE_URI;
+        raptor_set_identifier_uri(identifier,
+                                  raptor_uri_copy_v2(rdf_parser->world,
+                                                     item->uri));
       } else {
         int url_fields[2];
         int url_fields_count = 1;
@@ -909,9 +909,13 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
         }
       
         if(!identifier->uri) {
+          const unsigned char *id;
+
           /* need to make bnode */
-          raptor_set_identifier_id(identifier,
-                                   raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL));
+          id = raptor_parser_internal_generate_id(rdf_parser,
+                                                  RAPTOR_GENID_TYPE_BNODEID,
+                                                  NULL);
+          raptor_set_identifier_id(identifier, id);
         }
       }
     
