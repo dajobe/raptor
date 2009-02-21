@@ -523,18 +523,39 @@ raptor_rss_item_add_field(raptor_rss_item* item, int type,
 }
 
 
+int
+raptor_rss_item_equals_statement_subject(const raptor_rss_item *item,
+                                         const raptor_statement *statement)
+{
+  if(item->identifier.uri)
+    return raptor_uri_equals_v2(item->world,
+                                (raptor_uri*)statement->subject,
+                                item->identifier.uri);
+  
+  return !strcmp((const char*)statement->subject,
+                 (const char*)item->identifier.id);
+}
+
+
 raptor_rss_block*
-raptor_new_rss_block(raptor_world* world, raptor_rss_type type)
+raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
+                     const unsigned char* id)
 {
   raptor_rss_block *block;
   block = (raptor_rss_block*)RAPTOR_CALLOC(raptor_rss_block, 1,
                                            sizeof(raptor_rss_block));
-  /* init world field in identifier not created with raptor_new_identifier() */
+
   if(block) {
-    block->identifier.world = world;
+    raptor_identifier* identifier = &block->identifier;
+
     block->rss_type = type;
     block->node_type = world->rss_types_info_uris[type];
-  }
+
+    identifier->world = world;
+    raptor_set_identifier_id(identifier, id);
+  
+  } else
+    RAPTOR_FREE(cstring, id);
   
   return block;
 }

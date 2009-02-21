@@ -47,8 +47,6 @@
 
 /* local prototypes */
 
-static void raptor_rss_block_make_blank_node(raptor_parser* rdf_parser,  raptor_rss_block *block);
-static void raptor_rss_insert_identifiers(raptor_parser* rdf_parser);
 static void raptor_rss_uplift_items(raptor_parser* rdf_parser);
 static int raptor_rss_emit(raptor_parser* rdf_parser);
 
@@ -418,8 +416,12 @@ raptor_rss_start_element_handler(void *user_data,
         RAPTOR_DEBUG3("  container attribute %s=%s\n", attrName, attrValue);
         if(!strcmp(attrName, "about")) {
           raptor_rss_item* update_item = raptor_rss_get_current_item(rss_parser);
-          if(update_item)
+          if(update_item) {
             update_item->uri = raptor_new_uri_v2(rdf_parser->world, attrValue);
+            raptor_set_identifier_uri(&update_item->identifier,
+                                      raptor_uri_copy_v2(rdf_parser->world,
+                                                         update_item->uri));
+          }
         }
       }
     }
@@ -475,13 +477,16 @@ raptor_rss_start_element_handler(void *user_data,
      RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE) {
     raptor_rss_type block_type;
     raptor_rss_item* update_item;
+    const unsigned char *id;
 
     block_type = raptor_rss_fields_info[rss_parser->current_field].block_type;
 
     RAPTOR_DEBUG3("FOUND new block type %d - %s\n", block_type,
                   raptor_rss_types_info[block_type].name);
     update_item = rss_parser->model.last;
-    block = raptor_new_rss_block(rdf_parser->world, block_type);
+    id = raptor_parser_internal_generate_id(rdf_parser,
+                                            RAPTOR_GENID_TYPE_BNODEID, NULL);
+    block = raptor_new_rss_block(rdf_parser->world, block_type, id);
     raptor_rss_item_add_block(update_item, block);
 
     /* Now check block attributes */
@@ -854,36 +859,6 @@ raptor_rss_sax2_new_namespace_handler(void *user_data,
 }
 
 
-
-static void
-raptor_rss_block_make_blank_node(raptor_parser* rdf_parser, 
-                                 raptor_rss_block *block)
-{
-  raptor_identifier* identifier = &block->identifier;
-
-  identifier->id = raptor_parser_internal_generate_id(rdf_parser,
-                                                      RAPTOR_GENID_TYPE_BNODEID, NULL);
-  identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-  identifier->uri_source = RAPTOR_URI_SOURCE_GENERATED;
-}
-
-
-static void
-raptor_rss_insert_block_identifiers(raptor_parser* rdf_parser, 
-                                    raptor_rss_block *block)
-{
-  raptor_identifier* identifier = &block->identifier;
-
-  if(block->rss_type == RAPTOR_RSS_ENCLOSURE && block->urls[0]) { 
-    /* emit as URI resource */
-    identifier->uri = raptor_uri_copy_v2(rdf_parser->world, block->urls[0]);
-    identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-    identifier->uri_source = RAPTOR_URI_SOURCE_URI;
-  } else
-    raptor_rss_block_make_blank_node(rdf_parser, block);
-}
-
-
 static void
 raptor_rss_insert_identifiers(raptor_parser* rdf_parser) 
 {
@@ -921,25 +896,22 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
           raptor_rss_field* field;
 
           for(field = item->fields[url_fields[f]]; field; field = field->next) {
-            if(field->value) {
-              identifier->uri = raptor_new_uri_v2(rdf_parser->world, (const unsigned char*)field->value);
-              identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-              identifier->uri_source = RAPTOR_URI_SOURCE_URI;
-              break;
-            } else if(field->uri) {
-              identifier->uri = raptor_uri_copy_v2(rdf_parser->world, field->uri);
-              identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-              identifier->uri_source = RAPTOR_URI_SOURCE_URI;
-              break;
-            }
+            raptor_uri *new_uri;
+            if(field->value)
+              new_uri = raptor_new_uri_v2(rdf_parser->world,
+                                          (const unsigned char*)field->value);
+            else if(field->uri)
+              new_uri = raptor_uri_copy_v2(rdf_parser->world, field->uri);
+
+            raptor_set_identifier_uri(identifier, new_uri);
+            break;
           }
         }
       
         if(!identifier->uri) {
           /* need to make bnode */
-          identifier->id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-          identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-          identifier->uri_source = RAPTOR_URI_SOURCE_GENERATED;
+          raptor_set_identifier_id(identifier,
+                                   raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL));
         }
       }
     
@@ -951,42 +923,40 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
   for(item = rss_parser->model.items; item; item = item->next) {
     raptor_identifier* identifier = &item->identifier;
     raptor_rss_block *block;
+    raptor_uri* uri;
     
     if(item->uri) {
-      identifier->uri = raptor_uri_copy_v2(rdf_parser->world, item->uri);
-      identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-      identifier->uri_source = RAPTOR_URI_SOURCE_URI;
+      uri = raptor_uri_copy_v2(rdf_parser->world, item->uri);
     } else {
       if (item->fields[RAPTOR_RSS_FIELD_LINK]) {
-        if (item->fields[RAPTOR_RSS_FIELD_LINK]->value) {
-          identifier->uri = raptor_new_uri_v2(rdf_parser->world, (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_LINK]->value);
-          identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          identifier->uri_source = RAPTOR_URI_SOURCE_URI;
-        } else if(item->fields[RAPTOR_RSS_FIELD_LINK]->uri) {
-          identifier->uri = raptor_uri_copy_v2(rdf_parser->world, item->fields[RAPTOR_RSS_FIELD_LINK]->uri);
-          identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          identifier->uri_source = RAPTOR_URI_SOURCE_URI;
-        }
+        if (item->fields[RAPTOR_RSS_FIELD_LINK]->value)
+          uri = raptor_new_uri_v2(rdf_parser->world,
+                                  (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_LINK]->value);
+        else if(item->fields[RAPTOR_RSS_FIELD_LINK]->uri)
+          uri = raptor_uri_copy_v2(rdf_parser->world,
+                                   item->fields[RAPTOR_RSS_FIELD_LINK]->uri);
       } else if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]) {
-        if (item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value) {
-          identifier->uri = raptor_new_uri_v2(rdf_parser->world, (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value);
-          identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          identifier->uri_source = RAPTOR_URI_SOURCE_URI;
-        } else if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->uri) {
-          identifier->uri = raptor_uri_copy_v2(rdf_parser->world, item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->uri);
-          identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          identifier->uri_source = RAPTOR_URI_SOURCE_URI;
-        }
-      } else {
-        /* need to make bnode */
-        identifier->id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-        identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-        identifier->uri_source = RAPTOR_URI_SOURCE_GENERATED;
+        if (item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value)
+          uri = raptor_new_uri_v2(rdf_parser->world,
+                                  (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value);
+        else if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->uri)
+          uri = raptor_uri_copy_v2(rdf_parser->world,
+                                   item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->uri);
       }
     }
+
+    raptor_set_identifier_uri(identifier, uri);
+
     
-    for(block = item->blocks; block; block = block->next)
-      raptor_rss_insert_block_identifiers(rdf_parser, block);
+    for(block = item->blocks; block; block = block->next) {
+      if(!block->identifier.uri && !block->identifier.id) {
+        const unsigned char *id;
+        /* need to make bnode */
+        id = raptor_parser_internal_generate_id(rdf_parser,
+                                                RAPTOR_GENID_TYPE_BNODEID, NULL);
+        raptor_set_identifier_id(identifier, id);
+      }
+    }
     
     item->node_type = &raptor_rss_types_info[RAPTOR_RSS_ITEM];
     item->node_typei = RAPTOR_RSS_ITEM;
