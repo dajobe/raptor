@@ -408,19 +408,20 @@ raptor_rss_start_element_handler(void *user_data,
     
     /* check a few container attributes */
     if(named_attrs) {
-      for (i = 0; i < ns_attributes_count; i++) {
+      raptor_rss_item* update_item = raptor_rss_get_current_item(rss_parser);
+
+      for(i = 0; i < ns_attributes_count; i++) {
         raptor_qname* attr=named_attrs[i];
         const char* attrName = (const char*)attr->local_name;
         const unsigned char* attrValue = attr->value;
 
         RAPTOR_DEBUG3("  container attribute %s=%s\n", attrName, attrValue);
         if(!strcmp(attrName, "about")) {
-          raptor_rss_item* update_item = raptor_rss_get_current_item(rss_parser);
           if(update_item) {
+            raptor_uri *new_uri;
             update_item->uri = raptor_new_uri_v2(rdf_parser->world, attrValue);
-            raptor_set_identifier_uri(&update_item->identifier,
-                                      raptor_uri_copy_v2(rdf_parser->world,
-                                                         update_item->uri));
+            new_uri = raptor_uri_copy_v2(rdf_parser->world, update_item->uri);
+            raptor_set_identifier_uri(&update_item->identifier, new_uri);
           }
         }
       }
@@ -877,9 +878,9 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
       RAPTOR_DEBUG3("Inserting identifiers in common type %d - %s\n", i, raptor_rss_types_info[i].name);
     
       if(item->uri) {
-        raptor_set_identifier_uri(identifier,
-                                  raptor_uri_copy_v2(rdf_parser->world,
-                                                     item->uri));
+        raptor_uri *new_uri = raptor_uri_copy_v2(rdf_parser->world, item->uri);
+
+        raptor_set_identifier_uri(identifier, new_uri);
       } else {
         int url_fields[2];
         int url_fields_count = 1;
