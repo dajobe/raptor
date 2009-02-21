@@ -709,6 +709,8 @@ extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *s
 int raptor_check_ordinal(const unsigned char *name);
 
 /* raptor_identifier.c */
+void raptor_set_identifier_uri(raptor_identifier *identifier, raptor_uri *uri);
+void raptor_set_identifier_id(raptor_identifier *identifier, const unsigned char *id);
 #ifdef RAPTOR_DEBUG
 void raptor_identifier_print(FILE *stream, raptor_identifier* identifier);
 #endif

@@ -2,7 +2,7 @@
  *
  * raptor_identifier.c - Raptor identifier classes
  *
- * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -239,6 +239,24 @@ raptor_free_identifier(raptor_identifier *identifier)
 
   if(identifier->is_malloced)
     RAPTOR_FREE(identifier, (void*)identifier);
+}
+
+
+void
+raptor_set_identifier_uri(raptor_identifier *identifier, raptor_uri *uri)
+{
+  identifier->uri = uri;
+  identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  identifier->uri_source = RAPTOR_URI_SOURCE_URI;
+}
+
+
+void
+raptor_set_identifier_id(raptor_identifier *identifier, const unsigned char *id)
+{
+  identifier->id = id;
+  identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+  identifier->uri_source = RAPTOR_URI_SOURCE_GENERATED;
 }
 
 
