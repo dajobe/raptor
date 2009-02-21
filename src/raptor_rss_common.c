@@ -81,7 +81,7 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
 };
 
 
-const raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
+const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "title",          RSS1_0_NS, 0 },
   { "link",           RSS1_0_NS, 0 },
   { "description",    RSS1_0_NS, 0 },

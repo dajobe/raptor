@@ -1123,8 +1123,8 @@ raptor_rss10_emit_atom_triples_map(raptor_serializer *serializer, int is_feed,
   for(i=0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
     int from_f=raptor_atom_to_rss[i].from;
     int to_f=raptor_atom_to_rss[i].to;
-    const raptor_rss_info* from_field_info=&raptor_rss_fields_info[from_f];
-    const raptor_rss_info* to_field_info=&raptor_rss_fields_info[to_f];
+    const raptor_rss_field_info* from_field_info = &raptor_rss_fields_info[from_f];
+    const raptor_rss_field_info* to_field_info = &raptor_rss_fields_info[to_f];
     raptor_xml_element* at_map_element;
     raptor_qname *at_map_qname;
     raptor_qname** at_map_attrs;

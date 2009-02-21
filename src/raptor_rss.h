@@ -116,13 +116,13 @@ extern const raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAM
 #define RAPTOR_RSS_INFO_FLAG_URI_VALUE 1
 #define RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE 2
 
-/* Typed nodes used in RSS */
+/* Namespaced elements used in feeds */
 typedef struct {
   const char* name;
   rss_info_namespace nspace;
   int flags;
   raptor_rss_type block_type;
-} raptor_rss_info;
+} raptor_rss_field_info;
 
 /* Fields of typed nodes used in RSS */
 typedef enum {
@@ -220,7 +220,7 @@ typedef enum {
   RAPTOR_RSS_FIELDS_SIZE=RAPTOR_RSS_FIELD_UNKNOWN
 } raptor_rss_fields_type;
 
-extern const raptor_rss_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2];
+extern const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2];
 
 typedef struct {
   raptor_rss_fields_type from;
