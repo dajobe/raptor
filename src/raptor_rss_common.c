@@ -62,22 +62,22 @@ const raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES
 };
 
 
-const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE+1]={
-  { "channel",    RSS1_0_NS, 0 },
-  { "image",      RSS1_0_NS, 0 },
-  { "textinput",  RSS1_0_NS, 0 },
-  { "item",       RSS1_0_NS, 0 },
-  { "author",     ATOM1_0_NS, 0 },
-  { "skipHours",  RSS0_91_NS, 0 },
-  { "skipDays",   RSS0_91_NS, 0 },
-  { "Enclosure",  RSS2_0_ENC_NS, 0 }, /* Enclosure class in RDF output */
-  { "category",   ATOM1_0_NS, 0 },
-  { "category",   RSS2_0_NS, 0 },
-  { "source"  ,   RSS2_0_NS, 0 },
-  { "feed",       ATOM1_0_NS, 0 },
-  { "entry",      ATOM1_0_NS, 0 },
-  { "<unknown>",  RSS_UNKNOWN_NS, 0 },
-  { "<none>",  RSS_UNKNOWN_NS, 0 }
+const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
+  { "channel",    RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "image",      RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "textinput",  RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "item",       RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "author",     ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_ATOM_AUTHOR },
+  { "skipHours",  RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "skipDays",   RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "Enclosure",  RSS2_0_ENC_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ENCLOSURE },
+  { "category",   ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_FIELD_ATOM_CATEGORY },
+  { "category",   RSS2_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_FIELD_CATEGORY },
+  { "source"  ,   RSS2_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_FIELD_SOURCE },
+  { "feed",       ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "entry",      ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "<unknown>",  RSS_UNKNOWN_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
+  { "<none>",  RSS_UNKNOWN_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE }
 };
 
 
@@ -271,10 +271,10 @@ raptor_rss_common_init(raptor_world* world) {
   if(!world->rss_types_info_uris)
     return -1;
   for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-    int n=raptor_rss_types_info[i].nspace;
+    int n=raptor_rss_items_info[i].nspace;
     namespace_uri=world->rss_namespaces_info_uris[n];
     if(namespace_uri) {
-      world->rss_types_info_uris[i]=raptor_new_uri_from_uri_local_name_v2(world, namespace_uri, (const unsigned char*)raptor_rss_types_info[i].name);
+      world->rss_types_info_uris[i]=raptor_new_uri_from_uri_local_name_v2(world, namespace_uri, (const unsigned char*)raptor_rss_items_info[i].name);
       if(!world->rss_types_info_uris[i])
         return -1;
     }
@@ -442,12 +442,12 @@ raptor_rss_model_add_common(raptor_rss_model* rss_model,
 
   if(rss_model->common[type]==NULL) {
     RAPTOR_DEBUG3("Adding common type %d - %s\n", type,
-                  raptor_rss_types_info[type].name);
+                  raptor_rss_items_info[type].name);
     rss_model->common[type]=item; 
   } else {
     raptor_rss_item* next;
     RAPTOR_DEBUG3("Appending common type %d - %s\n", type, 
-                  raptor_rss_types_info[type].name);
+                  raptor_rss_items_info[type].name);
     for (next=rss_model->common[type]; next->next; next=next->next)
       ;
     next->next=item;

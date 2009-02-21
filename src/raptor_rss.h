@@ -124,8 +124,6 @@ typedef struct {
   raptor_rss_type block_type;
 } raptor_rss_info;
 
-extern const raptor_rss_info raptor_rss_types_info[RAPTOR_RSS_COMMON_SIZE+1];
-
 /* Fields of typed nodes used in RSS */
 typedef enum {
   RAPTOR_RSS_FIELD_TITLE,
@@ -281,6 +279,19 @@ struct raptor_rss_block_s
 };
 typedef struct raptor_rss_block_s raptor_rss_block;
 
+#define RAPTOR_RSS_ITEM_CONTAINER 1
+#define RAPTOR_RSS_ITEM_BLOCK     2
+typedef struct {
+  const char* name;
+  rss_info_namespace nspace;
+  int flags;
+  /* RDF class URI */
+  raptor_rss_fields_type cls;
+} raptor_rss_item_info;
+
+
+extern const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1];
+
 #define RAPTOR_RSS_BLOCKS_SIZE 10
 /* Metadata blocks info */
 typedef struct {
@@ -320,7 +331,7 @@ struct raptor_rss_item_s
   raptor_world* world;
   raptor_uri *uri;
   raptor_identifier identifier;
-  const raptor_rss_info *node_type;
+  const raptor_rss_item_info *node_type;
   int node_typei;
   raptor_rss_field* fields[RAPTOR_RSS_FIELDS_SIZE];
   raptor_rss_block* blocks;
