@@ -51,7 +51,6 @@ typedef enum {
   /* metadata blocks */
   RAPTOR_RSS_ENCLOSURE,
   RAPTOR_ATOM_CATEGORY,
-  RAPTOR_RSS_CATEGORY,
   RAPTOR_RSS_SOURCE,
 
   RAPTOR_ATOM_FEED,

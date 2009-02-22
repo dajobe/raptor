@@ -72,7 +72,6 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
   { "skipDays",   RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
   { "Enclosure",  RSS2_0_ENC_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ENCLOSURE },
   { "category",   ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_FIELD_ATOM_CATEGORY },
-  { "category",   RSS2_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_FIELD_CATEGORY },
   { "source"  ,   RSS2_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_FIELD_SOURCE },
   { "feed",       ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
   { "entry",      ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
@@ -111,7 +110,7 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "type",           RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "length",         RSS2_0_NS, 0 },
   { "type",           RSS2_0_NS, 0 },
-  { "category",       RSS0_92_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_RSS_CATEGORY },
+  { "category",       RSS0_92_NS, 0 },
   { "comments",       RSS0_92_NS, 0 },
   { "items",          RSS1_0_NS, 0 },
   { "image",          RSS1_0_NS, 0 },
@@ -208,14 +207,6 @@ const raptor_rss_block_field_info raptor_rss_block_fields_info[RAPTOR_RSS_BLOCKS
   { RAPTOR_RSS_ENCLOSURE, "url",    RSS_BLOCK_FIELD_TYPE_URL,    0, RAPTOR_RSS_RDF_ENCLOSURE_URL },
   { RAPTOR_RSS_ENCLOSURE, "length", RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_RDF_ENCLOSURE_LENGTH },
   { RAPTOR_RSS_ENCLOSURE, "type",   RSS_BLOCK_FIELD_TYPE_STRING, 1, RAPTOR_RSS_RDF_ENCLOSURE_TYPE },
-
-  /*
-  RSS 2 <category> - optional element inside <item>
-  attributes:
-    domain (optional): the domain. url
-  content: category. string
-  */
-  { RAPTOR_RSS_CATEGORY, "domain",    RSS_BLOCK_FIELD_TYPE_URL,    0 },
 
   /*
   RSS 2 <source> - optional element inside <item>
