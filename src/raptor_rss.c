@@ -1016,7 +1016,7 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
     return 1;
   }
 
-  predicate_uri = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ENCLOSURE];
+  predicate_uri = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ENCLOSURE_CLASS];
 
   rss_parser->statement.predicate = predicate_uri;
   rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;

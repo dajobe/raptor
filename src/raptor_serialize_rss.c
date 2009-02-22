@@ -1807,7 +1807,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         raptor_uri* enclosure_uri=field->uri;
         raptor_rss_item *enclosure_item=NULL;
         int i;
-        if (f == RAPTOR_RSS_RDF_ENCLOSURE && item_type == RAPTOR_RSS_ITEM) {
+        if (f == RAPTOR_RSS_FIELD_ENCLOSURE && item_type == RAPTOR_RSS_ITEM) {
           for(i=0; i < raptor_sequence_size(rss_serializer->enclosures); i++) {
             enclosure_item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->enclosures, i);
             if(enclosure_item->uri && raptor_uri_equals_v2(rss_serializer->world, enclosure_uri, enclosure_item->uri))
