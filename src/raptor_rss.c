@@ -528,6 +528,9 @@ raptor_rss_start_element_handler(void *user_data,
     block = raptor_new_rss_block(rdf_parser->world, block_type, id);
     raptor_rss_item_add_block(update_item, block);
     rss_parser->current_block = block;
+
+    if(block_type == RAPTOR_RSS_ENCLOSURE)
+      rss_parser->nspaces_seen[RSS2_0_ENC_NS] = 'Y';
     
     /* Now check block attributes */
     if(named_attrs) {
