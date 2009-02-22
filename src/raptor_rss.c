@@ -96,6 +96,9 @@ struct raptor_rss_parser_s {
 
   /* namespaces seen during parsing or creating output model */
   char nspaces_seen[RAPTOR_RSS_NAMESPACES_SIZE];
+
+  /* current BLOCK pointer (inside CONTAINER of type current_type) */
+  raptor_rss_block *current_block;
 };
 
 typedef struct raptor_rss_parser_s raptor_rss_parser;
@@ -169,6 +172,7 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
   rss_parser->prev_type = RAPTOR_RSS_NONE;
   rss_parser->current_field = RAPTOR_RSS_FIELD_NONE;
   rss_parser->current_type = RAPTOR_RSS_NONE;
+  rss_parser->current_block = NULL;
 
   if(rss_parser->sax2) {
     raptor_free_sax2(rss_parser->sax2);
@@ -523,7 +527,8 @@ raptor_rss_start_element_handler(void *user_data,
                                             RAPTOR_GENID_TYPE_BNODEID, NULL);
     block = raptor_new_rss_block(rdf_parser->world, block_type, id);
     raptor_rss_item_add_block(update_item, block);
-
+    rss_parser->current_block = block;
+    
     /* Now check block attributes */
     if(named_attrs) {
       for (i = 0; i < ns_attributes_count; i++) {
@@ -724,6 +729,38 @@ raptor_rss_end_element_handler(void *user_data,
     raptor_uri* base_uri = NULL;
     
     base_uri = raptor_sax2_inscope_base_uri(rss_parser->sax2);
+
+    if(rss_parser->current_block) {
+      const raptor_rss_block_field_info *bfi;
+      int handled = 0;
+      /* in a block, maybe store the CDATA there */
+
+      for(bfi = &raptor_rss_block_fields_info[0];
+          bfi->type != RAPTOR_RSS_NONE;
+          bfi++) {
+
+        if(bfi->type != rss_parser->current_block->rss_type ||
+           bfi->attribute != NULL)
+          continue;
+
+        /* Set author name from element */
+        raptor_rss_block_set_field(rdf_parser->world, base_uri,
+                                   rss_parser->current_block,
+                                   bfi, (const char*)cdata);
+        handled = 1;
+        break;
+      }
+
+#ifdef RAPTOR_DEBUG
+      if(!handled) {
+        raptor_rss_type block_type = rss_parser->current_block->rss_type;
+        RAPTOR_DEBUG3("Ignoring cdata for block %d - %s\n",
+                      block_type, raptor_rss_items_info[block_type].name);
+      }
+#endif
+      rss_parser->current_block = NULL;
+      goto do_end_element;
+    }
 
     if(rss_parser->current_type == RAPTOR_RSS_NONE ||
        (rss_parser->current_field == RAPTOR_RSS_FIELD_NONE ||
