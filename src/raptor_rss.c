@@ -257,7 +257,7 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
 static int
 raptor_rss_add_container(raptor_rss_parser *rss_parser, const char *name) 
 {
-  raptor_rss_type type = RAPTOR_RSS_UNKNOWN;
+  raptor_rss_type type = RAPTOR_RSS_NONE;
     
   if(!strcmp(name, "rss") || !strcmp(name, "rdf") || !strcmp(name, "RDF")) {
     /* rss */
@@ -290,7 +290,7 @@ raptor_rss_add_container(raptor_rss_parser *rss_parser, const char *name)
     }
   }
     
-  if(type != RAPTOR_RSS_UNKNOWN) {
+  if(type != RAPTOR_RSS_NONE) {
     if(type == RAPTOR_RSS_ITEM)
       raptor_rss_model_add_item(&rss_parser->model);
     else
@@ -303,7 +303,7 @@ raptor_rss_add_container(raptor_rss_parser *rss_parser, const char *name)
     rss_parser->current_type = type;
   }
   
-  return (type == RAPTOR_RSS_UNKNOWN);
+  return (type == RAPTOR_RSS_NONE);
 }
 
 
@@ -706,10 +706,9 @@ raptor_rss_end_element_handler(void *user_data,
     
     base_uri = raptor_sax2_inscope_base_uri(rss_parser->sax2);
 
-    if((rss_parser->current_type==RAPTOR_RSS_NONE ||
-        rss_parser->current_type==RAPTOR_RSS_UNKNOWN) ||
-       (rss_parser->current_field==RAPTOR_RSS_FIELD_NONE ||
-        rss_parser->current_field==RAPTOR_RSS_FIELD_UNKNOWN)) {
+    if(rss_parser->current_type == RAPTOR_RSS_NONE ||
+       (rss_parser->current_field == RAPTOR_RSS_FIELD_NONE ||
+        rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN)) {
       unsigned char *p = cdata;
       int i;
       for(i = cdata_len; i>0 && *p; i--) {

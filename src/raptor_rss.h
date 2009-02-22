@@ -57,9 +57,6 @@ typedef enum {
   RAPTOR_ATOM_FEED,
   RAPTOR_ATOM_ENTRY,
 
-  /* unknown name found */
-  RAPTOR_RSS_UNKNOWN,
-
   /* nothing found yet */
   RAPTOR_RSS_NONE,
 
