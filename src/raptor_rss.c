@@ -1010,13 +1010,15 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
   raptor_rss_type block_type = block->rss_type;
   raptor_uri *predicate_uri;
   const raptor_rss_block_field_info *bfi;
+  raptor_rss_fields_type predicate_field;
 
   if(!identifier->uri && !identifier->id) {
     raptor_parser_error(rdf_parser, "Block has no identifier");
     return 1;
   }
 
-  predicate_uri = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ENCLOSURE_CLASS];
+  predicate_field = raptor_rss_items_info[block_type].cls;
+  predicate_uri = rdf_parser->world->rss_fields_info_uris[predicate_field];
 
   rss_parser->statement.predicate = predicate_uri;
   rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
@@ -1045,8 +1047,9 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
     int attribute_type;
     int offset;
     
-    if(bfi->type != block_type)
+    if(bfi->type != block_type || !bfi->attribute)
       continue;
+
     attribute_type = bfi->attribute_type;
     offset = bfi->offset;
     predicate_uri = rdf_parser->world->rss_fields_info_uris[bfi->field];
@@ -1089,11 +1092,13 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
   int f;
   raptor_identifier* identifier = &item->identifier;
   raptor_rss_block *block;
-    
+  raptor_uri *type_uri;
+
   if(!item->fields_count)
     return 0;
 
-  if(raptor_rss_emit_type_triple(rdf_parser, identifier, rdf_parser->world->rss_types_info_uris[item->node_typei]))
+  type_uri = rdf_parser->world->rss_types_info_uris[item->node_typei];
+  if(raptor_rss_emit_type_triple(rdf_parser, identifier, type_uri))
     return 1;
 
   for(f = 0; f< RAPTOR_RSS_FIELDS_SIZE; f++) {
