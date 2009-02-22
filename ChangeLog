@@ -1,4 +1,220 @@
+2009-02-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: raptor_rss_items_info - add block
+	predicate types raptor_rss_fields_info - make atom:author a
+	block. add atom:Author, atom:Category, atom:label, atom:schema and
+	atom:term raptor_rss_block_fields_info - add new predicates for
+	atom:category block add atom:author block
+
+	* src/raptor_rss.c: raptor_rss_parser gains current_block field to
+	store current metadata block object.
+	(raptor_rss_start_element_handler): Set current_block.
+	(raptor_rss_end_element_handler): Store any cdata in block field
+	with NULL attribute if there is one.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Wildcard element name matches
+	for RSS namespaces
+
+	* src/raptor_rss.c:
+	(raptor_rss_block_set_field): Added.
+	(raptor_rss_start_element_handler): Use above to set a block
+	attribute value
+
+	* src/raptor_rss.c: raptor_rss_parser - comment.
+	(raptor_rss_start_element_handler): Use
+	raptor_rss_get_current_item to get item.  When checking block
+	attributes, skip NULL attribute names - for element cdata
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Code style and skip block fields with no name.
+	(raptor_rss_emit_item): Code style.
+
+	* src/raptor_rss_common.c: raptor_rss_fields_info modify to make
+	rss:link and rss:docs take URLs
+
+	* src/raptor_rss.c, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: Use RAPTOR_RSS_RDF_ENCLOSURE_CLASS for
+	enclosure class and RAPTOR_RSS_FIELD_ENCLOSURE for predicate
+
+	* src/raptor_rss.h: RAPTOR_RSS_BLOCKS_SIZE 10 after removing rss
+	container
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Add itunes: namespace
+	and itunes:owner container with fields in namespace itunes:
+	author, subtitle, summary, keywords explicit, image, name, block,
+	category and email
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: raptor_rss_type loses
+	RAPTOR_RSS_CATEGORY type.  raptor_rss_block_fields_info loses rss
+	category - just make it a string value
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	raptor_rss_type delete RAPTOR_RSS_UNKNOWN and replace with
+	RAPTOR_RSS_NONE everywhere
+
+2009-02-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: raptor_rss_field_info renamed from
+	raptor_rss_info
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: raptor_rss_items_info renamed from
+	raptor_rss_types_info raptor_rss_types_info gains a flags field to
+	distinguish blocks from containers.
+	(raptor_rss_add_container): Use flag to only scan containers, not
+	blocks.
+	(raptor_rss_emit_block): Handle all types of blocks.  Use the node
+	type from raptor_rss_types_info to emit the node type.  Use the
+	raptor_rss_block_fields_info to emit the predicates for all
+	blocks.
+
+2009-02-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Code style.
+
+	* src/raptor_rss.c:
+	(raptor_rss_insert_identifiers): Tidy to use
+	raptor_set_identifier_uri. Indenting.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: 
+	(raptor_rss_start_element_handler, raptor_rss_insert_identifiers,
+	raptor_rss10_serialize_statement): Use raptor_set_identifier_uri
+	and raptor_set_identifier_id and refactor to use them better.
+	(raptor_rss_block_make_blank_node,
+	raptor_rss_insert_block_identifiers): Deleted.
+	(raptor_rss_item_equals_statement_subject): Added.
+	(raptor_new_rss_block): Add id argument.
+
+	* src/raptor_identifier.c, src/raptor_internal.h:
+	Added raptor_set_identifier_uri and raptor_set_identifier_id
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: Remove old enclosure core and switch
+	to data-driven raptor_rss_block metadata code.  Update copyrights
+	for 2009.  typedef raptor_rss_block_fields_info renamed from
+	raptor_rss_block_info and add docs.  Renamed field 'attribute'
+	from field_name, attribute_type from field_type.  Added rdf
+	predicate info 'field'.  raptor_rss_block_fields_info adds
+	predicate info.
+	(raptor_rss_start_element_handler): Read from
+	raptor_rss_block_fields_info.
+	(raptor_rss_insert_block_identifiers): Renamed from
+	raptor_rss_insert_enclosure_identifiers.
+	(raptor_rss_insert_identifiers): Call above with new name.
+	(raptor_rss_emit_block): Use more data tables to emit block.
+
+	* src/raptor_rss_common.c: Add sentinel to end
+	raptor_rss_blocks_info array
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Recognise blocks from flags
+	and handle <enclosure> attributes @url, @length and @type -
+	statically for now.
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: raptor_rss_info gains
+	block flag and block_type to use when a block is found.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Fix conditions for recognizing
+	inner containers.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c: Add
+	raptor_rss_block_info to record other metadata blocks
+	configuration: rss enclosues, atom categories, rss category and
+	rss source.  Switch raptor_rss_block structure from a list of
+	specific fields to short arrays of urls and strings.
+	(raptor_free_rss_block, raptor_rss_start_element_handler,
+	raptor_rss_insert_enclosure_identifiers, raptor_rss_emit_block):
+	Switch to generic raptor_rss_block URLs, strings
+
+2009-02-20  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Compilation fix after function parameter
+	rename
+
+2009-02-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Renamed from raptor_rss_emit_enclosure
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Add none raptor node type
+
+	* src/raptor_rss.c: Code style / whitespace.
+	(raptor_rss_end_element_handler): Use
+	raptor_rss_get_current_item() to get update_item.
+
 2009-02-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_get_current_item): Pull logic out to get item for
+	current type.
+	(raptor_rss_start_element_handler): Fix inner container
+	processing. Look for rdf:about on an item to get item URI there
+	first. Pull out enclosure construction from general field
+	handling.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Remove extra code block &
+	outdent.
+
+	* src/raptor_rss.c:
+	(raptor_rss_promote_namespace_uri): Added for storing namespace
+	change rules.
+	(raptor_rss_start_element_handler): Use above to simplify field
+	search logic.  Document how an element matches a field.
+
+	* src/raptor_rss.c:
+	(raptor_rss_add_container): Add rules about inner containers,
+	setting prev_type if seen and put author element ambiguity rules
+	here.
+	(raptor_rss_start_element_handler): Use above to replace inner
+	container identification code.
+
+	* src/raptor_rss.c:
+	(raptor_rss_add_container): Added, pulled out of
+	raptor_rss_start_element_handler to include the logic for
+	determining feed type and container from element name.
+	(raptor_rss_start_element_handler): Call above.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Comments and tidying control
+	flow when identifying a container for rss_parser->current_type
+
+	* src/raptor_rss.c:
+	(raptor_rss_block_make_blank_node): Added
+	pulled out of raptor_rss_insert_identifiers
+	(raptor_rss_insert_identifiers): Call above.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	raptor_rss_block gains rss_type field
+	(raptor_new_rss_block): Take type as param and use to set
+	node_type.
+	(raptor_rss_insert_enclosure_identifiers): Remove node_type init
+	and let raptor_new_rss_block set it.
+	(raptor_rss_start_element_handler): Call raptor_new_rss_type with
+	param for enclosure.
+
+	* src/raptor_rss.h: prototype param
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	raptor_rss_item renamed field enclosure to blocks.
+	(raptor_rss_insert_identifiers, raptor_rss_emit_item,
+	raptor_free_rss_item, raptor_rss_item_add_block): Renamed
+	item->enclosure to item->blocks and renamed variables.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	Rename raptor_rss_enclosure to raptor_rss_block throughout and
+	corrected naming convention.
+
+	(raptor_new_rss_block): Renamed from raptor_rss_new_enclosure.
+	(raptor_rss_item_add_block): Renamed from
+	raptor_rss_item_add_enclosure.
+	(raptor_free_rss_block): Renamed from raptor_enclosure_free.
 
 	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
 	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
