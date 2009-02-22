@@ -44,6 +44,9 @@ typedef enum {
   /* atom author */
   RAPTOR_ATOM_AUTHOR,
 
+  /* itunes owner */
+  RAPTOR_ITUNES_OWNER,
+
   /* also common, but IGNORED */
   RAPTOR_RSS_SKIPHOURS,
   RAPTOR_RSS_SKIPDAYS,
@@ -76,6 +79,7 @@ typedef enum {
 #define ATOM1_0_NAMESPACE_URI    "http://www.w3.org/2005/Atom"
 #define RDF_NAMESPACE_URI        "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define ATOMTRIPLES_NAMESPACE_URI "http://purl.org/syndication/atomtriples/1"
+#define ITUNES_NAMESPACE_URI      "http://www.itunes.com/dtds/podcast-1.0.dtd"
 
 /* Old netscape namespace, turn into RSS 1.0 */
 #define RSS0_9_NAMESPACE_URI  "http://my.netscape.com/rdf/simple/0.9/"
@@ -96,8 +100,9 @@ typedef enum {
   ATOM1_0_NS     = 10,
   RDF_NS         = 11,
   ATOMTRIPLES_NS = 12,
+  ITUNES_NS      = 13,
 
-  RAPTOR_RSS_NAMESPACES_SIZE = ATOMTRIPLES_NS + 1
+  RAPTOR_RSS_NAMESPACES_SIZE = ITUNES_NS + 1
 } rss_info_namespace;
 
 
@@ -208,6 +213,18 @@ typedef enum {
   RAPTOR_RSS_FIELD_CONTENT_ENCODED,  /* rss 1.0 module content:encoded */
 
   RAPTOR_RSS_FIELD_AT_CONTENT_TYPE,  /* at:contentType */
+
+  RAPTOR_RSS_FIELD_ITUNES_AUTHOR,
+  RAPTOR_RSS_FIELD_ITUNES_SUBTITLE,
+  RAPTOR_RSS_FIELD_ITUNES_SUMARY,
+  RAPTOR_RSS_FIELD_ITUNES_KEYWORDS,
+  RAPTOR_RSS_FIELD_ITUNES_EXPLICIT,
+  RAPTOR_RSS_FIELD_ITUNES_IMAGE,
+  RAPTOR_RSS_FIELD_ITUNES_NAME,
+  RAPTOR_RSS_FIELD_ITUNES_OWNER,
+  RAPTOR_RSS_FIELD_ITUNES_BLOCK,
+  RAPTOR_RSS_FIELD_ITUNES_CATEGORY,
+  RAPTOR_RSS_FIELD_ITUNES_EMAIL,
 
   RAPTOR_RSS_FIELD_UNKNOWN,
 

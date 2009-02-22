@@ -59,6 +59,7 @@ const raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES
   { ATOM1_0_NAMESPACE_URI,    "atom",    },
   { RDF_NAMESPACE_URI,        "rdf",     },
   { ATOMTRIPLES_NAMESPACE_URI, "at",     },
+  { ITUNES_NAMESPACE_URI,     "itunes",  },
 };
 
 
@@ -68,6 +69,7 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
   { "textinput",  RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
   { "item",       RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
   { "author",     ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_ATOM_AUTHOR },
+  { "owner"  ,   ITUNES_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_ITUNES_OWNER },
   { "skipHours",  RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
   { "skipDays",   RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE },
   { "Enclosure",  RSS2_0_ENC_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ENCLOSURE },
@@ -165,6 +167,19 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "encoded",        CONTENT_NS, 0 },
 
   { "contentType",    ATOMTRIPLES_NS, 0 },
+
+  { "author",         ITUNES_NS, 0 },
+  { "subtitle",       ITUNES_NS, 0 },
+  { "summary",        ITUNES_NS, 0 },
+  { "keywords",       ITUNES_NS, 0 },
+  { "explicit",       ITUNES_NS, 0 },
+  { "image",          ITUNES_NS, 0 },
+  { "name",           ITUNES_NS, 0 },
+  { "owner",          ITUNES_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_ITUNES_OWNER },
+  { "block",          ITUNES_NS, 0 },
+  { "category",       ITUNES_NS, 0 },
+  { "email",          ITUNES_NS, 0 },
+
 
   { "<unknown>",      RSS_UNKNOWN_NS, 0 },
   { "<none>",         RSS_UNKNOWN_NS, 0 }
