@@ -473,12 +473,17 @@ raptor_rss_start_element_handler(void *user_data,
   for(i = 0; i < RAPTOR_RSS_FIELDS_SIZE; i++) {
     raptor_uri* nspace_URI;
     raptor_uri* field_nspace_URI;
+    rss_info_namespace nsid = raptor_rss_fields_info[i].nspace;
     
     if(strcmp((const char*)name, raptor_rss_fields_info[i].name))
       continue;
     
-    if(!el_nspace && raptor_rss_fields_info[i].nspace == RSS_NO_NS) {
-      /* Matches if the element has no namespace ana so does the field (RSS) */
+    if(!el_nspace) {
+      if(nsid != RSS_NO_NS && nsid != RSS1_0_NS && nsid != RSS0_91_NS &&
+         nsid != RSS0_9_NS && nsid != RSS1_1_NS)
+        continue;
+
+      /* Matches if the element has no namespace and field is not atom */
       rss_parser->current_field = (raptor_rss_fields_type)i;
       break;
     }
