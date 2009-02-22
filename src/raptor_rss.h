@@ -33,6 +33,7 @@ extern "C" {
 
 
 typedef enum {
+/* CONTAINERs */
   /* common */
   RAPTOR_RSS_CHANNEL,
   RAPTOR_RSS_IMAGE,
@@ -47,15 +48,16 @@ typedef enum {
   /* itunes owner */
   RAPTOR_ITUNES_OWNER,
 
-  /* also common, but IGNORED */
+  /* containers but IGNORED */
   RAPTOR_RSS_SKIPHOURS,
   RAPTOR_RSS_SKIPDAYS,
 
-  /* metadata blocks */
+/* metadata BLOCKs */
   RAPTOR_RSS_ENCLOSURE,
   RAPTOR_ATOM_CATEGORY,
   RAPTOR_RSS_SOURCE,
 
+/* serializing containers */
   RAPTOR_ATOM_FEED,
   RAPTOR_ATOM_ENTRY,
 
@@ -151,7 +153,7 @@ typedef enum {
   RAPTOR_RSS_FIELD_AUTHOR,        /* item 2.0 */
   RAPTOR_RSS_FIELD_GUID,          /* item 2.0 */
   RAPTOR_RSS_FIELD_ENCLOSURE,     /* item 0.92, 2.0 */
-  RAPTOR_RSS_RDF_ENCLOSURE,        /* In RDF output, not an RSS field */
+  RAPTOR_RSS_RDF_ENCLOSURE_CLASS,  /* In RDF output, not an RSS field */
   RAPTOR_RSS_RDF_ENCLOSURE_URL,    /* In RDF output, not an RSS field */
   RAPTOR_RSS_RDF_ENCLOSURE_LENGTH, /* In RDF output, not an RSS field */
   RAPTOR_RSS_RDF_ENCLOSURE_TYPE,   /* In RDF output, not an RSS field */
@@ -192,6 +194,13 @@ typedef enum {
   RAPTOR_RSS_FIELD_ATOM_SUBTITLE,    /* atom 1.0 subtitle */
   RAPTOR_RSS_FIELD_ATOM_SUMMARY,     /* atom 1.0 summary */
   RAPTOR_RSS_FIELD_ATOM_URI,         /* atom 1.0 uri */
+
+  RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS,      /* In RDF output, not atom field */
+  RAPTOR_RSS_RDF_ATOM_CATEGORY_CLASS,    /* In RDF output, not atom field */
+
+  RAPTOR_RSS_FIELD_ATOM_LABEL,      /* atom 1.0 attribute label */
+  RAPTOR_RSS_FIELD_ATOM_SCHEME,     /* atom 1.0 attribute scheme */
+  RAPTOR_RSS_FIELD_ATOM_TERM,       /* atom 1.0 attribute term */
 
   RAPTOR_RSS_FIELD_DC_TITLE,       /* DC title */
   RAPTOR_RSS_FIELD_DC_CONTRIBUTOR, /* DC contributor */
@@ -300,6 +309,8 @@ typedef struct {
   int flags;
   /* RDF class URI */
   raptor_rss_fields_type cls;
+  /* RDF predicate URI to connect to the instance of this item */
+  raptor_rss_fields_type predicate;
 } raptor_rss_item_info;
 
 
@@ -310,7 +321,7 @@ extern const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1
 typedef struct {
   /* metadata block type it applies to */
   raptor_rss_type type;
-  /* XML attribute */
+  /* XML attribute (or NULL for field to use to store CDATA) */
   const char *attribute;
   /* How that attribute should be interpreted: url or string */
   int attribute_type;
