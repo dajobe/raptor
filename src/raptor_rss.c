@@ -344,6 +344,31 @@ raptor_rss_get_current_item(raptor_rss_parser *rss_parser)
 
 
 static void
+raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
+                           raptor_rss_block *block,
+                           const raptor_rss_block_field_info *bfi,
+                           const char *string)
+{
+  int attribute_type = bfi->attribute_type;
+  int offset = bfi->offset;
+  if(attribute_type == RSS_BLOCK_FIELD_TYPE_URL) {
+    raptor_uri* uri;
+    uri = raptor_new_uri_relative_to_base_v2(world, base_uri,
+                                             (const unsigned char*)string);
+    block->urls[offset] = uri;
+  } else if (attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
+    size_t len = strlen(string);
+    block->strings[offset] = (char*)RAPTOR_MALLOC(cstring, len+1);
+    strncpy(block->strings[offset], string, len+1);
+  } else {
+#ifdef RAPTOR_DEBUG
+    RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
+#endif
+  }
+}
+
+
+static void
 raptor_rss_start_element_handler(void *user_data,
                                  raptor_xml_element* xml_element)
 {
@@ -522,22 +547,8 @@ raptor_rss_start_element_handler(void *user_data,
         
         /* Found attribute for this block type */
         RAPTOR_DEBUG3("  found block attribute %s=%s\n", attrName, attrValue);
-
-        if(attribute_type == RSS_BLOCK_FIELD_TYPE_URL) {
-          raptor_uri* uri;
-          uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world,
-                                                   base_uri, attrValue);
-          block->urls[offset] = uri;
-        } else if (attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
-          size_t len = strlen((const char*)attrValue);
-          block->strings[offset] = (char*)RAPTOR_MALLOC(cstring, len+1);
-          strncpy(block->strings[offset], (char*)attrValue, len+1);
-        } else {
-#ifdef RAPTOR_DEBUG
-          RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
-#endif
-        }
-
+        raptor_rss_block_set_field(rdf_parser->world, base_uri,
+                                   block, bfi, (const char*)attrValue);
       }
 
     }
