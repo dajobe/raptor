@@ -83,7 +83,7 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
 
 const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "title",          RSS1_0_NS, 0 },
-  { "link",           RSS1_0_NS, 0 },
+  { "link",           RSS1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "description",    RSS1_0_NS, 0 },
   { "url",            RSS1_0_NS, 0 },
   { "name",           RSS1_0_NS, 0 },
@@ -92,7 +92,7 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "copyright",      RSS0_91_NS, 0 },
   { "pubDate",        RSS0_91_NS, 0 },
   { "lastBuildDate",  RSS0_91_NS, 0 },
-  { "docs",           RSS0_91_NS, 0 },
+  { "docs",           RSS0_91_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "managingEditor", RSS0_91_NS, 0 },
   { "webMaster",      RSS0_91_NS, 0 },
   { "cloud",          RSS0_92_NS, 0 },
