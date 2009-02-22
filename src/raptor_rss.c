@@ -75,7 +75,7 @@ struct raptor_rss_parser_s {
 
   raptor_sax2 *sax2;
 
-  /* rss node type of current item */
+  /* rss node type of current CONTAINER item */
   raptor_rss_type current_type;
 
   /* one place stack */
@@ -488,7 +488,7 @@ raptor_rss_start_element_handler(void *user_data,
 
     RAPTOR_DEBUG3("FOUND new block type %d - %s\n", block_type,
                   raptor_rss_items_info[block_type].name);
-    update_item = rss_parser->model.last;
+    update_item = raptor_rss_get_current_item(rss_parser);
     id = raptor_parser_internal_generate_id(rdf_parser,
                                             RAPTOR_GENID_TYPE_BNODEID, NULL);
     block = raptor_new_rss_block(rdf_parser->world, block_type, id);
@@ -507,6 +507,9 @@ raptor_rss_start_element_handler(void *user_data,
         for(bfi = &raptor_rss_block_fields_info[0];
             bfi->type != RAPTOR_RSS_NONE;
             bfi++) {
+          if(!bfi->attribute)
+            continue;
+          
           if(bfi->type == block_type && !strcmp(attrName, bfi->attribute)) {
             attribute_type = bfi->attribute_type;
             offset = bfi->offset;
