@@ -116,7 +116,6 @@ struct raptor_rss_element_s
   raptor_world* world;
 
   raptor_uri* uri;
-  const unsigned char *rel;
 
   /* Two types of content */
   raptor_rss_content_type type;
@@ -141,8 +140,6 @@ raptor_free_rss_element(raptor_rss_element *rss_element)
 {
   if(rss_element->uri)
     raptor_free_uri_v2(rss_element->world, rss_element->uri);
-  if(rss_element->rel)
-    raptor_free_memory((void*)rss_element->rel);
   if(rss_element->type == RAPTOR_RSS_CONTENT_TYPE_XML) {
     if(rss_element->xml_writer)
       raptor_free_xml_writer(rss_element->xml_writer);
@@ -618,12 +615,6 @@ raptor_rss_start_element_handler(void *user_data,
             }
           }
         }
-      } else if(!strcmp((const char*)attrName, "rel")) {
-        size_t len = strlen((const char*)attrValue);
-        RAPTOR_DEBUG2("  setting rel length %s\n", attrValue);
-        rss_element->rel = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-        strncpy((char*)rss_element->rel, (const char*)attrValue, len+1);
-        attrValue = NULL;
       } else if(!strcmp((const char*)attrName, "href")) {
         if(rss_parser->current_field == RAPTOR_RSS_FIELD_LINK ||
            rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
@@ -801,11 +792,7 @@ raptor_rss_end_element_handler(void *user_data,
       raptor_rss_item* update_item = raptor_rss_get_current_item(rss_parser);
       raptor_rss_field* field = raptor_rss_new_field(rdf_parser->world);
 
-      if(rss_parser->current_field == RAPTOR_RSS_FIELD_LINK &&
-         rss_element->rel && 
-         !strcmp((const char*)rss_element->rel, "alternate")) {
-        /* RSS with rel != alternate ignored FIXME */
-      } else if(rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN) {
+      if(rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN) {
         RAPTOR_DEBUG2("Cannot add URI from alternate attribute to type %s unknown field\n", raptor_rss_items_info[rss_parser->current_type].name);
         raptor_rss_field_free(field);
       } else {
