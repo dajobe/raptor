@@ -618,26 +618,6 @@ raptor_rss_start_element_handler(void *user_data,
             }
           }
         }
-      } else if(!strcmp((const char*)attrName, "url")) {
-        if(!strcmp((const char*)name, "source")) {
-          /* <source url="...">foo</source> */
-          if(rss_parser->model.last) {
-            /*
-              rss_parser->last->source_url = attrValue; 
-              attrValue = NULL;
-            */
-          }
-        }
-      } else if(!strcmp((const char*)attrName, "domain")) {
-        if(!strcmp((const char*)name, "category")) {
-          /* <category domain="URL">foo</source> */
-          if(rss_parser->model.last) {
-            /*
-              rss_parser->last->category_url = attrValue; 
-              attrValue = NULL;
-            */
-          }
-        }
       } else if(!strcmp((const char*)attrName, "rel")) {
         size_t len = strlen((const char*)attrValue);
         RAPTOR_DEBUG2("  setting rel length %s\n", attrValue);
