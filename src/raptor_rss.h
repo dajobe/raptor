@@ -155,6 +155,7 @@ typedef enum {
   RAPTOR_RSS_FIELD_AUTHOR,        /* item 2.0 */
   RAPTOR_RSS_FIELD_GUID,          /* item 2.0 */
   RAPTOR_RSS_FIELD_ENCLOSURE,     /* item 0.92, 2.0 */
+  RAPTOR_RSS_RDF_ENCLOSURE,        /* In RDF output, not an RSS field */
   RAPTOR_RSS_RDF_ENCLOSURE_CLASS,  /* In RDF output, not an RSS field */
   RAPTOR_RSS_RDF_ENCLOSURE_URL,    /* In RDF output, not an RSS field */
   RAPTOR_RSS_RDF_ENCLOSURE_LENGTH, /* In RDF output, not an RSS field */
@@ -324,7 +325,7 @@ typedef struct {
 
 extern const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1];
 
-#define RAPTOR_RSS_BLOCKS_SIZE 16
+#define RAPTOR_RSS_BLOCKS_SIZE 17
 /* Metadata blocks info */
 typedef struct {
   /* metadata block type it applies to */

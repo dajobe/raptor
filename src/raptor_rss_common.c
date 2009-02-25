@@ -73,7 +73,7 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
   { "Owner"  ,   ITUNES_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_ITUNES_OWNER, RAPTOR_RSS_FIELD_ITUNES_OWNER },
   { "skipHours",  RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
   { "skipDays",   RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
-  { "Enclosure",  RSS2_0_ENC_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ENCLOSURE_CLASS, RAPTOR_RSS_FIELD_ENCLOSURE },
+  { "Enclosure",  RSS2_0_ENC_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ENCLOSURE_CLASS, RAPTOR_RSS_RDF_ENCLOSURE },
   { "category",   ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ATOM_CATEGORY_CLASS, RAPTOR_RSS_FIELD_ATOM_CATEGORY },
   { "source"  ,   RSS2_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_FIELD_SOURCE, RAPTOR_RSS_FIELD_NONE },
   { "feed",       ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
@@ -107,6 +107,7 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "author",         RSS2_0_NS, 0 },
   { "guid",           RSS2_0_NS, 0 },
   { "enclosure",      RSS2_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_RSS_ENCLOSURE },     /* enclosure in RSS */
+  { "Enclosure",      RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "enclosure",      RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "url",            RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "length",         RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
