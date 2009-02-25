@@ -68,8 +68,9 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
   { "image",      RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
   { "textinput",  RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
   { "item",       RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
-  { "author",     ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS, RAPTOR_RSS_FIELD_ATOM_AUTHOR },
-  { "owner"  ,   ITUNES_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_ITUNES_OWNER, RAPTOR_RSS_FIELD_ITUNES_OWNER },
+  { "Author",     ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS, RAPTOR_RSS_FIELD_ATOM_AUTHOR },
+  { "Link",       ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ATOM_LINK_CLASS, RAPTOR_RSS_FIELD_ATOM_LINK },
+  { "Owner"  ,   ITUNES_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_ITUNES_OWNER, RAPTOR_RSS_FIELD_ITUNES_OWNER },
   { "skipHours",  RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
   { "skipDays",   RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
   { "Enclosure",  RSS2_0_ENC_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ENCLOSURE_CLASS, RAPTOR_RSS_FIELD_ENCLOSURE },
@@ -138,7 +139,7 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "feed",           ATOM1_0_NS, 0 },
   { "generator",      ATOM1_0_NS, 0 },
   { "icon",           ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
-  { "link",           ATOM1_0_NS, 0 },
+  { "link",           ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_ATOM_LINK },
   { "logo",           ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "name",           ATOM1_0_NS, 0 },
   { "published",      ATOM1_0_NS, 0 },
@@ -150,10 +151,16 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
 
   { "Author",         ATOM1_0_NS, 0 },
   { "Category",       ATOM1_0_NS, 0 },
+  { "Link",           ATOM1_0_NS, 0 },
 
   { "label",          ATOM1_0_NS, 0 },
   { "scheme",         ATOM1_0_NS, 0, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "term",           ATOM1_0_NS, 0 },
+  { "href",           ATOM1_0_NS, 0, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
+  { "rel",            ATOM1_0_NS, 0 },
+  { "type",           ATOM1_0_NS, 0 },
+  { "hreflang",       ATOM1_0_NS, 0 },
+  { "length",         ATOM1_0_NS, 0 },
 
   { "title",          DC_NS, 0 },
   { "contributor",    DC_NS, 0 },
@@ -260,6 +267,25 @@ const raptor_rss_block_field_info raptor_rss_block_fields_info[RAPTOR_RSS_BLOCKS
   { RAPTOR_ATOM_AUTHOR, "name",  RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_NAME },
   { RAPTOR_ATOM_AUTHOR, NULL,    RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_NAME },
   { RAPTOR_ATOM_AUTHOR, "email", RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_EMAIL },
+
+  /*
+  Atom <link> - optional element inside <entry>
+  attributes:
+    href (required):  . url
+    rel (optional): . string
+    type (optional): . string
+    hreflang (optional): . string
+    title (optional): . string
+    length (optional): . string
+  content: empty
+  */
+  { RAPTOR_ATOM_LINK, "href", RSS_BLOCK_FIELD_TYPE_URL, 0, RAPTOR_RSS_FIELD_ATOM_HREF },
+  { RAPTOR_ATOM_LINK, "rel",  RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_REL },
+  { RAPTOR_ATOM_LINK, "type", RSS_BLOCK_FIELD_TYPE_STRING, 1, RAPTOR_RSS_FIELD_ATOM_TYPE },
+  { RAPTOR_ATOM_LINK, "hreflang", RSS_BLOCK_FIELD_TYPE_STRING, 2, RAPTOR_RSS_FIELD_ATOM_HREFLANG },
+  { RAPTOR_ATOM_LINK, "title", RSS_BLOCK_FIELD_TYPE_STRING, 3, RAPTOR_RSS_FIELD_ATOM_TITLE },
+  { RAPTOR_ATOM_LINK, "length", RSS_BLOCK_FIELD_TYPE_STRING, 4, RAPTOR_RSS_FIELD_ATOM_LENGTH },
+  { RAPTOR_ATOM_LINK, NULL, RSS_BLOCK_FIELD_TYPE_URL, 0, RAPTOR_RSS_FIELD_ATOM_HREF },
 
   /* sentinel */
   { RAPTOR_RSS_NONE, NULL, 0, 0 }

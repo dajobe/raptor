@@ -44,6 +44,8 @@ typedef enum {
 
   /* atom author */
   RAPTOR_ATOM_AUTHOR,
+  /* atom link */
+  RAPTOR_ATOM_LINK,
 
   /* itunes owner */
   RAPTOR_ITUNES_OWNER,
@@ -197,10 +199,16 @@ typedef enum {
 
   RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS,      /* In RDF output, not atom field */
   RAPTOR_RSS_RDF_ATOM_CATEGORY_CLASS,    /* In RDF output, not atom field */
+  RAPTOR_RSS_RDF_ATOM_LINK_CLASS,        /* In RDF output, not atom field */
 
   RAPTOR_RSS_FIELD_ATOM_LABEL,      /* atom 1.0 attribute label */
   RAPTOR_RSS_FIELD_ATOM_SCHEME,     /* atom 1.0 attribute scheme */
   RAPTOR_RSS_FIELD_ATOM_TERM,       /* atom 1.0 attribute term */
+  RAPTOR_RSS_FIELD_ATOM_HREF,       /* atom 1.0 attribute term */
+  RAPTOR_RSS_FIELD_ATOM_REL,        /* atom 1.0 attribute term */
+  RAPTOR_RSS_FIELD_ATOM_TYPE,       /* atom 1.0 attribute term */
+  RAPTOR_RSS_FIELD_ATOM_HREFLANG,   /* atom 1.0 attribute term */
+  RAPTOR_RSS_FIELD_ATOM_LENGTH,     /* atom 1.0 attribute term */
 
   RAPTOR_RSS_FIELD_DC_TITLE,       /* DC title */
   RAPTOR_RSS_FIELD_DC_CONTRIBUTOR, /* DC contributor */
@@ -316,7 +324,7 @@ typedef struct {
 
 extern const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1];
 
-#define RAPTOR_RSS_BLOCKS_SIZE 10
+#define RAPTOR_RSS_BLOCKS_SIZE 16
 /* Metadata blocks info */
 typedef struct {
   /* metadata block type it applies to */
