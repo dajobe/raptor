@@ -1043,7 +1043,7 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
     return 1;
   }
 
-  predicate_field = raptor_rss_items_info[block_type].cls;
+  predicate_field = raptor_rss_items_info[block_type].predicate;
   predicate_uri = rdf_parser->world->rss_fields_info_uris[predicate_field];
 
   rss_parser->statement.predicate = predicate_uri;
