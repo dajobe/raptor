@@ -107,8 +107,8 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "author",         RSS2_0_NS, 0 },
   { "guid",           RSS2_0_NS, 0 },
   { "enclosure",      RSS2_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_RSS_ENCLOSURE },     /* enclosure in RSS */
-  { "Enclosure",      RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
-  { "enclosure",      RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
+  { "enclosure",      RSS2_0_ENC_NS, 0 }, /* RDF output predicate, not an RSS field */
+  { "Enclosure",      RSS2_0_ENC_NS, 0 }, /* RDF output class, not an RSS field */
   { "url",            RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "length",         RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
   { "type",           RSS2_0_ENC_NS, 0 }, /* In RDF output, not an RSS field */
