@@ -69,10 +69,10 @@ typedef struct {
   /* Triples with no assigned type node */
   raptor_sequence *triples;
 
-  /* URIs of rdf:Seq items rdf:_<n> at offset n */
+  /* Sequence of raptor_rss_item* : rdf:Seq items rdf:_<n> at offset n */
   raptor_sequence *items;
 
-  /* URIs of raptor_rss_item* (?x rdf:type rss:Enclosure) */
+  /* Sequence of raptor_rss_item* (?x rdf:type rss:Enclosure) */
   raptor_sequence *enclosures;
 
   /* URI of rdf:Seq node */
