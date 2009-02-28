@@ -766,10 +766,16 @@ static int
 raptor_rss10_serialize_statement(raptor_serializer* serializer, 
                                  const raptor_statement *statement)
 {
-  raptor_rss10_serializer_context *rss_serializer=(raptor_rss10_serializer_context*)serializer->context;
-  raptor_rss_model* rss_model=&rss_serializer->model;
-  int handled=0;
-  
+  raptor_rss10_serializer_context *rss_serializer;
+  raptor_rss_model *rss_model;
+  int handled = 0;
+  int i;
+  raptor_rss_type type;
+  raptor_rss_item *item = NULL;
+
+  rss_serializer = (raptor_rss10_serializer_context*)serializer->context;
+  rss_model = &rss_serializer->model;
+
   if(raptor_uri_equals_v2(rss_serializer->world,
                           (raptor_uri*)statement->predicate, 
                           RAPTOR_RSS_RSS_items_URI(rss_model))) {
@@ -777,104 +783,120 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     return 0;
   }
 
-  if(raptor_uri_equals_v2(rss_serializer->world,
-                          (raptor_uri*)statement->predicate, 
-                          RAPTOR_RSS_RDF_type_URI(rss_model))) {
+  if(!raptor_uri_equals_v2(rss_serializer->world,
+                           (raptor_uri*)statement->predicate, 
+                           RAPTOR_RSS_RDF_type_URI(rss_model))) 
+    goto savetriple;
+  
 
-    if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-       raptor_uri_equals_v2(rss_serializer->world,
-                            (raptor_uri*)statement->object, 
-                            RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
-
-      /* triple (?resource rdf:type rdf:Seq) */
-      if(statement->subject_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-        RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",
-                      (char*)statement->subject);
-        rss_serializer->seq_uri=raptor_new_uri_v2(rss_serializer->world, (unsigned char*)statement->subject);
-      } else {
-        RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
-                      raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)statement->subject));
-        rss_serializer->seq_uri=raptor_uri_copy_v2(rss_serializer->world, rss_serializer->seq_uri);
-      }
-      
-      handled=1;
+  /* Look for triple (?resource rdf:type rdf:Seq) */
+  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+     raptor_uri_equals_v2(rss_serializer->world,
+                          (raptor_uri*)statement->object, 
+                          RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
+    
+    if(statement->subject_type==RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+      RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",
+                    (char*)statement->subject);
+      rss_serializer->seq_uri = raptor_new_uri_v2(rss_serializer->world,
+                                                  (unsigned char*)statement->subject);
     } else {
-      int i;
-      raptor_rss_type type=RAPTOR_RSS_NONE;
-      
-      for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-        raptor_uri *item_uri=serializer->world->rss_types_info_uris[i];
-        if(item_uri &&
-           raptor_uri_equals_v2(rss_serializer->world, (raptor_uri*)statement->object, item_uri)) {
-          type=(raptor_rss_type)i;
-          RAPTOR_DEBUG4("Found RSS 1.0 typed node %i - %s with URI <%s>\n", type, raptor_rss_items_info[type].name,
-                        raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)statement->subject));
-          break;
-        }
-      }
-
-      if(type != RAPTOR_RSS_NONE) {
-        raptor_rss_item *item=NULL;
-
-        if(type == RAPTOR_RSS_ITEM) {
-          for(i=0; i < raptor_sequence_size(rss_serializer->items); i++) {
-            item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
-            if(raptor_rss_item_equals_statement_subject(item, statement))
-              break;
-            
-          }
-          if(i < raptor_sequence_size(rss_serializer->items)) {
-            RAPTOR_DEBUG2("Found RSS item at entry %d in sequence of items\n", i);
-          } else {
-            RAPTOR_DEBUG2("RSS item URI <%s> is not in sequence of items\n",
-                          raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)statement->subject));
-            item=NULL;
-          }
-        } else if(type == RAPTOR_RSS_ENCLOSURE) {
-          for(i=0; i < raptor_sequence_size(rss_serializer->enclosures); i++) {
-            item=(raptor_rss_item*)raptor_sequence_get_at(rss_serializer->enclosures, i);
-            if(raptor_rss_item_equals_statement_subject(item, statement))
-              break;
-            
-          }
-          if(i < raptor_sequence_size(rss_serializer->items)) {
-            RAPTOR_DEBUG2("Found enclosure at entry %d in sequence of enclosures\n", i);
-          } else {
-            RAPTOR_DEBUG2("Add new enclosure to sequence with URI <%s>\n",
-                          raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)statement->subject));
-
-            item=raptor_new_rss_item(rss_serializer->world);
-            raptor_sequence_push(rss_serializer->enclosures, item);
-          }
-        } else {
-          item=raptor_rss_model_add_common(rss_model, type);
-        }
-
-        if(item) {
-          raptor_uri *uri = raptor_uri_copy_v2(rss_serializer->world,
-                                               (raptor_uri*)statement->subject);
-
-          raptor_set_identifier_uri(&item->identifier, uri);
-
-          /* Move any existing statements to the newly discovered item */
-          raptor_rss10_move_statements(rss_serializer, type, item);
-
-          raptor_rss10_set_item_group(rss_serializer, item->uri, item);
-
-          handled=1;
-        }
-      } else
-        RAPTOR_DEBUG2("UNKNOWN RSS 1.0 typed node with type URI <%s>\n",
-                      raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)statement->object));
-
+      RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
+                    raptor_uri_as_string_v2(rss_serializer->world,
+                                            (raptor_uri*)statement->subject));
+      rss_serializer->seq_uri=raptor_uri_copy_v2(rss_serializer->world,
+                                                 rss_serializer->seq_uri);
     }
-  } /* if was a triple (? rdf:type ?) */
-
-  if(!handled) {
-    raptor_statement_v2 *t=raptor_statement_copy_v2_from_v1(rss_serializer->world, statement);
-    if(t)
-      handled=raptor_rss10_store_statement(rss_serializer, t);
+    
+    handled = 1;
+    goto savetriple;
   }
+
+
+  /* look for triple: (? rdf:type ?) to find containers and blocks */
+  type = RAPTOR_RSS_NONE;
+  for(i = 0; i < RAPTOR_RSS_COMMON_SIZE; i++) {
+    raptor_uri *item_uri = serializer->world->rss_types_info_uris[i];
+    if(item_uri &&
+       raptor_uri_equals_v2(rss_serializer->world,
+                            (raptor_uri*)statement->object, item_uri)) {
+      type = (raptor_rss_type)i;
+      RAPTOR_DEBUG4("Found typed node %i - %s with URI <%s>\n", type,
+                    raptor_rss_items_info[type].name,
+                    raptor_uri_as_string_v2(rss_serializer->world,
+                                            (raptor_uri*)statement->subject));
+      break;
+    }
+  }
+
+  if(type == RAPTOR_RSS_NONE) {
+    RAPTOR_DEBUG2("UNKNOWN typed node with type URI <%s>\n",
+                  raptor_uri_as_string_v2(rss_serializer->world,
+                                          (raptor_uri*)statement->object));
+    goto savetriple;
+  }
+
+
+  if(type == RAPTOR_RSS_ITEM) {
+    for(i = 0; i < raptor_sequence_size(rss_serializer->items); i++) {
+      item = (raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
+      if(raptor_rss_item_equals_statement_subject(item, statement))
+        break;
+      
+    }
+    if(i < raptor_sequence_size(rss_serializer->items)) {
+      RAPTOR_DEBUG2("Found RSS item at entry %d in sequence of items\n", i);
+    } else {
+      RAPTOR_DEBUG2("RSS item URI <%s> is not in sequence of items\n",
+                    raptor_uri_as_string_v2(rss_serializer->world,
+                                            (raptor_uri*)statement->subject));
+      item = NULL;
+    }
+  } else if(type == RAPTOR_RSS_ENCLOSURE) {
+    for(i = 0; i < raptor_sequence_size(rss_serializer->enclosures); i++) {
+      item = (raptor_rss_item*)raptor_sequence_get_at(rss_serializer->enclosures, i);
+      if(raptor_rss_item_equals_statement_subject(item, statement))
+        break;
+      
+    }
+    if(i < raptor_sequence_size(rss_serializer->items)) {
+      RAPTOR_DEBUG2("Found enclosure at entry %d in sequence of enclosures\n", i);
+    } else {
+      RAPTOR_DEBUG2("Add new enclosure to sequence with URI <%s>\n",
+                    raptor_uri_as_string_v2(rss_serializer->world,
+                                            (raptor_uri*)statement->subject));
+      
+      item = raptor_new_rss_item(rss_serializer->world);
+      raptor_sequence_push(rss_serializer->enclosures, item);
+    }
+  } else {
+    item=raptor_rss_model_add_common(rss_model, type);
+  }
+  
+
+  if(item) {
+    raptor_uri *uri = raptor_uri_copy_v2(rss_serializer->world,
+                                         (raptor_uri*)statement->subject);
+    
+    raptor_set_identifier_uri(&item->identifier, uri);
+    
+    /* Move any existing statements to the newly discovered item */
+    raptor_rss10_move_statements(rss_serializer, type, item);
+    
+    raptor_rss10_set_item_group(rss_serializer, item->uri, item);
+    
+    handled = 1;
+  }
+
+
+  savetriple:
+  if(!handled) {
+    raptor_statement_v2 *t;
+    t = raptor_statement_copy_v2_from_v1(rss_serializer->world, statement);
+    if(t)
+      handled = raptor_rss10_store_statement(rss_serializer, t);
+  }
+
   return 0;
 }
 
