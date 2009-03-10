@@ -903,6 +903,7 @@ AM_CONDITIONAL(RAPTOR_SERIALIZER_TURTLE, test $turtle_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RSS_1_0, test $rss_1_0_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_DOT, test $dot_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_JSON, test $json_serializer = yes)
+AM_CONDITIONAL(RAPTOR_SERIALIZER_ATOM, test $atom_serializer = yes)
 
 AM_CONDITIONAL(RAPTOR_RSS_COMMON, test $rss_1_0_serializer = yes -o $rss_parser = yes)
 
@@ -1260,6 +1261,7 @@ docs/version.xml
 examples/Makefile
 src/Makefile
 tests/Makefile
+tests/feeds/Makefile
 tests/grddl/Makefile
 tests/ntriples/Makefile
 tests/rdfa/Makefile
