@@ -61,7 +61,7 @@ test01.atom: $(srcdir)/test01.rss $(top_builddir)/utils/rapper
 	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org/whatsnew -f writeBaseURI=0 -f rssTriples=atom-triples -f atomEntryUri=http://example.org/2006/03/28/blog-item $< > $@ 2> errors.log || (cat errors.log && exit 1)
 
 test02.atom: $(srcdir)/test02.rss $(top_builddir)/utils/rapper
-	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org/news/ -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors && exit 1)
+	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org/news/ -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
 
 test03.atom: $(srcdir)/test03.rss $(top_builddir)/utils/rapper
-	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors && exit 1)
+	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
