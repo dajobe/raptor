@@ -48,10 +48,11 @@ check-feeds: build-rapper $(TEST_FILES)
 
 check-serialize-atom: $(TEST_ATOMS) check-validate-atom
 
-check-validate-atom: atom.rng $(TEST_ATOMS)
-	@for atom in $(TEST_ATOMS); do \
-	  echo "Checking $$atom"; \
-	  jing atom.rng $$atom; \
+check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
+	@echo "Validating Atom XML with RelaxNG"; \
+	for atom in $(TEST_ATOMS); do \
+	  echo "$$atom"; \
+	  jing $(srcdir)/atom.rng $$atom; \
 	done
 # or xmllint --relaxng atom.rng --noout $$atom
 
