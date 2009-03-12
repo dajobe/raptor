@@ -22,12 +22,13 @@
 
 TEST_RSS=test01.rss test02.rss test03.rss
 TEST_ATOMS=$(TEST_RSS:.rss=.atom)
+OUT_ATOMS=$(TEST_RSS:.rss=-result.atom)
 EXTRA_ATOMS=
 
 ALL_TEST_FILES= \
 	$(TEST_ATOMS)
 
-EXTRA_DIST = $(ALL_TEST_FILES) atom.rng atom.rnc
+EXTRA_DIST = $(TEST_RSS) $(OUT_ATOMS) atom.rng atom.rnc
 
 CLEANFILES = $(TEST_ATOMS) errors.log
 
@@ -48,16 +49,40 @@ endif
 
 check-feeds: build-rapper $(TEST_FILES)
 
-check-serialize-atom: $(TEST_ATOMS) check-atom
-
-check-atom: $(srcdir)/atom.rng $(srcdir)/test.tab
-	@echo "Validating Atom XML with RelaxNG"; \
-	tab=$(srcdir)/test.tab; \
-	for atom in $(TEST_ATOMS); do \
-	  echo "$$atom"; \
-	  jing $(srcdir)/atom.rng $$atom; \
-	done
-# or xmllint --relaxng atom.rng --noout $$atom
+check-serialize-atom: $(TEST_RSS)
+	@set +e; result=0; \
+	echo "Testing Atom XML serializing"; \
+	for test in $(TEST_RSS); do \
+	  name=`basename $$test .rss` ; \
+	  atom="$$name.atom"; \
+	  expected="$$name-result.atom"; \
+	  opts="-f writeBaseURI=0 -f rssTriples=atom-triples"; \
+	  if test $$name = test01; then \
+	    baseuri="http://example.org/whatsnew"; \
+	    opts="$$opts -f atomEntryUri=http://example.org/2006/03/28/blog-item"; \
+	  elif test $$name = test02; then \
+	    baseuri="http://example.org/news/"; \
+	  elif test $$name = test03; then \
+	    baseuri="http://example.org"; \
+	  fi; \
+	  opts="-q -i rdfxml -o atom $$opts -O $$baseuri"; \
+	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$atom 2> errors.log; \
+	  status=$$?; \
+	  if test $$status != 0; then \
+	    echo "FAILED with code $$status"; \
+	    echo "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    cat errors.log ; \
+	  elif cmp $(srcdir)/$$atom $$expected >/dev/null 2>&1; then \
+	    echo "ok"; \
+	  else \
+	    echo "FAILED"; \
+	    echo "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    diff -u $(srcdir)/$$atom $$expected; result=1; \
+	  fi; \
+	  rm -f $$atom errors.log ; \
+	done; \
+	set -e; exit $$result
 
 check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
 	@echo "Validating Atom XML with RelaxNG"; \
@@ -66,13 +91,3 @@ check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
 	  jing $(srcdir)/atom.rng $$atom; \
 	done
 # or xmllint --relaxng atom.rng --noout $$atom
-
-
-test01.atom: $(srcdir)/test01.rss $(RAPPER)
-	$(RAPPER) -q -i rdfxml -o atom -O http://example.org/whatsnew -f writeBaseURI=0 -f rssTriples=atom-triples -f atomEntryUri=http://example.org/2006/03/28/blog-item $< > $@ 2> errors.log || (cat errors.log && exit 1)
-
-test02.atom: $(srcdir)/test02.rss $(RAPPER)
-	$(RAPPER) -q -i rdfxml -o atom -O http://example.org/news/ -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
-
-test03.atom: $(srcdir)/test03.rss $(RAPPER)
-	$(RAPPER) -q -i rdfxml -o atom -O http://example.org -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
