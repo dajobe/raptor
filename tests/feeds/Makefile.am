@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor Feed tests
 #
-# Copyright (C) 2009, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2009, David Beckett http://www.dajobe.org/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
 # 
@@ -56,7 +56,7 @@ check-serialize-atom: $(TEST_RSS)
 	  name=`basename $$test .rss` ; \
 	  atom="$$name.atom"; \
 	  expected="$$name-result.atom"; \
-	  opts="-f writeBaseURI=0 -f rssTriples=atom-triples"; \
+	  opts="-f writeBaseURI=0 -f rssTriples=atom-triples -f aliasDefaultNamespace=0"; \
 	  if test $$name = test01; then \
 	    baseuri="http://example.org/whatsnew"; \
 	    opts="$$opts -f atomEntryUri=http://example.org/2006/03/28/blog-item"; \
