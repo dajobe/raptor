@@ -31,6 +31,8 @@ EXTRA_DIST = $(ALL_TEST_FILES) atom.rng atom.rnc
 
 CLEANFILES = $(TEST_ATOMS) errors.log
 
+RAPPER = $(top_builddir)/utils/rapper
+
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
@@ -46,7 +48,16 @@ endif
 
 check-feeds: build-rapper $(TEST_FILES)
 
-check-serialize-atom: $(TEST_ATOMS) check-validate-atom
+check-serialize-atom: $(TEST_ATOMS) check-atom
+
+check-atom: $(srcdir)/atom.rng $(srcdir)/test.tab
+	@echo "Validating Atom XML with RelaxNG"; \
+	tab=$(srcdir)/test.tab; \
+	for atom in $(TEST_ATOMS); do \
+	  echo "$$atom"; \
+	  jing $(srcdir)/atom.rng $$atom; \
+	done
+# or xmllint --relaxng atom.rng --noout $$atom
 
 check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
 	@echo "Validating Atom XML with RelaxNG"; \
@@ -57,11 +68,11 @@ check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
 # or xmllint --relaxng atom.rng --noout $$atom
 
 
-test01.atom: $(srcdir)/test01.rss $(top_builddir)/utils/rapper
-	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org/whatsnew -f writeBaseURI=0 -f rssTriples=atom-triples -f atomEntryUri=http://example.org/2006/03/28/blog-item $< > $@ 2> errors.log || (cat errors.log && exit 1)
+test01.atom: $(srcdir)/test01.rss $(RAPPER)
+	$(RAPPER) -q -i rdfxml -o atom -O http://example.org/whatsnew -f writeBaseURI=0 -f rssTriples=atom-triples -f atomEntryUri=http://example.org/2006/03/28/blog-item $< > $@ 2> errors.log || (cat errors.log && exit 1)
 
-test02.atom: $(srcdir)/test02.rss $(top_builddir)/utils/rapper
-	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org/news/ -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
+test02.atom: $(srcdir)/test02.rss $(RAPPER)
+	$(RAPPER) -q -i rdfxml -o atom -O http://example.org/news/ -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
 
-test03.atom: $(srcdir)/test03.rss $(top_builddir)/utils/rapper
-	$(top_builddir)/utils/rapper -q -i rdfxml -o atom -O http://example.org -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
+test03.atom: $(srcdir)/test03.rss $(RAPPER)
+	$(RAPPER) -q -i rdfxml -o atom -O http://example.org -f writeBaseURI=0 -f rssTriples=atom-triples $< > $@ 2> errors.log || (cat errors.log && exit 1)
