@@ -73,12 +73,12 @@ check-serialize-atom: $(TEST_RSS)
 	    echo "FAILED with code $$status"; \
 	    echo "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    cat errors.log ; \
-	  elif cmp $$expected $(srcdir)/$$atom >/dev/null 2>&1; then \
+	  elif cmp $(srcdir)/$$expected $$atom >/dev/null 2>&1; then \
 	    echo "ok"; \
 	  else \
 	    echo "FAILED"; \
 	    echo "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
-	    diff -u $$expected $(srcdir)/$$atom; result=1; \
+	    diff -u $(srcdir)/$$expected $$atom; result=1; \
 	  fi; \
 	  rm -f $$atom errors.log ; \
 	done; \
