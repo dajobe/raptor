@@ -37,26 +37,42 @@ RAPPER = $(top_builddir)/utils/rapper
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
-check-local: check-feeds
-@RAPTOR_SERIALIZER_ATOM_TRUE@check-local: check-feeds check-serialize-atom
-
 if MAINTAINER_MODE
+check-local:: check-feeds check-validate-atom
+
 SUFFIXES = .atom .rss .rng .rnc
 
 .rnc.rng:
 	trang $? $@
+
+
+check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
+	@echo "Validating Atom XML with RelaxNG"; \
+	for atom in $(TEST_ATOMS); do \
+	  echo "$$atom"; \
+	  jing $(srcdir)/atom.rng $$atom; \
+	done
+# or xmllint --relaxng atom.rng --noout $$atom
+
+else
+
+check-local:: check-feeds
+
 endif
+
+
+@RAPTOR_SERIALIZER_ATOM_TRUE@check-local:: check-serialize-atom
 
 check-feeds: build-rapper $(TEST_FILES)
 
-check-serialize-atom: $(TEST_RSS)
+check-serialize-atom $(TEST_ATOMS): $(TEST_RSS)
 	@set +e; result=0; \
 	echo "Testing Atom XML serializing"; \
 	for test in $(TEST_RSS); do \
 	  name=`basename $$test .rss` ; \
 	  atom="$$name.atom"; \
 	  expected="$$name-result.atom"; \
-	  opts="-f writeBaseURI=0 -f rssTriples=atom-triples -f aliasDefaultNamespace=0"; \
+	  opts="-f writeBaseURI=0 -f rssTriples=atom-triples"; \
 	  if test $$name = test01; then \
 	    baseuri="http://example.org/whatsnew"; \
 	    opts="$$opts -f atomEntryUri=http://example.org/2006/03/28/blog-item"; \
@@ -80,14 +96,6 @@ check-serialize-atom: $(TEST_RSS)
 	    echo "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    diff -u $(srcdir)/$$expected $$atom; result=1; \
 	  fi; \
-	  rm -f $$atom errors.log ; \
+	  rm -f errors.log ; \
 	done; \
 	set -e; exit $$result
-
-check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
-	@echo "Validating Atom XML with RelaxNG"; \
-	for atom in $(TEST_ATOMS); do \
-	  echo "$$atom"; \
-	  jing $(srcdir)/atom.rng $$atom; \
-	done
-# or xmllint --relaxng atom.rng --noout $$atom

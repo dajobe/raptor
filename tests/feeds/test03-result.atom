@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed
+<atom:feed
    xmlns:at="http://purl.org/syndication/atomtriples/1"
    xmlns:atom="http://www.w3.org/2005/Atom"
    xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -76,4 +76,4 @@ over several lines.</div></summary>
     <at:md/>
   </entry>
 
-</feed>
+</atom:feed>
