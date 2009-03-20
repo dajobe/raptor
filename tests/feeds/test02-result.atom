@@ -10,13 +10,13 @@
    xmlns:rss091="http://purl.org/rss/1.0/modules/rss091#"
    xmlns:rss="http://purl.org/rss/1.0/"
    xmlns="http://www.w3.org/2005/Atom">
-  <id>http://example.org/news/</id>
-  <title>Example News</title>
-  <updated>2008-03-30T05:52:06Z</updated>
-  <author>
-    <name>unknown</name>
-  </author>
-  <link href="http://example.org/news/" rel="self"/>
+  <atom:id>http://example.org/news/</atom:id>
+  <atom:title>Example News</atom:title>
+  <atom:updated>2008-03-30T05:52:06Z</atom:updated>
+  <atom:author>
+    <atom:name>unknown</atom:name>
+  </atom:author>
+  <atom:link href="http://example.org/news/" rel="self"/>
   <at:feedmap>
     <at:feedmap property="http://purl.org/rss/1.0/link">atom:id</at:feedmap>
     <at:feedmap property="http://purl.org/dc/elements/1.1/date">atom:updated</at:feedmap>
@@ -32,26 +32,26 @@
     <at:entrymap property="http://purl.org/rss/1.0/modules/content/encoded">atom:summary</at:entrymap>
   </at:entrymap>
 
-  <entry>
-    <id>http://example.org/news/2008-03-30</id>
-    <title>News for 2008-03-30</title>
-    <updated>2008-03-30T06:07:28Z</updated>
-    <link href="http://example.org/news/2008-03-30" rel="alternate"/>
-    <summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
+  <atom:entry>
+    <atom:id>http://example.org/news/2008-03-30</atom:id>
+    <atom:title>News for 2008-03-30</atom:title>
+    <atom:updated>2008-03-30T06:07:28Z</atom:updated>
+    <atom:link href="http://example.org/news/2008-03-30" rel="alternate"/>
+    <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
 html description 1
-</div></summary>
+</div></atom:summary>
     <at:md/>
-  </entry>
+  </atom:entry>
 
-  <entry>
-    <id>http://example.org/news/2007-10-01</id>
-    <title>News for 2007-10-01</title>
-    <updated>2007-10-01T06:56:58Z</updated>
-    <link href="http://example.org/news/2007-10-01" rel="alternate"/>
-    <summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
+  <atom:entry>
+    <atom:id>http://example.org/news/2007-10-01</atom:id>
+    <atom:title>News for 2007-10-01</atom:title>
+    <atom:updated>2007-10-01T06:56:58Z</atom:updated>
+    <atom:link href="http://example.org/news/2007-10-01" rel="alternate"/>
+    <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
 html description 3
-</div></summary>
+</div></atom:summary>
     <at:md/>
-  </entry>
+  </atom:entry>
 
 </atom:feed>
