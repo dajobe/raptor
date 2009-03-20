@@ -15,12 +15,12 @@
   <atom:updated>2006-03-28T20:57:15Z</atom:updated>
   <atom:link href="2006/03/28/blog-item" rel="alternate"/>
   <atom:summary>rss:description here</atom:summary>
-  <atom:at:md>
-    <atom:dc:creator>
-      <atom:dc:Person>
-        <atom:dc:title>Example</atom:dc:title>
-      </atom:dc:Person>
-    </atom:dc:creator>
-  </atom:at:md>
+  <at:md>
+    <dc:creator>
+      <dc:Person>
+        <dc:title>Example</dc:title>
+      </dc:Person>
+    </dc:creator>
+  </at:md>
 
 </atom:entry>
