@@ -20,19 +20,22 @@
 # 
 # 
 
+# Input RSS 1.0 files
 TEST_RSS=test01.rss test02.rss test03.rss
-TEST_ATOMS=$(TEST_RSS:.rss=.atom)
+# Output files in Turtle (after parsing) and Atom (after serializing) 
 TEST_TTLS=$(TEST_RSS:.rss=.ttl)
+TEST_ATOMS=$(TEST_RSS:.rss=.atom)
+
+# Expected results for above
 OUT_TTLS=$(TEST_RSS:.rss=-result.ttl)
 OUT_ATOMS=$(TEST_RSS:.rss=-result.atom)
-EXTRA_ATOMS=
 
 ALL_TEST_FILES= \
 	$(TEST_ATOMS)
 
 EXTRA_DIST = $(TEST_RSS) $(OUT_ATOMS) atom.rng atom.rnc
 
-CLEANFILES = $(TEST_ATOMS) errors.log
+CLEANFILES = $(TEST_ATOMS) $(TEST_TTLS) errors.log
 
 RAPPER = $(top_builddir)/utils/rapper
 
