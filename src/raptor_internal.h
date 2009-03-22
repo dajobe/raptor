@@ -573,9 +573,9 @@ struct raptor_serializer_s {
   unsigned char *feature_atom_entry_uri;
 
   /* FEATURE:
-   * Alias default namespace with a prefixed declaration too.
+   * Namespace-prefix elements OR prefer unprefixed elements.
    */
-  int feature_alias_default_namespace;
+  int feature_prefix_elements;
 };
 
 

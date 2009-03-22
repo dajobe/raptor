@@ -90,7 +90,7 @@ static const struct
   { RAPTOR_FEATURE_JSON_EXTRA_DATA   , 6,  "jsonExtraData", "JSON serializer extra data" },
   { RAPTOR_FEATURE_RSS_TRIPLES       , 6,  "rssTriples", "Atom/RSS serializer writes extra RDF triples" },
   { RAPTOR_FEATURE_ATOM_ENTRY_URI    , 6,  "atomEntryUri", "Atom serializer Entry URI" },
-  { RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE , 2,  "aliasDefaultNamespace", "Atom/RSS1.0 serializers alias default namespace" }
+  { RAPTOR_FEATURE_PREFIX_ELEMENTS   , 2,  "prefixElements", "Atom/RSS serializers write namespace-prefixed elements" }
 };
 
 

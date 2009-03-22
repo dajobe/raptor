@@ -1467,7 +1467,7 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_JSON_EXTRA_DATA:
     case RAPTOR_FEATURE_RSS_TRIPLES:
     case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
+    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
       
     case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
     case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
@@ -1582,7 +1582,7 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
     case RAPTOR_FEATURE_JSON_EXTRA_DATA:
     case RAPTOR_FEATURE_RSS_TRIPLES:
     case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE:
+    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
 
     /* XML writer features */
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:

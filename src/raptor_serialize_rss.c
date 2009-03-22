@@ -1003,7 +1003,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
   }
   item_node_type = &raptor_rss_items_info[item_node_typei];
 
-  if(serializer->feature_alias_default_namespace)
+  if(serializer->feature_prefix_elements)
     /* declare this NS with standard prefix */
     default_prefix = (const unsigned char*)raptor_rss_namespaces_info[default_ns_id].prefix;
   else
@@ -1013,7 +1013,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
                                                         default_prefix, ns_uri,
                                                         0);
   rss_serializer->free_default_nspace = 1;
-  if(serializer->feature_alias_default_namespace) {
+  if(serializer->feature_prefix_elements) {
     rss_serializer->nspaces[default_ns_id] = rss_serializer->default_nspace;
     rss_serializer->free_default_nspace = 0;
   }
@@ -1034,12 +1034,8 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
       continue;
     
     if(i == default_ns_id) {
-      if(!serializer->feature_alias_default_namespace)
-        /* declare this NS with no prefix */
+      if(serializer->feature_prefix_elements)
         prefix = NULL;
-      else
-        /* this namespace was made an alias of the default namespace above */
-        continue;
     }
     
     if(uri) {
@@ -1068,19 +1064,20 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
     const unsigned char *prefix;
 
     prefix = (const unsigned char*)raptor_rss_namespaces_info[i].prefix;
-    if(!prefix)
+    if(!prefix && i != default_ns_id)
       continue;
 
-    if(i == default_ns_id &&
-       !serializer->feature_alias_default_namespace)
-      continue;
-    
     if(rss_serializer->nspaces[i])
       raptor_xml_element_declare_namespace(element, rss_serializer->nspaces[i]);
   }
   for(i = 0; i < raptor_sequence_size(rss_serializer->user_namespaces); i++) {
     raptor_namespace* nspace;
     nspace = (raptor_namespace*)raptor_sequence_get_at(rss_serializer->user_namespaces, i);
+
+    /* Ignore user setting default namespace prefix */
+    if(!nspace->prefix)
+      continue;
+    
     raptor_xml_element_declare_namespace(element, nspace);
   }
 
