@@ -1,0 +1,40 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix atom: <http://www.w3.org/2005/Atom> .
+@prefix content: <http://purl.org/rss/1.0/modules/content/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix enc: <http://purl.oclc.org/net/rss_2.0/enc#> .
+@prefix rss091: <http://purl.org/rss/1.0/modules/rss091#> .
+@prefix : <http://purl.org/rss/1.0/> .
+
+<>
+    dc:date "2006-03-28T17:05:01-05:00" ;
+    :items [
+        rdf:_1 <2006/03/28/blog-item> ;
+        a rdf:Seq
+    ] ;
+    :link "http://example.org/whatsnew" ;
+    :title "example feed with 1 item" ;
+    a :channel ;
+    atom:author "example" ;
+    atom:email "example@example.com" ;
+    atom:title "atomic title" ;
+    atom:updated "2006-03-28T20:57:15Z" ;
+    atom:uri "http://example.com/" .
+
+<2006/03/28/blog-item>
+    dc:creator [
+        dc:title "Example" ;
+        a dc:Person
+    ] ;
+    dc:date "2006-03-28T20:57:15Z" ;
+    :description "rss:description here" ;
+    :link "http://example.org/2006/03/28/blog-item" ;
+    :title "Original blog item title 2006-03" ;
+    a :item ;
+    atom:summary """<div xmlns=\"http://www.w3.org/1999/xhtml\">The atom:summary description including
+<b>tags</b>
+over several lines.
+</div>"""^^rdf:XMLLiteral ;
+    atom:title "atomic blog item title" ;
+    atom:updated "2006-03-28T20:57:15Z" .
+
