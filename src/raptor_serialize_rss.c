@@ -1030,7 +1030,9 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
     const unsigned char *prefix;
 
     prefix = (const unsigned char*)raptor_rss_namespaces_info[i].prefix;
-
+    if(!prefix)
+      continue;
+    
     if(i == default_ns_id) {
       if(!serializer->feature_alias_default_namespace)
         /* declare this NS with no prefix */
@@ -1063,6 +1065,12 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
   raptor_xml_element_declare_namespace(element, rss_serializer->default_nspace);
 
   for(i = 0; i < RAPTOR_RSS_NAMESPACES_SIZE; i++) {
+    const unsigned char *prefix;
+
+    prefix = (const unsigned char*)raptor_rss_namespaces_info[i].prefix;
+    if(!prefix)
+      continue;
+
     if(i == default_ns_id &&
        !serializer->feature_alias_default_namespace)
       continue;
