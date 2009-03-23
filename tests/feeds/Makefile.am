@@ -22,6 +22,7 @@
 
 # Input RSS 1.0 files
 TEST_RSS=test01.rss test02.rss test03.rss
+
 # Output files in Turtle (after parsing) and Atom (after serializing) 
 TEST_TTLS=$(TEST_RSS:.rss=.ttl)
 TEST_ATOMS=$(TEST_RSS:.rss=.atom)
@@ -29,6 +30,7 @@ TEST_ATOMS=$(TEST_RSS:.rss=.atom)
 # Expected results for above
 OUT_TTLS=$(TEST_RSS:.rss=-result.ttl)
 OUT_ATOMS=$(TEST_RSS:.rss=-result.atom)
+
 
 ALL_TEST_FILES= \
 	$(TEST_ATOMS)
@@ -42,34 +44,21 @@ RAPPER = $(top_builddir)/utils/rapper
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
-if MAINTAINER_MODE
-check-local:: check-feeds check-validate-atom
+FEED_TESTS=
 
-SUFFIXES = .atom .rss .rng .rnc
-
-.rnc.rng:
-	trang $? $@
-
-
-check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
-	@echo "Validating Atom XML with RelaxNG"; \
-	for atom in $(TEST_ATOMS); do \
-	  echo "$$atom"; \
-	  jing $(srcdir)/atom.rng $$atom; \
-	done
-# or xmllint --relaxng atom.rng --noout $$atom
-
-else
-
-check-local:: check-feeds
-
+if RAPTOR_PARSER_RSS
+FEED_TESTS += check-parse-feed
 endif
 
+if RAPTOR_SERIALIZER_ATOM
+FEED_TESTS += check-serialize-atom
+endif
 
-@RAPTOR_PARSER_RSS_TRUE@check-local:: check-parse-feed
-@RAPTOR_SERIALIZER_ATOM_TRUE@check-local:: check-serialize-atom
+if MAINTAINER_MODE
+FEED_TESTS += check-validate-atom
+endif
 
-check-feeds: build-rapper $(TEST_FILES)
+check-local: build-rapper $(FEED_TESTS)
 
 check-parse-feed $(TEST_TTLS): $(TEST_RSS)
 	@set +e; result=0; \
@@ -139,3 +128,20 @@ check-serialize-atom $(TEST_ATOMS): $(TEST_TTLS)
 	  rm -f errors.log ; \
 	done; \
 	set -e; exit $$result
+
+
+if MAINTAINER_MODE
+SUFFIXES = .rng .rnc
+
+.rnc.rng:
+	trang $? $@
+
+check-validate-atom: $(srcdir)/atom.rng $(TEST_ATOMS)
+	@echo "Validating Atom XML with RelaxNG"; \
+	for atom in $(TEST_ATOMS); do \
+	  echo "$$atom"; \
+	  jing $(srcdir)/atom.rng $$atom; \
+	done
+# or xmllint --relaxng atom.rng --noout $$atom
+
+endif
