@@ -121,7 +121,7 @@ check-serialize-atom $(TEST_ATOMS): $(TEST_TTLS)
 	  elif test $$name = test03; then \
 	    baseuri="http://example.org"; \
 	  fi; \
-	  opts="-q -i turtle -o atom $$opts -O $$baseuri"; \
+	  opts="-q -i turtle -o atom $$opts -I $$baseuri -O $$baseuri"; \
 	  echo $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$atom 2> errors.log; \
 	  status=$$?; \
