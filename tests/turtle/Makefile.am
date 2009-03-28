@@ -262,11 +262,11 @@ check-turtle-parse-ntriples: build-rapper
 	done; \
 	set -e; exit $$result
 
-check-turtle-serialize-rdf: build-rdfdiff build-rapper $(TURTLE_SERIALIZE_TEST_FILES)
+check-turtle-serialize-rdf: build-rdfdiff build-rapper $(TURTLE_SERIALIZE_RDF_FILES)
 	@set +e; result=0; \
 	RDF_TEST_FILES=`unset MAKELEVEL MAKEFLAGS; cd $(srcdir)/$(RDFXML_DIR) && $(MAKE) print-rdf-test-files | sed -e 's,^,$(RDFXML_DIR)/,'`; \
 	$(ECHO) "Testing turtle serialization with legal rdf/xml"; \
-	for test in $$RDF_TEST_FILES $(TURTLE_SERIALIZE_TEST_FILES); do \
+	for test in $$RDF_TEST_FILES $(TURTLE_SERIALIZE_RDF_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
