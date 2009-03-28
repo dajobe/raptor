@@ -572,17 +572,23 @@ raptor_rss_start_element_handler(void *user_data,
                 raptor_rss_fields_info[rss_parser->current_field].name,
                 raptor_rss_items_info[rss_parser->current_type].name);
   
-  /* Rewrite item fields */
+  /* Rename some fields from atom to rss */
   for(i = 0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
     if(raptor_atom_to_rss[i].from == rss_parser->current_field) {
       rss_parser->current_field = raptor_atom_to_rss[i].to;
-      
       RAPTOR_DEBUG3("Rewrote into field %d - %s\n", rss_parser->current_field,
                     raptor_rss_fields_info[rss_parser->current_field].name);
       break;
     }
   }
 
+  /* Mark namespace seen in new field */
+  if(1) {
+    rss_info_namespace ns_index;
+    ns_index = raptor_rss_fields_info[rss_parser->current_field].nspace;
+    rss_parser->nspaces_seen[ns_index] = 'Y';
+  }
+  
   
   /* Now check for field attributes */
   if(named_attrs) {
@@ -778,7 +784,6 @@ raptor_rss_end_element_handler(void *user_data,
       raptor_rss_item_add_field(update_item, rss_parser->current_field, field);
     }
   } /* end if contained cdata */
-  
 
   if(raptor_xml_element_is_empty(xml_element)) {
     /* Empty element, so consider adding one of the attributes as
@@ -820,6 +825,16 @@ raptor_rss_end_element_handler(void *user_data,
         rss_parser->current_type = RAPTOR_RSS_NONE;
     }
   }
+
+  if(rss_parser->current_block) {
+#ifdef RAPTOR_DEBUG
+    raptor_rss_type block_type = rss_parser->current_block->rss_type;
+    RAPTOR_DEBUG3("Ending current block %d - %s\n",
+                  block_type, raptor_rss_items_info[block_type].name);
+#endif
+    rss_parser->current_block = NULL;
+  }
+
 
  tidy_end_element:
 
@@ -1094,9 +1109,9 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
       if(str) {
         rss_parser->statement.object = str;
         rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+        (*rdf_parser->statement_handler)(rdf_parser->user_data,
+                                         &rss_parser->statement);
       }
-      (*rdf_parser->statement_handler)(rdf_parser->user_data,
-                                       &rss_parser->statement);
     } else {
 #ifdef RAPTOR_DEBUG
       RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
@@ -1171,7 +1186,8 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
                            raptor_identifier *object_identifier) 
 {
   raptor_rss_parser* rss_parser = (raptor_rss_parser*)rdf_parser->context;
-
+  raptor_uri *puri = NULL;
+  
   if(!subject_identifier->uri && !subject_identifier->id) {
     raptor_parser_error(rdf_parser, "Connection subject has no identifier");
     return 1;
@@ -1180,14 +1196,13 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
   rss_parser->statement.subject = subject_identifier->uri ? (void*)subject_identifier->uri : (void*)subject_identifier->id;
   rss_parser->statement.subject_type = subject_identifier->type;
 
-  if(predicate_uri) {
-    rss_parser->statement.predicate = predicate_uri;
-    rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  } else {
-    rss_parser->statement.predicate = (void*)&predicate_ordinal;
-    rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_ORDINAL;
+  if(!predicate_uri) {
+    /* new URI object */
+    puri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
+    predicate_uri = puri;
   }
-  
+  rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.predicate = predicate_uri;
   
   rss_parser->statement.object = object_identifier->uri ? (void*)object_identifier->uri : (void*)object_identifier->id;
   rss_parser->statement.object_type = object_identifier->type;
@@ -1197,6 +1212,9 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
   /* Generate the statement */
   (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
 
+  if(puri)
+    raptor_free_uri_v2(rdf_parser->world, puri);
+    
   return 0;
 }
 
@@ -1306,7 +1324,7 @@ static const raptor_field_pair raptor_rss_uplift_map[]={
 
 
 static void
-raptor_rss_uplift_fields(raptor_rss_item* item) 
+raptor_rss_uplift_fields(raptor_rss_parser* rss_parser, raptor_rss_item* item) 
 {
   int i;
   
@@ -1341,6 +1359,9 @@ raptor_rss_uplift_fields(raptor_rss_item* item)
        )
       raptor_rss_date_uplift(field, item->fields[from_field]->value);
 #endif
+
+    /* Ensure output namespace is declared */
+    rss_parser->nspaces_seen[raptor_rss_fields_info[to_field].nspace] = 'Y';
     
     if(!field->value) {
       /* Otherwise default action is to copy from_field value */
@@ -1363,12 +1384,12 @@ raptor_rss_uplift_items(raptor_parser* rdf_parser)
   
   for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
     for(item = rss_parser->model.common[i]; item; item = item->next) {
-      raptor_rss_uplift_fields(item);
+      raptor_rss_uplift_fields(rss_parser, item);
     }
   }
 
   for(item = rss_parser->model.items; item; item = item->next) {
-    raptor_rss_uplift_fields(item);
+    raptor_rss_uplift_fields(rss_parser, item);
   }
   
 }
