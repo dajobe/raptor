@@ -84,7 +84,7 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
 
 const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "title",          RSS1_0_NS, 0 },
-  { "link",           RSS1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
+  { "link",           RSS1_0_NS, 0 }, /* Actually a URI but RSS 1.0 spec wants this as an (XML & RDF) literal */
   { "description",    RSS1_0_NS, 0 },
   { "url",            RSS1_0_NS, 0 },
   { "name",           RSS1_0_NS, 0 },
@@ -267,7 +267,7 @@ const raptor_rss_block_field_info raptor_rss_block_fields_info[RAPTOR_RSS_BLOCKS
   */
   { RAPTOR_ATOM_AUTHOR, "name",  RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_NAME },
   { RAPTOR_ATOM_AUTHOR, NULL,    RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_NAME },
-  { RAPTOR_ATOM_AUTHOR, "email", RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_EMAIL },
+  { RAPTOR_ATOM_AUTHOR, "email", RSS_BLOCK_FIELD_TYPE_STRING, 1, RAPTOR_RSS_FIELD_ATOM_EMAIL },
 
   /*
   Atom <link> - optional element inside <entry>
