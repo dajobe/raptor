@@ -1,0 +1,56 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rss091: <http://purl.org/rss/1.0/modules/rss091#> .
+@prefix rss: <http://purl.org/rss/1.0/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix content: <http://purl.org/rss/1.0/modules/content/> .
+@prefix atom: <http://www.w3.org/2005/Atom> .
+
+<index.atom>
+    rss:items [
+        rdf:_1 <tag:example.org,2004:2217> ;
+        rdf:_2 <tag:example.org,2004:2216> ;
+        a rdf:Seq
+    ] ;
+    rss:link "http://www.example.org/blog/index.atom" ;
+    rss:title "Kim Doe" ;
+    a rss:channel ;
+    atom:author [
+        a atom:Author ;
+        atom:email "me@example.org" ;
+        atom:name "Kim Doe"
+    ] ;
+    atom:link [
+        a atom:Link ;
+        atom:href <index.atom> ;
+        atom:rel "self"
+    ] ;
+    atom:subtitle "Blog subtitle" ;
+    atom:uri "http://www.example.org/blog/"; 
+    atom:updated "2006-04-02T22:15:25-04:00" .
+
+<tag:example.org,2004:2217>
+    dc:date "2006-04-02T07:06:12-04:00" ;
+    rss:description "Blah blah summary." ;
+    rss:link "tag:example.org,2004:2217" ;
+    content:encoded "Blah blah summary." ;
+    rss:title "Blah Blah" ;
+    a rss:item ;
+    atom:content "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Blah blah</p></div>" ;
+    atom:updated "2006-04-02T07:06:12-04:00" ;
+    atom:link [
+        a atom:Link ;
+        atom:href <2006/04/02/Blah-Blah>
+    ] .
+
+<tag:example.org,2004:2216>
+    dc:date "2006-04-01T08:03:19-05:00" ;
+    rss:link "tag:example.org,2004:2216" ;
+    rss:title "More stuff" ;
+    a rss:item ;
+    atom:content "<div xmlns=\"http://www.w3.org/1999/xhtml\"><em>More stuff</em></div>" ;
+    atom:updated "2006-04-01T08:03:19-05:00" ;
+    atom:link [
+        a atom:Link ;
+        atom:href <2006/04/01/More-Stuff>
+    ] .
+

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <link rel="self" href="http://www.example.org/blog/index.atom"/>
+  <id>http://www.example.org/blog/index.atom</id>
+
+  <title>Kim Doe</title>
+  <author><name>Kim Doe</name></author>
+  <updated>2009-01-01T00:00:00-00:00</updated>
+</feed>

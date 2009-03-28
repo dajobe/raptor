@@ -16,7 +16,7 @@
   <atom:author>
     <atom:name>unknown</atom:name>
   </atom:author>
-  <atom:link href="http://example.org/news/" rel="self"/>
+  <atom:link href="" rel="self"/>
   <at:feedmap>
     <at:feedmap property="http://purl.org/rss/1.0/link">atom:id</at:feedmap>
     <at:feedmap property="http://purl.org/dc/elements/1.1/date">atom:updated</at:feedmap>
@@ -36,7 +36,7 @@
     <atom:id>http://example.org/news/2008-03-30</atom:id>
     <atom:title>News for 2008-03-30</atom:title>
     <atom:updated>2008-03-30T06:07:28Z</atom:updated>
-    <atom:link href="http://example.org/news/2008-03-30" rel="alternate"/>
+    <atom:link href="2008-03-30" rel="alternate"/>
     <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
 html description 1
 </div></atom:summary>
@@ -47,7 +47,7 @@ html description 1
     <atom:id>http://example.org/news/2007-10-01</atom:id>
     <atom:title>News for 2007-10-01</atom:title>
     <atom:updated>2007-10-01T06:56:58Z</atom:updated>
-    <atom:link href="http://example.org/news/2007-10-01" rel="alternate"/>
+    <atom:link href="2007-10-01" rel="alternate"/>
     <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
 html description 3
 </div></atom:summary>
