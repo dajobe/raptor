@@ -1,0 +1,10 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rss: <http://purl.org/rss/1.0/> .
+
+<http://example.org/block>
+    rss:items [
+        rdf:_1 <http://example.org/first-item> ;
+        rdf:_2 <http://example.org/second-item> ;
+        a rdf:Seq
+    ] .
+
