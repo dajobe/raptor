@@ -72,9 +72,13 @@ raptor_sax2_finish(raptor_world* world)
     return;
 
 #ifdef RAPTOR_XML_LIBXML
-  xmlCleanupParser();
   xmlSetStructuredErrorFunc(NULL, NULL);
   xmlSetGenericErrorFunc(NULL, NULL);
+  /* Should call this after all uses of libxml are done.
+   * In particular after xmlSetStructuredErrorFunc() otherwise
+   * it has reportedly caused an access violation on windows.
+   */
+  xmlCleanupParser();
 #endif
 }
 
