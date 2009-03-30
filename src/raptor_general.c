@@ -330,7 +330,14 @@ raptor_vsnprintf(const char *message, va_list arguments)
     len=vsnprintf(buffer, size, message, args_copy);
     va_end(args_copy);
 
-    if(len>=0)
+    /* On windows, vsnprintf() returns -1 if the buffer does not fit.
+     * If the buffer exactly fits the string without a NULL
+     * terminator, it returns the string length and it ends up with
+     * an unterminated string.  The added check makes sure the string
+     * returned is terminated - otherwise more buffer space is
+     * allocated and the while() loop retries.
+    */
+    if((len >= 0) && (buffer[len] == '\0'))
       break;
     RAPTOR_FREE(cstring, buffer);
     size+=4;
