@@ -289,7 +289,7 @@ raptor_new_namespaces_v2(raptor_world* world,
                          void *error_data,
                          int defaults) 
 {
-  raptor_namespace_stack *nstack=(raptor_namespace_stack *)RAPTOR_MALLOC(raptor_namespace_stack, sizeof(raptor_namespace_stack));
+  raptor_namespace_stack *nstack=(raptor_namespace_stack *)RAPTOR_CALLOC(raptor_namespace_stack, 1, sizeof(raptor_namespace_stack));
   if(!nstack)
     return NULL;
                       
