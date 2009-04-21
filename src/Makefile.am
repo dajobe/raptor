@@ -56,7 +56,6 @@ MEM=@MEM@
 MEM_LIBS=@MEM_LIBS@
 
 AM_CPPFLAGS = $(MEM)
-LIBS=@LIBS@ $(MEM_LIBS)
 
 
 libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c \
@@ -164,7 +163,8 @@ $(top_srcdir)/librdfa/rdfa_utils.h
 AM_CPPFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
 endif
 
-libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@
+libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@ \
+@RAPTOR_LDFLAGS@ $(MEM_LIBS)
 libraptor_la_LIBADD = @LTLIBOBJS@
 
 

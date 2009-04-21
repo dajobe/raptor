@@ -7,6 +7,6 @@ Name: Raptor
 Description: RDF Parser Toolkit Library
 Version: @VERSION@
 Libs: -L${libdir} -lraptor
-Libs.private: @LIBS@
+Libs.private: @RAPTOR_LDFLAGS@
 Cflags: -I${includedir}
 

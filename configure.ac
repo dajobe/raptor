@@ -300,7 +300,9 @@ fi
 
 need_libm=no
 
+# Save LIBS 
 oLIBS="$LIBS"
+
 LIBS="$LIBS -lm"
 AC_MSG_CHECKING(whether have trunc in libm)
 AC_TRY_LINK([#ifdef HAVE_MATH_H
@@ -372,7 +374,6 @@ fi
 AC_CHECK_HEADERS(expat.h xmlparse.h)
 
 
-oLIBS="$LIBS"
 AC_CHECK_LIB(xmltok, main, xmlt=1, xmlt=0)
 
 # Raptor needs XML_ParserCreate expat function (not namespace one)
@@ -516,7 +517,6 @@ if test "X$CURL_CONFIG" = "X"; then
 fi
 
 
-oLIBS="$LIBS"
 
 AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check        Turn off Unicode NFC checking (default enabled).  ], nfc_check="no", nfc_check="yes")	
 AC_MSG_CHECKING(using Unicode NFC checking)
@@ -544,7 +544,6 @@ else
 fi
 
 oCPPFLAGS="$CPPFLAGS"
-oLIBS="$LIBS"
 if test "X$XML_CONFIG" != X; then
   LIBS="$LIBS `$XML_CONFIG --libs`"
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
@@ -650,7 +649,6 @@ LIBS="$oLIBS"
 have_libxslt=0
 
 oCPPFLAGS="$CPPFLAGS"
-oLIBS="$LIBS"
 if test "X$XSLT_CONFIG" != X; then
   LIBS="$LIBS `$XSLT_CONFIG --libs`"
   AC_CHECK_FUNC(xsltSaveResultToString, have_xsltSaveResultToString=yes, have_xsltSaveResultToString=no)
@@ -933,7 +931,6 @@ need_libxml_www=0
 need_libfetch=0
 
 oCPPFLAGS="$CPPFLAGS"
-oLIBS="$LIBS"
 if test "X$CURL_CONFIG" != X; then
   CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
   LIBS="$LIBS `$CURL_CONFIG --libs`"
@@ -957,7 +954,6 @@ if test "X$ac_cv_header_curl_curl_h" = Xyes; then
 fi
 
 if test $ac_cv_header_fetch_h = yes; then
-  oLIBS="$LIBS"
   AC_CHECK_LIB(fetch, fetchXGetURL, have_libfetch=1)
   LIBS="$oLIBS"
 fi
@@ -1067,7 +1063,6 @@ AC_CHECK_HEADER(libinn.h)
 CPPFLAGS="$oCPPFLAGS"
 
 oCPPFLAGS="$CPPFLAGS"
-oLIBS="$LIBS"
 if test $ac_cv_header_libinn_h = yes; then
   CPPFLAGS="$CPPFLAGS -I/usr/include/inn"
   LIBS="$LIBS -L/usr/lib/news -linn"
@@ -1191,6 +1186,11 @@ if test $need_expat = 1; then
 fi
 
 
+RAPTOR_LDFLAGS="$LIBS"
+
+# Restore LIBS
+LIBS="$oLIBS"
+
 # Make final changes to cflags
 MEM=
 MEM_LIBS=
@@ -1235,6 +1235,8 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   CPPFLAGS="$MAINTAINER_CPPFLAGS $CPPFLAGS"
 fi
 
+
+AC_SUBST(RAPTOR_LDFLAGS)
 
 AC_SUBST(MEM)
 AC_SUBST(MEM_LIBS)
