@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor utils
 #
-# Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
+# Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
 # Copyright (C) 2000-2004, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -29,21 +29,11 @@ man_MANS = rapper.1
 
 CLEANFILES=rdfdiff
 
-# Memory debugging alternatives
+# Memory debugging
 MEM=@MEM@
 MEM_LIBS=@MEM_LIBS@
 
-# 1) None (use standard functions directly)
-#MEM=
-#MEM_LIBS=
-
-# 2) Use dmalloc library
-#MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
-#MEM_LIBS=-ldmalloc
-
-AM_CPPFLAGS= -I$(top_srcdir)/src 
-AM_CFLAGS= $(MEM)
-STANDARD_CFLAGS= @STANDARD_CFLAGS@ $(MEM)
+AM_CPPFLAGS= $(MEM) -I$(top_srcdir)/src
 LIBS=@LIBS@ $(MEM_LIBS)
 
 

@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor libraptor
 #
-# Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
 # Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -51,20 +51,11 @@ turtle_parser.c turtle_parser.h turtle_parser.output \
 n3_lexer.c n3_lexer.h \
 n3_parser.c n3_parser.h n3_parser.output
 
-# Memory debugging alternatives
+# Memory debugging
 MEM=@MEM@
 MEM_LIBS=@MEM_LIBS@
 
-# 1) None (use standard functions directly)
-#MEM=
-#MEM_LIBS=
-
-# 2) Use dmalloc library
-#MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
-#MEM_LIBS=-ldmalloc
-
-AM_CFLAGS=$(MEM)
-STANDARD_CFLAGS=@STANDARD_CFLAGS@ $(MEM)
+AM_CPPFLAGS = $(MEM)
 LIBS=@LIBS@ $(MEM_LIBS)
 
 
@@ -158,6 +149,7 @@ if PARSEDATE
 libraptor_la_SOURCES += parsedate.c
 endif
 
+
 if LIBRDFA
 libraptor_la_SOURCES += \
 $(top_srcdir)/librdfa/curie.c \
@@ -169,7 +161,7 @@ $(top_srcdir)/librdfa/triple.c \
 $(top_srcdir)/librdfa/rdfa.h \
 $(top_srcdir)/librdfa/rdfa_utils.h 
 
-AM_CFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
+AM_CPPFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
 endif
 
 libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@

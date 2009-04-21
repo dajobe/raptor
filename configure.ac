@@ -3,7 +3,7 @@ dnl
 dnl configure.in - autoconf file for Raptor
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
-dnl Copyright (C) 2000-2008 David Beckett http://www.dajobe.org/
+dnl Copyright (C) 2000-2009 David Beckett http://www.dajobe.org/
 dnl Copyright (C) 2000-2005 University of Bristol, UK http://www.bristol.ac.uk/
 dnl 
 dnl This package is Free Software and part of Redland http://librdf.org/
@@ -172,8 +172,7 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   AC_MSG_RESULT($warning_cflags)
 fi
 
-STANDARD_CFLAGS=
-MAINTAINER_CFLAGS="$warning_cflags"
+MAINTAINER_CPPFLAGS="$warning_cflags"
 
 
 dnl Checks for header files.
@@ -1206,7 +1205,6 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   else
     use_dmalloc=no
   fi
-  CPPFLAGS="-g -DRAPTOR_DEBUG=1 $CPPFLAGS"
 else
   use_dmalloc=no
 fi
@@ -1223,14 +1221,23 @@ if test $use_memory_signing = yes; then
   MEM_LIBS=
 fi
 
-STANDARD_CFLAGS="$STANDARD_CFLAGS $CFLAGS"
+debug_messages=no
 if test "$USE_MAINTAINER_MODE" = yes; then
-  CFLAGS="$MAINTAINER_CFLAGS $CFLAGS"
+  debug_messages=yes
 fi
+
+AC_ARG_ENABLE(debug, [  --enable-debug          Enable debug messages (default no).  ], debug_messages=$enableval)	
+if test "$debug_messages" = "yes"; then
+  CPPFLAGS="-g -DRAPTOR_DEBUG=1 $CPPFLAGS"
+fi
+
+if test "$USE_MAINTAINER_MODE" = yes; then
+  CPPFLAGS="$MAINTAINER_CPPFLAGS $CPPFLAGS"
+fi
+
 
 AC_SUBST(MEM)
 AC_SUBST(MEM_LIBS)
-AC_SUBST(STANDARD_CFLAGS)
 
 AC_SUBST(ECHO)
 ECHO_N="$ECHO_N"
