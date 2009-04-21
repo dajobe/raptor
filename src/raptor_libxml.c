@@ -2,7 +2,7 @@
  *
  * raptor_libxml.c - Raptor libxml functions
  *
- * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -476,6 +476,7 @@ raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
   sax->warning=(warningSAXFunc)raptor_libxml_warning;
   sax->error=(errorSAXFunc)raptor_libxml_error;
   sax->fatalError=(fatalErrorSAXFunc)raptor_libxml_fatal_error;
+  sax->serror=(xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
   sax->externalSubset = raptor_libxml_externalSubset;
@@ -492,6 +493,7 @@ raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
   sax->warning=(warningSAXFunc)raptor_libxml_warning;
   sax->error=(errorSAXFunc)raptor_libxml_error;
   sax->fatalError=(fatalErrorSAXFunc)raptor_libxml_fatal_error;
+  sax->serror=(xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
   sax->initialized = 1;
