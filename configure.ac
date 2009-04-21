@@ -303,6 +303,8 @@ need_libm=no
 # Save LIBS 
 oLIBS="$LIBS"
 
+RAPTOR_LDFLAGS=
+
 LIBS="$LIBS -lm"
 AC_MSG_CHECKING(whether have trunc in libm)
 AC_TRY_LINK([#ifdef HAVE_MATH_H
@@ -324,7 +326,7 @@ AC_TRY_LINK([#ifdef HAVE_MATH_H
 LIBS="$oLIBS"
 
 if test "X$need_libm" = Xyes; then
-  LIBS="$LIBS -lm"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lm"
 fi
 
 
@@ -1046,7 +1048,7 @@ fi
 
 if test $need_libcurl = 1; then
   CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
-  LIBS="$LIBS `$CURL_CONFIG --libs`"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$CURL_CONFIG --libs`"
   AC_LIBOBJ(raptor_www_curl)
 
 fi
@@ -1095,7 +1097,7 @@ AC_MSG_CHECKING(date parsing source)
 raptor_parsedate_needed=no
 if test $have_inn_parsedate = yes; then
   CPPFLAGS="$CPPFLAGS -I/usr/include/inn"
-  LIBS="$LIBS -L/usr/lib/news -linn"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -L/usr/lib/news -linn"
   AC_MSG_RESULT(INN parsedate)
 else
   if test $need_libcurl = 1; then
@@ -1113,7 +1115,7 @@ fi
 
 
 if test $need_libfetch = 1; then
-  LIBS="$LIBS -lfetch"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lfetch"
   AC_LIBOBJ(raptor_www_libfetch)
 fi
 
@@ -1128,9 +1130,9 @@ if test $need_libxml = 1; then
     SD="$SD libxml"
     (cd libxml && ./configure --cache=../config.cache --enable-shared=no)
     CPPFLAGS="-I$srcdir/libxml $CPPFLAGS"
-    LIBS="$LIBS -Llibxml -llibxml"
+    RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -Llibxml -llibxml"
   else
-    LIBS="$LIBS `$XML_CONFIG --libs`"
+    RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XML_CONFIG --libs`"
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
   fi
   RAPTOR_XML_PARSER=libxml
@@ -1145,19 +1147,19 @@ if test $need_expat = 1; then
     fi
     if test -d "$expat_source_dir/xmlparse"; then
       # old expat
-      LIBS="$LIBS $expat_obj_dir/xmlparse/xmlparse.o $expat_obj_dir/xmlparse/hashtable.o $expat_obj_dir/xmltok/xmlrole.o $expat_obj_dir/xmltok/xmltok.o"
+      RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $expat_obj_dir/xmlparse/xmlparse.o $expat_obj_dir/xmlparse/hashtable.o $expat_obj_dir/xmltok/xmlrole.o $expat_obj_dir/xmltok/xmltok.o"
     else
       # new expat
-      LIBS="$LIBS $expat_obj_dir/lib/xmlparse.o $expat_obj_dir/lib/xmlrole.o $expat_obj_dir/lib/xmltok.o"
+      RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $expat_obj_dir/lib/xmlparse.o $expat_obj_dir/lib/xmlrole.o $expat_obj_dir/lib/xmltok.o"
     fi
   else
-    LIBS="$LIBS $expat_libs"
+    RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $expat_libs"
   fi
   RAPTOR_XML_PARSER=expat
 fi
 
 if test $need_libxslt = 1; then
-  LIBS="$LIBS `$XSLT_CONFIG --libs`"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XSLT_CONFIG --libs`"
   CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
 fi
 
@@ -1185,8 +1187,6 @@ if test $need_expat = 1; then
   fi
 fi
 
-
-RAPTOR_LDFLAGS="$LIBS"
 
 # Restore LIBS
 LIBS="$oLIBS"
