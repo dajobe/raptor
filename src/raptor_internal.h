@@ -1360,6 +1360,12 @@ struct raptor_world_s {
    * xsltFreeSecurityPrefs() on exit
    */
   int free_xslt_security_preferences;
+
+  /* Flags for libxml set by raptor_world_set_libxml_flags() and
+   * raptor_set_libxml_flags() - see #raptor_libxml_flags for
+   * meanings 
+   */
+  int libxml_flags;
 };
 
 /* raptor_world legacy accessor */

@@ -72,8 +72,6 @@ raptor_sax2_finish(raptor_world* world)
     return;
 
 #ifdef RAPTOR_XML_LIBXML
-  xmlSetStructuredErrorFunc(NULL, NULL);
-  xmlSetGenericErrorFunc(NULL, NULL);
   /* Should call this after all uses of libxml are done.
    * In particular after xmlSetStructuredErrorFunc() otherwise
    * it has reportedly caused an access violation on windows.
@@ -113,12 +111,21 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
   sax2->error_handlers=error_handlers;
 
 #ifdef RAPTOR_XML_LIBXML
-  /* sets xmlGenericErrorContext and xmlStructuredError */
-  xmlSetStructuredErrorFunc(&sax2->error_handlers, 
-                            raptor_libxml_xmlStructuredErrorFunc);
-  /* sets xmlGenericErrorContext and xmlGenericError */
-  xmlSetGenericErrorFunc(&sax2->error_handlers, 
-                         (xmlGenericErrorFunc)raptor_libxml_generic_error);
+  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE) {
+    sax2->saved_structured_error_context = xmlGenericErrorContext;
+    sax2->saved_structured_error_handler = xmlStructuredError;
+    /* sets xmlGenericErrorContext and xmlStructuredError */
+    xmlSetStructuredErrorFunc(&sax2->error_handlers, 
+                              (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc);
+  }
+  
+  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE) {
+    sax2->saved_generic_error_context = xmlGenericErrorContext;
+    sax2->saved_generic_error_handler = xmlGenericError;
+    /* sets xmlGenericErrorContext and xmlGenericError */
+    xmlSetGenericErrorFunc(&sax2->error_handlers, 
+                           (xmlGenericErrorFunc)raptor_libxml_generic_error);
+  }
 #endif
   
   return sax2;
@@ -150,6 +157,14 @@ raptor_free_sax2(raptor_sax2 *sax2)
     raptor_libxml_free(sax2->xc);
     sax2->xc=NULL;
   }
+
+  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE)
+    xmlSetStructuredErrorFunc(sax2->saved_structured_error_context,
+                              sax2->saved_structured_error_handler);
+
+  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE)
+    xmlSetGenericErrorFunc(sax2->saved_generic_error_context,
+                           sax2->saved_generic_error_handler);
 #endif
 
   while( (xml_element=raptor_xml_element_pop(sax2)) )

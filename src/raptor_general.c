@@ -2,7 +2,7 @@
  *
  * raptor_general.c - Raptor general routines
  *
- * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -116,7 +116,21 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 raptor_world *
 raptor_new_world(void)
 {
-  return (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(raptor_world), 1);
+  raptor_world *world;
+  
+  world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(raptor_world), 1);
+  if(world) {
+    /* set default libxml flags - can be updated by
+     * raptor_world_set_libxml_flags() and raptor_set_libxml_flags()
+     */
+
+    /* unset: RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE
+     * unset: RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE
+     */
+    world->libxml_flags = 0; 
+  }
+  
+  return world;
 }
 
 
@@ -309,6 +323,53 @@ raptor_set_libxslt_security_preferences(void *security_preferences)
   raptor_world* world = raptor_world_instance();
   if(world)
     raptor_world_set_libxslt_security_preferences(world, security_preferences);
+}
+#endif
+
+
+/**
+ * raptor_world_set_libxml_flags:
+ * @world: world
+ * @flags: libxml flags
+ * 
+ * Set common libxml library flags
+ *
+ * If libxml is compiled into the library, @flags is a bitmask
+ * taking an OR of values defined in #raptor_libxml_flags
+ *
+ * See the #raptor_libxml_flags documentation for full details of
+ * what the flags mean.
+ *
+ */
+void
+raptor_world_set_libxml_flags(raptor_world *world, int flags)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+
+  world->libxml_flags = flags;
+}
+
+
+#ifndef RAPTOR_DISABLE_V1
+/**
+ * raptor_set_libxml_flags:
+ * @flags: flags
+ * 
+ * Set common libxml library flags
+ *
+ * If libxml is compiled into the library, @flags is a bitmask
+ * taking an OR of values defined in #raptor_libxml_flags 
+ *
+ * See the #raptor_libxml_flags documentation for full details of
+ * what the flags mean.
+ *
+ */
+void
+raptor_set_libxml_flags(int flags)
+{
+  raptor_world* world = raptor_world_instance();
+  if(world)
+    raptor_world_set_libxml_flags(world, flags);
 }
 #endif
 

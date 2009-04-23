@@ -822,6 +822,27 @@ typedef void (*raptor_www_final_uri_handler)(raptor_www* www, void *userdata, ra
 typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 
 
+/**
+ * raptor_libxml_flags:
+ * @RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE: if set - save/restore the libxml generic error handler when parsing (default unset)
+ * @RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: if set - save/restore the libxml structured error handler when parsing (default unset)
+ *
+ * libxml library flags
+ *
+ * These are used by raptor_world_set_libxml_flags() and
+ * raptor_set_libxml_flags() to control common libxml features.
+ *
+ * If any handler saving/restoring is enabled, any existing handler
+ * and context is saved before parsing and restored afterwards.
+ * Otherwise, no saving/restoring is performed.
+ *
+ */
+typedef enum {
+  RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE    = 1,
+  RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE = 2
+} raptor_libxml_flags;
+
+
 /* Public functions */
 
 RAPTOR_API
@@ -832,6 +853,8 @@ RAPTOR_API
 void raptor_free_world(raptor_world* world);
 RAPTOR_API
 void raptor_world_set_libxslt_security_preferences(raptor_world *world, void *security_preferences);
+RAPTOR_API
+void raptor_world_set_libxml_flags(raptor_world *world,  int flags);
 
 #ifndef RAPTOR_DISABLE_V1
 RAPTOR_API RAPTOR_V1
@@ -840,6 +863,7 @@ RAPTOR_API RAPTOR_V1
 void raptor_finish(void);
 RAPTOR_API RAPTOR_V1
 void raptor_set_libxslt_security_preferences(void *security_preferences);
+void raptor_set_libxml_flags(int flags);
 #endif
 
 /* Get parser names */
