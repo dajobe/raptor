@@ -262,6 +262,57 @@ raptor_world_instance(void)
 #endif
 
 
+/**
+ * raptor_world_set_libxslt_security_preferences:
+ * @world: world
+ * @security_preferences: security preferences (an #xsltSecurityPrefsPtr)
+ * 
+ * Set libxslt security preferences policy object
+ *
+ * The @security_preferences object will NOT become owned by
+ * #raptor_world
+ *
+ * If libxslt is compiled into the library, @security_preferences
+ * should be an #xsltSecurityPrefsPtr and will be used to call
+ * xsltSetCtxtSecurityPrefs() when an XSLT engine is initialised.
+ *
+ * If libxslt is not compiled in, the object set here is not used.
+ */
+void
+raptor_world_set_libxslt_security_preferences(raptor_world *world, 
+                                              void *security_preferences)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+
+  world->xslt_security_preferences = security_preferences;
+}
+
+
+#ifndef RAPTOR_DISABLE_V1
+/**
+ * raptor_set_libxslt_security_preferences:
+ * @security_preferences: security preferences (an #xsltSecurityPrefsPtr)
+ * 
+ * Set libxslt security preferences policy object
+ *
+ * The @security_preferences object will NOT become owned by Raptor
+ *
+ * If libxslt is compiled into the library, @security_preferences
+ * should be an #xsltSecurityPrefsPtr and will be used to call
+ * xsltSetCtxtSecurityPrefs() when an XSLT engine is initialised.
+ *
+ * If libxslt is not compiled in, the object set here is not used.
+ */
+void
+raptor_set_libxslt_security_preferences(void *security_preferences)
+{
+  raptor_world* world = raptor_world_instance();
+  if(world)
+    raptor_world_set_libxslt_security_preferences(world, security_preferences);
+}
+#endif
+
+
 /* 
  * Thanks to the patch in this Debian bug for the solution
  * to the crash inside vsnprintf on some architectures.

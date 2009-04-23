@@ -830,12 +830,16 @@ RAPTOR_API
 int raptor_world_open(raptor_world* world);
 RAPTOR_API
 void raptor_free_world(raptor_world* world);
+RAPTOR_API
+void raptor_world_set_libxslt_security_preferences(raptor_world *world, void *security_preferences);
 
 #ifndef RAPTOR_DISABLE_V1
 RAPTOR_API RAPTOR_V1
 void raptor_init(void);
 RAPTOR_API RAPTOR_V1
 void raptor_finish(void);
+RAPTOR_API RAPTOR_V1
+void raptor_set_libxslt_security_preferences(void *security_preferences);
 #endif
 
 /* Get parser names */

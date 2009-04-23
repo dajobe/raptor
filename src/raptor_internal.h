@@ -2,7 +2,7 @@
  *
  * raptor_internal.h - Redland Parser Toolkit for RDF (Raptor) internals
  *
- * Copyright (C) 2002-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2002-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -786,7 +786,7 @@ int raptor_init_parser_guess(raptor_world* world);
 int raptor_init_parser_rss(raptor_world* world);
 int raptor_init_parser_rdfa(raptor_world* world);
 
-void raptor_terminate_parser_grddl_common(void);
+void raptor_terminate_parser_grddl_common(raptor_world *world);
 
 /* raptor_parse.c */
 int raptor_parsers_init(raptor_world* world);
@@ -1000,6 +1000,12 @@ struct raptor_sax2_s {
   int first_read;
 #endif
 
+  void *saved_structured_error_context;
+  xmlStructuredErrorFunc saved_structured_error_handler;
+  
+  void *saved_generic_error_context;
+  xmlGenericErrorFunc saved_generic_error_handler;
+  
 #endif  
 
   /* element depth */
@@ -1345,6 +1351,15 @@ struct raptor_world_s {
 
   /* raptor_sax2 init counter to work around issues in xml parser init/cleanup */
   int sax2_initialized;
+
+  /* This is used to store a #xsltSecurityPrefsPtr typed object
+   * pointer when libxslt is compiled in.
+   */
+  void* xslt_security_preferences;
+  /* If non-0 - raptors own the above object and should free it with
+   * xsltFreeSecurityPrefs() on exit
+   */
+  int free_xslt_security_preferences;
 };
 
 /* raptor_world legacy accessor */

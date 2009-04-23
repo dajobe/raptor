@@ -636,6 +636,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
                                      xmlDocPtr xslt_doc,
                                      xmlDocPtr doc)
 {
+  raptor_world* world = rdf_parser->world;
   raptor_grddl_parser_context* grddl_parser=(raptor_grddl_parser_context*)rdf_parser->context;
   int ret=0;
   xsltStylesheetPtr sheet=NULL;
@@ -649,6 +650,13 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   raptor_uri* xslt_uri;
   raptor_uri* base_uri;
   char *quoted_base_uri=NULL;
+  xmlGenericErrorFunc saved_xsltGenericError;
+  void *saved_xsltGenericErrorContext;
+  xsltTransformContextPtr userCtxt;
+
+  userCtxt = xsltNewTransformContext(sheet, doc);
+  if(world->xslt_security_preferences)
+    xsltSetCtxtSecurityPrefs(world->xslt_security_preferences, userCtxt);
 
   xslt_uri=xml_context->uri;
   base_uri=xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
@@ -667,6 +675,8 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     goto cleanup_xslt;
   }
 
+  saved_xsltGenericError = xsltGenericError;
+  saved_xsltGenericErrorContext = xsltGenericErrorContext;
   xsltSetGenericErrorFunc(rdf_parser, raptor_grddl_xsltGenericError_handler);
 
 #if 1
@@ -693,9 +703,10 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   params[5]=(const char*)quoted_base_uri;
   params[6]=NULL;
 
-  res = xsltApplyStylesheet(sheet, doc, params);
+  res = xsltApplyStylesheetUser(sheet, doc, params, NULL, NULL, userCtxt);
 #else
-  res = xsltApplyStylesheet(sheet, doc, NULL); /* No params */
+  /* No params */
+  res = xsltApplyStylesheetUser(sheet, doc, NULL, NULL, NULL, userCtxt);
 #endif
   if(!res) {
     raptor_parser_error(rdf_parser, "Failed to apply stylesheet in '%s'",
@@ -788,6 +799,9 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   
   cleanup_xslt:
 
+  if(userCtxt)
+    xsltFreeTransformContext(userCtxt);
+  
   if(quoted_base_uri)
     RAPTOR_FREE(cstring, quoted_base_uri);
   
@@ -800,6 +814,9 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   if(sheet)
     xsltFreeStylesheet(sheet);
   
+  xsltSetGenericErrorFunc(saved_xsltGenericErrorContext,
+                          saved_xsltGenericError);
+
   return ret;
 }
 
@@ -1951,8 +1968,6 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
 }
 
 
-static xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
-
 int
 raptor_init_parser_grddl_common(raptor_world* world)
 {
@@ -1960,28 +1975,35 @@ raptor_init_parser_grddl_common(raptor_world* world)
   xsltInit();
 #endif
 
-  raptor_xslt_sec = xsltNewSecurityPrefs();
-  xsltSetDefaultSecurityPrefs(raptor_xslt_sec);
+  if(world->xslt_security_preferences == NULL)  {
+    xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
 
+    raptor_xslt_sec = xsltNewSecurityPrefs();
+    xsltSetDefaultSecurityPrefs(raptor_xslt_sec);
+  
 
-  /* no read from file (read from URI with scheme = file) */
-  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_READ_FILE,
-                       xsltSecurityForbid);
+    /* no read from file (read from URI with scheme = file) */
+    xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_READ_FILE,
+                         xsltSecurityForbid);
+    
+    /* no create/write to file */
+    xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_WRITE_FILE,
+                         xsltSecurityForbid);
+    
+    /* no create directory */
+    xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_CREATE_DIRECTORY,
+                         xsltSecurityForbid);
+    
+    /* yes read from URI with scheme != file (XSLT_SECPREF_READ_NETWORK) */
+    
+    /* no write to network (you can 'write' with GET params anyway) */
+    xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_WRITE_NETWORK,
+                         xsltSecurityForbid);
+    
+    world->xslt_security_preferences = (void*)raptor_xslt_sec;
+    world->free_xslt_security_preferences = 1;
+  }
   
-  /* no create/write to file */
-  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_WRITE_FILE,
-                       xsltSecurityForbid);
-  
-  /* no create directory */
-  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_CREATE_DIRECTORY,
-                       xsltSecurityForbid);
-  
-  /* yes read from URI with scheme != file (XSLT_SECPREF_READ_NETWORK) */
-  
-  /* no write to network (you can 'write' with GET params anyway) */
-  xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_WRITE_NETWORK,
-                       xsltSecurityForbid);
-
   return 0;
 }
 
@@ -1997,12 +2019,12 @@ raptor_init_parser_grddl(raptor_world* world)
 
 
 void
-raptor_terminate_parser_grddl_common(void)
+raptor_terminate_parser_grddl_common(raptor_world *world)
 {
   xsltCleanupGlobals();
 
-  if(raptor_xslt_sec) {
-    xsltFreeSecurityPrefs(raptor_xslt_sec);
-    raptor_xslt_sec = NULL;
-  }
+  if(world->xslt_security_preferences &&
+     world->free_xslt_security_preferences)
+    xsltFreeSecurityPrefs((xsltSecurityPrefsPtr)world->xslt_security_preferences);
+
 }

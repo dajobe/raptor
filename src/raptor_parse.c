@@ -149,7 +149,7 @@ raptor_parsers_finish(raptor_world *world)
     world->parsers=NULL;
   }
 #if defined(RAPTOR_PARSER_GRDDL)
-  raptor_terminate_parser_grddl_common();
+  raptor_terminate_parser_grddl_common(world);
 #endif
 }
 
