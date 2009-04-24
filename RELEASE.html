@@ -380,14 +380,13 @@ for future replacing of <code>raptor_statement</code></p>
   <li>Call <code>xmlCleanupParser()</code> libxml call last to avoid an access
 violation on windows.</li>
   <li>Windows <code>vsnprintf()</code> portability patch</li>
-</ul>
-
-<p><code>raptor_sequence_set_at()</code> fixed to maintain the design
+  <li><code>raptor_sequence_set_at()</code> fixed to maintain the design
 contract: provide "size" consecutive items in "sequence" starting from
 "start" even when setting items more than +1 offset beyond the end of
 sequence. <br />
 <a href="http://bugs.librdf.org/mantis/view.php?id=276">Issue #0000276</a>
-</p>
+  </li>
+</ul>
 
 
 
