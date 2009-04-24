@@ -21,6 +21,283 @@ wrapper for <code>pkg-config raptor ...</code>
 It will be removed in a future release.</p>
 </blockquote>
 
+<p>
+Error when raptor_new_uri() fails in Turtle parser: Fixes Issue #0000262 http://bugs.librdf.org/mantis/view.php?id=262
+Fixes Issue #0000263 http://bugs.librdf.org/mantis/view.php?id=263
+Issue#0000269 http://bugs.librdf.org/mantis/view.php?id=269
+RSS serializer fixes for g++: Issue#0000270 http://bugs.librdf.org/mantis/view.php?id=270 
+Fix raptor_sequence_set_at() when setting beyond end: Fixes Issue#000276 http://bugs.librdf.org/mantis/view.php?id=276
+Fix <code>raptor_sax2_parse_chunk()</code> raptor_log_error_to_handlers() calls with expat: Fixes Issue #0000287 http://bugs.librdf.org/mantis/view.php?id=287
+Fix RDFa parser problem when there is a subject and predicate specified on an
+element, but no child nodes for the object literal: Fixes Issue#0000289 http://bugs.librdf.org/mantis/view.php?id=289
+Fix NFC check for legal combiner sequence: Fixes Issue#0000259 http://bugs.librdf.org/mantis/view.php?id=259
+Fix RDF/XML Parser problem with legacy ordinal predicates: Fixes Issue#0000293 http://bugs.librdf.org/mantis/view.php?id=293
+Fix performance problems when turtle parsing with lots of namespaces: Fixes Issue#0000290 http://bugs.librdf.org/mantis/view.php?id=290
+Avoid calling xmlSetStructuredErrorFunc() and xmlSetGenericErrorFunc(): Fixes Issue#000299 http://bugs.librdf.org/mantis/view.php?id=299
+Avoid calling xsltSetDefaultSecurityPrefs(): Fixes Issue#0000296 http://bugs.librdf.org/mantis/view.php?id=296
+</p>
+
+<h3>Parser Changes</h3>
+
+<p>N-Triples parser:
+Produce error messages when raptor_new_uri() fails. <br />
+Fixes Issue #0000262 http://bugs.librdf.org/mantis/view.php?id=262
+</p>
+
+<p>RDFa parser:
+Fix problem when there is a subject and predicate specified on an
+element, but no child nodes for the object literal using
+latest librdfa GIT source with head
+2ddcb3f9e010d0b3d9ee546e807539be5da1b14a <br />
+Fixes Issue#0000289 http://bugs.librdf.org/mantis/view.php?id=289
+</p>
+
+<p>RSS tag soup parser:
+Huge internal changes:<br />
+Recording more atom core structures in triples (such as author, contributor -
+person) rather than only channels and items<br />
+Introduced a new 'blocks' concept to record single element structured
+items such as atom category, link and rss enclosure<br />
+Added itunes namespace and container.<br />
+</p>
+
+<p>RDF/XML Parser:
+Adjust predicate_type when removing ordinal identifier type from predicate. <br />
+Fixes Issue#0000293 http://bugs.librdf.org/mantis/view.php?id=293
+</p>
+
+
+<h3>Serializer Changes</h3>
+
+<p>Turtle serializer:
+Validate XSD integer, decimal and double literal
+output. Emit special short forms only if the whole literal value is
+consumed by <code>strtol()</code> (for integers) or
+<code>strtod()</code> (for decimals and doubles). Otherwise produce a
+warning and emit literal in the normal
+<code>"value"^^&lt;datatype_uri&gt;</code> format. <br />
+Fixes Issue #0000263 http://bugs.librdf.org/mantis/view.php?id=263
+</p>
+
+<p>RSS serializer:
+Fixes for g++ <br />
+Fixes Issue#0000270 http://bugs.librdf.org/mantis/view.php?id=270 
+<br />
+Added a new serializer feature
+<code>RAPTOR_FEATURE_PREFIX_ELEMENTS</code> (short name
+prefixElements) for atom and rss 1.0 serializers to decide whether
+core elements in the default namespace are declared with the prefix
+or without a prefix.<br />
+Removed generation of deprecated predicate ordinals of type
+RAPTOR_IDENTIFIER_TYPE_ORDINAL and replace with resource type URIs
+</p>
+
+
+<h3>Other Changes</h3>
+
+<p>Removed default calls to xmlSetStructuredErrorFunc() and
+xmlSetGenericErrorFunc() which can be a problem when libxml is shared
+with other code in memory.  They may be called optionally but will do
+a save/restore of the existing functions.  This protection is enabled
+by the new API call <code>raptor_set_libxml_flags()</code> to set the
+flags from values in enum <code>raptor_libxml_flags</code>. <br />
+Fixes Issue#000299 http://bugs.librdf.org/mantis/view.php?id=299
+</p>
+
+<p>Use context-specific libslt security configuration to avoid
+calling xsltSetDefaultSecurityPrefs() which can be a problem when
+libxslt is shared with other code in memory.
+Allow the user to set the policy for raptor globally with new API
+function <code>raptor_set_libxslt_security_preferences()</code>. <br />
+Fixes Issue#0000296 http://bugs.librdf.org/mantis/view.php?id=296
+</p>
+
+
+<p>Make libxml SAX2 structured errors go to parser-specific
+raptor_libxml_xmlStructuredErrorFunc handler rather than to libxml
+global structured error handler.
+</p>
+
+<p>Win32 portability fixes from Lou Sakey:<br />
+Handle absence of <code>gettimeofday()</code><br />
+Call <code>xmlCleanupParser()</code> libxml call last to avoid an access
+violation on windows.<br />
+Windows <code>vsnprintf()</code> portability patch
+</p>
+
+<p>Use a DJ Bernstein hash to replace a linked list for namespace
+storage and lookup.  This makes turtle parsing with lots of
+namespaces (100s) much faster.  Based on the initial patch in the
+bug. <br />
+Fixes Issue#0000290 http://bugs.librdf.org/mantis/view.php?id=290
+</p>
+
+<p>Use new <code>raptor_memstr()</code> funciton to compare a string
+against a buffer that may not be NUL terminated. <br />
+Issue#0000269 http://bugs.librdf.org/mantis/view.php?id=269
+</p>
+
+<p><code>raptor_sequence_set_at()</code>: Maintain sequence design
+contract: "size" consecutive items in "sequence" starting from
+"start" when setting items more than +1 offset beyond the end of
+sequence. <br />
+Fixes Issue#000276 http://bugs.librdf.org/mantis/view.php?id=276
+</p>
+
+<p><code>raptor_sax2_parse_chunk()</code>: Fixed
+raptor_log_error_to_handlers() calls when built with expat. <br />
+Fixes Issue #0000287 http://bugs.librdf.org/mantis/view.php?id=287
+</p>
+
+
+<h3>Raptor V2 Preparation Changes</h3>
+
+<p>Lots of internal changes were made by Lauri Aalto preparing for
+Raptor V2 to fully attach all static data and config to a new
+<code>raptor_world</code> object.  A new static instance of this
+class is now used internally behind the existing V1 API and will be
+required to be constructed by the library user for the V2 API with a
+new constructor/destructor.</p>
+
+<p><b>NOTE:</b> The method names here are illustrative of the final
+V2 names but are not confirmed.  Some methods will still be altered
+for fields and (raptor_world) parameters.  All constructors
+should have it as a parameter.</p>
+
+<p>Added <code>raptor_world</code> typedef.</p>
+
+<p>Added raptor world class constructor
+<code>raptor_world* raptor_new_world(void)</code> and initializer:
+<code>int raptor_world_open(raptor_world* world)</code>
+</p>
+
+<p>Added world class destructor:
+<code>void raptor_free_world(raptor_world* world)</code>
+</p>
+
+<p>Added new V2 methods:</p>
+<pre>
+  void raptor_world_set_libxslt_security_preferences(raptor_world *world,
+    void *security_preferences)
+
+  void raptor_world_set_libxml_flags(raptor_world *world,  int flags)
+
+  raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
+</pre>
+
+
+<p>Added V2 methods that are versions of existing methods, named with
+_v2 suffix:</p>
+<pre>
+  int raptor_parsers_enumerate_v2(raptor_world* world,
+    const unsigned int counter, const char **name, const char **label)
+
+  int raptor_syntax_name_check_v2(raptor_world* world, const char *name);
+
+  void raptor_print_locator_v2(raptor_world* world, FILE *stream,
+    raptor_locator* locator);
+
+  const char *raptor_locator_uri_v2(raptor_world* world,
+    raptor_locator *locator);
+
+  int raptor_features_enumerate_v2(raptor_world* world,
+    const raptor_feature feature, const char **name,
+    raptor_uri **uri, const char **label);
+
+  int raptor_serializers_enumerate_v2(raptor_world* world,
+    const unsigned int counter, const char **name, const char **label,
+    const char **mime_type, const unsigned char **uri_string);
+
+  int raptor_serializer_syntax_name_check_v2(raptor_world* world,
+    const char *name);
+
+  int raptor_serializer_features_enumerate_v2(raptor_world* world,
+    const raptor_feature feature, const char **name,  raptor_uri **uri,
+    const char **label);
+</pre>
+
+<p>Added world pointer to raptor_identifier object</p>
+
+<p>Added V2 indentifier class constructor:</p>
+<pre>
+  raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
+</pre>
+
+<p>Added V2 parser class method:</p>
+<pre>
+  raptor_parser* raptor_new_parser_for_content_v2(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier)
+</pre>
+
+<p>Added V2 serializer class constructor:
+<code>raptor_serializer* raptor_new_serializer_v2(raptor_world* world, const char *name)</code>
+and method
+<code>raptor_world* raptor_serializer_get_world(raptor_serializer* rdf_serializer)</code>
+</p>
+
+<p>Added V2 statement class <code>raptor_statement_v2</code> typdef for future replacing of raptor_statement<br />
+Added multiple V2 statement class methods to handle raptor_statement_v2 instead of V1: <code>void raptor_print_statement_v2()</code>, <code>raptor_statement_part_as_counted_string_v2()</code>, <code>raptor_statement_part_as_string_v2()</code>, <code>raptor_statement_compare_v2()</code></p>
+
+<p>Added V2 uri class methods:</p>
+<pre>
+  unsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p);
+
+  raptor_uri* raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string);
+
+  raptor_uri* raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, const unsigned char *local_name);
+
+  raptor_uri* raptor_new_uri_relative_to_base_v2(raptor_world* world, raptor_uri *base_uri, const unsigned char *uri_string);
+
+  raptor_uri* raptor_new_uri_from_id_v2(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
+
+  raptor_uri* raptor_new_uri_for_rdf_concept_v2(raptor_world* world, const char *name);
+
+  void raptor_free_uri_v2(raptor_world* world, raptor_uri *uri);
+
+  int raptor_uri_equals_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2);
+
+  int raptor_uri_compare_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2);
+
+  raptor_uri* raptor_uri_copy_v2(raptor_world* world, raptor_uri *uri);
+
+  unsigned char* raptor_uri_as_string_v2(raptor_world* world, raptor_uri *uri);
+
+  unsigned char* raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t* len_p);
+
+  raptor_uri* raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri);
+
+  raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
+
+  raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri);
+
+</pre>
+
+
+<h3>Internal Changes</h3>
+
+<p>More internal changes to be more resiliant after allocation failure
+(Lauri Aalto)
+</p>
+
+<p>Reorganised tests in source tree to pull out specific directories
+for RDF/XML, Turtle, etc.
+</p>
+
+<p><code>raptor_error_handlers</code>: API struct gains world
+field. BINARY COMPATIBILITY BREAK: struct size and layout
+changed. Source compatibility not broken.
+</p>
+
+<p><code>raptor_identifier</code>: API struct gains world
+field. BINARY COMPATIBILITY BREAK: sizeof(raptor_identifier)
+changed. Source compatibility not broken.
+</p>
+
+<p>More fixes for compiling with C++
+</p>
+
+<p>Move some more static data as constant to enable more efficient
+compilation - moves to data segment of object binary.</p>
+
 
 
 <h2 id="rel1_4_18"><a name="rel1_4_18">Raptor 1.4.18 Changes</a></h2>
@@ -2306,7 +2583,7 @@ for constructing strings from substrings appended or prepended.</p>
 
 <hr />
 
-<p>Copyright (C) 2003-2008 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2003-2009 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
