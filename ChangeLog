@@ -1,3 +1,227 @@
+2009-04-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_sax2.c: Protect calls to xmlSetStructuredErrorFunc()
+	and xmlSetGenericErrorFunc() by libxml flags and if enabled, save
+	and restore the previous values.  Added
+	raptor_set_libxml_flags() (raptor V1) and
+	raptor_world_set_libxml_flags() (raptor V2) to set these flags.
+	Flags are defined in new enum raptor_libxml_flags.
+
+	Fixes Issue#000299 http://bugs.librdf.org/mantis/view.php?id=299
+
+	* docs/tmpl/section-feature.sgml, src/raptor.h,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_parse.c: Use context-specific libslt security
+	configuration to avoid calling 	xsltSetDefaultSecurityPrefs().
+
+	Also allow user to set the policy for raptor globally with new API
+	function raptor_set_libxslt_security_preferences() (and in Raptor V2
+	with raptor_world_set_libxslt_security_preferences method on the
+	world class)
+
+	Fixes Isssue#0000296 http://bugs.librdf.org/mantis/view.php?id=296
+
+2009-04-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_libxml.c:
+	(raptor_libxml_init, raptor_libxml_init_sax_error_handlers): Init
+	per-context structured error handlers to go to
+	raptor_libxml_xmlStructuredErrorFunc
+
+	* configure.ac: Use RAPTOR_LDFLAGS for rest of internally linked
+	libs for libm, curl, fetch, libxml, expat, libxslt, libinn (for
+	parsedate)
+
+	* configure.ac, raptor.pc.in, src/Makefile.am: Introduce
+	RAPTOR_LDFLAGS to replace raw LIBS as the internal set of
+	arguments to use in linking.
+
+	* configure.ac, src/Makefile.am, utils/Makefile.am: Add
+	--enable-debug configure option. use AM_CPPFLAGS for defines and
+	include options Remove unused STANDARD_CFLAGS
+
+2009-03-31  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_namespace.c:
+	(raptor_new_namespaces_v2): Lowmem fix. Use calloc instead of
+	malloc to have struct members initialized to zero in case
+	raptor_namespaces_init_v2() fails and need to free a partially
+	initialized nstack.
+
+2009-03-30  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_serialize_rss.c: Test for
+	gettimeofday. (raptor_rss10_ensure_atom_feed_valid): Use condition
+	to avoid calling it on windows that doesn't have it.  Patch from
+	Lou Sakey 2008-07-31 to redland-dev
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_finish): Call xmlCleanupParser() libxml call last to
+	avoid an access violation on windows. Patch from Lou Sakey
+	2008-07-31 to redland-dev.
+
+	* src/raptor_general.c:
+	(raptor_vsnprintf): Windows vsnprintf() portability patch from Lou
+	Sakey.
+
+2009-03-29  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Substitute ECHO
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Make namespaces seen in fields
+	after any potential renames, so they will get declared later.
+	(raptor_rss_end_element_handler): End any blocks in all cases -
+	was not happening when there was no cdata.
+	(raptor_rss_emit_block): Only emit block strings that are not
+	NULL.
+	(raptor_rss_emit_connection): Turn predicate ordinals into URIs
+	since the RAPTOR_IDENTIFIER_TYPE_ORDINAL is deprecated (and turtle
+	serialiser does not handle it).
+	(raptor_rss_uplift_fields): Gain rss_parser arg and mark
+	namespaces seen in renames.
+
+	* src/raptor_rss_common.c: raptor_rss_fields_info - restore
+	rss:link value to string. raptor_rss_block_fields_info - fix
+	clashing offset for atom author name/email fields.
+
+2009-03-28  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am, tests/feeds/test02-result.atom,
+	tests/feeds/test04-result.ttl, tests/feeds/test04.atom,
+	tests/feeds/test05-result.ttl, tests/feeds/test05.atom: Add test04
+	and test05 atom parsing to turtle.  Update test suite to show
+	errors better and use ECHO macros
+
+	* tests/feeds/test0[123].rdf:: Rename test0[123].rss to .rdf
+
+	* tests/turtle/Makefile.am: Use TURTLE_SERIALIZE_RDF_FILES so that
+	ex-62.rdf gets used
+
+	* tests/turtle/Makefile.am, tests/turtle/test-31-out.ttl,
+	tests/turtle/test-31.ttl: Add tests for serializing rdf:_<n>
+	properties back to themselves.
+
+2009-03-23  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am: use conditionals to execute tests in
+	sane order via FEED_TESTS var
+
+	* tests/feeds/Makefile.am: (check-serialize-atom): Set
+	parser/input base URI for test.
+
+	* tests/feeds/Makefile.am: notes
+
+	* tests/feeds/Makefile.am, tests/feeds/test01-result.ttl,
+	tests/feeds/test02-result.ttl, tests/feeds/test03-result.ttl: Add
+	parsing and serializing tests with intermediate turtle results to
+	check
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Renamed
+	RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE to
+	RAPTOR_FEATURE_PREFIX_ELEMENTS (prefixElements) and change
+	meaning; it always declares prefix: and default namespace but this
+	option flips whether it core vocab is in the prefixed or default
+	namespace.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_build_xml_names): Do not declare or start namespaces
+	with NULL prefix; only the default namespace *may* do that.
+
+2009-03-20  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test01-result.atom: fix namespaces
+
+	* tests/feeds/test01-result.atom, tests/feeds/test02-result.atom,
+	tests/feeds/test03-result.atom: Add namespaces back to all
+	expected results
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_build_xml_names): Enable turning on/off namespaced
+	elements based on feature_alias_default_namespace
+
+2009-03-19  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am, tests/feeds/test01-result.atom,
+	tests/feeds/test02-result.atom, tests/feeds/test03-result.atom:
+	Remove -f aliasDefaultNamespace=0 from tests for now, to enable
+	fixing of other things on their own
+
+2009-03-17  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am: use $(srcdir) before expected
+
+	* tests/feeds/Makefile.am: report failure diff the right way
+	around: from expected to actual
+
+2009-03-12  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test02-result.atom, tests/feeds/test03-result.atom:
+	Fix atom namespaces
+
+	* tests/feeds/Makefile.am: Set aliasDefaultNamespace=0
+
+	* tests/feeds/Makefile.am, tests/feeds/test01-result.atom,
+	tests/feeds/test02-result.atom, tests/feeds/test03-result.atom:
+	Add expected test results, make check works from Makefile alone
+
+	* tests/feeds/Makefile.am: Fix RAPPER call
+
+2009-03-10  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test01.atom, tests/feeds/test02.atom,
+	tests/feeds/test03.atom: Remove atom output - now generated via
+	test
+
+	* tests/feeds/Makefile.am: fix error in error logging
+
+	* configure.ac, tests/Makefile.am, tests/feeds,
+	tests/feeds/Makefile.am: automaked tests/feed
+
+	* tests/feeds/Makefile: Removed, now autogenerated
+
+2009-02-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: comments
+
+	* src/raptor_serialize_rss.c: (raptor_rss10_serialize_statement):
+	Code style, remove if() depth.
+
+2009-02-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: Make itunes:owner container work again.
+
+2009-02-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: fix enclosure class/predicate RDF names
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Added
+	RAPTOR_RSS_RDF_ENCLOSURE for enclosure predicate in RDF as well as
+	RAPTOR_RSS_RDF_ENCLOSURE_CLASS for enclosure class in RDF
+
+	* src/raptor_rss.c: (raptor_rss_start_element_handler): Declare as
+	seen the namespace for a block.
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Add RAPTOR_ATOM_LINK
+	block type
+
+	* src/raptor_rss.c: (raptor_rss_emit_block): Emit type URI from
+	cls field, not predicate.
+
+2009-02-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c: raptor_rss_element loses unused rel field
+
+	* src/raptor_rss.c: (raptor_rss_start_element_handler): Remove
+	unused element attribute recognition <source url> and <category domain>
+
+	* src/raptor_rss.c: (raptor_rss_start_element_handler): Set
+	enclosure namespace used if an enclosure block was seen.
+
 2009-02-22  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rss_common.c: raptor_rss_items_info - add block
