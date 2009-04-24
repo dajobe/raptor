@@ -28,11 +28,6 @@ from unicode character form into UTF-8 (DATA, DOCS)</li>
 to register a parser outside raptor that provides RDF query results as
 triples.  Alternatively, provide a skeleton wrapper parser that
 allows the same by delegating all triple generation to callbacks. (FEATURE)</li>
-<li>RSS tag soup parser junks/overwrites element content if it is
-delivered in chunks rather than as one big CDATA, such as when
-libxml2 sees entities, it emits the content in bits (BUG)</li>
-<li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work (FEATURE)</li>
-<li>Turtle parser: the lexer <code>lval-&gt;string</code> values get overwritten on errors (BUG?)</li>
 <li>Add a N3 parser (FEATURE)</li>
 <li>Add a PNG parser, like
 <a href="http://pmt.sourceforge.net/pngmeta/">pngmeta</a> and parse
@@ -134,9 +129,19 @@ that knows OSX. (0.9.6)
 </ul>
 
 
+<h2>Could not duplicate problem list</h2>
+
+<ul>
+<li>Turtle parser: the lexer <code>lval-&gt;string</code> values get overwritten on errors (BUG?)</li>
+<li>RSS tag soup parser junks/overwrites element content if it is
+delivered in chunks rather than as one big CDATA, such as when
+libxml2 sees entities, it emits the content in bits (BUG)</li>
+</ul>
+
 <h2>Decided not to do list</h2>
 
 <ul>
+<li>Add a gzip2/bzip2 content reading interface, using libxml2 to do the hard work (FEATURE): users can do this if they need it with the chunk API, or using curl with HTTP content compression</li>
 <li>Provide a perl interface (FEATURE): use Redland bindings</li>
 <li>LSID URN support (FEATURE)</li>
 <li>Record the xml parser used and make available from API (FEATURE)</li>
@@ -161,7 +166,7 @@ area of the
 
 <hr />
 
-<p>Copyright (C) 2001-2008 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2001-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2001-2009 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2001-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
