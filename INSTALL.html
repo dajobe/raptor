@@ -6,10 +6,22 @@
 </head>
 <body>
 
-<h1 style="text-align:center">Raptor RDF Parser Library - Building and Installing from Source</h1>
+<h1>Raptor RDF Parser Library - Building and Installing from Source</h1>
   
 
 <h2>1. Getting the sources</h2>
+
+<p>There are several ways to get the sources.  The most stable and
+tested versions are the sources shipped with each release and these
+are recommended as the first place to start.  If you want to get a
+newer set, then there are nightly snapshots made of the development
+sources, which may not yet be committed to Subversion.  For the
+latest developent sources, anonymous Subversion access is available
+but this may require some configuring of developer tools that are not
+needed for the snapshot releases.</p>
+
+<p>The source bundle and package files contain all the HTML files and
+documentation provided on the web site.</p>
 
 <h2>1.1 Getting the sources from releases</h2>
 
@@ -20,14 +32,8 @@
 
 <h2>1.2 Getting the sources from Subversion</h2>
 
-<p><strong>NOTE</strong>: Raptor switched to use
-<a href="http://subversion.tigris.org/">Subversion</a>
-for version control after the 1.4.8 release.  If you were
-using CVS, you will need to re-check out the sources.</p>
-
 <pre>
-  svn checkout http://svn.librdf.org/repository/raptor/trunk/
-  mv trunk raptor
+  svn checkout http://svn.librdf.org/repository/raptor/trunk/ raptor
   cd raptor
 </pre>
 
@@ -37,28 +43,24 @@ below in <a href="#sec-create-configure">Create the configure program</a>
 by using the <code>autogen.sh</code> script.</p>
 
 <p>Building Raptor in this way requires some particular development
-tools not needed when building from snapshot releases - automake and
-autoconf.  The <code>autogen.sh</code> script looks for the newest
-versions of the auto* tools and checks that they meet the minimum
-versions.</p>
+tools not needed when building from snapshot releases - automake,
+autoconf, libtool and dependencies.
+The <code>autogen.sh</code> script looks for the newest versions of
+the auto* tools and checks that they meet the minimum versions.</p>
 
 
 <h2>2. Configuring and building</h2>
 
 <p>Raptor uses the GNU automake and autoconf to handle system
-dependency checking.  It requires an XML parser - either libxml2
-(2.4.0 or newer, 2.6.0 or later highly recommended) or expat.  It will
-optionally use libcurl, libxml2 for retrieving URIs.  It will
-optionally use libxslt (requiring libxml2 also) to provide the XSLT
-functionality for the GRDDL parser.</p>
+dependency checking.  It is developed and built on x86 Linux
+and x86 OSX but is also tested on other systems occasionally.
+</p>
 
-<p>Raptor is developed and built on x86 GNU/Linux
-(Redhat Fedora Core 4, Debian unstable) but is also regularly tested on
-sparc Sun Solaris, x86 FreeBSD, ppc Apple OSX 
-and as part of Redland on several other systems via the 
-<a href="http://sourceforge.net/">SourceForge</a> compile farm
-(typically AMD64, Alpha, Solaris x86, OpenBSD, NetBSD).</p>
-
+<p>Raptor requires an XML parser - either libxml2
+(2.6.8 or newer) or expat.  It will optionally use libcurl, libxml2
+for retrieving URIs.  It will optionally use libxslt (requiring
+libxml2 also) to provide the XSLT functionality for the GRDDL and
+microformats parser.</p>
 
 <h3><a id="sec-create-configure" name="sec-create-configure"></a>2.1. Create <code>configure</code> program</h3>
 
@@ -79,9 +81,10 @@ below for what these are):</p>
 <blockquote>
 <p>On OSX you may have to explicitly set the <code>LIBTOOLIZE</code>
 variable for the <code>libtoolize</code> utility since on
-OSX <code>libtoolize</code> is a different program:</p>
+OSX <code>libtoolize</code> is a different program.  The full
+path to the utility should be given:</p>
 <pre>
-  LIBTOOLIZE=glibtoolize ./autogen.sh
+  LIBTOOLIZE=/opt/local/bin/glibtoolize ./autogen.sh
 </pre>
 </blockquote>
 
@@ -91,12 +94,10 @@ OSX <code>libtoolize</code> is a different program:</p>
 </pre>
 
 <p>The automake and autoconf tools have many different versions and
-at present development is being done with automake 1.8.3 (minimum
-version 1.7), autoconf 2.59 (minimum version 2.54) and libtool 1.5.4
-(minimum version 1.4).  These are only needed when compiling from Subversion
-sources.  autogen.sh enforces the requirements.  In future
-development will move to require automake 1.8, autoconf 2.58 and
-libtool 1.5.</p>
+at present development is being done with automake 1.10.2 (minimum
+version 1.7), autoconf 2.63 (minimum version 2.54) and libtool 2.2.6
+(minimum version 2.2.0).  These are only needed when compiling from
+Subversion sources.  autogen.sh enforces the requirements.</p>
 
 <p>Raptor also requires
 <a href="http://lex.sourceforge.net/">flex</a> version 2.5.31 or newer
@@ -123,6 +124,11 @@ checks will succeed when this is disabled.
 directory <em>DIR</em>.  This handles the older and newer style 
 expat source directory structures.
 </p></dd>
+
+<dt><code>--enable-debug</code><br /></dt>
+<dd><p>Enable debug messages (default not enabled).
+Maintainer mode automatically enables this.</p>
+</dd>
 
 <dt><tt>--enable-parsers=PARSERS</tt><br /></dt>
 <dd><p>Pick the RDF parsers to build from the list:<br />
@@ -157,8 +163,7 @@ memory was allocated in the same library.</p></dd>
 
 <dt><tt>--with-xml-parser=NAME</tt><br /></dt>
 <dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
-minimum version 2.4.0 (2.6.0 or newer prefered)
-or <tt>expat</tt>.  If this option is not given,
+minimum version 2.6.8 or <tt>expat</tt>.  If this option is not given,
 either will be used, with libxml preferred if both are present.
 These can either be installed system libraries or source
 trees in subdirectories of these sources named libxml, expat.</p>
@@ -169,17 +174,6 @@ expat 1.95.2-2 (on RedHat 7.3),
 expat 1.95.2-6 (on Debian 3.0),
 expat 1.95.7 (on Redhat Fedora Core 2),
 expat 1.95.8 (on Debian unstable),
-libxml 2.4.10 (on RedHat 7.2),
-libxml 2.4.13 (on OSX 10.1.5),
-libxml 2.4.17 (on FreeBSD 4.5-RELEASE-p2),
-libxml 2.4.19 (on RedHat 7.2),
-libxml 2.4.23 (on Debian 3.0),
-libxml 2.4.24 (on FreeBSD 4.7-STABLE),
-libxml 2.4.25, 2.4.28, 2.4.30 (Debian unstable),
-libxml 2.5.3-2.5.4 (Redhat 9, Debian unstable, x86 Solaris 2.9),
-libxml 2.5.7 (Redhat 9, Debian unstable),
-libxml 2.5.8-2.5.9 (Debian unstable),
-libxml 2.6.0-2.6.10 (Debian unstable),
 libxml 2.6.8 (Redhat Fedora Core 2),
 libxml 2.6.9 (FreeBSD 4.10-STABLE)
 </p>
@@ -205,7 +199,7 @@ coherent.</p>
 <dd><p>Set the path to the <a href="http://curl.haxx.se/libcurl/">libcurl</a> curl-config program</p></dd>
 
 <dt><tt>--with-libwww-config=NAME</tt><br /></dt>
-<dd><p>Set the path to the W3C <a href="http://www.w3.org/Library/">WWW library</a> libwww-config program</p></dd>
+<dd><p>Legacy option that used to support the libwww library.</p></dd>
 
 </dl>
 
@@ -298,7 +292,7 @@ They are in the <code>examples</code> sub-directory and can be built with:</p>
 
 <hr />
 
-<p>Copyright 2000-2008 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright 2000-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2000-2009 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright 2000-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
