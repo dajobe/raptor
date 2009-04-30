@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor N-Triples tests
 #
-# Copyright (C) 2000-2008, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
 # Copyright (C) 2000-2004, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -86,4 +86,4 @@ check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 	set -e; exit $$result
 
 print-nt-test-files:
-	@echo $(NT_TEST_FILES) | tr ' ' '\012'
+	@cd $(srcdir) && echo $(NT_TEST_FILES) | tr ' ' '\012'
