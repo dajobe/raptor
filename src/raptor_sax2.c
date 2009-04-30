@@ -111,7 +111,7 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
   sax2->error_handlers=error_handlers;
 
 #ifdef RAPTOR_XML_LIBXML
-  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE) {
+  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE) {
     sax2->saved_structured_error_context = xmlGenericErrorContext;
     sax2->saved_structured_error_handler = xmlStructuredError;
     /* sets xmlGenericErrorContext and xmlStructuredError */
@@ -119,7 +119,7 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
                               (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc);
   }
   
-  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE) {
+  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE) {
     sax2->saved_generic_error_context = xmlGenericErrorContext;
     sax2->saved_generic_error_handler = xmlGenericError;
     /* sets xmlGenericErrorContext and xmlGenericError */
