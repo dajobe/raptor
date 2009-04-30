@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor Turtle tests
 #
-# Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+# Copyright (C) 2003-2009, David Beckett http://www.dajobe.org/
 # Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -82,7 +82,8 @@ ALL_TEST_FILES= README.txt \
 	$(TEST_MANIFEST_FILES) \
 	$(TEST_SERIALIZE_FILES) \
 	$(TEST_SERIALIZE_OUT_FILES) \
-	$(TURTLE_SERIALIZE_RDF_TEST_FILES)
+	$(TURTLE_SERIALIZE_RDF_TEST_FILES) \
+	$(TURTLE_SERIALIZE_RDF_FILES)
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
