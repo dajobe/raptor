@@ -31,7 +31,7 @@ OUT_ATOM_TTLS= $(TEST_IN_ATOMS:.atom=.ttl)
 OUT_RDF_ATOMS= $(TEST_IN_RDF_ATOMS:.rdf=.atom)
 
 # Expected results for above
-EXPECTED_TTLS= $(OUT_RDF_TTLS:.ttl=-result.ttl)
+EXPECTED_TTLS= $(OUT_RDF_TTLS:.ttl=-result.ttl) $(OUT_ATOM_TTLS:.ttl=-result.ttl)
 EXPECTED_ATOMS= $(OUT_RDF_ATOMS:.atom=-result.atom)
 
 # Files generated during testing (to delete/clean)
