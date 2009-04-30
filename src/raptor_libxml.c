@@ -591,12 +591,28 @@ static const char* const raptor_libxml_domain_labels[XML_LAST_DL+2]= {
 void 
 raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
 {
-  raptor_error_handlers* error_handlers=(raptor_error_handlers*)user_data;
+  raptor_error_handlers* error_handlers = NULL;
   raptor_stringbuffer* sb;
   char *nmsg;
   raptor_message_handler handler=NULL;
   void* handler_data=NULL;
   raptor_log_level level=RAPTOR_LOG_LEVEL_ERROR;
+
+  /* user_data OR err->ctxt->userData may point to a raptor_sax2 */
+  if(user_data) {
+    raptor_sax2* sax2 = (raptor_sax2*)user_data;
+    if(sax2->magic == RAPTOR_LIBXML_MAGIC)
+      error_handlers = sax2->error_handlers;
+  }
+  
+  if(err && err->ctxt) {
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr)err->ctxt;
+    if(ctxt->userData) {
+      raptor_sax2* sax2 = (raptor_sax2*)ctxt->userData;
+      if(sax2->magic == RAPTOR_LIBXML_MAGIC)
+        error_handlers = sax2->error_handlers;
+    }
+  }
   
   if(err == NULL || err->code == XML_ERR_OK || err->level == XML_ERR_NONE)
     return;
@@ -609,7 +625,7 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   if(err->level == XML_ERR_FATAL)
     err->level= XML_ERR_ERROR;
   
-  
+
   sb=raptor_new_stringbuffer();
   if(err->domain != XML_FROM_HTML)
     raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)"XML ",
