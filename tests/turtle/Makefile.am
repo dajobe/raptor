@@ -243,7 +243,7 @@ check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
 check-turtle-parse-ntriples: build-rapper
 	@set +e; result=0; \
 	$(ECHO) "Testing Turtle parsing with N-Triples tests"; \
-	NT_TEST_FILES=`unset MAKELEVEL MAKEFLAGS; cd $(NTRIPLES_DIR) && $(MAKE) print-nt-test-files | sed -e 's,^,$(NTRIPLES_DIR)/,'`; \
+	NT_TEST_FILES=`unset MAKELEVEL MAKEFLAGS; cd $(NTRIPLES_DIR) && $(MAKE) print-nt-test-files | sed -e 's,^, ,' -e 's, ,$(NTRIPLES_DIR)/,g'`; \
 	for test in $$NT_TEST_FILES; do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=-; \
@@ -262,9 +262,9 @@ check-turtle-parse-ntriples: build-rapper
 	done; \
 	set -e; exit $$result
 
-check-turtle-serialize-rdf: build-rdfdiff build-rapper $(TURTLE_SERIALIZE_RDF_FILES)
+check-turtle-serialize-rdf: build-rdfdiff build-rapper
 	@set +e; result=0; \
-	RDF_TEST_FILES=`unset MAKELEVEL MAKEFLAGS; cd $(RDFXML_DIR) && $(MAKE) print-rdf-test-files | sed -e 's,^,$(RDFXML_DIR)/,'`; \
+	RDF_TEST_FILES=`unset MAKELEVEL MAKEFLAGS; cd $(RDFXML_DIR) && $(MAKE) print-rdf-test-files | sed -e 's,^, ,' -e 's, ,$(RDFXML_DIR)/,g'`; \
 	$(ECHO) "Testing turtle serialization with legal rdf/xml"; \
 	for test in $$RDF_TEST_FILES $(TURTLE_SERIALIZE_RDF_FILES); do \
 	  name=`basename $$test .rdf` ; \
