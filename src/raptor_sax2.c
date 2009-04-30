@@ -617,12 +617,12 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 #if LIBXML_VERSION < 20425
   if(sax2->first_read && is_end) {
     /* parse all but the last character */
-    rc=xmlParseChunk(xc, (char*)buffer, len-1, 0);
-    if(rc)
+    rc = xmlParseChunk(xc, (char*)buffer, len-1, 0);
+    if(rc && rc != XML_WAR_UNDECLARED_ENTITY)
       goto handle_error;
     /* last character */
-    rc=xmlParseChunk(xc, (char*)buffer + (len-1), 1, 0);
-    if(rc)
+    rc = xmlParseChunk(xc, (char*)buffer + (len-1), 1, 0);
+    if(rc && rc != XML_WAR_UNDECLARED_ENTITY)
       goto handle_error;
     /* end */
     xmlParseChunk(xc, (char*)buffer, 0, 1);
@@ -634,8 +634,8 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
   sax2->first_read=0;
 #endif
     
-  rc=xmlParseChunk(xc, (char*)buffer, len, is_end);
-  if(rc) /* libxml: non 0 is failure */
+  rc = xmlParseChunk(xc, (char*)buffer, len, is_end);
+  if(rc && rc != XML_WAR_UNDECLARED_ENTITY) /* libxml: non 0 is failure */
     goto handle_error;
   if(is_end)
     return 0;
