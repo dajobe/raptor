@@ -3,7 +3,7 @@
  * raptor_serialize_turtle.c - Turtle serializer
  *
  * Copyright (C) 2006,2008 Dave Robillard
- * Copyright (C) 2004-2008 David Beckett http://www.dajobe.org/
+ * Copyright (C) 2004-2009 David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005 University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005 Steve Shepard steveshep@gmail.com
  * 
@@ -387,19 +387,24 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
   int idx;
   raptor_avltree_iterator* iter=NULL;
   int i;
+  int is_new_subject = 0;
 
   RAPTOR_DEBUG5("Emitting subject collection items for node %p refcount %d subject %d object %d\n", 
                 subject->node,
                 subject->node->ref_count, subject->node->count_as_subject, 
                 subject->node->count_as_object);
 
-  
+  /* if just saw a new subject (is_new_subject is true) then there is no need
+   * to advance the iterator - it was just reset
+   */
   for(i=0, (iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
       iter && !rv;
-      i++, (rv=raptor_avltree_iterator_next(iter))) {
+      i++, (rv = is_new_subject ? 0 : raptor_avltree_iterator_next(iter))) {
     raptor_abbrev_node** nodes;
     raptor_abbrev_node* predicate;
     raptor_abbrev_node* object;
+
+    is_new_subject = 0;
 
     nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
     if(!nodes)
@@ -472,6 +477,15 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
                             "Malformed collection - could not find subject for rdf:rest");
         return 1;
       }
+
+      /* got a <(old)subject> rdf:rest <(new)subject> triple so know
+       * subject has changed and should reset the properties iterator
+       */
+      if(iter)
+        raptor_free_avltree_iterator(iter);
+      iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
+      is_new_subject = 1;
+
     } else {
       if(object->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
          !raptor_uri_equals_v2(serializer->world, object->value.resource.uri, context->rdf_nil_uri)) {
@@ -653,7 +667,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   }
 
   /* check if we can do collection abbreviation */
-  if(raptor_avltree_size(subject->properties) >= 4) {
+  if(raptor_avltree_size(subject->properties) >= 2) {
     raptor_avltree_iterator* iter=NULL;
     raptor_abbrev_node* pred1;
     raptor_abbrev_node* pred2;
