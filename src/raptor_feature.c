@@ -46,15 +46,18 @@ static const struct
 {
   raptor_feature feature;
   /* flag bits
+   *  0: default is bool/int value
+   *
    *  1=parser feature
    *  2=serializer feature
-   *  4=string value (else int)
+   *  4=string value (else bool/int)
    *  8=xml writer feature
+   * 16=bool/int value is an integer
    */
   int flags;
   const char *name;
   const char *label;
-} raptor_features_list [RAPTOR_FEATURE_LAST+1]= {
+} raptor_features_list[RAPTOR_FEATURE_LAST+1]= {
   { RAPTOR_FEATURE_SCANNING                , 1, "scanForRDF", "Scan for rdf:RDF in XML content" },
   { RAPTOR_FEATURE_ASSUME_IS_RDF           , 1, "assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
   { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES , 1, "allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
@@ -82,7 +85,7 @@ static const struct
   { RAPTOR_FEATURE_HTML_TAG_SOUP     , 1,  "htmlTagSoup", "HTML parsing uses a lax HTML parser" },
   { RAPTOR_FEATURE_MICROFORMATS      , 1,  "microformats", "GRDDL parsing looks for microformats" },
   { RAPTOR_FEATURE_HTML_LINK         , 1,  "htmlLink", "GRDDL parsing looks for <link type=\"application/rdf+xml\">" },
-  { RAPTOR_FEATURE_WWW_TIMEOUT       , 1,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
+  { RAPTOR_FEATURE_WWW_TIMEOUT       , 1+16,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
   { RAPTOR_FEATURE_WRITE_BASE_URI    , 2,  "writeBaseURI", "Write @base / xml:base directive in serializer output" },
   { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, 5, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
   { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 5,  "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
