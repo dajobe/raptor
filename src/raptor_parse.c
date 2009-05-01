@@ -1561,7 +1561,7 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
     case RAPTOR_FEATURE_WWW_TIMEOUT:
-      result=(parser->features[(int)feature] != 0);
+      result = parser->features[(int)feature];
       break;
 
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
