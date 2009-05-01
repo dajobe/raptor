@@ -1,0 +1,5 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex: <http://example.org/ns#> .
+
+# Based on Issue#0000274 http://bugs.librdf.org/mantis/view.php?id=274
+ex:node1 rdf:value ( ex:item1 ex:item2 ) .
