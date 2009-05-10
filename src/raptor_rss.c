@@ -572,16 +572,6 @@ raptor_rss_start_element_handler(void *user_data,
                 raptor_rss_fields_info[rss_parser->current_field].name,
                 raptor_rss_items_info[rss_parser->current_type].name);
   
-  /* Rename some fields from atom to rss */
-  for(i = 0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
-    if(raptor_atom_to_rss[i].from == rss_parser->current_field) {
-      rss_parser->current_field = raptor_atom_to_rss[i].to;
-      RAPTOR_DEBUG3("Rewrote into field %d - %s\n", rss_parser->current_field,
-                    raptor_rss_fields_info[rss_parser->current_field].name);
-      break;
-    }
-  }
-
   /* Mark namespace seen in new field */
   if(1) {
     rss_info_namespace ns_index;
@@ -1328,11 +1318,50 @@ raptor_rss_uplift_fields(raptor_rss_parser* rss_parser, raptor_rss_item* item)
 {
   int i;
   
+  /* COPY some fields from atom to rss */
+  for(i = 0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
+    raptor_rss_fields_type from_field = raptor_atom_to_rss[i].from;
+    raptor_rss_fields_type to_field = raptor_atom_to_rss[i].to;
+    raptor_rss_field* field = NULL;
+
+    if(!(item->fields[from_field] && item->fields[from_field]->value))
+      continue;
+  
+    if(from_field == to_field) {
+      field = item->fields[from_field];
+    } else {
+      if(item->fields[to_field] && item->fields[to_field]->value)
+        continue;
+      field = raptor_rss_new_field(item->world);
+      field->is_mapped = 1;
+      raptor_rss_item_add_field(item, to_field, field);
+    }
+
+    /* Ensure output namespace is declared */
+    rss_parser->nspaces_seen[raptor_rss_fields_info[to_field].nspace] = 'Y';
+    
+    if(!field->value) {
+      size_t len;
+
+      /* Otherwise default action is to copy from_field value */
+      len = strlen((const char*)item->fields[from_field]->value);
+      
+      field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+      strncpy((char*)field->value,
+              (const char*)item->fields[from_field]->value, len + 1);
+    }
+    
+    RAPTOR_DEBUG3("Copied atom field %s to rss field %s\n", 
+                  raptor_rss_fields_info[from_field].name,
+                  raptor_rss_fields_info[to_field].name);
+  }
+
+
+  /* Change the values of some fields */
   for(i = 0; raptor_rss_uplift_map[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
     raptor_rss_fields_type from_field = raptor_rss_uplift_map[i].from;
     raptor_rss_fields_type to_field = raptor_rss_uplift_map[i].to;
     raptor_rss_field* field = NULL;
-    size_t len;
     
     if(!(item->fields[from_field] && item->fields[from_field]->value))
       continue;
@@ -1364,6 +1393,8 @@ raptor_rss_uplift_fields(raptor_rss_parser* rss_parser, raptor_rss_item* item)
     rss_parser->nspaces_seen[raptor_rss_fields_info[to_field].nspace] = 'Y';
     
     if(!field->value) {
+      size_t len;
+
       /* Otherwise default action is to copy from_field value */
       len = strlen((const char*)item->fields[from_field]->value);
       
