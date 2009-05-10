@@ -68,7 +68,7 @@ const raptor_rss_item_info raptor_rss_items_info[RAPTOR_RSS_COMMON_SIZE+1]={
   { "image",      RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
   { "textinput",  RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
   { "item",       RSS1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
-  { "Author",     ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS, RAPTOR_RSS_FIELD_ATOM_AUTHOR },
+  { "author",     ATOM1_0_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS, RAPTOR_RSS_FIELD_ATOM_AUTHOR },
   { "Link",       ATOM1_0_NS, RAPTOR_RSS_ITEM_BLOCK, RAPTOR_RSS_RDF_ATOM_LINK_CLASS, RAPTOR_RSS_FIELD_ATOM_LINK },
   { "owner"  ,   ITUNES_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_ITUNES_OWNER, RAPTOR_RSS_FIELD_ITUNES_OWNER },
   { "skipHours",  RSS0_91_NS, RAPTOR_RSS_ITEM_CONTAINER, RAPTOR_RSS_FIELD_NONE, RAPTOR_RSS_FIELD_NONE },
@@ -131,7 +131,7 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "title",          ATOM1_0_NS, 0 },
   { "updated",        ATOM1_0_NS, 0 },
   /* atom 1.0 optional fields */
-  { "author",         ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_ATOM_AUTHOR },
+  { "author",         ATOM1_0_NS, 0, RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS },
   { "category",       ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_ATOM_CATEGORY },
   { "content",        ATOM1_0_NS, 0 },
   { "contributor",    ATOM1_0_NS, 0 },
@@ -257,17 +257,6 @@ const raptor_rss_block_field_info raptor_rss_block_fields_info[RAPTOR_RSS_BLOCKS
   { RAPTOR_ATOM_CATEGORY, "term",   RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_TERM },
   { RAPTOR_ATOM_CATEGORY, "scheme", RSS_BLOCK_FIELD_TYPE_URL, 0, RAPTOR_RSS_FIELD_ATOM_SCHEME },
   { RAPTOR_ATOM_CATEGORY, "label",  RSS_BLOCK_FIELD_TYPE_STRING, 1, RAPTOR_RSS_FIELD_ATOM_LABEL },
-
-  /*
-  Atom <author> - optional element inside <entry>
-  attributes:
-    name (required):  . string
-    email (optional): . string
-  content: empty
-  */
-  { RAPTOR_ATOM_AUTHOR, "name",  RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_NAME },
-  { RAPTOR_ATOM_AUTHOR, NULL,    RSS_BLOCK_FIELD_TYPE_STRING, 0, RAPTOR_RSS_FIELD_ATOM_NAME },
-  { RAPTOR_ATOM_AUTHOR, "email", RSS_BLOCK_FIELD_TYPE_STRING, 1, RAPTOR_RSS_FIELD_ATOM_EMAIL },
 
   /*
   Atom <link> - optional element inside <entry>
