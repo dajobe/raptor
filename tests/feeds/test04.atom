@@ -28,7 +28,7 @@
     <id>tag:example.org,2004:2217</id>
     <link href="http://www.example.org/blog/2006/04/02/Blah-Blah"/>
     <title>Blah Blah</title>
-    <content type="xhtml"><div>><p>Blah blah</p></div></content>
+    <content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml"><p>Blah blah</p></div></content>
     <summary>Blah blah summary.</summary>
     <updated>2006-04-02T07:06:12-04:00</updated>
   </entry>
@@ -37,7 +37,7 @@
     <id>tag:example.org,2004:2216</id>
     <link href="http://www.example.org/blog/2006/04/01/More-Stuff"/>
     <title>More stuff</title>
-    <content type="xhtml"><div><em>More stuff</em></div></content>
+    <content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml"><em>More stuff</em></div></content>
     <updated>2006-04-01T08:03:19-05:00</updated>
   </entry>
 
