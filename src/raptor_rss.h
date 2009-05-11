@@ -253,9 +253,14 @@ typedef enum {
 
 extern const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2];
 
+typedef struct raptor_rss_field_s raptor_rss_field;
+
+typedef int (*raptor_rss_field_conversion)(raptor_rss_field* from_field, raptor_rss_field* to_field);
+
 typedef struct {
   raptor_rss_fields_type from;
   raptor_rss_fields_type to;
+  raptor_rss_field_conversion conversion;
 } raptor_field_pair;
 
 extern const raptor_field_pair raptor_atom_to_rss[];
@@ -354,7 +359,6 @@ struct raptor_rss_field_s
   /* value is XML */
   unsigned int is_xml:1;
 };
-typedef struct raptor_rss_field_s raptor_rss_field;
 
 #define RAPTOR_RSS_FIELD_MAPPED
 
