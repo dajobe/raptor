@@ -1,20 +1,24 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rss091: <http://purl.org/rss/1.0/modules/rss091#> .
 @prefix rss: <http://purl.org/rss/1.0/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix atom: <http://www.w3.org/2005/Atom> .
 
 <index.atom>
     rss:link "http://www.example.org/blog/index.atom" ;
+    dc:date "2009-01-01T00:00:00-00:00" ;
     rss:title "Kim Doe" ;
     a rss:channel ;
-    atom:updated "2009-01-01T00:00:00-00:00" ;
     atom:author [
         a atom:Author ;
         atom:name "Kim Doe"
     ] ;
+    atom:id <index.atom> ;
     atom:link [
         a atom:Link ;
         atom:href <index.atom> ;
         atom:rel "self"
-    ] .
+    ] ;
+    atom:title "Kim Doe" ;
+    atom:updated "2009-01-01T00:00:00-00:00" .
 
