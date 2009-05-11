@@ -1297,20 +1297,49 @@ raptor_rss_emit(raptor_parser* rdf_parser)
 }
 
 
-static const raptor_field_pair raptor_rss_uplift_map[]={
-  /* from */                  /* to */
-#ifdef RAPTOR_PARSEDATE_FUNCTION
-  /* convert to ISO date */
-  { RAPTOR_RSS_FIELD_PUBDATE,        RAPTOR_RSS_FIELD_DC_DATE },
+static int    
+raptor_rss_copy_field(raptor_rss_parser* rss_parser,
+                      raptor_rss_item* item,
+                      const raptor_field_pair* pair)
+{
+  raptor_rss_fields_type from_field = pair->from;
+  raptor_rss_fields_type to_field = pair->to;
+  raptor_rss_field* field = NULL;
 
-  /* default action: copy fields */
-  { RAPTOR_RSS_FIELD_ATOM_UPDATED,   RAPTOR_RSS_FIELD_DC_DATE },
-#endif
-  /* default actions: copy fields */
-  { RAPTOR_RSS_FIELD_DESCRIPTION,    RAPTOR_RSS_FIELD_CONTENT_ENCODED },
+  if(!(item->fields[from_field] && item->fields[from_field]->value))
+    return 1;
 
-  { RAPTOR_RSS_FIELD_UNKNOWN, RAPTOR_RSS_FIELD_UNKNOWN }
-};
+  if(from_field == to_field) {
+    field = item->fields[from_field];
+  } else {
+    if(item->fields[to_field] && item->fields[to_field]->value)
+      return 1;
+  
+    field = raptor_rss_new_field(item->world);
+    field->is_mapped = 1;
+    raptor_rss_item_add_field(item, to_field, field);
+  }
+  
+  /* Ensure output namespace is declared */
+  rss_parser->nspaces_seen[raptor_rss_fields_info[to_field].nspace] = 'Y';
+    
+  if(!field->value) {
+    if(pair->conversion)
+      pair->conversion(item->fields[from_field], field);
+    else {
+      size_t len;
+
+      /* Otherwise default action is to copy from_field value */
+      len = strlen((const char*)item->fields[from_field]->value);
+
+      field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+      strncpy((char*)field->value,
+              (const char*)item->fields[from_field]->value, len + 1);
+    }
+  }
+
+  return 0;
+}
 
 
 static void
@@ -1318,90 +1347,16 @@ raptor_rss_uplift_fields(raptor_rss_parser* rss_parser, raptor_rss_item* item)
 {
   int i;
   
-  /* COPY some fields from atom to rss */
+  /* COPY some fields from atom to rss/dc */
   for(i = 0; raptor_atom_to_rss[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
     raptor_rss_fields_type from_field = raptor_atom_to_rss[i].from;
     raptor_rss_fields_type to_field = raptor_atom_to_rss[i].to;
-    raptor_rss_field* field = NULL;
 
-    if(!(item->fields[from_field] && item->fields[from_field]->value))
+    if(raptor_rss_copy_field(rss_parser, item, &raptor_atom_to_rss[i]))
       continue;
-  
-    if(from_field == to_field) {
-      field = item->fields[from_field];
-    } else {
-      if(item->fields[to_field] && item->fields[to_field]->value)
-        continue;
-      field = raptor_rss_new_field(item->world);
-      field->is_mapped = 1;
-      raptor_rss_item_add_field(item, to_field, field);
-    }
-
-    /* Ensure output namespace is declared */
-    rss_parser->nspaces_seen[raptor_rss_fields_info[to_field].nspace] = 'Y';
-    
-    if(!field->value) {
-      size_t len;
-
-      /* Otherwise default action is to copy from_field value */
-      len = strlen((const char*)item->fields[from_field]->value);
-      
-      field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
-      strncpy((char*)field->value,
-              (const char*)item->fields[from_field]->value, len + 1);
-    }
-    
-    RAPTOR_DEBUG3("Copied atom field %s to rss field %s\n", 
+    RAPTOR_DEBUG3("Copied field %s to rss field %s\n", 
                   raptor_rss_fields_info[from_field].name,
                   raptor_rss_fields_info[to_field].name);
-  }
-
-
-  /* Change the values of some fields */
-  for(i = 0; raptor_rss_uplift_map[i].from != RAPTOR_RSS_FIELD_UNKNOWN; i++) {
-    raptor_rss_fields_type from_field = raptor_rss_uplift_map[i].from;
-    raptor_rss_fields_type to_field = raptor_rss_uplift_map[i].to;
-    raptor_rss_field* field = NULL;
-    
-    if(!(item->fields[from_field] && item->fields[from_field]->value))
-      continue;
-  
-    if(from_field == to_field) {
-      field = item->fields[from_field];
-    } else {
-      if(item->fields[to_field] && item->fields[to_field]->value)
-        continue;
-      field = raptor_rss_new_field(item->world);
-      field->is_mapped = 1;
-      raptor_rss_item_add_field(item, to_field, field);
-    }
-
-#ifdef RAPTOR_PARSEDATE_FUNCTION
-    /* Get rid of date soup */
-    if(from_field == RAPTOR_RSS_FIELD_PUBDATE
-#if 0
-       /* or normalize to UTC */
-       ||
-       from_field == RAPTOR_RSS_FIELD_ATOM_PUBLISHED ||
-       from_field == RAPTOR_RSS_FIELD_ATOM_UPDATED
-#endif
-       )
-      raptor_rss_date_uplift(field, item->fields[from_field]->value);
-#endif
-
-    /* Ensure output namespace is declared */
-    rss_parser->nspaces_seen[raptor_rss_fields_info[to_field].nspace] = 'Y';
-    
-    if(!field->value) {
-      size_t len;
-
-      /* Otherwise default action is to copy from_field value */
-      len = strlen((const char*)item->fields[from_field]->value);
-      
-      field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
-      strncpy((char*)field->value, (const char*)item->fields[from_field]->value, len + 1);
-    }
-    
   }
 }
 
