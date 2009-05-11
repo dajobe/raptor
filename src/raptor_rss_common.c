@@ -45,6 +45,9 @@
 #include "raptor_rss.h"
 
 
+static int raptor_rss_field_conversion_date_uplift(raptor_rss_field* from_field, raptor_rss_field* to_field);
+
+
 const raptor_rss_namespace_info raptor_rss_namespaces_info[RAPTOR_RSS_NAMESPACES_SIZE]={
   { NULL,                     NULL,      },
   { NULL,                     NULL,      },
@@ -201,9 +204,9 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
 };
 
 
-/* Crude and unofficial mappings from atom fields to RSS */
+/* FIeld mappings from atom fields to RSS/DC */
 const raptor_field_pair raptor_atom_to_rss[]={
-  /* atom clone of rss fields */
+  /* rss clone of atom fields */
   { RAPTOR_RSS_FIELD_ATOM_SUMMARY,   RAPTOR_RSS_FIELD_DESCRIPTION },
   { RAPTOR_RSS_FIELD_ATOM_ID,        RAPTOR_RSS_FIELD_LINK },
   { RAPTOR_RSS_FIELD_ATOM_UPDATED,   RAPTOR_RSS_FIELD_DC_DATE },
@@ -214,14 +217,24 @@ const raptor_field_pair raptor_atom_to_rss[]={
   /* atom 0.3 to atom 1.0 */
   { RAPTOR_RSS_FIELD_ATOM_COPYRIGHT, RAPTOR_RSS_FIELD_ATOM_RIGHTS },
   { RAPTOR_RSS_FIELD_ATOM_TAGLINE,   RAPTOR_RSS_FIELD_ATOM_SUBTITLE },
+
 #if 0
-  /* other old atom 0.3 fields */
+  /* other old atom 0.3 fields - IGNORED */
   { RAPTOR_RSS_FIELD_ATOM_CREATED,  RAPTOR_RSS_FIELD_UNKNOWN },
   { RAPTOR_RSS_FIELD_ATOM_ISSUED,   RAPTOR_RSS_FIELD_UNKNOWN },
   { RAPTOR_RSS_FIELD_ATOM_MODIFIED, RAPTOR_RSS_FIELD_UNKNOWN },
 #endif
 
-  { RAPTOR_RSS_FIELD_UNKNOWN,       RAPTOR_RSS_FIELD_UNKNOWN }
+#ifdef RAPTOR_PARSEDATE_FUNCTION
+  /* convert to ISO date */
+  { RAPTOR_RSS_FIELD_PUBDATE,        RAPTOR_RSS_FIELD_DC_DATE,
+    &raptor_rss_field_conversion_date_uplift },
+#endif
+
+  /* rss content encoded */
+  { RAPTOR_RSS_FIELD_DESCRIPTION,    RAPTOR_RSS_FIELD_CONTENT_ENCODED },
+
+  { RAPTOR_RSS_FIELD_UNKNOWN,        RAPTOR_RSS_FIELD_UNKNOWN }
 };
 
 
@@ -684,14 +697,18 @@ raptor_rss_set_date_field(raptor_rss_field* field, time_t unix_time)
 }
 
 
-int
-raptor_rss_date_uplift(raptor_rss_field* to_field, 
-                       const unsigned char *date_string)
+static int
+raptor_rss_field_conversion_date_uplift(raptor_rss_field* from_field,
+                                        raptor_rss_field* to_field)
 {
 #ifdef RAPTOR_PARSEDATE_FUNCTION
   time_t unix_time;
-
-  unix_time=RAPTOR_PARSEDATE_FUNCTION((const char*)date_string, NULL);
+  char *date_string = (char*)from_field->value;
+  
+  if(!date_string)
+    return 1;
+  
+  unix_time = RAPTOR_PARSEDATE_FUNCTION(date_string, NULL);
   if(unix_time < 0)
     return 1;
 
