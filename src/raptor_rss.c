@@ -952,7 +952,34 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
           raptor_set_identifier_id(identifier, id);
         }
       }
-    
+
+      /* Add an rss:link with /atom:link[@rel="self"]/@href contents */
+      if(i == RAPTOR_RSS_CHANNEL &&
+         !item->fields[RAPTOR_RSS_FIELD_LINK]) {
+        raptor_rss_block *block;
+        for(block = item->blocks; block; block = block->next) {
+          raptor_rss_field* field;
+
+          if(block->rss_type != RAPTOR_ATOM_LINK)
+            continue;
+
+          /* FIXME - <link @href> is url 0 and <link @rel> is string 0
+           * We just "know" this although the raptor_rss_block_fields_info
+           * structure records it.
+           */
+          if(!block->urls[0] || !block->strings[0] ||
+             strcmp(block->strings[0], "self"))
+            continue;
+
+          /* set the field rss:link to the string value of the @href */
+          field = raptor_rss_new_field(item->world);
+          field->value = raptor_uri_to_string_v2(rdf_parser->world,
+                                                 block->urls[0]);
+
+          raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
+        }
+      }
+
       item->node_type = &raptor_rss_items_info[i];
       item->node_typei = i;
     }
