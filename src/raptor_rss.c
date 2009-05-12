@@ -1127,7 +1127,12 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
   if(!item->fields_count)
     return 0;
 
-  type_uri = rdf_parser->world->rss_types_info_uris[item->node_typei];
+  /* HACK - FIXME - set correct atom output class type */
+  if(item->node_typei == RAPTOR_ATOM_AUTHOR) 
+    type_uri = rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS];
+  else
+    type_uri = rdf_parser->world->rss_types_info_uris[item->node_typei];
+
   if(raptor_rss_emit_type_triple(rdf_parser, identifier, type_uri))
     return 1;
 
