@@ -1032,11 +1032,12 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
 
 
 static int
-raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
+raptor_rss_emit_block(raptor_parser* rdf_parser,
+                      raptor_identifier *resource,
+                      raptor_rss_block *block)
 {
   raptor_rss_parser* rss_parser = (raptor_rss_parser*)rdf_parser->context;
   raptor_identifier* identifier = &block->identifier;
-  const void* subject = rss_parser->statement.subject;
   raptor_rss_type block_type = block->rss_type;
   raptor_uri *predicate_uri;
   const raptor_rss_block_field_info *bfi;
@@ -1047,6 +1048,9 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
     return 1;
   }
 
+  rss_parser->statement.subject = resource->uri ? (void*)resource->uri : (void*)resource->id;
+  rss_parser->statement.subject_type = resource->type;
+  
   predicate_field = raptor_rss_items_info[block_type].predicate;
   predicate_uri = rdf_parser->world->rss_fields_info_uris[predicate_field];
 
@@ -1110,7 +1114,6 @@ raptor_rss_emit_block(raptor_parser* rdf_parser, raptor_rss_block *block)
         
   }
 
-  rss_parser->statement.subject = subject;
   return 0;
 }
 
@@ -1167,7 +1170,7 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
   }
 
   for(block = item->blocks; block; block = block->next) {
-    raptor_rss_emit_block(rdf_parser, block);
+    raptor_rss_emit_block(rdf_parser, identifier, block);
   }
 
   return 0;
