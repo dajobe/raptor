@@ -1499,7 +1499,7 @@ raptor_rss10_ensure_atom_field_zero_one(raptor_rss_item* item,
 
 
 /**
- * raptor_rss10_ensure_atom_items_valid:
+ * raptor_rss10_ensure_atom_feed_valid:
  * @rss_serializer: serializer object
  *
  * INTERNAL - Ensure the atom items have all the fields they need:
