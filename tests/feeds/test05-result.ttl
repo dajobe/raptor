@@ -5,8 +5,8 @@
 @prefix atom: <http://www.w3.org/2005/Atom> .
 
 <index.atom>
-    rss:link "http://www.example.org/blog/index.atom" ;
     dc:date "2009-01-01T00:00:00-00:00" ;
+    rss:link "http://www.example.org/blog/index.atom" ;
     rss:title "Kim Doe" ;
     a rss:channel ;
     atom:author [
