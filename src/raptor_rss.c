@@ -893,6 +893,56 @@ raptor_rss_sax2_new_namespace_handler(void *user_data,
 }
 
 
+/* Add an rss:link from string contents of either:
+ *   atom:id
+ *   atom:link[@rel="self"]/@href 
+ */
+static void
+raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
+                          raptor_rss_item* item) 
+{
+  raptor_rss_block *block;
+  raptor_rss_field* id_field;
+  raptor_rss_field* field = NULL;
+
+  /* Try atom:id first */
+  id_field = item->fields[RAPTOR_RSS_FIELD_ATOM_ID];
+  if(id_field && id_field->value) {
+    const char *value = (const char*)id_field->value;
+    size_t len = strlen(value);
+
+    field = raptor_rss_new_field(item->world);
+    field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+    strncpy((char*)field->value, (const char*)value, len + 1);
+    raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
+
+    return;
+  }
+  
+  
+  for(block = item->blocks; block; block = block->next) {
+    if(block->rss_type != RAPTOR_ATOM_LINK)
+      continue;
+    
+    /* FIXME - <link @href> is url 0 and <link @rel> is string 0
+     * We just "know" this although the raptor_rss_block_fields_info
+     * structure records it.
+     */
+    if(!block->urls[0] || 
+       (block->strings[0] && strcmp(block->strings[0], "self"))
+       )
+      continue;
+    
+    /* set the field rss:link to the string value of the @href */
+    field = raptor_rss_new_field(item->world);
+    field->value = raptor_uri_to_string_v2(rdf_parser->world, block->urls[0]);
+
+    raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
+    return;
+  }
+}
+
+
 static void
 raptor_rss_insert_identifiers(raptor_parser* rdf_parser) 
 {
@@ -953,32 +1003,9 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
         }
       }
 
-      /* Add an rss:link with /atom:link[@rel="self"]/@href contents */
-      if(i == RAPTOR_RSS_CHANNEL &&
-         !item->fields[RAPTOR_RSS_FIELD_LINK]) {
-        raptor_rss_block *block;
-        for(block = item->blocks; block; block = block->next) {
-          raptor_rss_field* field;
-
-          if(block->rss_type != RAPTOR_ATOM_LINK)
-            continue;
-
-          /* FIXME - <link @href> is url 0 and <link @rel> is string 0
-           * We just "know" this although the raptor_rss_block_fields_info
-           * structure records it.
-           */
-          if(!block->urls[0] || !block->strings[0] ||
-             strcmp(block->strings[0], "self"))
-            continue;
-
-          /* set the field rss:link to the string value of the @href */
-          field = raptor_rss_new_field(item->world);
-          field->value = raptor_uri_to_string_v2(rdf_parser->world,
-                                                 block->urls[0]);
-
-          raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
-        }
-      }
+      /* Try to add an rss:link if missing */
+      if(i == RAPTOR_RSS_CHANNEL && !item->fields[RAPTOR_RSS_FIELD_LINK])
+        raptor_rss_insert_rss_link(rdf_parser, item);
 
       item->node_type = &raptor_rss_items_info[i];
       item->node_typei = i;
@@ -990,6 +1017,9 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
     raptor_rss_block *block;
     raptor_uri* uri;
     
+    if(!item->fields[RAPTOR_RSS_FIELD_LINK]) 
+      raptor_rss_insert_rss_link(rdf_parser, item);
+
     if(item->uri) {
       uri = raptor_uri_copy_v2(rdf_parser->world, item->uri);
     } else {
