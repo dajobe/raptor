@@ -30,6 +30,8 @@
     <at:entrymap property="http://purl.org/dc/elements/1.1/rights">atom:rights</at:entrymap>
     <at:entrymap property="http://purl.org/rss/1.0/title">atom:title</at:entrymap>
     <at:entrymap property="http://purl.org/rss/1.0/modules/content/encoded">atom:summary</at:entrymap>
+    <at:entrymap property="http://purl.org/dc/elements/1.1/date">rss091:pubDate</at:entrymap>
+    <at:entrymap property="http://purl.org/rss/1.0/modules/content/encoded">rss:description</at:entrymap>
   </at:entrymap>
 
   <atom:entry>
