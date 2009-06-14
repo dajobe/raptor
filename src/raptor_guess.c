@@ -150,7 +150,10 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG2("Guessed parser name '%s'\n", name);
 #endif
-      
+
+      /* If there is an existing guessed parser factory present and
+       * it's different from the wanted parser, free it
+       */
       if(guess_parser->parser) {
         raptor_parser_factory* factory=raptor_get_parser_factory(rdf_parser->world, name);
 
