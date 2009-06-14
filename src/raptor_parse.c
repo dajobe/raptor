@@ -1717,7 +1717,10 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
 const char*
 raptor_get_name(raptor_parser *rdf_parser) 
 {
-  return rdf_parser->factory->name;
+  if(rdf_parser->factory->get_name)
+    return rdf_parser->factory->get_name(rdf_parser);
+  else
+    return rdf_parser->factory->name;
 }
 
 
