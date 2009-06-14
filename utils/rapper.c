@@ -363,6 +363,8 @@ main(int argc, char *argv[])
 
       case 'c':
         count=1;
+        if(serializer_syntax_name)
+          serializer_syntax_name = NULL;
         break;
 
       case 'f':
