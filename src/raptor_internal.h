@@ -480,6 +480,9 @@ struct raptor_parser_factory_s {
 
   /* get the current generated ID base (OPTIONAL) */
   int (*get_current_base_id)(raptor_parser* rdf_parser);
+
+  /* get the name (OPTIONAL) */
+  const char* (*get_name)(raptor_parser* rdf_parser);
 };
 
 
