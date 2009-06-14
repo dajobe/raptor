@@ -654,10 +654,6 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   void *saved_xsltGenericErrorContext;
   xsltTransformContextPtr userCtxt;
 
-  userCtxt = xsltNewTransformContext(sheet, doc);
-  if(world->xslt_security_preferences)
-    xsltSetCtxtSecurityPrefs(world->xslt_security_preferences, userCtxt);
-
   xslt_uri=xml_context->uri;
   base_uri=xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
 
@@ -674,6 +670,10 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     ret=1;
     goto cleanup_xslt;
   }
+
+  userCtxt = xsltNewTransformContext(sheet, doc);
+  if(world->xslt_security_preferences)
+    xsltSetCtxtSecurityPrefs(world->xslt_security_preferences, userCtxt);
 
   saved_xsltGenericError = xsltGenericError;
   saved_xsltGenericErrorContext = xsltGenericErrorContext;
