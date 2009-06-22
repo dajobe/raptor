@@ -9,7 +9,7 @@
 #  perl fix-bison brql_parser.tab.c > $tmp
 #  mv $tmp brql_parser.tab.c
 #
-# Copyright (C) 2004-2006, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2004-2006, David Beckett http://www.dajobe.org/
 # Copyright (C) 2004, University of Bristol, UK http://www.bristol.ac.uk/
 #
 

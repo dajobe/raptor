@@ -7,7 +7,7 @@
 #  perl fix-flex $output > $tmp
 #  mv $tmp $output
 #
-# (C) Copyright 2004 Dave Beckett http://purl.org/net/dajobe/
+# (C) Copyright 2004 Dave Beckett http://www.dajobe.org/
 # (C) Copyright 2004 University of Bristol
 #
 
