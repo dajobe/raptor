@@ -391,7 +391,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
             if(raptor_rss_fields_info[to_f].nspace == ATOM0_3_NS)
               continue;
 
-            if(f == from_f) {
+            if(f == from_f &&
+               !(item->fields[to_f] && item->fields[to_f]->value)) {
               f= to_f;
               field->is_mapped=1;
               RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
@@ -539,7 +540,7 @@ raptor_rss10_move_leftover_statements(raptor_rss10_serializer_context *rss_seria
  * @item: rss item
  * @type: item type
  *
- * INTERNAL - Remvoe mapepd fields for an item
+ * INTERNAL - Remove mapped fields for an item
  *
  */
 static int
@@ -694,7 +695,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
             if(raptor_rss_fields_info[to_f].nspace == ATOM0_3_NS)
               continue;
             
-            if(f == from_f) {
+            if(f == from_f &&
+               !(item->fields[to_f] && item->fields[to_f]->value)) {
               f= to_f;
               field->is_mapped=1;
               RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
