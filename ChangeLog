@@ -1,3 +1,45 @@
+2009-07-16  Dave Beckett  <dave@dajobe.org>
+
+	* Raptor passes 'make check' test suite as of SVN r15234
+
+	* src/raptor_serialize_rss.c: Guess whether <atom:summary> on
+	input is xml or not based on if it starts with <
+
+	* tests/feeds/test02-result.atom, tests/feeds/test02-result.ttl,
+	tests/feeds/test02.rdf: Add <div>...</div> once to descs
+
+	* tests/feeds/test02.rdf: use <div>...</div> in descriptions
+
+	* tests/feeds/test03-result.atom: fix relative atom:link @href in
+	expected output
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_atom_feed): Output relative URIs for
+	<atom:link @href>
+
+	* src/raptor_serialize_rss.c: Extra/tidy debug messages
+
+2009-07-15  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement, raptor_rss10_build_items): Use
+	raptor_rss_item_set_uri to always assign item identifier and uri
+	fields correctly.
+
+	* src/raptor_rss.h, src/raptor_rss_common.c:
+	(raptor_rss_item_set_uri): Added to set the item identifier fields
+	plus the item->uri field correctly.
+
+2009-07-13  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Add SHAVE support - disabled by default and enabled
+	for maintainers.
+	libtool V2 needed
+	Add -Wall to automake args
+	Reorder args to remove dups
+	Find config_aux_dir and config_macro_dir and use them for copying in
+	config.{sub,guess} and adjusting aclocal args respectively.
+
 2009-06-21  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_rss.c:
