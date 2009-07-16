@@ -589,6 +589,26 @@ raptor_rss_item_equals_statement_subject(const raptor_rss_item *item,
 }
 
 
+int
+raptor_rss_item_set_uri(raptor_rss_item *item, raptor_uri* uri)
+{
+  RAPTOR_DEBUG3("Set node %p to URI <%s>\n", item,
+                raptor_uri_as_string_v2(item->world, uri));
+  
+  item->uri = raptor_uri_copy_v2(item->world, uri);
+  if(!item->uri)
+    return 1;
+  
+  uri = raptor_uri_copy_v2(item->world, item->uri);
+  if(!uri)
+    return 1;
+  
+  raptor_set_identifier_uri(&item->identifier, uri);
+  return 0;
+}
+
+
+
 raptor_rss_block*
 raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
                      const unsigned char* id)
