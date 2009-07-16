@@ -1260,6 +1260,7 @@ raptor_rss10_emit_atom_feed(raptor_serializer *serializer,
   raptor_qname *atom_link_qname;
   raptor_qname** atom_link_attrs;
   raptor_namespace* atom_nspace=rss_serializer->nspaces[ATOM1_0_NS];
+  unsigned char* ruri_string;
 
   xml_writer=rss_serializer->xml_writer;
 
@@ -1271,10 +1272,14 @@ raptor_rss10_emit_atom_feed(raptor_serializer *serializer,
   atom_link_element=raptor_new_xml_element(atom_link_qname, NULL, base_uri_copy);
 
   atom_link_attrs=(raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, sizeof(raptor_qname*));
+  ruri_string = raptor_uri_to_relative_uri_string_v2(rss_serializer->world,
+                                                     base_uri, item->uri);
+
   atom_link_attrs[0]=raptor_new_qname(rss_serializer->nstack, 
                                       (const unsigned char*)"href", 
-                                      raptor_uri_as_string_v2(rss_serializer->world, item->uri),
+                                      ruri_string,
                                       NULL, NULL); /* errors */
+  raptor_free_memory(ruri_string);
   atom_link_attrs[1]=raptor_new_qname(rss_serializer->nstack, 
                                       (const unsigned char*)"rel", 
                                       (const unsigned char*)"self",
