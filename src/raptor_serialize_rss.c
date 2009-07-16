@@ -877,10 +877,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   
 
   if(item) {
-    raptor_uri *uri = raptor_uri_copy_v2(rss_serializer->world,
-                                         (raptor_uri*)statement->subject);
-    
-    raptor_set_identifier_uri(&item->identifier, uri);
+    raptor_rss_item_set_uri(item, (raptor_uri*)statement->subject);
     
     /* Move any existing statements to the newly discovered item */
     raptor_rss10_move_statements(rss_serializer, type, item);
@@ -949,11 +946,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
         
         item = raptor_new_rss_item(rss_serializer->world);
 
-        item->uri = (raptor_uri*)s->s->object;
-        s->s->object = NULL;
-        raptor_set_identifier_uri(&item->identifier,
-                                  raptor_uri_copy_v2(rss_serializer->world,
-                                                     item->uri));
+        raptor_rss_item_set_uri(item, (raptor_uri*)s->s->object);
 
         raptor_sequence_set_at(rss_serializer->items, ordinal-1, item);
 
