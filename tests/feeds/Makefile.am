@@ -95,6 +95,7 @@ check-rdfxml-to-turtle: $(TEST_IN_RDF_ATOMS)
 	    $(ECHO) "FAILED with code $$status"; \
 	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    cat errors.log ; \
+	    result=1 ; \
 	  elif cmp $(srcdir)/$$expected $$turtle >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -128,6 +129,7 @@ check-atom-to-turtle: $(TEST_IN_ATOMS)
 	    $(ECHO) "FAILED with code $$status"; \
 	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    cat errors.log ; \
+	    result=1 ; \
 	  elif cmp $(srcdir)/$$expected $$turtle >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -164,6 +166,7 @@ check-serialize-atom: $(OUT_RDF_TTLS)
 	    $(ECHO) "FAILED with code $$status"; \
 	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    cat errors.log ; \
+	    result=1 ; \
 	  elif cmp $(srcdir)/$$expected $$atom >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
@@ -193,10 +196,12 @@ check-validate-atom: $(srcdir)/atom.rng $(OUT_ATOMS) $(TEST_IN_ATOMS)
 	    $(ECHO) "FAILED with code $$status"; result=1; \
 	    $(ECHO) jing $(srcdir)/atom.rng $$atom; \
 	    sed -e "s,^.*$$atom,$$atom," errors.log ; \
+	    result=1 ; \
 	  else \
 	    $(ECHO) "ok"; \
           fi; \
           rm -f errors.log; \
-	done
+	done; \
+	set -e; exit $$result
 
 endif
