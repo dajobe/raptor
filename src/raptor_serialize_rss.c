@@ -376,6 +376,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
              field->is_xml=1;
           if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
              field->is_xml=1;
+          if(f == RAPTOR_RSS_FIELD_ATOM_SUMMARY && *field->value == '<')
+            field->is_xml=1;
         }
         s->s->object=NULL;
 
@@ -394,6 +396,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
             if(f == from_f &&
                !(item->fields[to_f] && item->fields[to_f]->value)) {
               f= to_f;
+              if(to_f == RAPTOR_RSS_FIELD_ATOM_SUMMARY && *field->value == '<')
+                field->is_xml=1;
               field->is_mapped=1;
               RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
               break;
@@ -680,6 +684,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
              field->is_xml=1;
           if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
             field->is_xml=1;
+          if(f == RAPTOR_RSS_FIELD_ATOM_SUMMARY && *field->value == '<')
+            field->is_xml=1;
         }
         s->s->object=NULL;
 
@@ -698,6 +704,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
             if(f == from_f &&
                !(item->fields[to_f] && item->fields[to_f]->value)) {
               f= to_f;
+              if(to_f == RAPTOR_RSS_FIELD_ATOM_SUMMARY && *field->value == '<')
+                field->is_xml=1;
               field->is_mapped=1;
               RAPTOR_DEBUG5("Moved field %d - %s to field %d - %s\n", from_f, raptor_rss_fields_info[from_f].name, to_f, raptor_rss_fields_info[to_f].name);
               break;
@@ -1657,7 +1665,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   raptor_xml_element *element=NULL;
   raptor_qname **attrs=NULL;
   raptor_uri* base_uri_copy=NULL;
-  int f;
+  raptor_rss_fields_type f;
   int is_atom;
 
 #ifdef RAPTOR_DEBUG
@@ -1805,6 +1813,10 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
 
       base_uri_copy=base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
       predicate=raptor_new_xml_element(raptor_qname_copy(serializer->world->rss_fields_info_qnames[f]), NULL, base_uri_copy);
+
+      /* Use atom:summary in preference */
+      if(is_atom && f == RAPTOR_RSS_FIELD_DESCRIPTION)
+        continue;
 
       if(is_atom && field->uri) {
         unsigned char* ruri_string;
