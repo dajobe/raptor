@@ -1,0 +1,91 @@
+<!-- ##### SECTION Title ##### -->
+Initialisation
+
+<!-- ##### SECTION Short_Description ##### -->
+Library startup, shutdown and configuration.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+How to initialise and terminate the library, set
+library-wide configuration flags and options.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION raptor_init ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION raptor_finish ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### TYPEDEF raptor_world ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION raptor_new_world ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_free_world ##### -->
+<para>
+
+</para>
+
+@world: 
+
+
+<!-- ##### ENUM raptor_libxml_flags ##### -->
+<para>
+
+</para>
+
+@RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE: 
+@RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: 
+
+<!-- ##### FUNCTION raptor_world_set_libxml_flags ##### -->
+<para>
+
+</para>
+
+@world: 
+@flags: 
+
+
+<!-- ##### FUNCTION raptor_world_set_libxslt_security_preferences ##### -->
+<para>
+
+</para>
+
+@world: 
+@security_preferences: 
+
+
+<!-- ##### FUNCTION raptor_world_open ##### -->
+<para>
+
+</para>
+
+@world: 
+@Returns: 
+
+

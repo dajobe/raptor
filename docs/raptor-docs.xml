@@ -46,6 +46,7 @@
       <year>2006</year>
       <year>2007</year>
       <year>2008</year>
+      <year>2009</year>
       <holder>Dave Beckett</holder>
     </copyright>
     <copyright>
@@ -119,6 +120,7 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
     <xi:include href="raptor-serializers.xml"/>
 
 
+    <xi:include href="xml/section-world.xml"/>
     <xi:include href="xml/section-general.xml"/>
     <xi:include href="xml/section-memory.xml"/>
     <xi:include href="xml/section-constants.xml"/>

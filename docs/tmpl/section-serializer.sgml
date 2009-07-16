@@ -235,3 +235,12 @@ that can adjust how serializing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_serializer_get_world ##### -->
+<para>
+
+</para>
+
+@rdf_serializer: 
+@Returns: 
+
+
