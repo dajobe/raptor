@@ -40,7 +40,7 @@
     <atom:updated>2008-03-30T06:07:28Z</atom:updated>
     <atom:link href="2008-03-30" rel="alternate"/>
     <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
-html description 1
+html description 2
 </div></atom:summary>
     <at:md/>
   </atom:entry>
@@ -51,7 +51,7 @@ html description 1
     <atom:updated>2007-10-01T06:56:58Z</atom:updated>
     <atom:link href="2007-10-01" rel="alternate"/>
     <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">
-html description 3
+html description 4
 </div></atom:summary>
     <at:md/>
   </atom:entry>
