@@ -18,7 +18,7 @@
     <atom:name>unknown</atom:name>
     <atom:uri>http://bob.com/</atom:uri>
   </atom:author>
-  <atom:link href="" rel="self"/>
+  <atom:link href="/whatsnew" rel="self"/>
   <at:feedmap>
     <at:feedmap property="http://purl.org/rss/1.0/link">atom:id</at:feedmap>
     <at:feedmap property="http://purl.org/dc/elements/1.1/date">atom:updated</at:feedmap>
