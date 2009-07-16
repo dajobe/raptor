@@ -23,7 +23,7 @@
     <content:encoded><![CDATA[<div xmlns="http://www.w3.org/1999/xhtml">
 html description 1
 </div>]]></content:encoded>
-    <description>&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;&lt;ul&gt;
+    <description>&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;&lt;div&gt;
 html description 2
 &lt;/div&gt;</description>
     <dc:date>2008-03-30T06:07:28Z</dc:date>
@@ -35,7 +35,7 @@ html description 2
     <content:encoded><![CDATA[<div xmlns="http://www.w3.org/1999/xhtml">
 html description 3
 </div>]]></content:encoded>
-    <description>&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;&lt;ul&gt;
+    <description>&lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;&lt;div&gt;
 html description 4
 &lt;/div&gt;</description>
     <dc:date>2007-10-01T06:56:58Z</dc:date>
