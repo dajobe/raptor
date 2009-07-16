@@ -160,11 +160,11 @@ check-serialize-atom: $(OUT_RDF_TTLS)
 	  fi; \
 	  opts="-q -i turtle -o atom $$opts -I $$baseuri -O $$baseuri"; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$atom 2> errors.log; \
+	  $(RAPPER) $$opts file:$$test > $$atom 2> errors.log; \
 	  status=$$?; \
 	  if test $$status != 0; then \
 	    $(ECHO) "FAILED with code $$status"; \
-	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    $(ECHO) "$(RAPPER) $$opts file:$$test"; \
 	    cat errors.log ; \
 	    result=1 ; \
 	  elif cmp $(srcdir)/$$expected $$atom >/dev/null 2>&1; then \
