@@ -116,7 +116,7 @@ raptor_new_sequence(raptor_sequence_free_handler *free_handler,
 
 
 /**
- * raptor_new_sequence_with_handler_context:
+ * raptor_new_sequence_v2:
  * @free_handler: handler to free a sequence item
  * @print_handler: handler to print a sequence item to a FILE*
  * @handler_context: context information to pass to free/print handlers
@@ -126,9 +126,9 @@ raptor_new_sequence(raptor_sequence_free_handler *free_handler,
  * Return value: a new #raptor_sequence or NULL on failure 
  **/
 raptor_sequence*
-raptor_new_sequence_with_handler_context(raptor_sequence_free_handler_v2 *free_handler,
-                                         raptor_sequence_print_handler_v2 *print_handler,
-                                         void *handler_context)
+raptor_new_sequence_v2(raptor_sequence_free_handler_v2 *free_handler,
+                       raptor_sequence_print_handler_v2 *print_handler,
+                       void *handler_context)
 {
   raptor_sequence* seq=(raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
   if(!seq)

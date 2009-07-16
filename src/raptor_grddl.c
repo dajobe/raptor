@@ -270,7 +270,7 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   raptor_libxml_init_sax_error_handlers(&grddl_parser->sax);
 
   /* Sequence of URIs of XSLT sheets to transform the document */
-  grddl_parser->doc_transform_uris=raptor_new_sequence_with_handler_context((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, rdf_parser->world);
+  grddl_parser->doc_transform_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, rdf_parser->world);
 
   grddl_parser->grddl_processing=1;
   grddl_parser->xinclude_processing=1;
@@ -290,7 +290,7 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_grddl_parse_init_common(rdf_parser, name);
 
   /* Sequence of URIs from <head profile> */
-  grddl_parser->profile_uris=raptor_new_sequence_with_handler_context((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, (void*)world);
+  grddl_parser->profile_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, (void*)world);
 
   grddl_parser->namespace_transformation_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#namespaceTransformation");
   grddl_parser->profile_transformation_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#profileTransformation");
@@ -298,7 +298,7 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   /* Sequence of URIs visited - may be overwritten if this is not
    * the depth 0 grddl parser
    */
-  grddl_parser->visited_uris=raptor_new_sequence_with_handler_context((raptor_sequence_free_handler_v2*)raptor_free_uri_v2, (raptor_sequence_print_handler_v2*)raptor_uri_print_v2, (void*)world);
+  grddl_parser->visited_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)raptor_free_uri_v2, (raptor_sequence_print_handler_v2*)raptor_uri_print_v2, (void*)world);
 
   return 0;
 }
