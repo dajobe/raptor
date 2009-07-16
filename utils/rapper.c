@@ -431,7 +431,7 @@ main(int argc, char *argv[])
 
               len=strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
-                fv=(feature_value*)raptor_alloc_memory(sizeof(feature_value));
+                fv=(feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
 
                 fv->feature=(raptor_feature)i;
                 if(raptor_feature_value_type(fv->feature) == 0) {
