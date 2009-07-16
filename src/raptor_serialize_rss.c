@@ -401,7 +401,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
           }
         } /* end is atom field to map */
 
-        RAPTOR_DEBUG1("fa4 - ");
+        RAPTOR_DEBUG1("Adding field\n");
         raptor_rss_item_add_field(item, f, field);
         raptor_sequence_set_at(rss_serializer->triples, t, NULL);
         break;
@@ -705,7 +705,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
           }
         }
 
-        RAPTOR_DEBUG1("fa5 - ");
+        RAPTOR_DEBUG1("Adding field\n");
         raptor_rss_item_add_field(item, f, field);
         raptor_free_statement_v2(s);
 #if RAPTOR_DEBUG > 1
@@ -777,6 +777,17 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 
   rss_serializer = (raptor_rss10_serializer_context*)serializer->context;
   rss_model = &rss_serializer->model;
+
+#if RAPTOR_DEBUG > 1
+  if(1) {
+    raptor_statement_v2 s2;
+    RAPTOR_DEBUG1("Processing statement\n  ");
+    s2.s = (raptor_statement*)statement;
+    s2.world = rss_serializer->world;
+    raptor_print_statement_as_ntriples_v2(&s2, stderr);
+    fputc('\n', stderr);
+  }
+#endif
 
   if(raptor_uri_equals_v2(rss_serializer->world,
                           (raptor_uri*)statement->predicate, 
@@ -918,9 +929,18 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     if(!s)
       continue;
     
+#if RAPTOR_DEBUG > 1
+    RAPTOR_DEBUG1("Processing statement\n  ");
+    raptor_print_statement_as_ntriples_v2(s, stderr);
+    fputc('\n', stderr);
+#endif
+    
     /* skip triples that are not ? ? <uri> */
-    if(s->s->object_type != RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    if(s->s->object_type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+      RAPTOR_DEBUG1("Not ? ? <uri> - continuing\n");
       continue;
+    }
+  
 
     if(s->s->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
       fake_uri=raptor_new_uri_v2(rss_serializer->world, (unsigned char*)s->s->subject);
