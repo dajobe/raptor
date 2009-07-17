@@ -1,4 +1,30 @@
-2009-07-16  Dave Beckett  <dave@dajobe.org>
+2009-07-16  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-docs.xml, docs/raptor-sections.txt,
+	docs/tmpl/section-general.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-world.sgml:
+	Add new functions.  Add section world for init/cleanup and V2
+	world stuff
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_sequence.c:
+	(raptor_new_sequence_v2): Renamed from
+	raptor_new_sequence_with_handler_context
+
+	* tests/rdfxml: Ignore automake outputs
+
+	* tests/ntriples: Ignore automake outputs
+
+	* tests/feeds: Ignore ttl outputs
+
+	* tests/feeds/Makefile.am: (check-serialize-atom): Make test use
+	generated file from build dir.
+
+	* utils/rapper.c: calloc another feature_value
+
+	* tests/feeds/Makefile.am: set result=1 on failures
+
+	* utils/rapper.c: calloc feature_value so that fields are
+	initialised to 0/NULL
 
 	* Raptor passes 'make check' test suite as of SVN r15234
 
