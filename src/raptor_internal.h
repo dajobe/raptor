@@ -191,6 +191,9 @@ void raptor_system_free(void *ptr);
 #endif
 
 
+#include <raptor_v2.h>
+
+
 #ifdef RAPTOR_XML_LIBXML
 
 #include <libxml/parser.h>
