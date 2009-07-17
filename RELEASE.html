@@ -17,8 +17,7 @@
 <p><strong>NOTE:</strong> In the next release of raptor, the
 <code>raptor-config</code> utility that provides the compile and link
 args will be deprecated, generate a warning when run and will turn into a
-wrapper for <code>pkg-config raptor ...</code>
-It will be removed in a future release.</p>
+wrapper for <code>pkg-config raptor ...</code>.</p>
 </blockquote>
 
 <p>Fixed Issues:</p>
@@ -30,16 +29,27 @@ It will be removed in a future release.</p>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=269">0000269</a>: strstr is called in <code>raptor_parse_chunk()</code> on a buffer string, where it should be called on a null-terminating string.</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=270">0000270</a>: RSS serializer fixes for g++</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=276">0000276</a>: Fix <code>raptor_sequence_set_at()</code> when setting beyond end</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=277">0000277</a>: broken collection abbreviation in turtle serialization</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=287">0000287</a>: Fix <code>raptor_sax2_parse_chunk()</code> calling <code>raptor_log_error_to_handlers()</code> with expat</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=288">0000288</a>: raptor_get_feature function does not return feature value</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=289">0000289</a>: Fix RDFa parser problem when there is a subject and predicate specified on an element, but no child nodes for the object literal</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=290">0000290</a>: Fix performance problems when turtle parsing with lots of namespaces</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=293">0000293</a>: Fix RDF/XML Parser problem with legacy ordinal predicates</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=296">0000296</a>: Avoid calling <code>xsltSetDefaultSecurityPrefs()</code></li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=299">0000299</a>: Avoid calling <code>xmlSetStructuredErrorFunc()</code> and <code>xmlSetGenericErrorFunc()</code></li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=303">0000303</a>: rdfa parser does not parse content as RDFa which librdfa+expat alone handles</li>
 </ul>
 
 
 <h3>Parser Changes</h3>
+
+<p><code>raptor_get_feature()</code> now returns the integer value rather than
+just 1 or 0.
+<a href="http://bugs.librdf.org/mantis/view.php?id=288">Issue #0000288</a>
+</p>
+
+<p>Guess parser: return name of guessed parser not 'guess'.
+</p>
 
 <p>N-Triples parser:
 Produce error messages when raptor_new_uri() fails. <br />
@@ -71,6 +81,10 @@ Adjust predicate_type when removing ordinal identifier type from predicate. <br 
 
 <h3>Serializer Changes</h3>
 
+<p>Atom 1.0 serializer:
+Now tested and takes more care to try to generate valid Atom 1.0
+</p>
+
 <p>Turtle serializer:
 Validate XSD integer, decimal and double literal
 output. Emit special short forms only if the whole literal value is
@@ -78,7 +92,9 @@ consumed by <code>strtol()</code> (for integers) or
 <code>strtod()</code> (for decimals and doubles). Otherwise produce a
 warning and emit literal in the normal
 <code>"value"^^&lt;datatype_uri&gt;</code> format. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=263">Issue #0000263</a>
+<a href="http://bugs.librdf.org/mantis/view.php?id=263">Issue #0000263</a><br />
+Fix broken collection abbreviation<br />
+<a href="http://bugs.librdf.org/mantis/view.php?id=277">Issue #0000277</a><br />
 </p>
 
 <p>RSS serializer:
@@ -343,7 +359,7 @@ for future replacing of <code>raptor_statement</code></p>
   typedef void (raptor_sequence_print_handler_v2(void *context, void *object,
     FILE *fh));
 
-  raptor_sequence* raptor_new_sequence_with_handler_context(raptor_sequence_free_handler_v2* free_handler,
+  raptor_sequence* raptor_new_sequence_v2(raptor_sequence_free_handler_v2* free_handler,
     raptor_sequence_print_handler_v2* print_handler, void* handler_context);
 
   void raptor_sequence_set_print_handler_v2(raptor_sequence *seq,
@@ -427,6 +443,8 @@ changed. Source compatibility not broken.
 <p>Move some more static data as constant to enable more efficient
 compilation - moves to data segment of object binary.</p>
 
+<p><code>rapper(1)</code> utility changes: if counting, do not use a serializer at all.
+</p>
 
 
 <h2 id="rel1_4_18"><a name="rel1_4_18">Raptor 1.4.18 Changes</a></h2>
