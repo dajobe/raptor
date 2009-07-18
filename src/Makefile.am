@@ -28,7 +28,7 @@ lib_LTLIBRARIES = libraptor.la
 
 include_HEADERS = raptor.h
 
-noinst_HEADERS = raptor_internal.h win32_raptor_config.h raptor_v2.h
+noinst_HEADERS = raptor_internal.h win32_raptor_config.h
 
 man_MANS = raptor-config.1
 
