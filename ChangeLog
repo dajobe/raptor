@@ -1,3 +1,51 @@
+2009-07-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_turtle_writer.c:
+	(raptor_turtle_writer_literal): More silly games to prevent stupid
+	gcc warning: ignoring return value of 'strtol', declared with
+	attribute warn_unused_result so use the value and then discard it
+	in a stupid expression.  Ditto strtod.
+
+	* src/raptor_uri.c:
+	(raptor_uri_print_v2): Silly games to prevent stupid gcc warning:
+	ignoring return value of 'fwrite', declared with attribute
+	warn_unused_result but right now there is nowhere to return the
+	error too.
+
+	* src/raptor_rss.c:
+	(raptor_rss_uplift_fields): Comment out variables used only in
+	debugging.
+
+	* src/raptor_turtle_writer.c:
+	(raptor_turtle_writer_literal): Ignore unused return values from
+	strtol and strtod used for checking.
+
+	* utils/rapper.c: Revert r15252 and reapply r14951 on rapper to
+	use experimental V2 APIs again
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_v2.h: Remove raptor_v2.h again - no need to dup this
+	for an internal build.  Instead use -DRAPTOR_V2_EXPERIMENTAL when
+	building
+
+	* src/Makefile.am, src/raptor.h, src/raptor_internal.h,
+	src/raptor_v2.h: Added raptor_v2.h again - internal only and put
+	scary warning about V2 things into raptor.h
+
+	* src/raptor.h: use -DRAPTOR_V2_EXPERIMENTAL to enable the V2
+	structs and functions
+
+	* src/Makefile.am: Remove raptor_v2.h - bad idea for now
+
+	* src/Makefile.am, src/raptor.h, src/raptor_internal.h,
+	src/raptor_v2.h: Move public V2 structs and prototypes to internal
+	raptor_v2.h
+
+	* utils/rapper.c: Revert r14951 on rapper to use V1 APIs only for now
+
+	* COPYING, COPYING.LIB: Add specific versions of GPL (2) and
+	LGPL (2.1) to source control
+
 2009-07-16  Dave Beckett <dave@dajobe.org>
 
 	* docs/raptor-docs.xml, docs/raptor-sections.txt,
