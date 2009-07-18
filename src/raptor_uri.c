@@ -1761,13 +1761,20 @@ raptor_uri_print(const raptor_uri* uri, FILE *stream) {
  *
  **/
 void
-raptor_uri_print_v2(raptor_world* world, const raptor_uri* uri, FILE *stream) {
+raptor_uri_print_v2(raptor_world* world, const raptor_uri* uri, FILE *stream)
+{
+  int rc = 0;
+  
   if(uri) {
     size_t len;
     unsigned char *string=raptor_uri_as_counted_string_v2(world, (raptor_uri*)uri, &len);
-    (void)fwrite(string, len, 1, stream);
+    rc = fwrite(string, len, 1, stream);
   } else 
-    (void)fwrite("(NULL URI)", 10, 1, stream);
+    rc = fwrite("(NULL URI)", 10, 1, stream);
+
+  /* FIXME  Until world gains an error handler, there is nowhere to
+   * report the IO error
+   */
 }
 
 
