@@ -78,8 +78,11 @@ extern "C" {
 #define RAPTOR_DEPRECATED
 #endif
 
-/* Flag for clients: raptor v2 functions/structs available */
+/* Enable EXPERIMENTAL and UNSUPPORTED v2 structs and functions */
 #undef RAPTOR_V2_AVAILABLE
+#ifdef RAPTOR_V2_EXPERIMENTAL
+#define RAPTOR_V2_AVAILABLE 1
+#endif
 
 /* Allow to flag V1 functions as deprecated */
 #ifndef RAPTOR_V1
