@@ -563,10 +563,12 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   if(datatype) {
     /* integer */
     if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_integer_uri)) {
-      (void)strtol((const char*)s, &endptr, 10);
+      /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
+      long gcc_is_stupid = strtol((const char*)s, &endptr, 10);
       if(endptr != (char*)s && !*endptr) {
         raptor_iostream_write_string(turtle_writer->iostr, s);
-        written = 1;
+        /* More gcc madness to 'use' the variable I didn't want */
+        written = 1 + 0 * (int)gcc_is_stupid;
       } else {
         turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:integer literal.");
       }
@@ -574,10 +576,12 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
     /* double, decimal */
     } else if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_double_uri) ||
       raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_decimal_uri)) {
-      (void)strtod((const char*)s, &endptr);
+      /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
+      double gcc_is_doubly_stupid = strtod((const char*)s, &endptr);
       if(endptr != (char*)s && !*endptr) {
         raptor_iostream_write_string(turtle_writer->iostr, s);
-        written = 1;
+        /* More gcc madness to 'use' the variable I didn't want */
+        written = 1 +  0 * (int)gcc_is_doubly_stupid;
       } else {
         turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:double or xsd:decimal literal.");
       }
