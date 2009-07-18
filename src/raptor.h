@@ -78,7 +78,17 @@ extern "C" {
 #define RAPTOR_DEPRECATED
 #endif
 
-/* Enable EXPERIMENTAL and UNSUPPORTED v2 structs and functions */
+/**
+ * RAPTOR_V2_EXPERIMENTAL:
+ *
+ * Enable EXPERIMENTAL and UNSUPPORTED API v2 structs and functions
+ *
+ * WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
+ *
+ *   The v2 structs and raptor*_v2() functions are NOT supported.
+ *
+ * WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
+ */
 #undef RAPTOR_V2_AVAILABLE
 #ifdef RAPTOR_V2_EXPERIMENTAL
 #define RAPTOR_V2_AVAILABLE 1

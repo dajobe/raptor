@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_v2.h - INTERNAL raptor V2 API - not stable and not released
+ * raptor_v2.h - INTERNAL raptor experimental V2 functions
  *
  * Copyright (C) 2009, David Beckett http://www.dajobe.org/
  * 
@@ -24,6 +24,9 @@
 
 #ifndef RAPTOR_V2_H
 #define RAPTOR_V2_H
+
+#undef RAPTOR_V2_AVAILABLE
+#define RAPTOR_V2_AVAILABLE 1
 
 
 /**
@@ -74,6 +77,7 @@ int raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, r
 RAPTOR_API
 const char * raptor_locator_uri_v2(raptor_world* world, raptor_locator *locator);
 
+RAPTOR_API
 int raptor_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 
 RAPTOR_API
