@@ -191,9 +191,6 @@ void raptor_system_free(void *ptr);
 #endif
 
 
-#ifndef RAPTOR_V2_ENABLED
-#include <raptor_v2.h>
-#endif
 
 
 #ifdef RAPTOR_XML_LIBXML

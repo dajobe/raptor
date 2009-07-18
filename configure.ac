@@ -1194,7 +1194,7 @@ LIBS="$oLIBS"
 # Make final changes to cflags
 MEM=
 MEM_LIBS=
-CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
+CPPFLAGS="-DRAPTOR_INTERNAL=1 -DRAPTOR_V2_EXPERIMENTAL=1 $CPPFLAGS"
 AC_ARG_WITH(dmalloc, [  --with-dmalloc            Use dmalloc debugging library (default=no)], use_dmalloc="$withval", use_dmalloc="no") 
 AC_MSG_CHECKING(using dmalloc library)
 if test "$USE_MAINTAINER_MODE" = yes; then
