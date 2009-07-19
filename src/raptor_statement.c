@@ -233,6 +233,8 @@ raptor_free_statement(raptor_world *world, raptor_statement *statement)
     if(statement->object_literal_datatype)
       raptor_free_uri_v2(world, (raptor_uri*)statement->object_literal_datatype);
   }
+
+  RAPTOR_FREE(raptor_statement, statement);
 }
 
 
