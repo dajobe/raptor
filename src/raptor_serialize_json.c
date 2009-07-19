@@ -2,7 +2,7 @@
  *
  * raptor_serialize_json.c - JSON serializers
  *
- * Copyright (C) 2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2008-2009, David Beckett http://www.dajobe.org/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -58,7 +58,7 @@ typedef struct {
   raptor_avltree* avltree;
 
   /* Last statement generated if is_resource (shared pointer) */
-  raptor_statement* last_statement;
+  raptor_statement_v2* last_statement;
 
   int need_object_comma;
 
@@ -267,14 +267,13 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   raptor_serializer* serializer=(raptor_serializer*)user_data;
   raptor_json_context* context=(raptor_json_context*)serializer->context;
 
-  raptor_statement* statement=(raptor_statement*)data;
+  raptor_statement_v2* statement=(raptor_statement_v2*)data;
+  raptor_statement* s1 = statement->s;
+  raptor_statement* s2 = context->last_statement ? (context->last_statement->s) : NULL;
   int new_subject=0;
   int new_predicate=0;
   
-  if(context->last_statement) {
-    raptor_statement* s1=statement;
-    raptor_statement* s2=context->last_statement;
-    
+  if(s2) {
     if(s1->subject_type != s2->subject_type) {
       new_subject=1;
     } else {
@@ -313,18 +312,18 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
     /* start triple */
 
     /* subject */
-    switch(statement->subject_type) {
+    switch(s1->subject_type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
         raptor_json_writer_key_uri_value(context->json_writer, 
                                          NULL, 0,
-                                         (raptor_uri*)statement->subject);
+                                         (raptor_uri*)s1->subject);
         break;
         
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
         raptor_iostream_write_counted_string(serializer->iostream, "\"_:", 3);
         raptor_iostream_write_string_python(serializer->iostream,
-                                            (const unsigned char*)statement->subject, 0, 
+                                            (const unsigned char*)s1->subject, 0, 
                                             '"', 2);
         raptor_iostream_write_byte(serializer->iostream, '"');
         break;
@@ -334,7 +333,8 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL1("Unsupported identifier type\n");
+        RAPTOR_FATAL2("Unsupported statement subject identifier type %d\n",
+                      s1->subject_type);
         break;
     }
 
@@ -351,8 +351,8 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       new_predicate=1;
     else {
       new_predicate=!raptor_uri_equals_v2(serializer->world, 
-                                          (raptor_uri*)statement->predicate,
-                                          (raptor_uri*)context->last_statement->predicate);
+                                          (raptor_uri*)s1->predicate,
+                                          (raptor_uri*)s2->predicate);
       if(new_predicate) {
         raptor_json_writer_newline(context->json_writer);
         raptor_json_writer_end_block(context->json_writer, ']');
@@ -368,7 +368,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
 
     raptor_json_writer_key_uri_value(context->json_writer, 
                                    NULL, 0,
-                                   (raptor_uri*)statement->predicate);
+                                   (raptor_uri*)s1->predicate);
     raptor_iostream_write_counted_string(serializer->iostream, " : ", 3);
     raptor_json_writer_start_block(context->json_writer, '[');
     raptor_iostream_write_byte(serializer->iostream, ' ');
@@ -382,40 +382,41 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   }
   
   /* object */
-  switch(statement->object_type) {
+  switch(s1->object_type) {
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_json_writer_uri_object(context->json_writer,
-                                    (raptor_uri*)statement->object);
+                                    (raptor_uri*)s1->object);
       raptor_json_writer_newline(context->json_writer);
       break;
           
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_json_writer_literal_object(context->json_writer,
-                                        (unsigned char*)statement->object,
-                                        (unsigned char*)statement->object_literal_language, 
-                                        statement->object_literal_datatype,
+                                        (unsigned char*)s1->object,
+                                        (unsigned char*)s1->object_literal_language, 
+                                        s1->object_literal_datatype,
                                         "value", "type");
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
       raptor_json_writer_blank_object(context->json_writer, 
-                                      (const char*)statement->object);
+                                      (const char*)s1->object);
       raptor_json_writer_newline(context->json_writer);
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL1("Unsupported identifier type\n");
+        RAPTOR_FATAL2("Unsupported statement object identifier type %d\n",
+                      s1->object_type);
         break;
   }
 
   /* end triple */
 
-  context->need_object_comma=1;
-  context->last_statement=statement;
+  context->need_object_comma = 1;
+  context->last_statement = statement;
 
   return 1;
 }
