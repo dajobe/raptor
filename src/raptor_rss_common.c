@@ -134,7 +134,7 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "title",          ATOM1_0_NS, 0 },
   { "updated",        ATOM1_0_NS, 0 },
   /* atom 1.0 optional fields */
-  { "author",         ATOM1_0_NS, 0, RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS },
+  { "author",         ATOM1_0_NS, 0, RAPTOR_ATOM_AUTHOR },
   { "category",       ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_BLOCK_VALUE, RAPTOR_ATOM_CATEGORY },
   { "content",        ATOM1_0_NS, 0 },
   { "contributor",    ATOM1_0_NS, 0 },
@@ -158,9 +158,9 @@ const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2]={
   { "Link",           ATOM1_0_NS, 0 },
 
   { "label",          ATOM1_0_NS, 0 },
-  { "scheme",         ATOM1_0_NS, 0, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
+  { "scheme",         ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "term",           ATOM1_0_NS, 0 },
-  { "href",           ATOM1_0_NS, 0, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
+  { "href",           ATOM1_0_NS, RAPTOR_RSS_INFO_FLAG_URI_VALUE },
   { "rel",            ATOM1_0_NS, 0 },
   { "type",           ATOM1_0_NS, 0 },
   { "hreflang",       ATOM1_0_NS, 0 },
