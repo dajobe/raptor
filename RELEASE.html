@@ -178,8 +178,6 @@ the URI handler/context part will go into raptor_world in V2)</p>
 
   void raptor_world_set_libxml_flags(raptor_world *world,  int flags)
 
-  raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
-
   void raptor_error_handlers_init_v2(raptor_world* world,
     raptor_error_handlers* error_handlers);
 </pre>
@@ -217,7 +215,7 @@ _v2 suffix:</p>
 
 <p>Added world pointer to raptor_identifier object</p>
 
-<p>Added V2 indentifier class constructor:</p>
+<p>Added V2 identifier class constructor:</p>
 <pre>
   raptor_identifier* raptor_new_identifier_v2(raptor_world* world,
     raptor_identifier_type type, raptor_uri *uri,
@@ -231,6 +229,7 @@ _v2 suffix:</p>
   raptor_parser* raptor_new_parser_for_content_v2(raptor_world* world,
     raptor_uri *uri, const char *mime_type, const unsigned char *buffer,
     size_t len, const unsigned char *identifier)
+  raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
 </pre>
 
 <p>Added V2 serializer class constructor and method:</p>
