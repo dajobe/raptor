@@ -1,4 +1,6 @@
-2009-07-19  Dave Beckett <dave@dajobe.org>
+2009-07-19  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor_1_4_19 for 1.4.19 release (SVN 15279)
 
 	* src/raptor_serialize_rss.c:
 	(raptor_rss10_emit_item): Handle C++'s picky casting between enum
