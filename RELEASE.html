@@ -153,12 +153,18 @@ required to be constructed by the library user for the V2 API with a
 new constructor/destructor.</p>
 
 <p><b>NOTE:</b> The method names here are illustrative of the final
-V2 names but are not confirmed.  Some methods will still be altered
-for fields and (raptor_world) parameters.  All constructors should
-have it as a parameter.  All methods will not have them (so for
-example, all the URI methods named _v2 will lose the world
+V2 names but are not confirmed - <strong>These functions are not
+supported in the 1.4.x series</strong>.  Some methods will still be
+altered for fields and (raptor_world) parameters.  All constructors
+should have it as a parameter.  All methods will not have them (so
+for example, all the URI methods named _v2 will lose the world
 parameter and just have the URI parameter - but that is also because
 the URI handler/context part will go into raptor_world in V2)</p>
+
+<p>To use the <strong>unsupported and experimental</strong> V2
+functions, define <code>-DRAPTOR_V2_EXPERIMENTAL=1</code> when
+building with raptor.
+</p>
 
 <p>Added <code>raptor_world</code> typedef.</p>
 
