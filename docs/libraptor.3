@@ -1,10 +1,10 @@
 .\"
 .\" libraptor.3 - Raptor library manual page
 .\"
-.\" Copyright (C) 2002-2008 David Beckett - http://www.dajobe.org/
+.\" Copyright (C) 2002-2009 David Beckett - http://www.dajobe.org/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2008-06-19"
+.TH libraptor 3 "2009-07-18"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 libraptor \- Raptor RDF parser and serializer library
@@ -42,9 +42,10 @@ of parsers and serializers that generate
 Resource Description Framework (RDF) triples
 by parsing syntaxes or serialize the triples into syntaxes.
 .LP
-The supported parsing syntaxes are RDF/XML,
-N-Triples, Turtle, RSS tag soup including Atom 0.3 and the
-serializing syntaxes are RDF/XML, N-Triples and RSS 1.0.
+The supported parsing syntaxes include RDF/XML, N-Triples, Turtle,
+TRiG, RSS tag soup (including all RSS and Atoms), GRDDL, RDFa and the
+serializing syntaxes include RDF/XML (3 varieties), N-Triples,
+Turtle, RSS 1.0, Atom 1.0, GraphViz DOT and RDF/JSON.
 The RDF/XML parser can use either \fIexpat\fP or \fIlibxml\fP
 XML parsers for providing the SAX event stream.
 The library functions are arranged in an object-oriented style with
@@ -68,11 +69,22 @@ encoding of Unicode at the API for passing in or returning Unicode
 strings.  It is intended that the preservation of Unicode for URIs
 will support Internationalized Resource Identifiers (IRIs) which are
 still under development and standardisation.
-.SH LIBRARY INITIALISATION AND CLEANUP
+.SH "LIBRARY INITIALISATION AND CLEANUP"
 .IP "\fBraptor_init()\fR"
 .IP "\fBraptor_finish()\fR"
-Initialise and cleanup the library.  These must be called before
-any raptor class such as raptor_parser, raptor_uri is created or used.
+Initialise and cleanup the library.  These must be called before any
+raptor class such as raptor_parser, raptor_uri is created or used.
+Note: as of 1.4.19 these are wrappers around a static instance of the
+new \fBraptor_world\fP class.  In Raptor 2.0 this initialisation and
+cleanup method will be removed.
+.IP "\fBvoid raptor_set_libxslt_security_preferences(void *\fIsecurity_preferences\fP)\fR"
+Set libxslt security preferences object.
+.IP "\fBvoid raptor_set_libxml_flags(int \fIflags\fP)\fR"
+Set libxml flags from the choices:
+\fBRAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE\fP: save/restore
+the libxml generic error handler when parsing and
+\fBRAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: save/restore
+the libxml structured error handler when parsing.
 .SH "PARSER CLASS"
 This class provides the functionality of turning syntaxes into
 RDF triples - RDF parsing.
@@ -307,6 +319,8 @@ Generate an ID for a parser of type \fItype\fP, either
 This uses any configuration set by \fBraptor_set_generate_id_handler\fP.
 .IP "\fBvoid raptor_set_graph_handler(raptor_parser* \fIparser\fP, void* \fIuser_data\fP, raptor_graph_handler \fIhandler\fP)\fR"
 Set the graph handler callback.
+.IP "\fBraptor_world* raptor_parser_get_world(raptor_parser* \fIrdf_parser\fP)\fR"
+Get the world object for the given \fIrdf_parser\fP.
 .SH "PARSER UTILITY FUNCTIONS"
 .IP "\fBint raptor_parsers_enumerate(const unsigned int \fIcounter\fB, const char **\fIname\fB, const char **\fIlabel\fB)\fR"
 Return the parser name/label for a parser with a given integer
@@ -656,6 +670,8 @@ used to trigger generation of an atom entry document for the atom
 serializer.
 .IP "\fBint raptor_serializer_get_feature(raptor_serializer* \fIserializer\fB, raptor_feature \fIfeature\fB)\fR"
 Get serializer features, the allowed \fIfeature\fP values are available
+.IP "\fBraptor_world* raptor_serializer_get_world(raptor_serializer* \fIrdf_serializer\fP)\fR"
+Get the world object for the given \fIrdf_serializer\fP.
 .SH "SERIALIZER UTILITY FUNCTIONS"
 .IP "\fBint raptor_serializers_enumerate(const unsigned \fIint counter\fB, const char **\fIname\fB, const char **\fIlabel\fB, const char **\fImime_type\fB, const unsigned char **\fIuri_string\fB)\fR"
 Return the serializer name/label for a serializer with a given integer
@@ -1351,26 +1367,65 @@ Flush the XML writer output for any pending writes.
 .IP "\fBvoid raptor_xml_writer_newline(raptor_xml_writer* \fIxml_writer\fP)\fR"
 Write a newline to the XML writer (which may trigger indenting before
 the next item).
+.SH "WORLD CLASS"
+This class stores the library state and configuration.  It will be
+the main class for initialsiing and configuring the library in Raptor
+2.0.
+.SH "WORLD CLASS CONSTRUCTOR"
+.IP "\fBraptor_world* raptor_new_world(void)\fR"
+Create a new raptor library object.
+.SH "WORLD CLASS DESTRUCTOR"
+.IP "\fBvoid raptor_free_world(raptor_world* \fIworld\fP)\fR"
+Destroy a raptor library object and free all resources.
+.SH "WORLD CLASS METHODS"
+.IP "\fBint raptor_world_open(raptor_world* \fIworld\fP)\fR"
+Start using a raptor library - allocate any dependent resources.
+This is optional.
+.IP "\fBvoid raptor_world_set_libxslt_security_preferences(raptor_world *\fIworld\fP, void *security_preferences)\fR"
+See \fBraptor_set_libxslt_security_preferences()\fP description.
+.IP "\fBvoid raptor_world_set_libxml_flags(raptor_world *\fIworld\fP,  int flags)\fR"
+See \fBraptor_set_libxml_flags()\fP description.
 .SH API CHANGES
+.SS 1.4.19
+Added \fBraptor_world\fP class to prepare for V2 API with
+constructor \fBraptor_new_world()\fP,
+destructor \fBraptor_free_world()\fP
+and methods
+\fBraptor_world_open()\fP,
+\fBraptor_world_set_libxslt_security_preferences()\fP and
+\fBraptor_world_set_libxml_flags()\fP.
+.LP
+The \fBraptor_identifier\fP, \fBraptor_error_handlers\fP structs both
+gained a raptor_world* pointer field.
+.LP
+Added \fBraptor_set_libxslt_security_preferences()\fP and
+\fBraptor_set_libxml_flags()\fP.
+.LP
+Added \fBraptor_libxml_flags\fP enum for flags for 
+\fBraptor_world_set_libxml_flags()\fP and
+\fBraptor_set_libxml_flags()\fP.
+.LP
+Added \fBRAPTOR_FEATURE_PREFIX_ELEMENTS\fP
+.LP
 .SS 1.4.18
 Added atom serializer
 .LP
 Added rdfa parser
 .LP
-Added serializer features RAPTOR_FEATURE_RSS_TRIPLES and
-RAPTOR_FEATURE_ATOM_ENTRY_URI
+Added serializer features \fBRAPTOR_FEATURE_RSS_TRIPLES\fP and
+\fBRAPTOR_FEATURE_ATOM_ENTRY_URI\fP
 .LP
-Added raptor_qname_to_counted_name
+Added \fBraptor_qname_to_counted_name()\fP
 .LP
-Added raptor_serialize_start_to_iostream
+Added \fBraptor_serialize_start_to_iostream()\fP
 .LP
-Added raptor_sequence_delete_at
+Added \fBraptor_sequence_delete_at()\fP
 .LP
-Added raptor_xml_writer_newline
+Added \fBraptor_xml_writer_newline()\fP
 .LP
-Added raptor_xml_writer_flush
+Added \fBraptor_xml_writer_flush()\fP
 .LP
-Added raptor_xml_writer_get_depth
+Added \fBraptor_xml_writer_get_depth()\fP
 .SS 1.4.17
 Added SAX2 class \fBraptor_sax2\fP.
 Added new SAX2 API typedefs:
@@ -1450,77 +1505,77 @@ Added new enum \fBraptor_log_level\fP.
 Added new typedef \fBraptor_error_handlers\fP.
 and new function \fBraptor_error_handlers_init()\fP.
 .SS 1.4.16
-\fBraptor_namespaces_init\fP now returns an integer status
+\fBraptor_namespaces_init()\fP now returns an integer status
 .LP
-Added \fBraptor_new_xml_element_from_namespace_local_name\fP
+Added \fBraptor_new_xml_element_from_namespace_local_name()\fP
 .LP
-Added \fBraptor_uri_compare\fP.
+Added \fBraptor_uri_compare()\fP.
 .LP
 Added new features for the 'grddl' parser:
-RAPTOR_FEATURE_HTML_TAG_SOUP, RAPTOR_FEATURE_MICROFORMATS and
-RAPTOR_FEATURE_HTML_LINK.
+\fBRAPTOR_FEATURE_HTML_TAG_SOUP\fP, \fBRAPTOR_FEATURE_MICROFORMATS\fP and
+\fBRAPTOR_FEATURE_HTML_LINK\fP.
 .LP
-Added parser feature RAPTOR_FEATURE_WWW_TIMEOUT
+Added parser feature \fBRAPTOR_FEATURE_WWW_TIMEOUT\fP
 .LP
-Added raptor_graph_handler typedef and \fBraptor_set_graph_handler\fP
+Added raptor_graph_handler typedef and \fBraptor_set_graph_handler()\fP
 .LP
 Added raptor_www_final_uri_handler typedef and
-\fBraptor_www_set_final_uri_handler\fP
+\fBraptor_www_set_final_uri_handler()\fP
 .LP
-Added \fBraptor_www_set_connection_timeout\fP
+Added \fBraptor_www_set_connection_timeout()\fP
 .LP
-Added \fBraptor_www_get_final_uri\fP
+Added \fBraptor_www_get_final_uri()\fP
 .SS 1.4.15
 No changes.
 .SS 1.4.14
 Add two new exported strings raptor_license_string and raptor_home_url_string.
 .LP
 Added new features for the 'dot' serializer:
-RAPTOR_FEATURE_RESOURCE_BORDER, RAPTOR_FEATURE_LITERAL_BORDER,
-RAPTOR_FEATURE_BNODE_BORDER, RAPTOR_FEATURE_RESOURCE_FILL,
-RAPTOR_FEATURE_LITERAL_FILL and RAPTOR_FEATURE_BNODE_FILL
+\fBRAPTOR_FEATURE_RESOURCE_BORDER\fP, \fBRAPTOR_FEATURE_LITERAL_BORDER\fP,
+\fBRAPTOR_FEATURE_BNODE_BORDER\fP, \fBRAPTOR_FEATURE_RESOURCE_FILL\fP,
+\fBRAPTOR_FEATURE_LITERAL_FILL\fP and \fBRAPTOR_FEATURE_BNODE_FILL\fP
 .LP
-Added \fBraptor_parser_generate_id\fP
+Added \fBraptor_parser_generate_id()\fP
 .LP
-Added \fBraptor_iostream_write_string_turtle\fP
+Added \fBraptor_iostream_write_string_turtle()\fP
 .SS 1.4.13
 No API changes.
 .SS 1.4.12
 No API changes.
 .SS 1.4.11
-Added \fBraptor_get_feature_count\fP
+Added \fBraptor_get_feature_count()\fP
 .LP
-Added \fBraptor_get_need_base_uri\fP
+Added \fBraptor_get_need_base_uri()\fP
 .LP
 Added parser feature \fBRAPTOR_FEATURE_NO_NET\fP
 .LP
-Added \fBraptor_www_set_uri_filter\fP, \fBraptor_parser_set_uri_filter\fP
+Added \fBraptor_www_set_uri_filter()\fP, \fBraptor_parser_set_uri_filter()\fP
 with filter type \fBraptor_uri_filter_func\fP
 .SS 1.4.10
 No API changes.
 .SS 1.4.9
-Added \fBraptor_parser_get_accept_header\fP
+Added \fBraptor_parser_get_accept_header()\fP
 .LP
-Added \fBraptor_xml_element_is_empty\fP
+Added \fBraptor_xml_element_is_empty()\fP
 .LP
-Added \fBraptor_qname_get_namespace\fP
+Added \fBraptor_qname_get_namespace()\fP
 .LP
-Added \fBraptor_iostream_write_uri\fP
+Added \fBraptor_iostream_write_uri()\fP
 .LP
-Added \fBraptor_namespaces_qname_from_uri\fP.
+Added \fBraptor_namespaces_qname_from_uri()\fP.
 .LP
-Added \fBraptor_namespace_get_counted_prefix\fP
+Added \fBraptor_namespace_get_counted_prefix()\fP
 .LP
-Added \fBraptor_serialize_set_namespace_from_namespace\fP
+Added \fBraptor_serialize_set_namespace_from_namespace()\fP
 .LP
-Deprecated \fBraptor_uri_is_file_uri\fP
-for new \fBraptor_uri_string_is_file_uri\fP.
+Deprecated \fBraptor_uri_is_file_uri()\fP
+for new \fBraptor_uri_string_is_file_uri()\fP.
 .LP
 Added
-\fBraptor_xml_element_get_attributes\fP and
-\fBraptor_xml_element_get_attributes_count\fP
+\fBraptor_xml_element_get_attributes()\fP and
+\fBraptor_xml_element_get_attributes_count()\fP
 .SS 1.4.8
-Added \fBraptor_set_namespace_handler\fP.
+Added \fBraptor_set_namespace_handler()\fP.
 .LP
 Added XML 1.1 serializing support, feature
 \fBRAPTOR_FEATURE_WRITER_XML_VERSION\fP with shortname
@@ -1528,8 +1583,8 @@ Added XML 1.1 serializing support, feature
 it.  Added XML writer feature
 \fBRAPTOR_FEATURE_WRITER_XML_DECLARATION\fP to control generation
 of the XML declaration.
-Added new functions \fBraptor_xml_any_escape_string\fP and
-\fBraptor_iostream_write_xml_any_escaped_string\fP to allow
+Added new functions \fBraptor_xml_any_escape_string()\fP and
+\fBraptor_iostream_write_xml_any_escaped_string()\fP to allow
 generating XML 1.1 or XML 1.0.
 .LP
 \fBRAPTOR_IDENTIFIER_TYPE_PREDICATE\fP will no longer be generated
@@ -1544,56 +1599,56 @@ No changes.
 .SS 1.4.6
 No changes.
 .SS 1.4.5
-Deprecated \fBraptor_ntriples_string_as_utf8_string\fP (never
+Deprecated \fBraptor_ntriples_string_as_utf8_string()\fP (never
 documented above) since it can only work with a raptor_parser object
 which makes it rather unusable alone.
 .P
 Added XML writer features and support functions
-\fBraptor_xml_writer_features_enumerate\fP,
-\fBraptor_xml_writer_set_feature\fP,
-\fBraptor_xml_writer_set_feature_string\fP,
-\fBraptor_xml_writer_get_feature\fP and
-\fBraptor_xml_writer_get_feature_string\fP
+\fBraptor_xml_writer_features_enumerate()\fP,
+\fBraptor_xml_writer_set_feature()\fP,
+\fBraptor_xml_writer_set_feature_string()\fP,
+\fBraptor_xml_writer_get_feature()\fP and
+\fBraptor_xml_writer_get_feature_string()\fP
 .SS 1.4.3
 Added XML Writer class (\fBraptor_xml_writer\fP)
 and XML Element class (\fBraptor_xml_element\fP)
 .P
-Added \fBraptor_parser_get_feature_string\fP,
-\fBraptor_parser_set_feature_string\fP,
-\fBraptor_serializer_set_feature_string\fP,
-\fBraptor_serializer_get_feature_string\fP and
-\fBraptor_feature_value_type\fP.
+Added \fBraptor_parser_get_feature_string()\fP,
+\fBraptor_parser_set_feature_string()\fP,
+\fBraptor_serializer_set_feature_string()\fP,
+\fBraptor_serializer_get_feature_string()\fP and
+\fBraptor_feature_value_type()\fP.
 .P
 Added \fBraptor_serializer_set_namespace\fP,
-\fBraptor_serializer_set_feature\fP and
-\fBraptor_serializer_get_feature\fP.
+\fBraptor_serializer_set_feature()\fP and
+\fBraptor_serializer_get_feature()\fP.
 .P
 Added
-\fBraptor_new_namespace_from_uri\fP,
-\fBraptor_new_namespace_parts_from_string\fP,
-Added \fBraptor_namespaces_find_namespace_by_uri\fP.
+\fBraptor_new_namespace_from_uri()\fP,
+\fBraptor_new_namespace_parts_from_string()\fP,
+Added \fBraptor_namespaces_find_namespace_by_uri()\fP.
 and
-\fBraptor_iostream_write_namespace\fP to write a namespace
+\fBraptor_iostream_write_namespace()\fP to write a namespace
 declaration to an iostream.
 .P
-Added copy constructor \fBraptor_qname_copy\fP
-and \fBraptor_iostream_write_qname\fP to write a qname to an iostream.
+Added copy constructor \fBraptor_qname_copy()\fP
+and \fBraptor_iostream_write_qname()\fP to write a qname to an iostream.
 .P
-Added \fBraptor_sequence_join\fP to join two sequences, leaving one empty.
+Added \fBraptor_sequence_join()\fP to join two sequences, leaving one empty.
 .P
-Added \fBraptor_iostream_write_stringbuffer\fP to write a
+Added \fBraptor_iostream_write_stringbuffer()\fP to write a
 stringbuffer to an iostream.
 .P
 Added N-Triples
-\fBraptor_iostream_write_string_ntriples\fP and
-\fBraptor_iostream_write_statement_ntriples\fP
+\fBraptor_iostream_write_string_ntriples()\fP and
+\fBraptor_iostream_write_statement_ntriples()\fP
 utility functions for writing to raptor_iostreams.
 .P
-Added \fBraptor_uri_to_relative_counted_uri_string\fP,
-\fBraptor_uri_to_relative_uri_string\fP.
-\fBraptor_uri_print\fP,
-\fBraptor_uri_to_counted_string\fP and
-\fBraptor_uri_to_string\fP
+Added \fBraptor_uri_to_relative_counted_uri_string()\fP,
+\fBraptor_uri_to_relative_uri_string()\fP.
+\fBraptor_uri_print()\fP,
+\fBraptor_uri_to_counted_string()\fP and
+\fBraptor_uri_to_string()\fP
 .P
 Added unicode name checking utility functions for XML 1.0 and XML 1.1
 name starting character and continued name character.
@@ -1858,10 +1913,17 @@ http://www.ietf.org/rfc/rfc4287.txt
 http://www.w3.org/TR/2007/REC-grddl-20070911/
 .UE
 
+\fIRDFa in XHTML: Syntax and Processing\fP,
+Ben Adida, Mark Birbeck, Shane McCarron, Steven Pemberton (eds.)
+ W3C Recommendation, 2008-10-14,
+.UR http://www.w3.org/TR/2008/REC-rdfa-syntax-20081014/
+http://www.w3.org/TR/2008/REC-rdfa-syntax-20081014/
+.UE
+
 .SH SEE ALSO
 .BR rapper(1), raptor-config(1)
 .SH AUTHOR
 Dave Beckett - 
-.UR http://purl.org/net/dajobe/
-http://purl.org/net/dajobe/
+.UR http://www.dajobe.org/
+http://www.dajobe.org/
 .UE
