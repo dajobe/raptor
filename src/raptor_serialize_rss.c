@@ -1665,7 +1665,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   raptor_xml_element *element=NULL;
   raptor_qname **attrs=NULL;
   raptor_uri* base_uri_copy=NULL;
-  raptor_rss_fields_type f;
+  int fi;
   int is_atom;
 
 #ifdef RAPTOR_DEBUG
@@ -1728,7 +1728,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
   }
   
 
-  for(f=0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
+  for(fi = 0; fi < RAPTOR_RSS_FIELDS_SIZE; fi++) {
+    raptor_rss_fields_type f = (raptor_rss_fields_type)fi;
     raptor_rss_field* field;
 
     if(f == RAPTOR_RSS_FIELD_ITEMS)
