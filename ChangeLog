@@ -1,3 +1,47 @@
+2009-07-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_item): Handle C++'s picky casting between enum
+	types - that are really integers - to ints.
+
+	* src/raptor_rss_common.c: static data raptor_rss_fields_info:
+	semantic data errors found by C++'s more strict aliasing.
+	- Fix author item class.
+	- Set URI flag value for atom:schema and atom:href
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_init_v2, raptor_namespace_stack_to_array):
+	Casts for C++ in returns from RAPTOR_CALLOC for namespace stacks
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_doc): Cast for C++ for arg to
+	xsltSetCtxtSecurityPrefs.
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): Use memmove for overlapping
+	copy, not memcpy. [valgrind]
+
+	* src/raptor_serialize_json.c: raptor_json_context - use
+	raptor_statement_v2 for last statement.
+	(raptor_json_serialize_avltree_visit): Make V1 statements for the
+	stored V2 statements.
+	Improve fatal error messages.
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): Restore actually freeing statement memory
+	- resource leak.
+
+	* configure.ac: libtool version change.
+	was: current 2  revision 0  age 1
+	rules steps:
+	   3. source code changed: revision++ = 3
+	   4. interfaces added and changed: current++ = 3, revision = 0
+	   5. interfaces added: age++ = 2
+	   6. interfaces removed: no
+	now: current 3  revision  0  age 2
+
+	* docs/libraptor.3: 1.4.19 changes
+
 2009-07-17  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_turtle_writer.c:
