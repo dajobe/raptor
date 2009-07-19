@@ -673,7 +673,8 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
 
   userCtxt = xsltNewTransformContext(sheet, doc);
   if(world->xslt_security_preferences)
-    xsltSetCtxtSecurityPrefs(world->xslt_security_preferences, userCtxt);
+    xsltSetCtxtSecurityPrefs((xsltSecurityPrefs*)world->xslt_security_preferences,
+                             userCtxt);
 
   saved_xsltGenericError = xsltGenericError;
   saved_xsltGenericErrorContext = xsltGenericErrorContext;
