@@ -2,7 +2,7 @@
  *
  * raptor_rfc2396.c - Raptor URI resolving from RFC2396 and RFC3986
  *
- * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2004-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -537,10 +537,10 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   for(p=result.path; p; ) {
     if(!strncmp((const char *)p, "/../", 4)) {
       result.path_len -= 3;
-      memcpy(p, p+3, result.path_len+1);
+      memmove(p, p+3, result.path_len+1);
     } else if(!strncmp((const char *)p, "/./", 3)) {
       result.path_len -= 2;
-      memcpy(p, p+2, result.path_len+1);
+      memmove(p, p+2, result.path_len+1);
     } else
       break;
   }
