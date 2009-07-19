@@ -11,13 +11,12 @@
 
 <h2 id="rel1_4_19"><a name="rel1_4_19">Raptor 1.4.19 Changes</a></h2>
 
-<p>NOT YET RELEASED</p>
-
 <blockquote>
-<p><strong>NOTE:</strong> In the next release of raptor, the
-<code>raptor-config</code> utility that provides the compile and link
-args will be deprecated, generate a warning when run and will turn into a
-wrapper for <code>pkg-config raptor ...</code>.</p>
+<p><strong>WARNING: FUTURE ABI and API CHANGES.</strong> The next
+release of raptor 1.4.x will include bug fixes only and no new
+features.  New development will move to raptor 2 where a planned ABI
+and API break will happen.  There may be preview releases of raptor 2
+with 1.9.x numbering.</p>
 </blockquote>
 
 <p>Fixed Issues:</p>
@@ -44,7 +43,7 @@ wrapper for <code>pkg-config raptor ...</code>.</p>
 <h3>Parser Changes</h3>
 
 <p><code>raptor_get_feature()</code> now returns the integer value rather than
-just 1 or 0.
+just 1 or 0.<br />
 <a href="http://bugs.librdf.org/mantis/view.php?id=288">Issue #0000288</a>
 </p>
 
@@ -140,6 +139,69 @@ method above can still enable registerding the global error handlers.
 <p>In <code>raptor_sax2_parse_chunk()</code> fixed calls to
 <code>raptor_log_error_to_handlers()</code> when built with expat. <br />
 <a href="http://bugs.librdf.org/mantis/view.php?id=287">Issue #0000287</a>
+</p>
+
+
+<h3>Other Changes</h3>
+
+<p>Win32 portability fixes from Lou Sakey:</p>
+<ul>
+  <li>Handle absence of <code>gettimeofday()</code></li>
+  <li>Call <code>xmlCleanupParser()</code> libxml call last to avoid an access
+violation on windows.</li>
+  <li>Windows <code>vsnprintf()</code> portability patch</li>
+  <li><code>raptor_sequence_set_at()</code> fixed to maintain the design
+contract: provide "size" consecutive items in "sequence" starting from
+"start" even when setting items more than +1 offset beyond the end of
+sequence. <br />
+<a href="http://bugs.librdf.org/mantis/view.php?id=276">Issue #0000276</a>
+  </li>
+</ul>
+
+<p><code>rapper(1)</code> utility changes: if counting, do not use a
+serializer at all.
+</p>
+
+
+<h3>Internal Changes</h3>
+
+<p>More internal changes to be more resiliant after allocation failure
+(Lauri Aalto)
+</p>
+
+<p>Reorganised tests in source tree to pull out specific directories
+for RDF/XML, Turtle, etc.
+</p>
+
+<p>Use a DJ Bernstein hash to replace a linked list for storing a
+stack of namespaces.  This makes turtle parsing with lots of
+namespaces (100s) much faster.  Based on the initial patch in the bug. <br />
+<a href="http://bugs.librdf.org/mantis/view.php?id=290">Issue #0000290</a>
+</p>
+
+<p>Use new internal <code>raptor_memstr()</code> function to compare
+a string against a buffer that may not be NUL terminated. <br />
+<a href="http://bugs.librdf.org/mantis/view.php?id=269">Issue #0000269</a>
+</p>
+
+<p><code>raptor_error_handlers</code>: API structure gains world
+field. BINARY COMPATIBILITY BREAK: sizeof(raptor_error_handlers)
+changed. Source compatibility not broken.
+</p>
+
+<p><code>raptor_identifier</code>: API structure gains world
+field. BINARY COMPATIBILITY BREAK: sizeof(raptor_identifier)
+changed. Source compatibility not broken.
+</p>
+
+<p>More fixes for compiling with C++
+</p>
+
+<p>Move some more static data as constant to enable more efficient
+compilation - moves to data segment of object binary.</p>
+
+<p>Use memmove for overlapping copy, not memcpy when doing relative
+URI resolving.
 </p>
 
 
@@ -339,7 +401,7 @@ for future replacing of <code>raptor_statement</code></p>
     void* connection);
 </pre>
 
-<p>Added V2 wname class methods:</p>
+<p>Added V2 qname class methods:</p>
 <pre>
   raptor_qname* raptor_new_qname_from_namespace_local_name_v2(raptor_world* world,
     raptor_namespace *ns, const unsigned char *local_name,
@@ -391,65 +453,6 @@ for future replacing of <code>raptor_statement</code></p>
     const raptor_feature feature, const char **name, raptor_uri **uri,
     const char **label);
 </pre>
-
-
-<h3>Other Changes</h3>
-
-<p>Win32 portability fixes from Lou Sakey:</p>
-<ul>
-  <li>Handle absence of <code>gettimeofday()</code></li>
-  <li>Call <code>xmlCleanupParser()</code> libxml call last to avoid an access
-violation on windows.</li>
-  <li>Windows <code>vsnprintf()</code> portability patch</li>
-  <li><code>raptor_sequence_set_at()</code> fixed to maintain the design
-contract: provide "size" consecutive items in "sequence" starting from
-"start" even when setting items more than +1 offset beyond the end of
-sequence. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=276">Issue #0000276</a>
-  </li>
-</ul>
-
-
-
-<h3>Internal Changes</h3>
-
-<p>More internal changes to be more resiliant after allocation failure
-(Lauri Aalto)
-</p>
-
-<p>Reorganised tests in source tree to pull out specific directories
-for RDF/XML, Turtle, etc.
-</p>
-
-<p>Use a DJ Bernstein hash to replace a linked list for storing a
-stack of namespaces.  This makes turtle parsing with lots of
-namespaces (100s) much faster.  Based on the initial patch in the bug. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=290">Issue #0000290</a>
-</p>
-
-<p>Use new internal <code>raptor_memstr()</code> function to compare
-a string against a buffer that may not be NUL terminated. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=269">Issue #0000269</a>
-</p>
-
-<p><code>raptor_error_handlers</code>: API structure gains world
-field. BINARY COMPATIBILITY BREAK: sizeof(raptor_error_handlers)
-changed. Source compatibility not broken.
-</p>
-
-<p><code>raptor_identifier</code>: API structure gains world
-field. BINARY COMPATIBILITY BREAK: sizeof(raptor_identifier)
-changed. Source compatibility not broken.
-</p>
-
-<p>More fixes for compiling with C++
-</p>
-
-<p>Move some more static data as constant to enable more efficient
-compilation - moves to data segment of object binary.</p>
-
-<p><code>rapper(1)</code> utility changes: if counting, do not use a serializer at all.
-</p>
 
 
 <h2 id="rel1_4_18"><a name="rel1_4_18">Raptor 1.4.18 Changes</a></h2>
