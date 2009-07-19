@@ -189,9 +189,9 @@ raptor_namespaces_init_v2(raptor_world* world,
   nstack->size = 0;
   
   nstack->table_size = RAPTOR_NAMESPACES_HASHTABLE_SIZE;
-  nstack->table = RAPTOR_CALLOC(raptor_namespaces,
-                                RAPTOR_NAMESPACES_HASHTABLE_SIZE,
-                                sizeof(raptor_namespace*));
+  nstack->table = (raptor_namespace**)RAPTOR_CALLOC(raptor_namespaces,
+                                                    RAPTOR_NAMESPACES_HASHTABLE_SIZE,
+                                                    sizeof(raptor_namespace*));
   if(!nstack->table)
     return -1;
 
@@ -1074,8 +1074,8 @@ raptor_namespace_stack_to_array(raptor_namespace_stack *nstack,
   size_t size = 0;
   int bucket;
   
-  ns_list = RAPTOR_CALLOC(namespace_stack, nstack->size,
-                          sizeof(raptor_namespace*));
+  ns_list = (raptor_namespace**)RAPTOR_CALLOC(namespace_stack, nstack->size,
+                                              sizeof(raptor_namespace*));
   if(!ns_list)
     return NULL;
   
