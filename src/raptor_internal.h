@@ -1275,7 +1275,7 @@ int raptor_json_writer_blank_object(raptor_json_writer* json_writer, const char*
 int raptor_json_writer_uri_object(raptor_json_writer* json_writer, raptor_uri* uri);
 int raptor_json_writer_key_uri_value(raptor_json_writer* json_writer, const char* key, size_t key_len, raptor_uri* uri);
 
-/* raptor_memnstr.c */
+/* raptor_memstr.c */
 const char* raptor_memstr(const char *haystack, size_t haystack_len, const char *needle);
 
 /* raptor_serialize_rdfxmla.c special functions for embedding rdf/xml */
