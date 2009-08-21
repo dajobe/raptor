@@ -580,8 +580,10 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
   
   RAPTOR_ASSERT((strlen(header) != header_len), "Cache-Control header length is wrong");
 
-  if(www->cache_control)
+  if(www->cache_control) {
     RAPTOR_FREE(cstring, www->cache_control);
+    www->cache_control=NULL;
+  }
 
   if(!cache_control) {
     www->cache_control=NULL;
