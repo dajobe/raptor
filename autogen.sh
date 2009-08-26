@@ -46,19 +46,21 @@ CONFIG_DIR=${CONFIG_DIR-../config}
 #
 programs="automake aclocal autoconf autoheader libtoolize"
 confs=`find . -name configure.ac -print`
+gtkdoc_args=
 if grep "^GTK_DOC_CHECK" $confs >/dev/null; then
   programs="$programs gtkdocize"
+  gtkdoc_args="--enable-gtk-doc"
 fi
 if grep "^AC_CHECK_PROGS.SWIG" $confs >/dev/null; then
   programs="$programs swig"
 fi
-ltdl=
+ltdl_args=
 if grep "^AC_LIBLTDL_" $confs >/dev/null; then
-  ltdl="--ltdl"
+  ltdl_args="--ltdl"
 fi
-shave=
+shave_args=
 if grep "^SHAVE_INIT" $confs >/dev/null; then
-  shave="--enable-shave"
+  shave_args="--enable-shave"
 fi
 
 # Some dependencies for autotools:
@@ -79,10 +81,9 @@ swig_min_vers=010324
 automake_args="--gnu --add-missing --force --copy -Wall"
 aclocal_args=
 autoconf_args=
-libtoolize_args="$ltdl --force --copy --automake"
+libtoolize_args="--force --copy --automake $ltdl_args"
 gtkdocize_args="--copy"
-# --enable-gtk-doc does no harm if it's not available
-configure_args="--enable-maintainer-mode --enable-gtk-doc $shave"
+configure_args="--enable-maintainer-mode $gtkdoc_args $shave_args"
 
 
 # You should not need to edit below here
@@ -170,7 +171,11 @@ update_prog_version() {
   cd "$dir"
   PATH=".:$PATH"
 
-  names=`ls $prog* 2>/dev/null`
+  nameglob="$prog*"
+  if [ -x /usr/bin/uname -a `/usr/bin/uname` = 'Darwin' -a $prog = 'libtoolize' ] ; then
+    nameglob="g$nameglob"
+  fi
+  names=`ls $nameglob 2>/dev/null`
   if [ "X$names" != "X" ]; then
     for name in $names; do
       vers=`perl $autogen_get_version $dir/$name $prog`
