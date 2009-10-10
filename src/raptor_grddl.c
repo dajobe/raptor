@@ -1411,11 +1411,13 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     /* Save error handlers and discard parsing errors
      * NOTE not setting RAPTOR_LOG_LEVEL_NONE handler
      */
-    memcpy(&eh.handlers, &rdf_parser->error_handlers,
-           sizeof(raptor_message_handler_closure) * (1+eh.last_log_level));
-    for(i=1; i <= (int)eh.last_log_level; i++) {
-      rdf_parser->error_handlers.handlers[i].handler=raptor_grddl_discard_message;
-      rdf_parser->error_handlers.handlers[i].user_data=rdf_parser->world;
+    for(i = RAPTOR_LOG_LEVEL_NONE; i <= (int)eh.last_log_level; i++) {
+      eh.handlers[i].handler = rdf_parser->error_handlers.handlers[i].handler;
+      eh.handlers[i].user_data = rdf_parser->error_handlers.handlers[i].user_data;
+      if(i > RAPTOR_LOG_LEVEL_NONE) {
+        rdf_parser->error_handlers.handlers[i].handler = raptor_grddl_discard_message;
+        rdf_parser->error_handlers.handlers[i].user_data = rdf_parser->world;
+      }
     }
   }
 
@@ -1537,9 +1539,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   
   if(1) {
     /* Restore error handlers */
-    for(i=1; i<= (int)eh.last_log_level; i++)
-      rdf_parser->error_handlers.handlers[i].handler=eh.handlers[i].handler;
-      rdf_parser->error_handlers.handlers[i].user_data=eh.handlers[i].user_data;
+    for(i = RAPTOR_LOG_LEVEL_NONE + 1; i<= (int)eh.last_log_level; i++) {
+      rdf_parser->error_handlers.handlers[i].handler = eh.handlers[i].handler;
+      rdf_parser->error_handlers.handlers[i].user_data = eh.handlers[i].user_data;
+    }
   }
 
   if(!grddl_parser->html_ctxt && !grddl_parser->xml_ctxt) {
