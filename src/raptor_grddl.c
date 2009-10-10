@@ -984,13 +984,13 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
                              raptor_grddl_uri_xml_parse_bytes, &xpbc,
                              NULL, NULL,
                              FETCH_ACCEPT_XSLT);
+  xslt_ctxt = xpbc.xc;
   if(ret) {
     locator->uri=old_locator_uri;
     raptor_parser_warning(rdf_parser, "Fetching XSLT document URI '%s' failed",
                           raptor_uri_as_string_v2(rdf_parser->world, xslt_uri));
     ret=0;
   } else {
-    xslt_ctxt=xpbc.xc;
     xmlParseChunk(xpbc.xc, NULL, 0, 1);
   
     ret=raptor_grddl_run_grddl_transform_doc(rdf_parser,
