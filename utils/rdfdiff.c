@@ -611,71 +611,62 @@ rdfdiff_lookup_blank(rdfdiff_file* file, char *blank_id)
 
 
 static int
-rdfdiff_add_blank_statement(rdfdiff_file* file, const raptor_statement *statement)
+rdfdiff_add_blank_statement(rdfdiff_file* file,
+                            const raptor_statement *statement)
 {
-  int rv = 0;
+  rdfdiff_blank *blank;
+  rdfdiff_link *dlink;
+
+  blank = rdfdiff_lookup_blank(file, (char *)statement->subject);
+  if(!blank)
+    goto failed;
+
+  dlink = (rdfdiff_link *)RAPTOR_MALLOC(rdfdiff_link, sizeof(rdfdiff_link));
+  if(!dlink)
+    goto failed;
   
-  rdfdiff_blank *blank = rdfdiff_lookup_blank(file, (char *)statement->subject);
-  if(blank) {
-
-    rdfdiff_link *dlink = (rdfdiff_link *)RAPTOR_MALLOC(rdfdiff_link, sizeof(rdfdiff_link));
-
-    if(dlink) {
-
-      dlink->statement = raptor_statement_copy(file->world, statement);
-
-      if(dlink->statement) {
-    
-        dlink->next = NULL;
-
-        if(!blank->first) {
-          blank->first = dlink;
-          blank->last = dlink;
-        } else {
-          blank->last->next = dlink;
-          blank->last = dlink;
-        }
-
-      } else {
-        RAPTOR_FREE(rdfdiff_link, dlink);
-        rv = 1;
-      }
-
-    } else {
-      rv = 1;
-    }
-
-  } else {
-    rv = 1;
+  dlink->statement = raptor_statement_copy(file->world, statement);
+  if(!dlink->statement) {
+    RAPTOR_FREE(rdfdiff_link, dlink);
+    goto failed;
   }
   
-  if(rv != 0)
-    fprintf(stderr, "%s: Internal Error\n", program);
+  dlink->next = NULL;
+  if(!blank->first) {
+    blank->first = dlink;
+    blank->last = dlink;
+  } else {
+    blank->last->next = dlink;
+    blank->last = dlink;
+  }
+  
+  return 0;
 
-  return rv;
-
+failed:
+  fprintf(stderr, "%s: Internal Error\n", program);
+  return 1;
 }
 
 
 static int
-rdfdiff_add_blank_statement_owner(rdfdiff_file* file, const raptor_statement *statement)
+rdfdiff_add_blank_statement_owner(rdfdiff_file* file,
+                                  const raptor_statement *statement)
 {
-  int rv = 0;
+  rdfdiff_blank *blank;
+
+  blank = rdfdiff_lookup_blank(file, (char *)statement->object);
+  if(!blank)
+    goto failed;
   
-  rdfdiff_blank *blank = rdfdiff_lookup_blank(file, (char *)statement->object);
-  if(blank) {
-    blank->owner = raptor_statement_copy(file->world, statement);
+  blank->owner = raptor_statement_copy(file->world, statement);
+  if(!blank->owner)
+    goto failed;
 
-    if(!blank->owner)
-      rv = 1;
-    
-  }
+  return 0;
 
-  if(rv != 0)
-    fprintf(stderr, "%s: Internal Error\n", program);
-
-  return rv;
-  
+failed:
+  fprintf(stderr, "%s: Internal Error\n", program);
+  return 1;
 }
 
 
