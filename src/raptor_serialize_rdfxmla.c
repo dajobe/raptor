@@ -63,9 +63,9 @@ typedef struct {
   raptor_xml_element* rdf_RDF_element;  /* the rdf:RDF element */
   raptor_xml_writer *xml_writer;        /* where the xml is being written */
   raptor_sequence *namespaces;          /* User declared namespaces */
-  raptor_sequence *subjects;            /* subject items */
-  raptor_sequence *blanks;              /* blank subject items */
-  raptor_avltree *nodes;               /* nodes */
+  raptor_avltree *subjects;             /* subject items */
+  raptor_avltree *blanks;               /* blank subject items */
+  raptor_avltree *nodes;                /* nodes */
   raptor_abbrev_node *rdf_type;         /* rdf:type uri */
 
   /* URI of rdf:XMLLiteral */
@@ -413,17 +413,16 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
     /* If this is only used as a 1 subject and object or never
      * used as a subject or never used as an object, it never need
      * be referenced with an explicit name */
-    int idx;
     raptor_abbrev_subject* blank;
 
     raptor_xml_writer_start_element(context->xml_writer, element);
 
     blank = raptor_abbrev_subject_find(context->blanks, node->type,
-                                       node->value.blank.string, &idx);
+                                       node->value.blank.string);
           
     if(blank) {
       raptor_rdfxmla_emit_subject(serializer, blank, depth+1);
-      raptor_sequence_set_at(context->blanks, idx, NULL);
+      raptor_abbrev_subject_invalidate(blank);
     }
           
   } else {
@@ -472,7 +471,7 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
   int rv = 0;
   int i=0;
   raptor_uri* base_uri=NULL;
-  
+
   RAPTOR_DEBUG5("Emitting subject list items for node %p refcount %d subject %d object %d\n", 
                 subject->node,
                 subject->node->ref_count, subject->node->count_as_subject, 
@@ -562,7 +561,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   int rv = 0;
   int i;
   raptor_avltree_iterator* iter=NULL;
-  
+
   RAPTOR_DEBUG5("Emitting subject properties for node %p refcount %d subject %d object %d\n", 
                 subject->node, subject->node->ref_count, 
                 subject->node->count_as_subject,
@@ -732,6 +731,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   raptor_uri *base_uri=NULL;
   int subject_is_single_node;
 
+  if (!raptor_abbrev_subject_valid(subject)) return 0;
+
   subject_is_single_node=(context->single_node &&
                           subject->node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
                           raptor_uri_equals_v2(serializer->world,
@@ -887,24 +888,34 @@ raptor_rdfxmla_emit(raptor_serializer *serializer)
   raptor_rdfxmla_context* context=(raptor_rdfxmla_context*)serializer->context;
   raptor_abbrev_subject* subject;
   raptor_abbrev_subject* blank;
-  int i;
-  
-  for(i=0; i < raptor_sequence_size(context->subjects); i++) {
-    subject = (raptor_abbrev_subject* )raptor_sequence_get_at(context->subjects, i);
-    if(subject)
+  raptor_avltree_iterator* iter=NULL;
+
+  iter = raptor_new_avltree_iterator(context->subjects, NULL, NULL, 1);
+  while (iter) {
+    subject = (raptor_abbrev_subject*)raptor_avltree_iterator_get(iter);
+    if (subject) {
       raptor_rdfxmla_emit_subject(serializer, subject, context->starting_depth);
-  }
-
-
-  if(!context->single_node) {
-    /* Emit any remaining blank nodes */
-    for(i=0; i < raptor_sequence_size(context->blanks); i++) {
-      blank = (raptor_abbrev_subject* )raptor_sequence_get_at(context->blanks, i);
-      if(blank)
-        raptor_rdfxmla_emit_subject(serializer, blank, context->starting_depth);
     }
+    if (raptor_avltree_iterator_next(iter))
+      break;
   }
-
+  if (iter) 
+    raptor_free_avltree_iterator(iter);
+  
+  if (!context->single_node) {
+    /* Emit any remaining blank nodes */
+    iter = raptor_new_avltree_iterator(context->blanks, NULL, NULL, 1);
+    while (iter) {
+      blank = (raptor_abbrev_subject*)raptor_avltree_iterator_get(iter);
+      if (blank) {
+	raptor_rdfxmla_emit_subject(serializer, blank, context->starting_depth);
+      }
+      if (raptor_avltree_iterator_next(iter))
+	break;
+    }
+    if (iter) 
+      raptor_free_avltree_iterator(iter);
+  }
     
   return 0;
 }
@@ -953,10 +964,14 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
   context->namespaces=raptor_new_sequence(NULL, NULL);
 
   context->subjects =
-    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
+    raptor_new_avltree(serializer->world,
+		       (raptor_data_compare_function)raptor_abbrev_subject_cmp,
+		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
 
   context->blanks =
-    raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_subject,NULL);
+    raptor_new_avltree(serializer->world,
+		       (raptor_data_compare_function)raptor_abbrev_subject_cmp,
+		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
   
   context->nodes =
     raptor_new_avltree(serializer->world,
@@ -1042,12 +1057,12 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
   }
 
   if(context->subjects) {
-    raptor_free_sequence(context->subjects);
+    raptor_free_avltree(context->subjects);
     context->subjects=NULL;
   }
   
   if(context->blanks) {
-    raptor_free_sequence(context->blanks);
+    raptor_free_avltree(context->blanks);
     context->blanks=NULL;
   }
   
@@ -1500,17 +1515,15 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
           
           if(node == predicate) {
             add_property=0;
-            
             if(object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
               /* look for any generated blank node associated with this
                * statement and free it
                */
-              int idx=0;
-              if(raptor_abbrev_subject_find(context->blanks, object_type,
-                                            statement->object, &idx))
-                raptor_sequence_set_at(context->blanks, idx, NULL);
+	      raptor_abbrev_subject *blank = 
+		raptor_abbrev_subject_find(context->blanks, object_type,
+					   statement->object);
+	      if (subject) raptor_avltree_delete(context->blanks, blank);
             }
-            
             break;
           }
         }

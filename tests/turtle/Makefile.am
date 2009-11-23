@@ -59,6 +59,9 @@ test-28.ttl test-31.ttl test-32.ttl
 TEST_SERIALIZE_OUT_FILES= \
 test-28-out.ttl test-31-out.ttl test-32-out.ttl
 
+TURTLE_HACK_OUT_FILES= \
+ex-38-turtle.out
+
 TURTLE_SERIALIZE_RDF_FILES=ex-62.rdf
 
 
@@ -83,7 +86,8 @@ ALL_TEST_FILES= README.txt \
 	$(TEST_SERIALIZE_FILES) \
 	$(TEST_SERIALIZE_OUT_FILES) \
 	$(TURTLE_SERIALIZE_RDF_TEST_FILES) \
-	$(TURTLE_SERIALIZE_RDF_FILES)
+	$(TURTLE_SERIALIZE_RDF_FILES) \
+	$(TURTLE_HACK_OUT_FILES)
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
@@ -271,19 +275,24 @@ check-turtle-serialize-rdf: build-rdfdiff build-rapper
 	  name=`basename $$test .rdf` ; \
 	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.rdf 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
 	  status1=$$?; \
-	  $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.rdf > $$name.res 2> $$name.err; \
-	  status2=$$?; \
+	  if test $$test = "$(RDFXML_DIR)/ex-38.rdf"; then \
+	    diff $(srcdir)/ex-38-turtle.out $$name-turtle.ttl > $$name.res 2> $$name.err; \
+	    status2=$$?; \
+	  else \
+	    $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.ttl > $$name.res 2> $$name.err; \
+	    status2=$$?; \
+	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED"; result=1; \
-	    $(ECHO) $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.rdf; \
-	    $(ECHO) $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.rdf '>' $$name.res; \
+	    $(ECHO) $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.ttl; \
+	    $(ECHO) $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.ttl '>' $$name.res; \
 	    cat $$name.err; \
 	  fi; \
-	  rm -f $$name-turtle.rdf $$name.res $$name.err; \
+	  rm -f $$name-turtle.ttl $$name.res $$name.err; \
 	done; \
 	set -e; exit $$result
 

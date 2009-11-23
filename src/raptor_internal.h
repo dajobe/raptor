@@ -1199,11 +1199,13 @@ typedef struct {
   raptor_abbrev_node* node;      /* node representing the subject of
                                   * this resource */
   raptor_abbrev_node* node_type; /* the rdf:type of this resource */
-  raptor_avltree *properties;   /* list of properties
+  raptor_avltree *properties;    /* list of properties
                                   * (predicate/object pair) of this
                                   * subject */
   raptor_sequence *list_items;   /* list of container elements if
                                   * is rdf container */
+  int valid;                     /* set 0 for blank nodes that do not
+				  * need to be referred to again */
 } raptor_abbrev_subject;
 
 
@@ -1211,15 +1213,17 @@ raptor_abbrev_node* raptor_new_abbrev_node(raptor_world* world, raptor_identifie
 void raptor_free_abbrev_node(raptor_abbrev_node* node);
 int raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
 int raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
-int raptor_abbrev_node_matches(raptor_abbrev_node* node, raptor_identifier_type node_type, const void *node_data, raptor_uri *datatype, const unsigned char *language);
 raptor_abbrev_node* raptor_abbrev_node_lookup(raptor_avltree* nodes, raptor_identifier_type node_type, const void *node_value, raptor_uri *datatype, const unsigned char *language, int* created_p);
 
 raptor_abbrev_subject* raptor_new_abbrev_subject(raptor_abbrev_node* node);
 void raptor_free_abbrev_subject(raptor_abbrev_subject* subject);
 int raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject, raptor_abbrev_node* predicate, raptor_abbrev_node* object);
 int raptor_abbrev_subject_add_list_element(raptor_abbrev_subject* subject, int ordinal, raptor_abbrev_node* object);
-raptor_abbrev_subject* raptor_abbrev_subject_find(raptor_sequence *sequence, raptor_identifier_type node_type, const void *node_data, int *idx);
-raptor_abbrev_subject* raptor_abbrev_subject_lookup(raptor_avltree* nodes, raptor_sequence* subjects, raptor_sequence* blanks, raptor_identifier_type node_type, const void *node_data, int* created_p);
+int raptor_abbrev_subject_cmp(raptor_abbrev_subject* subject1, raptor_abbrev_subject* subject2);
+raptor_abbrev_subject* raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_identifier_type node_type, const void *node_data);
+raptor_abbrev_subject* raptor_abbrev_subject_lookup(raptor_avltree* nodes, raptor_avltree* subjects, raptor_avltree* blanks, raptor_identifier_type node_type, const void *node_data, int* created_p);
+int raptor_abbrev_subject_valid(raptor_abbrev_subject *subject);
+int raptor_abbrev_subject_invalidate(raptor_abbrev_subject *subject);
 
 unsigned char *raptor_unique_id(unsigned char *base);
 

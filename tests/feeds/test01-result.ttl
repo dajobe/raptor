@@ -6,21 +6,6 @@
 @prefix rss091: <http://purl.org/rss/1.0/modules/rss091#> .
 @prefix : <http://purl.org/rss/1.0/> .
 
-<>
-    dc:date "2006-03-28T17:05:01-05:00" ;
-    :items [
-        rdf:_1 <2006/03/28/blog-item> ;
-        a rdf:Seq
-    ] ;
-    :link "http://example.org/whatsnew" ;
-    :title "example feed with 1 item" ;
-    a :channel ;
-    atom:author "example" ;
-    atom:email "example@example.com" ;
-    atom:title "atomic title" ;
-    atom:updated "2006-03-28T20:57:15Z" ;
-    atom:uri "http://example.com/" .
-
 <2006/03/28/blog-item>
     dc:creator [
         dc:title "Example" ;
@@ -37,4 +22,19 @@ over several lines.
 </div>"""^^rdf:XMLLiteral ;
     atom:title "atomic blog item title" ;
     atom:updated "2006-03-28T20:57:15Z" .
+
+<>
+    dc:date "2006-03-28T17:05:01-05:00" ;
+    :items [
+        rdf:_1 <2006/03/28/blog-item> ;
+        a rdf:Seq
+    ] ;
+    :link "http://example.org/whatsnew" ;
+    :title "example feed with 1 item" ;
+    a :channel ;
+    atom:author "example" ;
+    atom:email "example@example.com" ;
+    atom:title "atomic title" ;
+    atom:updated "2006-03-28T20:57:15Z" ;
+    atom:uri "http://example.com/" .
 

@@ -66,6 +66,8 @@ ex-57.out ex-58.out ex-61.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out daml-oil.out wine.out
 
+RDF_HACK_OUT_FILES=ex-38-rdfxmla.out
+
 RDF_MAYFAIL_XML_OUT_FILES=ex-55.rdf
 
 RDF_WARN_OUT_FILES=warn-00.out warn-02.out warn-04.out \
@@ -106,7 +108,8 @@ EXTRA_DIST = \
 	$(RDF_SCAN_OUT_FILES) \
 	$(RDF_WARN_OUT_FILES) \
 	$(RDF_SERIALIZE_TEST_FILES) \
-	$(RDF_SERIALIZE_OUT_FILES)
+	$(RDF_SERIALIZE_OUT_FILES) \
+	$(RDF_HACK_OUT_FILES)
 
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
@@ -339,8 +342,13 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$name-rdfxmla.rdf 2> $$name.err; \
 	  status1=$$?; \
-	  $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
-	  status2=$$?; \
+	  if test $$test = ex-38.rdf; then \
+	    diff $(srcdir)/ex-38-rdfxmla.out $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
+	    status2=$$?; \
+	  else \
+	    $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
+	    status2=$$?; \
+	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(ECHO) "ok"; \
 	  else \

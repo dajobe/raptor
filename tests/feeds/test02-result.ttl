@@ -15,18 +15,6 @@
     :title "Example News" ;
     a :channel .
 
-<2008-03-30>
-    dc:date "2008-03-30T06:07:28Z" ;
-    :description """<div xmlns=\"http://www.w3.org/1999/xhtml\">
-html description 2
-</div>""" ;
-    :link "http://example.org/news/2008-03-30" ;
-    content:encoded """<div xmlns=\"http://www.w3.org/1999/xhtml\">
-html description 1
-</div>""" ;
-    :title "News for 2008-03-30" ;
-    a :item .
-
 <2007-10-01>
     dc:date "2007-10-01T06:56:58Z" ;
     :description """<div xmlns=\"http://www.w3.org/1999/xhtml\">
@@ -37,5 +25,17 @@ html description 4
 html description 3
 </div>""" ;
     :title "News for 2007-10-01" ;
+    a :item .
+
+<2008-03-30>
+    dc:date "2008-03-30T06:07:28Z" ;
+    :description """<div xmlns=\"http://www.w3.org/1999/xhtml\">
+html description 2
+</div>""" ;
+    :link "http://example.org/news/2008-03-30" ;
+    content:encoded """<div xmlns=\"http://www.w3.org/1999/xhtml\">
+html description 1
+</div>""" ;
+    :title "News for 2008-03-30" ;
     a :item .
 
