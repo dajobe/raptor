@@ -1,3 +1,29 @@
+2009-11-25  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_abbrev.c:
+	(raptor_abbrev_subject_lookup): Free node if
+	raptor_new_abbrev_subject() ownership transfer did not succeed.
+
+	* src/raptor_abbrev.c:
+	(raptor_abbrev_subject_find): Check for failures.
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit): Free iterators on before returning an error.
+
+	* src/raptor_abbrev.c, src/raptor_avltree.c:
+	(raptor_avltree_sprout): Always take ownership of passed in node
+	data - free it if malloc fails. Make sure free_fn is not null
+	before calling it.
+
+	(raptor_abbrev_node_lookup,raptor_abbrev_subject_add_property):
+	raptor_avltree_add() now always takes ownership of added nodes.
+
+	* src/raptor_internal.h, src/raptor_serialize_rdfxmla.c:
+	fixed indent tabs -> spaces
+
+	* src/raptor_abbrev.c:
+	(raptor_abbrev_subject_invalidate): Return value expected
+
 2009-11-24  Dave Beckett <dave@dajobe.org>
 
 	* many files: Merge from raptor branch raptor1
