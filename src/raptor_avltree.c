@@ -587,8 +587,11 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
   if(!*node_pp) {
     RAPTOR_AVLTREE_DEBUG1("grounded. adding new node, setting rebalancing flag true\n");
     *node_pp= (raptor_avltree_node*)RAPTOR_MALLOC(raptor_avltree_node, sizeof(**node_pp));
-    if(!*node_pp)
+    if(!*node_pp) {
+      if(tree->free_fn)
+        tree->free_fn(p_data);
       return RAPTOR_AVLTREE_ENOMEM;
+    }
     
     (*node_pp)->parent= parent;
     (*node_pp)->left= NULL;
@@ -623,7 +626,8 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
     return FALSE;
   } else {
     /* ignore item with equivalent key */
-    tree->free_fn(p_data);
+    if(tree->free_fn)    
+      tree->free_fn(p_data);
     return RAPTOR_AVLTREE_EXISTS;
   }
 }

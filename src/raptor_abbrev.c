@@ -334,13 +334,10 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
   /* If not found, insert/return a new one */
   if(!rv_node) {
     
-    if(raptor_avltree_add(nodes, lookup_node)) {
-      /* Insert failed */
-      raptor_free_abbrev_node(lookup_node);
+    if(raptor_avltree_add(nodes, lookup_node))
       return NULL;
-    } else {
+    else
       return lookup_node;
-    }
 
   /* Found */
   } else {
@@ -556,10 +553,8 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
   raptor_avltree_dump(subject->properties, stderr);
 #endif
   err = raptor_avltree_add(subject->properties, nodes);
-  if(err) {
-    raptor_free_abbrev_po(nodes);
+  if(err)
     return -1;
-  }
 #if 0
   fprintf(stderr, "Result ");
   raptor_avltree_print(subject->properties, stderr);
