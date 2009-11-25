@@ -1,4 +1,48 @@
+2009-11-24  Dave Beckett <dave@dajobe.org>
+
+	* many files: Merge from raptor branch raptor1
+
+2009-11-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	tests/feeds/test01-result.ttl, tests/feeds/test02-result.ttl,
+	tests/feeds/test03-result.ttl, tests/feeds/test04-result.ttl,
+	tests/rdfxml/Makefile.am, tests/turtle/Makefile.am: Apply SVN
+	r15690 to raptor head
+
+2009-11-15  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c: Apply SVN 15667 to raptor trunk
+
+2009-10-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_uri): Fix XML parser context
+	resource leak if raptor_grddl_fetch_uri fails.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_parse_chunk): Save and restore error handlers
+	properly - restore loop was broken.  Remove memcpy for clarity in
+	copying.
+
+2009-08-25  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Update common autogen.sh
+
+2009-08-21  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_www.c:
+	(raptor_www_set_http_cache_control): Avoid dangling pointers
+
+2009-08-03  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_internal.h: Fixed comment
+
 2009-07-27  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: For trunk raptor 1.9.x series update libtool
+	version to 4:0:0 which bumps the soname.
 
 	* src/raptor_parse.c
 	(raptor_parse_file): Simplify, no need for O_LARGEFILES flag and
