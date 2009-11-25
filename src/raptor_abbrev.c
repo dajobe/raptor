@@ -623,9 +623,15 @@ raptor_abbrev_subject_find(raptor_avltree *subjects,
   /* datatype and language both null for a subject node */
   
   lookup_node = raptor_new_abbrev_node(subjects->world,
-				       node_type, node_data, NULL, NULL);
+                                       node_type, node_data, NULL, NULL);
+  if(!lookup_node)
+    return NULL;
   
   lookup = raptor_new_abbrev_subject(lookup_node);
+  if(!lookup) {
+    raptor_free_abbrev_node(lookup_node);
+    return NULL;
+  }
 
   rv_subject = raptor_avltree_search(subjects, lookup);
 
