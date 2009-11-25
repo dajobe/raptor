@@ -509,6 +509,7 @@ int
 raptor_abbrev_subject_invalidate(raptor_abbrev_subject *subject)
 {
   subject->valid = 0;
+  return 0;
 }
   
   
