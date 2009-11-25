@@ -816,6 +816,13 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
 }
 
 
+static void
+turtle_lexer_discard_error(void* user_data, const char *message, ...)
+{
+  return;
+}
+
+
 int
 main(int argc, char *argv[]) 
 {
@@ -826,7 +833,7 @@ main(int argc, char *argv[])
   FILE *fh;
   YYSTYPE lval;
   const unsigned char *uri_string;
-  char *filename=NULL;
+  const char *filename=NULL;
   
   raptor_init();
   
@@ -840,11 +847,21 @@ main(int argc, char *argv[])
     }
   } else {
     filename="<stdin>";
-    fh=stdin;
+    fh = (FILE*)stdin;
   }
 
   memset(&rdf_parser, 0, sizeof(raptor_parser));
   memset(&turtle_parser, 0, sizeof(raptor_turtle_parser));
+
+  rdf_parser.world = raptor_world_instance();
+
+  /* discard namespace errors - caused by not interpreting @prefix 
+   * and hence causing failed qname construction
+   */
+  raptor_namespaces_init_v2(rdf_parser.world,
+                            &turtle_parser.namespaces,
+                            turtle_lexer_discard_error, NULL,
+                            0);
 
   yylex_init(&turtle_parser.scanner);
   scanner=turtle_parser.scanner;
@@ -878,6 +895,8 @@ main(int argc, char *argv[])
 
   yylex_destroy(scanner);
 
+  raptor_namespaces_clear(&turtle_parser.namespaces);
+  
   raptor_free_uri(rdf_parser.base_uri);
 
   raptor_finish();

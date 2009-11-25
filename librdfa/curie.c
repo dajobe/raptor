@@ -251,11 +251,11 @@ char* rdfa_resolve_curie(
 
       // fully resolve the prefix and get it's length
 
-      // if a colon was found, but no prefix, use the context->base as
-      // the prefix IRI
-      if(uri[0] == ':')
+      // if a colon was found, but no prefix, use the XHTML vocabulary URI
+      // as the expanded prefix 
+      if((uri[0] == ':') || (strcmp(uri, "[:]") == 0))
       {
-         expanded_prefix = "http://www.w3.org/1999/xhtml/vocab#";
+         expanded_prefix = XHTML_VOCAB_URI;
          curie_reference = prefix;
          prefix = NULL;
       }
@@ -303,10 +303,10 @@ char* rdfa_resolve_curie(
          expanded_prefix_length = strlen(expanded_prefix);
       }
       
-      // if the expanded prefix and the reference exist, generate the
-      // full IRI.
       if((expanded_prefix != NULL) && (curie_reference != NULL))
       {
+         // if the expanded prefix and the reference exist, generate the
+         // full IRI.
          if(strcmp(expanded_prefix, "_") == 0)
          {
             rval = rdfa_join_string("_:", curie_reference);
@@ -315,6 +315,14 @@ char* rdfa_resolve_curie(
          {
             rval = rdfa_join_string(expanded_prefix, curie_reference);
          }
+      }
+      else if((expanded_prefix != NULL) && (expanded_prefix[0] != '_') && 
+         (curie_reference == NULL))
+      {
+         // if the expanded prefix exists, but the reference is null, 
+	 // generate the CURIE because a reference-less CURIE is still
+         // valid
+ 	 rval = rdfa_join_string(expanded_prefix, "");
       }
 
       free(working_copy);

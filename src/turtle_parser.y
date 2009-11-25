@@ -1680,7 +1680,7 @@ main(int argc, char *argv[])
   raptor_turtle_parser turtle_parser; /* static */
   raptor_locator *locator=&rdf_parser.locator;
   FILE *fh;
-  char *filename;
+  const char *filename;
   int rc;
   
 #if RAPTOR_DEBUG > 2
@@ -1724,6 +1724,7 @@ main(int argc, char *argv[])
 
   turtle_parser.lineno= 1;
 
+  rdf_parser.world = raptor_world_instance();
   rdf_parser.context=&turtle_parser;
   rdf_parser.base_uri=raptor_new_uri((const unsigned char*)"http://example.org/fake-base-uri/");
 
@@ -1732,8 +1733,10 @@ main(int argc, char *argv[])
   
   turtle_parser.error_count=0;
 
-  turtle_parse(&rdf_parser, string);
+  turtle_parse(&rdf_parser, string, strlen(string));
 
+  raptor_turtle_parse_terminate(&rdf_parser);
+  
   raptor_free_uri(rdf_parser.base_uri);
 
   raptor_finish();

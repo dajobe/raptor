@@ -177,7 +177,7 @@ MAINTAINER_CPPFLAGS="$warning_cflags"
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h stdlib.h unistd.h string.h limits.h math.h dmalloc.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
+AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h unistd.h string.h limits.h math.h dmalloc.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
@@ -295,7 +295,8 @@ int main(int argc, char* argv) {
   return is_c99("1234567");
 }], AC_MSG_RESULT(no),
     AC_DEFINE(HAVE_C99_VSNPRINTF, 1, [vsnprint has C99 compatible return value])
-    AC_MSG_RESULT(yes))
+    AC_MSG_RESULT(yes),
+    AC_DEFINE(CHECK_VSNPRINTF_RUNTIME, 1, [have to check C99 vsnprintf at runtime because cross compiling]))
 fi
 
 need_libm=no
@@ -324,6 +325,8 @@ AC_TRY_LINK([#ifdef HAVE_MATH_H
             AC_DEFINE(HAVE_ROUND, 1, [have round() in libm]),
             AC_MSG_RESULT(no))
 LIBS="$oLIBS"
+
+AC_SYS_LARGEFILE
 
 if test "X$need_libm" = Xyes; then
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lm"

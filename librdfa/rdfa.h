@@ -236,6 +236,8 @@ void rdfa_parse_end(rdfacontext* context);
 
 void rdfa_init_context(rdfacontext* context);
 
+char* rdfa_iri_get_base(const char* iri);
+
 /**
  * Destroys the given rdfa context by freeing all memory associated
  * with the context.

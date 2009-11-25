@@ -172,8 +172,10 @@ update_prog_version() {
   PATH=".:$PATH"
 
   nameglob="$prog*"
-  if [ -x /usr/bin/uname -a `/usr/bin/uname` = 'Darwin' -a $prog = 'libtoolize' ] ; then
-    nameglob="g$nameglob"
+  if [ -x /usr/bin/uname ]; then
+    if [ `/usr/bin/uname` = 'Darwin' -a $prog = 'libtoolize' ] ; then
+      nameglob="g$nameglob"
+    fi
   fi
   names=`ls $nameglob 2>/dev/null`
   if [ "X$names" != "X" ]; then

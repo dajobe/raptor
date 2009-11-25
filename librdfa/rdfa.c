@@ -49,8 +49,10 @@ void rdfa_init_context(rdfacontext* context)
    context->parent_subject = NULL;
    if(context->base != NULL)
    {
+      char* cleaned_base = rdfa_iri_get_base(context->base);
       context->parent_subject =
-         rdfa_replace_string(context->parent_subject, context->base);
+         rdfa_replace_string(context->parent_subject, cleaned_base);
+      free(cleaned_base);
    }
    
    // the [parent object] is set to null;
@@ -171,6 +173,7 @@ static size_t rdfa_init_base(
             {
                size_t uri_size = uri_end - uri_start;
                char* temp_uri = (char*)malloc(sizeof(char) * uri_size + 1);
+	       char* cleaned_base;
                strncpy(temp_uri, uri_start, uri_size);
                temp_uri[uri_size] = '\0';
 
@@ -178,13 +181,15 @@ static size_t rdfa_init_base(
                //       be? Setting current_object_resource will make
                //       sure that the BASE element is inherited by all
                //       subcontexts.
+	       cleaned_base = rdfa_iri_get_base(temp_uri);
                context->current_object_resource =
-                  rdfa_replace_string(context->current_object_resource,
-                                      temp_uri);
+                  rdfa_replace_string(
+                     context->current_object_resource, cleaned_base);
+
+	       // clean up the base context
                context->base =
-                  rdfa_replace_string(context->base,
-                                      temp_uri);
-               
+                  rdfa_replace_string(context->base, cleaned_base);
+               free(cleaned_base);
                free(temp_uri);
             }
          }         
@@ -1053,9 +1058,12 @@ rdfacontext* rdfa_create_context(const char* base)
    // if the base isn't specified, don't create a context
    if(base_length > 0)
    {
+      char* cleaned_base;
       rval = (rdfacontext*)malloc(sizeof(rdfacontext));
       rval->base = NULL;
-      rval->base = rdfa_replace_string(rval->base, base);
+      cleaned_base = rdfa_iri_get_base(base);
+      rval->base = rdfa_replace_string(rval->base, cleaned_base);
+      free(cleaned_base);
 
       /* parse state */
       rval->wb_allocated = 0;
@@ -1171,7 +1179,7 @@ void rdfa_free_context(rdfacontext* context)
       do {
         rval=rdfa_pop_item(context->context_stack);
         if(rval && rval != context)
-          rdfa_free_context((rdfacontext*)rval);
+          rdfa_free_context(rval);
       } while(rval);
       free(context->context_stack->items);
       free(context->context_stack);
@@ -1275,7 +1283,11 @@ int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done)
       if(XML_Parse(context->parser, context->working_buffer,
          context->wb_offset, 0) == XML_STATUS_ERROR)
       {
+#ifdef WIN32
+         printf(
+#else
          fprintf(stderr,
+#endif
                  "%s at line %d, column %d\n",
                  XML_ErrorString(XML_GetErrorCode(context->parser)),
                  XML_GetCurrentLineNumber(context->parser),
@@ -1298,7 +1310,11 @@ int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done)
 #else
    if(XML_Parse(context->parser, data, wblen, done) == XML_STATUS_ERROR)
    {
-      fprintf(stderr,
+#ifdef WIN32
+         printf(
+#else
+         fprintf(stderr,
+#endif
               "%s at line %d, column %d.\n",
               XML_ErrorString(XML_GetErrorCode(context->parser)),
               XML_GetCurrentLineNumber(context->parser),

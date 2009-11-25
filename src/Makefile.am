@@ -152,6 +152,7 @@ endif
 if LIBRDFA
 libraptor_la_SOURCES += \
 $(top_srcdir)/librdfa/curie.c \
+$(top_srcdir)/librdfa/iri.c \
 $(top_srcdir)/librdfa/language.c\
 $(top_srcdir)/librdfa/rdfa.c \
 $(top_srcdir)/librdfa/rdfa_utils.c \

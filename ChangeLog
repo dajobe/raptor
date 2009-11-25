@@ -1,4 +1,25 @@
-2009-07-19  Dave Beckett  <dave@dajobe.org>
+2009-07-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c
+	(raptor_parse_file): Simplify, no need for O_LARGEFILES flag and
+	open/fdopen sequence.
+
+	* configure.ac:
+	Check for fcntl.h and AC_SYS_LARGEFILE to get large file checks
+
+	* src/raptor_parse.c:
+	(raptor_parse_file): Use open(2) and apply O_LARGEFILE option to
+	allow 32bit systems to read multi-gigabyte files.
+
+2009-07-23  Dave Beckett <dave@dajobe.org>
+
+	* Changelog entries above this are on BRANCH raptor1
+
+	* Create raptor 1 branch (SVN r15287)
+
+2009-07-19  Dave Beckett <dave@dajobe.org>
+
+	* Tagged for raptor 1.4.19 (SVN r15280)
 
 	* Snapshotted raptor_1_4_19 for 1.4.19 release (SVN 15279)
 

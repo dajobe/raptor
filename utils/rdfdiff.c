@@ -453,7 +453,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
 
 static int
 rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
-                     rdfdiff_file*b1_file, rdfdiff_file*b2_file) 
+                     rdfdiff_file *b1_file, rdfdiff_file *b2_file) 
 {
   /* first compare "owners". Owners are subject/predicate or arcs
    * in. */
@@ -467,14 +467,14 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
   } else if(b1->owner == NULL || b2->owner == NULL) {
     equal = 0;
   } else if(b1->owner->subject_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
-      b2->owner->subject_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+            b2->owner->subject_type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     /* Neither are anonymous. Normal comparison. This will return
      * false if both the subject and the predicates don't match. We
      * know the objects are blank nodes. */
     equal = rdfdiff_statement_equals(b1->world, b1->owner, b2->owner);
     
   } else if(b1->owner->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
-             b2->owner->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+            b2->owner->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     rdfdiff_blank *p1;
     rdfdiff_blank *p2;
 

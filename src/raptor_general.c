@@ -392,6 +392,82 @@ raptor_set_libxml_flags(int flags)
 #endif
 #endif
 
+
+#ifdef CHECK_VSNPRINTF_RUNTIME
+static int vsnprintf_checked = -1;
+
+static int
+vsnprint_check_is_c99(const char *s, ...)
+{
+  char buffer[32];
+  va_list args;
+  int r;
+  va_start(args, s);
+  r = vsnprintf(buffer, 5, s, args);
+  va_end(args);
+
+  return (r == 7);
+}
+
+static int
+vsnprintf_is_c99(void)
+{
+  if(vsnprintf_checked < 0)
+    vsnprintf_checked = vsnprint_check_is_c99("1234567");
+  return vsnprintf_checked;
+}
+#endif
+
+
+#define VSNPRINTF_C99_BLOCK \
+do { \
+  /* copy for re-use */ \
+  va_copy(args_copy, arguments); \
+  len = vsnprintf(empty_buffer, 1, message, args_copy)+1; \
+  va_end(args_copy); \
+ \
+  if(len <= 0) \
+    return NULL; \
+   \
+  buffer = (char*)RAPTOR_MALLOC(cstring, len); \
+  if(buffer) { \
+    /* copy for re-use */ \
+    va_copy(args_copy, arguments); \
+    vsnprintf(buffer, len, message, args_copy); \
+    va_end(args_copy); \
+  } \
+} while(0)
+
+#define VSNPRINTF_NOT_C99_BLOCK \
+do { \
+  /* This vsnprintf doesn't return number of bytes required */ \
+  int size = 2; \
+       \
+  while(1) { \
+    buffer = (char*)RAPTOR_MALLOC(cstring, size+1); \
+    if(!buffer) \
+      break; \
+     \
+    /* copy for re-use */ \
+    va_copy(args_copy, arguments); \
+    len = vsnprintf(buffer, size, message, args_copy); \
+    va_end(args_copy); \
+ \
+    /* On windows, vsnprintf() returns -1 if the buffer does not fit. \
+     * If the buffer exactly fits the string without a NULL \
+     * terminator, it returns the string length and it ends up with \
+     * an unterminated string.  The added check makes sure the string \
+     * returned is terminated - otherwise more buffer space is \
+     * allocated and the while() loop retries. \
+    */ \
+    if((len >= 0) && (buffer[len] == '\0')) \
+      break; \
+    RAPTOR_FREE(cstring, buffer); \
+    size += 4; \
+  } \
+} while(0)
+
+
 /**
  * raptor_vsnprintf:
  * @message: printf-style format string
@@ -409,51 +485,20 @@ raptor_vsnprintf(const char *message, va_list arguments)
 {
   char empty_buffer[1];
   int len;
-  char *buffer=NULL;
+  char *buffer = NULL;
   va_list args_copy;
 
-#ifdef HAVE_C99_VSNPRINTF
-  /* copy for re-use */
-  va_copy(args_copy, arguments);
-  len=vsnprintf(empty_buffer, 1, message, args_copy)+1;
-  va_end(args_copy);
-
-  if(len<=0)
-    return NULL;
-  
-  buffer=(char*)RAPTOR_MALLOC(cstring, len);
-  if(buffer) {
-    /* copy for re-use */
-    va_copy(args_copy, arguments);
-    vsnprintf(buffer, len, message, args_copy);
-    va_end(args_copy);
-  }
+#ifdef CHECK_VSNPRINTF_RUNTIME
+  if(vsnprintf_is_c99())
+    VSNPRINTF_C99_BLOCK ;
+  else
+    VSNPRINTF_NOT_C99_BLOCK ;
 #else
-  /* This vsnprintf doesn't return number of bytes required */
-  int size=2;
-      
-  while(1) {
-    buffer=(char*)RAPTOR_MALLOC(cstring, size+1);
-    if(!buffer)
-      break;
-    
-    /* copy for re-use */
-    va_copy(args_copy, arguments);
-    len=vsnprintf(buffer, size, message, args_copy);
-    va_end(args_copy);
-
-    /* On windows, vsnprintf() returns -1 if the buffer does not fit.
-     * If the buffer exactly fits the string without a NULL
-     * terminator, it returns the string length and it ends up with
-     * an unterminated string.  The added check makes sure the string
-     * returned is terminated - otherwise more buffer space is
-     * allocated and the while() loop retries.
-    */
-    if((len >= 0) && (buffer[len] == '\0'))
-      break;
-    RAPTOR_FREE(cstring, buffer);
-    size+=4;
-  }
+#ifdef HAVE_C99_VSNPRINTF
+  VSNPRINTF_C99_BLOCK ;
+#else
+  VSNPRINTF_NOT_C99_BLOCK ;
+#endif
 #endif
 
   return buffer;

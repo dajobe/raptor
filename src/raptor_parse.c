@@ -2,7 +2,7 @@
  *
  * raptor_parse.c - Raptor Parser API
  *
- * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -44,6 +44,9 @@
 #endif
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
 #endif
 
 /* Raptor includes */
@@ -842,7 +845,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
     }
 #endif
 
-    fh=fopen(filename, "r");
+    fh = fopen(filename, "r");
     if(!fh) {
       raptor_parser_error(rdf_parser, "file '%s' open failed - %s",
                           filename, strerror(errno));
