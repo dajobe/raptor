@@ -805,6 +805,7 @@ raptor_turtle_emit(raptor_serializer *serializer)
     if (subject) {
       rc = raptor_turtle_emit_subject(serializer, subject, 0);
       if (rc) {
+        raptor_free_avltree_iterator(iter);
         return rc;
       }
     }
@@ -819,6 +820,7 @@ raptor_turtle_emit(raptor_serializer *serializer)
     if (blank) {
       rc = raptor_turtle_emit_subject(serializer, blank, 0);
       if (rc) {
+        raptor_free_avltree_iterator(iter);
         return rc;
       }
     }
