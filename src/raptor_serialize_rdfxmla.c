@@ -1519,10 +1519,10 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
               /* look for any generated blank node associated with this
                * statement and free it
                */
-	      raptor_abbrev_subject *blank = 
-		raptor_abbrev_subject_find(context->blanks, object_type,
-					   statement->object);
-	      if (subject) raptor_avltree_delete(context->blanks, blank);
+              raptor_abbrev_subject *blank = 
+                raptor_abbrev_subject_find(context->blanks, object_type,
+                                           statement->object);
+              if (subject) raptor_avltree_delete(context->blanks, blank);
             }
             break;
           }

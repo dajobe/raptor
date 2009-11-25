@@ -1205,7 +1205,7 @@ typedef struct {
   raptor_sequence *list_items;   /* list of container elements if
                                   * is rdf container */
   int valid;                     /* set 0 for blank nodes that do not
-				  * need to be referred to again */
+                                  * need to be referred to again */
 } raptor_abbrev_subject;
 
 
