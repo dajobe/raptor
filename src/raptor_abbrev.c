@@ -673,11 +673,12 @@ raptor_abbrev_subject_lookup(raptor_avltree* nodes,
       if(rv_subject) {
         if(raptor_avltree_add(tree, rv_subject)) {
           rv_subject = NULL;
-        }      
-      }
+        }
+      } else
+        raptor_free_abbrev_node(node);
     }
   }
-  
+
   return rv_subject;
 }
 
