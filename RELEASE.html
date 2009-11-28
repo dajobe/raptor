@@ -18,6 +18,70 @@
 </p>
 
 
+<h2 id="rel1_4_20"><a name="rel1_4_20">Raptor 1.4.20 Changes</a></h2>
+
+<p>This is a bug fix only release with no new features.  New
+development has moved to raptor 2 where a planned ABI and API break
+will happen.  There may be preview releases of raptor 2 with 1.9.x
+numbering.</p>
+
+<p>Fixed Issues:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=307">0000307</a>: configure fails at vnsprintf test when cross compiling</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=312">0000312</a>: Ununitialized pointer in example rdfserialize.c causes crash</li>
+</ul>
+
+<h3>Parser Changes</h3>
+
+<p>
+GRDDL parser: Fix XML parser context resource leak if
+<code>raptor_grddl_fetch_uri()</code> fails.  Save and restore error
+handlers properly to prevent crashes when an error is reported during
+parsing.
+</p>
+
+<p>
+librdfa parser: Update to latest librdfa GIT source with head
+b8e3f78a3483a5c8aad4fe220daf60b4d3eee91e <br />
+now moved to 
+<a href="http://github.com/msporny/librdfa">http://github.com/msporny/librdfa</a>
+</p>
+
+<h3>Serializer Changes</h3>
+
+<p>
+Turtle serializer:
+Applied scalability patch from Chris Cannam.
+This switches the serializer to use a <code>raptor_avltree</code>
+instead of a <code>raptor_sequence</code> for the subject and blanks
+used with <code>raptor_abbrev_node_lookup()</code>.  This fixes a
+performance problem in the serializing and moves lookups from O(N) to
+O(log N) - from list to balanced tree.
+</p>
+
+<h3>Other Changes</h3>
+
+<p>If cross compiling, check for <code>vsnprintf()</code> C99 compatible at
+runtime by setting define <code>CHECK_VSNPRINTF_RUNTIME</code> during
+configuration.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=307">Issue#0000307</a>
+</p>
+
+<p>Use <code>calloc()</code> for allocating a raptor_statement in
+rdfserializer.c example code to properly initialise state.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=312">Issue#0000312</a>
+</p>
+
+<p>Use <code>AC_SYS_LARGEFILE</code> to get large file IO checks which
+allows 32-bit systems to read multi-gigabyte files.
+</p>
+
+<p><code>autogen.sh</code> script fix for if test when uname is not in
+standard OSX dir.
+</p>
+
+
+
 <h2 id="rel1_4_19"><a name="rel1_4_19">Raptor 1.4.19 Changes</a></h2>
 
 <blockquote>

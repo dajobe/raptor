@@ -613,8 +613,16 @@ static void XMLCALL
          else if(strcmp(attr, "datatype") == 0)
          {
             datatype_curie = value;
-            datatype = rdfa_resolve_curie(context, datatype_curie,
-               CURIE_PARSE_INSTANCEOF_DATATYPE);
+
+            if(strlen(datatype_curie) == 0)
+            {
+               datatype = rdfa_replace_string(datatype, "");
+            }
+            else
+            {
+               datatype = rdfa_resolve_curie(context, datatype_curie,
+                  CURIE_PARSE_INSTANCEOF_DATATYPE);
+            }
          }
 #ifndef LIBRDFA_IN_RAPTOR
          else if(strcmp(attr, "xml:lang") == 0)
@@ -635,8 +643,11 @@ static void XMLCALL
    }
 
 #ifdef LIBRDFA_IN_RAPTOR
-   if(context->sax2)
-      xml_lang=(const char*)raptor_sax2_inscope_xml_language(context->sax2);
+   if(context->sax2) {
+      xml_lang = (const char*)raptor_sax2_inscope_xml_language(context->sax2);
+      if(!xml_lang)
+        xml_lang = "";
+   }
 #endif
    // check to see if we should append an xml:lang to the XML Literal
    // if one is defined in the context and does not exist on the element.

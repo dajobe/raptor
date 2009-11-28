@@ -444,7 +444,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    }
    else if(strlen(context->plain_literal) == 0)
    {
-     current_object_literal = (char*)"";
+      current_object_literal = (char*)"";
       type = RDF_TYPE_PLAIN_LITERAL;
    }
    else if((context->xml_literal != NULL) &&
@@ -452,7 +452,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
            (strlen(context->xml_literal) > 0) &&
            (strcmp(context->datatype, "") == 0))
    {
-      current_object_literal = context->xml_literal;
+      current_object_literal = context->plain_literal;
       type = RDF_TYPE_PLAIN_LITERAL;
    }
 

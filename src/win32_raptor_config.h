@@ -102,7 +102,7 @@ extern "C" {
 #define RAPTOR_VERSION_RELEASE 0
 
 /* Version number of package */
-#define VERSION "1.4.19"
+#define VERSION "1.9.0"
 
 
 #ifdef RAPTOR_XML_LIBXML

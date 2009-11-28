@@ -28,19 +28,10 @@
 #include "rdfa_utils.h"
 #include "rdfa.h"
 
-// These are all of the @property reserved words in XHTML 1.1 that
-// should generate triples.
-#define XHTML_PROPERTY_RESERVED_WORDS_SIZE 6
-static
-   const char * const g_property_reserved_words[XHTML_PROPERTY_RESERVED_WORDS_SIZE] =
-{
-   "description", "generator", "keywords", "reference", "robots", "title"
-};
-
 // These are all of the @rel/@rev reserved words in XHTML 1.1 that
 // should generate triples.
 #define XHTML_RELREV_RESERVED_WORDS_SIZE 23
-static const char * const g_relrev_reserved_words[XHTML_RELREV_RESERVED_WORDS_SIZE] =
+static const char* const g_relrev_reserved_words[XHTML_RELREV_RESERVED_WORDS_SIZE] =
 {
    "alternate", "appendix", "bookmark", "chapter", "cite", "contents",
    "copyright", "glossary", "help", "icon", "index", "meta", "next", "p3pv1",
@@ -259,8 +250,11 @@ char* rdfa_resolve_curie(
          curie_reference = prefix;
          prefix = NULL;
       }
-      else if((strlen(uri) > 2) && (uri[1] == ':'))
+      else if(uri[0] == ':')
       {
+         // FIXME: This looks like a bug - don't know why this code is
+         // in here. I think it's for the case where ":next" is
+         // specified, but the code's not checking that -- manu
          expanded_prefix = context->base;
          curie_reference = prefix;
          prefix = NULL;
@@ -395,57 +389,6 @@ char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri)
    return rval;
 }
 
-/**
- * Resolves a given uri depending on whether or not it is a fully
- * qualified IRI, a CURIE, or a short-form XHTML reserved word for
- * @property as defined in the XHTML+RDFa Syntax Document.
- *
- * @param context the current processing context.
- * @param uri the URI part to process.
- *
- * @return the fully qualified IRI, or NULL if the conversion failed
- *         due to the given URI not being a short-form XHTML reserved
- *         word. The memory returned from this function MUST be freed.
- */
-char* rdfa_resolve_property_curie(rdfacontext* context, const char* uri)
-{
-   char* rval = NULL;
-   int i = 0;
-   const char* resource = uri;
-
-   // check to make sure the URI doesn't have an empty prefix
-   if(uri[0] == ':')
-   {
-      resource++;
-   }
-   
-   // TODO: Is it clear that property has predefined values in the
-   //       Syntax doc?
-   // TODO: THIS IS A BUG AND SHOULD BE REMOVED - there are no
-   //       predefined values for @property
-   // search all of the XHTML @property reserved words for a match
-   // against the given URI
-   for(i = 0; i < XHTML_PROPERTY_RESERVED_WORDS_SIZE; i++)
-   {
-      if(strcmp(g_property_reserved_words[i], resource) == 0)
-      {
-         // since the URI is a reserved word, generate the full IRI
-         // and stop the loop.
-         rval = rdfa_join_string(XHTML_VOCAB_URI, resource);
-         i = XHTML_PROPERTY_RESERVED_WORDS_SIZE;
-      }
-   }
-
-   // if none of the XHTML @property reserved words were found,
-   // attempt to resolve the value as a standard CURIE
-   if(rval == NULL)
-   {
-      rval = rdfa_resolve_curie(context, uri, CURIE_PARSE_PROPERTY);
-   }
-   
-   return rval;
-}
-
 rdfalist* rdfa_resolve_curie_list(
    rdfacontext* rdfa_context, const char* uris, curieparse_t mode)
 {
@@ -462,7 +405,8 @@ rdfalist* rdfa_resolve_curie_list(
       char* resolved_curie = NULL;
 
       if((mode == CURIE_PARSE_INSTANCEOF_DATATYPE) ||
-         (mode == CURIE_PARSE_ABOUT_RESOURCE))
+         (mode == CURIE_PARSE_ABOUT_RESOURCE) ||
+         (mode == CURIE_PARSE_PROPERTY))
       {
          resolved_curie =
             rdfa_resolve_curie(rdfa_context, ctoken, mode);
@@ -471,11 +415,6 @@ rdfalist* rdfa_resolve_curie_list(
       {
          resolved_curie =
             rdfa_resolve_relrev_curie(rdfa_context, ctoken);
-      }
-      else if(mode == CURIE_PARSE_PROPERTY)
-      {
-         resolved_curie =
-            rdfa_resolve_property_curie(rdfa_context, ctoken);
       }
 
       // add the CURIE if it was a valid one

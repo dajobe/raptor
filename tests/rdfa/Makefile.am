@@ -40,6 +40,8 @@ TEST_FILES= 0001.xhtml 0006.xhtml 0007.xhtml 0008.xhtml 0009.xhtml	\
 0105.xhtml 0106.xhtml 0107.xhtml 0108.xhtml 0109.xhtml 0110.xhtml	\
 0111.xhtml 0112.xhtml 1001.xhtml
 
+TEST_UNAPPROVED_FILES = 0172.xhtml 0173.xhtml 0174.xhtml
+
 TEST_OUT_FILES = 0001.out 0006.out 0007.out 0008.out 0009.out	\
 0010.out 0011.out 0012.out 0013.out 0014.out 0015.out 0017.out	\
 0018.out 0019.out 0020.out 0021.out 0023.out 0025.out 0026.out	\
@@ -56,12 +58,16 @@ TEST_OUT_FILES = 0001.out 0006.out 0007.out 0008.out 0009.out	\
 0105.out 0106.out 0107.out 0108.out 0109.out 0110.out 0111.out	\
 0112.out 1001.out
 
+TEST_UNAPPROVED_OUT_FILES = 0172.out 0173.out 0174.out
+
 TEST_BAD_FILES=
 
 ALL_TEST_FILES= \
 	$(TEST_FILES) \
 	$(TEST_BAD_FILES) \
-	$(TEST_OUT_FILES)
+	$(TEST_OUT_FILES) \
+	$(TEST_UNAPPROVED_FILES) \
+	$(TEST_UNAPPROVED_OUT_FILES)
 
 # Expected test failures:
 #   0094.xhtml - XML namespaces are in a different order to expected output
@@ -70,6 +76,8 @@ ALL_TEST_FILES= \
 #   0103.xhtml - XML namespaces are in a different order to expected output
 # (Add a space to the start of this string)
 EXPECTED_FAILURES=" 0094.xhtml 0101.xhtml 0102.xhtml 0103.xhtml"
+
+EXPECTED_UNAPPROVED_FAILURES=" "
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
@@ -80,7 +88,7 @@ build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
 check-local:
-@RAPTOR_PARSER_RDFA_TRUE@check-local: check-rdfa
+@RAPTOR_PARSER_RDFA_TRUE@check-local: check-rdfa check-unapproved-rdfa
 
 check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	@set +e; result=0; failures=; failure_count=0; \
@@ -109,6 +117,40 @@ check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	if test "X$$failures" != X; then \
 	  echo "$$failure_count tests FAILED: $$failures"; \
 	  if test "$$failures" = $(EXPECTED_FAILURES); then \
+	    echo "Ignoring expected failures"; \
+	    result=0; \
+	  fi; \
+	fi; \
+	set -e; exit $$result
+
+
+check-unapproved-rdfa: build-rdfdiff build-rapper $(TEST_UNAPPROVED_FILES)
+	@set +e; result=0; failures=; failure_count=0; \
+	$(ECHO) "Testing unapproved RDFA"; \
+	for test in $(TEST_UNAPPROVED_FILES); do \
+	  name=`basename $$test .xhtml` ; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  baseuri=$(BASE_URI)$$test; \
+	  $(top_builddir)/utils/rapper -f noNet -q -i rdfa -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
+	  status1=$$?; \
+	  $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
+	  status2=$$?; \
+	  if test $$status1 = 0 -a $$status2 = 0; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    $(ECHO) "Triple counts: expected: `wc -l < $(srcdir)/$$name.out` got: `wc -l < $$name-res.nt` "; \
+	    $(ECHO) $(top_builddir)/utils/rapper -f noNet -q -i rdfa -I $$baseuri -o ntriples $(srcdir)/$$test '>' $$name-res.nt; \
+	    $(ECHO) $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt '>' $$name.res; \
+	    cat $$name.err $$name.res; \
+	    failures="$$failures $$test"; \
+	    failure_count=`expr $$failure_count + 1`; \
+	  fi; \
+	  rm -f $$name-res.nt $$name.res $$name.err; \
+	done; \
+	if test "X$$failures" != X; then \
+	  echo "$$failure_count tests FAILED: $$failures"; \
+	  if test "$$failures" = $(EXPECTED_UNAPPROVED_FAILURES); then \
 	    echo "Ignoring expected failures"; \
 	    result=0; \
 	  fi; \

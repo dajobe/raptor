@@ -66,6 +66,8 @@
 	* src/raptor_internal.h: Fixed comment
 
 2009-07-27  Dave Beckett <dave@dajobe.org>
+	* src/turtle_parser.y
+	(main): Terminate parser
 
 	* configure.ac: For trunk raptor 1.9.x series update libtool
 	version to 4:0:0 which bumps the soname.
