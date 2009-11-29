@@ -27,7 +27,9 @@ numbering.</p>
 
 <p>Fixed Issues:</p>
 <ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=306">0000306</a>: rapper doesn't handle datatype=""and xml:lang="" properly with RDFa</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=307">0000307</a>: configure fails at vnsprintf test when cross compiling</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=310">0000310</a>:  Raptor does not like single character namespaces with RDFa</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=312">0000312</a>: Ununitialized pointer in example rdfserialize.c causes crash</li>
 </ul>
 
@@ -41,10 +43,18 @@ parsing.
 </p>
 
 <p>
-librdfa parser: Update to latest librdfa GIT source with head
-b8e3f78a3483a5c8aad4fe220daf60b4d3eee91e <br />
+RDFA parser (via librdfa): Update to latest librdfa GIT sources with head
+a438ce68a40e04b399ec2b2c613d0c867d9315c7 <br />
 now moved to 
 <a href="http://github.com/msporny/librdfa">http://github.com/msporny/librdfa</a>
+to fix handling single character namespaces
+(<a href="http://bugs.librdf.org/mantis/view.php?id=310">Issue#0000310</a>),
+empty datatype attribute and empty xml:lang attributes
+(<a href="http://bugs.librdf.org/mantis/view.php?id=306">Issue#0000306</a>)
+</p>
+
+<p>Added three unapproved RDFa tests 0172, 0173 and 0174 to cover the
+fixes above.
 </p>
 
 <h3>Serializer Changes</h3>

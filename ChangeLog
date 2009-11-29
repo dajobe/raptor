@@ -1,3 +1,65 @@
+2009-11-28  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor_1_4_20 for 1.4.20 release (SVN 15727)
+	
+	* tests/rdfa/0172.out, tests/rdfa/0172.xhtml, tests/rdfa/0173.out,
+	tests/rdfa/0173.xhtml, tests/rdfa/0174.out, tests/rdfa/0174.xhtml,
+	tests/rdfa/Makefile.am:
+	Added unapproved RDFa tests from librdfa upstream test suite:
+	 0172: empty datatype attribute
+	 0173: empty xml:lang attribute on plain literal
+	 0174: single character namespace prefixes
+
+	0172 and 0173 test
+	Issue#0000306 http://bugs.librdf.org/mantis/view.php?id=306
+
+	0174 tests
+	Issue#0000310 http://bugs.librdf.org/mantis/view.php?id=310
+
+	* librdfa/rdfa.c:
+	(start_element): For raptor, turn a NULL language to "" which is
+	what librdfa expects.
+
+	* librdfa/curie.c, librdfa/language.c, librdfa/rdfa.c,
+	librdfa/triple.c:
+	Apply librdfa GIT commits up to
+	5823cb8bffe50fb1b46960f237f7274388cb5f93
+
+	commit 5823cb8bffe50fb1b46960f237f7274388cb5f93
+	    Fixed @property CURIE processing unit tests to match code
+	    updates.
+
+	commit a85d8e9e2e3d28452ad03d1ca64fdd98eed1c180
+	    Fixed CURIE processing bug for TC 174.
+
+	    The bug caused single-character prefixed CURIEs to be processed
+	    incorrectly. Also fixed @property processing to not use reserved
+	    words specified in a very early version of the RDFa spec. Fixed
+	    a small bug related to processing CURIEs that have ':' as the
+	    second character in the URI string.
+
+	commit f384b28bf916a2e0c7a7dbc99101a1a44c301965
+	    Fixed plain literal bug uncovered by TC 172.
+
+	    This bug caused plain literals to not be generated when
+	    datatype="" was specified and when the content inside the element
+	    contained XHTML child nodes.
+
+	* librdfa/language.c:
+	Apply librdfa GIT commit
+	9960791ee4beca8e52e5d3a9766aba73d33f0063
+	    Fixed bug that caused unreviewed TC 173 to partially fail.
+
+	    The currently active language, specified via xml:lang, was not
+	    being cleared when xml:lang="" was specified.
+
+	Related to Redland Issue#0000306
+	http://bugs.librdf.org/mantis/view.php?id=306
+
+2009-11-25  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, src/raptor_abbrev.c: Casts for C++
+
 2009-11-25  Lauri Aalto <laalto@iki.fi>
 
 	* src/raptor_abbrev.c:
@@ -69,8 +131,17 @@
 	* src/turtle_parser.y
 	(main): Terminate parser
 
+<<<<<<< .working
 	* configure.ac: For trunk raptor 1.9.x series update libtool
 	version to 4:0:0 which bumps the soname.
+=======
+	* src/turtle_parser.y
+	(main): Terminate parser
+
+	* src/turtle_lexer.l
+	(main): Init world and namespaces so turtle lexing test does not
+	die.
+>>>>>>> .merge-right.r15728
 
 	* src/raptor_parse.c
 	(raptor_parse_file): Simplify, no need for O_LARGEFILES flag and
