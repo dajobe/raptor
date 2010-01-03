@@ -1,0 +1,6 @@
+*.out
+.deps
+.libs
+TAGS
+raptor_empty_test
+raptor_empty_test.exe

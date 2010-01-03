@@ -1,0 +1,11 @@
+.deps
+.gdb_history
+.libs
+*.lo
+*.o
+rapper
+rapper.exe
+rapper.html
+rdfdiff
+rdfdiff.exe
+TAGS

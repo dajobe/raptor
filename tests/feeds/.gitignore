@@ -1,0 +1,10 @@
+*.log
+old
+test01.atom
+test02.atom
+test03.atom
+test01.ttl
+test02.ttl
+test03.ttl
+test04.ttl
+test05.ttl

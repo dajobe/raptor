@@ -1,0 +1,16 @@
+*.stamp
+html/
+libraptor.html
+raptor-decl-list.txt
+raptor-decl.txt
+raptor-docs.sgml
+raptor-undeclared.txt
+raptor-undocumented.txt
+raptor-unused.txt
+raptor.args
+raptor.hierarchy
+raptor.interfaces
+raptor.prerequisites
+raptor.signals
+version.xml
+xml/
