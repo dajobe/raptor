@@ -23,17 +23,20 @@ dnl
 dnl 
 
 
-AC_INIT(Raptor RDF Parser, 1.9.0, http://bugs.librdf.org/, raptor)
-AC_PREREQ(2.50)
-AC_CONFIG_SRCDIR(src/raptor_general.c)
-AC_REVISION($Revision$)
+AC_PREREQ(2.62)
+AC_INIT(Raptor RDF Parser and Serializer library, 1.9.0, http://bugs.librdf.org/, raptor)
+AC_CONFIG_SRCDIR([src/raptor_general.c])
+AM_CONFIG_HEADER([src/raptor_config.h])
+AC_CONFIG_AUX_DIR(build)
+AC_CONFIG_MACRO_DIR(build)
+AM_INIT_AUTOMAKE([1.11 check-news std-options -Wall])
 
 libxml_min_version=2.6.8
 
 libxslt_min_version=1.0.18
 
-AM_INIT_AUTOMAKE([1.7 check-news std-options -Wall])
-AM_CONFIG_HEADER(src/raptor_config.h)
+AC_REVISION($Revision: $)dnl
+
 AM_MAINTAINER_MODE
 
 release_version=no
@@ -1264,6 +1267,9 @@ abs_top_srcdir=`cd $srcdir; pwd`
 AC_SUBST(abs_top_srcdir)
 abs_top_builddir=`pwd`
 AC_SUBST(abs_top_builddir)
+
+dnl automake 1.11
+AM_SILENT_RULES([no])
 
 AC_CONFIG_FILES([Makefile
 raptor.spec
