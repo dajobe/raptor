@@ -1,4 +1,25 @@
+2010-01-02  Dave Beckett  <dave@dajobe.org>
+
+	* Use AM_SILENT_RULES and move autotools helper files to build/ dir
+
+	Update autogen.sh with latest version; dependent on automake 1.11
+	and it's dependencies to get AM_SILENT_RULES.
+    
+	Update configure.ac to invoke AM_SILENT_RULES defaulting to 'no'.
+
+	* Remove RCS ID
+
+	* Update another .gitignore
+
+	* Add .gitignore to replace SVN properties svn:ignore
+
+2009-11-29  Dave Beckett  <dave@dajobe.org>
+
+	* Merge from raptor 1.4.20 release SVNr15728 to trunk
+
 2009-11-28  Dave Beckett  <dave@dajobe.org>
+
+	* Merge RDFa changes from Raptor branch raptor1 (r15719)
 
 	* Snapshotted raptor_1_4_20 for 1.4.20 release (SVN 15727)
 	
