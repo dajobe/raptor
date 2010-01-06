@@ -67,7 +67,7 @@ extern "C" {
 /* Use gcc 3.1+ feature to allow marking of deprecated API calls.
  * This gives a warning during compiling.
  */
-#if ( __GNUC__ == 3 && __GNUC_MINOR__ > 0 ) || __GNUC__ > 3
+#if( __GNUC__ == 3 && __GNUC_MINOR__ > 0 ) || __GNUC__ > 3
 #ifdef __APPLE_CC__
 /* OSX gcc cpp-precomp is broken */
 #define RAPTOR_DEPRECATED
@@ -2045,7 +2045,7 @@ typedef enum {
    * API is released else binary compatibility will be broken in the
    * #raptor_error_handlers structure - it causes an array to grow.
    */
-  RAPTOR_LOG_LEVEL_LAST=RAPTOR_LOG_LEVEL_WARNING
+  RAPTOR_LOG_LEVEL_LAST = RAPTOR_LOG_LEVEL_WARNING
 } raptor_log_level;
 
 

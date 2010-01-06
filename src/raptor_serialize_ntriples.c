@@ -164,7 +164,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_iostream_write_byte(iostr, '<');
-      term=raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &len);
+      term = raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &len);
       raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, len, '>');
       raptor_iostream_write_byte(iostr, '>');
       break;

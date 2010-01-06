@@ -75,12 +75,12 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
   size_t i;
   const unsigned char *s;
   unsigned char *d;
-  unsigned char *string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  unsigned char *string = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
   
   if(!string)
     return -1;
 
-  for(s=text, d=string, i=0; i<len; s++, i++) {
+  for(s = text, d = string, i = 0; i < len; s++, i++) {
     unsigned char c=*s;
 
     if(c == '\\' ) {
@@ -94,9 +94,9 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         *d++= '\t';
       else if(c == '\\' || c == delim)
         *d++=c;
-      else if (c == 'u' || c == 'U') {
-        size_t ulen=(c == 'u') ? 4 : 8;
-        unsigned long unichar=0;
+      else if(c == 'u' || c == 'U') {
+        size_t ulen = (c == 'u') ? 4 : 8;
+        unsigned long unichar = 0;
         int n;
         
         s++; i++;
@@ -107,7 +107,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           return 1;
         }
         
-        n=sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+        n = sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
         if(n != 1) {
           error_handler(error_data,
                         "Turtle string error - illegal Uncode escape '%c%s...'",
@@ -127,7 +127,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           return 1;
         }
           
-        d+=raptor_unicode_char_to_utf8(unichar, d);
+        d += raptor_unicode_char_to_utf8(unichar, d);
 
       } else {
         /* don't handle \x where x isn't one of: \t \n \r \\ (delim) */

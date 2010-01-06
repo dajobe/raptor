@@ -242,7 +242,7 @@ raptor_dot_serializer_new_node(raptor_world* world,
         break;
         
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-        string=(unsigned char*)RAPTOR_MALLOC(blank,
+        string = (unsigned char*)RAPTOR_MALLOC(blank,
                                              strlen((char*)node_data)+1);
         strcpy((char*)string, (const char*) node_data);
         node->value.blank.string = string;
@@ -342,7 +342,7 @@ raptor_dot_serializer_init(raptor_serializer *serializer, const char *name)
     raptor_new_namespaces_v2(serializer->world,
                              (raptor_simple_message_handler)raptor_serializer_simple_error,
                              serializer, 1);
-  context->namespaces=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_namespace, NULL);
+  context->namespaces = raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_namespace, NULL);
 
   /* We keep a list of nodes to avoid duplication (which isn't
    * critical in graphviz, but why bloat the file?)
@@ -431,7 +431,7 @@ raptor_dot_serializer_write_uri(raptor_serializer* serializer,
       (raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
     const unsigned char* ns_uri_string;
     size_t ns_uri_string_len;
-    ns_uri_string=raptor_uri_as_counted_string_v2(serializer->world, ns->uri, &ns_uri_string_len);
+    ns_uri_string = raptor_uri_as_counted_string_v2(serializer->world, ns->uri, &ns_uri_string_len);
 
     if(!strncmp((char*)full, (char*)ns_uri_string, ns_uri_string_len) ) {
       const unsigned char* prefix = raptor_namespace_get_prefix(ns);
@@ -553,7 +553,7 @@ static int
 raptor_dot_serializer_start(raptor_serializer* serializer)
 {
   raptor_iostream_write_string(serializer->iostream, (const unsigned char *)
-                               "digraph {\n\trankdir=LR;\n\tcharset=\"utf-8\";\n\n");
+                               "digraph {\n\trankdir = LR;\n\tcharset=\"utf-8\";\n\n");
 
   return 0;
 }
@@ -573,11 +573,11 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
       }
       else
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char *)", color=blue");
+                                     (const unsigned char *)", color = blue");
 
       if(serializer->feature_resource_fill) {
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char *)", style=filled, fillcolor=");
+                                     (const unsigned char *)", style = filled, fillcolor=");
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)
                                      serializer->feature_resource_fill);
@@ -594,11 +594,11 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
       }
       else
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char *)", color=green");
+                                     (const unsigned char *)", color = green");
 
       if(serializer->feature_bnode_fill) {
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char *)", style=filled, fillcolor=");
+                                     (const unsigned char *)", style = filled, fillcolor=");
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)serializer->feature_bnode_fill);
       }
@@ -615,7 +615,7 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
       if(serializer->feature_literal_fill) {
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char *)", style=filled, fillcolor=");
+                                     (const unsigned char *)", style = filled, fillcolor=");
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)serializer->feature_literal_fill);
       }
@@ -638,7 +638,7 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 static int
 raptor_dot_serializer_end(raptor_serializer* serializer)
 {
-  raptor_dot_context* context=(raptor_dot_context*)serializer->context;
+  raptor_dot_context* context = (raptor_dot_context*)serializer->context;
   raptor_dot_serializer_node* node;
   int i;
 
@@ -656,7 +656,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
     raptor_dot_serializer_write_node(serializer, node->value.resource.uri,
                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE, NULL, NULL);
     raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char *)"\", shape=ellipse");
+                                 (const unsigned char *)"\", shape = ellipse");
     raptor_dot_serializer_write_colors(serializer,
                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE);
     raptor_iostream_write_string(serializer->iostream,
@@ -676,7 +676,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\" [ label=\"");
     raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char *)"\", shape=circle");
+                                 (const unsigned char *)"\", shape = circle");
     raptor_dot_serializer_write_colors(serializer,
                                        RAPTOR_IDENTIFIER_TYPE_ANONYMOUS);
     raptor_iostream_write_string(serializer->iostream,
@@ -701,7 +701,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
                                      node->value.literal.datatype,
                                      node->value.literal.language);
     raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char *)"\", shape=record");
+                                 (const unsigned char *)"\", shape = record");
     raptor_dot_serializer_write_colors(serializer,
                                        RAPTOR_IDENTIFIER_TYPE_LITERAL);
     raptor_iostream_write_string(serializer->iostream,
@@ -755,7 +755,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
 static void
 raptor_dot_serializer_terminate(raptor_serializer* serializer)
 {
-  /* raptor_dot_context* context=(raptor_dot_context*)serializer->context; */
+  /* raptor_dot_context* context = (raptor_dot_context*)serializer->context; */
 
   /* Everything should have been freed in raptor_dot_serializer_end */
 }

@@ -55,7 +55,7 @@ static int
 Err (char *name, char *mess, int c)		/* returns '?' */
 {
   optopt = c;
-  if (opterr)
+  if(opterr)
     {
       (void) fprintf (stderr, "%s: %s -- %c\n", name, mess, c);
     }
@@ -79,7 +79,7 @@ getopt (int argc, char * const argv[], const char *optstring)
   optarg = NULL;
 
   /* initialise getopt vars */
-  if (optind == 0)
+  if(optind == 0)
     {
       optind = 1;
       opterr = 1;
@@ -87,14 +87,14 @@ getopt (int argc, char * const argv[], const char *optstring)
       optarg = NULL;
     }
 
-  if (sp == 1)
+  if(sp == 1)
     {				/* fresh argument */
-      if (optind >= argc	/* no more arguments */
+      if(optind >= argc	/* no more arguments */
 	  || argv[optind][0] != '-'	/* no more options */
 	  || argv[optind][1] == '\0'	/* not option; stdin */
 	)
 	return EOF;
-      else if (strcmp (argv[optind], "--") == 0)
+      else if(strcmp (argv[optind], "--") == 0)
 	{
 	  ++optind;		/* skip over "--" */
 	  return EOF;		/* "--" marks end of options */
@@ -107,34 +107,34 @@ getopt (int argc, char * const argv[], const char *optstring)
 #ifndef STRICT
   oind = optind;		/* save optind for param test */
 #endif
-  if (argv[optind][sp] == '\0')
+  if(argv[optind][sp] == '\0')
     {				/* end of argument */
       ++optind;			/* get ready for next try */
       sp = 1;			/* beginning of next argument */
     }
 
-  if (c == ':' 
+  if(c == ':' 
       || c == '?'	/* optstring syntax conflict */
       || (cp = strchr (optstring, c)) == NULL) /* not found */
     {
       return Err (argv[0], "illegal option", c);
     }
 
-  if (cp[1] == ':')
+  if(cp[1] == ':')
     {				/* option takes parameter */
 #ifdef STRICT
-      if (osp != 1)
+      if(osp != 1)
 	{
 	  return Err (argv[0], "option must not be clustered", c);
 	}
 
       /* reset by end of argument */
-      if (sp != 1)
+      if(sp != 1)
 	{
 	  return Err (argv[0], "option must be followed by white space", c);
 	}
 #else
-      if (oind == optind)
+      if(oind == optind)
 	{			/* argument w/o whitespace */
 	  optarg = &argv[optind][sp];
 	  sp = 1;		/* beginning of next argument */
@@ -142,7 +142,7 @@ getopt (int argc, char * const argv[], const char *optstring)
 
       else
 #endif
-      if (optind >= argc)
+      if(optind >= argc)
 	{
 	  return Err (argv[0], "option requires an argument", c);
 	}

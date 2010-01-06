@@ -245,9 +245,9 @@ sec_fraction_part: '.' tUNUMBER {
 
 zonepart_numeric_without_colon: tSNUMBER {
 		/* format: [+-]hhmm */
-		if ($1 <= -100 || $1 >= 100) {
+		if($1 <= -100 || $1 >= 100) {
 			((struct date_yy *)parm)->yyTimezone = (-$1 / 100) * 60 + (-$1 % 100);
-		} else if ($1 >= -99 || $1 <= 99) {
+		} else if($1 >= -99 || $1 <= 99) {
 			((struct date_yy *)parm)->yyTimezone = -$1 * 60;
 		}
 	}
@@ -335,7 +335,7 @@ date	: tUNUMBER '/' tUNUMBER {
 	     The goal in recognizing YYYY/MM/DD is solely to support legacy
 	     machine-generated dates like those in an RCS log listing.  If
 	     you want portability, use the ISO 8601 format.  */
-	  if ($1 >= 1000)
+	  if($1 >= 1000)
 	    {
 	      ((struct date_yy *)parm)->yyYear = $1;
 	      ((struct date_yy *)parm)->yyMonth = $3;
@@ -365,7 +365,7 @@ date	: tUNUMBER '/' tUNUMBER {
 	}
 	| tMONTH tUNUMBER {
 	    ((struct date_yy *)parm)->yyMonth = $1;
-	    if ($2 > 1000) {
+	    if($2 > 1000) {
 		((struct date_yy *)parm)->yyYear = $2;
 	    } else {
 		((struct date_yy *)parm)->yyDay = $2;
@@ -378,7 +378,7 @@ date	: tUNUMBER '/' tUNUMBER {
 	}
 	| tUNUMBER tMONTH {
 	    ((struct date_yy *)parm)->yyMonth = $2;
-	    if ($1 > 1000) {
+	    if($1 > 1000) {
 		((struct date_yy *)parm)->yyYear = $1;
 	    } else {
 		((struct date_yy *)parm)->yyDay = $1;
@@ -395,14 +395,14 @@ iso8601datetime: iso8601date tTZONE iso8601time
 	| tUNUMBER tTZONE iso8601time {
 		int i = $1;
 
-		if (i >= 10000) {
+		if(i >= 10000) {
 			/* format: yyyymmdd */
 			((struct date_yy *)parm)->yyYear = i / 10000;
 			i %= 10000;
 			((struct date_yy *)parm)->yyMonth = i / 100;
 			i %= 100;
 			((struct date_yy *)parm)->yyDay = i;
-		} else if (i >= 1000 && i <= 9999) {
+		} else if(i >= 1000 && i <= 9999) {
 			/* format: yyyy */
 			((struct date_yy *)parm)->yyYear = i;
 			((struct date_yy *)parm)->yyDay= 1;
@@ -448,18 +448,18 @@ iso8601time:
 	| tUNUMBER sec_fraction_part iso8601zonepart {
 		int i = $1;
 
-		if (i <= -100000 || i >= 100000) {
+		if(i <= -100000 || i >= 100000) {
 			((struct date_yy *)parm)->yyHour = i / 10000;
 			i %= 10000;
 			((struct date_yy *)parm)->yyMinutes = i / 100;
 			i %= 100;
 	    	((struct date_yy *)parm)->yySeconds = i;
-		} else if (i <= -1000 || i >= 1000) {
+		} else if(i <= -1000 || i >= 1000) {
 			((struct date_yy *)parm)->yyHour = i / 100;
 			i %= 100;
 			((struct date_yy *)parm)->yyMinutes = i;
 	    	((struct date_yy *)parm)->yySeconds = 0;
-		} else if (i >= -99 || i <= 99) {
+		} else if(i >= -99 || i <= 99) {
 			((struct date_yy *)parm)->yyHour = $1;
 			((struct date_yy *)parm)->yyMinutes = 0;
 	    	((struct date_yy *)parm)->yySeconds = 0;
@@ -545,13 +545,13 @@ relunit	: tUNUMBER tYEAR_UNIT {
 
 number	: tUNUMBER
           {
-	    if (((struct date_yy *)parm)->yyHaveTime && 
+	    if(((struct date_yy *)parm)->yyHaveTime && 
 			((struct date_yy *)parm)->yyHaveDate && 
 			!((struct date_yy *)parm)->yyHaveRel)
 	      ((struct date_yy *)parm)->yyYear = $1;
 	    else
 	      {
-		if ($1>10000)
+		if($1 > 10000)
 		  {
 		    ((struct date_yy *)parm)->yyHaveDate++;
 		    ((struct date_yy *)parm)->yyDay= ($1)%100;
@@ -561,7 +561,7 @@ number	: tUNUMBER
 		else
 		  {
 		    ((struct date_yy *)parm)->yyHaveTime++;
-		    if ($1 < 100)
+		    if($1 < 100)
 		      {
 			((struct date_yy *)parm)->yyHour = $1;
 			((struct date_yy *)parm)->yyMinutes = 0;
@@ -791,19 +791,19 @@ ToHour(int Hours, MERIDIAN Meridian)
   switch (Meridian)
     {
     case MER24:
-      if (Hours < 0 || Hours > 23)
+      if(Hours < 0 || Hours > 23)
 	return -1;
       return Hours;
     case MERam:
-      if (Hours < 1 || Hours > 12)
+      if(Hours < 1 || Hours > 12)
 	return -1;
-      if (Hours == 12)
+      if(Hours == 12)
 	Hours = 0;
       return Hours;
     case MERpm:
-      if (Hours < 1 || Hours > 12)
+      if(Hours < 1 || Hours > 12)
 	return -1;
-      if (Hours == 12)
+      if(Hours == 12)
 	Hours = 0;
       return Hours + 12;
     default:
@@ -819,14 +819,14 @@ ToHour(int Hours, MERIDIAN Meridian)
 static int
 ToYear(int Year)
 {
-  if (Year < 0)
+  if(Year < 0)
     Year = -Year;
 
   /* XPG4 suggests that years 00-68 map to 2000-2068, and
      years 69-99 map to 1969-1999.  */
-  if (Year < 69)
+  if(Year < 69)
     Year += 2000;
-  else if (Year < 100)
+  else if(Year < 100)
     Year += 1900;
 
   return Year;
@@ -842,25 +842,25 @@ LookupWord (YYSTYPE *lvalp, char *buff)
   int abbrev;
 
   /* Make it lowercase. */
-  for (p = buff; *p; p++)
-    if (ISUPPER ((unsigned char) *p))
+  for(p = buff; *p; p++)
+    if(ISUPPER ((unsigned char) *p))
       *p = tolower (*p);
 
-  if (strcmp (buff, "am") == 0 || strcmp (buff, "a.m.") == 0)
+  if(strcmp (buff, "am") == 0 || strcmp (buff, "a.m.") == 0)
     {
       lvalp->Meridian = MERam;
       return tMERIDIAN;
     }
-  if (strcmp (buff, "pm") == 0 || strcmp (buff, "p.m.") == 0)
+  if(strcmp (buff, "pm") == 0 || strcmp (buff, "p.m.") == 0)
     {
       lvalp->Meridian = MERpm;
       return tMERIDIAN;
     }
 
   /* See if we have an abbreviation for a month. */
-  if (strlen (buff) == 3)
+  if(strlen (buff) == 3)
     abbrev = 1;
-  else if (strlen (buff) == 4 && buff[3] == '.')
+  else if(strlen (buff) == 4 && buff[3] == '.')
     {
       abbrev = 1;
       buff[3] = '\0';
@@ -868,35 +868,35 @@ LookupWord (YYSTYPE *lvalp, char *buff)
   else
     abbrev = 0;
 
-  for (tp = MonthDayTable; tp->name; tp++)
+  for(tp = MonthDayTable; tp->name; tp++)
     {
-      if (abbrev)
+      if(abbrev)
 	{
-	  if (strncmp (buff, tp->name, 3) == 0)
+	  if(strncmp (buff, tp->name, 3) == 0)
 	    {
 	      lvalp->Number = tp->value;
 	      return tp->type;
 	    }
 	}
-      else if (strcmp (buff, tp->name) == 0)
+      else if(strcmp (buff, tp->name) == 0)
 	{
 	  lvalp->Number = tp->value;
 	  return tp->type;
 	}
     }
 
-  for (tp = TimezoneTable; tp->name; tp++)
-    if (strcmp (buff, tp->name) == 0)
+  for(tp = TimezoneTable; tp->name; tp++)
+    if(strcmp (buff, tp->name) == 0)
       {
 	lvalp->Number = tp->value;
 	return tp->type;
       }
 
-  if (strcmp (buff, "dst") == 0)
+  if(strcmp (buff, "dst") == 0)
     return tDST;
 
-  for (tp = UnitsTable; tp->name; tp++)
-    if (strcmp (buff, tp->name) == 0)
+  for(tp = UnitsTable; tp->name; tp++)
+    if(strcmp (buff, tp->name) == 0)
       {
 	lvalp->Number = tp->value;
 	return tp->type;
@@ -904,11 +904,11 @@ LookupWord (YYSTYPE *lvalp, char *buff)
 
   /* Strip off any plural and try the units table again. */
   i = strlen (buff) - 1;
-  if (buff[i] == 's')
+  if(buff[i] == 's')
     {
       buff[i] = '\0';
-      for (tp = UnitsTable; tp->name; tp++)
-	if (strcmp (buff, tp->name) == 0)
+      for(tp = UnitsTable; tp->name; tp++)
+	if(strcmp (buff, tp->name) == 0)
 	  {
 	    lvalp->Number = tp->value;
 	    return tp->type;
@@ -916,18 +916,18 @@ LookupWord (YYSTYPE *lvalp, char *buff)
       buff[i] = 's';		/* Put back for "this" in OtherTable. */
     }
 
-  for (tp = OtherTable; tp->name; tp++)
-    if (strcmp (buff, tp->name) == 0)
+  for(tp = OtherTable; tp->name; tp++)
+    if(strcmp (buff, tp->name) == 0)
       {
 	lvalp->Number = tp->value;
 	return tp->type;
       }
 
   /* Military timezones. */
-  if (buff[1] == '\0' && ISALPHA ((unsigned char) *buff))
+  if(buff[1] == '\0' && ISALPHA ((unsigned char) *buff))
     {
-      for (tp = MilitaryTable; tp->name; tp++)
-	if (strcmp (buff, tp->name) == 0)
+      for(tp = MilitaryTable; tp->name; tp++)
+	if(strcmp (buff, tp->name) == 0)
 	  {
 	    lvalp->Number = tp->value;
 	    return tp->type;
@@ -935,15 +935,15 @@ LookupWord (YYSTYPE *lvalp, char *buff)
     }
 
   /* Drop out any periods and try the timezone table again. */
-  for (i = 0, p = q = buff; *q; q++)
-    if (*q != '.')
+  for(i = 0, p = q = buff; *q; q++)
+    if(*q != '.')
       *p++ = *q;
     else
       i++;
   *p = '\0';
-  if (i)
-    for (tp = TimezoneTable; tp->name; tp++)
-      if (strcmp (buff, tp->name) == 0)
+  if(i)
+    for(tp = TimezoneTable; tp->name; tp++)
+      if(strcmp (buff, tp->name) == 0)
 	{
 	  lvalp->Number = tp->value;
 	  return tp->type;
@@ -961,32 +961,32 @@ int yylex(YYSTYPE *lvalp, void *parm)
   int sign;
   struct date_yy * date = (struct date_yy *)parm;
 
-  for (;;)
+  for(;;)
     {
-      while (ISSPACE ((unsigned char) *date->yyInput))
+      while(ISSPACE ((unsigned char) *date->yyInput))
 	date->yyInput++;
 
-      if (ISDIGIT (c = *date->yyInput) || c == '-' || c == '+')
+      if(ISDIGIT (c = *date->yyInput) || c == '-' || c == '+')
 	{
-	  if (c == '-' || c == '+')
+	  if(c == '-' || c == '+')
 	    {
 	      sign = c == '-' ? -1 : 1;
-	      if (!ISDIGIT (*++date->yyInput))
+	      if(!ISDIGIT (*++date->yyInput))
 		/* skip the '-' sign */
 		continue;
 	    }
 	  else
 	    sign = 0;
-	  for (lvalp->Number = 0; ISDIGIT (c = *date->yyInput++);)
+	  for(lvalp->Number = 0; ISDIGIT (c = *date->yyInput++);)
 	    lvalp->Number = 10 * lvalp->Number + c - '0';
 	  date->yyInput--;
-	  if (sign < 0)
+	  if(sign < 0)
 	    lvalp->Number = -lvalp->Number;
 	  /* Ignore ordinal suffixes on numbers */
 	  c = *date->yyInput;
-	  if (c == 's' || c == 'n' || c == 'r' || c == 't') {
+	  if(c == 's' || c == 'n' || c == 'r' || c == 't') {
 	    c = *++date->yyInput;
-	    if (c == 't' || c == 'd' || c == 'h') {
+	    if(c == 't' || c == 'd' || c == 'h') {
 	      date->yyInput++;
 	    } else {
 	      date->yyInput--;
@@ -994,29 +994,29 @@ int yylex(YYSTYPE *lvalp, void *parm)
 	  }
 	  return sign ? tSNUMBER : tUNUMBER;
 	}
-      if (ISALPHA (c))
+      if(ISALPHA (c))
 	{
-	  for (p = buff; (c = *date->yyInput++, ISALPHA (c)) || c == '.';)
-	    if (p < &buff[sizeof buff - 1])
+	  for(p = buff; (c = *date->yyInput++, ISALPHA (c)) || c == '.';)
+	    if(p < &buff[sizeof buff - 1])
 	      *p++ = c;
 	  *p = '\0';
 	  date->yyInput--;
 	  return LookupWord (lvalp, buff);
 	}
-      if (c != '(')
+      if(c != '(')
 	return *date->yyInput++;
       Count = 0;
       do
 	{
 	  c = *date->yyInput++;
-	  if (c == '\0')
+	  if(c == '\0')
 	    return c;
-	  if (c == '(')
+	  if(c == '(')
 	    Count++;
-	  else if (c == ')')
+	  else if(c == ')')
 	    Count--;
 	}
-      while (Count > 0);
+      while(Count > 0);
     }
 }
 
@@ -1052,7 +1052,7 @@ time_t raptor_parse_date(const char *p, time_t *now)
   date.yyInput = p;
   Start = now ? *now : time ((time_t *) NULL);
   tmp = localtime (&Start);
-  if (!tmp)
+  if(!tmp)
     return -1;
   date.yyYear = tmp->tm_year + TM_YEAR_ORIGIN;
   date.yyMonth = tmp->tm_mon + 1;
@@ -1074,7 +1074,7 @@ time_t raptor_parse_date(const char *p, time_t *now)
   date.yyHaveTime = 0;
   date.yyHaveZone = 0;
 
-  if (yyparse ((void *)&date)
+  if(yyparse ((void *)&date)
       || date.yyHaveTime > 1 || date.yyHaveZone > 1 
 	  || date.yyHaveDate > 1 || date.yyHaveDay > 1) {
     return -1;
@@ -1082,10 +1082,10 @@ time_t raptor_parse_date(const char *p, time_t *now)
   tm.tm_year = ToYear (date.yyYear) - TM_YEAR_ORIGIN + date.yyRelYear;
   tm.tm_mon = date.yyMonth - 1 + date.yyRelMonth;
   tm.tm_mday = date.yyDay + date.yyRelDay;
-  if (date.yyHaveTime || (date.yyHaveRel && !date.yyHaveDate && !date.yyHaveDay))
+  if(date.yyHaveTime || (date.yyHaveRel && !date.yyHaveDate && !date.yyHaveDay))
     {
       tm.tm_hour = ToHour (date.yyHour, date.yyMeridian);
-      if (tm.tm_hour < 0)
+      if(tm.tm_hour < 0)
 	return -1;
       tm.tm_min = date.yyMinutes;
       tm.tm_sec = date.yySeconds;
@@ -1100,14 +1100,14 @@ time_t raptor_parse_date(const char *p, time_t *now)
 
   /* Let mktime deduce tm_isdst if we have an absolute timestamp,
      or if the relative timestamp mentions days, months, or years.  */
-  if (date.yyHaveDate | date.yyHaveDay | date.yyHaveTime | date.yyRelDay | date.yyRelMonth | date.yyRelYear)
+  if(date.yyHaveDate | date.yyHaveDay | date.yyHaveTime | date.yyRelDay | date.yyRelMonth | date.yyRelYear)
     tm.tm_isdst = -1;
 
   tm0 = tm;
 
   Start = mktime (&tm);
 
-  if (Start == (time_t) -1)
+  if(Start == (time_t) -1)
     {
 
       /* Guard against falsely reporting errors near the time_t boundaries
@@ -1118,10 +1118,10 @@ time_t raptor_parse_date(const char *p, time_t *now)
          we apply mktime to 1970-01-02 08:00:00 instead and adjust the time
          zone by 24 hours to compensate.  This algorithm assumes that
          there is no DST transition within a day of the time_t boundaries.  */
-      if (date.yyHaveZone)
+      if(date.yyHaveZone)
 	{
 	  tm = tm0;
-	  if (tm.tm_year <= EPOCH - TM_YEAR_ORIGIN)
+	  if(tm.tm_year <= EPOCH - TM_YEAR_ORIGIN)
 	    {
 	      tm.tm_mday++;
 	      date.yyTimezone -= 24 * 60;
@@ -1134,28 +1134,28 @@ time_t raptor_parse_date(const char *p, time_t *now)
 	  Start = mktime (&tm);
 	}
 
-      if (Start == (time_t) -1)
+      if(Start == (time_t) -1)
 	return Start;
     }
 
-  if (date.yyHaveDay && !date.yyHaveDate)
+  if(date.yyHaveDay && !date.yyHaveDate)
     {
       tm.tm_mday += ((date.yyDayNumber - tm.tm_wday + 7) % 7
 		     + 7 * (date.yyDayOrdinal - (0 < date.yyDayOrdinal)));
       Start = mktime (&tm);
-      if (Start == (time_t) -1)
+      if(Start == (time_t) -1)
 	return Start;
     }
 
-  if (date.yyHaveZone)
+  if(date.yyHaveZone)
     {
       long delta;
       struct tm *gmt = gmtime (&Start);
-      if (!gmt)
+      if(!gmt)
 	return -1;
       delta = date.yyTimezone * 60L + difftm (&tm, gmt);
 
-      if ((Start + delta < Start) != (delta < 0))
+      if((Start + delta < Start) != (delta < 0))
 	return -1;		/* time_t overflow */
       Start += delta;
     }

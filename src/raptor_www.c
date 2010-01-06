@@ -54,8 +54,8 @@ static int raptor_www_file_fetch(raptor_www* www);
 
 #ifndef RAPTOR_DISABLE_V1
 /* should raptor_www do initializing and cleanup of the WWW library */
-static int raptor_www_skip_www_init_finish=0;
-static int raptor_www_initialized=0;
+static int raptor_www_skip_www_init_finish = 0;
+static int raptor_www_initialized = 0;
 #endif
 
 
@@ -270,24 +270,24 @@ raptor_www_new_with_connection(void *connection)
 raptor_www* 
 raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
 {
-  raptor_www* www=(raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(raptor_www));
+  raptor_www* www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(raptor_www));
   if(!www)
     return NULL;
 
-  www->world=world;  
-  www->type=NULL;
-  www->free_type=1; /* default is to free content type */
-  www->total_bytes=0;
-  www->failed=0;
-  www->status_code=0;
-  www->write_bytes=NULL;
-  www->content_type=NULL;
-  www->uri_filter=NULL;
-  www->connection_timeout=10;
-  www->cache_control=NULL;
+  www->world = world;  
+  www->type = NULL;
+  www->free_type = 1; /* default is to free content type */
+  www->total_bytes = 0;
+  www->failed = 0;
+  www->status_code = 0;
+  www->write_bytes = NULL;
+  www->content_type = NULL;
+  www->uri_filter = NULL;
+  www->connection_timeout = 10;
+  www->cache_control = NULL;
 
 #ifdef RAPTOR_WWW_LIBCURL
-  www->curl_handle=(CURL*)connection;
+  www->curl_handle = (CURL*)connection;
   raptor_www_curl_init(www);
 #endif
 #ifdef RAPTOR_WWW_LIBXML
@@ -351,27 +351,27 @@ raptor_www_free(raptor_www* www)
   if(www->type) {
     if(www->free_type)
       RAPTOR_FREE(cstring, www->type);
-    www->type=NULL;
+    www->type = NULL;
   }
   
   if(www->user_agent) {
     RAPTOR_FREE(cstring, www->user_agent);
-    www->user_agent=NULL;
+    www->user_agent = NULL;
   }
 
   if(www->cache_control) {
     RAPTOR_FREE(cstring, www->cache_control);
-    www->cache_control=NULL;
+    www->cache_control = NULL;
   }
 
   if(www->proxy) {
     RAPTOR_FREE(cstring, www->proxy);
-    www->proxy=NULL;
+    www->proxy = NULL;
   }
 
   if(www->http_accept) {
     RAPTOR_FREE(cstring, www->http_accept);
-    www->http_accept=NULL;
+    www->http_accept = NULL;
   }
 
 #ifdef RAPTOR_WWW_LIBCURL
@@ -411,8 +411,8 @@ raptor_www_set_error_handler(raptor_www* www,
                              raptor_message_handler error_handler,
                              void *error_data)
 {
-  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data=error_data;
-  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler=error_handler;
+  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data = error_data;
+  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler = error_handler;
 }
 
 
@@ -430,8 +430,8 @@ raptor_www_set_write_bytes_handler(raptor_www* www,
                                    raptor_www_write_bytes_handler handler, 
                                    void *user_data)
 {
-  www->write_bytes=handler;
-  www->write_bytes_userdata=user_data;
+  www->write_bytes = handler;
+  www->write_bytes_userdata = user_data;
 }
 
 
@@ -452,8 +452,8 @@ raptor_www_set_content_type_handler(raptor_www* www,
                                     raptor_www_content_type_handler handler, 
                                     void *user_data)
 {
-  www->content_type=handler;
-  www->content_type_userdata=user_data;
+  www->content_type = handler;
+  www->content_type_userdata = user_data;
 }
 
 
@@ -467,19 +467,19 @@ raptor_www_set_content_type_handler(raptor_www* www,
 void
 raptor_www_set_user_agent(raptor_www* www, const char *user_agent)
 {
-  char *ua_copy=NULL;
+  char *ua_copy = NULL;
 
   if(!user_agent || !*user_agent) {
-    www->user_agent=NULL;
+    www->user_agent = NULL;
     return;
   }
   
-  ua_copy=(char*)RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
+  ua_copy = (char*)RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
   if(!ua_copy)
     return;
   strcpy(ua_copy, user_agent);
   
-  www->user_agent=ua_copy;
+  www->user_agent = ua_copy;
 }
 
 
@@ -500,12 +500,12 @@ raptor_www_set_proxy(raptor_www* www, const char *proxy)
   if(!proxy)
     return;
   
-  proxy_copy=(char*)RAPTOR_MALLOC(cstring, strlen(proxy)+1);
+  proxy_copy = (char*)RAPTOR_MALLOC(cstring, strlen(proxy)+1);
   if(!proxy_copy)
     return;
   strcpy(proxy_copy, proxy);
   
-  www->proxy=proxy_copy;
+  www->proxy = proxy_copy;
 }
 
 
@@ -521,18 +521,18 @@ void
 raptor_www_set_http_accept(raptor_www* www, const char *value)
 {
   char *value_copy;
-  size_t len=8; /* strlen("Accept:")+1 */
+  size_t len = 8; /* strlen("Accept:")+1 */
   
   if(value)
-    len+=1+strlen(value); /* " "+value */
+    len += 1+strlen(value); /* " "+value */
   
-  value_copy=(char*)RAPTOR_MALLOC(cstring, len);
+  value_copy = (char*)RAPTOR_MALLOC(cstring, len);
   if(!value_copy)
     return;
-  www->http_accept=value_copy;
+  www->http_accept = value_copy;
 
   strcpy(value_copy, "Accept:");
-  value_copy+=7;
+  value_copy += 7;
   if(value) {
     *value_copy++=' ';
     strcpy(value_copy, value);
@@ -554,7 +554,7 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
 void
 raptor_www_set_connection_timeout(raptor_www* www, int timeout)
 {
-  www->connection_timeout=timeout;
+  www->connection_timeout = timeout;
 }
 
 
@@ -575,28 +575,28 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
 {
   char *cache_control_copy;
   const char* const header="Cache-Control:";
-  const size_t header_len=14; /* strlen("Cache-Control:") */
+  const size_t header_len = 14; /* strlen("Cache-Control:") */
   size_t len;
   
   RAPTOR_ASSERT((strlen(header) != header_len), "Cache-Control header length is wrong");
 
   if(www->cache_control) {
     RAPTOR_FREE(cstring, www->cache_control);
-    www->cache_control=NULL;
+    www->cache_control = NULL;
   }
 
   if(!cache_control) {
-    www->cache_control=NULL;
+    www->cache_control = NULL;
     return 0;
   }
   
-  len=header_len + 1 +strlen(cache_control) + 1; /* header+" "+cache_control+"\0" */
+  len = header_len + 1 +strlen(cache_control) + 1; /* header+" "+cache_control+"\0" */
   
-  cache_control_copy=(char*)RAPTOR_MALLOC(cstring, len);
+  cache_control_copy = (char*)RAPTOR_MALLOC(cstring, len);
   if(!cache_control_copy)
     return 1;
   
-  www->cache_control=cache_control_copy;
+  www->cache_control = cache_control_copy;
 
   strncpy(cache_control_copy, header, header_len);
   cache_control_copy+= header_len;
@@ -626,8 +626,8 @@ raptor_www_set_uri_filter(raptor_www* www,
                           raptor_uri_filter_func filter,
                           void *user_data)
 {
-  www->uri_filter=filter;
-  www->uri_filter_user_data=user_data;
+  www->uri_filter = filter;
+  www->uri_filter_user_data = user_data;
 }
 
 
@@ -680,7 +680,7 @@ raptor_www_get_connection(raptor_www* www)
 void
 raptor_www_abort(raptor_www* www, const char *reason)
 {
-  www->failed=1;
+  www->failed = 1;
 }
 
 
@@ -708,7 +708,7 @@ raptor_www_file_handle_fetch(raptor_www* www, FILE* fh)
   unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE+1];
   
   while(!feof(fh)) {
-    int len=fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
+    int len = fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
     if(len > 0) {
       www->total_bytes += len;
       buffer[len]='\0';
@@ -722,7 +722,7 @@ raptor_www_file_handle_fetch(raptor_www* www, FILE* fh)
   }
   
   if(!www->failed)
-    www->status_code=200;
+    www->status_code = 200;
   
   return www->failed;
 }
@@ -733,14 +733,14 @@ raptor_www_file_fetch(raptor_www* www)
 {
   char *filename;
   FILE *fh;
-  unsigned char *uri_string=raptor_uri_as_string_v2(www->world, www->uri);
+  unsigned char *uri_string = raptor_uri_as_string_v2(www->world, www->uri);
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   struct stat buf;
 #endif
   
-  www->status_code=200;
+  www->status_code = 200;
 
-  filename=raptor_uri_uri_string_to_filename(uri_string);
+  filename = raptor_uri_uri_string_to_filename(uri_string);
   if(!filename) {
     raptor_www_error(www, "Not a file: URI");
     return 1;
@@ -750,18 +750,18 @@ raptor_www_file_fetch(raptor_www* www)
   if(!stat(filename, &buf) && S_ISDIR(buf.st_mode)) {
     raptor_www_error(www, "Cannot read from a directory '%s'", filename);
     RAPTOR_FREE(cstring, filename);
-    www->status_code=404;
+    www->status_code = 404;
     return 1;
   }
 #endif
 
-  fh=fopen(filename, "rb");
+  fh = fopen(filename, "rb");
   if(!fh) {
     raptor_www_error(www, "file '%s' open failed - %s",
                      filename, strerror(errno));
     RAPTOR_FREE(cstring, filename);
-    www->status_code=(errno == EACCES) ? 403: 404;
-    www->failed=1;
+    www->status_code = (errno == EACCES) ? 403: 404;
+    www->failed = 1;
     
     return www->failed;
   }
@@ -787,11 +787,11 @@ raptor_www_file_fetch(raptor_www* www)
 int
 raptor_www_fetch(raptor_www *www, raptor_uri *uri) 
 {
-  int status=1;
+  int status = 1;
   
-  www->uri=raptor_new_uri_for_retrieval_v2(www->world, uri);
+  www->uri = raptor_new_uri_for_retrieval_v2(www->world, uri);
   
-  www->locator.uri=uri;
+  www->locator.uri = uri;
   www->locator.line= -1;
   www->locator.column= -1;
 
@@ -800,22 +800,22 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
       return status;
   
 #ifdef RAPTOR_WWW_NONE
-  status=raptor_www_file_fetch(www);
+  status = raptor_www_file_fetch(www);
 #else
 
   if(raptor_uri_uri_string_is_file_uri(raptor_uri_as_string_v2(www->world, www->uri)))
-    status=raptor_www_file_fetch(www);
+    status = raptor_www_file_fetch(www);
   else {
 #ifdef RAPTOR_WWW_LIBCURL
-    status=raptor_www_curl_fetch(www);
+    status = raptor_www_curl_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBXML
-    status=raptor_www_libxml_fetch(www);
+    status = raptor_www_libxml_fetch(www);
 #endif
 
 #ifdef RAPTOR_WWW_LIBFETCH
-    status=raptor_www_libfetch_fetch(www);
+    status = raptor_www_libfetch_fetch(www);
 #endif
   }
   
@@ -823,10 +823,10 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   if(!status && www->status_code && www->status_code != 200){
     raptor_www_error(www, "Resolving URI failed with HTTP status %d",
                      www->status_code);
-    status=1;
+    status = 1;
   }
 
-  www->failed=status;
+  www->failed = status;
   
   return www->failed;
 }
@@ -837,8 +837,8 @@ raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
                                        const void *ptr, size_t size,
                                        size_t nmemb)
 {
-  raptor_stringbuffer* sb=(raptor_stringbuffer*)userdata;
-  int len=size*nmemb;
+  raptor_stringbuffer* sb = (raptor_stringbuffer*)userdata;
+  int len = size*nmemb;
 
   raptor_stringbuffer_append_counted_string(sb, (unsigned char*)ptr, len, 1);
 }
@@ -866,28 +866,28 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
                            void **string_p, size_t *length_p,
                            void *(*malloc_handler)(size_t size))
 {
-  raptor_stringbuffer *sb=NULL;
-  void *str=NULL;
+  raptor_stringbuffer *sb = NULL;
+  void *str = NULL;
   raptor_www_write_bytes_handler saved_write_bytes;
   void *saved_write_bytes_userdata;
   
-  sb=raptor_new_stringbuffer();
+  sb = raptor_new_stringbuffer();
   if(!sb)
     return 1;
 
   if(length_p)
     *length_p=0;
 
-  saved_write_bytes=www->write_bytes;
-  saved_write_bytes_userdata=www->write_bytes_userdata;
+  saved_write_bytes = www->write_bytes;
+  saved_write_bytes_userdata = www->write_bytes_userdata;
   raptor_www_set_write_bytes_handler(www, raptor_www_fetch_to_string_write_bytes, sb);
 
   if(raptor_www_fetch(www, uri))
-    str=NULL;
+    str = NULL;
   else {
-    size_t len=raptor_stringbuffer_length(sb);
+    size_t len = raptor_stringbuffer_length(sb);
     if(len) {
-      str=(void*)malloc_handler(len+1);
+      str = (void*)malloc_handler(len+1);
       if(str) {
         raptor_stringbuffer_copy_to_string(sb, (unsigned char*)str, len+1);
         *string_p=str;
@@ -940,6 +940,6 @@ raptor_www_set_final_uri_handler(raptor_www* www,
                                  raptor_www_final_uri_handler handler, 
                                  void *user_data)
 {
-  www->final_uri_handler=handler;
-  www->final_uri_userdata=user_data;
+  www->final_uri_handler = handler;
+  www->final_uri_userdata = user_data;
 }

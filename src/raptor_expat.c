@@ -53,7 +53,7 @@
 void
 raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
 {
-  XML_Parser xp=XML_ParserCreate(NULL);
+  XML_Parser xp = XML_ParserCreate(NULL);
 
   /* create a new parser in the specified encoding */
   XML_SetUserData(xp, sax2);
@@ -75,7 +75,7 @@ raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri)
 
   XML_SetExternalEntityRefHandler(xp, (XML_ExternalEntityRefHandler)raptor_sax2_external_entity_ref);
 
-  sax2->xp=xp;
+  sax2->xp = xp;
 }
 
 
@@ -83,9 +83,9 @@ void
 raptor_expat_update_document_locator(raptor_sax2* sax2,
                                      raptor_locator* locator)
 {
-  locator->line=XML_GetCurrentLineNumber(sax2->xp);
-  locator->column=XML_GetCurrentColumnNumber(sax2->xp);
-  locator->byte=XML_GetCurrentByteIndex(sax2->xp);
+  locator->line = XML_GetCurrentLineNumber(sax2->xp);
+  locator->column = XML_GetCurrentColumnNumber(sax2->xp);
+  locator->byte = XML_GetCurrentByteIndex(sax2->xp);
 }
 
 /* end if RAPTOR_XML_EXPAT */

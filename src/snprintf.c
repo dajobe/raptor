@@ -50,7 +50,7 @@ raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
   size_t frac_len = 0;
   size_t idx;
 
-  if (max < min)
+  if(max < min)
     max = min;
   
   /* index to the last char */
@@ -68,25 +68,25 @@ raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
 
   frac = (ufvalue - intpart);
   
-  for (exp_len=0; exp_len <= max; ++exp_len) {
+  for(exp_len = 0; exp_len <= max; ++exp_len) {
     frac *= 10;
 
     mod_10 = trunc(fmod(trunc(frac), 10));
     
-    if (fabs(frac_delta - (fracpart / pow(10, exp_len))) < (DBL_EPSILON * 2.0)) {
+    if(fabs(frac_delta - (fracpart / pow(10, exp_len))) < (DBL_EPSILON * 2.0)) {
       break;
     }
     
     frac_delta = fracpart / pow(10, exp_len);
 
     /* Only "append" (numerically) if digit is not a zero */
-    if (mod_10 > 0 && mod_10 < 10) {
+    if(mod_10 > 0 && mod_10 < 10) {
         fracpart = round(frac);
         frac_len = exp_len;
     }
   }
   
-  if (frac_len < min) {
+  if(frac_len < min) {
     buffer[idx--] = '0';
   } else {
     /* Convert/write fractional part (right to left) */

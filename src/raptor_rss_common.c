@@ -295,7 +295,7 @@ const raptor_rss_block_field_info raptor_rss_block_fields_info[RAPTOR_RSS_BLOCKS
 };
 
 
-const unsigned char * const raptor_atom_namespace_uri=(const unsigned char *)"http://www.w3.org/2005/Atom";
+const unsigned char * const raptor_atom_namespace_uri = (const unsigned char *)"http://www.w3.org/2005/Atom";
 
 
 
@@ -307,38 +307,38 @@ raptor_rss_common_init(raptor_world* world) {
   if(world->rss_common_initialised++)
     return 0;
 
-  world->rss_namespaces_info_uris=(raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_NAMESPACES_SIZE, sizeof(raptor_uri*));
+  world->rss_namespaces_info_uris = (raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_NAMESPACES_SIZE, sizeof(raptor_uri*));
   if(!world->rss_namespaces_info_uris)
     return -1;
-  for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
-    const char *uri_string=raptor_rss_namespaces_info[i].uri_string;
+  for(i = 0; i < RAPTOR_RSS_NAMESPACES_SIZE;i++) {
+    const char *uri_string = raptor_rss_namespaces_info[i].uri_string;
     if(uri_string) {
-      world->rss_namespaces_info_uris[i]=raptor_new_uri_v2(world, (const unsigned char*)uri_string);
+      world->rss_namespaces_info_uris[i] = raptor_new_uri_v2(world, (const unsigned char*)uri_string);
       if(!world->rss_namespaces_info_uris[i])
         return -1;
     }
   }
 
-  world->rss_types_info_uris=(raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_COMMON_SIZE, sizeof(raptor_uri*));
+  world->rss_types_info_uris = (raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_COMMON_SIZE, sizeof(raptor_uri*));
   if(!world->rss_types_info_uris)
     return -1;
-  for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-    int n=raptor_rss_items_info[i].nspace;
-    namespace_uri=world->rss_namespaces_info_uris[n];
+  for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    int n = raptor_rss_items_info[i].nspace;
+    namespace_uri = world->rss_namespaces_info_uris[n];
     if(namespace_uri) {
-      world->rss_types_info_uris[i]=raptor_new_uri_from_uri_local_name_v2(world, namespace_uri, (const unsigned char*)raptor_rss_items_info[i].name);
+      world->rss_types_info_uris[i] = raptor_new_uri_from_uri_local_name_v2(world, namespace_uri, (const unsigned char*)raptor_rss_items_info[i].name);
       if(!world->rss_types_info_uris[i])
         return -1;
     }
   }
 
-  world->rss_fields_info_uris=(raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_FIELDS_SIZE, sizeof(raptor_uri*));
+  world->rss_fields_info_uris = (raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_FIELDS_SIZE, sizeof(raptor_uri*));
   if(!world->rss_fields_info_uris)
     return -1;
-  for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
-    namespace_uri=world->rss_namespaces_info_uris[raptor_rss_fields_info[i].nspace];
+  for(i = 0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
+    namespace_uri = world->rss_namespaces_info_uris[raptor_rss_fields_info[i].nspace];
     if(namespace_uri) {
-      world->rss_fields_info_uris[i]=raptor_new_uri_from_uri_local_name_v2(world, namespace_uri,
+      world->rss_fields_info_uris[i] = raptor_new_uri_from_uri_local_name_v2(world, namespace_uri,
                                                                            (const unsigned char*)raptor_rss_fields_info[i].name);
       if(!world->rss_fields_info_uris[i])
         return -1;
@@ -356,30 +356,30 @@ raptor_rss_common_terminate(raptor_world* world) {
     return;
 
   if(world->rss_types_info_uris) {
-    for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
       if(world->rss_types_info_uris[i])
         raptor_free_uri_v2(world, world->rss_types_info_uris[i]);
     }
     RAPTOR_FREE(raptor_uri* array, world->rss_types_info_uris);
-    world->rss_types_info_uris=NULL;
+    world->rss_types_info_uris = NULL;
   }
 
   if(world->rss_fields_info_uris) {
-    for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
+    for(i = 0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
       if(world->rss_fields_info_uris[i])
         raptor_free_uri_v2(world, world->rss_fields_info_uris[i]);
     }
     RAPTOR_FREE(raptor_uri* array, world->rss_fields_info_uris);
-    world->rss_fields_info_uris=NULL;
+    world->rss_fields_info_uris = NULL;
   }
 
   if(world->rss_namespaces_info_uris) {
-    for(i=0; i<RAPTOR_RSS_NAMESPACES_SIZE;i++) {
+    for(i = 0; i < RAPTOR_RSS_NAMESPACES_SIZE;i++) {
       if(world->rss_namespaces_info_uris[i])
         raptor_free_uri_v2(world, world->rss_namespaces_info_uris[i]);
     }
     RAPTOR_FREE(raptor_uri* array, world->rss_namespaces_info_uris);
-    world->rss_namespaces_info_uris=NULL;
+    world->rss_namespaces_info_uris = NULL;
   }
 }
 
@@ -389,14 +389,14 @@ raptor_rss_model_init(raptor_world* world, raptor_rss_model* rss_model)
 {
   memset(rss_model->common, 0, sizeof(void*)*RAPTOR_RSS_COMMON_SIZE);
 
-  rss_model->world=world;
+  rss_model->world = world;
 
-  rss_model->last=rss_model->items=NULL;
-  rss_model->items_count=0;
+  rss_model->last = rss_model->items = NULL;
+  rss_model->items_count = 0;
 
-  RAPTOR_RSS_RDF_type_URI(rss_model)=raptor_new_uri_for_rdf_concept_v2(world, "type");
-  RAPTOR_RSS_RDF_Seq_URI(rss_model)=raptor_new_uri_for_rdf_concept_v2(world, "Seq");
-  RAPTOR_RSS_RSS_items_URI(rss_model)=raptor_new_uri_relative_to_base_v2(world, world->rss_namespaces_info_uris[RSS1_0_NS], (const unsigned char*)"items");
+  RAPTOR_RSS_RDF_type_URI(rss_model) = raptor_new_uri_for_rdf_concept_v2(world, "type");
+  RAPTOR_RSS_RDF_Seq_URI(rss_model) = raptor_new_uri_for_rdf_concept_v2(world, "Seq");
+  RAPTOR_RSS_RSS_items_URI(rss_model) = raptor_new_uri_relative_to_base_v2(world, world->rss_namespaces_info_uris[RSS1_0_NS], (const unsigned char*)"items");
 }
   
 
@@ -406,29 +406,29 @@ raptor_rss_model_clear(raptor_rss_model* rss_model)
   int i;
   raptor_rss_item* item;
   
-  for(i=0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-    item=rss_model->common[i];
+  for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    item = rss_model->common[i];
     while(item) {
-      raptor_rss_item *next=item->next;
+      raptor_rss_item *next = item->next;
       raptor_free_rss_item(item);
-      item=next;
+      item = next;
     }
   }
 
-  item=rss_model->items;
+  item = rss_model->items;
   while(item) {
-    raptor_rss_item *next=item->next;
+    raptor_rss_item *next = item->next;
 
     raptor_free_rss_item(item);
-    item=next;
+    item = next;
   }
-  rss_model->last=rss_model->items=NULL;
+  rss_model->last = rss_model->items = NULL;
 
-  for(i=0; i< RAPTOR_RSS_N_CONCEPTS; i++) {
-    raptor_uri* concept_uri=rss_model->concepts[i];
+  for(i = 0; i< RAPTOR_RSS_N_CONCEPTS; i++) {
+    raptor_uri* concept_uri = rss_model->concepts[i];
     if(concept_uri) {
       raptor_free_uri_v2(rss_model->world, concept_uri);
-      rss_model->concepts[i]=NULL;
+      rss_model->concepts[i] = NULL;
     }
   }
 }
@@ -439,14 +439,14 @@ raptor_new_rss_item(raptor_world* world)
 {
   raptor_rss_item* item;
 
-  item=(raptor_rss_item*)RAPTOR_CALLOC(raptor_rss_item, 1, 
+  item = (raptor_rss_item*)RAPTOR_CALLOC(raptor_rss_item, 1, 
                                        sizeof(raptor_rss_item));
   if(!item)
     return NULL;
   
-  item->world=world;
-  item->identifier.world=world;
-  item->triples=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement_v2, (raptor_sequence_print_handler*)raptor_print_statement_v2);
+  item->world = world;
+  item->identifier.world = world;
+  item->triples = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement_v2, (raptor_sequence_print_handler*)raptor_print_statement_v2);
   if(!item->triples) {
     RAPTOR_FREE(raptor_rss_item, item);
     return NULL;
@@ -460,20 +460,20 @@ raptor_rss_model_add_item(raptor_rss_model* rss_model)
 {
   raptor_rss_item* item;
 
-  item=raptor_new_rss_item(rss_model->world);
+  item = raptor_new_rss_item(rss_model->world);
   if(!item)
     return 1;
 
   /* new list */
   if(!rss_model->items)
-    rss_model->items=item;
+    rss_model->items = item;
   
   /* join last item to this one */
   if(rss_model->last)
-    rss_model->last->next=item;
+    rss_model->last->next = item;
   
   /* this is now the last item */
-  rss_model->last=item;
+  rss_model->last = item;
   rss_model->items_count++;
 
   RAPTOR_DEBUG2("Added item %d\n", rss_model->items_count);
@@ -488,21 +488,21 @@ raptor_rss_model_add_common(raptor_rss_model* rss_model,
 {
   raptor_rss_item* item;
 
-  item=raptor_new_rss_item(rss_model->world);
+  item = raptor_new_rss_item(rss_model->world);
   if(!item)
     return NULL;
 
-  if(rss_model->common[type]==NULL) {
+  if(rss_model->common[type] == NULL) {
     RAPTOR_DEBUG3("Adding common type %d - %s\n", type,
                   raptor_rss_items_info[type].name);
-    rss_model->common[type]=item; 
+    rss_model->common[type] = item; 
   } else {
     raptor_rss_item* next;
     RAPTOR_DEBUG3("Appending common type %d - %s\n", type, 
                   raptor_rss_items_info[type].name);
-    for (next=rss_model->common[type]; next->next; next=next->next)
+    for(next = rss_model->common[type]; next->next; next = next->next)
       ;
-    next->next=item;
+    next->next = item;
   }
   return item;
 }
@@ -512,9 +512,9 @@ raptor_rss_item*
 raptor_rss_model_get_common(raptor_rss_model* rss_model, raptor_rss_type type)
 {
   raptor_rss_item* item;
-  for(item=rss_model->common[type]; 
+  for(item = rss_model->common[type]; 
       item && item->next;
-      item=item->next) ;
+      item = item->next) ;
   return item;
 }
 
@@ -523,7 +523,7 @@ void
 raptor_free_rss_item(raptor_rss_item* item)
 {
   int i;
-  for(i=0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
+  for(i = 0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     if(item->fields[i])
       raptor_rss_field_free(item->fields[i]);
   }
@@ -564,13 +564,13 @@ raptor_rss_item_add_field(raptor_rss_item* item, int type,
   if(!item->fields[type]) {
     RAPTOR_DEBUG3("Adding first type %d field %s\n", type, raptor_rss_fields_info[type].name);
     item->fields_count++;	
-    item->fields[type]=field;
+    item->fields[type] = field;
   } else { 
     raptor_rss_field* cur;
 
     RAPTOR_DEBUG1("Adding subsequent field\n");
-    for(cur=item->fields[type]; cur->next; cur=cur->next) ;
-    cur->next=field;
+    for(cur = item->fields[type]; cur->next; cur = cur->next) ;
+    cur->next = field;
   }
 }
 
@@ -660,9 +660,9 @@ raptor_free_rss_block(raptor_rss_block *block)
 raptor_rss_field*
 raptor_rss_new_field(raptor_world* world)
 {
-  raptor_rss_field* field=(raptor_rss_field*)RAPTOR_CALLOC(raptor_rss_field, 1, sizeof(raptor_rss_field));
+  raptor_rss_field* field = (raptor_rss_field*)RAPTOR_CALLOC(raptor_rss_field, 1, sizeof(raptor_rss_field));
   if(field)
-    field->world=world;
+    field->world = world;
   return field;
 }
 
@@ -690,7 +690,7 @@ raptor_rss_format_iso_date(char* buffer, size_t len, time_t unix_time)
   if(len < RAPTOR_ISO_DATE_LEN)
     return 1;
 
-  structured_time=gmtime(&unix_time);
+  structured_time = gmtime(&unix_time);
   strftime(buffer, len+1, RAPTOR_ISO_DATE_FORMAT, structured_time);
 
   return 0;
@@ -700,11 +700,11 @@ raptor_rss_format_iso_date(char* buffer, size_t len, time_t unix_time)
 int
 raptor_rss_set_date_field(raptor_rss_field* field, time_t unix_time)
 {
-  size_t len=RAPTOR_ISO_DATE_LEN;
+  size_t len = RAPTOR_ISO_DATE_LEN;
   
   if(field->value)
     RAPTOR_FREE(cstring, field->value);
-  field->value=(unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
   if(!field->value)
     return 1;
   

@@ -81,9 +81,9 @@ raptor_free_serializer_factory(raptor_serializer_factory* factory)
 int
 raptor_serializers_init(raptor_world* world)
 {
-  int rc=0;
+  int rc = 0;
 
-  world->serializers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_serializer_factory, NULL);
+  world->serializers = raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_serializer_factory, NULL);
   if(!world->serializers)
     return 1;
 
@@ -133,7 +133,7 @@ raptor_serializers_finish(raptor_world* world)
 {
   if(world->serializers) {
     raptor_free_sequence(world->serializers);
-    world->serializers=NULL;
+    world->serializers = NULL;
   }
 }
 
@@ -173,8 +173,8 @@ raptor_serializer_register_factory(raptor_world* world,
                 (uri_string ? (const char *)uri_string : "none"));
 #endif
   
-  for(i=0;
-      (serializer=(raptor_serializer_factory*)raptor_sequence_get_at(world->serializers, i));
+  for(i = 0;
+      (serializer = (raptor_serializer_factory*)raptor_sequence_get_at(world->serializers, i));
       i++) {
     if(!strcmp(serializer->name, name)) {
       RAPTOR_FATAL2("serializer %s already registered\n", name);
@@ -183,54 +183,54 @@ raptor_serializer_register_factory(raptor_world* world,
   }
   
 
-  serializer=(raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
+  serializer = (raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
                                                sizeof(raptor_serializer_factory));
   if(!serializer)
     return 1;
 
-  serializer->world=world;
+  serializer->world = world;
 
-  name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
+  name_copy = (char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy)
     goto tidy;
   strcpy(name_copy, name);
-  serializer->name=name_copy;
+  serializer->name = name_copy;
         
-  label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
+  label_copy = (char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
   if(!label_copy)
     goto tidy;
   strcpy(label_copy, label);
-  serializer->label=label_copy;
+  serializer->label = label_copy;
 
   if(mime_type) {
-    mime_type_copy=(char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
+    mime_type_copy = (char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
     if(!mime_type_copy)
       goto tidy;
     strcpy(mime_type_copy, mime_type);
-    serializer->mime_type=mime_type_copy;
+    serializer->mime_type = mime_type_copy;
   }
 
   if(uri_string) {
-    uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
+    uri_string_copy = (unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
     if(!uri_string_copy)
       goto tidy;
     strcpy((char*)uri_string_copy, (const char*)uri_string);
-    serializer->uri_string=uri_string_copy;
+    serializer->uri_string = uri_string_copy;
   }
         
   if(alias) {
-    alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
+    alias_copy = (char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
     if(!alias_copy)
       goto tidy;
     strcpy(alias_copy, alias);
-    serializer->alias=alias_copy;
+    serializer->alias = alias_copy;
   }
 
   if(raptor_sequence_push(world->serializers, serializer))
     return 1; /* on error, serializer is already freed by the sequence */
 
   /* Call the serializer registration function on the new object */
-  if (factory(serializer))
+  if(factory(serializer))
     return 1; /* serializer is owned and freed by the serializers sequence */
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -262,7 +262,7 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
 
   /* return 1st serializer if no particular one wanted - why? */
   if(!name) {
-    factory=(raptor_serializer_factory *)raptor_sequence_get_at(world->serializers, 0);
+    factory = (raptor_serializer_factory *)raptor_sequence_get_at(world->serializers, 0);
     if(!factory) {
       RAPTOR_DEBUG1("No (default) serializers registered\n");
       return NULL;
@@ -270,8 +270,8 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
   } else {
     int i;
     
-    for(i=0;
-        (factory=(raptor_serializer_factory*)raptor_sequence_get_at(world->serializers, i));
+    for(i = 0;
+        (factory = (raptor_serializer_factory*)raptor_sequence_get_at(world->serializers, i));
         i++) {
       if(!strcmp(factory->name, name) ||
          (factory->alias && !strcmp(factory->alias, name)))
@@ -343,7 +343,7 @@ raptor_serializers_enumerate_v2(raptor_world* world,
 {
   raptor_serializer_factory *factory;
 
-  factory=(raptor_serializer_factory*)raptor_sequence_get_at(world->serializers,
+  factory = (raptor_serializer_factory*)raptor_sequence_get_at(world->serializers,
                                                              counter);
 
   if(!factory)
@@ -434,33 +434,33 @@ raptor_new_serializer_v2(raptor_world* world, const char *name)
   raptor_serializer_factory* factory;
   raptor_serializer* rdf_serializer;
 
-  factory=raptor_get_serializer_factory(world, name);
+  factory = raptor_get_serializer_factory(world, name);
   if(!factory)
     return NULL;
 
-  rdf_serializer=(raptor_serializer*)RAPTOR_CALLOC(raptor_serializer, 1,
+  rdf_serializer = (raptor_serializer*)RAPTOR_CALLOC(raptor_serializer, 1,
                                            sizeof(raptor_serializer));
   if(!rdf_serializer)
     return NULL;
 
-  rdf_serializer->world=world;
+  rdf_serializer->world = world;
   
-  rdf_serializer->context=(char*)RAPTOR_CALLOC(raptor_serializer_context, 1,
+  rdf_serializer->context = (char*)RAPTOR_CALLOC(raptor_serializer_context, 1,
                                                factory->context_length);
   if(!rdf_serializer->context) {
     raptor_free_serializer(rdf_serializer);
     return NULL;
   }
   
-  rdf_serializer->factory=factory;
+  rdf_serializer->factory = factory;
 
   /* Default features */
   
   /* Emit @base directive or equivalent */
-  rdf_serializer->feature_write_base_uri=1;
+  rdf_serializer->feature_write_base_uri = 1;
   
   /* Emit relative URIs where possible */
-  rdf_serializer->feature_relative_uris=1;
+  rdf_serializer->feature_relative_uris = 1;
 
   rdf_serializer->feature_resource_border  =
     rdf_serializer->feature_literal_border =
@@ -470,10 +470,10 @@ raptor_new_serializer_v2(raptor_world* world, const char *name)
     rdf_serializer->feature_bnode_fill     = NULL;
 
   /* XML 1.0 output */
-  rdf_serializer->xml_version=10;
+  rdf_serializer->xml_version = 10;
 
   /* Write XML declaration */
-  rdf_serializer->feature_write_xml_declaration=1;
+  rdf_serializer->feature_write_xml_declaration = 1;
 
   /* JSON callback function name */
   rdf_serializer->feature_json_callback= NULL;
@@ -525,13 +525,13 @@ raptor_serialize_start_to_iostream(raptor_serializer *rdf_serializer,
     return 1;
   
   if(uri)
-    uri=raptor_uri_copy_v2(rdf_serializer->world, uri);
+    uri = raptor_uri_copy_v2(rdf_serializer->world, uri);
   
-  rdf_serializer->base_uri=uri;
-  rdf_serializer->locator.uri=uri;
-  rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
+  rdf_serializer->base_uri = uri;
+  rdf_serializer->locator.uri = uri;
+  rdf_serializer->locator.line = rdf_serializer->locator.column = 0;
 
-  rdf_serializer->iostream=iostream;
+  rdf_serializer->iostream = iostream;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -559,9 +559,9 @@ raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri,
                        raptor_iostream *iostream) 
 {
   int rc;
-  rc=raptor_serialize_start_to_iostream(rdf_serializer, uri, iostream);
+  rc = raptor_serialize_start_to_iostream(rdf_serializer, uri, iostream);
   if(!rc)
-    rdf_serializer->free_iostream_on_end=1;
+    rdf_serializer->free_iostream_on_end = 1;
 
   return rc;
 }
@@ -580,24 +580,24 @@ int
 raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
                                    const char *filename)
 {
-  unsigned char *uri_string=raptor_uri_filename_to_uri_string(filename);
+  unsigned char *uri_string = raptor_uri_filename_to_uri_string(filename);
   if(!uri_string)
     return 1;
 
   if(rdf_serializer->base_uri)
     raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
-  rdf_serializer->base_uri=raptor_new_uri_v2(rdf_serializer->world, uri_string);
-  rdf_serializer->locator.uri=rdf_serializer->base_uri;
-  rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
+  rdf_serializer->base_uri = raptor_new_uri_v2(rdf_serializer->world, uri_string);
+  rdf_serializer->locator.uri = rdf_serializer->base_uri;
+  rdf_serializer->locator.line = rdf_serializer->locator.column = 0;
 
   RAPTOR_FREE(cstring, uri_string);
 
-  rdf_serializer->iostream=raptor_new_iostream_to_filename(filename);
+  rdf_serializer->iostream = raptor_new_iostream_to_filename(filename);
   if(!rdf_serializer->iostream)
     return 1;
 
-  rdf_serializer->free_iostream_on_end=1;
+  rdf_serializer->free_iostream_on_end = 1;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -626,19 +626,19 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
     raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
   if(uri)
-    rdf_serializer->base_uri=raptor_uri_copy_v2(rdf_serializer->world, uri);
+    rdf_serializer->base_uri = raptor_uri_copy_v2(rdf_serializer->world, uri);
   else
-    rdf_serializer->base_uri=NULL;
-  rdf_serializer->locator.uri=rdf_serializer->base_uri;
-  rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
+    rdf_serializer->base_uri = NULL;
+  rdf_serializer->locator.uri = rdf_serializer->base_uri;
+  rdf_serializer->locator.line = rdf_serializer->locator.column = 0;
 
 
-  rdf_serializer->iostream=raptor_new_iostream_to_string(string_p, length_p, 
+  rdf_serializer->iostream = raptor_new_iostream_to_string(string_p, length_p, 
                                                          NULL);
   if(!rdf_serializer->iostream)
     return 1;
 
-  rdf_serializer->free_iostream_on_end=1;
+  rdf_serializer->free_iostream_on_end = 1;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -666,17 +666,17 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
     raptor_free_uri_v2(rdf_serializer->world, rdf_serializer->base_uri);
 
   if(uri)
-    rdf_serializer->base_uri=raptor_uri_copy_v2(rdf_serializer->world, uri);
+    rdf_serializer->base_uri = raptor_uri_copy_v2(rdf_serializer->world, uri);
   else
-    rdf_serializer->base_uri=NULL;
-  rdf_serializer->locator.uri=rdf_serializer->base_uri;
-  rdf_serializer->locator.line=rdf_serializer->locator.column = 0;
+    rdf_serializer->base_uri = NULL;
+  rdf_serializer->locator.uri = rdf_serializer->base_uri;
+  rdf_serializer->locator.line = rdf_serializer->locator.column = 0;
 
-  rdf_serializer->iostream=raptor_new_iostream_to_file_handle(fh);
+  rdf_serializer->iostream = raptor_new_iostream_to_file_handle(fh);
   if(!rdf_serializer->iostream)
     return 1;
 
-  rdf_serializer->free_iostream_on_end=1;
+  rdf_serializer->free_iostream_on_end = 1;
 
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
@@ -699,7 +699,7 @@ raptor_serialize_set_namespace(raptor_serializer* rdf_serializer,
                                raptor_uri *uri, const unsigned char *prefix) 
 {
   if(prefix && !*prefix)
-    prefix=NULL;
+    prefix = NULL;
   
   if(rdf_serializer->factory->declare_namespace)
     return rdf_serializer->factory->declare_namespace(rdf_serializer, 
@@ -725,7 +725,7 @@ raptor_serialize_set_namespace_from_namespace(raptor_serializer* rdf_serializer,
   if(rdf_serializer->factory->declare_namespace_from_namespace)
     return rdf_serializer->factory->declare_namespace_from_namespace(rdf_serializer, 
                                                                      nspace);
-  else if (rdf_serializer->factory->declare_namespace)
+  else if(rdf_serializer->factory->declare_namespace)
     return rdf_serializer->factory->declare_namespace(rdf_serializer, 
                                                       raptor_namespace_get_uri(nspace),
                                                       raptor_namespace_get_prefix(nspace));
@@ -770,14 +770,14 @@ raptor_serialize_end(raptor_serializer *rdf_serializer)
     return 1;
 
   if(rdf_serializer->factory->serialize_end)
-    rc=rdf_serializer->factory->serialize_end(rdf_serializer);
+    rc = rdf_serializer->factory->serialize_end(rdf_serializer);
   else
-    rc=0;
+    rc = 0;
 
   if(rdf_serializer->iostream) {
     if(rdf_serializer->free_iostream_on_end)
       raptor_free_iostream(rdf_serializer->iostream);
-    rdf_serializer->iostream=NULL;
+    rdf_serializer->iostream = NULL;
   }
   return rc;
 }
@@ -932,11 +932,11 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
   
   switch(feature) {
     case RAPTOR_FEATURE_WRITE_BASE_URI:
-      serializer->feature_write_base_uri=value;
+      serializer->feature_write_base_uri = value;
       break;
 
     case RAPTOR_FEATURE_RELATIVE_URIS:
-      serializer->feature_relative_uris=value;
+      serializer->feature_relative_uris = value;
       break;
 
     case RAPTOR_FEATURE_START_URI:
@@ -945,7 +945,7 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
 
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
       if(value == 10 || value == 11)
-        serializer->xml_version=value;
+        serializer->xml_version = value;
       break;
 
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
@@ -1009,14 +1009,14 @@ static int
 raptor_serializer_copy_string(unsigned char ** dest,
 			      const unsigned char * src)
 {
-  size_t src_len=strlen((const char *)src);
+  size_t src_len = strlen((const char *)src);
 
   if(*dest) {
     RAPTOR_FREE(cstring, *dest);
     *dest=NULL;
   }
 
-  if(!(*dest=(unsigned char*)RAPTOR_MALLOC(cstring, src_len+1)))
+  if(!(*dest = (unsigned char*)RAPTOR_MALLOC(cstring, src_len+1)))
     return -1;
 
   strcpy((char *)(*dest), (const char *)src);
@@ -1043,7 +1043,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
                                      raptor_feature feature, 
                                      const unsigned char *value)
 {
-  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
     return raptor_serializer_set_feature(serializer, feature, 
                                          atoi((const char*)value));
@@ -1051,7 +1051,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
   switch(feature) {
     case RAPTOR_FEATURE_START_URI:
       if(value)
-        serializer->feature_start_uri=raptor_new_uri_v2(serializer->world, value);
+        serializer->feature_start_uri = raptor_new_uri_v2(serializer->world, value);
       else
         return -1;
       break;
@@ -1170,11 +1170,11 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
   
   switch(feature) {
     case RAPTOR_FEATURE_WRITE_BASE_URI:
-      result=(serializer->feature_write_base_uri != 0);
+      result = (serializer->feature_write_base_uri != 0);
       break;
 
     case RAPTOR_FEATURE_RELATIVE_URIS:
-      result=(serializer->feature_relative_uris != 0);
+      result = (serializer->feature_relative_uris != 0);
       break;
 
     /* String features */
@@ -1197,11 +1197,11 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
       break;
       
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
-      result=serializer->xml_version;
+      result = serializer->xml_version;
       break;
   
     case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-      result=serializer->feature_write_xml_declaration;
+      result = serializer->feature_write_xml_declaration;
       break;
       
     /* parser features */
@@ -1255,7 +1255,7 @@ const unsigned char *
 raptor_serializer_get_feature_string(raptor_serializer *serializer, 
                                      raptor_feature feature)
 {
-  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
     return NULL;
   
@@ -1389,14 +1389,14 @@ raptor_serializer_error_varargs(raptor_serializer* serializer,
                                 va_list arguments)
 {
   if(serializer->error_handler) {
-    char *buffer=raptor_vsnprintf(message, arguments);
+    char *buffer = raptor_vsnprintf(message, arguments);
     size_t length;
     if(!buffer) {
       fprintf(stderr, "raptor_serializer_error_varargs: Out of memory\n");
       return;
     }
-    length=strlen(buffer);
-    if(buffer[length-1]=='\n')
+    length = strlen(buffer);
+    if(buffer[length-1] == '\n')
       buffer[length-1]='\0';
     serializer->error_handler(serializer->error_user_data, 
                               &serializer->locator, buffer);
@@ -1436,14 +1436,14 @@ raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *mes
 {
 
   if(serializer->warning_handler) {
-    char *buffer=raptor_vsnprintf(message, arguments);
+    char *buffer = raptor_vsnprintf(message, arguments);
     size_t length;
     if(!buffer) {
       fprintf(stderr, "raptor_serializer_warning_varargs: Out of memory\n");
       return;
     }
-    length=strlen(buffer);
-    if(buffer[length-1]=='\n')
+    length = strlen(buffer);
+    if(buffer[length-1] == '\n')
       buffer[length-1]='\0';
     serializer->warning_handler(serializer->warning_user_data,
                                 &serializer->locator, buffer);
@@ -1474,8 +1474,8 @@ raptor_serializer_set_error_handler(raptor_serializer* serializer,
                                     void *user_data,
                                     raptor_message_handler handler)
 {
-  serializer->error_user_data=user_data;
-  serializer->error_handler=handler;
+  serializer->error_user_data = user_data;
+  serializer->error_handler = handler;
 }
 
 
@@ -1495,8 +1495,8 @@ raptor_serializer_set_warning_handler(raptor_serializer* serializer,
                                       void *user_data,
                                       raptor_message_handler handler)
 {
-  serializer->warning_user_data=user_data;
-  serializer->warning_handler=handler;
+  serializer->warning_user_data = user_data;
+  serializer->warning_handler = handler;
 }
 
 

@@ -188,8 +188,8 @@ EXPONENT [eE][+-]?[0-9]+
   /* rules */
 
 %{
-  raptor_parser *rdf_parser=(raptor_parser*)yyextra;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_parser *rdf_parser = (raptor_parser*)yyextra;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)rdf_parser->context;
 
 #ifdef HAVE_SETJMP
   if(setjmp(n3_lexer_fatal_error_longjmp_env))
@@ -216,18 +216,18 @@ EXPONENT [eE][+-]?[0-9]+
 ")"       { return RIGHT_ROUND; }
 
 
-'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
+'([^'\\\n\r]|\\[^\n\r])*'    { n3_parser_lval->string = n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '\"'); /* ' */
                                if(!n3_parser_lval->string)
                                  YY_FATAL_ERROR_EOF("n3_copy_string_token failed");
                                return STRING_LITERAL; }
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string=n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+\"([^"\\\n\r]|\\[^\n\r])*\"   { n3_parser_lval->string = n3_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 if(!n3_parser_lval->string)
                                   YY_FATAL_ERROR_EOF("n3_copy_string_token failed");
                                 return STRING_LITERAL; }
 
 \"\"\"				{ BEGIN(LITERAL); 
-                                  n3_parser->sb=raptor_new_stringbuffer();
+                                  n3_parser->sb = raptor_new_stringbuffer();
                                   if(!n3_parser->sb)
                                     N3_LEXER_OOM();
                           }
@@ -236,46 +236,46 @@ EXPONENT [eE][+-]?[0-9]+
 		  size_t len;
      
 		  BEGIN(INITIAL);
-                  len=raptor_stringbuffer_length(n3_parser->sb);
-                  n3_parser_lval->string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+                  len = raptor_stringbuffer_length(n3_parser->sb);
+                  n3_parser_lval->string = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
                   if(!n3_parser_lval->string)
                     N3_LEXER_OOM();
                   raptor_stringbuffer_copy_to_string(n3_parser->sb, (unsigned char*)n3_parser_lval->string, len);
                   n3_parser_lval->string[len]='\0';
 
                   raptor_free_stringbuffer(n3_parser->sb);
-                  n3_parser->sb=NULL;
+                  n3_parser->sb = NULL;
                   return STRING_LITERAL; }
 
 <LITERAL>\"|(\\[^uU]|\\u....|\\U........|[^\"]|\n)*	{
-		  if (*yytext == EOF) {
+		  if(*yytext == EOF) {
                     BEGIN(INITIAL);
                     n3_syntax_error(rdf_parser, "End of file in middle of literal");
                     raptor_free_stringbuffer(n3_parser->sb);
-                    n3_parser->sb=NULL;
+                    n3_parser->sb = NULL;
                     return EOF;
                   }
 
                   if(raptor_stringbuffer_append_turtle_string(n3_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)n3_lexer_syntax_error, rdf_parser)) { /* " */
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(n3_parser->sb);
-                    n3_parser->sb=NULL;
+                    n3_parser->sb = NULL;
                     YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   
    }
 
-{BNAME}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext+2, yyleng-2);
+{BNAME}	{ n3_parser_lval->string = n3_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!n3_parser_lval->string)
             YY_FATAL_ERROR_EOF("n3_copy_token failed");
                           return BLANK_LITERAL; }
 
-{QNAME}	{ n3_parser_lval->uri=n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+{QNAME}	{ n3_parser_lval->uri = n3_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
           if(!n3_parser_lval->uri)
             YY_FATAL_ERROR_EOF("n3_qname_to_uri failed");
                           return QNAME_LITERAL; }
 
-[-+]?{DECIMAL}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+[-+]?{DECIMAL}	{ n3_parser_lval->string = n3_copy_token((unsigned char*)yytext, yyleng);
                   if(!n3_parser_lval->string)
                     YY_FATAL_ERROR_EOF("n3_copy_token failed");
                         return DECIMAL_LITERAL;
@@ -285,16 +285,16 @@ EXPONENT [eE][+-]?[0-9]+
                         double d;
                         int n;
                         
-                        n=sscanf((const char*)yytext, "%lf", &d);
+                        n = sscanf((const char*)yytext, "%lf", &d);
                         if(n != 1) {
                           n3_syntax_error(rdf_parser, "N3 syntax error - Illegal floating point constant %s", yytext);
                           yyterminate();
                         }
-                        n3_parser_lval->floating=d;
+                        n3_parser_lval->floating = d;
                         return FLOATING_LITERAL;
 }
 
-[-+]?[0-9]+        { n3_parser_lval->integer=atoi(yytext);
+[-+]?[0-9]+        { n3_parser_lval->integer = atoi(yytext);
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
@@ -304,13 +304,13 @@ EXPONENT [eE][+-]?[0-9]+
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>":"	{ BEGIN(INITIAL);
-		  n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, 0);
+		  n3_parser_lval->string = n3_copy_token((unsigned char*)yytext, 0);
       if(!n3_parser_lval->string)
         YY_FATAL_ERROR_EOF("n3_copy_token failed");
                   return IDENTIFIER; }
 
 <PREF>(.|\n)	{ BEGIN(INITIAL);
-		  if (*yytext == EOF)
+		  if(*yytext == EOF)
                     return EOF;
 
                   n3_syntax_error(rdf_parser, "syntax error at '%c' - @prefix name must end in :", *yytext);
@@ -318,16 +318,16 @@ EXPONENT [eE][+-]?[0-9]+
 
 
 {QUOTEDURI}   { if(yyleng == 2) 
-                n3_parser_lval->uri=raptor_uri_copy_v2(rdf_parser->world, rdf_parser->base_uri);
+                n3_parser_lval->uri = raptor_uri_copy_v2(rdf_parser->world, rdf_parser->base_uri);
               else {
                 yytext[yyleng-1]='\0';
-                n3_parser_lval->uri=raptor_new_uri_relative_to_base_v2(rdf_parser->world, rdf_parser->base_uri, (const unsigned char*)yytext+1);
+                n3_parser_lval->uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, rdf_parser->base_uri, (const unsigned char*)yytext+1);
                 if(!n3_parser_lval->uri)
                   YY_FATAL_ERROR_EOF("raptor_new_uri_relative_to_base failed");
               }
               return URI_LITERAL; }
 
-{LANGUAGETOKEN}	{ n3_parser_lval->string=n3_copy_token((unsigned char*)yytext, yyleng);
+{LANGUAGETOKEN}	{ n3_parser_lval->string = n3_copy_token((unsigned char*)yytext, yyleng);
                   if(!n3_parser_lval->string)
                     YY_FATAL_ERROR_EOF("n3_copy_token failed");
                           return IDENTIFIER; }
@@ -339,7 +339,7 @@ EXPONENT [eE][+-]?[0-9]+
 \#[^\r\n]*	{ /* # comment on the last line with no terminating newline */
                 }
 
-.         	{ if (*yytext == EOF)
+.         	{ if(*yytext == EOF)
                     return EOF;
 
                   n3_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
@@ -360,8 +360,8 @@ n3_copy_token(unsigned char *text, size_t len)
 {
   unsigned char *s;
   if(!len)
-    len=strlen((const char*)text);
-  s=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+    len = strlen((const char*)text);
+  s = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
   if(s) {
     strncpy((char*)s, (const char*)text, len);
     s[len] = '\0';
@@ -374,15 +374,15 @@ static unsigned char *
 n3_copy_string_token(raptor_parser* rdf_parser, 
                      unsigned char *string, size_t len, int delim)
 {
-  raptor_stringbuffer* sb=NULL;
+  raptor_stringbuffer* sb = NULL;
   int rc;
   
   if(len) {
-    sb=raptor_new_stringbuffer();
+    sb = raptor_new_stringbuffer();
     if(!sb)
       return NULL;
     
-    rc=raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
+    rc = raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
                                                 (raptor_simple_message_handler)n3_lexer_syntax_error,
                                                 rdf_parser);
     if(rc) {
@@ -390,10 +390,10 @@ n3_copy_string_token(raptor_parser* rdf_parser,
       return NULL;
     }
 
-    len=raptor_stringbuffer_length(sb);
+    len = raptor_stringbuffer_length(sb);
   }
   
-  string=(unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  string = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
   if(string) {
     if(sb) {
       raptor_stringbuffer_copy_to_string(sb, string, len+1);
@@ -412,13 +412,13 @@ n3_copy_string_token(raptor_parser* rdf_parser,
 void
 n3_lexer_syntax_error(void* ctx, const char *message, ...)
 {
-  raptor_parser* rdf_parser=(raptor_parser *)ctx;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_parser* rdf_parser = (raptor_parser *)ctx;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)rdf_parser->context;
   va_list arguments;
   
-  rdf_parser->locator.line=n3_parser->lineno;
+  rdf_parser->locator.line = n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
-  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+  rdf_parser->locator.column = n3_lexer_get_column(yyscanner);
 #endif
 
   va_start(arguments, message);
@@ -437,10 +437,10 @@ n3_lexer_syntax_error(void* ctx, const char *message, ...)
  */
 static void n3_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner)
 {
-  raptor_parser *rdf_parser=NULL;
+  raptor_parser *rdf_parser = NULL;
 
   if(yyscanner)
-    rdf_parser=(raptor_parser *)n3_lexer_get_extra(yyscanner);
+    rdf_parser = (raptor_parser *)n3_lexer_get_extra(yyscanner);
 
   if(rdf_parser)
     /* avoid "format not a string literal and no format arguments" warning with %s */
@@ -464,7 +464,7 @@ typedef struct {
 } lexer_alloc_tracker_header;
 
 /* Initial alloc tracker slot array size - 2 seems to be enough for almost all cases */
-static const int initial_lexer_allocs_size=2;
+static const int initial_lexer_allocs_size = 2;
 #endif
 
 /*
@@ -484,22 +484,22 @@ static void n3_lexer_cleanup(yyscan_t yyscanner)
   if(!yyscanner)
     return;
 
-  rdf_parser=(raptor_parser *)n3_lexer_get_extra(yyscanner);
+  rdf_parser = (raptor_parser *)n3_lexer_get_extra(yyscanner);
   if(!rdf_parser)
     return;
 
-  tracker=(lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
+  tracker = (lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
   if(!tracker)
     return;
-  lexer_allocs=(void**)&tracker[1];
+  lexer_allocs = (void**)&tracker[1];
 
-  for(i=0; i<tracker->lexer_allocs_size; ++i) {
+  for(i = 0; i < tracker->lexer_allocs_size; ++i) {
     if(lexer_allocs[i])
       free(lexer_allocs[i]);
-    lexer_allocs[i]=NULL;
+    lexer_allocs[i] = NULL;
   }
   free(rdf_parser->lexer_user_data);
-  rdf_parser->lexer_user_data=NULL;
+  rdf_parser->lexer_user_data = NULL;
 #endif
 }
 
@@ -527,29 +527,29 @@ void *n3_lexer_alloc(yy_size_t size, yyscan_t yyscanner)
   if(!yyscanner)
     return malloc(size);
 
-  rdf_parser=(raptor_parser *)n3_lexer_get_extra(yyscanner);
+  rdf_parser = (raptor_parser *)n3_lexer_get_extra(yyscanner);
   if(!rdf_parser)
     YY_FATAL_ERROR("lexer_alloc: yyscanner extra not initialized");
 
   /* try to allocate tracker if it does not exist */
-  tracker=(lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
+  tracker = (lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
   if(!tracker) {
     /* allocate tracker header + array of void* slots */
-    tracker=(lexer_alloc_tracker_header*)calloc(1, sizeof(lexer_alloc_tracker_header)+initial_lexer_allocs_size*sizeof(void*));
+    tracker = (lexer_alloc_tracker_header*)calloc(1, sizeof(lexer_alloc_tracker_header)+initial_lexer_allocs_size*sizeof(void*));
     if(!tracker)
       YY_FATAL_ERROR("lexer_alloc: cannot allocate tracker");
-    tracker->lexer_allocs_size=initial_lexer_allocs_size;
-    rdf_parser->lexer_user_data=(void *)tracker;
+    tracker->lexer_allocs_size = initial_lexer_allocs_size;
+    rdf_parser->lexer_user_data = (void *)tracker;
   }
-  lexer_allocs=(void**)&tracker[1];
+  lexer_allocs = (void**)&tracker[1];
 
   /* allocate memory */
-  ptr=malloc(size);
+  ptr = malloc(size);
   
   /* find a free slot for ptr */
-  for(i=0; i<tracker->lexer_allocs_size; ++i) {
+  for(i = 0; i < tracker->lexer_allocs_size; ++i) {
     if(!lexer_allocs[i]) {
-      lexer_allocs[i]=ptr;
+      lexer_allocs[i] = ptr;
       break;
     }
   }
@@ -558,26 +558,26 @@ void *n3_lexer_alloc(yy_size_t size, yyscan_t yyscanner)
   if(i>=tracker->lexer_allocs_size) {
     int j;
     void **dest;
-    tracker=(lexer_alloc_tracker_header*)calloc(1, sizeof(lexer_alloc_tracker_header)+i*2*sizeof(void*));
+    tracker = (lexer_alloc_tracker_header*)calloc(1, sizeof(lexer_alloc_tracker_header)+i*2*sizeof(void*));
     if(!tracker) {
       if(ptr)
         free(ptr);
       YY_FATAL_ERROR("lexer_alloc: cannot grow tracker");
     }
-    tracker->lexer_allocs_size=i*2;
+    tracker->lexer_allocs_size = i*2;
     
     /* copy data from old tracker */
-    dest=(void**)&tracker[1];
-    for(j=0; j<i; ++j) {
-      dest[j]=lexer_allocs[j];
+    dest = (void**)&tracker[1];
+    for(j = 0; j < i; ++j) {
+      dest[j] = lexer_allocs[j];
     }
     
     /* set new item to first free slot */
-    dest[j]=ptr;
+    dest[j] = ptr;
 
     /* free old tracker and replace with new one */
     free(rdf_parser->lexer_user_data);
-    rdf_parser->lexer_user_data=tracker;
+    rdf_parser->lexer_user_data = tracker;
   }
 
   return ptr;
@@ -605,18 +605,18 @@ void *n3_lexer_realloc(void *ptr, yy_size_t size, yyscan_t yyscanner)
   if(!yyscanner)
     YY_FATAL_ERROR("lexer_realloc: yyscanner not initialized");
 
-  rdf_parser=(raptor_parser *)n3_lexer_get_extra(yyscanner);
+  rdf_parser = (raptor_parser *)n3_lexer_get_extra(yyscanner);
   if(!rdf_parser)
     YY_FATAL_ERROR("lexer_realloc: yyscanner extra not initialized");
 
-  tracker=(lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
+  tracker = (lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
   if(!tracker)
     YY_FATAL_ERROR("lexer_realloc: no alloc tracker");
-  lexer_allocs=(void**)&tracker[1];
+  lexer_allocs = (void**)&tracker[1];
 
   /* find the old slot for ptr */
-  for(i=0; i<tracker->lexer_allocs_size; ++i) {
-    if(lexer_allocs[i]==ptr)
+  for(i = 0; i < tracker->lexer_allocs_size; ++i) {
+    if(lexer_allocs[i] == ptr)
       break;
   }
 
@@ -625,10 +625,10 @@ void *n3_lexer_realloc(void *ptr, yy_size_t size, yyscan_t yyscanner)
     YY_FATAL_ERROR("lexer_realloc: cell not in tracker");
 
   /* realloc */
-  newptr=realloc((char*)ptr, size);
+  newptr = realloc((char*)ptr, size);
 
   /* replace entry in tracker */
-  lexer_allocs[i]=newptr;
+  lexer_allocs[i] = newptr;
 
   return newptr;
 #else
@@ -661,21 +661,21 @@ void n3_lexer_free(void *ptr, yyscan_t yyscanner)
 
   /* yyscanner is allocated with n3_lexer_alloc() but it's never stored in the tracker
    * - we need yyscanner to access the tracker */
-  if(!yyscanner || ptr==yyscanner)
+  if(!yyscanner || ptr == yyscanner)
     return;
 
-  rdf_parser=(raptor_parser *)n3_lexer_get_extra(yyscanner);
+  rdf_parser = (raptor_parser *)n3_lexer_get_extra(yyscanner);
   if(!rdf_parser)
     return;
 
-  tracker=(lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
+  tracker = (lexer_alloc_tracker_header *)rdf_parser->lexer_user_data;
   if(!tracker)
     return;
-  lexer_allocs=(void**)&tracker[1];
+  lexer_allocs = (void**)&tracker[1];
 
   /* find the slot for ptr */
-  for(i=0; i<tracker->lexer_allocs_size; ++i) {
-    if(lexer_allocs[i]==ptr)
+  for(i = 0; i < tracker->lexer_allocs_size; ++i) {
+    if(lexer_allocs[i] == ptr)
       break;
   }
 
@@ -684,7 +684,7 @@ void n3_lexer_free(void *ptr, yyscan_t yyscanner)
     YY_FATAL_ERROR("lexer_free: cell not in tracker");
 
   /* remove entry from tracker */
-  lexer_allocs[i]=NULL;
+  lexer_allocs[i] = NULL;
 #else
   if(ptr)
     free(ptr);
@@ -810,17 +810,17 @@ main(int argc, char *argv[])
   raptor_parser rdf_parser;
   raptor_n3_parser n3_parser;
   yyscan_t scanner;
-  int token=EOF;
+  int token = EOF;
   FILE *fh;
   YYSTYPE lval;
   const unsigned char *uri_string;
-  char *filename=NULL;
+  char *filename = NULL;
   
   raptor_init();
   
   if(argc > 1) {
-    filename=argv[1];
-    fh=fopen(filename, "r");
+    filename = argv[1];
+    fh = fopen(filename, "r");
     if(!fh) {
       fprintf(stderr, "%s: Cannot open file %s - %s\n", argv[0], filename,
               strerror(errno));
@@ -828,32 +828,32 @@ main(int argc, char *argv[])
     }
   } else {
     filename="<stdin>";
-    fh=stdin;
+    fh = stdin;
   }
 
   memset(&rdf_parser, 0, sizeof(raptor_parser));
   memset(&n3_parser, 0, sizeof(raptor_n3_parser));
 
   yylex_init(&n3_parser.scanner);
-  scanner=n3_parser.scanner;
+  scanner = n3_parser.scanner;
   n3_lexer_set_in(fh, scanner);
   n3_lexer_set_extra(&rdf_parser, scanner);
 
   /* Initialise enough of the parser and locator to get error messages */
   rdf_parser.context=&n3_parser;
-  n3_parser.lineno=1;
-  rdf_parser.locator.file=filename;
+  n3_parser.lineno = 1;
+  rdf_parser.locator.file = filename;
   rdf_parser.locator.column= -1;
 
-  uri_string=raptor_uri_filename_to_uri_string(filename);
-  rdf_parser.base_uri=raptor_new_uri(uri_string);
+  uri_string = raptor_uri_filename_to_uri_string(filename);
+  rdf_parser.base_uri = raptor_new_uri(uri_string);
   RAPTOR_FREE(cstring, (void*)uri_string);
   
   while(1) {
     memset(&lval, 0, sizeof(YYSTYPE));
     if(n3_lexer_get_text(scanner) != NULL)
       printf("yyinput '%s'\n", n3_lexer_get_text(scanner));
-    token=yylex(&lval, scanner);
+    token = yylex(&lval, scanner);
 #ifdef RAPTOR_DEBUG
     printf("token %s\n", n3_token_print(raptor_world_instance(), token, &lval)); /* FIXME */
 #else

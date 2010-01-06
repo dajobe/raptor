@@ -117,7 +117,7 @@ raptor_new_identifier_v2(raptor_world* world,
 {
   raptor_identifier *identifier;
 
-  identifier=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1,
+  identifier = (raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1,
                                                sizeof(raptor_identifier));
   if(!identifier) {
     if(uri)
@@ -134,16 +134,16 @@ raptor_new_identifier_v2(raptor_world* world,
     return NULL;
   }
 
-  identifier->world=world;
-  identifier->type=type;
-  identifier->is_malloced=1;
+  identifier->world = world;
+  identifier->type = type;
+  identifier->is_malloced = 1;
 
   /* SHARED */
-  identifier->uri=uri;
-  identifier->id=id;
-  identifier->literal=literal;
-  identifier->literal_datatype=literal_datatype;
-  identifier->literal_language=literal_language;
+  identifier->uri = uri;
+  identifier->id = id;
+  identifier->literal = literal;
+  identifier->literal_datatype = literal_datatype;
+  identifier->literal_language = literal_language;
   
   return identifier;
 }
@@ -165,17 +165,17 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 
   raptor_free_identifier(dest);
 
-  dest->world=src->world;
-  dest->type=src->type;
-  dest->uri_source=src->uri_source;
-  dest->ordinal=src->ordinal;
+  dest->world = src->world;
+  dest->type = src->type;
+  dest->uri_source = src->uri_source;
+  dest->ordinal = src->ordinal;
 
-  dest->uri=raptor_uri_copy_v2(src->world, src->uri);
+  dest->uri = raptor_uri_copy_v2(src->world, src->uri);
 
   if(src->id) {
-    len=strlen((char*)src->id);
+    len = strlen((char*)src->id);
     
-    dest->id=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    dest->id = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
     if(!dest->id) {
       raptor_free_identifier(dest);
       return 1;
@@ -184,9 +184,9 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
   }
 
   if(src->literal_language) {
-    len=strlen((char*)src->literal_language);
+    len = strlen((char*)src->literal_language);
     
-    dest->literal_language=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+    dest->literal_language = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
     if(!dest->literal_language) {
       raptor_free_identifier(dest);
       return 1;
@@ -194,7 +194,7 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
     strncpy((char*)dest->literal_language, (char*)src->literal_language, len+1);
   }
 
-  dest->literal_datatype=raptor_uri_copy_v2(src->world, src->literal_datatype);
+  dest->literal_datatype = raptor_uri_copy_v2(src->world, src->literal_datatype);
 
   return 0;
 }
@@ -214,27 +214,27 @@ raptor_free_identifier(raptor_identifier *identifier)
   
   if(identifier->uri) {
     raptor_free_uri_v2(identifier->world, identifier->uri);
-    identifier->uri=NULL;
+    identifier->uri = NULL;
   }
 
   if(identifier->id) {
     RAPTOR_FREE(cstring, (void*)identifier->id);
-    identifier->id=NULL;
+    identifier->id = NULL;
   }
 
   if(identifier->literal) {
     RAPTOR_FREE(cstring, (void*)identifier->literal);
-    identifier->literal=NULL;
+    identifier->literal = NULL;
   }
 
   if(identifier->literal_datatype) {
     raptor_free_uri_v2(identifier->world, identifier->literal_datatype);
-    identifier->literal_datatype=NULL;
+    identifier->literal_datatype = NULL;
   }
 
   if(identifier->literal_language) {
     RAPTOR_FREE(cstring, (void*)identifier->literal_language);
-    identifier->literal_language=NULL;
+    identifier->literal_language = NULL;
   }
 
   if(identifier->is_malloced)

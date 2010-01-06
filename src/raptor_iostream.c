@@ -81,7 +81,7 @@ raptor_iostream_calculate_modes(const raptor_iostream_handler2 * const handler2)
 }
 
 
-/* Return non-0 if handler is legal and OK for given mode (if not 0=ANY) */
+/* Return non-0 if handler is legal and OK for given mode (if not 0 = ANY) */
 static int
 raptor_iostream_check_handler(const raptor_iostream_handler2 * const handler2,
                               unsigned int user_mode)
@@ -117,13 +117,13 @@ raptor_new_iostream_from_handler2(void *user_data,
   if(!raptor_iostream_check_handler(handler2, 0))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
                                         sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
-  iostr->handler=handler2;
-  iostr->user_data=(void*)user_data;
+  iostr->handler = handler2;
+  iostr->user_data = (void*)user_data;
   iostr->mode = raptor_iostream_calculate_modes(handler2);
   
   if(iostr->handler->init && 
@@ -152,13 +152,13 @@ raptor_iostream*
 raptor_new_iostream_from_handler(void *user_data,
                                  const raptor_iostream_handler *handler)
 {
-  raptor_iostream* iostr=NULL;
+  raptor_iostream* iostr = NULL;
   raptor_iostream_handler2 *handler2;
 
   if(!handler)
     return NULL;
 
-  handler2=(raptor_iostream_handler2*)RAPTOR_CALLOC(raptor_iostream_handler2, 1,
+  handler2 = (raptor_iostream_handler2*)RAPTOR_CALLOC(raptor_iostream_handler2, 1,
                                                    sizeof(raptor_iostream_handler2*));
   if(!handler2)
     return NULL;
@@ -170,7 +170,7 @@ raptor_new_iostream_from_handler(void *user_data,
   handler2->write_bytes = handler->write_bytes;
   handler2->write_end   = handler->write_end;
 
-  iostr=raptor_new_iostream_from_handler2(user_data, handler2);
+  iostr = raptor_new_iostream_from_handler2(user_data, handler2);
   if(iostr) {
     /* Ensure newly alloced structure is freed on iostream destruction */
     iostr->flags |= RAPTOR_IOSTREAM_FLAGS_FREE_HANDLER;
@@ -242,14 +242,14 @@ raptor_new_iostream_to_sink(void)
 static void
 raptor_filename_iostream_finish(void *user_data)
 {
-  FILE* handle=(FILE*)user_data;
+  FILE* handle = (FILE*)user_data;
   fclose(handle);
 }
 
 static int
 raptor_filename_iostream_write_byte(void *user_data, const int byte)
 {
-  FILE* handle=(FILE*)user_data;
+  FILE* handle = (FILE*)user_data;
   return (fputc(byte, handle) == byte);
 }
 
@@ -257,14 +257,14 @@ static int
 raptor_filename_iostream_write_bytes(void *user_data,
                                      const void *ptr, size_t size, size_t nmemb)
 {
-  FILE* handle=(FILE*)user_data;
+  FILE* handle = (FILE*)user_data;
   return (fwrite(ptr, size, nmemb, handle) == nmemb);
 }
 
 static void
 raptor_filename_iostream_write_end(void *user_data)
 {
-  FILE* handle=(FILE*)user_data;
+  FILE* handle = (FILE*)user_data;
   fclose(handle);
 }
 
@@ -272,14 +272,14 @@ static int
 raptor_filename_iostream_read_bytes(void *user_data,
                                     void *ptr, size_t size, size_t nmemb)
 {
-  FILE* handle=(FILE*)user_data;
+  FILE* handle = (FILE*)user_data;
   return fread(ptr, size, nmemb, handle);
 }
 
 static int
 raptor_filename_iostream_read_eof(void *user_data)
 {
-  FILE* handle=(FILE*)user_data;
+  FILE* handle = (FILE*)user_data;
   return feof(handle);
 }
 
@@ -309,24 +309,24 @@ raptor_new_iostream_to_filename(const char *filename)
   FILE *handle;
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_write_filename_handler;
-  const unsigned int mode=RAPTOR_IOSTREAM_MODE_WRITE;
+  const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
   
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  handle=fopen(filename, "wb");
+  handle = fopen(filename, "wb");
   if(!handle)
     return NULL;
   
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
   if(!iostr) {
     fclose(handle);
     return NULL;
   }
 
-  iostr->handler=handler2;
-  iostr->user_data=(void*)handle;
-  iostr->mode=mode;
+  iostr->handler = handler2;
+  iostr->user_data = (void*)handle;
+  iostr->mode = mode;
 
   if(iostr->handler->init && 
      iostr->handler->init(iostr->user_data)) {
@@ -365,7 +365,7 @@ raptor_new_iostream_to_file_handle(FILE *handle)
 {
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_write_file_handler;
-  const unsigned int mode=RAPTOR_IOSTREAM_MODE_WRITE;
+  const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
 
   if(!handle)
     return NULL;
@@ -373,14 +373,14 @@ raptor_new_iostream_to_file_handle(FILE *handle)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
                                         sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
-  iostr->handler=handler2;
-  iostr->user_data=(void*)handle;
-  iostr->mode=mode;
+  iostr->handler = handler2;
+  iostr->user_data = (void*)handle;
+  iostr->mode = mode;
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
     RAPTOR_FREE(raptor_iostream, iostr);
@@ -406,16 +406,16 @@ raptor_write_string_iostream_finish(void *user_data)
 {
   struct raptor_write_string_iostream_context* con;
   size_t len;
-  void *str=NULL;
+  void *str = NULL;
 
-  con=(struct raptor_write_string_iostream_context*)user_data;
-  len=raptor_stringbuffer_length(con->sb);
+  con = (struct raptor_write_string_iostream_context*)user_data;
+  len = raptor_stringbuffer_length(con->sb);
 
   *con->string_p=NULL;
   if(con->length_p)
     *con->length_p=len;
   
-  str=(void*)con->malloc_handler(len+1);
+  str = (void*)con->malloc_handler(len+1);
   if(str) {
     if(len)
       raptor_stringbuffer_copy_to_string(con->sb, (unsigned char*)str, len+1);
@@ -436,9 +436,9 @@ static int
 raptor_write_string_iostream_write_byte(void *user_data, const int byte)
 {
   struct raptor_write_string_iostream_context* con;
-  unsigned char buf=(unsigned char)byte;
+  unsigned char buf = (unsigned char)byte;
 
-  con=(struct raptor_write_string_iostream_context*)user_data;
+  con = (struct raptor_write_string_iostream_context*)user_data;
   return raptor_stringbuffer_append_counted_string(con->sb, &buf, 1, 1);
 }
 
@@ -449,7 +449,7 @@ raptor_write_string_iostream_write_bytes(void *user_data, const void *ptr,
 {
   struct raptor_write_string_iostream_context* con;
 
-  con=(struct raptor_write_string_iostream_context*)user_data;
+  con = (struct raptor_write_string_iostream_context*)user_data;
   return raptor_stringbuffer_append_counted_string(con->sb, 
                  (const unsigned char*)ptr, size * nmemb, 1);
 }
@@ -488,43 +488,43 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
   raptor_iostream* iostr;
   struct raptor_write_string_iostream_context* con;
   const raptor_iostream_handler2* handler2=&raptor_iostream_write_string_handler;
-  const unsigned int mode=RAPTOR_IOSTREAM_MODE_WRITE;
+  const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
   
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
                                         sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
-  con=(struct raptor_write_string_iostream_context*)RAPTOR_CALLOC(raptor_write_string_iostream_context, 1, sizeof(struct raptor_write_string_iostream_context));
+  con = (struct raptor_write_string_iostream_context*)RAPTOR_CALLOC(raptor_write_string_iostream_context, 1, sizeof(struct raptor_write_string_iostream_context));
   if(!con) {
     RAPTOR_FREE(raptor_iostream, iostr);
     return NULL;
   }
 
-  con->sb=raptor_new_stringbuffer();
+  con->sb = raptor_new_stringbuffer();
   if(!con->sb) {
     RAPTOR_FREE(raptor_iostream, iostr);
     RAPTOR_FREE(raptor_write_string_iostream_context, con);
     return NULL;
   }
 
-  con->string_p=string_p;
+  con->string_p = string_p;
   *string_p=NULL;
 
-  con->length_p=length_p;  
+  con->length_p = length_p;  
   if(length_p)
     *length_p=0;
 
   if(malloc_handler)
-    con->malloc_handler=malloc_handler;
+    con->malloc_handler = malloc_handler;
   else
-    con->malloc_handler=raptor_alloc_memory;
+    con->malloc_handler = raptor_alloc_memory;
   
-  iostr->handler=handler2;
-  iostr->user_data=(void*)con;
+  iostr->handler = handler2;
+  iostr->user_data = (void*)con;
   iostr->mode = mode;
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
@@ -575,7 +575,7 @@ raptor_new_iostream_from_filename(const char *filename)
   FILE *handle;
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_read_filename_handler;
-  const unsigned int mode=RAPTOR_IOSTREAM_MODE_READ;
+  const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
   if(!filename)
     return NULL;
@@ -583,19 +583,19 @@ raptor_new_iostream_from_filename(const char *filename)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  handle=fopen(filename, "rb");
+  handle = fopen(filename, "rb");
   if(!handle)
     return NULL;
   
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
                                         sizeof(raptor_iostream));
   if(!iostr) {
     fclose(handle);
     return NULL;
   }
 
-  iostr->handler=handler2;
-  iostr->user_data=(void*)handle;
+  iostr->handler = handler2;
+  iostr->user_data = (void*)handle;
   iostr->mode = mode;
 
   if(iostr->handler->init && 
@@ -635,7 +635,7 @@ raptor_new_iostream_from_file_handle(FILE *handle)
 {
   raptor_iostream* iostr;
   const raptor_iostream_handler2* handler2=&raptor_iostream_read_file_handle_handler;
-  const unsigned int mode=RAPTOR_IOSTREAM_MODE_READ;
+  const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
   if(!handle)
     return NULL;
@@ -643,13 +643,13 @@ raptor_new_iostream_from_file_handle(FILE *handle)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
                                         sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
-  iostr->handler=handler2;
-  iostr->user_data=(void*)handle;
+  iostr->handler = handler2;
+  iostr->user_data = (void*)handle;
   iostr->mode = mode;
 
   if(iostr->handler->init && 
@@ -750,7 +750,7 @@ raptor_iostream_write_bytes(raptor_iostream *iostr,
 int
 raptor_iostream_write_string(raptor_iostream *iostr, const void *string)
 {
-  size_t len=strlen((const char*)string);
+  size_t len = strlen((const char*)string);
   return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
 }
 
@@ -808,7 +808,7 @@ int
 raptor_iostream_write_uri_v2(raptor_world* world, raptor_iostream* iostr, raptor_uri* uri)
 {
   size_t len;
-  const void *string=raptor_uri_as_counted_string_v2(world, uri, &len);
+  const void *string = raptor_uri_as_counted_string_v2(world, uri, &len);
   return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
 }
 
@@ -866,9 +866,9 @@ raptor_iostream_write_stringbuffer(raptor_iostream* iostr,
   if(!sb)
     return 1;
   
-  length=(int)raptor_stringbuffer_length(sb);
+  length = (int)raptor_stringbuffer_length(sb);
   if(length) {
-    int count=raptor_iostream_write_bytes(iostr,
+    int count = raptor_iostream_write_bytes(iostr,
                                           raptor_stringbuffer_as_string(sb),
                                           1, length);
     return (count != length);
@@ -894,17 +894,17 @@ raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
    */
   unsigned char buf[20];
   unsigned char *p;
-  int i=integer;
-  size_t length=1;
+  int i = integer;
+  size_t length = 1;
   if(integer < 0) {
     length++;
     i= -integer;
   }
-  while(i/=10)
+  while(i /= 10)
     length++;
 
-  p=buf+length-1;
-  i=integer;
+  p = buf+length-1;
+  i = integer;
   if(i < 0)
     i= -i;
   do {
@@ -941,20 +941,20 @@ raptor_iostream_format_hexadecimal(raptor_iostream* iostr,
   if(width <1)
     return 1;
   
-  buf=(unsigned char*)RAPTOR_MALLOC(cstring, width);
+  buf = (unsigned char*)RAPTOR_MALLOC(cstring, width);
   if(!buf)
     return 1;
   
-  p=buf+width-1;
+  p = buf+width-1;
   do {
-    unsigned int digit=(integer & 15);
+    unsigned int digit = (integer & 15);
     *p-- =(digit < 10) ? '0'+digit : 'A'+(digit-10);
     integer >>= 4;
   } while(integer);
   while(p >= buf)
     *p-- = '0';
   
-  rc=raptor_iostream_write_bytes(iostr, buf, 1, width);
+  rc = raptor_iostream_write_bytes(iostr, buf, 1, width);
   RAPTOR_FREE(cstring, buf);
   return rc;
 }
@@ -987,7 +987,7 @@ raptor_iostream_read_bytes(raptor_iostream *iostr,
   if(!iostr->handler->read_bytes)
     count= -1;
   else
-    count=iostr->handler->read_bytes(iostr->user_data, ptr, size, nmemb);
+    count = iostr->handler->read_bytes(iostr->user_data, ptr, size, nmemb);
 
   if(count > 0)
     iostr->offset += (size*count);
@@ -1039,7 +1039,7 @@ raptor_read_string_iostream_finish(void *user_data)
 {
   struct raptor_read_string_iostream_context* con;
 
-  con=(struct raptor_read_string_iostream_context*)user_data;
+  con = (struct raptor_read_string_iostream_context*)user_data;
   RAPTOR_FREE(raptor_read_string_iostream_context, con);
   return;
 }
@@ -1055,14 +1055,14 @@ raptor_read_string_iostream_read_bytes(void *user_data, void *ptr,
   if(!ptr || size <= 0 || !nmemb)
     return -1;
   
-  con=(struct raptor_read_string_iostream_context*)user_data;
+  con = (struct raptor_read_string_iostream_context*)user_data;
   if(con->offset >= con->length)
     return 0;
 
-  avail=(int)((con->length-con->offset) / size);  
+  avail = (int)((con->length-con->offset) / size);  
   if(avail < nmemb)
-    avail=nmemb;
-  blen=(avail * size);
+    avail = nmemb;
+  blen = (avail * size);
   memcpy(ptr, (char*)con->string + con->offset, blen);
   con->offset+= blen;
   
@@ -1074,7 +1074,7 @@ raptor_read_string_iostream_read_eof(void *user_data)
 {
   struct raptor_read_string_iostream_context* con;
 
-  con=(struct raptor_read_string_iostream_context*)user_data;
+  con = (struct raptor_read_string_iostream_context*)user_data;
   return (con->offset >= con->length);
 }
 
@@ -1106,7 +1106,7 @@ raptor_new_iostream_from_string(void *string, size_t length)
   raptor_iostream* iostr;
   struct raptor_read_string_iostream_context* con;
   const raptor_iostream_handler2* handler2=&raptor_iostream_read_string_handler;
-  const unsigned int mode=RAPTOR_IOSTREAM_MODE_READ;
+  const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
   if(!string)
     return NULL;
@@ -1114,22 +1114,22 @@ raptor_new_iostream_from_string(void *string, size_t length)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr=(raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
                                         sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
-  con=(struct raptor_read_string_iostream_context*)RAPTOR_CALLOC(raptor_read_string_iostream_context, 1, sizeof(struct raptor_read_string_iostream_context));
+  con = (struct raptor_read_string_iostream_context*)RAPTOR_CALLOC(raptor_read_string_iostream_context, 1, sizeof(struct raptor_read_string_iostream_context));
   if(!con) {
     RAPTOR_FREE(raptor_iostream, iostr);
     return NULL;
   }
 
-  con->string=string;
-  con->length=length;
+  con->string = string;
+  con->length = length;
 
-  iostr->handler=handler2;
-  iostr->user_data=(void*)con;
+  iostr->handler = handler2;
+  iostr->user_data = (void*)con;
   iostr->mode = mode;
 
   if(iostr->handler->init && iostr->handler->init(iostr->user_data)) {
@@ -1176,30 +1176,30 @@ test_write_to_filename(const char* filename,
                        const char* test_string, size_t test_string_len,
                        const unsigned int expected_bytes_count)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   unsigned long count;
-  int rc=0;
+  int rc = 0;
   const char* const label="write iostream to filename";
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Testing %s '%s'\n", program, label, filename);
 #endif
 
-  iostr=raptor_new_iostream_to_filename(filename);
+  iostr = raptor_new_iostream_to_filename(filename);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s '%s'\n", program, label, filename);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_tell(iostr);
+  count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
@@ -1220,30 +1220,30 @@ test_write_to_file_handle(FILE* handle,
                           const char* test_string, size_t test_string_len,
                           const unsigned int expected_bytes_count)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   unsigned long count;
-  int rc=0;
+  int rc = 0;
   const char* const label="write iostream to file handle";
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr=raptor_new_iostream_to_file_handle(handle);
+  iostr = raptor_new_iostream_to_file_handle(handle);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_tell(iostr);
+  count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
-    rc=1;
+    rc = 1;
   }
 
   tidy:
@@ -1261,10 +1261,10 @@ static int
 test_write_to_string(const char* test_string, size_t test_string_len,
                      const unsigned int expected_bytes_count)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   unsigned long count;
-  int rc=0;
-  void *string=NULL;
+  int rc = 0;
+  void *string = NULL;
   size_t string_len;
   const char* const label="write iostream to a string";
 
@@ -1273,25 +1273,25 @@ test_write_to_string(const char* test_string, size_t test_string_len,
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr=raptor_new_iostream_to_string(&string, &string_len, NULL);
+  iostr = raptor_new_iostream_to_string(&string, &string_len, NULL);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create write iostream to string\n",
             program);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_tell(iostr);
+  count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
-    rc=1;
+    rc = 1;
   }
 
-  raptor_free_iostream(iostr); iostr=NULL;
+  raptor_free_iostream(iostr); iostr = NULL;
 
   if(!string) {
     fprintf(stderr, "%s: %s failed to create a string\n", program, label);
@@ -1320,30 +1320,30 @@ static int
 test_write_to_sink(const char* test_string, size_t test_string_len,
                    const unsigned int expected_bytes_count)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   unsigned long count;
-  int rc=0;
+  int rc = 0;
   const char* const label="write iostream to sink";
 
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr=raptor_new_iostream_to_sink();
+  iostr = raptor_new_iostream_to_sink();
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
   raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
   raptor_iostream_write_byte(iostr, '\n');
   
-  count=raptor_iostream_tell(iostr);
+  count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
     fprintf(stderr, "%s: %s wrote %d bytes, expected %d\n", program, label,
             (int)count, expected_bytes_count);
-    rc=1;
+    rc = 1;
   }
 
   tidy:
@@ -1363,49 +1363,49 @@ test_read_from_filename(const char* filename,
                         const unsigned int expected_len,
                         const unsigned int expected_len2)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   char buffer[READ_BUFFER_SIZE];
   unsigned long count;
-  int rc=0;
+  int rc = 0;
   const char* const label="read iostream from filename";
 
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Testing %s '%s'\n", program, label, filename);
 #endif
 
-  iostr=raptor_new_iostream_from_filename(filename);
+  iostr = raptor_new_iostream_from_filename(filename);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s '%s'\n", program, label, filename);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
   
-  count=raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
-  count=raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
   if(count != expected_len2) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len2);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
   if(!raptor_iostream_read_eof(iostr)) {
     fprintf(stderr, "%s: %s not EOF as expected\n", program, label);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
   if(strncmp(buffer, test_string, test_string_len)) {
     fprintf(stderr, "%s: %s returned '%s' expected '%s'\n", program, label,
             buffer, test_string);
-    rc=1;
+    rc = 1;
   }
 
   tidy:
@@ -1425,47 +1425,47 @@ test_read_from_file_handle(FILE* handle,
                            const unsigned int expected_len,
                            const unsigned int expected_len2)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   char buffer[READ_BUFFER_SIZE];
   unsigned long count;
-  int rc=0;
+  int rc = 0;
   const char* const label="read iostream from file handle";
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr=raptor_new_iostream_from_file_handle(handle);
+  iostr = raptor_new_iostream_from_file_handle(handle);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
-  count=raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
-    rc=1;
+    rc = 1;
   }
 
-  count=raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
   if(count != expected_len2) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len2);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
   if(!raptor_iostream_read_eof(iostr)) {
     fprintf(stderr, "%s: %s not EOF as expected\n", program, label);
-    rc=1;
+    rc = 1;
   }
 
   if(strncmp(buffer, test_string, test_string_len)) {
     fprintf(stderr, "%s: %s returned '%s' expected '%s'\n", program, label,
             buffer, test_string);
-    rc=1;
+    rc = 1;
   }
   
   tidy:
@@ -1483,39 +1483,39 @@ static int
 test_read_from_string(const char* test_string, size_t test_string_len,
                       const unsigned int expected_len)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   char buffer[READ_BUFFER_SIZE];
   unsigned long count;
-  int rc=0;
+  int rc = 0;
   const char* const label="read iostream from a string";
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
   
-  iostr=raptor_new_iostream_from_string((void*)test_string, test_string_len);
+  iostr = raptor_new_iostream_from_string((void*)test_string, test_string_len);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
-  count=raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
-    rc=1;
+    rc = 1;
   }
 
   if(!raptor_iostream_read_eof(iostr)) {
     fprintf(stderr, "%s: %s not EOF as expected\n", program, label);
-    rc=1;
+    rc = 1;
   }
 
   if(strncmp(buffer, test_string, test_string_len)) {
     fprintf(stderr, "%s: %s returned '%s' expected '%s'\n", program, label,
             buffer, test_string);
-    rc=1;
+    rc = 1;
   }
   
   tidy:
@@ -1532,33 +1532,33 @@ test_read_from_string(const char* test_string, size_t test_string_len,
 static int
 test_read_from_sink(size_t read_len, size_t expected_len)
 {
-  raptor_iostream *iostr=NULL;
+  raptor_iostream *iostr = NULL;
   char buffer[READ_BUFFER_SIZE];
   unsigned long count;
-  int rc=0;
+  int rc = 0;
   const char* const label="read iostream from sink";
   
 #ifdef RAPTOR_DEBUG
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
-  expected_len=0;
-  iostr=raptor_new_iostream_from_sink();
+  expected_len = 0;
+  iostr = raptor_new_iostream_from_sink();
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
-    rc=1;
+    rc = 1;
     goto tidy;
   }
 
-  count=raptor_iostream_read_bytes(iostr, buffer, 1, read_len);
+  count = raptor_iostream_read_bytes(iostr, buffer, 1, read_len);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
-    rc=1;
+    rc = 1;
   }
 
   if(!raptor_iostream_read_eof(iostr)) {
     fprintf(stderr, "%s: %s not EOF as expected\n", program, label);
-    rc=1;
+    rc = 1;
   }
 
   tidy:
@@ -1582,15 +1582,15 @@ test_read_from_sink(size_t read_len, size_t expected_len)
 int
 main(int argc, char *argv[]) 
 {
-  FILE *handle=NULL;
-  int failures=0;
+  FILE *handle = NULL;
+  int failures = 0;
   
-  program=raptor_basename(argv[0]);
+  program = raptor_basename(argv[0]);
 
   /* Write tests */
   failures+= test_write_to_filename((const char*)OUT_FILENAME,
                          TEST_STRING, TEST_STRING_LEN, (int)OUT_BYTES_COUNT);
-  handle=fopen((const char*)OUT_FILENAME, "wb");
+  handle = fopen((const char*)OUT_FILENAME, "wb");
   if(!handle) {
     fprintf(stderr, "%s: Failed to create write file handle to file %s\n",
             program, OUT_FILENAME);
@@ -1611,7 +1611,7 @@ main(int argc, char *argv[])
 
 
   /* Read tests */
-  handle=fopen((const char*)IN_FILENAME, "wb");
+  handle = fopen((const char*)IN_FILENAME, "wb");
   if(!handle) {
     fprintf(stderr, "%s: Failed to create write handle to file %s\n",
             program, IN_FILENAME);
@@ -1623,7 +1623,7 @@ main(int argc, char *argv[])
     failures+= test_read_from_filename((const char*)IN_FILENAME,
                                        TEST_STRING, TEST_STRING_LEN,
                                        TEST_STRING_LEN, 0);
-    handle=fopen((const char*)IN_FILENAME, "rb");
+    handle = fopen((const char*)IN_FILENAME, "rb");
     if(!handle) {
       fprintf(stderr, "%s: Failed to create read file handle to file %s\n",
               program, IN_FILENAME);
@@ -1632,7 +1632,7 @@ main(int argc, char *argv[])
       failures+= test_read_from_file_handle(handle,
                                             TEST_STRING, TEST_STRING_LEN,
                                             TEST_STRING_LEN, 0);
-      fclose(handle); handle=NULL;
+      fclose(handle); handle = NULL;
     }
   }
   

@@ -68,7 +68,7 @@ typedef struct raptor_librdfa_parser_context_s raptor_librdfa_parser_context;
 static int
 raptor_librdfa_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  /*raptor_librdfa_parser_context *librdfa_parser=(raptor_librdfa_parser_context*)rdf_parser->context; */
+  /*raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context; */
   return 0;
 }
 
@@ -76,12 +76,12 @@ raptor_librdfa_parse_init(raptor_parser* rdf_parser, const char *name)
 static void
 raptor_librdfa_parse_terminate(raptor_parser* rdf_parser)
 {
-  raptor_librdfa_parser_context *librdfa_parser=(raptor_librdfa_parser_context*)rdf_parser->context;
+  raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
 
   if(librdfa_parser->context) {
     rdfa_parse_end(librdfa_parser->context);
     rdfa_free_context(librdfa_parser->context);
-    librdfa_parser->context=NULL;
+    librdfa_parser->context = NULL;
   }
 }
 
@@ -89,12 +89,12 @@ raptor_librdfa_parse_terminate(raptor_parser* rdf_parser)
 static void
 raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
 {
-  raptor_parser* parser=(raptor_parser*)callback_data;
+  raptor_parser* parser = (raptor_parser*)callback_data;
   raptor_statement *s=&parser->statement;
-  raptor_uri *subject_uri=NULL;
-  raptor_uri *predicate_uri=NULL;
-  raptor_uri *object_uri=NULL;
-  raptor_uri *datatype_uri=NULL;
+  raptor_uri *subject_uri = NULL;
+  raptor_uri *predicate_uri = NULL;
+  raptor_uri *object_uri = NULL;
+  raptor_uri *datatype_uri = NULL;
 
   if(!triple->subject || !triple->predicate || !triple->object) {
     RAPTOR_FATAL1("Triple has NULL parts\n");
@@ -113,50 +113,50 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     s->subject= (triple->subject + 2);
   } else {
     s->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-    subject_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->subject);
+    subject_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)triple->subject);
     if(!subject_uri)
       goto cleanup;
-    s->subject=subject_uri;
+    s->subject = subject_uri;
   }
   
 
-  predicate_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->predicate);
+  predicate_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)triple->predicate);
   if(!predicate_uri)
     goto cleanup;
-  s->predicate=predicate_uri;
-  s->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  s->predicate = predicate_uri;
+  s->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
  
   s->object = triple->object;
-  s->object_literal_datatype=NULL;
-  s->object_literal_language=NULL;
+  s->object_literal_datatype = NULL;
+  s->object_literal_language = NULL;
   if(triple->object_type == RDF_TYPE_IRI) {
     if((triple->object[0] == '_') && (triple->object[1] == ':')) {
       s->object_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
       s->object = (triple->object + 2);
     } else {
       s->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-      object_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->object);
+      object_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)triple->object);
       if(!object_uri)
         goto cleanup;
-      s->object=object_uri;
+      s->object = object_uri;
     }
   } else if(triple->object_type == RDF_TYPE_PLAIN_LITERAL) {
-    s->object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    s->object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
     if(triple->language)
-      s->object_literal_language=(const unsigned char*)triple->language;
+      s->object_literal_language = (const unsigned char*)triple->language;
   } else if(triple->object_type == RDF_TYPE_XML_LITERAL) {
     s->object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
   } else if(triple->object_type == RDF_TYPE_TYPED_LITERAL) {
-    s->object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    s->object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
     if(triple->language)
-      s->object_literal_language=(const unsigned char*)triple->language;
+      s->object_literal_language = (const unsigned char*)triple->language;
     if(triple->datatype) {
-      datatype_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)triple->datatype);
+      datatype_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)triple->datatype);
       if(!datatype_uri)
         goto cleanup;
-      s->object_literal_datatype=datatype_uri;
+      s->object_literal_datatype = datatype_uri;
       /* If datatype, no language allowed */
-      s->object_literal_language=NULL;
+      s->object_literal_language = NULL;
     }
   } else {
     RAPTOR_FATAL2("Triple has unknown object type %d\n", s->object_type);
@@ -188,7 +188,7 @@ raptor_librdfa_sax2_new_namespace_handler(void *user_data,
                                           raptor_namespace* nspace)
 {
   raptor_parser* rdf_parser;
-  rdf_parser=(raptor_parser*)user_data;
+  rdf_parser = (raptor_parser*)user_data;
   raptor_parser_start_namespace(rdf_parser, nspace);
 }
 
@@ -198,28 +198,28 @@ static int
 raptor_librdfa_parse_start(raptor_parser* rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
-  raptor_librdfa_parser_context *librdfa_parser=(raptor_librdfa_parser_context*)rdf_parser->context;
+  raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
   int rc;
-  char* base_uri_string=NULL;
+  char* base_uri_string = NULL;
   
-  locator->line=1;
-  locator->column=0;
-  locator->byte=0;
+  locator->line = 1;
+  locator->column = 0;
+  locator->byte = 0;
 
   if(rdf_parser->base_uri)
-    base_uri_string=(char*)raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
+    base_uri_string = (char*)raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
 
   if(librdfa_parser->context)
     rdfa_free_context(librdfa_parser->context);
-  librdfa_parser->context=rdfa_create_context(base_uri_string);
+  librdfa_parser->context = rdfa_create_context(base_uri_string);
   if(!librdfa_parser->context)
     return 1;
 
-  librdfa_parser->context->namespace_handler=raptor_librdfa_sax2_new_namespace_handler;
-  librdfa_parser->context->namespace_handler_user_data=rdf_parser;
+  librdfa_parser->context->namespace_handler = raptor_librdfa_sax2_new_namespace_handler;
+  librdfa_parser->context->namespace_handler_user_data = rdf_parser;
   librdfa_parser->context->error_handlers=&rdf_parser->error_handlers;
 
-  librdfa_parser->context->callback_data=rdf_parser;
+  librdfa_parser->context->callback_data = rdf_parser;
   rdfa_set_triple_handler(librdfa_parser->context, 
                           raptor_librdfa_generate_statement);
 
@@ -236,8 +236,8 @@ raptor_librdfa_parse_chunk(raptor_parser* rdf_parser,
                            const unsigned char *s, size_t len,
                            int is_end)
 {
-  raptor_librdfa_parser_context *librdfa_parser=(raptor_librdfa_parser_context*)rdf_parser->context;
-  int rval=rdfa_parse_chunk(librdfa_parser->context, (char*)s, len, is_end);
+  raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
+  int rval = rdfa_parse_chunk(librdfa_parser->context, (char*)s, len, is_end);
   return rval != RDFA_PARSE_SUCCESS;
 }
 
@@ -248,11 +248,11 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
                                       const unsigned char *suffix, 
                                       const char *mime_type)
 {
-  int score=0;
+  int score = 0;
   
   if(identifier) {
     if(strstr((const char*)identifier, "RDFa"))
-      score=10;
+      score = 10;
   }
   
   if(buffer && len) {
@@ -260,7 +260,7 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
 #define  HAS_RDFA_2 (raptor_memstr((const char*)buffer, len, "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd") != NULL)
 
     if(HAS_RDFA_1 || HAS_RDFA_2)
-      score=10;
+      score = 10;
   }
   
   return score;
@@ -270,7 +270,7 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
 static int
 raptor_librdfa_parser_register_factory(raptor_parser_factory *factory) 
 {
-  int rc=0;
+  int rc = 0;
 
   factory->context_length     = sizeof(raptor_librdfa_parser_context);
 
@@ -282,7 +282,7 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_librdfa_parse_chunk;
   factory->recognise_syntax = raptor_librdfa_parse_recognise_syntax;
 
-  rc=raptor_parser_factory_add_uri(factory, 
+  rc = raptor_parser_factory_add_uri(factory, 
                                 (const unsigned char*)"http://www.w3.org/TR/rdfa/");
 
   return rc;

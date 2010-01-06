@@ -55,11 +55,11 @@ int main (int argc, char *argv[])
   raptor_www *www;
   const char *user_agent="raptor-www-test";
   raptor_uri *uri;
-  void *string=NULL;
-  size_t string_length=0;
+  void *string = NULL;
+  size_t string_length = 0;
   
-  if(argc>1)
-    uri_string=argv[1];
+  if(argc > 1)
+    uri_string = argv[1];
   else
     uri_string="http://librdf.org/";
 
@@ -67,13 +67,13 @@ int main (int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
 
-  uri=raptor_new_uri_v2(world, (const unsigned char*)uri_string);
+  uri = raptor_new_uri_v2(world, (const unsigned char*)uri_string);
   if(!uri) {
     fprintf(stderr, "Failed to create Raptor URI for %s\n", uri_string);
     exit(1);
   }
   
-  www=raptor_www_new_v2(world);
+  www = raptor_www_new_v2(world);
 
   raptor_www_set_content_type_handler(www, write_content_type, (void*)stderr);
   raptor_www_set_user_agent(www, user_agent);

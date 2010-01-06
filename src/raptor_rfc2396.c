@@ -64,21 +64,21 @@ raptor_new_uri_detail(const unsigned char *uri_string)
   if(!uri_string)
     return NULL;
 
-  uri_len=strlen((const char*)uri_string);
+  uri_len = strlen((const char*)uri_string);
 
   /* The extra +5 is for the 5 \0s that may be added for each component 
    * even if the entire URI is empty 
    */
-  ud=(raptor_uri_detail*)RAPTOR_CALLOC(raptor_uri_detail,
+  ud = (raptor_uri_detail*)RAPTOR_CALLOC(raptor_uri_detail,
                                        sizeof(raptor_uri_detail)+uri_len+5+1,
                                        1);
   if(!ud)
     return NULL;
-  ud->uri_len=uri_len;
-  ud->buffer=(unsigned char*)((unsigned char*)ud + sizeof(raptor_uri_detail));
+  ud->uri_len = uri_len;
+  ud->buffer = (unsigned char*)((unsigned char*)ud + sizeof(raptor_uri_detail));
   
-  s=uri_string;
-  b=ud->buffer;
+  s = uri_string;
+  b = ud->buffer;
 
 
   /* Split the URI into it's syntactic components */
@@ -99,8 +99,8 @@ raptor_new_uri_detail(const unsigned char *uri_string)
   
     if(*s == ':') {
       /* it matches the URI scheme grammar, so store this as a scheme */
-      ud->scheme=b;
-      ud->scheme_len=s-uri_string;
+      ud->scheme = b;
+      ud->scheme_len = s-uri_string;
 
       while(*uri_string != ':')
         *b++ = *uri_string++;
@@ -110,20 +110,20 @@ raptor_new_uri_detail(const unsigned char *uri_string)
       /* and move past the : */
       s++;
     } else
-      s=uri_string;
+      s = uri_string;
   }
 
 
   /* authority */
   if(*s && s[1] && *s == '/' && s[1] == '/') {
-    ud->authority=b;
+    ud->authority = b;
 
-    s+=2; /* skip "//" */
+    s += 2; /* skip "//" */
     
     while(*s && *s != '/' && *s != '?' && *s != '#')
       *b++ = *s++;
     
-    ud->authority_len=b-ud->authority;
+    ud->authority_len = b-ud->authority;
     
     *b++ = '\0';
   }
@@ -131,12 +131,12 @@ raptor_new_uri_detail(const unsigned char *uri_string)
 
   /* path */
   if(*s && *s != '?' && *s != '#') {
-    ud->path=b;
+    ud->path = b;
     
     while(*s && *s != '?' && *s != '#')
       *b++ = *s++;
 
-    ud->path_len=b-ud->path;
+    ud->path_len = b-ud->path;
     
     *b++ = '\0';
   }
@@ -144,14 +144,14 @@ raptor_new_uri_detail(const unsigned char *uri_string)
 
   /* query */
   if(*s && *s == '?') {
-    ud->query=b;
+    ud->query = b;
     
     s++;
     
     while(*s && *s != '#')
       *b++ = *s++;
     
-    ud->query_len=b-ud->query;
+    ud->query_len = b-ud->query;
     
     *b++ = '\0';
   }
@@ -159,19 +159,19 @@ raptor_new_uri_detail(const unsigned char *uri_string)
   
   /* fragment identifier - RFC2396 Section 4.1 */
   if(*s && *s == '#') {
-    ud->fragment=b;
+    ud->fragment = b;
     
     s++;
     
     while(*s)
       *b++ = *s++;
     
-    ud->fragment_len=b-ud->fragment;
+    ud->fragment_len = b-ud->fragment;
     
     *b='\0';
   }
 
-  ud->is_hierarchical=(ud->path && *ud->path == '/');
+  ud->is_hierarchical = (ud->path && *ud->path == '/');
 
   return ud;
 }
@@ -188,7 +188,7 @@ raptor_free_uri_detail(raptor_uri_detail* uri_detail)
 unsigned char*
 raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
 {
-  size_t len=0;
+  size_t len = 0;
   unsigned char *buffer, *p;
   
   if(ud->scheme)
@@ -205,38 +205,38 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
   if(len_p)
     *len_p=len;
   
-  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
   if(!buffer)
     return NULL;
 
-  p=buffer;
+  p = buffer;
   
   if(ud->scheme) {
-    unsigned char *src=ud->scheme;
+    unsigned char *src = ud->scheme;
     while(*src)
       *p++ = *src++;
     *p++ = ':';
   }
   if(ud->authority) {
-    unsigned char *src=ud->authority;
+    unsigned char *src = ud->authority;
     *p++ = '/';
     *p++ = '/';
     while(*src)
       *p++ = *src++;
   }
   if(ud->path) {
-    unsigned char *src=ud->path;
+    unsigned char *src = ud->path;
     while(*src)
       *p++ = *src++;
   }
   if(ud->fragment) {
-    unsigned char *src=ud->fragment;
+    unsigned char *src = ud->fragment;
     *p++ = '#';
     while(*src)
       *p++ = *src++;
   }
   if(ud->query) {
-    unsigned char *src=ud->query;
+    unsigned char *src = ud->query;
     *p++ = '?';
     while(*src)
       *p++ = *src++;
@@ -262,10 +262,10 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
                                  const unsigned char *reference_uri,
                                  unsigned char *buffer, size_t length)
 {
-  raptor_uri_detail *ref=NULL;
-  raptor_uri_detail *base=NULL;
+  raptor_uri_detail *ref = NULL;
+  raptor_uri_detail *base = NULL;
   raptor_uri_detail result; /* static - pointers go to inside ref or base */
-  unsigned char *path_buffer=NULL;
+  unsigned char *path_buffer = NULL;
   unsigned char *p, *cur, *prev, *s;
   unsigned char last_char;
 
@@ -279,7 +279,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   *buffer = '\0';
   memset(&result, 0, sizeof(result));
 
-  ref=raptor_new_uri_detail(reference_uri);
+  ref = raptor_new_uri_detail(reference_uri);
   if(!ref)
     goto resolve_tidy;
   
@@ -289,12 +289,12 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     unsigned char c;
 
     /* Copy base URI to result up to '\0' or '#' */
-    for(p=buffer; (c= *base_uri) && c != '#'; p++, base_uri++)
+    for(p = buffer; (c= *base_uri) && c != '#'; p++, base_uri++)
       *p = c;
     *p='\0';
     
     if(ref->fragment) {
-      unsigned char *src=ref->fragment;
+      unsigned char *src = ref->fragment;
       /* Append any fragment */
       *p++ = '#';
       while(*src)
@@ -312,7 +312,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   
 
   /* now the reference URI must be schemeless, i.e. relative */
-  base=raptor_new_uri_detail(base_uri);
+  base = raptor_new_uri_detail(base_uri);
   if(!base)
     goto resolve_tidy;
 
@@ -350,14 +350,14 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   /* need to resolve relative path */
 
   /* Build the result path in path_buffer */
-  result.path_len=0;
+  result.path_len = 0;
 
   if(base->path)
     result.path_len += base->path_len;
   else {
     /* Add a missing path - makes the base URI 1 character longer */
-    base->path=(unsigned char*)"/"; /* static, but copied and not free()d  */
-    base->path_len=1;
+    base->path = (unsigned char*)"/"; /* static, but copied and not free()d  */
+    base->path_len = 1;
     base->uri_len++;
     result.path_len++;
   }
@@ -366,17 +366,17 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     result.path_len += ref->path_len;
 
   /* the resulting path can be no longer than result.path_len */
-  path_buffer=(unsigned char*)RAPTOR_MALLOC(cstring, result.path_len+1);
+  path_buffer = (unsigned char*)RAPTOR_MALLOC(cstring, result.path_len+1);
   if(!path_buffer)
     goto resolve_tidy;
   result.path = path_buffer;
   *path_buffer = '\0';
   
-  for(p=base->path + base->path_len-1; p > base->path && *p != '/'; p--)
+  for(p = base->path + base->path_len-1; p > base->path && *p != '/'; p--)
     ;
 
   if(p >= base->path) {
-    result.path_len=p-base->path+1;
+    result.path_len = p-base->path+1;
 
     /* Found a /, copy everything before that to path_buffer */
     strncpy((char*)path_buffer, (char*)base->path, result.path_len);
@@ -391,24 +391,24 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
 
 
   /* remove all "./" path components */
-  for(p=(prev=path_buffer); *p; p++) {
+  for(p = (prev = path_buffer); *p; p++) {
     if(*p != '/')
       continue;
 
     if(p == (prev+1) && *prev == '.') {
-      unsigned char *dest=prev;
+      unsigned char *dest = prev;
       
       p++;
       while(*dest)
         *dest++ = *p++;
       *dest= '\0';
       
-      p=prev;
+      p = prev;
       result.path_len -=2;
       if(!*p)
         break;
     } else {
-      prev=p+1;
+      prev = p+1;
     }
   }
   
@@ -432,12 +432,12 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
    *       prev-^       cur-^
    * and p points to the previous prev (can be NULL)
    */
-  prev=NULL;
-  cur=NULL;
-  p=NULL;
+  prev = NULL;
+  cur = NULL;
+  p = NULL;
   last_char='\0';
   
-  for(s=path_buffer; *s; last_char=*s++) {
+  for(s = path_buffer; *s; last_char=*s++) {
 
     /* find the path components */
     if(*s != '/') {
@@ -445,9 +445,9 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
       if(!last_char || last_char == '/') {
         /* Store 2 path components */
         if(!prev)
-          prev=s;
+          prev = s;
         else if(!cur)
-          cur=s;
+          cur = s;
       }
       continue;
     }
@@ -469,12 +469,12 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
        * (which means it is beyond the root such as a path "/foo/../..")
        */
       if(cur != (prev+3) || prev[0] != '.' || prev[1] != '.') {
-        unsigned char *dest=prev;
+        unsigned char *dest = prev;
         
         /* remove the <component>/../<next>
          *       prev-^       cur-^ ^-s 
          */
-        size_t len=s-prev+1; /* length of path component we are removing */
+        size_t len = s-prev+1; /* length of path component we are removing */
         
         s++;
         while(*s)
@@ -490,17 +490,17 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
            * prev to the previous prev path component
            * cur to NULL. Will be set by the next loop iteration since s
            *   points to a '/', last_char will be set to *s. */
-          s=prev-1;
-          prev=p;
-          cur=NULL;
-          p=NULL;
+          s = prev-1;
+          prev = p;
+          cur = NULL;
+          p = NULL;
         } else {
           /* Otherwise must start from the beginning again */
-          prev=NULL;
-          cur=NULL;
-          p=NULL;
+          prev = NULL;
+          cur = NULL;
+          p = NULL;
           last_char='\0';
-          s=path_buffer;
+          s = path_buffer;
         }
         
       }
@@ -509,9 +509,9 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
       /* otherwise this is not a special path component so 
        * shift the path components stack 
        */
-      p=prev;
-      prev=cur;
-      cur=NULL;
+      p = prev;
+      prev = cur;
+      cur = NULL;
     }
 
   } 
@@ -534,7 +534,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   /* RFC3986 Appendix C.2 / 5.4.2 Abnormal Examples
    * Remove leading /../ and /./ 
    */
-  for(p=result.path; p; ) {
+  for(p = result.path; p; ) {
     if(!strncmp((const char *)p, "/../", 4)) {
       result.path_len -= 3;
       memmove(p, p+3, result.path_len+1);
@@ -547,16 +547,16 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   
 
   if(ref->query) {
-    result.query=ref->query;
-    result.query_len=ref->query_len;
+    result.query = ref->query;
+    result.query_len = ref->query_len;
   }
   
   if(ref->fragment) {
-    result.fragment=ref->fragment;
-    result.fragment_len=ref->fragment_len;
+    result.fragment = ref->fragment;
+    result.fragment_len = ref->fragment_len;
   }
   
-  p=buffer;
+  p = buffer;
   if(result.scheme) {
     strncpy((char*)p, (const char*)result.scheme, result.scheme_len);
     p += result.scheme_len;
@@ -641,7 +641,7 @@ check_resolve(const char *base_uri, const char *reference_uri,
 static int
 check_parses(const char *uri_string) {
   raptor_uri_detail* ud;
-  ud=raptor_new_uri_detail((unsigned const char*)uri_string);
+  ud = raptor_new_uri_detail((unsigned const char*)uri_string);
   if(!ud) {
       fprintf(stderr, "%s: raptor_new_uri_detail(%s) FAILED to parse\n",
               program, uri_string);
@@ -660,9 +660,9 @@ int
 main(int argc, char *argv[]) 
 {
   const char *base_uri="http://example.org/bpath/cpath/d;p?querystr#frag";
-  int failures=0;
+  int failures = 0;
 
-  program=raptor_basename(argv[0]);
+  program = raptor_basename(argv[0]);
   
   fprintf(stderr, "%s: Using base URI '%s'\n", program, base_uri);
 
@@ -717,8 +717,8 @@ main(int argc, char *argv[])
   failures += check_resolve(base_uri, "./gpath/.", "http://example.org/bpath/cpath/gpath/");
   failures += check_resolve(base_uri, "gpath/./hpath", "http://example.org/bpath/cpath/gpath/hpath");
   failures += check_resolve(base_uri, "gpath/../hpath", "http://example.org/bpath/cpath/hpath");
-  failures += check_resolve(base_uri, "gpath;x=1/./y", "http://example.org/bpath/cpath/gpath;x=1/y");
-  failures += check_resolve(base_uri, "gpath;x=1/../y", "http://example.org/bpath/cpath/y");
+  failures += check_resolve(base_uri, "gpath;x = 1/./y", "http://example.org/bpath/cpath/gpath;x = 1/y");
+  failures += check_resolve(base_uri, "gpath;x = 1/../y", "http://example.org/bpath/cpath/y");
 
   failures += check_resolve(base_uri, "gpath?y/./x", "http://example.org/bpath/cpath/gpath?y/./x");
   failures += check_resolve(base_uri, "gpath?y/../x", "http://example.org/bpath/cpath/gpath?y/../x");
@@ -761,7 +761,7 @@ main(int argc, char *argv[])
   /* base URI and relative URI with no absolute path works */
   failures += check_resolve("foo:", "not_scheme:blah", "foo:not_scheme:blah");
 
-  /* Issue#000177 http://bugs.librdf.org/mantis/view.php?id=177 */
+  /* Issue#000177 http://bugs.librdf.org/mantis/view.php?id = 177 */
   failures += check_resolve("foo:1234", "9999", "foo:9999");
 
   return failures;

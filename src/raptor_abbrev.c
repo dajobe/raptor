@@ -63,7 +63,7 @@ raptor_new_abbrev_node(raptor_world* world,
                        raptor_uri *datatype, const unsigned char *language)
 {
   unsigned char *string;
-  raptor_abbrev_node* node=NULL;
+  raptor_abbrev_node* node = NULL;
   
   if(node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
     return NULL;
@@ -85,7 +85,7 @@ raptor_new_abbrev_node(raptor_world* world,
           break;
           
         case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-          string=(unsigned char*)RAPTOR_MALLOC(blank,
+          string = (unsigned char*)RAPTOR_MALLOC(blank,
                                                strlen((char*)node_data)+1);
           if(!string)
             goto oom;
@@ -112,7 +112,7 @@ raptor_new_abbrev_node(raptor_world* world,
 
           if(language) {
             unsigned char *lang;
-            lang=(unsigned char*)RAPTOR_MALLOC(language,
+            lang = (unsigned char*)RAPTOR_MALLOC(language,
                                                strlen((const char*)language)+1);
             if(!lang) {
               RAPTOR_FREE(literal, string);
@@ -326,7 +326,7 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
   if(!lookup_node)
     return NULL;
 
-  rv_node=(raptor_abbrev_node*)raptor_avltree_search(nodes, lookup_node);
+  rv_node = (raptor_abbrev_node*)raptor_avltree_search(nodes, lookup_node);
   
   if(created_p)
     *created_p=(!rv_node);
@@ -350,14 +350,14 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
 static raptor_abbrev_node**
 raptor_new_abbrev_po(raptor_abbrev_node* predicate, raptor_abbrev_node* object)
 {
-  raptor_abbrev_node** nodes=NULL;
+  raptor_abbrev_node** nodes = NULL;
   nodes = (raptor_abbrev_node**)RAPTOR_CALLOC(raptor_abbrev_nodes, 2,
                                               sizeof(raptor_abbrev_node*));
   if(!nodes)
     return NULL;
   
-  nodes[0]=predicate;
-  nodes[1]=object;
+  nodes[0] = predicate;
+  nodes[1] = object;
   
   return nodes;
 }
@@ -382,9 +382,9 @@ raptor_compare_abbrev_po(raptor_abbrev_node** nodes1,
                          raptor_abbrev_node** nodes2)
 {
   int d;
-  d=raptor_abbrev_node_cmp(nodes1[0], nodes2[0]);
+  d = raptor_abbrev_node_cmp(nodes1[0], nodes2[0]);
   if(!d)
-    d=raptor_abbrev_node_cmp(nodes1[1], nodes2[1]);
+    d = raptor_abbrev_node_cmp(nodes1[1], nodes2[1]);
 
   return d;
 }
@@ -441,7 +441,7 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
   subject = (raptor_abbrev_subject*)RAPTOR_CALLOC(raptor_subject, 1,
                                                   sizeof(raptor_abbrev_subject));
 
-  if (subject) {
+  if(subject) {
     subject->node = node;
     subject->node->ref_count++;
     subject->node->count_as_subject++;
@@ -533,7 +533,7 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
   int err;
   raptor_abbrev_node** nodes;
   
-  nodes=raptor_new_abbrev_po(predicate, object);
+  nodes = raptor_new_abbrev_po(predicate, object);
   if(!nodes)
     return -1;
 
@@ -690,7 +690,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   unsigned char *subj;
   unsigned char *pred;
   unsigned char *obj;
-  raptor_avltree_iterator* iter=NULL;
+  raptor_avltree_iterator* iter = NULL;
 
   /* Note: The raptor_abbrev_node field passed as the first argument for
    * raptor_statement_part_as_string() is somewhat arbitrary, since as
@@ -702,7 +702,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
                                          subject->node->type, NULL, NULL);
 
   if(subject->type) {
-      obj=raptor_statement_part_as_string(subject->type->value.resource.uri,
+      obj = raptor_statement_part_as_string(subject->type->value.resource.uri,
                                           subject->type->type,
                                           subject->type->value.literal.datatype,
                                           subject->type->value.literal.language);
@@ -710,7 +710,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
       RAPTOR_FREE(cstring, obj);
   }
   
-  for(i=0; i < raptor_sequence_size(subject->elements); i++) {
+  for(i = 0; i < raptor_sequence_size(subject->elements); i++) {
 
     raptor_abbrev_node* o = raptor_sequence_get_at(subject->elements, i);
     if(o) {
@@ -725,10 +725,10 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   }
 
 
-  iter=raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
+  iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1);
   while(iter) {
     raptor_abbrev_node** nodes;
-    nodes=(raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
+    nodes = (raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
     if(!nodes)
       break;
     raptor_print_abbrev_po(stderr, nodes);
@@ -796,8 +796,8 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
                                int* namespace_count,
                                raptor_abbrev_node* node)
 {
-  unsigned char* name=NULL;  /* where to split predicate name */
-  size_t name_len=1;
+  unsigned char* name = NULL;  /* where to split predicate name */
+  size_t name_len = 1;
   unsigned char *uri_string;
   size_t uri_len;
   unsigned char c;
@@ -811,7 +811,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     return NULL;
   }
 
-  qname=raptor_namespaces_qname_from_uri(nstack, 
+  qname = raptor_namespaces_qname_from_uri(nstack, 
                                          node->value.resource.uri, 10);
   if(qname)
     return qname;
@@ -819,10 +819,10 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   uri_string = raptor_uri_as_counted_string_v2(node->world, node->value.resource.uri, &uri_len);
 
   p= uri_string;
-  name_len=uri_len;
+  name_len = uri_len;
   while(name_len >0) {
     if(raptor_xml_name_check(p, name_len, 10)) {
-      name=p;
+      name = p;
       break;
     }
     p++; name_len--;
@@ -832,7 +832,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     return NULL;
 
   c=*name; *name='\0';
-  ns_uri=raptor_new_uri_v2(node->world, uri_string);
+  ns_uri = raptor_new_uri_v2(node->world, uri_string);
   if(!ns_uri)
     return NULL;
   

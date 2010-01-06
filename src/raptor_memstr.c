@@ -64,10 +64,10 @@ raptor_memstr(const char *haystack, size_t haystack_len, const char *needle)
   if(!*needle)
     return haystack;
   
-  needle_len=strlen(needle);
+  needle_len = strlen(needle);
 
   /* loop invariant: haystack_len is always length of remaining buffer at *p */
-  for(p=haystack;
+  for(p = haystack;
       (haystack_len >= needle_len) && (c=*p);
       p++, haystack_len--) {
 

@@ -100,7 +100,7 @@ static const char* const xml_validation_warning_prefix="XML parser validation wa
 static void
 raptor_libxml_internalSubset(void* user_data, const xmlChar *name,
                              const xmlChar *ExternalID, const xmlChar *SystemID) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   libxml2_internalSubset(sax2->xc, name, ExternalID, SystemID);
 }
 
@@ -110,7 +110,7 @@ static void
 raptor_libxml_externalSubset(void* user_data, const xmlChar *name,
                              const xmlChar *ExternalID, const xmlChar *SystemID)
 {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   libxml2_externalSubset(sax2->xc, name, ExternalID, SystemID);
 }
 #endif
@@ -119,7 +119,7 @@ raptor_libxml_externalSubset(void* user_data, const xmlChar *name,
 static int
 raptor_libxml_isStandalone (void* user_data) 
 {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   return libxml2_isStandalone(sax2->xc);
 }
 
@@ -127,7 +127,7 @@ raptor_libxml_isStandalone (void* user_data)
 static int
 raptor_libxml_hasInternalSubset (void* user_data) 
 {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   return libxml2_hasInternalSubset(sax2->xc);
 }
 
@@ -135,7 +135,7 @@ raptor_libxml_hasInternalSubset (void* user_data)
 static int
 raptor_libxml_hasExternalSubset (void* user_data) 
 {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   return libxml2_hasExternalSubset(sax2->xc);
 }
 
@@ -143,21 +143,21 @@ raptor_libxml_hasExternalSubset (void* user_data)
 static xmlParserInputPtr
 raptor_libxml_resolveEntity(void* user_data, 
                             const xmlChar *publicId, const xmlChar *systemId) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   return libxml2_resolveEntity(sax2->xc, publicId, systemId);
 }
 
 
 static xmlEntityPtr
 raptor_libxml_getEntity(void* user_data, const xmlChar *name) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   return libxml2_getEntity(sax2->xc, name);
 }
 
 
 static xmlEntityPtr
 raptor_libxml_getParameterEntity(void* user_data, const xmlChar *name) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   return libxml2_getParameterEntity(sax2->xc, name);
 }
 
@@ -166,7 +166,7 @@ static void
 raptor_libxml_entityDecl(void* user_data, const xmlChar *name, int type,
                          const xmlChar *publicId, const xmlChar *systemId, 
                          xmlChar *content) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   libxml2_entityDecl(sax2->xc, name, type, publicId, systemId, content);
 }
 
@@ -175,28 +175,28 @@ static void
 raptor_libxml_unparsedEntityDecl(void* user_data, const xmlChar *name,
                                  const xmlChar *publicId, const xmlChar *systemId,
                                  const xmlChar *notationName) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   libxml2_unparsedEntityDecl(sax2->xc, name, publicId, systemId, notationName);
 }
 
 
 static void
 raptor_libxml_startDocument(void* user_data) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
   libxml2_startDocument(sax2->xc);
 }
 
 
 static void
 raptor_libxml_endDocument(void* user_data) {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
-  xmlParserCtxtPtr xc=sax2->xc;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
+  xmlParserCtxtPtr xc = sax2->xc;
 
   libxml2_endDocument(sax2->xc);
 
   if(xc->myDoc) {
     xmlFreeDoc(xc->myDoc);
-    xc->myDoc=NULL;
+    xc->myDoc = NULL;
   }
 }
 
@@ -205,8 +205,8 @@ raptor_libxml_endDocument(void* user_data) {
 static void
 raptor_libxml_set_document_locator(void* user_data, xmlSAXLocatorPtr loc)
 {
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
-  sax2->loc=loc;
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
+  sax2->loc = loc;
 }
 
 
@@ -215,7 +215,7 @@ raptor_libxml_update_document_locator(raptor_sax2* sax2,
                                       raptor_locator* locator)
 {
   /* for storing error info */
-  xmlSAXLocatorPtr loc=sax2 ? sax2->loc : NULL;
+  xmlSAXLocatorPtr loc = sax2 ? sax2->loc : NULL;
   xmlParserCtxtPtr xc= sax2 ? sax2->xc : NULL;
 
   if(xc && xc->inSubset)
@@ -231,9 +231,9 @@ raptor_libxml_update_document_locator(raptor_sax2* sax2,
     return;
 
   if(loc) {
-    locator->line=loc->getLineNumber(xc);
+    locator->line = loc->getLineNumber(xc);
     /* Seems to be broken */
-    /* locator->column=loc->getColumnNumber(xc); */
+    /* locator->column = loc->getColumnNumber(xc); */
   }
 
 }
@@ -242,9 +242,9 @@ raptor_libxml_update_document_locator(raptor_sax2* sax2,
 static void
 raptor_libxml_warning(void* user_data, const char *msg, ...) 
 {
-  raptor_sax2* sax2=NULL;
+  raptor_sax2* sax2 = NULL;
   va_list args;
-  int prefix_length=strlen(xml_warning_prefix);
+  int prefix_length = strlen(xml_warning_prefix);
   int length;
   char *nmsg;
 
@@ -252,21 +252,21 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
    * returns a ctx, sometimes the userdata
    */
   if(((raptor_sax2*)user_data)->magic == RAPTOR_LIBXML_MAGIC)
-    sax2=(raptor_sax2*)user_data;
+    sax2 = (raptor_sax2*)user_data;
   else
     /* user_data is not userData */
-    sax2=(raptor_sax2*)((xmlParserCtxtPtr)user_data)->userData;
+    sax2 = (raptor_sax2*)((xmlParserCtxtPtr)user_data)->userData;
 
   va_start(args, msg);
 
   raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
+  length = prefix_length+strlen(msg)+1;
+  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
     strcpy(nmsg, xml_warning_prefix);
     strcpy(nmsg+prefix_length, msg);
-    if(nmsg[length-2]=='\n')
+    if(nmsg[length-2] == '\n')
       nmsg[length-2]='\0';
   }
   
@@ -287,8 +287,8 @@ static void
 raptor_libxml_error_common(void* user_data, const char *msg, va_list args, 
                            const char *prefix, int is_fatal)
 {
-  raptor_sax2* sax2=NULL;
-  int prefix_length=strlen(prefix);
+  raptor_sax2* sax2 = NULL;
+  int prefix_length = strlen(prefix);
   int length;
   char *nmsg;
 
@@ -297,21 +297,21 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
      * returns a user_data, sometimes the userdata
      */
     if(((raptor_sax2*)user_data)->magic == RAPTOR_LIBXML_MAGIC)
-      sax2=(raptor_sax2*)user_data;
+      sax2 = (raptor_sax2*)user_data;
     else
       /* user_data is not userData */
-      sax2=(raptor_sax2*)((xmlParserCtxtPtr)user_data)->userData;
+      sax2 = (raptor_sax2*)((xmlParserCtxtPtr)user_data)->userData;
   }
 
   if(sax2->locator)
     raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
+  length = prefix_length+strlen(msg)+1;
+  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
     strcpy(nmsg, prefix);
     strcpy(nmsg+prefix_length, msg);
-    if(nmsg[length-1]=='\n')
+    if(nmsg[length-1] == '\n')
       nmsg[length-1]='\0';
   }
 
@@ -352,10 +352,10 @@ raptor_libxml_error(void* user_data, const char *msg, ...)
 void
 raptor_libxml_generic_error(void* user_data, const char *msg, ...) 
 {
-  raptor_error_handlers* error_handlers=(raptor_error_handlers*)user_data;
+  raptor_error_handlers* error_handlers = (raptor_error_handlers*)user_data;
   va_list args;
-  const char* prefix=xml_generic_error_prefix;
-  int prefix_length=strlen(prefix);
+  const char* prefix = xml_generic_error_prefix;
+  int prefix_length = strlen(prefix);
   int length;
   char *nmsg;
 
@@ -363,12 +363,12 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
 
   /* no SAX2 and locator from error_handlers */
 
-  length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
+  length = prefix_length+strlen(msg)+1;
+  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
     strcpy(nmsg, prefix);
     strcpy(nmsg+prefix_length, msg);
-    if(nmsg[length-1]=='\n')
+    if(nmsg[length-1] == '\n')
       nmsg[length-1]='\0';
   }
 
@@ -414,8 +414,8 @@ void
 raptor_libxml_validation_warning(void* user_data, const char *msg, ...) 
 {
   va_list args;
-  raptor_sax2* sax2=(raptor_sax2*)user_data;
-  int prefix_length=strlen(xml_validation_warning_prefix);
+  raptor_sax2* sax2 = (raptor_sax2*)user_data;
+  int prefix_length = strlen(xml_validation_warning_prefix);
   int length;
   char *nmsg;
 
@@ -423,12 +423,12 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
 
   raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  length=prefix_length+strlen(msg)+1;
-  nmsg=(char*)RAPTOR_MALLOC(cstring, length);
+  length = prefix_length+strlen(msg)+1;
+  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
     strcpy(nmsg, xml_validation_warning_prefix);
     strcpy(nmsg+prefix_length, msg);
-    if(nmsg[length-2]=='\n')
+    if(nmsg[length-2] == '\n')
       nmsg[length-2]='\0';
   }
 
@@ -473,10 +473,10 @@ raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
   sax->ignorableWhitespace= raptor_sax2_cdata;
   sax->processingInstruction = NULL; /* processingInstruction */
   sax->comment = raptor_sax2_comment;      /* comment */
-  sax->warning=(warningSAXFunc)raptor_libxml_warning;
-  sax->error=(errorSAXFunc)raptor_libxml_error;
-  sax->fatalError=(fatalErrorSAXFunc)raptor_libxml_fatal_error;
-  sax->serror=(xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
+  sax->warning = (warningSAXFunc)raptor_libxml_warning;
+  sax->error = (errorSAXFunc)raptor_libxml_error;
+  sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
+  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
   sax->externalSubset = raptor_libxml_externalSubset;
@@ -490,10 +490,10 @@ raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
 
 void
 raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
-  sax->warning=(warningSAXFunc)raptor_libxml_warning;
-  sax->error=(errorSAXFunc)raptor_libxml_error;
-  sax->fatalError=(fatalErrorSAXFunc)raptor_libxml_fatal_error;
-  sax->serror=(xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
+  sax->warning = (warningSAXFunc)raptor_libxml_warning;
+  sax->error = (errorSAXFunc)raptor_libxml_error;
+  sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
+  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
   sax->initialized = 1;
@@ -507,7 +507,7 @@ raptor_libxml_free(xmlParserCtxtPtr xc) {
 
   if(xc->myDoc) {
     xmlFreeDoc(xc->myDoc);
-    xc->myDoc=NULL;
+    xc->myDoc = NULL;
   }
 
   xmlFreeParserCtxt(xc);
@@ -594,9 +594,9 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   raptor_error_handlers* error_handlers = NULL;
   raptor_stringbuffer* sb;
   char *nmsg;
-  raptor_message_handler handler=NULL;
-  void* handler_data=NULL;
-  raptor_log_level level=RAPTOR_LOG_LEVEL_ERROR;
+  raptor_message_handler handler = NULL;
+  void* handler_data = NULL;
+  raptor_log_level level = RAPTOR_LOG_LEVEL_ERROR;
 
   /* user_data OR err->ctxt->userData may point to a raptor_sax2 */
   if(user_data) {
@@ -626,14 +626,14 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
     err->level= XML_ERR_ERROR;
   
 
-  sb=raptor_new_stringbuffer();
+  sb = raptor_new_stringbuffer();
   if(err->domain != XML_FROM_HTML)
     raptor_stringbuffer_append_counted_string(sb, (const unsigned char*)"XML ",
                                               4, 1);
   
   if(err->domain != XML_FROM_NONE && err->domain < XML_LAST_DL) {
     const unsigned char* label;
-    label=(const unsigned char*)raptor_libxml_domain_labels[(int)err->domain];
+    label = (const unsigned char*)raptor_libxml_domain_labels[(int)err->domain];
     raptor_stringbuffer_append_string(sb, label, 1);
     raptor_stringbuffer_append_counted_string(sb, 
                                               (const unsigned char*)" ", 1, 1);
@@ -650,7 +650,7 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   if(err->message) {
     unsigned char* msg;
     size_t len;
-    msg=(unsigned char*)err->message;
+    msg = (unsigned char*)err->message;
     len= strlen((const char*)msg);
     if(len && msg[len-1] == '\n')
       msg[--len]='\0';
@@ -665,7 +665,7 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   if(err->domain == XML_FROM_HTTP && err->str1) {
     unsigned char* msg;
     size_t len;
-    msg=(unsigned char*)err->str1;
+    msg = (unsigned char*)err->str1;
     len= strlen((const char*)msg);
     if(len && msg[len-1] == '\n')
       msg[--len]='\0';
@@ -695,21 +695,21 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
           RAPTOR_FATAL2("Received bogus error_handlers pointer %p\n",
                         error_handlers);
 #endif
-      error_handlers=NULL;
+      error_handlers = NULL;
     }
   }
   
-  nmsg=(char*)raptor_stringbuffer_as_string(sb);
+  nmsg = (char*)raptor_stringbuffer_as_string(sb);
   if(err->level == XML_ERR_FATAL)
-    level=RAPTOR_LOG_LEVEL_FATAL;
+    level = RAPTOR_LOG_LEVEL_FATAL;
   else if(err->level == XML_ERR_ERROR)
-    level=RAPTOR_LOG_LEVEL_ERROR;
+    level = RAPTOR_LOG_LEVEL_ERROR;
   else
-    level=RAPTOR_LOG_LEVEL_WARNING;
+    level = RAPTOR_LOG_LEVEL_WARNING;
 
   if(error_handlers && level <= error_handlers->last_log_level) {
-    handler=error_handlers->handlers[level].handler;
-    handler_data=error_handlers->handlers[level].user_data;
+    handler = error_handlers->handlers[level].handler;
+    handler_data = error_handlers->handlers[level].user_data;
   }
 
   if(error_handlers)

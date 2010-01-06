@@ -68,8 +68,8 @@ static int
 decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
                const char *unicode_string, const char *end)
 {
-  unsigned char *u=utf8_string;
-  const char *p=unicode_string;
+  unsigned char *u = utf8_string;
+  const char *p = unicode_string;
   
 #ifdef RAPTOR_NFC_DECODE_DEBUG
   fputs("decode_to_utf8: string '", stderr);
@@ -78,7 +78,7 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
 #endif
 
   while(p < end) {
-    unsigned long c=0;
+    unsigned long c = 0;
     char *endptr;
 
     if(*p == ' ') {
@@ -86,13 +86,13 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
       continue;
     }
     
-    c=(unsigned long)strtol(p, &endptr, 16);
+    c = (unsigned long)strtol(p, &endptr, 16);
 
 #ifdef RAPTOR_NFC_DECODE_DEBUG
     fprintf(stderr, "U+%04lX ", c);
 #endif
 
-    p=(const char*)endptr;
+    p = (const char*)endptr;
     
     u+= raptor_unicode_char_to_utf8(c, u);
     
@@ -116,11 +116,11 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
 static void
 utf8_print(const unsigned char *input, int length, FILE *stream)
 {
-  int i=0;
+  int i = 0;
   
-  while(i<length && *input) {
+  while(i < length && *input) {
     unsigned long c;
-    int size=raptor_utf8_to_unicode_char(&c, input, length-i);
+    int size = raptor_utf8_to_unicode_char(&c, input, length-i);
     if(size <= 0)
       return;
     if(i)
@@ -135,15 +135,15 @@ utf8_print(const unsigned char *input, int length, FILE *stream)
 int
 main (int argc, char *argv[]) 
 {
-  const char *program=raptor_basename(argv[0]);
+  const char *program = raptor_basename(argv[0]);
   const char *filename;
   FILE *fh;
-  int rc=0;
-  unsigned int line=1;
-  size_t max_c2_len=0;
-  size_t max_c4_len=0;
-  int passes=0;
-  int fails=0;
+  int rc = 0;
+  unsigned int line = 1;
+  size_t max_c2_len = 0;
+  size_t max_c4_len = 0;
+  int passes = 0;
+  int fails = 0;
 
   if(argc != 2) {
     fprintf(stderr,
@@ -153,8 +153,8 @@ main (int argc, char *argv[])
     return 1;
   }
   
-  filename=argv[1];
-  fh=fopen(filename, "r");
+  filename = argv[1];
+  fh = fopen(filename, "r");
   if(!fh) {
     fprintf(stderr, "%s: file '%s' open failed - %s\n",
             program, filename, strerror(errno));
@@ -175,12 +175,12 @@ main (int argc, char *argv[])
     int nfc_rc;
     int error;
     
-    p=fgets(buffer, LINE_BUFFER_SIZE, fh);
+    p = fgets(buffer, LINE_BUFFER_SIZE, fh);
     if(!p) {
       if(ferror(fh)) {
         fprintf(stderr, "%s: file '%s' read failed - %s\n",
                 program, filename, strerror(errno));
-        rc=1;
+        rc = 1;
         break;
       }
       /* assume feof */
@@ -204,28 +204,28 @@ main (int argc, char *argv[])
       ;
 
     /* read column 2 into column2, column2_len */
-    start=p;
+    start = p;
     /* find end column 2 */
     while(*p++ != ';')
       ;
 
-    column2_len=decode_to_utf8(column2, UNISTR_SIZE, start, p-1);
+    column2_len = decode_to_utf8(column2, UNISTR_SIZE, start, p-1);
     if(column2_len > max_c2_len)
-      max_c2_len=column2_len;
+      max_c2_len = column2_len;
     
     /* skip column 3 */
     while(*p++ != ';')
       ;
 
     /* read column 4 into column4, column4_len */
-    start=p;
+    start = p;
     /* find end column 4 */
     while(*p++ != ';')
       ;
 
-    column4_len=decode_to_utf8(column4, UNISTR_SIZE, start, p-1);
+    column4_len = decode_to_utf8(column4, UNISTR_SIZE, start, p-1);
     if(column4_len > max_c4_len)
-      max_c4_len=column4_len;
+      max_c4_len = column4_len;
 
     if(!raptor_utf8_check(column2, column2_len)) {
       fprintf(stderr, "%s:%d: UTF8 column 2 failed on: '", filename, line);
@@ -236,7 +236,7 @@ main (int argc, char *argv[])
       passes++;
 
     /* Column 2 must be NFC */
-    nfc_rc=raptor_nfc_check(column2, column2_len, &error);
+    nfc_rc = raptor_nfc_check(column2, column2_len, &error);
     if(!nfc_rc) {
       fprintf(stderr, "%s:%d: NFC column 2 failed on: '", filename, line);
       utf8_print(column2, column2_len, stderr);
@@ -257,7 +257,7 @@ main (int argc, char *argv[])
       passes++;
 
     /* Column 4 must be in NFC */
-    nfc_rc=raptor_nfc_check(column4, column4_len, &error);
+    nfc_rc = raptor_nfc_check(column4, column4_len, &error);
     if(!nfc_rc) {
       fprintf(stderr, "%s:%d: NFC column 4 failed on: '", filename, line);
       utf8_print(column4, column4_len, stderr);

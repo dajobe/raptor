@@ -63,16 +63,16 @@
 static int
 raptor_nfc_check_combiners(u16 base, u16 follow)
 {
-  int low=0;
-  int high=RAPTOR_NFC_RECOMBINERS_COUNT;
+  int low = 0;
+  int high = RAPTOR_NFC_RECOMBINERS_COUNT;
 
   while(low < high) {
-    int middle=(low+high)/2;
-    u16 middle_base=raptor_nfc_recombiners[middle].base;
+    int middle = (low+high)/2;
+    u16 middle_base = raptor_nfc_recombiners[middle].base;
     
     if(base == middle_base) {
       /* found base */
-      u16 middle_follow=raptor_nfc_recombiners[middle].follow;
+      u16 middle_follow = raptor_nfc_recombiners[middle].follow;
       if(middle_follow == follow) 
         /* success */
         return 1;
@@ -81,13 +81,13 @@ raptor_nfc_check_combiners(u16 base, u16 follow)
        * values for this base 
        */
       if(follow < middle_follow)
-        high=middle;
+        high = middle;
       else
-        low=middle+1;
+        low = middle+1;
     } else if(base < middle_base)
-      high=middle;
+      high = middle;
     else
-      low=middle+1;
+      low = middle+1;
   }
 
   return raptor_nfc_recombiners[low].base == base &&
@@ -99,12 +99,12 @@ raptor_nfc_check_combiners(u16 base, u16 follow)
 static int
 raptor_nfc_get_class(unsigned long key)
 {
-  int low=0;
-  int high=RAPTOR_NFC_CLASSES_COUNT;
+  int low = 0;
+  int high = RAPTOR_NFC_CLASSES_COUNT;
 
-  while (low < high) {
-    int middle=(low+high)/2;
-    unsigned int middle_key=raptor_nfc_classes[middle].key;
+  while(low < high) {
+    int middle = (low+high)/2;
+    unsigned int middle_key = raptor_nfc_classes[middle].key;
 
     /* found class */
     if(key == middle_key)
@@ -112,9 +112,9 @@ raptor_nfc_get_class(unsigned long key)
 
     /* otherwise need to binary search further */
     if(key < middle_key)
-      high=middle;
+      high = middle;
     else
-      low=middle+1;
+      low = middle+1;
   }
 
   return raptor_nfc_classes[low].combining_class;
@@ -202,22 +202,22 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
   int is_start;
   size_t offset;
   
-  raptor_nfc_code_flag prev_char_flag=(raptor_nfc_code_flag)0;
-  unsigned long prev_char=0L;
+  raptor_nfc_code_flag prev_char_flag = (raptor_nfc_code_flag)0;
+  unsigned long prev_char = 0L;
   int prev_class;
   
-  start=string;
-  is_start=1;
-  offset=0;
-  prev_class=0;
+  start = string;
+  is_start = 1;
+  offset = 0;
+  prev_class = 0;
 
   while(offset < len) {
     raptor_unichar unichar;
     int unichar_len;
-    int combining_class=0;
+    int combining_class = 0;
     raptor_nfc_code_flag flag;
     
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
+    unichar_len = raptor_utf8_to_unicode_char(&unichar, string, len);
     if(unichar_len < 0 || unichar_len > (int)len) {
       /* UTF-8 encoding had an error or ended in the middle of a string */
       if(error)
@@ -269,7 +269,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo at start");
           return 0;
         }
-        combining_class=raptor_nfc_get_class(unichar);
+        combining_class = raptor_nfc_get_class(unichar);
 
         /* check 1 - previous class later than current, always an error */
         if(prev_class > combining_class) {
@@ -307,7 +307,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           return 0;
         }
 
-        combining_class=raptor_nfc_get_class(unichar);
+        combining_class = raptor_nfc_get_class(unichar);
         if(prev_class > combining_class) {
           if(error)
             *error=offset;
@@ -338,14 +338,14 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           return 0;
         }
 
-        combining_class=0;
+        combining_class = 0;
         break;
 
 
       case Hang:
         /* hangul Jamo (Korean) initial consonants */
 
-        combining_class=0;
+        combining_class = 0;
         break;
 
 
@@ -361,7 +361,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           return 0;
         }
 
-        combining_class=0;
+        combining_class = 0;
         break;
 
 
@@ -377,14 +377,14 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
           return 0;
         }
 
-        combining_class=0;
+        combining_class = 0;
         break;
 
 
       case HAng:
         /* Hangul Jamo (Korean) initial/medial syllables */
 
-        combining_class=0;
+        combining_class = 0;
         break;
 
 
@@ -393,15 +393,15 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
       case simp:
         /* simple characters */
 
-        combining_class=0;
+        combining_class = 0;
         break;
     }
 
-    prev_char=unichar;
-    prev_char_flag=flag;
-    prev_class=combining_class;
+    prev_char = unichar;
+    prev_char_flag = flag;
+    prev_class = combining_class;
 
-    is_start=0;
+    is_start = 0;
   }
 
   return 1;

@@ -163,28 +163,28 @@ raptor_new_turtle_writer(raptor_world* world,
                          raptor_simple_message_handler error_handler,
                          void *error_data)
 {
-  raptor_turtle_writer* turtle_writer=(raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1, sizeof(raptor_turtle_writer)+1);
+  raptor_turtle_writer* turtle_writer = (raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1, sizeof(raptor_turtle_writer)+1);
 
   if(!turtle_writer)
     return NULL;
 
-  turtle_writer->world=world;
+  turtle_writer->world = world;
 
-  turtle_writer->nstack_depth=0;
+  turtle_writer->nstack_depth = 0;
 
-  turtle_writer->error_handler=error_handler;
-  turtle_writer->error_data=error_data;
+  turtle_writer->error_handler = error_handler;
+  turtle_writer->error_data = error_data;
 
-  turtle_writer->nstack=nstack;
+  turtle_writer->nstack = nstack;
   if(!turtle_writer->nstack) {
-    turtle_writer->nstack=nstack=raptor_new_namespaces_v2(world,
+    turtle_writer->nstack = nstack = raptor_new_namespaces_v2(world,
                                                           error_handler,
                                                           error_data,
                                                           1);
-    turtle_writer->my_nstack=1;
+    turtle_writer->my_nstack = 1;
   }
 
-  turtle_writer->iostr=iostr;
+  turtle_writer->iostr = iostr;
 
   turtle_writer->flags = 0;
   turtle_writer->indent = 2;
@@ -195,10 +195,10 @@ raptor_new_turtle_writer(raptor_world* world,
     raptor_turtle_writer_base(turtle_writer, base_uri);
   turtle_writer->base_uri = base_uri;
 
-  turtle_writer->xsd_boolean_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  turtle_writer->xsd_decimal_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
-  turtle_writer->xsd_double_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  turtle_writer->xsd_integer_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  turtle_writer->xsd_boolean_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  turtle_writer->xsd_decimal_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  turtle_writer->xsd_double_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  turtle_writer->xsd_integer_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   
   return turtle_writer;
 }
@@ -233,7 +233,7 @@ raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
 static int
 raptor_turtle_writer_contains_newline(const unsigned char *s)
 {
-  size_t i=0;
+  size_t i = 0;
 
   for( ; i < strlen((char*)s); i++)
     if(s[i] == '\n')
@@ -357,7 +357,7 @@ void
 raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
                            raptor_qname* qname)
 {
-  raptor_iostream* iostr=turtle_writer->iostr;
+  raptor_iostream* iostr = turtle_writer->iostr;
   
   if(qname->nspace && qname->nspace->prefix_length > 0)
     raptor_iostream_write_counted_string(iostr, qname->nspace->prefix,
@@ -398,7 +398,7 @@ raptor_iostream_write_string_python(raptor_iostream *iostr,
     return 1;
   
   for(; (c=*string); string++, len--) {
-    if((delim && c == delim && (delim=='\'' || delim == '"')) ||
+    if((delim && c == delim && (delim == '\'' || delim == '"')) ||
        c == '\\') {
       raptor_iostream_write_byte(iostr, '\\');
       raptor_iostream_write_byte(iostr, c);
@@ -447,7 +447,7 @@ raptor_iostream_write_string_python(raptor_iostream *iostr,
     
     /* It is unicode */
     
-    unichar_len=raptor_utf8_to_unicode_char(NULL, string, len);
+    unichar_len = raptor_utf8_to_unicode_char(NULL, string, len);
     if(unichar_len < 0 || unichar_len > (int)len)
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
@@ -456,7 +456,7 @@ raptor_iostream_write_string_python(raptor_iostream *iostr,
       /* Turtle and JSON are UTF-8 - no need to escape */
       raptor_iostream_write_counted_string(iostr, string, unichar_len);
     } else {
-      unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
+      unichar_len = raptor_utf8_to_unicode_char(&unichar, string, len);
 
       if(unichar < 0x10000) {
         raptor_iostream_write_counted_string(iostr, "\\u", 2);
@@ -511,7 +511,7 @@ int
 raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
                                            const unsigned char *s, size_t len)
 {
-  const unsigned char *quotes=(const unsigned char *)"\"\"\"\"";
+  const unsigned char *quotes = (const unsigned char *)"\"\"\"\"";
   const unsigned char *q;
   size_t q_len;
   int flags;
@@ -520,9 +520,9 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
     return 1;
   
   /* Turtle """longstring""" (2) or "string" (1) */
-  flags=raptor_turtle_writer_contains_newline(s) ? 2 : 1;
-  q=(flags == 2) ? quotes : quotes+2;
-  q_len=(q == quotes) ? 3 : 1;
+  flags = raptor_turtle_writer_contains_newline(s) ? 2 : 1;
+  q = (flags == 2) ? quotes : quotes+2;
+  q_len = (q == quotes) ? 3 : 1;
   raptor_iostream_write_counted_string(turtle_writer->iostr, q, q_len);
   raptor_iostream_write_string_python(turtle_writer->iostr,
                                       s, strlen((const char*)s), '"', flags);
@@ -794,7 +794,7 @@ raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
                                         raptor_feature feature, 
                                         const unsigned char *value)
 {
-  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
     return raptor_turtle_writer_set_feature(turtle_writer, feature, 
                                             atoi((const char*)value));
@@ -824,11 +824,11 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
 
   switch(feature) {
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-      result=TURTLE_WRITER_AUTO_INDENT(turtle_writer);
+      result = TURTLE_WRITER_AUTO_INDENT(turtle_writer);
       break;
 
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-      result=turtle_writer->indent;
+      result = turtle_writer->indent;
       break;
     
     /* writer features */
@@ -917,9 +917,9 @@ raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer,
 int main(int argc, char *argv[]);
 
 
-const unsigned char *base_uri_string=(const unsigned char*)"http://example.org/base#";
+const unsigned char *base_uri_string = (const unsigned char*)"http://example.org/base#";
 
-const unsigned char* longstr=(const unsigned char*)"it's quoted\nand has newlines, \"s <> and\n\ttabbing";
+const unsigned char* longstr = (const unsigned char*)"it's quoted\nand has newlines, \"s <> and\n\ttabbing";
 
 #define OUT_BYTES_COUNT 149
 
@@ -927,7 +927,7 @@ int
 main(int argc, char *argv[]) 
 {
   raptor_world *world;
-  const char *program=raptor_basename(argv[0]);
+  const char *program = raptor_basename(argv[0]);
   raptor_iostream *iostr;
   raptor_namespace_stack *nstack;
   raptor_namespace* ex_ns;
@@ -938,26 +938,26 @@ main(int argc, char *argv[])
   raptor_uri* datatype;
   
   /* for raptor_new_iostream_to_string */
-  void *string=NULL;
-  size_t string_len=0;
+  void *string = NULL;
+  size_t string_len = 0;
 
   world = raptor_new_world();
   if(!world || raptor_world_open(world))
     exit(1);
   
-  iostr=raptor_new_iostream_to_string(&string, &string_len, NULL);
+  iostr = raptor_new_iostream_to_string(&string, &string_len, NULL);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create iostream to string\n", program);
     exit(1);
   }
 
-  nstack=raptor_new_namespaces_v2(world,
+  nstack = raptor_new_namespaces_v2(world,
                                   NULL, NULL, /* errors */
                                   1);
 
-  base_uri=raptor_new_uri_v2(world, base_uri_string);
+  base_uri = raptor_new_uri_v2(world, base_uri_string);
 
-  turtle_writer=raptor_new_turtle_writer(world,
+  turtle_writer = raptor_new_turtle_writer(world,
                                          base_uri, 1,
                                          nstack,
                                          iostr,
@@ -971,7 +971,7 @@ main(int argc, char *argv[])
   raptor_turtle_writer_set_feature(turtle_writer, 
                                    RAPTOR_FEATURE_WRITER_AUTO_INDENT, 1);
 
-  ex_ns=raptor_new_namespace(nstack,
+  ex_ns = raptor_new_namespace(nstack,
                               (const unsigned char*)"ex",
                               (const unsigned char*)"http://example.org/ns#",
                               0);
@@ -992,7 +992,7 @@ main(int argc, char *argv[])
                                    (const unsigned char*)" ;", 2);
   raptor_turtle_writer_newline(turtle_writer);
 
-  el_name=raptor_new_qname_from_namespace_local_name_v2(world,
+  el_name = raptor_new_qname_from_namespace_local_name_v2(world,
                                                         ex_ns,
                                                         (const unsigned char*)"bar", 
                                                         NULL);
@@ -1002,7 +1002,7 @@ main(int argc, char *argv[])
 
   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
 
-  datatype=raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  datatype = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   raptor_turtle_writer_literal(turtle_writer, nstack,
                                (const unsigned char*)"10.0", NULL,
                                datatype);
@@ -1025,7 +1025,7 @@ main(int argc, char *argv[])
   raptor_free_uri_v2(world, base_uri);
 
   
-  count=raptor_iostream_tell(iostr);
+  count = raptor_iostream_tell(iostr);
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing iostream\n", program);
@@ -1045,7 +1045,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: I/O stream failed to create a string\n", program);
     return 1;
   }
-  string_len=strlen((const char*)string);
+  string_len = strlen((const char*)string);
   if(string_len != count) {
     fprintf(stderr, "%s: I/O stream created a string length %d, expected %d\n", program, (int)string_len, (int)count);
     return 1;

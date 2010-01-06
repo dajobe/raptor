@@ -101,12 +101,12 @@ struct raptor_id_set_s
 raptor_id_set*
 raptor_new_id_set(raptor_world* world)
 {
-  raptor_id_set* set=(raptor_id_set*)RAPTOR_CALLOC(raptor_id_set, 1, 
+  raptor_id_set* set = (raptor_id_set*)RAPTOR_CALLOC(raptor_id_set, 1, 
                                                    sizeof(raptor_id_set));
   if(!set)
     return NULL;
 
-  set->world=world;
+  set->world = world;
 
   return set;
 }
@@ -144,11 +144,11 @@ raptor_free_id_set(raptor_id_set *set)
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(set, raptor_id_set);
 
-  base=set->first;
+  base = set->first;
   while(base) {
-    raptor_base_id_set *next=base->next;
+    raptor_base_id_set *next = base->next;
     raptor_free_base_id_set(base);
-    base=next;
+    base = next;
   }
   RAPTOR_FREE(raptor_id_set, set);
 }
@@ -176,50 +176,50 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
   if(!base_uri || !id || !id_len)
     return -1;
 
-  base=set->first;
+  base = set->first;
   while(base) {
     if(raptor_uri_equals_v2(set->world, base->uri, base_uri))
       break;
-    base=base->next;
+    base = base->next;
   }
 
   if(!base) {
     /* a set for this base_uri not found */
-    base=(raptor_base_id_set*)RAPTOR_CALLOC(raptor_base_id_set, 1, 
+    base = (raptor_base_id_set*)RAPTOR_CALLOC(raptor_base_id_set, 1, 
                                             sizeof(raptor_base_id_set));
     if(!base)
       return -1;
 
-    base->world=set->world;
+    base->world = set->world;
 
-    base->uri=raptor_uri_copy_v2(set->world, base_uri);
+    base->uri = raptor_uri_copy_v2(set->world, base_uri);
 
-    base->tree=raptor_new_avltree(set->world,
+    base->tree = raptor_new_avltree(set->world,
                                   (raptor_data_compare_function)strcmp,
                                   free, 0);
   
     /* Add to the start of the list */
     if(set->first)
-      set->first->prev=base;
-    /* base->prev=NULL; */
-    base->next=set->first;
+      set->first->prev = base;
+    /* base->prev = NULL; */
+    base->next = set->first;
 
-    set->first=base;
+    set->first = base;
   } else {
     /* If not at the start of the list, move there */
     if(base != set->first) {
       /* remove from the list */
-      base->prev->next=base->next;
+      base->prev->next = base->next;
       if(base->next)
-        base->next->prev=base->prev;
+        base->next->prev = base->prev;
       /* add at the start of the list */
-      set->first->prev=base;
-      base->prev=NULL;
-      base->next=set->first;
+      set->first->prev = base;
+      base->prev = NULL;
+      base->next = set->first;
     }
   }
   
-  item=(char*)raptor_avltree_search(base->tree, id);
+  item = (char*)raptor_avltree_search(base->tree, id);
 
   /* if already there, error */
   if(item) {
@@ -233,7 +233,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
   set->hits++;
 #endif
   
-  item=(char*)RAPTOR_MALLOC(cstring, id_len+1);
+  item = (char*)RAPTOR_MALLOC(cstring, id_len+1);
   if(!item)
     return 1;
 
@@ -263,37 +263,37 @@ int
 main(int argc, char *argv[]) 
 {
   raptor_world *world;
-  const char *program=raptor_basename(argv[0]);
+  const char *program = raptor_basename(argv[0]);
   const char *items[8] = { "ron", "amy", "jen", "bij", "jib", "daj", "jim", NULL };
   raptor_id_set *set;
   raptor_uri *base_uri;
-  int i=0;
+  int i = 0;
   
   world = raptor_new_world();
   if(!world || raptor_world_open(world))
     exit(1);
     
-  base_uri=raptor_new_uri_v2(world, (const unsigned char*)"http://example.org/base#");
+  base_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://example.org/base#");
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating set\n", program);
 #endif
 
-  set=raptor_new_id_set(world);
+  set = raptor_new_id_set(world);
   if(!set) {
     fprintf(stderr, "%s: Failed to create set\n", program);
     exit(1);
   }
 
-  for(i=0; items[i]; i++) {
-    size_t len=strlen(items[i]);
+  for(i = 0; items[i]; i++) {
+    size_t len = strlen(items[i]);
     int rc;
 
 #if RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding set item '%s'\n", program, items[i]);
 #endif
   
-    rc=raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
+    rc = raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
 if(rc) {
       fprintf(stderr, "%s: Adding set item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
@@ -301,15 +301,15 @@ if(rc) {
     }
   }
 
-  for(i=0; items[i]; i++) {
-    size_t len=strlen(items[i]);
+  for(i = 0; items[i]; i++) {
+    size_t len = strlen(items[i]);
     int rc;
 
 #if RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding duplicate set item '%s'\n", program, items[i]);
 #endif
 
-    rc=raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
+    rc = raptor_id_set_add(set, base_uri, (const unsigned char*)items[i], len);
     if(rc <= 0) {
       fprintf(stderr, "%s: Adding duplicate set item %d '%s' succeeded, should have failed, returning error %d\n",
               program, i, items[i], rc);

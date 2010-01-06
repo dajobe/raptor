@@ -84,12 +84,12 @@ static void raptor_json_serialize_finish_factory(raptor_serializer_factory* fact
 static int
 raptor_json_serialize_init(raptor_serializer* serializer, const char *name)
 {
-  raptor_json_context* context=(raptor_json_context*)serializer->context;
+  raptor_json_context* context = (raptor_json_context*)serializer->context;
 
   context->is_resource=!strcmp(name,"json");
 
   /* Default for JSON serializer is absolute URIs */
-  serializer->feature_relative_uris=0;
+  serializer->feature_relative_uris = 0;
   
   return 0;
 }
@@ -99,16 +99,16 @@ raptor_json_serialize_init(raptor_serializer* serializer, const char *name)
 static void
 raptor_json_serialize_terminate(raptor_serializer* serializer)
 {
-  raptor_json_context* context=(raptor_json_context*)serializer->context;
+  raptor_json_context* context = (raptor_json_context*)serializer->context;
 
   if(context->json_writer) {
     raptor_free_json_writer(context->json_writer);
-    context->json_writer=NULL;
+    context->json_writer = NULL;
   }
 
   if(context->avltree) {
     raptor_free_avltree(context->avltree);
-    context->avltree=NULL;
+    context->avltree = NULL;
   }
 }
 
@@ -116,12 +116,12 @@ raptor_json_serialize_terminate(raptor_serializer* serializer)
 static int
 raptor_json_serialize_start(raptor_serializer* serializer)
 {
-  raptor_json_context* context=(raptor_json_context*)serializer->context;
+  raptor_json_context* context = (raptor_json_context*)serializer->context;
   raptor_uri* base_uri;
 
-  base_uri=(serializer->feature_relative_uris) ? serializer->base_uri : NULL;
+  base_uri = (serializer->feature_relative_uris) ? serializer->base_uri : NULL;
   
-  context->json_writer=raptor_new_json_writer(serializer->world,
+  context->json_writer = raptor_new_json_writer(serializer->world,
                                               base_uri,
                                               serializer->iostream,
                                               (raptor_simple_message_handler)raptor_serializer_simple_error,
@@ -130,13 +130,13 @@ raptor_json_serialize_start(raptor_serializer* serializer)
     return 1;
 
   if(context->is_resource) {
-    context->avltree=raptor_new_avltree(serializer->world,
+    context->avltree = raptor_new_avltree(serializer->world,
                                         (raptor_data_compare_function)raptor_statement_compare_v2,
                                         (raptor_data_free_function)raptor_free_statement_v2,
                                         0);
     if(!context->avltree) {
       raptor_free_json_writer(context->json_writer);
-      context->json_writer=NULL;
+      context->json_writer = NULL;
       return 1;
     }
   }
@@ -168,10 +168,10 @@ static int
 raptor_json_serialize_statement(raptor_serializer* serializer, 
                                 const raptor_statement *statement)
 {
-  raptor_json_context* context=(raptor_json_context*)serializer->context;
+  raptor_json_context* context = (raptor_json_context*)serializer->context;
 
   if(context->is_resource) {
-    raptor_statement_v2* s=raptor_statement_copy_v2_from_v1(serializer->world, statement);
+    raptor_statement_v2* s = raptor_statement_copy_v2_from_v1(serializer->world, statement);
     if(!s)
       return 1;
     return raptor_avltree_add(context->avltree, s);
@@ -255,7 +255,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   /* end triple */
   raptor_json_writer_end_block(context->json_writer, '}');
 
-  context->need_subject_comma=1;
+  context->need_subject_comma = 1;
   return 0;
 }
 
@@ -264,22 +264,22 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
 static int
 raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
 {
-  raptor_serializer* serializer=(raptor_serializer*)user_data;
-  raptor_json_context* context=(raptor_json_context*)serializer->context;
+  raptor_serializer* serializer = (raptor_serializer*)user_data;
+  raptor_json_context* context = (raptor_json_context*)serializer->context;
 
-  raptor_statement_v2* statement=(raptor_statement_v2*)data;
+  raptor_statement_v2* statement = (raptor_statement_v2*)data;
   raptor_statement* s1 = statement->s;
   raptor_statement* s2 = context->last_statement ? (context->last_statement->s) : NULL;
-  int new_subject=0;
-  int new_predicate=0;
+  int new_subject = 0;
+  int new_predicate = 0;
   
   if(s2) {
     if(s1->subject_type != s2->subject_type) {
-      new_subject=1;
+      new_subject = 1;
     } else {
       /* subjects are URIs or blank nodes */
       if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-        new_subject=strcmp((char*)s1->subject, (char*)s2->subject);
+        new_subject = strcmp((char*)s1->subject, (char*)s2->subject);
       else
         new_subject=!raptor_uri_equals_v2(serializer->world,
                                           (raptor_uri*)s1->subject,
@@ -297,11 +297,11 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       raptor_json_writer_end_block(context->json_writer, '}');
       raptor_json_writer_newline(context->json_writer);
 
-      context->need_subject_comma=1;
-      context->need_object_comma=0;
+      context->need_subject_comma = 1;
+      context->need_object_comma = 0;
     }
   } else
-    new_subject=1;
+    new_subject = 1;
   
   if(new_subject)  {
     if(context->need_subject_comma) {
@@ -348,7 +348,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   /* predicate */
   if(context->last_statement) {
     if(new_subject)
-      new_predicate=1;
+      new_predicate = 1;
     else {
       new_predicate=!raptor_uri_equals_v2(serializer->world, 
                                           (raptor_uri*)s1->predicate,
@@ -361,7 +361,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       }
     }
   } else
-    new_predicate=1;
+    new_predicate = 1;
 
   if(new_predicate) {
     /* start predicate */
@@ -373,7 +373,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
     raptor_json_writer_start_block(context->json_writer, '[');
     raptor_iostream_write_byte(serializer->iostream, ' ');
 
-    context->need_object_comma=0;
+    context->need_object_comma = 0;
   }
 
   if(context->need_object_comma) {
@@ -425,7 +425,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
 static int
 raptor_json_serialize_end(raptor_serializer* serializer)
 {
-  raptor_json_context* context=(raptor_json_context*)serializer->context;
+  raptor_json_context* context = (raptor_json_context*)serializer->context;
 
   raptor_json_writer_newline(context->json_writer);
 
@@ -525,7 +525,7 @@ raptor_init_serializer_json(raptor_world* world)
 {
   int rc;
   
-  rc=raptor_serializer_register_factory(world,
+  rc = raptor_serializer_register_factory(world,
                                         "json-triples",
                                         "RDF/JSON Triples", 
                                         "application/json",

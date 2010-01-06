@@ -91,7 +91,7 @@ typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
 static int
 raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  /*raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context; */
+  /*raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context; */
   return 0;
 }
 
@@ -107,7 +107,7 @@ raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name)
 static void
 raptor_ntriples_parse_terminate(raptor_parser* rdf_parser)
 {
-  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
+  raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   if(ntriples_parser->line_length)
     RAPTOR_FREE(cdata, ntriples_parser->line);
 }
@@ -150,70 +150,70 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                    const unsigned char *object_literal_language,
                                    const unsigned char *object_literal_datatype)
 {
-  /* raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)parser->context; */
+  /* raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)parser->context; */
   raptor_statement *statement=&parser->statement;
-  raptor_uri *subject_uri=NULL;
-  raptor_uri *predicate_uri=NULL;
-  raptor_uri *object_uri=NULL;
-  raptor_uri *datatype_uri=NULL;
+  raptor_uri *subject_uri = NULL;
+  raptor_uri *predicate_uri = NULL;
+  raptor_uri *object_uri = NULL;
+  raptor_uri *datatype_uri = NULL;
 
   /* Two choices for subject from N-Triples */
   if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
-    statement->subject=subject;
-    statement->subject_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    statement->subject = subject;
+    statement->subject_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else {
-    subject_uri=raptor_new_uri_v2(parser->world, subject);
+    subject_uri = raptor_new_uri_v2(parser->world, subject);
     if(!subject_uri) {
       raptor_parser_error(parser, "Could not create subject uri '%s', skipping", subject);
       goto cleanup;
     }
-    statement->subject=subject_uri;
-    statement->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    statement->subject = subject_uri;
+    statement->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
 
   if(object_literal_datatype) {
-    datatype_uri=raptor_new_uri_v2(parser->world, object_literal_datatype);
+    datatype_uri = raptor_new_uri_v2(parser->world, object_literal_datatype);
     if(!datatype_uri) {
       raptor_parser_error(parser, "Could not create object literal datatype uri '%s', skipping", object_literal_datatype);
       goto cleanup;
     }
-    object_literal_language=NULL;
+    object_literal_language = NULL;
   }
 
   /* Predicates in N-Triples are URIs but check for bad ordinals */
   if(!strncmp((const char*)predicate, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    int predicate_ordinal=raptor_check_ordinal(predicate+44);
+    int predicate_ordinal = raptor_check_ordinal(predicate+44);
     if(predicate_ordinal <= 0)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate);
   }
   
-  predicate_uri=raptor_new_uri_v2(parser->world, predicate);
+  predicate_uri = raptor_new_uri_v2(parser->world, predicate);
   if(!predicate_uri) {
     raptor_parser_error(parser, "Could not create predicate uri '%s', skipping", predicate);
     goto cleanup;
   }
-  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  statement->predicate=predicate_uri;
+  statement->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate = predicate_uri;
   
   /* Three choices for object from N-Triples */
-  statement->object_literal_language=NULL;
-  statement->object_literal_datatype=NULL;
+  statement->object_literal_language = NULL;
+  statement->object_literal_datatype = NULL;
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
-    object_uri=raptor_new_uri_v2(parser->world, (const unsigned char*)object);
+    object_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)object);
     if(!object_uri) {
       raptor_parser_error(parser, "Could not create object uri '%s', skipping", (const char *)object);
       goto cleanup;
     }
-    statement->object=object_uri;
-    statement->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    statement->object = object_uri;
+    statement->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
-    statement->object=object;
-    statement->object_type=RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    statement->object = object;
+    statement->object_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else { 
-    statement->object_type=RAPTOR_IDENTIFIER_TYPE_LITERAL;
-    statement->object=object;
-    statement->object_literal_language=object_literal_language;
-    statement->object_literal_datatype=datatype_uri;
+    statement->object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    statement->object = object;
+    statement->object_literal_language = object_literal_language;
+    statement->object_literal_datatype = datatype_uri;
   }
 
   if(!parser->statement_handler)
@@ -235,10 +235,10 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 
 
 /* These are for 7-bit ASCII and not locale-specific */
-#define IS_ASCII_ALPHA(c) (((c)>0x40 && (c)<0x5B) || ((c)>0x60 && (c)<0x7B))
-#define IS_ASCII_UPPER(c) ((c)>0x40 && (c)<0x5B)
-#define IS_ASCII_DIGIT(c) ((c)>0x2F && (c)<0x3A)
-#define IS_ASCII_PRINT(c) ((c)>0x1F && (c)<0x7F)
+#define IS_ASCII_ALPHA(c) (((c) > 0x40 && (c) < 0x5B) || ((c) > 0x60 && (c) < 0x7B))
+#define IS_ASCII_UPPER(c) ((c) > 0x40 && (c) < 0x5B)
+#define IS_ASCII_DIGIT(c) ((c) > 0x2F && (c) < 0x3A)
+#define IS_ASCII_PRINT(c) ((c) > 0x1F && (c) < 0x7F)
 #define TO_ASCII_LOWER(c) ((c)+0x20)
 
 typedef enum {
@@ -254,35 +254,35 @@ static int
 raptor_ntriples_term_valid(unsigned char c, int position, 
                            raptor_ntriples_term_class term_class) 
 {
-  int result=0;
+  int result = 0;
 
   switch(term_class) {
     case RAPTOR_TERM_CLASS_URI:
       /* ends on > */
-      result=(c!= '>');
+      result = (c!= '>');
       break;
       
     case RAPTOR_TERM_CLASS_BNODEID:  
       /* ends on first non [A-Za-z][A-Za-z0-9]* */
-      result=IS_ASCII_ALPHA(c);
+      result = IS_ASCII_ALPHA(c);
       if(position)
         result = (result || IS_ASCII_DIGIT(c));
       break;
       
     case RAPTOR_TERM_CLASS_STRING:
       /* ends on " */
-      result=(c!= '"');
+      result = (c!= '"');
       break;
 
     case RAPTOR_TERM_CLASS_LANGUAGE:
       /* ends on first non [a-z0-9]+ ('-' [a-z0-9]+ )? */
-      result=(IS_ASCII_ALPHA(c) || IS_ASCII_DIGIT(c));
+      result = (IS_ASCII_ALPHA(c) || IS_ASCII_DIGIT(c));
       if(position)
-        result = (result || c=='-');
+        result = (result || c == '-');
       break;
       
     case RAPTOR_TERM_CLASS_FULL:
-      result=1;
+      result = 1;
       break;
       
     default:
@@ -326,10 +326,10 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 {
   const unsigned char *p=*start;
   unsigned char c='\0';
-  size_t ulen=0;
-  unsigned long unichar=0;
-  unsigned int position=0;
-  int end_char_seen=0;
+  size_t ulen = 0;
+  unsigned long unichar = 0;
+  unsigned int position = 0;
+  int end_char_seen = 0;
 
   if(term_class == RAPTOR_TERM_CLASS_FULL)
     end_char='\0';
@@ -346,7 +346,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     if(allow_utf8) {
       if(c > 0x7f) {
         /* just copy the UTF-8 bytes through */
-        size_t unichar_len=raptor_utf8_to_unicode_char(NULL, (const unsigned char*)p-1, 1+*lenp);
+        size_t unichar_len = raptor_utf8_to_unicode_char(NULL, (const unsigned char*)p-1, 1+*lenp);
         if(unichar_len > *lenp) {
           raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
           /* UTF-8 encoding had an error or ended in the middle of a string */
@@ -374,7 +374,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     if(c != '\\') {
       /* finish at non-backslashed end_char */
       if(end_char && c == end_char) {
-        end_char_seen=1;
+        end_char_seen = 1;
         break;
       }
 
@@ -428,7 +428,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         break;
       case 'u':
       case 'U':
-        ulen=(c == 'u') ? 4 : 8;
+        ulen = (c == 'u') ? 4 : 8;
         
         if(*lenp < ulen) {
           raptor_parser_error(rdf_parser, "%c over end of line", c);
@@ -438,24 +438,24 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         if(1) {
           int n;
 
-          n=sscanf((const char*)p, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+          n = sscanf((const char*)p, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
           if(n != 1) {
             raptor_parser_error(rdf_parser, "Illegal Uncode escape '%c%s...'", c, p);
             break;
           }
         }
 
-        p+=ulen;
-        (*lenp)-=ulen;
-        rdf_parser->locator.column+=ulen;
-        rdf_parser->locator.byte+=ulen;
+        p += ulen;
+        (*lenp) -= ulen;
+        rdf_parser->locator.column += ulen;
+        rdf_parser->locator.byte += ulen;
         
         if(unichar > 0x10ffff) {
           raptor_parser_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
           break;
         }
           
-        dest+=raptor_unicode_char_to_utf8(unichar, dest);
+        dest += raptor_unicode_char_to_utf8(unichar, dest);
         break;
 
       default:
@@ -505,20 +505,20 @@ raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser,
                                       const unsigned char *src, int len,  
                                       size_t *dest_lenp)
 {
-  const unsigned char *start=src;
-  size_t length=len;
+  const unsigned char *start = src;
+  size_t length = len;
   unsigned char *dest;
   int rc;
   
-  dest=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  dest = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
   if(!dest)
     return NULL;
 
-  rc=raptor_ntriples_term(rdf_parser, &start, dest, &length, dest_lenp,
+  rc = raptor_ntriples_term(rdf_parser, &start, dest, &length, dest_lenp,
                               '\0', RAPTOR_TERM_CLASS_FULL, 1);
   if(rc) {
     RAPTOR_FREE(cstring, dest);
-    dest=NULL;
+    dest = NULL;
   }
   return dest;
 }
@@ -537,12 +537,12 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   size_t term_lengths[3];
   raptor_ntriples_term_type term_types[3];
   size_t term_length= 0;
-  unsigned char *object_literal_language=NULL;
-  unsigned char *object_literal_datatype=NULL;
-  int rc=0;
+  unsigned char *object_literal_language = NULL;
+  unsigned char *object_literal_datatype = NULL;
+  int rc = 0;
   
-  for(i=0; i<3; i++)
-    terms_allocated[i]=0;
+  for(i = 0; i < 3; i++)
+    terms_allocated[i] = 0;
 
   /* ASSERTION:
    * p always points to first char we are considering
@@ -557,9 +557,9 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   RAPTOR_DEBUG3("handling line '%s' (%d bytes)\n", buffer, (unsigned int)len);
 #endif
   
-  p=buffer;
+  p = buffer;
 
-  while(len>0 && isspace((int)*p)) {
+  while(len > 0 && isspace((int)*p)) {
     p++;
     rdf_parser->locator.column++;
     rdf_parser->locator.byte++;
@@ -575,7 +575,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     return 0;
   
   /* Remove trailing spaces */
-  while(len>0 && isspace((int)p[len-1])) {
+  while(len > 0 && isspace((int)p[len-1])) {
     p[len-1]='\0';
     len--;
   }
@@ -597,7 +597,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
   /* Must be triple */
 
-  for(i=0; i<3; i++) {
+  for(i = 0; i < 3; i++) {
     if(!len) {
       raptor_parser_error(rdf_parser, "Unexpected end of line");
       goto cleanup;
@@ -620,7 +620,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>", *p);
         goto cleanup;
       }
-    } else /* i==0 */ {
+    } else /* i == 0 */ {
       if(*p != '<' && *p != '_') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
         goto cleanup;
@@ -631,7 +631,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
       case '<':
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_URI_REF;
         
-        dest=p;
+        dest = p;
 
         p++;
         len--;
@@ -642,7 +642,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                 (const unsigned char**)&p, 
                                 dest, &len, &term_length, 
                                 '>', RAPTOR_TERM_CLASS_URI, 0)) {
-          rc=1;
+          rc = 1;
           goto cleanup;
         }
         break;
@@ -650,7 +650,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
       case '"':
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
         
-        dest=p;
+        dest = p;
 
         p++;
         len--;
@@ -661,7 +661,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                 (const unsigned char**)&p,
                                 dest, &len, &term_length,
                                 '"', RAPTOR_TERM_CLASS_STRING, 0)) {
-          rc=1;
+          rc = 1;
           goto cleanup;
         }
         
@@ -669,7 +669,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           if(*p == '-')
             raptor_parser_error(rdf_parser, "Old N-Triples language syntax using \"string\"-lang rather than \"string\"@lang.");
 
-          object_literal_language=p;
+          object_literal_language = p;
 
           /* Skip - */
           p++;
@@ -687,14 +687,14 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                   (const unsigned char**)&p,
                                   object_literal_language, &len, NULL,
                                   '\0', RAPTOR_TERM_CLASS_LANGUAGE, 0)) {
-            rc=1;
+            rc = 1;
             goto cleanup;
           }
         }
 
         if(len >1 && *p == '^' && p[1] == '^') {
 
-          object_literal_datatype=p;
+          object_literal_datatype = p;
 
           /* Skip ^^ */
           p+= 2;
@@ -716,7 +716,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                   (const unsigned char**)&p,
                                   object_literal_datatype, &len, NULL,
                                   '>', RAPTOR_TERM_CLASS_URI, 0)) {
-            rc=1;
+            rc = 1;
             goto cleanup;
           }
           
@@ -724,7 +724,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
         if(object_literal_datatype && object_literal_language) {
           raptor_parser_warning(rdf_parser, "Typed literal used with a language - ignoring the language");
-          object_literal_language=NULL;
+          object_literal_language = NULL;
         }
           
 
@@ -735,7 +735,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE;
 
         /* store where _ was */
-        dest=p;
+        dest = p;
 
         p++;
         len--;
@@ -758,7 +758,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                 (const unsigned char**)&p,
                                 dest, &len, &term_length,
                                 '\0', RAPTOR_TERM_CLASS_BNODEID, 0)) {
-          rc=1;
+          rc = 1;
           goto cleanup;
         }
 
@@ -766,17 +766,17 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           raptor_parser_error(rdf_parser, "Bad or missing bNodeID after _:");
           goto cleanup;
         } else {
-          unsigned char *blank=(unsigned char*)RAPTOR_MALLOC(cstring, term_length+1);
+          unsigned char *blank = (unsigned char*)RAPTOR_MALLOC(cstring, term_length+1);
           if(!blank) {
             raptor_parser_fatal_error(rdf_parser, "Out of memory");
-            rc=1;
+            rc = 1;
             goto cleanup;
           }
           strcpy((char*)blank, (const char*)dest);
-          dest=raptor_parser_internal_generate_id(rdf_parser, 
+          dest = raptor_parser_internal_generate_id(rdf_parser, 
                                                   RAPTOR_GENID_TYPE_BNODEID,
                                                   blank);
-          terms_allocated[i]=1;
+          terms_allocated[i] = 1;
         }
 
         break;
@@ -788,11 +788,11 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         /* already know we have 'xml"' coming up */
         term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
         
-        /* 3=strlen("xml") */
-        p+=3;
-        len-=3;
+        /* 3 = strlen("xml") */
+        p += 3;
+        len -= 3;
 
-        dest=p;
+        dest = p;
 
         p++;
         len--;
@@ -803,18 +803,18 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                 (const unsigned char**)&p,
                                 dest, &len, &term_length, 
                                 '"', RAPTOR_TERM_CLASS_STRING, 0)) {
-          rc=1;
+          rc = 1;
           goto cleanup;
         }
 
         /* got XML literal string */
-        object_literal_datatype=(unsigned char*)raptor_xml_literal_datatype_uri_string;
+        object_literal_datatype = (unsigned char*)raptor_xml_literal_datatype_uri_string;
 
         if(len && (*p == '-' || *p == '@')) {
           if(*p == '-')
             raptor_parser_error(rdf_parser, "Old N-Triples language syntax using xml\"string\"-lang rather than xml\"string\"@lang.");
 
-          object_literal_language=p;
+          object_literal_language = p;
 
           /* Skip - */
           p++;
@@ -831,7 +831,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                   (const unsigned char**)&p,
                                   object_literal_language, &len, NULL,
                                   '"', RAPTOR_TERM_CLASS_STRING, 0)) {
-            rc=1;
+            rc = 1;
             goto cleanup;
           }
           
@@ -839,7 +839,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
         if(len >1 && *p == '^' && p[1] == '^') {
 
-          object_literal_datatype=p;
+          object_literal_datatype = p;
 
           /* Skip ^^ */
           p+= 2;
@@ -861,7 +861,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                   (const unsigned char**)&p,
                                   object_literal_datatype, &len, NULL,
                                   '>', RAPTOR_TERM_CLASS_URI, 0)) {
-            rc=1;
+            rc = 1;
             goto cleanup;
           }
           
@@ -884,23 +884,23 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
       default:
         raptor_parser_fatal_error(rdf_parser, "Unknown term type");
-        rc=1;
+        rc = 1;
         goto cleanup;
     }
 
 
     /* Store term */
-    terms[i]=dest; term_lengths[i]=term_length;
+    terms[i] = dest; term_lengths[i] = term_length;
 
     /* Whitespace must separate the terms */
-    if(i<2 && !isspace((int)*p)) {
+    if(i < 2 && !isspace((int)*p)) {
       raptor_parser_error(rdf_parser, "Missing whitespace after term '%s'", terms[i]);
-      rc=1;
+      rc = 1;
       goto cleanup;
     }
 
     /* Skip whitespace after terms */
-    while(len>0 && isspace((int)*p)) {
+    while(len > 0 && isspace((int)*p)) {
       p++;
       len--;
       rdf_parser->locator.column++;
@@ -925,7 +925,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     /* Normalize language to lowercase
      * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
      */
-    for(q=object_literal_language; *q; q++) {
+    for(q = object_literal_language; *q; q++) {
       if(IS_ASCII_UPPER(*q))
         *q=TO_ASCII_LOWER(*q);
     }
@@ -941,7 +941,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   rdf_parser->locator.byte += len;
 
  cleanup:
-  for(i=0; i<3; i++)
+  for(i = 0; i < 3; i++)
     if(terms_allocated[i])
       RAPTOR_FREE(cstring, terms[i]);
 
@@ -957,7 +957,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   unsigned char *buffer;
   unsigned char *ptr;
   unsigned char *start;
-  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
+  raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("adding %d bytes to buffer\n", (unsigned int)len);
@@ -967,7 +967,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   if(!len)
     return 0;
 
-  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, ntriples_parser->line_length + len + 1);
+  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, ntriples_parser->line_length + len + 1);
   if(!buffer) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return 1;
@@ -978,10 +978,10 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     RAPTOR_FREE(cstring, ntriples_parser->line);
   }
 
-  ntriples_parser->line=buffer;
+  ntriples_parser->line = buffer;
 
   /* move pointer to end of cdata buffer */
-  ptr=buffer+ntriples_parser->line_length;
+  ptr = buffer+ntriples_parser->line_length;
 
   /* adjust stored length */
   ntriples_parser->line_length += len;
@@ -995,9 +995,9 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   RAPTOR_DEBUG2("buffer now %d bytes\n", ntriples_parser->line_length);
 #endif
 
-  ptr=buffer+ntriples_parser->offset;
-  while(*(start=ptr)) {
-    unsigned char *line_start=ptr;
+  ptr = buffer+ntriples_parser->offset;
+  while(*(start = ptr)) {
+    unsigned char *line_start = ptr;
     
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("line buffer now '%s' (offset %d)\n", ptr, ptr-(buffer+ntriples_parser->offset));
@@ -1010,8 +1010,8 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #endif
       ptr++;
       rdf_parser->locator.byte++;
-      rdf_parser->locator.column=0;
-      start=line_start=ptr;
+      rdf_parser->locator.column = 0;
+      start = line_start = ptr;
     }
 
     while(*ptr && *ptr != '\n' && *ptr != '\r')
@@ -1026,8 +1026,8 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #endif
     ntriples_parser->last_char=*ptr;
 
-    len=ptr-line_start;
-    rdf_parser->locator.column=0;
+    len = ptr-line_start;
+    rdf_parser->locator.column = 0;
 
     *ptr='\0';
     if(raptor_ntriples_parse_line(rdf_parser,line_start,len))
@@ -1048,9 +1048,9 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #endif
   }
 
-  ntriples_parser->offset=start-buffer;
+  ntriples_parser->offset = start-buffer;
 
-  len=ntriples_parser->line_length - ntriples_parser->offset;
+  len = ntriples_parser->line_length - ntriples_parser->offset;
     
   if(len) {
     /* collapse buffer */
@@ -1058,7 +1058,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     RAPTOR_DEBUG3("collapsing buffer from %d to %d bytes\n", ntriples_parser->line_length, (unsigned int)len);
 #endif
-    buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+    buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
     if(!buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
@@ -1071,9 +1071,9 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 
     RAPTOR_FREE(cstring, ntriples_parser->line);
 
-    ntriples_parser->line=buffer;
+    ntriples_parser->line = buffer;
     ntriples_parser->line_length -= ntriples_parser->offset;
-    ntriples_parser->offset=0;
+    ntriples_parser->offset = 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     RAPTOR_DEBUG3("buffer now '%s' (%d bytes)\n", ntriples_parser->line, ntriples_parser->line_length);
@@ -1098,11 +1098,11 @@ static int
 raptor_ntriples_parse_start(raptor_parser* rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
-  raptor_ntriples_parser_context *ntriples_parser=(raptor_ntriples_parser_context*)rdf_parser->context;
+  raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
 
-  locator->line=1;
-  locator->column=0;
-  locator->byte=0;
+  locator->line = 1;
+  locator->column = 0;
+  locator->byte = 0;
 
   ntriples_parser->last_char='\0';
 
@@ -1121,16 +1121,16 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
   
   if(suffix) {
     if(!strcmp((const char*)suffix, "nt"))
-      score=8;
+      score = 8;
     if(!strcmp((const char*)suffix, "ttl"))
-      score=3;
+      score = 3;
     if(!strcmp((const char*)suffix, "n3"))
-      score=1;
+      score = 1;
   }
   
   if(mime_type) {
     if(strstr((const char*)mime_type, "ntriples"))
-      score+=6;
+      score += 6;
   }
   
   return score;
@@ -1140,7 +1140,7 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
 static int
 raptor_ntriples_parser_register_factory(raptor_parser_factory *factory) 
 {
-  int rc=0;
+  int rc = 0;
 
   factory->context_length     = sizeof(raptor_ntriples_parser_context);
 
@@ -1152,7 +1152,7 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_ntriples_parse_chunk;
   factory->recognise_syntax = raptor_ntriples_parse_recognise_syntax;
 
-  rc=raptor_parser_factory_add_uri(factory, 
+  rc = raptor_parser_factory_add_uri(factory, 
                                 (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples");
 
   return rc;

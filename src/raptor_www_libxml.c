@@ -44,10 +44,10 @@
 void
 raptor_www_libxml_init(raptor_www *www)
 {
-  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_NONE].user_data=www;
-  www->old_xmlGenericErrorContext=xmlGenericErrorContext;
+  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_NONE].user_data = www;
+  www->old_xmlGenericErrorContext = xmlGenericErrorContext;
   xmlSetGenericErrorFunc(&www->error_handlers, raptor_libxml_generic_error);
-  www->ctxt=NULL;
+  www->ctxt = NULL;
 }
 
 
@@ -62,38 +62,38 @@ raptor_www_libxml_free(raptor_www *www)
 int
 raptor_www_libxml_fetch(raptor_www *www) 
 {
-  char* headers=NULL;
+  char* headers = NULL;
   
   if(www->proxy)
     xmlNanoHTTPScanProxy(www->proxy);
 
   if(www->http_accept || www->user_agent) {
-    size_t accept_len=0;
-    size_t ua_len=0;
-    size_t cc_len=0;
-    size_t len=0;
+    size_t accept_len = 0;
+    size_t ua_len = 0;
+    size_t cc_len = 0;
+    size_t len = 0;
     char *p;
     
     if(www->http_accept) {
-      accept_len=strlen(www->http_accept);
-      len+=accept_len+2; /* \r\n */
+      accept_len = strlen(www->http_accept);
+      len += accept_len+2; /* \r\n */
     }
     
     if(www->user_agent) {
-      ua_len=strlen(www->user_agent);
-      len+=12+ua_len+2; /* strlen("User-Agent: ") + \r\n */
+      ua_len = strlen(www->user_agent);
+      len += 12+ua_len+2; /* strlen("User-Agent: ") + \r\n */
     }
 
     if(www->cache_control) {
-      cc_len=strlen(www->cache_control);
-      len+=cc_len+2; /* \r\n */
+      cc_len = strlen(www->cache_control);
+      len += cc_len+2; /* \r\n */
     }
 
-    headers=(char*)RAPTOR_MALLOC(cstring, len+1);
+    headers = (char*)RAPTOR_MALLOC(cstring, len+1);
     if(!headers)
       return 1;
     
-    p=headers;
+    p = headers;
     if(www->http_accept) {
       strncpy(p, www->http_accept, accept_len);
       p+= accept_len;
@@ -102,7 +102,7 @@ raptor_www_libxml_fetch(raptor_www *www)
     }
     if(www->user_agent) {
       strncpy(p, "User-Agent: ", 12);
-      p+=12;
+      p += 12;
       strncpy(p, www->user_agent, ua_len);
       p+= ua_len;
       *p++='\r';
@@ -117,7 +117,7 @@ raptor_www_libxml_fetch(raptor_www *www)
     *p='\0';
   }
 
-  www->ctxt=xmlNanoHTTPMethod((const char*)raptor_uri_as_string_v2(www->world, www->uri),
+  www->ctxt = xmlNanoHTTPMethod((const char*)raptor_uri_as_string_v2(www->world, www->uri),
                               NULL, /* HTTP method (default GET) */
                               NULL, /* input string */
                               &www->type,
@@ -139,14 +139,14 @@ raptor_www_libxml_fetch(raptor_www *www)
       }
     }
     xmlFree(www->type);
-    www->type=NULL;
+    www->type = NULL;
   }
 
-  www->status_code=xmlNanoHTTPReturnCode(www->ctxt);
+  www->status_code = xmlNanoHTTPReturnCode(www->ctxt);
   
   while(1) {
-    int len=xmlNanoHTTPRead(www->ctxt, www->buffer, RAPTOR_WWW_BUFFER_SIZE);
-    if(len<0)
+    int len = xmlNanoHTTPRead(www->ctxt, www->buffer, RAPTOR_WWW_BUFFER_SIZE);
+    if(len < 0)
       break;
     
     www->total_bytes += len;

@@ -50,7 +50,7 @@
 
 /* statics */
 #ifndef RAPTOR_DISABLE_V1
-static raptor_world* Raptor_World=NULL;
+static raptor_world* Raptor_World = NULL;
 #endif
 
 
@@ -226,12 +226,12 @@ raptor_init(void)
     return;
   }
 
-  Raptor_World=raptor_new_world();
+  Raptor_World = raptor_new_world();
   if(!Raptor_World)
     goto failure;
   if(raptor_world_open(Raptor_World))
     goto failure;
-  Raptor_World->static_usage=1;
+  Raptor_World->static_usage = 1;
 
   return;
 
@@ -256,7 +256,7 @@ raptor_finish(void)
     return;
 
   raptor_free_world(Raptor_World);
-  Raptor_World=NULL;
+  Raptor_World = NULL;
 }
 
 
@@ -517,17 +517,17 @@ const char*
 raptor_basename(const char *name)
 {
   char *p;
-  if((p=strrchr(name, '/')))
-    name=p+1;
-  else if((p=strrchr(name, '\\')))
-    name=p+1;
+  if((p = strrchr(name, '/')))
+    name = p+1;
+  else if((p = strrchr(name, '\\')))
+    name = p+1;
 
   return name;
 }
 
 
-const unsigned char * const raptor_xml_literal_datatype_uri_string=(const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
-const unsigned int raptor_xml_literal_datatype_uri_string_len=53;
+const unsigned char * const raptor_xml_literal_datatype_uri_string = (const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
+const unsigned int raptor_xml_literal_datatype_uri_string_len = 53;
 
 /**
  * raptor_print_ntriples_string:
@@ -546,7 +546,7 @@ raptor_print_ntriples_string(FILE *stream,
                              const char delim) 
 {
   unsigned char c;
-  size_t len=strlen((const char*)string);
+  size_t len = strlen((const char*)string);
   int unichar_len;
   raptor_unichar unichar;
   
@@ -576,12 +576,12 @@ raptor_print_ntriples_string(FILE *stream,
     
     /* It is unicode */
     
-    unichar_len=raptor_utf8_to_unicode_char(NULL, string, len);
+    unichar_len = raptor_utf8_to_unicode_char(NULL, string, len);
     if(unichar_len < 0 || unichar_len > (int)len)
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
 
-    unichar_len=raptor_utf8_to_unicode_char(&unichar, string, len);
+    unichar_len = raptor_utf8_to_unicode_char(&unichar, string, len);
     
     if(unichar < 0x10000)
       fprintf(stream, "\\u%04lX", unichar);
@@ -614,7 +614,7 @@ raptor_check_ordinal(const unsigned char *name) {
     if(c < '0' || c > '9')
       return -1;
     if(ordinal <0)
-      ordinal=0;
+      ordinal = 0;
     ordinal *= 10;
     ordinal += (c - '0');
   }
@@ -651,8 +651,8 @@ raptor_error_handlers_init(raptor_error_handlers* error_handlers)
 void
 raptor_error_handlers_init_v2(raptor_world *world, raptor_error_handlers* error_handlers)
 {
-  error_handlers->magic=RAPTOR_ERROR_HANDLER_MAGIC;
-  error_handlers->world=world;
+  error_handlers->magic = RAPTOR_ERROR_HANDLER_MAGIC;
+  error_handlers->world = world;
 }
 
 
@@ -693,7 +693,7 @@ raptor_log_error_varargs(raptor_world* world,
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
-  buffer=raptor_vsnprintf(message, arguments);
+  buffer = raptor_vsnprintf(message, arguments);
   if(!buffer) {
     if(locator && world) {
       raptor_print_locator_v2(world, stderr, locator);
@@ -707,8 +707,8 @@ raptor_log_error_varargs(raptor_world* world,
     return;
   }
 
-  length=strlen(buffer);
-  if(buffer[length-1]=='\n')
+  length = strlen(buffer);
+  if(buffer[length-1] == '\n')
     buffer[length-1]='\0';
   
   raptor_log_error(world, level, handler, handler_data, locator, buffer);
@@ -837,7 +837,7 @@ raptor_sign_malloc(size_t size)
   
   size += sizeof(int);
   
-  p=(int*)malloc(size);
+  p = (int*)malloc(size);
   *p++ = RAPTOR_SIGN_KEY;
   return p;
 }
@@ -850,7 +850,7 @@ raptor_sign_calloc(size_t nmemb, size_t size)
   /* turn into bytes */
   size = nmemb*size + sizeof(int);
   
-  p=(int*)calloc(1, size);
+  p = (int*)calloc(1, size);
   *p++ = RAPTOR_SIGN_KEY;
   return p;
 }
@@ -863,7 +863,7 @@ raptor_sign_realloc(void *ptr, size_t size)
   if(!ptr)
     return raptor_sign_malloc(size);
   
-  p=(int*)ptr;
+  p = (int*)ptr;
   p--;
 
   if(*p != RAPTOR_SIGN_KEY)
@@ -871,7 +871,7 @@ raptor_sign_realloc(void *ptr, size_t size)
 
   size += sizeof(int);
   
-  p=(int*)realloc(p, size);
+  p = (int*)realloc(p, size);
   *p++= RAPTOR_SIGN_KEY;
   return p;
 }
@@ -884,7 +884,7 @@ raptor_sign_free(void *ptr)
   if(!ptr)
     return;
   
-  p=(int*)ptr;
+  p = (int*)ptr;
   p--;
 
   if(*p != RAPTOR_SIGN_KEY)

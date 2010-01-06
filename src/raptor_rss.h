@@ -248,7 +248,7 @@ typedef enum {
 
   RAPTOR_RSS_FIELD_NONE,
 
-  RAPTOR_RSS_FIELDS_SIZE=RAPTOR_RSS_FIELD_UNKNOWN
+  RAPTOR_RSS_FIELDS_SIZE = RAPTOR_RSS_FIELD_UNKNOWN
 } raptor_rss_fields_type;
 
 extern const raptor_rss_field_info raptor_rss_fields_info[RAPTOR_RSS_FIELDS_SIZE+2];

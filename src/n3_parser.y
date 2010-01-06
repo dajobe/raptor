@@ -211,25 +211,25 @@ statement: directive
 
   if($1 && $2) {
     /* have subject and non-empty property list, handle it  */
-    for(i=0; i<raptor_sequence_size($2); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_triple* t2 = (raptor_triple*)raptor_sequence_get_at($2, i);
+      raptor_identifier *i2 = (raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       if(!i2) {
         raptor_free_sequence($2);
         raptor_free_identifier($1);
         YYERROR;
       }
       raptor_copy_identifier(i2, $1);
-      t2->subject=i2;
-      t2->subject->is_malloced=1;
+      t2->subject = i2;
+      t2->subject->is_malloced = 1;
     }
 #if RAPTOR_DEBUG > 1  
     printf(" after substitution propertyList=");
     raptor_sequence_print($2, stdout);
     printf("\n\n");
 #endif
-    for(i=0; i<raptor_sequence_size($2); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_triple* t2 = (raptor_triple*)raptor_sequence_get_at($2, i);
       raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
     }
   }
@@ -267,7 +267,7 @@ objectList: objectList COMMA object
   if(!$3)
     $$=NULL;
   else {
-    triple=raptor_n3_new_triple(NULL, NULL, $3);
+    triple = raptor_n3_new_triple(NULL, NULL, $3);
     if(!triple) {
       raptor_free_sequence($1);
       YYERROR;
@@ -301,7 +301,7 @@ objectList: objectList COMMA object
   if(!$1)
     $$=NULL;
   else {
-    triple=raptor_n3_new_triple(NULL, NULL, $1);
+    triple = raptor_n3_new_triple(NULL, NULL, $1);
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
@@ -351,7 +351,7 @@ itemList: itemList object
   if(!$2)
     $$=NULL;
   else {
-    triple=raptor_n3_new_triple(NULL, NULL, $2);
+    triple = raptor_n3_new_triple(NULL, NULL, $2);
     if(!triple) {
       raptor_free_sequence($1);
       YYERROR;
@@ -385,7 +385,7 @@ itemList: itemList object
   if(!$1)
     $$=NULL;
   else {
-    triple=raptor_n3_new_triple(NULL, NULL, $1);
+    triple = raptor_n3_new_triple(NULL, NULL, $1);
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
@@ -427,10 +427,10 @@ verb: predicate
   raptor_uri *uri;
 
 #if RAPTOR_DEBUG > 1  
-  printf("verb predicate=rdf:type (a)\n");
+  printf("verb predicate = rdf:type (a)\n");
 #endif
 
-  uri=raptor_new_uri_for_rdf_concept_v2(((raptor_parser*)rdf_parser)->world, "type");
+  uri = raptor_new_uri_for_rdf_concept_v2(((raptor_parser*)rdf_parser)->world, "type");
   if(!uri)
     YYERROR;
   $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
@@ -460,9 +460,9 @@ propertyList: propertyList SEMICOLON verb objectList
 #endif
   } else if($3 && $4) {
     /* non-empty property list, handle it  */
-    for(i=0; i<raptor_sequence_size($4); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($4, i);
-      raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+    for(i = 0; i < raptor_sequence_size($4); i++) {
+      raptor_triple* t2 = (raptor_triple*)raptor_sequence_get_at($4, i);
+      raptor_identifier *i2 = (raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       if(!i2) {
         if($1)
           raptor_free_sequence($1);
@@ -471,8 +471,8 @@ propertyList: propertyList SEMICOLON verb objectList
         YYERROR;
       }
       raptor_copy_identifier(i2, $3);
-      t2->predicate=i2;
-      t2->predicate->is_malloced=1;
+      t2->predicate = i2;
+      t2->predicate->is_malloced = 1;
     }
   
 #if RAPTOR_DEBUG > 1  
@@ -486,9 +486,9 @@ propertyList: propertyList SEMICOLON verb objectList
 #if RAPTOR_DEBUG > 1  
     printf(" empty propertyList not copied\n\n");
 #endif
-  } else if ($3 && $4 && $1) {
+  } else if($3 && $4 && $1) {
     while(raptor_sequence_size($4)) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_unshift($4);
+      raptor_triple* t2 = (raptor_triple*)raptor_sequence_unshift($4);
       if(raptor_sequence_push($1, t2)) {
         raptor_free_sequence($1);
         if($3)
@@ -527,17 +527,17 @@ propertyList: propertyList SEMICOLON verb objectList
 #endif
 
   if($1 && $2) {
-    for(i=0; i<raptor_sequence_size($2); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_triple* t2 = (raptor_triple*)raptor_sequence_get_at($2, i);
+      raptor_identifier *i2 = (raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       if(!i2) {
         raptor_free_sequence($2);
         raptor_free_identifier($1);
         YYERROR;
       }
       raptor_copy_identifier(i2, $1);
-      t2->predicate=i2;
-      t2->predicate->is_malloced=1;
+      t2->predicate = i2;
+      t2->predicate->is_malloced = 1;
     }
 
 #if RAPTOR_DEBUG > 1  
@@ -573,7 +573,7 @@ propertyList: propertyList SEMICOLON verb objectList
 directive : PREFIX IDENTIFIER URI_LITERAL DOT
 {
   unsigned char *prefix=$2;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
   raptor_namespace *ns;
 
 #if 0
@@ -585,17 +585,17 @@ directive : PREFIX IDENTIFIER URI_LITERAL DOT
 #endif
 
   if(prefix) {
-    size_t len=strlen((const char*)prefix);
+    size_t len = strlen((const char*)prefix);
     if(prefix[len-1] == ':') {
       if(len == 1)
          /* declaring default namespace prefix @prefix : ... */
-        prefix=NULL;
+        prefix = NULL;
       else
         prefix[len-1]='\0';
     }
   }
 
-  ns=raptor_new_namespace_from_uri(&n3_parser->namespaces, prefix, $3, 0);
+  ns = raptor_new_namespace_from_uri(&n3_parser->namespaces, prefix, $3, 0);
   if(ns) {
     raptor_namespaces_start_namespace(&n3_parser->namespaces, ns);
     raptor_parser_start_namespace((raptor_parser*)rdf_parser, ns);
@@ -732,11 +732,11 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   printf("resource integer=%d\n", $1);
 #endif
-  string=(unsigned char*)RAPTOR_MALLOC(cstring, 32); /* FIXME */
+  string = (unsigned char*)RAPTOR_MALLOC(cstring, 32); /* FIXME */
   if(!string)
     YYERROR;
   sprintf((char*)string, "%d", $1);
-  uri=raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   if(!uri)
     YYERROR;
   $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
@@ -758,7 +758,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   printf("resource decimal=%s\n", $1);
 #endif
-  uri=raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   if(!uri)
     YYERROR;
   $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
@@ -804,7 +804,7 @@ blank: BLANK_LITERAL
 #if RAPTOR_DEBUG > 1  
   printf("subject blank=\"%s\"\n", $1);
 #endif
-  id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, $1);
+  id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, $1);
   if(!id)
     YYERROR;
 
@@ -817,7 +817,7 @@ blank: BLANK_LITERAL
   int i;
   const unsigned char *id;
 
-  id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+  id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
   if(!id) {
     if($2)
       raptor_free_sequence($2);
@@ -845,9 +845,9 @@ blank: BLANK_LITERAL
     printf("\n");
 #endif
 
-    for(i=0; i<raptor_sequence_size($2); i++) {
-      raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
-      raptor_identifier *i2=(raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_triple* t2 = (raptor_triple*)raptor_sequence_get_at($2, i);
+      raptor_identifier *i2 = (raptor_identifier*)RAPTOR_CALLOC(raptor_identifier, 1, sizeof(raptor_identifier));
       if(!i2) {
         raptor_free_sequence($2);
         raptor_free_identifier($$);
@@ -861,8 +861,8 @@ blank: BLANK_LITERAL
         $$=NULL;
         YYERROR;
       }
-      t2->subject=i2;
-      t2->subject->is_malloced=1;
+      t2->subject = i2;
+      t2->subject->is_malloced = 1;
       raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 
@@ -887,11 +887,11 @@ blank: BLANK_LITERAL
 collection: LEFT_ROUND itemList RIGHT_ROUND
 {
   int i;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
-  raptor_identifier* first_identifier=NULL;
-  raptor_identifier* rest_identifier=NULL;
-  raptor_identifier* object=NULL;
-  raptor_identifier* blank=NULL;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_identifier* first_identifier = NULL;
+  raptor_identifier* rest_identifier = NULL;
+  raptor_identifier* object = NULL;
+  raptor_identifier* blank = NULL;
 
 #if RAPTOR_DEBUG > 1  
   printf("collection\n objectList=");
@@ -899,10 +899,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  first_identifier=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  first_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!first_identifier)
     goto err_collection;
-  rest_identifier=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  rest_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!rest_identifier)
     goto err_collection;
   
@@ -913,43 +913,43 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  object=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  object = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
   if(!object)
     goto err_collection;
 
-  for(i=raptor_sequence_size($2)-1; i>=0; i--) {
-    raptor_triple* t2=(raptor_triple*)raptor_sequence_get_at($2, i);
+  for(i = raptor_sequence_size($2)-1; i>=0; i--) {
+    raptor_triple* t2 = (raptor_triple*)raptor_sequence_get_at($2, i);
     const unsigned char *blank_id;
     raptor_identifier* temp;
 
-    blank_id=raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+    blank_id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
     if(!blank_id)
       goto err_collection;
 
-    blank=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
+    blank = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
     if(!blank)
       goto err_collection;
     
-    t2->subject=blank;
-    t2->predicate=first_identifier;
+    t2->subject = blank;
+    t2->predicate = first_identifier;
     /* t2->object already set to the value we want */
     raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
     
-    temp=t2->object;
+    temp = t2->object;
     
-    t2->subject=blank;
-    t2->predicate=rest_identifier;
-    t2->object=object;
+    t2->subject = blank;
+    t2->predicate = rest_identifier;
+    t2->object = object;
     raptor_n3_generate_statement((raptor_parser*)rdf_parser, t2);
 
     raptor_free_identifier(object);
       
-    t2->subject=NULL;
-    t2->predicate=NULL;
-    t2->object=temp;
+    t2->subject = NULL;
+    t2->predicate = NULL;
+    t2->object = temp;
 
-    object=blank;
-    blank=NULL;
+    object = blank;
+    blank = NULL;
   }
   
 #if RAPTOR_DEBUG > 1
@@ -987,7 +987,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 }
 |  LEFT_ROUND RIGHT_ROUND 
 {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)(((raptor_parser*)rdf_parser)->context);
 
 #if RAPTOR_DEBUG > 1  
   printf("collection\n empty\n");
@@ -1019,7 +1019,7 @@ raptor_n3_new_triple(raptor_identifier *subject,
 {
   raptor_triple* t;
   
-  t=(raptor_triple*)RAPTOR_MALLOC(raptor_triple, sizeof(raptor_triple));
+  t = (raptor_triple*)RAPTOR_MALLOC(raptor_triple, sizeof(raptor_triple));
   if(!t) {
     if(subject)
       raptor_free_identifier(subject);
@@ -1031,9 +1031,9 @@ raptor_n3_new_triple(raptor_identifier *subject,
     return NULL;
   }
   
-  t->subject=subject;
-  t->predicate=predicate;
-  t->object=object;
+  t->subject = subject;
+  t->predicate = predicate;
+  t->object = object;
 
   return t;
 }
@@ -1067,15 +1067,15 @@ raptor_triple_print(raptor_triple *t, FILE *fh)
 int
 n3_parser_error(void* ctx, const char *msg)
 {
-  raptor_parser* rdf_parser=(raptor_parser *)ctx;
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_parser* rdf_parser = (raptor_parser *)ctx;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)rdf_parser->context;
   
   if(n3_parser->error_count++)
     return 0;
 
-  rdf_parser->locator.line=n3_parser->lineno;
+  rdf_parser->locator.line = n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
-  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+  rdf_parser->locator.column = n3_lexer_get_column(yyscanner);
 #endif
 
   raptor_parser_simple_error(rdf_parser, "%s", msg);
@@ -1086,15 +1086,15 @@ n3_parser_error(void* ctx, const char *msg)
 int
 n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)rdf_parser->context;
   va_list arguments;
 
   if(n3_parser->error_count++)
     return 0;
 
-  rdf_parser->locator.line=n3_parser->lineno;
+  rdf_parser->locator.line = n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
-  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+  rdf_parser->locator.column = n3_lexer_get_column(yyscanner);
 #endif
 
   va_start(arguments, message);
@@ -1110,11 +1110,11 @@ n3_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 raptor_uri*
 n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
 {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)rdf_parser->context;
 
-  rdf_parser->locator.line=n3_parser->lineno;
+  rdf_parser->locator.line = n3_parser->lineno;
 #ifdef RAPTOR_N3_USE_ERROR_COLUMNS
-  rdf_parser->locator.column=n3_lexer_get_column(yyscanner);
+  rdf_parser->locator.column = n3_lexer_get_column(yyscanner);
 #endif
 
   return raptor_qname_string_to_uri(&n3_parser->namespaces,
@@ -1126,7 +1126,7 @@ n3_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len)
 
 static int
 n3_parse(raptor_parser *rdf_parser, const char *string) {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)rdf_parser->context;
   void *buffer;
   
   if(!string || !*string)
@@ -1134,7 +1134,7 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   
   if(n3_lexer_lex_init(&n3_parser->scanner))
     return 1;
-  n3_parser->scanner_set=1;
+  n3_parser->scanner_set = 1;
 
   n3_lexer_set_extra(rdf_parser, n3_parser->scanner);
   buffer= n3_lexer__scan_string(string, n3_parser->scanner);
@@ -1142,7 +1142,7 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
   n3_parser_parse(rdf_parser);
 
   n3_lexer_lex_destroy(n3_parser->scanner);
-  n3_parser->scanner_set=0;
+  n3_parser->scanner_set = 0;
 
   return 0;
 }
@@ -1156,7 +1156,7 @@ n3_parse(raptor_parser *rdf_parser, const char *string) {
 
 static int
 raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
-  raptor_n3_parser* n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_n3_parser* n3_parser = (raptor_n3_parser*)rdf_parser->context;
 
   if(raptor_namespaces_init_v2(rdf_parser->world,
                                &n3_parser->namespaces,
@@ -1164,9 +1164,9 @@ raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
                                0))
     return 1;
 
-  n3_parser->nil_uri=raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "nil");
-  n3_parser->first_uri=raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "first");
-  n3_parser->rest_uri=raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "rest");
+  n3_parser->nil_uri = raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "nil");
+  n3_parser->first_uri = raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "first");
+  n3_parser->rest_uri = raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "rest");
 
   if(!n3_parser->nil_uri || !n3_parser->first_uri || !n3_parser->rest_uri)
     return 1;
@@ -1185,7 +1185,7 @@ raptor_n3_parse_init(raptor_parser* rdf_parser, const char *name) {
  **/
 static void
 raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
-  raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_n3_parser *n3_parser = (raptor_n3_parser*)rdf_parser->context;
 
   if(n3_parser->nil_uri)
     raptor_free_uri_v2(rdf_parser->world, n3_parser->nil_uri);
@@ -1198,7 +1198,7 @@ raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
 
   if(n3_parser->scanner_set) {
     n3_lexer_lex_destroy(n3_parser->scanner);
-    n3_parser->scanner_set=0;
+    n3_parser->scanner_set = 0;
   }
 
   if(n3_parser->buffer_length)
@@ -1209,55 +1209,55 @@ raptor_n3_parse_terminate(raptor_parser *rdf_parser) {
 static void
 raptor_n3_generate_statement(raptor_parser *parser, raptor_triple *t)
 {
-  /* raptor_n3_parser *n3_parser=(raptor_n3_parser*)parser->context; */
+  /* raptor_n3_parser *n3_parser = (raptor_n3_parser*)parser->context; */
   raptor_statement *statement=&parser->statement;
 
   if(!t->subject || !t->predicate || !t->object)
     return;
 
   /* Two choices for subject for N3 */
-  statement->subject_type=t->subject->type;
+  statement->subject_type = t->subject->type;
   if(t->subject->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    statement->subject=t->subject->id;
+    statement->subject = t->subject->id;
   } else {
     /* RAPTOR_IDENTIFIER_TYPE_RESOURCE */
     RAPTOR_ASSERT(t->subject->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                   "subject type is not resource");
-    statement->subject=t->subject->uri;
+    statement->subject = t->subject->uri;
   }
 
   /* Predicates are URIs but check for bad ordinals */
   if(!strncmp((const char*)raptor_uri_as_string_v2(parser->world, t->predicate->uri),
               "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    unsigned char* predicate_uri_string=raptor_uri_as_string_v2(parser->world, t->predicate->uri);
-    int predicate_ordinal=raptor_check_ordinal(predicate_uri_string+44);
+    unsigned char* predicate_uri_string = raptor_uri_as_string_v2(parser->world, t->predicate->uri);
+    int predicate_ordinal = raptor_check_ordinal(predicate_uri_string+44);
     if(predicate_ordinal <= 0)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
   }
   
-  statement->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  statement->predicate=t->predicate->uri;
+  statement->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate = t->predicate->uri;
   
 
   /* Three choices for object for N3 */
-  statement->object_type=t->object->type;
-  statement->object_literal_language=NULL;
-  statement->object_literal_datatype=NULL;
+  statement->object_type = t->object->type;
+  statement->object_literal_language = NULL;
+  statement->object_literal_datatype = NULL;
 
   if(t->object->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    statement->object=t->object->uri;
+    statement->object = t->object->uri;
   } else if(t->object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    statement->object=t->object->id;
+    statement->object = t->object->id;
   } else {
     /* RAPTOR_IDENTIFIER_TYPE_LITERAL */
     RAPTOR_ASSERT(t->object->type != RAPTOR_IDENTIFIER_TYPE_LITERAL,
                   "object type is not literal");
-    statement->object=t->object->literal;
-    statement->object_literal_language=t->object->literal_language;
-    statement->object_literal_datatype=t->object->literal_datatype;
+    statement->object = t->object->literal;
+    statement->object_literal_language = t->object->literal_language;
+    statement->object_literal_datatype = t->object->literal_datatype;
 
     if(statement->object_literal_datatype)
-      statement->object_literal_language=NULL;
+      statement->object_literal_language = NULL;
   }
 
   if(!parser->statement_handler)
@@ -1276,22 +1276,22 @@ raptor_n3_parse_chunk(raptor_parser* rdf_parser,
 {
   char *buffer;
   char *ptr;
-  raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_n3_parser *n3_parser = (raptor_n3_parser*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("adding %d bytes to line buffer\n", (int)len);
 #endif
 
   if(len) {
-    buffer=(char*)RAPTOR_REALLOC(cstring, n3_parser->buffer, n3_parser->buffer_length + len + 1);
+    buffer = (char*)RAPTOR_REALLOC(cstring, n3_parser->buffer, n3_parser->buffer_length + len + 1);
     if(!buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
     }
-    n3_parser->buffer=buffer;
+    n3_parser->buffer = buffer;
 
     /* move pointer to end of cdata buffer */
-    ptr=buffer+n3_parser->buffer_length;
+    ptr = buffer+n3_parser->buffer_length;
 
     /* adjust stored length */
     n3_parser->buffer_length += len;
@@ -1323,23 +1323,23 @@ static int
 raptor_n3_parse_start(raptor_parser *rdf_parser) 
 {
   raptor_locator *locator=&rdf_parser->locator;
-  raptor_n3_parser *n3_parser=(raptor_n3_parser*)rdf_parser->context;
+  raptor_n3_parser *n3_parser = (raptor_n3_parser*)rdf_parser->context;
 
   /* base URI required for N3 */
   if(!rdf_parser->base_uri)
     return 1;
 
-  locator->line=1;
+  locator->line = 1;
   locator->column= -1; /* No column info */
   locator->byte= -1; /* No bytes info */
 
   if(n3_parser->buffer_length) {
     RAPTOR_FREE(cdata, n3_parser->buffer);
-    n3_parser->buffer=NULL;
-    n3_parser->buffer_length=0;
+    n3_parser->buffer = NULL;
+    n3_parser->buffer_length = 0;
   }
   
-  n3_parser->lineno=1;
+  n3_parser->lineno = 1;
 
   return 0;
 }
@@ -1356,12 +1356,12 @@ raptor_n3_parse_recognise_syntax(raptor_parser_factory* factory,
   
   if(suffix) {
     if(!strcmp((const char*)suffix, "n3"))
-      score=8;
+      score = 8;
   }
   
   if(mime_type) {
     if(strstr((const char*)mime_type, "n3"))
-      score+=6;
+      score += 6;
   }
   
   return score;
@@ -1371,7 +1371,7 @@ raptor_n3_parse_recognise_syntax(raptor_parser_factory* factory,
 static int
 raptor_n3_parser_register_factory(raptor_parser_factory *factory) 
 {
-  int rc=0;
+  int rc = 0;
 
   factory->context_length     = sizeof(raptor_n3_parser);
   
@@ -1408,7 +1408,7 @@ raptor_init_parser_n3(raptor_world* world)
 static
 void n3_parser_print_statement(void *user, const raptor_statement *statement) 
 {
-  FILE* stream=(FILE*)user;
+  FILE* stream = (FILE*)user;
   raptor_print_statement(statement, stream);
   putc('\n', stream);
 }
@@ -1427,11 +1427,11 @@ main(int argc, char *argv[])
   int rc;
   
 #if RAPTOR_DEBUG > 2
-  n3_parser_debug=1;
+  n3_parser_debug = 1;
 #endif
 
   if(argc > 1) {
-    filename=argv[1];
+    filename = argv[1];
     fh = fopen(filename, "r");
     if(!fh) {
       fprintf(stderr, "%s: Cannot open file %s - %s\n", argv[0], filename,
@@ -1444,7 +1444,7 @@ main(int argc, char *argv[])
   }
 
   memset(string, 0, N3_FILE_BUF_SIZE);
-  rc=fread(string, N3_FILE_BUF_SIZE, 1, fh);
+  rc = fread(string, N3_FILE_BUF_SIZE, 1, fh);
   if(rc < N3_FILE_BUF_SIZE) {
     if(ferror(fh)) {
       fprintf(stderr, "%s: file '%s' read failed - %s\n",
@@ -1454,7 +1454,7 @@ main(int argc, char *argv[])
     }
   }
   
-  if(argc>1)
+  if(argc > 1)
     fclose(fh);
 
   raptor_init();
@@ -1468,12 +1468,12 @@ main(int argc, char *argv[])
   n3_parser.lineno= 1;
 
   rdf_parser.context=&n3_parser;
-  rdf_parser.base_uri=raptor_new_uri((const unsigned char*)"http://example.org/fake-base-uri/");
+  rdf_parser.base_uri = raptor_new_uri((const unsigned char*)"http://example.org/fake-base-uri/");
 
   raptor_set_statement_handler(&rdf_parser, stdout, n3_parser_print_statement);
   raptor_n3_parse_init(&rdf_parser, "n3");
   
-  n3_parser.error_count=0;
+  n3_parser.error_count = 0;
 
   n3_parse(&rdf_parser, string);
 

@@ -90,9 +90,9 @@ raptor_free_parser_factory(raptor_parser_factory* factory)
 int
 raptor_parsers_init(raptor_world *world)
 {
-  int rc=0;
+  int rc = 0;
 
-  world->parsers=raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
+  world->parsers = raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
   if(!world->parsers)
     return 1;
   
@@ -149,7 +149,7 @@ raptor_parsers_finish(raptor_world *world)
 {
   if(world->parsers) {
     raptor_free_sequence(world->parsers);
-    world->parsers=NULL;
+    world->parsers = NULL;
   }
 #if defined(RAPTOR_PARSER_GRDDL)
   raptor_terminate_parser_grddl_common(world);
@@ -176,7 +176,7 @@ raptor_parser_register_factory(raptor_world* world,
                                const char *name, const char *label,
                                int (*factory) (raptor_parser_factory*)) 
 {
-  raptor_parser_factory *parser=NULL;
+  raptor_parser_factory *parser = NULL;
   raptor_parser_factory *h;
   char *name_copy, *label_copy;
   int i;
@@ -185,8 +185,8 @@ raptor_parser_register_factory(raptor_world* world,
   RAPTOR_DEBUG3("Received registration for syntax %s '%s'\n", name, label);
 #endif
   
-  for(i=0;
-      (h=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
+  for(i = 0;
+      (h = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     if(!strcmp(h->name, name)) {
       RAPTOR_DEBUG2("parser %s already registered\n", h->name);
@@ -194,26 +194,26 @@ raptor_parser_register_factory(raptor_world* world,
     }
   }
   
-  parser=(raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
+  parser = (raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
                                                sizeof(raptor_parser_factory));
   if(!parser)
     return NULL;
 
-  parser->world=world;
+  parser->world = world;
 
-  name_copy=(char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
+  name_copy = (char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
   if(!name_copy)
     goto tidy;
   strcpy(name_copy, name);
-  parser->name=name_copy;
+  parser->name = name_copy;
         
-  label_copy=(char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
+  label_copy = (char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
   if(!label_copy)
     goto tidy;
   strcpy(label_copy, label);
-  parser->label=label_copy;
+  parser->label = label_copy;
 
-  parser->mime_types=raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
+  parser->mime_types = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
   if(!parser->mime_types)
     goto tidy;
 
@@ -221,7 +221,7 @@ raptor_parser_register_factory(raptor_world* world,
     return NULL; /* on error, parser is already freed by the sequence */
   
   /* Call the parser registration function on the new object */
-  if (factory(parser))
+  if(factory(parser))
     return NULL; /* parser is owned and freed by the parsers sequence */
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -245,8 +245,8 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
   char *alias_copy;
   int i;
   
-  for(i=0;
-      (p=(raptor_parser_factory*)raptor_sequence_get_at(factory->world->parsers, i));
+  for(i = 0;
+      (p = (raptor_parser_factory*)raptor_sequence_get_at(factory->world->parsers, i));
       i++) {
     if(!strcmp(p->name, alias)) {
       RAPTOR_DEBUG2("parser %s already registered\n", p->name);
@@ -254,11 +254,11 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
     }
   }
   
-  alias_copy=(char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
+  alias_copy = (char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
   if(!alias_copy)
     return 1;
   strcpy(alias_copy, alias);
-  factory->alias=alias_copy;
+  factory->alias = alias_copy;
 
   return 0;
 }
@@ -293,25 +293,25 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
   char* mime_type_copy;
   size_t len;
   
-  type_q=(raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, sizeof(raptor_type_q), 1);
+  type_q = (raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, sizeof(raptor_type_q), 1);
   if(!type_q)
     return 1;
-  len=strlen(mime_type);
-  mime_type_copy=(char*)RAPTOR_CALLOC(cstring, len+1, 1);
+  len = strlen(mime_type);
+  mime_type_copy = (char*)RAPTOR_CALLOC(cstring, len+1, 1);
   if(!mime_type_copy) {
     raptor_free_type_q(type_q);
     return 1;
   }
   strcpy(mime_type_copy, mime_type);
 
-  type_q->mime_type=mime_type_copy;
-  type_q->mime_type_len=len;
+  type_q->mime_type = mime_type_copy;
+  type_q->mime_type_len = len;
 
-  if(q<0)
-    q=0;
-  if(q>10)
-    q=10;
-  type_q->q=q;
+  if(q < 0)
+    q = 0;
+  if(q > 10)
+    q = 10;
+  type_q->q = q;
 
   return raptor_sequence_push(factory->mime_types, type_q);
 }
@@ -335,12 +335,12 @@ raptor_parser_factory_add_uri(raptor_parser_factory* factory,
   if(!uri_string)
     return 1;
   
-  uri_string_copy=(unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
+  uri_string_copy = (unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
   if(!uri_string_copy)
     return 1;
 
   strcpy((char*)uri_string_copy, (const char*)uri_string);
-  factory->uri_string=uri_string_copy;
+  factory->uri_string = uri_string_copy;
 
   return 0;
 }
@@ -362,7 +362,7 @@ raptor_get_parser_factory(raptor_world *world, const char *name)
 
   /* return 1st parser if no particular one wanted - why? */
   if(!name) {
-    factory=(raptor_parser_factory *)raptor_sequence_get_at(world->parsers, 0);
+    factory = (raptor_parser_factory *)raptor_sequence_get_at(world->parsers, 0);
     if(!factory) {
       RAPTOR_DEBUG1("No (default) parsers registered\n");
       return NULL;
@@ -370,8 +370,8 @@ raptor_get_parser_factory(raptor_world *world, const char *name)
   } else {
     int i;
     
-    for(i=0;
-        (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
+    for(i = 0;
+        (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
         i++) {
       if(!strcmp(factory->name, name) ||
          (factory->alias && !strcmp(factory->alias, name)))
@@ -438,7 +438,7 @@ raptor_syntaxes_enumerate_v2(raptor_world* world,
 {
   raptor_parser_factory *factory;
 
-  factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers,
+  factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers,
                                                          counter);
 
   if(!factory)
@@ -449,12 +449,12 @@ raptor_syntaxes_enumerate_v2(raptor_world* world,
   if(label)
     *label=factory->label;
   if(mime_type) {
-    const char *mime_type_t=NULL;
+    const char *mime_type_t = NULL;
     if(factory->mime_types) {
       raptor_type_q* tq;
-      tq=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, 0);
+      tq = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, 0);
       if(tq)
-        mime_type_t=tq->mime_type;
+        mime_type_t = tq->mime_type;
     }
     *mime_type=mime_type_t;
   }
@@ -549,18 +549,18 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
 
-  factory=raptor_get_parser_factory(world, name);
+  factory = raptor_get_parser_factory(world, name);
   if(!factory)
     return NULL;
 
-  rdf_parser=(raptor_parser*)RAPTOR_CALLOC(raptor_parser, 1,
+  rdf_parser = (raptor_parser*)RAPTOR_CALLOC(raptor_parser, 1,
                                            sizeof(raptor_parser));
   if(!rdf_parser)
     return NULL;
 
-  rdf_parser->world=world;
+  rdf_parser->world = world;
   
-  rdf_parser->context=(char*)RAPTOR_CALLOC(raptor_parser_context, 1,
+  rdf_parser->context = (char*)RAPTOR_CALLOC(raptor_parser_context, 1,
                                            factory->context_length);
   if(!rdf_parser->context) {
     raptor_free_parser(rdf_parser);
@@ -568,14 +568,14 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
   }
   
 #ifdef RAPTOR_XML_LIBXML
-  rdf_parser->magic=RAPTOR_LIBXML_MAGIC;
+  rdf_parser->magic = RAPTOR_LIBXML_MAGIC;
 #endif  
-  rdf_parser->factory=factory;
+  rdf_parser->factory = factory;
 
-  rdf_parser->failed=0;
+  rdf_parser->failed = 0;
 
   rdf_parser->error_handlers.locator=&rdf_parser->locator;
-  rdf_parser->error_handlers.last_log_level=RAPTOR_LOG_LEVEL_LAST;
+  rdf_parser->error_handlers.last_log_level = RAPTOR_LOG_LEVEL_LAST;
   raptor_error_handlers_init_v2(rdf_parser->world, &rdf_parser->error_handlers);
   
   /* Initialise default (lax) feature values */
@@ -674,11 +674,11 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
   }
 
   if(uri)
-    uri=raptor_uri_copy_v2(rdf_parser->world, uri);
+    uri = raptor_uri_copy_v2(rdf_parser->world, uri);
   
   if(rdf_parser->base_uri)
     raptor_free_uri_v2(rdf_parser->world, rdf_parser->base_uri);
-  rdf_parser->base_uri=uri;
+  rdf_parser->base_uri = uri;
 
   rdf_parser->locator.uri    = uri;
   rdf_parser->locator.line   = -1;
@@ -783,7 +783,7 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
 {
   /* Read buffer */
   unsigned char buffer[RAPTOR_READ_BUFFER_SIZE+1];
-  int rc=0;
+  int rc = 0;
   raptor_locator *locator=&rdf_parser->locator;
 
   if(!stream || !base_uri)
@@ -796,10 +796,10 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
     return 1;
   
   while(!feof(stream)) {
-    int len=fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, stream);
-    int is_end=(len < RAPTOR_READ_BUFFER_SIZE);
+    int len = fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, stream);
+    int is_end = (len < RAPTOR_READ_BUFFER_SIZE);
     buffer[len] = '\0';
-    rc=raptor_parse_chunk(rdf_parser, buffer, len, is_end);
+    rc = raptor_parse_chunk(rdf_parser, buffer, len, is_end);
     if(rc || is_end)
       break;
   }
@@ -824,16 +824,16 @@ int
 raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
                   raptor_uri *base_uri) 
 {
-  int rc=0;
-  int free_base_uri=0;
-  const char *filename=NULL;
-  FILE *fh=NULL;
+  int rc = 0;
+  int free_base_uri = 0;
+  const char *filename = NULL;
+  FILE *fh = NULL;
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   struct stat buf;
 #endif
 
   if(uri) {
-    filename=raptor_uri_uri_string_to_filename(raptor_uri_as_string_v2(rdf_parser->world, uri));
+    filename = raptor_uri_uri_string_to_filename(raptor_uri_as_string_v2(rdf_parser->world, uri));
     if(!filename)
       return 1;
 
@@ -852,16 +852,16 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
       goto cleanup;
     }
     if(!base_uri) {
-      base_uri=raptor_uri_copy_v2(rdf_parser->world, uri);
-      free_base_uri=1;
+      base_uri = raptor_uri_copy_v2(rdf_parser->world, uri);
+      free_base_uri = 1;
     }
   } else {
     if(!base_uri)
       return 1;
-    fh=stdin;
+    fh = stdin;
   }
 
-  rc=raptor_parse_file_stream(rdf_parser, fh, filename, base_uri);
+  rc = raptor_parse_file_stream(rdf_parser, fh, filename, base_uri);
 
   cleanup:
   if(uri) {
@@ -881,21 +881,21 @@ raptor_parse_uri_write_bytes(raptor_www* www,
                              void *userdata, const void *ptr, 
                              size_t size, size_t nmemb)
 {
-  raptor_parse_bytes_context* rpbc=(raptor_parse_bytes_context*)userdata;
-  int len=size*nmemb;
+  raptor_parse_bytes_context* rpbc = (raptor_parse_bytes_context*)userdata;
+  int len = size*nmemb;
 
   if(!rpbc->started) {
-    raptor_uri* base_uri=rpbc->base_uri;
+    raptor_uri* base_uri = rpbc->base_uri;
     
     if(!base_uri) {
-      rpbc->final_uri=raptor_www_get_final_uri(www);
+      rpbc->final_uri = raptor_www_get_final_uri(www);
       /* base URI after URI resolution is finally chosen */
       base_uri = rpbc->final_uri ? rpbc->final_uri : www->uri;
     }
 
     if(raptor_start_parse(rpbc->rdf_parser, base_uri))
       raptor_www_abort(www, "Parsing failed");
-    rpbc->started=1;
+    rpbc->started = 1;
   }
 
   if(raptor_parse_chunk(rpbc->rdf_parser, (unsigned char*)ptr, len, 0))
@@ -907,7 +907,7 @@ static void
 raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata, 
                                       const char* content_type)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)userdata;
+  raptor_parser* rdf_parser = (raptor_parser*)userdata;
   if(rdf_parser->factory->content_type_handler)
     rdf_parser->factory->content_type_handler(rdf_parser, content_type);
 }
@@ -916,8 +916,8 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
 int
 raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri)
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
-  unsigned char* uri_string=raptor_uri_as_string_v2(rdf_parser->world, uri);
+  raptor_parser* rdf_parser = (raptor_parser*)user_data;
+  unsigned char* uri_string = raptor_uri_as_string_v2(rdf_parser->world, uri);
   
   if(raptor_uri_uri_string_is_file_uri(uri_string))
     return 0;
@@ -979,13 +979,13 @@ int
 raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                  raptor_uri *base_uri, void *connection)
 {
-  int ret=0;
+  int ret = 0;
   raptor_parse_bytes_context rpbc;
   
   if(connection) {
     if(rdf_parser->www)
       raptor_www_free(rdf_parser->www);
-    rdf_parser->www=raptor_www_new_with_connection_v2(rdf_parser->world, connection);
+    rdf_parser->www = raptor_www_new_with_connection_v2(rdf_parser->world, connection);
     if(!rdf_parser->www)
       return 1;
   } else {
@@ -993,21 +993,21 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     
     if(rdf_parser->www)
       raptor_www_free(rdf_parser->www);
-    rdf_parser->www=raptor_www_new_v2(rdf_parser->world);
+    rdf_parser->www = raptor_www_new_v2(rdf_parser->world);
     if(!rdf_parser->www)
       return 1;
 
-    accept_h=raptor_parser_get_accept_header(rdf_parser);
+    accept_h = raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
       raptor_www_set_http_accept(rdf_parser->www, accept_h);
       RAPTOR_FREE(cstring, accept_h);
     }
   }
 
-  rpbc.rdf_parser=rdf_parser;
-  rpbc.base_uri=base_uri;
-  rpbc.final_uri=NULL;
-  rpbc.started=0;
+  rpbc.rdf_parser = rdf_parser;
+  rpbc.base_uri = base_uri;
+  rpbc.final_uri = NULL;
+  rpbc.started = 0;
   
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(rdf_parser->www, rdf_parser->uri_filter,
@@ -1030,25 +1030,25 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   if(rdf_parser->user_agent)
     raptor_www_set_user_agent(rdf_parser->www, rdf_parser->user_agent);
   
-  ret=raptor_www_fetch(rdf_parser->www, uri);
+  ret = raptor_www_fetch(rdf_parser->www, uri);
   
   if(!rpbc.started && !ret)
-    ret=raptor_start_parse(rdf_parser, base_uri);
+    ret = raptor_start_parse(rdf_parser, base_uri);
 
   if(rpbc.final_uri)
     raptor_free_uri_v2(rdf_parser->world, rpbc.final_uri);
 
   if(ret) {
     raptor_www_free(rdf_parser->www);
-    rdf_parser->www=NULL;
+    rdf_parser->www = NULL;
     return 1;
   }
 
   if(raptor_parse_chunk(rdf_parser, NULL, 0, 1))
-    rdf_parser->failed=1;
+    rdf_parser->failed = 1;
 
   raptor_www_free(rdf_parser->www);
-  rdf_parser->www=NULL;
+  rdf_parser->www = NULL;
 
   return rdf_parser->failed;
 }
@@ -1062,7 +1062,7 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
 
-  parser->failed=1;
+  parser->failed = 1;
 
   va_start(arguments, message);
   if(parser)
@@ -1105,7 +1105,7 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
 void
 raptor_parser_simple_error(void* user_data, const char *message, ...)
 {
-  raptor_parser* parser=(raptor_parser*)user_data;
+  raptor_parser* parser = (raptor_parser*)user_data;
   va_list arguments;
 
   va_start(arguments, message);
@@ -1199,8 +1199,8 @@ void
 raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data,
                                raptor_message_handler handler)
 {
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data=user_data;
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler=handler;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data = user_data;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler = handler;
 }
 
 
@@ -1219,8 +1219,8 @@ void
 raptor_set_error_handler(raptor_parser* parser, void *user_data,
                          raptor_message_handler handler)
 {
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data=user_data;
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler=handler;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data = user_data;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler = handler;
 }
 
 
@@ -1239,8 +1239,8 @@ void
 raptor_set_warning_handler(raptor_parser* parser, void *user_data,
                            raptor_message_handler handler)
 {
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data=user_data;
-  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler=handler;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data = user_data;
+  parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler = handler;
 }
 
 
@@ -1258,8 +1258,8 @@ raptor_set_statement_handler(raptor_parser* parser,
                              void *user_data,
                              raptor_statement_handler handler)
 {
-  parser->user_data=user_data;
-  parser->statement_handler=handler;
+  parser->user_data = user_data;
+  parser->statement_handler = handler;
 }
 
 
@@ -1277,8 +1277,8 @@ raptor_set_graph_handler(raptor_parser* parser,
 			 void *user_data,
 			 raptor_graph_handler handler)
 {
-  parser->user_data=user_data;
-  parser->graph_handler=handler;
+  parser->user_data = user_data;
+  parser->graph_handler = handler;
 }
 
 
@@ -1307,8 +1307,8 @@ raptor_set_generate_id_handler(raptor_parser* parser,
                                void *user_data,
                                raptor_generate_id_handler handler)
 {
-  parser->generate_id_handler_user_data=user_data;
-  parser->generate_id_handler=handler;
+  parser->generate_id_handler_user_data = user_data;
+  parser->generate_id_handler = handler;
 }
 
 
@@ -1333,8 +1333,8 @@ raptor_set_namespace_handler(raptor_parser* parser,
                              void *user_data,
                              raptor_namespace_handler handler)
 {
-  parser->namespace_handler=handler;
-  parser->namespace_handler_user_data=user_data;
+  parser->namespace_handler = handler;
+  parser->namespace_handler_user_data = user_data;
 }
 
 
@@ -1351,8 +1351,8 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
                              raptor_uri_filter_func filter,
                              void *user_data)
 {
-  parser->uri_filter=filter;
-  parser->uri_filter_user_data=user_data;
+  parser->uri_filter = filter;
+  parser->uri_filter_user_data = user_data;
 }
 
 
@@ -1443,7 +1443,7 @@ raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
     case RAPTOR_FEATURE_MICROFORMATS:
     case RAPTOR_FEATURE_HTML_LINK:
     case RAPTOR_FEATURE_WWW_TIMEOUT:
-      parser->features[(int)feature]=value;
+      parser->features[(int)feature] = value;
       break;
 
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
@@ -1501,17 +1501,17 @@ raptor_parser_set_feature_string(raptor_parser *parser,
                                  raptor_feature feature, 
                                  const unsigned char *value)
 {
-  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
     return raptor_set_feature(parser, feature, atoi((const char*)value));
 
   if((feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL) ||
      (feature == RAPTOR_FEATURE_WWW_HTTP_USER_AGENT)) {
     char *value_copy;
-    size_t len=0;
+    size_t len = 0;
     if(value)
-      len=strlen((const char*)value);
-    value_copy=(char*)RAPTOR_MALLOC(cstring, len+1);
+      len = strlen((const char*)value);
+    value_copy = (char*)RAPTOR_MALLOC(cstring, len+1);
     if(!value_copy)
       return 1;
     
@@ -1520,9 +1520,9 @@ raptor_parser_set_feature_string(raptor_parser *parser,
     value_copy[len]='\0';
     
     if(feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL)
-      parser->cache_control=value_copy;
+      parser->cache_control = value_copy;
     else
-      parser->user_agent=value_copy;
+      parser->user_agent = value_copy;
 
     return 0;
   }
@@ -1568,7 +1568,7 @@ raptor_get_feature(raptor_parser *parser, raptor_feature feature)
       break;
 
     case RAPTOR_FEATURE_ASSUME_IS_RDF:
-      result=0;
+      result = 0;
       break;
 
     /* serializing features */
@@ -1622,7 +1622,7 @@ const unsigned char *
 raptor_parser_get_feature_string(raptor_parser *parser, 
                                  raptor_feature feature)
 {
-  int value_is_string=(raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
     return NULL;
   
@@ -1641,19 +1641,19 @@ raptor_parser_get_feature_string(raptor_parser *parser,
 void
 raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
 {
-  is_strict=(is_strict) ? 1 : 0;
+  is_strict = (is_strict) ? 1 : 0;
 
   /* Initialise default parser mode */
-  rdf_parser->features[RAPTOR_FEATURE_SCANNING]=0;
+  rdf_parser->features[RAPTOR_FEATURE_SCANNING] = 0;
 
   rdf_parser->features[RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES]=!is_strict;
   rdf_parser->features[RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES]=!is_strict;
   rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]=!is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST]=0;
-  rdf_parser->features[RAPTOR_FEATURE_NORMALIZE_LANGUAGE]=1;
-  rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL]=is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST] = 0;
+  rdf_parser->features[RAPTOR_FEATURE_NORMALIZE_LANGUAGE] = 1;
+  rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL] = is_strict;
   rdf_parser->features[RAPTOR_FEATURE_WARN_OTHER_PARSETYPES]=!is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID]=1;
+  rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID] = 1;
   rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]=!is_strict;
   rdf_parser->features[RAPTOR_FEATURE_MICROFORMATS]=!is_strict;
   rdf_parser->features[RAPTOR_FEATURE_HTML_LINK]=!is_strict;
@@ -1685,16 +1685,16 @@ void
 raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser, 
                                           char *prefix, int base)
 {
-  char *prefix_copy=NULL;
-  size_t length=0;
+  char *prefix_copy = NULL;
+  size_t length = 0;
 
-  if(--base<0)
-    base=0;
+  if(--base < 0)
+    base = 0;
 
   if(prefix) {
-    length=strlen(prefix);
+    length = strlen(prefix);
     
-    prefix_copy=(char*)RAPTOR_MALLOC(cstring, length+1);
+    prefix_copy = (char*)RAPTOR_MALLOC(cstring, length+1);
     if(!prefix_copy)
       return;
     strcpy(prefix_copy, prefix);
@@ -1703,9 +1703,9 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
   if(rdf_parser->default_generate_id_handler_prefix)
     RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
 
-  rdf_parser->default_generate_id_handler_prefix=prefix_copy;
-  rdf_parser->default_generate_id_handler_prefix_length=length;
-  rdf_parser->default_generate_id_handler_base=base;
+  rdf_parser->default_generate_id_handler_prefix = prefix_copy;
+  rdf_parser->default_generate_id_handler_prefix_length = length;
+  rdf_parser->default_generate_id_handler_base = base;
 }
 
 
@@ -1753,12 +1753,12 @@ raptor_get_label(raptor_parser *rdf_parser)
 const char*
 raptor_get_mime_type(raptor_parser *rdf_parser) 
 {
-  const char *mime_type=NULL;
+  const char *mime_type = NULL;
   if(rdf_parser->factory->mime_types) {
     raptor_type_q* tq;
-    tq=(raptor_type_q*)raptor_sequence_get_at(rdf_parser->factory->mime_types, 0);
+    tq = (raptor_type_q*)raptor_sequence_get_at(rdf_parser->factory->mime_types, 0);
     if(tq)
-      mime_type=tq->mime_type;
+      mime_type = tq->mime_type;
   }
   
   return mime_type;
@@ -1798,7 +1798,7 @@ raptor_get_need_base_uri(raptor_parser *rdf_parser)
 void
 raptor_parse_abort(raptor_parser *rdf_parser)
 {
-  rdf_parser->failed=1;
+  rdf_parser->failed = 1;
 }
 
 
@@ -1806,7 +1806,7 @@ static unsigned char*
 raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
                                    unsigned char *user_bnodeid) 
 {
-  raptor_parser *rdf_parser=(raptor_parser *)user_data;
+  raptor_parser *rdf_parser = (raptor_parser *)user_data;
   int id;
   unsigned char *buffer;
   int length;
@@ -1817,9 +1817,9 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 
   id=++rdf_parser->default_generate_id_handler_base;
 
-  tmpid=id;
-  length=2; /* min length 1 + \0 */
-  while(tmpid/=10)
+  tmpid = id;
+  length = 2; /* min length 1 + \0 */
+  while(tmpid /= 10)
     length++;
 
   if(rdf_parser->default_generate_id_handler_prefix)
@@ -1827,7 +1827,7 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
   else
     length += 5; /* genid */
   
-  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, length);
+  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, length);
   if(!buffer)
     return NULL;
   if(rdf_parser->default_generate_id_handler_prefix) {
@@ -1900,7 +1900,7 @@ raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 #ifdef RAPTOR_PARSER_RDFXML
 #if RAPTOR_DEBUG > 1
   if(!strcmp(rdf_parser->factory->name, "rdfxml")) {
-    raptor_rdfxml_parser *rdf_xml_parser=(raptor_rdfxml_parser*)rdf_parser->context;
+    raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
     fputs("raptor parser stats\n  ", stream);
     raptor_rdfxml_parser_stats_print(rdf_xml_parser, stream);
   }
@@ -1979,26 +1979,26 @@ raptor_guess_parser_name_v2(raptor_world* world,
 {
   unsigned int i;
   raptor_parser_factory *factory;
-  unsigned char *suffix=NULL;
+  unsigned char *suffix = NULL;
 /* FIXME - up to 10 parsers :) */
 #define MAX_PARSERS 10
   struct syntax_score scores[MAX_PARSERS];
 
   if(identifier) {
-    unsigned char *p=(unsigned char*)strrchr((const char*)identifier, '.');
+    unsigned char *p = (unsigned char*)strrchr((const char*)identifier, '.');
     if(p) {
       unsigned char *from, *to;
       p++;
-      suffix=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)p)+1);
+      suffix = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)p)+1);
       if(!suffix)
         return NULL;
-      for(from=p, to=suffix; *from; ) {
+      for(from = p, to = suffix; *from; ) {
         unsigned char c=*from++;
         /* discard the suffix if it wasn't '\.[a-zA-Z0-9]+$' */
         if(!isalpha(c) && !isdigit(c)) {
           RAPTOR_FREE(cstring, suffix);
-          suffix=NULL;
-          to=NULL;
+          suffix = NULL;
+          to = NULL;
           break;
         }
         *to++=isupper((char)c) ? (unsigned char)tolower((char)c): c;
@@ -2008,24 +2008,24 @@ raptor_guess_parser_name_v2(raptor_world* world,
     }
   }
 
-  for(i=0;
-      (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
+  for(i = 0;
+      (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     int score= -1;
-    raptor_type_q* type_q=NULL;
+    raptor_type_q* type_q = NULL;
     
     if(mime_type && factory->mime_types) {
       int j;
-      type_q=NULL;
-      for(j=0; 
-          (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j)); 
+      type_q = NULL;
+      for(j = 0; 
+          (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j)); 
           j++) {
         if(!strcmp(mime_type, type_q->mime_type))
           break;
       }
       /* got an exact match mime type - score it via the Q */
       if(type_q)
-        score=type_q->q;
+        score = type_q->q;
     }
     /* mime type match has high Q - return result */
     if(score >= 10)
@@ -2045,7 +2045,7 @@ raptor_guess_parser_name_v2(raptor_world* world,
        */
 #define FIRSTN 1024
       if(buffer && len && len > FIRSTN) {
-        c=buffer[FIRSTN];
+        c = buffer[FIRSTN];
         ((char*)buffer)[FIRSTN]='\0';
       }
 
@@ -2054,7 +2054,7 @@ raptor_guess_parser_name_v2(raptor_world* world,
                                          mime_type);
 
       if(c >= 0)
-        ((char*)buffer)[FIRSTN]=c;
+        ((char*)buffer)[FIRSTN] = c;
     }
 
     if(i > MAX_PARSERS) {
@@ -2065,7 +2065,7 @@ raptor_guess_parser_name_v2(raptor_world* world,
       return NULL;
     }
 
-    scores[i].score=score < 10 ? score : 10; scores[i].factory=factory;
+    scores[i].score = score < 10 ? score : 10; scores[i].factory = factory;
 #if RAPTOR_DEBUG > 2
     RAPTOR_DEBUG3("Score %15s : %d\n", factory->name, score);
 #endif
@@ -2075,7 +2075,7 @@ raptor_guess_parser_name_v2(raptor_world* world,
     /* sort the scores and pick a factory */
     qsort(scores, i, sizeof(struct syntax_score), compare_syntax_score);
     if(scores[0].score >= 0)
-      factory=scores[0].factory;
+      factory = scores[0].factory;
   }
 
   if(suffix)
@@ -2098,7 +2098,7 @@ int
 raptor_parser_copy_user_state(raptor_parser *to_parser, 
                               raptor_parser *from_parser)
 {
-  int rc=0;
+  int rc = 0;
   int i;
   
   to_parser->user_data= from_parser->user_data;
@@ -2110,14 +2110,14 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->default_generate_id_handler_base= from_parser->default_generate_id_handler_base;
   /* copy over non-shared user state - generate ID prefix string */
   if(from_parser->default_generate_id_handler_prefix) {
-    size_t len=from_parser->default_generate_id_handler_prefix_length;
-    to_parser->default_generate_id_handler_prefix=(char*)RAPTOR_MALLOC(cstring, len+1);
+    size_t len = from_parser->default_generate_id_handler_prefix_length;
+    to_parser->default_generate_id_handler_prefix = (char*)RAPTOR_MALLOC(cstring, len+1);
     if(to_parser->default_generate_id_handler_prefix)
       strncpy((char*)to_parser->default_generate_id_handler_prefix, 
               (const char*)from_parser->default_generate_id_handler_prefix,
               len+1);
     else
-      rc=1;
+      rc = 1;
   }
   to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
   to_parser->namespace_handler= from_parser->namespace_handler;
@@ -2127,30 +2127,30 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
 
   /* copy over Cache-Control: header */
   if(!rc && from_parser->cache_control) {
-    size_t len=strlen(from_parser->cache_control);
-    to_parser->cache_control=(char*)RAPTOR_MALLOC(cstring, len+1);
+    size_t len = strlen(from_parser->cache_control);
+    to_parser->cache_control = (char*)RAPTOR_MALLOC(cstring, len+1);
     if(to_parser->cache_control)
       strncpy((char*)to_parser->cache_control, 
               (const char*)from_parser->cache_control,
               len+1);
     else
-      rc=1;
+      rc = 1;
   }
 
   /* copy over User-Agent: header */
   if(!rc && from_parser->user_agent) {
-    size_t len=strlen(from_parser->user_agent);
-    to_parser->user_agent=(char*)RAPTOR_MALLOC(cstring, len+1);
+    size_t len = strlen(from_parser->user_agent);
+    to_parser->user_agent = (char*)RAPTOR_MALLOC(cstring, len+1);
     if(to_parser->user_agent)
       strncpy((char*)to_parser->user_agent, 
               (const char*)from_parser->user_agent,
               len+1);
     else
-      rc=1;
+      rc = 1;
   }
 
   /* copy features */
-  for(i=0; i<= RAPTOR_FEATURE_LAST; i++)
+  for(i = 0; i<= RAPTOR_FEATURE_LAST; i++)
     to_parser->features[i]= from_parser->features[i];
 
   return rc;
@@ -2190,8 +2190,8 @@ raptor_parser_start_namespace(raptor_parser* rdf_parser,
 const char*
 raptor_parser_get_accept_header(raptor_parser* rdf_parser)
 {
-  raptor_parser_factory *factory=rdf_parser->factory;
-  char *accept_header=NULL;
+  raptor_parser_factory *factory = rdf_parser->factory;
+  char *accept_header = NULL;
   size_t len;
   char *p;
   int i;
@@ -2203,25 +2203,25 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
   if(!factory->mime_types)
     return NULL;
 
-  len=0;
-  for(i=0; 
-      (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+  len = 0;
+  for(i = 0; 
+      (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
       i++) {
     if(type_q->mime_type) {
       len+= type_q->mime_type_len + 2; /* ", " */
       if(type_q->q < 10)
-        len+= 6; /* ";q=X.Y" */
+        len+= 6; /* ";q = X.Y" */
     }
   }
   
-  /* 9 = "\*\/\*;q=0.1" */
-  accept_header=(char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
+  /* 9 = "\*\/\*;q = 0.1" */
+  accept_header = (char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
   if(!accept_header)
     return NULL;
 
-  p=accept_header;
-  for(i=0; 
-      (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+  p = accept_header;
+  for(i = 0; 
+      (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
       i++) {
     if(type_q->mime_type) {
       strncpy(p, type_q->mime_type, type_q->mime_type_len);
@@ -2240,7 +2240,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
     *p++ = ' ';
   }
 
-  strncpy(p, "*/*;q=0.1", 10);
+  strncpy(p, "*/*;q = 0.1", 10);
 
   return accept_header;
 }
@@ -2250,43 +2250,43 @@ const char*
 raptor_parser_get_accept_header_all(raptor_world* world)
 {
   raptor_parser_factory *factory;
-  char *accept_header=NULL;
+  char *accept_header = NULL;
   size_t len;
   char *p;
   int i;
   
-  len=0;
-  for(i=0;
-      (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
+  len = 0;
+  for(i = 0;
+      (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     raptor_type_q* type_q;
     int j;
     
-    for(j=0;
-        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
+    for(j = 0;
+        (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
         j++) {
       if(type_q->mime_type) {
         len+= type_q->mime_type_len + 2; /* ", " */
         if(type_q->q < 10)
-          len+= 6; /* ";q=X.Y" */
+          len+= 6; /* ";q = X.Y" */
       }
     }
   }
   
-  /* 9 = "\*\/\*;q=0.1" */
-  accept_header=(char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
+  /* 9 = "\*\/\*;q = 0.1" */
+  accept_header = (char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
   if(!accept_header)
     return NULL;
 
-  p=accept_header;
-  for(i=0;
-      (factory=(raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
+  p = accept_header;
+  for(i = 0;
+      (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     raptor_type_q* type_q;
     int j;
     
-    for(j=0; 
-        (type_q=(raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
+    for(j = 0; 
+        (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
         j++) {
       if(type_q->mime_type) {
         strncpy(p, type_q->mime_type, type_q->mime_type_len);
@@ -2307,7 +2307,7 @@ raptor_parser_get_accept_header_all(raptor_world* world)
     
   }
   
-  strncpy(p, "*/*;q=0.1", 10);
+  strncpy(p, "*/*;q = 0.1", 10);
   
   return accept_header;
 }
@@ -2332,8 +2332,8 @@ raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p)
   if(!rdf_parser->sb)
     return NULL;
   
-  len=raptor_stringbuffer_length(rdf_parser->sb);
-  buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  len = raptor_stringbuffer_length(rdf_parser->sb);
+  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
   if(!buffer)
     return NULL;
 
@@ -2394,7 +2394,7 @@ main(int argc, char *argv[])
 {
   raptor_world *world;
 #ifdef RAPTOR_DEBUG
-  const char *program=raptor_basename(argv[0]);
+  const char *program = raptor_basename(argv[0]);
 #endif
   int i;
   const char *s;
@@ -2407,7 +2407,7 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Known features:\n", program);
 #endif
 
-  for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
+  for(i = 0; i <= RAPTOR_FEATURE_LAST; i++) {
     const char *feature_name;
     const char *feature_label;
     raptor_uri *feature_uri;
@@ -2420,7 +2420,7 @@ main(int argc, char *argv[])
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, " %2d %-20s %s\n", i, feature_name, feature_label);
 #endif
-    fn=raptor_feature_from_uri_v2(world, feature_uri);
+    fn = raptor_feature_from_uri_v2(world, feature_uri);
     if(fn != i) {
       fprintf(stderr, "raptor_feature_from_uri returned %d expected %d\n", fn, i);
       return 1;
@@ -2428,7 +2428,7 @@ main(int argc, char *argv[])
     raptor_free_uri_v2(world, feature_uri);
   }
 
-  s=raptor_parser_get_accept_header_all(world);
+  s = raptor_parser_get_accept_header_all(world);
   fprintf(stderr, "Default HTTP accept header: '%s'\n", s);
   RAPTOR_FREE(cstring, s);
 

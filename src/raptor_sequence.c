@@ -105,11 +105,11 @@ raptor_sequence*
 raptor_new_sequence(raptor_sequence_free_handler *free_handler,
                     raptor_sequence_print_handler *print_handler)
 {
-  raptor_sequence* seq=(raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
+  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
   if(!seq)
     return NULL;
-  seq->free_handler=free_handler;
-  seq->print_handler=print_handler;
+  seq->free_handler = free_handler;
+  seq->print_handler = print_handler;
   
   return seq;
 }
@@ -130,12 +130,12 @@ raptor_new_sequence_v2(raptor_sequence_free_handler_v2 *free_handler,
                        raptor_sequence_print_handler_v2 *print_handler,
                        void *handler_context)
 {
-  raptor_sequence* seq=(raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
+  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
   if(!seq)
     return NULL;
-  seq->free_handler_v2=free_handler;
-  seq->print_handler_v2=print_handler;
-  seq->handler_context=handler_context;
+  seq->free_handler_v2 = free_handler;
+  seq->print_handler_v2 = print_handler;
+  seq->handler_context = handler_context;
   
   return seq;
 }
@@ -156,11 +156,11 @@ raptor_free_sequence(raptor_sequence* seq)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
 
   if(seq->free_handler) {
-    for(i=seq->start, j=seq->start+seq->size; i<j; i++)
+    for(i = seq->start, j = seq->start+seq->size; i < j; i++)
       if(seq->sequence[i])
         seq->free_handler(seq->sequence[i]);
   } else if(seq->free_handler_v2) {
-    for(i=seq->start, j=seq->start+seq->size; i<j; i++)
+    for(i = seq->start, j = seq->start+seq->size; i < j; i++)
       if(seq->sequence[i])
         seq->free_handler_v2(seq->handler_context, seq->sequence[i]);
   }
@@ -185,21 +185,21 @@ raptor_sequence_ensure(raptor_sequence *seq, int capacity, int grow_at_front)
 
   /* POLICY - minimum size */
   if(capacity < 8)
-    capacity=8;
+    capacity = 8;
 
-  new_sequence=(void**)RAPTOR_CALLOC(ptrarray, capacity, sizeof(void*));
+  new_sequence = (void**)RAPTOR_CALLOC(ptrarray, capacity, sizeof(void*));
   if(!new_sequence)
     return 1;
 
-  offset=(grow_at_front ? (capacity-seq->capacity) : 0)+seq->start;
+  offset = (grow_at_front ? (capacity-seq->capacity) : 0)+seq->start;
   if(seq->size) {
     memcpy(&new_sequence[offset], &seq->sequence[seq->start], sizeof(void*)*seq->size);
     RAPTOR_FREE(ptrarray, seq->sequence);
   }
-  seq->start=offset;
+  seq->start = offset;
 
-  seq->sequence=new_sequence;
-  seq->capacity=capacity;
+  seq->sequence = new_sequence;
+  seq->capacity = capacity;
   return 0;
 }
 
@@ -259,7 +259,7 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
     return 1;
   }
   
-  need_capacity=seq->start+idx+1;
+  need_capacity = seq->start+idx+1;
   if(need_capacity > seq->capacity) {
     if(seq->capacity*2 > need_capacity)
       need_capacity = seq->capacity*2;
@@ -286,10 +286,10 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
   } else {
     /* if there is no old data, size is increasing */
     /* make sure there are seq->size items starting from seq->start */
-    seq->size=idx+1;
+    seq->size = idx+1;
   }  
 
-  seq->sequence[seq->start+idx]=data;
+  seq->sequence[seq->start+idx] = data;
   return 0;
 }
 
@@ -324,7 +324,7 @@ raptor_sequence_push(raptor_sequence* seq, void *data)
     }
   }
 
-  seq->sequence[seq->start+seq->size]=data;
+  seq->sequence[seq->start+seq->size] = data;
   seq->size++;
   return 0;
 }
@@ -359,7 +359,7 @@ raptor_sequence_shift(raptor_sequence* seq, void *data)
     }
   }
   
-  seq->sequence[--seq->start]=data;
+  seq->sequence[--seq->start] = data;
   seq->size++;
   return 0;
 }
@@ -413,8 +413,8 @@ raptor_sequence_delete_at(raptor_sequence* seq, int idx)
   if(idx < 0 || idx > seq->size-1)
     return NULL;
 
-  data=seq->sequence[seq->start+idx];
-  seq->sequence[seq->start+idx]=NULL;
+  data = seq->sequence[seq->start+idx];
+  seq->sequence[seq->start+idx] = NULL;
   
   return data;
 }
@@ -444,9 +444,9 @@ raptor_sequence_pop(raptor_sequence* seq)
     return NULL;
 
   seq->size--;
-  i=seq->start+seq->size;
-  data=seq->sequence[i];
-  seq->sequence[i]=NULL;
+  i = seq->start+seq->size;
+  data = seq->sequence[i];
+  seq->sequence[i] = NULL;
 
   return data;
 }
@@ -474,10 +474,10 @@ raptor_sequence_unshift(raptor_sequence* seq)
   if(!seq->size)
     return NULL;
   
-  i=seq->start++;
-  data=seq->sequence[i];
+  i = seq->start++;
+  data = seq->sequence[i];
   seq->size--;
-  seq->sequence[i]=NULL;
+  seq->sequence[i] = NULL;
   
   return data;
 }
@@ -558,7 +558,7 @@ raptor_sequence_print_string(char *data, FILE *fh)
 void
 raptor_sequence_print_uri(char *data, FILE *fh) 
 {
-  raptor_uri* uri=(raptor_uri*)data;
+  raptor_uri* uri = (raptor_uri*)data;
   fputs((const char*)raptor_uri_as_string_v2(raptor_world_instance(), uri), fh);
 }
 #endif
@@ -579,7 +579,7 @@ raptor_sequence_set_print_handler(raptor_sequence *seq,
                                   raptor_sequence_print_handler *print_handler) {
   if(!seq)
     return;
-  seq->print_handler=print_handler;
+  seq->print_handler = print_handler;
 }
 
 
@@ -598,7 +598,7 @@ raptor_sequence_set_print_handler_v2(raptor_sequence *seq,
                                      raptor_sequence_print_handler_v2 *print_handler) {
   if(!seq)
     return;
-  seq->print_handler_v2=print_handler;
+  seq->print_handler_v2 = print_handler;
 }
 
 
@@ -617,7 +617,7 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
 
   fputc('[', fh);
-  for(i=0; i<seq->size; i++) {
+  for(i = 0; i < seq->size; i++) {
     if(i)
       fputs(", ", fh);
     if(seq->sequence[seq->start+i]) {
@@ -655,7 +655,7 @@ raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
   memcpy(&dest->sequence[dest->start+dest->size], &src->sequence[src->start], sizeof(void*)*src->size);
   dest->size += src->size;
 
-  src->size=0;
+  src->size = 0;
 
   return 0;
 }
@@ -671,15 +671,15 @@ raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
 int main(int argc, char *argv[]);
 
 
-#define assert_match_string(function, expr, string) do { char *result=expr; if(strcmp(result, string)) { fprintf(stderr, "%s:" #function " failed - returned %s, expected %s\n", program, result, string); exit(1); } } while(0)
-#define assert_match_int(function, expr, value) do { int result=expr; if(result != value) { fprintf(stderr, "%s:" #function " failed - returned %d, expected %d\n", program, result, value); exit(1); } } while(0)
+#define assert_match_string(function, expr, string) do { char *result = expr; if(strcmp(result, string)) { fprintf(stderr, "%s:" #function " failed - returned %s, expected %s\n", program, result, string); exit(1); } } while(0)
+#define assert_match_int(function, expr, value) do { int result = expr; if(result != value) { fprintf(stderr, "%s:" #function " failed - returned %d, expected %d\n", program, result, value); exit(1); } } while(0)
 
 int
 main(int argc, char *argv[]) 
 {
-  const char *program=raptor_basename(argv[0]);
-  raptor_sequence* seq1=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
-  raptor_sequence* seq2=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  const char *program = raptor_basename(argv[0]);
+  raptor_sequence* seq1 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  raptor_sequence* seq2 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
   char *s;
   int i;
 
@@ -694,13 +694,13 @@ main(int argc, char *argv[])
 
   raptor_sequence_shift(seq1, (void*)"second");
 
-  s=(char*)raptor_sequence_get_at(seq1, 0);
+  s = (char*)raptor_sequence_get_at(seq1, 0);
   assert_match_string(raptor_sequence_get_at, s, "second");
 
-  s=(char*)raptor_sequence_get_at(seq1, 1);
+  s = (char*)raptor_sequence_get_at(seq1, 1);
   assert_match_string(raptor_sequence_get_at, s, "first");
   
-  s=(char*)raptor_sequence_get_at(seq1, 2);
+  s = (char*)raptor_sequence_get_at(seq1, 2);
   assert_match_string(raptor_sequence_get_at, s, "third");
   
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 3);
@@ -716,7 +716,7 @@ main(int argc, char *argv[])
   raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
 
-  s=(char*)raptor_sequence_pop(seq1);
+  s = (char*)raptor_sequence_pop(seq1);
   assert_match_string(raptor_sequence_get_at, s, "third");
 
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 2);
@@ -725,7 +725,7 @@ main(int argc, char *argv[])
   raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
 
-  s=(char*)raptor_sequence_unshift(seq1);
+  s = (char*)raptor_sequence_unshift(seq1);
   assert_match_string(raptor_sequence_get_at, s, "first");
 
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 1);
@@ -734,7 +734,7 @@ main(int argc, char *argv[])
   raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
 
-  s=(char*)raptor_sequence_get_at(seq1, 0);
+  s = (char*)raptor_sequence_get_at(seq1, 0);
   assert_match_string(raptor_sequence_get_at, s, "second");
   
   raptor_sequence_push(seq2, (void*)"first.2");
@@ -751,26 +751,26 @@ main(int argc, char *argv[])
 
   /* test sequence growing */
   
-  seq1=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
-  for(i=0; i<100; i++)
+  seq1 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  for(i = 0; i < 100; i++)
     if(raptor_sequence_shift(seq1, (void*)"foo")) {
       fprintf(stderr, "%s: raptor_sequence_shift failed\n", program);
       exit(1);
     }
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 100);
-  for(i=0; i<100; i++)
+  for(i = 0; i < 100; i++)
     raptor_sequence_unshift(seq1);
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 0);
   raptor_free_sequence(seq1);
 
-  seq1=raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
-  for(i=0; i<100; i++)
+  seq1 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  for(i = 0; i < 100; i++)
     if(raptor_sequence_push(seq1, (void*)"foo")) {
       fprintf(stderr, "%s: raptor_sequence_push failed\n", program);
       exit(1);
     }
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 100);
-  for(i=0; i<100; i++)
+  for(i = 0; i < 100; i++)
     raptor_sequence_pop(seq1);
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 0);
   raptor_free_sequence(seq1);

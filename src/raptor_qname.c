@@ -110,55 +110,55 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   raptor_namespace* ns;
   unsigned char* new_name;
   int prefix_length;
-  int local_name_length=0;
+  int local_name_length = 0;
 
 #if RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("name %s\n", name);
 #endif  
 
-  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
+  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!qname)
     return NULL;
-  qname->world=nstack->world;
+  qname->world = nstack->world;
 
   if(value) {
-    int value_length=strlen((char*)value);
-    unsigned char* new_value=(unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+    int value_length = strlen((char*)value);
+    unsigned char* new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
 
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
     strcpy((char*)new_value, (char*)value);
-    qname->value=new_value;
-    qname->value_length=value_length;
+    qname->value = new_value;
+    qname->value_length = value_length;
   }
 
 
   /* Find : */
-  for(p=name; *p && *p != ':'; p++)
+  for(p = name; *p && *p != ':'; p++)
     ;
 
 
   if(!*p) {
-    local_name_length=p-name;
+    local_name_length = p-name;
 
     /* No : in the name */
-    new_name=(unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
     }
     strcpy((char*)new_name, (char*)name);
-    qname->local_name=new_name;
-    qname->local_name_length=local_name_length;
+    qname->local_name = new_name;
+    qname->local_name_length = local_name_length;
 
     /* For elements only, pick up the default namespace if there is one */
     if(!value) {
-      ns=raptor_namespaces_get_default_namespace(nstack);
+      ns = raptor_namespaces_get_default_namespace(nstack);
       
       if(ns) {
-        qname->nspace=ns;
+        qname->nspace = ns;
 #if RAPTOR_DEBUG > 1
         RAPTOR_DEBUG2("Found default namespace %s\n", raptor_uri_as_string_v2(nstack->world, ns->uri));
 #endif
@@ -172,22 +172,22 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   } else {
     /* There is a namespace prefix */
 
-    prefix_length=p-name;
+    prefix_length = p-name;
     p++; 
 
     /* p now is at start of local_name */
-    local_name_length=strlen((char*)p);
-    new_name=(unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+    local_name_length = strlen((char*)p);
+    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
     }
     strcpy((char*)new_name, (char*)p);
-    qname->local_name=new_name;
-    qname->local_name_length=local_name_length;
+    qname->local_name = new_name;
+    qname->local_name_length = local_name_length;
 
     /* Find the namespace */
-    ns=raptor_namespaces_find_namespace(nstack, name, prefix_length);
+    ns = raptor_namespaces_find_namespace(nstack, name, prefix_length);
 
     if(!ns) {
       /* failed to find namespace - now what? */
@@ -197,7 +197,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG3("Found namespace prefix %s URI %s\n", ns->prefix, raptor_uri_as_string_v2(nstack->world, ns->uri));
 #endif
-      qname->nspace=ns;
+      qname->nspace = ns;
     }
   }
 
@@ -207,11 +207,11 @@ raptor_new_qname(raptor_namespace_stack *nstack,
    * for this element 
    */
   if(qname->nspace && local_name_length) {
-    raptor_uri *uri=raptor_namespace_get_uri(qname->nspace);
+    raptor_uri *uri = raptor_namespace_get_uri(qname->nspace);
     if(uri)
-      uri=raptor_new_uri_from_uri_local_name_v2(qname->world, uri, new_name);
+      uri = raptor_new_uri_from_uri_local_name_v2(qname->world, uri, new_name);
 
-    qname->uri=uri;
+    qname->uri = uri;
   }
 
 
@@ -271,44 +271,44 @@ raptor_new_qname_from_namespace_local_name_v2(raptor_world* world,
 {
   raptor_qname* qname;
   unsigned char* new_name;
-  int local_name_length=strlen((char*)local_name);
+  int local_name_length = strlen((char*)local_name);
 
   if(!local_name)
     return NULL;
 
-  qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
+  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!qname)
     return NULL;
-  qname->world=world;
+  qname->world = world;
 
   if(value) {
-    int value_length=strlen((char*)value);
-    unsigned char* new_value=(unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+    int value_length = strlen((char*)value);
+    unsigned char* new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
 
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
     strcpy((char*)new_value, (char*)value);
-    qname->value=new_value;
-    qname->value_length=value_length;
+    qname->value = new_value;
+    qname->value_length = value_length;
   }
 
-  new_name=(unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
   if(!new_name) {
     raptor_free_qname(qname);
     return NULL;
   }
   strcpy((char*)new_name, (char*)local_name);
-  qname->local_name=new_name;
-  qname->local_name_length=local_name_length;
+  qname->local_name = new_name;
+  qname->local_name_length = local_name_length;
 
-  qname->nspace=ns;
+  qname->nspace = ns;
 
   if(qname->nspace) {
-    qname->uri=raptor_namespace_get_uri(qname->nspace);
+    qname->uri = raptor_namespace_get_uri(qname->nspace);
     if(qname->uri)
-      qname->uri=raptor_new_uri_from_uri_local_name_v2(qname->world, qname->uri, new_name);
+      qname->uri = raptor_new_uri_from_uri_local_name_v2(qname->world, qname->uri, new_name);
   }
   
   return qname;
@@ -328,38 +328,38 @@ raptor_qname_copy(raptor_qname *qname) {
   raptor_qname* new_qname;
   unsigned char* new_name;
 
-  new_qname=(raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
+  new_qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
   if(!new_qname)
     return NULL;
-  new_qname->world=qname->world;
+  new_qname->world = qname->world;
 
   if(qname->value) {
-    int value_length=qname->value_length;
-    unsigned char* new_value=(unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+    int value_length = qname->value_length;
+    unsigned char* new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
 
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
     strcpy((char*)new_value, (char*)qname->value);
-    new_qname->value=new_value;
-    new_qname->value_length=value_length;
+    new_qname->value = new_value;
+    new_qname->value_length = value_length;
   }
 
-  new_name=(unsigned char*)RAPTOR_MALLOC(cstring, qname->local_name_length+1);
+  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, qname->local_name_length+1);
   if(!new_name) {
     raptor_free_qname(new_qname);
     return NULL;
   }
   strcpy((char*)new_name, (char*)qname->local_name);
-  new_qname->local_name=new_name;
-  new_qname->local_name_length=qname->local_name_length;
+  new_qname->local_name = new_name;
+  new_qname->local_name_length = qname->local_name_length;
 
-  new_qname->nspace=qname->nspace;
+  new_qname->nspace = qname->nspace;
 
-  new_qname->uri=raptor_namespace_get_uri(new_qname->nspace);
+  new_qname->uri = raptor_namespace_get_uri(new_qname->nspace);
   if(new_qname->uri)
-    new_qname->uri=raptor_new_uri_from_uri_local_name_v2(qname->world, new_qname->uri, new_name);
+    new_qname->uri = raptor_new_uri_from_uri_local_name_v2(qname->world, new_qname->uri, new_name);
   
   return new_qname;
 }
@@ -370,7 +370,7 @@ void
 raptor_qname_print(FILE *stream, raptor_qname* name) 
 {
   if(name->nspace) {
-    const unsigned char *prefix=raptor_namespace_get_prefix(name->nspace);
+    const unsigned char *prefix = raptor_namespace_get_prefix(name->nspace);
     if(prefix)
       fprintf(stream, "%s:%s", prefix, name->local_name);
     else
@@ -457,16 +457,16 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
                            raptor_simple_message_handler error_handler,
                            void *error_data)
 {
-  raptor_uri *uri=NULL;
+  raptor_uri *uri = NULL;
   const unsigned char *p;
-  const unsigned char *original_name=name;
-  const unsigned char *local_name=NULL;
-  int local_name_length=0;
+  const unsigned char *original_name = name;
+  const unsigned char *local_name = NULL;
+  int local_name_length = 0;
   raptor_namespace* ns;
 
   /* Empty string is default namespace URI */
   if(!name) {
-    ns=raptor_namespaces_get_default_namespace(nstack);
+    ns = raptor_namespaces_get_default_namespace(nstack);
   } else {
     /* If starts with :, it is relative to default namespace, so skip it */
     if(*name == ':') {
@@ -474,29 +474,29 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
       name_len--;
     }
     
-    for(p=name; *p && *p != ':'; p++)
+    for(p = name; *p && *p != ':'; p++)
       ;
     
     /* If ends with :, it is the URI of a namespace */
     if(p-name == (int)(name_len-1)) {
-      ns=raptor_namespaces_find_namespace(nstack, name, name_len-1);
+      ns = raptor_namespaces_find_namespace(nstack, name, name_len-1);
     } else {
       if(!*p) {
-        local_name=name;
-        local_name_length=p-name;
+        local_name = name;
+        local_name_length = p-name;
         
         /* pick up the default namespace if there is one */
-        ns=raptor_namespaces_get_default_namespace(nstack);
+        ns = raptor_namespaces_get_default_namespace(nstack);
       } else {
         /* There is a namespace prefix */
-        int prefix_length=p-name;
+        int prefix_length = p-name;
         p++;
 
-        local_name=p;
-        local_name_length=strlen((char*)p);
+        local_name = p;
+        local_name_length = strlen((char*)p);
         
         /* Find the namespace */
-        ns=raptor_namespaces_find_namespace(nstack, name, prefix_length);
+        ns = raptor_namespaces_find_namespace(nstack, name, prefix_length);
       }
     }
   }
@@ -511,11 +511,11 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
   /* If namespace has a URI and a local_name is defined, return the URI
    * for this name
    */
-  if(ns && (uri=raptor_namespace_get_uri(ns))) {
+  if(ns && (uri = raptor_namespace_get_uri(ns))) {
     if(local_name_length)
-      uri=raptor_new_uri_from_uri_local_name_v2(nstack->world, uri, local_name);
+      uri = raptor_new_uri_from_uri_local_name_v2(nstack->world, uri, local_name);
     else
-      uri=raptor_uri_copy_v2(nstack->world, uri);
+      uri = raptor_uri_copy_v2(nstack->world, uri);
   }
 
   return uri;
@@ -558,7 +558,7 @@ raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname)
 unsigned char*
 raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
 {
-  size_t len=qname->local_name_length;
+  size_t len = qname->local_name_length;
   unsigned char* s;
   unsigned char *p;
 
@@ -568,11 +568,11 @@ raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
   if(length_p)
     *length_p=len;
   
-  s=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  s = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
   if(!s)
     return NULL;
 
-  p=s;
+  p = s;
   if(qname->nspace && qname->nspace->prefix_length > 0) {
     strncpy((char*)p, (const char*)qname->nspace->prefix,
             qname->nspace->prefix_length);

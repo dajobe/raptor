@@ -67,22 +67,22 @@ raptor_new_xml_element(raptor_qname *name,
 {
   raptor_xml_element* xml_element;
 
-  xml_element=(raptor_xml_element*)RAPTOR_CALLOC(raptor_xml_element, 1,
+  xml_element = (raptor_xml_element*)RAPTOR_CALLOC(raptor_xml_element, 1,
                                                  sizeof(raptor_xml_element));
   if(!xml_element)
     return NULL;
 
   /* Element name */
-  xml_element->name=name;
-  xml_element->xml_language=xml_language;
-  xml_element->base_uri=xml_base;
+  xml_element->name = name;
+  xml_element->xml_language = xml_language;
+  xml_element->base_uri = xml_base;
 
-  xml_element->declared_nspaces=NULL;
+  xml_element->declared_nspaces = NULL;
 
-  xml_element->content_cdata_sb=raptor_new_stringbuffer();
+  xml_element->content_cdata_sb = raptor_new_stringbuffer();
   if(!xml_element->content_cdata_sb) {
     RAPTOR_FREE(raptor_xml_element, xml_element);
-    xml_element=NULL;
+    xml_element = NULL;
   }
 
   return xml_element;
@@ -110,12 +110,12 @@ raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns,
 {
   raptor_uri *base_uri_copy;
   raptor_qname *qname;
-  raptor_xml_element *element=NULL;
+  raptor_xml_element *element = NULL;
 
-  qname=raptor_new_qname_from_namespace_local_name_v2(ns->nstack->world, ns, name, NULL);
+  qname = raptor_new_qname_from_namespace_local_name_v2(ns->nstack->world, ns, name, NULL);
   if(qname) {
-    base_uri_copy=xml_base ? raptor_uri_copy_v2(ns->nstack->world, xml_base) : NULL;
-    element=raptor_new_xml_element(qname, xml_language, base_uri_copy);
+    base_uri_copy = xml_base ? raptor_uri_copy_v2(ns->nstack->world, xml_base) : NULL;
+    element = raptor_new_xml_element(qname, xml_language, base_uri_copy);
     if(!element) {
       raptor_free_qname(qname);
       if(base_uri_copy)
@@ -139,7 +139,7 @@ raptor_free_xml_element(raptor_xml_element *element)
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(element, raptor_xml_element);
 
-  for (i=0; i < element->attribute_count; i++)
+  for(i = 0; i < element->attribute_count; i++)
     if(element->attributes[i])
       raptor_free_qname(element->attributes[i]);
 
@@ -193,8 +193,8 @@ void
 raptor_xml_element_set_attributes(raptor_xml_element* xml_element,
                                    raptor_qname **attributes, int count)
 {
-  xml_element->attributes=attributes;
-  xml_element->attribute_count=count;
+  xml_element->attributes = attributes;
+  xml_element->attribute_count = count;
 }
 
 
@@ -248,7 +248,7 @@ raptor_xml_element_declare_namespace(raptor_xml_element* xml_element,
   const raptor_namespace *ns;
 
   if(!xml_element->declared_nspaces)
-    xml_element->declared_nspaces=raptor_new_sequence(NULL, NULL);
+    xml_element->declared_nspaces = raptor_new_sequence(NULL, NULL);
 
   if((ns = xml_element->name->nspace)) {
     /* Cannot have same namespace already seen */
@@ -263,7 +263,7 @@ raptor_xml_element_declare_namespace(raptor_xml_element* xml_element,
   }
 
   
-  for(i=0;
+  for(i = 0;
       (ns = (const raptor_namespace*)raptor_sequence_get_at(xml_element->declared_nspaces, i));
       i++) {
     /* Cannot have same namespace already seen */
@@ -292,16 +292,16 @@ raptor_print_xml_element(raptor_xml_element *element, FILE* stream)
 
   if(element->attribute_count) {
     unsigned int i;
-    int printed=0;
+    int printed = 0;
 
     fputs(" attributes: ", stream);
-    for (i = 0; i < element->attribute_count; i++) {
+    for(i = 0; i < element->attribute_count; i++) {
       if(element->attributes[i]) {
         if(printed)
           fputc(' ', stream);
         raptor_qname_print(stream, element->attributes[i]);
         fprintf(stream, "='%s'", element->attributes[i]->value);
-        printed=1;
+        printed = 1;
       }
     }
     fputc('\n', stream);
@@ -321,8 +321,8 @@ struct nsd
 static int
 raptor_nsd_compare(const void *a, const void *b) 
 {
-  struct nsd* nsd_a=(struct nsd*)a;
-  struct nsd* nsd_b=(struct nsd*)b;
+  struct nsd* nsd_a = (struct nsd*)a;
+  struct nsd* nsd_b = (struct nsd*)b;
   return strcmp((const char*)nsd_a->declaration, (const char*)nsd_b->declaration);
 }
 
@@ -352,17 +352,17 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
                                   void *error_data,
                                   int depth)
 {
-  struct nsd *nspace_declarations=NULL;
-  size_t nspace_declarations_count=0;  
+  struct nsd *nspace_declarations = NULL;
+  size_t nspace_declarations_count = 0;  
   unsigned int i;
 
   /* max is 1 per element and 1 for each attribute + size of declared */
   if(nstack) {
-    int nspace_max_count=element->attribute_count+1;
+    int nspace_max_count = element->attribute_count+1;
     if(element->declared_nspaces)
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
     
-    nspace_declarations=(struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count, sizeof(struct nsd));
+    nspace_declarations = (struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count, sizeof(struct nsd));
   }
 
   if(element->name->nspace) {
@@ -371,25 +371,25 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
       nspace_declarations[0].declaration=
         raptor_namespaces_format(element->name->nspace,
                                  &nspace_declarations[0].length);
-      nspace_declarations[0].nspace=element->name->nspace;
+      nspace_declarations[0].nspace = element->name->nspace;
       nspace_declarations_count++;
     }
   }
 
-  if (!is_end && element->attributes) {
-    for(i=0; i < element->attribute_count; i++) {
+  if(!is_end && element->attributes) {
+    for(i = 0; i < element->attribute_count; i++) {
       /* qname */
       if(element->attributes[i]->nspace) {
         if(nstack && 
            !raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
           /* not in scope and not same as element (so already going to be declared)*/
           unsigned int j;
-          int declare_me=1;
+          int declare_me = 1;
           
           /* check it wasn't an earlier declaration too */
-          for (j=0; j < nspace_declarations_count; j++)
+          for(j = 0; j < nspace_declarations_count; j++)
             if(nspace_declarations[j].nspace == element->attributes[j]->nspace) {
-              declare_me=0;
+              declare_me = 0;
               break;
             }
             
@@ -397,7 +397,7 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
             nspace_declarations[nspace_declarations_count].declaration=
               raptor_namespaces_format(element->attributes[i]->nspace,
                                        &nspace_declarations[nspace_declarations_count].length);
-            nspace_declarations[nspace_declarations_count].nspace=element->attributes[i]->nspace;
+            nspace_declarations[nspace_declarations_count].nspace = element->attributes[i]->nspace;
             nspace_declarations_count++;
           }
         }
@@ -409,15 +409,15 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
 
   if(!is_end && nstack && element->declared_nspaces &&
      raptor_sequence_size(element->declared_nspaces) > 0) {
-    for(i=0; i< (unsigned int)raptor_sequence_size(element->declared_nspaces); i++) {
-      raptor_namespace* nspace=(raptor_namespace*)raptor_sequence_get_at(element->declared_nspaces, i);
+    for(i = 0; i< (unsigned int)raptor_sequence_size(element->declared_nspaces); i++) {
+      raptor_namespace* nspace = (raptor_namespace*)raptor_sequence_get_at(element->declared_nspaces, i);
       unsigned int j;
-      int declare_me=1;
+      int declare_me = 1;
       
       /* check it wasn't an earlier declaration too */
-      for (j=0; j < nspace_declarations_count; j++)
+      for(j = 0; j < nspace_declarations_count; j++)
         if(nspace_declarations[j].nspace == nspace) {
-          declare_me=0;
+          declare_me = 0;
           break;
         }
       
@@ -425,7 +425,7 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
         nspace_declarations[nspace_declarations_count].declaration=
           raptor_namespaces_format(nspace,
                                    &nspace_declarations[nspace_declarations_count].length);
-        nspace_declarations[nspace_declarations_count].nspace=nspace;
+        nspace_declarations[nspace_declarations_count].nspace = nspace;
         nspace_declarations_count++;
       }
 
@@ -455,13 +455,13 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
           nspace_declarations_count, sizeof(struct nsd),
           raptor_nsd_compare);
     /* add them */
-    for (i=0; i < nspace_declarations_count; i++) {
+    for(i = 0; i < nspace_declarations_count; i++) {
       raptor_iostream_write_byte(iostr, ' ');
       raptor_iostream_write_counted_string(iostr, 
                                            (const char*)nspace_declarations[i].declaration,
                                            nspace_declarations[i].length);
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
-      nspace_declarations[i].declaration=NULL;
+      nspace_declarations[i].declaration = NULL;
 
       raptor_namespace_copy(nstack,
                             (raptor_namespace*)nspace_declarations[i].nspace,
@@ -471,7 +471,7 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
 
 
   if(!is_end && element->attributes) {
-    for(i=0; i < element->attribute_count; i++) {
+    for(i = 0; i < element->attribute_count; i++) {
       raptor_iostream_write_byte(iostr, ' ');
       
       if(element->attributes[i]->nspace && 
@@ -541,7 +541,7 @@ raptor_xml_element_get_language(raptor_xml_element* xml_element)
 int
 raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 {
-  int len=strlen((const char*)string);
+  int len = strlen((const char*)string);
 #ifdef RAPTOR_XML_1_1
   #define XML_ID_XML_VERSION 11
 #else
@@ -607,7 +607,7 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
                              void *error_data)
 {
   int l;
-  size_t new_len=0;
+  size_t new_len = 0;
   const unsigned char *p;
   unsigned char *q;
   int unichar_len;
@@ -616,9 +616,9 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
   if(quote != '\"' && quote != '\'')
     quote='\0';
 
-  for(l=len, p=string; l; p++, l--) {
+  for(l = len, p = string; l; p++, l--) {
     if(*p > 0x7f) {
-      unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+      unichar_len = raptor_utf8_to_unicode_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
         if(error_handler)
           error_handler(error_data, "Bad UTF-8 encoding.");
@@ -626,7 +626,7 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
       }
     } else {
       unichar=*p;
-      unichar_len=1;
+      unichar_len = 1;
     }
   
     if(unichar == '&')
@@ -635,14 +635,14 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
     else if(unichar == '<' || (!quote && unichar == '>'))
       /* &lt; or &gt; */
       new_len+= 4;
-    else if (quote && unichar == (unsigned long)quote)
+    else if(quote && unichar == (unsigned long)quote)
       /* &apos; or &quot; */
       new_len+= 6;
-    else if (unichar == 0x0d ||
+    else if(unichar == 0x0d ||
              (quote && (unichar == 0x09 || unichar == 0x0a)))
       /* &#xD; or &#x9; or &xA; */
       new_len+= 5;
-    else if (unichar == 0x7f ||
+    else if(unichar == 0x7f ||
              (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
         if(error_handler)
@@ -666,30 +666,30 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
   if(!buffer)
     return new_len;
   
-  for(l=len, p=string, q=buffer; l; p++, l--) {
+  for(l = len, p = string, q = buffer; l; p++, l--) {
     if(*p > 0x7f) {
-      unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+      unichar_len = raptor_utf8_to_unicode_char(&unichar, p, l);
     } else {
       unichar=*p;
-      unichar_len=1;
+      unichar_len = 1;
     }
 
     if(unichar == '&') {
       strncpy((char*)q, "&amp;", 5);
       q+= 5;
-    } else if (unichar == '<') {
+    } else if(unichar == '<') {
       strncpy((char*)q, "&lt;", 4);
       q+= 4;
-    } else if (!quote && unichar == '>') {
+    } else if(!quote && unichar == '>') {
       strncpy((char*)q, "&gt;", 4);
       q+= 4;
-    } else if (quote && unichar == (unsigned long)quote) {
+    } else if(quote && unichar == (unsigned long)quote) {
       if(quote == '\'')  
         strncpy((char*)q, "&apos;", 6);
       else
         strncpy((char*)q, "&quot;", 6);
       q+= 6;
-    } else if (unichar == 0x0d ||
+    } else if(unichar == 0x0d ||
                (quote && (unichar == 0x09 || unichar == 0x0a))) {
       /* &#xX; */
       *q++='&';
@@ -700,7 +700,7 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
       else
         *q++ = 'A'+ ((char)unichar-0x0a);
       *q++= ';';
-    } else if (unichar == 0x7f ||
+    } else if(unichar == 0x7f ||
                (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
         if(error_handler)
@@ -792,17 +792,17 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
   const unsigned char *p;
 
   if(xml_version != 10)
-    xml_version=11;
+    xml_version = 11;
 
   if(quote != '\"' && quote != '\'')
     quote='\0';
 
-  for(l=len, p=string; l; p++, l--) {
-    int unichar_len=1;
+  for(l = len, p = string; l; p++, l--) {
+    int unichar_len = 1;
     raptor_unichar unichar=*p;
 
     if(*p > 0x7f) {
-      unichar_len=raptor_utf8_to_unicode_char(&unichar, p, l);
+      unichar_len = raptor_utf8_to_unicode_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
         if(error_handler)
           error_handler(error_data, "Bad UTF-8 encoding.");
@@ -812,16 +812,16 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
 
     if(unichar == '&')
       raptor_iostream_write_counted_string(iostr, "&amp;", 5);
-    else if (unichar == '<')
+    else if(unichar == '<')
       raptor_iostream_write_counted_string(iostr, "&lt;", 4);
-    else if (!quote && unichar == '>')
+    else if(!quote && unichar == '>')
       raptor_iostream_write_counted_string(iostr, "&gt;", 4);
-    else if (quote && unichar == (unsigned long)quote) {
+    else if(quote && unichar == (unsigned long)quote) {
       if(quote == '\'')  
         raptor_iostream_write_counted_string(iostr, "&apos;", 6);
       else
         raptor_iostream_write_counted_string(iostr, "&quot;", 6);
-    } else if (unichar == 0x0d ||
+    } else if(unichar == 0x0d ||
                (quote && (unichar == 0x09 || unichar == 0x0a))) {
       /* &#xX; */
       raptor_iostream_write_counted_string(iostr, "&#x", 3);
@@ -830,13 +830,13 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
       else
         raptor_iostream_write_byte(iostr, 'A'+ ((char)unichar-0x0a));
       raptor_iostream_write_byte(iostr, ';');
-    } else if (unichar == 0x7f ||
+    } else if(unichar == 0x7f ||
                (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
         if(error_handler)
           error_handler(error_data, "Cannot write illegal XML 1.0 character %d.", unichar);
       } else {
-        int width=(unichar < 0x10) ? 1 : 2;
+        int width = (unichar < 0x10) ? 1 : 2;
 
         /* &#xX; */
         raptor_iostream_write_counted_string(iostr, "&#x", 3);
@@ -907,10 +907,10 @@ raptor_xml_name_check(const unsigned char *string, size_t length,
   if(xml_version != 10 && xml_version != 11)
     return 0;
 
-  for(pos=0; length > 0; pos++) {
-    raptor_unichar unichar=0;
+  for(pos = 0; length > 0; pos++) {
+    raptor_unichar unichar = 0;
 
-    int unichar_len=raptor_utf8_to_unicode_char(&unichar, string, length);
+    int unichar_len = raptor_utf8_to_unicode_char(&unichar, string, length);
     if(unichar_len < 0 || unichar_len > (int)length)
       return 0;
 
@@ -972,7 +972,7 @@ raptor_bad_string_print(const unsigned char *input, FILE *stream)
 int
 main(int argc, char *argv[]) 
 {
-  const char *program=raptor_basename(argv[0]);
+  const char *program = raptor_basename(argv[0]);
   struct tv {
     const char *string;
     const char quote;
@@ -1022,16 +1022,16 @@ main(int argc, char *argv[])
     {NULL, 0, 0}
   };
   int i;
-  int failures=0;
+  int failures = 0;
 
-  for(i=0; (t=&test_values[i]) && t->string; i++) {
-    const unsigned char *utf8_string=(const unsigned char*)t->string;
-    int quote=t->quote;
-    size_t utf8_string_len=strlen((const char*)utf8_string);
+  for(i = 0; (t=&test_values[i]) && t->string; i++) {
+    const unsigned char *utf8_string = (const unsigned char*)t->string;
+    int quote = t->quote;
+    size_t utf8_string_len = strlen((const char*)utf8_string);
     unsigned char *xml_string;
-    int xml_string_len=0;
+    int xml_string_len = 0;
 
-    xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
+    xml_string_len = raptor_xml_escape_string(utf8_string, utf8_string_len,
                                             NULL, 0, quote, NULL, NULL);
     if(xml_string_len < 0) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
@@ -1042,9 +1042,9 @@ main(int argc, char *argv[])
       continue;
     }
       
-    xml_string=(unsigned char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
+    xml_string = (unsigned char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
     
-    xml_string_len=raptor_xml_escape_string(utf8_string, utf8_string_len,
+    xml_string_len = raptor_xml_escape_string(utf8_string, utf8_string_len,
                                             xml_string, xml_string_len, quote,
                                             NULL, NULL);
     if(xml_string_len < 0) {

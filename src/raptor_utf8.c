@@ -61,56 +61,56 @@
 int
 raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
 {
-  int size=0;
+  int size = 0;
   
   if      (c < 0x00000080)
-    size=1;
-  else if (c < 0x00000800)
-    size=2;
-  else if (c < 0x00010000)
-    size=3;
-  else if (c < 0x00200000)
-    size=4;
-  else if (c < 0x04000000)
-    size=5;
-  else if (c < 0x80000000)
-    size=6;
+    size = 1;
+  else if(c < 0x00000800)
+    size = 2;
+  else if(c < 0x00010000)
+    size = 3;
+  else if(c < 0x00200000)
+    size = 4;
+  else if(c < 0x04000000)
+    size = 5;
+  else if(c < 0x80000000)
+    size = 6;
   else
     return -1;
 
   switch(size) {
     case 6:
-      output[5]=0x80 | (unsigned char)(c & 0x3F);
+      output[5] = 0x80 | (unsigned char)(c & 0x3F);
       c= c >> 6;
        /* set bit 2 (bits 7,6,5,4,3,2 less 7,6,5,4,3 set below) on last byte */
       c |= 0x4000000; /* 0x10000 = 0x04 << 24 */
       /* FALLTHROUGH */
     case 5:
-      output[4]=0x80 | (unsigned char)(c & 0x3F);
+      output[4] = 0x80 | (unsigned char)(c & 0x3F);
       c= c >> 6;
        /* set bit 3 (bits 7,6,5,4,3 less 7,6,5,4 set below) on last byte */
       c |= 0x200000; /* 0x10000 = 0x08 << 18 */
       /* FALLTHROUGH */
     case 4:
-      output[3]=0x80 | (unsigned char)(c & 0x3F);
+      output[3] = 0x80 | (unsigned char)(c & 0x3F);
       c= c >> 6;
        /* set bit 4 (bits 7,6,5,4 less 7,6,5 set below) on last byte */
       c |= 0x10000; /* 0x10000 = 0x10 << 12 */
       /* FALLTHROUGH */
     case 3:
-      output[2]=0x80 | (unsigned char)(c & 0x3F);
+      output[2] = 0x80 | (unsigned char)(c & 0x3F);
       c= c >> 6;
       /* set bit 5 (bits 7,6,5 less 7,6 set below) on last byte */
       c |= 0x800; /* 0x800 = 0x20 << 6 */
       /* FALLTHROUGH */
     case 2:
-      output[1]=0x80 | (unsigned char)(c & 0x3F);
+      output[1] = 0x80 | (unsigned char)(c & 0x3F);
       c= c >> 6;
       /* set bits 7,6 on last byte */
       c |= 0xc0; 
       /* FALLTHROUGH */
     case 1:
-      output[0]=(unsigned char)c;
+      output[0] = (unsigned char)c;
   }
 
   return size;
@@ -136,29 +136,29 @@ raptor_utf8_to_unicode_char(raptor_unichar *output,
 {
   unsigned char in;
   int size;
-  raptor_unichar c=0;
+  raptor_unichar c = 0;
   
   if(length < 1)
     return -1;
 
   in=*input++;
   if((in & 0x80) == 0) {
-    size=1;
+    size = 1;
     c= in & 0x7f;
   } else if((in & 0xe0) == 0xc0) {
-    size=2;
+    size = 2;
     c= in & 0x1f;
   } else if((in & 0xf0) == 0xe0) {
-    size=3;
+    size = 3;
     c= in & 0x0f;
   } else if((in & 0xf8) == 0xf0) {
-    size=4;
+    size = 4;
     c = in & 0x07;
   } else if((in & 0xfc) == 0xf8) {
-    size=5;
+    size = 5;
     c = in & 0x03;
   } else if((in & 0xfe) == 0xfc) {
-    size=6;
+    size = 6;
     c = in & 0x01;
   } else
     return -1;
@@ -786,11 +786,11 @@ int
 raptor_utf8_is_nfc(const unsigned char *input, size_t length) 
 {
   unsigned int i;
-  int plain=1;
+  int plain = 1;
   
-  for(i=0; i<length; i++)
-    if(input[i]>0x7f) {
-      plain=0;
+  for(i = 0; i < length; i++)
+    if(input[i] > 0x7f) {
+      plain = 0;
       break;
     }
     
@@ -818,9 +818,9 @@ int
 raptor_utf8_check(const unsigned char *string, size_t length)
 {
   while(length > 0) {
-    raptor_unichar unichar=0;
+    raptor_unichar unichar = 0;
 
-    int unichar_len=raptor_utf8_to_unicode_char(&unichar, string, length);
+    int unichar_len = raptor_utf8_to_unicode_char(&unichar, string, length);
     if(unichar_len < 0 || unichar_len > (int)length)
       return 0;
 

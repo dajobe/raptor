@@ -76,7 +76,7 @@ static int
 raptor_simple_serialize_statement(raptor_serializer* serializer, 
                                   const raptor_statement *statement)
 {
-  raptor_iostream *iostr=serializer->iostream;
+  raptor_iostream *iostr = serializer->iostream;
   
   /* was: fprintf(stdout, "%s: Statement: ", program); */
   raptor_iostream_write_string(iostr, "Statement: ");

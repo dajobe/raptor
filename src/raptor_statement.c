@@ -77,15 +77,15 @@ raptor_statement_copy_v2_from_v1(raptor_world* world, const raptor_statement *st
 {
   raptor_statement_v2 *s;
 
-  s=(raptor_statement_v2*)RAPTOR_CALLOC(raptor_statement_v2, 1, sizeof(raptor_statement_v2));
+  s = (raptor_statement_v2*)RAPTOR_CALLOC(raptor_statement_v2, 1, sizeof(raptor_statement_v2));
   if(!s)
     return NULL;
 
-  s->world=world;
-  s->s=raptor_statement_copy(world, statement);
+  s->world = world;
+  s->s = raptor_statement_copy(world, statement);
   if(!s->s) {
     raptor_free_statement_v2(s);
-    s=NULL;
+    s = NULL;
   }
 
   return s;
@@ -106,70 +106,70 @@ raptor_statement_copy(raptor_world* world, const raptor_statement *statement)
 {
   raptor_statement *s;
 
-  s=(raptor_statement*)RAPTOR_CALLOC(raptor_statement, 1, sizeof(raptor_statement));
+  s = (raptor_statement*)RAPTOR_CALLOC(raptor_statement, 1, sizeof(raptor_statement));
   if(!s)
     return NULL;
 
-  s->subject_type=statement->subject_type;
+  s->subject_type = statement->subject_type;
   if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    unsigned char *new_blank=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->subject)+1);
+    unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->subject)+1);
     if(!new_blank)
       goto oom;
     strcpy((char*)new_blank, (const char*)statement->subject);
-    s->subject=new_blank;
+    s->subject = new_blank;
   } else if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->subject=raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->subject));
-    s->subject_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    s->subject = raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->subject));
+    s->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else
-    s->subject=raptor_uri_copy_v2(world, (raptor_uri*)statement->subject);
+    s->subject = raptor_uri_copy_v2(world, (raptor_uri*)statement->subject);
 
-  s->predicate_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  s->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    s->predicate=raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->predicate));
+    s->predicate = raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->predicate));
   else
-    s->predicate=raptor_uri_copy_v2(world, (raptor_uri*)statement->predicate);
+    s->predicate = raptor_uri_copy_v2(world, (raptor_uri*)statement->predicate);
 
 
-  s->object_type=statement->object_type;
+  s->object_type = statement->object_type;
   if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
      statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     unsigned char *string;
-    char *language=NULL;
-    raptor_uri *uri=NULL;
+    char *language = NULL;
+    raptor_uri *uri = NULL;
     
-    string=(unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->object)+1);
+    string = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->object)+1);
     if(!string)
       goto oom;
     strcpy((char*)string, (const char*)statement->object);
-    s->object=string;
+    s->object = string;
 
     if(statement->object_literal_language) {
-      language=(char*)RAPTOR_MALLOC(cstring, strlen((const char*)statement->object_literal_language)+1);
+      language = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)statement->object_literal_language)+1);
       if(!language)
         goto oom;
       strcpy(language, (const char*)statement->object_literal_language);
-      s->object_literal_language=(const unsigned char*)language;
+      s->object_literal_language = (const unsigned char*)language;
     }
 
     if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
       /* nop */
     } else if(statement->object_literal_datatype) {
-      uri=raptor_uri_copy_v2(world, (raptor_uri*)statement->object_literal_datatype);
-      s->object_literal_datatype=uri;
+      uri = raptor_uri_copy_v2(world, (raptor_uri*)statement->object_literal_datatype);
+      s->object_literal_datatype = uri;
     }
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    char *blank=(char*)statement->object;
-    unsigned char *new_blank=(unsigned char*)RAPTOR_MALLOC(cstring, strlen(blank)+1);
+    char *blank = (char*)statement->object;
+    unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen(blank)+1);
     if(!new_blank)
       goto oom;
     strcpy((char*)new_blank, (const char*)blank);
-    s->object=new_blank;
+    s->object = new_blank;
   } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->object=raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->object));
-    s->object_type=RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    s->object = raptor_new_uri_from_rdf_ordinal(world, *((int*)statement->object));
+    s->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else {
-    raptor_uri *uri=raptor_uri_copy_v2(world, (raptor_uri*)statement->object);
-    s->object=uri;
+    raptor_uri *uri = raptor_uri_copy_v2(world, (raptor_uri*)statement->object);
+    s->object = uri;
   }
 
   return s;
@@ -439,32 +439,32 @@ raptor_statement_part_as_counted_string_v2(raptor_world* world,
                                            const unsigned char *literal_language,
                                            size_t* len_p)
 {
-  size_t len=0, term_len, uri_len;
-  size_t language_len=0;
-  unsigned char *s, *buffer=NULL;
-  unsigned char *uri_string=NULL;
+  size_t len = 0, term_len, uri_len;
+  size_t language_len = 0;
+  unsigned char *s, *buffer = NULL;
+  unsigned char *uri_string = NULL;
   
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-      term_len=strlen((const char*)term);
-      len=2+term_len;
+      term_len = strlen((const char*)term);
+      len = 2+term_len;
       if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
-        language_len=strlen((const char*)literal_language);
+        language_len = strlen((const char*)literal_language);
         len+= language_len+1;
       }
       if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
         len += 4+raptor_xml_literal_datatype_uri_string_len;
       else if(literal_datatype) {
-        uri_string=raptor_uri_as_counted_string_v2(world, (raptor_uri*)literal_datatype, &uri_len);
+        uri_string = raptor_uri_as_counted_string_v2(world, (raptor_uri*)literal_datatype, &uri_len);
         len += 4+uri_len;
       }
   
-      buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
         return NULL;
 
-      s=buffer;
+      s = buffer;
       *s++ ='"';
       /* raptor_print_ntriples_string(stream, (const char*)term, '"'); */
       strcpy((char*)s, (const char*)term);
@@ -496,19 +496,19 @@ raptor_statement_part_as_counted_string_v2(raptor_world* world,
       break;
       
     case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
-      len=2+strlen((const char*)term);
-      buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      len = 2+strlen((const char*)term);
+      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
         return NULL;
-      s=buffer;
+      s = buffer;
       *s++ ='_';
       *s++ =':';
       strcpy((char*)s, (const char*)term);
       break;
       
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      len=raptor_rdf_namespace_uri_len + 13; 
-      buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      len = raptor_rdf_namespace_uri_len + 13; 
+      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
         return NULL;
 
@@ -518,13 +518,13 @@ raptor_statement_part_as_counted_string_v2(raptor_world* world,
   
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
     case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-      uri_string=raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &uri_len);
-      len=2+uri_len;
-      buffer=(unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      uri_string = raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &uri_len);
+      len = 2+uri_len;
+      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
         return NULL;
 
-      s=buffer;
+      s = buffer;
       *s++ ='<';
       /* raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)term), '\0'); */
       strcpy((char*)s, (const char*)uri_string);
@@ -799,33 +799,33 @@ raptor_statement_compare_common(raptor_world* world,
                                 const raptor_statement *s1,
                                 const raptor_statement *s2)
 {
-  int d=0;
+  int d = 0;
 
   if(s1->subject && s2->subject) {
-    d=s1->subject_type != s2->subject_type;
+    d = s1->subject_type != s2->subject_type;
     if(d)
       return d;
 
     /* subjects are URIs or blank nodes */
     if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-      d=strcmp((char*)s1->subject, (char*)s2->subject);
+      d = strcmp((char*)s1->subject, (char*)s2->subject);
     else
-      d=raptor_uri_compare_v2(world,
+      d = raptor_uri_compare_v2(world,
                               (raptor_uri*)s1->subject,
                               (raptor_uri*)s2->subject);
   } else if(s1->subject || s2->subject)
-    d=(!s1->subject ? -1 : 1);
+    d = (!s1->subject ? -1 : 1);
   if(d)
     return d;
   
 
   /* predicates are URIs */
   if(s1->predicate && s2->predicate) {
-    d=raptor_uri_compare_v2(world,
+    d = raptor_uri_compare_v2(world,
                             (raptor_uri*)s1->predicate,
                             (raptor_uri*)s2->predicate);
   } else if(s1->predicate || s2->predicate)
-    d=(!s1->predicate ? -1 : 1);
+    d = (!s1->predicate ? -1 : 1);
   if(d)
     return d;
 
@@ -834,37 +834,37 @@ raptor_statement_compare_common(raptor_world* world,
   if(s1->object && s2->object) {
     if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
        s1->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-      d=strcmp((char*)s1->object, (char*)s2->object);
+      d = strcmp((char*)s1->object, (char*)s2->object);
       if(d)
         return d;
 
       if(s1->object_literal_language && s2->object_literal_language) {
         /* both have a language */
-        d=strcmp((char*)s1->object_literal_language,
+        d = strcmp((char*)s1->object_literal_language,
                  (char*)s2->object_literal_language);
       } else if(s1->object_literal_language || s2->object_literal_language)
         /* only one has a language; the language-less one is earlier */
-        d=(!s1->object_literal_language ? -1 : 1);
+        d = (!s1->object_literal_language ? -1 : 1);
       if(d)
         return d;
 
       if(s1->object_literal_datatype && s2->object_literal_datatype) {
         /* both have a datatype */
-        d=raptor_uri_compare_v2(world,
+        d = raptor_uri_compare_v2(world,
                                 (raptor_uri*)s1->object_literal_datatype,
                                 (raptor_uri*)s2->object_literal_datatype);
       } else if(s1->object_literal_datatype || s2->object_literal_datatype)
         /* only one has a datatype; the datatype-less one is earlier */
-        d=(!s1->object_literal_datatype ? -1 : 1);
+        d = (!s1->object_literal_datatype ? -1 : 1);
       if(d)
         return d;
 
     } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-      d=strcmp((char*)s1->object, (char*)s2->object);
+      d = strcmp((char*)s1->object, (char*)s2->object);
     else
-      d=raptor_uri_compare_v2(world, (raptor_uri*)s1->object, (raptor_uri*)s2->object);
+      d = raptor_uri_compare_v2(world, (raptor_uri*)s1->object, (raptor_uri*)s2->object);
   } else if(s1->object || s2->object)
-    d=(!s1->object ? -1 : 1);
+    d = (!s1->object ? -1 : 1);
 
   return d;
 }

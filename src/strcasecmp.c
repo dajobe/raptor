@@ -30,7 +30,7 @@ raptor_strcasecmp(const char* s1, const char* s2)
   while(*s1 && *s2) {
     c1 = tolower(*s1);
     c2 = tolower(*s2);
-    if (c1 != c2)
+    if(c1 != c2)
       return (c1 - c2);
     s1++;
     s2++;
@@ -47,7 +47,7 @@ raptor_strncasecmp(const char* s1, const char* s2, size_t n)
   while(*s1 && *s2 && n) {
     c1 = tolower(*s1);
     c2 = tolower(*s2);
-    if (c1 != c2)
+    if(c1 != c2)
       return (c1 - c2);
     s1++;
     s2++;
@@ -70,10 +70,10 @@ int main(int argc, char *argv[]);
 static int
 assert_strcasecmp (const char *s1, const char *s2, int expected)
 {
-  int result=strcasecmp(s1, s2);
-  result=(result>0) ? 1 : ((result <0) ? -1 : 0);
+  int result = strcasecmp(s1, s2);
+  result = (result > 0) ? 1 : ((result <0) ? -1 : 0);
 
-  if (result != expected)
+  if(result != expected)
     {
       fprintf(stderr, "FAIL strcasecmp (%s, %s) gave %d != %d\n",
               s1, s2, result, expected);
@@ -86,10 +86,10 @@ assert_strcasecmp (const char *s1, const char *s2, int expected)
 static int
 assert_strncasecmp (const char *s1, const char *s2, size_t size, int expected)
 {
-  int result=strncasecmp(s1, s2, size);
-  result=(result>0) ? 1 : ((result <0) ? -1 : 0);
+  int result = strncasecmp(s1, s2, size);
+  result = (result > 0) ? 1 : ((result <0) ? -1 : 0);
 
-  if (result != expected)
+  if(result != expected)
     {
       fprintf(stderr, "FAIL strncasecmp (%s, %s, %d) gave %d != %d\n",
               s1, s2, (unsigned int)size, result, expected);
@@ -102,7 +102,7 @@ assert_strncasecmp (const char *s1, const char *s2, size_t size, int expected)
 int
 main(int argc, char *argv[]) 
 {
-  int failures=0;
+  int failures = 0;
   
   failures += assert_strcasecmp("foo", "foo", 0);
   failures += assert_strcasecmp("foo", "FOO", 0);

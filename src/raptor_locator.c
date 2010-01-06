@@ -84,7 +84,7 @@ raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locat
 
   if(locator->uri)
     fprintf(stream, "URI %s", raptor_uri_as_string_v2(world, locator->uri));
-  else if (locator->file)
+  else if(locator->file)
     fprintf(stream, "file %s", locator->file);
   else
     return;
@@ -140,7 +140,7 @@ raptor_format_locator(char *buffer, size_t length, raptor_locator* locator)
 int
 raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, raptor_locator* locator) 
 {
-  size_t bufsize=0;
+  size_t bufsize = 0;
   int count;
   
   if(!locator)
@@ -150,7 +150,7 @@ raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, rapto
     size_t uri_len;
     (void)raptor_uri_as_counted_string_v2(world, locator->uri, &uri_len);
     bufsize= 4 + uri_len; /* "URI " */
-  } else if (locator->file)
+  } else if(locator->file)
     bufsize= 5 + strlen(locator->file); /* "file " */
   else
     return -1;
@@ -166,16 +166,16 @@ raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, rapto
   
 
   if(locator->uri)
-    count=sprintf(buffer, "URI %s", raptor_uri_as_string_v2(world, locator->uri));
-  else if (locator->file)
-    count=sprintf(buffer, "file %s", locator->file);
+    count = sprintf(buffer, "URI %s", raptor_uri_as_string_v2(world, locator->uri));
+  else if(locator->file)
+    count = sprintf(buffer, "file %s", locator->file);
   else
     return -1;
 
   buffer+= count;
   
   if(locator->line > 0) {
-    count=sprintf(buffer, ":%d", locator->line);
+    count = sprintf(buffer, ":%d", locator->line);
     if(locator->column >= 0)
       sprintf(buffer+count, " column %d", locator->column);
   }
@@ -195,7 +195,7 @@ raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, rapto
 int
 raptor_locator_line(raptor_locator *locator)
 {
-  if (!locator)
+  if(!locator)
     return -1;
   return locator->line;
 }
@@ -211,7 +211,7 @@ raptor_locator_line(raptor_locator *locator)
 int
 raptor_locator_column(raptor_locator *locator)
 {
-  if (!locator)
+  if(!locator)
     return -1;
   return locator->column;
 }
@@ -227,7 +227,7 @@ raptor_locator_column(raptor_locator *locator)
 int
 raptor_locator_byte(raptor_locator *locator)
 {
-  if (!locator)
+  if(!locator)
     return -1;
   return locator->byte;
 }
@@ -243,7 +243,7 @@ raptor_locator_byte(raptor_locator *locator)
 const char *
 raptor_locator_file(raptor_locator *locator)
 {
-  if (!locator)
+  if(!locator)
     return NULL;
   return locator->file;
 }
@@ -287,7 +287,7 @@ raptor_locator_uri(raptor_locator *locator)
 const char *
 raptor_locator_uri_v2(raptor_world* world, raptor_locator *locator)
 {
-  if (!locator)
+  if(!locator)
     return NULL;
   return (const char*)raptor_uri_as_string_v2(world, locator->uri);
 }

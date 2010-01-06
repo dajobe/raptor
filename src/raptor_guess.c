@@ -69,10 +69,10 @@ typedef struct raptor_guess_parser_context_s raptor_guess_parser_context;
 static int
 raptor_guess_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  raptor_guess_parser_context *guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
-  guess_parser->content_type=NULL;
+  raptor_guess_parser_context *guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
+  guess_parser->content_type = NULL;
 
-  guess_parser->do_guess=1;
+  guess_parser->do_guess = 1;
 
   return 0;
 }
@@ -81,7 +81,7 @@ raptor_guess_parse_init(raptor_parser* rdf_parser, const char *name)
 static void
 raptor_guess_parse_terminate(raptor_parser *rdf_parser)
 {
-  raptor_guess_parser_context *guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
+  raptor_guess_parser_context *guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
   if(guess_parser->content_type)
     RAPTOR_FREE(cstring, guess_parser->content_type);
@@ -95,18 +95,18 @@ static void
 raptor_guess_parse_content_type_handler(raptor_parser* rdf_parser, 
                                         const char* content_type)
 {
-  raptor_guess_parser_context* guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
+  raptor_guess_parser_context* guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
   if(content_type) {
     const char *p;
     size_t len;
 
-    if((p=strchr(content_type,';')))
-      len=p-content_type;
+    if((p = strchr(content_type,';')))
+      len = p-content_type;
     else
-      len=strlen(content_type);
+      len = strlen(content_type);
     
-    guess_parser->content_type=(char*)RAPTOR_MALLOC(cstring, len+1);
+    guess_parser->content_type = (char*)RAPTOR_MALLOC(cstring, len+1);
     strncpy(guess_parser->content_type, content_type, len);
     guess_parser->content_type[len]='\0';
 
@@ -120,18 +120,18 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
                         const unsigned char *buffer, size_t len,
                         int is_end)
 {
-  raptor_guess_parser_context* guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
+  raptor_guess_parser_context* guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
   if(guess_parser->do_guess) {
-    const unsigned char *identifier=NULL;
+    const unsigned char *identifier = NULL;
     const char *name;
     
-    guess_parser->do_guess=0;
+    guess_parser->do_guess = 0;
 
     if(rdf_parser->base_uri)
-      identifier=raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
+      identifier = raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
     
-    name=raptor_guess_parser_name_v2(rdf_parser->world,
+    name = raptor_guess_parser_name_v2(rdf_parser->world,
                                      NULL, guess_parser->content_type, buffer, len,
                                      identifier);
     if(!name) {
@@ -142,7 +142,7 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
       raptor_parse_abort(rdf_parser);
       if(guess_parser->parser) {
         raptor_free_parser(guess_parser->parser);
-        guess_parser->parser=NULL;
+        guess_parser->parser = NULL;
       }
       return 1;
     } else {
@@ -155,16 +155,16 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
        * it's different from the wanted parser, free it
        */
       if(guess_parser->parser) {
-        raptor_parser_factory* factory=raptor_get_parser_factory(rdf_parser->world, name);
+        raptor_parser_factory* factory = raptor_get_parser_factory(rdf_parser->world, name);
 
         if(guess_parser->parser->factory != factory) {
           raptor_free_parser(guess_parser->parser);
-          guess_parser->parser=NULL;
+          guess_parser->parser = NULL;
         }
       }
       
       if(!guess_parser->parser) {
-        guess_parser->parser=raptor_new_parser_v2(rdf_parser->world, name);
+        guess_parser->parser = raptor_new_parser_v2(rdf_parser->world, name);
         if(!guess_parser->parser)
           return 1;
       }
@@ -194,7 +194,7 @@ raptor_guess_accept_header(raptor_parser* rdf_parser)
 static int
 raptor_guess_get_current_base_id(raptor_parser* rdf_parser)
 {
-  raptor_guess_parser_context *guess_parser=(raptor_guess_parser_context*)rdf_parser->context;
+  raptor_guess_parser_context *guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
   return raptor_parser_get_current_base_id(guess_parser->parser);
 }

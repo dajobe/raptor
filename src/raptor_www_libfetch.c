@@ -72,18 +72,18 @@ raptor_www_libfetch_fetch(raptor_www *www)
   if(www->user_agent)
     setenv("HTTP_USER_AGENT", www->user_agent, 0);
 
-  stream=fetchXGetURL((const char*)raptor_uri_as_string_v2(www->world, www->uri), NULL, NULL);
+  stream = fetchXGetURL((const char*)raptor_uri_as_string_v2(www->world, www->uri), NULL, NULL);
   if(!stream) {
-    www->failed=1;
+    www->failed = 1;
     raptor_www_error(www, "%s", fetchLastErrString);
     return 1;
   }
   
   /* fetch does not give us access to this */
-  www->status_code=200;
+  www->status_code = 200;
   
   while(!feof(stream)) {
-    size_t len=fread(www->buffer, 1, RAPTOR_WWW_BUFFER_SIZE, stream);
+    size_t len = fread(www->buffer, 1, RAPTOR_WWW_BUFFER_SIZE, stream);
     
     www->total_bytes += len;
 

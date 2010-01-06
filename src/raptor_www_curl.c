@@ -55,7 +55,7 @@ raptor_www_curl_update_status(raptor_www* www)
   
   if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, 
                        &final_uri) == CURLE_OK) {
-    www->final_uri=raptor_new_uri_v2(www->world, (const unsigned char*)final_uri);
+    www->final_uri = raptor_new_uri_v2(www->world, (const unsigned char*)final_uri);
     if(www->final_uri_handler)
       www->final_uri_handler(www, www->final_uri_userdata, www->final_uri);
   }
@@ -66,8 +66,8 @@ raptor_www_curl_update_status(raptor_www* www)
 static size_t
 raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userdata) 
 {
-  raptor_www* www=(raptor_www*)userdata;
-  int bytes=size*nmemb;
+  raptor_www* www = (raptor_www*)userdata;
+  int bytes = size*nmemb;
 
   /* If WWW has been aborted, return nothing so that
    * libcurl will abort the transfer
@@ -92,8 +92,8 @@ static size_t
 raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
                                 void *userdata) 
 {
-  raptor_www* www=(raptor_www*)userdata;
-  int bytes=size*nmemb;
+  raptor_www* www = (raptor_www*)userdata;
+  int bytes = size*nmemb;
 
   /* If WWW has been aborted, return nothing so that
    * libcurl will abort the transfer
@@ -102,14 +102,14 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     return 0;
   
   if(!strncmp((char*)ptr, "Content-Type: ", 14)) {
-    int len=bytes-16;
-    char *type_buffer=(char*)RAPTOR_MALLOC(cstring, len+1);
+    int len = bytes-16;
+    char *type_buffer = (char*)RAPTOR_MALLOC(cstring, len+1);
     strncpy(type_buffer, (char*)ptr+14, len);
     type_buffer[len]='\0';
     if(www->type)
       RAPTOR_FREE(cstring, www->type);
-    www->type=type_buffer;
-    www->free_type=1;
+    www->type = type_buffer;
+    www->free_type = 1;
 
 #if RAPTOR_DEBUG > 2
     RAPTOR_DEBUG3("Got content type '%s' (%d bytes)\n", type_buffer, len);
@@ -126,8 +126,8 @@ void
 raptor_www_curl_init(raptor_www *www)
 {
   if(!www->curl_handle) {
-    www->curl_handle=curl_easy_init();
-    www->curl_init_here=1;
+    www->curl_handle = curl_easy_init();
+    www->curl_init_here = 1;
   }
 
 
@@ -170,7 +170,7 @@ raptor_www_curl_free(raptor_www *www)
     /* only tidy up if we did all the work */
   if(www->curl_init_here && www->curl_handle) {
     curl_easy_cleanup(www->curl_handle);
-    www->curl_handle=NULL;
+    www->curl_handle = NULL;
   }
 }
 
@@ -178,7 +178,7 @@ raptor_www_curl_free(raptor_www *www)
 int
 raptor_www_curl_fetch(raptor_www *www) 
 {
-  struct curl_slist *slist=NULL;
+  struct curl_slist *slist = NULL;
     
   if(www->proxy)
     curl_easy_setopt(www->curl_handle, CURLOPT_PROXY, www->proxy);
@@ -187,12 +187,12 @@ raptor_www_curl_fetch(raptor_www *www)
     curl_easy_setopt(www->curl_handle, CURLOPT_USERAGENT, www->user_agent);
 
   if(www->http_accept)
-    slist=curl_slist_append(slist, (const char*)www->http_accept);
+    slist = curl_slist_append(slist, (const char*)www->http_accept);
 
   /* ALWAYS disable curl default "Pragma: no-cache" */
-  slist=curl_slist_append(slist, "Pragma:");
+  slist = curl_slist_append(slist, "Pragma:");
   if(www->cache_control)
-    slist=curl_slist_append(slist, (const char*)www->cache_control);
+    slist = curl_slist_append(slist, (const char*)www->cache_control);
 
   if(slist)
     curl_easy_setopt(www->curl_handle, CURLOPT_HTTPHEADER, slist);
@@ -203,7 +203,7 @@ raptor_www_curl_fetch(raptor_www *www)
 
   if(curl_easy_perform(www->curl_handle)) {
     /* failed */
-    www->failed=1;
+    www->failed = 1;
     raptor_www_error(www, "Resolving URI failed: %s", www->error_buffer);
   } else {
     long lstatus;
@@ -214,7 +214,7 @@ raptor_www_curl_fetch(raptor_www *www)
 
     /* Requires pointer to a long */
     if(curl_easy_getinfo(www->curl_handle, CURLINFO_RESPONSE_CODE, &lstatus) == CURLE_OK)
-      www->status_code=lstatus;
+      www->status_code = lstatus;
 
   }
 

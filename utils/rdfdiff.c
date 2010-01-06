@@ -118,7 +118,7 @@ typedef struct {
 } rdfdiff_file;
 
 static int brief = 0;
-static char *program=NULL;
+static char *program = NULL;
 static const char * const title_format_string="Raptor RDF diff utility %s\n";
 static int ignore_errors = 0;
 static int ignore_warnings = 0;
@@ -171,7 +171,7 @@ rdfdiff_print_statements(rdfdiff_file* file)
 {    
   fprintf(stderr, "Statements in %s\n",  file->name);
   rdfdiff_link *cur = file->first;
-  while (cur) {
+  while(cur) {
     raptor_print_statement(cur->statement, stderr);
     fprintf(stderr, "\n");
     cur = cur->next;
@@ -298,7 +298,7 @@ rdfdiff_ordinal_equals_resource(raptor_world* world, int ordinal, raptor_uri *re
 static int
 rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const raptor_statement *s2)
 {
-  int rv=0;
+  int rv = 0;
   
   if(!s1 || !s2)
     return 0;
@@ -317,7 +317,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     if(!rdfdiff_ordinal_equals_resource(world,
                                         *(int *)s1->subject, 
                                         (raptor_uri *)s2->subject)) {
-      rv=0;
+      rv = 0;
       goto done;
     }
     
@@ -328,14 +328,14 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     if(!rdfdiff_ordinal_equals_resource(world,
                                         *(int *)s2->subject,
                                         (raptor_uri *)s1->subject)) {
-      rv=0;
+      rv = 0;
       goto done;
     }
       
   } else {
     /* normal comparison */
     if(s1->subject_type != s2->subject_type) {
-      rv=0;
+      rv = 0;
       goto done;
     }
 
@@ -348,7 +348,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
       if(!raptor_uri_equals_v2(world,
                                (raptor_uri *)s1->subject,
                                (raptor_uri *)s2->subject)) {
-        rv=0;
+        rv = 0;
         goto done;
       }
     }
@@ -361,7 +361,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     if(!rdfdiff_ordinal_equals_resource(world,
                                         *(int *)s1->predicate, 
                                         (raptor_uri *)s2->predicate)) {
-      rv=0;
+      rv = 0;
       goto done;
     }
 
@@ -372,34 +372,34 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     if(!rdfdiff_ordinal_equals_resource(world,
                                         *(int *)s2->predicate,
                                         (raptor_uri *)s1->predicate)) {
-      rv=0;
+      rv = 0;
       goto done;
     }
       
   } else {
     
     if(s1->predicate_type != s2->predicate_type) {
-      rv=0;
+      rv = 0;
       goto done;
     }
   
     if(s1->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
       if(*(int *)s1->predicate != *(int *)s2->predicate) {
-        rv=0;
+        rv = 0;
         goto done;
       }
     } else {
       if(!raptor_uri_equals_v2(world,
                                (raptor_uri *)s1->predicate,
                                (raptor_uri *)s2->predicate)) {
-        rv=0;
+        rv = 0;
         goto done;
       }
     }
   }
   
   if(s1->object_type != s2->object_type) {
-    rv=0;
+    rv = 0;
     goto done;
   }
   
@@ -414,17 +414,17 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
         equal=!strcmp((char *)s1->object_literal_language,
                       (char *)s2->object_literal_language);
       else if(s1->object_literal_language || s2->object_literal_language)
-        equal=0;
+        equal = 0;
       else
-        equal=1;
+        equal = 1;
 
       if(equal)
-        equal=raptor_uri_equals_v2(world,
+        equal = raptor_uri_equals_v2(world,
                                    s1->object_literal_datatype, 
                                    s2->object_literal_datatype);
     }
 
-    rv=equal;
+    rv = equal;
     goto done;
   } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
     /* Here for completeness. Anonymous nodes are taken care of
@@ -433,15 +433,15 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
        return 0; */
   } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     if(*(int *)s1->object != *(int *)s2->object) {
-      rv=0;
+      rv = 0;
       goto done;
     }
   } else {
     if(!raptor_uri_equals_v2(world, (raptor_uri *)s1->object, (raptor_uri *)s2->object))
-      rv=0;
+      rv = 0;
   }
 
-  rv=1;
+  rv = 1;
   done:
 
 #if RAPTOR_DEBUG > 2
@@ -501,10 +501,10 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
    * different blank nodes as values. */
   if(equal) {
     rdfdiff_link *s1 = b1->first;
-    while (s1) {
+    while(s1) {
 
       rdfdiff_link *s2 = b2->first;
-      while (s2) {
+      while(s2) {
 
         if(rdfdiff_statement_equals(b1->world, s1->statement, s2->statement))
           break;
@@ -570,7 +570,7 @@ rdfdiff_find_blank(rdfdiff_blank *first, char *blank_id)
   rdfdiff_blank *rv_blank = 0;
   rdfdiff_blank *cur = first;
 
-  while (cur) {
+  while(cur) {
 
     if(strcmp(cur->blank_id, blank_id) == 0) {
       rv_blank = cur;
@@ -591,7 +591,7 @@ rdfdiff_lookup_blank(rdfdiff_file* file, char *blank_id)
 {
   rdfdiff_blank *rv_blank = rdfdiff_find_blank(file->first_blank, blank_id);
   
-  if(rv_blank == NULL) {
+  if(!rv_blank) {
     rv_blank = rdfdiff_new_blank(file->world, blank_id);
     if(rv_blank) {
 
@@ -723,8 +723,8 @@ rdfdiff_statement_find(rdfdiff_file* file, const raptor_statement *statement,
         *prev_p=prev;
       return cur;
     }
-    prev=cur;
-    cur=cur->next;
+    prev = cur;
+    cur = cur->next;
   }
 
   return NULL;
@@ -735,8 +735,8 @@ static int
 rdfdiff_statement_exists(rdfdiff_file* file, const raptor_statement *statement)
 {
   rdfdiff_link* node;
-  rdfdiff_link* prev=NULL;
-  node=rdfdiff_statement_find(file, statement, &prev);
+  rdfdiff_link* prev = NULL;
+  node = rdfdiff_statement_find(file, statement, &prev);
   return (node != NULL);
 }
 
@@ -781,28 +781,28 @@ int
 main(int argc, char *argv[]) 
 {
   raptor_world *world = NULL;
-  unsigned char *from_string=NULL;
-  unsigned char *to_string=NULL;
-  raptor_uri *from_uri=NULL;
-  raptor_uri *to_uri=NULL;
-  raptor_uri *base_uri=NULL;
+  unsigned char *from_string = NULL;
+  unsigned char *to_string = NULL;
+  raptor_uri *from_uri = NULL;
+  raptor_uri *to_uri = NULL;
+  raptor_uri *base_uri = NULL;
   const char *from_syntax = "rdfxml";
   const char *to_syntax = "rdfxml";
   int free_from_string = 0;
   int free_to_string = 0;
-  int usage=0;
-  int help=0;
+  int usage = 0;
+  int help = 0;
   char *p;
   int rv = 0;
   rdfdiff_blank *b1;
   rdfdiff_link *cur;
   
-  program=argv[0];
-  if((p=strrchr(program, '/')))
-    program=p+1;
-  else if((p=strrchr(program, '\\')))
-    program=p+1;
-  argv[0]=program;
+  program = argv[0];
+  if((p = strrchr(program, '/')))
+    program = p+1;
+  else if((p = strrchr(program, '\\')))
+    program = p+1;
+  argv[0] = program;
 
   world = raptor_new_world();
   if(!world)
@@ -811,7 +811,7 @@ main(int argc, char *argv[])
   if(rv)
     exit(1);
 
-  while (!usage && !help)
+  while(!usage && !help)
   {
     int c;
 #ifdef HAVE_GETOPT_LONG
@@ -827,7 +827,7 @@ main(int argc, char *argv[])
     switch (c) {
       case 0:
       case '?': /* getopt() - unknown option */
-        usage=1;
+        usage = 1;
         break;
         
       case 'b':
@@ -835,7 +835,7 @@ main(int argc, char *argv[])
         break;
 
       case 'h':
-        help=1;
+        help = 1;
         break;
 
       case 'f':
@@ -861,7 +861,7 @@ main(int argc, char *argv[])
     help = 1;
   
   if(usage) {
-    if(usage>1) {
+    if(usage > 1) {
       fprintf(stderr, title_format_string, raptor_version_string);
       fputs(raptor_short_copyright_string, stderr);
       fputc('\n', stderr);
@@ -972,7 +972,7 @@ main(int argc, char *argv[])
   while(cur) {
     rdfdiff_link* node;
     rdfdiff_link* prev;
-    node=rdfdiff_statement_find(from_file, cur->statement, &prev);
+    node = rdfdiff_statement_find(from_file, cur->statement, &prev);
     if(node) {
       /* exists in from file - remove it from the list */
       if(from_file->first == node) {
@@ -997,17 +997,17 @@ main(int argc, char *argv[])
       
       to_file->difference_count++;
     }
-    cur=cur->next;
+    cur = cur->next;
   }
 
   
   /* Now compare the blank nodes */
   b1 = to_file->first_blank;
-  while (b1) {
+  while(b1) {
 
     rdfdiff_blank *b2 = from_file->first_blank;
 
-    while (b2) {
+    while(b2) {
 
       if(!b2->matched && rdfdiff_blank_equals(b1, b2, to_file, from_file)) {
         b1->matched = 1;
@@ -1053,7 +1053,7 @@ main(int argc, char *argv[])
       }
       
       cur = from_file->first;
-      while (cur) {
+      while(cur) {
         if(!brief) {
           fprintf(stderr, ">    ");
           raptor_print_statement_v1(world, cur->statement, stderr);
@@ -1069,7 +1069,7 @@ main(int argc, char *argv[])
 
   if(from_file->first_blank) {
     rdfdiff_blank *blank = from_file->first_blank;
-    while (blank) {
+    while(blank) {
 
       if(!blank->matched) {
         if(!brief) {

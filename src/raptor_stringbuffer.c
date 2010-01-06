@@ -106,15 +106,15 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(stringbuffer, raptor_stringbuffer);
 
   if(stringbuffer->head) {
-    raptor_stringbuffer_node *node=stringbuffer->head;
+    raptor_stringbuffer_node *node = stringbuffer->head;
   
     while(node) {
-      raptor_stringbuffer_node *next=node->next;
+      raptor_stringbuffer_node *next = node->next;
       
       if(node->string)
         RAPTOR_FREE(cstring, node->string);
       RAPTOR_FREE(raptor_stringbuffer_node, node);
-      node=next;
+      node = next;
     }
   }
 
@@ -156,7 +156,7 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
   if(!string || !length)
     return 0;
   
-  node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
+  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
   if(!node) {
     if(!do_copy)
       RAPTOR_FREE(cstring, string);
@@ -165,27 +165,27 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
 
   if(do_copy) {
     /* Note this copy does not include the \0 character - not needed  */
-    node->string=(unsigned char*)RAPTOR_MALLOC(bytes, length);
+    node->string = (unsigned char*)RAPTOR_MALLOC(bytes, length);
     if(!node->string) {
       RAPTOR_FREE(raptor_stringbuffer_node, node);
       return 1;
     }
     strncpy((char*)node->string, (const char*)string, length);
   } else
-    node->string=(unsigned char*)string;
-  node->length=length;
+    node->string = (unsigned char*)string;
+  node->length = length;
 
 
   if(stringbuffer->tail) {
-    stringbuffer->tail->next=node;
-    stringbuffer->tail=node;
+    stringbuffer->tail->next = node;
+    stringbuffer->tail = node;
   } else
-    stringbuffer->head=stringbuffer->tail=node;
-  node->next=NULL;
+    stringbuffer->head = stringbuffer->tail = node;
+  node->next = NULL;
 
   if(stringbuffer->string) {
     RAPTOR_FREE(cstring, stringbuffer->string);
-    stringbuffer->string=NULL;
+    stringbuffer->string = NULL;
   }
   stringbuffer->length += length;
 
@@ -269,24 +269,24 @@ raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer,
    */
   unsigned char buf[20];
   unsigned char *p;
-  int i=integer;
-  size_t length=1;
-  if(integer<0) {
+  int i = integer;
+  size_t length = 1;
+  if(integer < 0) {
     length++;
     i= -integer;
   }
-  while(i/=10)
+  while(i /= 10)
     length++;
 
-  p=buf+length-1;
-  i=integer;
-  if(i<0)
+  p = buf+length-1;
+  i = integer;
+  if(i < 0)
     i= -i;
   do {
     *p-- ='0'+(i %10);
     i /= 10;
   } while(i);
-  if(integer<0)
+  if(integer < 0)
     *p= '-';
   
   return raptor_stringbuffer_append_counted_string(stringbuffer, buf, length, 1);
@@ -309,32 +309,32 @@ int
 raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer, 
                                         raptor_stringbuffer* append)
 {
-  raptor_stringbuffer_node *node=append->head;
+  raptor_stringbuffer_node *node = append->head;
 
   if(!node)
     return 0;
 
   /* move all append nodes to stringbuffer */
   if(stringbuffer->tail) {
-    stringbuffer->tail->next=node;
+    stringbuffer->tail->next = node;
   } else
-    stringbuffer->head=node;
+    stringbuffer->head = node;
 
-  stringbuffer->tail=append->tail;
+  stringbuffer->tail = append->tail;
 
   /* adjust our length */
   stringbuffer->length += append->length;
   if(stringbuffer->string) {
     RAPTOR_FREE(cstring, stringbuffer->string);
-    stringbuffer->string=NULL;
+    stringbuffer->string = NULL;
   }
 
   /* zap append content */
-  append->head=append->tail=NULL;
-  append->length=0;
+  append->head = append->tail = NULL;
+  append->length = 0;
   if(append->string) {
     RAPTOR_FREE(cstring, append->string);
-    append->string=NULL;
+    append->string = NULL;
   }
   
   return 0;
@@ -367,32 +367,32 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
 {
   raptor_stringbuffer_node *node;
 
-  node=(raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
+  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
   if(!node)
     return 1;
 
   if(do_copy) {
     /* Note this copy does not include the \0 character - not needed  */
-    node->string=(unsigned char*)RAPTOR_MALLOC(bytes, length);
+    node->string = (unsigned char*)RAPTOR_MALLOC(bytes, length);
     if(!node->string) {
       RAPTOR_FREE(raptor_stringbuffer_node, node);
       return 1;
     }
     strncpy((char*)node->string, (const char*)string, length);
   } else
-    node->string=(unsigned char*)string;
-  node->length=length;
+    node->string = (unsigned char*)string;
+  node->length = length;
 
 
-  node->next=stringbuffer->head;
+  node->next = stringbuffer->head;
   if(stringbuffer->head)
-    stringbuffer->head=node;
+    stringbuffer->head = node;
   else
-    stringbuffer->head=stringbuffer->tail=node;
+    stringbuffer->head = stringbuffer->tail = node;
 
   if(stringbuffer->string) {
     RAPTOR_FREE(cstring, stringbuffer->string);
-    stringbuffer->string=NULL;
+    stringbuffer->string = NULL;
   }
   stringbuffer->length += length;
 
@@ -487,16 +487,16 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
   if(stringbuffer->string)
     return stringbuffer->string;
 
-  stringbuffer->string=(unsigned char*)RAPTOR_MALLOC(cstring, stringbuffer->length+1);
+  stringbuffer->string = (unsigned char*)RAPTOR_MALLOC(cstring, stringbuffer->length+1);
   if(!stringbuffer->string)
     return NULL;
 
-  node=stringbuffer->head;
-  p=stringbuffer->string;
+  node = stringbuffer->head;
+  p = stringbuffer->string;
   while(node) {
     strncpy((char*)p, (const char*)node->string, node->length);
     p+= node->length;
-    node=node->next;
+    node = node->next;
   }
   *p='\0';
   return stringbuffer->string;
@@ -529,8 +529,8 @@ raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer,
   if(!stringbuffer->length)
     return 0;
 
-  p=string;
-  for(node=stringbuffer->head; node; node=node->next) {
+  p = string;
+  for(node = stringbuffer->head; node; node = node->next) {
     if(node->length > length) {
       p[-1]='\0';
       return 1;
@@ -556,11 +556,11 @@ int main(int argc, char *argv[]);
 int
 main(int argc, char *argv[]) 
 {
-  const char *program=raptor_basename(argv[0]);
+  const char *program = raptor_basename(argv[0]);
 #define TEST_ITEMS_COUNT 9
   const char *items[TEST_ITEMS_COUNT] = { "the", "quick" ,"brown", "fox", "jumps", "over", "the", "lazy", "dog" };
   const char *items_string = "thequickbrownfoxjumpsoverthelazydog";  
-  const size_t items_len=35;
+  const size_t items_len = 35;
   const char *test_integer_string = "abcd";
 #define TEST_INTEGERS_COUNT 7
   const int test_integers[TEST_INTEGERS_COUNT]={ 0, 1, -1, 11, 1234, 12345, -12345 };
@@ -568,7 +568,7 @@ main(int argc, char *argv[])
   raptor_stringbuffer *sb;
   unsigned char *str;
   size_t len;
-  int i=0;
+  int i = 0;
   raptor_stringbuffer *sb1, *sb2;
 #define TEST_APPEND_COUNT 2
   const char *test_append_results[TEST_APPEND_COUNT]={ "thebrownjumpsthedog", "quickfoxoverlazy" };
@@ -582,21 +582,21 @@ main(int argc, char *argv[])
 
   /* test appending */
 
-  sb=raptor_new_stringbuffer();
+  sb = raptor_new_stringbuffer();
   if(!sb) {
     fprintf(stderr, "%s: Failed to create string buffer\n", program);
     exit(1);
   }
 
-  for(i=0; i<TEST_ITEMS_COUNT; i++) {
+  for(i = 0; i < TEST_ITEMS_COUNT; i++) {
     int rc;
-    len=strlen(items[i]);
+    len = strlen(items[i]);
 
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, "%s: Adding string buffer item '%s'\n", program, items[i]);
 #endif
   
-    rc=raptor_stringbuffer_append_counted_string(sb, (unsigned char*)items[i], len, 1);
+    rc = raptor_stringbuffer_append_counted_string(sb, (unsigned char*)items[i], len, 1);
     if(rc) {
       fprintf(stderr, "%s: Adding string buffer item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
@@ -604,14 +604,14 @@ main(int argc, char *argv[])
     }
   }
 
-  len=raptor_stringbuffer_length(sb);
+  len = raptor_stringbuffer_length(sb);
   if(len != items_len) {
     fprintf(stderr, "%s: string buffer len is %d, expected %d\n", program,
             (int)len, (int)items_len);
     exit(1);
   }
 
-  str=raptor_stringbuffer_as_string(sb);
+  str = raptor_stringbuffer_as_string(sb);
   if(strcmp((const char*)str, items_string)) {
     fprintf(stderr, "%s: string buffer contains '%s', expected '%s'\n",
             program, str, items_string);
@@ -627,21 +627,21 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Creating string buffer\n", program);
 #endif
 
-  sb=raptor_new_stringbuffer();
+  sb = raptor_new_stringbuffer();
   if(!sb) {
     fprintf(stderr, "%s: Failed to create string buffer\n", program);
     exit(1);
   }
 
-  for(i=TEST_ITEMS_COUNT-1; i>=0 ; i--) {
+  for(i = TEST_ITEMS_COUNT-1; i>=0 ; i--) {
     int rc;
-    len=strlen(items[i]);
+    len = strlen(items[i]);
 
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, "%s: Prepending string buffer item '%s'\n", program, items[i]);
 #endif
   
-    rc=raptor_stringbuffer_prepend_counted_string(sb, (unsigned char*)items[i], len, 1);
+    rc = raptor_stringbuffer_prepend_counted_string(sb, (unsigned char*)items[i], len, 1);
     if(rc) {
       fprintf(stderr, "%s: Prepending string buffer item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
@@ -649,14 +649,14 @@ main(int argc, char *argv[])
     }
   }
 
-  len=raptor_stringbuffer_length(sb);
+  len = raptor_stringbuffer_length(sb);
   if(len != items_len) {
     fprintf(stderr, "%s: string buffer len is %d, expected %d\n", program,
             (int)len, (int)items_len);
     exit(1);
   }
 
-  str=raptor_stringbuffer_as_string(sb);
+  str = raptor_stringbuffer_as_string(sb);
   if(strcmp((const char*)str, items_string)) {
     fprintf(stderr, "%s: string buffer contains '%s', expected '%s'\n",
             program, str, items_string);
@@ -666,8 +666,8 @@ main(int argc, char *argv[])
 
   /* test adding integers */
 
-  for(i=0; i<TEST_INTEGERS_COUNT; i++) {
-    raptor_stringbuffer *isb=raptor_new_stringbuffer();
+  for(i = 0; i < TEST_INTEGERS_COUNT; i++) {
+    raptor_stringbuffer *isb = raptor_new_stringbuffer();
     if(!isb) {
       fprintf(stderr, "%s: Failed to create string buffer\n", program);
       exit(1);
@@ -682,7 +682,7 @@ main(int argc, char *argv[])
 
     raptor_stringbuffer_append_decimal(isb, test_integers[i]);
 
-    str=raptor_stringbuffer_as_string(isb);
+    str = raptor_stringbuffer_as_string(isb);
     if(strcmp((const char*)str, test_integer_results[i])) {
       fprintf(stderr, "%s: string buffer contains '%s', expected '%s'\n",
               program, str, test_integer_results[i]);
@@ -699,24 +699,24 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: Creating two stringbuffers to join\n", program);
 #endif
 
-  sb1=raptor_new_stringbuffer();
+  sb1 = raptor_new_stringbuffer();
   if(!sb1) {
     fprintf(stderr, "%s: Failed to create string buffer\n", program);
     exit(1);
   }
-  sb2=raptor_new_stringbuffer();
+  sb2 = raptor_new_stringbuffer();
   if(!sb2) {
     fprintf(stderr, "%s: Failed to create string buffer\n", program);
     exit(1);
   }
 
-  for(i=0; i<TEST_ITEMS_COUNT; i++) {
+  for(i = 0; i < TEST_ITEMS_COUNT; i++) {
     raptor_stringbuffer *sbx;
     int rc;
-    len=strlen(items[i]);
+    len = strlen(items[i]);
 
-    sbx=(i % 2) ? sb2 : sb1;
-    rc=raptor_stringbuffer_append_counted_string(sbx, (unsigned char*)items[i], len, 1);
+    sbx = (i % 2) ? sb2 : sb1;
+    rc = raptor_stringbuffer_append_counted_string(sbx, (unsigned char*)items[i], len, 1);
     if(rc) {
       fprintf(stderr, "%s: Adding string buffer item %d '%s' failed, returning error %d\n",
               program, i, items[i], rc);
@@ -727,13 +727,13 @@ main(int argc, char *argv[])
   if(1) {
     int rc;
 
-    rc=raptor_stringbuffer_append_counted_string(sb1, (unsigned char*)"X", 0, 1);
+    rc = raptor_stringbuffer_append_counted_string(sb1, (unsigned char*)"X", 0, 1);
     if(rc) {
       fprintf(stderr, "%s: Adding 0-length counted string failed, returning error %d\n",
               program, rc);
       exit(1);
     }
-    rc=raptor_stringbuffer_append_string(sb1, NULL, 1);
+    rc = raptor_stringbuffer_append_string(sb1, NULL, 1);
     if(rc) {
       fprintf(stderr, "%s: Adding NULL string failed, returning error %d\n",
               program, rc);
@@ -741,13 +741,13 @@ main(int argc, char *argv[])
     }
   }
   
-  str=raptor_stringbuffer_as_string(sb1);
+  str = raptor_stringbuffer_as_string(sb1);
   if(strcmp((const char*)str, test_append_results[0])) {
     fprintf(stderr, "%s: string buffer sb1 contains '%s', expected '%s'\n",
             program, str, test_append_results[0]);
     exit(1);
   }
-  str=raptor_stringbuffer_as_string(sb2);
+  str = raptor_stringbuffer_as_string(sb2);
   if(strcmp((const char*)str, test_append_results[1])) {
     fprintf(stderr, "%s: string buffer sb2 contains '%s', expected '%s'\n",
             program, str, test_append_results[1]);
@@ -763,14 +763,14 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  str=raptor_stringbuffer_as_string(sb1);
+  str = raptor_stringbuffer_as_string(sb1);
   if(strcmp((const char*)str, test_append_results_total)) {
     fprintf(stderr, "%s: appended string buffer contains '%s', expected '%s'\n",
             program, str, test_append_results_total);
     exit(1);
   }
   
-  len=raptor_stringbuffer_length(sb2);
+  len = raptor_stringbuffer_length(sb2);
   if(len) {
     fprintf(stderr, "%s: appended string buffer is length %d, not empty'\n",
             program, (int)len);
@@ -782,7 +782,7 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Copying string buffer to string\n", program);
 #endif
 
-  copy_string=(unsigned char*)malloc(COPY_STRING_BUFFER_SIZE);
+  copy_string = (unsigned char*)malloc(COPY_STRING_BUFFER_SIZE);
   if(raptor_stringbuffer_copy_to_string(sb1, copy_string, COPY_STRING_BUFFER_SIZE)) {
     fprintf(stderr, "%s: copying string buffer to string failed\n",
             program);

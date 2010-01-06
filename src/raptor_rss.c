@@ -357,7 +357,7 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
     uri = raptor_new_uri_relative_to_base_v2(world, base_uri,
                                              (const unsigned char*)string);
     block->urls[offset] = uri;
-  } else if (attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
+  } else if(attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
     size_t len = strlen(string);
     block->strings[offset] = (char*)RAPTOR_MALLOC(cstring, len+1);
     strncpy(block->strings[offset], string, len+1);
@@ -441,7 +441,7 @@ raptor_rss_start_element_handler(void *user_data,
       raptor_rss_item* update_item = raptor_rss_get_current_item(rss_parser);
 
       for(i = 0; i < ns_attributes_count; i++) {
-        raptor_qname* attr=named_attrs[i];
+        raptor_qname* attr = named_attrs[i];
         const char* attrName = (const char*)attr->local_name;
         const unsigned char* attrValue = attr->value;
 
@@ -530,7 +530,7 @@ raptor_rss_start_element_handler(void *user_data,
     
     /* Now check block attributes */
     if(named_attrs) {
-      for (i = 0; i < ns_attributes_count; i++) {
+      for(i = 0; i < ns_attributes_count; i++) {
         raptor_qname* attr = named_attrs[i];
         const char* attrName = (const char*)attr->local_name;
         const unsigned char* attrValue = attr->value;
@@ -582,7 +582,7 @@ raptor_rss_start_element_handler(void *user_data,
   
   /* Now check for field attributes */
   if(named_attrs) {
-    for (i = 0; i < ns_attributes_count; i++) {
+    for(i = 0; i < ns_attributes_count; i++) {
       raptor_qname* attr = named_attrs[i];
       const unsigned char* attrName = attr->local_name;
       const unsigned char* attrValue = attr->value;
@@ -619,12 +619,12 @@ raptor_rss_start_element_handler(void *user_data,
           rss_element->uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
                                                                 (const unsigned char*)attrValue);
         }
-      } else if (!strcmp((const char*)attrName, "type")) {
+      } else if(!strcmp((const char*)attrName, "type")) {
         if(rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
           /* do nothing with atom link attribute type */
         } else if(rss_parser->is_atom) {
           /* Atom only typing */
-          if (!strcmp((const char*)attrValue, "xhtml") ||
+          if(!strcmp((const char*)attrValue, "xhtml") ||
               !strcmp((const char*)attrValue, "xml") ||
               strstr((const char*)attrValue, "+xml")) {
 
@@ -646,7 +646,7 @@ raptor_rss_start_element_handler(void *user_data,
 
           }
         }
-      } else if (!strcmp((const char*)attrName, "version")) {
+      } else if(!strcmp((const char*)attrName, "version")) {
         if(!raptor_strcasecmp((const char*)name, "feed")) {
           if(!strcmp((const char*)attrValue, "0.3"))
             rss_parser->is_atom = 1;
@@ -736,12 +736,12 @@ raptor_rss_end_element_handler(void *user_data,
         rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN)) {
       unsigned char *p = cdata;
       int i;
-      for(i = cdata_len; i>0 && *p; i--) {
+      for(i = cdata_len; i > 0 && *p; i--) {
         if(!isspace(*p))
           break;
         p++;
       }
-      if(i>0 && *p) {
+      if(i > 0 && *p) {
         RAPTOR_DEBUG4("IGNORING non-whitespace text '%s' inside type %s, field %s\n", cdata,
                       raptor_rss_items_info[rss_parser->current_type].name,
                       raptor_rss_fields_info[rss_parser->current_field].name);
@@ -1023,15 +1023,15 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
     if(item->uri) {
       uri = raptor_uri_copy_v2(rdf_parser->world, item->uri);
     } else {
-      if (item->fields[RAPTOR_RSS_FIELD_LINK]) {
-        if (item->fields[RAPTOR_RSS_FIELD_LINK]->value)
+      if(item->fields[RAPTOR_RSS_FIELD_LINK]) {
+        if(item->fields[RAPTOR_RSS_FIELD_LINK]->value)
           uri = raptor_new_uri_v2(rdf_parser->world,
                                   (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_LINK]->value);
         else if(item->fields[RAPTOR_RSS_FIELD_LINK]->uri)
           uri = raptor_uri_copy_v2(rdf_parser->world,
                                    item->fields[RAPTOR_RSS_FIELD_LINK]->uri);
       } else if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]) {
-        if (item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value)
+        if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value)
           uri = raptor_new_uri_v2(rdf_parser->world,
                                   (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value);
         else if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->uri)
@@ -1155,7 +1155,7 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
         (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                          &rss_parser->statement);
       }
-    } else if (attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
+    } else if(attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
       const char *str = block->strings[offset];
       if(str) {
         rss_parser->statement.object = str;
@@ -1209,7 +1209,7 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
     
     rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
-    for (field = item->fields[f]; field; field = field->next) {
+    for(field = item->fields[f]; field; field = field->next) {
       rss_parser->statement.object_literal_language = NULL;
       rss_parser->statement.object_literal_datatype = NULL;
       if(field->value) {
@@ -1281,7 +1281,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
   int i;
   raptor_rss_item* item;
 
-  if (!rss_parser->model.common[RAPTOR_RSS_CHANNEL]) {
+  if(!rss_parser->model.common[RAPTOR_RSS_CHANNEL]) {
     raptor_parser_error(rdf_parser, "No RSS channel item present");
     return 1;
   }
@@ -1292,8 +1292,8 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     return 1;
   }
 
-  for (i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
-    for (item = rss_parser->model.common[i]; item; item = item->next) {
+  for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+    for(item = rss_parser->model.common[i]; item; item = item->next) {
       if(!item->fields_count)
         continue;
       
@@ -1456,11 +1456,11 @@ raptor_rss_start_namespaces(raptor_parser* rdf_parser)
   int n;
 
   /* for each item type (channel, item, ...) */
-  for (i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
+  for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
     raptor_rss_item* item;
     
     /* for each item instance of a type */
-    for (item = rss_parser->model.common[i]; item; item = item->next) {
+    for(item = rss_parser->model.common[i]; item; item = item->next) {
       int f;
       if(!item->fields_count)
         continue;
@@ -1469,7 +1469,7 @@ raptor_rss_start_namespaces(raptor_parser* rdf_parser)
       for(f = 0; f< RAPTOR_RSS_FIELDS_SIZE; f++) {
         raptor_rss_field* field;
         /* for each field value */
-        for (field = item->fields[f]; field; field = field->next) {
+        for(field = item->fields[f]; field; field = field->next) {
           rss_info_namespace ns_index = raptor_rss_fields_info[f].nspace;
           rss_parser->nspaces_seen[ns_index] = 'Y';
           /* knowing there is one value is enough */

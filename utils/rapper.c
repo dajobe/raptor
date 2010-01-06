@@ -67,38 +67,38 @@ static void relay_namespaces(void* user_data, raptor_namespace *nspace);
 int main(int argc, char *argv[]);
 
 
-static char *program=NULL;
+static char *program = NULL;
 
 /* replace newlines in literal string output with spaces */
-static int replace_newlines=0;
+static int replace_newlines = 0;
 
 /* extra noise? */
-static int quiet=0;
+static int quiet = 0;
 /* just count, no printing */
-static int count=0;
+static int count = 0;
 
-static int triple_count=0;
+static int triple_count = 0;
 
-static raptor_serializer* serializer=NULL;
+static raptor_serializer* serializer = NULL;
 
-static int guess=0;
+static int guess = 0;
 
-static int reported_guess=0;
+static int reported_guess = 0;
 
-static int report_namespace=0;
+static int report_namespace = 0;
 
-static int report_graph=0;
+static int report_graph = 0;
 
 static
 void print_triples(void *user_data, const raptor_statement *triple) 
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_parser* rdf_parser = (raptor_parser*)user_data;
   triple_count++;
 
   if(guess && !quiet && !reported_guess) {
      fprintf(stderr, "%s: Guessed parser name '%s'\n", program,
              raptor_get_name(rdf_parser));
-     reported_guess=1;
+     reported_guess = 1;
   }
 
 
@@ -109,7 +109,7 @@ void print_triples(void *user_data, const raptor_statement *triple)
   if(replace_newlines && 
      triple->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     char *s;
-    for(s=(char*)triple->object; *s; s++)
+    for(s = (char*)triple->object; *s; s++)
       if(*s == '\n')
         *s=' ';
   }
@@ -136,13 +136,13 @@ void print_graph(void *user_data, raptor_uri *graph)
 static void
 print_namespaces(void* user_data, raptor_namespace *nspace)
 {
-  /* raptor_parser* rdf_parser=(raptor_parser*)user_data; */
+  /* raptor_parser* rdf_parser = (raptor_parser*)user_data; */
   unsigned char *s;
   
   if(!report_namespace)
     return;
 
-  s=raptor_namespaces_format(nspace, NULL);
+  s = raptor_namespaces_format(nspace, NULL);
   fprintf(stderr, "%s: Namespace declared: %s\n", program, s);
   raptor_free_memory(s);
   
@@ -153,7 +153,7 @@ print_namespaces(void* user_data, raptor_namespace *nspace)
 static void
 relay_namespaces(void* user_data, raptor_namespace *nspace)
 {
-  raptor_serializer* rdf_serializer=(raptor_serializer*)user_data;
+  raptor_serializer* rdf_serializer = (raptor_serializer*)user_data;
 
   if(report_namespace)
     print_namespaces(user_data, nspace);
@@ -211,11 +211,11 @@ static const struct option long_options[] =
 #endif
 
 
-static int error_count=0;
-static int warning_count=0;
+static int error_count = 0;
+static int warning_count = 0;
 
-static int ignore_warnings=0;
-static int ignore_errors=0;
+static int ignore_warnings = 0;
+static int ignore_errors = 0;
 
 static const char * const title_format_string="Raptor RDF syntax parsing and serializing utility %s\n";
 
@@ -262,7 +262,7 @@ struct namespace_decl
 
 static void
 rdfdump_free_namespace_decl(void* data) {
-  struct namespace_decl* nsd=(struct namespace_decl*)data;
+  struct namespace_decl* nsd = (struct namespace_decl*)data;
   if(nsd->prefix)
     raptor_free_memory(nsd->prefix);
   if(nsd->uri_string)
@@ -297,40 +297,40 @@ main(int argc, char *argv[])
    * or if NULL, stdin.  Base URI in 'base_uri_string' is required for stdin.
    */
   raptor_world* world = NULL;
-  raptor_parser* rdf_parser=NULL;
-  char *filename=NULL;
+  raptor_parser* rdf_parser = NULL;
+  char *filename = NULL;
 #define FILENAME_LABEL(name) ((name) ? (name) : "<stdin>")
-  unsigned char *uri_string=NULL;
-  int free_uri_string=0;
+  unsigned char *uri_string = NULL;
+  int free_uri_string = 0;
   raptor_uri *uri;
-  unsigned char *base_uri_string=NULL;
-  raptor_uri *base_uri=NULL;
+  unsigned char *base_uri_string = NULL;
+  raptor_uri *base_uri = NULL;
   const char *syntax_name="rdfxml";
-  raptor_sequence* parser_features=NULL;
-  int scanning=0;
-  int strict_mode=0;
-  int trace=0;
+  raptor_sequence* parser_features = NULL;
+  int scanning = 0;
+  int strict_mode = 0;
+  int trace = 0;
 
   /* output variables - serializer */
   /* 'serializer' object variable is a global */
   const char *serializer_syntax_name="ntriples";
-  unsigned char *output_base_uri_string=NULL;
-  raptor_uri *output_base_uri=NULL;
-  raptor_sequence* serializer_features=NULL;
-  raptor_sequence *namespace_declarations=NULL;
+  unsigned char *output_base_uri_string = NULL;
+  raptor_uri *output_base_uri = NULL;
+  raptor_sequence* serializer_features = NULL;
+  raptor_sequence *namespace_declarations = NULL;
 
   /* other variables */
   int rc;
-  int usage=0;
-  int help=0;
+  int usage = 0;
+  int help = 0;
   char *p;
 
-  program=argv[0];
-  if((p=strrchr(program, '/')))
-    program=p+1;
-  else if((p=strrchr(program, '\\')))
-    program=p+1;
-  argv[0]=program;
+  program = argv[0];
+  if((p = strrchr(program, '/')))
+    program = p+1;
+  else if((p = strrchr(program, '\\')))
+    program = p+1;
+  argv[0] = program;
 
   world = raptor_new_world();
   if(!world)
@@ -339,7 +339,7 @@ main(int argc, char *argv[])
   if(rc)
     exit(1);
 
-  while (!usage && !help)
+  while(!usage && !help)
   {
     int c;
 #ifdef HAVE_GETOPT_LONG
@@ -349,20 +349,20 @@ main(int argc, char *argv[])
 #else
     c = getopt (argc, argv, GETOPT_STRING);
 #endif
-    if (c == -1)
+    if(c == -1)
       break;
 
     switch (c) {
       case 0:
       case '?': /* getopt() - unknown option */
-        usage=1;
+        usage = 1;
         break;
         
       case 'a':
         break;
 
       case 'c':
-        count=1;
+        count = 1;
         if(serializer_syntax_name)
           serializer_syntax_name = NULL;
         break;
@@ -373,33 +373,33 @@ main(int argc, char *argv[])
             int i;
             
             fprintf(stderr, "%s: Valid parser features are:\n", program);
-            for(i=0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
-                const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
+                const char *feature_type = (raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
                 fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
             }
             fprintf(stderr, "%s: Valid serializer features are:\n", program);
-            for(i=0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_serializer_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
-                const char *feature_type=(raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
+                const char *feature_type = (raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
                 fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
             }
-            fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE=VALUE or `-f FEATURE'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
+            fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE = VALUE or `-f FEATURE'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
             fputs("\nA feature of the form xmlns:PREFIX=\"URI\" can be used to declare output\nnamespace prefixes and names for serializing using an XML-style syntax\nEither or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\nThis form can be repeated for multiple declarations.\n", stderr);
 
             raptor_free_world(world);
             exit(0);
           } else if(!strncmp(optarg, "xmlns", 5)) {
             struct namespace_decl *nd;
-            nd=(struct namespace_decl *)raptor_alloc_memory(sizeof(struct namespace_decl));
+            nd = (struct namespace_decl *)raptor_alloc_memory(sizeof(struct namespace_decl));
             if(raptor_new_namespace_parts_from_string((unsigned char*)optarg,
                                                       &nd->prefix,
                                                       &nd->uri_string)) {
@@ -412,76 +412,76 @@ main(int argc, char *argv[])
             }
 
             if(!namespace_declarations)
-              namespace_declarations=raptor_new_sequence(rdfdump_free_namespace_decl, NULL);
+              namespace_declarations = raptor_new_sequence(rdfdump_free_namespace_decl, NULL);
 
             raptor_sequence_push(namespace_declarations, nd);
           } else {
             int i;
-            size_t arg_len=strlen(optarg);
+            size_t arg_len = strlen(optarg);
             feature_value* fv;
-            int ok=0;
+            int ok = 0;
             
             /* parser features */
-            for(i=0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
               if(raptor_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, NULL))
                 continue;
 
-              len=strlen(feature_name);
+              len = strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
-                fv=(feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
+                fv = (feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
 
-                fv->feature=(raptor_feature)i;
+                fv->feature = (raptor_feature)i;
                 if(raptor_feature_value_type(fv->feature) == 0) {
                   if(len < arg_len && optarg[len] == '=')
-                    fv->i_value=atoi(&optarg[len+1]);
+                    fv->i_value = atoi(&optarg[len+1]);
                   else if(len == arg_len)
-                    fv->i_value=1;
+                    fv->i_value = 1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    fv->s_value=(unsigned char*)&optarg[len+1];
+                    fv->s_value = (unsigned char*)&optarg[len+1];
                   else if(len == arg_len)
-                    fv->s_value=(unsigned char*)"";
+                    fv->s_value = (unsigned char*)"";
                 }
 
                 if(!parser_features)
-                  parser_features=raptor_new_sequence(raptor_free_memory, NULL);
+                  parser_features = raptor_new_sequence(raptor_free_memory, NULL);
                 raptor_sequence_push(parser_features, fv);
-                ok=1;
+                ok = 1;
                 break;
               }
             }
             
-            for(i=0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
               if(raptor_serializer_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, NULL))
                 continue;
 
-              len=strlen(feature_name);
+              len = strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
-                fv=(feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
+                fv = (feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
 
-                fv->feature=(raptor_feature)i;
+                fv->feature = (raptor_feature)i;
                 if(raptor_feature_value_type(fv->feature) == 0) {
                   if(len < arg_len && optarg[len] == '=')
-                    fv->i_value=atoi(&optarg[len+1]);
+                    fv->i_value = atoi(&optarg[len+1]);
                   else if(len == arg_len)
-                    fv->i_value=1;
+                    fv->i_value = 1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    fv->s_value=(unsigned char*)&optarg[len+1];
+                    fv->s_value = (unsigned char*)&optarg[len+1];
                   else if(len == arg_len)
-                    fv->s_value=(unsigned char*)"";
+                    fv->s_value = (unsigned char*)"";
                 }
 
                 if(!serializer_features)
-                  serializer_features=raptor_new_sequence(raptor_free_memory, NULL);
+                  serializer_features = raptor_new_sequence(raptor_free_memory, NULL);
                 raptor_sequence_push(serializer_features, fv);
-                ok=1;
+                ok = 1;
                 break;
               }
             }
@@ -489,18 +489,18 @@ main(int argc, char *argv[])
             if(!ok) {
               fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s " HELP_ARG(f, feature) " help' for a list of valid features\n",
                       program, optarg, program);
-              usage=1;
+              usage = 1;
             }
           }
         }
         break;
 
       case 'g':
-        guess=1;
+        guess = 1;
         break;
 
       case 'h':
-        help=1;
+        help = 1;
         break;
 
       case 'n':
@@ -508,32 +508,32 @@ main(int argc, char *argv[])
         break;
 
       case 's':
-        scanning=1;
+        scanning = 1;
         break;
 
       case 't':
-        trace=1;
+        trace = 1;
         break;
 
       case 'q':
-        quiet=1;
+        quiet = 1;
         break;
 
       case 'r':
-        replace_newlines=1;
+        replace_newlines = 1;
         break;
 
       case 'm':
         if(optarg) {
           if(!strcmp(optarg, "strict"))
-            strict_mode=1;
-          else if (!strcmp(optarg, "lax"))
-            strict_mode=0;
+            strict_mode = 1;
+          else if(!strcmp(optarg, "lax"))
+            strict_mode = 0;
           else {
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(m, mode) "'\n",
                     program, optarg);
             fprintf(stderr, "Valid arguments are:\n  - `lax'\n  - `strict'\n");
-            usage=1;
+            usage = 1;
           }
         }
         break;
@@ -541,21 +541,21 @@ main(int argc, char *argv[])
       case 'o':
         if(optarg) {
           if(raptor_serializer_syntax_name_check_v2(world, optarg))
-            serializer_syntax_name=optarg;
+            serializer_syntax_name = optarg;
           else {
             int i;
             
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(o, output) "'\n",
                     program, optarg);
             fprintf(stderr, "Valid arguments are:\n");
-            for(i=0; 1; i++) {
+            for(i = 0; 1; i++) {
               const char *help_name;
               const char *help_label;
               if(raptor_serializers_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
                 break;
               fprintf(stderr, "  %-14s for %s\n", help_name, help_label);
             }
-            usage=1;
+            usage = 1;
             break;
             
           }
@@ -564,27 +564,27 @@ main(int argc, char *argv[])
 
       case 'O':
         if(optarg)
-          output_base_uri_string=(unsigned char*)optarg;
+          output_base_uri_string = (unsigned char*)optarg;
         break;
         
       case 'i':
         if(optarg) {
           if(raptor_syntax_name_check_v2(world, optarg))
-            syntax_name=optarg;
+            syntax_name = optarg;
           else {
             int i;
             
             fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
                     program, optarg);
             fprintf(stderr, "Valid arguments are:\n");
-            for(i=0; 1; i++) {
+            for(i = 0; 1; i++) {
               const char *help_name;
               const char *help_label;
               if(raptor_syntaxes_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
                 break;
               fprintf(stderr, "  %-14s for %s\n", help_name, help_label);
             }
-            usage=1;
+            usage = 1;
             break;
             
           }
@@ -593,15 +593,15 @@ main(int argc, char *argv[])
 
       case 'I':
         if(optarg)
-          base_uri_string=(unsigned char*)optarg;
+          base_uri_string = (unsigned char*)optarg;
         break;
         
       case 'w':
-        ignore_warnings=1;
+        ignore_warnings = 1;
         break;
         
       case 'e':
-        ignore_errors=1;
+        ignore_errors = 1;
         break;
 
       case 'v':
@@ -613,13 +613,13 @@ main(int argc, char *argv[])
 
 #ifdef SHOW_NAMESPACES_FLAG
       case SHOW_NAMESPACES_FLAG:
-        report_namespace=1;
+        report_namespace = 1;
         break;
 #endif
 
 #ifdef SHOW_GRAPHS_FLAG
       case SHOW_GRAPHS_FLAG:
-        report_graph=1;
+        report_graph = 1;
         break;
 #endif
 
@@ -628,12 +628,12 @@ main(int argc, char *argv[])
   }
 
   if(optind != argc-1 && optind != argc-2 && !help && !usage) {
-    usage=2; /* Title and usage */
+    usage = 2; /* Title and usage */
   }
 
   
   if(usage) {
-    if(usage>1) {
+    if(usage > 1) {
       fprintf(stderr, title_format_string, raptor_version_string);
       fputs("Raptor home page: ", stderr);
       fputs(raptor_home_url_string, stderr);
@@ -673,7 +673,7 @@ main(int argc, char *argv[])
 
     puts("\nMain options:");
     puts(HELP_TEXT("i FORMAT", "input FORMAT ", "Set the input format/parser to one of:"));
-    for(i=0; 1; i++) {
+    for(i = 0; 1; i++) {
       const char *help_name;
       const char *help_label;
       if(raptor_syntaxes_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
@@ -688,7 +688,7 @@ main(int argc, char *argv[])
     putchar('\n');
 
     puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format/serializer to one of:"));
-    for(i=0; 1; i++) {
+    for(i = 0; 1; i++) {
       const char *help_name;
       const char *help_label;
       if(raptor_serializers_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
@@ -729,10 +729,10 @@ main(int argc, char *argv[])
 
 
   if(optind == argc-1)
-    uri_string=(unsigned char*)argv[optind];
+    uri_string = (unsigned char*)argv[optind];
   else {
-    uri_string=(unsigned char*)argv[optind++];
-    base_uri_string=(unsigned char*)argv[optind];
+    uri_string = (unsigned char*)argv[optind++];
+    base_uri_string = (unsigned char*)argv[optind];
   }
 
   /* If uri_string is "path-to-file", turn it into a file: URI */
@@ -742,33 +742,33 @@ main(int argc, char *argv[])
               program);
       return(1);
     }
-    uri_string=NULL;
+    uri_string = NULL;
   } else if(!access((const char*)uri_string, R_OK)) {
-    filename=(char*)uri_string;
-    uri_string=raptor_uri_filename_to_uri_string(filename);
+    filename = (char*)uri_string;
+    uri_string = raptor_uri_filename_to_uri_string(filename);
     if(!uri_string) {
       fprintf(stderr, "%s: Failed to create URI for file %s.\n",
               program, filename);
       return(1);
     }
-    free_uri_string=1;
+    free_uri_string = 1;
   }
 
   if(uri_string) {
-    uri=raptor_new_uri_v2(world, uri_string);
+    uri = raptor_new_uri_v2(world, uri_string);
     if(!uri) {
       fprintf(stderr, "%s: Failed to create URI for %s\n",
               program, uri_string);
       return(1);
     }
   } else
-    uri=NULL; /* stdin */
+    uri = NULL; /* stdin */
 
 
   /* Set the input/parser base URI */
   if(base_uri_string) {
     if(strcmp((const char*)base_uri_string, "-")) {
-      base_uri=raptor_new_uri_v2(world, base_uri_string);
+      base_uri = raptor_new_uri_v2(world, base_uri_string);
       if(!base_uri) {
         fprintf(stderr, "%s: Failed to create URI for %s\n",
                 program, base_uri_string);
@@ -783,24 +783,24 @@ main(int argc, char *argv[])
    */
   if(!output_base_uri_string) {
     if(base_uri)
-      output_base_uri=raptor_uri_copy_v2(world, base_uri);
+      output_base_uri = raptor_uri_copy_v2(world, base_uri);
   } else {
     if(strcmp((const char*)output_base_uri_string, "-")) {
-      output_base_uri=raptor_new_uri_v2(world, (const unsigned char*)output_base_uri_string);
+      output_base_uri = raptor_new_uri_v2(world, (const unsigned char*)output_base_uri_string);
       if(!output_base_uri) {
         fprintf(stderr, "%s: Failed to create output base URI for %s\n",
                 program, output_base_uri_string);
         return(1);
       }
     } else
-      output_base_uri=NULL;
+      output_base_uri = NULL;
   }
     
 
   if(guess)
     syntax_name="guess";
 
-  rdf_parser=raptor_new_parser_v2(world, syntax_name);
+  rdf_parser = raptor_new_parser_v2(world, syntax_name);
   if(!rdf_parser) {
     fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
             syntax_name);
@@ -817,7 +817,7 @@ main(int argc, char *argv[])
 
   if(parser_features) {
     feature_value *fv;
-    while((fv=(feature_value*)raptor_sequence_pop(parser_features))) {
+    while((fv = (feature_value*)raptor_sequence_pop(parser_features))) {
       if(fv->s_value)
         raptor_parser_set_feature_string(rdf_parser, fv->feature, fv->s_value);
       else
@@ -825,7 +825,7 @@ main(int argc, char *argv[])
       raptor_free_memory(fv);
     }
     raptor_free_sequence(parser_features);
-    parser_features=NULL;
+    parser_features = NULL;
   }
 
   if(trace)
@@ -870,7 +870,7 @@ main(int argc, char *argv[])
                 program, serializer_syntax_name);
     }
 
-    serializer=raptor_new_serializer_v2(world, serializer_syntax_name);
+    serializer = raptor_new_serializer_v2(world, serializer_syntax_name);
     if(!serializer) {
       fprintf(stderr, 
               "%s: Failed to create raptor serializer type %s\n", program,
@@ -880,23 +880,23 @@ main(int argc, char *argv[])
 
     if(namespace_declarations) {
       int i;
-      for(i=0; i< raptor_sequence_size(namespace_declarations); i++) {
-        struct namespace_decl *nd=(struct namespace_decl *)raptor_sequence_get_at(namespace_declarations, i);
-        raptor_uri *ns_uri=NULL;
+      for(i = 0; i< raptor_sequence_size(namespace_declarations); i++) {
+        struct namespace_decl *nd = (struct namespace_decl *)raptor_sequence_get_at(namespace_declarations, i);
+        raptor_uri *ns_uri = NULL;
         if(nd->uri_string)
-          ns_uri=raptor_new_uri_v2(world, nd->uri_string);
+          ns_uri = raptor_new_uri_v2(world, nd->uri_string);
         
         raptor_serialize_set_namespace(serializer, ns_uri, nd->prefix);
         if(ns_uri)
           raptor_free_uri_v2(world, ns_uri);
       }
       raptor_free_sequence(namespace_declarations);
-      namespace_declarations=NULL;
+      namespace_declarations = NULL;
     }
     
     if(serializer_features) {
       feature_value *fv;
-      while((fv=(feature_value*)raptor_sequence_pop(serializer_features))) {
+      while((fv = (feature_value*)raptor_sequence_pop(serializer_features))) {
         if(fv->s_value)
           raptor_serializer_set_feature_string(serializer, fv->feature,
                                                fv->s_value);
@@ -905,7 +905,7 @@ main(int argc, char *argv[])
         raptor_free_memory(fv);
       }
       raptor_free_sequence(serializer_features);
-      serializer_features=NULL;
+      serializer_features = NULL;
     }
 
     raptor_serialize_start_to_file_handle(serializer, 
@@ -919,18 +919,18 @@ main(int argc, char *argv[])
   /* Begin the parsing of the content from file or URI,
    * sending it to serializer via callback print_triples()
    */
-  rc=0;
+  rc = 0;
   if(!uri || filename) {
     if(raptor_parse_file(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse file %s %s content\n", program, 
               FILENAME_LABEL(filename), syntax_name);
-      rc=1;
+      rc = 1;
     }
   } else {
     if(raptor_parse_uri(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse URI %s %s content\n", program, 
               uri_string, syntax_name);
-      rc=1;
+      rc = 1;
     }
   }
 
