@@ -773,27 +773,6 @@ raptor_iostream_write_counted_string(raptor_iostream *iostr,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_iostream_write_uri:
- * @iostr: raptor iostream
- * @uri: URI
- *
- * Write a raptor URI to the iostream.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_iostream_write_uri_v2() if using raptor_world APIs.
- *
- * Return value: non-0 on failure
- **/
-int
-raptor_iostream_write_uri(raptor_iostream* iostr, raptor_uri* uri)
-{
-  return raptor_iostream_write_uri_v2(raptor_world_instance(), iostr, uri);
-}
-#endif
-
-
 /**
  * raptor_iostream_write_uri_v2:
  * @world: raptor_world object

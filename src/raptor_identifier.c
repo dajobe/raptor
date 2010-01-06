@@ -45,48 +45,6 @@
 #include "raptor_internal.h"
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_new_identifier:
- * @type: raptor_identifier_type of identifier
- * @uri: #raptor_uri of identifier (if relevant) (SHARED)
- * @uri_source: raptor_uri_source of URI (if relevant)
- * @id: string for ID or genid (if relevant) (SHARED)
- * @literal: string for literal (SHARED)
- * @literal_datatype: #raptor_uri of identifier (SHARED)
- * @literal_language: literal language (SHARED)
- *
- * Constructor - create a raptor_identifier.
- * 
- * Constructs a new identifier copying the URI, ID fields.
- * SHARED means raptor_new_identifier owns this argument after calling.
- * 
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_new_identifier_v2() if using raptor_world APIs.
- *
- * Return value: a new raptor_identifier object or NULL on failure
- **/
-raptor_identifier*
-raptor_new_identifier(raptor_identifier_type type,
-                      raptor_uri *uri,
-                      raptor_uri_source uri_source,
-                      const unsigned char *id,
-                      const unsigned char *literal,
-                      raptor_uri *literal_datatype,
-                      const unsigned char *literal_language)
-{
-  return raptor_new_identifier_v2(raptor_world_instance(),
-                                  type,
-                                  uri,
-                                  uri_source,
-                                  id,
-                                  literal,
-                                  literal_datatype,
-                                  literal_language);
-}
-#endif
-
-
 /**
  * raptor_new_identifier_v2:
  * @world: raptor_world object

@@ -176,29 +176,6 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_iostream_write_statement_ntriples:
- * @iostr: raptor iostream
- * @statement: statement to write
- * 
- * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_iostream_write_statement_ntriples_v2() if using raptor_world APIs.
- * 
- **/
-void
-raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
-                                         const raptor_statement *statement)
-{
-  raptor_iostream_write_statement_ntriples_v2(raptor_world_instance(),
-                                              iostr,
-                                              statement);
-}
-#endif
-
-
 /**
  * raptor_iostream_write_statement_ntriples_v2:
  * @world: raptor_world object

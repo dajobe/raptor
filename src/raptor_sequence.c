@@ -540,30 +540,6 @@ raptor_sequence_print_string(char *data, FILE *fh)
 }
 
 
-#if !defined(RAPTOR_DISABLE_DEPRECATED) && !defined(RAPTOR_DISABLE_V1)
-/**
- * raptor_sequence_print_uri:
- * @data: data item (a #raptor_uri)
- * @fh: file handle to print to
- *
- * Helper function for printing a sequence of URIs.
- *
- * Intended for use as a #raptor_sequence_print_handler passed into
- * raptor_new_sequence().
- *
- * raptor_init() MUST have been called before calling this function.
- *
- * @deprecated: Use raptor_uri_print() instead.
- */
-void
-raptor_sequence_print_uri(char *data, FILE *fh) 
-{
-  raptor_uri* uri = (raptor_uri*)data;
-  fputs((const char*)raptor_uri_as_string_v2(raptor_world_instance(), uri), fh);
-}
-#endif
-
-
 /**
  * raptor_sequence_set_print_handler:
  * @seq: sequence

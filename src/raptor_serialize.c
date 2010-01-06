@@ -290,37 +290,6 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_serializers_enumerate:
- * @counter: index into the list of syntaxes
- * @name: pointer to store the name of the syntax (or NULL)
- * @label: pointer to store syntax readable label (or NULL)
- * @mime_type: pointer to store syntax MIME Type (or NULL)
- * @uri_string: pointer to store syntax URI string (or NULL)
- *
- * Get information on syntax serializers.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_serializers_enumerate_v2() if using raptor_world APIs.
- * 
- * Return value: non 0 on failure of if counter is out of range
- **/
-int
-raptor_serializers_enumerate(const unsigned int counter,
-                             const char **name, const char **label,
-                             const char **mime_type,
-                             const unsigned char **uri_string)
-{
-  return raptor_serializers_enumerate_v2(raptor_world_instance(),
-                                         counter,
-                                         name, label,
-                                         mime_type,
-                                         uri_string);
-}
-#endif
-
-
 /**
  * raptor_serializers_enumerate_v2:
  * @world: raptor_world object
@@ -362,27 +331,6 @@ raptor_serializers_enumerate_v2(raptor_world* world,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_serializer_syntax_name_check:
- * @name: the syntax name
- *
- * Check name of a serializer.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_serializer_syntax_name_check_v2() if using raptor_world APIs.
- *
- * Return value: non 0 if name is a known syntax name
- */
-int
-raptor_serializer_syntax_name_check(const char *name)
-{
-  return raptor_serializer_syntax_name_check_v2(raptor_world_instance(),
-                                                name);
-}
-#endif
-
-
 /**
  * raptor_serializer_syntax_name_check_v2:
  * @world: raptor_world object
@@ -397,26 +345,6 @@ raptor_serializer_syntax_name_check_v2(raptor_world* world, const char *name)
 {
   return (raptor_get_serializer_factory(world, name) != NULL);
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_new_serializer:
- * @name: the serializer name
- *
- * Constructor - create a new raptor_serializer object.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_new_serializer_v2() if using raptor_world APIs.
- *
- * Return value: a new #raptor_serializer object or NULL on failure
- */
-raptor_serializer*
-raptor_new_serializer(const char *name)
-{
-  return raptor_new_serializer_v2(raptor_world_instance(), name);
-}
-#endif
 
 
 /**
@@ -855,35 +783,6 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
 {
   return serializer->iostream;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_serializer_features_enumerate:
- * @feature: feature enumeration (0+)
- * @name: pointer to store feature short name (or NULL)
- * @uri: pointer to store feature URI (or NULL)
- * @label: pointer to feature label (or NULL)
- *
- * Get list of serializer features.
- * 
- * If uri is not NULL, a pointer toa new raptor_uri is returned
- * that must be freed by the caller with raptor_free_uri().
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_serializer_features_enumerate_v2() if using raptor_world APIs.
- *
- * Return value: 0 on success, <0 on failure, >0 if feature is unknown
- **/
-int
-raptor_serializer_features_enumerate(const raptor_feature feature,
-                                     const char **name, 
-                                     raptor_uri **uri, const char **label)
-{
-  return raptor_serializer_features_enumerate_v2(raptor_world_instance(),
-                                                 feature, name, uri, label);
-}
-#endif
 
 
 /**

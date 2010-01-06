@@ -179,28 +179,6 @@ raptor_feature_value_type(const raptor_feature feature) {
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_feature_from_uri:
- * @uri: feature URI
- *
- * Turn a feature URI into an feature enum.
- * 
- * The allowed feature URIs are available via raptor_features_enumerate().
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_feature_from_uri_v2() if using raptor_world APIs.
- *
- * Return value: < 0 if the feature is unknown
- **/
-raptor_feature
-raptor_feature_from_uri(raptor_uri *uri)
-{
-  return raptor_feature_from_uri_v2(raptor_world_instance(), uri);
-}
-#endif
-
-
 /**
  * raptor_feature_from_uri_v2:
  * @world: raptor_world instance

@@ -78,26 +78,9 @@ extern "C" {
 #define RAPTOR_DEPRECATED
 #endif
 
-/**
- * RAPTOR_V2_EXPERIMENTAL:
- *
- * Enable EXPERIMENTAL and UNSUPPORTED API v2 structs and functions
- *
- * WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
- *
- *   The v2 structs and raptor*_v2() functions are NOT supported.
- *
- * WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
- */
+/* V2 is always available now - FIXME - remove this define */
 #undef RAPTOR_V2_AVAILABLE
-#ifdef RAPTOR_V2_EXPERIMENTAL
 #define RAPTOR_V2_AVAILABLE 1
-#endif
-
-/* Allow to flag V1 functions as deprecated */
-#ifndef RAPTOR_V1
-#define RAPTOR_V1
-#endif
 
 /**
  * RAPTOR_PRINTF_FORMAT:
@@ -871,27 +854,7 @@ void raptor_world_set_libxslt_security_preferences(raptor_world *world, void *se
 RAPTOR_API
 void raptor_world_set_libxml_flags(raptor_world *world,  int flags);
 
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-void raptor_init(void);
-RAPTOR_API RAPTOR_V1
-void raptor_finish(void);
-RAPTOR_API RAPTOR_V1
-void raptor_set_libxslt_security_preferences(void *security_preferences);
-void raptor_set_libxml_flags(int flags);
-#endif
-
 /* Get parser names */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-int raptor_parsers_enumerate(const unsigned int counter, const char **name, const char **label);
-RAPTOR_API RAPTOR_V1
-int raptor_syntaxes_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
-RAPTOR_API RAPTOR_V1
-int raptor_syntax_name_check(const char *name);
-RAPTOR_API RAPTOR_V1
-const char* raptor_guess_parser_name(raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 int raptor_parsers_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label);
@@ -904,12 +867,6 @@ const char* raptor_guess_parser_name_v2(raptor_world* world, raptor_uri *uri, co
 #endif
 
 /* Create */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_parser* raptor_new_parser(const char *name);
-RAPTOR_API RAPTOR_V1
-raptor_parser* raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_parser* raptor_new_parser_v2(raptor_world* world, const char *name);
@@ -943,29 +900,11 @@ void raptor_set_namespace_handler(raptor_parser* parser, void *user_data, raptor
 RAPTOR_API
 void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data);
 
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-void raptor_print_statement(const raptor_statement * statement, FILE *stream);
-RAPTOR_API RAPTOR_V1
-void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 void raptor_print_statement_v2(const raptor_statement_v2 * statement, FILE *stream);
 RAPTOR_API
 void raptor_print_statement_as_ntriples_v2(const raptor_statement_v2 * statement, FILE *stream);
-#endif
-#if !defined(RAPTOR_DISABLE_DEPRECATED) && !defined(RAPTOR_DISABLE_V1)
-RAPTOR_API RAPTOR_DEPRECATED
-void raptor_print_statement_detailed(const raptor_statement * statement, int detailed, FILE *stream);
-#endif
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_statement_part_as_counted_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_statement_part_as_string(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
-RAPTOR_API RAPTOR_V1
-int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
 #endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
@@ -998,14 +937,6 @@ RAPTOR_API
 void raptor_parse_abort(raptor_parser* rdf_parser);
 
 /* Utility functions */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-void raptor_print_locator(FILE *stream, raptor_locator* locator);
-RAPTOR_API RAPTOR_V1
-int raptor_format_locator(char *buffer, size_t length, raptor_locator* locator);
-RAPTOR_API RAPTOR_V1
-const char * raptor_locator_uri(raptor_locator *locator);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 void raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locator);
@@ -1035,10 +966,6 @@ const char* raptor_get_mime_type(raptor_parser *rdf_parser);
 RAPTOR_API
 int raptor_get_need_base_uri(raptor_parser *rdf_parser);
 
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-int raptor_features_enumerate(const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 int raptor_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
@@ -1064,12 +991,6 @@ RAPTOR_API
 raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
 
 /* Get serializer names */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-int raptor_serializers_enumerate(const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
-RAPTOR_API RAPTOR_V1
-int raptor_serializer_syntax_name_check(const char *name);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 int raptor_serializers_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
@@ -1078,10 +999,6 @@ int raptor_serializer_syntax_name_check_v2(raptor_world* world, const char *name
 #endif
 
 /* Serializing */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_serializer* raptor_new_serializer(const char *name);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_serializer* raptor_new_serializer_v2(raptor_world* world, const char *name);
@@ -1115,10 +1032,6 @@ RAPTOR_API
 void raptor_serializer_set_warning_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
 RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-int raptor_serializer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 int raptor_serializer_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
@@ -1144,30 +1057,6 @@ RAPTOR_API
 void* raptor_calloc_memory(size_t nmemb, size_t size);
 
 /* URI functions */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_new_uri(const unsigned char *uri_string);
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_name);
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_new_uri_relative_to_base(raptor_uri *base_uri, const unsigned char *uri_string);
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_new_uri_from_id(raptor_uri *base_uri, const unsigned char *id);
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_new_uri_for_rdf_concept(const char *name);
-RAPTOR_API RAPTOR_V1
-void raptor_free_uri(raptor_uri *uri);
-RAPTOR_API RAPTOR_V1
-int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
-RAPTOR_API RAPTOR_V1
-int raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2);
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_uri_copy(raptor_uri *uri);
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_uri_as_string(raptor_uri *uri);
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_uri* raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string);
@@ -1194,29 +1083,17 @@ unsigned char* raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *
 #endif
 
 /* Make an xml:base-compatible URI from an existing one */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri);
 #endif
 /* Make a URI suitable for retrieval (no fragment, has path) from an existing one */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri);
 #endif
 
 /* Identifier functions */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_identifier* raptor_new_identifier(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
@@ -1244,11 +1121,6 @@ int raptor_iostream_write_string_python(raptor_iostream *iostr, const unsigned c
 #ifndef RAPTOR_DISABLE_DEPRECATED
 RAPTOR_API RAPTOR_DEPRECATED
 void raptor_iostream_write_string_turtle(raptor_iostream *iostr, const unsigned char *string, size_t len);
-#endif
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
-RAPTOR_API
 #endif
 #ifdef RAPTOR_V2_AVAILABLE
 void raptor_iostream_write_statement_ntriples_v2(raptor_world* world, raptor_iostream* iostr, const raptor_statement *statement);
@@ -1285,22 +1157,6 @@ int raptor_uri_is_file_uri(const unsigned char* uri_string);
 #endif
 RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_uri_to_relative_uri_string(raptor_uri *base_uri,  raptor_uri *reference_uri);
-RAPTOR_API RAPTOR_V1
-void raptor_uri_print(const raptor_uri* uri, FILE *stream);
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p);
-RAPTOR_API RAPTOR_V1
-unsigned char* raptor_uri_to_string(raptor_uri *uri);
-RAPTOR_API RAPTOR_V1
-void raptor_uri_set_handler(const raptor_uri_handler *handler, void *context);
-RAPTOR_API RAPTOR_V1
-void raptor_uri_get_handler(const raptor_uri_handler **handler, void **context);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 unsigned char* raptor_uri_to_relative_counted_uri_string_v2(raptor_world* world, raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
@@ -1358,14 +1214,6 @@ void raptor_uri_get_handler_v2(raptor_world* world, const raptor_uri_handler **h
 
 
 /* raptor_www */
-#ifndef RAPOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-void raptor_www_init(void);
-RAPTOR_API RAPTOR_V1
-void raptor_www_finish(void);
-RAPTOR_API RAPTOR_V1
-void raptor_www_no_www_library_init_finish(void);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 int raptor_www_init_v2(raptor_world* world);
@@ -1376,12 +1224,6 @@ void raptor_www_no_www_library_init_finish_v2(raptor_world* world);
 #endif
 
 
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_www *raptor_www_new(void);
-RAPTOR_API RAPTOR_V1
-raptor_www *raptor_www_new_with_connection(void* connection);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_www *raptor_www_new_v2(raptor_world* world);
@@ -1425,10 +1267,6 @@ raptor_uri* raptor_www_get_final_uri(raptor_www* www);
 /* raptor_qname - XML qnames */
 RAPTOR_API
 raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value, raptor_simple_message_handler error_handler, void *error_data);
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_qname* raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_qname* raptor_new_qname_from_namespace_local_name_v2(raptor_world* world, raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
@@ -1458,12 +1296,6 @@ const unsigned char* raptor_qname_get_counted_value(raptor_qname* name, size_t* 
 /* raptor_namespace_stack - stack of XML namespaces */
 RAPTOR_API
 raptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *nstack, const unsigned char *prefix,  raptor_uri* ns_uri, int depth);
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_namespace_stack* raptor_new_namespaces(const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
-RAPTOR_API RAPTOR_V1
-int raptor_namespaces_init(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_namespace_stack* raptor_new_namespaces_v2(raptor_world* world, raptor_simple_message_handler error_handler, void *error_data, int defaults);
@@ -1846,10 +1678,6 @@ RAPTOR_API
 int raptor_iostream_format_hexadecimal(raptor_iostream* iostr, unsigned int integer, int width);
 RAPTOR_API
 int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor_stringbuffer *sb);
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-int raptor_iostream_write_uri(raptor_iostream *iostr,  raptor_uri *uri);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 int raptor_iostream_write_uri_v2(raptor_world* world, raptor_iostream *iostr,  raptor_uri *uri);
@@ -1860,10 +1688,6 @@ RAPTOR_API
 int raptor_iostream_read_eof(raptor_iostream *iostr);
 
 /* Parser and Serializer features */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_feature raptor_feature_from_uri(raptor_uri *uri);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_feature raptor_feature_from_uri_v2(raptor_world* world, raptor_uri *uri);
@@ -1896,10 +1720,6 @@ RAPTOR_API
 const unsigned char* raptor_xml_element_get_language(raptor_xml_element* xml_element);
 
 /* XML Writer Class (raptor_xml_writer) */
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-raptor_xml_writer* raptor_new_xml_writer(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 raptor_xml_writer* raptor_new_xml_writer_v2(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize);
@@ -1928,10 +1748,6 @@ RAPTOR_API
 void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsigned char *s, unsigned int len);
 RAPTOR_API
 void raptor_xml_writer_flush(raptor_xml_writer* xml_writer);
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-int raptor_xml_writer_features_enumerate(const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 int raptor_xml_writer_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
@@ -2076,10 +1892,6 @@ typedef struct {
   raptor_world *world;
 } raptor_error_handlers;
 
-#ifndef RAPTOR_DISABLE_V1
-RAPTOR_API RAPTOR_V1
-void raptor_error_handlers_init(raptor_error_handlers* error_handlers);
-#endif
 #ifdef RAPTOR_V2_AVAILABLE
 RAPTOR_API
 void raptor_error_handlers_init_v2(raptor_world* world, raptor_error_handlers* error_handlers);

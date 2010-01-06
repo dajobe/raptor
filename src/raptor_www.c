@@ -52,31 +52,6 @@ static int raptor_www_file_fetch(raptor_www* www);
 
 
 
-#ifndef RAPTOR_DISABLE_V1
-/* should raptor_www do initializing and cleanup of the WWW library */
-static int raptor_www_skip_www_init_finish = 0;
-static int raptor_www_initialized = 0;
-#endif
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_www_init:
- * 
- * Initialise the WWW class.
- *
- * Must be called before creating any #raptor_www object.
- *
- * See also: raptor_www_init_v2()
- **/
-void
-raptor_www_init(void)
-{
-  raptor_www_init_common(raptor_www_skip_www_init_finish, &raptor_www_initialized);
-}
-#endif
-
-
 /**
  * raptor_www_init_v2:
  * @world: raptor_world object
@@ -92,16 +67,6 @@ raptor_www_init(void)
 int
 raptor_www_init_v2(raptor_world* world)
 {
-#ifndef RAPTOR_DISABLE_V1
-  /* support legacy v1 raptor_www_no_www_library_init_finish() */
-  if(raptor_www_skip_www_init_finish)
-    world->www_skip_www_init_finish = raptor_www_skip_www_init_finish;
-
-  /* skip init if already inited with legacy init() */
-  if(raptor_www_initialized)
-    return 0;
-#endif
-
   return raptor_www_init_common(world->www_skip_www_init_finish, &world->www_initialized);
 }
 
@@ -123,36 +88,6 @@ raptor_www_init_common(int skip_www_init_finish, int *www_initialized)
   *www_initialized = 1;
   return rc;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_www_no_www_library_init_finish:
- *
- * Do not initialise or finish the lower level WWW library.
- *
- * If this is called then the raptor_www library will neither
- * initialise or terminate the lower level WWW library.  Usually in
- * raptor_init either curl_global_init (for libcurl)
- * are called and in raptor_finish curl_global_cleanup is called.
- *
- * This allows the application finer control over these libraries such
- * as setting other global options or potentially calling and terminating
- * raptor several times.  It does mean that applications which use
- * this call must do their own extra work in order to allocate and free
- * all resources to the system.
- * 
- * This function must be called before raptor_init.
- *
- * See also: raptor_www_no_www_library_init_finish_v2()
- *
- **/
-void
-raptor_www_no_www_library_init_finish(void)
-{
-  raptor_www_skip_www_init_finish = 1;
-}
-#endif
 
 
 /**
@@ -182,24 +117,6 @@ raptor_www_no_www_library_init_finish_v2(raptor_world* world)
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_www_finish:
- * 
- * Terminate the WWW class.
- *
- * Must be called to clean any resources used by the WWW implementation.
- *
- * See also: raptor_www_finish_v2()
- **/
-void
-raptor_www_finish(void)
-{
-  raptor_www_finish_common(raptor_www_skip_www_init_finish);
-}
-#endif
-
-
 /**
  * raptor_www_finish_v2:
  * @world: raptor_world object
@@ -226,31 +143,6 @@ raptor_www_finish_common(int skip_www_init_finish)
 #endif
   }
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_www_new_with_connection:
- * @connection: external WWW connection object.
- * 
- * Constructor - create a new #raptor_www object over an existing WWW connection.
- *
- * At present this only works with a libcurl CURL handle object
- * when raptor is compiled with libcurl suppport. Otherwise the
- * @connection is ignored.  This allows such things as setting
- * up special flags on the curl handle before passing into the constructor.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_www_new_with_connection_v2() if using raptor_world APIs.
- * 
- * Return value: a new #raptor_www object or NULL on failure.
- **/
-raptor_www* 
-raptor_www_new_with_connection(void *connection)
-{
-  return raptor_www_new_with_connection_v2(raptor_world_instance(), connection);
-}
-#endif
 
 
 /**
@@ -302,25 +194,6 @@ raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
 
   return www;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_www_new:
- * 
- * Constructor - create a new #raptor_www object.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_www_new_v2() if using raptor_world APIs.
- * 
- * Return value: a new #raptor_www or NULL on failure.
- **/
-raptor_www*
-raptor_www_new(void)
-{
-  return raptor_www_new_v2(raptor_world_instance());
-}
-#endif
 
 
 /**

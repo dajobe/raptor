@@ -48,25 +48,6 @@
 #include "raptor_internal.h"
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_print_locator:
- * @stream: stream to print to
- * @locator: #raptor_locator to print
- *
- * Print a raptor locator to a stream.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_print_locator_v2() if using raptor_world APIs.
- **/
-void
-raptor_print_locator(FILE *stream, raptor_locator* locator) 
-{
-  raptor_print_locator_v2(raptor_world_instance(), stream, locator);
-}
-#endif
-
-
 /**
  * raptor_print_locator_v2:
  * @world: raptor_world object
@@ -94,32 +75,6 @@ raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locat
       fprintf(stream, " column %d", locator->column);
   }
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_format_locator:
- * @buffer: buffer to store format
- * @length: size of buffer
- * @locator: #raptor_locator to format
- *
- * Format a raptor locator as a string.
- * 
- * If buffer is NULL or length is insufficient for the size of
- * the locator, returns the number of additional bytes required
- * in the buffer to write the locator.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_format_locator_v2() if using raptor_world APIs.
- * 
- * Return value: 0 on success, >0 if additional bytes required in buffer, <0 on failure
- **/
-int
-raptor_format_locator(char *buffer, size_t length, raptor_locator* locator) 
-{
-  return raptor_format_locator_v2(raptor_world_instance(), buffer, length, locator);
-}
-#endif
 
 
 /**
@@ -247,29 +202,6 @@ raptor_locator_file(raptor_locator *locator)
     return NULL;
   return locator->file;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_locator_uri:
- * @locator: locator
- *
- * Get URI from locator.
- *
- * Returns a pointer to a shared string version of the URI in
- * the locator.  This must be copied if it is needed.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_locator_uri_v2() if using raptor_world APIs.
- *
- * Return value: string URI, or NULL if there is no URI available
- **/
-const char *
-raptor_locator_uri(raptor_locator *locator)
-{
-  return raptor_locator_uri_v2(raptor_world_instance(), locator);
-}
-#endif
 
 
 /**

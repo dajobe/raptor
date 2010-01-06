@@ -97,47 +97,6 @@ const unsigned char * const raptor_xmlschema_datatypes_namespace_uri = (const un
 const unsigned char * const raptor_owl_namespace_uri = (const unsigned char *)"http://www.w3.org/2002/07/owl#";
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_namespaces_init:
- * @nstack: #raptor_namespace_stack to initialise
- * @uri_handler: URI handler function (ignored)
- * @uri_context: context for URI handler (ignored)
- * @error_handler: error handler function
- * @error_data: context for error handler
- * @defaults: namespaces to initialise.
- *
- * Initialise a namespaces stack some optional common namespaces.
- *
- * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL
- * and XSD (RDQL uses this) or 3+ undefined.
- *
- * @uri_handler and @uri_context parameters are ignored but are retained
- * in the API for backwards compatibility. Internally the same uri handler
- * as returned by raptor_uri_get_handler() will be used.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_namespaces_init_v2() if using raptor_world APIs.
- *
- * Return value: non-0 on error
- */
-int
-raptor_namespaces_init(raptor_namespace_stack *nstack,
-                       const raptor_uri_handler *uri_handler,
-                       void *uri_context,
-                       raptor_simple_message_handler error_handler,
-                       void *error_data,
-                       int defaults)
-{
-  return raptor_namespaces_init_v2(raptor_world_instance(),
-                                   nstack,
-                                   error_handler,
-                                   error_data,
-                                   defaults);
-}
-#endif
-
-
 /* hash function to hash namespace prefix strings (usually short strings)
  *
  * Uses DJ Bernstein original hash function - good on short text keys.
@@ -231,43 +190,6 @@ raptor_namespaces_init_v2(raptor_world* world,
   }
   return failures;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_new_namespaces:
- * @uri_handler: URI handler function (ignored)
- * @uri_context: URI handler context data (ignored)
- * @error_handler: error handler function
- * @error_data: error handler data
- * @defaults: namespaces to initialise
- * 
- * Constructor - create a new #raptor_namespace_stack.
- *
- * See raptor_namespaces_init() for the values of @defaults.
- *
- * @uri_handler and @uri_context parameters are ignored but are retained
- * in the API for backwards compatibility. Internally the same uri handler
- * as returned by raptor_uri_get_handler() will be used.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_new_namespaces_v2() if using raptor_world APIs.
- * 
- * Return value: a new namespace stack or NULL on failure
- **/
-raptor_namespace_stack *
-raptor_new_namespaces(const raptor_uri_handler *uri_handler,
-                      void *uri_context,
-                      raptor_simple_message_handler error_handler,
-                      void *error_data,
-                      int defaults) 
-{
-  return raptor_new_namespaces_v2(raptor_world_instance(),
-                                  error_handler,
-                                  error_data,
-                                  defaults);
-}
-#endif
 
 
 /**

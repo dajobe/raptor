@@ -388,34 +388,6 @@ raptor_get_parser_factory(raptor_world *world, const char *name)
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_syntaxes_enumerate:
- * @counter: index into the list of syntaxes
- * @name: pointer to store the name of the syntax (or NULL)
- * @label: pointer to store syntax readable label (or NULL)
- * @mime_type: pointer to store syntax MIME Type (or NULL)
- * @uri_string: pointer to store syntax URI string (or NULL)
- *
- * Get information on syntaxes.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_syntaxes_enumerate_v2() if using raptor_world APIs.
- * 
- * Return value: non 0 on failure of if counter is out of range
- **/
-int
-raptor_syntaxes_enumerate(const unsigned int counter,
-                          const char **name, const char **label,
-                          const char **mime_type,
-                          const unsigned char **uri_string)
-{
-  return raptor_syntaxes_enumerate_v2(raptor_world_instance(),
-    counter, name, label, mime_type, uri_string);
-}
-#endif
-
-
 /**
  * raptor_syntaxes_enumerate_v2:
  * @world: raptor_world object
@@ -464,43 +436,6 @@ raptor_syntaxes_enumerate_v2(raptor_world* world,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_parsers_enumerate:
- * @counter: index to list of parsers
- * @name: pointer to store syntax name (or NULL)
- * @label: pointer to store syntax label (or NULL)
- *
- * Get list of syntax parsers.
- * 
- * Return value: non 0 on failure of if counter is out of range
- **/
-int
-raptor_parsers_enumerate(const unsigned int counter,
-                         const char **name, const char **label)
-{
-  return raptor_syntaxes_enumerate(counter, name, label, NULL, NULL);
-}
-
-
-/**
- * raptor_syntax_name_check:
- * @name: the syntax name
- *
- * Check name of a parser.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_syntax_name_check_v2() if using raptor_world APIs.
- *
- * Return value: non 0 if name is a known syntax name
- */
-int
-raptor_syntax_name_check(const char *name) {
-  return raptor_syntax_name_check_v2(raptor_world_instance(), name);
-}
-#endif
-
-
 /**
  * raptor_syntax_name_check_v2:
  * @world: raptor_world object
@@ -514,25 +449,6 @@ int
 raptor_syntax_name_check_v2(raptor_world* world, const char *name) {
   return (raptor_get_parser_factory(world, name) != NULL);
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_new_parser:
- * @name: the parser name
- *
- * Constructor - create a new raptor_parser object.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_new_parser_v2() if using raptor_world APIs.
- *
- * Return value: a new #raptor_parser object or NULL on failure
- */
-raptor_parser*
-raptor_new_parser(const char *name) {
-  return raptor_new_parser_v2(raptor_world_instance(), name);
-}
-#endif
 
 
 /**
@@ -588,40 +504,6 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
   
   return rdf_parser;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_new_parser_for_content:
- * @uri: URI identifying the syntax (or NULL)
- * @mime_type: mime type identifying the content (or NULL)
- * @buffer: buffer of content to guess (or NULL)
- * @len: length of buffer
- * @identifier: identifier of content (or NULL)
- * 
- * Constructor - create a new raptor_parser.
- *
- * Uses raptor_guess_parser_name() to find a parser by scoring
- * recognition of the syntax by a block of characters, the content
- * identifier or a mime type.  The content identifier is typically a
- * filename or URI or some other identifier.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_new_parser_for_content_v2() if using raptor_world APIs.
- * 
- * Return value: a new #raptor_parser object or NULL on failure
- **/
-raptor_parser*
-raptor_new_parser_for_content(raptor_uri *uri, const char *mime_type,
-                              const unsigned char *buffer, size_t len,
-                              const unsigned char *identifier)
-{
-  return raptor_new_parser_for_content_v2(raptor_world_instance(),
-                                          uri, mime_type,
-                                          buffer, len,
-                                          identifier);
-}
-#endif
 
 
 /**
@@ -1356,35 +1238,6 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_features_enumerate:
- * @feature: feature enumeration (0+)
- * @name: pointer to store feature short name (or NULL)
- * @uri: pointer to store feature URI (or NULL)
- * @label: pointer to feature label (or NULL)
- *
- * Get list of syntax features.
- * 
- * If uri is not NULL, a pointer to a new raptor_uri is returned
- * that must be freed by the caller with raptor_free_uri().
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_features_enumerate_v2() if using raptor_world APIs.
- *
- * Return value: 0 on success, <0 on failure, >0 if feature is unknown
- **/
-int
-raptor_features_enumerate(const raptor_feature feature,
-                          const char **name, 
-                          raptor_uri **uri, const char **label)
-{
-  return raptor_features_enumerate_v2(raptor_world_instance(),
-                                      feature, name, uri, label);
-}
-#endif
-
-
 /**
  * raptor_features_enumerate_v2:
  * @world: raptor_world object
@@ -1922,37 +1775,6 @@ compare_syntax_score(const void *a, const void *b) {
   return ((struct syntax_score*)b)->score - ((struct syntax_score*)a)->score;
 }
   
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_guess_parser_name:
- * @uri: URI identifying the syntax (or NULL)
- * @mime_type: mime type identifying the content (or NULL)
- * @buffer: buffer of content to guess (or NULL)
- * @len: length of buffer
- * @identifier: identifier of content (or NULL)
- *
- * Guess a parser name for content.
- * 
- * Find a parser by scoring recognition of the syntax by a block of
- * characters, the content identifier or a mime type.  The content
- * identifier is typically a filename or URI or some other identifier.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_guess_parser_name_v2() if using raptor_world APIs.
- * 
- * Return value: a parser name or NULL if no guess could be made
- **/
-const char*
-raptor_guess_parser_name(raptor_uri *uri, const char *mime_type,
-                         const unsigned char *buffer, size_t len,
-                         const unsigned char *identifier)
-{
-  return raptor_guess_parser_name_v2(raptor_world_instance(),
-    uri, mime_type, buffer, len, identifier);
-}
-#endif
-
 
 /**
  * raptor_guess_parser_name_v2:

@@ -49,10 +49,6 @@
 
 
 /* statics */
-#ifndef RAPTOR_DISABLE_V1
-static raptor_world* Raptor_World = NULL;
-#endif
-
 
 const char * const raptor_short_copyright_string = "Copyright 2000-2009 David Beckett. Copyright 2000-2005 University of Bristol";
 
@@ -210,72 +206,6 @@ raptor_free_world(raptor_world* world)
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_init:
- *
- * Initialise the raptor library.
- * 
- * This function MUST be called before using any of the raptor APIs.
- **/
-void
-raptor_init(void) 
-{
-  if(Raptor_World) {
-    Raptor_World->static_usage++;
-    return;
-  }
-
-  Raptor_World = raptor_new_world();
-  if(!Raptor_World)
-    goto failure;
-  if(raptor_world_open(Raptor_World))
-    goto failure;
-  Raptor_World->static_usage = 1;
-
-  return;
-
-  failure:
-  raptor_finish();
-  RAPTOR_FATAL1("raptor_init() failed");
-}
-
-
-/**
- * raptor_finish:
- *
- * Terminate the raptor library.
- *
- * Cleans up state of the library.  If called, must be used after
- * all other objects are destroyed with their destructor.
- **/
-void
-raptor_finish(void) 
-{
-  if(!Raptor_World || --Raptor_World->static_usage)
-    return;
-
-  raptor_free_world(Raptor_World);
-  Raptor_World = NULL;
-}
-
-
-/*
- * raptor_world_instance:
- * Accessor for static raptor_world object.
- *
- * INTERNAL
- *
- * Return value: raptor_world object or NULL if not initialized
- */
-raptor_world*
-raptor_world_instance(void)
-{
-  return Raptor_World;
-}
-#endif
-
-
 /**
  * raptor_world_set_libxslt_security_preferences:
  * @world: world
@@ -302,31 +232,6 @@ raptor_world_set_libxslt_security_preferences(raptor_world *world,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_set_libxslt_security_preferences:
- * @security_preferences: security preferences (an #xsltSecurityPrefsPtr)
- * 
- * Set libxslt security preferences policy object
- *
- * The @security_preferences object will NOT become owned by Raptor
- *
- * If libxslt is compiled into the library, @security_preferences
- * should be an #xsltSecurityPrefsPtr and will be used to call
- * xsltSetCtxtSecurityPrefs() when an XSLT engine is initialised.
- *
- * If libxslt is not compiled in, the object set here is not used.
- */
-void
-raptor_set_libxslt_security_preferences(void *security_preferences)
-{
-  raptor_world* world = raptor_world_instance();
-  if(world)
-    raptor_world_set_libxslt_security_preferences(world, security_preferences);
-}
-#endif
-
-
 /**
  * raptor_world_set_libxml_flags:
  * @world: world
@@ -348,30 +253,6 @@ raptor_world_set_libxml_flags(raptor_world *world, int flags)
 
   world->libxml_flags = flags;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_set_libxml_flags:
- * @flags: flags
- * 
- * Set common libxml library flags
- *
- * If libxml is compiled into the library, @flags is a bitmask
- * taking an OR of values defined in #raptor_libxml_flags 
- *
- * See the #raptor_libxml_flags documentation for full details of
- * what the flags mean.
- *
- */
-void
-raptor_set_libxml_flags(int flags)
-{
-  raptor_world* world = raptor_world_instance();
-  if(world)
-    raptor_world_set_libxml_flags(world, flags);
-}
-#endif
 
 
 /* 
@@ -620,24 +501,6 @@ raptor_check_ordinal(const unsigned char *name) {
   }
   return ordinal;
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_error_handlers_init:
- * @error_handlers: error handlers object
- *
- * Initialize #raptor_error_handlers object statically.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_error_handlers_init_v2() if using raptor_world APIs.
- */
-void
-raptor_error_handlers_init(raptor_error_handlers* error_handlers)
-{
-  raptor_error_handlers_init_v2(raptor_world_instance(), error_handlers);
-}
-#endif
 
 
 /**

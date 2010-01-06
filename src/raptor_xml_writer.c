@@ -416,47 +416,6 @@ raptor_xml_writer_end_element_common(raptor_xml_writer* xml_writer,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_new_xml_writer:
- * @nstack: Namespace stack for the writer to start with (or NULL)
- * @uri_handler: URI handler function (ignored)
- * @uri_context: URI handler context data (ignored)
- * @iostr: I/O stream to write to
- * @error_handler: error handler function
- * @error_data: error handler data
- * @canonicalize: unused
- * 
- * Constructor - Create a new XML Writer writing XML to a raptor_iostream
- *
- * @uri_handler and @uri_context parameters are ignored but are retained
- * in the API for backwards compatibility. Internally the same uri handler
- * as returned by raptor_uri_get_handler() will be used.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_new_xml_writer_v2() if using raptor_world APIs.
- * 
- * Return value: a new #raptor_xml_writer object or NULL on failure
- **/
-raptor_xml_writer*
-raptor_new_xml_writer(raptor_namespace_stack *nstack,
-                      const raptor_uri_handler *uri_handler,
-                      void *uri_context,
-                      raptor_iostream* iostr,
-                      raptor_simple_message_handler error_handler,
-                      void *error_data,
-                      int canonicalize)
-{
-  return raptor_new_xml_writer_v2(raptor_world_instance(),
-                                  nstack,
-                                  iostr,
-                                  error_handler,
-                                  error_data,
-                                  canonicalize);
-}
-#endif
-
-
 /**
  * raptor_new_xml_writer_v2:
  * @world: raptor_world object
@@ -835,35 +794,6 @@ raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
   raptor_xml_writer_cdata_counted(xml_writer, s, len);
   raptor_xml_writer_raw_counted(xml_writer, (const unsigned char*)" -->", 4);
 }
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_xml_writer_features_enumerate:
- * @feature: feature enumeration (0+)
- * @name: pointer to store feature short name (or NULL)
- * @uri: pointer to store feature URI (or NULL)
- * @label: pointer to feature label (or NULL)
- *
- * Get list of xml_writer features.
- * 
- * If uri is not NULL, a pointer to a new raptor_uri is returned
- * that must be freed by the caller with raptor_free_uri().
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_xml_writer_features_enumerate_v2() if using raptor_world APIs.
- *
- * Return value: 0 on success, <0 on failure, >0 if feature is unknown
- **/
-int
-raptor_xml_writer_features_enumerate(const raptor_feature feature,
-                                     const char **name, 
-                                     raptor_uri **uri, const char **label)
-{
-  return raptor_xml_writer_features_enumerate_v2(raptor_world_instance(),
-                                                 feature, name, uri, label);
-}
-#endif
 
 
 /**

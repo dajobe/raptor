@@ -238,25 +238,6 @@ raptor_free_statement(raptor_world *world, raptor_statement *statement)
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_print_statement:
- * @statement: #raptor_statement object to print
- * @stream: #FILE* stream
- *
- * Print a raptor_statement to a stream.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_print_statement_v2() if using raptor_world APIs.
- **/
-void
-raptor_print_statement(const raptor_statement * statement, FILE *stream) 
-{
-  raptor_print_statement_v1(raptor_world_instance(), statement, stream);
-}
-#endif
-
-
 /**
  * raptor_print_statement_v2:
  * @statement: #raptor_statement_v2 object to print
@@ -336,75 +317,6 @@ raptor_print_statement_v1(raptor_world* world, const raptor_statement * statemen
 
   fputc(']', stream);
 }
-
-
-#if !defined(RAPTOR_DISABLE_DEPRECATED) && !defined(RAPTOR_DISABLE_V1)
-/**
- * raptor_print_statement_detailed:
- * @statement: #raptor_statement object to print
- * @detailed: unused
- * @stream: #FILE* stream
- *
- * Print a raptor_statement to a stream in a detailed fashion.
- *
- * raptor_init() MUST have been called before calling this function.
- *
- * @deprecated: an internal function, do not use.
- *
- * No current difference from calling raptor_print_statement().
- *
- **/
-void
-raptor_print_statement_detailed(const raptor_statement * statement, 
-                                int detailed, FILE *stream) 
-{
-  raptor_print_statement(statement, stream);
-}
-#endif
-
-
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_statement_part_as_counted_string:
- * @term: #raptor_statement part (subject, predicate, object)
- * @type: #raptor_statement part type
- * @literal_datatype: #raptor_statement part datatype
- * @literal_language: #raptor_statement part language
- * @len_p: Pointer to location to store length of new string (if not NULL)
- *
- * Turns part of raptor statement into a N-Triples format counted string.
- * 
- * Turns the given @term into an N-Triples escaped string using all the
- * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
- *
- * The part (subject, predicate, object) of the raptor_statement is
- * typically passed in as @term, the part type (subject_type,
- * predicate_type, object_type) is passed in as @type.  When the part
- * is a literal, the @literal_datatype and @literal_language fields
- * are set, otherwise NULL (usually object_datatype,
- * object_literal_language).
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_statement_part_as_counted_string_v2() if using raptor_world APIs.
- *
- * Return value: the new string or NULL on failure.  The length of
- * the new string is returned in *@len_p if len_p is not NULL.
- **/
-unsigned char*
-raptor_statement_part_as_counted_string(const void *term, 
-                                        raptor_identifier_type type,
-                                        raptor_uri* literal_datatype,
-                                        const unsigned char *literal_language,
-                                        size_t* len_p)
-{
-  return raptor_statement_part_as_counted_string_v2(raptor_world_instance(),
-                                                    term,
-                                                    type,
-                                                    literal_datatype,
-                                                    literal_language,
-                                                    len_p);
-}
-#endif
 
 
 /**
@@ -545,46 +457,6 @@ raptor_statement_part_as_counted_string_v2(raptor_world* world,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_statement_part_as_string:
- * @term: #raptor_statement part (subject, predicate, object)
- * @type: #raptor_statement part type
- * @literal_datatype: #raptor_statement part datatype
- * @literal_language: #raptor_statement part language
- *
- * Turns part of raptor statement into a N-Triples format string.
- * 
- * Turns the given @term into an N-Triples escaped string using all the
- * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
- *
- * The part (subject, predicate, object) of the raptor_statement is
- * typically passed in as @term, the part type (subject_type,
- * predicate_type, object_type) is passed in as @type.  When the part
- * is a literal, the @literal_datatype and @literal_language fields
- * are set, otherwise NULL (usually object_datatype,
- * object_literal_language).
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_statement_part_as_string_v2() if using raptor_world APIs.
- *
- * Return value: the new string or NULL on failure.
- **/
-unsigned char*
-raptor_statement_part_as_string(const void *term, 
-                                raptor_identifier_type type,
-                                raptor_uri* literal_datatype,
-                                const unsigned char *literal_language)
-{
-  return raptor_statement_part_as_string_v2(raptor_world_instance(),
-                                            term,
-                                            type,
-                                            literal_datatype,
-                                            literal_language);
-}
-#endif
-
-
 /**
  * raptor_statement_part_as_string_v2:
  * @world: raptor_world object
@@ -675,29 +547,6 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_print_statement_as_ntriples:
- * @statement: #raptor_statement to print
- * @stream: #FILE* stream
- *
- * Print a raptor_statement in N-Triples form.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_print_statement_as_ntriples_v2() if using raptor_world APIs.
- * 
- **/
-void
-raptor_print_statement_as_ntriples(const raptor_statement * statement,
-                                   FILE *stream) 
-{
-  raptor_print_statement_as_ntriples_common(raptor_world_instance(),
-                                            statement,
-                                            stream);
-}
-#endif
-
-
 /**
  * raptor_print_statement_as_ntriples_v2:
  * @statement: #raptor_statement_v2 to print
@@ -743,34 +592,6 @@ raptor_print_statement_as_ntriples_common(raptor_world* world,
 }
 
  
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_statement_compare:
- * @s1: first statement
- * @s2: second statement
- *
- * Compare a pair of #raptor_statement
- *
- * If types are different, the #raptor_identifier_type order is used.
- * Resource and datatype URIs are compared with raptor_uri_compare(),
- * blank nodes and literals with strcmp().  If one literal has no
- * language, it is earlier than one with a language.  If one literal
- * has no datatype, it is earlier than one with a datatype.
- *
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_statement_compare_v2() if using raptor_world APIs.
- * 
- * Return value: <0 if s1 is before s2, 0 if equal, >0 if s1 is after s2
- */
-int
-raptor_statement_compare(const raptor_statement *s1,
-                         const raptor_statement *s2)
-{
-  return raptor_statement_compare_common(raptor_world_instance(), s1, s2);
-}
-#endif
-
-
 /**
  * raptor_statement_compare_v2:
  * @s1: first statement

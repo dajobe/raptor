@@ -219,36 +219,6 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 }
 
 
-#ifndef RAPTOR_DISABLE_V1
-/**
- * raptor_new_qname_from_namespace_local_name:
- * @ns: namespace of qname (or NULL)
- * @local_name: element or attribute name
- * @value: attribute value (else is an element)
- *
- * Constructor - create a new XML qname.
- * 
- * Create a new qname from the namespace and local element/attribute name,
- * with optional (attribute) value.
- * 
- * raptor_init() MUST have been called before calling this function.
- * Use raptor_new_qname_from_namespace_local_name_v2() if using raptor_world APIs.
- *
- * Return value: a new #raptor_qname object or NULL on failure
- **/
-raptor_qname*
-raptor_new_qname_from_namespace_local_name(raptor_namespace *ns, 
-                                           const unsigned char *local_name,
-                                           const unsigned char *value)
-{
-  return raptor_new_qname_from_namespace_local_name_v2(raptor_world_instance(),
-                                                       ns,
-                                                       local_name,
-                                                       value);
-}
-#endif
-
-
 /**
  * raptor_new_qname_from_namespace_local_name_v2:
  * @world: raptor_world object
