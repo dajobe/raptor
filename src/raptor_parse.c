@@ -2214,8 +2214,8 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
     }
   }
   
-  /* 9 = "\*\/\*;q = 0.1" */
-  accept_header = (char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
+  /* 11 = strlen("\*\/\*;q = 0.1") */
+  accept_header = (char*)RAPTOR_MALLOC(cstring, len + 11 + 1);
   if(!accept_header)
     return NULL;
 
@@ -2240,7 +2240,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
     *p++ = ' ';
   }
 
-  strncpy(p, "*/*;q = 0.1", 10);
+  strncpy(p, "*/*;q = 0.1", 11 + 1);
 
   return accept_header;
 }
@@ -2273,8 +2273,8 @@ raptor_parser_get_accept_header_all(raptor_world* world)
     }
   }
   
-  /* 9 = "\*\/\*;q = 0.1" */
-  accept_header = (char*)RAPTOR_MALLOC(cstring, len + 9 + 1);
+  /* 11 = strlen("\*\/\*;q = 0.1") */
+  accept_header = (char*)RAPTOR_MALLOC(cstring, len + 11 + 1);
   if(!accept_header)
     return NULL;
 
@@ -2307,7 +2307,7 @@ raptor_parser_get_accept_header_all(raptor_world* world)
     
   }
   
-  strncpy(p, "*/*;q = 0.1", 10);
+  strncpy(p, "*/*;q = 0.1", 11 + 1);
   
   return accept_header;
 }
