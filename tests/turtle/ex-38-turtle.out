@@ -1,0 +1,17 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex: <http://example.org/> .
+
+<http://example.org/ns#foo>
+    rdf:object _:genid1 ;
+    rdf:predicate ex:property ;
+    rdf:subject ex:resource ;
+    a rdf:Statement .
+
+ex:resource
+    ex:property _:genid1 .
+
+_:genid1
+    <http://www.daml.org/2001/03/daml+oil#first> ex:resource1 ;
+    <http://www.daml.org/2001/03/daml+oil#rest> <http://www.daml.org/2001/03/daml+oil#nil> ;
+    a <http://www.daml.org/2001/03/daml+oil#List> .
+
