@@ -58,7 +58,7 @@ typedef struct {
   raptor_avltree* avltree;
 
   /* Last statement generated if is_resource (shared pointer) */
-  raptor_statement_v2* last_statement;
+  raptor_statement* last_statement;
 
   int need_object_comma;
 
@@ -131,9 +131,9 @@ raptor_json_serialize_start(raptor_serializer* serializer)
 
   if(context->is_resource) {
     context->avltree = raptor_new_avltree(serializer->world,
-                                        (raptor_data_compare_function)raptor_statement_compare_v2,
-                                        (raptor_data_free_function)raptor_free_statement_v2,
-                                        0);
+                                          (raptor_data_compare_function)raptor_statement_compare,
+                                          (raptor_data_free_function)raptor_free_statement,
+                                          0);
     if(!context->avltree) {
       raptor_free_json_writer(context->json_writer);
       context->json_writer = NULL;
@@ -171,7 +171,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   raptor_json_context* context = (raptor_json_context*)serializer->context;
 
   if(context->is_resource) {
-    raptor_statement_v2* s = raptor_statement_copy_v2_from_v1(serializer->world, statement);
+    raptor_statement* s = raptor_statement_copy(statement);
     if(!s)
       return 1;
     return raptor_avltree_add(context->avltree, s);
@@ -267,9 +267,9 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   raptor_serializer* serializer = (raptor_serializer*)user_data;
   raptor_json_context* context = (raptor_json_context*)serializer->context;
 
-  raptor_statement_v2* statement = (raptor_statement_v2*)data;
-  raptor_statement* s1 = statement->s;
-  raptor_statement* s2 = context->last_statement ? (context->last_statement->s) : NULL;
+  raptor_statement* statement = (raptor_statement*)data;
+  raptor_statement* s1 = statement;
+  raptor_statement* s2 = context->last_statement;
   int new_subject = 0;
   int new_predicate = 0;
   

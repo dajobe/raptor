@@ -475,6 +475,7 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
     return NULL;
 
   rdf_parser->world = world;
+  raptor_statement_init(&rdf_parser->statement, world);
   
   rdf_parser->context = (char*)RAPTOR_CALLOC(raptor_parser_context, 1,
                                            factory->context_length);

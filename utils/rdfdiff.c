@@ -222,7 +222,7 @@ rdfdiff_free_file(rdfdiff_file* file)
   for(cur = file->first; cur; cur = next) {
     next = cur->next;
 
-    raptor_free_statement(file->world, cur->statement);
+    raptor_free_statement(cur->statement);
     RAPTOR_FREE(rdfdiff_link, cur);
   }
 
@@ -261,12 +261,12 @@ rdfdiff_free_blank(rdfdiff_blank *blank)
     RAPTOR_FREE(cstring, blank->blank_id);
 
   if(blank->owner)
-    raptor_free_statement(blank->world, blank->owner);
+    raptor_free_statement(blank->owner);
   
   for(cur = blank->first; cur; cur = next) {
     next = cur->next;
 
-    raptor_free_statement(blank->world, cur->statement);
+    raptor_free_statement(cur->statement);
     RAPTOR_FREE(rdfdiff_link, cur);
   }
 
@@ -625,7 +625,7 @@ rdfdiff_add_blank_statement(rdfdiff_file* file,
   if(!dlink)
     goto failed;
   
-  dlink->statement = raptor_statement_copy(file->world, statement);
+  dlink->statement = raptor_statement_copy(statement);
   if(!dlink->statement) {
     RAPTOR_FREE(rdfdiff_link, dlink);
     goto failed;
@@ -658,7 +658,7 @@ rdfdiff_add_blank_statement_owner(rdfdiff_file* file,
   if(!blank)
     goto failed;
   
-  blank->owner = raptor_statement_copy(file->world, statement);
+  blank->owner = raptor_statement_copy(statement);
   if(!blank->owner)
     goto failed;
 
@@ -679,7 +679,7 @@ rdfdiff_add_statement(rdfdiff_file* file, const raptor_statement *statement)
 
   if(dlink) {
 
-    dlink->statement = raptor_statement_copy(file->world, statement);
+    dlink->statement = raptor_statement_copy(statement);
 
     if(dlink->statement) {
       
@@ -980,7 +980,7 @@ main(int argc, char *argv[])
       } else {
         prev->next = node->next;
       }
-      raptor_free_statement(world, node->statement);
+      raptor_free_statement(node->statement);
       RAPTOR_FREE(rdfdiff_link, node);
     } else {
       if(!brief) {
@@ -991,7 +991,7 @@ main(int argc, char *argv[])
         }
         
         fprintf(stderr, "<    ");
-        raptor_print_statement_v1(world, cur->statement, stderr);
+        raptor_print_statement(cur->statement, stderr);
         fprintf(stderr, "\n");
       }
       
@@ -1056,7 +1056,7 @@ main(int argc, char *argv[])
       while(cur) {
         if(!brief) {
           fprintf(stderr, ">    ");
-          raptor_print_statement_v1(world, cur->statement, stderr);
+          raptor_print_statement(cur->statement, stderr);
           fprintf(stderr, "\n");
         }
       
