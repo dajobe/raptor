@@ -222,15 +222,6 @@ typedef struct raptor_namespace_s raptor_namespace;
 typedef struct raptor_namespace_stack_s raptor_namespace_stack;
 
 /**
- * raptor_ntriples_parser:
- *
- * @Deprecated: use #raptor_parser.
- *
- * old structure - use #raptor_parser instead.
-*/
-typedef raptor_parser raptor_ntriples_parser;
-
-/**
  * raptor_sax2:
  *
  * Raptor SAX2 class
@@ -1073,22 +1064,10 @@ void raptor_free_identifier(raptor_identifier *identifier);
 /* Utility functions */
 RAPTOR_API
 int raptor_print_ntriples_string(FILE *stream, const unsigned char *string, const char delim);
-#ifndef RAPTOR_DISABLE_DEPRECATED
-RAPTOR_API RAPTOR_DEPRECATED
-unsigned char* raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, const unsigned char *src, int len, size_t *dest_lenp);
-#endif
-#ifndef RAPTOR_DISABLE_DEPRECATED
-RAPTOR_API RAPTOR_DEPRECATED
-const char* raptor_ntriples_term_as_string(raptor_ntriples_term_type term);
-#endif
 RAPTOR_API
 int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
 RAPTOR_API
 int raptor_iostream_write_string_python(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim, int flags);
-#ifndef RAPTOR_DISABLE_DEPRECATED
-RAPTOR_API RAPTOR_DEPRECATED
-void raptor_iostream_write_string_turtle(raptor_iostream *iostr, const unsigned char *string, size_t len);
-#endif
 void raptor_iostream_write_statement_ntriples_v2(raptor_world* world, raptor_iostream* iostr, const raptor_statement *statement);
 RAPTOR_API
 int raptor_xml_any_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);
@@ -1116,10 +1095,6 @@ RAPTOR_API
 char *raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API
 char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
-#ifndef RAPTOR_DISABLE_DEPRECATED
-RAPTOR_API RAPTOR_DEPRECATED
-int raptor_uri_is_file_uri(const unsigned char* uri_string);
-#endif
 RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API
@@ -1393,8 +1368,6 @@ void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, cons
 /* helper for printing sequences of strings */ 
 RAPTOR_API
 void raptor_sequence_print_string(char *data, FILE *fh);
-RAPTOR_API RAPTOR_DEPRECATED
-void raptor_sequence_print_uri(char *data, FILE *fh);
 RAPTOR_API
 void raptor_sequence_set_print_handler(raptor_sequence *seq, raptor_sequence_print_handler *print_handler);
 RAPTOR_API
@@ -1527,28 +1500,6 @@ typedef int (*raptor_iostream_read_bytes_func) (void *context, void *ptr, size_t
  */
 typedef int (*raptor_iostream_read_eof_func) (void *context);
 
-#ifndef RAPTOR_DISABLE_DEPRECATED
-/**
- * raptor_iostream_handler:
- * @init:  initialisation handler - optional, called at most once
- * @finish: finishing handler -  optional, called at most once
- * @write_byte: write byte handler - required (for writing)
- * @write_bytes: write bytes handler - required (for writing)
- * @write_end: write end handler - optional (for writing), called at most once
- *
- * I/O stream implementation handler structure.
- *
- * DEPRECATED: Use #raptor_iostream_handler2
- */
-typedef struct {
-  raptor_iostream_init_func         init;
-  raptor_iostream_finish_func       finish;
-  raptor_iostream_write_byte_func   write_byte;
-  raptor_iostream_write_bytes_func  write_bytes;
-  raptor_iostream_write_end_func    write_end;
-} raptor_iostream_handler;
-#endif
-
 /**
  * raptor_iostream_handler2:
  * @version: interface version.  Presently 1 or 2.
@@ -1579,10 +1530,6 @@ typedef struct {
 } raptor_iostream_handler2;
 
 
-#ifndef RAPTOR_DISABLE_DEPRECATED
-RAPTOR_API RAPTOR_DEPRECATED
-raptor_iostream* raptor_new_iostream_from_handler(void *context, const raptor_iostream_handler *handler);
-#endif
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_from_handler2(void *user_data, const raptor_iostream_handler2* const handler2);
 RAPTOR_API
@@ -1614,10 +1561,6 @@ RAPTOR_API
 int raptor_iostream_write_string(raptor_iostream *iostr, const void *string);
 RAPTOR_API
 int raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *string, size_t len);
-#ifndef RAPTOR_DISABLE_DEPRECATED
-RAPTOR_API RAPTOR_DEPRECATED
-size_t raptor_iostream_get_bytes_written_count(raptor_iostream *iostr);
-#endif
 RAPTOR_API
 unsigned long raptor_iostream_tell(raptor_iostream *iostr);
 RAPTOR_API

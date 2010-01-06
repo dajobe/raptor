@@ -476,27 +476,6 @@ raptor_iostream_write_string_python(raptor_iostream *iostr,
 }
 
 
-#ifndef RAPTOR_DISABLE_DEPRECATED
-/**
- * raptor_iostream_write_string_turtle:
- * @iostr: #raptor_iostream to write to
- * @string: UTF-8 string to write
- * @len: length of UTF-8 string
- *
- * Write an UTF-8 string using Turtle "longString" triple quoting to
- * an iostream.
- *
- * @deprecated: use raptor_iostream_write_string_python() instead
- **/
-void
-raptor_iostream_write_string_turtle(raptor_iostream *iostr,
-                                    const unsigned char *string, size_t len)
-{
-  raptor_iostream_write_string_python(iostr, string, len, '"', 1);
-}
-#endif
-
-
 /**
  * raptor_turtle_writer_quoted_counted_string:
  * @turtle_writer: Turtle writer object

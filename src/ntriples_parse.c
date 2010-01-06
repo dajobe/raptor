@@ -113,31 +113,13 @@ raptor_ntriples_parse_terminate(raptor_parser* rdf_parser)
 }
 
 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 static const char * const term_type_strings[]={
   "URIref",
   "bnodeID",
   "Literal"
 };
-
-
-#ifndef RAPTOR_DISABLE_DEPRECATED
-/**
- * raptor_ntriples_term_as_string:
- * @term: N-Triples term.
- * 
- * Get a label for a #raptor_ntriples_term_type.
- * 
- * @deprecated: an internal debug function, do not use.
- *
- * Return value: a pointer to a constant string.
- **/
-const char *
-raptor_ntriples_term_as_string(raptor_ntriples_term_type term)
-{
-  return term_type_strings[(int)term];
-}
 #endif
-
 
 static void
 raptor_ntriples_generate_statement(raptor_parser* parser, 
@@ -484,45 +466,6 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
   return 0;
 }
-
-
-#ifndef RAPTOR_DISABLE_DEPRECATED
-/**
- * raptor_ntriples_string_as_utf8_string:
- * @rdf_parser: parser object
- * @src: data to read from
- * @len: size of data
- * @dest_lenp: pointer to length of destination (out) or NULL
- * 
- * Turn an N-Triples string with escapes into a UTF-8 string.
- *
- * @deprecated: This requires use of parser internals and was never in the public API header.
- * 
- * Return value: a new UTF-8 string
- **/
-unsigned char*
-raptor_ntriples_string_as_utf8_string(raptor_parser* rdf_parser, 
-                                      const unsigned char *src, int len,  
-                                      size_t *dest_lenp)
-{
-  const unsigned char *start = src;
-  size_t length = len;
-  unsigned char *dest;
-  int rc;
-  
-  dest = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-  if(!dest)
-    return NULL;
-
-  rc = raptor_ntriples_term(rdf_parser, &start, dest, &length, dest_lenp,
-                              '\0', RAPTOR_TERM_CLASS_FULL, 1);
-  if(rc) {
-    RAPTOR_FREE(cstring, dest);
-    dest = NULL;
-  }
-  return dest;
-}
-#endif
 
 
 static int
@@ -910,7 +853,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "item %d: term '%s' len %d type %s\n",
             i, terms[i], (unsigned int)term_lengths[i],
-            raptor_ntriples_term_as_string(term_types[i]));
+            term_type_strings[term_types[i]]);
 #endif    
   }
 

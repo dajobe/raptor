@@ -855,24 +855,6 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
 }
 
 
-#ifndef RAPTOR_DISABLE_DEPRECATED
-/**
- * raptor_uri_is_file_uri:
- * @uri_string: The URI string to check
- *
- * Check if a URI string is a file: URI.
- *
- * @deprecated: use raptor_uri_uri_string_is_file_uri() instead
- *
- * Return value: Non zero if URI string is a file: URI
- **/
-int
-raptor_uri_is_file_uri(const unsigned char* uri_string) {
-  return raptor_uri_uri_string_is_file_uri(uri_string);
-}
-#endif
-
-
 /**
  * raptor_uri_uri_string_is_file_uri:
  * @uri_string: The URI string to check

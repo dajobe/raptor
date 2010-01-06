@@ -136,53 +136,6 @@ raptor_new_iostream_from_handler2(void *user_data,
 
 
 
-#ifndef RAPTOR_DISABLE_DEPRECATED
-/**
- * raptor_new_iostream_from_handler:
- * @context: pointer to context information to pass in to calls
- * @handler: pointer to handler methods
- *
- * Create a new iostream over a user-defined handler.
- *
- * @deprecated: Use raptor_new_iostream_from_handler2() instead
- *
- * Return value: new #raptor_iostream object or NULL on failure
- **/
-raptor_iostream*
-raptor_new_iostream_from_handler(void *user_data,
-                                 const raptor_iostream_handler *handler)
-{
-  raptor_iostream* iostr = NULL;
-  raptor_iostream_handler2 *handler2;
-
-  if(!handler)
-    return NULL;
-
-  handler2 = (raptor_iostream_handler2*)RAPTOR_CALLOC(raptor_iostream_handler2, 1,
-                                                   sizeof(raptor_iostream_handler2*));
-  if(!handler2)
-    return NULL;
-  
-  /* Copy V1 functions to V2 structure */
-  handler2->init        = handler->init;
-  handler2->finish      = handler->finish;
-  handler2->write_byte  = handler->write_byte;
-  handler2->write_bytes = handler->write_bytes;
-  handler2->write_end   = handler->write_end;
-
-  iostr = raptor_new_iostream_from_handler2(user_data, handler2);
-  if(iostr) {
-    /* Ensure newly alloced structure is freed on iostream destruction */
-    iostr->flags |= RAPTOR_IOSTREAM_FLAGS_FREE_HANDLER;
-  } else
-    /* failure: so delete it now */
-    RAPTOR_FREE(raptor_iostream_handler2, handler2);
-
-  return iostr;
-}
-#endif
-
-
 /* Local handlers for reading/writing to/from a sink */
 
 static int
@@ -807,25 +760,6 @@ raptor_iostream_write_end(raptor_iostream *iostr)
     iostr->handler->write_end(iostr->user_data);
   iostr->flags |= RAPTOR_IOSTREAM_FLAGS_EOF;
 }
-
-
-#ifndef RAPTOR_DISABLE_DEPRECATED
-/**
- * raptor_iostream_get_bytes_written_count:
- * @iostr: raptor iostream
- *
- * Get the number of bytes written to the iostream.
- *
- * @deprecated: Use raptor_iostream_tell() instead
- *
- * Return value: number of bytes written or 0 if none written so far
- **/
-size_t
-raptor_iostream_get_bytes_written_count(raptor_iostream *iostr)
-{
-  return iostr->offset;
-}
-#endif
 
 
 /**
