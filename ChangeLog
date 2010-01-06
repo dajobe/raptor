@@ -1,4 +1,138 @@
-2010-01-02  Dave Beckett  <dave@dajobe.org>
+2010-01-06  Dave Beckett <dave@dajobe.org>
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_grddl.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_simple.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c:
+	Make a raptor_statement into a 3-tuple of raptor_term.
+
+	This is a short term stage before merging raptor_term with
+	raptor_identifier and getting rid of raptor_triple (in N3 and
+	Turtle parsers).  Also want to make the 3 raptor_terms in
+	raptor_statement as object references not statics, and add a graph
+	term.  raptor_identifier_type should be raptor_term_type and have
+	less values: kill ordinal and predicate types.  Lots of structure
+	name field changes everywhere statement is used.
+
+2010-01-05  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_rss_common.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_rss.c,
+	src/raptor_statement.c, utils/rdfdiff.c:
+	Add raptor_world field to raptor_statement, remove raptor_statement_v2.
+
+	raptor_statment gains a raptor_world* field.  raptor_statement_v2
+	typedef is deleted.
+
+	(raptor_print_statement_as_ntriples_common,
+	raptor_statement_compare_common): Deleted these internal helper
+	functions.
+
+	(raptor_print_statement_v2): Renamed to raptor_print_statement
+
+	(raptor_print_statement_as_ntriples_v2): Renamed to
+	raptor_print_statement_as_ntriples.
+
+	(raptor_statement_part_as_counted_string_v2): Renamed to
+	raptor_statement_part_as_counted_string.
+
+	(raptor_statement_part_as_string_v2): Renamed to
+	raptor_statement_part_as_string.
+
+	(raptor_statement_compare_v2): Renamed to raptor_statement_compare.
+
+	(raptor_statement_copy): Loses world arg.
+
+	(raptor_statement_copy_v2, raptor_statement_copy_v2_from_v1):
+	Deleted.
+
+	(raptor_free_statement): Loses world arg.
+
+	(raptor_free_statement_v2, raptor_print_statement_v1): Deleted
+
+	(raptor_statement_init): Added to initialise statically a
+	allocated statement.
+
+	(raptor_new_parser_v2): Init static statement with
+	raptor_statement_init().
+
+2010-01-05  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_iostream.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c:
+	Removed all V1 deprecated functions and structures.
+
+	(raptor_ntriples_term_as_string,
+	raptor_ntriples_string_as_utf8_string,
+	raptor_new_iostream_from_handler,
+	raptor_iostream_get_bytes_written_count,
+	raptor_iostream_write_string_turtle, raptor_uri_is_file_uri):
+	Deprecated functions deleted
+
+	raptor_ntriples_parser and raptor_iostream_handler: Deprecated
+	typedefs removed.
+
+	* src/raptor.h: Remove RAPTOR_V2_AVAILABLE blocks - V2 is always
+	available
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_general.c,
+	src/raptor_identifier.c, src/raptor_iostream.c,
+	src/raptor_locator.c, src/raptor_namespace.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_ntriples.c, src/raptor_statement.c,
+	src/raptor_uri.c, src/raptor_www.c, src/raptor_xml_writer.c:
+	Remove all raptor v1 APIs with v2 replacements.
+
+	Remove RAPTOR_V2_EXPERIMENTAL - no longer experimental.  Remove
+	RAPTOR_V1 - not needed.  Remove all blocks that were protected by
+	RAPTOR_DISABLE_V1 including structs, prototypes and V1 functions.
+
+	* src/raptor_parse.c: Fix static accept_header string length so
+	result is always NUL terminated
+
+	(raptor_parser_get_accept_header): The static last-resource
+	accept_header static string is 11 chars not 9. Ensure buffer is
+	big enough so that the NUL gets copied by strncpy().
+
+	* tests/turtle/ex-38-turtle.out: Restore hack out file
+	ex-38-turtle.out
+
+	* tests/.gitignore, tests/rdfxml/ex-38-rdfxmla.out: Restore hack out
+	file ex-38-rdfxmla.out
+
+	* src/n3_lexer.l, src/n3_parser.y, src/ntriples_parse.c,
+	src/parsedate.y, src/raptor.h, src/raptor_abbrev.c,
+	src/raptor_avltree.c, src/raptor_expat.c, src/raptor_feature.c,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_identifier.c, src/raptor_iostream.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_libxml.c, src/raptor_locator.c, src/raptor_memstr.c,
+	src/raptor_namespace.c, src/raptor_nfc.c, src/raptor_nfc_test.c,
+	src/raptor_parse.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rfc2396.c, src/raptor_rss.c, src/raptor_rss.h,
+	src/raptor_rss_common.c, src/raptor_sax2.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_utf8.c,
+	src/raptor_www.c, src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/raptor_xsd.c, src/snprintf.c,
+	src/strcasecmp.c, src/turtle_common.c, src/turtle_lexer.l,
+	src/turtle_parser.y, utils/getopt.c, utils/rapper.c,
+	utils/rdfdiff.c: Code style - whitespace around assignment and
+	comparison ops
+
+2010-01-02  Dave Beckett <dave@dajobe.org>
 
 	* Use AM_SILENT_RULES and move autotools helper files to build/ dir
 
