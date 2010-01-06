@@ -1770,7 +1770,6 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         strncpy((char*)identifier->id, "author", 7);
 
         identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-        identifier->uri_source = RAPTOR_URI_SOURCE_GENERATED;
 
         /* Move atom:name author field, or create a dummy one */
         f = RAPTOR_RSS_FIELD_ATOM_NAME;

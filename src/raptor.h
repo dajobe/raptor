@@ -254,24 +254,6 @@ typedef enum {
 
 
 /**
- * raptor_uri_source:
- * @RAPTOR_URI_SOURCE_UNKNOWN: Internal
- * @RAPTOR_URI_SOURCE_NOT_URI: Internal
- * @RAPTOR_URI_SOURCE_ELEMENT: Internal
- * @RAPTOR_URI_SOURCE_ATTRIBUTE: Internal
- * @RAPTOR_URI_SOURCE_ID: Internal
- * @RAPTOR_URI_SOURCE_URI: Internal
- * @RAPTOR_URI_SOURCE_GENERATED: Internal
- * @RAPTOR_URI_SOURCE_BLANK_ID: Internal
- *
- * Internal: Where a URI or identifier was derived from
- *
- * Likely to be deprecated in future releases.
- */
-
-typedef enum { RAPTOR_URI_SOURCE_UNKNOWN, RAPTOR_URI_SOURCE_NOT_URI, RAPTOR_URI_SOURCE_ELEMENT, RAPTOR_URI_SOURCE_ATTRIBUTE, RAPTOR_URI_SOURCE_ID, RAPTOR_URI_SOURCE_URI, RAPTOR_URI_SOURCE_GENERATED, RAPTOR_URI_SOURCE_BLANK_ID } raptor_uri_source;
-
-/**
  * raptor_ntriples_term_type:
  * @RAPTOR_NTRIPLES_TERM_TYPE_URI_REF: Internal
  * @RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE: Internal
@@ -462,7 +444,6 @@ typedef enum {
 typedef struct {
   raptor_identifier_type type;
   raptor_uri *uri;
-  raptor_uri_source uri_source;
   const unsigned char *id;
   int ordinal;
   int is_malloced;
@@ -1050,7 +1031,7 @@ raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old
 
 /* Identifier functions */
 RAPTOR_API
-raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
+raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
 RAPTOR_API
 int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API

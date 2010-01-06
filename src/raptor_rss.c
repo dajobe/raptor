@@ -1323,7 +1323,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     
     /* make a new genid for the <rdf:Seq> node */
     items = raptor_new_identifier_v2(rdf_parser->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
-                                   NULL, RAPTOR_URI_SOURCE_GENERATED,
+                                   NULL,
                                    (const unsigned char*)raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL),
                                    NULL, NULL, NULL);
   

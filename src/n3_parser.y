@@ -433,7 +433,7 @@ verb: predicate
   uri = raptor_new_uri_for_rdf_concept_v2(((raptor_parser*)rdf_parser)->world, "type");
   if(!uri)
     YYERROR;
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, NULL, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -656,7 +656,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language string=\"%s\"\n", $1);
 #endif
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, $3);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, NULL, $3);
   if(!$$)
     YYERROR;
 }
@@ -667,7 +667,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $5, $3);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, $5, $3);
     if(!$$)
       YYERROR;
   } else
@@ -681,7 +681,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, (const unsigned char*)$1, $5, $3);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, (const unsigned char*)$1, $5, $3);
     if(!$$)
       YYERROR;
   } else
@@ -695,7 +695,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($3) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, $3, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -709,7 +709,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($3) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, $3, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, $3, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -721,7 +721,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal string=\"%s\"\n", $1);
 #endif
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -739,7 +739,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   if(!uri)
     YYERROR;
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, string, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, string, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -761,7 +761,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   if(!uri)
     YYERROR;
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, RAPTOR_URI_SOURCE_ELEMENT, NULL, $1, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -775,7 +775,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, NULL, NULL, NULL, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -788,7 +788,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, RAPTOR_URI_SOURCE_ELEMENT, NULL, NULL, NULL, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, NULL, NULL, NULL, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -808,7 +808,7 @@ blank: BLANK_LITERAL
   if(!id)
     YYERROR;
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_BLANK_ID, id, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, id, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -824,7 +824,7 @@ blank: BLANK_LITERAL
     YYERROR;
   }
   
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, id, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, id, NULL, NULL, NULL);
   if(!$$) {
     if($2)
       raptor_free_sequence($2);
@@ -899,10 +899,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  first_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->first_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  first_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->first_uri), NULL, NULL, NULL, NULL);
   if(!first_identifier)
     goto err_collection;
-  rest_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->rest_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  rest_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->rest_uri), NULL, NULL, NULL, NULL);
   if(!rest_identifier)
     goto err_collection;
   
@@ -913,7 +913,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  object = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  object = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), NULL, NULL, NULL, NULL);
   if(!object)
     goto err_collection;
 
@@ -926,7 +926,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     if(!blank_id)
       goto err_collection;
 
-    blank = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, RAPTOR_URI_SOURCE_GENERATED, blank_id, NULL, NULL, NULL);
+    blank = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, blank_id, NULL, NULL, NULL);
     if(!blank)
       goto err_collection;
     
@@ -993,7 +993,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("collection\n empty\n");
 #endif
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), RAPTOR_URI_SOURCE_URI, NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, n3_parser->nil_uri), NULL, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }

@@ -50,7 +50,6 @@
  * @world: raptor_world object
  * @type: raptor_identifier_type of identifier
  * @uri: #raptor_uri of identifier (if relevant) (SHARED)
- * @uri_source: raptor_uri_source of URI (if relevant)
  * @id: string for ID or genid (if relevant) (SHARED)
  * @literal: string for literal (SHARED)
  * @literal_datatype: #raptor_uri of identifier (SHARED)
@@ -67,7 +66,6 @@ raptor_identifier*
 raptor_new_identifier_v2(raptor_world* world,
                          raptor_identifier_type type,
                          raptor_uri *uri,
-                         raptor_uri_source uri_source,
                          const unsigned char *id,
                          const unsigned char *literal,
                          raptor_uri *literal_datatype,
@@ -125,7 +123,6 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 
   dest->world = src->world;
   dest->type = src->type;
-  dest->uri_source = src->uri_source;
   dest->ordinal = src->ordinal;
 
   dest->uri = raptor_uri_copy_v2(src->world, src->uri);
@@ -205,7 +202,6 @@ raptor_set_identifier_uri(raptor_identifier *identifier, raptor_uri *uri)
 {
   identifier->uri = uri;
   identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  identifier->uri_source = RAPTOR_URI_SOURCE_URI;
 }
 
 
@@ -214,7 +210,6 @@ raptor_set_identifier_id(raptor_identifier *identifier, const unsigned char *id)
 {
   identifier->id = id;
   identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
-  identifier->uri_source = RAPTOR_URI_SOURCE_GENERATED;
 }
 
 
