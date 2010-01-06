@@ -1352,14 +1352,14 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
     return;
 
   /* Two choices for subject for Turtle */
-  statement->subject_type = t->subject->type;
+  statement->subject.type = t->subject->type;
   if(t->subject->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    statement->subject = t->subject->id;
+    statement->subject.value = t->subject->id;
   } else {
     /* RAPTOR_IDENTIFIER_TYPE_RESOURCE */
     RAPTOR_ASSERT(t->subject->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE,
                   "subject type is not resource");
-    statement->subject = t->subject->uri;
+    statement->subject.value = t->subject->uri;
   }
 
   /* Predicates are URIs but check for bad ordinals */
@@ -1371,29 +1371,29 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
   }
   
-  statement->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  statement->predicate = t->predicate->uri;
+  statement->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate.value = t->predicate->uri;
   
 
   /* Three choices for object for Turtle */
-  statement->object_type = t->object->type;
-  statement->object_literal_language = NULL;
-  statement->object_literal_datatype = NULL;
+  statement->object.type = t->object->type;
+  statement->object.literal_language = NULL;
+  statement->object.literal_datatype = NULL;
 
   if(t->object->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    statement->object = t->object->uri;
+    statement->object.value = t->object->uri;
   } else if(t->object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    statement->object = t->object->id;
+    statement->object.value = t->object->id;
   } else {
     /* RAPTOR_IDENTIFIER_TYPE_LITERAL */
     RAPTOR_ASSERT(t->object->type != RAPTOR_IDENTIFIER_TYPE_LITERAL,
                   "object type is not literal");
-    statement->object = t->object->literal;
-    statement->object_literal_language = t->object->literal_language;
-    statement->object_literal_datatype = t->object->literal_datatype;
+    statement->object.value = t->object->literal;
+    statement->object.literal_language = t->object->literal_language;
+    statement->object.literal_datatype = t->object->literal_datatype;
 
-    if(statement->object_literal_datatype)
-      statement->object_literal_language = NULL;
+    if(statement->object.literal_datatype)
+      statement->object.literal_language = NULL;
   }
 
   if(!parser->statement_handler)

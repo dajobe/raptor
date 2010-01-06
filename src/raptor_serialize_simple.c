@@ -84,58 +84,58 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
   /* from raptor_print_statement */
   raptor_iostream_write_byte(iostr, '[');
 
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    raptor_iostream_write_string(iostr, statement->subject);
+  if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    raptor_iostream_write_string(iostr, statement->subject.value);
   } else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->subject)
+    if(!statement->subject.value)
       RAPTOR_FATAL1("Statement has NULL subject URI\n");
 #endif
-    raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->subject);
+    raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->subject.value);
   }
 
   raptor_iostream_write_counted_string(iostr, ", ", 2);
 
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+  if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     raptor_iostream_write_counted_string(iostr, "[rdf:_", 6);
-    raptor_iostream_write_decimal(iostr, *((int*)statement->predicate));
+    raptor_iostream_write_decimal(iostr, *((int*)statement->predicate.value));
     raptor_iostream_write_byte(iostr, ']');
   } else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->predicate)
+    if(!statement->predicate.value)
       RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
-    raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->predicate);
+    raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->predicate.value);
   }
 
   raptor_iostream_write_counted_string(iostr, ", ", 2);
 
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
+     statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+    if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
       raptor_iostream_write_byte(iostr, '<');
       raptor_iostream_write_string(iostr, raptor_xml_literal_datatype_uri_string);
       raptor_iostream_write_byte(iostr, '>');
-    } else if(statement->object_literal_datatype) {
+    } else if(statement->object.literal_datatype) {
       raptor_iostream_write_byte(iostr, '<');
-      raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->object_literal_datatype);
+      raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->object.literal_datatype);
       raptor_iostream_write_byte(iostr, '>');
     }
     raptor_iostream_write_byte(iostr, '"');
-    raptor_iostream_write_string(iostr, statement->object);
+    raptor_iostream_write_string(iostr, statement->object.value);
     raptor_iostream_write_byte(iostr, '"');
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    raptor_iostream_write_string(iostr, statement->object);
-  else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    raptor_iostream_write_string(iostr, statement->object.value);
+  else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     raptor_iostream_write_counted_string(iostr, "[rdf:_", 6);
-    raptor_iostream_write_decimal(iostr, *((int*)statement->object));
+    raptor_iostream_write_decimal(iostr, *((int*)statement->object.value));
     raptor_iostream_write_byte(iostr, ']');
   } else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->object)
+    if(!statement->object.value)
       RAPTOR_FATAL1("Statement has NULL object URI\n");
 #endif
-    raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->object);
+    raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->object.value);
   }
 
   raptor_iostream_write_counted_string(iostr, "]\n", 2);

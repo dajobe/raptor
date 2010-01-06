@@ -1112,29 +1112,29 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   int predicate_created = 0;
   int object_created = 0;
 
-  if(!(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-       statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-       statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
+  if(!(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
+       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
     raptor_serializer_error(serializer,
                             "Do not know how to serialize node type %d\n",
-                            statement->subject_type);
+                            statement->subject.type);
     return 1;
   }  
 
   subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
                                          context->blanks,
-                                         statement->subject_type,
-                                         statement->subject,
+                                         statement->subject.type,
+                                         statement->subject.value,
                                          &subject_created);
   if(!subject) {
     return 1;
   }
 
-  object_type = statement->object_type;
+  object_type = statement->object.type;
   if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
-    if(statement->object_literal_datatype &&
+    if(statement->object.literal_datatype &&
        raptor_uri_equals_v2(serializer->world, 
-                            statement->object_literal_datatype, 
+                            statement->object.literal_datatype, 
                             context->rdf_xml_literal_uri))
       object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
   }
@@ -1152,19 +1152,19 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   }
 
   object = raptor_abbrev_node_lookup(context->nodes, object_type,
-                                     statement->object,
-                                     statement->object_literal_datatype,
-                                     statement->object_literal_language,
+                                     statement->object.value,
+                                     statement->object.literal_datatype,
+                                     statement->object.literal_language,
                                      &object_created);
   if(!object)
     return 1;          
 
 
-  if((statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
-     (statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
+  if((statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
+     (statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
     predicate = raptor_abbrev_node_lookup(context->nodes,
-                                          statement->predicate_type,
-                                          statement->predicate, NULL, NULL,
+                                          statement->predicate.type,
+                                          statement->predicate.value, NULL, NULL,
                                           &predicate_created);
     if(!predicate)
       return 1;
@@ -1177,15 +1177,15 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
       return rv;
     }
   
-  } else if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    int idx = *(int*)statement->predicate;
+  } else if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    int idx = *(int*)statement->predicate.value;
     rv = raptor_abbrev_subject_add_list_element(subject, idx, object);
     if(rv) {
       /* An ordinal might already exist at that location, the fallback
        * is to just put in the properties list */
       predicate = raptor_abbrev_node_lookup(context->nodes,
-                                            statement->predicate_type,
-                                            statement->predicate, NULL, NULL,
+                                            statement->predicate.type,
+                                            statement->predicate.value, NULL, NULL,
                                             &predicate_created);
       if(!predicate)
         return 1;
@@ -1201,7 +1201,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   } else {
     raptor_serializer_error(serializer,
                             "Do not know how to serialize node type %d\n",
-                            statement->predicate_type);
+                            statement->predicate.type);
     return 1;
   }
   

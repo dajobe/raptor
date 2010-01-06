@@ -192,22 +192,22 @@ raptor_iostream_write_statement_ntriples_v2(raptor_world* world,
 {
   raptor_iostream_write_statement_part_ntriples(world,
                                                 iostr,
-                                                statement->subject,
-                                                statement->subject_type,
+                                                statement->subject.value,
+                                                statement->subject.type,
                                                 NULL, NULL);
   raptor_iostream_write_byte(iostr, ' ');
   raptor_iostream_write_statement_part_ntriples(world,
                                                 iostr,
-                                                statement->predicate,
-                                                statement->predicate_type,
+                                                statement->predicate.value,
+                                                statement->predicate.type,
                                                 NULL, NULL);
   raptor_iostream_write_byte(iostr, ' ');
   raptor_iostream_write_statement_part_ntriples(world,
                                                 iostr,
-                                                statement->object,
-                                                statement->object_type,
-                                                statement->object_literal_datatype,
-                                                statement->object_literal_language);
+                                                statement->object.value,
+                                                statement->object.type,
+                                                statement->object.literal_datatype,
+                                                statement->object.literal_language);
   raptor_iostream_write_counted_string(iostr, " .\n", 3);
 }
 

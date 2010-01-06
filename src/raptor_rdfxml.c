@@ -1303,10 +1303,10 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
       object_uri = (raptor_uri*)empty_literal;
   }
   
-  statement->subject = subject_uri ? (void*)subject_uri : (void*)subject_id;
-  statement->subject_type = subject_type;
+  statement->subject.value = subject_uri ? (void*)subject_uri : (void*)subject_id;
+  statement->subject.type = subject_type;
 
-  statement->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   if(predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
     /* new URI object */
     uri1 = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
@@ -1314,13 +1314,13 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
     predicate_id = NULL;
     predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
-  statement->predicate = predicate_uri;
+  statement->predicate.value = predicate_uri;
   
-  statement->object = object_uri ? (void*)object_uri : (void*)object_id;
-  statement->object_type = object_type;
+  statement->object.value = object_uri ? (void*)object_uri : (void*)object_id;
+  statement->object.type = object_type;
 
-  statement->object_literal_language = language;
-  statement->object_literal_datatype = literal_datatype;
+  statement->object.literal_language = language;
+  statement->object.literal_datatype = literal_datatype;
 
 
 #ifdef RAPTOR_DEBUG_VERBOSE
@@ -1328,13 +1328,13 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
   raptor_print_statement(statement, stderr);
   fputc('\n', stderr);
 
-  if(!(subject_uri||subject_id))
+  if(!(subject_uri || subject_id))
     RAPTOR_FATAL1("Statement has no subject\n");
   
-  if(!(predicate_uri||predicate_id))
+  if(!(predicate_uri || predicate_id))
     RAPTOR_FATAL1("Statement has no predicate\n");
   
-  if(!(object_uri||object_id))
+  if(!(object_uri || object_id))
     RAPTOR_FATAL1("Statement has no object\n");
   
 #endif
@@ -1351,23 +1351,23 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
      bag_element && (bag_element->bag.uri || bag_element->bag.id)) {
     raptor_identifier* bag=&bag_element->bag;
     
-    statement->subject = bag->uri ? (void*)bag->uri : (void*)bag->id;
-    statement->subject_type = bag->type;
+    statement->subject.value = bag->uri ? (void*)bag->uri : (void*)bag->id;
+    statement->subject.type = bag->type;
 
     bag_element->last_bag_ordinal++;
 
     /* new URI object */
     uri2 = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, bag_element->last_bag_ordinal);
-    statement->predicate = uri2;
+    statement->predicate.value = uri2;
 
     if(reified && (reified->uri || reified->id)) {
-      statement->object = reified->uri ? (void*)reified->uri : (void*)reified->id;
-      statement->object_type = reified->type;
+      statement->object.value = reified->uri ? (void*)reified->uri : (void*)reified->id;
+      statement->object.type = reified->type;
     } else {
       /* reified may be NULL so do not use it */
       reified_id = (char*)raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-      statement->object = reified_id;
-      statement->object_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+      statement->object.value = reified_id;
+      statement->object.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
     }
     
     (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
@@ -1376,39 +1376,39 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
     goto generate_tidy;
 
   /* generate reified statements */
-  statement->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  statement->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  statement->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->subject.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
-  statement->object_literal_language = NULL;
+  statement->object.literal_language = NULL;
 
   if(reified_id) {
     /* reified may be NULL so do not use it */
-    statement->subject = reified_id;
-    statement->subject_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    statement->subject.value = reified_id;
+    statement->subject.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else {
-    statement->subject = reified->uri ? (void*)reified->uri : (void*)reified->id;
-    statement->subject_type = reified->type;
+    statement->subject.value = reified->uri ? (void*)reified->uri : (void*)reified->id;
+    statement->subject.type = reified->type;
   }
   
-  statement->predicate = RAPTOR_RDF_type_URI(rdf_xml_parser);
-  statement->object = RAPTOR_RDF_Statement_URI(rdf_xml_parser);
+  statement->predicate.value = RAPTOR_RDF_type_URI(rdf_xml_parser);
+  statement->object.value = RAPTOR_RDF_Statement_URI(rdf_xml_parser);
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate = RAPTOR_RDF_subject_URI(rdf_xml_parser);
-  statement->object = subject_uri ? (void*)subject_uri : (void*)subject_id;
-  statement->object_type = subject_type;
+  statement->predicate.value = RAPTOR_RDF_subject_URI(rdf_xml_parser);
+  statement->object.value = subject_uri ? (void*)subject_uri : (void*)subject_id;
+  statement->object.type = subject_type;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate = RAPTOR_RDF_predicate_URI(rdf_xml_parser);
-  statement->object = predicate_uri ? (void*)predicate_uri : (void*)predicate_id;
-  statement->object_type = predicate_type;
+  statement->predicate.value = RAPTOR_RDF_predicate_URI(rdf_xml_parser);
+  statement->object.value = predicate_uri ? (void*)predicate_uri : (void*)predicate_id;
+  statement->object.type = predicate_type;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate = RAPTOR_RDF_object_URI(rdf_xml_parser);
-  statement->object = object_uri ? (void*)object_uri : (void*)object_id;
-  statement->object_type = object_type;
-  statement->object_literal_language = language;
+  statement->predicate.value = RAPTOR_RDF_object_URI(rdf_xml_parser);
+  statement->object.value = object_uri ? (void*)object_uri : (void*)object_id;
+  statement->object.type = object_type;
+  statement->object.literal_language = language;
 
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 

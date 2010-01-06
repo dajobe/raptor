@@ -1071,16 +1071,16 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
     return 1;
   }
 
-  rss_parser->statement.subject = resource->uri ? (void*)resource->uri : (void*)resource->id;
-  rss_parser->statement.subject_type = resource->type;
+  rss_parser->statement.subject.value = resource->uri ? (void*)resource->uri : (void*)resource->id;
+  rss_parser->statement.subject.type = resource->type;
   
-  rss_parser->statement.predicate = RAPTOR_RSS_RDF_type_URI(&rss_parser->model);
-  rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.predicate.value = RAPTOR_RSS_RDF_type_URI(&rss_parser->model);
+  rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
-  rss_parser->statement.object = (void*)type_uri;
-  rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  rss_parser->statement.object_literal_language = NULL;
-  rss_parser->statement.object_literal_datatype = NULL;
+  rss_parser->statement.object.value = (void*)type_uri;
+  rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.object.literal_language = NULL;
+  rss_parser->statement.object.literal_datatype = NULL;
   
   /* Generate the statement */
   (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
@@ -1105,24 +1105,24 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
     return 1;
   }
 
-  rss_parser->statement.subject = resource->uri ? (void*)resource->uri : (void*)resource->id;
-  rss_parser->statement.subject_type = resource->type;
+  rss_parser->statement.subject.value = resource->uri ? (void*)resource->uri : (void*)resource->id;
+  rss_parser->statement.subject.type = resource->type;
   
   predicate_field = raptor_rss_items_info[block_type].predicate;
   predicate_uri = rdf_parser->world->rss_fields_info_uris[predicate_field];
 
-  rss_parser->statement.predicate = predicate_uri;
-  rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.predicate.value = predicate_uri;
+  rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   
   if(identifier->uri) { 
-    rss_parser->statement.object = identifier->uri;
-    rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;	  
+    rss_parser->statement.object.value = identifier->uri;
+    rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;	  
   } else { 
-    rss_parser->statement.object = identifier->id;
-    rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    rss_parser->statement.object.value = identifier->id;
+    rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   }
-  rss_parser->statement.object_literal_language = NULL;
-  rss_parser->statement.object_literal_datatype = NULL;
+  rss_parser->statement.object.literal_language = NULL;
+  rss_parser->statement.object.literal_datatype = NULL;
 
   (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                    &rss_parser->statement);
@@ -1145,21 +1145,21 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
     offset = bfi->offset;
     predicate_uri = rdf_parser->world->rss_fields_info_uris[bfi->field];
 
-    rss_parser->statement.predicate = predicate_uri;
+    rss_parser->statement.predicate.value = predicate_uri;
 
     if(attribute_type == RSS_BLOCK_FIELD_TYPE_URL) {
       raptor_uri *uri = block->urls[offset];
       if(uri) {
-        rss_parser->statement.object = uri;
-        rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        rss_parser->statement.object.value = uri;
+        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
         (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                          &rss_parser->statement);
       }
     } else if(attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
       const char *str = block->strings[offset];
       if(str) {
-        rss_parser->statement.object = str;
-        rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+        rss_parser->statement.object.value = str;
+        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
         (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                          &rss_parser->statement);
       }
@@ -1203,22 +1203,22 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
     if(f == RAPTOR_RSS_FIELD_ITEMS)
       continue;
 	
-    rss_parser->statement.predicate = rdf_parser->world->rss_fields_info_uris[f];
-    if(!rss_parser->statement.predicate)
+    rss_parser->statement.predicate.value = rdf_parser->world->rss_fields_info_uris[f];
+    if(!rss_parser->statement.predicate.value)
       continue;
     
-    rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
 
     for(field = item->fields[f]; field; field = field->next) {
-      rss_parser->statement.object_literal_language = NULL;
-      rss_parser->statement.object_literal_datatype = NULL;
+      rss_parser->statement.object.literal_language = NULL;
+      rss_parser->statement.object.literal_datatype = NULL;
       if(field->value) {
-        rss_parser->statement.object = field->value;
-        rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+        rss_parser->statement.object.value = field->value;
+        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
         /* FIXME - should store and emit languages */
       } else {
-        rss_parser->statement.object = field->uri;
-        rss_parser->statement.object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        rss_parser->statement.object.value = field->uri;
+        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
       }
       
       /* Generate the statement */
@@ -1248,21 +1248,21 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
     return 1;
   }
 
-  rss_parser->statement.subject = subject_identifier->uri ? (void*)subject_identifier->uri : (void*)subject_identifier->id;
-  rss_parser->statement.subject_type = subject_identifier->type;
+  rss_parser->statement.subject.value = subject_identifier->uri ? (void*)subject_identifier->uri : (void*)subject_identifier->id;
+  rss_parser->statement.subject.type = subject_identifier->type;
 
   if(!predicate_uri) {
     /* new URI object */
     puri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
     predicate_uri = puri;
   }
-  rss_parser->statement.predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  rss_parser->statement.predicate = predicate_uri;
+  rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.predicate.value = predicate_uri;
   
-  rss_parser->statement.object = object_identifier->uri ? (void*)object_identifier->uri : (void*)object_identifier->id;
-  rss_parser->statement.object_type = object_identifier->type;
-  rss_parser->statement.object_literal_language = NULL;
-  rss_parser->statement.object_literal_datatype = NULL;
+  rss_parser->statement.object.value = object_identifier->uri ? (void*)object_identifier->uri : (void*)object_identifier->id;
+  rss_parser->statement.object.type = object_identifier->type;
+  rss_parser->statement.object.literal_language = NULL;
+  rss_parser->statement.object.literal_datatype = NULL;
   
   /* Generate the statement */
   (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);

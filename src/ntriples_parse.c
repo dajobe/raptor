@@ -141,16 +141,16 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 
   /* Two choices for subject from N-Triples */
   if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
-    statement->subject = subject;
-    statement->subject_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    statement->subject.value = subject;
+    statement->subject.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else {
     subject_uri = raptor_new_uri_v2(parser->world, subject);
     if(!subject_uri) {
       raptor_parser_error(parser, "Could not create subject uri '%s', skipping", subject);
       goto cleanup;
     }
-    statement->subject = subject_uri;
-    statement->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    statement->subject.value = subject_uri;
+    statement->subject.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   }
 
   if(object_literal_datatype) {
@@ -174,28 +174,28 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     raptor_parser_error(parser, "Could not create predicate uri '%s', skipping", predicate);
     goto cleanup;
   }
-  statement->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  statement->predicate = predicate_uri;
+  statement->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate.value = predicate_uri;
   
   /* Three choices for object from N-Triples */
-  statement->object_literal_language = NULL;
-  statement->object_literal_datatype = NULL;
+  statement->object.literal_language = NULL;
+  statement->object.literal_datatype = NULL;
   if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
     object_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)object);
     if(!object_uri) {
       raptor_parser_error(parser, "Could not create object uri '%s', skipping", (const char *)object);
       goto cleanup;
     }
-    statement->object = object_uri;
-    statement->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    statement->object.value = object_uri;
+    statement->object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
-    statement->object = object;
-    statement->object_type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    statement->object.value = object;
+    statement->object.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
   } else { 
-    statement->object_type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
-    statement->object = object;
-    statement->object_literal_language = object_literal_language;
-    statement->object_literal_datatype = datatype_uri;
+    statement->object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    statement->object.value = object;
+    statement->object.literal_language = object_literal_language;
+    statement->object.literal_datatype = datatype_uri;
   }
 
   if(!parser->statement_handler)

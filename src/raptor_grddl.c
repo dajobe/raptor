@@ -520,9 +520,9 @@ raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
   grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   /* Look for a triple <uri> <uri> <uri> */
-  if(!statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-     !statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-     !statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+  if(!statement->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+     !statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+     !statement->object.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
     return;
 
 #if RAPTOR_DEBUG > 2
@@ -554,9 +554,9 @@ raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
     if(!profile_uri)
       continue;
     
-    if(raptor_uri_equals_v2(rdf_parser->world, (raptor_uri*)statement->subject, profile_uri) &&
-       raptor_uri_equals_v2(rdf_parser->world, (raptor_uri*)statement->predicate, predicate_uri)) {
-      raptor_uri* uri = (raptor_uri*)statement->object;
+    if(raptor_uri_equals_v2(rdf_parser->world, (raptor_uri*)statement->subject.value, profile_uri) &&
+       raptor_uri_equals_v2(rdf_parser->world, (raptor_uri*)statement->predicate.value, predicate_uri)) {
+      raptor_uri* uri = (raptor_uri*)statement->object.value;
       
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Matches profile URI #%d '%s'\n",

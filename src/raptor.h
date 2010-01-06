@@ -474,32 +474,42 @@ typedef struct {
 
 
 /**
- * raptor_statement:
- * @subject: triple subject data
- * @subject_type: triple subject type
- * @predicate: triple predicate data
- * @predicate_type: triple predicate type
- * @object: triple object literal string
- * @object_type: triple object type
- * @object_literal_datatype: triple object literal datatype URI (or NULL)
- * @object_literal_language: triple object literal language string (or NULL)
+ * raptor_term:
+ * @value: term value
+ * @type: term type
+ * @literal_datatype: datatype URI (or NULL) when type is ltieral
+ * @literal_language: language string (or NULL) with type is literal
  *
- * An RDF triple
+ * An RDF triple term
+ *
+ */
+typedef struct {
+  raptor_world* world;
+
+  const void *value;
+  raptor_identifier_type type;
+  raptor_uri *literal_datatype;
+  const unsigned char *literal_language;
+} raptor_term;
+
+
+/**
+ * raptor_statement:
+ * @world: world pointer
+ * @subject: statement subject
+ * @predicate: statement predicate
+ * @object: statement object
+ *
+ * An RDF triple with graph
  *
  * See #raptor_identifier for a description of how the fields may be used.
  * As returned by a parser statement_handler.
  */
 typedef struct {
   raptor_world* world;
-
-  const void *subject;
-  raptor_identifier_type subject_type;
-  const void *predicate;
-  raptor_identifier_type predicate_type;
-  const void *object;
-  raptor_identifier_type object_type;
-  raptor_uri *object_literal_datatype;
-  const unsigned char *object_literal_language;
+  raptor_term subject;
+  raptor_term predicate;
+  raptor_term object;
 } raptor_statement;
 
 

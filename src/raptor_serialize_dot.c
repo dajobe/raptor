@@ -766,32 +766,33 @@ raptor_dot_serializer_statement(raptor_serializer* serializer,
                                 const raptor_statement *statement)
 {
   /* Cache the nodes for later. */
-  raptor_dot_serializer_assert_node(serializer, statement->subject_type,
-                                    statement->subject, NULL, NULL);
-  raptor_dot_serializer_assert_node(serializer, statement->object_type,
-                                    statement->object, statement->object_literal_datatype,
-                                    statement->object_literal_language);
+  raptor_dot_serializer_assert_node(serializer, statement->subject.type,
+                                    statement->subject.value, NULL, NULL);
+  raptor_dot_serializer_assert_node(serializer, statement->object.type,
+                                    statement->object.value,
+                                    statement->object.literal_datatype,
+                                    statement->object.literal_language);
 
   raptor_iostream_write_string(serializer->iostream,
                                (const unsigned char *)"\t\"");
-  raptor_dot_serializer_write_node_type(serializer, statement->subject_type);
+  raptor_dot_serializer_write_node_type(serializer, statement->subject.type);
   raptor_dot_serializer_write_node(serializer,
-                                   statement->subject,
-                                   statement->subject_type,
+                                   statement->subject.value,
+                                   statement->subject.type,
                                    NULL, NULL);
   raptor_iostream_write_string(serializer->iostream,
                                (const unsigned char *)"\" -> \"");
-  raptor_dot_serializer_write_node_type(serializer, statement->object_type);
+  raptor_dot_serializer_write_node_type(serializer, statement->object.type);
   raptor_dot_serializer_write_node(serializer,
-                                   statement->object,
-                                   statement->object_type,
-                                   statement->object_literal_datatype,
-                                   statement->object_literal_language);
+                                   statement->object.value,
+                                   statement->object.type,
+                                   statement->object.literal_datatype,
+                                   statement->object.literal_language);
   raptor_iostream_write_string(serializer->iostream,
                                (const unsigned char *)"\" [ label=\"");
   raptor_dot_serializer_write_node(serializer,
-                                   statement->predicate,
-                                   statement->predicate_type,
+                                   statement->predicate.value,
+                                   statement->predicate.type,
                                    NULL, NULL);
   raptor_iostream_write_string(serializer->iostream,
                                (const unsigned char *)"\" ];\n");

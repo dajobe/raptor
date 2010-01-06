@@ -81,70 +81,72 @@ raptor_statement_copy(const raptor_statement *statement)
 
   s->world = statement->world;
 
-  s->subject_type = statement->subject_type;
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->subject)+1);
+  s->subject.type = statement->subject.type;
+  if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->subject.value)+1);
     if(!new_blank)
       goto oom;
-    strcpy((char*)new_blank, (const char*)statement->subject);
-    s->subject = new_blank;
-  } else if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->subject = raptor_new_uri_from_rdf_ordinal(statement->world, *((int*)statement->subject));
-    s->subject_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    strcpy((char*)new_blank, (const char*)statement->subject.value);
+    s->subject.value = new_blank;
+  } else if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    s->subject.value = raptor_new_uri_from_rdf_ordinal(statement->world, *((int*)statement->subject.value));
+    s->subject.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else
-    s->subject = raptor_uri_copy_v2(statement->world,
-                                    (raptor_uri*)statement->subject);
+    s->subject.value = raptor_uri_copy_v2(statement->world,
+                                          (raptor_uri*)statement->subject.value);
 
-  s->predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    s->predicate = raptor_new_uri_from_rdf_ordinal(statement->world, *((int*)statement->predicate));
+  s->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    s->predicate.value = raptor_new_uri_from_rdf_ordinal(statement->world,
+                                                         *((int*)statement->predicate.value));
   else
-    s->predicate = raptor_uri_copy_v2(statement->world,
-                                      (raptor_uri*)statement->predicate);
+    s->predicate.value = raptor_uri_copy_v2(statement->world,
+                                            (raptor_uri*)statement->predicate.value);
 
 
-  s->object_type = statement->object_type;
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+  s->object.type = statement->object.type;
+  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
+     statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
     unsigned char *string;
     char *language = NULL;
     raptor_uri *uri = NULL;
     
-    string = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->object)+1);
+    string = (unsigned char*)RAPTOR_MALLOC(cstring,
+                                           strlen((char*)statement->object.value)+1);
     if(!string)
       goto oom;
-    strcpy((char*)string, (const char*)statement->object);
-    s->object = string;
+    strcpy((char*)string, (const char*)statement->object.value);
+    s->object.value = string;
 
-    if(statement->object_literal_language) {
-      language = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)statement->object_literal_language)+1);
+    if(statement->object.literal_language) {
+      language = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)statement->object.literal_language)+1);
       if(!language)
         goto oom;
-      strcpy(language, (const char*)statement->object_literal_language);
-      s->object_literal_language = (const unsigned char*)language;
+      strcpy(language, (const char*)statement->object.literal_language);
+      s->object.literal_language = (const unsigned char*)language;
     }
 
-    if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+    if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
       /* nop */
-    } else if(statement->object_literal_datatype) {
+    } else if(statement->object.literal_datatype) {
       uri = raptor_uri_copy_v2(statement->world,
-                               (raptor_uri*)statement->object_literal_datatype);
-      s->object_literal_datatype = uri;
+                               (raptor_uri*)statement->object.literal_datatype);
+      s->object.literal_datatype = uri;
     }
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    char *blank = (char*)statement->object;
+  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    char *blank = (char*)statement->object.value;
     unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen(blank)+1);
     if(!new_blank)
       goto oom;
     strcpy((char*)new_blank, (const char*)blank);
-    s->object = new_blank;
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->object = raptor_new_uri_from_rdf_ordinal(statement->world, *((int*)statement->object));
-    s->object_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    s->object.value = new_blank;
+  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    s->object.value = raptor_new_uri_from_rdf_ordinal(statement->world, *((int*)statement->object.value));
+    s->object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else {
     raptor_uri *uri = raptor_uri_copy_v2(statement->world,
-                                         (raptor_uri*)statement->object);
-    s->object = uri;
+                                         (raptor_uri*)statement->object.value);
+    s->object.value = uri;
   }
 
   return s;
@@ -165,33 +167,33 @@ raptor_statement_copy(const raptor_statement *statement)
 void
 raptor_free_statement(raptor_statement *statement)
 {
-  if(statement->subject) {
-    if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
-      raptor_free_uri_v2(statement->world, (raptor_uri*)statement->subject);
+  if(statement->subject.value) {
+    if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+      raptor_free_uri_v2(statement->world, (raptor_uri*)statement->subject.value);
     else
-      RAPTOR_FREE(cstring, (void*)statement->subject);
+      RAPTOR_FREE(cstring, (void*)statement->subject.value);
   }
 
-  if(statement->predicate) {
-    if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_PREDICATE ||
-       statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
-      raptor_free_uri_v2(statement->world, (raptor_uri*)statement->predicate);
+  if(statement->predicate.value) {
+    if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE ||
+       statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+      raptor_free_uri_v2(statement->world, (raptor_uri*)statement->predicate.value);
     else
-      RAPTOR_FREE(cstring, (void*)statement->predicate);
+      RAPTOR_FREE(cstring, (void*)statement->predicate.value);
   }
 
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
-    if(statement->object)
-      raptor_free_uri_v2(statement->world, (raptor_uri*)statement->object);
+  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+    if(statement->object.value)
+      raptor_free_uri_v2(statement->world, (raptor_uri*)statement->object.value);
   } else {
-    if(statement->object)
-      RAPTOR_FREE(cstring, (void*)statement->object);
+    if(statement->object.value)
+      RAPTOR_FREE(cstring, (void*)statement->object.value);
 
-    if(statement->object_literal_language)
-      RAPTOR_FREE(cstring, (void*)statement->object_literal_language);
-    if(statement->object_literal_datatype)
+    if(statement->object.literal_language)
+      RAPTOR_FREE(cstring, (void*)statement->object.literal_language);
+    if(statement->object.literal_datatype)
       raptor_free_uri_v2(statement->world,
-                         (raptor_uri*)statement->object_literal_datatype);
+                         (raptor_uri*)statement->object.literal_datatype);
   }
 
   RAPTOR_FREE(raptor_statement, statement);
@@ -210,58 +212,58 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 {
   fputc('[', stream);
 
-  if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-    fputs((const char*)statement->subject, stream);
+  if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    fputs((const char*)statement->subject.value, stream);
   } else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->subject)
+    if(!statement->subject.value)
       RAPTOR_FATAL1("Statement has NULL subject URI\n");
 #endif
     fputs((const char*)raptor_uri_as_string_v2(statement->world,
-                                               (raptor_uri*)statement->subject), stream);
+                                               (raptor_uri*)statement->subject.value), stream);
   }
 
   fputs(", ", stream);
 
-  if(statement->predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate));
+  if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate.value));
   else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->predicate)
+    if(!statement->predicate.value)
       RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
     fputs((const char*)raptor_uri_as_string_v2(statement->world,
-                                               (raptor_uri*)statement->predicate), stream);
+                                               (raptor_uri*)statement->predicate.value), stream);
   }
 
   fputs(", ", stream);
 
-  if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
+     statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+    if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
       fputc('<', stream);
       fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
       fputc('>', stream);
-    } else if(statement->object_literal_datatype) {
+    } else if(statement->object.literal_datatype) {
       fputc('<', stream);
       fputs((const char*)raptor_uri_as_string_v2(statement->world,
-                                                 (raptor_uri*)statement->object_literal_datatype), stream);
+                                                 (raptor_uri*)statement->object.literal_datatype), stream);
       fputc('>', stream);
     }
     fputc('"', stream);
-    fputs((const char*)statement->object, stream);
+    fputs((const char*)statement->object.value, stream);
     fputc('"', stream);
-  } else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-    fputs((const char*)statement->object, stream);
-  else if(statement->object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "[rdf:_%d]", *((int*)statement->object));
+  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    fputs((const char*)statement->object.value, stream);
+  else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
+    fprintf(stream, "[rdf:_%d]", *((int*)statement->object.value));
   else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->object)
+    if(!statement->object.value)
       RAPTOR_FATAL1("Statement has NULL object URI\n");
 #endif
     fputs((const char*)raptor_uri_as_string_v2(statement->world,
-                                               (raptor_uri*)statement->object), stream);
+                                               (raptor_uri*)statement->object.value), stream);
   }
 
   fputc(']', stream);
@@ -513,22 +515,22 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 {
   raptor_print_statement_part_as_ntriples(statement->world,
                                           stream,
-                                          statement->subject,
-                                          statement->subject_type,
+                                          statement->subject.value,
+                                          statement->subject.type,
                                           NULL, NULL);
   fputc(' ', stream);
   raptor_print_statement_part_as_ntriples(statement->world,
                                           stream,
-                                          statement->predicate,
-                                          statement->predicate_type,
+                                          statement->predicate.value,
+                                          statement->predicate.type,
                                           NULL, NULL);
   fputc(' ', stream);
   raptor_print_statement_part_as_ntriples(statement->world,
                                           stream,
-                                          statement->object,
-                                          statement->object_type,
-                                          statement->object_literal_datatype,
-                                          statement->object_literal_language);
+                                          statement->object.value,
+                                          statement->object.type,
+                                          statement->object.literal_datatype,
+                                          statement->object.literal_language);
   fputs(" .", stream);
 }
 
@@ -554,72 +556,72 @@ raptor_statement_compare(const raptor_statement *s1,
 {
   int d = 0;
 
-  if(s1->subject && s2->subject) {
-    d = s1->subject_type != s2->subject_type;
+  if(s1->subject.value && s2->subject.value) {
+    d = s1->subject.type != s2->subject.type;
     if(d)
       return d;
 
     /* subjects are URIs or blank nodes */
-    if(s1->subject_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-      d = strcmp((char*)s1->subject, (char*)s2->subject);
+    if(s1->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+      d = strcmp((char*)s1->subject.value, (char*)s2->subject.value);
     else
       d = raptor_uri_compare_v2(s1->world,
-                                (raptor_uri*)s1->subject,
-                                (raptor_uri*)s2->subject);
-  } else if(s1->subject || s2->subject)
-    d = (!s1->subject ? -1 : 1);
+                                (raptor_uri*)s1->subject.value,
+                                (raptor_uri*)s2->subject.value);
+  } else if(s1->subject.value || s2->subject.value)
+    d = (!s1->subject.value ? -1 : 1);
   if(d)
     return d;
   
 
   /* predicates are URIs */
-  if(s1->predicate && s2->predicate) {
+  if(s1->predicate.value && s2->predicate.value) {
     d = raptor_uri_compare_v2(s1->world,
-                              (raptor_uri*)s1->predicate,
-                              (raptor_uri*)s2->predicate);
-  } else if(s1->predicate || s2->predicate)
-    d = (!s1->predicate ? -1 : 1);
+                              (raptor_uri*)s1->predicate.value,
+                              (raptor_uri*)s2->predicate.value);
+  } else if(s1->predicate.value || s2->predicate.value)
+    d = (!s1->predicate.value ? -1 : 1);
   if(d)
     return d;
 
 
   /* objects are URIs or blank nodes or literals */
-  if(s1->object && s2->object) {
-    if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-       s1->object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-      d = strcmp((char*)s1->object, (char*)s2->object);
+  if(s1->object.value && s2->object.value) {
+    if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
+       s1->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+      d = strcmp((char*)s1->object.value, (char*)s2->object.value);
       if(d)
         return d;
 
-      if(s1->object_literal_language && s2->object_literal_language) {
+      if(s1->object.literal_language && s2->object.literal_language) {
         /* both have a language */
-        d = strcmp((char*)s1->object_literal_language,
-                 (char*)s2->object_literal_language);
-      } else if(s1->object_literal_language || s2->object_literal_language)
+        d = strcmp((char*)s1->object.literal_language,
+                   (char*)s2->object.literal_language);
+      } else if(s1->object.literal_language || s2->object.literal_language)
         /* only one has a language; the language-less one is earlier */
-        d = (!s1->object_literal_language ? -1 : 1);
+        d = (!s1->object.literal_language ? -1 : 1);
       if(d)
         return d;
 
-      if(s1->object_literal_datatype && s2->object_literal_datatype) {
+      if(s1->object.literal_datatype && s2->object.literal_datatype) {
         /* both have a datatype */
         d = raptor_uri_compare_v2(s1->world,
-                                  (raptor_uri*)s1->object_literal_datatype,
-                                  (raptor_uri*)s2->object_literal_datatype);
-      } else if(s1->object_literal_datatype || s2->object_literal_datatype)
+                                  (raptor_uri*)s1->object.literal_datatype,
+                                  (raptor_uri*)s2->object.literal_datatype);
+      } else if(s1->object.literal_datatype || s2->object.literal_datatype)
         /* only one has a datatype; the datatype-less one is earlier */
-        d = (!s1->object_literal_datatype ? -1 : 1);
+        d = (!s1->object.literal_datatype ? -1 : 1);
       if(d)
         return d;
 
-    } else if(s1->object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
-      d = strcmp((char*)s1->object, (char*)s2->object);
+    } else if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+      d = strcmp((char*)s1->object.value, (char*)s2->object.value);
     else
       d = raptor_uri_compare_v2(s1->world,
-                                (raptor_uri*)s1->object,
-                                (raptor_uri*)s2->object);
-  } else if(s1->object || s2->object)
-    d = (!s1->object ? -1 : 1);
+                                (raptor_uri*)s1->object.value,
+                                (raptor_uri*)s2->object.value);
+  } else if(s1->object.value || s2->object.value)
+    d = (!s1->object.value ? -1 : 1);
 
   return d;
 }

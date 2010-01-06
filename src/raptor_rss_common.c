@@ -581,10 +581,10 @@ raptor_rss_item_equals_statement_subject(const raptor_rss_item *item,
 {
   if(item->identifier.uri)
     return raptor_uri_equals_v2(item->world,
-                                (raptor_uri*)statement->subject,
+                                (raptor_uri*)statement->subject.value,
                                 item->identifier.uri);
   
-  return !strcmp((const char*)statement->subject,
+  return !strcmp((const char*)statement->subject.value,
                  (const char*)item->identifier.id);
 }
 
