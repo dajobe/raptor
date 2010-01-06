@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:ex="http://example.org/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Statement rdf:about="http://example.org/ns#foo">
+    <rdf:object rdf:nodeID="genid1"/>
+    <rdf:predicate rdf:resource="http://example.org/property"/>
+    <rdf:subject rdf:resource="http://example.org/resource"/>
+  </rdf:Statement>
+  <rdf:Description rdf:about="http://example.org/resource">
+    <ex:property rdf:nodeID="genid1"/>
+  </rdf:Description>
+  <ns1:List xmlns:ns1="http://www.daml.org/2001/03/daml+oil#" rdf:nodeID="genid1">
+    <ns1:first rdf:resource="http://example.org/resource1"/>
+    <ns1:rest rdf:resource="http://www.daml.org/2001/03/daml+oil#nil"/>
+  </ns1:List>
+</rdf:RDF>
