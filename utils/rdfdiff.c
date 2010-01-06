@@ -354,47 +354,22 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     }
   }
 
-  if(s1->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL &&
-     s2->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) {
-
-    /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(world,
-                                        *(int *)s1->predicate.value, 
-                                        (raptor_uri *)s2->predicate.value)) {
-      rv = 0;
-      goto done;
-    }
-
-  } else if(s1->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE &&
-            s2->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-
-    /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(world,
-                                        *(int *)s2->predicate.value,
-                                        (raptor_uri *)s1->predicate.value)) {
-      rv = 0;
-      goto done;
-    }
-      
-  } else {
-    
-    if(s1->predicate.type != s2->predicate.type) {
-      rv = 0;
-      goto done;
-    }
+  if(s1->predicate.type != s2->predicate.type) {
+    rv = 0;
+    goto done;
+  }
   
-    if(s1->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-      if(*(int *)s1->predicate.value != *(int *)s2->predicate.value) {
-        rv = 0;
-        goto done;
-      }
-    } else {
-      if(!raptor_uri_equals_v2(world,
-                               (raptor_uri *)s1->predicate.value,
-                               (raptor_uri *)s2->predicate.value)) {
-        rv = 0;
-        goto done;
-      }
+  if(s1->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
+    if(*(int *)s1->predicate.value != *(int *)s2->predicate.value) {
+      rv = 0;
+      goto done;
+    }
+   } else {
+    if(!raptor_uri_equals_v2(world,
+                             (raptor_uri *)s1->predicate.value,
+                             (raptor_uri *)s2->predicate.value)) {
+      rv = 0;
+      goto done;
     }
   }
   
