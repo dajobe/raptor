@@ -1,5 +1,24 @@
 2010-01-06  Dave Beckett <dave@dajobe.org>
 
+	* src/n3_parser.y, src/raptor.h, src/raptor_identifier.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize_rss.c,
+	src/raptor_xsd.c, src/turtle_parser.y:
+	Deleted raptor_uri_source enum and removed from raptor_identifier.
+
+	Only in RDF/XML parser and not used for anything public.
+
+	(raptor_new_identifier_v2): Delete uri_source arg.
+
+	(raptor_copy_identifier, raptor_set_identifier_uri,
+	raptor_set_identifier_id): Remove assignments to uri_source field.
+
+	(raptor_rdfxml_generate_statement): Remove 3 uri_source args.
+
+	(raptor_rss10_emit_item): Remove assignment to uri_source field.
+
+	Change all calls to raptor_new_identifier_v2() and
+	raptor_rdfxml_generate_statement() in the RDF/XML parser.
+
 	* src/n3_parser.y, src/ntriples_parse.c, src/raptor.h,
 	src/raptor_grddl.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
 	src/raptor_rss.c, src/raptor_rss_common.c,
