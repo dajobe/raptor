@@ -191,7 +191,6 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
                                (const unsigned char*)"\"subject\" : ");
   switch(statement->subject.type) {
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_json_writer_uri_object(context->json_writer,
                                     (raptor_uri*)statement->subject.value);
       break;
@@ -225,7 +224,6 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
                                (const unsigned char*)"\"object\" : ");
   switch(statement->object.type) {
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_json_writer_uri_object(context->json_writer,
                                     (raptor_uri*)statement->object.value);
       break;
@@ -315,7 +313,6 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
     /* subject */
     switch(s1->subject.type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
         raptor_json_writer_key_uri_value(context->json_writer, 
                                          NULL, 0,
                                          (raptor_uri*)s1->subject.value);
@@ -385,7 +382,6 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   /* object */
   switch(s1->object.type) {
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_json_writer_uri_object(context->json_writer,
                                     (raptor_uri*)s1->object.value);
       raptor_json_writer_newline(context->json_writer);

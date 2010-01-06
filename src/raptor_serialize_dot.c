@@ -89,7 +89,6 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
   
   switch (node->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
         raptor_free_uri_v2(node->world, node->value.resource.uri);
         break;
           
@@ -145,7 +144,6 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
 
   switch (node->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
         rv = raptor_uri_equals_v2(node->world,
                                   node->value.resource.uri,
                                   (raptor_uri*)node_data);
@@ -233,10 +231,6 @@ raptor_dot_serializer_new_node(raptor_world* world,
     node->type = node_type;
     
     switch (node_type) {
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        node->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-        /* intentional fall through */
-
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
         node->value.resource.uri = raptor_uri_copy_v2(world, (raptor_uri*)node_data);
         break;
@@ -406,7 +400,6 @@ raptor_dot_serializer_write_node_type(raptor_serializer * serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_iostream_write_byte(serializer->iostream, 'R');
       break;
 
@@ -485,7 +478,6 @@ raptor_dot_serializer_write_node(raptor_serializer * serializer,
       break;
   
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       raptor_dot_serializer_write_uri(serializer, (raptor_uri*)term);
       break;
       
@@ -514,7 +506,6 @@ raptor_dot_serializer_assert_node(raptor_serializer* serializer,
   /* Which list are we searching? */
   switch(node_type) {
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       seq = context->resources;
       break;
 
@@ -622,7 +613,6 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
     case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:

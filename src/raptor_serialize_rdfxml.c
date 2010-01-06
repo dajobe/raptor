@@ -376,8 +376,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     predicate_ns = context->rdf_nspace;
     sprintf((char*)ordinal_name, "_%d", *((int*)statement->predicate.value));
     name = ordinal_name;
-  } else if((statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
-     (statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
+  } else if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
     unsigned char *p;
     size_t uri_len;
     size_t name_len = 1;
@@ -495,7 +494,6 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       raptor_serializer_error(serializer, "Cannot serialize a triple with a literal subject\n");
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       raptor_serializer_error(serializer, "Cannot serialize a triple with subject node type %d\n", statement->subject.type);
@@ -649,7 +647,6 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       raptor_serializer_error(serializer, "Cannot serialize a triple with object node type %d\n", object_type);

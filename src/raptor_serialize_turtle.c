@@ -351,8 +351,6 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
 
       case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
         /* ordinals should never appear as an object with current parsers */
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        /* predicates should never appear as an object */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -443,8 +441,6 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
 
       case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
         /* ordinals should never appear as an object with current parsers */
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        /* predicates should never appear as an object */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -607,8 +603,6 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
 
       case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
         /* ordinals should never appear as an object with current parsers */
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-        /* predicates should never appear as an object */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -1160,8 +1154,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     return 1;          
 
 
-  if((statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) ||
-     (statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)) {
+  if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
     predicate = raptor_abbrev_node_lookup(context->nodes,
                                           statement->predicate.type,
                                           statement->predicate.value, NULL, NULL,

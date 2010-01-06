@@ -77,9 +77,6 @@ raptor_new_abbrev_node(raptor_world* world,
     node->type = node_type;
     
     switch (node_type) {
-        case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
-          node->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-          /* intentional fall through */
         case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
           node->value.resource.uri = raptor_uri_copy_v2(world, (raptor_uri*)node_data);
           break;
@@ -149,7 +146,6 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
   
   switch (node->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
         raptor_free_uri_v2(node->world, node->value.resource.uri);
         break;
           
@@ -208,7 +204,6 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 
   switch (node1->type) {
       case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-      case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
         rv = raptor_uri_compare_v2(node1->world,
                                    node1->value.resource.uri,
                                    node2->value.resource.uri);

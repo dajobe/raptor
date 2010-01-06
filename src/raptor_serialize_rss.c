@@ -354,9 +354,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       if(!rss_serializer->world->rss_fields_info_uris[f])
         continue;
       
-      if((s->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-          s->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) &&
-          s->object.type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
+      if(s->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+         s->object.type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
          raptor_uri_equals_v2(rss_serializer->world, 
                               (raptor_uri*)s->predicate.value,
                               rss_serializer->world->rss_fields_info_uris[f])) {
@@ -664,8 +663,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
       if(!rss_serializer->world->rss_fields_info_uris[f])
         continue;
 
-      if((s->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-          s->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE) &&
+      if(s->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
          raptor_uri_equals_v2(rss_serializer->world, 
                               (raptor_uri*)s->predicate.value,
                               rss_serializer->world->rss_fields_info_uris[f])) {

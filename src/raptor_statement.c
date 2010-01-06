@@ -175,8 +175,7 @@ raptor_free_statement(raptor_statement *statement)
   }
 
   if(statement->predicate.value) {
-    if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_PREDICATE ||
-       statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
       raptor_free_uri_v2(statement->world, (raptor_uri*)statement->predicate.value);
     else
       RAPTOR_FREE(cstring, (void*)statement->predicate.value);
@@ -381,7 +380,6 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       break;
   
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       uri_string = raptor_uri_as_counted_string_v2(world,
                                                    (raptor_uri*)term, &uri_len);
       len = 2+uri_len;
@@ -488,7 +486,6 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
       break;
   
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
-    case RAPTOR_IDENTIFIER_TYPE_PREDICATE:
       fputc('<', stream);
       raptor_print_ntriples_string(stream, raptor_uri_as_string_v2(world, (raptor_uri*)term), '\0');
       fputc('>', stream);
