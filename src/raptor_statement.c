@@ -98,8 +98,7 @@ raptor_statement_copy(const raptor_statement *statement)
   
 
   s->object.type = statement->object.type;
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     unsigned char *string;
     char *language = NULL;
     raptor_uri *uri = NULL;
@@ -119,9 +118,7 @@ raptor_statement_copy(const raptor_statement *statement)
       s->object.literal_language = (const unsigned char*)language;
     }
 
-    if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-      /* nop */
-    } else if(statement->object.literal_datatype) {
+    if(statement->object.literal_datatype) {
       uri = raptor_uri_copy_v2(statement->world,
                                (raptor_uri*)statement->object.literal_datatype);
       s->object.literal_datatype = uri;
@@ -223,13 +220,8 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 
   fputs(", ", stream);
 
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-      fputc('<', stream);
-      fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
-      fputc('>', stream);
-    } else if(statement->object.literal_datatype) {
+  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+    if(statement->object.literal_datatype) {
       fputc('<', stream);
       fputs((const char*)raptor_uri_as_string_v2(statement->world,
                                                  (raptor_uri*)statement->object.literal_datatype), stream);
@@ -292,16 +284,13 @@ raptor_statement_part_as_counted_string(raptor_world* world,
   
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       term_len = strlen((const char*)term);
       len = 2+term_len;
       if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
         language_len = strlen((const char*)literal_language);
         len+= language_len+1;
       }
-      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
-        len += 4+raptor_xml_literal_datatype_uri_string_len;
-      else if(literal_datatype) {
+      if(literal_datatype) {
         uri_string = raptor_uri_as_counted_string_v2(world,
                                                      (raptor_uri*)literal_datatype, &uri_len);
         len += 4+uri_len;
@@ -323,14 +312,7 @@ raptor_statement_part_as_counted_string(raptor_world* world,
         s+= language_len;
       }
 
-      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-        *s++ ='^';
-        *s++ ='^';
-        *s++ ='<';
-        strcpy((char*)s, (const char*)raptor_xml_literal_datatype_uri_string);
-        s+= raptor_xml_literal_datatype_uri_string_len;
-        *s++ ='>';
-      } else if(literal_datatype) {
+      if(literal_datatype) {
         *s++ ='^';
         *s++ ='^';
         *s++ ='<';
@@ -428,7 +410,6 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
 {
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       fputc('"', stream);
       raptor_print_ntriples_string(stream, (const unsigned char*)term, '"');
       fputc('"', stream);
@@ -436,11 +417,7 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
         fputc('@', stream);
         fputs((const char*)literal_language, stream);
       }
-      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-        fputs("^^<", stream);
-        fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
-        fputc('>', stream);
-      } else if(literal_datatype) {
+      if(literal_datatype) {
         fputs("^^<", stream);
         fputs((const char*)raptor_uri_as_string_v2(world,
                                                    (raptor_uri*)literal_datatype), stream);
@@ -553,8 +530,7 @@ raptor_statement_compare(const raptor_statement *s1,
 
   /* objects are URIs or blank nodes or literals */
   if(s1->object.value && s2->object.value) {
-    if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-       s1->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+    if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
       d = strcmp((char*)s1->object.value, (char*)s2->object.value);
       if(d)
         return d;

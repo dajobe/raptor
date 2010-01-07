@@ -221,17 +221,14 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
     return;
   }
   
-  if(identifier->type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+  if(identifier->type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     fputc('"', stream);
     fputs((const char*)identifier->literal, stream);
     fputc('"', stream);
     if(identifier->literal_language)
       fprintf(stream, "@%s", identifier->literal_language);
     fputc('<', stream);
-    if(identifier->type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
-      fputs((const char*)raptor_xml_literal_datatype_uri_string, stream);
-    else if(identifier->literal_datatype)
+    if(identifier->literal_datatype)
       fputs((const char*)raptor_uri_as_string_v2(identifier->world, identifier->literal_datatype), stream);
     fputc('>', stream);
   } else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)

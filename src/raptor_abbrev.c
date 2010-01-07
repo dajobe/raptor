@@ -91,7 +91,6 @@ raptor_new_abbrev_node(raptor_world* world,
           break;
           
         case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-        case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
           string = (unsigned char*)RAPTOR_MALLOC(literal,
                                                  strlen((char*)node_data)+1);
           if(!string)
@@ -150,7 +149,6 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
         RAPTOR_FREE(literal, node->value.literal.string);
 
         if(node->value.literal.datatype)
@@ -210,8 +208,6 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-
         if((char *)node1->value.literal.string != NULL &&
             (char *)node2->value.literal.string != NULL) {
 

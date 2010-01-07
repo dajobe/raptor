@@ -367,7 +367,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   raptor_uri* base_uri = NULL;
   raptor_identifier_type object_type;
   int allocated = 1;
-
+  int object_is_parseTypeLiteral = 0;
+  
   if(raptor_rdfxml_ensure_writen_header(serializer, context))
     return 1;
 
@@ -476,7 +477,6 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_serializer_error(serializer, "Cannot serialize a triple with a literal subject\n");
       break;
 
@@ -509,13 +509,11 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   object_type = statement->object.type;
   switch(object_type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+      object_is_parseTypeLiteral = 0;
       if(statement->object.literal_datatype &&
          raptor_uri_equals_v2(serializer->world, statement->object.literal_datatype,
-                           context->rdf_xml_literal_uri))
-        object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
-
-      /* FALLTHROUGH */
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
+                              context->rdf_xml_literal_uri))
+        object_is_parseTypeLiteral = 1;
 
       if(statement->object.literal_language) {
         attrs[attrs_count] = raptor_new_qname(context->nstack,
@@ -529,7 +527,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       }
       len = strlen((const char*)statement->object.value);
 
-      if(object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+      if(object_is_parseTypeLiteral) {
         attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
         if(!attrs[attrs_count])
           goto oom;

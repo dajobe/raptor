@@ -104,13 +104,8 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
 
   raptor_iostream_write_counted_string(iostr, ", ", 2);
 
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-    if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-      raptor_iostream_write_byte(iostr, '<');
-      raptor_iostream_write_string(iostr, raptor_xml_literal_datatype_uri_string);
-      raptor_iostream_write_byte(iostr, '>');
-    } else if(statement->object.literal_datatype) {
+  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+    if(statement->object.literal_datatype) {
       raptor_iostream_write_byte(iostr, '<');
       raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->object.literal_datatype);
       raptor_iostream_write_byte(iostr, '>');

@@ -145,7 +145,9 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     if(triple->language)
       s->object.literal_language = (const unsigned char*)triple->language;
   } else if(triple->object_type == RDF_TYPE_XML_LITERAL) {
-    s->object.type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
+    s->object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    datatype_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)raptor_xml_literal_datatype_uri_string);
+    s->object.literal_datatype = datatype_uri;
   } else if(triple->object_type == RDF_TYPE_TYPED_LITERAL) {
     s->object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
     if(triple->language)

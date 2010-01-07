@@ -127,7 +127,6 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
 
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_iostream_write_byte(iostr, '"');
       raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, strlen((const char*)term), '"');
       raptor_iostream_write_byte(iostr, '"');
@@ -135,11 +134,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
         raptor_iostream_write_byte(iostr, '@');
         raptor_iostream_write_string(iostr, literal_language);
       }
-      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-        raptor_iostream_write_counted_string(iostr, "^^<", 3);
-        raptor_iostream_write_string(iostr, raptor_xml_literal_datatype_uri_string);
-        raptor_iostream_write_byte(iostr, '>');
-      } else if(literal_datatype) {
+      if(literal_datatype) {
         raptor_iostream_write_counted_string(iostr, "^^<", 3);
         raptor_iostream_write_string(iostr, raptor_uri_as_string_v2(world, (raptor_uri*)literal_datatype));
         raptor_iostream_write_byte(iostr, '>');

@@ -201,7 +201,6 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -228,7 +227,6 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
       break;
           
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_json_writer_literal_object(context->json_writer,
                                         (unsigned char*)statement->object.value,
                                         (unsigned char*)statement->object.literal_language, 
@@ -325,7 +323,6 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         break;
         
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL2("Unsupported statement subject identifier type %d\n",
@@ -385,7 +382,6 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       break;
           
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_json_writer_literal_object(context->json_writer,
                                         (unsigned char*)s1->object.value,
                                         (unsigned char*)s1->object.literal_language, 

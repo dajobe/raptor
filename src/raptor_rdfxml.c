@@ -1291,8 +1291,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
   if(rdf_parser->failed)
     return;
 
-  if((object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
-      object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) &&
+  if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL &&
      !literal_datatype) {
     language = raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
     if(!object_uri)

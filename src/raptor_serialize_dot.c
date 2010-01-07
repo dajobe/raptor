@@ -97,7 +97,6 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
         RAPTOR_FREE(literal, node->value.literal.string);
 
         if(node->value.literal.datatype)
@@ -153,8 +152,6 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-
         if((char*)node->value.literal.string != NULL &&
            (char*)node_data != NULL) {
 
@@ -239,7 +236,6 @@ raptor_dot_serializer_new_node(raptor_world* world,
         break;
         
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
         string = (unsigned char*)RAPTOR_MALLOC(literal,
                                                strlen((char*)node_data)+1);
         strcpy((char*)string, (const char*)node_data);
@@ -386,7 +382,6 @@ raptor_dot_serializer_write_node_type(raptor_serializer * serializer,
 {
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_iostream_write_byte(serializer->iostream, 'L');
       break;
 
@@ -447,18 +442,13 @@ raptor_dot_serializer_write_node(raptor_serializer * serializer,
                                  const unsigned char * literal_language) {
   switch(type) {
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       raptor_dot_iostream_write_string(serializer->iostream, (const unsigned char*)term);
       if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
         raptor_iostream_write_byte(serializer->iostream, '|');
         raptor_iostream_write_string(serializer->iostream, "Language: ");
         raptor_iostream_write_string(serializer->iostream, literal_language);
       }
-      if(type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
-        raptor_iostream_write_byte(serializer->iostream, '|');
-        raptor_iostream_write_string(serializer->iostream, "Datatype: ");
-        raptor_iostream_write_string(serializer->iostream, raptor_xml_literal_datatype_uri_string);
-      } else if(literal_datatype) {
+      if(literal_datatype) {
         raptor_iostream_write_byte(serializer->iostream, '|');
         raptor_iostream_write_string(serializer->iostream, "Datatype: ");
         raptor_dot_serializer_write_uri(serializer, (raptor_uri*)literal_datatype);
@@ -507,7 +497,6 @@ raptor_dot_serializer_assert_node(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_LITERAL:
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
       seq = context->literals;
       break;
 
@@ -605,7 +594,6 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       break;

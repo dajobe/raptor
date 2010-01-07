@@ -95,9 +95,6 @@ static int raptor_turtle_emit_resource(raptor_serializer *serializer,
 static int raptor_turtle_emit_literal(raptor_serializer *serializer,
                                       raptor_abbrev_node* node,
                                       int depth);
-static int raptor_turtle_emit_xml_literal(raptor_serializer *serializer,
-                                          raptor_abbrev_node* node,
-                                          int depth);
 static int raptor_turtle_emit_blank(raptor_serializer *serializer,
                                     raptor_abbrev_node* node,
                                     int depth);
@@ -210,45 +207,6 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
 
 
 /*
- * raptor_turtle_emit_xml_literal:
- * @serializer: #raptor_serializer object
- * @node: XML literal node
- * @depth: depth into tree
- * 
- * Emit a description of a literal using an XML Element
- * 
- * Return value: non-0 on failure
- **/
-static int
-raptor_turtle_emit_xml_literal(raptor_serializer *serializer,
-                               raptor_abbrev_node* node,
-                               int depth) 
-{
-  raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
-  raptor_turtle_writer *turtle_writer = context->turtle_writer;
-  raptor_uri* type_uri;
-  int rc = 0;
-  
-  RAPTOR_DEBUG5("Emitting XML literal node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
-
-  if(node->type != RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)
-    return 1;
-
-  type_uri = raptor_new_uri_v2(serializer->world, (const unsigned char*)
-    "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral");
-  
-  rc = raptor_turtle_writer_literal(turtle_writer, context->nstack,
-                                  node->value.literal.string, NULL, type_uri);
-
-  raptor_free_uri_v2(serializer->world, type_uri);
-
-  return rc;
-}
-
-
-/*
  * raptor_turtle_emit_blank:
  * @serializer: #raptor_serializer object
  * @node: blank node
@@ -341,10 +299,6 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
         rv = raptor_turtle_emit_literal(serializer, object, depth+1);
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-        rv = raptor_turtle_emit_xml_literal(serializer, object, depth+1);
-        break;
-          
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
         rv = raptor_turtle_emit_blank(serializer, object, depth+1);
         break;
@@ -427,10 +381,6 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
           
       case RAPTOR_IDENTIFIER_TYPE_LITERAL:
         rv = raptor_turtle_emit_literal(serializer, object, depth+1);
-        break;
-          
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-        rv = raptor_turtle_emit_xml_literal(serializer, object, depth+1);
         break;
           
       case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
@@ -577,10 +527,6 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         rv = raptor_turtle_emit_blank(serializer, object, depth+1);
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
-        rv = raptor_turtle_emit_xml_literal(serializer, object, depth+1);
-        break;
-
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -1089,19 +1035,10 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   }
 
   object_type = statement->object.type;
-  if(object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
-    if(statement->object.literal_datatype &&
-       raptor_uri_equals_v2(serializer->world, 
-                            statement->object.literal_datatype, 
-                            context->rdf_xml_literal_uri))
-      object_type = RAPTOR_IDENTIFIER_TYPE_XML_LITERAL;
-  }
-
 
   if(!(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
        object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-       object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
-       object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)) {
+       object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL)) {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with object node type %d\n",
                             object_type);

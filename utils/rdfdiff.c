@@ -327,8 +327,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     goto done;
   }
   
-  if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
-     s1->object.type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL) {
+  if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
     int equal;
     
     equal=!safe_strcmp((char *)s1->object.value, (char *)s2->object.value);
