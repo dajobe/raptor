@@ -1328,9 +1328,6 @@ struct raptor_world_s {
   /* world has been initialized with raptor_world_open() */
   int opened;
 
-  /* raptor_init(), raptor_finish() balance */
-  int static_usage;
-
   /* sequence of parser factories */
   raptor_sequence *parsers;
 
