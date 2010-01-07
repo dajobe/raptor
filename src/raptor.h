@@ -248,20 +248,6 @@ typedef enum {
 
 
 /**
- * raptor_ntriples_term_type:
- * @RAPTOR_NTRIPLES_TERM_TYPE_URI_REF: Internal
- * @RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE: Internal
- * @RAPTOR_NTRIPLES_TERM_TYPE_LITERAL: I
- *
- * N-Triples term types
- * 
- * Used for the deprecated function raptor_ntriples_term_as_string() only.
- *
- */
-typedef enum { RAPTOR_NTRIPLES_TERM_TYPE_URI_REF, RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE, RAPTOR_NTRIPLES_TERM_TYPE_LITERAL } raptor_ntriples_term_type;
-
-
-/**
  * raptor_locator:
  * @uri: URI of location (or NULL)
  * @file: Filename of location (or NULL)

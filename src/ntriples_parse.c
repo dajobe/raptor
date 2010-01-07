@@ -55,6 +55,24 @@
 #define RAPTOR_DEBUG 2
 */
 
+
+/*
+ * raptor_ntriples_term_type:
+ * @RAPTOR_NTRIPLES_TERM_TYPE_URI_REF: Internal
+ * @RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE: Internal
+ * @RAPTOR_NTRIPLES_TERM_TYPE_LITERAL: I
+ *
+ * INTERNAL - N-Triples term types
+ * 
+ */
+typedef enum {
+  RAPTOR_NTRIPLES_TERM_TYPE_URI_REF,
+  RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE,
+  RAPTOR_NTRIPLES_TERM_TYPE_LITERAL
+} raptor_ntriples_term_type;
+
+
+
 /* Prototypes for local functions */
 static void raptor_ntriples_generate_statement(raptor_parser* parser, const unsigned char *subject, const raptor_ntriples_term_type subject_type, const unsigned char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype);
 
