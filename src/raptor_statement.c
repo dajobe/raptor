@@ -88,21 +88,14 @@ raptor_statement_copy(const raptor_statement *statement)
       goto oom;
     strcpy((char*)new_blank, (const char*)statement->subject.value);
     s->subject.value = new_blank;
-  } else if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->subject.value = raptor_new_uri_from_rdf_ordinal(statement->world, *((int*)statement->subject.value));
-    s->subject.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else
     s->subject.value = raptor_uri_copy_v2(statement->world,
                                           (raptor_uri*)statement->subject.value);
 
   s->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    s->predicate.value = raptor_new_uri_from_rdf_ordinal(statement->world,
-                                                         *((int*)statement->predicate.value));
-  else
-    s->predicate.value = raptor_uri_copy_v2(statement->world,
-                                            (raptor_uri*)statement->predicate.value);
-
+  s->predicate.value = raptor_uri_copy_v2(statement->world,
+                                          (raptor_uri*)statement->predicate.value);
+  
 
   s->object.type = statement->object.type;
   if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL || 
@@ -140,9 +133,6 @@ raptor_statement_copy(const raptor_statement *statement)
       goto oom;
     strcpy((char*)new_blank, (const char*)blank);
     s->object.value = new_blank;
-  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    s->object.value = raptor_new_uri_from_rdf_ordinal(statement->world, *((int*)statement->object.value));
-    s->object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
   } else {
     raptor_uri *uri = raptor_uri_copy_v2(statement->world,
                                          (raptor_uri*)statement->object.value);
@@ -224,16 +214,12 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 
   fputs(", ", stream);
 
-  if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "[rdf:_%d]", *((int*)statement->predicate.value));
-  else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->predicate.value)
-      RAPTOR_FATAL1("Statement has NULL predicate URI\n");
+  if(!statement->predicate.value)
+    RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
-    fputs((const char*)raptor_uri_as_string_v2(statement->world,
+  fputs((const char*)raptor_uri_as_string_v2(statement->world,
                                                (raptor_uri*)statement->predicate.value), stream);
-  }
 
   fputs(", ", stream);
 
@@ -254,8 +240,6 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
     fputc('"', stream);
   } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fputs((const char*)statement->object.value, stream);
-  else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "[rdf:_%d]", *((int*)statement->object.value));
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->object.value)
@@ -369,16 +353,6 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       strcpy((char*)s, (const char*)term);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      len = raptor_rdf_namespace_uri_len + 13; 
-      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-      if(!buffer)
-        return NULL;
-
-      sprintf((char*)buffer, "<%s_%d>",
-              raptor_rdf_namespace_uri, *((int*)term));
-      break;
-  
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       uri_string = raptor_uri_as_counted_string_v2(world,
                                                    (raptor_uri*)term, &uri_len);
@@ -480,11 +454,6 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
       fputs((const char*)term, stream);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      fprintf(stream, "<%s_%d>",
-              raptor_rdf_namespace_uri, *((int*)term));
-      break;
-  
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       fputc('<', stream);
       raptor_print_ntriples_string(stream, raptor_uri_as_string_v2(world, (raptor_uri*)term), '\0');

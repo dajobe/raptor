@@ -1303,13 +1303,6 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
   statement->subject.type = subject_type;
 
   statement->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  if(predicate_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    /* new URI object */
-    uri1 = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
-    predicate_uri = uri1;
-    predicate_id = NULL;
-    predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
-  }
   statement->predicate.value = predicate_uri;
   
   statement->object.value = object_uri ? (void*)object_uri : (void*)object_id;
@@ -1508,16 +1501,16 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
      */
     if(attr->nspace->is_rdf_ms) {
       /* is rdf: namespace */
-      int ordinal = 0;
         
       if(*name == '_') {
+        int ordinal;
+
         /* recognise rdf:_ */
         name++;
         ordinal = raptor_check_ordinal(name);
         if(ordinal < 1) {
           raptor_rdfxml_update_document_locator(rdf_parser);
           raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property attribute '%s' seen on containing element '%s'.", ordinal, attr->local_name, name);
-          ordinal = 1;
         }
       } else {
         raptor_rdfxml_update_document_locator(rdf_parser);
@@ -1528,28 +1521,6 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
                                 name);
       }
 
-      if(ordinal >= 1) {
-        /* Generate an ordinal property when there are no problems */
-        raptor_rdfxml_generate_statement(rdf_parser, 
-                                  resource_identifier->uri,
-                                  resource_identifier->id,
-                                  resource_identifier->type,
-                                  
-                                  NULL,
-                                  NULL,
-                                  RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                  ordinal,
-                                  
-                                  (raptor_uri*)value,
-                                  NULL,
-                                  RAPTOR_IDENTIFIER_TYPE_LITERAL,
-                                  NULL,
-                                  
-                                  NULL, /* Property attributes are never reified*/
-                                  resource_element);
-        handled = 1;
-      }
-      
     } /* end is RDF namespace property */
 
 
@@ -2450,16 +2421,20 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
           /* Handle rdf:li as the rdf:parseType="resource" property */
           if(element_in_rdf_ns && 
              raptor_uri_equals_v2(rdf_parser->world, raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
+            raptor_uri* ordinal_predicate_uri;
+            
             element->parent->last_ordinal++;
+            ordinal_predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, element->parent->last_ordinal);
+
             raptor_rdfxml_generate_statement(rdf_parser, 
                                       element->parent->subject.uri,
                                       element->parent->subject.id,
                                       element->parent->subject.type,
                                       
+                                      ordinal_predicate_uri,
                                       NULL,
-                                      NULL,
-                                      RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                      element->parent->last_ordinal,
+                                      RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                      0,
                                       
                                       element->subject.uri,
                                       element->subject.id,
@@ -2468,6 +2443,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
                                       &element->reified,
                                       element->parent);
+            raptor_free_uri_v2(rdf_parser->world, ordinal_predicate_uri);
           } else {
             raptor_rdfxml_generate_statement(rdf_parser, 
                                       element->parent->subject.uri,
@@ -2695,8 +2671,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
              */
             if(1) {
               raptor_uri *predicate_uri = NULL;
-              raptor_identifier_type predicate_type;
-              int predicate_ordinal = 0;
+              int predicate_ordinal = -1;
               raptor_uri *object_uri;
               raptor_identifier_type object_type;
               raptor_uri *literal_datatype = NULL;
@@ -2705,11 +2680,11 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
                 element->parent->last_ordinal++;
                 predicate_ordinal = element->parent->last_ordinal;
-                predicate_type = RAPTOR_IDENTIFIER_TYPE_ORDINAL;
+
+                predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
 
               } else {
                 predicate_uri = raptor_xml_element_get_name(xml_element)->uri;
-                predicate_type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
               }
 
 
@@ -2747,8 +2722,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
                                         predicate_uri,
                                         NULL,
-                                        predicate_type,
-                                        predicate_ordinal,
+                                        RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                        0,
 
                                         object_uri,
                                         element->object.id,
@@ -2757,7 +2732,9 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
                                         &element->reified,
                                         element->parent);
-              
+
+              if(predicate_ordinal >= 0)
+                raptor_free_uri_v2(rdf_parser->world, predicate_uri);
             }
             
             break;
@@ -2792,16 +2769,20 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               
 
               if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
+                raptor_uri* predicate_uri;
+                
                 element->parent->last_ordinal++;
+                predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, element->parent->last_ordinal);
+
                 raptor_rdfxml_generate_statement(rdf_parser, 
                                           element->parent->subject.uri,
                                           element->parent->subject.id,
                                           element->parent->subject.type,
                                           
+                                          predicate_uri,
                                           NULL,
-                                          NULL,
-                                          RAPTOR_IDENTIFIER_TYPE_ORDINAL,
-                                          element->parent->last_ordinal,
+                                          RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+                                          0,
                                           
                                           (raptor_uri*)buffer,
                                           NULL,
@@ -2810,6 +2791,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                                           
                                           &element->reified,
                                           element->parent);
+
+                raptor_free_uri_v2(rdf_parser->world, predicate_uri);
               } else {
                 raptor_rdfxml_generate_statement(rdf_parser, 
                                           element->parent->subject.uri,

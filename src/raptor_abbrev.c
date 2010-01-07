@@ -90,10 +90,6 @@ raptor_new_abbrev_node(raptor_world* world,
           node->value.blank.string = string;
           break;
           
-        case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-          node->value.ordinal.ordinal = *(int *)node_data;
-          break;
-          
         case RAPTOR_IDENTIFIER_TYPE_LITERAL:
         case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
           string = (unsigned char*)RAPTOR_MALLOC(literal,
@@ -165,7 +161,6 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
 
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
       default:
         /* Nothing to do */
@@ -265,16 +260,6 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-        if(node1->value.ordinal.ordinal == node2->value.ordinal.ordinal)
-          rv = 0;
-        else if(node1->value.ordinal.ordinal < node2->value.ordinal.ordinal)
-          rv = -1;
-        else
-          rv = 1;
-
-        break;
-        
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
       default:
         /* Nothing to do */
@@ -427,9 +412,8 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
   raptor_abbrev_subject* subject;
   
   if(!(node->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-        node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-        node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
-    RAPTOR_FATAL1("Subject node must be a resource, blank, or ordinal\n");
+        node->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)) {
+    RAPTOR_FATAL1("Subject node must be a resource or blank\n");
     return NULL;
   }  
   

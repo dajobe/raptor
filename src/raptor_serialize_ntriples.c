@@ -152,15 +152,6 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
       raptor_iostream_write_string(iostr, term);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-      raptor_iostream_write_counted_string(iostr, "<_", 1);
-      raptor_iostream_write_counted_string(iostr, raptor_rdf_namespace_uri,
-                                           raptor_rdf_namespace_uri_len);
-      raptor_iostream_write_counted_string(iostr, "_", 1);
-      raptor_iostream_write_decimal(iostr, *((int*)term));
-      raptor_iostream_write_byte(iostr, '>');
-      break;
-  
     case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
       raptor_iostream_write_byte(iostr, '<');
       term = raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &len);

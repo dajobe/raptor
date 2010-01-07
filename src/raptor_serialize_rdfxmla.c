@@ -523,8 +523,6 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
         rv = raptor_rdfxmla_emit_blank(serializer, element, object, depth+1);
         break;
 
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-        /* ordinals should never appear as an object with current parsers */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -622,32 +620,15 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
     predicate= nodes[0];
     object= nodes[1];
     
-    if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-      /* we should only get here in rare cases -- usually when there
-       * are multiple ordinals with the same value. */
-
-      unsigned char uri_string[MAX_ASCII_INT_SIZE + 2];
-
-      sprintf((char*)uri_string, "_%d", predicate->value.ordinal.ordinal);
-
-      qname = raptor_new_qname_from_namespace_local_name_v2(serializer->world,
-                                                            context->rdf_nspace,
-                                                            uri_string,
-                                                            NULL);
-      if(!qname)
-        goto oom;
-      
-    } else {
-      qname = raptor_new_qname_from_resource(context->namespaces,
-                                             context->nstack,
-                                             &context->namespace_count,
-                                             predicate);
-      if(!qname) {
-        raptor_serializer_error(serializer,
-                                "Cannot split URI '%s' into an XML qname",
-                                raptor_uri_as_string_v2(serializer->world, predicate->value.resource.uri));
-        continue;
-      }
+    qname = raptor_new_qname_from_resource(context->namespaces,
+                                           context->nstack,
+                                           &context->namespace_count,
+                                           predicate);
+    if(!qname) {
+      raptor_serializer_error(serializer,
+                              "Cannot split URI '%s' into an XML qname",
+                              raptor_uri_as_string_v2(serializer->world, predicate->value.resource.uri));
+      continue;
     }
     
     if(serializer->base_uri)
@@ -679,8 +660,6 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
                                              depth+1);
         break;
 
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-        /* ordinals should never appear as an object with current parsers */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -818,16 +797,6 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
       attr_name = (unsigned char*)"nodeID";
       attr_value = subject->node->value.blank.string;
     }
-  } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    attr_name = (unsigned char*)"about";
-    attr_value = (unsigned char *)RAPTOR_MALLOC(string,
-                                                raptor_rdf_namespace_uri_len + MAX_ASCII_INT_SIZE + 2);
-    if(!attr_value) {
-      RAPTOR_FREE(qnamearray, attrs);
-      goto oom;
-    }
-    sprintf((char*)attr_value, "%s_%d", raptor_rdf_namespace_uri,
-            subject->node->value.ordinal.ordinal);
   } 
     
   if(attr_name) {
@@ -1420,8 +1389,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   int object_created = 0;
   
   if(!(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
+       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)) {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with subject node type %d\n",
                             statement->subject.type);
@@ -1449,8 +1417,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   if(!(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
        object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
        object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
-       object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
-       object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
+       object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)) {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with object node type %d\n",
                             object_type);
@@ -1537,27 +1504,6 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       }
     }
   
-  } else if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    int idx = *(int*)statement->predicate.value;
-    rv = raptor_abbrev_subject_add_list_element(subject, idx, object);
-    if(rv) {
-      /* An ordinal might already exist at that location, the fallback
-       * is to just put in the properties list */
-      predicate = raptor_abbrev_node_lookup(context->nodes,
-                                            statement->predicate.type,
-                                            statement->predicate.value, NULL, NULL,
-                                            &predicate_created);
-      if(!predicate)
-        return 1;
-
-      rv = raptor_abbrev_subject_add_property(subject, predicate, object);
-      if(rv < 0) {
-        raptor_serializer_error(serializer,
-                                "Unable to add properties to subject %p\n",
-                                subject);
-        return rv;
-      }
-    }
   } else {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with predicate node type %d\n",

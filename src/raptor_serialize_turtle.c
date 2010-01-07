@@ -349,8 +349,6 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
         rv = raptor_turtle_emit_blank(serializer, object, depth+1);
         break;
 
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-        /* ordinals should never appear as an object with current parsers */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -439,8 +437,6 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
         rv = raptor_turtle_emit_blank(serializer, object, depth+1);
         break;
 
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-        /* ordinals should never appear as an object with current parsers */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -550,24 +546,8 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         raptor_turtle_writer_newline(turtle_writer);
       }
 
-      if(predicate->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-        /* we should only get here in rare cases -- usually when there
-         * are multiple ordinals with the same value. */
-
-        unsigned char uri_string[MAX_ASCII_INT_SIZE + 2];
-
-        sprintf((char*)uri_string, "_%d", predicate->value.ordinal.ordinal);
-
-        qname = raptor_new_qname_from_namespace_local_name_v2(serializer->world,
-                                                              context->rdf_nspace,
-                                                              uri_string,
-                                                              NULL);
-
-      } else {
-        qname = raptor_namespaces_qname_from_uri(context->nstack,
-                                                 predicate->value.resource.uri, 10);
-      
-      }
+      qname = raptor_namespaces_qname_from_uri(context->nstack,
+                                               predicate->value.resource.uri, 10);
 
       if(raptor_abbrev_node_equals(predicate, context->rdf_type))
         raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"a");
@@ -601,8 +581,6 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         rv = raptor_turtle_emit_xml_literal(serializer, object, depth+1);
         break;
 
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
-        /* ordinals should never appear as an object with current parsers */
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       default:
         RAPTOR_FATAL1("Unsupported identifier type\n");
@@ -717,19 +695,6 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       raptor_turtle_writer_raw(turtle_writer, subject_str);
       RAPTOR_FREE(cstring, subject_str);
     }
-  } else if(subject->node->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    unsigned char* subject_str;
-    subject_str = (unsigned char *)RAPTOR_MALLOC(string,
-                                                 raptor_rdf_namespace_uri_len + MAX_ASCII_INT_SIZE + 2);
-    if(!subject_str)
-      return 1;
-    
-    sprintf((char*)subject, "%s_%d", raptor_rdf_namespace_uri,
-            subject->node->value.ordinal.ordinal);
-      
-    raptor_turtle_writer_raw(turtle_writer, subject_str);
-    RAPTOR_FREE(cstring, subject_str);
-    return blank = 0;
   } 
 
   if(collection) {
@@ -1107,8 +1072,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   int object_created = 0;
 
   if(!(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
-       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
+       statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)) {
     raptor_serializer_error(serializer,
                             "Do not know how to serialize node type %d\n",
                             statement->subject.type);
@@ -1137,8 +1101,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   if(!(object_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
        object_type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
        object_type == RAPTOR_IDENTIFIER_TYPE_LITERAL ||
-       object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL || 
-       object_type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)) {
+       object_type == RAPTOR_IDENTIFIER_TYPE_XML_LITERAL)) {
     raptor_serializer_error(serializer,
                             "Cannot serialize a triple with object node type %d\n",
                             object_type);
@@ -1170,27 +1133,6 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
       return rv;
     }
   
-  } else if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    int idx = *(int*)statement->predicate.value;
-    rv = raptor_abbrev_subject_add_list_element(subject, idx, object);
-    if(rv) {
-      /* An ordinal might already exist at that location, the fallback
-       * is to just put in the properties list */
-      predicate = raptor_abbrev_node_lookup(context->nodes,
-                                            statement->predicate.type,
-                                            statement->predicate.value, NULL, NULL,
-                                            &predicate_created);
-      if(!predicate)
-        return 1;
-
-      rv = raptor_abbrev_subject_add_property(subject, predicate, object);
-      if(rv < 0) {
-        raptor_serializer_error(serializer,
-                                "Unable to add properties to subject %p\n",
-                                subject);
-        return rv;
-      }
-    }
   } else {
     raptor_serializer_error(serializer,
                             "Do not know how to serialize node type %d\n",

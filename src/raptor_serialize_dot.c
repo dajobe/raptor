@@ -108,7 +108,6 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
 
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
       default:
         /* Nothing to do */
@@ -123,8 +122,7 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
  * raptor_dot_serializer_node_matches:
  * @node: #raptor_node to compare
  * @node_type: Raptor identifier type
- * @node_data: For node_type RAPTOR_IDENTIFIER_TYPE_ORDINAL, int* to the
- *             ordinal.
+ * @node_data: node URI or literal string
  * @datatype: Literal datatype or NULL
  * @language: Literal language or NULL
  *
@@ -186,7 +184,6 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
         
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
       default:
         /* Nothing to do */
@@ -201,8 +198,7 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
  * raptor_dot_serializer_new_node implementation:
  * @world: raptor_world object
  * @node_type: Raptor identifier type
- * @node_data: For node_type RAPTOR_IDENTIFIER_TYPE_ORDINAL, int* to the
- *             ordinal.
+ * @node_data: node URI or literal string.
  * @datatype: Literal datatype or NULL
  * @language: Literal language or NULL
  *
@@ -261,7 +257,6 @@ raptor_dot_serializer_new_node(raptor_world* world,
         }
         break;
         
-      case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
       case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
       default:
         RAPTOR_FREE(raptor_dot_serializer_node, node);
@@ -403,7 +398,6 @@ raptor_dot_serializer_write_node_type(raptor_serializer * serializer,
       raptor_iostream_write_byte(serializer->iostream, 'R');
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
       raptor_iostream_write_byte(serializer->iostream, '?');
       break;
@@ -481,7 +475,6 @@ raptor_dot_serializer_write_node(raptor_serializer * serializer,
       raptor_dot_serializer_write_uri(serializer, (raptor_uri*)term);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
@@ -519,7 +512,6 @@ raptor_dot_serializer_assert_node(raptor_serializer* serializer,
       break;
 
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
       break;
   }
 
@@ -613,7 +605,6 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_ORDINAL:
     case RAPTOR_IDENTIFIER_TYPE_XML_LITERAL:
     case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
     default:

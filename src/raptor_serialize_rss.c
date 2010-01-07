@@ -954,16 +954,15 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
       fake_uri = raptor_uri_copy_v2(rss_serializer->world, (raptor_uri*)s->subject.value);
       
     if(raptor_uri_equals_v2(rss_serializer->world, fake_uri, rss_serializer->seq_uri)) {
+      const unsigned char* uri_str;
       /* found <seq URI> <some predicate> <some URI> triple */
 
-      if(s->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-        ordinal= *((int*)s->predicate.value);
-      else { /* predicate is a resource */
-        const unsigned char* uri_str;
-        uri_str = raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)s->predicate.value);
-        if(!strncmp((const char*)uri_str, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44))
-          ordinal= raptor_check_ordinal(uri_str+44);
-      }
+      /* predicate is a resource */
+      uri_str = raptor_uri_as_string_v2(rss_serializer->world, 
+                                        (raptor_uri*)s->predicate.value);
+      if(!strncmp((const char*)uri_str, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44))
+        ordinal= raptor_check_ordinal(uri_str+44);
+
       RAPTOR_DEBUG3("Found RSS 1.0 item %d with URI <%s>\n", ordinal,
                     raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)s->object.value));
 

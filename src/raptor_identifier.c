@@ -123,7 +123,6 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 
   dest->world = src->world;
   dest->type = src->type;
-  dest->ordinal = src->ordinal;
 
   dest->uri = raptor_uri_copy_v2(src->world, src->uri);
 
@@ -237,8 +236,6 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
     fputc('>', stream);
   } else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
     fputs((const char*)identifier->id, stream);
-  else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ORDINAL)
-    fprintf(stream, "[rdf:_%d]", identifier->ordinal);
   else {
     fprintf(stream, "%s", raptor_uri_as_string_v2(identifier->world, identifier->uri));
   }

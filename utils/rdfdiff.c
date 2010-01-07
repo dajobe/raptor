@@ -276,26 +276,6 @@ rdfdiff_free_blank(rdfdiff_blank *blank)
 
 
 static int
-rdfdiff_ordinal_equals_resource(raptor_world* world, int ordinal, raptor_uri *resource) 
-{
-  unsigned char ordinal_string[ORDINAL_STRING_LEN + 1];
-  raptor_uri *ordinal_uri;
-  int equal;
-
-  snprintf((char *)ordinal_string, ORDINAL_STRING_LEN, "%s_%d",
-           raptor_rdf_namespace_uri, ordinal);
-  
-  ordinal_uri = raptor_new_uri_v2(world, ordinal_string);
-
-  equal = raptor_uri_equals_v2(world, ordinal_uri, resource);
-    
-  raptor_free_uri_v2(world, ordinal_uri);
-
-  return equal;
-}
-
-
-static int
 rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const raptor_statement *s2)
 {
   int rv = 0;
@@ -310,47 +290,23 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
   raptor_print_statement(s2, stderr);
 #endif
 
-  if(s1->subject.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL &&
-     s2->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+  /* normal comparison */
+  if(s1->subject.type != s2->subject.type) {
+    rv = 0;
+    goto done;
+  }
 
-    /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(world,
-                                        *(int *)s1->subject.value,
-                                        (raptor_uri *)s2->subject.value)) {
-      rv = 0;
-      goto done;
-    }
-    
-  } else if(s1->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-            s2->subject.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-
-    /* check for ordinal/resource equivalence */
-    if(!rdfdiff_ordinal_equals_resource(world,
-                                        *(int *)s2->subject.value,
-                                        (raptor_uri *)s1->subject.value)) {
-      rv = 0;
-      goto done;
-    }
-      
+  if(s1->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    /* Here for completeness. Anonymous nodes are taken care of
+     * elsewhere */
+    /*if(strcmp((const char *)s1->subject, (const char *)s2->subject.value) != 0)
+      return 0;*/
   } else {
-    /* normal comparison */
-    if(s1->subject.type != s2->subject.type) {
+    if(!raptor_uri_equals_v2(world,
+                             (raptor_uri *)s1->subject.value,
+                             (raptor_uri *)s2->subject.value)) {
       rv = 0;
       goto done;
-    }
-
-    if(s1->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
-      /* Here for completeness. Anonymous nodes are taken care of
-       * elsewhere */
-      /*if(strcmp((const char *)s1->subject, (const char *)s2->subject.value) != 0)
-        return 0;*/
-    } else {
-      if(!raptor_uri_equals_v2(world,
-                               (raptor_uri *)s1->subject.value,
-                               (raptor_uri *)s2->subject.value)) {
-        rv = 0;
-        goto done;
-      }
     }
   }
 
@@ -359,18 +315,11 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     goto done;
   }
   
-  if(s1->predicate.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    if(*(int *)s1->predicate.value != *(int *)s2->predicate.value) {
-      rv = 0;
-      goto done;
-    }
-   } else {
-    if(!raptor_uri_equals_v2(world,
-                             (raptor_uri *)s1->predicate.value,
-                             (raptor_uri *)s2->predicate.value)) {
-      rv = 0;
-      goto done;
-    }
+  if(!raptor_uri_equals_v2(world,
+                           (raptor_uri *)s1->predicate.value,
+                           (raptor_uri *)s2->predicate.value)) {
+    rv = 0;
+    goto done;
   }
   
   if(s1->object.type != s2->object.type) {
@@ -406,11 +355,6 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
      * elsewhere */
     /* if(strcmp((const char *)s1->object, (const char *)s2->object.value) != 0)
        return 0; */
-  } else if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_ORDINAL) {
-    if(*(int *)s1->object.value != *(int *)s2->object.value) {
-      rv = 0;
-      goto done;
-    }
   } else {
     if(!raptor_uri_equals_v2(world, (raptor_uri *)s1->object.value, (raptor_uri *)s2->object.value))
       rv = 0;
