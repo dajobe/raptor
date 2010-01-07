@@ -930,8 +930,6 @@ RAPTOR_API
 void raptor_free_serializer(raptor_serializer* rdf_serializer);
 
 RAPTOR_API
-int raptor_serialize_start(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream);
-RAPTOR_API
 int raptor_serialize_start_to_iostream(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream);
 RAPTOR_API
 int raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer, const char *filename);
