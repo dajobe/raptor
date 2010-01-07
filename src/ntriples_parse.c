@@ -5,7 +5,7 @@
  * N-Triples
  * http://www.w3.org/TR/rdf-testcases/#ntriples
  *
- * Copyright (C) 2001-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2001-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2001-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -56,25 +56,8 @@
 */
 
 
-/*
- * raptor_ntriples_term_type:
- * @RAPTOR_NTRIPLES_TERM_TYPE_URI_REF: Internal
- * @RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE: Internal
- * @RAPTOR_NTRIPLES_TERM_TYPE_LITERAL: I
- *
- * INTERNAL - N-Triples term types
- * 
- */
-typedef enum {
-  RAPTOR_NTRIPLES_TERM_TYPE_URI_REF,
-  RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE,
-  RAPTOR_NTRIPLES_TERM_TYPE_LITERAL
-} raptor_ntriples_term_type;
-
-
-
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser* parser, const unsigned char *subject, const raptor_ntriples_term_type subject_type, const unsigned char *predicate, const raptor_ntriples_term_type predicate_type, const void *object, const raptor_ntriples_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype);
+static void raptor_ntriples_generate_statement(raptor_parser* parser, const unsigned char *subject, const raptor_term_type subject_type, const unsigned char *predicate, const raptor_term_type predicate_type, const void *object, const raptor_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype);
 
 /*
  * NTriples parser object
@@ -125,28 +108,21 @@ raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name)
 static void
 raptor_ntriples_parse_terminate(raptor_parser* rdf_parser)
 {
-  raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
+  raptor_ntriples_parser_context *ntriples_parser;
+  ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   if(ntriples_parser->line_length)
     RAPTOR_FREE(cdata, ntriples_parser->line);
 }
 
 
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-static const char * const term_type_strings[]={
-  "URIref",
-  "bnodeID",
-  "Literal"
-};
-#endif
-
 static void
 raptor_ntriples_generate_statement(raptor_parser* parser, 
                                    const unsigned char *subject,
-                                   const raptor_ntriples_term_type subject_type,
+                                   const raptor_term_type subject_type,
                                    const unsigned char *predicate,
-                                   const raptor_ntriples_term_type predicate_type,
+                                   const raptor_term_type predicate_type,
                                    const void *object,
-                                   const raptor_ntriples_term_type object_type,
+                                   const raptor_term_type object_type,
                                    const unsigned char *object_literal_language,
                                    const unsigned char *object_literal_datatype)
 {
@@ -158,17 +134,17 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   raptor_uri *datatype_uri = NULL;
 
   /* Two choices for subject from N-Triples */
-  if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
+  statement->subject.type = subject_type;
+  if(subject_type == RAPTOR_TERM_TYPE_BLANK) {
     statement->subject.value = subject;
-    statement->subject.type = RAPTOR_TERM_TYPE_BLANK;
   } else {
+    /* must be RAPTOR_TERM_TYPE_URI */
     subject_uri = raptor_new_uri_v2(parser->world, subject);
     if(!subject_uri) {
       raptor_parser_error(parser, "Could not create subject uri '%s', skipping", subject);
       goto cleanup;
     }
     statement->subject.value = subject_uri;
-    statement->subject.type = RAPTOR_TERM_TYPE_URI;
   }
 
   if(object_literal_datatype) {
@@ -198,19 +174,19 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   /* Three choices for object from N-Triples */
   statement->object.literal_language = NULL;
   statement->object.literal_datatype = NULL;
-  if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_URI_REF) {
+
+  statement->object.type = object_type;
+  if(object_type == RAPTOR_TERM_TYPE_URI) {
     object_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)object);
     if(!object_uri) {
       raptor_parser_error(parser, "Could not create object uri '%s', skipping", (const char *)object);
       goto cleanup;
     }
     statement->object.value = object_uri;
-    statement->object.type = RAPTOR_TERM_TYPE_URI;
-  } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
+  } else if(object_type == RAPTOR_TERM_TYPE_BLANK) {
     statement->object.value = object;
-    statement->object.type = RAPTOR_TERM_TYPE_BLANK;
   } else { 
-    statement->object.type = RAPTOR_TERM_TYPE_LITERAL;
+    /*  RAPTOR_TERM_TYPE_LITERAL */
     statement->object.value = object;
     statement->object.literal_language = object_literal_language;
     statement->object.literal_datatype = datatype_uri;
@@ -496,7 +472,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   unsigned char *terms[3];
   int terms_allocated[3];
   size_t term_lengths[3];
-  raptor_ntriples_term_type term_types[3];
+  raptor_term_type term_types[3];
   size_t term_length= 0;
   unsigned char *object_literal_language = NULL;
   unsigned char *object_literal_datatype = NULL;
@@ -590,7 +566,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
     switch(*p) {
       case '<':
-        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_URI_REF;
+        term_types[i]= RAPTOR_TERM_TYPE_URI;
         
         dest = p;
 
@@ -609,7 +585,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         break;
 
       case '"':
-        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
+        term_types[i]= RAPTOR_TERM_TYPE_LITERAL;
         
         dest = p;
 
@@ -693,7 +669,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 
       case '_':
-        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE;
+        term_types[i]= RAPTOR_TERM_TYPE_BLANK;
 
         /* store where _ was */
         dest = p;
@@ -747,7 +723,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         raptor_parser_error(rdf_parser, "Old N-Triples XML using xml\"string\"-lang rather than \"string\"@lang^^<%s>.", raptor_xml_literal_datatype_uri_string);
 
         /* already know we have 'xml"' coming up */
-        term_types[i]= RAPTOR_NTRIPLES_TERM_TYPE_LITERAL;
+        term_types[i]= RAPTOR_TERM_TYPE_LITERAL;
         
         /* 3 = strlen("xml") */
         p += 3;
@@ -869,9 +845,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    fprintf(stderr, "item %d: term '%s' len %d type %s\n",
-            i, terms[i], (unsigned int)term_lengths[i],
-            term_type_strings[term_types[i]]);
+    fprintf(stderr, "item %d: term '%s' len %d type %d\n",
+            i, terms[i], (unsigned int)term_lengths[i], term_types[i]);
 #endif    
   }
 
