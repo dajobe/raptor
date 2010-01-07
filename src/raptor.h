@@ -1686,10 +1686,6 @@ typedef enum {
   RAPTOR_LOG_LEVEL_FATAL,
   RAPTOR_LOG_LEVEL_ERROR,
   RAPTOR_LOG_LEVEL_WARNING,
-  /* RAPTOR V2 FIXME - this enum list cannot be extended before V2
-   * API is released else binary compatibility will be broken in the
-   * #raptor_error_handlers structure - it causes an array to grow.
-   */
   RAPTOR_LOG_LEVEL_LAST = RAPTOR_LOG_LEVEL_WARNING
 } raptor_log_level;
 
@@ -1697,28 +1693,25 @@ typedef enum {
 /**
  * raptor_error_handlers:
  * @magic: magic value - must use raptor_error_handlers_init() to set this
+ * @world: raptor_world object
  * @locator: raptor locator of the error
  * @last_log_level: number of log levels; size of @handlers arrays
  * @handlers: user handlers per log level
- * @world: raptor_world object
  *
  * Error handlers structure
  */
 typedef struct {
   unsigned int magic;
 
+  raptor_world *world;
+
   raptor_locator* locator;
 
   /* size of handlers array */
   raptor_log_level last_log_level;
 
+  /* this must be at the end of the structure to allow handlers array to grow */
   raptor_message_handler_closure handlers[RAPTOR_LOG_LEVEL_LAST+1];
-
-  /* Raptor V2 FIXME - this should NOT be at the end of the structure
-   * since it prevents increasing the size of the @handlers array but
-   * it it is here to preserve Raptor V1 ABI.
-   */
-  raptor_world *world;
 } raptor_error_handlers;
 
 RAPTOR_API
