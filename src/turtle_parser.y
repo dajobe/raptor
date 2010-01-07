@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * turtle_parser.y - Raptor Turtle parser - over tokens from turtle grammar lexer
+ * turtle_parser.y - Raptor Turtle / N3 parsers - over tokens from turtle grammar lexer
  *
- * Copyright (C) 2003-2007, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -1500,10 +1500,8 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
   if(mime_type) {
     if(strstr((const char*)mime_type, "turtle"))
       score += 6;
-#ifndef RAPTOR_PARSER_N3
     if(strstr((const char*)mime_type, "n3"))
       score += 3;
-#endif
   }
 
   /* FIXME: Should do this as long as N3 is not also present since
@@ -1550,10 +1548,8 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
     if(strstr((const char*)mime_type, "turtle"))
       score += 6;
 #endif
-#ifndef RAPTOR_PARSER_N3
     if(strstr((const char*)mime_type, "n3"))
       score += 3;
-#endif
   }
 
 #ifndef RAPTOR_PARSER_TURTLE
@@ -1594,6 +1590,7 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   factory->recognise_syntax = raptor_turtle_parse_recognise_syntax;
 
   rc+= raptor_parser_factory_add_alias(factory, "ntriples-plus") != 0;
+  rc+= raptor_parser_factory_add_alias(factory, "n3") != 0;
 
   rc+= raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/") != 0;
 
@@ -1601,11 +1598,9 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   rc+= raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10) != 0;
   rc+= raptor_parser_factory_add_mime_type(factory, "application/turtle", 10) != 0;
 
-#ifndef RAPTOR_PARSER_N3
   rc+= raptor_parser_factory_add_mime_type(factory, "text/n3", 3) != 0;
   rc+= raptor_parser_factory_add_mime_type(factory, "text/rdf+n3", 3) != 0;
   rc+= raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3) != 0;
-#endif
 
   return rc;
 }
