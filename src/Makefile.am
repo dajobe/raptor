@@ -43,13 +43,10 @@ endif
 
 CLEANFILES=$(TESTS) \
 turtle_lexer_test turtle_parser_test \
-n3_lexer_test n3_parser_test \
 rdfdiff
 
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
-turtle_parser.c turtle_parser.h turtle_parser.output \
-n3_lexer.c n3_lexer.h \
-n3_parser.c n3_parser.h n3_parser.output
+turtle_parser.c turtle_parser.h turtle_parser.output
 
 # Memory debugging
 MEM=@MEM@
@@ -173,7 +170,6 @@ raptor_nfc_test.c \
 raptor_win32.c \
 $(man_MANS) \
 turtle_lexer.l turtle_parser.y \
-n3_lexer.l n3_parser.y \
 parsedate.y \
 fix-flex fix-bison
 
@@ -194,18 +190,6 @@ turtle_parser.c: $(srcdir)/turtle_parser.y $(srcdir)/fix-bison
 	mv turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
 
-# Actually it needs n3_parser.h but nevermind
-n3_lexer.c: $(srcdir)/n3_lexer.l n3_parser.c $(srcdir)/fix-flex
-	$(LEX) -o$@ $(srcdir)/n3_lexer.l
-	$(PERL) $(srcdir)/fix-flex $@ > n3_lexer.t
-	mv n3_lexer.t $@
-
-n3_parser.c: $(srcdir)/n3_parser.y  $(srcdir)/fix-bison
-	$(YACC) -b n3_parser -p n3_parser_ -d -v $(srcdir)/n3_parser.y
-	$(PERL) $(srcdir)/fix-bison n3_parser.tab.c > $@
-	mv n3_parser.tab.h n3_parser.h
-	rm -f n3_parser.tab.c
-
 endif
 
 # Actually it needs turtle_parser.h but nevermind
@@ -214,15 +198,6 @@ turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
 
 turtle_parser_test: $(srcdir)/turtle_parser.c libraptor.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor.la $(LIBS)
-
-
-if MAINTAINER_MODE
-n3_lexer_test: $(srcdir)/n3_lexer.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_lexer.c libraptor.la $(LIBS)
-
-n3_parser_test: $(srcdir)/n3_parser.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/n3_parser.c libraptor.la $(LIBS)
-endif
 
 
 parsedate.c: $(srcdir)/parsedate.y
