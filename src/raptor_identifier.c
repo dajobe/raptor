@@ -48,7 +48,7 @@
 /**
  * raptor_new_identifier_v2:
  * @world: raptor_world object
- * @type: raptor_identifier_type of identifier
+ * @type: raptor_term_type of identifier
  * @uri: #raptor_uri of identifier (if relevant) (SHARED)
  * @id: string for ID or genid (if relevant) (SHARED)
  * @literal: string for literal (SHARED)
@@ -64,7 +64,7 @@
  **/
 raptor_identifier*
 raptor_new_identifier_v2(raptor_world* world,
-                         raptor_identifier_type type,
+                         raptor_term_type type,
                          raptor_uri *uri,
                          const unsigned char *id,
                          const unsigned char *literal,
@@ -200,7 +200,7 @@ void
 raptor_set_identifier_uri(raptor_identifier *identifier, raptor_uri *uri)
 {
   identifier->uri = uri;
-  identifier->type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  identifier->type = RAPTOR_TERM_TYPE_URI;
 }
 
 
@@ -208,7 +208,7 @@ void
 raptor_set_identifier_id(raptor_identifier *identifier, const unsigned char *id)
 {
   identifier->id = id;
-  identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+  identifier->type = RAPTOR_TERM_TYPE_BLANK;
 }
 
 
@@ -221,7 +221,7 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
     return;
   }
   
-  if(identifier->type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+  if(identifier->type == RAPTOR_TERM_TYPE_LITERAL) {
     fputc('"', stream);
     fputs((const char*)identifier->literal, stream);
     fputc('"', stream);
@@ -231,7 +231,7 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
     if(identifier->literal_datatype)
       fputs((const char*)raptor_uri_as_string_v2(identifier->world, identifier->literal_datatype), stream);
     fputc('>', stream);
-  } else if(identifier->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+  } else if(identifier->type == RAPTOR_TERM_TYPE_BLANK)
     fputs((const char*)identifier->id, stream);
   else {
     fprintf(stream, "%s", raptor_uri_as_string_v2(identifier->world, identifier->uri));

@@ -365,14 +365,14 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   raptor_qname **attrs = NULL;
   int attrs_count = 0;
   raptor_uri* base_uri = NULL;
-  raptor_identifier_type object_type;
+  raptor_term_type object_type;
   int allocated = 1;
   int object_is_parseTypeLiteral = 0;
   
   if(raptor_rdfxml_ensure_writen_header(serializer, context))
     return 1;
 
-  if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+  if(statement->predicate.type == RAPTOR_TERM_TYPE_URI) {
     unsigned char *p;
     size_t uri_len;
     size_t name_len = 1;
@@ -443,14 +443,14 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
   /* subject */
   switch(statement->subject.type) {
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID",  (unsigned char*)statement->subject.value);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       allocated = 1;
       if(serializer->feature_relative_uris) {
         subject_uri_string = raptor_uri_to_relative_uri_string_v2(serializer->world,
@@ -476,11 +476,11 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       raptor_serializer_error(serializer, "Cannot serialize a triple with a literal subject\n");
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       raptor_serializer_error(serializer, "Cannot serialize a triple with subject node type %d\n", statement->subject.type);
   }
@@ -508,7 +508,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
   object_type = statement->object.type;
   switch(object_type) {
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       object_is_parseTypeLiteral = 0;
       if(statement->object.literal_datatype &&
          raptor_uri_equals_v2(serializer->world, statement->object.literal_datatype,
@@ -573,7 +573,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID", (unsigned char*)statement->object.value);
       if(!attrs[attrs_count])
         goto oom;
@@ -588,7 +588,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       allocated = 1;
       /* must be URI */
       if(serializer->feature_relative_uris) {
@@ -622,7 +622,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       raptor_serializer_error(serializer, "Cannot serialize a triple with object node type %d\n", object_type);
   }

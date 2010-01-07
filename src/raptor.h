@@ -226,21 +226,21 @@ typedef struct raptor_sax2_s raptor_sax2;
 
 
 /**
- * raptor_identifier_type:
- * @RAPTOR_IDENTIFIER_TYPE_RESOURCE:    Resource URI (e.g. <literal>rdf:about</literal>)
- * @RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:   <literal>_:foo</literal> N-Triples, or generated
- * @RAPTOR_IDENTIFIER_TYPE_LITERAL:     regular literal
- * @RAPTOR_IDENTIFIER_TYPE_UNKNOWN:     Internal
+ * raptor_term_type:
+ * @RAPTOR_TERM_TYPE_URI: RDF URI
+ * @RAPTOR_TERM_TYPE_BLANK: RDF blank node
+ * @RAPTOR_TERM_TYPE_LITERAL: RDF literal
+ * @RAPTOR_TERM_TYPE_UNKNOWN: Internal
  *
- * Type of identifier in a #raptor_statement
+ * Type of term in a #raptor_statement
  *
  */
 typedef enum {
-  RAPTOR_IDENTIFIER_TYPE_UNKNOWN,
-  RAPTOR_IDENTIFIER_TYPE_RESOURCE,
-  RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
-  RAPTOR_IDENTIFIER_TYPE_LITERAL
-} raptor_identifier_type;
+  RAPTOR_TERM_TYPE_UNKNOWN,
+  RAPTOR_TERM_TYPE_URI,
+  RAPTOR_TERM_TYPE_BLANK,
+  RAPTOR_TERM_TYPE_LITERAL
+} raptor_term_type;
 
 
 /**
@@ -401,21 +401,21 @@ typedef enum {
 /**
  * raptor_identifier:
  * @type: Type of identifier
- * @uri: URI of identifier for types %RAPTOR_IDENTIFIER_TYPE_RESOURCE
+ * @uri: URI of identifier for types %RAPTOR_TERM_TYPE_URI
  * @uri_source: where the identifier (URI or blank node) came from
- * @id: blank node identifier for type %RAPTOR_IDENTIFIER_TYPE_ANONYMOUS
+ * @id: blank node identifier for type %RAPTOR_TERM_TYPE_BLANK
  * @is_malloced: internal
- * @literal: literal string for types %RAPTOR_IDENTIFIER_TYPE_LITERAL
+ * @literal: literal string for types %RAPTOR_TERM_TYPE_LITERAL
  * @literal_datatype: RDF literal datatype URI for type
- *   %RAPTOR_IDENTIFIER_TYPE_LITERAL
+ *   %RAPTOR_TERM_TYPE_LITERAL
  * @literal_language: RDF literal language for type
- *   %RAPTOR_IDENTIFIER_TYPE_LITERAL
+ *   %RAPTOR_TERM_TYPE_LITERAL
  * @world: raptor_world object
  *
  * Raptor RDF term identifier.
 */
 typedef struct {
-  raptor_identifier_type type;
+  raptor_term_type type;
   raptor_uri *uri;
   const unsigned char *id;
   int is_malloced;
@@ -440,7 +440,7 @@ typedef struct {
   raptor_world* world;
 
   const void *value;
-  raptor_identifier_type type;
+  raptor_term_type type;
   raptor_uri *literal_datatype;
   const unsigned char *literal_language;
 } raptor_term;
@@ -838,9 +838,9 @@ void raptor_print_statement(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
-unsigned char* raptor_statement_part_as_counted_string(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
+unsigned char* raptor_statement_part_as_counted_string(raptor_world* world, const void *term, raptor_term_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
 RAPTOR_API
-unsigned char* raptor_statement_part_as_string(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
+unsigned char* raptor_statement_part_as_string(raptor_world* world, const void *term, raptor_term_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
 RAPTOR_API
 int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
 
@@ -1001,7 +1001,7 @@ raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old
 
 /* Identifier functions */
 RAPTOR_API
-raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
+raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_term_type type, raptor_uri *uri, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
 RAPTOR_API
 int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API

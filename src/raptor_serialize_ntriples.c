@@ -119,18 +119,18 @@ static void
 raptor_iostream_write_statement_part_ntriples(raptor_world* world,
                                               raptor_iostream* iostr,
                                               const void *term, 
-                                              raptor_identifier_type type,
+                                              raptor_term_type type,
                                               raptor_uri* literal_datatype,
                                               const unsigned char *literal_language) 
 {
   size_t len;
 
   switch(type) {
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       raptor_iostream_write_byte(iostr, '"');
       raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, strlen((const char*)term), '"');
       raptor_iostream_write_byte(iostr, '"');
-      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
         raptor_iostream_write_byte(iostr, '@');
         raptor_iostream_write_string(iostr, literal_language);
       }
@@ -142,19 +142,19 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
 
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       raptor_iostream_write_counted_string(iostr, "_:", 2);
       raptor_iostream_write_string(iostr, term);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       raptor_iostream_write_byte(iostr, '<');
       term = raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &len);
       raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, len, '>');
       raptor_iostream_write_byte(iostr, '>');
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
   }

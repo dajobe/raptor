@@ -1075,10 +1075,10 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
   rss_parser->statement.subject.type = resource->type;
   
   rss_parser->statement.predicate.value = RAPTOR_RSS_RDF_type_URI(&rss_parser->model);
-  rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.predicate.type = RAPTOR_TERM_TYPE_URI;
 
   rss_parser->statement.object.value = (void*)type_uri;
-  rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.object.type = RAPTOR_TERM_TYPE_URI;
   rss_parser->statement.object.literal_language = NULL;
   rss_parser->statement.object.literal_datatype = NULL;
   
@@ -1112,14 +1112,14 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
   predicate_uri = rdf_parser->world->rss_fields_info_uris[predicate_field];
 
   rss_parser->statement.predicate.value = predicate_uri;
-  rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.predicate.type = RAPTOR_TERM_TYPE_URI;
   
   if(identifier->uri) { 
     rss_parser->statement.object.value = identifier->uri;
-    rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;	  
+    rss_parser->statement.object.type = RAPTOR_TERM_TYPE_URI;	  
   } else { 
     rss_parser->statement.object.value = identifier->id;
-    rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    rss_parser->statement.object.type = RAPTOR_TERM_TYPE_BLANK;
   }
   rss_parser->statement.object.literal_language = NULL;
   rss_parser->statement.object.literal_datatype = NULL;
@@ -1151,7 +1151,7 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
       raptor_uri *uri = block->urls[offset];
       if(uri) {
         rss_parser->statement.object.value = uri;
-        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        rss_parser->statement.object.type = RAPTOR_TERM_TYPE_URI;
         (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                          &rss_parser->statement);
       }
@@ -1159,7 +1159,7 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
       const char *str = block->strings[offset];
       if(str) {
         rss_parser->statement.object.value = str;
-        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+        rss_parser->statement.object.type = RAPTOR_TERM_TYPE_LITERAL;
         (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                          &rss_parser->statement);
       }
@@ -1207,18 +1207,18 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
     if(!rss_parser->statement.predicate.value)
       continue;
     
-    rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    rss_parser->statement.predicate.type = RAPTOR_TERM_TYPE_URI;
 
     for(field = item->fields[f]; field; field = field->next) {
       rss_parser->statement.object.literal_language = NULL;
       rss_parser->statement.object.literal_datatype = NULL;
       if(field->value) {
         rss_parser->statement.object.value = field->value;
-        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+        rss_parser->statement.object.type = RAPTOR_TERM_TYPE_LITERAL;
         /* FIXME - should store and emit languages */
       } else {
         rss_parser->statement.object.value = field->uri;
-        rss_parser->statement.object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+        rss_parser->statement.object.type = RAPTOR_TERM_TYPE_URI;
       }
       
       /* Generate the statement */
@@ -1256,7 +1256,7 @@ raptor_rss_emit_connection(raptor_parser* rdf_parser,
     puri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, predicate_ordinal);
     predicate_uri = puri;
   }
-  rss_parser->statement.predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  rss_parser->statement.predicate.type = RAPTOR_TERM_TYPE_URI;
   rss_parser->statement.predicate.value = predicate_uri;
   
   rss_parser->statement.object.value = object_identifier->uri ? (void*)object_identifier->uri : (void*)object_identifier->id;
@@ -1322,7 +1322,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     raptor_identifier *items;
     
     /* make a new genid for the <rdf:Seq> node */
-    items = raptor_new_identifier_v2(rdf_parser->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS,
+    items = raptor_new_identifier_v2(rdf_parser->world, RAPTOR_TERM_TYPE_BLANK,
                                    NULL,
                                    (const unsigned char*)raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL),
                                    NULL, NULL, NULL);

@@ -59,7 +59,7 @@ typedef struct {
 
 typedef struct {
   raptor_world* world;
-  raptor_identifier_type type;  /* node type */
+  raptor_term_type type;  /* node type */
   union {
 
     struct {
@@ -88,15 +88,15 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
     return;
   
   switch (node->type) {
-      case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+      case RAPTOR_TERM_TYPE_URI:
         raptor_free_uri_v2(node->world, node->value.resource.uri);
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+      case RAPTOR_TERM_TYPE_BLANK:
         RAPTOR_FREE(blank, node->value.blank.string);
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+      case RAPTOR_TERM_TYPE_LITERAL:
         RAPTOR_FREE(literal, node->value.literal.string);
 
         if(node->value.literal.datatype)
@@ -107,7 +107,7 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
 
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
+      case RAPTOR_TERM_TYPE_UNKNOWN: 
       default:
         /* Nothing to do */
         break;
@@ -130,7 +130,7 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
  */
 static int
 raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
-                                   raptor_identifier_type node_type,
+                                   raptor_term_type node_type,
                                    const void* node_data, raptor_uri* datatype,
                                    const unsigned char* language)
 {
@@ -140,18 +140,18 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
     return 0;
 
   switch (node->type) {
-      case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+      case RAPTOR_TERM_TYPE_URI:
         rv = raptor_uri_equals_v2(node->world,
                                   node->value.resource.uri,
                                   (raptor_uri*)node_data);
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+      case RAPTOR_TERM_TYPE_BLANK:
         rv = !strcmp((const char*)node->value.blank.string,
                      (const char*)node_data);
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+      case RAPTOR_TERM_TYPE_LITERAL:
         if((char*)node->value.literal.string != NULL &&
            (char*)node_data != NULL) {
 
@@ -181,7 +181,7 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
         
         break;
           
-      case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
+      case RAPTOR_TERM_TYPE_UNKNOWN: 
       default:
         /* Nothing to do */
         break;
@@ -206,7 +206,7 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
  **/
 static raptor_dot_serializer_node *
 raptor_dot_serializer_new_node(raptor_world* world,
-                               raptor_identifier_type node_type,
+                               raptor_term_type node_type,
                                const void* node_data,
                                raptor_uri* datatype,
                                const unsigned char *language)
@@ -214,7 +214,7 @@ raptor_dot_serializer_new_node(raptor_world* world,
   unsigned char *string;
   raptor_dot_serializer_node* node;
   
-  if(node_type == RAPTOR_IDENTIFIER_TYPE_UNKNOWN)
+  if(node_type == RAPTOR_TERM_TYPE_UNKNOWN)
     return NULL;
 
   node = (raptor_dot_serializer_node *)RAPTOR_CALLOC(raptor_dot_serializer_node, 1, sizeof(raptor_dot_serializer_node));
@@ -224,18 +224,18 @@ raptor_dot_serializer_new_node(raptor_world* world,
     node->type = node_type;
     
     switch (node_type) {
-      case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+      case RAPTOR_TERM_TYPE_URI:
         node->value.resource.uri = raptor_uri_copy_v2(world, (raptor_uri*)node_data);
         break;
         
-      case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+      case RAPTOR_TERM_TYPE_BLANK:
         string = (unsigned char*)RAPTOR_MALLOC(blank,
                                              strlen((char*)node_data)+1);
         strcpy((char*)string, (const char*) node_data);
         node->value.blank.string = string;
         break;
         
-      case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+      case RAPTOR_TERM_TYPE_LITERAL:
         string = (unsigned char*)RAPTOR_MALLOC(literal,
                                                strlen((char*)node_data)+1);
         strcpy((char*)string, (const char*)node_data);
@@ -253,7 +253,7 @@ raptor_dot_serializer_new_node(raptor_world* world,
         }
         break;
         
-      case RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
+      case RAPTOR_TERM_TYPE_UNKNOWN: 
       default:
         RAPTOR_FREE(raptor_dot_serializer_node, node);
     }
@@ -378,22 +378,22 @@ raptor_dot_iostream_write_string(raptor_iostream *iostr,
 
 static void
 raptor_dot_serializer_write_node_type(raptor_serializer * serializer,
-                                      raptor_identifier_type type)
+                                      raptor_term_type type)
 {
   switch(type) {
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       raptor_iostream_write_byte(serializer->iostream, 'L');
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       raptor_iostream_write_byte(serializer->iostream, 'B');
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       raptor_iostream_write_byte(serializer->iostream, 'R');
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
       raptor_iostream_write_byte(serializer->iostream, '?');
       break;
   }
@@ -437,13 +437,13 @@ raptor_dot_serializer_write_uri(raptor_serializer* serializer,
 static void
 raptor_dot_serializer_write_node(raptor_serializer * serializer,
                                  const void* term,
-                                 raptor_identifier_type type,
+                                 raptor_term_type type,
                                  raptor_uri* literal_datatype,
                                  const unsigned char * literal_language) {
   switch(type) {
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       raptor_dot_iostream_write_string(serializer->iostream, (const unsigned char*)term);
-      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
         raptor_iostream_write_byte(serializer->iostream, '|');
         raptor_iostream_write_string(serializer->iostream, "Language: ");
         raptor_iostream_write_string(serializer->iostream, literal_language);
@@ -456,16 +456,16 @@ raptor_dot_serializer_write_node(raptor_serializer * serializer,
 
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       raptor_iostream_write_counted_string(serializer->iostream, "_:", 2);
       raptor_iostream_write_string(serializer->iostream, term);
       break;
   
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       raptor_dot_serializer_write_uri(serializer, (raptor_uri*)term);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
   }
@@ -477,7 +477,7 @@ raptor_dot_serializer_write_node(raptor_serializer * serializer,
  */
 static void
 raptor_dot_serializer_assert_node(raptor_serializer* serializer,
-                                  raptor_identifier_type node_type,
+                                  raptor_term_type node_type,
                                   const void* node_data,
                                   raptor_uri* datatype,
                                   const unsigned char* language)
@@ -488,19 +488,19 @@ raptor_dot_serializer_assert_node(raptor_serializer* serializer,
 
   /* Which list are we searching? */
   switch(node_type) {
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       seq = context->resources;
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       seq = context->bnodes;
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       seq = context->literals;
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
       break;
   }
 
@@ -533,10 +533,10 @@ raptor_dot_serializer_start(raptor_serializer* serializer)
 
 static int
 raptor_dot_serializer_write_colors(raptor_serializer* serializer,
-                                   raptor_identifier_type type)
+                                   raptor_term_type type)
 {
   switch(type) {
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       if(serializer->feature_resource_border) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)", color=");
@@ -557,7 +557,7 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       if(serializer->feature_bnode_border) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)", color=");
@@ -577,7 +577,7 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       if(serializer->feature_literal_border) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char *)", color=");
@@ -594,7 +594,7 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 
       break;
 
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       break;
   }
@@ -619,15 +619,15 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\t\"R");
     raptor_dot_serializer_write_node(serializer, node->value.resource.uri,
-                                     RAPTOR_IDENTIFIER_TYPE_RESOURCE, NULL, NULL);
+                                     RAPTOR_TERM_TYPE_URI, NULL, NULL);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\" [ label=\"");
     raptor_dot_serializer_write_node(serializer, node->value.resource.uri,
-                                     RAPTOR_IDENTIFIER_TYPE_RESOURCE, NULL, NULL);
+                                     RAPTOR_TERM_TYPE_URI, NULL, NULL);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\", shape = ellipse");
     raptor_dot_serializer_write_colors(serializer,
-                                       RAPTOR_IDENTIFIER_TYPE_RESOURCE);
+                                       RAPTOR_TERM_TYPE_URI);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)" ];\n");
     
@@ -641,13 +641,13 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\t\"B");
     raptor_dot_serializer_write_node(serializer, node->value.resource.uri,
-                                     RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, NULL);
+                                     RAPTOR_TERM_TYPE_BLANK, NULL, NULL);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\" [ label=\"");
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\", shape = circle");
     raptor_dot_serializer_write_colors(serializer,
-                                       RAPTOR_IDENTIFIER_TYPE_ANONYMOUS);
+                                       RAPTOR_TERM_TYPE_BLANK);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)" ];\n");
   }
@@ -660,19 +660,19 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\t\"L");
     raptor_dot_serializer_write_node(serializer, node->value.literal.string,
-                                     RAPTOR_IDENTIFIER_TYPE_LITERAL,
+                                     RAPTOR_TERM_TYPE_LITERAL,
                                      node->value.literal.datatype,
                                      node->value.literal.language);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\" [ label=\"");
     raptor_dot_serializer_write_node(serializer, node->value.literal.string,
-                                     RAPTOR_IDENTIFIER_TYPE_LITERAL,
+                                     RAPTOR_TERM_TYPE_LITERAL,
                                      node->value.literal.datatype,
                                      node->value.literal.language);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)"\", shape = record");
     raptor_dot_serializer_write_colors(serializer,
-                                       RAPTOR_IDENTIFIER_TYPE_LITERAL);
+                                       RAPTOR_TERM_TYPE_LITERAL);
     raptor_iostream_write_string(serializer->iostream,
                                  (const unsigned char *)" ];\n");
   }

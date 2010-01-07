@@ -502,7 +502,7 @@ verb: predicate
   uri = raptor_new_uri_for_rdf_concept_v2(((raptor_parser*)rdf_parser)->world, "type");
   if(!uri)
     YYERROR;
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, uri, NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, uri, NULL, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -748,7 +748,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal + language string=\"%s\"\n", $1);
 #endif
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, NULL, $3);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, NULL, $3);
   if(!$$)
     YYERROR;
 }
@@ -759,7 +759,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world,RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, $5, $3);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world,RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, $5, $3);
     if(!$$)
       YYERROR;
   } else
@@ -773,7 +773,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, (const unsigned char*)$1, $5, $3);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, (const unsigned char*)$1, $5, $3);
     if(!$$)
       YYERROR;
   } else
@@ -787,7 +787,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($3) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, $3, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, $3, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -801,7 +801,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($3) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, $3, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, $3, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -813,7 +813,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   printf("literal string=\"%s\"\n", $1);
 #endif
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -828,7 +828,7 @@ literal: STRING_LITERAL AT IDENTIFIER
     RAPTOR_FREE(cstring, $1);
     YYERROR;
   }
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -843,7 +843,7 @@ literal: STRING_LITERAL AT IDENTIFIER
     RAPTOR_FREE(cstring, $1);
     YYERROR;
   }
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -858,7 +858,7 @@ literal: STRING_LITERAL AT IDENTIFIER
     RAPTOR_FREE(cstring, $1);
     YYERROR;
   }
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, $1, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, $1, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -878,7 +878,7 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   }
   strncpy((char*)string, "true", 5);
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, string, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, string, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -898,7 +898,7 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   }
   strncpy((char*)string, "false", 6);
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_LITERAL, NULL, NULL, string, uri, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, string, uri, NULL);
   if(!$$)
     YYERROR;
 }
@@ -912,7 +912,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, NULL, NULL, NULL, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, $1, NULL, NULL, NULL, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -925,7 +925,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, $1, NULL, NULL, NULL, NULL);
+    $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, $1, NULL, NULL, NULL, NULL);
     if(!$$)
       YYERROR;
   } else
@@ -944,7 +944,7 @@ blank: BLANK_LITERAL
   if(!id)
     YYERROR;
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, id, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_BLANK, NULL, id, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -960,7 +960,7 @@ blank: BLANK_LITERAL
     YYERROR;
   }
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, id, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_BLANK, NULL, id, NULL, NULL, NULL);
   if(!$$) {
     if($2)
       raptor_free_sequence($2);
@@ -1035,10 +1035,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  first_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->first_uri), NULL, NULL, NULL, NULL);
+  first_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->first_uri), NULL, NULL, NULL, NULL);
   if(!first_identifier)
     goto err_collection;
-  rest_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->rest_uri), NULL, NULL, NULL, NULL);
+  rest_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->rest_uri), NULL, NULL, NULL, NULL);
   if(!rest_identifier)
     goto err_collection;
   
@@ -1049,7 +1049,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  object = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
+  object = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
   if(!object)
     goto err_collection;
 
@@ -1062,7 +1062,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     if(!blank_id)
       goto err_collection;
 
-    blank = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_ANONYMOUS, NULL, blank_id, NULL, NULL, NULL);
+    blank = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_BLANK, NULL, blank_id, NULL, NULL, NULL);
     if(!blank)
       goto err_collection;
     
@@ -1128,7 +1128,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("collection\n empty\n");
 #endif
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_IDENTIFIER_TYPE_RESOURCE, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -1353,11 +1353,11 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
 
   /* Two choices for subject for Turtle */
   statement->subject.type = t->subject->type;
-  if(t->subject->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->subject.value = t->subject->id;
   } else {
-    /* RAPTOR_IDENTIFIER_TYPE_RESOURCE */
-    RAPTOR_ASSERT(t->subject->type != RAPTOR_IDENTIFIER_TYPE_RESOURCE,
+    /* RAPTOR_TERM_TYPE_URI */
+    RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
                   "subject type is not resource");
     statement->subject.value = t->subject->uri;
   }
@@ -1371,7 +1371,7 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
   }
   
-  statement->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate.type = RAPTOR_TERM_TYPE_URI;
   statement->predicate.value = t->predicate->uri;
   
 
@@ -1380,13 +1380,13 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
   statement->object.literal_language = NULL;
   statement->object.literal_datatype = NULL;
 
-  if(t->object->type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+  if(t->object->type == RAPTOR_TERM_TYPE_URI) {
     statement->object.value = t->object->uri;
-  } else if(t->object->type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  } else if(t->object->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->object.value = t->object->id;
   } else {
-    /* RAPTOR_IDENTIFIER_TYPE_LITERAL */
-    RAPTOR_ASSERT(t->object->type != RAPTOR_IDENTIFIER_TYPE_LITERAL,
+    /* RAPTOR_TERM_TYPE_LITERAL */
+    RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
                   "object type is not literal");
     statement->object.value = t->object->literal;
     statement->object.literal_language = t->object->literal_language;

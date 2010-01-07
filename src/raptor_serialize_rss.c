@@ -323,7 +323,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
     if(!s)
       continue;
 
-    if(s->subject.type != RAPTOR_IDENTIFIER_TYPE_RESOURCE ||
+    if(s->subject.type != RAPTOR_TERM_TYPE_URI ||
        !raptor_uri_equals_v2(rss_serializer->world, (raptor_uri*)s->subject.value, item->uri))
        continue;
     
@@ -334,7 +334,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
     /* add triples with anonymous object to the general triples sequence
      * for this item, and to the group map (blank node closure)
      */
-    if(s->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    if(s->object.type == RAPTOR_TERM_TYPE_BLANK) {
       raptor_uri* fake_uri = raptor_new_uri_v2(rss_serializer->world, (const unsigned char*)s->object.value);
       raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
       raptor_free_uri_v2(rss_serializer->world, fake_uri);
@@ -354,8 +354,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       if(!rss_serializer->world->rss_fields_info_uris[f])
         continue;
       
-      if(s->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
-         s->object.type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
+      if(s->predicate.type == RAPTOR_TERM_TYPE_URI &&
+         s->object.type != RAPTOR_TERM_TYPE_BLANK &&
          raptor_uri_equals_v2(rss_serializer->world, 
                               (raptor_uri*)s->predicate.value,
                               rss_serializer->world->rss_fields_info_uris[f])) {
@@ -364,7 +364,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
         /* found field this triple to go in 'item' so move the
          * object value over 
          */
-        if(s->object.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+        if(s->object.type == RAPTOR_TERM_TYPE_URI)
           field->uri = (raptor_uri*)s->object.value;
         else {
           field->value = (unsigned char*)s->object.value;
@@ -468,7 +468,7 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
       if(!s)
         continue;
       
-      if(s->subject.type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+      if(s->subject.type != RAPTOR_TERM_TYPE_BLANK)
         continue;
       
       fake_uri = raptor_new_uri_v2(rss_serializer->world, (const unsigned char*)s->subject.value);
@@ -484,7 +484,7 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
         moved_count++;
 #endif
 
-        if(s->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+        if(s->object.type == RAPTOR_TERM_TYPE_BLANK) {
           fake_uri = raptor_new_uri_v2(rss_serializer->world, (const unsigned char*)s->object.value);
           raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
           raptor_free_uri_v2(rss_serializer->world, fake_uri);
@@ -655,7 +655,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   item = raptor_rss10_get_group_item(rss_serializer, fake_uri);
   raptor_free_uri_v2(rss_serializer->world, fake_uri);
 
-  if(item && s->object.type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  if(item && s->object.type != RAPTOR_TERM_TYPE_BLANK) {
     int f;
 
     for(f = 0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
@@ -663,7 +663,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
       if(!rss_serializer->world->rss_fields_info_uris[f])
         continue;
 
-      if(s->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+      if(s->predicate.type == RAPTOR_TERM_TYPE_URI &&
          raptor_uri_equals_v2(rss_serializer->world, 
                               (raptor_uri*)s->predicate.value,
                               rss_serializer->world->rss_fields_info_uris[f])) {
@@ -671,7 +671,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
          * object value over 
          */
         field = raptor_rss_new_field(rss_serializer->world);
-        if(s->object.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+        if(s->object.type == RAPTOR_TERM_TYPE_URI) {
           field->uri = (raptor_uri*)s->object.value;
         } else {
           field->value = (unsigned char*)s->object.value;
@@ -809,12 +809,12 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   
 
   /* Look for triple (?resource rdf:type rdf:Seq) */
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE &&
+  if(statement->object.type == RAPTOR_TERM_TYPE_URI &&
      raptor_uri_equals_v2(rss_serializer->world,
                           (raptor_uri*)statement->object.value,
                           RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
     
-    if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+    if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK) {
       RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",
                     (char*)statement->subject.value);
       rss_serializer->seq_uri = raptor_new_uri_v2(rss_serializer->world,
@@ -942,13 +942,13 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
 #endif
     
     /* skip triples that are not ? ? <uri> */
-    if(s->object.type != RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+    if(s->object.type != RAPTOR_TERM_TYPE_URI) {
       RAPTOR_DEBUG1("Not ? ? <uri> - continuing\n");
       continue;
     }
   
 
-    if(s->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    if(s->subject.type == RAPTOR_TERM_TYPE_BLANK)
       fake_uri = raptor_new_uri_v2(rss_serializer->world, (unsigned char*)s->subject.value);
     else
       fake_uri = raptor_uri_copy_v2(rss_serializer->world, (raptor_uri*)s->subject.value);
@@ -1766,7 +1766,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         identifier->id = (const unsigned char*)RAPTOR_MALLOC(cstring, 7);
         strncpy((char*)identifier->id, "author", 7);
 
-        identifier->type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+        identifier->type = RAPTOR_TERM_TYPE_BLANK;
 
         /* Move atom:name author field, or create a dummy one */
         f = RAPTOR_RSS_FIELD_ATOM_NAME;

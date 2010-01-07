@@ -84,7 +84,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
   /* from raptor_print_statement */
   raptor_iostream_write_byte(iostr, '[');
 
-  if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK) {
     raptor_iostream_write_string(iostr, statement->subject.value);
   } else {
 #ifdef RAPTOR_DEBUG
@@ -104,7 +104,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
 
   raptor_iostream_write_counted_string(iostr, ", ", 2);
 
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+  if(statement->object.type == RAPTOR_TERM_TYPE_LITERAL) {
     if(statement->object.literal_datatype) {
       raptor_iostream_write_byte(iostr, '<');
       raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->object.literal_datatype);
@@ -113,7 +113,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
     raptor_iostream_write_byte(iostr, '"');
     raptor_iostream_write_string(iostr, statement->object.value);
     raptor_iostream_write_byte(iostr, '"');
-  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  } else if(statement->object.type == RAPTOR_TERM_TYPE_BLANK) {
     raptor_iostream_write_string(iostr, statement->object.value);
   } else {
 #ifdef RAPTOR_DEBUG

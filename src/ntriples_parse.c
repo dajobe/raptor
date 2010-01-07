@@ -160,7 +160,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   /* Two choices for subject from N-Triples */
   if(subject_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
     statement->subject.value = subject;
-    statement->subject.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    statement->subject.type = RAPTOR_TERM_TYPE_BLANK;
   } else {
     subject_uri = raptor_new_uri_v2(parser->world, subject);
     if(!subject_uri) {
@@ -168,7 +168,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
       goto cleanup;
     }
     statement->subject.value = subject_uri;
-    statement->subject.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    statement->subject.type = RAPTOR_TERM_TYPE_URI;
   }
 
   if(object_literal_datatype) {
@@ -192,7 +192,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     raptor_parser_error(parser, "Could not create predicate uri '%s', skipping", predicate);
     goto cleanup;
   }
-  statement->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  statement->predicate.type = RAPTOR_TERM_TYPE_URI;
   statement->predicate.value = predicate_uri;
   
   /* Three choices for object from N-Triples */
@@ -205,12 +205,12 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
       goto cleanup;
     }
     statement->object.value = object_uri;
-    statement->object.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+    statement->object.type = RAPTOR_TERM_TYPE_URI;
   } else if(object_type == RAPTOR_NTRIPLES_TERM_TYPE_BLANK_NODE) {
     statement->object.value = object;
-    statement->object.type = RAPTOR_IDENTIFIER_TYPE_ANONYMOUS;
+    statement->object.type = RAPTOR_TERM_TYPE_BLANK;
   } else { 
-    statement->object.type = RAPTOR_IDENTIFIER_TYPE_LITERAL;
+    statement->object.type = RAPTOR_TERM_TYPE_LITERAL;
     statement->object.value = object;
     statement->object.literal_language = object_literal_language;
     statement->object.literal_datatype = datatype_uri;

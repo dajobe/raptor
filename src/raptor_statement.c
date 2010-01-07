@@ -43,7 +43,7 @@
 
 
 /* prototypes for helper functions */
-static void raptor_print_statement_part_as_ntriples(raptor_world* world, FILE* stream, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);
+static void raptor_print_statement_part_as_ntriples(raptor_world* world, FILE* stream, const void *term, raptor_term_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);
 
 
 /**
@@ -82,7 +82,7 @@ raptor_statement_copy(const raptor_statement *statement)
   s->world = statement->world;
 
   s->subject.type = statement->subject.type;
-  if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK) {
     unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->subject.value)+1);
     if(!new_blank)
       goto oom;
@@ -92,13 +92,13 @@ raptor_statement_copy(const raptor_statement *statement)
     s->subject.value = raptor_uri_copy_v2(statement->world,
                                           (raptor_uri*)statement->subject.value);
 
-  s->predicate.type = RAPTOR_IDENTIFIER_TYPE_RESOURCE;
+  s->predicate.type = RAPTOR_TERM_TYPE_URI;
   s->predicate.value = raptor_uri_copy_v2(statement->world,
                                           (raptor_uri*)statement->predicate.value);
   
 
   s->object.type = statement->object.type;
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+  if(statement->object.type == RAPTOR_TERM_TYPE_LITERAL) {
     unsigned char *string;
     char *language = NULL;
     raptor_uri *uri = NULL;
@@ -123,7 +123,7 @@ raptor_statement_copy(const raptor_statement *statement)
                                (raptor_uri*)statement->object.literal_datatype);
       s->object.literal_datatype = uri;
     }
-  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  } else if(statement->object.type == RAPTOR_TERM_TYPE_BLANK) {
     char *blank = (char*)statement->object.value;
     unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen(blank)+1);
     if(!new_blank)
@@ -155,20 +155,20 @@ void
 raptor_free_statement(raptor_statement *statement)
 {
   if(statement->subject.value) {
-    if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    if(statement->subject.type == RAPTOR_TERM_TYPE_URI)
       raptor_free_uri_v2(statement->world, (raptor_uri*)statement->subject.value);
     else
       RAPTOR_FREE(cstring, (void*)statement->subject.value);
   }
 
   if(statement->predicate.value) {
-    if(statement->predicate.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+    if(statement->predicate.type == RAPTOR_TERM_TYPE_URI)
       raptor_free_uri_v2(statement->world, (raptor_uri*)statement->predicate.value);
     else
       RAPTOR_FREE(cstring, (void*)statement->predicate.value);
   }
 
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_RESOURCE) {
+  if(statement->object.type == RAPTOR_TERM_TYPE_URI) {
     if(statement->object.value)
       raptor_free_uri_v2(statement->world, (raptor_uri*)statement->object.value);
   } else {
@@ -198,7 +198,7 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 {
   fputc('[', stream);
 
-  if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK) {
     fputs((const char*)statement->subject.value, stream);
   } else {
 #ifdef RAPTOR_DEBUG
@@ -220,7 +220,7 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 
   fputs(", ", stream);
 
-  if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+  if(statement->object.type == RAPTOR_TERM_TYPE_LITERAL) {
     if(statement->object.literal_datatype) {
       fputc('<', stream);
       fputs((const char*)raptor_uri_as_string_v2(statement->world,
@@ -230,7 +230,7 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
     fputc('"', stream);
     fputs((const char*)statement->object.value, stream);
     fputc('"', stream);
-  } else if(statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+  } else if(statement->object.type == RAPTOR_TERM_TYPE_BLANK)
     fputs((const char*)statement->object.value, stream);
   else {
 #ifdef RAPTOR_DEBUG
@@ -272,7 +272,7 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 unsigned char*
 raptor_statement_part_as_counted_string(raptor_world* world,
                                         const void *term, 
-                                        raptor_identifier_type type,
+                                        raptor_term_type type,
                                         raptor_uri* literal_datatype,
                                         const unsigned char *literal_language,
                                         size_t* len_p)
@@ -283,10 +283,10 @@ raptor_statement_part_as_counted_string(raptor_world* world,
   unsigned char *uri_string = NULL;
   
   switch(type) {
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       term_len = strlen((const char*)term);
       len = 2+term_len;
-      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
         language_len = strlen((const char*)literal_language);
         len+= language_len+1;
       }
@@ -306,7 +306,7 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       strcpy((char*)s, (const char*)term);
       s+= term_len;
       *s++ ='"';
-      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
         *s++ ='@';
         strcpy((char*)s, (const char*)literal_language);
         s+= language_len;
@@ -324,7 +324,7 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       len = 2+strlen((const char*)term);
       buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
@@ -335,7 +335,7 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       strcpy((char*)s, (const char*)term);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       uri_string = raptor_uri_as_counted_string_v2(world,
                                                    (raptor_uri*)term, &uri_len);
       len = 2+uri_len;
@@ -352,7 +352,7 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       *s++ ='\0';
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
   }
@@ -389,7 +389,7 @@ raptor_statement_part_as_counted_string(raptor_world* world,
 unsigned char*
 raptor_statement_part_as_string(raptor_world* world,
                                 const void *term, 
-                                raptor_identifier_type type,
+                                raptor_term_type type,
                                 raptor_uri* literal_datatype,
                                 const unsigned char *literal_language)
 {
@@ -404,16 +404,16 @@ static void
 raptor_print_statement_part_as_ntriples(raptor_world* world,
                                         FILE* stream,
                                         const void *term, 
-                                        raptor_identifier_type type,
+                                        raptor_term_type type,
                                         raptor_uri* literal_datatype,
                                         const unsigned char *literal_language) 
 {
   switch(type) {
-    case RAPTOR_IDENTIFIER_TYPE_LITERAL:
+    case RAPTOR_TERM_TYPE_LITERAL:
       fputc('"', stream);
       raptor_print_ntriples_string(stream, (const unsigned char*)term, '"');
       fputc('"', stream);
-      if(literal_language && type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
         fputc('@', stream);
         fputs((const char*)literal_language, stream);
       }
@@ -426,18 +426,18 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
 
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_ANONYMOUS:
+    case RAPTOR_TERM_TYPE_BLANK:
       fputs("_:", stream);
       fputs((const char*)term, stream);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_RESOURCE:
+    case RAPTOR_TERM_TYPE_URI:
       fputc('<', stream);
       raptor_print_ntriples_string(stream, raptor_uri_as_string_v2(world, (raptor_uri*)term), '\0');
       fputc('>', stream);
       break;
       
-    case RAPTOR_IDENTIFIER_TYPE_UNKNOWN:
+    case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown type %d", type);
   }
@@ -485,7 +485,7 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
  *
  * Compare a pair of #raptor_statement
  *
- * If types are different, the #raptor_identifier_type order is used.
+ * If types are different, the #raptor_term_type order is used.
  * Resource and datatype URIs are compared with raptor_uri_compare(),
  * blank nodes and literals with strcmp().  If one literal has no
  * language, it is earlier than one with a language.  If one literal
@@ -505,7 +505,7 @@ raptor_statement_compare(const raptor_statement *s1,
       return d;
 
     /* subjects are URIs or blank nodes */
-    if(s1->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    if(s1->subject.type == RAPTOR_TERM_TYPE_BLANK)
       d = strcmp((char*)s1->subject.value, (char*)s2->subject.value);
     else
       d = raptor_uri_compare_v2(s1->world,
@@ -530,7 +530,7 @@ raptor_statement_compare(const raptor_statement *s1,
 
   /* objects are URIs or blank nodes or literals */
   if(s1->object.value && s2->object.value) {
-    if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+    if(s1->object.type == RAPTOR_TERM_TYPE_LITERAL) {
       d = strcmp((char*)s1->object.value, (char*)s2->object.value);
       if(d)
         return d;
@@ -556,7 +556,7 @@ raptor_statement_compare(const raptor_statement *s1,
       if(d)
         return d;
 
-    } else if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    } else if(s1->object.type == RAPTOR_TERM_TYPE_BLANK)
       d = strcmp((char*)s1->object.value, (char*)s2->object.value);
     else
       d = raptor_uri_compare_v2(s1->world,

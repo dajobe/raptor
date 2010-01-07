@@ -296,7 +296,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     goto done;
   }
 
-  if(s1->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  if(s1->subject.type == RAPTOR_TERM_TYPE_BLANK) {
     /* Here for completeness. Anonymous nodes are taken care of
      * elsewhere */
     /*if(strcmp((const char *)s1->subject, (const char *)s2->subject.value) != 0)
@@ -327,7 +327,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     goto done;
   }
   
-  if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_LITERAL) {
+  if(s1->object.type == RAPTOR_TERM_TYPE_LITERAL) {
     int equal;
     
     equal=!safe_strcmp((char *)s1->object.value, (char *)s2->object.value);
@@ -349,7 +349,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
 
     rv = equal;
     goto done;
-  } else if(s1->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  } else if(s1->object.type == RAPTOR_TERM_TYPE_BLANK) {
     /* Here for completeness. Anonymous nodes are taken care of
      * elsewhere */
     /* if(strcmp((const char *)s1->object, (const char *)s2->object.value) != 0)
@@ -384,15 +384,15 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
     equal = 1;
   } else if(b1->owner == NULL || b2->owner == NULL) {
     equal = 0;
-  } else if(b1->owner->subject.type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
-            b2->owner->subject.type != RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  } else if(b1->owner->subject.type != RAPTOR_TERM_TYPE_BLANK &&
+            b2->owner->subject.type != RAPTOR_TERM_TYPE_BLANK) {
     /* Neither are anonymous. Normal comparison. This will return
      * false if both the subject and the predicates don't match. We
      * know the objects are blank nodes. */
     equal = rdfdiff_statement_equals(b1->world, b1->owner, b2->owner);
     
-  } else if(b1->owner->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS &&
-            b2->owner->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  } else if(b1->owner->subject.type == RAPTOR_TERM_TYPE_BLANK &&
+            b2->owner->subject.type == RAPTOR_TERM_TYPE_BLANK) {
     rdfdiff_blank *p1;
     rdfdiff_blank *p2;
 
@@ -674,13 +674,13 @@ rdfdiff_collect_statements(void *user_data, const raptor_statement *statement)
   
   file->statement_count++;
 
-  if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS ||
-      statement->object.type  == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS) {
+  if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK ||
+      statement->object.type  == RAPTOR_TERM_TYPE_BLANK) {
 
-    if(statement->subject.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK)
       rv = rdfdiff_add_blank_statement(file, statement);
 
-    if(rv == 0 && statement->object.type == RAPTOR_IDENTIFIER_TYPE_ANONYMOUS)
+    if(rv == 0 && statement->object.type == RAPTOR_TERM_TYPE_BLANK)
       rv = rdfdiff_add_blank_statement_owner(file, statement);
 
   } else {
