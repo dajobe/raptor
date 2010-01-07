@@ -78,10 +78,6 @@ extern "C" {
 #define RAPTOR_DEPRECATED
 #endif
 
-/* V2 is always available now - FIXME - remove this define */
-#undef RAPTOR_V2_AVAILABLE
-#define RAPTOR_V2_AVAILABLE 1
-
 /**
  * RAPTOR_PRINTF_FORMAT:
  * @string_index: ignore me
