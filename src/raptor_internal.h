@@ -1181,10 +1181,6 @@ typedef struct {
     } literal;
 
     struct {
-      int ordinal;
-    } ordinal;
-
-    struct {
       unsigned char *string;
     } blank;
     
@@ -1215,7 +1211,6 @@ raptor_abbrev_node* raptor_abbrev_node_lookup(raptor_avltree* nodes, raptor_term
 raptor_abbrev_subject* raptor_new_abbrev_subject(raptor_abbrev_node* node);
 void raptor_free_abbrev_subject(raptor_abbrev_subject* subject);
 int raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject, raptor_abbrev_node* predicate, raptor_abbrev_node* object);
-int raptor_abbrev_subject_add_list_element(raptor_abbrev_subject* subject, int ordinal, raptor_abbrev_node* object);
 int raptor_abbrev_subject_cmp(raptor_abbrev_subject* subject1, raptor_abbrev_subject* subject2);
 raptor_abbrev_subject* raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_term_type node_type, const void *node_data);
 raptor_abbrev_subject* raptor_abbrev_subject_lookup(raptor_avltree* nodes, raptor_avltree* subjects, raptor_avltree* blanks, raptor_term_type node_type, const void *node_data, int* created_p);

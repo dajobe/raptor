@@ -545,39 +545,6 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
 }
 
 
-/**
- * raptor_abbrev_subject_add_list_element:
- * @subject: subject node to add to
- * @ordinal: ordinal index
- * @object: object node
- * 
- * INTERNAL - Add rdf:li into list element array of a #raptor_abbrev_subject node.
- * 
- * Return value: non-0 on failure
- **/
-int
-raptor_abbrev_subject_add_list_element(raptor_abbrev_subject* subject, 
-                                       int ordinal,
-                                       raptor_abbrev_node* object)
-{
-  int rv = 1;
-  raptor_abbrev_node* node;
-
-  node = (raptor_abbrev_node*)raptor_sequence_get_at(subject->list_items,
-                                                     ordinal);
-  if(!node) {
-    /* If there isn't already an entry */
-    rv = raptor_sequence_set_at(subject->list_items, ordinal, object);
-    if(!rv) {
-      object->ref_count++;
-      object->count_as_subject++;
-    }
-  }
-  
-  return rv;
-}
-
-
 int
 raptor_abbrev_subject_cmp(raptor_abbrev_subject* subject1,
 			  raptor_abbrev_subject* subject2)
