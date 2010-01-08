@@ -203,7 +203,6 @@ void raptor_system_free(void *ptr);
 
 /* raptor_libxml.c exports */
 extern void raptor_libxml_sax_init(raptor_sax2* sax2);
-extern void raptor_libxml_sax_init_error_handlers(xmlSAXHandler *sax);
 extern void raptor_libxml_generic_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 extern int raptor_libxml_init(raptor_world* world);

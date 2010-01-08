@@ -445,20 +445,6 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
 }
 
 
-void
-raptor_libxml_sax_init_error_handlers(xmlSAXHandler *sax)
-{
-  sax->warning = (warningSAXFunc)raptor_libxml_warning;
-  sax->error = (errorSAXFunc)raptor_libxml_error;
-  sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
-  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
-
-#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
-  sax->initialized = 1;
-#endif
-}
-
-
 /*
  * Initialise libxml for a particular SAX2 setup
 */
@@ -490,12 +476,18 @@ raptor_libxml_sax_init(raptor_sax2* sax2)
   sax->ignorableWhitespace= raptor_sax2_cdata;
   sax->processingInstruction = NULL; /* processingInstruction */
   sax->comment = raptor_sax2_comment;      /* comment */
+  sax->warning = (warningSAXFunc)raptor_libxml_warning;
+  sax->error = (errorSAXFunc)raptor_libxml_error;
+  sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
+  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
   sax->externalSubset = raptor_libxml_externalSubset;
 #endif
 
-  raptor_libxml_sax_init_error_handlers(sax);
+#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
+  sax->initialized = 1;
+#endif
 }
 
 
