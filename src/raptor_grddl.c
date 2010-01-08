@@ -118,9 +118,6 @@ struct raptor_grddl_parser_context_s {
   /* ... constructed with this name */
   const char* internal_parser_name;
 
-  /* sax2 structure - only for recording error pointers */
-  raptor_sax2* sax2;
-
   /* URI of root namespace of document */
   raptor_uri* root_ns_uri;
 
@@ -260,10 +257,6 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
 
   grddl_parser->world = rdf_parser->world;
   grddl_parser->rdf_parser = rdf_parser;
-  
-  /* sax2 structure - only for recording error pointers */
-  grddl_parser->sax2 = raptor_new_sax2(rdf_parser->world,
-                                       &rdf_parser->locator, rdf_parser);
 
   /* The following error fields are normally initialised by
    * raptor_libxml_sax_init() via raptor_sax2_parse_start() which is
@@ -331,9 +324,6 @@ raptor_grddl_parse_terminate(raptor_parser *rdf_parser)
 
   if(grddl_parser->internal_parser)
     raptor_free_parser(grddl_parser->internal_parser);
-
-  if(grddl_parser->sax2)
-    raptor_free_sax2(grddl_parser->sax2);
 
   if(grddl_parser->root_ns_uri)
     raptor_free_uri_v2(rdf_parser->world, grddl_parser->root_ns_uri);
