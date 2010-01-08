@@ -733,10 +733,8 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   }
 
   if(error_handlers)
-    raptor_log_error(error_handlers->world,
-                     level, handler, handler_data,
-                     error_handlers->locator,
-                     nmsg);
+    raptor_log_error(error_handlers->world, level,
+                     error_handlers->locator, nmsg);
   else
     fputs(nmsg, stderr);
 

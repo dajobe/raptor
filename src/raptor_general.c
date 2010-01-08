@@ -625,9 +625,7 @@ raptor_log_error_to_handlers(raptor_world* world,
   if(world->internal_ignore_errors)
     return;
 
-  raptor_log_error(world, level, error_handlers->handlers[level].handler,
-                   error_handlers->handlers[level].user_data,
-                   locator, message);
+  raptor_log_error(world, level, locator, message);
 }
 
 
@@ -638,17 +636,12 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
 {
   char *buffer;
   size_t length;
-  raptor_message_handler handler;
-  void* handler_data;
   
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
   if(world->internal_ignore_errors)
     return;
-
-  handler = world->error_handlers.handlers[level].handler;
-  handler_data = world->error_handlers.handlers[level].user_data;
 
   buffer = raptor_vsnprintf(message, arguments);
   if(!buffer) {
@@ -668,7 +661,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
   if(buffer[length-1] == '\n')
     buffer[length-1]='\0';
   
-  raptor_log_error(world, level, handler, handler_data, locator, buffer);
+  raptor_log_error(world, level, locator, buffer);
 
   RAPTOR_FREE(cstring, buffer);
 }
@@ -676,16 +669,20 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
 
 /* internal */
 void
-raptor_log_error(raptor_world* world,
-                 raptor_log_level level,
-                 raptor_message_handler handler, void* handler_data,
+raptor_log_error(raptor_world* world, raptor_log_level level,
                  raptor_locator* locator, const char* message)
 {
+  raptor_message_handler handler;
+  void* handler_data;
+  
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
   if(world->internal_ignore_errors)
     return;
+
+  handler = world->error_handlers.handlers[level].handler;
+  handler_data = world->error_handlers.handlers[level].user_data;
 
   if(handler)
     /* This is the place in raptor that MOST of the user error handler
