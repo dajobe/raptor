@@ -754,13 +754,13 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 
 /**
  * raptor_libxml_flags:
- * @RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE: if set - save/restore the libxml generic error handler when parsing (default unset)
- * @RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: if set - save/restore the libxml structured error handler when parsing (default unset)
+ * @RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE: if set - save/restore the libxml generic error handler when raptor library initializes (default set)
+ * @RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: if set - save/restore the libxml structured error handler when raptor library terminates (default set)
  *
  * libxml library flags
  *
- * These are used by raptor_world_set_libxml_flags() and
- * raptor_set_libxml_flags() to control common libxml features.
+ * These are used by raptor_world_set_libxml_flags() to control
+ * common libxml features.
  *
  * If any handler saving/restoring is enabled, any existing handler
  * and context is saved before parsing and restored afterwards.

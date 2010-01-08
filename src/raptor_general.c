@@ -117,13 +117,14 @@ raptor_new_world(void)
   world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(raptor_world), 1);
   if(world) {
     /* set default libxml flags - can be updated by
-     * raptor_world_set_libxml_flags() and raptor_set_libxml_flags()
+     * raptor_world_set_libxml_flags()
      */
 
-    /* unset: RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE
-     * unset: RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE
+    /* set: RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE
+     * set: RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE
      */
-    world->libxml_flags = 0; 
+    world->libxml_flags = RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE |
+                          RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE ;
 
     world->error_handlers.last_log_level = RAPTOR_LOG_LEVEL_LAST;
     raptor_error_handlers_init_v2(world, &world->error_handlers);

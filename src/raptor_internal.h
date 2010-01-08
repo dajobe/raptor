@@ -211,7 +211,6 @@ extern void raptor_libxml_finish(raptor_world* world);
 extern void raptor_libxml_validation_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_libxml_free(xmlParserCtxtPtr xc);
-void raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err);
 
 /* raptor_parse.c - exported to libxml part */
 extern void raptor_libxml_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
@@ -1353,9 +1352,8 @@ struct raptor_world_s {
    */
   int free_xslt_security_preferences;
 
-  /* Flags for libxml set by raptor_world_set_libxml_flags() and
-   * raptor_set_libxml_flags() - see #raptor_libxml_flags for
-   * meanings 
+  /* Flags for libxml set by raptor_world_set_libxml_flags().
+   * See #raptor_libxml_flags for meanings 
    */
   int libxml_flags;
 

@@ -56,6 +56,9 @@ static void raptor_libxml_error_common(void* user_data, const char *msg, va_list
 static void raptor_libxml_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 static void raptor_libxml_fatal_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
+static void raptor_libxml_xmlStructuredError_handler_global(void *user_data, xmlErrorPtr err);
+static void raptor_libxml_xmlStructuredError_handler_parsing(void *user_data, xmlErrorPtr err);
+
 
 
 static const char* const xml_warning_prefix="XML parser warning - ";
@@ -469,7 +472,7 @@ raptor_libxml_sax_init(raptor_sax2* sax2)
   sax->warning = (warningSAXFunc)raptor_libxml_warning;
   sax->error = (errorSAXFunc)raptor_libxml_error;
   sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
-  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
+  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredError_handler_parsing;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
   sax->externalSubset = raptor_libxml_externalSubset;
@@ -503,8 +506,8 @@ raptor_libxml_init(raptor_world* world)
     world->libxml_saved_structured_error_context = xmlGenericErrorContext;
     world->libxml_saved_structured_error_handler = xmlStructuredError;
     /* sets xmlGenericErrorContext and xmlStructuredError */
-    xmlSetStructuredErrorFunc(&world->error_handlers, 
-                              (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc);
+    xmlSetStructuredErrorFunc(world, 
+                              (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredError_handler_global);
   }
   
   if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE) {
@@ -608,32 +611,15 @@ static const char* const raptor_libxml_domain_labels[XML_LAST_DL+2]= {
 };
   
 
-void 
-raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
+static void 
+raptor_libxml_xmlStructuredError_handler_common(raptor_world *world,
+                                                raptor_locator *locator,
+                                                xmlErrorPtr err)
 {
-  raptor_error_handlers* error_handlers = NULL;
   raptor_stringbuffer* sb;
   char *nmsg;
-  raptor_message_handler handler = NULL;
-  void* handler_data = NULL;
   raptor_log_level level = RAPTOR_LOG_LEVEL_ERROR;
 
-  /* user_data OR err->ctxt->userData may point to a raptor_sax2 */
-  if(user_data) {
-    raptor_sax2* sax2 = (raptor_sax2*)user_data;
-    if(sax2->magic == RAPTOR_LIBXML_MAGIC)
-      error_handlers = &sax2->world->error_handlers;
-  }
-  
-  if(err && err->ctxt) {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr)err->ctxt;
-    if(ctxt->userData) {
-      raptor_sax2* sax2 = (raptor_sax2*)ctxt->userData;
-      if(sax2->magic == RAPTOR_LIBXML_MAGIC)
-        error_handlers = &sax2->world->error_handlers;
-    }
-  }
-  
   if(err == NULL || err->code == XML_ERR_OK || err->level == XML_ERR_NONE)
     return;
 
@@ -643,7 +629,7 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
 
   /* XML fatal errors never cause an abort */
   if(err->level == XML_ERR_FATAL)
-    err->level= XML_ERR_ERROR;
+    err->level = XML_ERR_ERROR;
   
 
   sb = raptor_new_stringbuffer();
@@ -705,20 +691,6 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
     raptor_stringbuffer_append_string(sb, (const unsigned char*)err->str1, 1);
   }
 
-  if(error_handlers) {
-    if(error_handlers->magic != RAPTOR_ERROR_HANDLER_MAGIC) {
-#ifdef RAPTOR_DEBUG
-      if(1) /* FIXME */
-        RAPTOR_DEBUG2("Received bogus error_handlers pointer %p\n",
-                      error_handlers);
-        else
-          RAPTOR_FATAL2("Received bogus error_handlers pointer %p\n",
-                        error_handlers);
-#endif
-      error_handlers = NULL;
-    }
-  }
-  
   nmsg = (char*)raptor_stringbuffer_as_string(sb);
   if(err->level == XML_ERR_FATAL)
     level = RAPTOR_LOG_LEVEL_FATAL;
@@ -727,19 +699,60 @@ raptor_libxml_xmlStructuredErrorFunc(void *user_data, xmlErrorPtr err)
   else
     level = RAPTOR_LOG_LEVEL_WARNING;
 
-  if(error_handlers && level <= error_handlers->last_log_level) {
-    handler = error_handlers->handlers[level].handler;
-    handler_data = error_handlers->handlers[level].user_data;
-  }
-
-  if(error_handlers)
-    raptor_log_error(error_handlers->world, level,
-                     error_handlers->locator, nmsg);
-  else
-    fputs(nmsg, stderr);
-
+  raptor_log_error(world, level, locator, nmsg);
   
   raptor_free_stringbuffer(sb);
+}
+
+
+/* user_data is a raptor_world* */
+static void 
+raptor_libxml_xmlStructuredError_handler_global(void *user_data,
+                                                xmlErrorPtr err)
+{
+  raptor_world *world = NULL;
+  
+  /* user_data may point to a raptor_world* */
+  if(user_data) {
+    world = (raptor_world*)user_data;
+    if(world->error_handlers.magic != RAPTOR_ERROR_HANDLER_MAGIC)
+      world = NULL;
+  }
+
+  raptor_libxml_xmlStructuredError_handler_common(world, NULL, err);
+}
+
+
+/* user_data may be a raptor_sax2; err->ctxt->userData may point to a
+ * raptor_sax2* */
+static void 
+raptor_libxml_xmlStructuredError_handler_parsing(void *user_data,
+                                                 xmlErrorPtr err)
+{
+  raptor_sax2* sax2 = NULL;
+
+  /* user_data may point to a raptor_sax2* */
+  if(user_data) {
+    sax2 = (raptor_sax2*)sax2;
+    if(sax2->magic != RAPTOR_LIBXML_MAGIC)
+      sax2 = NULL;
+  }
+  
+  /* err->ctxt->userData may point to a raptor_sax2* */
+  if(err && err->ctxt) {
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr)err->ctxt;
+    if(ctxt->userData) {
+      sax2 = (raptor_sax2*)ctxt->userData;
+      if(sax2->magic != RAPTOR_LIBXML_MAGIC)
+        sax2 = NULL;
+    }
+  }
+
+  if(sax2)
+    raptor_libxml_xmlStructuredError_handler_common(sax2->world, sax2->locator,
+                                                    err);
+  else
+    raptor_libxml_xmlStructuredError_handler_common(NULL, NULL, err);
 }
 
 
