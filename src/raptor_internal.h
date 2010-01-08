@@ -1029,8 +1029,6 @@ struct raptor_sax2_s {
 
   raptor_locator *locator;
 
-  raptor_error_handlers* error_handlers;
-
   /* New XML namespace callback */
   raptor_namespace_handler  namespace_handler;
 

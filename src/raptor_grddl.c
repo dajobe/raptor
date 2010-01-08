@@ -261,7 +261,7 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   grddl_parser->rdf_parser = rdf_parser;
   
   /* sax2 structure - only for recording error pointers */
-  grddl_parser->sax2 = raptor_new_sax2(rdf_parser, &rdf_parser->world->error_handlers);
+  grddl_parser->sax2 = raptor_new_sax2(rdf_parser->world, &rdf_parser->locator, rdf_parser);
 
   /* The following error fields are normally initialised by
    * raptor_libxml_init() via raptor_sax2_parse_start() which is

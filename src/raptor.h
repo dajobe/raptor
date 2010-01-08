@@ -1713,7 +1713,7 @@ void raptor_error_handlers_init_v2(raptor_world* world, raptor_error_handlers* e
 
 /* SAX2 API */
 RAPTOR_API
-raptor_sax2* raptor_new_sax2(void *user_data, raptor_error_handlers* error_handlers);
+raptor_sax2* raptor_new_sax2(raptor_world *world, raptor_locator *locator, void* user_data);
 RAPTOR_API
 void raptor_free_sax2(raptor_sax2 *sax2);
 

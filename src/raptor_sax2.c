@@ -83,15 +83,17 @@ raptor_sax2_finish(raptor_world* world)
 
 /**
  * raptor_new_sax2:
- * @user_data: pointer context information to pass to handlers
- * @error_handlers: error handlers pointer
+ * @world: raptor world
+ * @locator: raptor locator to use for errors
+ * @user_data: pointer context information to pass to SAX handlers
  *
  * Constructor - Create a new SAX2 with error handlers
  *
  * Return value: new #raptor_sax2 object or NULL on failure
  */
 raptor_sax2*
-raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
+raptor_new_sax2(raptor_world *world, raptor_locator *locator,
+                void* user_data)
 {
   raptor_sax2* sax2;
   sax2 = (raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(raptor_sax2));
@@ -102,20 +104,17 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
   sax2->magic = RAPTOR_LIBXML_MAGIC;
 #endif
 
-  sax2->world = error_handlers->world;
-
+  sax2->world = world;
+  sax2->locator = locator;
   sax2->user_data = user_data;
 
-  sax2->locator = error_handlers->locator;
   
-  sax2->error_handlers = error_handlers;
-
 #ifdef RAPTOR_XML_LIBXML
   if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE) {
     sax2->saved_structured_error_context = xmlGenericErrorContext;
     sax2->saved_structured_error_handler = xmlStructuredError;
     /* sets xmlGenericErrorContext and xmlStructuredError */
-    xmlSetStructuredErrorFunc(&sax2->error_handlers, 
+    xmlSetStructuredErrorFunc(&sax2->world->error_handlers, 
                               (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc);
   }
   
@@ -123,7 +122,7 @@ raptor_new_sax2(void* user_data, raptor_error_handlers* error_handlers)
     sax2->saved_generic_error_context = xmlGenericErrorContext;
     sax2->saved_generic_error_handler = xmlGenericError;
     /* sets xmlGenericErrorContext and xmlGenericError */
-    xmlSetGenericErrorFunc(&sax2->error_handlers, 
+    xmlSetGenericErrorFunc(&sax2->world->error_handlers, 
                            (xmlGenericErrorFunc)raptor_libxml_generic_error);
   }
 #endif
@@ -438,7 +437,7 @@ raptor_sax2_simple_error(void* user_data, const char *message, ...)
   if(sax2) {
     raptor_log_level level = RAPTOR_LOG_LEVEL_ERROR;
     raptor_message_handler_closure* cl;
-    cl=&sax2->error_handlers->handlers[level];
+    cl = &sax2->world->error_handlers.handlers[level];
     raptor_log_error_varargs(sax2->world,
                              level, cl->handler, cl->user_data,
                              sax2->locator,
@@ -483,7 +482,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_init(sax2, base_uri);
 
-  xmlSetStructuredErrorFunc(&sax2->error_handlers, 
+  xmlSetStructuredErrorFunc(&sax2->world->error_handlers, 
                             raptor_libxml_xmlStructuredErrorFunc);
 
 #if LIBXML_VERSION < 20425
@@ -505,7 +504,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
     /* log a fatal error and set sax2 to failed state
        since the function signature does not currently support returning an error */
     raptor_log_error_to_handlers(sax2->world,
-                                 sax2->error_handlers,
+                                 &sax2->world->error_handlers,
                                  RAPTOR_LOG_LEVEL_FATAL, sax2->locator,
                                  "raptor_namespaces_init_v2() failed");
     sax2->failed = 1;
@@ -546,7 +545,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
       /* no data given at all - emit a similar message to expat */
       raptor_sax2_update_document_locator(sax2, sax2->locator);
       raptor_log_error_to_handlers(sax2->world,
-                                   sax2->error_handlers,
+                                   &sax2->world->error_handlers,
                                    RAPTOR_LOG_LEVEL_ERROR, sax2->locator,
                                    "XML Parsing failed - no element found");
       return 1;
@@ -678,13 +677,13 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
       strncpy(error_buffer+ERROR_PREFIX_LEN, error_message, error_length+1);
 
       raptor_log_error_to_handlers(sax2->world,
-                                   sax2->error_handlers,
+                                   &sax2->world->error_handlers,
                                    RAPTOR_LOG_LEVEL_ERROR,
                                    sax2->locator, error_buffer);
       RAPTOR_FREE(cstring, error_buffer);
     } else
       raptor_log_error_to_handlers(sax2->world,
-                                   sax2->error_handlers,
+                                   &sax2->world->error_handlers,
                                    RAPTOR_LOG_LEVEL_ERROR,
                                    sax2->locator, "XML Parsing failed");
   }
@@ -823,7 +822,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
 
       if(!dst) {
         raptor_log_error_to_handlers(sax2->world,
-                                     sax2->error_handlers, 
+                                     &sax2->world->error_handlers, 
                                      RAPTOR_LOG_LEVEL_FATAL,
                                      sax2->locator, "Out of memory");
         return;
@@ -903,7 +902,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         xml_language = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)atts[i+1])+1);
         if(!xml_language) {
           raptor_log_error_to_handlers(sax2->world,
-                                       sax2->error_handlers, 
+                                       &sax2->world->error_handlers, 
                                        RAPTOR_LOG_LEVEL_FATAL,
                                        sax2->locator, "Out of memory");
           goto fail;
@@ -964,7 +963,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
                                               sizeof(raptor_qname*));
     if(!named_attrs) {
       raptor_log_error_to_handlers(sax2->world,
-                                   sax2->error_handlers, 
+                                   &sax2->world->error_handlers, 
                                    RAPTOR_LOG_LEVEL_FATAL,
                                    sax2->locator, "Out of memory");
       goto fail;
