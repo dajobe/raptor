@@ -542,8 +542,6 @@ raptor_www_error(raptor_www* www, const char *message, ...)
 
   raptor_log_error_varargs(www->world,
                            RAPTOR_LOG_LEVEL_ERROR,
-                           www->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
-                           www->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                            &www->locator,
                            message, arguments);
 

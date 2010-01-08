@@ -397,11 +397,8 @@ raptor_sax2_simple_error(void* user_data, const char *message, ...)
   va_start(arguments, message);
 
   if(sax2) {
-    raptor_log_level level = RAPTOR_LOG_LEVEL_ERROR;
-    raptor_message_handler_closure* cl;
-    cl = &sax2->world->error_handlers.handlers[level];
     raptor_log_error_varargs(sax2->world,
-                             level, cl->handler, cl->user_data,
+                             RAPTOR_LOG_LEVEL_ERROR,
                              sax2->locator,
                              message, arguments);
   }

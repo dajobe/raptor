@@ -570,20 +570,23 @@ raptor_log_error_to_handlers(raptor_world* world,
 
 
 void
-raptor_log_error_varargs(raptor_world* world,
-                         raptor_log_level level,
-                         raptor_message_handler handler, void* handler_data,
+raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
                          raptor_locator* locator,
                          const char* message, va_list arguments)
 {
   char *buffer;
   size_t length;
+  raptor_message_handler handler;
+  void* handler_data;
   
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
   if(world->internal_ignore_errors)
     return;
+
+  handler = world->error_handlers.handlers[level].handler;
+  handler_data = world->error_handlers.handlers[level].user_data;
 
   buffer = raptor_vsnprintf(message, arguments);
   if(!buffer) {

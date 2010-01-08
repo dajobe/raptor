@@ -680,7 +680,7 @@ void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPT
 
 void raptor_world_internal_set_ignore_errors(raptor_world* world, int flag);
 void raptor_log_error_to_handlers(raptor_world* world, raptor_error_handlers* error_handlers, raptor_log_level level, raptor_locator* locator, const char* message);
-void raptor_log_error_varargs(raptor_world* world, raptor_log_level level, raptor_message_handler handler, void* handler_data, raptor_locator* locator, const char* message, va_list arguments) RAPTOR_PRINTF_FORMAT(6, 0);
+void raptor_log_error_varargs(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
 void raptor_log_error(raptor_world* world, raptor_log_level level, raptor_message_handler handler, void* handler_data, raptor_locator* locator, const char* message);
 
 

@@ -272,8 +272,6 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
   
   raptor_log_error_varargs(sax2->world,
                            RAPTOR_LOG_LEVEL_WARNING,
-                           sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler,
-                           sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data,
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
@@ -318,16 +316,12 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
   if(is_fatal)
     raptor_log_error_varargs(sax2->world,
                              RAPTOR_LOG_LEVEL_FATAL,
-                             sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler, 
-                             sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data,
                              sax2->locator, 
                              nmsg ? nmsg : msg, 
                              args);
   else
     raptor_log_error_varargs(sax2->world,
                              RAPTOR_LOG_LEVEL_ERROR,
-                             sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
-                             sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                              sax2->locator, 
                              nmsg ? nmsg : msg, 
                              args);
@@ -374,8 +368,6 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
 
   raptor_log_error_varargs(error_handlers->world,
                            RAPTOR_LOG_LEVEL_ERROR,
-                           error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
-                           error_handlers->handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                            error_handlers->locator,
                            nmsg ? nmsg : msg, 
                            args);
@@ -434,8 +426,6 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
 
   raptor_log_error_varargs(sax2->world,
                            RAPTOR_LOG_LEVEL_WARNING,
-                           sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler,
-                           sax2->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data,
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
