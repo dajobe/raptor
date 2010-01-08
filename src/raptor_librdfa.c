@@ -219,8 +219,8 @@ raptor_librdfa_parse_start(raptor_parser* rdf_parser)
 
   librdfa_parser->context->namespace_handler = raptor_librdfa_sax2_new_namespace_handler;
   librdfa_parser->context->namespace_handler_user_data = rdf_parser;
-  librdfa_parser->context->error_handlers=&rdf_parser->error_handlers;
-
+  librdfa_parser->context->error_handlers = &rdf_parser->world->error_handlers;
+  
   librdfa_parser->context->callback_data = rdf_parser;
   rdfa_set_triple_handler(librdfa_parser->context, 
                           raptor_librdfa_generate_statement);

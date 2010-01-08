@@ -261,7 +261,7 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   grddl_parser->rdf_parser = rdf_parser;
   
   /* sax2 structure - only for recording error pointers */
-  grddl_parser->sax2 = raptor_new_sax2(rdf_parser, &rdf_parser->error_handlers);
+  grddl_parser->sax2 = raptor_new_sax2(rdf_parser, &rdf_parser->world->error_handlers);
 
   /* The following error fields are normally initialised by
    * raptor_libxml_init() via raptor_sax2_parse_start() which is
@@ -870,19 +870,6 @@ raptor_grddl_uri_xml_parse_bytes(raptor_www* www,
 }
 
 
-static void
-raptor_grddl_discard_message(void *user_data, raptor_locator* locator,
-                             const char *message)
-{
-#ifdef RAPTOR_DEBUG
-  raptor_world* world = (raptor_world*)user_data;
-  RAPTOR_DEBUG3("%s: Discarded error message: %s\n", 
-                raptor_uri_as_string_v2(world, locator->uri), message);
-#endif
-  return;
-}
-
-
 #define FETCH_IGNORE_ERRORS 1
 #define FETCH_ACCEPT_XSLT   2
 
@@ -924,11 +911,8 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
     raptor_www_set_uri_filter(www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
   if(ignore_errors)
-    raptor_www_set_error_handler(www, raptor_grddl_discard_message, rdf_parser->world);
-  else
-    raptor_www_set_error_handler(www,
-                                 rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler, 
-                                 rdf_parser->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data);
+    raptor_world_internal_set_ignore_errors(rdf_parser->world, 1);
+
   raptor_www_set_write_bytes_handler(www, write_bytes_handler,
                                      write_bytes_user_data);
   raptor_www_set_content_type_handler(www, content_type_handler,
@@ -941,6 +925,9 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   ret = raptor_www_fetch(www, uri);
   
   raptor_www_free(www);
+
+  if(ignore_errors)
+    raptor_world_internal_set_ignore_errors(rdf_parser->world, 0);
 
   return ret;
 }
@@ -1293,15 +1280,8 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
     goto tidy;
   }
 
-  if(ignore_errors) {
-    raptor_error_handlers* eh=&grddl_parser->internal_parser->error_handlers;
-    int i;
-    /* NOTE not setting RAPTOR_LOG_LEVEL_NONE handler */
-    for(i = 1; i <= (int)eh->last_log_level; i++) {
-      eh->handlers[i].handler = raptor_grddl_discard_message;
-      eh->handlers[i].user_data = rdf_parser->world;
-    }
-  }
+  if(ignore_errors)
+    raptor_world_internal_set_ignore_errors(rdf_parser->world, 1);
   
   raptor_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
   rdf_parser->default_generate_id_handler_base=
@@ -1337,8 +1317,10 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   if(rpbc.final_uri)
     raptor_free_uri_v2(rdf_parser->world, rpbc.final_uri);
 
-  if(ignore_errors)
+  if(ignore_errors) {
+    raptor_world_internal_set_ignore_errors(rdf_parser->world, 0);
     ret = 0;
+  }
 
  tidy:
 
@@ -1370,7 +1352,6 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   size_t buffer_len = 0;
   int buffer_is_libxml = 0;
   int loop;
-  raptor_error_handlers eh;
 
   if(grddl_parser->content_type && !grddl_parser->content_type_check) {
     grddl_parser->content_type_check++;
@@ -1404,22 +1385,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   uri_string = raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
 
-  if(1) {
-    raptor_error_handlers_init_v2(rdf_parser->world, &eh);
-    eh.last_log_level = rdf_parser->error_handlers.last_log_level;
-
-    /* Save error handlers and discard parsing errors
-     * NOTE not setting RAPTOR_LOG_LEVEL_NONE handler
-     */
-    for(i = RAPTOR_LOG_LEVEL_NONE; i <= (int)eh.last_log_level; i++) {
-      eh.handlers[i].handler = rdf_parser->error_handlers.handlers[i].handler;
-      eh.handlers[i].user_data = rdf_parser->error_handlers.handlers[i].user_data;
-      if(i > RAPTOR_LOG_LEVEL_NONE) {
-        rdf_parser->error_handlers.handlers[i].handler = raptor_grddl_discard_message;
-        rdf_parser->error_handlers.handlers[i].user_data = rdf_parser->world;
-      }
-    }
-  }
+  /* Discard parsing errors */
+  raptor_world_internal_set_ignore_errors(rdf_parser->world, 1);
 
   RAPTOR_DEBUG4("Parser %p: URI %s: processing %d bytes of content\n",
                 rdf_parser, uri_string, (int)buffer_len);
@@ -1501,7 +1468,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     } else
       continue;
 
-    xmlSetStructuredErrorFunc(&rdf_parser->error_handlers, 
+    xmlSetStructuredErrorFunc(&rdf_parser->world->error_handlers, 
                               raptor_libxml_xmlStructuredErrorFunc);
 
     rc = 0;
@@ -1537,13 +1504,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   }
   
-  if(1) {
-    /* Restore error handlers */
-    for(i = RAPTOR_LOG_LEVEL_NONE + 1; i<= (int)eh.last_log_level; i++) {
-      rdf_parser->error_handlers.handlers[i].handler = eh.handlers[i].handler;
-      rdf_parser->error_handlers.handlers[i].user_data = eh.handlers[i].user_data;
-    }
-  }
+  /* Restore error handling */
+  raptor_world_internal_set_ignore_errors(rdf_parser->world, 0);
 
   if(!grddl_parser->html_ctxt && !grddl_parser->xml_ctxt) {
     raptor_parser_error(rdf_parser, "Failed to create HTML or XML parsers");

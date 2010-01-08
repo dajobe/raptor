@@ -189,9 +189,6 @@ raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
   raptor_www_libfetch_init(www);
 #endif
 
-  www->error_handlers.locator=&www->locator;
-  raptor_error_handlers_init_v2(world, &www->error_handlers);
-
   return www;
 }
 
@@ -266,27 +263,6 @@ raptor_www_free(raptor_www* www)
   RAPTOR_FREE(www, www);
 }
 
-
-
-/**
- * raptor_www_set_error_handler:
- * @www: WWW object
- * @error_handler: error handler function
- * @error_data: error handler data
- * 
- * Set the error handler routine for the raptor_www class.
- *
- * This takes the same arguments as the raptor_parser_set_error() and
- * raptor_parser_set_warning_handler() methods.
- **/
-void
-raptor_www_set_error_handler(raptor_www* www, 
-                             raptor_message_handler error_handler,
-                             void *error_data)
-{
-  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data = error_data;
-  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler = error_handler;
-}
 
 
 /**
@@ -566,8 +542,8 @@ raptor_www_error(raptor_www* www, const char *message, ...)
 
   raptor_log_error_varargs(www->world,
                            RAPTOR_LOG_LEVEL_ERROR,
-                           www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
-                           www->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
+                           www->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler,
+                           www->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data,
                            &www->locator,
                            message, arguments);
 

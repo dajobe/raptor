@@ -124,6 +124,11 @@ raptor_new_world(void)
      * unset: RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE
      */
     world->libxml_flags = 0; 
+
+    world->error_handlers.last_log_level = RAPTOR_LOG_LEVEL_LAST;
+    raptor_error_handlers_init_v2(world, &world->error_handlers);
+
+    world->internal_ignore_errors = 0;
   }
   
   return world;
@@ -529,12 +534,23 @@ static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
 
 /* internal */
 void
+raptor_world_internal_set_ignore_errors(raptor_world* world, int flag)
+{
+  world->internal_ignore_errors = flag;
+}
+
+
+/* internal */
+void
 raptor_log_error_to_handlers(raptor_world* world,
                              raptor_error_handlers* error_handlers,
                              raptor_log_level level,
                              raptor_locator* locator, const char* message)
 {
   if(level == RAPTOR_LOG_LEVEL_NONE)
+    return;
+
+  if(world->internal_ignore_errors)
     return;
 
   raptor_log_error(world, level, error_handlers->handlers[level].handler,
@@ -554,6 +570,9 @@ raptor_log_error_varargs(raptor_world* world,
   size_t length;
   
   if(level == RAPTOR_LOG_LEVEL_NONE)
+    return;
+
+  if(world->internal_ignore_errors)
     return;
 
   buffer = raptor_vsnprintf(message, arguments);
@@ -588,6 +607,9 @@ raptor_log_error(raptor_world* world,
                  raptor_locator* locator, const char* message)
 {
   if(level == RAPTOR_LOG_LEVEL_NONE)
+    return;
+
+  if(world->internal_ignore_errors)
     return;
 
   if(handler)

@@ -1035,7 +1035,7 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_world* world = rdf_parser->world;
 
   /* Allocate sax2 object */
-  sax2 = raptor_new_sax2(rdf_parser, &rdf_parser->error_handlers);
+  sax2 = raptor_new_sax2(rdf_parser, &rdf_parser->world->error_handlers);
   rdf_xml_parser->sax2 = sax2;
   if(!sax2)
     return 1;

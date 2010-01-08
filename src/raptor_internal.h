@@ -362,8 +362,6 @@ struct raptor_parser_s {
   /* stuff for our user */
   void *user_data;
 
-  raptor_error_handlers error_handlers;
-
   /* parser callbacks */
   raptor_statement_handler statement_handler;
 
@@ -678,6 +676,7 @@ void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPT
 /* logging */
 #define RAPTOR_ERROR_HANDLER_MAGIC 0xD00DB1FF
 
+void raptor_world_internal_set_ignore_errors(raptor_world* world, int flag);
 void raptor_log_error_to_handlers(raptor_world* world, raptor_error_handlers* error_handlers, raptor_log_level level, raptor_locator* locator, const char* message);
 void raptor_log_error_varargs(raptor_world* world, raptor_log_level level, raptor_message_handler handler, void* handler_data, raptor_locator* locator, const char* message, va_list arguments) RAPTOR_PRINTF_FORMAT(6, 0);
 void raptor_log_error(raptor_world* world, raptor_log_level level, raptor_message_handler handler, void* handler_data, raptor_locator* locator, const char* message);
@@ -904,8 +903,6 @@ struct  raptor_www_s {
   char *http_accept;
 
   FILE* handle;
-
-  raptor_error_handlers error_handlers;
 
   int connection_timeout;
 
@@ -1320,6 +1317,11 @@ void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
 struct raptor_world_s {
   /* world has been initialized with raptor_world_open() */
   int opened;
+
+  /* internal flag used to ignore errors for e.g. child GRDDL parsers */
+  int internal_ignore_errors;
+  
+  raptor_error_handlers error_handlers;
 
   /* sequence of parser factories */
   raptor_sequence *parsers;
