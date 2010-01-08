@@ -44,9 +44,6 @@
 void
 raptor_www_libxml_init(raptor_www *www)
 {
-  www->error_handlers.handlers[RAPTOR_LOG_LEVEL_NONE].user_data = www;
-  www->old_xmlGenericErrorContext = xmlGenericErrorContext;
-  xmlSetGenericErrorFunc(&www->error_handlers, raptor_libxml_generic_error);
   www->ctxt = NULL;
 }
 
@@ -54,8 +51,6 @@ raptor_www_libxml_init(raptor_www *www)
 void
 raptor_www_libxml_free(raptor_www *www)
 {
-  xmlSetGenericErrorFunc(www->old_xmlGenericErrorContext,
-                         raptor_libxml_generic_error);
 }
 
 
