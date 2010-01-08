@@ -643,8 +643,6 @@ typedef void (*raptor_simple_message_handler)(void *user_data, const char *messa
  * raptor_serializer_set_error_handler() and
  * raptor_serializer_set_warning_handler().
  *
- * Also used by raptor_www_set_error_handler() for location-based errors
- * in WWW retrieval.
  */
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
 
@@ -1122,8 +1120,6 @@ RAPTOR_API
 void raptor_www_set_content_type_handler(raptor_www *www, raptor_www_content_type_handler handler, void *user_data);
 RAPTOR_API
 void raptor_www_set_final_uri_handler(raptor_www* www, raptor_www_final_uri_handler handler, void *user_data);
-RAPTOR_API
-void raptor_www_set_error_handler(raptor_www *www, raptor_message_handler error_handler, void *error_data);
 RAPTOR_API
 void raptor_www_set_uri_filter(raptor_www* www, raptor_uri_filter_func filter, void* user_data);
 RAPTOR_API
