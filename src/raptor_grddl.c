@@ -255,13 +255,15 @@ grddl_free_xml_context(void *context, void* userdata)
 static int
 raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
 {
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   grddl_parser->world = rdf_parser->world;
   grddl_parser->rdf_parser = rdf_parser;
   
   /* sax2 structure - only for recording error pointers */
-  grddl_parser->sax2 = raptor_new_sax2(rdf_parser->world, &rdf_parser->locator, rdf_parser);
+  grddl_parser->sax2 = raptor_new_sax2(rdf_parser->world,
+                                       &rdf_parser->locator, rdf_parser);
 
   /* The following error fields are normally initialised by
    * raptor_libxml_init() via raptor_sax2_parse_start() which is
