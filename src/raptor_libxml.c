@@ -537,6 +537,9 @@ raptor_libxml_finish(raptor_world* world)
 }
 
 
+#if LIBXML_VERSION >= 20632
+#define XML_LAST_DL XML_FROM_SCHEMATRONV
+#else
 #if LIBXML_VERSION >= 20621
 #define XML_LAST_DL XML_FROM_I18N
 #else
@@ -554,7 +557,7 @@ raptor_libxml_finish(raptor_world* world)
 #endif
 #endif
 #endif
-
+#endif
 
 /* All other symbols not specifically below noted were added during
  * the period 2-10 October 2003 which is before the minimum libxml2
@@ -606,6 +609,10 @@ static const char* const raptor_libxml_domain_labels[XML_LAST_DL+2]= {
   /* 2005-08-24 - v2.6.21 */
   "module",            /* XML_FROM_MODULE */
   "encoding",          /* XML_FROM_I18N */
+#endif
+#if LIBXML_VERSION >= 20632
+  /* 2008-04-08 - v2.6.32 */
+  "schematronv",        /* XML_FROM_SCHEMATRONV */
 #endif
   NULL
 };
