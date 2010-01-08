@@ -349,7 +349,7 @@ raptor_libxml_error(void* user_data, const char *msg, ...)
 void
 raptor_libxml_generic_error(void* user_data, const char *msg, ...) 
 {
-  raptor_error_handlers* error_handlers = (raptor_error_handlers*)user_data;
+  raptor_world* world = (raptor_world*)user_data;
   va_list args;
   const char* prefix = xml_generic_error_prefix;
   int prefix_length = strlen(prefix);
@@ -357,8 +357,6 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
   char *nmsg;
 
   va_start(args, msg);
-
-  /* no SAX2 and locator from error_handlers */
 
   length = prefix_length+strlen(msg)+1;
   nmsg = (char*)RAPTOR_MALLOC(cstring, length);
@@ -369,9 +367,8 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
       nmsg[length-1]='\0';
   }
 
-  raptor_log_error_varargs(error_handlers->world,
-                           RAPTOR_LOG_LEVEL_ERROR,
-                           error_handlers->locator,
+  raptor_log_error_varargs(world, RAPTOR_LOG_LEVEL_ERROR,
+                           /* locator */ NULL,
                            nmsg ? nmsg : msg, 
                            args);
   
@@ -514,7 +511,7 @@ raptor_libxml_init(raptor_world* world)
     world->libxml_saved_generic_error_context = xmlGenericErrorContext;
     world->libxml_saved_generic_error_handler = xmlGenericError;
     /* sets xmlGenericErrorContext and xmlGenericError */
-    xmlSetGenericErrorFunc(&world->error_handlers, 
+    xmlSetGenericErrorFunc(world, 
                            (xmlGenericErrorFunc)raptor_libxml_generic_error);
   }
 
