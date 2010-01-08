@@ -180,6 +180,12 @@ raptor_world_open(raptor_world* world)
   if(rc)
     return rc;
 
+#ifdef RAPTOR_XML_LIBXML
+  rc = raptor_libxml_init(world);
+  if(rc)
+    return rc;
+#endif
+  
   world->opened = 1;
 
   return 0;
@@ -198,6 +204,10 @@ void
 raptor_free_world(raptor_world* world)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+
+#ifdef RAPTOR_XML_LIBXML
+  raptor_libxml_finish(world);
+#endif
 
   raptor_www_finish_v2(world);
 

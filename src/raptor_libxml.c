@@ -446,9 +446,26 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
 
 
 void
-raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
+raptor_libxml_sax_init_error_handlers(xmlSAXHandler *sax)
 {
-  xmlSAXHandler *sax=&sax2->sax;
+  sax->warning = (warningSAXFunc)raptor_libxml_warning;
+  sax->error = (errorSAXFunc)raptor_libxml_error;
+  sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
+  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
+
+#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
+  sax->initialized = 1;
+#endif
+}
+
+
+/*
+ * Initialise libxml for a particular SAX2 setup
+*/
+void
+raptor_libxml_sax_init(raptor_sax2* sax2)
+{
+  xmlSAXHandler *sax = &sax2->sax;
 
   sax->internalSubset = raptor_libxml_internalSubset;
   sax->isStandalone = raptor_libxml_isStandalone;
@@ -473,31 +490,12 @@ raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri)
   sax->ignorableWhitespace= raptor_sax2_cdata;
   sax->processingInstruction = NULL; /* processingInstruction */
   sax->comment = raptor_sax2_comment;      /* comment */
-  sax->warning = (warningSAXFunc)raptor_libxml_warning;
-  sax->error = (errorSAXFunc)raptor_libxml_error;
-  sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
-  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
 
 #ifdef RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
   sax->externalSubset = raptor_libxml_externalSubset;
 #endif
 
-#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
-  sax->initialized = 1;
-#endif
-}
-
-
-void
-raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax) {
-  sax->warning = (warningSAXFunc)raptor_libxml_warning;
-  sax->error = (errorSAXFunc)raptor_libxml_error;
-  sax->fatalError = (fatalErrorSAXFunc)raptor_libxml_fatal_error;
-  sax->serror = (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc;
-
-#ifdef RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
-  sax->initialized = 1;
-#endif
+  raptor_libxml_sax_init_error_handlers(sax);
 }
 
 
@@ -511,6 +509,42 @@ raptor_libxml_free(xmlParserCtxtPtr xc) {
   }
 
   xmlFreeParserCtxt(xc);
+}
+
+
+int
+raptor_libxml_init(raptor_world* world)
+{
+  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE) {
+    world->libxml_saved_structured_error_context = xmlGenericErrorContext;
+    world->libxml_saved_structured_error_handler = xmlStructuredError;
+    /* sets xmlGenericErrorContext and xmlStructuredError */
+    xmlSetStructuredErrorFunc(&world->error_handlers, 
+                              (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc);
+  }
+  
+  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE) {
+    world->libxml_saved_generic_error_context = xmlGenericErrorContext;
+    world->libxml_saved_generic_error_handler = xmlGenericError;
+    /* sets xmlGenericErrorContext and xmlGenericError */
+    xmlSetGenericErrorFunc(&world->error_handlers, 
+                           (xmlGenericErrorFunc)raptor_libxml_generic_error);
+  }
+
+  return 0;
+}
+
+
+void
+raptor_libxml_finish(raptor_world* world)
+{
+  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE)
+    xmlSetStructuredErrorFunc(world->libxml_saved_structured_error_context,
+                              world->libxml_saved_structured_error_handler);
+
+  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE)
+    xmlSetGenericErrorFunc(world->libxml_saved_generic_error_context,
+                           world->libxml_saved_generic_error_handler);
 }
 
 

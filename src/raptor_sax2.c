@@ -108,25 +108,6 @@ raptor_new_sax2(raptor_world *world, raptor_locator *locator,
   sax2->locator = locator;
   sax2->user_data = user_data;
 
-  
-#ifdef RAPTOR_XML_LIBXML
-  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE) {
-    sax2->saved_structured_error_context = xmlGenericErrorContext;
-    sax2->saved_structured_error_handler = xmlStructuredError;
-    /* sets xmlGenericErrorContext and xmlStructuredError */
-    xmlSetStructuredErrorFunc(&sax2->world->error_handlers, 
-                              (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredErrorFunc);
-  }
-  
-  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE) {
-    sax2->saved_generic_error_context = xmlGenericErrorContext;
-    sax2->saved_generic_error_handler = xmlGenericError;
-    /* sets xmlGenericErrorContext and xmlGenericError */
-    xmlSetGenericErrorFunc(&sax2->world->error_handlers, 
-                           (xmlGenericErrorFunc)raptor_libxml_generic_error);
-  }
-#endif
-  
   return sax2;
 }
 
@@ -156,14 +137,6 @@ raptor_free_sax2(raptor_sax2 *sax2)
     raptor_libxml_free(sax2->xc);
     sax2->xc = NULL;
   }
-
-  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE)
-    xmlSetStructuredErrorFunc(sax2->saved_structured_error_context,
-                              sax2->saved_structured_error_handler);
-
-  if(sax2->world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE)
-    xmlSetGenericErrorFunc(sax2->saved_generic_error_context,
-                           sax2->saved_generic_error_handler);
 #endif
 
   while( (xml_element = raptor_xml_element_pop(sax2)) )
@@ -480,10 +453,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 #endif
 
 #ifdef RAPTOR_XML_LIBXML
-  raptor_libxml_init(sax2, base_uri);
-
-  xmlSetStructuredErrorFunc(&sax2->world->error_handlers, 
-                            raptor_libxml_xmlStructuredErrorFunc);
+  raptor_libxml_sax_init(sax2);
 
 #if LIBXML_VERSION < 20425
   sax2->first_read = 1;

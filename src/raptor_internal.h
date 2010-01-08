@@ -202,9 +202,12 @@ void raptor_system_free(void *ptr);
 
 
 /* raptor_libxml.c exports */
-extern void raptor_libxml_init(raptor_sax2* sax2, raptor_uri *base_uri);
-extern void raptor_libxml_init_sax_error_handlers(xmlSAXHandler *sax);
+extern void raptor_libxml_sax_init(raptor_sax2* sax2);
+extern void raptor_libxml_sax_init_error_handlers(xmlSAXHandler *sax);
 extern void raptor_libxml_generic_error(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+
+extern int raptor_libxml_init(raptor_world* world);
+extern void raptor_libxml_finish(raptor_world* world);
 
 extern void raptor_libxml_validation_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 extern void raptor_libxml_validation_warning(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
@@ -997,12 +1000,6 @@ struct raptor_sax2_s {
   int first_read;
 #endif
 
-  void *saved_structured_error_context;
-  xmlStructuredErrorFunc saved_structured_error_handler;
-  
-  void *saved_generic_error_context;
-  xmlGenericErrorFunc saved_generic_error_handler;
-  
 #endif  
 
   /* element depth */
@@ -1362,6 +1359,14 @@ struct raptor_world_s {
    * meanings 
    */
   int libxml_flags;
+
+#ifdef RAPTOR_XML_LIBXML
+  void *libxml_saved_structured_error_context;
+  xmlStructuredErrorFunc libxml_saved_structured_error_handler;
+  
+  void *libxml_saved_generic_error_context;
+  xmlGenericErrorFunc libxml_saved_generic_error_handler;
+#endif  
 };
 
 /* end of RAPTOR_INTERNAL */

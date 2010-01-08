@@ -266,10 +266,10 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
                                        &rdf_parser->locator, rdf_parser);
 
   /* The following error fields are normally initialised by
-   * raptor_libxml_init() via raptor_sax2_parse_start() which is
+   * raptor_libxml_sax_init() via raptor_sax2_parse_start() which is
    * not used here as we go to libxml calls direct.
    */
-  raptor_libxml_init_sax_error_handlers(&grddl_parser->sax);
+  raptor_libxml_sax_init_error_handlers(&grddl_parser->sax);
 
   /* Sequence of URIs of XSLT sheets to transform the document */
   grddl_parser->doc_transform_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, rdf_parser->world);
