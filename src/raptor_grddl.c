@@ -1452,9 +1452,6 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     } else
       continue;
 
-    xmlSetStructuredErrorFunc(&rdf_parser->world->error_handlers, 
-                              raptor_libxml_xmlStructuredErrorFunc);
-
     rc = 0;
 
     if(grddl_parser->html_ctxt) {
