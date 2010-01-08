@@ -364,8 +364,6 @@ struct raptor_parser_s {
 
   raptor_error_handlers error_handlers;
 
-  void* unused1; /* UNUSED - re-use struct slot later needed */
-
   /* parser callbacks */
   raptor_statement_handler statement_handler;
 
