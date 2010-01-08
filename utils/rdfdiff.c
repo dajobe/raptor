@@ -191,8 +191,8 @@ rdfdiff_new_file(raptor_world *world, const unsigned char *name, const char *syn
     
     file->parser = raptor_new_parser_v2(world, syntax);
     if(file->parser) {
-      raptor_set_error_handler(file->parser, file, rdfdiff_error_handler);
-      raptor_set_warning_handler(file->parser, file, rdfdiff_warning_handler);
+      raptor_world_set_error_handler(world, file, rdfdiff_error_handler);
+      raptor_world_set_warning_handler(world, file, rdfdiff_warning_handler);
     } else {      
       fprintf(stderr, "%s: Failed to create raptor parser type %s for %s\n",
               program, syntax, name);

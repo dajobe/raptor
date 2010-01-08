@@ -270,6 +270,68 @@ raptor_world_set_libxml_flags(raptor_world *world, int flags)
 }
 
 
+/**
+ * raptor_world_set_fatal_error_handler:
+ * @world: world object
+ * @user_data: user data to pass to function
+ * @handler: pointer to the function
+ *
+ * Set the error handling function.
+ * 
+ * The function will receive callbacks when fatal errors happen
+ * 
+ **/
+void
+raptor_world_set_fatal_error_handler(raptor_world *world, void *user_data,
+                                     raptor_message_handler handler)
+{
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data = user_data;
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler = handler;
+}
+
+
+/**
+ * raptor_world_set_error_handler:
+ * @world: world object
+ * @user_data: user data to pass to function
+ * @handler: pointer to the function
+ *
+ * Set the parser error handling function.
+ * 
+ * The function will receive callbacks when errors happen.
+ * 
+ **/
+void
+raptor_world_set_error_handler(raptor_world *world, void *user_data,
+                               raptor_message_handler handler)
+{
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data = user_data;
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler = handler;
+}
+
+
+/**
+ * raptor_world_set_warning_handler:
+ * @world: world object
+ * @user_data: user data to pass to function
+ * @handler: pointer to the function
+ *
+ * Set the parser warning handling function.
+ * 
+ * The function will receive callbacks when warnings happen.
+ * 
+ **/
+void
+raptor_world_set_warning_handler(raptor_world *world, void *user_data,
+                                 raptor_message_handler handler)
+{
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data = user_data;
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler = handler;
+}
+
+
+
+
 /* 
  * Thanks to the patch in this Debian bug for the solution
  * to the crash inside vsnprintf on some architectures.

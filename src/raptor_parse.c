@@ -1055,66 +1055,6 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 /* PUBLIC FUNCTIONS */
 
 /**
- * raptor_set_fatal_error_handler:
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- *
- * Set the parser error handling function.
- * 
- * The function will receive callbacks when the parser fails.
- * 
- **/
-void
-raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data,
-                               raptor_message_handler handler)
-{
-  parser->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data = user_data;
-  parser->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler = handler;
-}
-
-
-/**
- * raptor_set_error_handler:
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- *
- * Set the parser error handling function.
- * 
- * The function will receive callbacks when the parser fails.
- * 
- **/
-void
-raptor_set_error_handler(raptor_parser* parser, void *user_data,
-                         raptor_message_handler handler)
-{
-  parser->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data = user_data;
-  parser->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler = handler;
-}
-
-
-/**
- * raptor_set_warning_handler:
- * @parser: the parser
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- *
- * Set the parser warning handling function.
- * 
- * The function will receive callbacks when the parser gives a warning.
- * 
- **/
-void
-raptor_set_warning_handler(raptor_parser* parser, void *user_data,
-                           raptor_message_handler handler)
-{
-  parser->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data = user_data;
-  parser->world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler = handler;
-}
-
-
-/**
  * raptor_set_statement_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback

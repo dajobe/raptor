@@ -638,8 +638,8 @@ typedef void (*raptor_simple_message_handler)(void *user_data, const char *messa
  *
  * Used during parsing and serializing for errors and warnings that
  * may include location information. Multiple handlers may be set for
- * parsers and serializers by raptor_set_fatal_error_handler(),
- * raptor_set_error_handler(), raptor_set_warning_handler(),
+ * parsers and serializers by raptor_world_set_fatal_error_handler(),
+ * raptor_world_set_error_handler(), raptor_world_set_warning_handler(),
  * raptor_serializer_set_error_handler() and
  * raptor_serializer_set_warning_handler().
  *
@@ -785,6 +785,12 @@ RAPTOR_API
 void raptor_world_set_libxslt_security_preferences(raptor_world *world, void *security_preferences);
 RAPTOR_API
 void raptor_world_set_libxml_flags(raptor_world *world,  int flags);
+RAPTOR_API
+void raptor_world_set_fatal_error_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
+RAPTOR_API
+void raptor_world_set_error_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
+RAPTOR_API
+void raptor_world_set_warning_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
 
 /* Get parser names */
 RAPTOR_API
@@ -811,12 +817,6 @@ RAPTOR_API
 void raptor_free_parser(raptor_parser* parser);
 
 /* Handlers */
-RAPTOR_API
-void raptor_set_fatal_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
-RAPTOR_API
-void raptor_set_error_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
-RAPTOR_API
-void raptor_set_warning_handler(raptor_parser* parser, void *user_data, raptor_message_handler handler);
 RAPTOR_API
 void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 RAPTOR_API

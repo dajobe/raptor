@@ -807,8 +807,8 @@ main(int argc, char *argv[])
     return(1);
   }
 
-  raptor_set_error_handler(rdf_parser, rdf_parser, rdfdump_error_handler);
-  raptor_set_warning_handler(rdf_parser, rdf_parser, rdfdump_warning_handler);
+  raptor_world_set_error_handler(world, rdf_parser, rdfdump_error_handler);
+  raptor_world_set_warning_handler(world, rdf_parser, rdfdump_warning_handler);
   
   raptor_set_parser_strict(rdf_parser, strict_mode);
   
