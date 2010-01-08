@@ -1924,13 +1924,13 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   int rc = 0;
   int i;
   
-  to_parser->user_data= from_parser->user_data;
+  to_parser->user_data = from_parser->user_data;
   memcpy(&to_parser->error_handlers, &from_parser->error_handlers,
          sizeof(raptor_error_handlers));
-  to_parser->statement_handler= from_parser->statement_handler;
-  to_parser->generate_id_handler_user_data= from_parser->generate_id_handler_user_data;
-  to_parser->generate_id_handler= from_parser->generate_id_handler;
-  to_parser->default_generate_id_handler_base= from_parser->default_generate_id_handler_base;
+  to_parser->statement_handler = from_parser->statement_handler;
+  to_parser->generate_id_handler_user_data = from_parser->generate_id_handler_user_data;
+  to_parser->generate_id_handler = from_parser->generate_id_handler;
+  to_parser->default_generate_id_handler_base = from_parser->default_generate_id_handler_base;
   /* copy over non-shared user state - generate ID prefix string */
   if(from_parser->default_generate_id_handler_prefix) {
     size_t len = from_parser->default_generate_id_handler_prefix_length;
@@ -1942,11 +1942,11 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
     else
       rc = 1;
   }
-  to_parser->default_generate_id_handler_prefix_length= from_parser->default_generate_id_handler_prefix_length;
-  to_parser->namespace_handler= from_parser->namespace_handler;
-  to_parser->namespace_handler_user_data= from_parser->namespace_handler_user_data;
-  to_parser->uri_filter= from_parser->uri_filter;
-  to_parser->uri_filter_user_data= from_parser->uri_filter_user_data;
+  to_parser->default_generate_id_handler_prefix_length = from_parser->default_generate_id_handler_prefix_length;
+  to_parser->namespace_handler = from_parser->namespace_handler;
+  to_parser->namespace_handler_user_data = from_parser->namespace_handler_user_data;
+  to_parser->uri_filter = from_parser->uri_filter;
+  to_parser->uri_filter_user_data = from_parser->uri_filter_user_data;
 
   /* copy over Cache-Control: header */
   if(!rc && from_parser->cache_control) {
