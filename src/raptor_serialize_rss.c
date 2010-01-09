@@ -2074,10 +2074,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
     raptor_free_xml_writer(rss_serializer->xml_writer);
 
   xml_writer = raptor_new_xml_writer_v2(rss_serializer->world,
-                                      rss_serializer->nstack,
-                                      serializer->iostream,
-                                      NULL, NULL, /* errors */
-                                      1);
+                                        rss_serializer->nstack,
+                                        serializer->iostream,
+                                        1);
   rss_serializer->xml_writer = xml_writer;
   raptor_xml_writer_set_feature(xml_writer,
                                 RAPTOR_FEATURE_WRITER_AUTO_INDENT, 1);

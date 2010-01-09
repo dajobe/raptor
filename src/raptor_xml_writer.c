@@ -73,6 +73,8 @@ typedef enum {
 
 
 struct raptor_xml_writer_s {
+  raptor_world *world;
+  
   int canonicalize;
 
   int depth;
@@ -83,9 +85,6 @@ struct raptor_xml_writer_s {
 
   const raptor_uri_handler *uri_handler;
   void *uri_context;
-
-  raptor_simple_message_handler error_handler;
-  void *error_data;
 
   raptor_xml_element* current_element;
 
@@ -418,8 +417,6 @@ raptor_xml_writer_end_element_common(raptor_xml_writer* xml_writer,
  * @world: raptor_world object
  * @nstack: Namespace stack for the writer to start with (or NULL)
  * @iostr: I/O stream to write to
- * @error_handler: error handler function
- * @error_data: error handler data
  * @canonicalize: unused
  * 
  * Constructor - Create a new XML Writer writing XML to a raptor_iostream
@@ -430,8 +427,6 @@ raptor_xml_writer*
 raptor_new_xml_writer_v2(raptor_world* world,
                          raptor_namespace_stack *nstack,
                          raptor_iostream* iostr,
-                         raptor_simple_message_handler error_handler,
-                         void *error_data,
                          int canonicalize)
 {
   raptor_xml_writer* xml_writer;
@@ -440,10 +435,9 @@ raptor_new_xml_writer_v2(raptor_world* world,
   if(!xml_writer)
     return NULL;
 
-  xml_writer->nstack_depth = 0;
+  xml_writer->world = world;
 
-  xml_writer->error_handler = error_handler;
-  xml_writer->error_data = error_data;
+  xml_writer->nstack_depth = 0;
 
   xml_writer->nstack = nstack;
   if(!xml_writer->nstack) {
@@ -1130,11 +1124,7 @@ main(int argc, char *argv[])
 
   nstack = raptor_new_namespaces_v2(world, 1);
 
-  xml_writer = raptor_new_xml_writer_v2(world,
-                                      nstack,
-                                      iostr,
-                                      NULL, NULL, /* errors */
-                                      1);
+  xml_writer = raptor_new_xml_writer_v2(world, nstack, iostr, 1);
   if(!xml_writer) {
     fprintf(stderr, "%s: Failed to create xml_writer to iostream\n", program);
     exit(1);

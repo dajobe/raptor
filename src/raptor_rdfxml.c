@@ -2248,10 +2248,9 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             if(!rdf_xml_parser->iostream)
               goto oom;
             rdf_xml_parser->xml_writer = raptor_new_xml_writer_v2(rdf_parser->world,
-                                                                NULL,
-                                                                rdf_xml_parser->iostream,
-                                                                (raptor_simple_message_handler)raptor_parser_simple_error, rdf_parser,
-                                                                1);
+                                                                  NULL,
+                                                                  rdf_xml_parser->iostream,
+                                                                  1);
             if(!rdf_xml_parser->xml_writer)
               goto oom;
             
