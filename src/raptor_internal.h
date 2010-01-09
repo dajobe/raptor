@@ -1136,6 +1136,10 @@ time_t raptor_parse_date(const char *p, time_t *now);
 #endif
 #endif
 
+/* only used internally now */
+typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...);
+
+
 /* turtle_common.c */
 int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, const unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
 
