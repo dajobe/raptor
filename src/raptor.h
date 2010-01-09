@@ -411,6 +411,7 @@ typedef enum {
  * Raptor RDF term identifier.
 */
 typedef struct {
+  int usage;
   raptor_term_type type;
   raptor_uri *uri;
   const unsigned char *id;

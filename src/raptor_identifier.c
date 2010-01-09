@@ -93,6 +93,8 @@ raptor_new_identifier_v2(raptor_world* world,
   identifier->world = world;
   identifier->type = type;
 
+  identifier->usage = 1;
+  
   /* SHARED */
   identifier->uri = uri;
   identifier->id = id;
@@ -100,6 +102,22 @@ raptor_new_identifier_v2(raptor_world* world,
   identifier->literal_datatype = literal_datatype;
   identifier->literal_language = literal_language;
   
+  return identifier;
+}
+
+
+/**
+ * raptor_new_identifier_from_identifier:
+ * @identifier:  source #raptor_identifier
+ *
+ * Copy constructor - copy an existing identifier
+ * 
+ * Return value: a new raptor_identifier object
+ **/
+raptor_identifier*
+raptor_new_identifier_from_identifier(raptor_identifier *identifier) 
+{
+  identifier->usage++;
   return identifier;
 }
 
@@ -202,6 +220,9 @@ raptor_clear_identifier(raptor_identifier *identifier)
 void
 raptor_free_identifier(raptor_identifier *identifier) 
 {
+  if(--identifier->usage)
+    return;
+  
   raptor_clear_identifier(identifier);
 
   RAPTOR_FREE(identifier, (void*)identifier);
