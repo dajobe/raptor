@@ -668,6 +668,19 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
 }
 
 
+void
+raptor_log_error_formatted(raptor_world* world, raptor_log_level level,
+                           raptor_locator* locator,
+                           const char* message, ...)
+{
+  va_list arguments;
+
+  va_start(arguments, message);
+  raptor_log_error_varargs(world, level, locator, message, arguments);
+  va_end(arguments);
+}
+
+
 /* internal */
 void
 raptor_log_error(raptor_world* world, raptor_log_level level,

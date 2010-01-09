@@ -120,8 +120,6 @@ raptor_hash_ns_string(const unsigned char *str, int length)
  * raptor_namespaces_init_v2:
  * @world: raptor_world object
  * @nstack: #raptor_namespace_stack to initialise
- * @error_handler: error handler function
- * @error_data: context for error handler
  * @defaults: namespaces to initialise.
  *
  * Initialise a namespaces stack some optional common namespaces.
@@ -134,16 +132,11 @@ raptor_hash_ns_string(const unsigned char *str, int length)
 int
 raptor_namespaces_init_v2(raptor_world* world,
                           raptor_namespace_stack *nstack,
-                          raptor_simple_message_handler error_handler,
-                          void *error_data,
                           int defaults)
 {
   int failures = 0;
 
   nstack->world = world;
-
-  nstack->error_handler = error_handler;
-  nstack->error_data = error_data;
 
   nstack->size = 0;
   
@@ -215,10 +208,7 @@ raptor_new_namespaces_v2(raptor_world* world,
   if(!nstack)
     return NULL;
                       
-  if(raptor_namespaces_init_v2(world,
-                               nstack, 
-                               error_handler, error_data,
-                               defaults)) {
+  if(raptor_namespaces_init_v2(world, nstack, defaults)) {
     raptor_free_namespaces(nstack);
     nstack = NULL;
   }
@@ -529,8 +519,10 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   if(prefix && !ns_uri) {
     /* failed to find namespace - now what? */
-    if(nstack->error_handler)
-      nstack->error_handler((raptor_parser*)nstack->error_data, "The namespace URI for prefix \"%s\" is empty.", prefix);
+    raptor_log_error_formatted(nstack->world, RAPTOR_LOG_LEVEL_ERROR,
+                               /* locator */ NULL, 
+                               "The namespace URI for prefix \"%s\" is empty.", 
+                               prefix);
     return NULL;
   }
   
@@ -1051,7 +1043,7 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
 
-  raptor_namespaces_init_v2(world, &namespaces, NULL, NULL, 1);
+  raptor_namespaces_init_v2(world, &namespaces, 1);
   
   raptor_namespaces_start_namespace_full(&namespaces,
                                          (const unsigned char*)"ex1",

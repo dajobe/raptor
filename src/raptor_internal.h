@@ -288,8 +288,6 @@ struct raptor_namespace_stack_s {
   int table_size;
   raptor_namespace** table;
   raptor_namespace* def_namespace;
-  raptor_simple_message_handler error_handler;
-  void *error_data;
 
   raptor_uri *rdf_ms_uri;
   raptor_uri *rdf_schema_uri;
@@ -680,6 +678,7 @@ void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPT
 void raptor_world_internal_set_ignore_errors(raptor_world* world, int flag);
 void raptor_log_error_to_handlers(raptor_world* world, raptor_error_handlers* error_handlers, raptor_log_level level, raptor_locator* locator, const char* message);
 void raptor_log_error_varargs(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
+void raptor_log_error_formatted(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, ...) RAPTOR_PRINTF_FORMAT(4, 5);
 void raptor_log_error(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message);
 
 

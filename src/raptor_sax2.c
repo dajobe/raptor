@@ -453,10 +453,7 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 
   raptor_namespaces_clear(&sax2->namespaces);
 
-  if(raptor_namespaces_init_v2(sax2->world,
-                               &sax2->namespaces,
-                               (raptor_simple_message_handler)raptor_sax2_simple_error, sax2, 
-                               1)) {
+  if(raptor_namespaces_init_v2(sax2->world, &sax2->namespaces, 1)) {
     /* log a fatal error and set sax2 to failed state
        since the function signature does not currently support returning an error */
     raptor_log_error_to_handlers(sax2->world,
