@@ -1171,7 +1171,7 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
 
 
 /**
- * raptor_features_enumerate_v2:
+ * raptor_world_enumerate_parser_features:
  * @world: raptor_world object
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
@@ -1186,10 +1186,10 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_features_enumerate_v2(raptor_world* world,
-                             const raptor_feature feature,
-                             const char **name, 
-                             raptor_uri **uri, const char **label)
+raptor_world_enumerate_parser_features(raptor_world* world,
+                                       const raptor_feature feature,
+                                       const char **name, 
+                                       raptor_uri **uri, const char **label)
 {
   return raptor_features_enumerate_common(world, feature, name, uri, label, 1);
 }
@@ -2166,7 +2166,7 @@ main(int argc, char *argv[])
     raptor_uri *feature_uri;
     int fn;
     
-    if(raptor_features_enumerate_v2(world, (raptor_feature)i,
+    if(raptor_world_enumerate_parser_features(world, (raptor_feature)i,
                                     &feature_name, &feature_uri, &feature_label))
       continue;
 

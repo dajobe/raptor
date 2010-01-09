@@ -867,7 +867,7 @@ RAPTOR_API
 int raptor_get_need_base_uri(raptor_parser *rdf_parser);
 
 RAPTOR_API
-int raptor_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
+int raptor_world_enumerate_parser_features(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_parser_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 RAPTOR_API
@@ -921,7 +921,7 @@ raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
 RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 RAPTOR_API
-int raptor_serializer_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_world_enumerate_serializer_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_serializer_set_feature(raptor_serializer *serializer, raptor_feature feature, int value);
 RAPTOR_API

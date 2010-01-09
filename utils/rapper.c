@@ -376,7 +376,7 @@ main(int argc, char *argv[])
             for(i = 0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
-              if(!raptor_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
+              if(!raptor_world_enumerate_parser_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
                 const char *feature_type = (raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
                 fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
@@ -386,7 +386,7 @@ main(int argc, char *argv[])
             for(i = 0; i < (int)raptor_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
-              if(!raptor_serializer_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
+              if(!raptor_world_enumerate_serializer_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
                 const char *feature_type = (raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
                 fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
@@ -426,7 +426,10 @@ main(int argc, char *argv[])
               const char *feature_name;
               size_t len;
               
-              if(raptor_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, NULL))
+              if(raptor_world_enumerate_parser_features(world,
+                                                        (raptor_feature)i,
+                                                        &feature_name,
+                                                        NULL, NULL))
                 continue;
 
               len = strlen(feature_name);
@@ -458,7 +461,10 @@ main(int argc, char *argv[])
               const char *feature_name;
               size_t len;
               
-              if(raptor_serializer_features_enumerate_v2(world, (raptor_feature)i, &feature_name, NULL, NULL))
+              if(raptor_world_enumerate_serializer_features(world,
+                                                            (raptor_feature)i,
+                                                            &feature_name,
+                                                            NULL, NULL))
                 continue;
 
               len = strlen(feature_name);

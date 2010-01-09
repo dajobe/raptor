@@ -759,7 +759,7 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
 
 
 /**
- * raptor_serializer_features_enumerate_v2:
+ * raptor_world_enumerate_serializer_features:
  * @world: raptor_world object
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
@@ -774,7 +774,7 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_serializer_features_enumerate_v2(raptor_world* world,
+raptor_world_enumerate_serializer_features(raptor_world* world,
                                         const raptor_feature feature,
                                         const char **name, 
                                         raptor_uri **uri, const char **label)
