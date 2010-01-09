@@ -368,7 +368,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
         raptor_iostream_write_string(json_writer->iostr, "true");
         written = 1;
       } else {
-        raptor_log_error(json_writer->world, RAPTOR_LOG_ERROR_ERROR, NULL, 
+        raptor_log_error(json_writer->world, RAPTOR_LOG_LEVEL_ERROR, NULL, 
                          "Illegal value for xsd:boolean literal.");
         return 1;
       }
