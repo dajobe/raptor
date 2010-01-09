@@ -398,8 +398,6 @@ raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
  * @nstack: #raptor_namespace_stack to decode the namespace
  * @name: QName string or NULL
  * @name_len: QName string length
- * @error_handler: function to call on an error
- * @error_data: user data for error function
  *
  * Get the URI for a qname.
  * 
@@ -419,9 +417,7 @@ raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
  **/
 raptor_uri*
 raptor_qname_string_to_uri(raptor_namespace_stack *nstack, 
-                           const unsigned char *name, size_t name_len,
-                           raptor_simple_message_handler error_handler,
-                           void *error_data)
+                           const unsigned char *name, size_t name_len)
 {
   raptor_uri *uri = NULL;
   const unsigned char *p;
@@ -468,8 +464,9 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
   }
   
   if(!ns) {
-    if(error_handler)
-      error_handler((raptor_parser*)error_data, "The namespace prefix in \"%s\" was not declared.", original_name);
+    raptor_log_error_formatted(nstack->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "The namespace prefix in \"%s\" was not declared.", 
+                               original_name);
   }
 
 

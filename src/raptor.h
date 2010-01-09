@@ -1151,7 +1151,7 @@ RAPTOR_API
 int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
 /* utility function */
 RAPTOR_API
-raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len, raptor_simple_message_handler error_handler, void *error_data);
+raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len);
 RAPTOR_API
 int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
 RAPTOR_API
