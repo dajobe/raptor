@@ -189,7 +189,7 @@ rdfdiff_new_file(raptor_world *world, const unsigned char *name, const char *syn
     file->name = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)name)+1);
     strcpy((char*)file->name, (const char*)name);
     
-    file->parser = raptor_new_parser_v2(world, syntax);
+    file->parser = raptor_new_parser(world, syntax);
     if(file->parser) {
       raptor_world_set_error_handler(world, file, rdfdiff_error_handler);
       raptor_world_set_warning_handler(world, file, rdfdiff_warning_handler);
