@@ -64,47 +64,6 @@
 #endif
 
 
-/**
- * raptor_uri_set_handler_v2:
- * @world: raptor_world object
- * @handler: URI handler structure
- * @context: URI handler context
- * 
- * Change the URI class implementation to the functions provided by the
- *
- * The URI interface in @handler->initialised should be either 1
- * or 2 (if raptor_uri_compare_func is implemented).
- **/
-void
-raptor_uri_set_handler_v2(raptor_world* world, const raptor_uri_handler *handler, void *context) 
-{
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(handler, raptor_uri_handler);
-  /* RAPTOR_ASSERT is the negative of ordinary asserts - it fails if the condition is true */
-  RAPTOR_ASSERT(!(handler->initialised >= 1 && handler->initialised <= 2),
-    "raptor_uri_handler->initialised not 1..2");
-
-  world->uri_handler = handler;
-  world->uri_handler_context = context;
-}
-
-
-/**
- * raptor_uri_get_handler_v2:
- * @handler: URI handler to return
- * @context: URI context to return
- * 
- * Return the current raptor URI class implementation @handler and @context
- **/
-void
-raptor_uri_get_handler_v2(raptor_world* world, const raptor_uri_handler **handler, void **context) 
-{
-  if(handler)
-    *handler=world->uri_handler;
-  if(context)
-    *context=world->uri_handler_context;
-}
-
-
 static raptor_uri*
 raptor_default_new_uri(void *context, const unsigned char *uri_string) 
 {
@@ -985,7 +944,9 @@ static const raptor_uri_handler raptor_uri_default_handler = {
 int
 raptor_uri_init(raptor_world* world)
 {
-  raptor_uri_set_handler_v2(world, &raptor_uri_default_handler, world);
+  world->uri_handler = &raptor_uri_default_handler;
+  world->uri_handler_context = world;
+
   return 0;
 }
 

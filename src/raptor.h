@@ -577,41 +577,6 @@ typedef unsigned char* (*raptor_uri_as_counted_string_func)(void *context, rapto
 
 
 /**
- * raptor_uri_handler:
- * @new_uri: function for raptor_new_uri()
- * @new_uri_from_uri_local_name: function for raptor_new_uri_from_uri_local_name()
- * @new_uri_relative_to_base: function for raptor_new_uri_relative_to_base()
- * @new_uri_for_rdf_concept: function for raptor_new_uri_for_rdf_concept()
- * @free_uri: function for raptor_free_uri()
- * @uri_equals: function for raptor_uri_equals()
- * @uri_compare: function for raptor_uri_compare()
- * @uri_copy: function for raptor_uri_copy()
- * @uri_as_string: function for raptor_uri_as_string()
- * @uri_as_counted_string: function for raptor_uri_as_counted_string()
- * @initialised: API version - set to API version implemented: 1..2
- *
- * URI implementation handler structure.
- */
-typedef struct {
-  /* constructors - URI Interface V1 */
-  raptor_new_uri_func                     new_uri;
-  raptor_new_uri_from_uri_local_name_func new_uri_from_uri_local_name;
-  raptor_new_uri_relative_to_base_func    new_uri_relative_to_base;
-  raptor_new_uri_for_rdf_concept_func     new_uri_for_rdf_concept;
-  /* destructor - URI Interface V1 */
-  raptor_free_uri_func                    free_uri;
-  /* methods - URI Interface V1 */
-  raptor_uri_equals_func                  uri_equals;
-  raptor_uri_copy_func                    uri_copy; /* well, copy constructor */
-  raptor_uri_as_string_func               uri_as_string;
-  raptor_uri_as_counted_string_func       uri_as_counted_string;
-  int initialised;
-  /* methods - URI Interface V2 */
-  raptor_uri_compare_func                 uri_compare;
-} raptor_uri_handler;
-
-
-/**
  * raptor_message_handler:
  * @user_data: user data
  * @locator: location associated with message or NULL
@@ -1026,11 +991,6 @@ RAPTOR_API
 unsigned char* raptor_uri_to_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t *len_p);
 RAPTOR_API
 unsigned char* raptor_uri_to_string_v2(raptor_world* world, raptor_uri *uri);
-
-RAPTOR_API
-void raptor_uri_set_handler_v2(raptor_world* world, const raptor_uri_handler *handler, void *context);
-RAPTOR_API
-void raptor_uri_get_handler_v2(raptor_world* world, const raptor_uri_handler **handler, void **context);
 
 
 /**
