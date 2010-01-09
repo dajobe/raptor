@@ -280,6 +280,10 @@ struct raptor_avltree_s {
 };
 
 
+/* raptor_iostream.c */
+raptor_world* raptor_iostream_get_world(raptor_iostream *iostr);
+
+
 /* Raptor Namespace Stack node */
 struct raptor_namespace_stack_s {
   raptor_world* world;

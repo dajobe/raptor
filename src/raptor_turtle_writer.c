@@ -921,7 +921,7 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
   
-  iostr = raptor_new_iostream_to_string(&string, &string_len, NULL);
+  iostr = raptor_new_iostream_to_string(world, &string, &string_len, NULL);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create iostream to string\n", program);
     exit(1);

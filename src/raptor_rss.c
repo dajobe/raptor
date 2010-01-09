@@ -630,7 +630,10 @@ raptor_rss_start_element_handler(void *user_data,
                           attrValue);
             
             rss_element->type = RAPTOR_RSS_CONTENT_TYPE_XML;
-            rss_element->iostream = raptor_new_iostream_to_string(&rss_element->xml_content, &rss_element->xml_content_length, raptor_alloc_memory);
+            rss_element->iostream = raptor_new_iostream_to_string(rdf_parser->world,
+                                                                  &rss_element->xml_content,
+                                                                  &rss_element->xml_content_length,
+                                                                  raptor_alloc_memory);
             rss_element->xml_writer = raptor_new_xml_writer_v2(rdf_parser->world,
                                                              NULL,
                                                              rss_element->iostream,

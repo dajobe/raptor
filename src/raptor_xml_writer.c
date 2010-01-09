@@ -200,8 +200,6 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
 {
   raptor_iostream* iostr = xml_writer->iostr;
   raptor_namespace_stack *nstack = xml_writer->nstack;
-  raptor_simple_message_handler error_handler = xml_writer->error_handler;
-  void *error_data = xml_writer->error_data;
   int depth = xml_writer->depth;
   int auto_indent = XML_WRITER_AUTO_INDENT(xml_writer);
   int xml_version = xml_writer->xml_version;
@@ -354,8 +352,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
                                                    element->attributes[i]->value, 
                                                    element->attributes[i]->value_length,
                                                    '"',
-                                                   xml_version,
-                                                   error_handler, error_data);
+                                                   xml_version);
       raptor_iostream_write_byte(iostr, '"');
     }
   }
@@ -653,9 +650,7 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
   raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
                                                s, strlen((const char*)s),
                                                '\0',
-                                               xml_writer->xml_version,
-                                               xml_writer->error_handler,
-                                               xml_writer->error_data);
+                                               xml_writer->xml_version);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;
@@ -685,9 +680,7 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
   raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
                                                s, len,
                                                '\0',
-                                               xml_writer->xml_version,
-                                               xml_writer->error_handler,
-                                               xml_writer->error_data);
+                                               xml_writer->xml_version);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;
@@ -1129,7 +1122,7 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
   
-  iostr = raptor_new_iostream_to_string(&string, &string_len, NULL);
+  iostr = raptor_new_iostream_to_string(world, &string, &string_len, NULL);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create iostream to string\n", program);
     exit(1);

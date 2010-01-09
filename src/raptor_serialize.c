@@ -492,7 +492,8 @@ raptor_serialize_start_to_filename(raptor_serializer *rdf_serializer,
 
   RAPTOR_FREE(cstring, uri_string);
 
-  rdf_serializer->iostream = raptor_new_iostream_to_filename(filename);
+  rdf_serializer->iostream = raptor_new_iostream_to_filename(rdf_serializer->world,
+                                                             filename);
   if(!rdf_serializer->iostream)
     return 1;
 
@@ -532,8 +533,9 @@ raptor_serialize_start_to_string(raptor_serializer *rdf_serializer,
   rdf_serializer->locator.line = rdf_serializer->locator.column = 0;
 
 
-  rdf_serializer->iostream = raptor_new_iostream_to_string(string_p, length_p, 
-                                                         NULL);
+  rdf_serializer->iostream = raptor_new_iostream_to_string(rdf_serializer->world,
+                                                           string_p, length_p, 
+                                                           NULL);
   if(!rdf_serializer->iostream)
     return 1;
 
@@ -571,7 +573,7 @@ raptor_serialize_start_to_file_handle(raptor_serializer *rdf_serializer,
   rdf_serializer->locator.uri = rdf_serializer->base_uri;
   rdf_serializer->locator.line = rdf_serializer->locator.column = 0;
 
-  rdf_serializer->iostream = raptor_new_iostream_to_file_handle(fh);
+  rdf_serializer->iostream = raptor_new_iostream_to_file_handle(rdf_serializer->world, fh);
   if(!rdf_serializer->iostream)
     return 1;
 

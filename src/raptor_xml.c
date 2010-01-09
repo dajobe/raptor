@@ -334,8 +334,6 @@ raptor_nsd_compare(const void *a, const void *b)
  * @nstack: Namespace stack context to use in formatting
  * @is_empty: non-0 if element is empty
  * @is_end: non-0 if this is an end element (else is a start element)
- * @error_handler: error handler function
- * @error_data: error handler function data
  * @depth: XML element depth
  *
  * Write a formatted XML element to a #raptor_iostream
@@ -348,8 +346,6 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
                                   raptor_namespace_stack *nstack,
                                   int is_empty,
                                   int is_end,
-                                  raptor_simple_message_handler error_handler,
-                                  void *error_data,
                                   int depth)
 {
   struct nsd *nspace_declarations = NULL;
@@ -491,8 +487,7 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
       raptor_iostream_write_xml_escaped_string(iostr,
                                                element->attributes[i]->value, 
                                                element->attributes[i]->value_length,
-                                               '"',
-                                               error_handler, error_data);
+                                               '"');
       raptor_iostream_write_byte(iostr, '"');
     }
   }
@@ -768,8 +763,6 @@ raptor_xml_escape_string(const unsigned char *string, size_t len,
  * @quote: optional quote character to escape for attribute content, or 0
  * @iostr: the #raptor_iostream to write to
  * @xml_version: XML version - 10 (XML 1.0) or 11 (XML 1.1)
- * @error_handler: error handler function
- * @error_data: error handler data
  *
  * Write an XML-escaped version of a string to an iostream.
  * 
@@ -784,9 +777,7 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
                                              const unsigned char *string,
                                              size_t len,
                                              char quote,
-                                             int xml_version,
-                                             raptor_simple_message_handler error_handler,
-                                             void *error_data)
+                                             int xml_version)
 {
   int l;
   const unsigned char *p;
@@ -804,8 +795,9 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
     if(*p > 0x7f) {
       unichar_len = raptor_utf8_to_unicode_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
-        if(error_handler)
-          error_handler(error_data, "Bad UTF-8 encoding.");
+        raptor_log_error(raptor_iostream_get_world(iostr),
+                         RAPTOR_LOG_LEVEL_ERROR, NULL,
+                         "Bad UTF-8 encoding.");
         return 1;
       }
     }
@@ -833,8 +825,10 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
     } else if(unichar == 0x7f ||
                (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
-        if(error_handler)
-          error_handler(error_data, "Cannot write illegal XML 1.0 character %d.", unichar);
+        raptor_log_error_formatted(raptor_iostream_get_world(iostr),
+                                   RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                   "Cannot write illegal XML 1.0 character U+%4X.",
+                                   (unsigned int)unichar);
       } else {
         int width = (unichar < 0x10) ? 1 : 2;
 
@@ -860,8 +854,6 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
  * @len: length of string
  * @quote: optional quote character to escape for attribute content, or 0
  * @iostr: the #raptor_iostream to write to
- * @error_handler: error handler function
- * @error_data: error handler data
  *
  * Write an XML 1.0-escaped version of a string to an iostream.
  * 
@@ -874,14 +866,10 @@ int
 raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr,
                                          const unsigned char *string,
                                          size_t len,
-                                         char quote,
-                                         raptor_simple_message_handler error_handler,
-                                         void *error_data)
+                                         char quote)
 {
   return raptor_iostream_write_xml_any_escaped_string(iostr, string, len,
-                                                      quote, 10,
-                                                      error_handler, 
-                                                      error_data);
+                                                      quote, 10);
 }
 
 

@@ -1013,11 +1013,11 @@ void raptor_iostream_write_statement_ntriples_v2(raptor_world* world, raptor_ios
 RAPTOR_API
 int raptor_xml_any_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API
-int raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);
+int raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, int xml_version);
 RAPTOR_API
 int raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data);
 RAPTOR_API
-int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, raptor_simple_message_handler error_handler, void *error_data);
+int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote);
 
 RAPTOR_API
 char* raptor_vsnprintf(const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(1, 0);
@@ -1470,23 +1470,23 @@ typedef struct {
 
 
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_handler2(void *user_data, const raptor_iostream_handler2* const handler2);
+raptor_iostream* raptor_new_iostream_from_handler2(raptor_world* world, void *user_data, const raptor_iostream_handler2* const handler2);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_to_sink(void);
+raptor_iostream* raptor_new_iostream_to_sink(raptor_world* world);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_to_filename(const char *filename);
+raptor_iostream* raptor_new_iostream_to_filename(raptor_world* world, const char *filename);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_to_file_handle(FILE *handle);
+raptor_iostream* raptor_new_iostream_to_file_handle(raptor_world* world, FILE *handle);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_to_string(void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
+raptor_iostream* raptor_new_iostream_to_string(raptor_world* world, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_sink(void);
+raptor_iostream* raptor_new_iostream_from_sink(raptor_world* world);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_filename(const char *filename);
+raptor_iostream* raptor_new_iostream_from_filename(raptor_world* world, const char *filename);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_file_handle(FILE *handle);
+raptor_iostream* raptor_new_iostream_from_file_handle(raptor_world* world, FILE *handle);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_string(void *string, size_t length);
+raptor_iostream* raptor_new_iostream_from_string(raptor_world* world, void *string, size_t length);
 RAPTOR_API
 void raptor_free_iostream(raptor_iostream *iostr);
 
@@ -1539,7 +1539,7 @@ int raptor_xml_element_get_attributes_count(raptor_xml_element* xml_element);
 RAPTOR_API
 int raptor_xml_element_declare_namespace(raptor_xml_element* xml_element, raptor_namespace *nspace);
 RAPTOR_API
-int raptor_iostream_write_xml_element(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth);
+int raptor_iostream_write_xml_element(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, int depth);
 RAPTOR_API
 int raptor_xml_element_is_empty(raptor_xml_element* xml_element);
 RAPTOR_API

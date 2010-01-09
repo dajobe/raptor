@@ -50,6 +50,8 @@
 
 struct raptor_iostream_s
 {
+  raptor_world *world;
+  
   void *user_data;
   const raptor_iostream_handler2* handler;
   unsigned long offset;
@@ -109,7 +111,8 @@ raptor_iostream_check_handler(const raptor_iostream_handler2 * const handler2,
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_from_handler2(void *user_data,
+raptor_new_iostream_from_handler2(raptor_world *world,
+                                  void *user_data,
                                   const raptor_iostream_handler2 * const handler2)
 {
   raptor_iostream* iostr;
@@ -118,10 +121,11 @@ raptor_new_iostream_from_handler2(void *user_data,
     return NULL;
 
   iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                        sizeof(raptor_iostream));
+                                          sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
+  iostr->world = world;
   iostr->handler = handler2;
   iostr->user_data = (void*)user_data;
   iostr->mode = raptor_iostream_calculate_modes(handler2);
@@ -184,9 +188,10 @@ static const raptor_iostream_handler2 raptor_iostream_sink_handler={
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_to_sink(void)
+raptor_new_iostream_to_sink(raptor_world *world)
 {
-  return raptor_new_iostream_from_handler2(NULL, &raptor_iostream_sink_handler);
+  return raptor_new_iostream_from_handler2(world,
+                                           NULL, &raptor_iostream_sink_handler);
 }
 
 
@@ -250,6 +255,7 @@ static const raptor_iostream_handler2 raptor_iostream_write_filename_handler={
 
 /**
  * raptor_new_iostream_to_filename:
+ * @world: raptor world
  * @filename: Output filename to open and write to
  *
  * Constructor - create a new iostream writing to a filename.
@@ -257,13 +263,14 @@ static const raptor_iostream_handler2 raptor_iostream_write_filename_handler={
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_to_filename(const char *filename)
+raptor_new_iostream_to_filename(raptor_world *world, const char *filename)
 {
   FILE *handle;
   raptor_iostream* iostr;
-  const raptor_iostream_handler2* handler2=&raptor_iostream_write_filename_handler;
+  const raptor_iostream_handler2* handler2;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
-  
+
+  handler2 = &raptor_iostream_write_filename_handler;
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
@@ -271,12 +278,14 @@ raptor_new_iostream_to_filename(const char *filename)
   if(!handle)
     return NULL;
   
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
+                                          sizeof(raptor_iostream));
   if(!iostr) {
     fclose(handle);
     return NULL;
   }
 
+  iostr->world = world;
   iostr->handler = handler2;
   iostr->user_data = (void*)handle;
   iostr->mode = mode;
@@ -304,6 +313,7 @@ static const raptor_iostream_handler2 raptor_iostream_write_file_handler={
 
 /**
  * raptor_new_iostream_to_file_handle:
+ * @world: raptor world
  * @handle: FILE* handle to write to
  *
  * Constructor - create a new iostream writing to a FILE*.
@@ -314,15 +324,16 @@ static const raptor_iostream_handler2 raptor_iostream_write_file_handler={
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_to_file_handle(FILE *handle)
+raptor_new_iostream_to_file_handle(raptor_world *world, FILE *handle)
 {
   raptor_iostream* iostr;
-  const raptor_iostream_handler2* handler2=&raptor_iostream_write_file_handler;
+  const raptor_iostream_handler2* handler2;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
 
   if(!handle)
     return NULL;
 
+  handler2 = &raptor_iostream_write_file_handler;
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
@@ -331,6 +342,7 @@ raptor_new_iostream_to_file_handle(FILE *handle)
   if(!iostr)
     return NULL;
 
+  iostr->world = world;
   iostr->handler = handler2;
   iostr->user_data = (void*)handle;
   iostr->mode = mode;
@@ -421,6 +433,7 @@ static const raptor_iostream_handler2 raptor_iostream_write_string_handler={
 
 /**
  * raptor_new_iostream_to_string:
+ * @world: raptor world
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
  * @malloc_handler: pointer to malloc to use to make string (or NULL)
@@ -435,14 +448,16 @@ static const raptor_iostream_handler2 raptor_iostream_write_string_handler={
  **/
 RAPTOR_EXTERN_C
 raptor_iostream*
-raptor_new_iostream_to_string(void **string_p, size_t *length_p,
+raptor_new_iostream_to_string(raptor_world *world,
+                              void **string_p, size_t *length_p,
                               void *(*malloc_handler)(size_t size))
 {
   raptor_iostream* iostr;
   struct raptor_write_string_iostream_context* con;
-  const raptor_iostream_handler2* handler2=&raptor_iostream_write_string_handler;
+  const raptor_iostream_handler2* handler2;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
   
+  handler2 = &raptor_iostream_write_string_handler;
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
@@ -475,7 +490,8 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
     con->malloc_handler = malloc_handler;
   else
     con->malloc_handler = raptor_alloc_memory;
-  
+
+  iostr->world = world;
   iostr->handler = handler2;
   iostr->user_data = (void*)con;
   iostr->mode = mode;
@@ -490,15 +506,17 @@ raptor_new_iostream_to_string(void **string_p, size_t *length_p,
 
 /**
  * raptor_new_iostream_from_sink:
+ * @world: raptor world
  *
  * Create a new read iostream from a sink.
  * 
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_from_sink(void)
+raptor_new_iostream_from_sink(raptor_world *world)
 {
-  return raptor_new_iostream_from_handler2(NULL, &raptor_iostream_sink_handler);
+  return raptor_new_iostream_from_handler2(world, NULL,
+                                           &raptor_iostream_sink_handler);
 }
 
 
@@ -516,6 +534,7 @@ static const raptor_iostream_handler2 raptor_iostream_read_filename_handler={
 
 /**
  * raptor_new_iostream_from_filename:
+ * @world: raptor world
  * @filename: Input filename to open and read from
  *
  * Constructor - create a new iostream reading from a filename.
@@ -523,16 +542,17 @@ static const raptor_iostream_handler2 raptor_iostream_read_filename_handler={
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_from_filename(const char *filename)
+raptor_new_iostream_from_filename(raptor_world *world, const char *filename)
 {
   FILE *handle;
   raptor_iostream* iostr;
-  const raptor_iostream_handler2* handler2=&raptor_iostream_read_filename_handler;
+  const raptor_iostream_handler2* handler2;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
   if(!filename)
     return NULL;
   
+  handler2 = &raptor_iostream_read_filename_handler;
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
@@ -547,6 +567,7 @@ raptor_new_iostream_from_filename(const char *filename)
     return NULL;
   }
 
+  iostr->world = world;
   iostr->handler = handler2;
   iostr->user_data = (void*)handle;
   iostr->mode = mode;
@@ -574,6 +595,7 @@ static const raptor_iostream_handler2 raptor_iostream_read_file_handle_handler={
 
 /**
  * raptor_new_iostream_from_file_handle:
+ * @world: raptor world
  * @handle: Input file_handle to open and read from
  *
  * Constructor - create a new iostream reading from a file_handle.
@@ -584,23 +606,25 @@ static const raptor_iostream_handler2 raptor_iostream_read_file_handle_handler={
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_from_file_handle(FILE *handle)
+raptor_new_iostream_from_file_handle(raptor_world *world, FILE *handle)
 {
   raptor_iostream* iostr;
-  const raptor_iostream_handler2* handler2=&raptor_iostream_read_file_handle_handler;
+  const raptor_iostream_handler2* handler2;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
   if(!handle)
     return NULL;
   
+  handler2 = &raptor_iostream_read_file_handle_handler;
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
   iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                        sizeof(raptor_iostream));
+                                          sizeof(raptor_iostream));
   if(!iostr)
     return NULL;
 
+  iostr->world = world;
   iostr->handler = handler2;
   iostr->user_data = (void*)handle;
   iostr->mode = mode;
@@ -1006,6 +1030,7 @@ static const raptor_iostream_handler2 raptor_iostream_read_string_handler={
 
 /**
  * raptor_new_iostream_from_string:
+ * @world: raptor world
  * @string: pointer to string
  * @length: length of string
  *
@@ -1014,16 +1039,18 @@ static const raptor_iostream_handler2 raptor_iostream_read_string_handler={
  * Return value: new #raptor_iostream object or NULL on failure
  **/
 raptor_iostream*
-raptor_new_iostream_from_string(void *string, size_t length)
+raptor_new_iostream_from_string(raptor_world *world,
+                                void *string, size_t length)
 {
   raptor_iostream* iostr;
   struct raptor_read_string_iostream_context* con;
-  const raptor_iostream_handler2* handler2=&raptor_iostream_read_string_handler;
+  const raptor_iostream_handler2* handler2;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
   if(!string)
     return NULL;
   
+  handler2 = &raptor_iostream_read_string_handler;
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
@@ -1041,6 +1068,7 @@ raptor_new_iostream_from_string(void *string, size_t length)
   con->string = string;
   con->length = length;
 
+  iostr->world = world;
   iostr->handler = handler2;
   iostr->user_data = (void*)con;
   iostr->mode = mode;
@@ -1068,6 +1096,13 @@ raptor_iostream_tell(raptor_iostream *iostr)
 }
 
 
+/* internal */
+raptor_world*
+raptor_iostream_get_world(raptor_iostream *iostr)
+{
+  return iostr->world;
+}
+
 
 #endif
 
@@ -1085,7 +1120,7 @@ static const char *program;
 
 
 static int
-test_write_to_filename(const char* filename, 
+test_write_to_filename(raptor_world *world, const char* filename, 
                        const char* test_string, size_t test_string_len,
                        const unsigned int expected_bytes_count)
 {
@@ -1098,7 +1133,7 @@ test_write_to_filename(const char* filename,
   fprintf(stderr, "%s: Testing %s '%s'\n", program, label, filename);
 #endif
 
-  iostr = raptor_new_iostream_to_filename(filename);
+  iostr = raptor_new_iostream_to_filename(world, filename);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s '%s'\n", program, label, filename);
     rc = 1;
@@ -1129,7 +1164,7 @@ test_write_to_filename(const char* filename,
 
 
 static int
-test_write_to_file_handle(FILE* handle,
+test_write_to_file_handle(raptor_world *world, FILE* handle,
                           const char* test_string, size_t test_string_len,
                           const unsigned int expected_bytes_count)
 {
@@ -1142,7 +1177,7 @@ test_write_to_file_handle(FILE* handle,
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr = raptor_new_iostream_to_file_handle(handle);
+  iostr = raptor_new_iostream_to_file_handle(world, handle);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
     rc = 1;
@@ -1171,7 +1206,8 @@ test_write_to_file_handle(FILE* handle,
 
 
 static int
-test_write_to_string(const char* test_string, size_t test_string_len,
+test_write_to_string(raptor_world *world,
+                     const char* test_string, size_t test_string_len,
                      const unsigned int expected_bytes_count)
 {
   raptor_iostream *iostr = NULL;
@@ -1186,7 +1222,7 @@ test_write_to_string(const char* test_string, size_t test_string_len,
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr = raptor_new_iostream_to_string(&string, &string_len, NULL);
+  iostr = raptor_new_iostream_to_string(world, &string, &string_len, NULL);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create write iostream to string\n",
             program);
@@ -1230,7 +1266,8 @@ test_write_to_string(const char* test_string, size_t test_string_len,
 
 
 static int
-test_write_to_sink(const char* test_string, size_t test_string_len,
+test_write_to_sink(raptor_world *world,
+                   const char* test_string, size_t test_string_len,
                    const unsigned int expected_bytes_count)
 {
   raptor_iostream *iostr = NULL;
@@ -1242,7 +1279,7 @@ test_write_to_sink(const char* test_string, size_t test_string_len,
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr = raptor_new_iostream_to_sink();
+  iostr = raptor_new_iostream_to_sink(world);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
     rc = 1;
@@ -1271,7 +1308,8 @@ test_write_to_sink(const char* test_string, size_t test_string_len,
 
 
 static int
-test_read_from_filename(const char* filename, 
+test_read_from_filename(raptor_world *world,
+                        const char* filename, 
                         const char* test_string, size_t test_string_len,
                         const unsigned int expected_len,
                         const unsigned int expected_len2)
@@ -1286,7 +1324,7 @@ test_read_from_filename(const char* filename,
   fprintf(stderr, "%s: Testing %s '%s'\n", program, label, filename);
 #endif
 
-  iostr = raptor_new_iostream_from_filename(filename);
+  iostr = raptor_new_iostream_from_filename(world, filename);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s '%s'\n", program, label, filename);
     rc = 1;
@@ -1333,7 +1371,7 @@ test_read_from_filename(const char* filename,
 
 
 static int
-test_read_from_file_handle(FILE* handle,
+test_read_from_file_handle(raptor_world *world, FILE* handle,
                            const char* test_string, size_t test_string_len,
                            const unsigned int expected_len,
                            const unsigned int expected_len2)
@@ -1348,7 +1386,7 @@ test_read_from_file_handle(FILE* handle,
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
-  iostr = raptor_new_iostream_from_file_handle(handle);
+  iostr = raptor_new_iostream_from_file_handle(world, handle);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
     rc = 1;
@@ -1393,7 +1431,8 @@ test_read_from_file_handle(FILE* handle,
 
 
 static int
-test_read_from_string(const char* test_string, size_t test_string_len,
+test_read_from_string(raptor_world *world,
+                      const char* test_string, size_t test_string_len,
                       const unsigned int expected_len)
 {
   raptor_iostream *iostr = NULL;
@@ -1406,7 +1445,8 @@ test_read_from_string(const char* test_string, size_t test_string_len,
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
   
-  iostr = raptor_new_iostream_from_string((void*)test_string, test_string_len);
+  iostr = raptor_new_iostream_from_string(world,
+                                          (void*)test_string, test_string_len);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
     rc = 1;
@@ -1443,7 +1483,7 @@ test_read_from_string(const char* test_string, size_t test_string_len,
 
 
 static int
-test_read_from_sink(size_t read_len, size_t expected_len)
+test_read_from_sink(raptor_world *world, size_t read_len, size_t expected_len)
 {
   raptor_iostream *iostr = NULL;
   char buffer[READ_BUFFER_SIZE];
@@ -1455,7 +1495,7 @@ test_read_from_sink(size_t read_len, size_t expected_len)
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
   expected_len = 0;
-  iostr = raptor_new_iostream_from_sink();
+  iostr = raptor_new_iostream_from_sink(world);
   if(!iostr) {
     fprintf(stderr, "%s: Failed to create %s\n", program, label);
     rc = 1;
@@ -1495,13 +1535,18 @@ test_read_from_sink(size_t read_len, size_t expected_len)
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world;
   FILE *handle = NULL;
   int failures = 0;
   
   program = raptor_basename(argv[0]);
 
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
+  
   /* Write tests */
-  failures+= test_write_to_filename((const char*)OUT_FILENAME,
+  failures+= test_write_to_filename(world, (const char*)OUT_FILENAME,
                          TEST_STRING, TEST_STRING_LEN, (int)OUT_BYTES_COUNT);
   handle = fopen((const char*)OUT_FILENAME, "wb");
   if(!handle) {
@@ -1509,15 +1554,18 @@ main(int argc, char *argv[])
             program, OUT_FILENAME);
     failures++;
   } else {
-    failures+= test_write_to_file_handle(handle, TEST_STRING, TEST_STRING_LEN,
+    failures+= test_write_to_file_handle(world,
+                                         handle, TEST_STRING, TEST_STRING_LEN,
                                          (int)OUT_BYTES_COUNT);
     fclose(handle);
     remove(OUT_FILENAME);
   }
   
-  failures+= test_write_to_string(TEST_STRING,
+  failures+= test_write_to_string(world,
+                                  TEST_STRING,
                                   TEST_STRING_LEN, (int)OUT_BYTES_COUNT);
-  failures+= test_write_to_sink(TEST_STRING,
+  failures+= test_write_to_sink(world,
+                                TEST_STRING,
                                 TEST_STRING_LEN, (int)OUT_BYTES_COUNT);
 
   remove(OUT_FILENAME);
@@ -1533,7 +1581,8 @@ main(int argc, char *argv[])
     fwrite(TEST_STRING, 1, TEST_STRING_LEN, handle);
     fclose(handle);
 
-    failures+= test_read_from_filename((const char*)IN_FILENAME,
+    failures+= test_read_from_filename(world,
+                                       (const char*)IN_FILENAME,
                                        TEST_STRING, TEST_STRING_LEN,
                                        TEST_STRING_LEN, 0);
     handle = fopen((const char*)IN_FILENAME, "rb");
@@ -1542,18 +1591,22 @@ main(int argc, char *argv[])
               program, IN_FILENAME);
       failures++;
     } else {
-      failures+= test_read_from_file_handle(handle,
+      failures+= test_read_from_file_handle(world,
+                                            handle,
                                             TEST_STRING, TEST_STRING_LEN,
                                             TEST_STRING_LEN, 0);
       fclose(handle); handle = NULL;
     }
   }
   
-  failures+= test_read_from_string(TEST_STRING, TEST_STRING_LEN,
+  failures+= test_read_from_string(world,
+                                   TEST_STRING, TEST_STRING_LEN,
                                    TEST_STRING_LEN);
-  failures+= test_read_from_sink(TEST_STRING_LEN, 0);
+  failures+= test_read_from_sink(world, TEST_STRING_LEN, 0);
 
   remove(IN_FILENAME);
+  
+  raptor_free_world(world);
   
   return failures;
 }
