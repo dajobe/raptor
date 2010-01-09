@@ -879,7 +879,7 @@ const unsigned char* raptor_parser_get_feature_string(raptor_parser *parser, rap
 RAPTOR_API
 unsigned int raptor_get_feature_count(void);
 RAPTOR_API
-void raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict);
+void raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict);
 RAPTOR_API
 const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
 

@@ -495,7 +495,7 @@ raptor_new_parser(raptor_world* world, const char *name)
   rdf_parser->world->error_handlers.locator = &rdf_parser->locator;
   
   /* Initialise default (lax) feature values */
-  raptor_set_parser_strict(rdf_parser, 0);
+  raptor_parser_set_strict(rdf_parser, 0);
 
   if(factory->init(rdf_parser, name)) {
     raptor_free_parser(rdf_parser);
@@ -1416,7 +1416,7 @@ raptor_parser_get_feature_string(raptor_parser *parser,
 
 
 /**
- * raptor_set_parser_strict:
+ * raptor_parser_set_strict:
  * @rdf_parser: #raptor_parser object
  * @is_strict: Non 0 for strict parsing
  *
@@ -1424,24 +1424,24 @@ raptor_parser_get_feature_string(raptor_parser *parser,
  * 
  **/
 void
-raptor_set_parser_strict(raptor_parser* rdf_parser, int is_strict)
+raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
 {
   is_strict = (is_strict) ? 1 : 0;
 
   /* Initialise default parser mode */
   rdf_parser->features[RAPTOR_FEATURE_SCANNING] = 0;
 
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES]=!is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES]=!is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES] = !is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES] = !is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID] = !is_strict;
   rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST] = 0;
   rdf_parser->features[RAPTOR_FEATURE_NORMALIZE_LANGUAGE] = 1;
   rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL] = is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_WARN_OTHER_PARSETYPES]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_WARN_OTHER_PARSETYPES] = !is_strict;
   rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID] = 1;
-  rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]=!is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_MICROFORMATS]=!is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_HTML_LINK]=!is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP] = !is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_MICROFORMATS] = !is_strict;
+  rdf_parser->features[RAPTOR_FEATURE_HTML_LINK] = !is_strict;
 }
 
 
