@@ -83,9 +83,6 @@ struct raptor_xml_writer_s {
   raptor_namespace_stack *nstack;
   int nstack_depth;
 
-  const raptor_uri_handler *uri_handler;
-  void *uri_context;
-
   raptor_xml_element* current_element;
 
   /* outputting to this iostream */
