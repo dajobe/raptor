@@ -549,14 +549,13 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 
 /**
  * raptor_xml_any_escape_string:
+ * @world: raptor world
  * @string: string to XML escape (UTF-8)
  * @len: length of string
  * @buffer: the buffer to use for new string (UTF-8)
  * @length: buffer size
  * @quote: optional quote character to escape for attribute content, or 0
  * @xml_version: XML 1.0 (10) or XML 1.1 (11)
- * @error_handler: error handler function
- * @error_data: error handler user data
  *
  * Return an XML-escaped version a string.
  * 
@@ -594,12 +593,11 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * Return value: the number of bytes required / used or <0 on failure.
  **/
 int
-raptor_xml_any_escape_string(const unsigned char *string, size_t len,
+raptor_xml_any_escape_string(raptor_world *world,
+                             const unsigned char *string, size_t len,
                              unsigned char *buffer, size_t length,
                              char quote,
-                             int xml_version,
-                             raptor_simple_message_handler error_handler,
-                             void *error_data)
+                             int xml_version)
 {
   int l;
   size_t new_len = 0;
@@ -615,8 +613,8 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
     if(*p > 0x7f) {
       unichar_len = raptor_utf8_to_unicode_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
-        if(error_handler)
-          error_handler(error_data, "Bad UTF-8 encoding.");
+        raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                         "Bad UTF-8 encoding.");
         return -1;
       }
     } else {
@@ -640,8 +638,9 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
     else if(unichar == 0x7f ||
              (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
-        if(error_handler)
-          error_handler(error_data, "Cannot write illegal XML 1.0 character %d.", unichar);
+        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                   "Cannot write illegal XML 1.0 character U+%6lX.",
+                                   unichar);
       } else {
         /* &#xX; */
         new_len+= 5;
@@ -698,8 +697,9 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
     } else if(unichar == 0x7f ||
                (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
-        if(error_handler)
-          error_handler(error_data, "Cannot write illegal XML 1.0 character %d.", unichar);
+        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                   "Cannot write illegal XML 1.0 character U+%6lX.",
+                                   unichar);
       } else {
         /* &#xX; */
         *q++='&';
@@ -727,13 +727,12 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
 
 /**
  * raptor_xml_escape_string:
+ * @world: raptor world
  * @string: string to XML 1.0 escape (UTF-8)
  * @len: length of string
  * @buffer: the buffer to use for new string (UTF-8)
  * @length: buffer size
  * @quote: optional quote character to escape for attribute content, or 0
- * @error_handler: error handler function
- * @error_data: error handler user data
  *
  * Return an XML 1.0-escaped version a string.
  * 
@@ -742,17 +741,15 @@ raptor_xml_any_escape_string(const unsigned char *string, size_t len,
  * Return value: the number of bytes required / used or <0 on failure.
  **/
 int
-raptor_xml_escape_string(const unsigned char *string, size_t len,
+raptor_xml_escape_string(raptor_world *world,
+                         const unsigned char *string, size_t len,
                          unsigned char *buffer, size_t length,
-                         char quote,
-                         raptor_simple_message_handler error_handler,
-                         void *error_data)
+                         char quote)
 {
-  return raptor_xml_any_escape_string(string, len,
+  return raptor_xml_any_escape_string(world, string, len,
                                       buffer, length,
                                       quote,
-                                      10,
-                                      error_handler, error_data);
+                                      10);
 }
 
 
@@ -827,8 +824,8 @@ raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr,
       if(!unichar || xml_version < 11) {
         raptor_log_error_formatted(raptor_iostream_get_world(iostr),
                                    RAPTOR_LOG_LEVEL_ERROR, NULL,
-                                   "Cannot write illegal XML 1.0 character U+%4X.",
-                                   (unsigned int)unichar);
+                                   "Cannot write illegal XML 1.0 character U+%6lX.",
+                                   unichar);
       } else {
         int width = (unichar < 0x10) ? 1 : 2;
 
@@ -960,6 +957,7 @@ raptor_bad_string_print(const unsigned char *input, FILE *stream)
 int
 main(int argc, char *argv[]) 
 {
+  raptor_world *world;
   const char *program = raptor_basename(argv[0]);
   struct tv {
     const char *string;
@@ -1012,6 +1010,10 @@ main(int argc, char *argv[])
   int i;
   int failures = 0;
 
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
+
   for(i = 0; (t=&test_values[i]) && t->string; i++) {
     const unsigned char *utf8_string = (const unsigned char*)t->string;
     int quote = t->quote;
@@ -1019,8 +1021,9 @@ main(int argc, char *argv[])
     unsigned char *xml_string;
     int xml_string_len = 0;
 
-    xml_string_len = raptor_xml_escape_string(utf8_string, utf8_string_len,
-                                            NULL, 0, quote, NULL, NULL);
+    xml_string_len = raptor_xml_escape_string(world, 
+                                              utf8_string, utf8_string_len,
+                                              NULL, 0, quote);
     if(xml_string_len < 0) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
               program);
@@ -1032,9 +1035,9 @@ main(int argc, char *argv[])
       
     xml_string = (unsigned char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
     
-    xml_string_len = raptor_xml_escape_string(utf8_string, utf8_string_len,
-                                            xml_string, xml_string_len, quote,
-                                            NULL, NULL);
+    xml_string_len = raptor_xml_escape_string(world,
+                                              utf8_string, utf8_string_len,
+                                              xml_string, xml_string_len, quote);
     if(xml_string_len < 0) {
       fprintf(stderr, "%s: raptor_xml_escape_string FAILED to escape string '",
               program);
@@ -1064,6 +1067,8 @@ main(int argc, char *argv[])
   if(!failures)
     fprintf(stderr, "%s: raptor_xml_escape_string all tests OK\n", program);
 #endif
+
+  raptor_free_world(world);
 
   return failures;
 }

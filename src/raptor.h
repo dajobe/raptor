@@ -1005,11 +1005,11 @@ RAPTOR_API
 int raptor_iostream_write_string_python(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim, int flags);
 void raptor_iostream_write_statement_ntriples_v2(raptor_world* world, raptor_iostream* iostr, const raptor_statement *statement);
 RAPTOR_API
-int raptor_xml_any_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data);
+int raptor_xml_any_escape_string(raptor_world* world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version);
 RAPTOR_API
 int raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, int xml_version);
 RAPTOR_API
-int raptor_xml_escape_string(const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data);
+int raptor_xml_escape_string(raptor_world *world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote);
 RAPTOR_API
 int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote);
 

@@ -726,8 +726,9 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 
   if(ns->uri) {
     uri_string = raptor_uri_as_counted_string_v2(ns->nstack->world, ns->uri, &uri_length);
-    xml_uri_length = raptor_xml_escape_string(uri_string, uri_length,
-                                            NULL, 0, quote, NULL, NULL);
+    xml_uri_length = raptor_xml_escape_string(ns->nstack->world,
+                                              uri_string, uri_length,
+                                              NULL, 0, quote);
   }
 
   length = 8+xml_uri_length+ns->prefix_length; /* 8 = length of [[xmlns=""] */
@@ -755,9 +756,9 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
   *p++ = '=';
   *p++ = quote;
   if(uri_length) {
-    raptor_xml_escape_string(uri_string, uri_length,
-                             p, xml_uri_length, quote,
-                             NULL, NULL);
+    raptor_xml_escape_string(ns->nstack->world,
+                             uri_string, uri_length,
+                             p, xml_uri_length, quote);
     p+= xml_uri_length;
   }
   *p++ = quote;
