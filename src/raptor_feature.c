@@ -161,7 +161,7 @@ raptor_features_enumerate_common(raptor_world* world,
  *
  * The type of the @feature is 0=integer , 1=string.  Other values are
  * undefined.  Most features are integer values and use
- * raptor_set_feature and raptor_get_feature()
+ * raptor_parser_set_feature and raptor_get_feature()
  * ( raptor_serializer_set_feature raptor_serializer_get_feature() )
  *
  * String value features use raptor_parser_set_feature_string() and

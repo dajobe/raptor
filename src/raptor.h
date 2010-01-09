@@ -869,7 +869,7 @@ int raptor_get_need_base_uri(raptor_parser *rdf_parser);
 RAPTOR_API
 int raptor_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API
-int raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+int raptor_parser_set_feature(raptor_parser *parser, raptor_feature feature, int value);
 RAPTOR_API
 int raptor_parser_set_feature_string(raptor_parser *parser, raptor_feature feature, const unsigned char *value);
 RAPTOR_API

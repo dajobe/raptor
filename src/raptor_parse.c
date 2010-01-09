@@ -1196,7 +1196,7 @@ raptor_features_enumerate_v2(raptor_world* world,
 
 
 /**
- * raptor_set_feature:
+ * raptor_parser_set_feature:
  * @parser: #raptor_parser parser object
  * @feature: feature to set from enumerated #raptor_feature values
  * @value: integer feature value (0 or larger)
@@ -1208,7 +1208,8 @@ raptor_features_enumerate_v2(raptor_world* world,
  * Return value: non 0 on failure or if the feature is unknown
  **/
 int
-raptor_set_feature(raptor_parser *parser, raptor_feature feature, int value)
+raptor_parser_set_feature(raptor_parser *parser,
+                          raptor_feature feature, int value)
 {
   if(value < 0)
     return -1;
@@ -1288,7 +1289,7 @@ raptor_parser_set_feature_string(raptor_parser *parser,
 {
   int value_is_string = (raptor_feature_value_type(feature) == 1);
   if(!value_is_string)
-    return raptor_set_feature(parser, feature, atoi((const char*)value));
+    return raptor_parser_set_feature(parser, feature, atoi((const char*)value));
 
   if((feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL) ||
      (feature == RAPTOR_FEATURE_WWW_HTTP_USER_AGENT)) {

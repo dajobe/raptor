@@ -819,7 +819,7 @@ main(int argc, char *argv[])
   raptor_parser_set_strict(rdf_parser, strict_mode);
   
   if(scanning)
-    raptor_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
+    raptor_parser_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
 
   if(parser_features) {
     feature_value *fv;
@@ -827,7 +827,7 @@ main(int argc, char *argv[])
       if(fv->s_value)
         raptor_parser_set_feature_string(rdf_parser, fv->feature, fv->s_value);
       else
-        raptor_set_feature(rdf_parser, fv->feature, fv->i_value);
+        raptor_parser_set_feature(rdf_parser, fv->feature, fv->i_value);
       raptor_free_memory(fv);
     }
     raptor_free_sequence(parser_features);
