@@ -613,22 +613,6 @@ typedef struct {
 
 
 /**
- * raptor_simple_message_handler:
- * @user_data: user data
- * @message: message to report
- * @...: arguments for message
- *
- * Simple message handler function.
- *
- * Used by multiple functions including raptor_xml_escape_string(),
- * raptor_iostream_write_xml_escaped_string(), raptor_new_qname(),
- * raptor_qname_string_to_uri(), raptor_new_namespaces(),
- * raptor_namespaces_init(), raptor_iostream_write_xml_element(),
- * raptor_new_xml_writer().
- */
-typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...);
-
-/**
  * raptor_message_handler:
  * @user_data: user data
  * @locator: location associated with message or NULL
