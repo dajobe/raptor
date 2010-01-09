@@ -858,10 +858,7 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_rdfxmla_context* context = (raptor_rdfxmla_context*)serializer->context;
   raptor_uri *rdf_type_uri;
   
-  context->nstack = raptor_new_namespaces_v2(serializer->world,
-                                           (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                           serializer,
-                                           1);
+  context->nstack = raptor_new_namespaces_v2(serializer->world, 1);
   if(!context->nstack)
     return 1;
 

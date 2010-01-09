@@ -1169,7 +1169,7 @@ const unsigned char* raptor_qname_get_counted_value(raptor_qname* name, size_t* 
 RAPTOR_API
 raptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *nstack, const unsigned char *prefix,  raptor_uri* ns_uri, int depth);
 RAPTOR_API
-raptor_namespace_stack* raptor_new_namespaces_v2(raptor_world* world, raptor_simple_message_handler error_handler, void *error_data, int defaults);
+raptor_namespace_stack* raptor_new_namespaces_v2(raptor_world* world, int defaults);
 RAPTOR_API
 int raptor_namespaces_init_v2(raptor_world* world, raptor_namespace_stack *nstack, int defaults);
 RAPTOR_API

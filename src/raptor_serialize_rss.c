@@ -208,10 +208,7 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
 
   rss_serializer->is_atom=!(strcmp(name,"atom"));
 
-  rss_serializer->nstack = raptor_new_namespaces_v2(serializer->world,
-                                                  (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                                  serializer,
-                                                  1);
+  rss_serializer->nstack = raptor_new_namespaces_v2(serializer->world, 1);
 
   rss_serializer->xml_literal_dt = raptor_new_uri_v2(serializer->world, raptor_xml_literal_datatype_uri_string);
 

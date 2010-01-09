@@ -450,9 +450,7 @@ raptor_new_xml_writer_v2(raptor_world* world,
 
   xml_writer->nstack = nstack;
   if(!xml_writer->nstack) {
-    xml_writer->nstack = nstack = raptor_new_namespaces_v2(world,
-                                                       error_handler, error_data,
-                                                       1);
+    xml_writer->nstack = nstack = raptor_new_namespaces_v2(world, 1);
     xml_writer->my_nstack = 1;
   }
 
@@ -1137,9 +1135,7 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  nstack = raptor_new_namespaces_v2(world,
-                                  NULL, NULL, /* errors */
-                                  1);
+  nstack = raptor_new_namespaces_v2(world, 1);
 
   xml_writer = raptor_new_xml_writer_v2(world,
                                       nstack,
