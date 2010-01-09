@@ -973,6 +973,8 @@ raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old
 RAPTOR_API
 raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_term_type type, raptor_uri *uri, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
 RAPTOR_API
+raptor_identifier* raptor_new_identifier_from_identifier(raptor_identifier *identifier);
+RAPTOR_API
 int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
 RAPTOR_API
 void raptor_free_identifier(raptor_identifier *identifier);
