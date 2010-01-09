@@ -956,12 +956,10 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
     raptor_free_turtle_writer(context->turtle_writer);
 
   turtle_writer = raptor_new_turtle_writer(serializer->world,
-                                         serializer->base_uri,
-                                         serializer->feature_write_base_uri,
-                                         context->nstack,
-                                         serializer->iostream,
-                                         (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                         serializer);
+                                           serializer->base_uri,
+                                           serializer->feature_write_base_uri,
+                                           context->nstack,
+                                           serializer->iostream);
   if(!turtle_writer)
     return 1;
 

@@ -73,9 +73,6 @@ struct raptor_turtle_writer_s {
   raptor_namespace_stack *nstack;
   int nstack_depth;
 
-  raptor_simple_message_handler error_handler;
-  void *error_data;
-
   /* outputting to this iostream */
   raptor_iostream *iostr;
 
@@ -148,8 +145,6 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
  * @write_base_uri: non-0 to write '@base' directive to output
  * @nstack: Namespace stack for the writer to start with (or NULL)
  * @iostr: I/O stream to write to
- * @error_handler: error handler function
- * @error_data: error handler data
  * 
  * Constructor - Create a new Turtle Writer writing Turtle to a raptor_iostream
  * 
@@ -159,9 +154,7 @@ raptor_turtle_writer*
 raptor_new_turtle_writer(raptor_world* world,
                          raptor_uri* base_uri, int write_base_uri,
                          raptor_namespace_stack *nstack,
-                         raptor_iostream* iostr,
-                         raptor_simple_message_handler error_handler,
-                         void *error_data)
+                         raptor_iostream* iostr)
 {
   raptor_turtle_writer* turtle_writer = (raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1, sizeof(raptor_turtle_writer)+1);
 
@@ -171,9 +164,6 @@ raptor_new_turtle_writer(raptor_world* world,
   turtle_writer->world = world;
 
   turtle_writer->nstack_depth = 0;
-
-  turtle_writer->error_handler = error_handler;
-  turtle_writer->error_data = error_data;
 
   turtle_writer->nstack = nstack;
   if(!turtle_writer->nstack) {
@@ -546,7 +536,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
         /* More gcc madness to 'use' the variable I didn't want */
         written = 1 + 0 * (int)gcc_is_stupid;
       } else {
-        turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:integer literal.");
+        raptor_log_error(turtle_writer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                         "Illegal value for xsd:integer literal.");
       }
 
     /* double, decimal */
@@ -559,7 +550,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
         /* More gcc madness to 'use' the variable I didn't want */
         written = 1 +  0 * (int)gcc_is_doubly_stupid;
       } else {
-        turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:double or xsd:decimal literal.");
+        raptor_log_error(turtle_writer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                         "Illegal value for xsd:double or xsd:decimal literal.");
       }
 
     /* boolean */
@@ -571,7 +563,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
         raptor_iostream_write_string(turtle_writer->iostr, "true");
         written = 1;
       } else {
-        turtle_writer->error_handler(turtle_writer->error_data, "Illegal value for xsd:boolean literal.");
+        raptor_log_error(turtle_writer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                         "Illegal value for xsd:boolean literal.");
       }
     }
   }
@@ -931,12 +924,7 @@ main(int argc, char *argv[])
 
   base_uri = raptor_new_uri_v2(world, base_uri_string);
 
-  turtle_writer = raptor_new_turtle_writer(world,
-                                         base_uri, 1,
-                                         nstack,
-                                         iostr,
-                                         NULL, NULL /* errors */
-                                         );
+  turtle_writer = raptor_new_turtle_writer(world, base_uri, 1, nstack, iostr);
   if(!turtle_writer) {
     fprintf(stderr, "%s: Failed to create turtle_writer to iostream\n", program);
     exit(1);
