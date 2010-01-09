@@ -290,7 +290,6 @@ triples: subject propertyList
       }
       raptor_copy_identifier(i2, $1);
       t2->subject = i2;
-      t2->subject->is_malloced = 1;
     }
 #if RAPTOR_DEBUG > 1  
     printf(" after substitution propertyList=");
@@ -547,7 +546,6 @@ propertyList: propertyList SEMICOLON verb objectList
         YYERROR;
       }
       t2->predicate = i2;
-      t2->predicate->is_malloced = 1;
     }
   
 #if RAPTOR_DEBUG > 1  
@@ -615,7 +613,6 @@ propertyList: propertyList SEMICOLON verb objectList
         YYERROR;
       }
       t2->predicate = i2;
-      t2->predicate->is_malloced = 1;
     }
 
 #if RAPTOR_DEBUG > 1  
@@ -998,7 +995,6 @@ blank: BLANK_LITERAL
         YYERROR;
       }
       t2->subject = i2;
-      t2->subject->is_malloced = 1;
       raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 

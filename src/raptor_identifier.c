@@ -92,7 +92,6 @@ raptor_new_identifier_v2(raptor_world* world,
 
   identifier->world = world;
   identifier->type = type;
-  identifier->is_malloced = 1;
 
   /* SHARED */
   identifier->uri = uri;
@@ -154,15 +153,15 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
 }
 
 
-/**
- * raptor_free_identifier:
+/*
+ * raptor_clear_identifier:
  * @identifier: #raptor_identifier object
  *
- * Destructor - destroy a raptor_identifier object.
+ * Internal - clear fields in a raptor_identifier object.
  *
  **/
 void
-raptor_free_identifier(raptor_identifier *identifier) 
+raptor_clear_identifier(raptor_identifier *identifier) 
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(identifier, raptor_identifier);
   
@@ -190,10 +189,24 @@ raptor_free_identifier(raptor_identifier *identifier)
     RAPTOR_FREE(cstring, (void*)identifier->literal_language);
     identifier->literal_language = NULL;
   }
-
-  if(identifier->is_malloced)
-    RAPTOR_FREE(identifier, (void*)identifier);
 }
+
+
+/**
+ * raptor_free_identifier:
+ * @identifier: #raptor_identifier object
+ *
+ * Destructor - destroy a raptor_identifier object.
+ *
+ **/
+void
+raptor_free_identifier(raptor_identifier *identifier) 
+{
+  raptor_clear_identifier(identifier);
+
+  RAPTOR_FREE(identifier, (void*)identifier);
+}
+
 
 
 void

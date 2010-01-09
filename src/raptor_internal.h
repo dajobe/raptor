@@ -916,6 +916,8 @@ struct  raptor_www_s {
 
 
 /* internal */
+void raptor_clear_identifier(raptor_identifier *identifier);
+
 void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www);

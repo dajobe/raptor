@@ -615,11 +615,12 @@ raptor_free_rdfxml_element(raptor_rdfxml_element *element)
     if(element->rdf_attr[i])
       RAPTOR_FREE(cstring, (void*)element->rdf_attr[i]);
 
-  raptor_free_identifier(&element->subject);
-  raptor_free_identifier(&element->predicate);
-  raptor_free_identifier(&element->object);
-  raptor_free_identifier(&element->bag);
-  raptor_free_identifier(&element->reified);
+  /* Empty fields of static raptor_identifier but do not free the objects */
+  raptor_clear_identifier(&element->subject);
+  raptor_clear_identifier(&element->predicate);
+  raptor_clear_identifier(&element->object);
+  raptor_clear_identifier(&element->bag);
+  raptor_clear_identifier(&element->reified);
 
   if(element->tail_id)
     RAPTOR_FREE(cstring, (char*)element->tail_id);

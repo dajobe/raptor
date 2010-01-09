@@ -401,7 +401,6 @@ typedef enum {
  * @uri: URI of identifier for types %RAPTOR_TERM_TYPE_URI
  * @uri_source: where the identifier (URI or blank node) came from
  * @id: blank node identifier for type %RAPTOR_TERM_TYPE_BLANK
- * @is_malloced: internal
  * @literal: literal string for types %RAPTOR_TERM_TYPE_LITERAL
  * @literal_datatype: RDF literal datatype URI for type
  *   %RAPTOR_TERM_TYPE_LITERAL
@@ -415,7 +414,6 @@ typedef struct {
   raptor_term_type type;
   raptor_uri *uri;
   const unsigned char *id;
-  int is_malloced;
   const unsigned char *literal;
   raptor_uri *literal_datatype;
   const unsigned char *literal_language;
