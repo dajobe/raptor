@@ -774,21 +774,19 @@ void raptor_world_set_error_handler(raptor_world *world, void *user_data, raptor
 RAPTOR_API
 void raptor_world_set_warning_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
 
-/* Get parser names */
+/* Parser names */
 RAPTOR_API
-int raptor_parsers_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label);
+int raptor_world_enumerate_parsers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
 RAPTOR_API
-int raptor_syntaxes_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
-int raptor_syntax_name_check_v2(raptor_world* world, const char *name);
-RAPTOR_API
-const char* raptor_guess_parser_name_v2(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
+const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
 /* Create */
 RAPTOR_API
-raptor_parser* raptor_new_parser_v2(raptor_world* world, const char *name);
+raptor_parser* raptor_new_parser(raptor_world* world, const char *name);
 RAPTOR_API
-raptor_parser* raptor_new_parser_for_content_v2(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
+raptor_parser* raptor_new_parser_for_content(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
 
 RAPTOR_API
@@ -892,13 +890,13 @@ raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
 
 /* Get serializer names */
 RAPTOR_API
-int raptor_serializers_enumerate_v2(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
 RAPTOR_API
-int raptor_serializer_syntax_name_check_v2(raptor_world* world, const char *name);
+int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 
 /* Serializing */
 RAPTOR_API
-raptor_serializer* raptor_new_serializer_v2(raptor_world* world, const char *name);
+raptor_serializer* raptor_new_serializer(raptor_world* world, const char *name);
 RAPTOR_API
 void raptor_free_serializer(raptor_serializer* rdf_serializer);
 

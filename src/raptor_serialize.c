@@ -291,7 +291,7 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
 
 
 /**
- * raptor_serializers_enumerate_v2:
+ * raptor_world_enumerate_serializers:
  * @world: raptor_world object
  * @counter: index into the list of syntaxes
  * @name: pointer to store the name of the syntax (or NULL)
@@ -304,11 +304,11 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
  * Return value: non 0 on failure of if counter is out of range
  **/
 int
-raptor_serializers_enumerate_v2(raptor_world* world,
-                                const unsigned int counter,
-                                const char **name, const char **label,
-                                const char **mime_type,
-                                const unsigned char **uri_string)
+raptor_world_enumerate_serializers(raptor_world* world,
+                                   const unsigned int counter,
+                                   const char **name, const char **label,
+                                   const char **mime_type,
+                                   const unsigned char **uri_string)
 {
   raptor_serializer_factory *factory;
 
@@ -332,7 +332,7 @@ raptor_serializers_enumerate_v2(raptor_world* world,
 
 
 /**
- * raptor_serializer_syntax_name_check_v2:
+ * raptor_world_is_serializer_name:
  * @world: raptor_world object
  * @name: the syntax name
  *
@@ -341,7 +341,7 @@ raptor_serializers_enumerate_v2(raptor_world* world,
  * Return value: non 0 if name is a known syntax name
  */
 int
-raptor_serializer_syntax_name_check_v2(raptor_world* world, const char *name)
+raptor_world_is_serializer_name(raptor_world* world, const char *name)
 {
   return (raptor_get_serializer_factory(world, name) != NULL);
 }
@@ -357,7 +357,7 @@ raptor_serializer_syntax_name_check_v2(raptor_world* world, const char *name)
  * Return value: a new #raptor_serializer object or NULL on failure
  */
 raptor_serializer*
-raptor_new_serializer_v2(raptor_world* world, const char *name)
+raptor_new_serializer(raptor_world* world, const char *name)
 {
   raptor_serializer_factory* factory;
   raptor_serializer* rdf_serializer;

@@ -389,7 +389,7 @@ raptor_get_parser_factory(raptor_world *world, const char *name)
 
 
 /**
- * raptor_syntaxes_enumerate_v2:
+ * raptor_world_enumerate_parsers:
  * @world: raptor_world object
  * @counter: index into the list of syntaxes
  * @name: pointer to store the name of the syntax (or NULL)
@@ -402,11 +402,11 @@ raptor_get_parser_factory(raptor_world *world, const char *name)
  * Return value: non 0 on failure of if counter is out of range
  **/
 int
-raptor_syntaxes_enumerate_v2(raptor_world* world,
-                             const unsigned int counter,
-                             const char **name, const char **label,
-                             const char **mime_type,
-                             const unsigned char **uri_string)
+raptor_world_enumerate_parsers(raptor_world* world,
+                               const unsigned int counter,
+                               const char **name, const char **label,
+                               const char **mime_type,
+                               const unsigned char **uri_string)
 {
   raptor_parser_factory *factory;
 
@@ -437,7 +437,7 @@ raptor_syntaxes_enumerate_v2(raptor_world* world,
 
 
 /**
- * raptor_syntax_name_check_v2:
+ * raptor_world_is_parser_name:
  * @world: raptor_world object
  * @name: the syntax name
  *
@@ -446,13 +446,13 @@ raptor_syntaxes_enumerate_v2(raptor_world* world,
  * Return value: non 0 if name is a known syntax name
  */
 int
-raptor_syntax_name_check_v2(raptor_world* world, const char *name) {
+raptor_world_is_parser_name(raptor_world* world, const char *name) {
   return (raptor_get_parser_factory(world, name) != NULL);
 }
 
 
 /**
- * raptor_new_parser_v2:
+ * raptor_new_parser:
  * @world: raptor_world object
  * @name: the parser name
  *
@@ -461,7 +461,8 @@ raptor_syntax_name_check_v2(raptor_world* world, const char *name) {
  * Return value: a new #raptor_parser object or NULL on failure
  */
 raptor_parser*
-raptor_new_parser_v2(raptor_world* world, const char *name) {
+raptor_new_parser(raptor_world* world, const char *name)
+{
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
 
@@ -506,7 +507,7 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
 
 
 /**
- * raptor_new_parser_for_content_v2:
+ * raptor_new_parser_for_content:
  * @world: raptor_world object
  * @uri: URI identifying the syntax (or NULL)
  * @mime_type: mime type identifying the content (or NULL)
@@ -516,7 +517,7 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
  * 
  * Constructor - create a new raptor_parser.
  *
- * Uses raptor_guess_parser_name() to find a parser by scoring
+ * Uses raptor_world_guess_parser_name() to find a parser by scoring
  * recognition of the syntax by a block of characters, the content
  * identifier or a mime type.  The content identifier is typically a
  * filename or URI or some other identifier.
@@ -524,13 +525,16 @@ raptor_new_parser_v2(raptor_world* world, const char *name) {
  * Return value: a new #raptor_parser object or NULL on failure
  **/
 raptor_parser*
-raptor_new_parser_for_content_v2(raptor_world* world,
-                                 raptor_uri *uri, const char *mime_type,
-                                 const unsigned char *buffer, size_t len,
-                                 const unsigned char *identifier)
+raptor_new_parser_for_content(raptor_world* world,
+                              raptor_uri *uri, const char *mime_type,
+                              const unsigned char *buffer, size_t len,
+                              const unsigned char *identifier)
 {
-  return raptor_new_parser_v2(world,
-                              raptor_guess_parser_name_v2(world, uri, mime_type, buffer, len, identifier));
+  const char* name;
+
+  name = raptor_world_guess_parser_name(world, uri, mime_type,
+                                        buffer, len, identifier);
+  return name ? raptor_new_parser(world, name) : NULL;
 }
 
 
@@ -1705,7 +1709,7 @@ compare_syntax_score(const void *a, const void *b) {
   
 
 /**
- * raptor_guess_parser_name_v2:
+ * raptor_world_guess_parser_name:
  * @world: raptor_world object
  * @uri: URI identifying the syntax (or NULL)
  * @mime_type: mime type identifying the content (or NULL)
@@ -1722,10 +1726,10 @@ compare_syntax_score(const void *a, const void *b) {
  * Return value: a parser name or NULL if no guess could be made
  **/
 const char*
-raptor_guess_parser_name_v2(raptor_world* world,
-                            raptor_uri *uri, const char *mime_type,
-                            const unsigned char *buffer, size_t len,
-                            const unsigned char *identifier)
+raptor_world_guess_parser_name(raptor_world* world,
+                               raptor_uri *uri, const char *mime_type,
+                               const unsigned char *buffer, size_t len,
+                               const unsigned char *identifier)
 {
   unsigned int i;
   raptor_parser_factory *factory;

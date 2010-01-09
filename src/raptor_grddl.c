@@ -582,7 +582,8 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
     
     RAPTOR_DEBUG3("Parser %p: Allocating new internal %s parser.\n",
                   rdf_parser, parser_name);
-    grddl_parser->internal_parser = raptor_new_parser_v2(rdf_parser->world, parser_name);
+    grddl_parser->internal_parser = raptor_new_parser(rdf_parser->world,
+                                                      parser_name);
     if(!grddl_parser->internal_parser) {
       raptor_parser_error(rdf_parser, "Failed to create %s parser",
                           parser_name);
@@ -748,9 +749,9 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     strncpy((char*)sheet->mediaType, "application/rdf+xml",20);
   }
   
-  parser_name = raptor_guess_parser_name_v2(rdf_parser->world,
-                                          NULL, (const char*)sheet->mediaType,
-                                          doc_txt, doc_txt_len, NULL);
+  parser_name = raptor_world_guess_parser_name(rdf_parser->world, NULL,
+                                               (const char*)sheet->mediaType,
+                                               doc_txt, doc_txt_len, NULL);
   if(!parser_name) {
     RAPTOR_DEBUG3("Parser %p: Guessed no parser from mime type '%s' and content - ending",
                   rdf_parser, sheet->mediaType);

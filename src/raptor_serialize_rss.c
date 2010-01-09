@@ -1440,7 +1440,7 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
     raptor_xml_writer_start_element(xml_writer, root_element);
   }
   
-  ser = raptor_new_serializer_v2(rss_serializer->world, "rdfxml-abbrev");
+  ser = raptor_new_serializer(rss_serializer->world, "rdfxml-abbrev");
   if(!ser)
     goto oom;
   
