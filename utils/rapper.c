@@ -540,7 +540,7 @@ main(int argc, char *argv[])
 
       case 'o':
         if(optarg) {
-          if(raptor_serializer_syntax_name_check_v2(world, optarg))
+          if(raptor_world_is_serializer_name(world, optarg))
             serializer_syntax_name = optarg;
           else {
             int i;
@@ -551,7 +551,9 @@ main(int argc, char *argv[])
             for(i = 0; 1; i++) {
               const char *help_name;
               const char *help_label;
-              if(raptor_serializers_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
+              if(raptor_world_enumerate_serializers(world, i,
+                                                    &help_name, &help_label,
+                                                    NULL, NULL))
                 break;
               fprintf(stderr, "  %-14s for %s\n", help_name, help_label);
             }
@@ -569,7 +571,7 @@ main(int argc, char *argv[])
         
       case 'i':
         if(optarg) {
-          if(raptor_syntax_name_check_v2(world, optarg))
+          if(raptor_world_is_parser_name(world, optarg))
             syntax_name = optarg;
           else {
             int i;
@@ -580,7 +582,9 @@ main(int argc, char *argv[])
             for(i = 0; 1; i++) {
               const char *help_name;
               const char *help_label;
-              if(raptor_syntaxes_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
+              if(raptor_world_enumerate_parsers(world, i,
+                                                &help_name, &help_label,
+                                                NULL, NULL))
                 break;
               fprintf(stderr, "  %-14s for %s\n", help_name, help_label);
             }
@@ -676,7 +680,8 @@ main(int argc, char *argv[])
     for(i = 0; 1; i++) {
       const char *help_name;
       const char *help_label;
-      if(raptor_syntaxes_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
+      if(raptor_world_enumerate_parsers(world, i, &help_name, &help_label,
+                                        NULL, NULL))
         break;
       printf("    %-14s  %s", help_name, help_label);
       if(!i)
@@ -691,7 +696,8 @@ main(int argc, char *argv[])
     for(i = 0; 1; i++) {
       const char *help_name;
       const char *help_label;
-      if(raptor_serializers_enumerate_v2(world, i, &help_name, &help_label, NULL, NULL))
+      if(raptor_world_enumerate_serializers(world, i, &help_name, &help_label,
+                                            NULL, NULL))
         break;
       printf("    %-14s  %s", help_name, help_label);
       if(!i)
@@ -800,7 +806,7 @@ main(int argc, char *argv[])
   if(guess)
     syntax_name="guess";
 
-  rdf_parser = raptor_new_parser_v2(world, syntax_name);
+  rdf_parser = raptor_new_parser(world, syntax_name);
   if(!rdf_parser) {
     fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
             syntax_name);
@@ -870,7 +876,7 @@ main(int argc, char *argv[])
                 program, serializer_syntax_name);
     }
 
-    serializer = raptor_new_serializer_v2(world, serializer_syntax_name);
+    serializer = raptor_new_serializer(world, serializer_syntax_name);
     if(!serializer) {
       fprintf(stderr, 
               "%s: Failed to create raptor serializer type %s\n", program,
