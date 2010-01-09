@@ -699,12 +699,8 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
   handler_data = world->error_handlers.handlers[level].user_data;
 
   if(handler)
-    /* This is the place in raptor that MOST of the user error handler
-     * functions are called.  Not all, since things that use
-     * raptor_simple_message_handler are called in their respective codes.
-     *
-     * FIXME: In future, this should be the only place but it requires
-     * a public API change such as e.g. raptor_new_qname()
+    /* This is the place in raptor that ALL of the user error handler
+     * functions are called.
      */
     handler(handler_data, locator, message);
   else {
