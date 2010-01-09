@@ -1140,7 +1140,7 @@ raptor_uri* raptor_www_get_final_uri(raptor_www* www);
 
 /* raptor_qname - XML qnames */
 RAPTOR_API
-raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value, raptor_simple_message_handler error_handler, void *error_data);
+raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value);
 RAPTOR_API
 raptor_qname* raptor_new_qname_from_namespace_local_name_v2(raptor_world* world, raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
 RAPTOR_API

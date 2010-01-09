@@ -1227,8 +1227,7 @@ raptor_rss10_emit_atom_triples_map(raptor_serializer *serializer, int is_feed,
     ruri_string = raptor_uri_to_relative_uri_string_v2(serializer->world, base_uri, serializer->world->rss_fields_info_uris[to_f]);
     at_map_attrs[0] = raptor_new_qname(rss_serializer->nstack, 
                                      (const unsigned char*)"property", 
-                                     ruri_string,
-                                     NULL, NULL); /* errors */
+                                     ruri_string);
     raptor_free_memory(ruri_string);
     raptor_xml_element_set_attributes(at_map_element, at_map_attrs, 1);
     
@@ -1278,14 +1277,12 @@ raptor_rss10_emit_atom_feed(raptor_serializer *serializer,
                                                      base_uri, item->uri);
 
   atom_link_attrs[0] = raptor_new_qname(rss_serializer->nstack, 
-                                      (const unsigned char*)"href", 
-                                      ruri_string,
-                                      NULL, NULL); /* errors */
+                                        (const unsigned char*)"href", 
+                                        ruri_string);
   raptor_free_memory(ruri_string);
   atom_link_attrs[1] = raptor_new_qname(rss_serializer->nstack, 
-                                      (const unsigned char*)"rel", 
-                                      (const unsigned char*)"self",
-                                      NULL, NULL); /* errors */
+                                        (const unsigned char*)"rel", 
+                                        (const unsigned char*)"self");
   raptor_xml_element_set_attributes(atom_link_element, atom_link_attrs, 2);
   
   raptor_xml_writer_empty_element(xml_writer, atom_link_element);

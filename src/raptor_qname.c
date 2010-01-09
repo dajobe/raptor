@@ -86,8 +86,6 @@
  * @nstack: namespace stack to look up for namespaces
  * @name: element or attribute name
  * @value: attribute value (else is an element)
- * @error_handler: function to call on an error
- * @error_data: user data for error function
  *
  * Constructor - create a new XML qname.
  * 
@@ -101,9 +99,7 @@
 raptor_qname*
 raptor_new_qname(raptor_namespace_stack *nstack, 
                  const unsigned char *name,
-                 const unsigned char *value,
-                 raptor_simple_message_handler error_handler,
-                 void *error_data)
+                 const unsigned char *value)
 {
   raptor_qname* qname;
   const unsigned char *p;
@@ -191,8 +187,8 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
     if(!ns) {
       /* failed to find namespace - now what? */
-      if(error_handler)
-        error_handler((raptor_parser*)error_data, "The namespace prefix in \"%s\" was not declared.", name);
+      raptor_log_error_formatted(qname->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                 "The namespace prefix in \"%s\" was not declared.", name);
     } else {
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG3("Found namespace prefix %s URI %s\n", ns->prefix, raptor_uri_as_string_v2(nstack->world, ns->uri));

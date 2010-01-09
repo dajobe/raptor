@@ -515,9 +515,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       if(statement->object.literal_language) {
         attrs[attrs_count] = raptor_new_qname(context->nstack,
                                             (unsigned char*)"xml:lang",
-                                            (unsigned char*)statement->object.literal_language,
-                                            (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                            serializer);
+                                            (unsigned char*)statement->object.literal_language);
         if(!attrs[attrs_count])
           goto oom;
         attrs_count++;

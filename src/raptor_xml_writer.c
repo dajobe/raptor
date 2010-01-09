@@ -1175,19 +1175,17 @@ main(int argc, char *argv[])
   raptor_xml_writer_cdata(xml_writer, (const unsigned char*)"\n");
 
   el_name = raptor_new_qname(nstack, 
-                           (const unsigned char*)"blah", 
-                           NULL, /* no attribute value - element */
-                           NULL, NULL); /* errors */
+                             (const unsigned char*)"blah", 
+                             NULL /* no attribute value - element */);
   base_uri_copy = base_uri ? raptor_uri_copy_v2(world, base_uri) : NULL;
   element = raptor_new_xml_element(el_name,
-                                  NULL, /* language */
-                                  base_uri_copy);
+                                   NULL, /* language */
+                                   base_uri_copy);
 
   attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
   attrs[0] = raptor_new_qname(nstack, 
-                            (const unsigned char*)"a",
-                            (const unsigned char*)"b", /* attribute value */
-                            NULL, NULL); /* errors */
+                              (const unsigned char*)"a",
+                              (const unsigned char*)"b" /* attribute value */);
   raptor_xml_element_set_attributes(element, attrs, 1);
 
   raptor_xml_writer_empty_element(xml_writer, element);

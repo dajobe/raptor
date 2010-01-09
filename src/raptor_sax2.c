@@ -891,8 +891,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
 
 
   /* Create new element structure */
-  el_name = raptor_new_qname(&sax2->namespaces, name, NULL,
-                           (raptor_simple_message_handler)raptor_sax2_simple_error, sax2);
+  el_name = raptor_new_qname(&sax2->namespaces, name, NULL);
   if(!el_name)
     goto fail;
 
@@ -930,9 +929,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         continue;
 
       /* namespace-name[i] stored in named_attrs[i] */
-      attr = raptor_new_qname(&sax2->namespaces,
-                            atts[i<<1], atts[(i<<1)+1],
-                            (raptor_simple_message_handler)raptor_sax2_simple_error, sax2);
+      attr = raptor_new_qname(&sax2->namespaces, atts[i<<1], atts[(i<<1)+1]);
       if(!attr) { /* failed - tidy up and return */
         int j;
 
