@@ -363,8 +363,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     if(!raptor_uri_equals_v2(serializer->world,
                              predicate->value.resource.uri, 
                              context->rdf_first_uri)) {
-      raptor_serializer_error(serializer,
-                              "Malformed collection - first predicate is not rdf:first");
+      raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                       "Malformed collection - first predicate is not rdf:first");
       return 1;
     }
     
@@ -403,8 +403,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     object = nodes[1];
 
     if(!raptor_uri_equals_v2(serializer->world, predicate->value.resource.uri, context->rdf_rest_uri)) {
-      raptor_serializer_error(serializer,
-                              "Malformed collection - second predicate is not rdf:rest");
+      raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                       "Malformed collection - second predicate is not rdf:rest");
       return 1;
     }
     
@@ -413,8 +413,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
 					   object->value.blank.string);
 
       if(!subject) {
-        raptor_serializer_error(serializer,
-                            "Malformed collection - could not find subject for rdf:rest");
+        raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                         "Malformed collection - could not find subject for rdf:rest");
         return 1;
       }
 
@@ -429,8 +429,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     } else {
       if(object->type != RAPTOR_TERM_TYPE_URI ||
          !raptor_uri_equals_v2(serializer->world, object->value.resource.uri, context->rdf_nil_uri)) {
-        raptor_serializer_error(serializer,
-                                "Malformed collection - last rdf:rest resource is not rdf:nil");
+        raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                         "Malformed collection - last rdf:rest resource is not rdf:nil");
         return 1;
       }
       break;
@@ -1014,9 +1014,9 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
 
   if(!(statement->subject.type == RAPTOR_TERM_TYPE_URI ||
        statement->subject.type == RAPTOR_TERM_TYPE_BLANK)) {
-    raptor_serializer_error(serializer,
-                            "Do not know how to serialize node type %d\n",
-                            statement->subject.type);
+    raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Do not know how to serialize node type %d",
+                               statement->subject.type);
     return 1;
   }  
 
@@ -1034,9 +1034,9 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   if(!(object_type == RAPTOR_TERM_TYPE_URI ||
        object_type == RAPTOR_TERM_TYPE_BLANK ||
        object_type == RAPTOR_TERM_TYPE_LITERAL)) {
-    raptor_serializer_error(serializer,
-                            "Cannot serialize a triple with object node type %d\n",
-                            object_type);
+    raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Cannot serialize a triple with object node type %d",
+                               object_type);
     return 1;
   }
 
@@ -1059,16 +1059,16 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
 	      
     rv = raptor_abbrev_subject_add_property(subject, predicate, object);
     if(rv < 0) {
-      raptor_serializer_error(serializer,
-                              "Unable to add properties to subject %p\n",
-                              subject);
+      raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                 "Unable to add properties to subject %p",
+                                 subject);
       return rv;
     }
   
   } else {
-    raptor_serializer_error(serializer,
-                            "Do not know how to serialize node type %d\n",
-                            statement->predicate.type);
+    raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Do not know how to serialize node type %d",
+                               statement->predicate.type);
     return 1;
   }
   

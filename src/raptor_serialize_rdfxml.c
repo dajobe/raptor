@@ -391,7 +391,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     }
 
     if(!name || (name == uri_string)) {
-      raptor_serializer_error(serializer, "Cannot split predicate URI %s into an XML qname - skipping statement", uri_string);
+      raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                 "Cannot split predicate URI %s into an XML qname - skipping statement", uri_string);
       rc = 0; /* skip but do not return an error */
       goto tidy;
     }
@@ -416,7 +417,9 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     }
     raptor_free_uri_v2(serializer->world, predicate_ns_uri);
   } else {
-    raptor_serializer_error(serializer, "Cannot serialize a triple with subject node type %d\n", statement->predicate.type);
+    raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Cannot serialize a triple with subject node type %d\n",
+                               statement->predicate.type);
     goto tidy;
   }
 
@@ -472,12 +475,14 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
-      raptor_serializer_error(serializer, "Cannot serialize a triple with a literal subject\n");
+      raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL, "Cannot serialize a triple with a literal subject\n");
       break;
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
-      raptor_serializer_error(serializer, "Cannot serialize a triple with subject node type %d\n", statement->subject.type);
+      raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                 "Cannot serialize a triple with subject node type %d",
+                                 statement->subject.type);
   }
 
   if(attrs_count) {
@@ -617,7 +622,9 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
-      raptor_serializer_error(serializer, "Cannot serialize a triple with object node type %d\n", object_type);
+      raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                 "Cannot serialize a triple with object node type %d",
+                                 object_type);
   }
 
   raptor_xml_writer_cdata_counted(xml_writer,
@@ -627,7 +634,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   goto tidy;
 
   oom:
-  raptor_serializer_error(serializer, "Out of memory\n");
+  raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_FATAL, NULL, 
+                   "Out of memory");
 
   tidy:
 

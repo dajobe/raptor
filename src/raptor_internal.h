@@ -821,12 +821,6 @@ int raptor_init_serializer_simple(raptor_world* world);
 int raptor_serializers_init(raptor_world* world);
 void raptor_serializers_finish(raptor_world* world);
 
-void raptor_serializer_error(raptor_serializer* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-void raptor_serializer_simple_error(void* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-void raptor_serializer_error_varargs(raptor_serializer* serializer, const char *message,  va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
-void raptor_serializer_warning(raptor_serializer* serializer, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-void raptor_serializer_warning_varargs(raptor_serializer* serializer, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
-
 /* raptor_serialize_rdfxmla.c */  
 int raptor_init_serializer_rdfxmla(raptor_world* world);
 

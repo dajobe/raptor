@@ -319,7 +319,8 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
 
   attrs_oom:
 
-  raptor_serializer_error(serializer, "Out of memory");
+  raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_FATAL, NULL,
+                   "Out of memory");
 
   /* attrs_count has not been incremented yet
    * and it points to the qname the allocation of which failed */
@@ -445,7 +446,8 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
       base_uri = raptor_uri_copy_v2(serializer->world, serializer->base_uri);
     element = raptor_new_xml_element(qname, NULL, base_uri);
     if(!element) {
-      raptor_serializer_error(serializer, "Out of memory");
+      raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_FATAL, NULL,
+                       "Out of memory");
       raptor_free_qname(qname);
       rv = 1; /* error */
       break;
@@ -569,9 +571,9 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
                                            &context->namespace_count,
                                            predicate);
     if(!qname) {
-      raptor_serializer_error(serializer,
-                              "Cannot split URI '%s' into an XML qname",
-                              raptor_uri_as_string_v2(serializer->world, predicate->value.resource.uri));
+      raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                 "Cannot split URI '%s' into an XML qname",
+                                 raptor_uri_as_string_v2(serializer->world, predicate->value.resource.uri));
       continue;
     }
     
@@ -616,7 +618,8 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   oom:
   if(iter)
     raptor_free_avltree_iterator(iter);
-  raptor_serializer_error(serializer, "Out of memory");
+  raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_FATAL, NULL,
+                   "Out of memory");
   return 1;
 }
 
@@ -677,10 +680,10 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
                                            subject->node_type);
     
     if(!qname) {
-      raptor_serializer_error(serializer,
-                              "Cannot split URI '%s' into an XML qname",
-                              raptor_uri_as_string_v2(serializer->world,
-                                                      subject->node_type->value.resource.uri));
+      raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                 "Cannot split URI '%s' into an XML qname",
+                                 raptor_uri_as_string_v2(serializer->world,
+                                                         subject->node_type->value.resource.uri));
       return 1;
     }
     
@@ -773,7 +776,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
   oom:
   if(element)
     raptor_free_xml_element(element);
-  raptor_serializer_error(serializer, "Out of memory");
+  raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,  "Out of memory");
   return 1;
 }
 
@@ -1302,7 +1305,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   return 0;
 
   oom:
-  raptor_serializer_error(serializer, "Out of memory");
+  raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,  "Out of memory");
   return 1;
 }
   
@@ -1324,9 +1327,9 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   
   if(!(statement->subject.type == RAPTOR_TERM_TYPE_URI ||
        statement->subject.type == RAPTOR_TERM_TYPE_BLANK)) {
-    raptor_serializer_error(serializer,
-                            "Cannot serialize a triple with subject node type %d\n",
-                            statement->subject.type);
+    raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Cannot serialize a triple with subject node type %d",
+                               statement->subject.type);
     return 1;
   }  
 
@@ -1343,9 +1346,9 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   if(!(object_type == RAPTOR_TERM_TYPE_URI ||
        object_type == RAPTOR_TERM_TYPE_BLANK ||
        object_type == RAPTOR_TERM_TYPE_LITERAL)) {
-    raptor_serializer_error(serializer,
-                            "Cannot serialize a triple with object node type %d\n",
-                            object_type);
+    raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Cannot serialize a triple with object node type %d",
+                               object_type);
     return 1;
   }
   
@@ -1421,18 +1424,18 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
       if(add_property) {
         rv = raptor_abbrev_subject_add_property(subject, predicate, object);
         if(rv < 0) {
-          raptor_serializer_error(serializer,
-                                  "Unable to add properties to subject %p\n",
-                                  subject);
+          raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                                     "Unable to add properties to subject %p",
+                                     subject);
           return rv;
         }
       }
     }
   
   } else {
-    raptor_serializer_error(serializer,
-                            "Cannot serialize a triple with predicate node type %d\n",
-                            statement->predicate.type);
+    raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Cannot serialize a triple with predicate node type %d",
+                               statement->predicate.type);
     return 1;
   }
   

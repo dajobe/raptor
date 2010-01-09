@@ -2065,7 +2065,8 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 #endif
 
   if(!rss_model->common[RAPTOR_RSS_CHANNEL]) {
-    raptor_serializer_error(serializer, "No RSS channel found");
+    raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                     "No RSS channel found");
     return 1;
   }
   

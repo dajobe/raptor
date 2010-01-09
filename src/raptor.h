@@ -639,9 +639,7 @@ typedef void (*raptor_simple_message_handler)(void *user_data, const char *messa
  * Used during parsing and serializing for errors and warnings that
  * may include location information. Multiple handlers may be set for
  * parsers and serializers by raptor_world_set_fatal_error_handler(),
- * raptor_world_set_error_handler(), raptor_world_set_warning_handler(),
- * raptor_serializer_set_error_handler() and
- * raptor_serializer_set_warning_handler().
+ * raptor_world_set_error_handler(), raptor_world_set_warning_handler().
  *
  */
 typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
@@ -938,10 +936,6 @@ RAPTOR_API
 int raptor_serialize_end(raptor_serializer *rdf_serializer);
 RAPTOR_API
 raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
-RAPTOR_API
-void raptor_serializer_set_error_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
-RAPTOR_API
-void raptor_serializer_set_warning_handler(raptor_serializer* serializer, void *user_data, raptor_message_handler handler);
 RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 RAPTOR_API
