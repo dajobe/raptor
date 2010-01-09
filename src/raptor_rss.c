@@ -1237,7 +1237,7 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
 static int
 raptor_rss_emit_connection(raptor_parser* rdf_parser,
                            raptor_identifier *subject_identifier,
-                           raptor_uri predicate_uri, int predicate_ordinal,
+                           raptor_uri* predicate_uri, int predicate_ordinal,
                            raptor_identifier *object_identifier) 
 {
   raptor_rss_parser* rss_parser = (raptor_rss_parser*)rdf_parser->context;
