@@ -61,9 +61,6 @@ struct raptor_json_writer_s {
 
   raptor_uri* base_uri;
   
-  raptor_simple_message_handler error_handler;
-  void *error_data;
-
   /* outputting to this iostream */
   raptor_iostream *iostr;
 
@@ -88,8 +85,6 @@ struct raptor_json_writer_s {
  * @world: raptor_world object
  * @base_uri: Base URI for the writer
  * @iostr: I/O stream to write to
- * @error_handler: error handler function
- * @error_data: error handler data
  * 
  * INTERNAL - Constructor - Create a new JSON writer writing to a raptor_iostream
  * 
@@ -98,9 +93,7 @@ struct raptor_json_writer_s {
 raptor_json_writer*
 raptor_new_json_writer(raptor_world* world,
                        raptor_uri* base_uri,
-                       raptor_iostream* iostr,
-                       raptor_simple_message_handler error_handler,
-                       void *error_data)
+                       raptor_iostream* iostr)
 {
   raptor_json_writer* json_writer;
 
@@ -110,8 +103,6 @@ raptor_new_json_writer(raptor_world* world,
     return NULL;
 
   json_writer->world = world;
-  json_writer->error_handler = error_handler;
-  json_writer->error_data = error_data;
   json_writer->iostr = iostr;
   json_writer->base_uri = base_uri;
 

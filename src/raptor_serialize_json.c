@@ -122,10 +122,8 @@ raptor_json_serialize_start(raptor_serializer* serializer)
   base_uri = (serializer->feature_relative_uris) ? serializer->base_uri : NULL;
   
   context->json_writer = raptor_new_json_writer(serializer->world,
-                                              base_uri,
-                                              serializer->iostream,
-                                              (raptor_simple_message_handler)raptor_serializer_simple_error,
-                                              serializer);
+                                                base_uri,
+                                                serializer->iostream);
   if(!context->json_writer)
     return 1;
 
