@@ -115,28 +115,36 @@ raptor_iostream_write_string_ntriples(raptor_iostream *iostr,
 }
 
 
-static void
-raptor_iostream_write_statement_part_ntriples(raptor_world* world,
-                                              raptor_iostream* iostr,
-                                              const void *term, 
-                                              raptor_term_type type,
-                                              raptor_uri* literal_datatype,
-                                              const unsigned char *literal_language) 
+/**
+ * raptor_iostream_write_term_ntriples:
+ * @iostr: raptor iostream
+ * @term: term to write
+ * 
+ * Write a #raptor_term formatted in N-Triples format to a #raptor_iostream
+ * 
+ **/
+void
+raptor_iostream_write_term_ntriples(raptor_iostream* iostr,
+                                    const raptor_term *term) 
 {
+  unsigned char *term_str;
   size_t len;
 
-  switch(type) {
+  switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
       raptor_iostream_write_byte(iostr, '"');
-      raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, strlen((const char*)term), '"');
+      raptor_iostream_write_string_ntriples(iostr, term->value,
+                                            strlen((const char*)term->value),
+                                            '"');
       raptor_iostream_write_byte(iostr, '"');
-      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
+      if(term->literal_language) {
         raptor_iostream_write_byte(iostr, '@');
-        raptor_iostream_write_string(iostr, literal_language);
+        raptor_iostream_write_string(iostr, term->literal_language);
       }
-      if(literal_datatype) {
+      if(term->literal_datatype) {
         raptor_iostream_write_counted_string(iostr, "^^<", 3);
-        raptor_iostream_write_string(iostr, raptor_uri_as_string((raptor_uri*)literal_datatype));
+        raptor_iostream_write_string(iostr,
+                                     raptor_uri_as_string(term->literal_datatype));
         raptor_iostream_write_byte(iostr, '>');
       }
 
@@ -144,26 +152,25 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
       
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_iostream_write_counted_string(iostr, "_:", 2);
-      raptor_iostream_write_string(iostr, term);
+      raptor_iostream_write_string(iostr, term->value);
       break;
       
     case RAPTOR_TERM_TYPE_URI:
       raptor_iostream_write_byte(iostr, '<');
-      term = raptor_uri_as_counted_string((raptor_uri*)term, &len);
-      raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, len, '>');
+      term_str = raptor_uri_as_counted_string((raptor_uri*)term->value, &len);
+      raptor_iostream_write_string_ntriples(iostr, term_str, len, '>');
       raptor_iostream_write_byte(iostr, '>');
       break;
       
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
-      RAPTOR_FATAL2("Unknown type %d", type);
+      RAPTOR_FATAL2("Unknown raptor_term type %d", term->type);
   }
 }
 
 
 /**
- * raptor_iostream_write_statement_ntriples_v2:
- * @world: raptor_world object
+ * raptor_iostream_write_statement_ntriples:
  * @iostr: raptor iostream
  * @statement: statement to write
  * 
@@ -171,28 +178,14 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
  * 
  **/
 void
-raptor_iostream_write_statement_ntriples_v2(raptor_world* world,
-                                            raptor_iostream* iostr,
-                                            const raptor_statement *statement)
+raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
+                                         const raptor_statement *statement)
 {
-  raptor_iostream_write_statement_part_ntriples(world,
-                                                iostr,
-                                                statement->subject.value,
-                                                statement->subject.type,
-                                                NULL, NULL);
+  raptor_iostream_write_term_ntriples(iostr, &statement->subject);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_statement_part_ntriples(world,
-                                                iostr,
-                                                statement->predicate.value,
-                                                statement->predicate.type,
-                                                NULL, NULL);
+  raptor_iostream_write_term_ntriples(iostr, &statement->predicate);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_statement_part_ntriples(world,
-                                                iostr,
-                                                statement->object.value,
-                                                statement->object.type,
-                                                statement->object.literal_datatype,
-                                                statement->object.literal_language);
+  raptor_iostream_write_term_ntriples(iostr, &statement->object);
   raptor_iostream_write_counted_string(iostr, " .\n", 3);
 }
 
@@ -202,7 +195,7 @@ static int
 raptor_ntriples_serialize_statement(raptor_serializer* serializer, 
                                     const raptor_statement *statement)
 {
-  raptor_iostream_write_statement_ntriples_v2(serializer->world, serializer->iostream, statement);
+  raptor_iostream_write_statement_ntriples(serializer->iostream, statement);
   return 0;
 }
 
