@@ -329,7 +329,7 @@ EXPONENT [eE][+-]?[0-9]+
                     YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   uri_string = raptor_stringbuffer_as_string(sb);
-                  turtle_parser_lval->uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, rdf_parser->base_uri, uri_string);
+                  turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
                   if(!turtle_parser_lval->uri) {
                     raptor_free_stringbuffer(sb);
                     TURTLE_LEXER_OOM();

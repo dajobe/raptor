@@ -182,10 +182,10 @@ raptor_new_turtle_writer(raptor_world* world,
     raptor_turtle_writer_base(turtle_writer, base_uri);
   turtle_writer->base_uri = base_uri;
 
-  turtle_writer->xsd_boolean_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  turtle_writer->xsd_decimal_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
-  turtle_writer->xsd_double_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  turtle_writer->xsd_integer_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  turtle_writer->xsd_boolean_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  turtle_writer->xsd_decimal_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  turtle_writer->xsd_double_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  turtle_writer->xsd_integer_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   
   return turtle_writer;
 }
@@ -922,7 +922,7 @@ main(int argc, char *argv[])
 
   nstack = raptor_new_namespaces_v2(world, 1);
 
-  base_uri = raptor_new_uri_v2(world, base_uri_string);
+  base_uri = raptor_new_uri(world, base_uri_string);
 
   turtle_writer = raptor_new_turtle_writer(world, base_uri, 1, nstack, iostr);
   if(!turtle_writer) {
@@ -964,7 +964,7 @@ main(int argc, char *argv[])
 
   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
 
-  datatype = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  datatype = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   raptor_turtle_writer_literal(turtle_writer, nstack,
                                (const unsigned char*)"10.0", NULL,
                                datatype);

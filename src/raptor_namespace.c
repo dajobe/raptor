@@ -149,11 +149,11 @@ raptor_namespaces_init_v2(raptor_world* world,
 
   nstack->def_namespace = NULL;
 
-  nstack->rdf_ms_uri = raptor_new_uri_v2(nstack->world,
+  nstack->rdf_ms_uri = raptor_new_uri(nstack->world,
                                          (const unsigned char*)raptor_rdf_namespace_uri);
   failures += !nstack->rdf_ms_uri;
    
-  nstack->rdf_schema_uri = raptor_new_uri_v2(nstack->world,
+  nstack->rdf_schema_uri = raptor_new_uri(nstack->world,
                                              (const unsigned char*)raptor_rdf_schema_namespace_uri);
   failures += !nstack->rdf_schema_uri;
 
@@ -591,7 +591,7 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
     ns_uri_string = NULL;
 
   if(ns_uri_string) {
-    ns_uri = raptor_new_uri_v2(nstack->world, ns_uri_string);
+    ns_uri = raptor_new_uri(nstack->world, ns_uri_string);
     if(!ns_uri)
       return NULL;
   }

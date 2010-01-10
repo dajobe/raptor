@@ -498,7 +498,7 @@ verb: predicate
   printf("verb predicate = rdf:type (a)\n");
 #endif
 
-  uri = raptor_new_uri_for_rdf_concept_v2(((raptor_parser*)rdf_parser)->world, "type");
+  uri = raptor_new_uri_for_rdf_concept(((raptor_parser*)rdf_parser)->world, "type");
   if(!uri)
     YYERROR;
   $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, uri, NULL, NULL, NULL, NULL);
@@ -820,7 +820,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   printf("resource integer=%s\n", $1);
 #endif
-  uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   if(!uri) {
     RAPTOR_FREE(cstring, $1);
     YYERROR;
@@ -835,7 +835,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   printf("resource double=%s\n", $1);
 #endif
-  uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
   if(!uri) {
     RAPTOR_FREE(cstring, $1);
     YYERROR;
@@ -850,7 +850,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   printf("resource decimal=%s\n", $1);
 #endif
-  uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   if(!uri) {
     RAPTOR_FREE(cstring, $1);
     YYERROR;
@@ -866,7 +866,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   fputs("resource boolean true\n", stderr);
 #endif
-  uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
   if(!uri)
     YYERROR;
   string = (unsigned char*)RAPTOR_MALLOC(cstring, 5);
@@ -886,7 +886,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #if RAPTOR_DEBUG > 1  
   fputs("resource boolean false\n", stderr);
 #endif
-  uri = raptor_new_uri_v2(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
   if(!uri)
     YYERROR;
   string = (unsigned char*)RAPTOR_MALLOC(cstring, 6);
@@ -1289,9 +1289,9 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   if(raptor_namespaces_init_v2(rdf_parser->world, &turtle_parser->namespaces, 0))
     return 1;
 
-  turtle_parser->nil_uri = raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "nil");
-  turtle_parser->first_uri = raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "first");
-  turtle_parser->rest_uri = raptor_new_uri_for_rdf_concept_v2(rdf_parser->world, "rest");
+  turtle_parser->nil_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, "nil");
+  turtle_parser->first_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, "first");
+  turtle_parser->rest_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, "rest");
 
   if(!turtle_parser->nil_uri || !turtle_parser->first_uri || !turtle_parser->rest_uri)
     return 1;

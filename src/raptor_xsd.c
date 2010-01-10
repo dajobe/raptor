@@ -57,7 +57,7 @@ raptor_new_identifier_from_double(raptor_world* world, double d)
     sprintf((char*)string, "%1g.0", d);
   else
     sprintf((char*)string, "%1g", d);
-  uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
   return raptor_new_identifier_v2(world, RAPTOR_TERM_TYPE_LITERAL, NULL, NULL, string, uri, NULL);
 }
 

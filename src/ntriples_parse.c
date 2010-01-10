@@ -139,7 +139,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     statement->subject.value = subject;
   } else {
     /* must be RAPTOR_TERM_TYPE_URI */
-    subject_uri = raptor_new_uri_v2(parser->world, subject);
+    subject_uri = raptor_new_uri(parser->world, subject);
     if(!subject_uri) {
       raptor_parser_error(parser, "Could not create subject uri '%s', skipping", subject);
       goto cleanup;
@@ -148,7 +148,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   }
 
   if(object_literal_datatype) {
-    datatype_uri = raptor_new_uri_v2(parser->world, object_literal_datatype);
+    datatype_uri = raptor_new_uri(parser->world, object_literal_datatype);
     if(!datatype_uri) {
       raptor_parser_error(parser, "Could not create object literal datatype uri '%s', skipping", object_literal_datatype);
       goto cleanup;
@@ -163,7 +163,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate);
   }
   
-  predicate_uri = raptor_new_uri_v2(parser->world, predicate);
+  predicate_uri = raptor_new_uri(parser->world, predicate);
   if(!predicate_uri) {
     raptor_parser_error(parser, "Could not create predicate uri '%s', skipping", predicate);
     goto cleanup;
@@ -177,7 +177,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 
   statement->object.type = object_type;
   if(object_type == RAPTOR_TERM_TYPE_URI) {
-    object_uri = raptor_new_uri_v2(parser->world, (const unsigned char*)object);
+    object_uri = raptor_new_uri(parser->world, (const unsigned char*)object);
     if(!object_uri) {
       raptor_parser_error(parser, "Could not create object uri '%s', skipping", (const char *)object);
       goto cleanup;

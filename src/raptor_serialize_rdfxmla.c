@@ -882,7 +882,7 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                        (raptor_data_compare_function)raptor_abbrev_node_cmp,
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
-  rdf_type_uri = raptor_new_uri_for_rdf_concept_v2(serializer->world, "type");
+  rdf_type_uri = raptor_new_uri_for_rdf_concept(serializer->world, "type");
   if(rdf_type_uri) {    
     context->rdf_type = raptor_new_abbrev_node(serializer->world,
                                                RAPTOR_TERM_TYPE_URI,
@@ -890,7 +890,7 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
     raptor_free_uri_v2(serializer->world, rdf_type_uri);
   }
 
-  context->rdf_xml_literal_uri = raptor_new_uri_v2(serializer->world, raptor_xml_literal_datatype_uri_string);
+  context->rdf_xml_literal_uri = raptor_new_uri(serializer->world, raptor_xml_literal_datatype_uri_string);
 
   if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||

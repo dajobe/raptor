@@ -768,7 +768,7 @@ main(int argc, char *argv[])
 
       case 'u':
         if(optarg)
-          base_uri = raptor_new_uri_v2(world, (const unsigned char*)optarg);
+          base_uri = raptor_new_uri(world, (const unsigned char*)optarg);
         break;
 
     }
@@ -831,7 +831,7 @@ main(int argc, char *argv[])
   }
   
   if(from_string) {
-    from_uri = raptor_new_uri_v2(world, from_string);
+    from_uri = raptor_new_uri(world, from_string);
     if(!from_uri) {
       fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
       rv = 2;
@@ -840,7 +840,7 @@ main(int argc, char *argv[])
   }
   
   if(to_string) {
-    to_uri = raptor_new_uri_v2(world, to_string);
+    to_uri = raptor_new_uri(world, to_string);
     if(!to_uri) {
       fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
       rv = 2;

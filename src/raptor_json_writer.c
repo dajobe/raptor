@@ -107,10 +107,10 @@ raptor_new_json_writer(raptor_world* world,
   json_writer->base_uri = base_uri;
 
 #if RAPTOR_JSON_WRITER_DATATYPES == 1
-  json_writer->xsd_boolean_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  json_writer->xsd_decimal_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
-  json_writer->xsd_double_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  json_writer->xsd_integer_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
+  json_writer->xsd_boolean_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
+  json_writer->xsd_decimal_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  json_writer->xsd_double_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
+  json_writer->xsd_integer_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
 #endif
 
   json_writer->indent_step = 2;

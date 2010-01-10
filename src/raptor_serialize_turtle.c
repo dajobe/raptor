@@ -774,7 +774,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
                        (raptor_data_compare_function)raptor_abbrev_node_cmp,
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
-  rdf_type_uri = raptor_new_uri_for_rdf_concept_v2(serializer->world, "type");
+  rdf_type_uri = raptor_new_uri_for_rdf_concept(serializer->world, "type");
   if(rdf_type_uri) {
     context->rdf_type = raptor_new_abbrev_node(serializer->world,
                                                RAPTOR_TERM_TYPE_URI,
@@ -783,10 +783,10 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   } else
     context->rdf_type = NULL;
 
-  context->rdf_xml_literal_uri = raptor_new_uri_v2(serializer->world, raptor_xml_literal_datatype_uri_string);
-  context->rdf_first_uri = raptor_new_uri_v2(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
-  context->rdf_rest_uri = raptor_new_uri_v2(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
-  context->rdf_nil_uri = raptor_new_uri_v2(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+  context->rdf_xml_literal_uri = raptor_new_uri(serializer->world, raptor_xml_literal_datatype_uri_string);
+  context->rdf_first_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+  context->rdf_rest_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+  context->rdf_nil_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
   if(!context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||

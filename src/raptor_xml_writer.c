@@ -1127,7 +1127,7 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  base_uri = raptor_new_uri_v2(world, base_uri_string);
+  base_uri = raptor_new_uri(world, base_uri_string);
 
   foo_ns = raptor_new_namespace(nstack,
                               (const unsigned char*)"foo",

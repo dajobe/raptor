@@ -352,7 +352,7 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
   int offset = bfi->offset;
   if(attribute_type == RSS_BLOCK_FIELD_TYPE_URL) {
     raptor_uri* uri;
-    uri = raptor_new_uri_relative_to_base_v2(world, base_uri,
+    uri = raptor_new_uri_relative_to_base(world, base_uri,
                                              (const unsigned char*)string);
     block->urls[offset] = uri;
   } else if(attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
@@ -447,7 +447,7 @@ raptor_rss_start_element_handler(void *user_data,
         if(!strcmp(attrName, "about")) {
           if(update_item) {
             raptor_uri *new_uri;
-            update_item->uri = raptor_new_uri_v2(rdf_parser->world, attrValue);
+            update_item->uri = raptor_new_uri(rdf_parser->world, attrValue);
             new_uri = raptor_uri_copy_v2(rdf_parser->world, update_item->uri);
             raptor_set_identifier_uri(&update_item->identifier, new_uri);
           }
@@ -598,7 +598,7 @@ raptor_rss_start_element_handler(void *user_data,
             raptor_rss_item_add_field(update_item, RAPTOR_RSS_FIELD_GUID, field);
             if(!strcmp((const char*)attrValue, "true")) {
               RAPTOR_DEBUG2("    setting guid to URI '%s'\n", attrValue);
-              field->uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
+              field->uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri,
                                                               (const unsigned char*)attrValue);
             } else {
               size_t len = strlen((const char*)attrValue);
@@ -614,7 +614,7 @@ raptor_rss_start_element_handler(void *user_data,
           RAPTOR_DEBUG2("  setting href as URI string for type %s\n", raptor_rss_items_info[rss_parser->current_type].name);
           if(rss_element->uri)
             raptor_free_uri_v2(rdf_parser->world, rss_element->uri);
-          rss_element->uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri,
+          rss_element->uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri,
                                                                 (const unsigned char*)attrValue);
         }
       } else if(!strcmp((const char*)attrName, "type")) {
@@ -761,7 +761,7 @@ raptor_rss_end_element_handler(void *user_data,
       if(raptor_rss_fields_info[rss_parser->current_field].flags & 
          RAPTOR_RSS_INFO_FLAG_URI_VALUE) {
         RAPTOR_DEBUG4("Added URI %s to field %s of type %s\n", cdata, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_items_info[rss_parser->current_type].name);
-        field->uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri, cdata);
+        field->uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri, cdata);
       } else {
         RAPTOR_DEBUG4("Added text '%s' to field %s of type %s\n", cdata, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_items_info[rss_parser->current_type].name);
         field->uri = NULL;
@@ -982,7 +982,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
           for(field = item->fields[url_fields[f]]; field; field = field->next) {
             raptor_uri *new_uri;
             if(field->value)
-              new_uri = raptor_new_uri_v2(rdf_parser->world,
+              new_uri = raptor_new_uri(rdf_parser->world,
                                           (const unsigned char*)field->value);
             else if(field->uri)
               new_uri = raptor_uri_copy_v2(rdf_parser->world, field->uri);
@@ -1025,14 +1025,14 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
     } else {
       if(item->fields[RAPTOR_RSS_FIELD_LINK]) {
         if(item->fields[RAPTOR_RSS_FIELD_LINK]->value)
-          uri = raptor_new_uri_v2(rdf_parser->world,
+          uri = raptor_new_uri(rdf_parser->world,
                                   (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_LINK]->value);
         else if(item->fields[RAPTOR_RSS_FIELD_LINK]->uri)
           uri = raptor_uri_copy_v2(rdf_parser->world,
                                    item->fields[RAPTOR_RSS_FIELD_LINK]->uri);
       } else if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]) {
         if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value)
-          uri = raptor_new_uri_v2(rdf_parser->world,
+          uri = raptor_new_uri(rdf_parser->world,
                                   (const unsigned char*)item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->value);
         else if(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->uri)
           uri = raptor_uri_copy_v2(rdf_parser->world,

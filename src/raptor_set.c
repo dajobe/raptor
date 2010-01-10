@@ -273,7 +273,7 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
     
-  base_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://example.org/base#");
+  base_uri = raptor_new_uri(world, (const unsigned char*)"http://example.org/base#");
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating set\n", program);

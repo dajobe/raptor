@@ -908,15 +908,15 @@ void* raptor_calloc_memory(size_t nmemb, size_t size);
 
 /* URI functions */
 RAPTOR_API
-raptor_uri* raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string);
+raptor_uri* raptor_new_uri(raptor_world* world, const unsigned char *uri_string);
 RAPTOR_API
-raptor_uri* raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, const unsigned char *local_name);
+raptor_uri* raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri, const unsigned char *local_name);
 RAPTOR_API
-raptor_uri* raptor_new_uri_relative_to_base_v2(raptor_world* world, raptor_uri *base_uri, const unsigned char *uri_string);
+raptor_uri* raptor_new_uri_relative_to_base(raptor_world* world, raptor_uri *base_uri, const unsigned char *uri_string);
 RAPTOR_API
-raptor_uri* raptor_new_uri_from_id_v2(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
+raptor_uri* raptor_new_uri_from_id(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_rdf_concept_v2(raptor_world* world, const char *name);
+raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const char *name);
 RAPTOR_API
 void raptor_free_uri_v2(raptor_world* world, raptor_uri *uri);
 RAPTOR_API
@@ -930,9 +930,9 @@ unsigned char* raptor_uri_as_string_v2(raptor_world* world, raptor_uri *uri);
 RAPTOR_API
 unsigned char* raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t* len_p);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri);
+raptor_uri* raptor_new_uri_for_xmlbase(raptor_world* world, raptor_uri* old_uri);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri);
+raptor_uri* raptor_new_uri_for_retrieval(raptor_world* world, raptor_uri* old_uri);
 
 /* Identifier functions */
 RAPTOR_API

@@ -134,11 +134,11 @@ raptor_features_enumerate_common(raptor_world* world,
         *name=raptor_features_list[i].name;
       
       if(uri) {
-        raptor_uri *base_uri = raptor_new_uri_v2(world, (const unsigned char*)raptor_feature_uri_prefix);
+        raptor_uri *base_uri = raptor_new_uri(world, (const unsigned char*)raptor_feature_uri_prefix);
         if(!base_uri)
           return -1;
         
-        *uri=raptor_new_uri_from_uri_local_name_v2(world,
+        *uri=raptor_new_uri_from_uri_local_name(world,
                                                    base_uri,
                                                    (const unsigned char*)raptor_features_list[i].name);
         raptor_free_uri_v2(world, base_uri);

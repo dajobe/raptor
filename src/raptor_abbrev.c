@@ -774,7 +774,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     return NULL;
 
   c=*name; *name='\0';
-  ns_uri = raptor_new_uri_v2(node->world, uri_string);
+  ns_uri = raptor_new_uri(node->world, uri_string);
   if(!ns_uri)
     return NULL;
   

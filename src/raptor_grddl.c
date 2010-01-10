@@ -279,8 +279,8 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   /* Sequence of URIs from <head profile> */
   grddl_parser->profile_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, (void*)world);
 
-  grddl_parser->namespace_transformation_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#namespaceTransformation");
-  grddl_parser->profile_transformation_uri = raptor_new_uri_v2(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#profileTransformation");
+  grddl_parser->namespace_transformation_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#namespaceTransformation");
+  grddl_parser->profile_transformation_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#profileTransformation");
 
   /* Sequence of URIs visited - may be overwritten if this is not
    * the depth 0 grddl parser
@@ -1095,7 +1095,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
     
     
     if(base_uri_string) {
-      base_uri = raptor_new_uri_v2(rdf_parser->world, base_uri_string);
+      base_uri = raptor_new_uri(rdf_parser->world, base_uri_string);
       xmlFree(base_uri_string);
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG2("XML base URI of match is '%s'\n", raptor_uri_as_string_v2(rdf_parser->world, base_uri));
@@ -1128,7 +1128,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
         RAPTOR_DEBUG2("Got list match URI '%s'\n", start);
 #endif
         
-        uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world,
+        uri = raptor_new_uri_relative_to_base(rdf_parser->world,
                                                base_uri,
                                                (const unsigned char*)start);
         if(flags & MATCH_IS_PROFILE &&
@@ -1154,7 +1154,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       RAPTOR_DEBUG2("Got single match URI '%s'\n", uri_string);
 #endif
 
-      uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, base_uri, uri_string);
+      uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri, uri_string);
       xml_context = raptor_new_xml_context(rdf_parser->world, uri, base_uri);
       raptor_sequence_push(seq, xml_context);
       raptor_free_uri_v2(rdf_parser->world, uri);
@@ -1579,7 +1579,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       if(ns_uri_string) {
         grddl_xml_context* xml_context;
 
-        grddl_parser->root_ns_uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world,
+        grddl_parser->root_ns_uri = raptor_new_uri_relative_to_base(rdf_parser->world,
                                                                      rdf_parser->base_uri, 
                                                                      ns_uri_string);
         xml_context = raptor_new_xml_context(rdf_parser->world,
@@ -1744,7 +1744,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         raptor_free_sequence(result);
         result = raptor_new_sequence((raptor_sequence_free_handler*)grddl_free_xml_context, NULL);
         
-        uri = raptor_new_uri_relative_to_base_v2(rdf_parser->world, rdf_parser->base_uri, uri_string);
+        uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
 
         xml_context = raptor_new_xml_context(rdf_parser->world, uri, rdf_parser->base_uri);
         raptor_sequence_push(result, xml_context);

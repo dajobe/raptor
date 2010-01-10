@@ -879,8 +879,8 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         raptor_uri* base_uri;
         raptor_uri* xuri;
         base_uri = raptor_sax2_inscope_base_uri(sax2);
-        xuri = raptor_new_uri_relative_to_base_v2(sax2->world, base_uri, atts[i+1]);
-        xml_base = raptor_new_uri_for_xmlbase_v2(sax2->world, xuri);
+        xuri = raptor_new_uri_relative_to_base(sax2->world, base_uri, atts[i+1]);
+        xml_base = raptor_new_uri_for_xmlbase(sax2->world, xuri);
         raptor_free_uri_v2(sax2->world, xuri);
       }
 

@@ -67,7 +67,7 @@ int main (int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
 
-  uri = raptor_new_uri_v2(world, (const unsigned char*)uri_string);
+  uri = raptor_new_uri(world, (const unsigned char*)uri_string);
   if(!uri) {
     fprintf(stderr, "Failed to create Raptor URI for %s\n", uri_string);
     exit(1);

@@ -210,7 +210,7 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
 
   rss_serializer->nstack = raptor_new_namespaces_v2(serializer->world, 1);
 
-  rss_serializer->xml_literal_dt = raptor_new_uri_v2(serializer->world, raptor_xml_literal_datatype_uri_string);
+  rss_serializer->xml_literal_dt = raptor_new_uri(serializer->world, raptor_xml_literal_datatype_uri_string);
 
   return 0;
 }
@@ -332,7 +332,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
      * for this item, and to the group map (blank node closure)
      */
     if(s->object.type == RAPTOR_TERM_TYPE_BLANK) {
-      raptor_uri* fake_uri = raptor_new_uri_v2(rss_serializer->world, (const unsigned char*)s->object.value);
+      raptor_uri* fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->object.value);
       raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
       raptor_free_uri_v2(rss_serializer->world, fake_uri);
 
@@ -468,7 +468,7 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
       if(s->subject.type != RAPTOR_TERM_TYPE_BLANK)
         continue;
       
-      fake_uri = raptor_new_uri_v2(rss_serializer->world, (const unsigned char*)s->subject.value);
+      fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->subject.value);
       item = raptor_rss10_get_group_item(rss_serializer, fake_uri);
       raptor_free_uri_v2(rss_serializer->world, fake_uri);
       
@@ -482,7 +482,7 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
 #endif
 
         if(s->object.type == RAPTOR_TERM_TYPE_BLANK) {
-          fake_uri = raptor_new_uri_v2(rss_serializer->world, (const unsigned char*)s->object.value);
+          fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->object.value);
           raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
           raptor_free_uri_v2(rss_serializer->world, fake_uri);
         }
@@ -648,7 +648,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   int is_atom = rss_serializer->is_atom;
   raptor_uri* fake_uri;
   
-  fake_uri = raptor_new_uri_v2(rss_serializer->world, (const unsigned char*)s->subject.value);
+  fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->subject.value);
   item = raptor_rss10_get_group_item(rss_serializer, fake_uri);
   raptor_free_uri_v2(rss_serializer->world, fake_uri);
 
@@ -814,7 +814,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK) {
       RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",
                     (char*)statement->subject.value);
-      rss_serializer->seq_uri = raptor_new_uri_v2(rss_serializer->world,
+      rss_serializer->seq_uri = raptor_new_uri(rss_serializer->world,
                                                   (unsigned char*)statement->subject.value);
     } else {
       RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
@@ -946,7 +946,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
   
 
     if(s->subject.type == RAPTOR_TERM_TYPE_BLANK)
-      fake_uri = raptor_new_uri_v2(rss_serializer->world, (unsigned char*)s->subject.value);
+      fake_uri = raptor_new_uri(rss_serializer->world, (unsigned char*)s->subject.value);
     else
       fake_uri = raptor_uri_copy_v2(rss_serializer->world, (raptor_uri*)s->subject.value);
       
@@ -2032,7 +2032,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
     raptor_rss10_remove_mapped_fields(rss_serializer);
 
     if(serializer->feature_atom_entry_uri) {
-      entry_uri = raptor_new_uri_v2(rss_serializer->world, serializer->feature_atom_entry_uri);
+      entry_uri = raptor_new_uri(rss_serializer->world, serializer->feature_atom_entry_uri);
       for(i = 0; i < raptor_sequence_size(rss_serializer->items); i++) {
         raptor_rss_item* item;
         item = (raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);

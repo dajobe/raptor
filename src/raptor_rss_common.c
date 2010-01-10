@@ -313,7 +313,7 @@ raptor_rss_common_init(raptor_world* world) {
   for(i = 0; i < RAPTOR_RSS_NAMESPACES_SIZE;i++) {
     const char *uri_string = raptor_rss_namespaces_info[i].uri_string;
     if(uri_string) {
-      world->rss_namespaces_info_uris[i] = raptor_new_uri_v2(world, (const unsigned char*)uri_string);
+      world->rss_namespaces_info_uris[i] = raptor_new_uri(world, (const unsigned char*)uri_string);
       if(!world->rss_namespaces_info_uris[i])
         return -1;
     }
@@ -326,7 +326,7 @@ raptor_rss_common_init(raptor_world* world) {
     int n = raptor_rss_items_info[i].nspace;
     namespace_uri = world->rss_namespaces_info_uris[n];
     if(namespace_uri) {
-      world->rss_types_info_uris[i] = raptor_new_uri_from_uri_local_name_v2(world, namespace_uri, (const unsigned char*)raptor_rss_items_info[i].name);
+      world->rss_types_info_uris[i] = raptor_new_uri_from_uri_local_name(world, namespace_uri, (const unsigned char*)raptor_rss_items_info[i].name);
       if(!world->rss_types_info_uris[i])
         return -1;
     }
@@ -338,7 +338,7 @@ raptor_rss_common_init(raptor_world* world) {
   for(i = 0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
     namespace_uri = world->rss_namespaces_info_uris[raptor_rss_fields_info[i].nspace];
     if(namespace_uri) {
-      world->rss_fields_info_uris[i] = raptor_new_uri_from_uri_local_name_v2(world, namespace_uri,
+      world->rss_fields_info_uris[i] = raptor_new_uri_from_uri_local_name(world, namespace_uri,
                                                                            (const unsigned char*)raptor_rss_fields_info[i].name);
       if(!world->rss_fields_info_uris[i])
         return -1;
@@ -394,9 +394,9 @@ raptor_rss_model_init(raptor_world* world, raptor_rss_model* rss_model)
   rss_model->last = rss_model->items = NULL;
   rss_model->items_count = 0;
 
-  RAPTOR_RSS_RDF_type_URI(rss_model) = raptor_new_uri_for_rdf_concept_v2(world, "type");
-  RAPTOR_RSS_RDF_Seq_URI(rss_model) = raptor_new_uri_for_rdf_concept_v2(world, "Seq");
-  RAPTOR_RSS_RSS_items_URI(rss_model) = raptor_new_uri_relative_to_base_v2(world, world->rss_namespaces_info_uris[RSS1_0_NS], (const unsigned char*)"items");
+  RAPTOR_RSS_RDF_type_URI(rss_model) = raptor_new_uri_for_rdf_concept(world, "type");
+  RAPTOR_RSS_RDF_Seq_URI(rss_model) = raptor_new_uri_for_rdf_concept(world, "Seq");
+  RAPTOR_RSS_RSS_items_URI(rss_model) = raptor_new_uri_relative_to_base(world, world->rss_namespaces_info_uris[RSS1_0_NS], (const unsigned char*)"items");
 }
   
 

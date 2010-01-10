@@ -104,7 +104,7 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->namespaces = raptor_new_sequence(NULL, NULL);
 
-  context->rdf_xml_literal_uri = raptor_new_uri_v2(serializer->world, raptor_xml_literal_datatype_uri_string);
+  context->rdf_xml_literal_uri = raptor_new_uri(serializer->world, raptor_xml_literal_datatype_uri_string);
 
   if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||
      !context->rdf_xml_literal_uri) {
@@ -398,7 +398,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     }
 
     c=*name; *name='\0';
-    predicate_ns_uri = raptor_new_uri_v2(serializer->world, uri_string);
+    predicate_ns_uri = raptor_new_uri(serializer->world, uri_string);
     if(!predicate_ns_uri)
       goto oom;
     *name=c;

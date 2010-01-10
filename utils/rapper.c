@@ -767,7 +767,7 @@ main(int argc, char *argv[])
   }
 
   if(uri_string) {
-    uri = raptor_new_uri_v2(world, uri_string);
+    uri = raptor_new_uri(world, uri_string);
     if(!uri) {
       fprintf(stderr, "%s: Failed to create URI for %s\n",
               program, uri_string);
@@ -780,7 +780,7 @@ main(int argc, char *argv[])
   /* Set the input/parser base URI */
   if(base_uri_string) {
     if(strcmp((const char*)base_uri_string, "-")) {
-      base_uri = raptor_new_uri_v2(world, base_uri_string);
+      base_uri = raptor_new_uri(world, base_uri_string);
       if(!base_uri) {
         fprintf(stderr, "%s: Failed to create URI for %s\n",
                 program, base_uri_string);
@@ -798,7 +798,7 @@ main(int argc, char *argv[])
       output_base_uri = raptor_uri_copy_v2(world, base_uri);
   } else {
     if(strcmp((const char*)output_base_uri_string, "-")) {
-      output_base_uri = raptor_new_uri_v2(world, (const unsigned char*)output_base_uri_string);
+      output_base_uri = raptor_new_uri(world, (const unsigned char*)output_base_uri_string);
       if(!output_base_uri) {
         fprintf(stderr, "%s: Failed to create output base URI for %s\n",
                 program, output_base_uri_string);
@@ -896,7 +896,7 @@ main(int argc, char *argv[])
         struct namespace_decl *nd = (struct namespace_decl *)raptor_sequence_get_at(namespace_declarations, i);
         raptor_uri *ns_uri = NULL;
         if(nd->uri_string)
-          ns_uri = raptor_new_uri_v2(world, nd->uri_string);
+          ns_uri = raptor_new_uri(world, nd->uri_string);
         
         raptor_serialize_set_namespace(serializer, ns_uri, nd->prefix);
         if(ns_uri)

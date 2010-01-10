@@ -1255,7 +1255,7 @@ int rdfa_parse_start(rdfacontext* context)
    rdfa_init_context(context);
 
 #ifdef LIBRDFA_IN_RAPTOR
-   context->base_uri=raptor_new_uri_v2(context->sax2->world, (const unsigned char*)context->base);
+   context->base_uri=raptor_new_uri(context->sax2->world, (const unsigned char*)context->base);
    raptor_sax2_parse_start(context->sax2, context->base_uri);
 #endif
 

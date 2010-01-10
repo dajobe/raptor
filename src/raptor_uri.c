@@ -65,7 +65,7 @@
 
 
 /**
- * raptor_new_uri_v2:
+ * raptor_new_uri:
  * @world: raptor_world object
  * @uri_string: URI string.
  * 
@@ -74,7 +74,7 @@
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string) 
+raptor_new_uri(raptor_world* world, const unsigned char *uri_string) 
 {
   unsigned char *p;
   size_t len;
@@ -101,7 +101,7 @@ raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string)
           return NULL;
         *new_fragment='#';
         strcpy((char*)new_fragment+1, (const char*)fragment);
-        new_uri = raptor_new_uri_relative_to_base_v2(world, uri, new_fragment);
+        new_uri = raptor_new_uri_relative_to_base(world, uri, new_fragment);
         RAPTOR_FREE(cstring, new_fragment);
         raptor_free_uri_v2(world, uri);
         uri = new_uri;
@@ -125,7 +125,7 @@ raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string)
 
 
 /**
- * raptor_new_uri_from_uri_local_name_v2:
+ * raptor_new_uri_from_uri_local_name:
  * @world: raptor_world object
  * @uri: existing #raptor_uri
  * @local_name: local name
@@ -139,7 +139,7 @@ raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string)
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, const unsigned char *local_name)
+raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri, const unsigned char *local_name)
 {
   int uri_length;
   unsigned char *p;
@@ -161,7 +161,7 @@ raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, cons
 
 
 /**
- * raptor_new_uri_relative_to_base_v2:
+ * raptor_new_uri_relative_to_base:
  * @world: raptor_world object
  * @base_uri: existing base URI
  * @uri_string: relative URI string
@@ -171,7 +171,7 @@ raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, cons
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri_relative_to_base_v2(raptor_world* world,
+raptor_new_uri_relative_to_base(raptor_world* world,
                                    raptor_uri *base_uri, 
                                    const unsigned char *uri_string) 
 {
@@ -202,7 +202,7 @@ raptor_new_uri_relative_to_base_v2(raptor_world* world,
 
 
 /**
- * raptor_new_uri_from_id_v2:
+ * raptor_new_uri_from_id:
  * @world: raptor_world object
  * @base_uri: existing base URI
  * @id: RDF ID
@@ -215,7 +215,7 @@ raptor_new_uri_relative_to_base_v2(raptor_world* world,
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri_from_id_v2(raptor_world *world, raptor_uri *base_uri,
+raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
                           const unsigned char *id) 
 {
   raptor_uri *new_uri;
@@ -236,14 +236,14 @@ raptor_new_uri_from_id_v2(raptor_world *world, raptor_uri *base_uri,
     return NULL;
   *local_name='#';
   strcpy((char*)local_name+1, (char*)id);
-  new_uri = raptor_new_uri_relative_to_base_v2(world, base_uri, local_name);
+  new_uri = raptor_new_uri_relative_to_base(world, base_uri, local_name);
   RAPTOR_FREE(cstring, local_name);
   return new_uri;
 }
 
 
 /**
- * raptor_new_uri_for_rdf_concept_v2:
+ * raptor_new_uri_for_rdf_concept:
  * @world: raptor_world object
  * @name: RDF namespace concept
  * 
@@ -255,7 +255,7 @@ raptor_new_uri_from_id_v2(raptor_world *world, raptor_uri *base_uri,
  * Return value: a new #raptor_uri object or NULL on failure
  **/
 raptor_uri*
-raptor_new_uri_for_rdf_concept_v2(raptor_world* world, const char *name) 
+raptor_new_uri_for_rdf_concept(raptor_world* world, const char *name) 
 {
   raptor_uri *new_uri;
   const unsigned char *base_uri = raptor_rdf_namespace_uri;
@@ -760,7 +760,7 @@ raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
 
 
 /**
- * raptor_new_uri_for_xmlbase_v2:
+ * raptor_new_uri_for_xmlbase:
  * @world: raptor_world object
  * @old_uri: URI to transform
  *
@@ -772,7 +772,7 @@ raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
  * Return value: new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri)
+raptor_new_uri_for_xmlbase(raptor_world* world, raptor_uri* old_uri)
 {
   unsigned char *uri_string;
   unsigned char *new_uri_string;
@@ -800,7 +800,7 @@ raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri)
   if(!new_uri_string)
     return NULL;
   
-  new_uri = raptor_new_uri_v2(world, new_uri_string);
+  new_uri = raptor_new_uri(world, new_uri_string);
   RAPTOR_FREE(cstring, new_uri_string);
 
   return new_uri;
@@ -808,7 +808,7 @@ raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri)
 
 
 /**
- * raptor_new_uri_for_retrieval_v2:
+ * raptor_new_uri_for_retrieval:
  * @world: raptor_world object
  * @old_uri: URI to transform
  *
@@ -820,7 +820,7 @@ raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri)
  * Return value: new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri)
+raptor_new_uri_for_retrieval(raptor_world* world, raptor_uri* old_uri)
 {
   unsigned char *uri_string;
   unsigned char *new_uri_string;
@@ -847,7 +847,7 @@ raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri)
   if(!new_uri_string)
     return NULL;
   
-  new_uri = raptor_new_uri_v2(world, new_uri_string);
+  new_uri = raptor_new_uri(world, new_uri_string);
   RAPTOR_FREE(cstring, new_uri_string);
 
   return new_uri;
@@ -1303,7 +1303,7 @@ raptor_new_uri_from_rdf_ordinal(raptor_world* world, int ordinal)
           raptor_rdf_namespace_uri_len);
   sprintf((char*)uri_string+raptor_rdf_namespace_uri_len, "_%d",
           ordinal);
-  return raptor_new_uri_v2(world, uri_string);
+  return raptor_new_uri(world, uri_string);
 }
 
 
@@ -1375,11 +1375,11 @@ assert_uri_to_relative(raptor_world *world, const char *base, const char *uri, c
   unsigned char *output;
   int result;
   raptor_uri* base_uri = NULL;
-  raptor_uri* reference_uri = raptor_new_uri_v2(world, (const unsigned char*)uri);
+  raptor_uri* reference_uri = raptor_new_uri(world, (const unsigned char*)uri);
   size_t length = 0;
 
   if(base)
-    base_uri = raptor_new_uri_v2(world, (const unsigned char*)base);
+    base_uri = raptor_new_uri(world, (const unsigned char*)base);
   
   output = raptor_uri_to_relative_counted_uri_string_v2(world,
                                                       base_uri, reference_uri, 
@@ -1493,7 +1493,7 @@ main(int argc, char *argv[])
  
 #endif
 
-  uri1 = raptor_new_uri_v2(world, (const unsigned char*)base_uri);
+  uri1 = raptor_new_uri(world, (const unsigned char*)base_uri);
 
   str = raptor_uri_as_string_v2(world, uri1);
   if(strcmp((const char*)str, base_uri)) {
@@ -1503,7 +1503,7 @@ main(int argc, char *argv[])
     failures++;
   }
   
-  uri2 = raptor_new_uri_for_xmlbase_v2(world, uri1);
+  uri2 = raptor_new_uri_for_xmlbase(world, uri1);
   str = raptor_uri_as_string_v2(world, uri2);
   if(strcmp((const char*)str, base_uri_xmlbase)) {
     fprintf(stderr, 
@@ -1512,7 +1512,7 @@ main(int argc, char *argv[])
     failures++;
   }
   
-  uri3 = raptor_new_uri_for_retrieval_v2(world, uri1);
+  uri3 = raptor_new_uri_for_retrieval(world, uri1);
 
   str = raptor_uri_as_string_v2(world, uri3);
   if(strcmp((const char*)str, base_uri_retrievable)) {
@@ -1551,8 +1551,8 @@ main(int argc, char *argv[])
     raptor_uri* u1;
     raptor_uri* u2;
     
-    u1 = raptor_new_uri_v2(world, (const unsigned char *)"http://example.org/abc");
-    u2 = raptor_new_uri_v2(world, (const unsigned char *)"http://example.org/def");
+    u1 = raptor_new_uri(world, (const unsigned char *)"http://example.org/abc");
+    u2 = raptor_new_uri(world, (const unsigned char *)"http://example.org/def");
 
     ret = raptor_uri_compare_v2(world, u1, u2);
     if(!(ret < 0)) {
