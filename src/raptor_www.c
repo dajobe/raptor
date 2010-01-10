@@ -255,10 +255,10 @@ raptor_www_free(raptor_www* www)
 #endif
 
   if(www->uri)
-    raptor_free_uri_v2(www->world, www->uri);
+    raptor_free_uri(www->uri);
 
   if(www->final_uri)
-    raptor_free_uri_v2(www->world, www->final_uri);
+    raptor_free_uri(www->final_uri);
 
   RAPTOR_FREE(www, www);
 }
@@ -580,7 +580,7 @@ raptor_www_file_fetch(raptor_www* www)
 {
   char *filename;
   FILE *fh;
-  unsigned char *uri_string = raptor_uri_as_string_v2(www->world, www->uri);
+  unsigned char *uri_string = raptor_uri_as_string(www->uri);
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   struct stat buf;
 #endif
@@ -636,7 +636,7 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
 {
   int status = 1;
   
-  www->uri = raptor_new_uri_for_retrieval(www->world, uri);
+  www->uri = raptor_new_uri_for_retrieval(uri);
   
   www->locator.uri = uri;
   www->locator.line= -1;
@@ -650,7 +650,7 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   status = raptor_www_file_fetch(www);
 #else
 
-  if(raptor_uri_uri_string_is_file_uri(raptor_uri_as_string_v2(www->world, www->uri)))
+  if(raptor_uri_uri_string_is_file_uri(raptor_uri_as_string(www->uri)))
     status = raptor_www_file_fetch(www);
   else {
 #ifdef RAPTOR_WWW_LIBCURL
@@ -766,7 +766,7 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
 raptor_uri*
 raptor_www_get_final_uri(raptor_www* www) 
 {
-  return www->final_uri ? raptor_uri_copy_v2(www->world, www->final_uri) : NULL;
+  return www->final_uri ? raptor_uri_copy(www->final_uri) : NULL;
 }
 
 

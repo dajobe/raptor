@@ -205,13 +205,13 @@ raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
     raptor_free_namespaces(turtle_writer->nstack);
 
   if(turtle_writer->xsd_boolean_uri)
-    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_boolean_uri);
+    raptor_free_uri(turtle_writer->xsd_boolean_uri);
   if(turtle_writer->xsd_decimal_uri)
-    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_decimal_uri);
+    raptor_free_uri(turtle_writer->xsd_decimal_uri);
   if(turtle_writer->xsd_double_uri)
-    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_double_uri);
+    raptor_free_uri(turtle_writer->xsd_double_uri);
   if(turtle_writer->xsd_integer_uri)
-    raptor_free_uri_v2(turtle_writer->world, turtle_writer->xsd_integer_uri);
+    raptor_free_uri(turtle_writer->xsd_integer_uri);
 
   RAPTOR_FREE(raptor_turtle_writer, turtle_writer);
 }
@@ -320,7 +320,7 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
   unsigned char* uri_str;
   size_t length;
   
-  uri_str = raptor_uri_to_relative_counted_uri_string_v2(turtle_writer->world, turtle_writer->base_uri, uri, &length);
+  uri_str = raptor_uri_to_relative_counted_uri_string(turtle_writer->base_uri, uri, &length);
 
   raptor_iostream_write_byte(turtle_writer->iostr, '<');
   if(uri_str)
@@ -528,7 +528,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   /* typed literal special cases */
   if(datatype) {
     /* integer */
-    if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_integer_uri)) {
+    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri)) {
       /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
       long gcc_is_stupid = strtol((const char*)s, &endptr, 10);
       if(endptr != (char*)s && !*endptr) {
@@ -541,8 +541,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
 
     /* double, decimal */
-    } else if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_double_uri) ||
-      raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_decimal_uri)) {
+    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_double_uri) ||
+      raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
       /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
       double gcc_is_doubly_stupid = strtod((const char*)s, &endptr);
       if(endptr != (char*)s && !*endptr) {
@@ -555,7 +555,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
 
     /* boolean */
-    } else if(raptor_uri_equals_v2(turtle_writer->world, datatype, turtle_writer->xsd_boolean_uri)) {
+    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
         raptor_iostream_write_string(turtle_writer->iostr, "false");
         written = 1;
@@ -968,7 +968,7 @@ main(int argc, char *argv[])
   raptor_turtle_writer_literal(turtle_writer, nstack,
                                (const unsigned char*)"10.0", NULL,
                                datatype);
-  raptor_free_uri_v2(world, datatype);
+  raptor_free_uri(datatype);
 
   raptor_turtle_writer_newline(turtle_writer);
 
@@ -984,7 +984,7 @@ main(int argc, char *argv[])
 
   raptor_free_namespaces(nstack);
 
-  raptor_free_uri_v2(world, base_uri);
+  raptor_free_uri(base_uri);
 
   
   count = raptor_iostream_tell(iostr);

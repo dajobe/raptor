@@ -93,7 +93,7 @@ int main (int argc, char *argv[])
   
   raptor_www_free(www);
 
-  raptor_free_uri_v2(world, uri);
+  raptor_free_uri(uri);
 
   raptor_free_world(world);
   

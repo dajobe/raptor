@@ -77,13 +77,13 @@ raptor_new_identifier_v2(raptor_world* world,
                                                sizeof(raptor_identifier));
   if(!identifier) {
     if(uri)
-      raptor_free_uri_v2(world, uri);
+      raptor_free_uri(uri);
     if(id)
       RAPTOR_FREE(cstring, (void*)id);
     if(literal)
       RAPTOR_FREE(cstring, (void*)literal);
     if(literal_datatype)
-      raptor_free_uri_v2(world, literal_datatype);
+      raptor_free_uri(literal_datatype);
     if(literal_language)
       RAPTOR_FREE(cstring, (void*)literal_language);
 
@@ -141,7 +141,8 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
   dest->world = src->world;
   dest->type = src->type;
 
-  dest->uri = raptor_uri_copy_v2(src->world, src->uri);
+  if(src->uri)
+    dest->uri = raptor_uri_copy(src->uri);
 
   if(src->id) {
     len = strlen((char*)src->id);
@@ -165,7 +166,8 @@ raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src)
     strncpy((char*)dest->literal_language, (char*)src->literal_language, len+1);
   }
 
-  dest->literal_datatype = raptor_uri_copy_v2(src->world, src->literal_datatype);
+  if(src->literal_datatype)
+    dest->literal_datatype = raptor_uri_copy(src->literal_datatype);
 
   return 0;
 }
@@ -184,7 +186,7 @@ raptor_clear_identifier(raptor_identifier *identifier)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(identifier, raptor_identifier);
   
   if(identifier->uri) {
-    raptor_free_uri_v2(identifier->world, identifier->uri);
+    raptor_free_uri(identifier->uri);
     identifier->uri = NULL;
   }
 
@@ -199,7 +201,7 @@ raptor_clear_identifier(raptor_identifier *identifier)
   }
 
   if(identifier->literal_datatype) {
-    raptor_free_uri_v2(identifier->world, identifier->literal_datatype);
+    raptor_free_uri(identifier->literal_datatype);
     identifier->literal_datatype = NULL;
   }
 
@@ -263,12 +265,12 @@ raptor_identifier_print(FILE *stream, raptor_identifier *identifier)
       fprintf(stream, "@%s", identifier->literal_language);
     fputc('<', stream);
     if(identifier->literal_datatype)
-      fputs((const char*)raptor_uri_as_string_v2(identifier->world, identifier->literal_datatype), stream);
+      fputs((const char*)raptor_uri_as_string(identifier->literal_datatype), stream);
     fputc('>', stream);
   } else if(identifier->type == RAPTOR_TERM_TYPE_BLANK)
     fputs((const char*)identifier->id, stream);
   else {
-    fprintf(stream, "%s", raptor_uri_as_string_v2(identifier->world, identifier->uri));
+    fprintf(stream, "%s", raptor_uri_as_string(identifier->uri));
   }
 }
 #endif

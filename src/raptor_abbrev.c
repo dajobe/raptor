@@ -78,7 +78,7 @@ raptor_new_abbrev_node(raptor_world* world,
     
     switch (node_type) {
         case RAPTOR_TERM_TYPE_URI:
-          node->value.resource.uri = raptor_uri_copy_v2(world, (raptor_uri*)node_data);
+          node->value.resource.uri = raptor_uri_copy((raptor_uri*)node_data);
           break;
           
         case RAPTOR_TERM_TYPE_BLANK:
@@ -99,7 +99,7 @@ raptor_new_abbrev_node(raptor_world* world,
           node->value.literal.string = string;
 
           if(datatype) {
-            node->value.literal.datatype = raptor_uri_copy_v2(world, datatype);
+            node->value.literal.datatype = raptor_uri_copy(datatype);
           }
 
           if(language) {
@@ -141,7 +141,7 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
   
   switch (node->type) {
       case RAPTOR_TERM_TYPE_URI:
-        raptor_free_uri_v2(node->world, node->value.resource.uri);
+        raptor_free_uri(node->value.resource.uri);
         break;
           
       case RAPTOR_TERM_TYPE_BLANK:
@@ -152,7 +152,7 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
         RAPTOR_FREE(literal, node->value.literal.string);
 
         if(node->value.literal.datatype)
-          raptor_free_uri_v2(node->world, node->value.literal.datatype);
+          raptor_free_uri(node->value.literal.datatype);
 
         if(node->value.literal.language)
           RAPTOR_FREE(language, node->value.literal.language);
@@ -197,9 +197,8 @@ raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 
   switch (node1->type) {
       case RAPTOR_TERM_TYPE_URI:
-        rv = raptor_uri_compare_v2(node1->world,
-                                   node1->value.resource.uri,
-                                   node2->value.resource.uri);
+        rv = raptor_uri_compare(node1->value.resource.uri,
+                                node2->value.resource.uri);
         break;
           
       case RAPTOR_TERM_TYPE_BLANK:
@@ -759,7 +758,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   if(qname)
     return qname;
   
-  uri_string = raptor_uri_as_counted_string_v2(node->world, node->value.resource.uri, &uri_len);
+  uri_string = raptor_uri_as_counted_string(node->value.resource.uri, &uri_len);
 
   p= uri_string;
   name_len = uri_len;
@@ -780,12 +779,13 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     return NULL;
   memcpy(ns_uri_string, (const char*)uri_string, ns_uri_string_len);
   ns_uri_string[ns_uri_string_len] = '\0';
+  
   ns_uri = raptor_new_uri(node->world, ns_uri_string);
   RAPTOR_FREE(cstring, ns_uri_string);
-
+  
   if(!ns_uri)
     return NULL;
-  
+
   ns = raptor_namespaces_find_namespace_by_uri(nstack, ns_uri);
   if(!ns) {
     /* The namespace was not declared, so create one */
@@ -803,14 +803,14 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
        * the ns ourselves on error
        */
       raptor_free_namespace(ns);
-      raptor_free_uri_v2(node->world, ns_uri);
+      raptor_free_uri(ns_uri);
       return NULL;
     }
   }
 
   qname = raptor_new_qname_from_namespace_local_name_v2(node->world, ns, name,  NULL);
   
-  raptor_free_uri_v2(node->world, ns_uri);
+  raptor_free_uri(ns_uri);
 
   return qname;
 }

@@ -134,7 +134,7 @@ raptor_free_sax2(raptor_sax2 *sax2)
   raptor_namespaces_clear(&sax2->namespaces);
 
   if(sax2->base_uri)
-    raptor_free_uri_v2(sax2->world, sax2->base_uri);
+    raptor_free_uri(sax2->base_uri);
 
   RAPTOR_FREE(raptor_sax2, sax2);
 }
@@ -423,9 +423,9 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
   sax2->current_element = NULL;
 
   if(sax2->base_uri)
-    raptor_free_uri_v2(sax2->world, sax2->base_uri);
+    raptor_free_uri(sax2->base_uri);
   if(base_uri)
-    sax2->base_uri = raptor_uri_copy_v2(sax2->world, base_uri);
+    sax2->base_uri = raptor_uri_copy(base_uri);
   else
     sax2->base_uri = NULL;
 
@@ -880,8 +880,8 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         raptor_uri* xuri;
         base_uri = raptor_sax2_inscope_base_uri(sax2);
         xuri = raptor_new_uri_relative_to_base(sax2->world, base_uri, atts[i+1]);
-        xml_base = raptor_new_uri_for_xmlbase(sax2->world, xuri);
-        raptor_free_uri_v2(sax2->world, xuri);
+        xml_base = raptor_new_uri_for_xmlbase(xuri);
+        raptor_free_uri(xuri);
       }
 
       /* delete all xml attributes whether processed above or not */
@@ -965,7 +965,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   if(xml_atts_copy)
     RAPTOR_FREE(cstringpointer, xml_atts_copy);
   if(xml_base)
-    raptor_free_uri_v2(sax2->world, xml_base);
+    raptor_free_uri(xml_base);
   if(xml_language)
     RAPTOR_FREE(cstring, xml_language);
   if(xml_element)

@@ -1139,7 +1139,7 @@ main(int argc, char *argv[])
                                                         foo_ns,
                                                         (const unsigned char*)"bar", 
                                                         NULL);
-  base_uri_copy = base_uri ? raptor_uri_copy_v2(world, base_uri) : NULL;
+  base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   element = raptor_new_xml_element(el_name,
                                   NULL, /* language */
                                   base_uri_copy);
@@ -1157,7 +1157,7 @@ main(int argc, char *argv[])
   el_name = raptor_new_qname(nstack, 
                              (const unsigned char*)"blah", 
                              NULL /* no attribute value - element */);
-  base_uri_copy = base_uri ? raptor_uri_copy_v2(world, base_uri) : NULL;
+  base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   element = raptor_new_xml_element(el_name,
                                    NULL, /* language */
                                    base_uri_copy);
@@ -1180,7 +1180,7 @@ main(int argc, char *argv[])
 
   raptor_free_namespaces(nstack);
 
-  raptor_free_uri_v2(world, base_uri);
+  raptor_free_uri(base_uri);
 
   
   offset = raptor_iostream_tell(iostr);

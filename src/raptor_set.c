@@ -125,7 +125,7 @@ raptor_free_base_id_set(raptor_base_id_set *base)
   if(base->tree)
     raptor_free_avltree(base->tree);
   if(base->uri)
-    raptor_free_uri_v2(base->world, base->uri);
+    raptor_free_uri(base->uri);
   RAPTOR_FREE(raptor_base_id_set, base);
 }
 
@@ -178,7 +178,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 
   base = set->first;
   while(base) {
-    if(raptor_uri_equals_v2(set->world, base->uri, base_uri))
+    if(raptor_uri_equals(base->uri, base_uri))
       break;
     base = base->next;
   }
@@ -192,7 +192,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 
     base->world = set->world;
 
-    base->uri = raptor_uri_copy_v2(set->world, base_uri);
+    base->uri = raptor_uri_copy(base_uri);
 
     base->tree = raptor_new_avltree(set->world,
                                   (raptor_data_compare_function)strcmp,
@@ -326,7 +326,7 @@ if(rc) {
 #endif
   raptor_free_id_set(set);
 
-  raptor_free_uri_v2(world, base_uri);
+  raptor_free_uri(base_uri);
   
   raptor_free_world(world);
   

@@ -141,7 +141,7 @@ raptor_features_enumerate_common(raptor_world* world,
         *uri=raptor_new_uri_from_uri_local_name(world,
                                                    base_uri,
                                                    (const unsigned char*)raptor_features_list[i].name);
-        raptor_free_uri_v2(world, base_uri);
+        raptor_free_uri(base_uri);
       }
       if(label)
         *label=raptor_features_list[i].label;
@@ -200,7 +200,7 @@ raptor_feature_from_uri_v2(raptor_world* world, raptor_uri *uri)
   if(!uri)
     return feature;
   
-  uri_string = raptor_uri_as_string_v2(world, uri);
+  uri_string = raptor_uri_as_string(uri);
   if(strncmp((const char*)uri_string, raptor_feature_uri_prefix,
              RAPTOR_FEATURE_URI_PREFIX_LEN))
     return feature;

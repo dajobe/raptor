@@ -89,7 +89,7 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
   
   switch (node->type) {
       case RAPTOR_TERM_TYPE_URI:
-        raptor_free_uri_v2(node->world, node->value.resource.uri);
+        raptor_free_uri(node->value.resource.uri);
         break;
           
       case RAPTOR_TERM_TYPE_BLANK:
@@ -100,7 +100,7 @@ raptor_dot_serializer_free_node(raptor_dot_serializer_node *node)
         RAPTOR_FREE(literal, node->value.literal.string);
 
         if(node->value.literal.datatype)
-          raptor_free_uri_v2(node->world, node->value.literal.datatype);
+          raptor_free_uri(node->value.literal.datatype);
 
         if(node->value.literal.language)
           RAPTOR_FREE(language, node->value.literal.language);
@@ -141,9 +141,8 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
 
   switch (node->type) {
       case RAPTOR_TERM_TYPE_URI:
-        rv = raptor_uri_equals_v2(node->world,
-                                  node->value.resource.uri,
-                                  (raptor_uri*)node_data);
+        rv = raptor_uri_equals(node->value.resource.uri,
+                               (raptor_uri*)node_data);
         break;
           
       case RAPTOR_TERM_TYPE_BLANK:
@@ -170,7 +169,7 @@ raptor_dot_serializer_node_matches(raptor_dot_serializer_node* node,
 
           /* datatype */
           if(node->value.literal.datatype != NULL && datatype != NULL)
-            rv &= (raptor_uri_equals_v2(node->world, node->value.literal.datatype,datatype) !=0);
+            rv &= (raptor_uri_equals(node->value.literal.datatype,datatype) !=0);
           else if(node->value.literal.datatype != NULL || datatype != NULL)
             rv = 0;
           
@@ -225,7 +224,7 @@ raptor_dot_serializer_new_node(raptor_world* world,
     
     switch (node_type) {
       case RAPTOR_TERM_TYPE_URI:
-        node->value.resource.uri = raptor_uri_copy_v2(world, (raptor_uri*)node_data);
+        node->value.resource.uri = raptor_uri_copy((raptor_uri*)node_data);
         break;
         
       case RAPTOR_TERM_TYPE_BLANK:
@@ -242,7 +241,7 @@ raptor_dot_serializer_new_node(raptor_world* world,
         node->value.literal.string = string;
         
         if(datatype)
-          node->value.literal.datatype = raptor_uri_copy_v2(world, datatype);
+          node->value.literal.datatype = raptor_uri_copy(datatype);
         
         if(language) {
           unsigned char *lang;
@@ -281,7 +280,7 @@ raptor_dot_serializer_declare_namespace_from_namespace(raptor_serializer* serial
        (ns->prefix && nspace->prefix &&
         !strcmp((const char*)ns->prefix, (const char*)nspace->prefix)) ||
        (ns->uri && nspace->uri &&
-        raptor_uri_equals_v2(serializer->world, ns->uri, nspace->uri)) )
+        raptor_uri_equals(ns->uri, nspace->uri)) )
       return 1;
   }
 
@@ -402,7 +401,7 @@ raptor_dot_serializer_write_uri(raptor_serializer* serializer,
                                 raptor_uri* uri)
 {
   raptor_dot_context* context = (raptor_dot_context*)serializer->context;
-  unsigned char* full = raptor_uri_as_string_v2(serializer->world, uri);
+  unsigned char* full = raptor_uri_as_string(uri);
   int i;
 
   for( i = 0 ; i < raptor_sequence_size(context->namespaces) ; i++ ) {
@@ -410,7 +409,7 @@ raptor_dot_serializer_write_uri(raptor_serializer* serializer,
       (raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
     const unsigned char* ns_uri_string;
     size_t ns_uri_string_len;
-    ns_uri_string = raptor_uri_as_counted_string_v2(serializer->world, ns->uri, &ns_uri_string_len);
+    ns_uri_string = raptor_uri_as_counted_string(ns->uri, &ns_uri_string_len);
 
     if(!strncmp((char*)full, (char*)ns_uri_string, ns_uri_string_len) ) {
       const unsigned char* prefix = raptor_namespace_get_prefix(ns);
@@ -679,7 +678,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
                                (const unsigned char *)"\n\tlabel=\"\\n\\nModel:\\n");
   if(serializer->base_uri)
     raptor_iostream_write_string(serializer->iostream,
-                                 raptor_uri_as_string_v2(serializer->world, serializer->base_uri));
+                                 raptor_uri_as_string(serializer->base_uri));
   else
     raptor_iostream_write_string(serializer->iostream, "(Unknown)");
 
@@ -699,7 +698,7 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
                                      (const unsigned char *)": ");
       }
       raptor_iostream_write_string(serializer->iostream,
-                                   raptor_uri_as_string_v2(serializer->world, ns->uri));
+                                   raptor_uri_as_string(ns->uri));
       raptor_iostream_write_string(serializer->iostream,
                                    (const unsigned char *)"\\n");
     }

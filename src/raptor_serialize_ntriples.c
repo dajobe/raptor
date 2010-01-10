@@ -136,7 +136,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
       }
       if(literal_datatype) {
         raptor_iostream_write_counted_string(iostr, "^^<", 3);
-        raptor_iostream_write_string(iostr, raptor_uri_as_string_v2(world, (raptor_uri*)literal_datatype));
+        raptor_iostream_write_string(iostr, raptor_uri_as_string((raptor_uri*)literal_datatype));
         raptor_iostream_write_byte(iostr, '>');
       }
 
@@ -149,7 +149,7 @@ raptor_iostream_write_statement_part_ntriples(raptor_world* world,
       
     case RAPTOR_TERM_TYPE_URI:
       raptor_iostream_write_byte(iostr, '<');
-      term = raptor_uri_as_counted_string_v2(world, (raptor_uri*)term, &len);
+      term = raptor_uri_as_counted_string((raptor_uri*)term, &len);
       raptor_iostream_write_string_ntriples(iostr, (const unsigned char*)term, len, '>');
       raptor_iostream_write_byte(iostr, '>');
       break;

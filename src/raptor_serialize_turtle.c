@@ -360,9 +360,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     predicate= nodes[0];
     object= nodes[1];
     
-    if(!raptor_uri_equals_v2(serializer->world,
-                             predicate->value.resource.uri, 
-                             context->rdf_first_uri)) {
+    if(!raptor_uri_equals(predicate->value.resource.uri,
+                          context->rdf_first_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - first predicate is not rdf:first");
       return 1;
@@ -402,7 +401,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     predicate = nodes[0];
     object = nodes[1];
 
-    if(!raptor_uri_equals_v2(serializer->world, predicate->value.resource.uri, context->rdf_rest_uri)) {
+    if(!raptor_uri_equals(predicate->value.resource.uri, context->rdf_rest_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - second predicate is not rdf:rest");
       return 1;
@@ -428,7 +427,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
 
     } else {
       if(object->type != RAPTOR_TERM_TYPE_URI ||
-         !raptor_uri_equals_v2(serializer->world, object->value.resource.uri, context->rdf_nil_uri)) {
+         !raptor_uri_equals(object->value.resource.uri, context->rdf_nil_uri)) {
         raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Malformed collection - last rdf:rest resource is not rdf:nil");
         return 1;
@@ -601,11 +600,11 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     if(pred1->type == RAPTOR_TERM_TYPE_URI &&
        pred2->type == RAPTOR_TERM_TYPE_URI &&
        (
-        (raptor_uri_equals_v2(serializer->world, pred1->value.resource.uri, context->rdf_first_uri) &&
-         raptor_uri_equals_v2(serializer->world, pred2->value.resource.uri, context->rdf_rest_uri))
+        (raptor_uri_equals(pred1->value.resource.uri, context->rdf_first_uri) &&
+         raptor_uri_equals(pred2->value.resource.uri, context->rdf_rest_uri))
         ||
-        (raptor_uri_equals_v2(serializer->world, pred2->value.resource.uri, context->rdf_first_uri) &&
-         raptor_uri_equals_v2(serializer->world, pred1->value.resource.uri, context->rdf_rest_uri))
+        (raptor_uri_equals(pred2->value.resource.uri, context->rdf_first_uri) &&
+         raptor_uri_equals(pred1->value.resource.uri, context->rdf_rest_uri))
         )
        ) {
       collection = 1;
@@ -779,7 +778,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
     context->rdf_type = raptor_new_abbrev_node(serializer->world,
                                                RAPTOR_TERM_TYPE_URI,
                                                rdf_type_uri, NULL, NULL);
-    raptor_free_uri_v2(serializer->world, rdf_type_uri);
+    raptor_free_uri(rdf_type_uri);
   } else
     context->rdf_type = NULL;
 
@@ -863,22 +862,22 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
   }
 
   if(context->rdf_xml_literal_uri) {
-    raptor_free_uri_v2(serializer->world, context->rdf_xml_literal_uri);
+    raptor_free_uri(context->rdf_xml_literal_uri);
     context->rdf_xml_literal_uri = NULL;
   }
 
   if(context->rdf_first_uri) {
-    raptor_free_uri_v2(serializer->world, context->rdf_first_uri);
+    raptor_free_uri(context->rdf_first_uri);
     context->rdf_first_uri = NULL;
   }
 
   if(context->rdf_rest_uri) {
-    raptor_free_uri_v2(serializer->world, context->rdf_rest_uri);
+    raptor_free_uri(context->rdf_rest_uri);
     context->rdf_rest_uri = NULL;
   }
 
   if(context->rdf_nil_uri) {
-    raptor_free_uri_v2(serializer->world, context->rdf_nil_uri);
+    raptor_free_uri(context->rdf_nil_uri);
     context->rdf_nil_uri = NULL;
   }
 }
@@ -910,7 +909,7 @@ raptor_turtle_serialize_declare_namespace_from_namespace(raptor_serializer* seri
       return 1;
 
     if(ns->uri && nspace->uri &&
-       raptor_uri_equals_v2(serializer->world, ns->uri, nspace->uri))
+       raptor_uri_equals(ns->uri, nspace->uri))
       return 1;
   }
 

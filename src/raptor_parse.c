@@ -559,10 +559,10 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
   }
 
   if(uri)
-    uri = raptor_uri_copy_v2(rdf_parser->world, uri);
+    uri = raptor_uri_copy(uri);
   
   if(rdf_parser->base_uri)
-    raptor_free_uri_v2(rdf_parser->world, rdf_parser->base_uri);
+    raptor_free_uri(rdf_parser->base_uri);
   rdf_parser->base_uri = uri;
 
   rdf_parser->locator.uri    = uri;
@@ -626,7 +626,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
     RAPTOR_FREE(raptor_parser_context, rdf_parser->context);
 
   if(rdf_parser->base_uri)
-    raptor_free_uri_v2(rdf_parser->world, rdf_parser->base_uri);
+    raptor_free_uri(rdf_parser->base_uri);
 
   if(rdf_parser->default_generate_id_handler_prefix)
     RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
@@ -718,7 +718,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 #endif
 
   if(uri) {
-    filename = raptor_uri_uri_string_to_filename(raptor_uri_as_string_v2(rdf_parser->world, uri));
+    filename = raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
     if(!filename)
       return 1;
 
@@ -737,7 +737,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
       goto cleanup;
     }
     if(!base_uri) {
-      base_uri = raptor_uri_copy_v2(rdf_parser->world, uri);
+      base_uri = raptor_uri_copy(uri);
       free_base_uri = 1;
     }
   } else {
@@ -755,7 +755,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
     RAPTOR_FREE(cstring, (void*)filename);
   }
   if(free_base_uri)
-    raptor_free_uri_v2(rdf_parser->world, base_uri);
+    raptor_free_uri(base_uri);
 
   return rc;
 }
@@ -801,8 +801,7 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
 int
 raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri)
 {
-  raptor_parser* rdf_parser = (raptor_parser*)user_data;
-  unsigned char* uri_string = raptor_uri_as_string_v2(rdf_parser->world, uri);
+  unsigned char* uri_string = raptor_uri_as_string(uri);
   
   if(raptor_uri_uri_string_is_file_uri(uri_string))
     return 0;
@@ -918,7 +917,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     ret = raptor_start_parse(rdf_parser, base_uri);
 
   if(rpbc.final_uri)
-    raptor_free_uri_v2(rdf_parser->world, rpbc.final_uri);
+    raptor_free_uri(rpbc.final_uri);
 
   if(ret) {
     raptor_www_free(rdf_parser->www);
@@ -1787,7 +1786,7 @@ raptor_world_guess_parser_name(raptor_world* world,
       break;
     
     if(uri && factory->uri_string &&
-       !strcmp((const char*)raptor_uri_as_string_v2(world, uri), 
+       !strcmp((const char*)raptor_uri_as_string(uri), 
                (const char*)factory->uri_string))
       /* got an exact match syntax for URI - return result */
       break;
@@ -2178,7 +2177,7 @@ main(int argc, char *argv[])
       fprintf(stderr, "raptor_feature_from_uri returned %d expected %d\n", fn, i);
       return 1;
     }
-    raptor_free_uri_v2(world, feature_uri);
+    raptor_free_uri(feature_uri);
   }
 
   s = raptor_parser_get_accept_header_all(world);

@@ -126,7 +126,7 @@ static void
 raptor_free_group_map(raptor_rss_group_map* gm) 
 {
   if(gm->uri)
-    raptor_free_uri_v2(gm->world, gm->uri);
+    raptor_free_uri(gm->uri);
   RAPTOR_FREE(raptor_rss_group_map, gm);
 }
 
@@ -135,7 +135,7 @@ static int
 raptor_rss_group_map_compare(raptor_rss_group_map* gm1,
                              raptor_rss_group_map* gm2)
 {
-  return raptor_uri_compare_v2(gm1->world, gm1->uri, gm2->uri);
+  return raptor_uri_compare(gm1->uri, gm2->uri);
 }
 
 
@@ -167,7 +167,7 @@ raptor_rss10_set_item_group(raptor_rss10_serializer_context *rss_serializer,
   gm = (raptor_rss_group_map*)RAPTOR_CALLOC(raptor_rss_group_map, 1,
                                           sizeof(raptor_rss_group_map));
   gm->world = rss_serializer->world;
-  gm->uri = raptor_uri_copy_v2(rss_serializer->world, uri);
+  gm->uri = raptor_uri_copy(uri);
   gm->item = item;
   
   raptor_avltree_add(rss_serializer->group_map, gm);
@@ -242,7 +242,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
     raptor_free_sequence(rss_serializer->enclosures);
 
   if(rss_serializer->seq_uri)
-    raptor_free_uri_v2(rss_serializer->world, rss_serializer->seq_uri);
+    raptor_free_uri(rss_serializer->seq_uri);
 
   if(rss_serializer->xml_writer)
     raptor_free_xml_writer(rss_serializer->xml_writer);
@@ -288,7 +288,7 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   }
 
   if(rss_serializer->xml_literal_dt)
-    raptor_free_uri_v2(rss_serializer->world, rss_serializer->xml_literal_dt);
+    raptor_free_uri(rss_serializer->xml_literal_dt);
 }
   
 
@@ -321,7 +321,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       continue;
 
     if(s->subject.type != RAPTOR_TERM_TYPE_URI ||
-       !raptor_uri_equals_v2(rss_serializer->world, (raptor_uri*)s->subject.value, item->uri))
+       !raptor_uri_equals((raptor_uri*)s->subject.value, item->uri))
        continue;
     
     /* now we know this triple is associated with the item URI
@@ -334,10 +334,10 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
     if(s->object.type == RAPTOR_TERM_TYPE_BLANK) {
       raptor_uri* fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->object.value);
       raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
-      raptor_free_uri_v2(rss_serializer->world, fake_uri);
+      raptor_free_uri(fake_uri);
 
       RAPTOR_DEBUG4("Moved anonymous value property URI <%s> for typed node %i - %s\n",
-                    raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)s->predicate.value),
+                    raptor_uri_as_string((raptor_uri*)s->predicate.value),
                     type, raptor_rss_items_info[type].name);
       s = (raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
                                                         t);
@@ -353,9 +353,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
       
       if(s->predicate.type == RAPTOR_TERM_TYPE_URI &&
          s->object.type != RAPTOR_TERM_TYPE_BLANK &&
-         raptor_uri_equals_v2(rss_serializer->world, 
-                              (raptor_uri*)s->predicate.value,
-                              rss_serializer->world->rss_fields_info_uris[f])) {
+         raptor_uri_equals((raptor_uri*)s->predicate.value,
+                           rss_serializer->world->rss_fields_info_uris[f])) {
          raptor_rss_field* field = raptor_rss_new_field(rss_serializer->world);
 
         /* found field this triple to go in 'item' so move the
@@ -366,9 +365,8 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
         else {
           field->value = (unsigned char*)s->object.value;
           if(s->object.literal_datatype &&
-             raptor_uri_equals_v2(rss_serializer->world,
-                                  s->object.literal_datatype,
-                                  rss_serializer->xml_literal_dt))
+             raptor_uri_equals(s->object.literal_datatype,
+                               rss_serializer->xml_literal_dt))
              field->is_xml = 1;
           if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
              field->is_xml = 1;
@@ -417,7 +415,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
      * sequence 
      */
     RAPTOR_DEBUG4("UNKNOWN property URI <%s> for typed node %i - %s\n",
-                  raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)s->predicate.value),
+                  raptor_uri_as_string((raptor_uri*)s->predicate.value),
                   type, raptor_rss_items_info[type].name);
     s = (raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
                                                       t);
@@ -429,7 +427,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
   if(count > 0)
     RAPTOR_DEBUG5("Moved %d triples to typed node %i - %s with uri <%s>\n",
                   count, type, raptor_rss_items_info[type].name,
-                  raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)item->uri));
+                  raptor_uri_as_string((raptor_uri*)item->uri));
 #endif
 
   return count;
@@ -470,7 +468,7 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
       
       fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->subject.value);
       item = raptor_rss10_get_group_item(rss_serializer, fake_uri);
-      raptor_free_uri_v2(rss_serializer->world, fake_uri);
+      raptor_free_uri(fake_uri);
       
       if(item) {
         /* triple matched an existing item */
@@ -484,7 +482,7 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
         if(s->object.type == RAPTOR_TERM_TYPE_BLANK) {
           fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->object.value);
           raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
-          raptor_free_uri_v2(rss_serializer->world, fake_uri);
+          raptor_free_uri(fake_uri);
         }
         
 
@@ -650,7 +648,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   
   fake_uri = raptor_new_uri(rss_serializer->world, (const unsigned char*)s->subject.value);
   item = raptor_rss10_get_group_item(rss_serializer, fake_uri);
-  raptor_free_uri_v2(rss_serializer->world, fake_uri);
+  raptor_free_uri(fake_uri);
 
   if(item && s->object.type != RAPTOR_TERM_TYPE_BLANK) {
     int f;
@@ -661,9 +659,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
         continue;
 
       if(s->predicate.type == RAPTOR_TERM_TYPE_URI &&
-         raptor_uri_equals_v2(rss_serializer->world, 
-                              (raptor_uri*)s->predicate.value,
-                              rss_serializer->world->rss_fields_info_uris[f])) {
+         raptor_uri_equals((raptor_uri*)s->predicate.value,
+                           rss_serializer->world->rss_fields_info_uris[f])) {
         /* found field this triple to go in 'item' so move the
          * object value over 
          */
@@ -673,9 +670,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
         } else {
           field->value = (unsigned char*)s->object.value;
           if(s->object.literal_datatype &&
-             raptor_uri_equals_v2(rss_serializer->world,
-                                  s->object.literal_datatype,
-                                  rss_serializer->xml_literal_dt))
+             raptor_uri_equals(s->object.literal_datatype,
+                               rss_serializer->xml_literal_dt))
              field->is_xml = 1;
           if(f == RAPTOR_RSS_FIELD_CONTENT_ENCODED)
             field->is_xml = 1;
@@ -792,24 +788,21 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   }
 #endif
 
-  if(raptor_uri_equals_v2(rss_serializer->world,
-                          (raptor_uri*)statement->predicate.value,
-                          RAPTOR_RSS_RSS_items_URI(rss_model))) {
+  if(raptor_uri_equals((raptor_uri*)statement->predicate.value,
+                       RAPTOR_RSS_RSS_items_URI(rss_model))) {
     /* ignore any triple (? rss:items ?) - is infered */
     return 0;
   }
 
-  if(!raptor_uri_equals_v2(rss_serializer->world,
-                           (raptor_uri*)statement->predicate.value,
-                           RAPTOR_RSS_RDF_type_URI(rss_model))) 
+  if(!raptor_uri_equals((raptor_uri*)statement->predicate.value,
+                        RAPTOR_RSS_RDF_type_URI(rss_model))) 
     goto savetriple;
   
 
   /* Look for triple (?resource rdf:type rdf:Seq) */
   if(statement->object.type == RAPTOR_TERM_TYPE_URI &&
-     raptor_uri_equals_v2(rss_serializer->world,
-                          (raptor_uri*)statement->object.value,
-                          RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
+     raptor_uri_equals((raptor_uri*)statement->object.value,
+                       RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
     
     if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK) {
       RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",
@@ -818,10 +811,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
                                                   (unsigned char*)statement->subject.value);
     } else {
       RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
-                    raptor_uri_as_string_v2(rss_serializer->world,
-                                            (raptor_uri*)statement->subject.value));
-      rss_serializer->seq_uri = raptor_uri_copy_v2(rss_serializer->world,
-                                                 rss_serializer->seq_uri);
+                    raptor_uri_as_string((raptor_uri*)statement->subject.value));
+      rss_serializer->seq_uri = raptor_uri_copy(rss_serializer->seq_uri);
     }
     
     handled = 1;
@@ -834,21 +825,18 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   for(i = 0; i < RAPTOR_RSS_COMMON_SIZE; i++) {
     raptor_uri *item_uri = serializer->world->rss_types_info_uris[i];
     if(item_uri &&
-       raptor_uri_equals_v2(rss_serializer->world,
-                            (raptor_uri*)statement->object.value, item_uri)) {
+       raptor_uri_equals((raptor_uri*)statement->object.value, item_uri)) {
       type = (raptor_rss_type)i;
       RAPTOR_DEBUG4("Found typed node %i - %s with URI <%s>\n", type,
                     raptor_rss_items_info[type].name,
-                    raptor_uri_as_string_v2(rss_serializer->world,
-                                            (raptor_uri*)statement->subject.value));
+                    raptor_uri_as_string((raptor_uri*)statement->subject.value));
       break;
     }
   }
 
   if(type == RAPTOR_RSS_NONE) {
     RAPTOR_DEBUG2("UNKNOWN typed node with type URI <%s>\n",
-                  raptor_uri_as_string_v2(rss_serializer->world,
-                                          (raptor_uri*)statement->object.value));
+                  raptor_uri_as_string((raptor_uri*)statement->object.value));
     goto savetriple;
   }
 
@@ -864,8 +852,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
       RAPTOR_DEBUG2("Found RSS item at entry %d in sequence of items\n", i);
     } else {
       RAPTOR_DEBUG2("RSS item URI <%s> is not in sequence of items\n",
-                    raptor_uri_as_string_v2(rss_serializer->world,
-                                            (raptor_uri*)statement->subject.value));
+                    raptor_uri_as_string((raptor_uri*)statement->subject.value));
       item = NULL;
     }
   } else if(type == RAPTOR_RSS_ENCLOSURE) {
@@ -879,8 +866,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
       RAPTOR_DEBUG2("Found enclosure at entry %d in sequence of enclosures\n", i);
     } else {
       RAPTOR_DEBUG2("Add new enclosure to sequence with URI <%s>\n",
-                    raptor_uri_as_string_v2(rss_serializer->world,
-                                            (raptor_uri*)statement->subject.value));
+                    raptor_uri_as_string((raptor_uri*)statement->subject.value));
       
       item = raptor_new_rss_item(rss_serializer->world);
       raptor_sequence_push(rss_serializer->enclosures, item);
@@ -948,20 +934,19 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     if(s->subject.type == RAPTOR_TERM_TYPE_BLANK)
       fake_uri = raptor_new_uri(rss_serializer->world, (unsigned char*)s->subject.value);
     else
-      fake_uri = raptor_uri_copy_v2(rss_serializer->world, (raptor_uri*)s->subject.value);
+      fake_uri = raptor_uri_copy((raptor_uri*)s->subject.value);
       
-    if(raptor_uri_equals_v2(rss_serializer->world, fake_uri, rss_serializer->seq_uri)) {
+    if(raptor_uri_equals(fake_uri, rss_serializer->seq_uri)) {
       const unsigned char* uri_str;
       /* found <seq URI> <some predicate> <some URI> triple */
 
       /* predicate is a resource */
-      uri_str = raptor_uri_as_string_v2(rss_serializer->world, 
-                                        (raptor_uri*)s->predicate.value);
+      uri_str = raptor_uri_as_string((raptor_uri*)s->predicate.value);
       if(!strncmp((const char*)uri_str, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44))
         ordinal= raptor_check_ordinal(uri_str+44);
 
       RAPTOR_DEBUG3("Found RSS 1.0 item %d with URI <%s>\n", ordinal,
-                    raptor_uri_as_string_v2(rss_serializer->world, (raptor_uri*)s->object.value));
+                    raptor_uri_as_string((raptor_uri*)s->object.value));
 
       if(ordinal >= 0) {
         raptor_rss_item *item;
@@ -981,7 +966,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
       }
     }
 
-    raptor_free_uri_v2(rss_serializer->world, fake_uri);
+    raptor_free_uri(fake_uri);
   }
 
   rss_model->items_count = raptor_sequence_size(rss_serializer->items);
@@ -1069,7 +1054,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
                                                         root_local_name,
                                                         NULL);
   if(base_uri)
-    base_uri = raptor_uri_copy_v2(rss_serializer->world, base_uri);
+    base_uri = raptor_uri_copy(base_uri);
   element = raptor_new_xml_element(qname, NULL, base_uri);
   rss_serializer->root_element = element;
 
@@ -1180,7 +1165,7 @@ raptor_rss10_emit_atom_triples_map(raptor_serializer *serializer, int is_feed,
 
   at_map_root_qname = raptor_new_qname_from_namespace_local_name_v2(serializer->world, at_nspace,
                                                                   (const unsigned char*)map_element_name,  NULL);
-  base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+  base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   at_map_root_element = raptor_new_xml_element(at_map_root_qname, NULL,
                                              base_uri_copy);
   
@@ -1218,13 +1203,13 @@ raptor_rss10_emit_atom_triples_map(raptor_serializer *serializer, int is_feed,
                                                                at_nspace,
                                                                map_element_name,
                                                                NULL);
-    base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+    base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
     at_map_element = raptor_new_xml_element(at_map_qname, NULL, base_uri_copy);
     
     
     at_map_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1,
                                                 sizeof(raptor_qname*));
-    ruri_string = raptor_uri_to_relative_uri_string_v2(serializer->world, base_uri, serializer->world->rss_fields_info_uris[to_f]);
+    ruri_string = raptor_uri_to_relative_uri_string(base_uri, serializer->world->rss_fields_info_uris[to_f]);
     at_map_attrs[0] = raptor_new_qname(rss_serializer->nstack, 
                                      (const unsigned char*)"property", 
                                      ruri_string);
@@ -1269,12 +1254,11 @@ raptor_rss10_emit_atom_feed(raptor_serializer *serializer,
                                                                 atom_nspace,
                                                                 (const unsigned char*)"link",
                                                                 NULL);
-  base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+  base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   atom_link_element = raptor_new_xml_element(atom_link_qname, NULL, base_uri_copy);
 
   atom_link_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, sizeof(raptor_qname*));
-  ruri_string = raptor_uri_to_relative_uri_string_v2(rss_serializer->world,
-                                                     base_uri, item->uri);
+  ruri_string = raptor_uri_to_relative_uri_string(base_uri, item->uri);
 
   atom_link_attrs[0] = raptor_new_qname(rss_serializer->nstack, 
                                         (const unsigned char*)"href", 
@@ -1321,12 +1305,12 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
                                                               (const unsigned char*)"Seq",
                                                               NULL);
   
-  base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+  base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   rdf_Seq_element = raptor_new_xml_element(rdf_Seq_qname, NULL, base_uri_copy);
   
   /* make the <rss:items><rdf:Seq><rdf:li /> .... </rdf:Seq></rss:items> */
   
-  base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+  base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   rss_items_predicate = raptor_new_xml_element(raptor_qname_copy(serializer->world->rss_fields_info_qnames[RAPTOR_RSS_FIELD_ITEMS]), NULL, base_uri_copy);
   
   raptor_xml_writer_start_element(xml_writer, rss_items_predicate);
@@ -1344,10 +1328,10 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
                                                                rss_serializer->default_nspace,
                                                                (const unsigned char*)"li",
                                                                NULL);
-    base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+    base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
     rdf_li_element = raptor_new_xml_element(rdf_li_qname, NULL, base_uri_copy);
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-    ruri_string = raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, item_item->uri);
+    ruri_string = raptor_uri_to_relative_uri_string(base_uri, item_item->uri);
     attrs[0] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                            rss_serializer->default_nspace,
                                                            (const unsigned char*)"resource",
@@ -1425,13 +1409,13 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
     
     base_uri = serializer->base_uri;
     if(base_uri)
-      base_uri = raptor_uri_copy_v2(rss_serializer->world, base_uri);
+      base_uri = raptor_uri_copy(base_uri);
     
     /* after this root_element owns root_qname and (this copy of) base_uri */
     root_element = raptor_new_xml_element(root_qname, NULL, base_uri);
     if(!root_element) {
       if(base_uri)
-        raptor_free_uri_v2(rss_serializer->world, base_uri);
+        raptor_free_uri(base_uri);
       raptor_free_qname(root_qname); root_qname = NULL;
       goto oom;
     }
@@ -1453,7 +1437,7 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   }
   
   if(base_uri)
-    base_uri = raptor_uri_copy_v2(rss_serializer->world, base_uri);
+    base_uri = raptor_uri_copy(base_uri);
 
   /* after this call, ser owns (this copy of) base_uri and does
    * NOT own serializer->iostream and will not destroy it
@@ -1556,7 +1540,7 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
     f = RAPTOR_RSS_FIELD_ATOM_ID;
     if(!item->fields[f]) {
       raptor_rss_field* field = raptor_rss_new_field(rss_serializer->world);
-      field->uri = raptor_uri_copy_v2(rss_serializer->world, item->uri);
+      field->uri = raptor_uri_copy(item->uri);
       raptor_rss_item_add_field(item, f, field);
     }
 
@@ -1600,7 +1584,7 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
     /* atom:id - defaults to item URI */
     if(!item->fields[RAPTOR_RSS_FIELD_ATOM_ID]) {
       raptor_rss_field* field = raptor_rss_new_field(rss_serializer->world);
-      field->uri = raptor_uri_copy_v2(rss_serializer->world, item->uri);
+      field->uri = raptor_uri_copy(item->uri);
       raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_ID, field);
     }
 
@@ -1625,7 +1609,7 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
     if(!item->fields[RAPTOR_RSS_FIELD_ATOM_CONTENT] &&
        !item->fields[RAPTOR_RSS_FIELD_ATOM_LINK]) {
       raptor_rss_field* field = raptor_rss_new_field(rss_serializer->world);
-      field->uri = raptor_uri_copy_v2(rss_serializer->world, item->uri);
+      field->uri = raptor_uri_copy(item->uri);
       raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_LINK, field);
     }
 
@@ -1680,7 +1664,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
        * previously such as when the enclosure url = the guid
        */
       if(enclosure_item->uri &&
-         raptor_uri_equals_v2(rss_serializer->world, item->uri, enclosure_item->uri)) {
+         raptor_uri_equals(item->uri, enclosure_item->uri)) {
         int j;
         for(j = 0; j < RAPTOR_RSS_FIELDS_SIZE;j++) {
           if(j != RAPTOR_RSS_RDF_ENCLOSURE_TYPE &&
@@ -1701,12 +1685,12 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     return;
 
   if(emit_container) {
-    base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+    base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
     element = raptor_new_xml_element(raptor_qname_copy(serializer->world->rss_types_info_qnames[item->node_typei]), NULL, base_uri_copy);
     if(!is_atom && item->uri) {
       unsigned char* ruri_string;
       attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-      ruri_string = raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, item->uri);
+      ruri_string = raptor_uri_to_relative_uri_string(base_uri, item->uri);
       attrs[0] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                              rss_serializer->default_nspace,
                                                              (const unsigned char*)"about",
@@ -1802,7 +1786,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     for(field = item->fields[f]; field; field = field->next) {
       raptor_xml_element* predicate;
 
-      base_uri_copy = base_uri ? raptor_uri_copy_v2(rss_serializer->world, base_uri) : NULL;
+      base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
       predicate = raptor_new_xml_element(raptor_qname_copy(serializer->world->rss_fields_info_qnames[f]), NULL, base_uri_copy);
 
       /* Use atom:summary in preference */
@@ -1817,9 +1801,9 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         if(f == RAPTOR_RSS_FIELD_ATOM_ID)
           my_base_uri = NULL;
         
-        ruri_string = raptor_uri_to_relative_counted_uri_string_v2(rss_serializer->world,
-                                                                 my_base_uri, 
-                                                                 field->uri, &len);
+        ruri_string = raptor_uri_to_relative_counted_uri_string(my_base_uri, 
+                                                                field->uri,
+                                                                &len);
 
         if(f == RAPTOR_RSS_FIELD_ATOM_LINK &&
            !item->fields[RAPTOR_RSS_FIELD_ATOM_CONTENT]) {
@@ -1885,7 +1869,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         if(f == RAPTOR_RSS_FIELD_ENCLOSURE && item_type == RAPTOR_RSS_ITEM) {
           for(i = 0; i < raptor_sequence_size(rss_serializer->enclosures); i++) {
             enclosure_item = (raptor_rss_item*)raptor_sequence_get_at(rss_serializer->enclosures, i);
-            if(enclosure_item->uri && raptor_uri_equals_v2(rss_serializer->world, enclosure_uri, enclosure_item->uri))
+            if(enclosure_item->uri && raptor_uri_equals(enclosure_uri, enclosure_item->uri))
               break;
           }
           if(enclosure_item) {
@@ -1893,7 +1877,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
             unsigned char* ruri_string;
 
             attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
-            ruri_string = raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, field->uri);
+            ruri_string = raptor_uri_to_relative_uri_string(base_uri, field->uri);
             attrs[attr_count] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                             rss_serializer->default_nspace,
                                                                             (const unsigned char*)"resource",
@@ -1916,14 +1900,14 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
             }
             raptor_xml_element_set_attributes(predicate, attrs, attr_count);
           } else {
-            RAPTOR_DEBUG2("Enclosure item with URI %s could not be found in list of enclosures\n", raptor_uri_as_string_v2(rss_serializer->world, enclosure_uri));
+            RAPTOR_DEBUG2("Enclosure item with URI %s could not be found in list of enclosures\n", raptor_uri_as_string(enclosure_uri));
           }
         } else {
           unsigned char* ruri_string;
 
           /* not an rss:item with an rss:enclosure field */
           attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
-          ruri_string = raptor_uri_to_relative_uri_string_v2(rss_serializer->world, base_uri, field->uri);
+          ruri_string = raptor_uri_to_relative_uri_string(base_uri, field->uri);
           attrs[0] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                  rss_serializer->default_nspace,
                                                                  (const unsigned char*)"resource",
@@ -2036,15 +2020,15 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
       for(i = 0; i < raptor_sequence_size(rss_serializer->items); i++) {
         raptor_rss_item* item;
         item = (raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
-        if(raptor_uri_equals_v2(rss_serializer->world, item->uri, entry_uri)) {
+        if(raptor_uri_equals(item->uri, entry_uri)) {
           entry_item = item;
           break;
         }
       }
       if(!entry_item) {
         RAPTOR_DEBUG2("Entry URI %s was not found in list of items\n",
-                      raptor_uri_as_string_v2(rss_serializer->world, entry_uri));
-        raptor_free_uri_v2(rss_serializer->world, entry_uri);
+                      raptor_uri_as_string(entry_uri));
+        raptor_free_uri(entry_uri);
         entry_uri = NULL;
       }
     }
@@ -2091,7 +2075,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
 
-    base_uri_string = raptor_uri_as_string_v2(rss_serializer->world, serializer->base_uri);
+    base_uri_string = raptor_uri_as_string(serializer->base_uri);
     attrs[attrs_count++] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                        rss_serializer->xml_nspace,
                                                                        (const unsigned char*)"base",
@@ -2180,7 +2164,7 @@ raptor_rss10_serialize_declare_namespace_from_namespace(raptor_serializer* seria
       return 1;
 
     if(ns->uri && nspace->uri &&
-       raptor_uri_equals_v2(rss_serializer->world, ns->uri, nspace->uri))
+       raptor_uri_equals(ns->uri, nspace->uri))
       return 1;
   }
 

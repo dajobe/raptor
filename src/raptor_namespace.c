@@ -310,11 +310,11 @@ raptor_namespaces_clear(raptor_namespace_stack *nstack)
 
   if(nstack->world) {
     if(nstack->rdf_ms_uri) {
-      raptor_free_uri_v2(nstack->world, nstack->rdf_ms_uri);
+      raptor_free_uri(nstack->rdf_ms_uri);
       nstack->rdf_ms_uri = NULL;
     }
     if(nstack->rdf_schema_uri) {
-      raptor_free_uri_v2(nstack->world, nstack->rdf_schema_uri);
+      raptor_free_uri(nstack->rdf_schema_uri);
       nstack->rdf_schema_uri = NULL;
     }
   }
@@ -452,7 +452,7 @@ raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack,
   for(bucket = 0; bucket < nstack->table_size; bucket++) {
     raptor_namespace* ns;
     for(ns = nstack->table[bucket]; ns ; ns = ns->next)
-      if(raptor_uri_equals_v2(nstack->world, ns->uri, ns_uri))
+      if(raptor_uri_equals(ns->uri, ns_uri))
         return ns;
    }
   
@@ -478,7 +478,7 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
   
   for(bucket = 0; bucket < nstack->table_size; bucket++) {
     for(ns = nstack->table[bucket]; ns ; ns = ns->next)
-      if(raptor_uri_equals_v2(nstack->world, ns->uri, nspace->uri))
+      if(raptor_uri_equals(ns->uri, nspace->uri))
         return 1;
   }
   return 0;
@@ -510,7 +510,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 #if RAPTOR_DEBUG >1
   RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n",
                 prefix ? (char*)prefix : "(default)",
-                ns_uri ? (char*)raptor_uri_as_string_v2(nstack->world, ns_uri) : "(none)",
+                ns_uri ? (char*)raptor_uri_as_string(ns_uri) : "(none)",
                 depth);
 #endif
 #endif
@@ -538,7 +538,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   p = (unsigned char*)ns+sizeof(raptor_namespace);
   if(ns_uri) {
-    ns->uri = raptor_uri_copy_v2(nstack->world, ns_uri);
+    ns->uri = raptor_uri_copy(ns_uri);
     if(!ns->uri) {
       RAPTOR_FREE(raptor_namespace, ns);
       return NULL;
@@ -555,9 +555,9 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   /* set convienience flags when there is a defined namespace URI */
   if(ns->uri) {
-    if(raptor_uri_equals_v2(nstack->world, ns->uri, nstack->rdf_ms_uri))
+    if(raptor_uri_equals(ns->uri, nstack->rdf_ms_uri))
       ns->is_rdf_ms = 1;
-    else if(raptor_uri_equals_v2(nstack->world, ns->uri, nstack->rdf_schema_uri))
+    else if(raptor_uri_equals(ns->uri, nstack->rdf_schema_uri))
       ns->is_rdf_schema = 1;
   }
 
@@ -597,7 +597,7 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
   }
   ns = raptor_new_namespace_from_uri(nstack, prefix, ns_uri, depth);
   if(ns_uri)
-    raptor_free_uri_v2(nstack->world, ns_uri);
+    raptor_free_uri(ns_uri);
 
   return ns;
 }
@@ -641,7 +641,7 @@ raptor_free_namespace(raptor_namespace *ns)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(ns, raptor_namespace);
 
   if(ns->uri)
-    raptor_free_uri_v2(ns->nstack->world, ns->uri);
+    raptor_free_uri(ns->uri);
 
   RAPTOR_FREE(raptor_namespace, ns);
 }
@@ -725,7 +725,7 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
   unsigned char *p;
 
   if(ns->uri) {
-    uri_string = raptor_uri_as_counted_string_v2(ns->nstack->world, ns->uri, &uri_length);
+    uri_string = raptor_uri_as_counted_string(ns->uri, &uri_length);
     xml_uri_length = raptor_xml_escape_string(ns->nstack->world,
                                               uri_string, uri_length,
                                               NULL, 0, quote);
@@ -787,7 +787,7 @@ raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
     return 1;
   
   if(ns->uri)
-    uri_string = raptor_uri_as_counted_string_v2(ns->nstack->world, ns->uri, &uri_length);
+    uri_string = raptor_uri_as_counted_string(ns->uri, &uri_length);
   
   raptor_iostream_write_counted_string(iostr, "xmlns", 5);
   if(ns->prefix) {
@@ -928,14 +928,14 @@ raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,
   if(!uri)
     return NULL;
   
-  uri_string = raptor_uri_as_counted_string_v2(nstack->world, uri, &uri_len);
+  uri_string = raptor_uri_as_counted_string(uri, &uri_len);
 
   for(bucket = 0; bucket < nstack->table_size; bucket++) {
     for(ns = nstack->table[bucket]; ns ; ns = ns->next) {
       if(!ns->uri)
         continue;
       
-      ns_uri_string = raptor_uri_as_counted_string_v2(nstack->world, ns->uri,
+      ns_uri_string = raptor_uri_as_counted_string(ns->uri,
                                                       &ns_uri_len);
       if(ns_uri_len >= uri_len)
         continue;
@@ -970,7 +970,7 @@ raptor_namespace_print(FILE *stream, raptor_namespace* ns)
 {
   const unsigned char *uri_string;
 
-  uri_string = raptor_uri_as_string_v2(ns->nstack->world, ns->uri);
+  uri_string = raptor_uri_as_string(ns->uri);
   if(ns->prefix)
     fprintf(stream, "%s:%s", ns->prefix, uri_string);
   else

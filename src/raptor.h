@@ -97,7 +97,7 @@ extern "C" {
  *
  * Raptor URI Class.
  */
-typedef void* raptor_uri;
+typedef struct raptor_uri_s raptor_uri;
 
 
 /* Public statics */
@@ -918,21 +918,21 @@ raptor_uri* raptor_new_uri_from_id(raptor_world* world, raptor_uri *base_uri, co
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const char *name);
 RAPTOR_API
-void raptor_free_uri_v2(raptor_world* world, raptor_uri *uri);
+void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API
-int raptor_uri_equals_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2);
+int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API
-int raptor_uri_compare_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2);
+int raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API
-raptor_uri* raptor_uri_copy_v2(raptor_world* world, raptor_uri *uri);
+raptor_uri* raptor_uri_copy(raptor_uri *uri);
 RAPTOR_API
-unsigned char* raptor_uri_as_string_v2(raptor_world* world, raptor_uri *uri);
+unsigned char* raptor_uri_as_string(raptor_uri *uri);
 RAPTOR_API
-unsigned char* raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t* len_p);
+unsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_xmlbase(raptor_world* world, raptor_uri* old_uri);
+raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_retrieval(raptor_world* world, raptor_uri* old_uri);
+raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
 
 /* Identifier functions */
 RAPTOR_API
@@ -981,16 +981,16 @@ char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string
 RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API
-unsigned char* raptor_uri_to_relative_counted_uri_string_v2(raptor_world* world, raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
+unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
 RAPTOR_API
-unsigned char* raptor_uri_to_relative_uri_string_v2(raptor_world* world, raptor_uri *base_uri,  raptor_uri *reference_uri);
+unsigned char* raptor_uri_to_relative_uri_string(raptor_uri *base_uri,  raptor_uri *reference_uri);
 
 RAPTOR_API
-void raptor_uri_print_v2(raptor_world* world, const raptor_uri* uri, FILE *stream);
+void raptor_uri_print(const raptor_uri* uri, FILE *stream);
 RAPTOR_API
-unsigned char* raptor_uri_to_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t *len_p);
+unsigned char* raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p);
 RAPTOR_API
-unsigned char* raptor_uri_to_string_v2(raptor_world* world, raptor_uri *uri);
+unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
 
 /**

@@ -199,7 +199,7 @@ raptor_www_curl_fetch(raptor_www *www)
 
   /* specify URL to get */
   curl_easy_setopt(www->curl_handle, CURLOPT_URL, 
-                   raptor_uri_as_string_v2(www->world, www->uri));
+                   raptor_uri_as_string(www->uri));
 
   if(curl_easy_perform(www->curl_handle)) {
     /* failed */

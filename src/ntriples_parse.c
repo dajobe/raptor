@@ -200,13 +200,13 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 
   cleanup:
   if(subject_uri)
-    raptor_free_uri_v2(parser->world, subject_uri);
+    raptor_free_uri(subject_uri);
   if(predicate_uri)
-    raptor_free_uri_v2(parser->world, predicate_uri);
+    raptor_free_uri(predicate_uri);
   if(object_uri)
-    raptor_free_uri_v2(parser->world, object_uri);
+    raptor_free_uri(object_uri);
   if(datatype_uri)
-    raptor_free_uri_v2(parser->world, datatype_uri);
+    raptor_free_uri(datatype_uri);
 }
 
 

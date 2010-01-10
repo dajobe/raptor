@@ -54,6 +54,11 @@
 #include <unistd.h>
 #endif
 
+#if 0
+#undef RAPTOR_DEBUG
+#define RAPTOR_DEBUG 2
+#endif
+
 #ifdef NEED_OPTIND_DECLARATION
 extern int optind;
 extern char *optarg;
@@ -165,21 +170,6 @@ safe_strcmp(const char *s1, const char *s2)
 }
 
 
-#ifdef RDFDIFF_DEBUG
-static void
-rdfdiff_print_statements(rdfdiff_file* file)
-{    
-  fprintf(stderr, "Statements in %s\n",  file->name);
-  rdfdiff_link *cur = file->first;
-  while(cur) {
-    raptor_print_statement(cur->statement, stderr);
-    fprintf(stderr, "\n");
-    cur = cur->next;
-  }
-}
-#endif
-
-
 static rdfdiff_file*
 rdfdiff_new_file(raptor_world *world, const unsigned char *name, const char *syntax)
 {
@@ -283,11 +273,11 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
   if(!s1 || !s2)
     return 0;
 
-#if RAPTOR_DEBUG > 2
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "(rdfdiff_statement_equals) Comparing ");
-  raptor_print_statement(s1, stderr);
+  raptor_print_statement_as_ntriples(s1, stderr);
   fprintf(stderr, " to ");
-  raptor_print_statement(s2, stderr);
+  raptor_print_statement_as_ntriples(s2, stderr);
 #endif
 
   /* normal comparison */
@@ -302,9 +292,8 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     /*if(strcmp((const char *)s1->subject, (const char *)s2->subject.value) != 0)
       return 0;*/
   } else {
-    if(!raptor_uri_equals_v2(world,
-                             (raptor_uri *)s1->subject.value,
-                             (raptor_uri *)s2->subject.value)) {
+    if(!raptor_uri_equals((raptor_uri*)s1->subject.value,
+                          (raptor_uri*)s2->subject.value)) {
       rv = 0;
       goto done;
     }
@@ -315,9 +304,8 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     goto done;
   }
   
-  if(!raptor_uri_equals_v2(world,
-                           (raptor_uri *)s1->predicate.value,
-                           (raptor_uri *)s2->predicate.value)) {
+  if(!raptor_uri_equals((raptor_uri*)s1->predicate.value,
+                        (raptor_uri*)s2->predicate.value)) {
     rv = 0;
     goto done;
   }
@@ -334,17 +322,16 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
 
     if(equal) {
       if(s1->object.literal_language && s2->object.literal_language)
-        equal=!strcmp((char *)s1->object.literal_language,
-                      (char *)s2->object.literal_language);
+        equal = !strcmp((char *)s1->object.literal_language,
+                        (char *)s2->object.literal_language);
       else if(s1->object.literal_language || s2->object.literal_language)
         equal = 0;
       else
         equal = 1;
 
       if(equal)
-        equal = raptor_uri_equals_v2(world,
-                                     s1->object.literal_datatype, 
-                                     s2->object.literal_datatype);
+        equal = raptor_uri_equals(s1->object.literal_datatype, 
+                                  s2->object.literal_datatype);
     }
 
     rv = equal;
@@ -355,14 +342,15 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     /* if(strcmp((const char *)s1->object, (const char *)s2->object.value) != 0)
        return 0; */
   } else {
-    if(!raptor_uri_equals_v2(world, (raptor_uri *)s1->object.value, (raptor_uri *)s2->object.value))
+    if(!raptor_uri_equals((raptor_uri*)s1->object.value,
+                          (raptor_uri*)s2->object.value))
       rv = 0;
   }
 
   rv = 1;
   done:
 
-#if RAPTOR_DEBUG > 2
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, " : %s\n", (rv ? "equal" : "not equal"));
 #endif
   return rv;
@@ -400,11 +388,11 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
      * containing anononymous nodes are eaual. */
 #if 0
     fprintf(stderr, "b1->owner: ");    
-    raptor_print_statement(b1->owner, stderr);
+    raptor_print_statement_as_ntriples(b1->owner, stderr);
     fprintf(stderr, "\n");
 
     fprintf(stderr, "b2->owner: ");    
-    raptor_print_statement(b2->owner, stderr);
+    raptor_print_statement_as_ntriples(b2->owner, stderr);
     fprintf(stderr, "\n");
 #endif    
     p1 = rdfdiff_find_blank(b1_file->first_blank, (char *)b1->owner->subject.value);
@@ -675,7 +663,7 @@ rdfdiff_collect_statements(void *user_data, const raptor_statement *statement)
   file->statement_count++;
 
   if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK ||
-      statement->object.type  == RAPTOR_TERM_TYPE_BLANK) {
+     statement->object.type  == RAPTOR_TERM_TYPE_BLANK) {
 
     if(statement->subject.type == RAPTOR_TERM_TYPE_BLANK)
       rv = rdfdiff_add_blank_statement(file, statement);
@@ -909,7 +897,7 @@ main(int argc, char *argv[])
         }
         
         fprintf(stderr, "<    ");
-        raptor_print_statement(cur->statement, stderr);
+        raptor_print_statement_as_ntriples(cur->statement, stderr);
         fprintf(stderr, "\n");
       }
       
@@ -941,7 +929,7 @@ main(int argc, char *argv[])
       if(!brief) {        
 #if 0
         fprintf(stderr, "<    ");
-        raptor_print_statement(b1->owner, stderr);
+        raptor_print_statement_as_ntriples(b1->owner, stderr);
         fprintf(stderr, "\n");
 #else
         if(emit_from_header) {
@@ -974,7 +962,7 @@ main(int argc, char *argv[])
       while(cur) {
         if(!brief) {
           fprintf(stderr, ">    ");
-          raptor_print_statement(cur->statement, stderr);
+          raptor_print_statement_as_ntriples(cur->statement, stderr);
           fprintf(stderr, "\n");
         }
       
@@ -993,7 +981,7 @@ main(int argc, char *argv[])
         if(!brief) {
 #if 0          
           fprintf(stderr, ">    ");
-          raptor_print_statement(blank->owner, stderr);
+          raptor_print_statement_as_ntriples(blank->owner, stderr);
           fprintf(stderr, "\n");
 #else
           if(emit_to_header) {
@@ -1024,7 +1012,7 @@ main(int argc, char *argv[])
 exit:
 
   if(base_uri)
-    raptor_free_uri_v2(world, base_uri);
+    raptor_free_uri(base_uri);
   
   if(from_file)
     rdfdiff_free_file(from_file);
@@ -1039,10 +1027,10 @@ exit:
     raptor_free_memory(to_string);
 
   if(from_uri)
-    raptor_free_uri_v2(world, from_uri);
+    raptor_free_uri(from_uri);
 
   if(to_uri)
-    raptor_free_uri_v2(world, to_uri);
+    raptor_free_uri(to_uri);
 
   raptor_free_world(world);
 

@@ -315,7 +315,7 @@ EXPONENT [eE][+-]?[0-9]+
 
 
 {QUOTEDURI}   { if(yyleng == 2) 
-                  turtle_parser_lval->uri = raptor_uri_copy_v2(rdf_parser->world, rdf_parser->base_uri);
+                  turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
                 else {
                   raptor_stringbuffer* sb;
                   unsigned char* uri_string;
@@ -748,7 +748,7 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 
     case URI_LITERAL:
       sprintf(buffer, "URI_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string_v2(world, lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case BLANK_LITERAL:
@@ -757,7 +757,7 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 
     case QNAME_LITERAL:
       sprintf(buffer, "QNAME_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string_v2(world, lval->uri) : ""));
+              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case INTEGER_LITERAL:
@@ -808,7 +808,7 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
     case URI_LITERAL:
     case QNAME_LITERAL:
       if(lval->uri)
-        raptor_free_uri_v2(world, lval->uri);
+        raptor_free_uri(lval->uri);
       break;
     default:
       break;

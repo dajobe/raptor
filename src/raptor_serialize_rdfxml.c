@@ -149,7 +149,7 @@ raptor_rdfxml_serialize_terminate(raptor_serializer* serializer)
   }
 
   if(context->rdf_xml_literal_uri) {
-    raptor_free_uri_v2(serializer->world, context->rdf_xml_literal_uri);
+    raptor_free_uri(context->rdf_xml_literal_uri);
     context->rdf_xml_literal_uri = NULL;
   }
 
@@ -199,7 +199,7 @@ raptor_rdfxml_serialize_declare_namespace_from_namespace(raptor_serializer* seri
       return 1;
 
     if(ns->uri && nspace->uri &&
-       raptor_uri_equals_v2(serializer->world, ns->uri, nspace->uri))
+       raptor_uri_equals(ns->uri, nspace->uri))
       return 1;
   }
 
@@ -286,7 +286,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
 
   base_uri = serializer->base_uri;
   if(base_uri)
-    base_uri = raptor_uri_copy_v2(serializer->world, base_uri);
+    base_uri = raptor_uri_copy(base_uri);
 
   context->rdf_RDF_element = raptor_new_xml_element_from_namespace_local_name(context->rdf_nspace, (const unsigned char*)"RDF", NULL, base_uri);
   if(!context->rdf_RDF_element)
@@ -308,7 +308,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
     if(!attrs)
       goto tidy;
 
-    base_uri_string = raptor_uri_as_string_v2(serializer->world, base_uri);
+    base_uri_string = raptor_uri_as_string(base_uri);
     attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
     if(!attrs[attrs_count]) {
       RAPTOR_FREE(qnamearray, attrs);
@@ -331,7 +331,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
 
   tidy:
   if(base_uri)
-    raptor_free_uri_v2(serializer->world, base_uri);
+    raptor_free_uri(base_uri);
 
   return rc;
 }
@@ -374,7 +374,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     unsigned char c;
 
     /* Do not use raptor_uri_as_counted_string() - we want a modifiable copy */
-    uri_string = raptor_uri_to_counted_string_v2(serializer->world, (raptor_uri*)statement->predicate.value,
+    uri_string = raptor_uri_to_counted_string((raptor_uri*)statement->predicate.value,
                                                &uri_len);
     if(!uri_string)
       goto oom;
@@ -410,12 +410,12 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                                  nsprefix,
                                                  predicate_ns_uri, 0);
       if(!predicate_ns) {
-        raptor_free_uri_v2(serializer->world, predicate_ns_uri);
+        raptor_free_uri(predicate_ns_uri);
         goto oom;
       }
       free_predicate_ns = 1;
     }
-    raptor_free_uri_v2(serializer->world, predicate_ns_uri);
+    raptor_free_uri(predicate_ns_uri);
   } else {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                                "Cannot serialize a triple with subject node type %d\n",
@@ -425,7 +425,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
   /* base uri */
   if(serializer->base_uri)
-    base_uri = raptor_uri_copy_v2(serializer->world, serializer->base_uri);
+    base_uri = raptor_uri_copy(serializer->base_uri);
 
 
   rdf_Description_element = raptor_new_xml_element_from_namespace_local_name(context->rdf_nspace,
@@ -451,13 +451,12 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_TERM_TYPE_URI:
       allocated = 1;
       if(serializer->feature_relative_uris) {
-        subject_uri_string = raptor_uri_to_relative_uri_string_v2(serializer->world,
-                                                                  serializer->base_uri,
-                                                                  (raptor_uri*)statement->subject.value);
+        subject_uri_string = raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                               (raptor_uri*)statement->subject.value);
         if(!subject_uri_string)
           goto oom;
       } else {
-        subject_uri_string = raptor_uri_as_string_v2(serializer->world, (raptor_uri*)statement->subject.value);
+        subject_uri_string = raptor_uri_as_string((raptor_uri*)statement->subject.value);
         allocated = 0;
       }
 
@@ -511,7 +510,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_TERM_TYPE_LITERAL:
       object_is_parseTypeLiteral = 0;
       if(statement->object.literal_datatype &&
-         raptor_uri_equals_v2(serializer->world, statement->object.literal_datatype,
+         raptor_uri_equals(statement->object.literal_datatype,
                               context->rdf_xml_literal_uri))
         object_is_parseTypeLiteral = 1;
 
@@ -545,7 +544,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                         len);
       } else {
         if(statement->object.literal_datatype) {
-          attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", (unsigned char*)raptor_uri_as_string_v2(serializer->world, (raptor_uri*)statement->object.literal_datatype));
+          attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", (unsigned char*)raptor_uri_as_string((raptor_uri*)statement->object.literal_datatype));
           if(!attrs[attrs_count])
             goto oom;
           attrs_count++;
@@ -590,13 +589,12 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       allocated = 1;
       /* must be URI */
       if(serializer->feature_relative_uris) {
-        object_uri_string = raptor_uri_to_relative_uri_string_v2(serializer->world,
-                                                                 serializer->base_uri,
-                                                                 (raptor_uri*)statement->object.value);
+        object_uri_string = raptor_uri_to_relative_uri_string(serializer->base_uri,
+                                                              (raptor_uri*)statement->object.value);
         if(!object_uri_string)
           goto oom;
       } else {
-        object_uri_string = raptor_uri_to_string_v2(serializer->world, (raptor_uri*)statement->object.value);
+        object_uri_string = raptor_uri_to_string((raptor_uri*)statement->object.value);
         allocated = 0;
       }
 
@@ -655,7 +653,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   }
 
   if(base_uri)
-    raptor_free_uri_v2(serializer->world, base_uri);
+    raptor_free_uri(base_uri);
 
   if(free_predicate_ns)
     raptor_free_namespace(predicate_ns);

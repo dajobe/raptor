@@ -176,7 +176,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_tripl
 %destructor {
   /* HACK: fix-bison adds rdf_parser param to yydestruct() */
   if($$)
-    raptor_free_uri_v2(((raptor_parser*)rdf_parser)->world, $$);
+    raptor_free_uri($$);
 } URI_LITERAL QNAME_LITERAL
 
 %destructor {
@@ -659,7 +659,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 #endif
 
 #if RAPTOR_DEBUG > 1  
-  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
+  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
 #endif
 
   if(prefix) {
@@ -681,7 +681,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 
   if($2)
     RAPTOR_FREE(cstring, $2);
-  raptor_free_uri_v2(((raptor_parser*)rdf_parser)->world, $3);
+  raptor_free_uri($3);
 
   if(!ns)
     YYERROR;
@@ -695,7 +695,7 @@ base: BASE URI_LITERAL DOT
   /*raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);*/
   raptor_parser* parser = (raptor_parser*)rdf_parser;
   if(parser->base_uri)
-    raptor_free_uri_v2(parser->world, parser->base_uri);
+    raptor_free_uri(parser->base_uri);
   parser->base_uri = uri;
 }
 ;
@@ -752,7 +752,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
   if($5) {
@@ -766,7 +766,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
   if($5) {
@@ -780,7 +780,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL HAT URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
+  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string($3));
 #endif
 
   if($3) {
@@ -794,7 +794,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | STRING_LITERAL HAT QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $3));
+  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string($3));
 #endif
 
   if($3) {
@@ -871,7 +871,7 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   string = (unsigned char*)RAPTOR_MALLOC(cstring, 5);
   if(!string) {
-    raptor_free_uri_v2(((raptor_parser*)rdf_parser)->world, uri);
+    raptor_free_uri(uri);
     YYERROR;
   }
   strncpy((char*)string, "true", 5);
@@ -891,7 +891,7 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   string = (unsigned char*)RAPTOR_MALLOC(cstring, 6);
   if(!string) {
-    raptor_free_uri_v2(((raptor_parser*)rdf_parser)->world, uri);
+    raptor_free_uri(uri);
     YYERROR;
   }
   strncpy((char*)string, "false", 6);
@@ -905,7 +905,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 resource: URI_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("resource URI=<%s>\n", raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $1));
+  printf("resource URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
   if($1) {
@@ -918,7 +918,7 @@ resource: URI_LITERAL
 | QNAME_LITERAL
 {
 #if RAPTOR_DEBUG > 1  
-  printf("resource qname URI=<%s>\n", raptor_uri_as_string_v2(((raptor_parser*)rdf_parser)->world, $1));
+  printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
   if($1) {
@@ -1031,10 +1031,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  first_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->first_uri), NULL, NULL, NULL, NULL);
+  first_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy(turtle_parser->first_uri), NULL, NULL, NULL, NULL);
   if(!first_identifier)
     goto err_collection;
-  rest_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->rest_uri), NULL, NULL, NULL, NULL);
+  rest_identifier = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy(turtle_parser->rest_uri), NULL, NULL, NULL, NULL);
   if(!rest_identifier)
     goto err_collection;
   
@@ -1045,7 +1045,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  object = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
+  object = raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy(turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
   if(!object)
     goto err_collection;
 
@@ -1124,7 +1124,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("collection\n empty\n");
 #endif
 
-  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy_v2(((raptor_parser*)rdf_parser)->world, turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
+  $$=raptor_new_identifier_v2(((raptor_parser*)rdf_parser)->world, RAPTOR_TERM_TYPE_URI, raptor_uri_copy(turtle_parser->nil_uri), NULL, NULL, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -1315,11 +1315,11 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
   if(turtle_parser->nil_uri)
-    raptor_free_uri_v2(rdf_parser->world, turtle_parser->nil_uri);
+    raptor_free_uri(turtle_parser->nil_uri);
   if(turtle_parser->first_uri)
-    raptor_free_uri_v2(rdf_parser->world, turtle_parser->first_uri);
+    raptor_free_uri(turtle_parser->first_uri);
   if(turtle_parser->rest_uri)
-    raptor_free_uri_v2(rdf_parser->world, turtle_parser->rest_uri);
+    raptor_free_uri(turtle_parser->rest_uri);
 
   raptor_namespaces_clear(&turtle_parser->namespaces);
 
@@ -1354,9 +1354,9 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
   }
 
   /* Predicates are URIs but check for bad ordinals */
-  if(!strncmp((const char*)raptor_uri_as_string_v2(parser->world, t->predicate->uri),
+  if(!strncmp((const char*)raptor_uri_as_string(t->predicate->uri),
               "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    unsigned char* predicate_uri_string = raptor_uri_as_string_v2(parser->world, t->predicate->uri);
+    unsigned char* predicate_uri_string = raptor_uri_as_string(t->predicate->uri);
     int predicate_ordinal = raptor_check_ordinal(predicate_uri_string+44);
     if(predicate_ordinal <= 0)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);

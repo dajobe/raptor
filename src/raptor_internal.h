@@ -1365,6 +1365,8 @@ struct raptor_world_s {
   void *libxml_saved_generic_error_context;
   xmlGenericErrorFunc libxml_saved_generic_error_handler;
 #endif  
+
+  raptor_avltree *uris_tree;
 };
 
 /* end of RAPTOR_INTERNAL */

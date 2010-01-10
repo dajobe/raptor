@@ -156,7 +156,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
       if(ns) {
         qname->nspace = ns;
 #if RAPTOR_DEBUG > 1
-        RAPTOR_DEBUG2("Found default namespace %s\n", raptor_uri_as_string_v2(nstack->world, ns->uri));
+        RAPTOR_DEBUG2("Found default namespace %s\n", raptor_uri_as_string(ns->uri));
 #endif
       } else {
 #if RAPTOR_DEBUG > 1
@@ -191,7 +191,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
                                  "The namespace prefix in \"%s\" was not declared.", name);
     } else {
 #if RAPTOR_DEBUG > 1
-      RAPTOR_DEBUG3("Found namespace prefix %s URI %s\n", ns->prefix, raptor_uri_as_string_v2(nstack->world, ns->uri));
+      RAPTOR_DEBUG3("Found namespace prefix %s URI %s\n", ns->prefix, raptor_uri_as_string(ns->uri));
 #endif
       qname->nspace = ns;
     }
@@ -362,7 +362,7 @@ raptor_free_qname(raptor_qname* name)
     RAPTOR_FREE(cstring, (void*)name->local_name);
 
   if(name->uri && name->nspace)
-    raptor_free_uri_v2(name->world, name->uri);
+    raptor_free_uri(name->uri);
 
   if(name->value)
     RAPTOR_FREE(cstring, (void*)name->value);
@@ -478,7 +478,7 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
     if(local_name_length)
       uri = raptor_new_uri_from_uri_local_name(nstack->world, uri, local_name);
     else
-      uri = raptor_uri_copy_v2(nstack->world, uri);
+      uri = raptor_uri_copy(uri);
   }
 
   return uri;

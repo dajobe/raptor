@@ -112,7 +112,7 @@ raptor_www_libxml_fetch(raptor_www *www)
     *p='\0';
   }
 
-  www->ctxt = xmlNanoHTTPMethod((const char*)raptor_uri_as_string_v2(www->world, www->uri),
+  www->ctxt = xmlNanoHTTPMethod((const char*)raptor_uri_as_string(www->uri),
                               NULL, /* HTTP method (default GET) */
                               NULL, /* input string */
                               &www->type,

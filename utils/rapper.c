@@ -121,14 +121,13 @@ void print_triples(void *user_data, const raptor_statement *triple)
 static
 void print_graph(void *user_data, raptor_uri *graph)
 {
-  raptor_parser *parser = (raptor_parser *)user_data;
-  
+  /* raptor_parser *parser = (raptor_parser *)user_data; */
   if(!report_graph)
     return;
 
   if(graph)
     fprintf(stderr, "%s: Named graph: URI %s\n", program,
-            raptor_uri_as_string_v2(raptor_parser_get_world(parser), graph));
+            raptor_uri_as_string(graph));
   else
     fprintf(stderr, "%s: Named graph: default\n", program);
 }
@@ -275,7 +274,7 @@ static int
 rapper_uri_trace(void *user_data, raptor_uri* uri)
 {
   fprintf(stderr, "%s: Processing URI %s\n", program,
-          raptor_uri_as_string_v2(raptor_parser_get_world((raptor_parser*)user_data), uri));
+          raptor_uri_as_string(uri));
   return 0;
 }
 
@@ -795,7 +794,7 @@ main(int argc, char *argv[])
    */
   if(!output_base_uri_string) {
     if(base_uri)
-      output_base_uri = raptor_uri_copy_v2(world, base_uri);
+      output_base_uri = raptor_uri_copy(base_uri);
   } else {
     if(strcmp((const char*)output_base_uri_string, "-")) {
       output_base_uri = raptor_new_uri(world, (const unsigned char*)output_base_uri_string);
@@ -876,7 +875,7 @@ main(int argc, char *argv[])
       if(output_base_uri)
         fprintf(stderr, "%s: Serializing with serializer %s and base URI %s\n",
                 program, serializer_syntax_name,
-                raptor_uri_as_string_v2(world, output_base_uri));
+                raptor_uri_as_string(output_base_uri));
       else
         fprintf(stderr, "%s: Serializing with serializer %s\n",
                 program, serializer_syntax_name);
@@ -900,7 +899,7 @@ main(int argc, char *argv[])
         
         raptor_serialize_set_namespace(serializer, ns_uri, nd->prefix);
         if(ns_uri)
-          raptor_free_uri_v2(world, ns_uri);
+          raptor_free_uri(ns_uri);
       }
       raptor_free_sequence(namespace_declarations);
       namespace_declarations = NULL;
@@ -963,11 +962,11 @@ main(int argc, char *argv[])
   }
   
   if(output_base_uri)
-    raptor_free_uri_v2(world, output_base_uri);
+    raptor_free_uri(output_base_uri);
   if(base_uri)
-    raptor_free_uri_v2(world, base_uri);
+    raptor_free_uri(base_uri);
   if(uri)
-    raptor_free_uri_v2(world, uri);
+    raptor_free_uri(uri);
   if(free_uri_string)
     raptor_free_memory(uri_string);
 

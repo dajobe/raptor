@@ -274,9 +274,8 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         new_subject = strcmp((char*)s1->subject.value,
                              (char*)s2->subject.value);
       else
-        new_subject=!raptor_uri_equals_v2(serializer->world,
-                                          (raptor_uri*)s1->subject.value,
-                                          (raptor_uri*)s2->subject.value);
+        new_subject = !raptor_uri_equals((raptor_uri*)s1->subject.value,
+                                         (raptor_uri*)s2->subject.value);
     }
 
     if(new_subject) {
@@ -340,9 +339,8 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
     if(new_subject)
       new_predicate = 1;
     else {
-      new_predicate=!raptor_uri_equals_v2(serializer->world, 
-                                          (raptor_uri*)s1->predicate.value,
-                                          (raptor_uri*)s2->predicate.value);
+      new_predicate = !raptor_uri_equals((raptor_uri*)s1->predicate.value,
+                                         (raptor_uri*)s2->predicate.value);
       if(new_predicate) {
         raptor_json_writer_newline(context->json_writer);
         raptor_json_writer_end_block(context->json_writer, ']');

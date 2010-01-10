@@ -64,7 +64,7 @@ raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locat
     return;
 
   if(locator->uri)
-    fprintf(stream, "URI %s", raptor_uri_as_string_v2(world, locator->uri));
+    fprintf(stream, "URI %s", raptor_uri_as_string(locator->uri));
   else if(locator->file)
     fprintf(stream, "file %s", locator->file);
   else
@@ -103,7 +103,7 @@ raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, rapto
 
   if(locator->uri) {
     size_t uri_len;
-    (void)raptor_uri_as_counted_string_v2(world, locator->uri, &uri_len);
+    (void)raptor_uri_as_counted_string(locator->uri, &uri_len);
     bufsize= 4 + uri_len; /* "URI " */
   } else if(locator->file)
     bufsize= 5 + strlen(locator->file); /* "file " */
@@ -121,7 +121,7 @@ raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, rapto
   
 
   if(locator->uri)
-    count = sprintf(buffer, "URI %s", raptor_uri_as_string_v2(world, locator->uri));
+    count = sprintf(buffer, "URI %s", raptor_uri_as_string(locator->uri));
   else if(locator->file)
     count = sprintf(buffer, "file %s", locator->file);
   else
@@ -221,5 +221,5 @@ raptor_locator_uri_v2(raptor_world* world, raptor_locator *locator)
 {
   if(!locator)
     return NULL;
-  return (const char*)raptor_uri_as_string_v2(world, locator->uri);
+  return (const char*)raptor_uri_as_string(locator->uri);
 }

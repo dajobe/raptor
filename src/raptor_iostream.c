@@ -764,7 +764,7 @@ int
 raptor_iostream_write_uri_v2(raptor_world* world, raptor_iostream* iostr, raptor_uri* uri)
 {
   size_t len;
-  const void *string = raptor_uri_as_counted_string_v2(world, uri, &len);
+  const void *string = raptor_uri_as_counted_string(uri, &len);
   return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
 }
 

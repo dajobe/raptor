@@ -133,13 +133,13 @@ raptor_free_json_writer(raptor_json_writer* json_writer)
 
 #if RAPTOR_JSON_WRITER_DATATYPES == 1
   if(json_writer->xsd_boolean_uri)
-    raptor_free_uri_v2(json_writer->world, json_writer->xsd_boolean_uri);
+    raptor_free_uri(json_writer->xsd_boolean_uri);
   if(json_writer->xsd_decimal_uri)
-    raptor_free_uri_v2(json_writer->world, json_writer->xsd_decimal_uri);
+    raptor_free_uri(json_writer->xsd_decimal_uri);
   if(json_writer->xsd_double_uri)
-    raptor_free_uri_v2(json_writer->world, json_writer->xsd_double_uri);
+    raptor_free_uri(json_writer->xsd_double_uri);
   if(json_writer->xsd_integer_uri)
-    raptor_free_uri_v2(json_writer->world, json_writer->xsd_integer_uri);
+    raptor_free_uri(json_writer->xsd_integer_uri);
 #endif
 
   RAPTOR_FREE(raptor_json_writer, json_writer);
@@ -214,7 +214,7 @@ raptor_json_writer_key_uri_value(raptor_json_writer* json_writer,
   size_t value_len;
   int rc = 0;
   
-  value = (const char*)raptor_uri_to_relative_counted_uri_string_v2(json_writer->world, json_writer->base_uri, uri, &value_len);
+  value = (const char*)raptor_uri_to_relative_counted_uri_string(json_writer->base_uri, uri, &value_len);
   if(!value)
     return 1;
 
@@ -330,7 +330,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
   /* typed literal special cases */
   if(datatype) {
     /* integer */
-    if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_integer_uri)) {
+    if(raptor_uri_equals(datatype, json_writer->xsd_integer_uri)) {
       long inum = strtol((const char*)s, NULL, 10);
       if(inum != LONG_MIN && inum != LONG_MAX) {
         raptor_iostream_write_decimal(json_writer->iostr, inum);
@@ -338,7 +338,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
       }
     
     /* double */
-    } else if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_double_uri)) {
+    } else if(raptor_uri_equals(datatype, json_writer->xsd_double_uri)) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
         const char* decimal = strchr((const char*)s, '.');
@@ -351,7 +351,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
       }
 
     /* decimal */
-    } else if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_decimal_uri)) {
+    } else if(raptor_uri_equals(datatype, json_writer->xsd_decimal_uri)) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
         snprintf(buf, 20, "%.1lf", dnum);
@@ -360,7 +360,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
       }
     
     /* boolean */
-    } else if(raptor_uri_equals_v2(json_writer->world, datatype, json_writer->xsd_boolean_uri)) {
+    } else if(raptor_uri_equals(datatype, json_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
         raptor_iostream_write_string(json_writer->iostr, "false");
         written = 1;

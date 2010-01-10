@@ -129,7 +129,7 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
     guess_parser->do_guess = 0;
 
     if(rdf_parser->base_uri)
-      identifier = raptor_uri_as_string_v2(rdf_parser->world, rdf_parser->base_uri);
+      identifier = raptor_uri_as_string(rdf_parser->base_uri);
     
     name = raptor_world_guess_parser_name(rdf_parser->world,
                                           NULL, guess_parser->content_type,
