@@ -1,4 +1,698 @@
+2010-01-10  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/curie.c, librdfa/rdfa.c, src/ntriples_parse.c,
+	src/raptor.h, src/raptor_abbrev.c, src/raptor_expat.c,
+	src/raptor_feature.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_identifier.c, src/raptor_internal.h,
+	src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_librdfa.c, src/raptor_locator.c, src/raptor_namespace.c,
+	src/raptor_parse.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_statement.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_lexer.l, src/turtle_parser.y,
+	utils/rapper.c, utils/rdfdiff.c:
+	New raptor_uri implementation - reference counted uris with interning.
+
+	Based on librdf_uri reference counted uris with interning in an
+	librdf_hash, this uses a raptor_avltree to store/lookup previously
+	seen uris so that a single URI string has one raptor_uri* object.
+
+	Removed initial world parameter from all raptor_uri class methods.
+
+	Update all callers of above.
+
+	rdfdiff debug prints also updated to generate ntriples
+
+	* src/raptor_abbrev.c: Remove too-clever inline editing of uri
+	string in raptor_new_qname_from_resource
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_uri.c:
+	Add raptor_uri_finish stup for uri class cleanup
+
+	* docs/raptor-sections.txt, docs/tmpl/section-feature.sgml,
+	docs/tmpl/section-general.sgml, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-locator.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-sax2.sgml, docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-world.sgml, docs/tmpl/section-www.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	Update some generated docs.
+
+	* librdfa/rdfa.c, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_abbrev.c, src/raptor_feature.c, src/raptor_grddl.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_namespace.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_test.c,
+	src/raptor_xml_writer.c, src/raptor_xsd.c, src/turtle_lexer.l,
+	src/turtle_parser.y, utils/rapper.c, utils/rdfdiff.c:
+	Remove _v2 suffix from raptor_uri constructors
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_connection): Use raptor_uri* for predicate_uri
+	arg
+
+	* src/raptor_internal.h, src/raptor_uri.c, src/raptor_xml_writer.c:
+	Removed raptor_uri_handler and made all URI functions work direct
+	with default implementation
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_uri.c:
+	Move raptor_uri_handler to internal and remove get/set functions.
+
+	(raptor_uri_get_handler_v2, raptor_uri_set_handler_v2): Deleted
+
+	(raptor_uri_init): Set default handler directly.
+
+	* src/raptor.h: Add raptor_new_identifier_from_identifier
+	prototype
+
+	* src/raptor.h, src/raptor_identifier.c:
+	Add reference count model for raptor_identifier
+
+	(raptor_new_identifier_from_identifier): Set initial usage to 1 when
+	allocaed as an object; initialising statically does not use this.
+
+	(raptor_new_identifier_from_identifier): Added copy constructor
+
+	(raptor_free_identifier): Free when usage is 0. static identifiers
+	do not call this; they use raptor_clear_identifier
+
+2010-01-08  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_identifier.c, src/raptor_internal.h,
+	src/raptor_rdfxml.c, src/turtle_parser.y:
+	Remove is_malloced field from raptor_identifier
+
+	raptor_identifier loses is_malloc field
+
+	(raptor_clear_identifier): Added to clear fields of static
+	identified; pulled out of raptor_free_identifier
+
+	(raptor_free_identifier): Call above and then free the object.
+
+	* src/raptor.h, src/raptor_parse.c, src/raptor_serialize.c,
+	utils/rapper.c: Rename parser/serializer feature enumeration
+	methods to be on raptor_world class
+
+	(raptor_world_enumerate_parser_features): Renamed from
+	raptor_features_enumerate_v2
+
+	(raptor_world_enumerate_serializer_features): Renamed from
+	raptor_serializer_features_enumerate_v2.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_parse.c,
+	utils/rapper.c:
+	Rename raptor_set_feature to correct method name
+	raptor_parser_set_feature
+
+	* src/raptor.h, src/raptor_parse.c, utils/rapper.c: Rename
+	raptor_set_parser_strict to correct method name
+	raptor_parser_set_strict
+
+	* utils/rdfdiff.c:
+	Update for new parser constructor name
+
+	* utils/rapper.c: Update for new parser/serializer enumerate/check
+	method names
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c:
+	Rename parser/serializer enumerating, checking and guessing
+	functions to be methods of raptor_world.
+
+	(raptor_world_enumerate_parsers): Renamed from
+	raptor_parsers_enumerate_v2
+
+	(raptor_syntaxes_enumerate_v2): Deleted; use
+	raptor_world_enumerate_parsers.
+
+	(raptor_world_is_parser_name): Renamed from
+	raptor_syntax_name_check_v2
+
+	(raptor_world_guess_parser_name): Renamed from
+	raptor_guess_parser_name_v2
+
+	(raptor_new_parser): Renamed from raptor_new_parser_v2
+
+	(raptor_new_parser_for_content): Renamed from
+	raptor_new_parser_for_content_v2.
+
+	(raptor_world_enumerate_serializers): Renamed from
+	raptor_serializers_enumerate_v2.
+
+	(raptor_world_is_serializer_name): Renamed from
+	raptor_serializer_syntax_name_check_v2
+
+	(raptor_new_serializer): Renamed from raptor_new_serializer_v2
+
+	* src/raptor_internal.h:
+	Restore raptor_simple_message_handler for internal use
+
+	* src/raptor_general.c:
+	(raptor_log_error): All user error handlers are called here now.
+
+	* src/raptor.h: Delete raptor_simple_message_handler - nothing
+	uses it anymore.
+
+	* src/raptor.h, src/raptor_namespace.c, src/raptor_xml.c:
+	raptor_xml_any_escape_string and raptor_xml_any_escape_string use
+	raptor_world to replace error_handler/error_data args.
+
+	(raptor_xml_any_escape_string, raptor_xml_any_escape_string): Delete
+	error_handler and error_data args and replace with raptor_world
+	initial argument.  Pass errors via raptor_log_error/formatted.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_serialize.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c:
+	Serializer class loses specific fatal/error/warning handling
+
+	(raptor_serializer_set_error_handler,
+	raptor_serializer_set_warning_handler): Deleted
+
+	(raptor_serializer_error, raptor_serializer_simple_error,
+	raptor_serializer_error_varargs, raptor_serializer_warning,
+	raptor_serializer_warning_varargs): Removed the internal functions
+	that called the serializer-specific handlers.
+
+	In serializers replaced calls to the above functions with
+	raptor_log_error or raptor_log_error_formatted depending on the
+	arguments present.
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c:
+	raptor_new_turtle_writer loses error_handler / error_data args.
+
+	struct raptor_turtle_writer_s loses error_handler and error_data
+	fields.
+
+	(raptor_new_turtle_writer): error_handler and error_data args
+	deleted.
+
+	Updated callers.
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c:
+	raptor_new_xml_writer_v2 loses error_handler / error_data args.
+
+	raptor_xml_writer gains raptor_world field.
+
+	(raptor_new_xml_writer_v2): Delete args.  Store world.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_iostream.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c:
+	All raptor_iostream constructors gain an initial raptor_world arg.
+
+	(raptor_new_iostream_from_handler2, raptor_new_iostream_to_sink,
+	raptor_new_iostream_to_filename, raptor_new_iostream_to_file_handle,
+	raptor_new_iostream_to_string, raptor_new_iostream_from_sink,
+	raptor_new_iostream_from_filename,
+	raptor_new_iostream_from_file_handle,
+	raptor_new_iostream_from_string): Gain an initial raptor_world*
+	world argument.  Consequently: 
+
+	(raptor_iostream_write_xml_any_escaped_string,
+	raptor_iostream_write_xml_escaped_string): Both lose the
+	error_handler and error_data args since it can send errors via the
+	internal world.
+
+	* src/raptor.h, src/raptor_qname.c, src/turtle_parser.y:
+	raptor_qname_string_to_uri loses error_handler/error_data args.
+
+	(raptor_qname_string_to_uri): Delete error_handler and error_data
+	args. Use raptor_log_error_formatted to report prefix error.
+
+	* src/raptor.h, src/raptor_qname.c, src/raptor_sax2.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c:
+	raptor_new_qname loses error_handler / error_data args
+
+	(raptor_new_qname): delete args and use raptor_log_error_formatted
+	for error reporting.
+
+	Update callers.
+
+	* src/raptor.h, src/raptor_namespace.c, src/raptor_rss.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c:
+	raptor_new_namespaces_v2 loses error_handler / error_data args.
+
+	(raptor_new_namespaces_v2): Delete args.
+
+	Update all callers with the change - many of which were NULL/NULL
+	anyway!
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_namespace.c, src/raptor_sax2.c, src/turtle_parser.y:
+	raptor_namespaces_init_v2 loses error_handler / error_data
+
+	(raptor_log_error_formatted): Added to write a formatted error
+	message with sprintf style.
+
+	raptor_namespace_stack: loses error_handler and error_data fields.
+
+	(raptor_namespaces_init_v2): Remove error_handler and error_data
+	args.
+
+	(raptor_new_namespace_from_uri): Use raptor_log_error_formatted to
+	format an error message with argument.
+
+	Update all calls to raptor_namespaces_init_v2 to remove error
+	handler/data args.
+
+	* src/raptor_json_writer.c:
+	Update call to error_handler in #defined-out code
+
+	* src/raptor_internal.h, src/raptor_json_writer.c,
+	src/raptor_serialize_json.c:
+	Remove error_handler/error_data from json writer
+
+	struct raptor_json_writer_s: loses error_handler and error_data
+	fields.
+	
+	(raptor_new_json_writer): loses error_handler and error_data args.
+
+	(raptor_json_serialize_start): Update for new signature.
+
+	* src/raptor_libxml.c:
+	Initialise libxml generic error with pointer to raptor_world
+
+	(raptor_libxml_generic_error): Expect world and never a locator.
+
+	(raptor_libxml_init): Initialise generic error func with world
+	user data.
+
+	* src/raptor_libxml.c:
+	Handle new XML_FROM_SCHEMATRONV introduced in
+	libxml 2.6.32 2008-04-08
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_libxml.c:
+	libxml generic & structured error saving defaults on.
+
+	These are turned on by default so that when libxml library-wide
+	generic/structured error handlers are set, this happens by default.
+	Previously (1.4.x) it was done anyway, regardless of the flags.
+
+	raptor_libxml_flags: update docs to note default is on.
+
+	(raptor_new_world): set the flags on.
+
+	raptor_world_s: update docs for libxml_flags field to note
+	default.
+
+	(raptor_libxml_xmlStructuredError_handler_common): Renamed from
+	raptor_libxml_xmlStructuredErrorFunc and contains the core libxml
+	error handling but not the parameter guessing.
+
+	(raptor_libxml_xmlStructuredError_handler_global): Added to take
+	structured errors from the global libxml handlers. Calls
+	raptor_libxml_xmlStructuredErrorFunc with world and always NULL
+	locator.
+
+	(raptor_libxml_xmlStructuredError_handler_parsing): Added to take
+	structured errors from serror SAX handler. Calls
+	raptor_libxml_xmlStructuredErrorFunc with any world and locator
+	found.
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_libxml.c:
+	raptor_log_error no longer needs/uses error hander/data args
+
+	(raptor_log_error): Remove args and pick handler/data from work
+	error handlers.
+
+	(raptor_log_error_varags): Just call raptor_log_error and no longer
+	pick error handler/data here.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_parse.c,
+	utils/rapper.c, utils/rdfdiff.c:
+	Move error-handler setting functions to methods of raptor_world
+
+	(raptor_world_set_fatal_error_handler): Renamed from
+	raptor_set_fatal_error_handler from parser class.
+
+	(raptor_world_set_error_handler): Renamed from
+	raptor_set_error_handler from parser class.
+
+	(raptor_world_set_warning_handler): Renamed from
+	raptor_set_warning_handler from parser class.
+
+	Updated rapper.c and rdfdiff.c to use new names and calling
+	convention.
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_libxml.c,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_www.c:
+	raptor_log_error_varargs no longer needs/users error handler/data
+	args
+
+	(raptor_log_error_varargs): Remove args and pick handler and handler
+	data from world error_handlers.
+
+	Update all callers of above.
+
+	* src/raptor_www_libxml.c:
+	(raptor_www_libxml_init, raptor_www_libxml_free): Remove
+	error_handlers code.
+
+	* src/raptor_libxml.c, src/raptor_sax2.c: Move libxml init/free
+	code to raptor_libxml_init and raptor_libxml_finish
+
+	(raptor_libxml_init): Add xmlInitParser call.
+
+	(raptor_libxml_finish): Add xmlCleanupParser call.
+
+	(raptor_sax2_init): Remove xmlInitParser call.
+
+	(raptor_sax2_finish): Remove xmlCleanupParser call.
+
+	* src/raptor_grddl.c:
+	Remove use of xmlSetStructuredErrorFunc from GRDDL parser.
+
+	(raptor_grddl_parse_chunk): Remove call to xmlSetStructuredErrorFunc
+	which is now done in raptor_libxml_init, once per-library.
+
+	* src/raptor_internal.h, src/raptor_libxml.c:
+	Removed	raptor_libxml_sax_init_error_handlers - no users remain.
+
+	(raptor_libxml_sax_init_error_handlers): Deleted and merged back
+	into raptor_libxml_sax_init
+
+	* src/raptor_grddl.c:
+	GRDDL parser does not need or use libxml2 sax object.
+
+	struct raptor_grddl_parser_context_s loses sax field.
+
+	(raptor_grddl_parse_init_common): Remove call to
+	raptor_libxml_sax_init_error_handlers.
+
+	* src/raptor_grddl.c:
+	GRDDL parser does not need to create a raptor_sax2 for error
+	handlers.
+
+	struct raptor_grddl_parser_context_s loses sax2 field.
+
+	(raptor_grddl_parse_init_common, raptor_grddl_parse_terminate): Do
+	not init / free sax2.
+
+	* src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_libxml.c, src/raptor_sax2.c:
+	Make libxml error handling save/restore happen once in world
+
+	struct raptor_sax2_s loses saved_structured_error_context,
+	saved_structured_error_handler, saved_generic_error_context and
+	saved_generic_error_handler
+
+	struct raptor_world_s gains above fields.
+
+	(raptor_libxml_init, raptor_libxml_finish): Added to capture the
+	save/restore of xmlSetStructuredErrorFunc and xmlSetGenericErrorFunc
+	context and handlers.
+
+	(raptor_world_open, raptor_free_world): Call raptor_libxml_init and
+	raptor_libxml_finish.
+
+	(raptor_libxml_sax_init_error_handlers): Renamed from
+	raptor_libxml_init_sax_error_handlers.
+
+	(raptor_libxml_sax_init): libxml setup specific to a SAX setup
+
+	(raptor_grddl_parse_init_common): Use above.
+
+	(raptor_new_sax2): Delete libxml init code.
+
+	(raptor_sax2_parse_start): Delete xmlSetStructuredErrorFunc call
+	and use raptor_libxml_sax_init.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_parse_init_common): Code style.
+
+2010-01-07  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, librdfa/rdfa.h, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_libxml.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_sax2.c:
+	Alter raptor_new_sax2() to take world and locator not
+	error_handlers.
+
+	struct raptor_sax2_s loses error_handlers field.
+
+	(raptor_new_sax2): Change to add world and locator at start; store
+	them and forget about error_handlers.
+
+	(raptor_sax2_simple_error, raptor_sax2_parse_chunk,
+	raptor_sax2_start_element): Take error handlers from world, not
+	sax2.
+
+	(raptor_grddl_parse_init_common, raptor_librdfa_parse_start,
+	raptor_rdfxml_parse_init, raptor_rss_parse_init): Update to new
+	raptor_new_sax2 calling convention.
+
+	(raptor_libxml_warning, raptor_libxml_error_common,
+	raptor_libxml_validation_warning): Call error handlers under world
+	rather than in sax2 error_handlers object.
+
+	(raptor_libxml_xmlStructuredErrorFunc): Find error handlers via
+	world.
+
+	struct rdfacontext [in librdfa] replaces error_handlers with world
+	and locator fields for use in calling raptor_new_sax2()
+
+	(rdfa_create_new_element_context) [in librdfa]: no need to copy
+	error_handlers.
+
+	(rdfa_parse_start) [in librdfa] use stored world and locator.
+
+	* src/raptor.h:
+	Removed prototype for raptor_www_set_error_handler
+
+	* src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_librdfa.c, src/raptor_parse.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_www.c:
+	Moved raptor_error_handlers to one instance in raptor_world.
+
+	structs raptor_parser_s and raptor_www_s lose error_handlers
+	field.
+
+	struct raptor_world_s gains error_handlers field and new
+	internal_ignore_errors flag to temporarily disable errors.
+
+	(raptor_new_world): Initialise error handlers structure; this is now
+	the only place in the library this is done the public function
+	raptor_error_handlers_init_v2()
+
+	Consequently raptor_error_handlers_init_v2() could be moved internal
+	and the raptor_error_handlers structure made just fields in
+	raptor_world rather than a public structure that is hard to
+	version.
+
+	(raptor_world_internal_set_ignore_errors): Added internal function
+	to disable invoking all error handlers when set.  Used in the GRDDL
+	parser and when WWW-fetching in some cases to ignore parse/404
+	errors.
+
+	(raptor_log_error_to_handlers, raptor_log_error_varargs,
+	raptor_log_error): Respect the ignore errors flag.
+
+	(raptor_grddl_discard_message): Deleted.
+
+	(raptor_grddl_fetch_uri): No longer uses above function but instead
+	calls raptor_world_internal_set_ignore_errors() before and after the
+	WWW fetch.
+
+	(raptor_grddl_run_recursive): Also no longer sets error handlers to
+	ignore errors and uses raptor_world_internal_set_ignore_errors
+	before and after running an internal parser.
+
+	(raptor_new_parser_v2): Do not init error_handlers field, just set
+	locator.
+
+	(raptor_www_set_error_handler): Deleted; not necessary since the
+	error_handlers is part of raptor_world not in raptor_www.
+
+	(raptor_parse_uri_with_connection): Removed call to
+	raptor_www_set_error_handler.
+
+	(raptor_parser_copy_user_state): Do not copy removed error_handlers
+	field.
+
+	(raptor_www_new_with_connection_v2): Do not init error_handlers
+	field.
+
+	* src/raptor_parse.c:
+	(raptor_parser_copy_user_state): Code style for assignments.
+
+	* src/raptor_internal.h:
+	Delete unused field from raptor_parser_s
+
+	* src/raptor_abbrev.c, src/raptor_internal.h:
+	Remove unused ordinal code from raptor_abbrev_node
+
+	raptor_abbrev_node: lose ordinal union part.
+
+	(raptor_abbrev_subject_add_list_element): Deleted.
+
+	* src/raptor.h:
+	Remove RAPTOR_WORLD_DECLARED
+
+	* src/raptor_internal.h:
+	Remove an old RAPTOR_DISABLE_V1-protected prototype.
+
 2010-01-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h:
+	Break raptor_error_handlers struct ABI moving handlers array to end.
+
+	Remove V2 API fixmes near this; also allows new log levels to be
+	added later.
+
+	* src/raptor_internal.h:
+	Remove unused static_usage field from raptor_world
+
+	* src/ntriples_parse.c:
+	Replace raptor_ntriples_term_type with raptor_term_type
+
+	(raptor_ntriples_generate_statement): Change types of args.  Just
+	assign term types to statement types.
+
+	(raptor_ntriples_parse_line): Declare array of 3 term types.
+
+	* src/Makefile.am: remove n3 tests
+
+	* configure.ac, src/Makefile.am, src/n3_common.h, src/n3_lexer.l,
+	src/n3_parser.y, src/turtle_parser.y:
+	Remove experimental N3 flex/bison parser - let turtle parser handle it
+
+	This code was never in production/released code and will never be
+	since the turtle parser is likely to be updated and rewritten.
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_abbrev.c, src/raptor_grddl.c, src/raptor_identifier.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	src/raptor_xsd.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c:
+	Rename raptor_identifier_type enum and values to raptor_term_type
+
+	The enum values changed: from RAPTOR_IDENTIFIER_TYPE_RESOURCE to
+	RAPTOR_TERM_TYPE_URI, from RAPTOR_IDENTIFIER_TYPE_ANONYMOUS to
+	RAPTOR_TERM_TYPE_BLANK, from RAPTOR_IDENTIFIER_TYPE_LITERAL to
+	RAPTOR_TERM_TYPE_LITERAL and from RAPTOR_IDENTIFIER_TYPE_UNKNOWN to
+	RAPTOR_TERM_TYPE_UNKNOWN.
+
+	* librdfa/iri.c:
+	fix warning: cast from pointer to integer of different size
+
+	(rdfa_iri_get_base): Do pointer calculations then cast result to
+	unsigned int.
+
+	* src/raptor.h:
+	Remove RAPTOR_V2_AVAILABLE - not needed
+
+	* configure.ac:
+	Remove -DRAPTOR_V2_EXPERIMENTAL=1 not needed anymore
+
+	* src/raptor.h, src/raptor_serialize.c:
+	raptor_serialize_start replaced by
+	raptor_serialize_start_to_iostream
+
+	(raptor_serialize_start): Removed deprecated function replaced by
+	correctly named raptor_serialize_start_to_iostream.
+
+	* src/ntriples_parse.c, src/raptor.h:
+	Removed raptor_ntriples_term_type from public api.
+
+	Moved raptor_ntriples_term_type to ntriples_parse.c module only.
+	It could be replaced by a more general raptor_term_type in future
+	when it gets added.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_identifier.c,
+	src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	utils/rdfdiff.c:
+	Remove RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
+
+	This was used for rdf:parseType="Literal" object literals
+	internally 	but publically always is turned into
+	RAPTOR_IDENTIFIER_TYPE_LITERAL.
+
+	raptor_identifier_type loses RAPTOR_IDENTIFIER_TYPE_XML_LITERAL value.
+
+	Removed all code for this which mostly was deleting switch cases
+	but also deletes some functions from the Turtle and RDF/XML-abbrev
+	serializers.
+
+	(raptor_rdfxmla_emit_xml_literal, raptor_turtle_emit_xml_literal):
+	Deleted.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_identifier.c,
+	src/raptor_rdfxml.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c src/raptor_serialize_rdfxmla.c ,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	utils/rdfdiff.c:
+	raptor_identifier_type loses the RAPTOR_IDENTIFIER_TYPE_ORDINAL value.
+    
+	raptor_identifier loses ordinal field.
+    
+	Consequent removal of RAPTOR_IDENTIFIER_TYPE_ORDINAL from cases
+	especially handling predicates.
+
+	(raptor_rdfxml_end_element_grammar,
+	raptor_rdfxml_generate_statement,
+	raptor_rdfxml_process_property_attributes,
+	raptor_rdfxml_serialize_statement): Most changes were made here to
+	generate a URI instead of the ordinal integers from the various
+	rdf:li element forms.
+
+	Multiple serializers are now simpler in not having to check for
+	predicate (or even subject/object) ordinals.  Several if
+	ordinal {ordinal handling } ..  else {uri handling} were removed.
+
+	rdfdiff lost several checks for ordinal/resource alternatives.
+	(rdfdiff_ordinal_equals_resource): Deleted.
+
+	* utils/rdfdiff.c: Remove checks for
+	RAPTOR_IDENTIFIER_TYPE_PREDICATE comparison with ordinal for
+	equality.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c: Removed RAPTOR_IDENTIFIER_TYPE_PREDICATE
+
+	raptor_identifier_type loses RAPTOR_IDENTIFIER_TYPE_PREDICATE
+	which has been a synonym for RAPTOR_IDENTIFIER_TYPE_RESOURCE for
+	some time.
+
+	Update code to remove from switch()s and conditions.
 
 	* src/n3_parser.y, src/raptor.h, src/raptor_identifier.c,
 	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize_rss.c,
