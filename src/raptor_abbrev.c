@@ -742,11 +742,12 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   size_t name_len = 1;
   unsigned char *uri_string;
   size_t uri_len;
-  unsigned char c;
   unsigned char *p;
   raptor_uri *ns_uri;
   raptor_namespace *ns;
   raptor_qname *qname;
+  unsigned char *ns_uri_string;
+  size_t ns_uri_string_len;
   
   if(node->type != RAPTOR_TERM_TYPE_URI) {
     RAPTOR_FATAL1("Node must be a resource\n");
@@ -773,12 +774,17 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   if(!name || (name == uri_string))
     return NULL;
 
-  c=*name; *name='\0';
-  ns_uri = raptor_new_uri(node->world, uri_string);
+  ns_uri_string_len = name - uri_string;
+  ns_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, ns_uri_string_len + 1);
+  if(!ns_uri_string)
+    return NULL;
+  memcpy(ns_uri_string, (const char*)uri_string, ns_uri_string_len);
+  ns_uri_string[ns_uri_string_len] = '\0';
+  ns_uri = raptor_new_uri(node->world, ns_uri_string);
+  RAPTOR_FREE(cstring, ns_uri_string);
+
   if(!ns_uri)
     return NULL;
-  
-  *name=c;
   
   ns = raptor_namespaces_find_namespace_by_uri(nstack, ns_uri);
   if(!ns) {
