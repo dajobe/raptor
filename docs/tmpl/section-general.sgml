@@ -43,16 +43,6 @@ and various other utility functions.
 </para>
 
 
-<!-- ##### USER_FUNCTION raptor_simple_message_handler ##### -->
-<para>
-
-</para>
-
-@user_data: 
-@message: 
-@Varargs: 
-
-
 <!-- ##### USER_FUNCTION raptor_message_handler ##### -->
 <para>
 
@@ -72,74 +62,6 @@ and various other utility functions.
 @statement: 
 
 
-<!-- ##### FUNCTION raptor_parsers_enumerate ##### -->
-<para>
-
-</para>
-
-@counter: 
-@name: 
-@label: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_syntaxes_enumerate ##### -->
-<para>
-
-</para>
-
-@counter: 
-@name: 
-@label: 
-@mime_type: 
-@uri_string: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_syntax_name_check ##### -->
-<para>
-
-</para>
-
-@name: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_guess_parser_name ##### -->
-<para>
-
-</para>
-
-@uri: 
-@mime_type: 
-@buffer: 
-@len: 
-@identifier: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_serializers_enumerate ##### -->
-<para>
-
-</para>
-
-@counter: 
-@name: 
-@label: 
-@mime_type: 
-@uri_string: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_serializer_syntax_name_check ##### -->
-<para>
-
-</para>
-
-@name: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_print_ntriples_string ##### -->
 <para>
 
@@ -148,27 +70,6 @@ and various other utility functions.
 @stream: 
 @string: 
 @delim: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_ntriples_string_as_utf8_string ##### -->
-<para>
-
-</para>
-
-@rdf_parser: 
-@src: 
-@len: 
-@dest_lenp: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_ntriples_term_as_string ##### -->
-<para>
-
-</para>
-
-@term: 
 @Returns: 
 
 
@@ -206,32 +107,8 @@ and various other utility functions.
 </para>
 
 @magic: 
+@world: 
 @locator: 
 @last_log_level: 
 @handlers: 
-@world: 
-
-<!-- ##### FUNCTION raptor_error_handlers_init ##### -->
-<para>
-
-</para>
-
-@error_handlers: 
-
-
-<!-- ##### FUNCTION raptor_set_libxml_flags ##### -->
-<para>
-
-</para>
-
-@flags: 
-
-
-<!-- ##### FUNCTION raptor_set_libxslt_security_preferences ##### -->
-<para>
-
-</para>
-
-@security_preferences: 
-
 

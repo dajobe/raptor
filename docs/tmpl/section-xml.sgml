@@ -127,21 +127,6 @@ a name is legal in some XML version.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_new_xml_writer ##### -->
-<para>
-
-</para>
-
-@nstack: 
-@uri_handler: 
-@uri_context: 
-@iostr: 
-@error_handler: 
-@error_data: 
-@canonicalize: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_free_xml_writer ##### -->
 <para>
 
@@ -250,18 +235,6 @@ a name is legal in some XML version.
 @xml_writer: 
 
 
-<!-- ##### FUNCTION raptor_xml_writer_features_enumerate ##### -->
-<para>
-
-</para>
-
-@feature: 
-@name: 
-@uri: 
-@label: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_xml_writer_get_depth ##### -->
 <para>
 
@@ -323,8 +296,6 @@ a name is legal in some XML version.
 @nstack: 
 @is_empty: 
 @is_end: 
-@error_handler: 
-@error_data: 
 @depth: 
 @Returns: 
 
@@ -340,14 +311,13 @@ a name is legal in some XML version.
 
 </para>
 
+@world: 
 @string: 
 @len: 
 @buffer: 
 @length: 
 @quote: 
 @xml_version: 
-@error_handler: 
-@error_data: 
 @Returns: 
 
 
@@ -356,13 +326,12 @@ a name is legal in some XML version.
 
 </para>
 
+@world: 
 @string: 
 @len: 
 @buffer: 
 @length: 
 @quote: 
-@error_handler: 
-@error_data: 
 @Returns: 
 
 
@@ -376,8 +345,6 @@ a name is legal in some XML version.
 @len: 
 @quote: 
 @xml_version: 
-@error_handler: 
-@error_data: 
 @Returns: 
 
 
@@ -390,8 +357,6 @@ a name is legal in some XML version.
 @string: 
 @len: 
 @quote: 
-@error_handler: 
-@error_data: 
 @Returns: 
 
 

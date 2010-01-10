@@ -18,20 +18,6 @@ library-wide configuration flags and options.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### FUNCTION raptor_init ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### FUNCTION raptor_finish ##### -->
-<para>
-
-</para>
-
-
-
 <!-- ##### TYPEDEF raptor_world ##### -->
 <para>
 
@@ -78,6 +64,84 @@ library-wide configuration flags and options.
 
 @world: 
 @security_preferences: 
+
+
+<!-- ##### FUNCTION raptor_world_set_fatal_error_handler ##### -->
+<para>
+
+</para>
+
+@world: 
+@user_data: 
+@handler: 
+
+
+<!-- ##### FUNCTION raptor_world_set_error_handler ##### -->
+<para>
+
+</para>
+
+@world: 
+@user_data: 
+@handler: 
+
+
+<!-- ##### FUNCTION raptor_world_set_warning_handler ##### -->
+<para>
+
+</para>
+
+@world: 
+@user_data: 
+@handler: 
+
+
+<!-- ##### FUNCTION raptor_world_is_parser_name ##### -->
+<para>
+
+</para>
+
+@world: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_guess_parser_name ##### -->
+<para>
+
+</para>
+
+@world: 
+@uri: 
+@mime_type: 
+@buffer: 
+@len: 
+@identifier: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_enumerate_serializers ##### -->
+<para>
+
+</para>
+
+@world: 
+@counter: 
+@name: 
+@label: 
+@mime_type: 
+@uri_string: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_is_serializer_name ##### -->
+<para>
+
+</para>
+
+@world: 
+@name: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_world_open ##### -->

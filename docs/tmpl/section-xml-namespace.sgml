@@ -39,33 +39,6 @@ XML documents where inner namespaces can override outer ones.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_new_namespaces ##### -->
-<para>
-
-</para>
-
-@uri_handler: 
-@uri_context: 
-@error_handler: 
-@error_data: 
-@defaults: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_namespaces_init ##### -->
-<para>
-
-</para>
-
-@nstack: 
-@uri_handler: 
-@uri_context: 
-@error_handler: 
-@error_data: 
-@defaults: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_namespaces_clear ##### -->
 <para>
 

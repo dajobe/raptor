@@ -71,27 +71,6 @@ taken.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_features_enumerate ##### -->
-<para>
-
-</para>
-
-@feature: 
-@name: 
-@uri: 
-@label: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_feature_from_uri ##### -->
-<para>
-
-</para>
-
-@uri: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_feature_value_type ##### -->
 <para>
 

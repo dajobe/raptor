@@ -150,15 +150,6 @@ where the items are added and removed from the end.
 @fh: 
 
 
-<!-- ##### FUNCTION raptor_sequence_print_uri ##### -->
-<para>
-
-</para>
-
-@data: 
-@fh: 
-
-
 <!-- ##### FUNCTION raptor_sequence_set_print_handler ##### -->
 <para>
 

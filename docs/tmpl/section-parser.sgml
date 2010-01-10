@@ -38,6 +38,7 @@ adjust how parsing is performed.
 
 </para>
 
+@world: 
 @name: 
 @Returns: 
 
@@ -47,6 +48,7 @@ adjust how parsing is performed.
 
 </para>
 
+@world: 
 @uri: 
 @mime_type: 
 @buffer: 
@@ -71,36 +73,6 @@ adjust how parsing is performed.
 </para>
 
 @parser: 
-
-
-<!-- ##### FUNCTION raptor_set_fatal_error_handler ##### -->
-<para>
-
-</para>
-
-@parser: 
-@user_data: 
-@handler: 
-
-
-<!-- ##### FUNCTION raptor_set_error_handler ##### -->
-<para>
-
-</para>
-
-@parser: 
-@user_data: 
-@handler: 
-
-
-<!-- ##### FUNCTION raptor_set_warning_handler ##### -->
-<para>
-
-</para>
-
-@parser: 
-@user_data: 
-@handler: 
 
 
 <!-- ##### FUNCTION raptor_set_statement_handler ##### -->
@@ -282,17 +254,6 @@ adjust how parsing is performed.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_set_feature ##### -->
-<para>
-
-</para>
-
-@parser: 
-@feature: 
-@value: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_parser_set_feature_string ##### -->
 <para>
 
@@ -324,7 +285,7 @@ adjust how parsing is performed.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_set_parser_strict ##### -->
+<!-- ##### FUNCTION raptor_parser_set_strict ##### -->
 <para>
 
 </para>

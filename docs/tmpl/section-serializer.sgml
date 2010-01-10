@@ -36,6 +36,7 @@ that can adjust how serializing is performed.
 
 </para>
 
+@world: 
 @name: 
 @Returns: 
 
@@ -46,17 +47,6 @@ that can adjust how serializing is performed.
 </para>
 
 @rdf_serializer: 
-
-
-<!-- ##### FUNCTION raptor_serialize_start ##### -->
-<para>
-
-</para>
-
-@rdf_serializer: 
-@uri: 
-@iostream: 
-@Returns: 
 
 
 <!-- ##### FUNCTION raptor_serialize_start_to_iostream ##### -->
@@ -152,44 +142,12 @@ that can adjust how serializing is performed.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_serializer_set_error_handler ##### -->
-<para>
-
-</para>
-
-@serializer: 
-@user_data: 
-@handler: 
-
-
-<!-- ##### FUNCTION raptor_serializer_set_warning_handler ##### -->
-<para>
-
-</para>
-
-@serializer: 
-@user_data: 
-@handler: 
-
-
 <!-- ##### FUNCTION raptor_serializer_get_locator ##### -->
 <para>
 
 </para>
 
 @rdf_serializer: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_serializer_features_enumerate ##### -->
-<para>
-
-</para>
-
-@feature: 
-@name: 
-@uri: 
-@label: 
 @Returns: 
 
 

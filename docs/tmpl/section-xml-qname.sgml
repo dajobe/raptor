@@ -33,19 +33,6 @@ for XML element and attribute names.
 @nstack: 
 @name: 
 @value: 
-@error_handler: 
-@error_data: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_new_qname_from_namespace_local_name ##### -->
-<para>
-
-</para>
-
-@ns: 
-@local_name: 
-@value: 
 @Returns: 
 
 
@@ -84,8 +71,6 @@ for XML element and attribute names.
 @nstack: 
 @name: 
 @name_len: 
-@error_handler: 
-@error_data: 
 @Returns: 
 
 

@@ -30,46 +30,16 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @RAPTOR_GENID_TYPE_BNODEID: 
 @RAPTOR_GENID_TYPE_BAGID: 
 
-<!-- ##### ENUM raptor_identifier_type ##### -->
-<para>
-
-</para>
-
-@RAPTOR_IDENTIFIER_TYPE_UNKNOWN: 
-@RAPTOR_IDENTIFIER_TYPE_RESOURCE: 
-@RAPTOR_IDENTIFIER_TYPE_ANONYMOUS: 
-@RAPTOR_IDENTIFIER_TYPE_PREDICATE: 
-@RAPTOR_IDENTIFIER_TYPE_ORDINAL: 
-@RAPTOR_IDENTIFIER_TYPE_LITERAL: 
-@RAPTOR_IDENTIFIER_TYPE_XML_LITERAL: 
-
 <!-- ##### STRUCT raptor_identifier ##### -->
 <para>
 
 </para>
 
+@usage: 
 @type: 
 @uri: 
-@uri_source: 
-@ordinal: 
-@is_malloced: 
 @literal_datatype: 
 @world: 
-
-<!-- ##### FUNCTION raptor_new_identifier ##### -->
-<para>
-
-</para>
-
-@type: 
-@uri: 
-@uri_source: 
-@id: 
-@literal: 
-@literal_datatype: 
-@literal_language: 
-@Returns: 
-
 
 <!-- ##### FUNCTION raptor_copy_identifier ##### -->
 <para>
@@ -94,13 +64,10 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 
 </para>
 
+@world: 
 @subject: 
-@subject_type: 
 @predicate: 
-@predicate_type: 
 @object: 
-@object_type: 
-@object_literal_datatype: 
 
 <!-- ##### FUNCTION raptor_statement_compare ##### -->
 <para>
@@ -130,21 +97,12 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @stream: 
 
 
-<!-- ##### FUNCTION raptor_print_statement_detailed ##### -->
-<para>
-
-</para>
-
-@statement: 
-@detailed: 
-@stream: 
-
-
 <!-- ##### FUNCTION raptor_statement_part_as_counted_string ##### -->
 <para>
 
 </para>
 
+@world: 
 @term: 
 @type: 
 @literal_datatype: 
@@ -158,6 +116,7 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 
 </para>
 
+@world: 
 @term: 
 @type: 
 @literal_datatype: 

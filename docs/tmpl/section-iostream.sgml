@@ -94,17 +94,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### STRUCT raptor_iostream_handler ##### -->
-<para>
-
-</para>
-
-@init: 
-@finish: 
-@write_byte: 
-@write_bytes: 
-@write_end: 
-
 <!-- ##### STRUCT raptor_iostream_handler2 ##### -->
 <para>
 
@@ -124,18 +113,9 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @user_data: 
 @handler2: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_new_iostream_from_handler ##### -->
-<para>
-
-</para>
-
-@context: 
-@handler: 
 @Returns: 
 
 
@@ -144,6 +124,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @Returns: 
 
 
@@ -152,6 +133,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @filename: 
 @Returns: 
 
@@ -161,6 +143,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @handle: 
 @Returns: 
 
@@ -170,6 +153,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @string: 
 @length: 
 @Returns: 
@@ -180,6 +164,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @Returns: 
 
 
@@ -188,6 +173,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @filename: 
 @Returns: 
 
@@ -197,6 +183,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @handle: 
 @Returns: 
 
@@ -206,6 +193,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
+@world: 
 @string_p: 
 @length_p: 
 @malloc_handler: 
@@ -228,15 +216,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @iostr: 
 @integer: 
 @width: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_get_bytes_written_count ##### -->
-<para>
-
-</para>
-
-@iostr: 
 @Returns: 
 
 
@@ -321,15 +300,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @iostr: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_statement_ntriples ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@statement: 
-
-
 <!-- ##### FUNCTION raptor_iostream_write_string ##### -->
 <para>
 
@@ -363,16 +333,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @delim: 
 @flags: 
 @Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_string_turtle ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@string: 
-@len: 
 
 
 <!-- ##### FUNCTION raptor_iostream_write_stringbuffer ##### -->
