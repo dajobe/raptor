@@ -777,9 +777,9 @@ void raptor_print_statement(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
-unsigned char* raptor_statement_part_as_counted_string(raptor_world* world, const void *term, raptor_term_type type, raptor_uri* literal_datatype, const unsigned char *literal_language, size_t* len_p);
+unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API
-unsigned char* raptor_statement_part_as_string(raptor_world* world, const void *term, raptor_term_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);  
+unsigned char* raptor_term_as_string(raptor_term *term);
 RAPTOR_API
 int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
 

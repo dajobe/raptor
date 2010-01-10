@@ -376,14 +376,8 @@ raptor_print_abbrev_po(FILE* handle, raptor_abbrev_node** nodes)
     unsigned char *pred;
     unsigned char *obj;
 
-    pred = raptor_statement_part_as_string(p->world,
-                                           p->value.resource.uri, p->type,
-                                           NULL, NULL);
-    obj = raptor_statement_part_as_string(o->world,
-                                          o->value.literal.string,
-                                          o->type,
-                                          o->value.literal.datatype,
-                                          o->value.literal.language);
+    pred = raptor_term_as_string(p);
+    obj = raptor_term_as_string(o);
     fprintf(handle, "[%s : %s]\n", pred, obj);      
     RAPTOR_FREE(cstring, pred);
     RAPTOR_FREE(cstring, obj);
@@ -634,31 +628,24 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   raptor_avltree_iterator* iter = NULL;
 
   /* Note: The raptor_abbrev_node field passed as the first argument for
-   * raptor_statement_part_as_string() is somewhat arbitrary, since as
+   * raptor_term_as_string() is somewhat arbitrary, since as
    * the data structure is designed, the first word in the value union
    * is what was passed as the subject/predicate/object of the
    * statement.
    */
-  subj = raptor_statement_part_as_string(subject->node->value.resource.uri,
-                                         subject->node->type, NULL, NULL);
+  subj = raptor_term_as_string(subject);
 
   if(subject->type) {
-      obj = raptor_statement_part_as_string(subject->type->value.resource.uri,
-                                          subject->type->type,
-                                          subject->type->value.literal.datatype,
-                                          subject->type->value.literal.language);
-      fprintf(stderr,"[%s, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, %s]\n", subj, obj);      
-      RAPTOR_FREE(cstring, obj);
+    obj = raptor_term_as_string(subject);
+    fprintf(stderr,"[%s, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, %s]\n", subj, obj);      
+    RAPTOR_FREE(cstring, obj);
   }
   
   for(i = 0; i < raptor_sequence_size(subject->elements); i++) {
 
     raptor_abbrev_node* o = raptor_sequence_get_at(subject->elements, i);
     if(o) {
-      obj = raptor_statement_part_as_string(o->value.literal.string,
-                                            o->type,
-                                            o->value.literal.datatype,
-                                            o->value.literal.language);
+      obj = raptor_term_as_string(o);
       fprintf(stderr,"[%s, [rdf:_%d], %s]\n", subj, i, obj);      
       RAPTOR_FREE(cstring, obj);
     }

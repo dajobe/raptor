@@ -237,53 +237,38 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
 
 
 /**
- * raptor_statement_part_as_counted_string:
- * @world: raptor_world object
- * @term: #raptor_statement part (subject, predicate, object)
- * @type: #raptor_statement part type
- * @literal_datatype: #raptor_statement part datatype
- * @literal_language: #raptor_statement part language
+ * raptor_term_as_counted_string:
+ * @term: #raptor_term
  * @len_p: Pointer to location to store length of new string (if not NULL)
  *
- * Turns part of raptor statement into a N-Triples format counted string.
+ * Turns part of raptor term into a N-Triples format counted string.
  * 
  * Turns the given @term into an N-Triples escaped string using all the
  * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
- *
- * The part (subject, predicate, object) of the raptor_statement is
- * typically passed in as @term, the part type (subject_type,
- * predicate_type, object_type) is passed in as @type.  When the part
- * is a literal, the @literal_datatype and @literal_language fields
- * are set, otherwise NULL (usually object_datatype,
- * object_literal_language).
  *
  * Return value: the new string or NULL on failure.  The length of
  * the new string is returned in *@len_p if len_p is not NULL.
  **/
 unsigned char*
-raptor_statement_part_as_counted_string(raptor_world* world,
-                                        const void *term, 
-                                        raptor_term_type type,
-                                        raptor_uri* literal_datatype,
-                                        const unsigned char *literal_language,
-                                        size_t* len_p)
+raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
 {
   size_t len = 0, term_len, uri_len;
   size_t language_len = 0;
   unsigned char *s, *buffer = NULL;
   unsigned char *uri_string = NULL;
   
-  switch(type) {
+  switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
-      term_len = strlen((const char*)term);
-      len = 2+term_len;
-      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
-        language_len = strlen((const char*)literal_language);
-        len+= language_len+1;
+      term_len = strlen((const char*)term->value);
+      len = 2 + term_len;
+      if(term->literal_language) {
+        language_len = strlen((const char*)term->literal_language);
+        len += language_len+1;
       }
-      if(literal_datatype) {
-        uri_string = raptor_uri_as_counted_string((raptor_uri*)literal_datatype, &uri_len);
-        len += 4+uri_len;
+      if(term->literal_datatype) {
+        uri_string = raptor_uri_as_counted_string(term->literal_datatype,
+                                                  &uri_len);
+        len += 4 + uri_len;
       }
   
       buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
@@ -293,16 +278,16 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       s = buffer;
       *s++ ='"';
       /* raptor_print_ntriples_string(stream, (const char*)term, '"'); */
-      strcpy((char*)s, (const char*)term);
+      strcpy((char*)s, (const char*)term->value);
       s+= term_len;
       *s++ ='"';
-      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
+      if(term->literal_language) {
         *s++ ='@';
-        strcpy((char*)s, (const char*)literal_language);
+        strcpy((char*)s, (const char*)term->literal_language);
         s+= language_len;
       }
 
-      if(literal_datatype) {
+      if(term->literal_datatype) {
         *s++ ='^';
         *s++ ='^';
         *s++ ='<';
@@ -343,7 +328,7 @@ raptor_statement_part_as_counted_string(raptor_world* world,
       
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
-      RAPTOR_FATAL2("Unknown type %d", type);
+      RAPTOR_FATAL2("Unknown raptor_term type %d", term->type);
   }
 
   if(len_p)
@@ -354,38 +339,20 @@ raptor_statement_part_as_counted_string(raptor_world* world,
 
 
 /**
- * raptor_statement_part_as_string:
- * @world: raptor_world object
- * @term: #raptor_statement part (subject, predicate, object)
- * @type: #raptor_statement part type
- * @literal_datatype: #raptor_statement part datatype
- * @literal_language: #raptor_statement part language
+ * raptor_term_as_string:
+ * @term: #raptor_term
  *
  * Turns part of raptor statement into a N-Triples format string.
  * 
  * Turns the given @term into an N-Triples escaped string using all the
  * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
  *
- * The part (subject, predicate, object) of the raptor_statement is
- * typically passed in as @term, the part type (subject_type,
- * predicate_type, object_type) is passed in as @type.  When the part
- * is a literal, the @literal_datatype and @literal_language fields
- * are set, otherwise NULL (usually object_datatype,
- * object_literal_language).
- *
  * Return value: the new string or NULL on failure.
  **/
 unsigned char*
-raptor_statement_part_as_string(raptor_world* world,
-                                const void *term, 
-                                raptor_term_type type,
-                                raptor_uri* literal_datatype,
-                                const unsigned char *literal_language)
+raptor_term_as_string(raptor_term *term)
 {
-  return raptor_statement_part_as_counted_string(world, term, type,
-                                                 literal_datatype,
-                                                 literal_language,
-                                                 NULL);
+  return raptor_term_as_counted_string(term, NULL);
 }
 
 
