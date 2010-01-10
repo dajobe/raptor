@@ -421,17 +421,79 @@ raptor_print_statement_as_ntriples(const raptor_statement * statement,
 
  
 /**
+ * raptor_term_compare:
+ * @t1: first term
+ * @t2: second term
+ *
+ * Compare a pair of #raptor_term
+ *
+ * If types are different, the #raptor_term_type order is used.
+ *
+ * Resource and datatype URIs are compared with raptor_uri_compare(),
+ * blank nodes and literals with strcmp().  If one literal has no
+ * language, it is earlier than one with a language.  If one literal
+ * has no datatype, it is earlier than one with a datatype.
+ * 
+ * Return value: <0 if t1 is before t2, 0 if equal, >0 if t1 is after t2
+ */
+int
+raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
+{
+  int d = 0;
+  
+  if(t1->type != t2->type)
+    return (t1->type - t2->type);
+  
+  switch(t1->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      d = raptor_uri_compare((raptor_uri*)t1->value, (raptor_uri*)t2->value);
+      break;
+
+    case RAPTOR_TERM_TYPE_BLANK:
+      d = strcmp((const char*)t1->value, (const char*)t2->value);
+      break;
+      
+    case RAPTOR_TERM_TYPE_LITERAL:
+      d = strcmp((const char*)t1->value, (const char*)t2->value);
+      if(d)
+        break;
+      
+      if(t1->literal_language && t2->literal_language) {
+        /* both have a language */
+        d = strcmp((const char*)t1->literal_language, 
+                   (const char*)t2->literal_language);
+      } else if(t1->literal_language || t2->literal_language)
+        /* only one has a language; the language-less one is earlier */
+        d = (!t1->literal_language ? -1 : 1);
+      if(d)
+        break;
+      
+      if(t1->literal_datatype && t2->literal_datatype) {
+        /* both have a datatype */
+        d = raptor_uri_compare(t1->literal_datatype, t2->literal_datatype);
+      } else if(t1->literal_datatype || t2->literal_datatype)
+        /* only one has a datatype; the datatype-less one is earlier */
+        d = (!t1->literal_datatype ? -1 : 1);
+      break;
+      
+    case RAPTOR_TERM_TYPE_UNKNOWN:
+    default:
+      break;
+  }
+
+  return d;
+}
+
+
+/**
  * raptor_statement_compare:
  * @s1: first statement
  * @s2: second statement
  *
  * Compare a pair of #raptor_statement
  *
- * If types are different, the #raptor_term_type order is used.
- * Resource and datatype URIs are compared with raptor_uri_compare(),
- * blank nodes and literals with strcmp().  If one literal has no
- * language, it is earlier than one with a language.  If one literal
- * has no datatype, it is earlier than one with a datatype.
+ * Uses raptor_term_compare() to check ordering between subjects,
+ * predicates and objects of statements.
  * 
  * Return value: <0 if s1 is before s2, 0 if equal, >0 if s1 is after s2
  */
@@ -441,67 +503,16 @@ raptor_statement_compare(const raptor_statement *s1,
 {
   int d = 0;
 
-  if(s1->subject.value && s2->subject.value) {
-    d = s1->subject.type != s2->subject.type;
-    if(d)
-      return d;
-
-    /* subjects are URIs or blank nodes */
-    if(s1->subject.type == RAPTOR_TERM_TYPE_BLANK)
-      d = strcmp((char*)s1->subject.value, (char*)s2->subject.value);
-    else
-      d = raptor_uri_compare((raptor_uri*)s1->subject.value,
-                             (raptor_uri*)s2->subject.value);
-  } else if(s1->subject.value || s2->subject.value)
-    d = (!s1->subject.value ? -1 : 1);
+  d = raptor_term_compare(&s1->subject, &s2->subject);
   if(d)
     return d;
-  
 
   /* predicates are URIs */
-  if(s1->predicate.value && s2->predicate.value) {
-    d = raptor_uri_compare((raptor_uri*)s1->predicate.value,
-                           (raptor_uri*)s2->predicate.value);
-  } else if(s1->predicate.value || s2->predicate.value)
-    d = (!s1->predicate.value ? -1 : 1);
+  d = raptor_term_compare(&s1->predicate, &s2->predicate);
   if(d)
     return d;
 
-
   /* objects are URIs or blank nodes or literals */
-  if(s1->object.value && s2->object.value) {
-    if(s1->object.type == RAPTOR_TERM_TYPE_LITERAL) {
-      d = strcmp((char*)s1->object.value, (char*)s2->object.value);
-      if(d)
-        return d;
-
-      if(s1->object.literal_language && s2->object.literal_language) {
-        /* both have a language */
-        d = strcmp((char*)s1->object.literal_language,
-                   (char*)s2->object.literal_language);
-      } else if(s1->object.literal_language || s2->object.literal_language)
-        /* only one has a language; the language-less one is earlier */
-        d = (!s1->object.literal_language ? -1 : 1);
-      if(d)
-        return d;
-
-      if(s1->object.literal_datatype && s2->object.literal_datatype) {
-        /* both have a datatype */
-        d = raptor_uri_compare((raptor_uri*)s1->object.literal_datatype,
-                               (raptor_uri*)s2->object.literal_datatype);
-      } else if(s1->object.literal_datatype || s2->object.literal_datatype)
-        /* only one has a datatype; the datatype-less one is earlier */
-        d = (!s1->object.literal_datatype ? -1 : 1);
-      if(d)
-        return d;
-
-    } else if(s1->object.type == RAPTOR_TERM_TYPE_BLANK)
-      d = strcmp((char*)s1->object.value, (char*)s2->object.value);
-    else
-      d = raptor_uri_compare((raptor_uri*)s1->object.value,
-                             (raptor_uri*)s2->object.value);
-  } else if(s1->object.value || s2->object.value)
-    d = (!s1->object.value ? -1 : 1);
-
+  d = raptor_term_compare(&s1->object, &s2->object);
   return d;
 }

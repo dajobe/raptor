@@ -663,6 +663,7 @@ const char* raptor_basename(const char *name);
 void raptor_statement_init(raptor_statement *statement, raptor_world *world);
 raptor_statement* raptor_statement_copy(const raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);
+int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
 
 /* raptor_parse.c */
 raptor_parser_factory* raptor_get_parser_factory(raptor_world* world, const char *name);  
