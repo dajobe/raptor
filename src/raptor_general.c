@@ -218,6 +218,8 @@ raptor_free_world(raptor_world* world)
 
   raptor_parsers_finish(world);
 
+  raptor_uri_finish(world);
+
   RAPTOR_FREE(raptor_world, world);
 }
 
