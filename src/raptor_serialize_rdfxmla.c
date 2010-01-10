@@ -364,11 +364,15 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
      * used as a subject or never used as an object, it never need
      * be referenced with an explicit name */
     raptor_abbrev_subject* blank;
-
+    raptor_term blank_term; /* static */
+    
     raptor_xml_writer_start_element(context->xml_writer, element);
+    
+    memset(&blank_term, '\0', sizeof(blank_term));
+    blank_term.type = node->type;
+    blank_term.value = node->value.blank.string;
 
-    blank = raptor_abbrev_subject_find(context->blanks, node->type,
-                                       node->value.blank.string);
+    blank = raptor_abbrev_subject_find(context->blanks, &blank_term);
           
     if(blank) {
       raptor_rdfxmla_emit_subject(serializer, blank, depth+1);
@@ -879,10 +883,14 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept(serializer->world, "type");
-  if(rdf_type_uri) {    
-    context->rdf_type = raptor_new_abbrev_node(serializer->world,
-                                               RAPTOR_TERM_TYPE_URI,
-                                               rdf_type_uri, NULL, NULL);
+  if(rdf_type_uri) {
+    raptor_term uri_term; /* static */
+
+    memset(&uri_term, '\0', sizeof(uri_term));
+    uri_term.type = RAPTOR_TERM_TYPE_URI;
+    uri_term.value = rdf_type_uri;
+
+    context->rdf_type = raptor_new_abbrev_node(serializer->world, &uri_term);
     raptor_free_uri(rdf_type_uri);
   }
 
@@ -1331,8 +1339,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
   subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
                                          context->blanks,
-                                         statement->subject.type,
-                                         statement->subject.value,
+                                         (raptor_term*)&statement->subject,
                                          &subject_created);
   if(!subject)
     return 1;
@@ -1348,10 +1355,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
     return 1;
   }
   
-  object = raptor_abbrev_node_lookup(context->nodes, object_type,
-                                     statement->object.value,
-                                     statement->object.literal_datatype,
-                                     statement->object.literal_language,
+  object = raptor_abbrev_node_lookup(context->nodes,
+                                     (raptor_term*)&statement->object,
                                      &object_created);
   if(!object)
     return 1;          
@@ -1359,8 +1364,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
   if(statement->predicate.type == RAPTOR_TERM_TYPE_URI) {
     predicate = raptor_abbrev_node_lookup(context->nodes,
-                                          statement->predicate.type,
-                                          statement->predicate.value, NULL, NULL,
+                                          (raptor_term*)&statement->predicate,
                                           &predicate_created);
     if(!predicate)
       return 1;
@@ -1374,9 +1378,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
        * multiple type definitions.  All definitions after the
        * first go in the property list */
       subject->node_type = raptor_abbrev_node_lookup(context->nodes,
-                                                     object_type,
-                                                     statement->object.value, NULL,
-                                                     NULL, NULL);
+                                                     (raptor_term*)&statement->object,
+                                                     NULL);
       if(!subject->node_type)
         return 1;
       subject->node_type->ref_count++;
@@ -1406,8 +1409,8 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                * statement and free it
                */
               raptor_abbrev_subject *blank = 
-                raptor_abbrev_subject_find(context->blanks, object_type,
-                                           statement->object.value);
+                raptor_abbrev_subject_find(context->blanks,
+                                           (raptor_term*)&statement->object);
               if(subject) raptor_avltree_delete(context->blanks, blank);
             }
             break;
