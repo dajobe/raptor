@@ -43,7 +43,7 @@
 
 
 /* prototypes for helper functions */
-static void raptor_print_statement_part_as_ntriples(raptor_world* world, FILE* stream, const void *term, raptor_term_type type, raptor_uri* literal_datatype, const unsigned char *literal_language);
+static void raptor_term_print_as_ntriples(FILE* stream, const raptor_term* term);
 
 
 /**
@@ -390,25 +390,24 @@ raptor_statement_part_as_string(raptor_world* world,
 
 
 static void
-raptor_print_statement_part_as_ntriples(raptor_world* world,
-                                        FILE* stream,
-                                        const void *term, 
-                                        raptor_term_type type,
-                                        raptor_uri* literal_datatype,
-                                        const unsigned char *literal_language) 
+raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
 {
-  switch(type) {
+  raptor_uri* uri;
+  
+  switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
       fputc('"', stream);
-      raptor_print_ntriples_string(stream, (const unsigned char*)term, '"');
+      raptor_print_ntriples_string(stream, (const unsigned char*)term->value,
+                                   '"');
       fputc('"', stream);
-      if(literal_language && type == RAPTOR_TERM_TYPE_LITERAL) {
+      if(term->literal_language) {
         fputc('@', stream);
-        fputs((const char*)literal_language, stream);
+        fputs((const char*)term->literal_language, stream);
       }
-      if(literal_datatype) {
+      if(term->literal_datatype) {
+        uri = (raptor_uri*)term->literal_datatype;
         fputs("^^<", stream);
-        fputs((const char*)raptor_uri_as_string((raptor_uri*)literal_datatype), stream);
+        fputs((const char*)raptor_uri_as_string(uri), stream);
         fputc('>', stream);
       }
 
@@ -416,18 +415,19 @@ raptor_print_statement_part_as_ntriples(raptor_world* world,
       
     case RAPTOR_TERM_TYPE_BLANK:
       fputs("_:", stream);
-      fputs((const char*)term, stream);
+      fputs((const char*)term->value, stream);
       break;
       
     case RAPTOR_TERM_TYPE_URI:
+      uri = (raptor_uri*)term->value;
       fputc('<', stream);
-      raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)term), '\0');
+      raptor_print_ntriples_string(stream, raptor_uri_as_string(uri), '\0');
       fputc('>', stream);
       break;
       
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
-      RAPTOR_FATAL2("Unknown type %d", type);
+      RAPTOR_FATAL2("Unknown raptor_term type %d", term->type);
   }
 }
 
@@ -444,24 +444,11 @@ void
 raptor_print_statement_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
 {
-  raptor_print_statement_part_as_ntriples(statement->world,
-                                          stream,
-                                          statement->subject.value,
-                                          statement->subject.type,
-                                          NULL, NULL);
+  raptor_term_print_as_ntriples(stream, &statement->subject);
   fputc(' ', stream);
-  raptor_print_statement_part_as_ntriples(statement->world,
-                                          stream,
-                                          statement->predicate.value,
-                                          statement->predicate.type,
-                                          NULL, NULL);
+  raptor_term_print_as_ntriples(stream, &statement->predicate);
   fputc(' ', stream);
-  raptor_print_statement_part_as_ntriples(statement->world,
-                                          stream,
-                                          statement->object.value,
-                                          statement->object.type,
-                                          statement->object.literal_datatype,
-                                          statement->object.literal_language);
+  raptor_term_print_as_ntriples(stream, &statement->object);
   fputs(" .", stream);
 }
 
