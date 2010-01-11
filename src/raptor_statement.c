@@ -516,3 +516,149 @@ raptor_statement_compare(const raptor_statement *s1,
   d = raptor_term_compare(&s1->object, &s2->object);
   return d;
 }
+
+
+
+/*
+ * raptor_clear_term:
+ * @term: #raptor_term object
+ *
+ * Internal - clear fields in a raptor_term object.
+ *
+ **/
+void
+raptor_clear_term(raptor_term *term)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(term, raptor_term);
+  
+  switch(term->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      if(term->value) {
+        raptor_free_uri((raptor_uri*)term->value);
+        term->value = NULL;
+      }
+      break;
+
+    case RAPTOR_TERM_TYPE_BLANK:
+      if(term->value) {
+        RAPTOR_FREE(cstring, (void*)term->value);
+        term->value = NULL;
+      }
+      break;
+      
+    case RAPTOR_TERM_TYPE_LITERAL:
+      if(term->value) {
+        RAPTOR_FREE(cstring, (void*)term->value);
+        term->value = NULL;
+      }
+
+      if(term->literal_datatype) {
+        raptor_free_uri(term->literal_datatype);
+        term->literal_datatype = NULL;
+      }
+      
+      if(term->literal_language) {
+        RAPTOR_FREE(cstring, (void*)term->literal_language);
+        term->literal_language = NULL;
+      }
+      break;
+      
+    case RAPTOR_TERM_TYPE_UNKNOWN:
+    default:
+      break;
+  }
+}
+
+
+/**
+ * raptor_free_term:
+ * @term: #raptor_term object
+ *
+ * Destructor - destroy a raptor_term object.
+ *
+ **/
+void
+raptor_free_term(raptor_term *term)
+{
+  raptor_clear_term(term);
+
+  RAPTOR_FREE(term, (void*)term);
+}
+
+
+
+/**
+ * raptor_copy_term:
+ * @dest: destination #raptor_term (previously created)
+ * @src:  source #raptor_term
+ *
+ * Copy raptor_terms.
+ * 
+ * Return value: Non 0 on failure
+ **/
+int
+raptor_copy_term(raptor_term *dest, raptor_term *src)
+{
+  int len;
+
+  raptor_clear_term(dest);
+
+  dest->world = src->world;
+  dest->type = src->type;
+
+  switch(src->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      if(src->value)
+        dest->value = raptor_uri_copy((raptor_uri*)src->value);
+      break;
+      
+    case RAPTOR_TERM_TYPE_BLANK:
+      if(src->value) {
+        len = strlen((char*)src->value);
+        
+        dest->value = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+        if(!dest->value) {
+          raptor_clear_term(dest);
+          return 1;
+        }
+        strncpy((char*)dest->value, (char*)src->value, len+1);
+      }
+      break;
+      
+    case RAPTOR_TERM_TYPE_LITERAL:
+      if(src->value) {
+        len = strlen((char*)src->value);
+        
+        dest->value = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+        if(!dest->value) {
+          raptor_clear_term(dest);
+          return 1;
+        }
+        strncpy((char*)dest->value, (char*)src->value, len+1);
+      }
+
+      if(src->literal_language) {
+        len = strlen((char*)src->literal_language);
+        
+        dest->literal_language = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+        if(!dest->literal_language) {
+          raptor_clear_term(dest);
+          return 1;
+        }
+        strncpy((char*)dest->literal_language, (char*)src->literal_language,
+                len+1);
+      }
+      
+      if(src->literal_datatype)
+        dest->literal_datatype = raptor_uri_copy(src->literal_datatype);
+
+    case RAPTOR_TERM_TYPE_UNKNOWN:
+    default:
+      RAPTOR_FATAL2("Unknown raptor_term type %d", src->type);
+      break;
+  }
+  
+  return 0;
+}
+
+
