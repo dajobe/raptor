@@ -1,4 +1,93 @@
-2010-01-10  Dave Beckett <dave@dajobe.org>
+2010-01-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: raptor_rdfxml_generate_statement() now
+	takes raptor_term subject/ raptor_uri term.
+
+	(raptor_rdfxml_generate_statement): Use raptor_term fields. 
+
+	(raptor_rdfxml_element_has_property_attributes,
+	raptor_rdfxml_start_element_grammar): Create static raptor_term
+	objects on stack for use in constructing parameter sets for
+	raptor_rdfxml_generate_statement.  Several of these should be
+	dynamic and/or constructed once parser-wide.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_statement.c: Replace raptor_identifier with raptor_term
+	inside rdf/xml parser.
+
+	struct raptor_rdfxml_element_s updated to change fields reified,
+	bag, subject, predicate, object from raptor_identifier to
+	raptor_term.  Also added a reified_id field for storing an ID used
+	for reification; not clear if this is entirely necessary.
+
+	(raptor_clear_term): Added based on raptor_clear_identifier. 
+
+	(raptor_free_term): Added. 
+
+	(raptor_copy_term): Added based on raptor_copy_identifier but not
+	calling raptor_free term on dest; call raptor_clear_term instead. 
+
+	(raptor_free_rdfxml_element): Use raptor_clear_term to replace
+	raptor_clear_identifier. 
+
+	(raptor_rdfxml_generate_statement): Updated to use raptor_term
+	field names.  Some loss of clarity here since identifier URI/blank
+	node fields are merged into one void* term field 'value' for now.
+
+	(raptor_rdfxml_process_property_attributes,
+	raptor_rdfxml_start_element_grammar): Updated for raptor_term
+	fields.  For capturing bag/reified IDs, use local variables rather
+	than overloading subject/reified/bad.id fields.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c: Make
+	abbrev_node constructors/lookup functions use raptor_term
+
+	(raptor_new_abbrev_node): Pass in a raptor_term and use that to
+	find fields to copy.
+
+	(raptor_abbrev_node_lookup, raptor_abbrev_subject_find,
+	raptor_abbrev_subject_lookup): Lookup using fields in a passed in
+	raptor_term.  Update callers to use raptor_term when searching -
+	means creating some static raptor_term objects on the stack for
+	now; will be either references or dynamically created when
+	raptor_abbrev_node / raptor_term node merge is done.
+
+	* src/raptor.h, src/raptor_serialize_ntriples.c: Added
+	raptor_iostream_write_term_ntriples and
+	raptor_iostream_write_statement_ntriples to public API
+
+	(raptor_iostream_write_statement_ntriples): Renamed from
+	raptor_iostream_write_statement_ntriples_v2 and loses world arg. 
+
+	(raptor_iostream_write_term_ntriples): Renamed from internal
+	raptor_iostream_write_statement_part_ntriples and down to just 2
+	args: the iostr and term. 
+
+	(raptor_ntriples_serialize_statement): Updated call to
+	raptor_iostream_write_statement_ntriples.
+
+	* src/raptor_internal.h, src/raptor_statement.c: Added
+	raptor_term_compare split out from raptor_statement_compare
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_statement.c: Turn
+	print-part-of-statements functions into methods of raptor_term
+
+	(raptor_term_as_counted_string): Renamed from
+	raptor_statement_part_as_counted_string and just take term arg.
+
+	(raptor_term_as_string): Renamed from
+	raptor_statement_part_as_string and just take term arg.  Update
+	callers to use new 1-arg convention.
+
+	* src/raptor_statement.c: raptor_term_print_as_ntriples formed from
+	raptor_print_statement_as_ntriples
+
+	(raptor_term_print_as_ntriples): Renamed from
+	raptor_print_statement_part_as_ntriples
+
+	(raptor_print_statement_as_ntriples): Call above with raptor_term
+	pointer.
 
 	* librdfa/curie.c, librdfa/rdfa.c, src/ntriples_parse.c,
 	src/raptor.h, src/raptor_abbrev.c, src/raptor_expat.c,
