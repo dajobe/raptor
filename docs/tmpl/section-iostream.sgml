@@ -300,6 +300,15 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @iostr: 
 
 
+<!-- ##### FUNCTION raptor_iostream_write_statement_ntriples ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@statement: 
+
+
 <!-- ##### FUNCTION raptor_iostream_write_string ##### -->
 <para>
 

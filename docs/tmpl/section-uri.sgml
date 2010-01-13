@@ -79,12 +79,67 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_free_uri ##### -->
+<para>
+
+</para>
+
+@uri: 
+
+
+<!-- ##### FUNCTION raptor_uri_compare ##### -->
+<para>
+
+</para>
+
+@uri1: 
+@uri2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_equals ##### -->
+<para>
+
+</para>
+
+@uri1: 
+@uri2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_copy ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_as_string ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_as_counted_string ##### -->
+<para>
+
+</para>
+
+@uri: 
+@len_p: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_uri_for_xmlbase ##### -->
 <para>
 
 </para>
 
-@world: 
 @old_uri: 
 @Returns: 
 
@@ -94,7 +149,6 @@ current access to internals of URIs such as URI scheme, path, authority.
 
 </para>
 
-@world: 
 @old_uri: 
 @Returns: 
 
@@ -144,6 +198,55 @@ current access to internals of URIs such as URI scheme, path, authority.
 </para>
 
 @uri_string: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_to_relative_counted_uri_string ##### -->
+<para>
+
+</para>
+
+@base_uri: 
+@reference_uri: 
+@length_p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_to_relative_uri_string ##### -->
+<para>
+
+</para>
+
+@base_uri: 
+@reference_uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_print ##### -->
+<para>
+
+</para>
+
+@uri: 
+@stream: 
+
+
+<!-- ##### FUNCTION raptor_uri_to_counted_string ##### -->
+<para>
+
+</para>
+
+@uri: 
+@len_p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_to_string ##### -->
+<para>
+
+</para>
+
+@uri: 
 @Returns: 
 
 

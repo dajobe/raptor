@@ -97,30 +97,3 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @stream: 
 
 
-<!-- ##### FUNCTION raptor_statement_part_as_counted_string ##### -->
-<para>
-
-</para>
-
-@world: 
-@term: 
-@type: 
-@literal_datatype: 
-@literal_language: 
-@len_p: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_statement_part_as_string ##### -->
-<para>
-
-</para>
-
-@world: 
-@term: 
-@type: 
-@literal_datatype: 
-@literal_language: 
-@Returns: 
-
-
