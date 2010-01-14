@@ -60,7 +60,7 @@ extern int optind;
 extern char *optarg;
 #endif
 
-static void print_triples(void *user_data, const raptor_statement *statement);
+static void print_triples(void *user_data, raptor_statement *statement);
 static void print_graph(void *user_data, raptor_uri *graph);
 static void print_namespaces(void* user_data, raptor_namespace *nspace);
 static void relay_namespaces(void* user_data, raptor_namespace *nspace);
@@ -90,7 +90,7 @@ static int report_namespace = 0;
 static int report_graph = 0;
 
 static
-void print_triples(void *user_data, const raptor_statement *triple) 
+void print_triples(void *user_data, raptor_statement *triple) 
 {
   raptor_parser* rdf_parser = (raptor_parser*)user_data;
   triple_count++;
