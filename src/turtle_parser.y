@@ -1343,14 +1343,15 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
     return;
 
   /* Two choices for subject for Turtle */
-  statement->subject->type = t->subject->type;
   if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->subject->value = t->subject->id;
+    statement->subject = raptor_new_term_from_blank(parser->world,
+                                                    strdup(t->subject->id));
   } else {
     /* RAPTOR_TERM_TYPE_URI */
     RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
                   "subject type is not resource");
-    statement->subject->value = t->subject->uri;
+    statement->subject = raptor_new_term_from_uri(parser->world,
+                                                  raptor_uri_copy(t->subject->uri));
   }
 
   /* Predicates are URIs but check for bad ordinals */
@@ -1362,29 +1363,25 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_triple *t)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
   }
   
-  statement->predicate->type = RAPTOR_TERM_TYPE_URI;
-  statement->predicate->value = t->predicate->uri;
+  statement->predicate = raptor_new_term_from_uri(parser->world,
+                                                  raptor_uri_copy(t->predicate->uri));
   
 
   /* Three choices for object for Turtle */
-  statement->object->type = t->object->type;
-  statement->object->literal_language = NULL;
-  statement->object->literal_datatype = NULL;
-
   if(t->object->type == RAPTOR_TERM_TYPE_URI) {
-    statement->object->value = t->object->uri;
+    statement->object = raptor_new_term_from_uri(parser->world,
+                                                 raptor_uri_copy(t->object->uri));
   } else if(t->object->type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->object->value = t->object->id;
+    statement->object = raptor_new_term_from_blank(parser->world,
+                                                   strdup(t->object->id));
   } else {
     /* RAPTOR_TERM_TYPE_LITERAL */
     RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
                   "object type is not literal");
-    statement->object->value = t->object->literal;
-    statement->object->literal_language = t->object->literal_language;
-    statement->object->literal_datatype = t->object->literal_datatype;
-
-    if(statement->object->literal_datatype)
-      statement->object->literal_language = NULL;
+    statement->object = raptor_new_term_from_literal(parser->world,
+                                                     strdup(t->object->literal),
+                                                     (t->object->literal_datatype ? raptor_uri_copy(t->object->literal_datatype) : NULL),
+                                                     (t->object->literal_language ? strdup(t->object->literal_language) : NULL));
   }
 
   if(!parser->statement_handler)

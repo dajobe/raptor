@@ -1034,7 +1034,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
 
   subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
                                          context->blanks,
-                                         (raptor_term*)&statement->subject,
+                                         statement->subject,
                                          &subject_created);
   if(!subject) {
     return 1;
@@ -1052,7 +1052,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   }
 
   object = raptor_abbrev_node_lookup(context->nodes,
-                                     (raptor_term*)&statement->object,
+                                     statement->object,
                                      &object_created);
   if(!object)
     return 1;          
@@ -1060,7 +1060,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
 
   if(statement->predicate->type == RAPTOR_TERM_TYPE_URI) {
     predicate = raptor_abbrev_node_lookup(context->nodes,
-                                          (raptor_term*)&statement->predicate,
+                                          statement->predicate,
                                           &predicate_created);
     if(!predicate)
       return 1;
