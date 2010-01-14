@@ -668,9 +668,7 @@ raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
 raptor_term* raptor_new_term_from_literal(raptor_world* world, unsigned char* literal, raptor_uri* datatype, unsigned char* language);
 raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
-void raptor_clear_term(raptor_term *term);
 void raptor_free_term(raptor_term *term);
-int raptor_copy_term(raptor_term *dest, raptor_term *src);
 
 /* raptor_parse.c */
 raptor_parser_factory* raptor_get_parser_factory(raptor_world* world, const char *name);  

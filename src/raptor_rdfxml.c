@@ -2671,6 +2671,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 literal = RAPTOR_MALLOC(cstring, literal_len + 1);
                 if(!literal)
                   goto oom;
+
                 if(literal_len)
                   raptor_stringbuffer_copy_to_string(xml_element->content_cdata_sb, 
                                                      literal, literal_len);
@@ -2686,7 +2687,13 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                   inscope_literal_language = raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
                   if(inscope_literal_language) {
                     literal_language = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)inscope_literal_language) + 1);
-                    strcpy((char*)literal_language, (const char*)inscope_literal_language);
+                    if(!literal_language) {
+                      RAPTOR_FREE(cstring, literal);
+                      goto oom;
+                    }
+                    
+                    strcpy((char*)literal_language,
+                           (const char*)inscope_literal_language);
                   }
                 }
 
