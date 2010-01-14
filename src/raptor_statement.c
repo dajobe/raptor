@@ -74,86 +74,8 @@ raptor_statement*
 raptor_statement_copy(raptor_statement *statement)
 {
   statement->usage++;
+
   return statement;
-
-#if 0
-  raptor_statement *s;
-
-  s = (raptor_statement*)RAPTOR_CALLOC(raptor_statement, 1,
-                                       sizeof(raptor_statement));
-  if(!s)
-    return NULL;
-
-  s->world = statement->world;
-
-#if 1
-  s->subject = raptor_new_term_from_term(statement->subject);
-#else
-  s->subject->type = statement->subject->type;
-  if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-    unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)statement->subject->value)+1);
-    if(!new_blank)
-      goto oom;
-    strcpy((char*)new_blank, (const char*)statement->subject->value);
-    s->subject->value = new_blank;
-  } else
-    s->subject->value = raptor_uri_copy((raptor_uri*)statement->subject->value);
-#endif
-
-#if 1
-  s->predicate = raptor_new_term_from_term(statement->predicate);
-#else
-  s->predicate->type = RAPTOR_TERM_TYPE_URI;
-  s->predicate->value = raptor_uri_copy((raptor_uri*)statement->predicate->value);
-#endif
-
-#if 1
-  s->object = raptor_new_term_from_term(statement->object);
-#else
-  s->object->type = statement->object->type;
-  if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
-    unsigned char *string;
-    char *language = NULL;
-    raptor_uri *uri = NULL;
-    
-    string = (unsigned char*)RAPTOR_MALLOC(cstring,
-                                           strlen((char*)statement->object->value)+1);
-    if(!string)
-      goto oom;
-    strcpy((char*)string, (const char*)statement->object->value);
-    s->object->value = string;
-
-    if(statement->object->literal_language) {
-      language = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)statement->object->literal_language)+1);
-      if(!language)
-        goto oom;
-      strcpy(language, (const char*)statement->object->literal_language);
-      s->object->literal_language = (const unsigned char*)language;
-    }
-
-    if(statement->object->literal_datatype) {
-      uri = raptor_uri_copy(statement->object->literal_datatype);
-      s->object->literal_datatype = uri;
-    }
-  } else if(statement->object->type == RAPTOR_TERM_TYPE_BLANK) {
-    char *blank = (char*)statement->object->value;
-    unsigned char *new_blank = (unsigned char*)RAPTOR_MALLOC(cstring, strlen(blank)+1);
-    if(!new_blank)
-      goto oom;
-    strcpy((char*)new_blank, (const char*)blank);
-    s->object->value = new_blank;
-  } else {
-    raptor_uri *uri = raptor_uri_copy((raptor_uri*)statement->object->value);
-    s->object->value = uri;
-  }
-#endif
-
-  return s;
-
-  oom:
-  raptor_free_statement(s);
-  return NULL;
-#endif
 }
 
 
@@ -170,32 +92,12 @@ raptor_free_statement(raptor_statement *statement)
   if(--statement->usage)
     return;
   
-  if(statement->subject->value) {
-    if(statement->subject->type == RAPTOR_TERM_TYPE_URI)
-      raptor_free_uri((raptor_uri*)statement->subject->value);
-    else
-      RAPTOR_FREE(cstring, (void*)statement->subject->value);
-  }
-
-  if(statement->predicate->value) {
-    if(statement->predicate->type == RAPTOR_TERM_TYPE_URI)
-      raptor_free_uri((raptor_uri*)statement->predicate->value);
-    else
-      RAPTOR_FREE(cstring, (void*)statement->predicate->value);
-  }
-
-  if(statement->object->type == RAPTOR_TERM_TYPE_URI) {
-    if(statement->object->value)
-      raptor_free_uri((raptor_uri*)statement->object->value);
-  } else {
-    if(statement->object->value)
-      RAPTOR_FREE(cstring, (void*)statement->object->value);
-
-    if(statement->object->literal_language)
-      RAPTOR_FREE(cstring, (void*)statement->object->literal_language);
-    if(statement->object->literal_datatype)
-      raptor_free_uri((raptor_uri*)statement->object->literal_datatype);
-  }
+  if(statement->subject)
+    raptor_free_term(statement->subject);
+  if(statement->predicate)
+    raptor_free_term(statement->predicate);
+  if(statement->object)
+    raptor_free_term(statement->object);
 
   RAPTOR_FREE(raptor_statement, statement);
 }
