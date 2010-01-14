@@ -660,6 +660,7 @@ unsigned char* raptor_parser_internal_generate_id(raptor_parser *rdf_parser, rap
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 const char* raptor_basename(const char *name);
+raptor_statement* raptor_new_statement(raptor_world *world);
 void raptor_statement_init(raptor_statement *statement, raptor_world *world);
 raptor_statement* raptor_statement_copy(raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);

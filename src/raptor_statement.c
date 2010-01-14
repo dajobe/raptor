@@ -47,6 +47,31 @@ static void raptor_term_print_as_ntriples(FILE* stream, const raptor_term* term)
 
 
 /**
+ * raptor_new_statement:
+ * @world: raptor world
+ *
+ * Constructor - create a new #raptor_statement.
+ *
+ */
+raptor_statement*
+raptor_new_statement(raptor_world *world)
+{
+  raptor_statement* statement;
+
+  statement = (raptor_statement*)RAPTOR_CALLOC(raptor_statement,
+                                               1, sizeof(*statement));
+  if(!statement)
+    return NULL;
+  
+  statement->world = world;
+  /* dynamic - usage counted */
+  statement->usage = 1;
+
+  return statement;
+}
+
+
+/**
  * raptor_statement_init:
  * @statement: statement to initialize
  * @world: raptor world
@@ -58,7 +83,9 @@ void
 raptor_statement_init(raptor_statement *statement, raptor_world *world)
 {
   statement->world = world;
-  statement->usage = 1;
+
+  /* static - not usage counted */
+  statement->usage = -1;
 }
 
 
@@ -73,6 +100,25 @@ raptor_statement_init(raptor_statement *statement, raptor_world *world)
 raptor_statement*
 raptor_statement_copy(raptor_statement *statement)
 {
+  /* static - not usage counted */
+  if(statement->usage < 0) {
+    raptor_statement* s2;
+    /* s2 will be a dynamic, usage->counted statement */
+    s2 = raptor_new_statement(statement->world);
+    if(!s2)
+      return NULL;
+
+    s2->world = statement->world;
+    if(statement->subject)
+      s2->subject = raptor_new_term_from_term(statement->subject);
+    if(statement->predicate)
+      s2->predicate = raptor_new_term_from_term(statement->predicate);
+    if(statement->object)
+      s2->object = raptor_new_term_from_term(statement->object);
+
+    return s2;
+  }
+  
   statement->usage++;
 
   return statement;
@@ -89,6 +135,10 @@ raptor_statement_copy(raptor_statement *statement)
 void
 raptor_free_statement(raptor_statement *statement)
 {
+  /* static - not usage counted */
+  if(statement->usage < 0)
+    return;
+
   if(--statement->usage)
     return;
   

@@ -1376,38 +1376,50 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
   /* otherwise generate reified statements */
 
-  /* FIXME - messing about with internals of raptor_term* predicate_term */
-
-  /* deliberately not copying URI here since it'll be overwritten below */
-  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
-                                                    RAPTOR_RDF_type_URI(rdf_xml_parser));
   statement_term = raptor_new_term_from_uri(rdf_parser->world,
                                             raptor_uri_copy(RAPTOR_RDF_Statement_URI(rdf_xml_parser)));
+
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_type_URI(rdf_xml_parser)));
 
   statement->subject = reified_term;
   statement->predicate = reified_predicate_term;
   statement->object = statement_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(statement->predicate); statement->predicate = NULL;
 
   raptor_free_term(statement_term); statement_term = NULL;
 
+
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_subject_URI(rdf_xml_parser)));
+
   /* statement->subject = reified_term; */
-  reified_predicate_term->value = RAPTOR_RDF_subject_URI(rdf_xml_parser);
+  statement->predicate = reified_predicate_term;
   statement->object = subject_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(reified_predicate_term); reified_predicate_term = NULL;
+
+
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_predicate_URI(rdf_xml_parser)));
 
   /* statement->subject = reified_term; */
-  reified_predicate_term->value = RAPTOR_RDF_predicate_URI(rdf_xml_parser);
+  statement->predicate = reified_predicate_term;
   statement->object = predicate_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(reified_predicate_term); reified_predicate_term = NULL;
+
+
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_object_URI(rdf_xml_parser)));
 
   /* statement->subject = reified_term; */
-  reified_predicate_term->value = RAPTOR_RDF_object_URI(rdf_xml_parser);
+  statement->predicate = reified_predicate_term;
   statement->object = object_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(reified_predicate_term); reified_predicate_term = NULL;
 
-  /* OK to destroy here, we did not copy it above */
-  reified_predicate_term->value = NULL;
 
  generate_tidy:
   /* Tidy up things allocated here */
