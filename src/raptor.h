@@ -435,6 +435,7 @@ typedef struct {
 typedef struct {
   raptor_world* world;
 
+  int usage;
   const void *value;
   raptor_term_type type;
   raptor_uri *literal_datatype;
@@ -445,6 +446,7 @@ typedef struct {
 /**
  * raptor_statement:
  * @world: world pointer
+ * @usage: usage count
  * @subject: statement subject
  * @predicate: statement predicate
  * @object: statement object
@@ -456,9 +458,10 @@ typedef struct {
  */
 typedef struct {
   raptor_world* world;
-  raptor_term subject;
-  raptor_term predicate;
-  raptor_term object;
+  int usage;
+  raptor_term* subject;
+  raptor_term* predicate;
+  raptor_term* object;
 } raptor_statement;
 
 
@@ -613,7 +616,7 @@ typedef struct {
  *
  * Statement (triple) reporting handler function.
  */
-typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
+typedef void (*raptor_statement_handler)(void *user_data, raptor_statement *statement);
 
 /**
  * raptor_graph_handler:
@@ -877,7 +880,7 @@ int raptor_serialize_set_namespace(raptor_serializer* rdf_serializer, raptor_uri
 RAPTOR_API
 int raptor_serialize_set_namespace_from_namespace(raptor_serializer* rdf_serializer, raptor_namespace *nspace);
 RAPTOR_API
-int raptor_serialize_statement(raptor_serializer* rdf_serializer, const raptor_statement *statement);
+int raptor_serialize_statement(raptor_serializer* rdf_serializer, raptor_statement *statement);
 RAPTOR_API
 int raptor_serialize_end(raptor_serializer *rdf_serializer);
 RAPTOR_API

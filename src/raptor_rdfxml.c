@@ -1272,57 +1272,53 @@ raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer
 
 static void
 raptor_rdfxml_generate_statement(raptor_parser *rdf_parser, 
-                                 raptor_term *subject,
+                                 raptor_term *subject_term,
                                  raptor_uri *predicate_uri,
-                                 raptor_term *object,
-                                 raptor_term *reified,
+                                 raptor_term *object_term,
+                                 raptor_term *reified_term,
                                  raptor_rdfxml_element* bag_element)
 {
-  raptor_statement *statement=&rdf_parser->statement;
-  const unsigned char *language = NULL;
-  static const char empty_literal[1]="";
   raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
-  char *reified_id = NULL;
-  raptor_uri* uri1 = NULL;
-  raptor_uri* uri2 = NULL;
+  raptor_statement *statement = &rdf_parser->statement;
+  raptor_term* predicate_term = NULL;
+  raptor_term* statement_term = NULL;
+  raptor_term* reified_predicate_term = NULL;
   
   if(rdf_parser->failed)
     return;
 
-  if(object->type == RAPTOR_TERM_TYPE_LITERAL &&
-     !object->literal_datatype) {
-    language = raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
-    if(!object->value)
-      object->value = (raptor_uri*)empty_literal;
+#ifdef RAPTOR_DEBUG_VERBOSE
+  if(!subject_term)
+    RAPTOR_FATAL1("Statement has no subject\n");
+  
+  if(!predicate_uri)
+    RAPTOR_FATAL1("Statement has no predicate\n");
+  
+  if(!object_term)
+    RAPTOR_FATAL1("Statement has no object\n");
+  
+#endif
+
+  predicate_term = raptor_new_term_from_uri(rdf_parser->world, 
+                                            raptor_uri_copy(predicate_uri));
+  if(!predicate_term)
+    return;
+
+
+  if(object_term->type == RAPTOR_TERM_TYPE_LITERAL &&
+     !object_term->literal_datatype) {
+    object_term->literal_language = raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
   }
+
   
-  statement->subject.value = subject->value;
-  statement->subject.type = subject->type;
-
-  statement->predicate.type = RAPTOR_TERM_TYPE_URI;
-  statement->predicate.value = predicate_uri;
-  
-  statement->object.value = object->value;
-  statement->object.type = object->type;
-
-  statement->object.literal_language = language;
-  statement->object.literal_datatype = object->literal_datatype;
-
+  statement->subject = subject_term;
+  statement->predicate = predicate_term;
+  statement->object = object_term;
 
 #ifdef RAPTOR_DEBUG_VERBOSE
   fprintf(stderr, "raptor_rdfxml_generate_statement: Generating statement: ");
   raptor_print_statement(statement, stderr);
   fputc('\n', stderr);
-
-  if(!(subject_uri || subject_id))
-    RAPTOR_FATAL1("Statement has no subject\n");
-  
-  if(!(predicate_uri || predicate_id))
-    RAPTOR_FATAL1("Statement has no predicate\n");
-  
-  if(!(object->value || object_id))
-    RAPTOR_FATAL1("Statement has no object\n");
-  
 #endif
 
   if(!rdf_parser->statement_handler)
@@ -1336,76 +1332,92 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
   if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID] &&
      bag_element && bag_element->bag.value) {
     raptor_term* bag = &bag_element->bag;
+    raptor_uri* bag_predicate_uri = NULL;
+    raptor_term* bag_predicate_term = NULL;
     
-    statement->subject.value = bag->value;
-    statement->subject.type = bag->type;
+    statement->subject = bag;
 
     bag_element->last_bag_ordinal++;
 
     /* new URI object */
-    uri2 = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, bag_element->last_bag_ordinal);
-    statement->predicate.value = uri2;
+    bag_predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world,
+                                                        bag_element->last_bag_ordinal);
+    if(!bag_predicate_uri)
+      goto generate_tidy;
 
-    if(reified && reified->value) {
-      statement->object.value = reified->value;
-      statement->object.type = reified->type;
-    } else {
-      /* reified may be NULL so do not use it */
-      reified_id = (char*)raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-      statement->object.value = reified_id;
-      statement->object.type = RAPTOR_TERM_TYPE_BLANK;
+    bag_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                  bag_predicate_uri);
+    if(!bag_predicate_term)
+      goto generate_tidy;
+    
+    statement->predicate = bag_predicate_term;
+
+    if(!reified_term || !reified_term->value) {
+      unsigned char *reified_id = NULL;
+
+      /* reified_term is NULL so generate a bag ID */
+      reified_id = raptor_parser_internal_generate_id(rdf_parser, 
+                                                      RAPTOR_GENID_TYPE_BNODEID, NULL);
+      reified_term = raptor_new_term_from_blank(rdf_parser->world, 
+                                                reified_id);
     }
     
+    statement->object = reified_term;
     (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
-    
-  } else if(!reified || !reified->value)
+
+    if(bag_predicate_term)
+      raptor_free_term(bag_predicate_term);
+  }
+
+
+  /* return if is there no reified ID (that is valid) */
+  if(!reified_term || !reified_term->value)
     goto generate_tidy;
 
-  /* generate reified statements */
-  statement->subject.type = RAPTOR_TERM_TYPE_URI;
-  statement->predicate.type = RAPTOR_TERM_TYPE_URI;
-  statement->object.type = RAPTOR_TERM_TYPE_URI;
 
-  statement->object.literal_language = NULL;
+  /* otherwise generate reified statements */
 
-  if(reified_id) {
-    /* reified may be NULL so do not use it */
-    statement->subject.value = reified_id;
-    statement->subject.type = RAPTOR_TERM_TYPE_BLANK;
-  } else {
-    statement->subject.value = reified->value;
-    statement->subject.type = reified->type;
-  }
-  
-  statement->predicate.value = RAPTOR_RDF_type_URI(rdf_xml_parser);
-  statement->object.value = RAPTOR_RDF_Statement_URI(rdf_xml_parser);
+  /* FIXME - messing about with internals of raptor_term* predicate_term */
+
+  /* deliberately not copying URI here since it'll be overwritten below */
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    RAPTOR_RDF_type_URI(rdf_xml_parser));
+  statement_term = raptor_new_term_from_uri(rdf_parser->world,
+                                            raptor_uri_copy(RAPTOR_RDF_Statement_URI(rdf_xml_parser)));
+
+  statement->subject = reified_term;
+  statement->predicate = reified_predicate_term;
+  statement->object = statement_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate.value = RAPTOR_RDF_subject_URI(rdf_xml_parser);
-  statement->object.value = subject->value;
-  statement->object.type = subject->type;
+  raptor_free_term(statement_term); statement_term = NULL;
+
+  /* statement->subject = reified_term; */
+  reified_predicate_term->value = RAPTOR_RDF_subject_URI(rdf_xml_parser);
+  statement->object = subject_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate.value = RAPTOR_RDF_predicate_URI(rdf_xml_parser);
-  statement->object.value = predicate_uri;
-  statement->object.type = RAPTOR_TERM_TYPE_URI;
+  /* statement->subject = reified_term; */
+  reified_predicate_term->value = RAPTOR_RDF_predicate_URI(rdf_xml_parser);
+  statement->object = predicate_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
 
-  statement->predicate.value = RAPTOR_RDF_object_URI(rdf_xml_parser);
-  statement->object.value = object->value;
-  statement->object.type = object->type;
-  statement->object.literal_language = language;
-
+  /* statement->subject = reified_term; */
+  reified_predicate_term->value = RAPTOR_RDF_object_URI(rdf_xml_parser);
+  statement->object = object_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+
+  /* OK to destroy here, we did not copy it above */
+  reified_predicate_term->value = NULL;
 
  generate_tidy:
   /* Tidy up things allocated here */
-  if(reified_id)
-    RAPTOR_FREE(cstring, reified_id);
-  if(uri1)
-    raptor_free_uri(uri1);
-  if(uri2)
-    raptor_free_uri(uri2);
+  if(reified_predicate_term)
+    raptor_free_term(reified_predicate_term);
+  if(statement_term)
+    raptor_free_term(statement_term);
+  if(predicate_term)
+    raptor_free_term(predicate_term);
 }
 
 

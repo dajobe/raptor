@@ -107,9 +107,9 @@ void print_triples(void *user_data, const raptor_statement *triple)
 
   /* replace newlines with spaces if object is a literal string */
   if(replace_newlines && 
-     triple->object.type == RAPTOR_TERM_TYPE_LITERAL) {
+     triple->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     char *s;
-    for(s = (char*)triple->object.value; *s; s++)
+    for(s = (char*)triple->object->value; *s; s++)
       if(*s == '\n')
         *s=' ';
   }

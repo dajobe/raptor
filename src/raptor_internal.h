@@ -618,7 +618,7 @@ struct raptor_serializer_factory_s {
   int (*serialize_start)(raptor_serializer* serializer);
   
   /* serialize a statement */
-  int (*serialize_statement)(raptor_serializer* serializer, const raptor_statement *statment);
+  int (*serialize_statement)(raptor_serializer* serializer, raptor_statement *statment);
 
   /* end a serialization */
   int (*serialize_end)(raptor_serializer* serializer);
@@ -661,8 +661,12 @@ void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 const char* raptor_basename(const char *name);
 void raptor_statement_init(raptor_statement *statement, raptor_world *world);
-raptor_statement* raptor_statement_copy(const raptor_statement *statement);
+raptor_statement* raptor_statement_copy(raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);
+raptor_term* raptor_new_term_from_term(raptor_term* term);
+raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
+raptor_term* raptor_new_term_from_literal(raptor_world* world, unsigned char* literal, raptor_uri* datatype, unsigned char* language);
+raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
 void raptor_clear_term(raptor_term *term);
 void raptor_free_term(raptor_term *term);

@@ -120,7 +120,7 @@ static int raptor_turtle_serialize_declare_namespace(raptor_serializer* serializ
                                                      const unsigned char *prefix);
 static int raptor_turtle_serialize_start(raptor_serializer* serializer);
 static int raptor_turtle_serialize_statement(raptor_serializer* serializer, 
-                                             const raptor_statement *statement);
+                                             raptor_statement *statement);
 
 static int raptor_turtle_serialize_end(raptor_serializer* serializer);
 static void raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory);
@@ -1012,7 +1012,7 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
 /* serialize a statement */
 static int
 raptor_turtle_serialize_statement(raptor_serializer* serializer, 
-                                  const raptor_statement *statement)
+                                  raptor_statement *statement)
 {
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_abbrev_subject* subject = NULL;
@@ -1024,11 +1024,11 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   int predicate_created = 0;
   int object_created = 0;
 
-  if(!(statement->subject.type == RAPTOR_TERM_TYPE_URI ||
-       statement->subject.type == RAPTOR_TERM_TYPE_BLANK)) {
+  if(!(statement->subject->type == RAPTOR_TERM_TYPE_URI ||
+       statement->subject->type == RAPTOR_TERM_TYPE_BLANK)) {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                                "Do not know how to serialize node type %d",
-                               statement->subject.type);
+                               statement->subject->type);
     return 1;
   }  
 
@@ -1040,7 +1040,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     return 1;
   }
 
-  object_type = statement->object.type;
+  object_type = statement->object->type;
 
   if(!(object_type == RAPTOR_TERM_TYPE_URI ||
        object_type == RAPTOR_TERM_TYPE_BLANK ||
@@ -1058,7 +1058,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     return 1;          
 
 
-  if(statement->predicate.type == RAPTOR_TERM_TYPE_URI) {
+  if(statement->predicate->type == RAPTOR_TERM_TYPE_URI) {
     predicate = raptor_abbrev_node_lookup(context->nodes,
                                           (raptor_term*)&statement->predicate,
                                           &predicate_created);
@@ -1076,7 +1076,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   } else {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                                "Do not know how to serialize node type %d",
-                               statement->predicate.type);
+                               statement->predicate->type);
     return 1;
   }
   

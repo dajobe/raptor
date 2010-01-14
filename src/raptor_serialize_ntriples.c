@@ -181,11 +181,11 @@ void
 raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
                                          const raptor_statement *statement)
 {
-  raptor_iostream_write_term_ntriples(iostr, &statement->subject);
+  raptor_iostream_write_term_ntriples(iostr, statement->subject);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_term_ntriples(iostr, &statement->predicate);
+  raptor_iostream_write_term_ntriples(iostr, statement->predicate);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_term_ntriples(iostr, &statement->object);
+  raptor_iostream_write_term_ntriples(iostr, statement->object);
   raptor_iostream_write_counted_string(iostr, " .\n", 3);
 }
 
@@ -193,7 +193,7 @@ raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
 /* serialize a statement */
 static int
 raptor_ntriples_serialize_statement(raptor_serializer* serializer, 
-                                    const raptor_statement *statement)
+                                    raptor_statement *statement)
 {
   raptor_iostream_write_statement_ntriples(serializer->iostream, statement);
   return 0;
