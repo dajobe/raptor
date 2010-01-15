@@ -1204,23 +1204,23 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
     if(f == RAPTOR_RSS_FIELD_ITEMS)
       continue;
 	
-    rss_parser->statement.predicate->value = rdf_parser->world->rss_fields_info_uris[f];
-    if(!rss_parser->statement.predicate->value)
+    rss_parser->statement.predicate = raptor_new_term_from_uri(rdf_parser->world,
+                                                               raptor_uri_copy(rdf_parser->world->rss_fields_info_uris[f]));
+    if(!rss_parser->statement.predicate)
       continue;
     
-    rss_parser->statement.predicate->type = RAPTOR_TERM_TYPE_URI;
-
     for(field = item->fields[f]; field; field = field->next) {
-      rss_parser->statement.object->literal_language = NULL;
-      rss_parser->statement.object->literal_datatype = NULL;
+      raptor_term* object_term;
       if(field->value) {
-        rss_parser->statement.object->value = field->value;
-        rss_parser->statement.object->type = RAPTOR_TERM_TYPE_LITERAL;
         /* FIXME - should store and emit languages */
+        object_term = raptor_new_term_from_literal(rdf_parser->world,
+                                                   strdup(field->value),
+                                                   NULL, NULL);
       } else {
-        rss_parser->statement.object->value = field->uri;
-        rss_parser->statement.object->type = RAPTOR_TERM_TYPE_URI;
+        object_term = raptor_new_term_from_uri(rdf_parser->world,
+                                               raptor_uri_copy(field->uri));
       }
+      rss_parser->statement.object = object_term;
       
       /* Generate the statement */
       (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
