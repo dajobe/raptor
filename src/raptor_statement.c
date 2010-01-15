@@ -649,3 +649,57 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 
   return t;
 }
+
+int
+raptor_term_equals(raptor_term* t1, raptor_term* t2) 
+{
+  int d = 0;
+  
+  if(t1->type != t2->type)
+    return 0;
+  
+  if(t1 == t2)
+    return 1;
+  
+  switch(t1->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      d = raptor_uri_equals((raptor_uri*)t1->value, (raptor_uri*)t2->value);
+      break;
+
+    case RAPTOR_TERM_TYPE_BLANK:
+      d = !strcmp((const char*)t1->value, (const char*)t2->value);
+      break;
+
+    case RAPTOR_TERM_TYPE_LITERAL:
+      d = !strcmp((const char*)t1->value, (const char*)t2->value);
+      if(!d)
+        break;
+      
+      if(t1->literal_language && t2->literal_language) {
+        /* both have a language */
+        d = !strcmp((const char*)t1->literal_language, 
+                    (const char*)t2->literal_language);
+        if(!d)
+          break;
+      } else if(t1->literal_language || t2->literal_language) {
+        /* only one has a language - different */
+        d = 0;
+        break;
+      }
+
+      if(t1->literal_datatype && t2->literal_datatype) {
+        /* both have a datatype */
+        d = raptor_uri_equals(t1->literal_datatype, t2->literal_datatype);
+      } else if(t1->literal_datatype || t2->literal_datatype) {
+        /* only one has a datatype - different */
+        d = 0;
+      }
+      break;
+      
+    case RAPTOR_TERM_TYPE_UNKNOWN:
+    default:
+      break;
+  }
+
+  return d;
+}
