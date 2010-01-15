@@ -71,6 +71,31 @@ raptor_new_statement(raptor_world *world)
 }
 
 
+raptor_statement*
+raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
+                                raptor_term *predicate, raptor_term *object)
+{
+  raptor_statement* t;
+  
+  t = raptor_new_statement(world);
+  if(!t) {
+    if(subject)
+      raptor_free_term(subject);
+    if(predicate)
+      raptor_free_term(predicate);
+    if(object)
+      raptor_free_term(object);
+    return NULL;
+  }
+  
+  t->subject = subject;
+  t->predicate = predicate;
+  t->object = object;
+
+  return t;
+}
+
+
 /**
  * raptor_statement_init:
  * @statement: statement to initialize
