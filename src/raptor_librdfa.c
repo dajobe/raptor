@@ -91,10 +91,10 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
 {
   raptor_parser* parser = (raptor_parser*)callback_data;
   raptor_statement *s=&parser->statement;
-  raptor_uri *subject_uri = NULL;
+  raptor_term *subject_term = NULL;
+  raptor_term *predicate_term = NULL;
   raptor_uri *predicate_uri = NULL;
-  raptor_uri *object_uri = NULL;
-  raptor_uri *datatype_uri = NULL;
+  raptor_term *object_term = NULL;
 
   if(!triple->subject || !triple->predicate || !triple->object) {
     RAPTOR_FATAL1("Triple has NULL parts\n");
@@ -109,61 +109,76 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   }
   
   if((triple->subject[0] == '_') && (triple->subject[1] == ':')) {
-    s->subject->type = RAPTOR_TERM_TYPE_BLANK;
-    s->subject->value = (triple->subject + 2);
+    subject_term = raptor_new_term_from_blank(parser->world,
+                                              (const unsigned char*)strdup(triple->subject + 2));
   } else {
-    s->subject->type = RAPTOR_TERM_TYPE_URI;
-    subject_uri = raptor_new_uri(parser->world, (const unsigned char*)triple->subject);
-    if(!subject_uri)
-      goto cleanup;
-    s->subject->value = subject_uri;
+    raptor_uri* subject_uri;
+    
+    subject_uri = raptor_new_uri(parser->world,
+                                 (const unsigned char*)triple->subject);
+    subject_term = raptor_new_term_from_uri(parser->world, subject_uri);
+    subject_uri = NULL;
   }
+  s->subject = subject_term;
   
 
-  predicate_uri = raptor_new_uri(parser->world, (const unsigned char*)triple->predicate);
+  predicate_uri = raptor_new_uri(parser->world,
+                                 (const unsigned char*)triple->predicate);
   if(!predicate_uri)
     goto cleanup;
-  s->predicate->value = predicate_uri;
-  s->predicate->type = RAPTOR_TERM_TYPE_URI;
+  predicate_term = raptor_new_term_from_uri(parser->world, predicate_uri);
+  s->predicate = predicate_term;
  
-  s->object->value = triple->object;
-  s->object->literal_datatype = NULL;
-  s->object->literal_language = NULL;
   if(triple->object_type == RDF_TYPE_IRI) {
     if((triple->object[0] == '_') && (triple->object[1] == ':')) {
-      s->object->type = RAPTOR_TERM_TYPE_BLANK;
-      s->object->value = (triple->object + 2);
+      object_term = raptor_new_term_from_blank(parser->world,
+                                               (const unsigned char*)strdup(triple->object + 2));
     } else {
-      s->object->type = RAPTOR_TERM_TYPE_URI;
-      object_uri = raptor_new_uri(parser->world, (const unsigned char*)triple->object);
+      raptor_uri* object_uri;
+      object_uri = raptor_new_uri(parser->world,
+                                  (const unsigned char*)triple->object);
       if(!object_uri)
         goto cleanup;
-      s->object->value = object_uri;
+      object_term = raptor_new_term_from_uri(parser->world, object_uri);
     }
   } else if(triple->object_type == RDF_TYPE_PLAIN_LITERAL) {
-    s->object->type = RAPTOR_TERM_TYPE_LITERAL;
-    if(triple->language)
-      s->object->literal_language = (const unsigned char*)triple->language;
+    object_term = raptor_new_term_from_literal(parser->world,
+                                               (unsigned char*)strdup(triple->object),
+                                               NULL,
+                                               (triple->language ? (unsigned char*)strdup(triple->language) : NULL));
+    
   } else if(triple->object_type == RDF_TYPE_XML_LITERAL) {
-    s->object->type = RAPTOR_TERM_TYPE_LITERAL;
-    datatype_uri = raptor_new_uri(parser->world, (const unsigned char*)raptor_xml_literal_datatype_uri_string);
-    s->object->literal_datatype = datatype_uri;
+    raptor_uri* datatype_uri;
+    datatype_uri = raptor_new_uri(parser->world,
+                                  (const unsigned char*)raptor_xml_literal_datatype_uri_string);
+    object_term = raptor_new_term_from_literal(parser->world,
+                                               (unsigned char*)strdup(triple->object),
+                                               datatype_uri,
+                                               NULL);
   } else if(triple->object_type == RDF_TYPE_TYPED_LITERAL) {
-    s->object->type = RAPTOR_TERM_TYPE_LITERAL;
-    if(triple->language)
-      s->object->literal_language = (const unsigned char*)triple->language;
-    if(triple->datatype) {
-      datatype_uri = raptor_new_uri(parser->world, (const unsigned char*)triple->datatype);
+    raptor_uri *datatype_uri = NULL;
+    unsigned char* language = NULL;
+    
+    if(triple->language) {
+      language = (unsigned char*)strdup(triple->language);
+      /* If datatype, no language allowed */
+    } else if(triple->datatype) {
+      datatype_uri = raptor_new_uri(parser->world,
+                                    (const unsigned char*)triple->datatype);
       if(!datatype_uri)
         goto cleanup;
-      s->object->literal_datatype = datatype_uri;
-      /* If datatype, no language allowed */
-      s->object->literal_language = NULL;
     }
+    
+    object_term = raptor_new_term_from_literal(parser->world,
+                                               (unsigned char*)strdup(triple->object),
+                                               datatype_uri,
+                                               language);
+
   } else {
     RAPTOR_FATAL2("Triple has unknown object type %d\n", s->object->type);
     goto cleanup;
   }
+  s->object = object_term;
   
   if(!parser->statement_handler)
     goto cleanup;
@@ -174,14 +189,12 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   cleanup:
   rdfa_free_triple(triple);
   
-  if(subject_uri)
-    raptor_free_uri(subject_uri);
-  if(predicate_uri)
-    raptor_free_uri(predicate_uri);
-  if(object_uri)
-    raptor_free_uri(object_uri);
-  if(datatype_uri)
-    raptor_free_uri(datatype_uri);
+  if(subject_term)
+    raptor_free_term(subject_term);
+  if(predicate_term)
+    raptor_free_term(predicate_term);
+  if(object_term)
+    raptor_free_term(object_term);
 }
 
 
