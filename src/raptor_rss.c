@@ -1199,14 +1199,20 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
 
   for(f = 0; f< RAPTOR_RSS_FIELDS_SIZE; f++) {
     raptor_rss_field* field;
+    raptor_uri* predicate_uri = NULL;
     raptor_term* predicate_term = NULL;
     
     /* This is only made by a connection */	  
     if(f == RAPTOR_RSS_FIELD_ITEMS)
       continue;
-	
+
+    /* skip predicates with no URI (no namespace e.g. RSS 2) */
+    predicate_uri = rdf_parser->world->rss_fields_info_uris[f];
+    if(!predicate_uri)
+      continue;
+    
     predicate_term = raptor_new_term_from_uri(rdf_parser->world,
-                                              raptor_uri_copy(rdf_parser->world->rss_fields_info_uris[f]));
+                                              raptor_uri_copy(predicate_uri));
     if(!predicate_term)
       continue;
 
@@ -1227,7 +1233,8 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
       rss_parser->statement.object = object_term;
       
       /* Generate the statement */
-      (*rdf_parser->statement_handler)(rdf_parser->user_data, &rss_parser->statement);
+      (*rdf_parser->statement_handler)(rdf_parser->user_data,
+                                       &rss_parser->statement);
 
       raptor_free_term(object_term);
     }
