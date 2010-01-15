@@ -720,13 +720,6 @@ int raptor_features_enumerate_common(raptor_world* world, const raptor_feature f
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
 int raptor_check_ordinal(const unsigned char *name);
 
-/* raptor_identifier.c */
-void raptor_set_identifier_uri(raptor_identifier *identifier, raptor_uri *uri);
-void raptor_set_identifier_id(raptor_identifier *identifier, const unsigned char *id);
-#ifdef RAPTOR_DEBUG
-void raptor_identifier_print(FILE *stream, raptor_identifier* identifier);
-#endif
-  
 /* raptor_locator.c */
 
 
@@ -927,8 +920,6 @@ struct  raptor_www_s {
 
 
 /* internal */
-void raptor_clear_identifier(raptor_identifier *identifier);
-
 void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www);
@@ -1087,13 +1078,6 @@ typedef struct raptor_turtle_parser_s raptor_turtle_parser;
 
 /* n3_parser.y and n3_lexer.l */
 typedef struct raptor_n3_parser_s raptor_n3_parser;
-
-typedef struct {
-  raptor_identifier *subject;
-  raptor_identifier *predicate;
-  raptor_identifier *object;
-} raptor_triple;
-
 
 /* raptor_rfc2396.c */
 struct raptor_uri_detail_s
