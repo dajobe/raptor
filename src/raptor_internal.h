@@ -670,6 +670,7 @@ raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
 raptor_term* raptor_new_term_from_literal(raptor_world* world, unsigned char* literal, raptor_uri* datatype, unsigned char* language);
 raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
+int raptor_term_equals(raptor_term* term1, raptor_term* term2);
 void raptor_free_term(raptor_term *term);
 
 /* raptor_parse.c */
