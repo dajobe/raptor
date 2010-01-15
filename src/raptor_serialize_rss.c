@@ -1726,25 +1726,27 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       typei = RAPTOR_ATOM_AUTHOR;
       if(!rss_model->common[typei]) {
         raptor_rss_item* author_item;
-        raptor_identifier* identifier;
+        unsigned char* author_id;
 
         /* No atom author was present so make a new atom:author item
          * then either promote the string to an atom:name field OR
          * use "unknown"
          */
         author_item = raptor_rss_model_add_common(rss_model, (raptor_rss_type)typei);
-        identifier=&(author_item->identifier);
 
         author_item->node_type=&raptor_rss_items_info[typei];
         author_item->node_typei = typei;
+
         /* FIXME - uses _:author as bnode name - should make a new
          * genid for each author node.  This is OK because there
          * is a check above that there is only 1 author per FEED.
          */
-        identifier->id = (const unsigned char*)RAPTOR_MALLOC(cstring, 7);
-        strncpy((char*)identifier->id, "author", 7);
+        author_id = (unsigned char*)RAPTOR_MALLOC(cstring, 7);
+        strncpy((char*)author_id, "author", 7);
 
-        identifier->type = RAPTOR_TERM_TYPE_BLANK;
+        author_item->term = raptor_new_term_from_blank(serializer->world,
+                                                       author_id);
+
 
         /* Move atom:name author field, or create a dummy one */
         f = RAPTOR_RSS_FIELD_ATOM_NAME;
