@@ -646,7 +646,7 @@ raptor_serialize_set_namespace_from_namespace(raptor_serializer* rdf_serializer,
  **/
 int
 raptor_serialize_statement(raptor_serializer* rdf_serializer,
-                           const raptor_statement *statement)
+                           raptor_statement *statement)
 {
   if(!rdf_serializer->iostream)
     return 1;

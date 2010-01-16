@@ -65,6 +65,7 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 </para>
 
 @world: 
+@usage: 
 @subject: 
 @predicate: 
 @object: 

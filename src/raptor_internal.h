@@ -618,7 +618,7 @@ struct raptor_serializer_factory_s {
   int (*serialize_start)(raptor_serializer* serializer);
   
   /* serialize a statement */
-  int (*serialize_statement)(raptor_serializer* serializer, const raptor_statement *statment);
+  int (*serialize_statement)(raptor_serializer* serializer, raptor_statement *statment);
 
   /* end a serialization */
   int (*serialize_end)(raptor_serializer* serializer);
@@ -660,13 +660,18 @@ unsigned char* raptor_parser_internal_generate_id(raptor_parser *rdf_parser, rap
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 const char* raptor_basename(const char *name);
+raptor_statement* raptor_new_statement(raptor_world *world);
+raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject, raptor_term *predicate, raptor_term *object);
 void raptor_statement_init(raptor_statement *statement, raptor_world *world);
-raptor_statement* raptor_statement_copy(const raptor_statement *statement);
+raptor_statement* raptor_statement_copy(raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);
+raptor_term* raptor_new_term_from_term(raptor_term* term);
+raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
+raptor_term* raptor_new_term_from_literal(raptor_world* world, unsigned char* literal, raptor_uri* datatype, unsigned char* language);
+raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
-void raptor_clear_term(raptor_term *term);
+int raptor_term_equals(raptor_term* term1, raptor_term* term2);
 void raptor_free_term(raptor_term *term);
-int raptor_copy_term(raptor_term *dest, raptor_term *src);
 
 /* raptor_parse.c */
 raptor_parser_factory* raptor_get_parser_factory(raptor_world* world, const char *name);  
@@ -715,13 +720,6 @@ int raptor_features_enumerate_common(raptor_world* world, const raptor_feature f
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
 int raptor_check_ordinal(const unsigned char *name);
 
-/* raptor_identifier.c */
-void raptor_set_identifier_uri(raptor_identifier *identifier, raptor_uri *uri);
-void raptor_set_identifier_id(raptor_identifier *identifier, const unsigned char *id);
-#ifdef RAPTOR_DEBUG
-void raptor_identifier_print(FILE *stream, raptor_identifier* identifier);
-#endif
-  
 /* raptor_locator.c */
 
 
@@ -922,8 +920,6 @@ struct  raptor_www_s {
 
 
 /* internal */
-void raptor_clear_identifier(raptor_identifier *identifier);
-
 void raptor_www_libxml_init(raptor_www *www);
 void raptor_www_libxml_free(raptor_www *www);
 int raptor_www_libxml_fetch(raptor_www *www);
@@ -1083,13 +1079,6 @@ typedef struct raptor_turtle_parser_s raptor_turtle_parser;
 /* n3_parser.y and n3_lexer.l */
 typedef struct raptor_n3_parser_s raptor_n3_parser;
 
-typedef struct {
-  raptor_identifier *subject;
-  raptor_identifier *predicate;
-  raptor_identifier *object;
-} raptor_triple;
-
-
 /* raptor_rfc2396.c */
 struct raptor_uri_detail_s
 {
@@ -1150,10 +1139,6 @@ typedef void (*raptor_simple_message_handler)(void *user_data, const char *messa
 
 /* turtle_common.c */
 int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, const unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
-
-
-/* raptor_xsd.c */
-raptor_identifier* raptor_new_identifier_from_double(raptor_world* world, double d);
 
 
 /* raptor_abbrev.c */

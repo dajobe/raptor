@@ -445,7 +445,6 @@ raptor_new_rss_item(raptor_world* world)
     return NULL;
   
   item->world = world;
-  item->identifier.world = world;
   item->triples = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, (raptor_sequence_print_handler*)raptor_print_statement);
   if(!item->triples) {
     RAPTOR_FREE(raptor_rss_item, item);
@@ -531,7 +530,8 @@ raptor_free_rss_item(raptor_rss_item* item)
     raptor_free_rss_block(item->blocks);
   if(item->uri)
     raptor_free_uri(item->uri);
-  raptor_free_identifier(&item->identifier);
+  if(item->term)
+    raptor_free_term(item->term);
   if(item->triples)
     raptor_free_sequence(item->triples);
 
@@ -579,12 +579,7 @@ int
 raptor_rss_item_equals_statement_subject(const raptor_rss_item *item,
                                          const raptor_statement *statement)
 {
-  if(item->identifier.uri)
-    return raptor_uri_equals((raptor_uri*)statement->subject.value,
-                             item->identifier.uri);
-  
-  return !strcmp((const char*)statement->subject.value,
-                 (const char*)item->identifier.id);
+  return raptor_term_equals(statement->subject, item->term);
 }
 
 
@@ -602,7 +597,7 @@ raptor_rss_item_set_uri(raptor_rss_item *item, raptor_uri* uri)
   if(!uri)
     return 1;
   
-  raptor_set_identifier_uri(&item->identifier, uri);
+  item->term = raptor_new_term_from_uri(item->world, uri);
   return 0;
 }
 
@@ -617,14 +612,9 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
                                            sizeof(raptor_rss_block));
 
   if(block) {
-    raptor_identifier* identifier = &block->identifier;
-
     block->rss_type = type;
     block->node_type = world->rss_types_info_uris[type];
-
-    identifier->world = world;
-    raptor_set_identifier_id(identifier, id);
-  
+    block->identifier = raptor_new_term_from_blank(world, id);
   } else
     RAPTOR_FREE(cstring, id);
   
@@ -650,7 +640,8 @@ raptor_free_rss_block(raptor_rss_block *block)
   if(block->next)
     raptor_free_rss_block(block->next);
 
-  raptor_free_identifier(&(block->identifier));
+  if(block->identifier)
+    raptor_free_term(block->identifier);
 
   RAPTOR_FREE(raptor_rss_block, block);
 }

@@ -137,7 +137,7 @@ static int raptor_rdfxmla_serialize_declare_namespace(raptor_serializer* seriali
                                                       const unsigned char *prefix);
 static int raptor_rdfxmla_serialize_start(raptor_serializer* serializer);
 static int raptor_rdfxmla_serialize_statement(raptor_serializer* serializer, 
-                                              const raptor_statement *statement);
+                                              raptor_statement *statement);
 
 static int raptor_rdfxmla_serialize_end(raptor_serializer* serializer);
 static void raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* factory);
@@ -1317,7 +1317,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
 /* serialize a statement */
 static int
 raptor_rdfxmla_serialize_statement(raptor_serializer* serializer, 
-                                   const raptor_statement *statement)
+                                   raptor_statement *statement)
 {
   raptor_rdfxmla_context* context = (raptor_rdfxmla_context*)serializer->context;
   raptor_abbrev_subject* subject = NULL;
@@ -1329,22 +1329,22 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   int predicate_created = 0;
   int object_created = 0;
   
-  if(!(statement->subject.type == RAPTOR_TERM_TYPE_URI ||
-       statement->subject.type == RAPTOR_TERM_TYPE_BLANK)) {
+  if(!(statement->subject->type == RAPTOR_TERM_TYPE_URI ||
+       statement->subject->type == RAPTOR_TERM_TYPE_BLANK)) {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                                "Cannot serialize a triple with subject node type %d",
-                               statement->subject.type);
+                               statement->subject->type);
     return 1;
   }  
 
   subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
                                          context->blanks,
-                                         (raptor_term*)&statement->subject,
+                                         statement->subject,
                                          &subject_created);
   if(!subject)
     return 1;
   
-  object_type = statement->object.type;
+  object_type = statement->object->type;
 
   if(!(object_type == RAPTOR_TERM_TYPE_URI ||
        object_type == RAPTOR_TERM_TYPE_BLANK ||
@@ -1356,29 +1356,29 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   }
   
   object = raptor_abbrev_node_lookup(context->nodes,
-                                     (raptor_term*)&statement->object,
+                                     statement->object,
                                      &object_created);
   if(!object)
     return 1;          
 
 
-  if(statement->predicate.type == RAPTOR_TERM_TYPE_URI) {
+  if(statement->predicate->type == RAPTOR_TERM_TYPE_URI) {
     predicate = raptor_abbrev_node_lookup(context->nodes,
-                                          (raptor_term*)&statement->predicate,
+                                          statement->predicate,
                                           &predicate_created);
     if(!predicate)
       return 1;
 
     if(!subject->node_type && 
        raptor_abbrev_node_equals(predicate, context->rdf_type) &&
-       statement->object.type == RAPTOR_TERM_TYPE_URI) {
+       statement->object->type == RAPTOR_TERM_TYPE_URI) {
 
       /* Store the first one as the type for abbreviation 2.14
        * purposes. Note that it is perfectly legal to have
        * multiple type definitions.  All definitions after the
        * first go in the property list */
       subject->node_type = raptor_abbrev_node_lookup(context->nodes,
-                                                     (raptor_term*)&statement->object,
+                                                     statement->object,
                                                      NULL);
       if(!subject->node_type)
         return 1;
@@ -1410,7 +1410,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
                */
               raptor_abbrev_subject *blank = 
                 raptor_abbrev_subject_find(context->blanks,
-                                           (raptor_term*)&statement->object);
+                                           statement->object);
               if(subject) raptor_avltree_delete(context->blanks, blank);
             }
             break;
@@ -1434,7 +1434,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   } else {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                                "Cannot serialize a triple with predicate node type %d",
-                               statement->predicate.type);
+                               statement->predicate->type);
     return 1;
   }
   

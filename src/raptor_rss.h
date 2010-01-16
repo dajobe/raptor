@@ -278,7 +278,7 @@ struct raptor_rss_block_s
   raptor_rss_type rss_type;
  
  /* enclosure: subject node URI/blank node */
-  raptor_identifier identifier;
+  raptor_term *identifier;
 
   /* enclosure: node RAPTOR_RSS_ENCLOSURE
      category: node RAPTOR_ATOM_CATEGORY 
@@ -367,7 +367,7 @@ struct raptor_rss_item_s
 {
   raptor_world* world;
   raptor_uri *uri;
-  raptor_identifier identifier;
+  raptor_term* term;
   const raptor_rss_item_info *node_type;
   int node_typei;
   raptor_rss_field* fields[RAPTOR_RSS_FIELDS_SIZE];

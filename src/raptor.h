@@ -396,33 +396,6 @@ typedef enum {
 
 
 /**
- * raptor_identifier:
- * @type: Type of identifier
- * @uri: URI of identifier for types %RAPTOR_TERM_TYPE_URI
- * @uri_source: where the identifier (URI or blank node) came from
- * @id: blank node identifier for type %RAPTOR_TERM_TYPE_BLANK
- * @literal: literal string for types %RAPTOR_TERM_TYPE_LITERAL
- * @literal_datatype: RDF literal datatype URI for type
- *   %RAPTOR_TERM_TYPE_LITERAL
- * @literal_language: RDF literal language for type
- *   %RAPTOR_TERM_TYPE_LITERAL
- * @world: raptor_world object
- *
- * Raptor RDF term identifier.
-*/
-typedef struct {
-  int usage;
-  raptor_term_type type;
-  raptor_uri *uri;
-  const unsigned char *id;
-  const unsigned char *literal;
-  raptor_uri *literal_datatype;
-  const unsigned char *literal_language;
-  raptor_world *world;
-} raptor_identifier;
-
-
-/**
  * raptor_term:
  * @value: term value
  * @type: term type
@@ -435,6 +408,7 @@ typedef struct {
 typedef struct {
   raptor_world* world;
 
+  int usage;
   const void *value;
   raptor_term_type type;
   raptor_uri *literal_datatype;
@@ -445,20 +419,22 @@ typedef struct {
 /**
  * raptor_statement:
  * @world: world pointer
+ * @usage: usage count
  * @subject: statement subject
  * @predicate: statement predicate
  * @object: statement object
  *
  * An RDF triple with graph
  *
- * See #raptor_identifier for a description of how the fields may be used.
+ * See #raptor_term for a description of how the fields may be used.
  * As returned by a parser statement_handler.
  */
 typedef struct {
   raptor_world* world;
-  raptor_term subject;
-  raptor_term predicate;
-  raptor_term object;
+  int usage;
+  raptor_term* subject;
+  raptor_term* predicate;
+  raptor_term* object;
 } raptor_statement;
 
 
@@ -613,7 +589,7 @@ typedef struct {
  *
  * Statement (triple) reporting handler function.
  */
-typedef void (*raptor_statement_handler)(void *user_data, const raptor_statement *statement);
+typedef void (*raptor_statement_handler)(void *user_data, raptor_statement *statement);
 
 /**
  * raptor_graph_handler:
@@ -877,7 +853,7 @@ int raptor_serialize_set_namespace(raptor_serializer* rdf_serializer, raptor_uri
 RAPTOR_API
 int raptor_serialize_set_namespace_from_namespace(raptor_serializer* rdf_serializer, raptor_namespace *nspace);
 RAPTOR_API
-int raptor_serialize_statement(raptor_serializer* rdf_serializer, const raptor_statement *statement);
+int raptor_serialize_statement(raptor_serializer* rdf_serializer, raptor_statement *statement);
 RAPTOR_API
 int raptor_serialize_end(raptor_serializer *rdf_serializer);
 RAPTOR_API
@@ -933,16 +909,6 @@ RAPTOR_API
 raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
-
-/* Identifier functions */
-RAPTOR_API
-raptor_identifier* raptor_new_identifier_v2(raptor_world* world, raptor_term_type type, raptor_uri *uri, const unsigned char *id, const unsigned char *literal, raptor_uri *literal_datatype, const unsigned char *literal_language);
-RAPTOR_API
-raptor_identifier* raptor_new_identifier_from_identifier(raptor_identifier *identifier);
-RAPTOR_API
-int raptor_copy_identifier(raptor_identifier *dest, raptor_identifier *src);
-RAPTOR_API
-void raptor_free_identifier(raptor_identifier *identifier);
 
 /* Utility functions */
 RAPTOR_API

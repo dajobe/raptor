@@ -443,34 +443,34 @@ struct raptor_rdfxml_element_s {
   raptor_rdfxml_element_content_type child_content_type;
 
 
-  /* STATIC Reified statement identifier */
-  raptor_term reified;
+  /* Reified statement identifier */
+  raptor_term* reified;
 
   unsigned const char* reified_id;
 
-  /* STATIC Bag identifier */
-  raptor_term bag;
+  /* Bag identifier */
+  raptor_term* bag;
   int last_bag_ordinal; /* starts at 0, so first predicate is rdf:_1 */
 
-  /* STATIC Subject identifier (URI/anon ID), type, source
+  /* Subject identifier (URI/anon ID), type, source
    *
    * When the XML element represents a node, this is the identifier 
    */
-  raptor_term subject;
+  raptor_term* subject;
   
-  /* STATIC Predicate URI
+  /* Predicate URI
    *
    * When the XML element represents a node or predicate,
    * this is the identifier of the predicate 
    */
-  raptor_term predicate;
+  raptor_term* predicate;
 
-  /* STATIC Object identifier (URI/anon ID), type, source
+  /* Object identifier (URI/anon ID), type, source
    *
    * When this XML element generates a statement that needs an object,
    * possibly from a child element, this is the identifier of the object 
    */
-  raptor_term object;
+  raptor_term* object;
 
   /* URI of datatype of literal */
   raptor_uri *object_literal_datatype;
@@ -617,12 +617,16 @@ raptor_free_rdfxml_element(raptor_rdfxml_element *element)
     if(element->rdf_attr[i])
       RAPTOR_FREE(cstring, (void*)element->rdf_attr[i]);
 
-  /* Empty fields of static raptor_term but do not free the objects */
-  raptor_clear_term(&element->subject);
-  raptor_clear_term(&element->predicate);
-  raptor_clear_term(&element->object);
-  raptor_clear_term(&element->bag);
-  raptor_clear_term(&element->reified);
+  if(element->subject)
+    raptor_free_term(element->subject);
+  if(element->predicate)
+    raptor_free_term(element->predicate);
+  if(element->object)
+    raptor_free_term(element->object);
+  if(element->bag)
+    raptor_free_term(element->bag);
+  if(element->reified)
+    raptor_free_term(element->reified);
 
   if(element->tail_id)
     RAPTOR_FREE(cstring, (char*)element->tail_id);
@@ -701,14 +705,6 @@ raptor_rdfxml_start_element_handler(void *user_data,
   }
   element->world = rdf_parser->world;
   element->xml_element = xml_element;
-
-  /* init world fields in identifiers not created with raptor_new_identifier() */
-  element->reified.world=
-    element->bag.world=
-    element->subject.world=
-    element->predicate.world=
-    element->object.world=
-    rdf_parser->world;
 
   raptor_rdfxml_element_push(rdf_xml_parser, element);
 
@@ -881,7 +877,8 @@ raptor_rdfxml_start_element_handler(void *user_data,
 
 
 #ifdef RAPTOR_DEBUG_VERBOSE
-  RAPTOR_DEBUG2("Using content type %s\n", rdf_content_type_info[element->content_type].name);
+  RAPTOR_DEBUG2("Using content type %s\n",
+                rdf_content_type_info[element->content_type].name);
 
   fprintf(stderr, "raptor_rdfxml_start_element_handler: Start ns-element: ");
   raptor_print_xml_element(xml_element, stderr);
@@ -890,13 +887,13 @@ raptor_rdfxml_start_element_handler(void *user_data,
   
   /* Check for non namespaced stuff when not in a parseType literal, other */
   if(rdf_content_type_info[element->content_type].rdf_processing) {
-
+    const raptor_namespace* ns = raptor_xml_element_get_name(xml_element)->nspace;
     /* The element */
+
     /* If has no namespace or the namespace has no name (xmlns="") */
-    if(!raptor_xml_element_get_name(xml_element)->nspace ||
-       (raptor_xml_element_get_name(xml_element)->nspace &&
-        !raptor_namespace_get_uri(raptor_xml_element_get_name(xml_element)->nspace))) {
-      raptor_parser_error(rdf_parser, "Using an element '%s' without a namespace is forbidden.", 
+    if(!ns || (ns && !raptor_namespace_get_uri(ns))) {
+      raptor_parser_error(rdf_parser,
+                          "Using an element '%s' without a namespace is forbidden.", 
                           raptor_xml_element_get_name(element->parent->xml_element)->local_name);
       element->state = RAPTOR_STATE_SKIPPING;
       /* Remove count above so that parent thinks this is empty */
@@ -924,7 +921,8 @@ raptor_rdfxml_start_element_handler(void *user_data,
 
   if(element->rdf_attr[RDF_ATTR_aboutEach] || 
       element->rdf_attr[RDF_ATTR_aboutEachPrefix]) {
-    raptor_parser_warning(rdf_parser, "element '%s' has aboutEach / aboutEachPrefix, skipping.", 
+    raptor_parser_warning(rdf_parser,
+                          "element '%s' has aboutEach / aboutEachPrefix, skipping.", 
                           raptor_xml_element_get_name(xml_element)->local_name);
     element->state = RAPTOR_STATE_SKIPPING;
     /* Remove count above so that parent thinks this is empty */
@@ -954,7 +952,8 @@ raptor_rdfxml_end_element_handler(void *user_data,
   if(!rdf_parser->failed) {
     raptor_rdfxml_update_document_locator(rdf_parser);
 
-    raptor_rdfxml_end_element_grammar(rdf_parser, rdf_xml_parser->current_element);
+    raptor_rdfxml_end_element_grammar(rdf_parser,
+                                      rdf_xml_parser->current_element);
   }
   
   element = raptor_rdfxml_element_pop(rdf_xml_parser);
@@ -1259,10 +1258,12 @@ raptor_rdfxml_parse_recognise_syntax(raptor_parser_factory* factory,
 
 
 static int
-raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer,
-                       size_t len, int is_end) 
+raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser,
+                          const unsigned char *buffer,
+                          size_t len, int is_end) 
 {
-  raptor_rdfxml_parser* rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
+  raptor_rdfxml_parser* rdf_xml_parser;
+  rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
   if(rdf_parser->failed)
     return 1;
 
@@ -1272,57 +1273,49 @@ raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer
 
 static void
 raptor_rdfxml_generate_statement(raptor_parser *rdf_parser, 
-                                 raptor_term *subject,
+                                 raptor_term *subject_term,
                                  raptor_uri *predicate_uri,
-                                 raptor_term *object,
-                                 raptor_term *reified,
+                                 raptor_term *object_term,
+                                 raptor_term *reified_term,
                                  raptor_rdfxml_element* bag_element)
 {
-  raptor_statement *statement=&rdf_parser->statement;
-  const unsigned char *language = NULL;
-  static const char empty_literal[1]="";
-  raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
-  char *reified_id = NULL;
-  raptor_uri* uri1 = NULL;
-  raptor_uri* uri2 = NULL;
+  raptor_rdfxml_parser *rdf_xml_parser;
+  raptor_statement *statement = &rdf_parser->statement;
+  raptor_term* predicate_term = NULL;
+  raptor_term* statement_term = NULL;
+  raptor_term* reified_predicate_term = NULL;
+  int free_reified_term = 0;
   
+  rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
+
   if(rdf_parser->failed)
     return;
 
-  if(object->type == RAPTOR_TERM_TYPE_LITERAL &&
-     !object->literal_datatype) {
-    language = raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
-    if(!object->value)
-      object->value = (raptor_uri*)empty_literal;
-  }
+#ifdef RAPTOR_DEBUG_VERBOSE
+  if(!subject_term)
+    RAPTOR_FATAL1("Statement has no subject\n");
   
-  statement->subject.value = subject->value;
-  statement->subject.type = subject->type;
-
-  statement->predicate.type = RAPTOR_TERM_TYPE_URI;
-  statement->predicate.value = predicate_uri;
+  if(!predicate_uri)
+    RAPTOR_FATAL1("Statement has no predicate\n");
   
-  statement->object.value = object->value;
-  statement->object.type = object->type;
+  if(!object_term)
+    RAPTOR_FATAL1("Statement has no object\n");
+  
+#endif
 
-  statement->object.literal_language = language;
-  statement->object.literal_datatype = object->literal_datatype;
+  predicate_term = raptor_new_term_from_uri(rdf_parser->world, 
+                                            raptor_uri_copy(predicate_uri));
+  if(!predicate_term)
+    return;
 
+  statement->subject = subject_term;
+  statement->predicate = predicate_term;
+  statement->object = object_term;
 
 #ifdef RAPTOR_DEBUG_VERBOSE
   fprintf(stderr, "raptor_rdfxml_generate_statement: Generating statement: ");
   raptor_print_statement(statement, stderr);
   fputc('\n', stderr);
-
-  if(!(subject_uri || subject_id))
-    RAPTOR_FATAL1("Statement has no subject\n");
-  
-  if(!(predicate_uri || predicate_id))
-    RAPTOR_FATAL1("Statement has no predicate\n");
-  
-  if(!(object->value || object_id))
-    RAPTOR_FATAL1("Statement has no object\n");
-  
 #endif
 
   if(!rdf_parser->statement_handler)
@@ -1334,78 +1327,110 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
   /* the bagID mess */
   if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID] &&
-     bag_element && bag_element->bag.value) {
-    raptor_term* bag = &bag_element->bag;
+     bag_element && bag_element->bag) {
+    raptor_term* bag = bag_element->bag;
+    raptor_uri* bag_predicate_uri = NULL;
+    raptor_term* bag_predicate_term = NULL;
     
-    statement->subject.value = bag->value;
-    statement->subject.type = bag->type;
+    statement->subject = bag;
 
     bag_element->last_bag_ordinal++;
 
     /* new URI object */
-    uri2 = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, bag_element->last_bag_ordinal);
-    statement->predicate.value = uri2;
+    bag_predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world,
+                                                        bag_element->last_bag_ordinal);
+    if(!bag_predicate_uri)
+      goto generate_tidy;
 
-    if(reified && reified->value) {
-      statement->object.value = reified->value;
-      statement->object.type = reified->type;
-    } else {
-      /* reified may be NULL so do not use it */
-      reified_id = (char*)raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-      statement->object.value = reified_id;
-      statement->object.type = RAPTOR_TERM_TYPE_BLANK;
+    bag_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                  bag_predicate_uri);
+    if(!bag_predicate_term)
+      goto generate_tidy;
+    
+    statement->predicate = bag_predicate_term;
+
+    if(!reified_term || !reified_term->value) {
+      unsigned char *reified_id = NULL;
+
+      /* reified_term is NULL so generate a bag ID */
+      reified_id = raptor_parser_internal_generate_id(rdf_parser, 
+                                                      RAPTOR_GENID_TYPE_BNODEID, NULL);
+      reified_term = raptor_new_term_from_blank(rdf_parser->world, reified_id);
+      if(!reified_term)
+        goto generate_tidy;
+      free_reified_term = 1;
     }
     
+    statement->object = reified_term;
     (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
-    
-  } else if(!reified || !reified->value)
+
+    if(bag_predicate_term)
+      raptor_free_term(bag_predicate_term);
+  }
+
+
+  /* return if is there no reified ID (that is valid) */
+  if(!reified_term || !reified_term->value)
     goto generate_tidy;
 
-  /* generate reified statements */
-  statement->subject.type = RAPTOR_TERM_TYPE_URI;
-  statement->predicate.type = RAPTOR_TERM_TYPE_URI;
-  statement->object.type = RAPTOR_TERM_TYPE_URI;
 
-  statement->object.literal_language = NULL;
+  /* otherwise generate reified statements */
 
-  if(reified_id) {
-    /* reified may be NULL so do not use it */
-    statement->subject.value = reified_id;
-    statement->subject.type = RAPTOR_TERM_TYPE_BLANK;
-  } else {
-    statement->subject.value = reified->value;
-    statement->subject.type = reified->type;
-  }
-  
-  statement->predicate.value = RAPTOR_RDF_type_URI(rdf_xml_parser);
-  statement->object.value = RAPTOR_RDF_Statement_URI(rdf_xml_parser);
+  statement_term = raptor_new_term_from_uri(rdf_parser->world,
+                                            raptor_uri_copy(RAPTOR_RDF_Statement_URI(rdf_xml_parser)));
+
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_type_URI(rdf_xml_parser)));
+
+  statement->subject = reified_term;
+  statement->predicate = reified_predicate_term;
+  statement->object = statement_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(statement->predicate); statement->predicate = NULL;
 
-  statement->predicate.value = RAPTOR_RDF_subject_URI(rdf_xml_parser);
-  statement->object.value = subject->value;
-  statement->object.type = subject->type;
+  raptor_free_term(statement_term); statement_term = NULL;
+
+
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_subject_URI(rdf_xml_parser)));
+
+  /* statement->subject = reified_term; */
+  statement->predicate = reified_predicate_term;
+  statement->object = subject_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(reified_predicate_term); reified_predicate_term = NULL;
 
-  statement->predicate.value = RAPTOR_RDF_predicate_URI(rdf_xml_parser);
-  statement->object.value = predicate_uri;
-  statement->object.type = RAPTOR_TERM_TYPE_URI;
+
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_predicate_URI(rdf_xml_parser)));
+
+  /* statement->subject = reified_term; */
+  statement->predicate = reified_predicate_term;
+  statement->object = predicate_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(reified_predicate_term); reified_predicate_term = NULL;
 
-  statement->predicate.value = RAPTOR_RDF_object_URI(rdf_xml_parser);
-  statement->object.value = object->value;
-  statement->object.type = object->type;
-  statement->object.literal_language = language;
 
+  reified_predicate_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                    raptor_uri_copy(RAPTOR_RDF_object_URI(rdf_xml_parser)));
+
+  /* statement->subject = reified_term; */
+  statement->predicate = reified_predicate_term;
+  statement->object = object_term;
   (*rdf_parser->statement_handler)(rdf_parser->user_data, statement);
+  raptor_free_term(reified_predicate_term); reified_predicate_term = NULL;
+
 
  generate_tidy:
   /* Tidy up things allocated here */
-  if(reified_id)
-    RAPTOR_FREE(cstring, reified_id);
-  if(uri1)
-    raptor_free_uri(uri1);
-  if(uri2)
-    raptor_free_uri(uri2);
+  if(reified_predicate_term)
+    raptor_free_term(reified_predicate_term);
+  if(statement_term)
+    raptor_free_term(statement_term);
+  if(predicate_term)
+    raptor_free_term(predicate_term);
+  if(free_reified_term && reified_term)
+    raptor_free_term(reified_term);
 }
 
 
@@ -1447,7 +1472,7 @@ raptor_rdfxml_element_has_property_attributes(raptor_rdfxml_element *element)
  * Process the property attributes for an element for a given resource.
  * 
  **/
-static void 
+static int
 raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser, 
                                           raptor_rdfxml_element *attributes_element,
                                           raptor_rdfxml_element *resource_element,
@@ -1456,7 +1481,7 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
   unsigned int i;
   raptor_term *resource_identifier;
 
-  resource_identifier = property_node_identifier ? property_node_identifier : &resource_element->subject;
+  resource_identifier = property_node_identifier ? property_node_identifier : resource_element->subject;
   
 
   /* Process attributes as propAttr* = * (propName="string")*
@@ -1507,14 +1532,20 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
         ordinal = raptor_check_ordinal(name);
         if(ordinal < 1) {
           raptor_rdfxml_update_document_locator(rdf_parser);
-          raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property attribute '%s' seen on containing element '%s'.", ordinal, attr->local_name, name);
+          raptor_parser_error(rdf_parser,
+                              "Illegal ordinal value %d in property attribute '%s' seen on containing element '%s'.",
+                              ordinal, attr->local_name, name);
         }
       } else {
         raptor_rdfxml_update_document_locator(rdf_parser);
+
         if(raptor_rdfxml_forbidden_propertyAttribute_name((const char*)name) > 0)
-          raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
+          raptor_parser_error(rdf_parser,
+                              "RDF term %s is forbidden as a property attribute.",
+                              name);
         else
-          raptor_parser_warning(rdf_parser, "Unknown RDF namespace property attribute '%s'.", 
+          raptor_parser_warning(rdf_parser,
+                                "Unknown RDF namespace property attribute '%s'.", 
                                 name);
       }
 
@@ -1522,11 +1553,17 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
 
 
     if(!handled) {
-      raptor_term object_term; /* static */
+      raptor_term* object_term;
+      size_t value_len = strlen((const char*)value);
+      unsigned char* new_value;
+      new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_len + 1);
+      if(!new_value)
+        goto oom;
 
-      memset(&object_term, '\0', sizeof(object_term));
-      object_term.value = value;
-      object_term.type = RAPTOR_TERM_TYPE_LITERAL;
+      memcpy(new_value, value, value_len + 1);
+
+      object_term = raptor_new_term_from_literal(rdf_parser->world,
+                                                 new_value, NULL, NULL);
     
       /* else not rdf: namespace or unknown in rdf: namespace so
        * generate a statement with a literal object
@@ -1534,9 +1571,11 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
       raptor_rdfxml_generate_statement(rdf_parser, 
                                        resource_identifier,
                                        attr->uri,
-                                       &object_term,
+                                       object_term,
                                        NULL, /* Property attributes are never reified*/
                                        resource_element);
+
+      raptor_free_term(object_term);
     }
     
   } /* end for ... attributes */
@@ -1547,13 +1586,16 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
    */
   for(i = 0; i<= RDF_ATTR_LAST; i++) {
     const unsigned char *value = attributes_element->rdf_attr[i];
+    size_t value_len;
     int object_is_literal = (rdf_syntax_terms_info[i].type == RAPTOR_TERM_TYPE_LITERAL);
     raptor_uri *property_uri;
-    raptor_term object_term; /* static */
+    raptor_term* object_term;
       
     if(!value)
       continue;
 
+    value_len = strlen((const char*)value);
+    
     if(rdf_syntax_terms_info[i].type == RAPTOR_TERM_TYPE_UNKNOWN) {
       const char *name = rdf_syntax_terms_info[i].name;
       if(raptor_rdfxml_forbidden_propertyAttribute_name(name)) {
@@ -1563,40 +1605,57 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
       }
     }
 
-    if(object_is_literal && !raptor_utf8_is_nfc(value, strlen((const char*)value))) {
-      const char *message="Property attribute '%s' has a string not in Unicode Normal Form C: %s";
+    if(object_is_literal && !raptor_utf8_is_nfc(value, value_len)) {
+      const char *message;
+      message = "Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_rdfxml_update_document_locator(rdf_parser);
       if(rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL])
-        raptor_parser_error(rdf_parser, message, rdf_syntax_terms_info[i].name, value);
+        raptor_parser_error(rdf_parser, message,
+                            rdf_syntax_terms_info[i].name, value);
       else
-        raptor_parser_warning(rdf_parser, message, rdf_syntax_terms_info[i].name, value);
+        raptor_parser_warning(rdf_parser, message,
+                              rdf_syntax_terms_info[i].name, value);
       continue;
     }
 
-    property_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, (rdf_syntax_terms_info[i].name));
+    property_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, 
+                                                  (rdf_syntax_terms_info[i].name));
     
-    memset(&object_term, '\0', sizeof(object_term));
     if(object_is_literal) {
-      object_term.value = value;
-      object_term.type = RAPTOR_TERM_TYPE_LITERAL;
+      unsigned char* new_value;
+      new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_len+1);
+      if(!new_value)
+        goto oom;
+
+      memcpy(new_value, value, value_len + 1);
+      object_term = raptor_new_term_from_literal(rdf_parser->world,
+                                                 new_value, NULL, NULL);
     } else {
-      object_term.value = raptor_new_uri_relative_to_base(rdf_parser->world, raptor_rdfxml_inscope_base_uri(rdf_parser), value);
-      object_term.type = RAPTOR_TERM_TYPE_URI;
+      raptor_uri *base_uri;
+      raptor_uri *object_uri;
+      base_uri = raptor_rdfxml_inscope_base_uri(rdf_parser);
+      object_uri = raptor_new_uri_relative_to_base(rdf_parser->world, 
+                                                   base_uri, value);
+      object_term = raptor_new_term_from_uri(rdf_parser->world, object_uri);
     }
     
     raptor_rdfxml_generate_statement(rdf_parser,
                                      resource_identifier,
                                      property_uri,
-                                     &object_term,
+                                     object_term,
                                      NULL, /* Property attributes are never reified*/
                                      resource_element);
-    if(object_term.type == RAPTOR_TERM_TYPE_URI)
-      raptor_free_uri((raptor_uri*)object_term.value);
+
+    raptor_free_term(object_term);
 
     raptor_free_uri(property_uri);
     
   } /* end for rdf:property values */
-
+  
+  return 0;
+  
+oom:
+  return 1;
 }
 
 
@@ -1604,25 +1663,31 @@ static void
 raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
                                     raptor_rdfxml_element *element) 
 {
+  raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
   int finished;
   raptor_state state;
-  raptor_xml_element* xml_element = element->xml_element;
-  const unsigned char *el_name = raptor_xml_element_get_name(xml_element)->local_name;
-  int element_in_rdf_ns = (raptor_xml_element_get_name(xml_element)->nspace && 
-                         raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
-  raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
+  raptor_xml_element* xml_element;
+  const unsigned char *el_name;
+  int element_in_rdf_ns;
   int rc = 0;
   raptor_uri* base_uri;
+  raptor_uri* element_name_uri;
+
+  xml_element = element->xml_element;
+  el_name = raptor_xml_element_get_name(xml_element)->local_name;
+  element_in_rdf_ns = (raptor_xml_element_get_name(xml_element)->nspace && 
+                       raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
+  base_uri = raptor_rdfxml_inscope_base_uri(rdf_parser);
+  element_name_uri = raptor_xml_element_get_name(xml_element)->uri;
   
   state = element->state;
 #ifdef RAPTOR_DEBUG_VERBOSE
   RAPTOR_DEBUG2("Starting in state %s\n", raptor_rdfxml_state_as_string(state));
 #endif
 
-  base_uri = raptor_rdfxml_inscope_base_uri(rdf_parser);
-
-  finished= 0;
+  finished = 0;
   while(!finished) {
+
     switch(state) {
       case RAPTOR_STATE_SKIPPING:
         element->child_state = state;
@@ -1634,7 +1699,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         /* found <rdf:RDF> ? */
 
         if(element_in_rdf_ns) {
-          if(raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
+          if(raptor_uri_equals(element_name_uri,
+                               RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
             element->child_state = RAPTOR_STATE_NODE_ELEMENT_LIST;
             element->child_content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_NODES;
             /* Yes - need more content before can continue,
@@ -1643,7 +1709,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             finished = 1;
             break;
           }
-          if(raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
+          if(raptor_uri_equals(element_name_uri,
+                               RAPTOR_RDF_Description_URI(rdf_xml_parser))) {
             state = RAPTOR_STATE_DESCRIPTION;
             element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES;
             /* Yes - found something so move immediately to description */
@@ -1707,7 +1774,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
          * Only create a bag if bagID given
          */
 
-        if(!raptor_xml_element_get_name(xml_element)->uri) {
+        if(!element_name_uri) {
           /* We cannot handle this */
           raptor_parser_warning(rdf_parser, "Using node element '%s' without a namespace is forbidden.", 
                                 raptor_xml_element_get_name(xml_element)->local_name);
@@ -1749,7 +1816,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
            state == RAPTOR_STATE_DESCRIPTION || 
            state == RAPTOR_STATE_PARSETYPE_COLLECTION) {
           if(element_in_rdf_ns &&
-             raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_Description_URI(rdf_xml_parser)))
+             raptor_uri_equals(element_name_uri,
+                               RAPTOR_RDF_Description_URI(rdf_xml_parser)))
             state = RAPTOR_STATE_DESCRIPTION;
           else
             state = RAPTOR_STATE_NODE_ELEMENT;
@@ -1766,12 +1834,10 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         if(element->rdf_attr[RDF_ATTR_ID]) {
           unsigned char* subject_id = (unsigned char*)element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID] = NULL;
-          element->subject.value = raptor_new_uri_from_id(rdf_parser->world, base_uri, subject_id);
-          if(!element->subject.value) {
-            RAPTOR_FREE(cstring, subject_id);
+          element->subject = raptor_new_term_from_uri(rdf_parser->world, raptor_new_uri_from_id(rdf_parser->world, base_uri, subject_id));
+          if(!element->subject)
             goto oom;
-          }
-          element->subject.type = RAPTOR_TERM_TYPE_URI;
+
           if(!raptor_valid_xml_ID(rdf_parser, subject_id)) {
             raptor_parser_error(rdf_parser, "Illegal rdf:ID value '%s'", 
                                 subject_id);
@@ -1792,21 +1858,33 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           }
           RAPTOR_FREE(cstring, subject_id);
         } else if(element->rdf_attr[RDF_ATTR_about]) {
-          element->subject.value = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri, (const unsigned char*)element->rdf_attr[RDF_ATTR_about]);
+          raptor_uri* subject_uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri, (const unsigned char*)element->rdf_attr[RDF_ATTR_about]);
+          if(!subject_uri)
+            goto oom;
+          
+          element->subject = raptor_new_term_from_uri(rdf_parser->world, subject_uri);
           RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_about]);
           element->rdf_attr[RDF_ATTR_about] = NULL;
-          if(!element->subject.value)
+          if(!element->subject)
             goto oom;
-          element->subject.type = RAPTOR_TERM_TYPE_URI;
+
         } else if(element->rdf_attr[RDF_ATTR_nodeID]) {
-          element->subject.value = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
-          element->rdf_attr[RDF_ATTR_nodeID] = NULL;
-          if(!element->subject.value)
+          unsigned char* subject_id;
+          subject_id = raptor_parser_internal_generate_id(rdf_parser,
+                                                          RAPTOR_GENID_TYPE_BNODEID,
+                                                          (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
+          if(!subject_id)
             goto oom;
-          element->subject.type = RAPTOR_TERM_TYPE_BLANK;
-          if(!raptor_valid_xml_ID(rdf_parser, element->subject.value)) {
+          
+          element->subject = raptor_new_term_from_blank(rdf_parser->world,
+                                                        subject_id);
+          element->rdf_attr[RDF_ATTR_nodeID] = NULL;
+          if(!element->subject)
+            goto oom;
+
+          if(!raptor_valid_xml_ID(rdf_parser, element->subject->value)) {
             raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", 
-                                (const char*)element->subject.value);
+                                (const char*)element->subject->value);
             state = RAPTOR_STATE_SKIPPING;
             element->child_state = RAPTOR_STATE_SKIPPING;
             finished = 1;
@@ -1815,30 +1893,34 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         } else if(element->parent && 
                    element->parent->child_content_type != RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_COLLECTION &&
                    element->parent->child_content_type != RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION &&
-                   element->parent->object.value) {
+                   element->parent->object) {
           /* copy from parent (property element), it has a URI for us */
-          raptor_copy_term(&element->subject, &element->parent->object);
+          element->subject = raptor_new_term_from_term(element->parent->object);
         } else {
-          element->subject.value = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-          if(!element->subject.value)
+          unsigned char* subject_id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+          if(!subject_id)
             goto oom;
-          element->subject.type = RAPTOR_TERM_TYPE_BLANK;
+          element->subject = raptor_new_term_from_blank(rdf_parser->world,
+                                                        subject_id);
+          if(!element->subject)
+            goto oom;
         }
 
 
         if(element->rdf_attr[RDF_ATTR_bagID]) {
           if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]) {
             unsigned char* bag_id = (unsigned char*)element->rdf_attr[RDF_ATTR_bagID];
-            raptor_term object_term; /* static */
+            raptor_uri* bag_uri = NULL;
+            raptor_term* object_term;
 
             element->rdf_attr[RDF_ATTR_bagID] = NULL;
-            element->bag.value = raptor_new_uri_from_id(rdf_parser->world, 
-                                                        base_uri, bag_id);
-            if(!element->bag.value) {
+            bag_uri = raptor_new_uri_from_id(rdf_parser->world, 
+                                             base_uri, bag_id);
+            if(!bag_uri) {
               RAPTOR_FREE(cstring, bag_id);
               goto oom;
             }
-            element->bag.type = RAPTOR_TERM_TYPE_URI;
+            element->bag = raptor_new_term_from_uri(rdf_parser->world, bag_uri);
             
             if(!raptor_valid_xml_ID(rdf_parser, bag_id)) {
               raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", 
@@ -1862,16 +1944,18 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             RAPTOR_FREE(cstring, bag_id);
             raptor_parser_warning(rdf_parser, "rdf:bagID is deprecated.");
 
-            memset(&object_term, '\0', sizeof(object_term));
-            object_term.type = RAPTOR_TERM_TYPE_URI;
-            object_term.value = RAPTOR_RDF_Bag_URI(rdf_xml_parser);
+            
+            object_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                   raptor_uri_copy(RAPTOR_RDF_Bag_URI(rdf_xml_parser)));
 
             raptor_rdfxml_generate_statement(rdf_parser, 
-                                             &element->bag,
+                                             element->bag,
                                              RAPTOR_RDF_type_URI(rdf_xml_parser),
-                                             &object_term,
+                                             object_term,
                                              NULL,
                                              NULL);
+
+            raptor_free_term(object_term);
           } else {
             /* bagID forbidden */
             raptor_parser_error(rdf_parser, "rdf:bagID is forbidden.");
@@ -1890,47 +1974,46 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
            */
           if(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_COLLECTION ||
               element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
-            const unsigned char * idList = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-            
             /* <idList> rdf:type rdf:List */
+            const unsigned char * idList;
             raptor_uri *predicate_uri;
-            raptor_term idList_term; /* static */
-            raptor_term object_term; /* static */
+            raptor_term* idList_term;
+            raptor_term* object_term;
               
-            memset(&idList_term, '\0', sizeof(idList_term));
-            idList_term.value = idList;
-            idList_term.type = RAPTOR_TERM_TYPE_BLANK;
-
-            memset(&object_term, '\0', sizeof(object_term));
-
+            idList = raptor_parser_internal_generate_id(rdf_parser,
+                                                        RAPTOR_GENID_TYPE_BNODEID, NULL);
             if(!idList)
+              goto oom;
+
+            idList_term = raptor_new_term_from_blank(rdf_parser->world, 
+                                                     strdup(idList));
+            if(!idList_term)
               goto oom;
 
             if((element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ||
                rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST]) {
               raptor_uri* class_uri = (element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_List_URI(rdf_xml_parser) : RAPTOR_RDF_List_URI(rdf_xml_parser);
 
-              object_term.value = class_uri;
-              object_term.type = RAPTOR_TERM_TYPE_URI;
+              object_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                     raptor_uri_copy(class_uri));
 
               raptor_rdfxml_generate_statement(rdf_parser, 
-                                               &idList_term,
+                                               idList_term,
                                                RAPTOR_RDF_type_URI(rdf_xml_parser),
-                                               &object_term,
+                                               object_term,
                                                NULL,
                                                element);
+
+              raptor_free_term(object_term); object_term = NULL;
             }
 
             predicate_uri = (element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_first_URI(rdf_xml_parser) : RAPTOR_RDF_first_URI(rdf_xml_parser);
 
-            object_term.value = (raptor_uri*)element->subject.value;
-            object_term.type = element->subject.type;
-
             /* <idList> rdf:first <element->uri> */
             raptor_rdfxml_generate_statement(rdf_parser, 
-                                             &idList_term,
+                                             idList_term,
                                              predicate_uri,
-                                             &object_term,
+                                             element->subject,
                                              NULL,
                                              NULL);
             
@@ -1939,14 +2022,11 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
               int len;
               unsigned char *new_id;
               
-              /* Free any existing object URI still around
+              /* Free any existing object still around.
                * I suspect this can never happen.
                */
-              if(element->parent->object.type == RAPTOR_TERM_TYPE_URI &&
-                 element->parent->object.value) {
-                raptor_free_uri((raptor_uri*)element->parent->object.value);
-                element->parent->object.value = NULL;
-              }
+              if(element->parent->object)
+                raptor_free_term(element->parent->object);
 
               len = strlen((char*)idList);
               new_id = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
@@ -1957,24 +2037,24 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
               }
               strncpy((char*)new_id, (char*)idList, len+1);
 
-              element->parent->object.value = new_id;
-              element->parent->object.type = RAPTOR_TERM_TYPE_BLANK;
+              element->parent->object = raptor_new_term_from_blank(rdf_parser->world, new_id);
             } else {
-              raptor_term tail_id_term; /* static */
-              
-              memset(&tail_id_term, '\0', sizeof(tail_id_term));
-              tail_id_term.value = element->parent->tail_id;
-              tail_id_term.type = RAPTOR_TERM_TYPE_BLANK;
+              raptor_term* tail_id_term;
 
+              tail_id_term = raptor_new_term_from_blank(rdf_parser->world, 
+                                                        strdup(element->parent->tail_id));
+              
               predicate_uri = (element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_rest_URI(rdf_xml_parser) : RAPTOR_RDF_rest_URI(rdf_xml_parser);
 
               /* _:tail_id rdf:rest _:listRest */
               raptor_rdfxml_generate_statement(rdf_parser, 
-                                               &tail_id_term,
+                                               tail_id_term,
                                                predicate_uri,
-                                               &idList_term,
+                                               idList_term,
                                                NULL,
                                                NULL);
+
+              raptor_free_term(tail_id_term);
             }
 
             /* update new tail */
@@ -1983,18 +2063,20 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
             element->parent->tail_id = idList;
             
+            raptor_free_term(idList_term);
           } else if(element->parent->state != RAPTOR_STATE_UNKNOWN &&
                     element->state != RAPTOR_STATE_PARSETYPE_RESOURCE) {
             /* If there is a parent element (property) containing this
              * element (node) and it has no object, set it from this subject
              */
             
-            if(element->parent->object.value) {
+            if(element->parent->object) {
               raptor_rdfxml_update_document_locator(rdf_parser);
-              raptor_parser_error(rdf_parser, "Tried to set multiple objects of a statement");
+              raptor_parser_error(rdf_parser,
+                                  "Tried to set multiple objects of a statement");
             } else {
               /* Store URI of this node in our parent as the property object */
-              raptor_copy_term(&element->parent->object, &element->subject);
+              element->parent->object = raptor_new_term_from_term(element->subject);
               element->parent->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
             }
 
@@ -2006,21 +2088,24 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
          * from this node
          */
         if(state == RAPTOR_STATE_NODE_ELEMENT) {
-          raptor_term el_name_term; /* static */
+          raptor_term* el_name_term;
               
-          memset(&el_name_term, '\0', sizeof(el_name_term));
-          el_name_term.value = raptor_xml_element_get_name(xml_element)->uri;
-          el_name_term.type = RAPTOR_TERM_TYPE_URI;
+          el_name_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                  raptor_uri_copy(element_name_uri));
 
           raptor_rdfxml_generate_statement(rdf_parser, 
-                                           &element->subject,
+                                           element->subject,
                                            RAPTOR_RDF_type_URI(rdf_xml_parser),
-                                           &el_name_term,
-                                           &element->reified,
+                                           el_name_term,
+                                           element->reified,
                                            element);
+
+          raptor_free_term(el_name_term);
         }
 
-        raptor_rdfxml_process_property_attributes(rdf_parser, element, element, NULL);
+        if(raptor_rdfxml_process_property_attributes(rdf_parser, element,
+                                                     element, NULL))
+          goto oom;
 
         /* for both productions now need some more content or
          * property elements before can do any more work.
@@ -2054,7 +2139,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_MEMBER_PROPERTYELT:
       case RAPTOR_STATE_PROPERTYELT:
 
-        if(!raptor_xml_element_get_name(xml_element)->uri) {
+        if(!element_name_uri) {
           raptor_parser_error(rdf_parser, "Using property element '%s' without a namespace is forbidden.", 
                               raptor_xml_element_get_name(element->parent->xml_element)->local_name);
           raptor_rdfxml_update_document_locator(rdf_parser);
@@ -2066,7 +2151,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
         /* Handling rdf:li as a property, noting special processing */ 
         if(element_in_rdf_ns && 
-           raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
+           raptor_uri_equals(element_name_uri,
+                             RAPTOR_RDF_li_URI(rdf_xml_parser))) {
           state = RAPTOR_STATE_MEMBER_PROPERTYELT;
         }
 
@@ -2088,22 +2174,30 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
          * Allowed on all property element forms
          */
         if(element->rdf_attr[RDF_ATTR_ID]) {
+          raptor_uri *reified_uri;
+          
           element->reified_id = element->rdf_attr[RDF_ATTR_ID];
           element->rdf_attr[RDF_ATTR_ID] = NULL;
-          element->reified.value = raptor_new_uri_from_id(rdf_parser->world, base_uri, element->reified_id);
-          if(!element->reified.value)
+          reified_uri = raptor_new_uri_from_id(rdf_parser->world, base_uri,
+                                               element->reified_id);
+          if(!reified_uri)
             goto oom;
-          element->reified.type = RAPTOR_TERM_TYPE_URI;
+          element->reified = raptor_new_term_from_uri(rdf_parser->world,
+                                                      reified_uri);
+          if(!element->reified)
+            goto oom;
 
           if(!raptor_valid_xml_ID(rdf_parser, element->reified_id)) {
-            raptor_parser_error(rdf_parser, "Illegal rdf:ID value '%s'", element->reified_id);
+            raptor_parser_error(rdf_parser, "Illegal rdf:ID value '%s'",
+                                element->reified_id);
             state = RAPTOR_STATE_SKIPPING;
             element->child_state = RAPTOR_STATE_SKIPPING;
             finished = 1;
             break;
           }
           if(raptor_rdfxml_record_ID(rdf_parser, element, element->reified_id)) {
-            raptor_parser_error(rdf_parser, "Duplicated rdf:ID value '%s'", element->reified_id);
+            raptor_parser_error(rdf_parser, "Duplicated rdf:ID value '%s'",
+                                element->reified_id);
             state = RAPTOR_STATE_SKIPPING;
             element->child_state = RAPTOR_STATE_SKIPPING;
             finished = 1;
@@ -2116,7 +2210,12 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
          *   http://www.w3.org/TR/rdf-syntax-grammar/#literalPropertyElt 
          */
         if(element->rdf_attr[RDF_ATTR_datatype]) {
-          element->object_literal_datatype = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri, (const unsigned char*)element->rdf_attr[RDF_ATTR_datatype]);
+          raptor_uri *datatype_uri;
+          
+          datatype_uri = raptor_new_uri_relative_to_base(rdf_parser->world, 
+                                                         base_uri,
+                                                         (const unsigned char*)element->rdf_attr[RDF_ATTR_datatype]);
+          element->object_literal_datatype = datatype_uri;
           RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_datatype]); 
           element->rdf_attr[RDF_ATTR_datatype] = NULL; 
           if(!element->object_literal_datatype)
@@ -2134,17 +2233,25 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
               /* prevent this being used later either */
               element->rdf_attr[RDF_ATTR_bagID] = NULL;
             } else {
-              unsigned char* bag_id = (unsigned char*)element->rdf_attr[RDF_ATTR_bagID];
+              unsigned char* bag_id;
+              raptor_uri* bag_uri;
+              
+              bag_id = (unsigned char*)element->rdf_attr[RDF_ATTR_bagID];
               element->rdf_attr[RDF_ATTR_bagID] = NULL;
-              element->bag.value = raptor_new_uri_from_id(rdf_parser->world, base_uri, bag_id);
-              if(!element->bag.value) {
+              bag_uri = raptor_new_uri_from_id(rdf_parser->world, base_uri,
+                                               bag_id);
+              if(!bag_uri) {
                 RAPTOR_FREE(cstring, bag_id);
                 goto oom;
               }
-              element->bag.type = RAPTOR_TERM_TYPE_URI;
+              element->bag = raptor_new_term_from_uri(rdf_parser->world,
+                                                      bag_uri);
+              if(!element->bag)
+                goto oom;
               
               if(!raptor_valid_xml_ID(rdf_parser, bag_id)) {
-                raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'", bag_id);
+                raptor_parser_error(rdf_parser, "Illegal rdf:bagID value '%s'",
+                                    bag_id);
                 state = RAPTOR_STATE_SKIPPING;
                 element->child_state = RAPTOR_STATE_SKIPPING;
                 finished = 1;
@@ -2152,7 +2259,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
                 break;
               }
               if(raptor_rdfxml_record_ID(rdf_parser, element, bag_id)) {
-                raptor_parser_error(rdf_parser, "Duplicated rdf:bagID value '%s'", bag_id);
+                raptor_parser_error(rdf_parser,
+                                    "Duplicated rdf:bagID value '%s'", bag_id);
                 state = RAPTOR_STATE_SKIPPING;
                 element->child_state = RAPTOR_STATE_SKIPPING;
                 RAPTOR_FREE(cstring, bag_id);
@@ -2177,9 +2285,11 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         element->child_content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT;
 
         if(element->rdf_attr[RDF_ATTR_parseType]) {
-          const unsigned char *parse_type = element->rdf_attr[RDF_ATTR_parseType];
+          const unsigned char *parse_type;
           int i;
           int is_parseType_Literal = 0;
+
+          parse_type = element->rdf_attr[RDF_ATTR_parseType];
 
           if(raptor_rdfxml_element_has_property_attributes(element)) {
             raptor_parser_error(rdf_parser, "Property attributes cannot be used with rdf:parseType='%s'", parse_type);
@@ -2203,15 +2313,21 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           if(!strcmp((char*)parse_type, "Literal"))
             is_parseType_Literal = 1;
           else if(!strcmp((char*)parse_type, "Resource")) {
+            unsigned char* subject_id;
+            
             state = RAPTOR_STATE_PARSETYPE_RESOURCE;
             element->child_state = RAPTOR_STATE_PROPERTYELT;
             element->child_content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES;
 
             /* create a node for the subject of the contained properties */
-            element->subject.value = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-            if(!element->subject.value)
+            subject_id = raptor_parser_internal_generate_id(rdf_parser,
+                                                            RAPTOR_GENID_TYPE_BNODEID, NULL);
+            if(!subject_id)
               goto oom;
-            element->subject.type = RAPTOR_TERM_TYPE_BLANK;
+            element->subject = raptor_new_term_from_blank(rdf_parser->world,
+                                                          subject_id);
+            if(!element->subject)
+              goto oom;
           } else if(!strcmp((char*)parse_type, "Collection")) {
             /* An rdf:parseType="Collection" appears as a single node */
             element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
@@ -2234,18 +2350,24 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           }
           
           if(is_parseType_Literal) {
+            raptor_xml_writer* xml_writer;
+
             /* rdf:parseType="Literal" - explicitly or default
              * if the parseType value is not recognised
              */
             rdf_xml_parser->xml_content = NULL;
             rdf_xml_parser->xml_content_length = 0;
-            rdf_xml_parser->iostream = raptor_new_iostream_to_string(rdf_parser->world, &rdf_xml_parser->xml_content, &rdf_xml_parser->xml_content_length, raptor_alloc_memory);
+            rdf_xml_parser->iostream =
+              raptor_new_iostream_to_string(rdf_parser->world,
+                                            &rdf_xml_parser->xml_content,
+                                            &rdf_xml_parser->xml_content_length,
+                                            raptor_alloc_memory);
             if(!rdf_xml_parser->iostream)
               goto oom;
-            rdf_xml_parser->xml_writer = raptor_new_xml_writer_v2(rdf_parser->world,
-                                                                  NULL,
-                                                                  rdf_xml_parser->iostream,
-                                                                  1);
+            xml_writer = raptor_new_xml_writer_v2(rdf_parser->world, NULL,
+                                                  rdf_xml_parser->iostream,
+                                                  1);
+            rdf_xml_parser->xml_writer = xml_writer;
             if(!rdf_xml_parser->xml_writer)
               goto oom;
             
@@ -2270,11 +2392,16 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
            * Assign reified URI here so we don't reify property attributes
            * using this id
            */
-          if(element->reified_id && !element->reified.value) {
-            element->reified.value = raptor_new_uri_from_id(rdf_parser->world, base_uri, element->reified_id);
-            if(!element->reified.value)
+          if(element->reified_id && !element->reified) {
+            raptor_uri* reified_uri;
+            reified_uri = raptor_new_uri_from_id(rdf_parser->world, base_uri,
+                                                 element->reified_id);
+            if(!reified_uri)
               goto oom;
-            element->reified.type = RAPTOR_TERM_TYPE_URI;
+            element->reified = raptor_new_term_from_uri(rdf_parser->world,
+                                                        reified_uri);
+            if(!element->reified)
+              goto oom;
           }
 
           if(element->rdf_attr[RDF_ATTR_resource] ||
@@ -2304,7 +2431,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
     if(state != element->state) {
       element->state = state;
 #ifdef RAPTOR_DEBUG_VERBOSE
-      RAPTOR_DEBUG3("Moved to state %d - %s\n", state, raptor_rdfxml_state_as_string(state));
+      RAPTOR_DEBUG3("Moved to state %d - %s\n", state,
+                    raptor_rdfxml_state_as_string(state));
 #endif
     }
 
@@ -2333,6 +2461,9 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
   int element_in_rdf_ns = (raptor_xml_element_get_name(xml_element)->nspace && 
                          raptor_xml_element_get_name(xml_element)->nspace->is_rdf_ms);
   raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
+  raptor_uri* element_name_uri;
+
+  element_name_uri = raptor_xml_element_get_name(xml_element)->uri;
 
 
   state = element->state;
@@ -2353,7 +2484,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
       case RAPTOR_STATE_NODE_ELEMENT_LIST:
         if(element_in_rdf_ns && 
-           raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
+           raptor_uri_equals(element_name_uri,
+                             RAPTOR_RDF_RDF_URI(rdf_xml_parser))) {
           /* end of RDF - boo hoo */
           state = RAPTOR_STATE_UNKNOWN;
           finished = 1;
@@ -2372,7 +2504,9 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
          * a mismatched XML tag and cause an error earlier)
          */
         raptor_rdfxml_update_document_locator(rdf_parser);
-        raptor_parser_warning(rdf_parser, "Element '%s' ended, expected end of RDF element", el_name);
+        raptor_parser_warning(rdf_parser,
+                              "Element '%s' ended, expected end of RDF element",
+                              el_name);
         state = RAPTOR_STATE_UNKNOWN;
         finished = 1;
         break;
@@ -2389,36 +2523,37 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
          * don't get connect to <rdf:RDF> parent element)
          */
         if(state == RAPTOR_STATE_NODE_ELEMENT && 
-           element->parent && element->parent->subject.value) {
+           element->parent && element->parent->subject) {
           raptor_rdfxml_generate_statement(rdf_parser, 
-                                           &element->parent->subject,
-                                           raptor_xml_element_get_name(element->parent->xml_element)->uri,
-                                           &element->subject,
+                                           element->parent->subject,
+                                           element_name_uri,
+                                           element->subject,
                                            NULL,
                                            element);
         } else if(state == RAPTOR_STATE_PARSETYPE_RESOURCE && 
-                element->parent && element->parent->subject.value) {
+                  element->parent && element->parent->subject) {
           /* Handle rdf:li as the rdf:parseType="resource" property */
           if(element_in_rdf_ns && 
-             raptor_uri_equals(raptor_xml_element_get_name(xml_element)->uri, RAPTOR_RDF_li_URI(rdf_xml_parser))) {
+             raptor_uri_equals(element_name_uri,
+                               RAPTOR_RDF_li_URI(rdf_xml_parser))) {
             raptor_uri* ordinal_predicate_uri;
             
             element->parent->last_ordinal++;
             ordinal_predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, element->parent->last_ordinal);
 
             raptor_rdfxml_generate_statement(rdf_parser, 
-                                             &element->parent->subject,
+                                             element->parent->subject,
                                              ordinal_predicate_uri,
-                                             &element->subject,
-                                             &element->reified,
+                                             element->subject,
+                                             element->reified,
                                              element->parent);
             raptor_free_uri(ordinal_predicate_uri);
           } else {
             raptor_rdfxml_generate_statement(rdf_parser, 
-                                             &element->parent->subject,
-                                             raptor_xml_element_get_name(xml_element)->uri,
-                                             &element->subject,
-                                             &element->reified,
+                                             element->parent->subject,
+                                             element_name_uri,
+                                             element->subject,
+                                             element->reified,
                                              element->parent);
           }
         }
@@ -2454,12 +2589,12 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
         if(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTY_CONTENT) {
           if(xml_element->content_cdata_seen) 
-            element->content_type= RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL;
+            element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL;
           else if(xml_element->content_element_seen) 
-            element->content_type= RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES;
-          else { /* Empty Literal */
-            element->object.type= RAPTOR_TERM_TYPE_LITERAL;
-            element->content_type= RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL;
+            element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES;
+          else {
+            /* Empty Literal */
+            element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL;
           }
           
         }
@@ -2471,28 +2606,29 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
           raptor_uri* nil_uri = (element->child_content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_nil_URI(rdf_xml_parser) : RAPTOR_RDF_nil_URI(rdf_xml_parser);
           if(!element->tail_id) {
             /* If No List: set object of statement to rdf:nil */
-            element->object.value = raptor_uri_copy(nil_uri);
-            element->object.type = RAPTOR_TERM_TYPE_URI;
+            element->object = raptor_new_term_from_uri(rdf_parser->world,
+                                                       raptor_uri_copy(nil_uri));
           } else {
             raptor_uri* rest_uri = (element->child_content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_rest_URI(rdf_xml_parser) : RAPTOR_RDF_rest_URI(rdf_xml_parser);
-            raptor_term tail_id_term; /* static */
-            raptor_term nil_id_term; /* static */
+            raptor_term* tail_id_term;
+            raptor_term* nil_id_term;
               
-            memset(&tail_id_term, '\0', sizeof(tail_id_term));
-            tail_id_term.value = element->tail_id;
-            tail_id_term.type = RAPTOR_TERM_TYPE_BLANK;
+            tail_id_term = raptor_new_term_from_blank(rdf_parser->world, 
+                                                      strdup(element->tail_id));
 
-            memset(&nil_id_term, '\0', sizeof(nil_id_term));
-            nil_id_term.value = nil_uri;
-            nil_id_term.type = RAPTOR_TERM_TYPE_URI;
+            nil_id_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                   raptor_uri_copy(nil_uri));
 
             /* terminate the list */
             raptor_rdfxml_generate_statement(rdf_parser, 
-                                             &tail_id_term,
+                                             tail_id_term,
                                              rest_uri,
-                                             &nil_id_term,
+                                             nil_id_term,
                                              NULL,
                                              NULL);
+
+            raptor_free_term(tail_id_term);
+            raptor_free_term(nil_id_term);
           }
 
         } /* end rdf:parseType="Collection" termination */
@@ -2514,42 +2650,52 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               break;
             }
 
-            if(element->object.type == RAPTOR_TERM_TYPE_UNKNOWN) {
+            if(!element->object) {
               if(element->rdf_attr[RDF_ATTR_resource]) {
-                element->object.value = raptor_new_uri_relative_to_base(rdf_parser->world,
-                                                                        raptor_rdfxml_inscope_base_uri(rdf_parser),
-                                                                        (const unsigned char*)element->rdf_attr[RDF_ATTR_resource]);
+                raptor_uri* resource_uri;
+                resource_uri = raptor_new_uri_relative_to_base(rdf_parser->world,
+                                                               raptor_rdfxml_inscope_base_uri(rdf_parser),
+                                                               (const unsigned char*)element->rdf_attr[RDF_ATTR_resource]);
+                if(!resource_uri)
+                  goto oom;
+                
+                element->object = raptor_new_term_from_uri(rdf_parser->world,
+                                                           resource_uri);
                 RAPTOR_FREE(cstring, (void*)element->rdf_attr[RDF_ATTR_resource]);
                 element->rdf_attr[RDF_ATTR_resource] = NULL;
-                if(!element->object.value)
+                if(!element->object)
                   goto oom;
-                element->object.type = RAPTOR_TERM_TYPE_URI;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
               } else if(element->rdf_attr[RDF_ATTR_nodeID]) {
-                element->object.value = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
+                unsigned char* resource_id;
+                resource_id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, (unsigned char*)element->rdf_attr[RDF_ATTR_nodeID]);
+                element->object = raptor_new_term_from_blank(rdf_parser->world,
+                                                             resource_id);
                 element->rdf_attr[RDF_ATTR_nodeID] = NULL;
-                if(!element->object.value)
+                if(!element->object)
                   goto oom;
-                element->object.type = RAPTOR_TERM_TYPE_BLANK;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
-                if(!raptor_valid_xml_ID(rdf_parser, element->object.value)) {
-                  raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", (const char*)element->object.value);
+                if(!raptor_valid_xml_ID(rdf_parser, element->object->value)) {
+                  raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", (const char*)element->object->value);
                   state = RAPTOR_STATE_SKIPPING;
                   element->child_state = RAPTOR_STATE_SKIPPING;
                   finished = 1;
                   break;
                 }
               } else {
-                element->object.value = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-                if(!element->object.value)
+                unsigned char* resource_id;
+                resource_id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+                element->object = raptor_new_term_from_blank(rdf_parser->world,
+                                                             resource_id);
+                if(!element->object)
                   goto oom;
-                element->object.type = RAPTOR_TERM_TYPE_BLANK;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
               }
 
-              raptor_rdfxml_process_property_attributes(rdf_parser, element, 
-                                                        element->parent, 
-                                                        &element->object);
+              if(raptor_rdfxml_process_property_attributes(rdf_parser, element, 
+                                                           element->parent, 
+                                                           element->object))
+                 goto oom;
 
             }
 
@@ -2569,24 +2715,25 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
               if(rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID]) {
                 /* Only an empty literal can have a rdf:bagID */
-                if(element->bag.value) {
+                if(element->bag) {
                   if(xml_element->content_cdata_length > 0) {
                     raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on a literal property element '%s'.", el_name);
                     /* prevent this being used later either */
                     element->rdf_attr[RDF_ATTR_bagID] = NULL;
                   } else {
-                    raptor_term bag_term; /* static */
+                    raptor_term* bag_term;
               
-                    memset(&bag_term, '\0', sizeof(bag_term));
-                    bag_term.value = RAPTOR_RDF_Bag_URI(rdf_xml_parser);
-                    bag_term.type = RAPTOR_TERM_TYPE_URI;
+                    bag_term = raptor_new_term_from_uri(rdf_parser->world,
+                                                        raptor_uri_copy(RAPTOR_RDF_Bag_URI(rdf_xml_parser)));
 
                     raptor_rdfxml_generate_statement(rdf_parser, 
-                                                     &element->bag,
+                                                     element->bag,
                                                      RAPTOR_RDF_type_URI(rdf_xml_parser),
-                                                     &bag_term,
+                                                     bag_term,
                                                      NULL,
                                                      NULL);
+
+                    raptor_free_term(bag_term);
                   }
                 }
               } /* if rdf:bagID */
@@ -2596,26 +2743,32 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                */
               if(raptor_rdfxml_element_has_property_attributes(element) &&
                  xml_element->content_cdata_length > 0) {
-                raptor_parser_error(rdf_parser, "Literal property element '%s' has property attributes", el_name);
+                raptor_parser_error(rdf_parser,
+                                    "Literal property element '%s' has property attributes", 
+                                    el_name);
                 state = RAPTOR_STATE_SKIPPING;
                 element->child_state = RAPTOR_STATE_SKIPPING;
                 finished = 1;
                 break;
               }
 
-              if(element->object.type == RAPTOR_TERM_TYPE_LITERAL &&
+              if(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL &&
                  raptor_rdfxml_element_has_property_attributes(element) &&
-                 !element->object.value) {
-                element->object.value = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
-                if(!element->object.value)
+                 !element->object) {
+                unsigned char* object_id;
+                object_id = raptor_parser_internal_generate_id(rdf_parser,
+                                                               RAPTOR_GENID_TYPE_BNODEID, NULL);
+                element->object = raptor_new_term_from_blank(rdf_parser->world,
+                                                             object_id);
+                if(!element->object)
                   goto oom;
-                element->object.type = RAPTOR_TERM_TYPE_BLANK;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
               }
               
-              raptor_rdfxml_process_property_attributes(rdf_parser, element, 
-                                                        element,
-                                                        &element->object);
+              if(raptor_rdfxml_process_property_attributes(rdf_parser, element, 
+                                                           element,
+                                                           element->object))
+                 goto oom;
             }
             
 
@@ -2625,32 +2778,60 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
             if(1) {
               raptor_uri *predicate_uri = NULL;
               int predicate_ordinal = -1;
-              const unsigned char* empty_literal = (const unsigned char*)"";
-              raptor_term object_term; /* static */
+              raptor_term* object_term = NULL;
               
-              memset(&object_term, '\0', sizeof(object_term));
-
               if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
                 predicate_ordinal = ++element->parent->last_ordinal;
                 predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world,
                                                                 predicate_ordinal);
 
               } else {
-                predicate_uri = raptor_xml_element_get_name(xml_element)->uri;
+                predicate_uri = element_name_uri;
               }
 
 
               if(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL) {
                 unsigned char* literal;
-                literal = raptor_stringbuffer_as_string(xml_element->content_cdata_sb);
+                size_t literal_len;
+                raptor_uri* literal_datatype;
+                unsigned char* literal_language = NULL;
 
-                object_term.type = RAPTOR_TERM_TYPE_LITERAL;
-                object_term.value = literal;
-                object_term.literal_datatype = element->object_literal_datatype;
+                literal_len = raptor_stringbuffer_length(xml_element->content_cdata_sb);
+                literal = RAPTOR_MALLOC(cstring, literal_len + 1);
+                if(!literal)
+                  goto oom;
 
-                if(!object_term.literal_datatype && literal &&
-                   !raptor_utf8_is_nfc(literal, xml_element->content_cdata_length)) {
-                  const char *message="Property element '%s' has a string not in Unicode Normal Form C: %s";
+                if(literal_len)
+                  raptor_stringbuffer_copy_to_string(xml_element->content_cdata_sb, 
+                                                     literal, literal_len);
+                else
+                  *literal = '\0';
+                
+                literal_datatype = element->object_literal_datatype;
+                if(literal_datatype) {
+                  literal_datatype = raptor_uri_copy(literal_datatype);
+                  literal_language = NULL;
+                } else {
+                  const unsigned char* inscope_literal_language;
+                  inscope_literal_language = raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
+                  if(inscope_literal_language) {
+                    size_t language_len = strlen((const char*)inscope_literal_language);
+                    literal_language = (unsigned char*)RAPTOR_MALLOC(cstring, language_len + 1);
+                    if(!literal_language) {
+                      RAPTOR_FREE(cstring, literal);
+                      goto oom;
+                    }
+                    
+                    memcpy(literal_language, inscope_literal_language,
+                           language_len + 1);
+                  }
+                }
+
+                if(!literal_datatype && literal &&
+                   !raptor_utf8_is_nfc(literal, 
+                                       xml_element->content_cdata_length)) {
+                  const char *message;
+                  message = "Property element '%s' has a string not in Unicode Normal Form C: %s";
                   raptor_rdfxml_update_document_locator(rdf_parser);
                   if(rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL])
                     raptor_parser_error(rdf_parser, message, el_name, literal);
@@ -2658,23 +2839,26 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                     raptor_parser_warning(rdf_parser, message, el_name, literal);
                 }
 
-                if(!literal)
-                  /* empty literal */
-                  object_term.value = (unsigned char*)empty_literal;
+                object_term = raptor_new_term_from_literal(rdf_parser->world,
+                                                           literal,
+                                                           literal_datatype,
+                                                           literal_language);
               } else {
-                object_term.type = element->object.type;
-                object_term.value = element->object.value;
+                object_term = raptor_new_term_from_term(element->object);
               }
 
               raptor_rdfxml_generate_statement(rdf_parser, 
-                                               &element->parent->subject,
+                                               element->parent->subject,
                                                predicate_uri,
-                                               &object_term,
-                                               &element->reified,
+                                               object_term,
+                                               element->reified,
                                                element->parent);
 
               if(predicate_ordinal >= 0)
                 raptor_free_uri(predicate_uri);
+
+              if(object_term)
+                raptor_free_term(object_term);
             }
             
             break;
@@ -2683,8 +2867,9 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
         case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_XML_LITERAL:
             {
               unsigned char *buffer;
+              unsigned char *new_buffer;
               unsigned int length;
-              raptor_term xmlliteral_term; /* static */
+              raptor_term* xmlliteral_term;
               
               memset(&xmlliteral_term, '\0', sizeof(xmlliteral_term));
 
@@ -2709,10 +2894,14 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 else
                   raptor_parser_warning(rdf_parser, message, el_name, buffer);
               }
-              
-              xmlliteral_term.value = buffer;
-              xmlliteral_term.type = RAPTOR_TERM_TYPE_LITERAL;
-              xmlliteral_term.literal_datatype = RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser);
+
+              new_buffer = (unsigned char *)RAPTOR_MALLOC(cstring, length+1);
+              memcpy(new_buffer, buffer, length+1);
+
+              xmlliteral_term = raptor_new_term_from_literal(rdf_parser->world,
+                                                             new_buffer,
+                                                             raptor_uri_copy(RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser)),
+                                                             NULL);
               
               if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {
                 raptor_uri* predicate_uri;
@@ -2721,22 +2910,24 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 predicate_uri = raptor_new_uri_from_rdf_ordinal(rdf_parser->world, element->parent->last_ordinal);
 
                 raptor_rdfxml_generate_statement(rdf_parser, 
-                                                 &element->parent->subject,
+                                                 element->parent->subject,
                                                  predicate_uri,
-                                                 &xmlliteral_term,
-                                                 &element->reified,
+                                                 xmlliteral_term,
+                                                 element->reified,
                                                  element->parent);
 
                 raptor_free_uri(predicate_uri);
               } else {
                 raptor_rdfxml_generate_statement(rdf_parser, 
-                                                 &element->parent->subject,
-                                                 raptor_xml_element_get_name(xml_element)->uri,
-                                                 &xmlliteral_term,
-                                                 &element->reified,
+                                                 element->parent->subject,
+                                                 element_name_uri,
+                                                 xmlliteral_term,
+                                                 element->reified,
                                                  element->parent);
               }
               
+              raptor_free_term(xmlliteral_term);
+
               /* Finish the xml writer iostream for parseType="Literal" */
               if(rdf_xml_parser->xml_writer) {
                 raptor_free_xml_writer(rdf_xml_parser->xml_writer);

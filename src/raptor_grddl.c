@@ -80,7 +80,7 @@
  */
 
 
-static void raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement);
+static void raptor_grddl_filter_triples(void *user_data, raptor_statement *statement);
 
 static void raptor_libxslt_error_common(raptor_parser* rdf_parser, const char *msg, va_list args, const char *prefix) RAPTOR_PRINTF_FORMAT(2, 0);
 
@@ -359,11 +359,11 @@ raptor_grddl_parser_add_parent(raptor_parser *rdf_parser,
     raptor_free_sequence(grddl_parser->visited_uris);
 
   /* share parent's list and do not free it here */
-  grddl_parser->visited_uris= parent_grddl_parser->visited_uris;
-  grddl_parser->grddl_depth= parent_grddl_parser->grddl_depth+1;
+  grddl_parser->visited_uris = parent_grddl_parser->visited_uris;
+  grddl_parser->grddl_depth = parent_grddl_parser->grddl_depth+1;
 
-  grddl_parser->saved_user_data= parent_grddl_parser->rdf_parser;
-  grddl_parser->saved_statement_handler= raptor_grddl_filter_triples;
+  grddl_parser->saved_user_data = parent_grddl_parser->rdf_parser;
+  grddl_parser->saved_statement_handler = raptor_grddl_filter_triples;
 }
 
     
@@ -493,7 +493,7 @@ raptor_grddl_add_transform_xml_context(raptor_grddl_parser_context* grddl_parser
 
 
 static void
-raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
+raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
 {
   raptor_parser* rdf_parser = (raptor_parser*)user_data;
   raptor_grddl_parser_context* grddl_parser;
@@ -503,9 +503,9 @@ raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
   grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   /* Look for a triple <uri> <uri> <uri> */
-  if(!statement->subject.type == RAPTOR_TERM_TYPE_URI ||
-     !statement->predicate.type == RAPTOR_TERM_TYPE_URI ||
-     !statement->object.type == RAPTOR_TERM_TYPE_URI)
+  if(!statement->subject->type == RAPTOR_TERM_TYPE_URI ||
+     !statement->predicate->type == RAPTOR_TERM_TYPE_URI ||
+     !statement->object->type == RAPTOR_TERM_TYPE_URI)
     return;
 
 #if RAPTOR_DEBUG > 2
@@ -537,9 +537,9 @@ raptor_grddl_filter_triples(void *user_data, const raptor_statement *statement)
     if(!profile_uri)
       continue;
     
-    if(raptor_uri_equals((raptor_uri*)statement->subject.value, profile_uri) &&
-       raptor_uri_equals((raptor_uri*)statement->predicate.value, predicate_uri)) {
-      raptor_uri* uri = (raptor_uri*)statement->object.value;
+    if(raptor_uri_equals((raptor_uri*)statement->subject->value, profile_uri) &&
+       raptor_uri_equals((raptor_uri*)statement->predicate->value, predicate_uri)) {
+      raptor_uri* uri = (raptor_uri*)statement->object->value;
       
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Matches profile URI #%d '%s'\n",
