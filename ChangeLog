@@ -1,3 +1,205 @@
+2010-01-16  Dave Beckett <dave@dajobe.org>
+
+	* Merge branch 'statement-term' to 'master' with
+	commit efd40982c2356eab8c37c1da1acd8b459ec06b56
+	
+2010-01-15  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_internal.h, src/raptor_xsd.c:
+	Removed unused raptor_new_identifier_from_double and raptor_xsd module.
+
+	* src/raptor_librdfa.c:
+	Updated RDFA parser to use statement and term object model
+
+	* src/raptor_rss.c:
+	Skip attempting to output predicates with no URI/namespace
+
+	(raptor_rss_emit_item): Check predicate_uri first.
+
+	* src/raptor_rss.c:
+	Free allocate raptor_term
+	
+	(raptor_rss_emit_item): Free some predicate and object terms just
+	allocated.  Code style.
+
+	* docs/tmpl/section-iostream.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-uri.sgml: update generated docs
+
+	* src/raptor_rss.c:
+	Construct terms in raptor_rss_emit_item
+
+	(raptor_rss_emit_item): Use raptor_term constructors
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c:
+	Switch RSS parser and serializer internals from identfier to term
+
+	Compiles but does not fully work yet.
+
+	* src/raptor_internal.h:
+	Added raptor_term_equals
+
+	* src/raptor_statement.c:
+	Added raptor_term_equals
+
+2010-01-14  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y:
+	Convert turtle parser to use raptor_statement and raptor_term
+
+	Change raptor_identifier to raptor_term
+
+	Change raptor_turtle_triple to raptor_statement
+
+	Code style.
+
+	(raptor_turtle_generate_statement): Use copy constructor for term. 
+
+	(raptor_turtle_new_triple, raptor_turtle_free_triple,
+	raptor_triple_print): Deleted
+
+	* src/raptor_internal.h, src/raptor_statement.c:
+	Add raptor_new_statement_from_nodes
+	
+	(raptor_new_statement_from_nodes): Added
+
+	* src/raptor_serialize_turtle.c, src/turtle_parser.y:
+	Update Turtle parser and serializer to statement reference model. 
+
+	(raptor_turtle_generate_statement): Generate new term objects for
+	each statement. 
+
+	(raptor_turtle_serialize_statement): Use correct reference to
+	statement fields.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_statement.c:
+	Made statement work statically and dynamically, promoting on copies
+
+	(raptor_new_statement): Added to make a new dynamic statement
+
+	(raptor_statement_init): Init a static statement with negative
+	usage. 
+
+	(raptor_statement_copy): Do promote to dynamic on copy. 
+
+	(raptor_free_statement): Do not free static statements. 
+
+	(raptor_rdfxml_generate_statement): Do proper predicate creation
+	when reifying - this broke statement copying and rdfdiff. 
+
+	(raptor_rdfxmla_serialize_statement): Correct pointers to statement
+	fields.
+
+2010-01-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c:
+	Code style and more fixing up RDF/XML raptor_term object use
+
+	Code style; introduce variables to break long lines/duplicate
+	expressions that hopefully the compiler will still optimize way.
+
+	(raptor_rdfxml_generate_statement): Free a locally created
+	reified_term object.
+
+	(raptor_rdfxml_process_property_attributes): Save a strlen.  Code
+	style. 
+
+	(raptor_rdfxml_start_element_grammar): Code style.  Add
+	element_name_uri to remove several long lines.  Add some OOM checks
+	when an ID/URI then raptor_term are created in two steps.
+
+	* src/ntriples_parse.c:
+	Update N-Triples parser to use raptor_term objects
+
+	(raptor_ntriples_generate_statement): Use raptor_term constructors.
+
+	* src/raptor_rdfxml.c:
+	More conversions of raptor_term statics to dynamic. 
+
+	(raptor_rdfxml_process_property_attributes): Return failure error
+	status. 
+
+	(raptor_rdfxml_process_property_attributes): Convert more
+	static (on stack) raptor_term objects into dynamic/by-reference.
+
+	* src/raptor_statement.c:
+	(raptor_statement_copy): Delete commented out old deep copy code. 
+
+	(raptor_free_statement): Just call raptor_term to free inner terms.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_statement.c:
+	Deleted raptor_clear_term and raptor_copy_term. literal languages
+
+	(raptor_clear_term, raptor_copy_term): Deleted - no longer needed
+	or used.
+
+	(raptor_free_term): Merge in old raptor_clear code here. 
+
+	(raptor_rdfxml_end_element_grammar): A little OOM checking.
+
+	* src/raptor_rdfxml.c:
+	(raptor_rdfxml_end_element_grammar): Allocate new strings for
+	literals since they become owned by raptor_term.
+
+	* src/raptor_rdfxml.c, utils/rapper.c:
+	change raptor_rdfxml_element
+
+	raptor_term statics fields to objects
+
+	raptor_rdfxml_element: reified, bag, subject, predicate and object
+	fields are now raptor_term*
+
+	(raptor_free_rdfxml_element): Use raptor_free_term on above fields
+	instead of raptor_clear_term. 
+
+	(raptor_rdfxml_start_element_handler): Do not assign world to
+	above fields - not allocated yet.  Move setting of default
+	literal_language inscope to code near the line where raptor_term
+	for a literal is created.  Start turning direct references to
+	raptor_statement field->subject->type into static raptor_term
+	objects (memset then assigned) for bags, reified terms,
+	collections, bags, reified statements, ...  
+
+	First stage of conversion to allocated raptor_terms.
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_simple.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c: raptor_term and raptor_term get usages.
+	statement is pointer to 3 terms
+
+	Compiles, does not all work.
+
+	(raptor_statement_init): Init usage. 
+
+	(raptor_statement_copy): Now just a usage increment; comment out old
+	copying code. 
+
+	(raptor_free_statement): Free on zero usage. 
+
+	(raptor_free_term): Free on zero usage. 
+
+	(raptor_new_term_from_term, raptor_new_term_from_uri,
+	raptor_new_term_from_literal, raptor_new_term_from_blank): Added new
+	term constructors - taking ownership of their input objects.
+
+	(raptor_rdfxml_generate_statement): Create raptor_term objects to
+	generate reified statements.  Update lots of uses in parsers and
+	serializers of object.field to object->field for pointer based
+	access.
+
+2010-01-12  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-iostream.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-uri.sgml: Update generated docs
+
 2010-01-11  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_rdfxml.c: raptor_rdfxml_generate_statement() now
