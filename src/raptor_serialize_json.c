@@ -266,17 +266,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   int new_predicate = 0;
   
   if(s2) {
-    if(s1->subject->type != s2->subject->type) {
-      new_subject = 1;
-    } else {
-      /* subjects are URIs or blank nodes */
-      if(s1->subject->type == RAPTOR_TERM_TYPE_BLANK)
-        new_subject = strcmp((char*)s1->subject->value.blank,
-                             (char*)s2->subject->value.blank);
-      else
-        new_subject = !raptor_uri_equals(s1->subject->value.uri,
-                                         s2->subject->value.uri);
-    }
+    new_subject = !raptor_term_equals(s1->subject, s2->subject);
 
     if(new_subject) {
       /* end last predicate */
