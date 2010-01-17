@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_statement.c - Raptor statements
+ * raptor_statement.c - Raptor terms and statements
  *
  * Copyright (C) 2008-2010, David Beckett http://www.dajobe.org/
  * 
@@ -297,7 +297,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       break;
       
     case RAPTOR_TERM_TYPE_BLANK:
-      len = 2+strlen((const char*)term);
+      len = 2 + strlen((const char*)term->value);
       buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
         return NULL;
@@ -308,7 +308,8 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       break;
       
     case RAPTOR_TERM_TYPE_URI:
-      uri_string = raptor_uri_as_counted_string((raptor_uri*)term, &uri_len);
+      uri_string = raptor_uri_as_counted_string((raptor_uri*)term->value, 
+                                                &uri_len);
       len = 2+uri_len;
       buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
