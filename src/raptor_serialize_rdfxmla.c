@@ -370,7 +370,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
     
     memset(&blank_term, '\0', sizeof(blank_term));
     blank_term.type = node->type;
-    blank_term.value = node->value.blank.string;
+    blank_term.value.blank = node->value.blank.string;
 
     blank = raptor_abbrev_subject_find(context->blanks, &blank_term);
           
@@ -888,7 +888,7 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 
     memset(&uri_term, '\0', sizeof(uri_term));
     uri_term.type = RAPTOR_TERM_TYPE_URI;
-    uri_term.value = rdf_type_uri;
+    uri_term.value.uri = rdf_type_uri;
 
     context->rdf_type = raptor_new_abbrev_node(serializer->world, &uri_term);
     raptor_free_uri(rdf_type_uri);

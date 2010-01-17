@@ -204,7 +204,7 @@ graph: graphName colonMinusOpt LEFT_CURLY
     if(!turtle_parser->trig)
       turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
     else
-      raptor_parser_set_graph_name(parser, (raptor_uri*)$1->value);
+      raptor_parser_set_graph_name(parser, $1->value.uri);
   }
   graphBody RIGHT_CURLY
 {
@@ -1262,43 +1262,43 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   /* Two choices for subject for Turtle */
   if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->subject = raptor_new_term_from_blank(parser->world,
-                                                    strdup(t->subject->value));
+                                                    strdup(t->subject->value.blank));
   } else {
     /* RAPTOR_TERM_TYPE_URI */
     RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
                   "subject type is not resource");
     statement->subject = raptor_new_term_from_uri(parser->world,
-                                                  raptor_uri_copy((raptor_uri*)t->subject->value));
+                                                  raptor_uri_copy(t->subject->value.uri));
   }
 
   /* Predicates are URIs but check for bad ordinals */
-  if(!strncmp((const char*)raptor_uri_as_string((raptor_uri*)t->predicate->value),
+  if(!strncmp((const char*)raptor_uri_as_string(t->predicate->value.uri),
               "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    unsigned char* predicate_uri_string = raptor_uri_as_string((raptor_uri*)t->predicate->value);
+    unsigned char* predicate_uri_string = raptor_uri_as_string(t->predicate->value.uri);
     int predicate_ordinal = raptor_check_ordinal(predicate_uri_string+44);
     if(predicate_ordinal <= 0)
       raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
   }
   
   statement->predicate = raptor_new_term_from_uri(parser->world,
-                                                  raptor_uri_copy((raptor_uri*)t->predicate->value));
+                                                  raptor_uri_copy(t->predicate->value.uri));
   
 
   /* Three choices for object for Turtle */
   if(t->object->type == RAPTOR_TERM_TYPE_URI) {
     statement->object = raptor_new_term_from_uri(parser->world,
-                                                 raptor_uri_copy((raptor_uri*)t->object->value));
+                                                 raptor_uri_copy(t->object->value.uri));
   } else if(t->object->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->object = raptor_new_term_from_blank(parser->world,
-                                                   strdup(t->object->value));
+                                                   strdup(t->object->value.blank));
   } else {
     /* RAPTOR_TERM_TYPE_LITERAL */
     RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
                   "object type is not literal");
     statement->object = raptor_new_term_from_literal(parser->world,
-                                                     strdup(t->object->value),
-                                                     (t->object->literal_datatype ? raptor_uri_copy(t->object->literal_datatype) : NULL),
-                                                     (t->object->literal_language ? strdup(t->object->literal_language) : NULL));
+                                                     strdup(t->object->value.literal.string),
+                                                     (t->object->value.literal.datatype ? raptor_uri_copy(t->object->value.literal.datatype) : NULL),
+                                                     (t->object->value.literal.language ? strdup(t->object->value.literal.language) : NULL));
   }
 
   if(!parser->statement_handler)

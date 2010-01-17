@@ -191,42 +191,42 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
   fputc('[', stream);
 
   if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-    fputs((const char*)statement->subject->value, stream);
+    fputs((const char*)statement->subject->value.blank, stream);
   } else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->subject->value)
+    if(!statement->subject->value.uri)
       RAPTOR_FATAL1("Statement has NULL subject URI\n");
 #endif
-    fputs((const char*)raptor_uri_as_string((raptor_uri*)statement->subject->value), stream);
+    fputs((const char*)raptor_uri_as_string(statement->subject->value.uri), stream);
   }
 
   fputs(", ", stream);
 
 #ifdef RAPTOR_DEBUG
-  if(!statement->predicate->value)
+  if(!statement->predicate->value.uri)
     RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
-  fputs((const char*)raptor_uri_as_string((raptor_uri*)statement->predicate->value), stream);
+  fputs((const char*)raptor_uri_as_string(statement->predicate->value.uri), stream);
 
   fputs(", ", stream);
 
   if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
-    if(statement->object->literal_datatype) {
+    if(statement->object->value.literal.datatype) {
       fputc('<', stream);
-      fputs((const char*)raptor_uri_as_string((raptor_uri*)statement->object->literal_datatype), stream);
+      fputs((const char*)raptor_uri_as_string(statement->object->value.literal.datatype), stream);
       fputc('>', stream);
     }
     fputc('"', stream);
-    fputs((const char*)statement->object->value, stream);
+    fputs((const char*)statement->object->value.literal.string, stream);
     fputc('"', stream);
   } else if(statement->object->type == RAPTOR_TERM_TYPE_BLANK)
-    fputs((const char*)statement->object->value, stream);
+    fputs((const char*)statement->object->value.blank, stream);
   else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->object->value)
+    if(!statement->object->value.uri)
       RAPTOR_FATAL1("Statement has NULL object URI\n");
 #endif
-    fputs((const char*)raptor_uri_as_string((raptor_uri*)statement->object->value), stream);
+    fputs((const char*)raptor_uri_as_string(statement->object->value.uri), stream);
   }
 
   fputc(']', stream);
@@ -256,14 +256,14 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
   
   switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
-      term_len = strlen((const char*)term->value);
+      term_len = strlen((const char*)term->value.literal.string);
       len = 2 + term_len;
-      if(term->literal_language) {
-        language_len = strlen((const char*)term->literal_language);
+      if(term->value.literal.language) {
+        language_len = strlen((const char*)term->value.literal.language);
         len += language_len+1;
       }
-      if(term->literal_datatype) {
-        uri_string = raptor_uri_as_counted_string(term->literal_datatype,
+      if(term->value.literal.datatype) {
+        uri_string = raptor_uri_as_counted_string(term->value.literal.datatype,
                                                   &uri_len);
         len += 4 + uri_len;
       }
@@ -275,16 +275,16 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       s = buffer;
       *s++ ='"';
       /* raptor_print_ntriples_string(stream, (const char*)term, '"'); */
-      strcpy((char*)s, (const char*)term->value);
+      strcpy((char*)s, (const char*)term->value.literal.string);
       s+= term_len;
       *s++ ='"';
-      if(term->literal_language) {
+      if(term->value.literal.language) {
         *s++ ='@';
-        strcpy((char*)s, (const char*)term->literal_language);
+        strcpy((char*)s, (const char*)term->value.literal.language);
         s+= language_len;
       }
 
-      if(term->literal_datatype) {
+      if(term->value.literal.datatype) {
         *s++ ='^';
         *s++ ='^';
         *s++ ='<';
@@ -297,7 +297,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       break;
       
     case RAPTOR_TERM_TYPE_BLANK:
-      len = 2 + strlen((const char*)term->value);
+      len = 2 + strlen((const char*)term->value.blank);
       buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
         return NULL;
@@ -308,7 +308,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       break;
       
     case RAPTOR_TERM_TYPE_URI:
-      uri_string = raptor_uri_as_counted_string((raptor_uri*)term->value, 
+      uri_string = raptor_uri_as_counted_string(term->value.uri, 
                                                 &uri_len);
       len = 2+uri_len;
       buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
@@ -362,15 +362,14 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
   switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
       fputc('"', stream);
-      raptor_print_ntriples_string(stream, (const unsigned char*)term->value,
-                                   '"');
+      raptor_print_ntriples_string(stream, term->value.literal.string, '"');
       fputc('"', stream);
-      if(term->literal_language) {
+      if(term->value.literal.language) {
         fputc('@', stream);
-        fputs((const char*)term->literal_language, stream);
+        fputs((const char*)term->value.literal.language, stream);
       }
-      if(term->literal_datatype) {
-        uri = (raptor_uri*)term->literal_datatype;
+      if(term->value.literal.datatype) {
+        uri = (raptor_uri*)term->value.literal.datatype;
         fputs("^^<", stream);
         fputs((const char*)raptor_uri_as_string(uri), stream);
         fputc('>', stream);
@@ -380,11 +379,11 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
       
     case RAPTOR_TERM_TYPE_BLANK:
       fputs("_:", stream);
-      fputs((const char*)term->value, stream);
+      fputs((const char*)term->value.blank, stream);
       break;
       
     case RAPTOR_TERM_TYPE_URI:
-      uri = (raptor_uri*)term->value;
+      uri = term->value.uri;
       fputc('<', stream);
       raptor_print_ntriples_string(stream, raptor_uri_as_string(uri), '\0');
       fputc('>', stream);
@@ -444,34 +443,35 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
   
   switch(t1->type) {
     case RAPTOR_TERM_TYPE_URI:
-      d = raptor_uri_compare((raptor_uri*)t1->value, (raptor_uri*)t2->value);
+      d = raptor_uri_compare(t1->value.uri, t2->value.uri);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      d = strcmp((const char*)t1->value, (const char*)t2->value);
+      d = strcmp((const char*)t1->value.blank, (const char*)t2->value.blank);
       break;
       
     case RAPTOR_TERM_TYPE_LITERAL:
-      d = strcmp((const char*)t1->value, (const char*)t2->value);
+      d = strcmp((const char*)t1->value.literal.string,
+                 (const char*)t2->value.literal.string);
       if(d)
         break;
       
-      if(t1->literal_language && t2->literal_language) {
+      if(t1->value.literal.language && t2->value.literal.language) {
         /* both have a language */
-        d = strcmp((const char*)t1->literal_language, 
-                   (const char*)t2->literal_language);
-      } else if(t1->literal_language || t2->literal_language)
+        d = strcmp((const char*)t1->value.literal.language, 
+                   (const char*)t2->value.literal.language);
+      } else if(t1->value.literal.language || t2->value.literal.language)
         /* only one has a language; the language-less one is earlier */
-        d = (!t1->literal_language ? -1 : 1);
+        d = (!t1->value.literal.language ? -1 : 1);
       if(d)
         break;
       
-      if(t1->literal_datatype && t2->literal_datatype) {
+      if(t1->value.literal.datatype && t2->value.literal.datatype) {
         /* both have a datatype */
-        d = raptor_uri_compare(t1->literal_datatype, t2->literal_datatype);
-      } else if(t1->literal_datatype || t2->literal_datatype)
+        d = raptor_uri_compare(t1->value.literal.datatype, t2->value.literal.datatype);
+      } else if(t1->value.literal.datatype || t2->value.literal.datatype)
         /* only one has a datatype; the datatype-less one is earlier */
-        d = (!t1->literal_datatype ? -1 : 1);
+        d = (!t1->value.literal.datatype ? -1 : 1);
       break;
       
     case RAPTOR_TERM_TYPE_UNKNOWN:
@@ -532,33 +532,33 @@ raptor_free_term(raptor_term *term)
   
   switch(term->type) {
     case RAPTOR_TERM_TYPE_URI:
-      if(term->value) {
-        raptor_free_uri((raptor_uri*)term->value);
-        term->value = NULL;
+      if(term->value.uri) {
+        raptor_free_uri(term->value.uri);
+        term->value.uri = NULL;
       }
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      if(term->value) {
-        RAPTOR_FREE(cstring, (void*)term->value);
-        term->value = NULL;
+      if(term->value.blank) {
+        RAPTOR_FREE(cstring, (void*)term->value.blank);
+        term->value.blank = NULL;
       }
       break;
       
     case RAPTOR_TERM_TYPE_LITERAL:
-      if(term->value) {
-        RAPTOR_FREE(cstring, (void*)term->value);
-        term->value = NULL;
+      if(term->value.literal.string) {
+        RAPTOR_FREE(cstring, (void*)term->value.literal.string);
+        term->value.literal.string = NULL;
       }
 
-      if(term->literal_datatype) {
-        raptor_free_uri(term->literal_datatype);
-        term->literal_datatype = NULL;
+      if(term->value.literal.datatype) {
+        raptor_free_uri(term->value.literal.datatype);
+        term->value.literal.datatype = NULL;
       }
       
-      if(term->literal_language) {
-        RAPTOR_FREE(cstring, (void*)term->literal_language);
-        term->literal_language = NULL;
+      if(term->value.literal.language) {
+        RAPTOR_FREE(cstring, (void*)term->value.literal.language);
+        term->value.literal.language = NULL;
       }
       break;
       
@@ -593,7 +593,7 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
   t->usage = 1;
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_URI;
-  t->value = uri;
+  t->value.uri = uri;
 
   return t;
 }
@@ -625,9 +625,9 @@ raptor_new_term_from_literal(raptor_world* world, unsigned char* literal,
   t->usage = 1;
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_LITERAL;
-  t->value = literal;
-  t->literal_language = language;
-  t->literal_datatype = datatype;
+  t->value.literal.string = literal;
+  t->value.literal.language = language;
+  t->value.literal.datatype = datatype;
 
   return t;
 }
@@ -646,7 +646,7 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
   t->usage = 1;
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_BLANK;
-  t->value = blank;
+  t->value.blank = blank;
 
   return t;
 }
@@ -664,34 +664,35 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
   
   switch(t1->type) {
     case RAPTOR_TERM_TYPE_URI:
-      d = raptor_uri_equals((raptor_uri*)t1->value, (raptor_uri*)t2->value);
+      d = raptor_uri_equals(t1->value.uri, t2->value.uri);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      d = !strcmp((const char*)t1->value, (const char*)t2->value);
+      d = !strcmp((const char*)t1->value.blank, (const char*)t2->value.blank);
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
-      d = !strcmp((const char*)t1->value, (const char*)t2->value);
+      d = !strcmp((const char*)t1->value.literal.string,
+                  (const char*)t2->value.literal.string);
       if(!d)
         break;
       
-      if(t1->literal_language && t2->literal_language) {
+      if(t1->value.literal.language && t2->value.literal.language) {
         /* both have a language */
-        d = !strcmp((const char*)t1->literal_language, 
-                    (const char*)t2->literal_language);
+        d = !strcmp((const char*)t1->value.literal.language, 
+                    (const char*)t2->value.literal.language);
         if(!d)
           break;
-      } else if(t1->literal_language || t2->literal_language) {
+      } else if(t1->value.literal.language || t2->value.literal.language) {
         /* only one has a language - different */
         d = 0;
         break;
       }
 
-      if(t1->literal_datatype && t2->literal_datatype) {
+      if(t1->value.literal.datatype && t2->value.literal.datatype) {
         /* both have a datatype */
-        d = raptor_uri_equals(t1->literal_datatype, t2->literal_datatype);
-      } else if(t1->literal_datatype || t2->literal_datatype) {
+        d = raptor_uri_equals(t1->value.literal.datatype, t2->value.literal.datatype);
+      } else if(t1->value.literal.datatype || t2->value.literal.datatype) {
         /* only one has a datatype - different */
         d = 0;
       }

@@ -232,27 +232,27 @@ raptor_dot_serializer_write_term(raptor_serializer * serializer,
   switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
       raptor_dot_iostream_write_string(serializer->iostream,
-                                       (const unsigned char*)term->value);
-      if(term->literal_language) {
+                                       term->value.literal.string);
+      if(term->value.literal.language) {
         raptor_iostream_write_byte(serializer->iostream, '|');
         raptor_iostream_write_string(serializer->iostream, "Language: ");
         raptor_iostream_write_string(serializer->iostream,
-                                     term->literal_language);
+                                     term->value.literal.language);
       }
-      if(term->literal_datatype) {
+      if(term->value.literal.datatype) {
         raptor_iostream_write_byte(serializer->iostream, '|');
         raptor_iostream_write_string(serializer->iostream, "Datatype: ");
-        raptor_dot_serializer_write_uri(serializer, term->literal_datatype);
+        raptor_dot_serializer_write_uri(serializer, term->value.literal.datatype);
       }
       break;
       
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_iostream_write_counted_string(serializer->iostream, "_:", 2);
-      raptor_iostream_write_string(serializer->iostream, term->value);
+      raptor_iostream_write_string(serializer->iostream, term->value.blank);
       break;
   
     case RAPTOR_TERM_TYPE_URI:
-      raptor_dot_serializer_write_uri(serializer, (raptor_uri*)term->value);
+      raptor_dot_serializer_write_uri(serializer, term->value.uri);
       break;
       
     case RAPTOR_TERM_TYPE_UNKNOWN:

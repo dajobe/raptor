@@ -537,9 +537,9 @@ raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
     if(!profile_uri)
       continue;
     
-    if(raptor_uri_equals((raptor_uri*)statement->subject->value, profile_uri) &&
-       raptor_uri_equals((raptor_uri*)statement->predicate->value, predicate_uri)) {
-      raptor_uri* uri = (raptor_uri*)statement->object->value;
+    if(raptor_uri_equals(statement->subject->value.uri, profile_uri) &&
+       raptor_uri_equals(statement->predicate->value.uri, predicate_uri)) {
+      raptor_uri* uri = statement->object->value.uri;
       
 #if RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Matches profile URI #%d '%s'\n",

@@ -386,14 +386,14 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
 
 int
 raptor_json_writer_blank_object(raptor_json_writer* json_writer,
-                                const char* blank)
+                                const unsigned char* blank)
 {
   raptor_json_writer_start_block(json_writer, '{');
   raptor_json_writer_newline(json_writer);
 
   raptor_iostream_write_counted_string(json_writer->iostr, 
                                        "\"value\" : \"_:", 13);
-  raptor_iostream_write_string(json_writer->iostr, blank);
+  raptor_iostream_write_string(json_writer->iostr, (const char*)blank);
   raptor_iostream_write_counted_string(json_writer->iostr, "\",", 2);
   raptor_json_writer_newline(json_writer);
 

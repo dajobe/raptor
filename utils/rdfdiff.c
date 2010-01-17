@@ -292,8 +292,8 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     /*if(strcmp((const char *)s1->subject, (const char *)s2->subject->value) != 0)
       return 0;*/
   } else {
-    if(!raptor_uri_equals((raptor_uri*)s1->subject->value,
-                          (raptor_uri*)s2->subject->value)) {
+    if(!raptor_uri_equals(s1->subject->value.uri,
+                          s2->subject->value.uri)) {
       rv = 0;
       goto done;
     }
@@ -304,8 +304,8 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     goto done;
   }
   
-  if(!raptor_uri_equals((raptor_uri*)s1->predicate->value,
-                        (raptor_uri*)s2->predicate->value)) {
+  if(!raptor_uri_equals(s1->predicate->value.uri,
+                        s2->predicate->value.uri)) {
     rv = 0;
     goto done;
   }
@@ -318,20 +318,21 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
   if(s1->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     int equal;
     
-    equal=!safe_strcmp((char *)s1->object->value, (char *)s2->object->value);
+    equal= !safe_strcmp((char *)s1->object->value.literal.string,
+                        (char *)s2->object->value.literal.string);
 
     if(equal) {
-      if(s1->object->literal_language && s2->object->literal_language)
-        equal = !strcmp((char *)s1->object->literal_language,
-                        (char *)s2->object->literal_language);
-      else if(s1->object->literal_language || s2->object->literal_language)
+      if(s1->object->value.literal.language && s2->object->value.literal.language)
+        equal = !strcmp((char *)s1->object->value.literal.language,
+                        (char *)s2->object->value.literal.language);
+      else if(s1->object->value.literal.language || s2->object->value.literal.language)
         equal = 0;
       else
         equal = 1;
 
       if(equal)
-        equal = raptor_uri_equals(s1->object->literal_datatype, 
-                                  s2->object->literal_datatype);
+        equal = raptor_uri_equals(s1->object->value.literal.datatype, 
+                                  s2->object->value.literal.datatype);
     }
 
     rv = equal;
@@ -342,8 +343,8 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
     /* if(strcmp((const char *)s1->object, (const char *)s2->object->value) != 0)
        return 0; */
   } else {
-    if(!raptor_uri_equals((raptor_uri*)s1->object->value,
-                          (raptor_uri*)s2->object->value))
+    if(!raptor_uri_equals(s1->object->value.uri,
+                          s2->object->value.uri))
       rv = 0;
   }
 
@@ -395,8 +396,10 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
     raptor_print_statement_as_ntriples(b2->owner, stderr);
     fprintf(stderr, "\n");
 #endif    
-    p1 = rdfdiff_find_blank(b1_file->first_blank, (char *)b1->owner->subject->value);
-    p2 = rdfdiff_find_blank(b2_file->first_blank, (char *)b2->owner->subject->value);
+    p1 = rdfdiff_find_blank(b1_file->first_blank, 
+                            (char *)b1->owner->subject->value.blank);
+    p2 = rdfdiff_find_blank(b2_file->first_blank,
+                            (char *)b2->owner->subject->value.blank);
     equal = rdfdiff_blank_equals(p1, p2, b1_file, b2_file);
   } else {
     equal = 0;
@@ -523,7 +526,7 @@ rdfdiff_add_blank_statement(rdfdiff_file* file,
   rdfdiff_blank *blank;
   rdfdiff_link *dlink;
 
-  blank = rdfdiff_lookup_blank(file, (char *)statement->subject->value);
+  blank = rdfdiff_lookup_blank(file, (char *)statement->subject->value.blank);
   if(!blank)
     goto failed;
 
@@ -560,7 +563,7 @@ rdfdiff_add_blank_statement_owner(rdfdiff_file* file,
 {
   rdfdiff_blank *blank;
 
-  blank = rdfdiff_lookup_blank(file, (char *)statement->object->value);
+  blank = rdfdiff_lookup_blank(file, (char *)statement->object->value.blank);
   if(!blank)
     goto failed;
   

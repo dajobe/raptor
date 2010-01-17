@@ -109,7 +109,7 @@ void print_triples(void *user_data, raptor_statement *triple)
   if(replace_newlines && 
      triple->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     char *s;
-    for(s = (char*)triple->object->value; *s; s++)
+    for(s = (char*)triple->object->value.literal.string; *s; s++)
       if(*s == '\n')
         *s=' ';
   }

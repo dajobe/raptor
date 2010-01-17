@@ -1249,7 +1249,7 @@ int raptor_json_writer_key_value(raptor_json_writer* json_writer, const char* ke
 int raptor_json_writer_start_block(raptor_json_writer* json_writer, char c);
 int raptor_json_writer_end_block(raptor_json_writer* json_writer, char c);
 int raptor_json_writer_literal_object(raptor_json_writer* json_writer, unsigned char* s, unsigned char* lang, raptor_uri* datatype, const char* key, const char* type_key);
-int raptor_json_writer_blank_object(raptor_json_writer* json_writer, const char* blank);
+int raptor_json_writer_blank_object(raptor_json_writer* json_writer, const unsigned char* blank);
 int raptor_json_writer_uri_object(raptor_json_writer* json_writer, raptor_uri* uri);
 int raptor_json_writer_key_uri_value(raptor_json_writer* json_writer, const char* key, size_t key_len, raptor_uri* uri);
 

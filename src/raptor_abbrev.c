@@ -76,39 +76,39 @@ raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
     
     switch (term->type) {
         case RAPTOR_TERM_TYPE_URI:
-          node->value.resource.uri = raptor_uri_copy((raptor_uri*)term->value);
+          node->value.resource.uri = raptor_uri_copy(term->value.uri);
           break;
           
         case RAPTOR_TERM_TYPE_BLANK:
           string = (unsigned char*)RAPTOR_MALLOC(blank,
-                                                 strlen((char*)term->value)+1);
+                                                 strlen((char*)term->value.blank)+1);
           if(!string)
             goto oom;
-          strcpy((char*)string, (const char*)term->value);
+          strcpy((char*)string, (const char*)term->value.blank);
           node->value.blank.string = string;
           break;
           
         case RAPTOR_TERM_TYPE_LITERAL:
           string = (unsigned char*)RAPTOR_MALLOC(literal,
-                                                 strlen((char*)term->value)+1);
+                                                 strlen((char*)term->value.literal.string)+1);
           if(!string)
             goto oom;
-          strcpy((char*)string, (const char*)term->value);
+          strcpy((char*)string, (const char*)term->value.literal.string);
           node->value.literal.string = string;
 
-          if(term->literal_datatype) {
-            node->value.literal.datatype = raptor_uri_copy(term->literal_datatype);
+          if(term->value.literal.datatype) {
+            node->value.literal.datatype = raptor_uri_copy(term->value.literal.datatype);
           }
 
-          if(term->literal_language) {
+          if(term->value.literal.language) {
             unsigned char *lang;
             lang = (unsigned char*)RAPTOR_MALLOC(language,
-                                                 strlen((const char*)term->literal_language)+1);
+                                                 strlen((const char*)term->value.literal.language)+1);
             if(!lang) {
               RAPTOR_FREE(literal, string);
               goto oom;
             }
-            strcpy((char*)lang, (const char*)term->literal_language);
+            strcpy((char*)lang, (const char*)term->value.literal.language);
             node->value.literal.language = lang;
           }
           break;

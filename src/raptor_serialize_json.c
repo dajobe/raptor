@@ -190,12 +190,12 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   switch(statement->subject->type) {
     case RAPTOR_TERM_TYPE_URI:
       raptor_json_writer_uri_object(context->json_writer,
-                                    (raptor_uri*)statement->subject->value);
+                                    statement->subject->value.uri);
       break;
           
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_json_writer_blank_object(context->json_writer,
-                                      (const char*)statement->subject->value);
+                                      statement->subject->value.blank);
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
@@ -211,7 +211,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   raptor_iostream_write_string(serializer->iostream,
                                (const unsigned char*)"\"predicate\" : ");
   raptor_json_writer_uri_object(context->json_writer,
-                                (raptor_uri*)statement->predicate->value);
+                                statement->predicate->value.uri);
   raptor_iostream_write_byte(serializer->iostream, ',');
   raptor_json_writer_newline(context->json_writer);
 
@@ -221,20 +221,20 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   switch(statement->object->type) {
     case RAPTOR_TERM_TYPE_URI:
       raptor_json_writer_uri_object(context->json_writer,
-                                    (raptor_uri*)statement->object->value);
+                                    statement->object->value.uri);
       break;
           
     case RAPTOR_TERM_TYPE_LITERAL:
       raptor_json_writer_literal_object(context->json_writer,
-                                        (unsigned char*)statement->object->value,
-                                        (unsigned char*)statement->object->literal_language, 
-                                        statement->object->literal_datatype,
+                                        statement->object->value.literal.string,
+                                        statement->object->value.literal.language, 
+                                        statement->object->value.literal.datatype,
                                         "value", "type");
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_json_writer_blank_object(context->json_writer,
-                                      (const char*)statement->object->value);
+                                      statement->object->value.blank);
       break;
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
@@ -271,11 +271,11 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
     } else {
       /* subjects are URIs or blank nodes */
       if(s1->subject->type == RAPTOR_TERM_TYPE_BLANK)
-        new_subject = strcmp((char*)s1->subject->value,
-                             (char*)s2->subject->value);
+        new_subject = strcmp((char*)s1->subject->value.blank,
+                             (char*)s2->subject->value.blank);
       else
-        new_subject = !raptor_uri_equals((raptor_uri*)s1->subject->value,
-                                         (raptor_uri*)s2->subject->value);
+        new_subject = !raptor_uri_equals(s1->subject->value.uri,
+                                         s2->subject->value.uri);
     }
 
     if(new_subject) {
@@ -308,13 +308,13 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       case RAPTOR_TERM_TYPE_URI:
         raptor_json_writer_key_uri_value(context->json_writer, 
                                          NULL, 0,
-                                         (raptor_uri*)s1->subject->value);
+                                         s1->subject->value.uri);
         break;
         
       case RAPTOR_TERM_TYPE_BLANK:
         raptor_iostream_write_counted_string(serializer->iostream, "\"_:", 3);
         raptor_iostream_write_string_python(serializer->iostream,
-                                            (const unsigned char*)s1->subject->value, 0, 
+                                            s1->subject->value.blank, 0,
                                             '"', 2);
         raptor_iostream_write_byte(serializer->iostream, '"');
         break;
@@ -339,8 +339,8 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
     if(new_subject)
       new_predicate = 1;
     else {
-      new_predicate = !raptor_uri_equals((raptor_uri*)s1->predicate->value,
-                                         (raptor_uri*)s2->predicate->value);
+      new_predicate = !raptor_uri_equals(s1->predicate->value.uri,
+                                         s2->predicate->value.uri);
       if(new_predicate) {
         raptor_json_writer_newline(context->json_writer);
         raptor_json_writer_end_block(context->json_writer, ']');
@@ -356,7 +356,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
 
     raptor_json_writer_key_uri_value(context->json_writer, 
                                    NULL, 0,
-                                   (raptor_uri*)s1->predicate->value);
+                                   s1->predicate->value.uri);
     raptor_iostream_write_counted_string(serializer->iostream, " : ", 3);
     raptor_json_writer_start_block(context->json_writer, '[');
     raptor_iostream_write_byte(serializer->iostream, ' ');
@@ -373,21 +373,21 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   switch(s1->object->type) {
     case RAPTOR_TERM_TYPE_URI:
       raptor_json_writer_uri_object(context->json_writer,
-                                    (raptor_uri*)s1->object->value);
+                                    s1->object->value.uri);
       raptor_json_writer_newline(context->json_writer);
       break;
           
     case RAPTOR_TERM_TYPE_LITERAL:
       raptor_json_writer_literal_object(context->json_writer,
-                                        (unsigned char*)s1->object->value,
-                                        (unsigned char*)s1->object->literal_language, 
-                                        s1->object->literal_datatype,
+                                        s1->object->value.literal.string,
+                                        s1->object->value.literal.language, 
+                                        s1->object->value.literal.datatype,
                                         "value", "type");
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_json_writer_blank_object(context->json_writer, 
-                                      (const char*)s1->object->value);
+                                      s1->object->value.blank);
       raptor_json_writer_newline(context->json_writer);
       break;
 

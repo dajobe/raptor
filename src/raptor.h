@@ -397,22 +397,36 @@ typedef enum {
 
 /**
  * raptor_term:
- * @value: term value
+ * @world: world
+ * @usage: usage reference count (if >0)
  * @type: term type
- * @literal_datatype: datatype URI (or NULL) when type is ltieral
- * @literal_language: language string (or NULL) with type is literal
+ * @value: term values per type
  *
- * An RDF triple term
+ * An RDF statement term
  *
  */
 typedef struct {
   raptor_world* world;
 
   int usage;
-  const void *value;
+
   raptor_term_type type;
-  raptor_uri *literal_datatype;
-  const unsigned char *literal_language;
+
+  union {
+    /* RAPTOR_TERM_TYPE_URI */
+    raptor_uri *uri;
+
+    /* RAPTOR_TERM_TYPE_LITERAL */
+    struct {
+      unsigned char *string;
+      raptor_uri *datatype;
+      unsigned char *language;
+    } literal;
+
+    /* RAPTOR_TERM_TYPE_BLANK */
+    unsigned char *blank;
+  } value;
+
 } raptor_term;
 
 
