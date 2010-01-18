@@ -1437,7 +1437,7 @@ int raptor_iostream_read_eof(raptor_iostream *iostr);
 
 /* Parser and Serializer features */
 RAPTOR_API
-raptor_feature raptor_feature_from_uri_v2(raptor_world* world, raptor_uri *uri);
+raptor_feature raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri);
 RAPTOR_API
 int raptor_feature_value_type(const raptor_feature feature);
 

@@ -180,18 +180,18 @@ raptor_feature_value_type(const raptor_feature feature) {
 
 
 /**
- * raptor_feature_from_uri_v2:
+ * raptor_world_get_feature_from_uri:
  * @world: raptor_world instance
  * @uri: feature URI
  *
- * Turn a feature URI into an feature enum.
+ * Get a feature ID from a URI
  * 
  * The allowed feature URIs are available via raptor_features_enumerate().
  *
  * Return value: < 0 if the feature is unknown
  **/
 raptor_feature
-raptor_feature_from_uri_v2(raptor_world* world, raptor_uri *uri)
+raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri)
 {
   unsigned char *uri_string;
   int i;

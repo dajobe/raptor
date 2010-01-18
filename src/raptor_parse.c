@@ -2173,7 +2173,7 @@ main(int argc, char *argv[])
 #ifdef RAPTOR_DEBUG
     fprintf(stderr, " %2d %-20s %s\n", i, feature_name, feature_label);
 #endif
-    fn = raptor_feature_from_uri_v2(world, feature_uri);
+    fn = raptor_world_get_feature_from_uri(world, feature_uri);
     if(fn != i) {
       fprintf(stderr, "raptor_feature_from_uri returned %d expected %d\n", fn, i);
       return 1;
