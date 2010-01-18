@@ -97,7 +97,7 @@ void print_triples(void *user_data, raptor_statement *triple)
 
   if(guess && !quiet && !reported_guess) {
      fprintf(stderr, "%s: Guessed parser name '%s'\n", program,
-             raptor_get_name(rdf_parser));
+             raptor_parser_get_name(rdf_parser));
      reported_guess = 1;
   }
 
@@ -230,7 +230,7 @@ rdfdump_error_handler(void *data, raptor_locator *locator,
     raptor_print_locator(stderr, locator);
     fprintf(stderr, " - %s\n", message);
     
-    raptor_parse_abort(parser);
+    raptor_parser_parse_abort(parser);
   }
 
   error_count++;
@@ -372,7 +372,7 @@ main(int argc, char *argv[])
             int i;
             
             fprintf(stderr, "%s: Valid parser features are:\n", program);
-            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_world_enumerate_parser_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
@@ -382,7 +382,7 @@ main(int argc, char *argv[])
               }
             }
             fprintf(stderr, "%s: Valid serializer features are:\n", program);
-            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
               const char *feature_name;
               const char *feature_label;
               if(!raptor_world_enumerate_serializer_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
@@ -421,7 +421,7 @@ main(int argc, char *argv[])
             int ok = 0;
             
             /* parser features */
-            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
@@ -456,7 +456,7 @@ main(int argc, char *argv[])
               }
             }
             
-            for(i = 0; i < (int)raptor_get_feature_count(); i++) {
+            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
               const char *feature_name;
               size_t len;
               
@@ -861,13 +861,13 @@ main(int argc, char *argv[])
     }
   }
   
-  raptor_set_statement_handler(rdf_parser, rdf_parser, print_triples);
+  raptor_parser_set_statement_handler(rdf_parser, rdf_parser, print_triples);
 
   if(report_graph)
-    raptor_set_graph_handler(rdf_parser, rdf_parser, print_graph);
+    raptor_parser_set_graph_handler(rdf_parser, rdf_parser, print_graph);
 
   if(report_namespace)
-    raptor_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
+    raptor_parser_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
 
 
   if(serializer_syntax_name) {    
@@ -923,7 +923,7 @@ main(int argc, char *argv[])
                                           output_base_uri, stdout);
 
     if(!report_namespace)
-      raptor_set_namespace_handler(rdf_parser, serializer, relay_namespaces);
+      raptor_parser_set_namespace_handler(rdf_parser, serializer, relay_namespaces);
   }
   
 

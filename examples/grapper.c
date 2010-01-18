@@ -427,7 +427,7 @@ grapper_model_parse(grapper_state *state)
       exit(1);
     }
     fprintf(stdout, "Guessed parser name '%s' from uri %s\n",
-            raptor_get_name(rdf_parser), state->url);
+            raptor_parser_get_name(rdf_parser), state->url);
   } else {
     rdf_parser=raptor_new_parser(syntax_name);
   }
@@ -440,7 +440,7 @@ grapper_model_parse(grapper_state *state)
 
   raptor_set_error_handler(rdf_parser, state, grapper_model_error_handler);
   raptor_set_warning_handler(rdf_parser, state, grapper_model_warning_handler);
-  raptor_set_statement_handler(rdf_parser, state, grapper_model_statements_handler);
+  raptor_parser_set_statement_handler(rdf_parser, state, grapper_model_statements_handler);
 
   raptor_parse_uri(rdf_parser, uri, NULL);
 

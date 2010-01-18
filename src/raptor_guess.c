@@ -139,7 +139,7 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
                           "Failed to guess parser from content type '%s'",
                           guess_parser->content_type ? 
                           guess_parser->content_type : "(none)");
-      raptor_parse_abort(rdf_parser);
+      raptor_parser_parse_abort(rdf_parser);
       if(guess_parser->parser) {
         raptor_free_parser(guess_parser->parser);
         guess_parser->parser = NULL;
@@ -155,7 +155,7 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
        * it's different from the wanted parser, free it
        */
       if(guess_parser->parser) {
-        raptor_parser_factory* factory = raptor_get_parser_factory(rdf_parser->world, name);
+        raptor_parser_factory* factory = raptor_world_get_parser_factory(rdf_parser->world, name);
 
         if(guess_parser->parser->factory != factory) {
           raptor_free_parser(guess_parser->parser);
@@ -173,14 +173,14 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
       if(raptor_parser_copy_user_state(guess_parser->parser, rdf_parser))
         return 1;
       
-      if(raptor_start_parse(guess_parser->parser, rdf_parser->base_uri))
+      if(raptor_parser_parse_start(guess_parser->parser, rdf_parser->base_uri))
         return 1;
     }
   }
   
 
   /* now we can pass on calls to internal guess_parser */
-  return raptor_parse_chunk(guess_parser->parser, buffer, len, is_end);
+  return raptor_parser_parse_chunk(guess_parser->parser, buffer, len, is_end);
 }
 
 
@@ -207,7 +207,7 @@ raptor_guess_guess_get_name(raptor_parser* rdf_parser)
   guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
   if(guess_parser)
-    return raptor_get_name(guess_parser->parser);
+    return raptor_parser_get_name(guess_parser->parser);
   else
     return rdf_parser->factory->name;
 }

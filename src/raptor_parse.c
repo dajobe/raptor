@@ -347,7 +347,7 @@ raptor_parser_factory_add_uri(raptor_parser_factory* factory,
 
 
 /**
- * raptor_get_parser_factory:
+ * raptor_world_get_parser_factory:
  * @world: raptor_world object
  * @name: the factory name or NULL for the default factory
  *
@@ -356,7 +356,7 @@ raptor_parser_factory_add_uri(raptor_parser_factory* factory,
  * Return value: the factory object or NULL if there is no such factory
  **/
 raptor_parser_factory*
-raptor_get_parser_factory(raptor_world *world, const char *name) 
+raptor_world_get_parser_factory(raptor_world *world, const char *name) 
 {
   raptor_parser_factory *factory;
 
@@ -447,7 +447,7 @@ raptor_world_enumerate_parsers(raptor_world* world,
  */
 int
 raptor_world_is_parser_name(raptor_world* world, const char *name) {
-  return (raptor_get_parser_factory(world, name) != NULL);
+  return (raptor_world_get_parser_factory(world, name) != NULL);
 }
 
 
@@ -466,7 +466,7 @@ raptor_new_parser(raptor_world* world, const char *name)
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
 
-  factory = raptor_get_parser_factory(world, name);
+  factory = raptor_world_get_parser_factory(world, name);
   if(!factory)
     return NULL;
 
@@ -539,18 +539,18 @@ raptor_new_parser_for_content(raptor_world* world,
 
 
 /**
- * raptor_start_parse:
+ * raptor_parser_parse_start:
  * @rdf_parser: RDF parser
  * @uri: base URI or may be NULL if no base URI is required
  *
  * Start a parse of content with base URI.
  * 
- * Parsers that need a base URI can be tested with raptor_get_need_base_uri().
+ * Parsers that need a base URI can be tested with raptor_parser_get_need_base_uri().
  * 
  * Return value: non-0 on failure, <0 if a required base URI was missing
  **/
 int
-raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri) 
+raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri) 
 {
   if(rdf_parser->factory->need_base_uri && !uri) {
     raptor_parser_error(rdf_parser, "Missing base URI for %s parser.",
@@ -580,7 +580,7 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
 
 
 /**
- * raptor_parse_chunk:
+ * raptor_parser_parse_chunk:
  * @rdf_parser: RDF parser
  * @buffer: content to parse
  * @len: length of buffer
@@ -588,13 +588,13 @@ raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri)
  *
  * Parse a block of content into triples.
  * 
- * This method can only be called after raptor_start_parse has
+ * This method can only be called after raptor_parser_parse_start has
  * initialised the parser.
  * 
  * Return value: non-0 on failure.
  **/
 int
-raptor_parse_chunk(raptor_parser* rdf_parser,
+raptor_parser_parse_chunk(raptor_parser* rdf_parser,
                    const unsigned char *buffer, size_t len, int is_end) 
 {
   if(rdf_parser->sb)
@@ -677,14 +677,14 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
   locator->line= locator->column = -1;
   locator->file= filename;
 
-  if(raptor_start_parse(rdf_parser, base_uri))
+  if(raptor_parser_parse_start(rdf_parser, base_uri))
     return 1;
   
   while(!feof(stream)) {
     int len = fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, stream);
     int is_end = (len < RAPTOR_READ_BUFFER_SIZE);
     buffer[len] = '\0';
-    rc = raptor_parse_chunk(rdf_parser, buffer, len, is_end);
+    rc = raptor_parser_parse_chunk(rdf_parser, buffer, len, is_end);
     if(rc || is_end)
       break;
   }
@@ -778,12 +778,12 @@ raptor_parse_uri_write_bytes(raptor_www* www,
       base_uri = rpbc->final_uri ? rpbc->final_uri : www->uri;
     }
 
-    if(raptor_start_parse(rpbc->rdf_parser, base_uri))
+    if(raptor_parser_parse_start(rpbc->rdf_parser, base_uri))
       raptor_www_abort(www, "Parsing failed");
     rpbc->started = 1;
   }
 
-  if(raptor_parse_chunk(rpbc->rdf_parser, (unsigned char*)ptr, len, 0))
+  if(raptor_parser_parse_chunk(rpbc->rdf_parser, (unsigned char*)ptr, len, 0))
     raptor_www_abort(www, "Parsing failed");
 }
 
@@ -799,7 +799,7 @@ raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata,
 
 
 int
-raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri)
+raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri)
 {
   unsigned char* uri_string = raptor_uri_as_string(uri);
   
@@ -851,7 +851,7 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  * If @base_uri is given, it overrides the process above.
  *
  * When @connection is NULL and a MIME Type exists for the parser
- * type - such as returned by raptor_get_mime_type(parser) - this
+ * type - such as returned by raptor_parser_get_mime_type(parser) - this
  * type is sent in an HTTP Accept: header in the form
  * Accept: MIME-TYPE along with a wildcard of 0.1 quality, so MIME-TYPE is
  * prefered rather than the sole answer.  The latter part may not be
@@ -898,7 +898,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     raptor_www_set_uri_filter(rdf_parser->www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
   else if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
-    raptor_www_set_uri_filter(rdf_parser->www, raptor_parse_uri_no_net_filter, rdf_parser);
+    raptor_www_set_uri_filter(rdf_parser->www, raptor_parser_set_uri_filter_no_net, rdf_parser);
   
   raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parse_uri_write_bytes, 
                                      &rpbc);
@@ -915,7 +915,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   ret = raptor_www_fetch(rdf_parser->www, uri);
   
   if(!rpbc.started && !ret)
-    ret = raptor_start_parse(rdf_parser, base_uri);
+    ret = raptor_parser_parse_start(rdf_parser, base_uri);
 
   if(rpbc.final_uri)
     raptor_free_uri(rpbc.final_uri);
@@ -926,7 +926,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     return 1;
   }
 
-  if(raptor_parse_chunk(rdf_parser, NULL, 0, 1))
+  if(raptor_parser_parse_chunk(rdf_parser, NULL, 0, 1))
     rdf_parser->failed = 1;
 
   raptor_www_free(rdf_parser->www);
@@ -1059,7 +1059,7 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 /* PUBLIC FUNCTIONS */
 
 /**
- * raptor_set_statement_handler:
+ * raptor_parser_set_statement_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
  * @handler: new statement callback function
@@ -1068,7 +1068,7 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
  * 
  **/
 void
-raptor_set_statement_handler(raptor_parser* parser,
+raptor_parser_set_statement_handler(raptor_parser* parser,
                              void *user_data,
                              raptor_statement_handler handler)
 {
@@ -1078,7 +1078,7 @@ raptor_set_statement_handler(raptor_parser* parser,
 
 
 /**
- * raptor_set_graph_handler:
+ * raptor_parser_set_graph_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
  * @handler: new graph callback function
@@ -1087,7 +1087,7 @@ raptor_set_statement_handler(raptor_parser* parser,
  * 
  **/
 void
-raptor_set_graph_handler(raptor_parser* parser,
+raptor_parser_set_graph_handler(raptor_parser* parser,
 			 void *user_data,
 			 raptor_graph_handler handler)
 {
@@ -1097,7 +1097,7 @@ raptor_set_graph_handler(raptor_parser* parser,
 
 
 /**
- * raptor_set_generate_id_handler:
+ * raptor_parser_set_generate_id_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
  * @handler: generate ID callback function
@@ -1117,7 +1117,7 @@ raptor_set_graph_handler(raptor_parser* parser,
  * 
  **/
 void
-raptor_set_generate_id_handler(raptor_parser* parser,
+raptor_parser_set_generate_id_handler(raptor_parser* parser,
                                void *user_data,
                                raptor_generate_id_handler handler)
 {
@@ -1127,7 +1127,7 @@ raptor_set_generate_id_handler(raptor_parser* parser,
 
 
 /**
- * raptor_set_namespace_handler:
+ * raptor_parser_set_namespace_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
  * @handler: new namespace callback function
@@ -1143,7 +1143,7 @@ raptor_set_generate_id_handler(raptor_parser* parser,
  * 
  **/
 void
-raptor_set_namespace_handler(raptor_parser* parser,
+raptor_parser_set_namespace_handler(raptor_parser* parser,
                              void *user_data,
                              raptor_namespace_handler handler)
 {
@@ -1318,7 +1318,7 @@ raptor_parser_set_feature_string(raptor_parser *parser,
 
 
 /**
- * raptor_get_feature:
+ * raptor_parser_get_feature:
  * @parser: #raptor_parser parser object
  * @feature: feature to get value
  *
@@ -1331,7 +1331,7 @@ raptor_parser_set_feature_string(raptor_parser *parser,
  * Return value: feature value or < 0 for an illegal feature
  **/
 int
-raptor_get_feature(raptor_parser *parser, raptor_feature feature)
+raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature)
 {
   int result= -1;
   
@@ -1447,7 +1447,7 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
 
 
 /**
- * raptor_set_default_generate_id_parameters:
+ * raptor_parser_set_default_generate_id_parameters:
  * @rdf_parser: #raptor_parser object
  * @prefix: prefix string
  * @base: integer base identifier
@@ -1468,7 +1468,7 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
  * 
  **/
 void
-raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser, 
+raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser, 
                                           char *prefix, int base)
 {
   char *prefix_copy = NULL;
@@ -1496,7 +1496,7 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
 
 
 /**
- * raptor_get_name:
+ * raptor_parser_get_name:
  * @rdf_parser: #raptor_parser parser object
  *
  * Get the name of a parser.
@@ -1504,7 +1504,7 @@ raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser,
  * Return value: the short name for the parser.
  **/
 const char*
-raptor_get_name(raptor_parser *rdf_parser) 
+raptor_parser_get_name(raptor_parser *rdf_parser) 
 {
   if(rdf_parser->factory->get_name)
     return rdf_parser->factory->get_name(rdf_parser);
@@ -1514,7 +1514,7 @@ raptor_get_name(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_get_label:
+ * raptor_parser_get_label:
  * @rdf_parser: #raptor_parser parser object
  *
  * Get a descriptive label of a parser.
@@ -1522,14 +1522,14 @@ raptor_get_name(raptor_parser *rdf_parser)
  * Return value: a readable label for the parser.
  **/
 const char*
-raptor_get_label(raptor_parser *rdf_parser) 
+raptor_parser_get_label(raptor_parser *rdf_parser) 
 {
   return rdf_parser->factory->label;
 }
 
 
 /**
- * raptor_get_mime_type:
+ * raptor_parser_get_mime_type:
  * @rdf_parser: #raptor_parser parser object
  *
  * Return MIME type for the parser.
@@ -1537,7 +1537,7 @@ raptor_get_label(raptor_parser *rdf_parser)
  * Return value: MIME type or NULL if none available
  **/
 const char*
-raptor_get_mime_type(raptor_parser *rdf_parser) 
+raptor_parser_get_mime_type(raptor_parser *rdf_parser) 
 {
   const char *mime_type = NULL;
   if(rdf_parser->factory->mime_types) {
@@ -1552,7 +1552,7 @@ raptor_get_mime_type(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_get_need_base_uri:
+ * raptor_parser_get_need_base_uri:
  * @rdf_parser: #raptor_parser parser object
  *
  * Get a boolean whether this parser needs a base URI to start parsing.
@@ -1560,14 +1560,14 @@ raptor_get_mime_type(raptor_parser *rdf_parser)
  * Return value: non-0 if this parser needs a base URI
  **/
 int
-raptor_get_need_base_uri(raptor_parser *rdf_parser)
+raptor_parser_get_need_base_uri(raptor_parser *rdf_parser)
 {
   return rdf_parser->factory->need_base_uri;
 }
 
 
 /**
- * raptor_parse_abort:
+ * raptor_parser_parse_abort:
  * @rdf_parser: #raptor_parser parser object
  *
  * Abort an ongoing parse.
@@ -1578,11 +1578,11 @@ raptor_get_need_base_uri(raptor_parser *rdf_parser)
  *
  * Most useful inside raptor_parse_file or raptor_parse_uri when
  * the Raptor library is directing the parsing and when one of the
- * callback handlers such as as set by raptor_set_statement_handler
+ * callback handlers such as as set by raptor_parser_set_statement_handler
  * requires to return to the main application code.
  **/
 void
-raptor_parse_abort(raptor_parser *rdf_parser)
+raptor_parser_parse_abort(raptor_parser *rdf_parser)
 {
   rdf_parser->failed = 1;
 }
@@ -1629,7 +1629,7 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 
 
 /**
- * raptor_parser_generate_id:
+ * raptor_parser_get_new_generated_id:
  * @rdf_parser: #raptor_parser parser object
  * @type: Type of ID to generate
  * 
@@ -1641,7 +1641,7 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
  * Return value: newly allocated generated ID or NULL on failure
  **/
 unsigned char*
-raptor_parser_generate_id(raptor_parser *rdf_parser, raptor_genid_type type)
+raptor_parser_get_new_generated_id(raptor_parser *rdf_parser, raptor_genid_type type)
 {
   if(type != RAPTOR_GENID_TYPE_BNODEID || 
      type != RAPTOR_GENID_TYPE_BAGID)
@@ -1665,7 +1665,7 @@ raptor_parser_internal_generate_id(raptor_parser *rdf_parser,
 
 
 /**
- * raptor_get_locator:
+ * raptor_parser_get_locator:
  * @rdf_parser: raptor parser
  *
  * Get the current raptor locator object.
@@ -1673,7 +1673,7 @@ raptor_parser_internal_generate_id(raptor_parser *rdf_parser,
  * Return value: raptor locator
  **/
 raptor_locator*
-raptor_get_locator(raptor_parser *rdf_parser) 
+raptor_parser_get_locator(raptor_parser *rdf_parser) 
 {
   return &rdf_parser->locator;
 }

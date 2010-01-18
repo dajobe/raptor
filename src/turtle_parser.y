@@ -1628,7 +1628,7 @@ main(int argc, char *argv[])
   rdf_parser.context=&turtle_parser;
   rdf_parser.base_uri = raptor_new_uri((const unsigned char*)"http://example.org/fake-base-uri/");
 
-  raptor_set_statement_handler(&rdf_parser, stdout, turtle_parser_print_statement);
+  raptor_parser_set_statement_handler(&rdf_parser, stdout, turtle_parser_print_statement);
   raptor_turtle_parse_init(&rdf_parser, "turtle");
   
   turtle_parser.error_count = 0;

@@ -21,7 +21,7 @@ main(int argc, char *argv[])
 
   rdf_parser=raptor_new_parser("rdfxml");
 
-  raptor_set_statement_handler(rdf_parser, NULL, print_triple);
+  raptor_parser_set_statement_handler(rdf_parser, NULL, print_triple);
 
   uri_string=raptor_uri_filename_to_uri_string(argv[1]);
   uri=raptor_new_uri(uri_string);

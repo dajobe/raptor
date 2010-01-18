@@ -387,7 +387,7 @@ typedef enum {
  * @RAPTOR_GENID_TYPE_BAGID: Generated ID is for rdf:bagID
  *
  * Intended type for a generated identifier asked for by the handler
- * registered with raptor_set_generate_id_handler().
+ * registered with raptor_parser_set_generate_id_handler().
  */
 typedef enum {
   RAPTOR_GENID_TYPE_BNODEID,
@@ -634,7 +634,7 @@ typedef unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_gen
  * @nspace: #raptor_namespace declared
  *
  * XML Namespace declaration reporting handler set by 
- * raptor_set_namespace_handler().
+ * raptor_parser_set_namespace_handler().
  */
 typedef void (*raptor_namespace_handler)(void* user_data, raptor_namespace *nspace);
 
@@ -744,7 +744,7 @@ raptor_parser* raptor_new_parser_for_content(raptor_world* world, raptor_uri *ur
 
 
 RAPTOR_API
-int raptor_start_parse(raptor_parser *rdf_parser, raptor_uri *uri);
+int raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri);
 
 /* Destroy */
 RAPTOR_API
@@ -752,13 +752,13 @@ void raptor_free_parser(raptor_parser* parser);
 
 /* Handlers */
 RAPTOR_API
-void raptor_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
+void raptor_parser_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 RAPTOR_API
-void raptor_set_graph_handler(raptor_parser* parser, void *user_data, raptor_graph_handler handler);
+void raptor_parser_set_graph_handler(raptor_parser* parser, void *user_data, raptor_graph_handler handler);
 RAPTOR_API
-void raptor_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
+void raptor_parser_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
 RAPTOR_API
-void raptor_set_namespace_handler(raptor_parser* parser, void *user_data, raptor_namespace_handler handler);
+void raptor_parser_set_namespace_handler(raptor_parser* parser, void *user_data, raptor_namespace_handler handler);
 RAPTOR_API
 void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data);
 
@@ -775,14 +775,14 @@ int raptor_statement_compare(const raptor_statement *s1, const raptor_statement 
 
 
 RAPTOR_API
-raptor_locator* raptor_get_locator(raptor_parser* rdf_parser);
+raptor_locator* raptor_parser_get_locator(raptor_parser* rdf_parser);
 
 RAPTOR_API
-void raptor_set_default_generate_id_parameters(raptor_parser* rdf_parser, char *prefix, int base);
+void raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser, char *prefix, int base);
 
 /* Parsing functions */
 RAPTOR_API
-int raptor_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
+int raptor_parser_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API
 int raptor_parse_file_stream(raptor_parser* rdf_parser, FILE *stream, const char *filename, raptor_uri *base_uri);
 RAPTOR_API
@@ -792,7 +792,7 @@ int raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *bas
 RAPTOR_API
 int raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
 RAPTOR_API
-void raptor_parse_abort(raptor_parser* rdf_parser);
+void raptor_parser_parse_abort(raptor_parser* rdf_parser);
 
 /* Utility functions */
 RAPTOR_API
@@ -812,13 +812,13 @@ const char * raptor_locator_uri_string(raptor_locator *locator);
 
 
 RAPTOR_API
-const char* raptor_get_name(raptor_parser *rdf_parser);
+const char* raptor_parser_get_name(raptor_parser *rdf_parser);
 RAPTOR_API
-const char* raptor_get_label(raptor_parser *rdf_parser);
+const char* raptor_parser_get_label(raptor_parser *rdf_parser);
 RAPTOR_API
-const char* raptor_get_mime_type(raptor_parser *rdf_parser);
+const char* raptor_parser_get_mime_type(raptor_parser *rdf_parser);
 RAPTOR_API
-int raptor_get_need_base_uri(raptor_parser *rdf_parser);
+int raptor_parser_get_need_base_uri(raptor_parser *rdf_parser);
 
 RAPTOR_API
 int raptor_world_enumerate_parser_features(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
@@ -827,17 +827,17 @@ int raptor_parser_set_feature(raptor_parser *parser, raptor_feature feature, int
 RAPTOR_API
 int raptor_parser_set_feature_string(raptor_parser *parser, raptor_feature feature, const unsigned char *value);
 RAPTOR_API
-int raptor_get_feature(raptor_parser *parser, raptor_feature feature);
+int raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature);
 RAPTOR_API
 const unsigned char* raptor_parser_get_feature_string(raptor_parser *parser, raptor_feature feature);
 RAPTOR_API
-unsigned int raptor_get_feature_count(void);
+unsigned int raptor_parser_get_feature_count(void);
 RAPTOR_API
 void raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict);
 RAPTOR_API
 const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
 
-unsigned char* raptor_parser_generate_id(raptor_parser *rdf_parser, raptor_genid_type type);
+unsigned char* raptor_parser_get_new_generated_id(raptor_parser *rdf_parser, raptor_genid_type type);
 
 RAPTOR_API
 raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);

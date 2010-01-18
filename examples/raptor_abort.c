@@ -69,7 +69,7 @@ void handle_statements(void *user_data, const raptor_statement *statement)
   me->count++;
   if(me->count > me->max) {
     fprintf(me->stream, "Reached %d statements, stopping\n", me->max);
-    raptor_parse_abort(me->parser);
+    raptor_parser_parse_abort(me->parser);
     me->stopped=1;
     return;
   }
@@ -111,7 +111,7 @@ main (int argc, char *argv[])
 
   me->parser=rdf_parser;
 
-  raptor_set_statement_handler(rdf_parser, me, handle_statements);
+  raptor_parser_set_statement_handler(rdf_parser, me, handle_statements);
 
   me->stopped=0;
   rc=raptor_parse_uri(rdf_parser, uri, NULL);

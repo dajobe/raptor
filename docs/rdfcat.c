@@ -32,8 +32,8 @@ main(int argc, char *argv[])
 
   /* Ask raptor to work out which parser to use */
   rdf_parser=raptor_new_parser("guess");
-  raptor_set_statement_handler(rdf_parser, NULL, serialize_triple);
-  raptor_set_namespace_handler(rdf_parser, NULL, declare_namespace);
+  raptor_parser_set_statement_handler(rdf_parser, NULL, serialize_triple);
+  raptor_parser_set_namespace_handler(rdf_parser, NULL, declare_namespace);
 
   rdf_serializer=raptor_new_serializer("rdfxml-abbrev");
 

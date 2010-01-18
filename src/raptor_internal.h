@@ -674,10 +674,10 @@ int raptor_term_equals(raptor_term* term1, raptor_term* term2);
 void raptor_free_term(raptor_term *term);
 
 /* raptor_parse.c */
-raptor_parser_factory* raptor_get_parser_factory(raptor_world* world, const char *name);  
+raptor_parser_factory* raptor_world_get_parser_factory(raptor_world* world, const char *name);  
 void raptor_delete_parser_factories(void);
 const char* raptor_parser_get_accept_header_all(raptor_world* world);
-int raptor_parse_uri_no_net_filter(void *user_data, raptor_uri* uri);
+int raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri);
 void raptor_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);

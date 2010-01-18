@@ -161,7 +161,7 @@ raptor_features_enumerate_common(raptor_world* world,
  *
  * The type of the @feature is 0=integer , 1=string.  Other values are
  * undefined.  Most features are integer values and use
- * raptor_parser_set_feature and raptor_get_feature()
+ * raptor_parser_set_feature and raptor_parser_get_feature()
  * ( raptor_serializer_set_feature raptor_serializer_get_feature() )
  *
  * String value features use raptor_parser_set_feature_string() and
@@ -218,7 +218,7 @@ raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri)
 
 
 /**
- * raptor_get_feature_count:
+ * raptor_parser_get_feature_count:
  *
  * Get the count of features defined.
  *
@@ -229,7 +229,7 @@ raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri)
  * Return value: count of features in the #raptor_feature enumeration
  **/
 unsigned int
-raptor_get_feature_count(void) {
+raptor_parser_get_feature_count(void) {
   return RAPTOR_FEATURE_LAST+1;
 }
 

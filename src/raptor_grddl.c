@@ -776,8 +776,8 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
       raptor_parser_get_current_base_id(rdf_parser);
 
     /* generate the triples */
-    raptor_start_parse(grddl_parser->internal_parser, base_uri);
-    raptor_parse_chunk(grddl_parser->internal_parser, doc_txt, doc_txt_len, 1);
+    raptor_parser_parse_start(grddl_parser->internal_parser, base_uri);
+    raptor_parser_parse_chunk(grddl_parser->internal_parser, doc_txt, doc_txt_len, 1);
 
     rdf_parser->default_generate_id_handler_base=
       raptor_parser_get_current_base_id(grddl_parser->internal_parser);
@@ -1268,7 +1268,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   if(ignore_errors)
     raptor_world_internal_set_ignore_errors(rdf_parser->world, 1);
   
-  raptor_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
+  raptor_parser_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
   rdf_parser->default_generate_id_handler_base=
     raptor_parser_get_current_base_id(grddl_parser->internal_parser);
 
@@ -1285,10 +1285,10 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
       grddl_parser->internal_parser->default_generate_id_handler_base=
         raptor_parser_get_current_base_id(rdf_parser);
 
-      if(raptor_start_parse(grddl_parser->internal_parser, uri))
+      if(raptor_parser_parse_start(grddl_parser->internal_parser, uri))
         ret = 1;
       else {
-        ret = raptor_parse_chunk(grddl_parser->internal_parser, ibuffer, 
+        ret = raptor_parser_parse_chunk(grddl_parser->internal_parser, ibuffer, 
                                ibuffer_len, 1);
         rdf_parser->default_generate_id_handler_base=
           raptor_parser_get_current_base_id(grddl_parser->internal_parser);
@@ -1788,11 +1788,11 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       grddl_parser->internal_parser->default_generate_id_handler_base=
         raptor_parser_get_current_base_id(rdf_parser);
 
-      if(raptor_start_parse(grddl_parser->internal_parser, 
+      if(raptor_parser_parse_start(grddl_parser->internal_parser, 
                             rdf_parser->base_uri))
         ret = 1;
       else {
-        ret = raptor_parse_chunk(grddl_parser->internal_parser, buffer, 
+        ret = raptor_parser_parse_chunk(grddl_parser->internal_parser, buffer, 
                                buffer_len, 1);
         rdf_parser->default_generate_id_handler_base=
           raptor_parser_get_current_base_id(grddl_parser->internal_parser);
