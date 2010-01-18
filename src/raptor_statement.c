@@ -197,7 +197,8 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
     if(!statement->subject->value.uri)
       RAPTOR_FATAL1("Statement has NULL subject URI\n");
 #endif
-    fputs((const char*)raptor_uri_as_string(statement->subject->value.uri), stream);
+    fputs((const char*)raptor_uri_as_string(statement->subject->value.uri),
+          stream);
   }
 
   fputs(", ", stream);
@@ -206,14 +207,16 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
   if(!statement->predicate->value.uri)
     RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
-  fputs((const char*)raptor_uri_as_string(statement->predicate->value.uri), stream);
+  fputs((const char*)raptor_uri_as_string(statement->predicate->value.uri),
+        stream);
 
   fputs(", ", stream);
 
   if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     if(statement->object->value.literal.datatype) {
+      raptor_uri* dt_uri = statement->object->value.literal.datatype;
       fputc('<', stream);
-      fputs((const char*)raptor_uri_as_string(statement->object->value.literal.datatype), stream);
+      fputs((const char*)raptor_uri_as_string(dt_uri), stream);
       fputc('>', stream);
     }
     fputc('"', stream);
@@ -226,7 +229,8 @@ raptor_print_statement(const raptor_statement * statement, FILE *stream)
     if(!statement->object->value.uri)
       RAPTOR_FATAL1("Statement has NULL object URI\n");
 #endif
-    fputs((const char*)raptor_uri_as_string(statement->object->value.uri), stream);
+    fputs((const char*)raptor_uri_as_string(statement->object->value.uri),
+          stream);
   }
 
   fputc(']', stream);
@@ -467,7 +471,8 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
       
       if(t1->value.literal.datatype && t2->value.literal.datatype) {
         /* both have a datatype */
-        d = raptor_uri_compare(t1->value.literal.datatype, t2->value.literal.datatype);
+        d = raptor_uri_compare(t1->value.literal.datatype,
+                               t2->value.literal.datatype);
       } else if(t1->value.literal.datatype || t2->value.literal.datatype)
         /* only one has a datatype; the datatype-less one is earlier */
         d = (!t1->value.literal.datatype ? -1 : 1);
@@ -690,7 +695,8 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
 
       if(t1->value.literal.datatype && t2->value.literal.datatype) {
         /* both have a datatype */
-        d = raptor_uri_equals(t1->value.literal.datatype, t2->value.literal.datatype);
+        d = raptor_uri_equals(t1->value.literal.datatype,
+                              t2->value.literal.datatype);
       } else if(t1->value.literal.datatype || t2->value.literal.datatype) {
         /* only one has a datatype - different */
         d = 0;
