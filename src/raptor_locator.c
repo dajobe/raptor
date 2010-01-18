@@ -49,8 +49,7 @@
 
 
 /**
- * raptor_print_locator_v2:
- * @world: raptor_world object
+ * raptor_print_locator:
  * @stream: stream to print to
  * @locator: #raptor_locator to print
  *
@@ -58,7 +57,7 @@
  * 
  **/
 void
-raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locator) 
+raptor_print_locator(FILE *stream, raptor_locator* locator) 
 {
   if(!locator)
     return;
@@ -78,8 +77,7 @@ raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locat
 
 
 /**
- * raptor_format_locator_v2:
- * @world: raptor_world object
+ * raptor_format_locator:
  * @buffer: buffer to store format
  * @length: size of buffer
  * @locator: #raptor_locator to format
@@ -93,7 +91,7 @@ raptor_print_locator_v2(raptor_world* world, FILE *stream, raptor_locator* locat
  * Return value: 0 on success, >0 if additional bytes required in buffer, <0 on failure
  **/
 int
-raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, raptor_locator* locator) 
+raptor_format_locator(char *buffer, size_t length, raptor_locator* locator) 
 {
   size_t bufsize = 0;
   int count;
@@ -104,9 +102,9 @@ raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, rapto
   if(locator->uri) {
     size_t uri_len;
     (void)raptor_uri_as_counted_string(locator->uri, &uri_len);
-    bufsize= 4 + uri_len; /* "URI " */
+    bufsize = 4 + uri_len; /* "URI " */
   } else if(locator->file)
-    bufsize= 5 + strlen(locator->file); /* "file " */
+    bufsize = 5 + strlen(locator->file); /* "file " */
   else
     return -1;
 
@@ -132,7 +130,7 @@ raptor_format_locator_v2(raptor_world* world, char *buffer, size_t length, rapto
   if(locator->line > 0) {
     count = sprintf(buffer, ":%d", locator->line);
     if(locator->column >= 0)
-      sprintf(buffer+count, " column %d", locator->column);
+      sprintf(buffer + count, " column %d", locator->column);
   }
 
   return 0;
@@ -205,7 +203,7 @@ raptor_locator_file(raptor_locator *locator)
 
 
 /**
- * raptor_locator_uri_v2:
+ * raptor_locator_uri_string:
  * @world: raptor_world object
  * @locator: locator
  *
@@ -217,7 +215,7 @@ raptor_locator_file(raptor_locator *locator)
  * Return value: string URI, or NULL if there is no URI available
  **/
 const char *
-raptor_locator_uri_v2(raptor_world* world, raptor_locator *locator)
+raptor_locator_uri_string(raptor_locator *locator)
 {
   if(!locator)
     return NULL;
