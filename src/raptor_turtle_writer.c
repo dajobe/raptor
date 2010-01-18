@@ -956,10 +956,10 @@ main(int argc, char *argv[])
                                    (const unsigned char*)" ;", 2);
   raptor_turtle_writer_newline(turtle_writer);
 
-  el_name = raptor_new_qname_from_namespace_local_name_v2(world,
-                                                        ex_ns,
-                                                        (const unsigned char*)"bar", 
-                                                        NULL);
+  el_name = raptor_new_qname_from_namespace_local_name(world,
+                                                       ex_ns,
+                                                       (const unsigned char*)"bar", 
+                                                       NULL);
 
   raptor_turtle_writer_qname(turtle_writer, el_name);
   raptor_free_qname(el_name);

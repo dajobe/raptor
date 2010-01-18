@@ -779,7 +779,8 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     }
   }
 
-  qname = raptor_new_qname_from_namespace_local_name_v2(node->world, ns, name,  NULL);
+  qname = raptor_new_qname_from_namespace_local_name(node->world, ns, name,
+                                                     NULL);
   
   raptor_free_uri(ns_uri);
 

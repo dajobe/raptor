@@ -310,7 +310,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
       goto tidy;
 
     base_uri_string = raptor_uri_as_string(base_uri);
-    attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
+    attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->xml_nspace, (const unsigned char*)"base",  base_uri_string);
     if(!attrs[attrs_count]) {
       RAPTOR_FREE(qnamearray, attrs);
       goto tidy;
@@ -430,8 +430,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
 
   rdf_Description_element = raptor_new_xml_element_from_namespace_local_name(context->rdf_nspace,
-                                                                           (unsigned const char*)"Description",
-                                                                           NULL, base_uri);
+                                                                             (unsigned const char*)"Description",
+                                                                             NULL, base_uri);
   if(!rdf_Description_element)
     goto oom;
 
@@ -443,8 +443,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   /* subject */
   switch(statement->subject->type) {
     case RAPTOR_TERM_TYPE_BLANK:
-      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID",
-                                                                         statement->subject->value.blank);
+      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID",
+                                                                      statement->subject->value.blank);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;
@@ -462,7 +462,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         allocated = 0;
       }
 
-      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
+      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
       if(!attrs[attrs_count]) {
         if(allocated)
           RAPTOR_FREE(cstring, subject_uri_string);
@@ -527,7 +527,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       len = strlen((const char*)statement->object->value.literal.string);
 
       if(object_is_parseTypeLiteral) {
-        attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
+        attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");
         if(!attrs[attrs_count])
           goto oom;
         attrs_count++;
@@ -546,7 +546,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                         len);
       } else {
         if(statement->object->value.literal.datatype) {
-          attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", raptor_uri_as_string(statement->object->value.literal.datatype));
+          attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", raptor_uri_as_string(statement->object->value.literal.datatype));
           if(!attrs[attrs_count])
             goto oom;
           attrs_count++;
@@ -573,7 +573,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID", statement->object->value.blank);
+      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID", statement->object->value.blank);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;
@@ -600,7 +600,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         allocated = 0;
       }
 
-      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
+      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
       if(!attrs[attrs_count]) {
         if(allocated)
           RAPTOR_FREE(cstring, object_uri_string);

@@ -1137,10 +1137,10 @@ main(int argc, char *argv[])
                               0);
 
 
-  el_name = raptor_new_qname_from_namespace_local_name_v2(world,
-                                                        foo_ns,
-                                                        (const unsigned char*)"bar", 
-                                                        NULL);
+  el_name = raptor_new_qname_from_namespace_local_name(world,
+                                                       foo_ns,
+                                                       (const unsigned char*)"bar", 
+                                                       NULL);
   base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   element = raptor_new_xml_element(el_name,
                                   NULL, /* language */

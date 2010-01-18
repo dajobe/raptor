@@ -216,7 +216,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
 
 /**
- * raptor_new_qname_from_namespace_local_name_v2:
+ * raptor_new_qname_from_namespace_local_name:
  * @world: raptor_world object
  * @ns: namespace of qname (or NULL)
  * @local_name: element or attribute name
@@ -230,10 +230,10 @@ raptor_new_qname(raptor_namespace_stack *nstack,
  * Return value: a new #raptor_qname object or NULL on failure
  **/
 raptor_qname*
-raptor_new_qname_from_namespace_local_name_v2(raptor_world* world,
-                                              raptor_namespace *ns, 
-                                              const unsigned char *local_name,
-                                              const unsigned char *value)
+raptor_new_qname_from_namespace_local_name(raptor_world* world,
+                                           raptor_namespace *ns, 
+                                           const unsigned char *local_name,
+                                           const unsigned char *value)
 {
   raptor_qname* qname;
   unsigned char* new_name;
