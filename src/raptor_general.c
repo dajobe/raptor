@@ -127,7 +127,7 @@ raptor_new_world(void)
                           RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE ;
 
     world->error_handlers.last_log_level = RAPTOR_LOG_LEVEL_LAST;
-    raptor_error_handlers_init_v2(world, &world->error_handlers);
+    raptor_error_handlers_init(world, &world->error_handlers);
 
     world->internal_ignore_errors = 0;
   }
@@ -584,7 +584,7 @@ raptor_check_ordinal(const unsigned char *name) {
 
 
 /**
- * raptor_error_handlers_init_v2:
+ * raptor_error_handlers_init:
  * @world: raptor_world object
  * @error_handlers: error handlers object
  *
@@ -592,7 +592,8 @@ raptor_check_ordinal(const unsigned char *name) {
  *
  */
 void
-raptor_error_handlers_init_v2(raptor_world *world, raptor_error_handlers* error_handlers)
+raptor_error_handlers_init(raptor_world *world,
+                           raptor_error_handlers* error_handlers)
 {
   error_handlers->magic = RAPTOR_ERROR_HANDLER_MAGIC;
   error_handlers->world = world;
