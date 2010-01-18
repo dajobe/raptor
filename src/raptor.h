@@ -1493,7 +1493,7 @@ void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsi
 RAPTOR_API
 void raptor_xml_writer_flush(raptor_xml_writer* xml_writer);
 RAPTOR_API
-int raptor_xml_writer_features_enumerate_v2(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_world_enumerate_xml_writer_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer, raptor_feature feature, int value);
 RAPTOR_API

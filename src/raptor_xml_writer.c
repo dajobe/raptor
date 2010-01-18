@@ -779,7 +779,7 @@ raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_xml_writer_features_enumerate_v2:
+ * raptor_world_enumerate_xml_writer_features:
  * @world: raptor_world object
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
@@ -794,10 +794,10 @@ raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_xml_writer_features_enumerate_v2(raptor_world* world, 
-                                        const raptor_feature feature,
-                                        const char **name, 
-                                        raptor_uri **uri, const char **label)
+raptor_world_enumerate_xml_writer_features(raptor_world* world, 
+                                           const raptor_feature feature,
+                                           const char **name, 
+                                           raptor_uri **uri, const char **label)
 {
   return raptor_features_enumerate_common(world, feature, name, uri, label, 8);
 }
