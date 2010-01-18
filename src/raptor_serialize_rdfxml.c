@@ -442,7 +442,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   /* subject */
   switch(statement->subject->type) {
     case RAPTOR_TERM_TYPE_BLANK:
-      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID",  (unsigned char*)statement->subject->value.blank);
+      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID",
+                                                                         statement->subject->value.blank);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;
@@ -516,8 +517,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
       if(statement->object->value.literal.language) {
         attrs[attrs_count] = raptor_new_qname(context->nstack,
-                                            (unsigned char*)"xml:lang",
-                                            (unsigned char*)statement->object->value.literal.language);
+                                              (unsigned char*)"xml:lang",
+                                              statement->object->value.literal.language);
         if(!attrs[attrs_count])
           goto oom;
         attrs_count++;
@@ -544,7 +545,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
                                         len);
       } else {
         if(statement->object->value.literal.datatype) {
-          attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", (unsigned char*)raptor_uri_as_string(statement->object->value.literal.datatype));
+          attrs[attrs_count] = raptor_new_qname_from_namespace_local_name_v2(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", raptor_uri_as_string(statement->object->value.literal.datatype));
           if(!attrs[attrs_count])
             goto oom;
           attrs_count++;

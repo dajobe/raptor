@@ -281,7 +281,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
     if(node->value.literal.language) {
       attrs[attrs_count] = raptor_new_qname(context->nstack,
                                             (unsigned char*)"xml:lang",
-                                            (unsigned char*)node->value.literal.language);
+                                            node->value.literal.language);
       if(!attrs[attrs_count])
         goto attrs_oom;
       attrs_count++;
@@ -721,7 +721,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     if(context->is_xmp) {
       /* XML rdf:about value is always "" */
       attr_value = (unsigned char *)RAPTOR_CALLOC(string, 1, 
-                                                  sizeof(unsigned char*));
+                                                  sizeof(unsigned char));
     } else if(serializer->feature_relative_uris)
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                      subject->node->value.resource.uri);
