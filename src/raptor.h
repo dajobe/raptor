@@ -1429,7 +1429,7 @@ int raptor_iostream_format_hexadecimal(raptor_iostream* iostr, unsigned int inte
 RAPTOR_API
 int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor_stringbuffer *sb);
 RAPTOR_API
-int raptor_iostream_write_uri_v2(raptor_world* world, raptor_iostream *iostr,  raptor_uri *uri);
+int raptor_iostream_write_uri(raptor_iostream *iostr,  raptor_uri *uri);
 RAPTOR_API
 int raptor_iostream_read_bytes(raptor_iostream* iostr, void *ptr, size_t size, size_t nmemb);
 RAPTOR_API

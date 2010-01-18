@@ -91,8 +91,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
     if(!statement->subject->value.uri)
       RAPTOR_FATAL1("Statement has NULL subject URI\n");
 #endif
-    raptor_iostream_write_uri_v2(serializer->world, iostr,
-                                 statement->subject->value.uri);
+    raptor_iostream_write_uri(iostr, statement->subject->value.uri);
   }
 
   raptor_iostream_write_counted_string(iostr, ", ", 2);
@@ -101,16 +100,15 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
   if(!statement->predicate->value.uri)
     RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
-  raptor_iostream_write_uri_v2(serializer->world, iostr,
-                               statement->predicate->value.uri);
+  raptor_iostream_write_uri(iostr, statement->predicate->value.uri);
 
   raptor_iostream_write_counted_string(iostr, ", ", 2);
 
   if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     if(statement->object->value.literal.datatype) {
       raptor_iostream_write_byte(iostr, '<');
-      raptor_iostream_write_uri_v2(serializer->world, iostr,
-                                   statement->object->value.literal.datatype);
+      raptor_iostream_write_uri(iostr,
+                                statement->object->value.literal.datatype);
       raptor_iostream_write_byte(iostr, '>');
     }
     raptor_iostream_write_byte(iostr, '"');
@@ -123,8 +121,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
     if(!statement->object->value.uri)
       RAPTOR_FATAL1("Statement has NULL object URI\n");
 #endif
-    raptor_iostream_write_uri_v2(serializer->world, iostr,
-                                 statement->object->value.uri);
+    raptor_iostream_write_uri(iostr, statement->object->value.uri);
   }
 
   raptor_iostream_write_counted_string(iostr, "]\n", 2);

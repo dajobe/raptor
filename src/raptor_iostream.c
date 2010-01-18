@@ -745,8 +745,7 @@ raptor_iostream_write_counted_string(raptor_iostream *iostr,
 
 
 /**
- * raptor_iostream_write_uri_v2:
- * @world: raptor_world object
+ * raptor_iostream_write_uri:
  * @iostr: raptor iostream
  * @uri: URI
  *
@@ -755,7 +754,7 @@ raptor_iostream_write_counted_string(raptor_iostream *iostr,
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_uri_v2(raptor_world* world, raptor_iostream* iostr, raptor_uri* uri)
+raptor_iostream_write_uri(raptor_iostream* iostr, raptor_uri* uri)
 {
   size_t len;
   const void *string = raptor_uri_as_counted_string(uri, &len);
