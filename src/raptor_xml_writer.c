@@ -209,7 +209,8 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     if(element->declared_nspaces)
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
     
-    nspace_declarations = (struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count, sizeof(struct nsd));
+    nspace_declarations = (struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count,
+                                                     sizeof(struct nsd));
     if(!nspace_declarations)
       return 1;
   }
@@ -428,7 +429,8 @@ raptor_new_xml_writer_v2(raptor_world* world,
 {
   raptor_xml_writer* xml_writer;
   
-  xml_writer = (raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1, sizeof(raptor_xml_writer)+1);
+  xml_writer = (raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1,
+                                                 sizeof(*xml_writer));
   if(!xml_writer)
     return NULL;
 

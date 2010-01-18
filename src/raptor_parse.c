@@ -195,7 +195,7 @@ raptor_parser_register_factory(raptor_world* world,
   }
   
   parser = (raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
-                                               sizeof(raptor_parser_factory));
+                                               sizeof(*parser));
   if(!parser)
     return NULL;
 
@@ -293,7 +293,7 @@ raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
   char* mime_type_copy;
   size_t len;
   
-  type_q = (raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, sizeof(raptor_type_q), 1);
+  type_q = (raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, 1, sizeof(*type_q));
   if(!type_q)
     return 1;
   len = strlen(mime_type);
@@ -471,7 +471,7 @@ raptor_new_parser(raptor_world* world, const char *name)
     return NULL;
 
   rdf_parser = (raptor_parser*)RAPTOR_CALLOC(raptor_parser, 1,
-                                           sizeof(raptor_parser));
+                                             sizeof(*rdf_parser));
   if(!rdf_parser)
     return NULL;
 

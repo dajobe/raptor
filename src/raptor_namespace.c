@@ -202,7 +202,7 @@ raptor_new_namespaces_v2(raptor_world* world,
 {
   raptor_namespace_stack *nstack;
   nstack = (raptor_namespace_stack *)RAPTOR_CALLOC(raptor_namespace_stack,
-                                                   1, sizeof(raptor_namespace_stack));
+                                                   1, sizeof(*nstack));
   if(!nstack)
     return NULL;
                       
@@ -536,7 +536,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
   if(!ns)
     return NULL;
 
-  p = (unsigned char*)ns+sizeof(raptor_namespace);
+  p = (unsigned char*)ns + sizeof(raptor_namespace);
   if(ns_uri) {
     ns->uri = raptor_uri_copy(ns_uri);
     if(!ns->uri) {

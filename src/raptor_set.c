@@ -102,7 +102,7 @@ raptor_id_set*
 raptor_new_id_set(raptor_world* world)
 {
   raptor_id_set* set = (raptor_id_set*)RAPTOR_CALLOC(raptor_id_set, 1, 
-                                                   sizeof(raptor_id_set));
+                                                     sizeof(*set));
   if(!set)
     return NULL;
 
@@ -186,7 +186,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
   if(!base) {
     /* a set for this base_uri not found */
     base = (raptor_base_id_set*)RAPTOR_CALLOC(raptor_base_id_set, 1, 
-                                            sizeof(raptor_base_id_set));
+                                              sizeof(*base));
     if(!base)
       return -1;
 

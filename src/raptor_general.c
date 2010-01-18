@@ -114,7 +114,7 @@ raptor_new_world(void)
 {
   raptor_world *world;
   
-  world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(raptor_world), 1);
+  world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(*world), 1);
   if(world) {
     /* set default libxml flags - can be updated by
      * raptor_world_set_libxml_flags()

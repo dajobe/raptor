@@ -85,7 +85,7 @@ raptor_new_sax2(raptor_world *world, raptor_locator *locator,
                 void* user_data)
 {
   raptor_sax2* sax2;
-  sax2 = (raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(raptor_sax2));
+  sax2 = (raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(*sax2));
   if(!sax2)
     return NULL;
 

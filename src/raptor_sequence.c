@@ -105,7 +105,8 @@ raptor_sequence*
 raptor_new_sequence(raptor_sequence_free_handler *free_handler,
                     raptor_sequence_print_handler *print_handler)
 {
-  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
+  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
+                                                         sizeof(*seq));
   if(!seq)
     return NULL;
   seq->free_handler = free_handler;
@@ -130,7 +131,8 @@ raptor_new_sequence_v2(raptor_sequence_free_handler_v2 *free_handler,
                        raptor_sequence_print_handler_v2 *print_handler,
                        void *handler_context)
 {
-  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, sizeof(raptor_sequence));
+  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
+                                                         sizeof(*seq));
   if(!seq)
     return NULL;
   seq->free_handler_v2 = free_handler;
@@ -193,7 +195,8 @@ raptor_sequence_ensure(raptor_sequence *seq, int capacity, int grow_at_front)
 
   offset = (grow_at_front ? (capacity-seq->capacity) : 0)+seq->start;
   if(seq->size) {
-    memcpy(&new_sequence[offset], &seq->sequence[seq->start], sizeof(void*)*seq->size);
+    memcpy(&new_sequence[offset], &seq->sequence[seq->start], 
+           sizeof(void*) * seq->size);
     RAPTOR_FREE(ptrarray, seq->sequence);
   }
   seq->start = offset;
@@ -628,7 +631,8 @@ raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
 
   if(raptor_sequence_ensure(dest, dest->size + src->size, 0))
     return 1;
-  memcpy(&dest->sequence[dest->start+dest->size], &src->sequence[src->start], sizeof(void*)*src->size);
+  memcpy(&dest->sequence[dest->start+dest->size], &src->sequence[src->start], 
+         sizeof(void*) * src->size);
   dest->size += src->size;
 
   src->size = 0;

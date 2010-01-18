@@ -112,7 +112,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   RAPTOR_DEBUG2("name %s\n", name);
 #endif  
 
-  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
+  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
   if(!qname)
     return NULL;
   qname->world = nstack->world;
@@ -242,7 +242,7 @@ raptor_new_qname_from_namespace_local_name_v2(raptor_world* world,
   if(!local_name)
     return NULL;
 
-  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
+  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
   if(!qname)
     return NULL;
   qname->world = world;
@@ -294,7 +294,7 @@ raptor_qname_copy(raptor_qname *qname) {
   raptor_qname* new_qname;
   unsigned char* new_name;
 
-  new_qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(raptor_qname));
+  new_qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
   if(!new_qname)
     return NULL;
   new_qname->world = qname->world;

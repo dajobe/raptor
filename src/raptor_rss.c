@@ -386,8 +386,8 @@ raptor_rss_start_element_handler(void *user_data,
   rdf_parser = (raptor_parser*)user_data;
   rss_parser = (raptor_rss_parser*)rdf_parser->context;
 
-  rss_element = (raptor_rss_element*)RAPTOR_CALLOC(raptor_rss_element,
-                                                   sizeof(raptor_rss_element), 1);
+  rss_element = (raptor_rss_element*)RAPTOR_CALLOC(raptor_rss_element, 1,
+                                                   sizeof(*rss_element));
   /* FIXME: check for alloc failure */
   rss_element->world = rdf_parser->world;
   rss_element->sb = raptor_new_stringbuffer();

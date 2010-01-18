@@ -387,7 +387,8 @@ raptor_rss_common_terminate(raptor_world* world) {
 void
 raptor_rss_model_init(raptor_world* world, raptor_rss_model* rss_model)
 {
-  memset(rss_model->common, 0, sizeof(void*)*RAPTOR_RSS_COMMON_SIZE);
+  memset(rss_model->common, 0,
+         sizeof(raptor_rss_item*) * RAPTOR_RSS_COMMON_SIZE);
 
   rss_model->world = world;
 
@@ -439,8 +440,7 @@ raptor_new_rss_item(raptor_world* world)
 {
   raptor_rss_item* item;
 
-  item = (raptor_rss_item*)RAPTOR_CALLOC(raptor_rss_item, 1, 
-                                       sizeof(raptor_rss_item));
+  item = (raptor_rss_item*)RAPTOR_CALLOC(raptor_rss_item, 1, sizeof(*item));
   if(!item)
     return NULL;
   
@@ -608,8 +608,7 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
                      const unsigned char* id)
 {
   raptor_rss_block *block;
-  block = (raptor_rss_block*)RAPTOR_CALLOC(raptor_rss_block, 1,
-                                           sizeof(raptor_rss_block));
+  block = (raptor_rss_block*)RAPTOR_CALLOC(raptor_rss_block, 1, sizeof(*block));
 
   if(block) {
     block->rss_type = type;
@@ -650,7 +649,8 @@ raptor_free_rss_block(raptor_rss_block *block)
 raptor_rss_field*
 raptor_rss_new_field(raptor_world* world)
 {
-  raptor_rss_field* field = (raptor_rss_field*)RAPTOR_CALLOC(raptor_rss_field, 1, sizeof(raptor_rss_field));
+  raptor_rss_field* field = (raptor_rss_field*)RAPTOR_CALLOC(raptor_rss_field,
+                                                             1, sizeof(*field));
   if(field)
     field->world = world;
   return field;

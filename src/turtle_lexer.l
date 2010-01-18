@@ -850,8 +850,8 @@ main(int argc, char *argv[])
     fh = (FILE*)stdin;
   }
 
-  memset(&rdf_parser, 0, sizeof(raptor_parser));
-  memset(&turtle_parser, 0, sizeof(raptor_turtle_parser));
+  memset(&rdf_parser, 0, sizeof(rdf_parser));
+  memset(&turtle_parser, 0, sizeof(turtle_parser));
 
   rdf_parser.world = raptor_world_instance();
 

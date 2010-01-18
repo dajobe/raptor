@@ -70,7 +70,7 @@ raptor_new_uri_detail(const unsigned char *uri_string)
    * even if the entire URI is empty 
    */
   ud = (raptor_uri_detail*)RAPTOR_CALLOC(raptor_uri_detail,
-                                       sizeof(raptor_uri_detail)+uri_len+5+1,
+                                       sizeof(*ud) + uri_len + 5 + 1,
                                        1);
   if(!ud)
     return NULL;
@@ -619,7 +619,7 @@ check_resolve(const char *base_uri, const char *reference_uri,
 
   raptor_uri_resolve_uri_reference((const unsigned char*)base_uri,
                                    (const unsigned char*)reference_uri,
-                                   buffer, sizeof (buffer));
+                                   buffer, sizeof(buffer));
 
   if(strcmp((const char*)buffer, result_uri)) {
       fprintf(stderr,

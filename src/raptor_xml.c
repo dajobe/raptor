@@ -68,7 +68,7 @@ raptor_new_xml_element(raptor_qname *name,
   raptor_xml_element* xml_element;
 
   xml_element = (raptor_xml_element*)RAPTOR_CALLOC(raptor_xml_element, 1,
-                                                 sizeof(raptor_xml_element));
+                                                 sizeof(*xml_element));
   if(!xml_element)
     return NULL;
 
@@ -358,7 +358,8 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
     if(element->declared_nspaces)
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
     
-    nspace_declarations = (struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count, sizeof(struct nsd));
+    nspace_declarations = (struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count,
+                                                     sizeof(struct nsd));
   }
 
   if(element->name->nspace) {

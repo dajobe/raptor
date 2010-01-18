@@ -165,7 +165,7 @@ raptor_rss10_set_item_group(raptor_rss10_serializer_context *rss_serializer,
     return 0;
  
   gm = (raptor_rss_group_map*)RAPTOR_CALLOC(raptor_rss_group_map, 1,
-                                          sizeof(raptor_rss_group_map));
+                                            sizeof(*gm));
   gm->world = rss_serializer->world;
   gm->uri = raptor_uri_copy(uri);
   gm->item = item;
@@ -1264,7 +1264,8 @@ raptor_rss10_emit_atom_feed(raptor_serializer *serializer,
   base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
   atom_link_element = raptor_new_xml_element(atom_link_qname, NULL, base_uri_copy);
 
-  atom_link_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, sizeof(raptor_qname*));
+  atom_link_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, 
+                                                   sizeof(raptor_qname*));
   ruri_string = raptor_uri_to_relative_uri_string(base_uri, item->uri);
 
   atom_link_attrs[0] = raptor_new_qname(rss_serializer->nstack, 
@@ -1819,7 +1820,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           /* atom:link to URI and there is no atom:content */
           raptor_qname **predicate_attrs = NULL;
           predicate_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, 
-                                                         sizeof(raptor_qname*));
+                                                           sizeof(raptor_qname*));
           predicate_attrs[0] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                            NULL,
                                                                            (const unsigned char*)"href",
@@ -1846,7 +1847,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
             content_type = (const unsigned char*)"text/html";
 
           predicate_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, 
-                                                         sizeof(raptor_qname*));
+                                                           sizeof(raptor_qname*));
           predicate_attrs[0] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                            NULL,
                                                                            (const unsigned char*)"src",
@@ -1885,7 +1886,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
             int attr_count = 0;
             unsigned char* ruri_string;
 
-            attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
+            attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, 
+                                                   sizeof(raptor_qname*));
             ruri_string = raptor_uri_to_relative_uri_string(base_uri, field->uri);
             attrs[attr_count] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                             rss_serializer->default_nspace,
@@ -1915,7 +1917,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           unsigned char* ruri_string;
 
           /* not an rss:item with an rss:enclosure field */
-          attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+          attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 
+                                                 sizeof(raptor_qname*));
           ruri_string = raptor_uri_to_relative_uri_string(base_uri, field->uri);
           attrs[0] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                  rss_serializer->default_nspace,
@@ -1932,7 +1935,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         
         if(is_xhtml_content && !prefer_cdata) {
           raptor_qname **predicate_attrs = NULL;
-          predicate_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+          predicate_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1,
+                                                           sizeof(raptor_qname*));
           if(is_atom)
             predicate_attrs[0] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,
                                                                              NULL,
@@ -2082,7 +2086,8 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
   if(serializer->base_uri && serializer->feature_write_base_uri) {
     const unsigned char* base_uri_string;
 
-    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 
+                                           sizeof(raptor_qname*));
 
     base_uri_string = raptor_uri_as_string(serializer->base_uri);
     attrs[attrs_count++] = raptor_new_qname_from_namespace_local_name_v2(rss_serializer->world,

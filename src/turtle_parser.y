@@ -1616,8 +1616,8 @@ main(int argc, char *argv[])
 
   raptor_init();
 
-  memset(&rdf_parser, 0, sizeof(raptor_parser));
-  memset(&turtle_parser, 0, sizeof(raptor_turtle_parser));
+  memset(&rdf_parser, 0, sizeof(rdf_parser));
+  memset(&turtle_parser, 0, sizeof(turtle_parser));
 
   locator->line= locator->column = -1;
   locator->file= filename;

@@ -162,7 +162,7 @@ raptor_www_finish_common(int skip_www_init_finish)
 raptor_www* 
 raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
 {
-  raptor_www* www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(raptor_www));
+  raptor_www* www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(*www));
   if(!www)
     return NULL;
 

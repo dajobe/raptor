@@ -120,8 +120,7 @@ raptor_new_iostream_from_handler2(raptor_world *world,
   if(!raptor_iostream_check_handler(handler2, 0))
     return NULL;
 
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                          sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(*iostr));
   if(!iostr)
     return NULL;
 
@@ -278,8 +277,7 @@ raptor_new_iostream_to_filename(raptor_world *world, const char *filename)
   if(!handle)
     return NULL;
   
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                          sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(*iostr));
   if(!iostr) {
     fclose(handle);
     return NULL;
@@ -337,8 +335,7 @@ raptor_new_iostream_to_file_handle(raptor_world *world, FILE *handle)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                        sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(*iostr));
   if(!iostr)
     return NULL;
 
@@ -461,12 +458,11 @@ raptor_new_iostream_to_string(raptor_world *world,
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                        sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(*iostr));
   if(!iostr)
     return NULL;
 
-  con = (struct raptor_write_string_iostream_context*)RAPTOR_CALLOC(raptor_write_string_iostream_context, 1, sizeof(struct raptor_write_string_iostream_context));
+  con = (struct raptor_write_string_iostream_context*)RAPTOR_CALLOC(raptor_write_string_iostream_context, 1, sizeof(*con));
   if(!con) {
     RAPTOR_FREE(raptor_iostream, iostr);
     return NULL;
@@ -560,8 +556,7 @@ raptor_new_iostream_from_filename(raptor_world *world, const char *filename)
   if(!handle)
     return NULL;
   
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                        sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(*iostr));
   if(!iostr) {
     fclose(handle);
     return NULL;
@@ -619,8 +614,7 @@ raptor_new_iostream_from_file_handle(raptor_world *world, FILE *handle)
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                          sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(*iostr));
   if(!iostr)
     return NULL;
 
@@ -1054,12 +1048,11 @@ raptor_new_iostream_from_string(raptor_world *world,
   if(!raptor_iostream_check_handler(handler2, mode))
     return NULL;
 
-  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1,
-                                        sizeof(raptor_iostream));
+  iostr = (raptor_iostream*)RAPTOR_CALLOC(raptor_iostream, 1, sizeof(*iostr));
   if(!iostr)
     return NULL;
 
-  con = (struct raptor_read_string_iostream_context*)RAPTOR_CALLOC(raptor_read_string_iostream_context, 1, sizeof(struct raptor_read_string_iostream_context));
+  con = (struct raptor_read_string_iostream_context*)RAPTOR_CALLOC(raptor_read_string_iostream_context, 1, sizeof(*con));
   if(!con) {
     RAPTOR_FREE(raptor_iostream, iostr);
     return NULL;

@@ -221,7 +221,8 @@ raptor_new_xml_context(raptor_world* world, raptor_uri* uri, raptor_uri* base_ur
 {
   grddl_xml_context* xml_context;
 
-  xml_context = (grddl_xml_context*)RAPTOR_MALLOC(xml_context, sizeof(grddl_xml_context));
+  xml_context = (grddl_xml_context*)RAPTOR_MALLOC(xml_context,
+                                                  sizeof(*xml_context));
   if(uri)
     uri = raptor_uri_copy(uri);
   if(base_uri)

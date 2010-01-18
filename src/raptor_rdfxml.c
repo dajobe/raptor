@@ -697,7 +697,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
 
   /* Create new element structure */
   element = (raptor_rdfxml_element*)RAPTOR_CALLOC(raptor_rdfxml_element, 1, 
-                                         sizeof(raptor_rdfxml_element));
+                                         sizeof(*element));
   if(!element) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     rdf_parser->failed = 1;
@@ -2870,10 +2870,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               unsigned char *buffer;
               unsigned char *new_buffer;
               unsigned int length;
-              raptor_term* xmlliteral_term;
+              raptor_term* xmlliteral_term = NULL;
               
-              memset(&xmlliteral_term, '\0', sizeof(xmlliteral_term));
-
               if(rdf_xml_parser->xml_writer) {
                 raptor_xml_writer_flush(rdf_xml_parser->xml_writer);
 

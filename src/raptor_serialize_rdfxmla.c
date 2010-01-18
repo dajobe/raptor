@@ -171,7 +171,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
   
   RAPTOR_DEBUG2("Emitting resource predicate URI %s\n", raptor_uri_as_string(uri));
 
-  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
+  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
   if(!attrs)
     return 1;
     
@@ -274,7 +274,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
   if(node->value.literal.language || node->value.literal.datatype) {
           
     attrs_count = 0;
-    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray,2,sizeof(raptor_qname *));
+    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray,2, sizeof(raptor_qname *));
     if(!attrs)
       return 1;
 
@@ -384,7 +384,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
     unsigned char *attr_value = node->value.blank.string;
     raptor_qname **attrs;
 
-    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray,1,sizeof(raptor_qname *));
+    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
     if(!attrs)
       return 1;
 
@@ -708,7 +708,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     goto oom;
   }
     
-  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname *));
+  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
   if(!attrs)
     goto oom;
     

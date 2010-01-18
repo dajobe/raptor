@@ -184,7 +184,7 @@ raptor_serializer_register_factory(raptor_world* world,
   
 
   serializer = (raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
-                                               sizeof(raptor_serializer_factory));
+                                               sizeof(*serializer));
   if(!serializer)
     return 1;
 
@@ -367,7 +367,7 @@ raptor_new_serializer(raptor_world* world, const char *name)
     return NULL;
 
   rdf_serializer = (raptor_serializer*)RAPTOR_CALLOC(raptor_serializer, 1,
-                                           sizeof(raptor_serializer));
+                                                     sizeof(*rdf_serializer));
   if(!rdf_serializer)
     return NULL;
 

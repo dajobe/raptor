@@ -156,7 +156,9 @@ raptor_new_turtle_writer(raptor_world* world,
                          raptor_namespace_stack *nstack,
                          raptor_iostream* iostr)
 {
-  raptor_turtle_writer* turtle_writer = (raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1, sizeof(raptor_turtle_writer)+1);
+  raptor_turtle_writer* turtle_writer;
+  turtle_writer = (raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1,
+                                                       sizeof(*turtle_writer));
 
   if(!turtle_writer)
     return NULL;

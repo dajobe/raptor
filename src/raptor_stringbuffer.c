@@ -89,7 +89,8 @@ static int raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringb
 raptor_stringbuffer*
 raptor_new_stringbuffer(void) 
 {
-  return (raptor_stringbuffer*)RAPTOR_CALLOC(raptor_stringbuffer, 1, sizeof(raptor_stringbuffer));
+  return (raptor_stringbuffer*)RAPTOR_CALLOC(raptor_stringbuffer, 1, 
+                                             sizeof(raptor_stringbuffer));
 }
 
 
@@ -156,7 +157,8 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
   if(!string || !length)
     return 0;
   
-  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
+  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node,
+                                                  sizeof(*node));
   if(!node) {
     if(!do_copy)
       RAPTOR_FREE(cstring, string);
@@ -367,7 +369,8 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
 {
   raptor_stringbuffer_node *node;
 
-  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, sizeof(raptor_stringbuffer_node));
+  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, 
+                                                  sizeof(*node));
   if(!node)
     return 1;
 

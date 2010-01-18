@@ -97,7 +97,8 @@ raptor_new_json_writer(raptor_world* world,
 {
   raptor_json_writer* json_writer;
 
-  json_writer = (raptor_json_writer*)RAPTOR_CALLOC(raptor_json_writer, 1, sizeof(raptor_json_writer)+1);
+  json_writer = (raptor_json_writer*)RAPTOR_CALLOC(raptor_json_writer, 1, 
+                                                   sizeof(*json_writer));
 
   if(!json_writer)
     return NULL;
