@@ -1,3 +1,227 @@
+2010-01-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/rdfcat.c, docs/rdfprint.c, examples/grapper.c,
+	examples/raptor_abort.c, examples/rdfcat.c, examples/rdfprint.c,
+	src/raptor.h, src/raptor_feature.c, src/raptor_general.c,
+	src/raptor_grddl.c, src/raptor_guess.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c:
+	Rename parser methods to all start raptor_parser_METHOD
+
+	(raptor_parser_get_feature): Renamed from raptor_get_feature. 
+
+	(raptor_parser_get_label): Renamed from raptor_get_label. 
+
+	(raptor_parser_get_locator): Renamed from raptor_get_locator. 
+
+	(raptor_parser_get_mime_type): Renamed from raptor_get_mime_type. 
+
+	(raptor_parser_get_name): Renamed from raptor_get_name. 
+
+	(raptor_parser_get_need_base_uri): Renamed from
+	raptor_get_need_base_uri. 
+
+	(raptor_world_get_parser_factory): Renamed from
+	raptor_get_parser_factory. 
+
+	(raptor_parser_parse_abort): Renamed from raptor_parse_abort. 
+
+	(raptor_parser_parse_chunk): Renamed from raptor_parse_chunk. 
+
+	(raptor_parser_set_uri_filter_no_net): Renamed from
+	raptor_parse_uri_no_net_filter. 
+
+	(raptor_parser_get_new_generated_i): Renamed from
+	raptor_parser_generate_id. 
+
+	(raptor_parser_set_default_generate_id_parameters): Renamed from
+	raptor_set_default_generate_id_parameters. 
+
+	(raptor_parser_set_generate_id_handler): Renamed from
+	raptor_set_generate_id_handler. 
+
+	(raptor_parser_set_graph_handler): Renamed from
+	raptor_set_graph_handler. 
+
+	(raptor_parser_set_namespace_handler): Renamed from
+	raptor_set_namespace_handler. 
+
+	(raptor_parser_set_statement_handler): Renamed from
+	raptor_set_statement_handler. 
+
+	(raptor_parser_parse_start): Renamed from raptor_start_parse.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_libxml.c,
+	src/raptor_parse.c:
+	Adjust raptor_log_level to match log4j levels: add trace, debug, info.
+
+	raptor_log_level gains RAPTOR_LOG_LEVEL_TRACE,
+	RAPTOR_LOG_LEVEL_DEBUG and RAPTOR_LOG_LEVEL_INFO.  Reordered to
+	match severity from trace level to fatal error.  Add autodocs.
+
+	* src/raptor_statement.c:
+	code style
+
+	* src/raptor_parse.c:
+	autodocs
+
+	* src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: autodocs
+
+	* src/raptor.h, src/raptor_iostream.c,
+	src/raptor_serialize_simple.c: Renamed
+	raptor_iostream_write_uri_v2 to raptor_iostream_write_uri and lose
+	world arg
+
+	* src/raptor.h, src/raptor_xml_writer.c: Rename
+	raptor_xml_writer_features_enumerate_v2 to
+	raptor_world_enumerate_xml_writer_features
+
+	* src/raptor.h, src/raptor_general.c: Rename
+	raptor_error_handlers_init_v2 to raptor_error_handlers_init
+
+	* src/raptor_serialize_rss.c: Fix debug calls to
+	raptor_print_statement_as_ntriples_v2 now called
+	raptor_print_statement_as_ntriples
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c:
+	Remove _v2 from raptor_new_xml_writer_v2 name and remove unused arg. 
+
+	(raptor_new_xml_writer_v2): Renamed from raptor_new_xml_writer and
+	delete unused
+
+	(never used) canonicalized arg.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_parse.c:
+	Renamed raptor_feature_from_uri_v2 to raptor_world_get_feature_from_uri
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_namespace.c,
+	src/raptor_qname.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c:
+	Remove _v2 from raptor_new_qname_from_namespace_local_name_v2
+
+	(raptor_new_qname_from_namespace_local_name): Renamed from
+	raptor_new_qname_from_namespace_local_name_v2.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_namespace.c,
+	src/raptor_rss.c, src/raptor_sax2.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c,
+	src/turtle_common.h, src/turtle_lexer.l, src/turtle_parser.y:
+	Rename raptor_namespaces/stack functions to lose _v2 in name
+
+	(raptor_new_namespaces): Renamed from raptor_new_namespaces_v2. 
+
+	(raptor_namespaces_init): Renamed from raptor_namespaces_init_v2
+
+	Also note where raptor_namespace_stack is static such as in
+	raptor_sax2, some tests and in raptor_turtle_parser.
+
+	* src/raptor_www_test.c:
+	Fix test o use raptor_www_new
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_parse.c, src/raptor_www.c:
+	Rename raptor_www functions to lose _v2 in name
+
+	(raptor_www_init): Renamed from raptor_www_init_2 - internal. 
+
+	(raptor_www_finish): Renamed from raptor_www_finish_v2 - internal. 
+
+	(raptor_www_new): Renamed from raptor_www_new_v2.
+	
+	(raptor_www_new_with_connection): Renamed from
+	raptor_www_new_with_connection_v2.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_locator.c,
+	utils/rapper.c, utils/rdfdiff.c:
+	Remove _v2 from name and world arg from raptor_locator functions
+
+	(raptor_print_locator): Renamed from raptor_print_locator_v2 and
+	loses world arg. 
+
+	(raptor_format_locator): Renamed from raptor_format_locator_v2 and
+	loses world arg. 
+
+	(raptor_locator_uri_string): Renamed from raptor_locator_uri_v2 and
+	renamed to reflect returns a string not a raptor_uri*
+
+	* src/raptor_avltree.c, src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_namespace.c, src/raptor_nfc_test.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rdfxml.c, src/raptor_rfc2396.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_set.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_www.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_lexer.l, src/turtle_parser.y:
+	
+	Code style:
+	use TYPE* var_name = RAPTOR_CALLOC(TYPE, 1, sizeof(*var_name))
+
+	This fix caught a few times where the calloc added an extra +1 -
+	presumably from the usual thing you need to do with a string
+	malloc.  e.g. in raptor_new_json_writer(),
+	raptor_new_turtle_writer() and raptor_new_xml_writer_v2() which
+	probably were all from the same source.
+
+	* src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c:
+	Remove some un-necessary casts to (unsigned char*)
+
+	* src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_statement.c:
+	Remove some un-necessary casts to raptor_uri*
+
+	* src/raptor_serialize_json.c:
+	(raptor_json_serialize_avltree_visit): Use raptor_term_equals
+	instead of hand-crafted equivalent.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_json_writer.c,
+	src/raptor_rdfxml.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	src/turtle_parser.y, utils/rapper.c, utils/rdfdiff.c:
+	raptor_term values are now a union of uri / literal fields / blank
+	string
+
+	raptor_term gains union value with uri field, literal struct and
+	blank field for URI, Literal and Blank rdf terms.
+
+	Lots of consequent changes; mostly mechanical search and replace.
+
+	Removed several (raptor_uri*)value and (unsigned char*)value casts. 
+
+	(raptor_rss10_move_statements): Changes but when zeroing uri /
+	literal, do that in separate steps rather than assigning to value.
+
+	* src/raptor_serialize_dot.c: Convert DOT serializer to use
+	raptor_term not local raptor_dot_serializer_node
+
+	Deleted raptor_dot_serializer_node typedef
+
+	(raptor_dot_serializer_free_node,
+	raptor_dot_serializer_node_matches, raptor_dot_serializer_new_node):
+	Deleted and replaced with raptor_term versions - both based on
+	librdf_node.
+
+	Code style fixes.
+
+	* src/raptor_statement.c:
+	Fix formatting in raptor_term_as_counted_string for blank and uri
+
+	(raptor_term_as_counted_string): RAPTOR_TERM_TYPE_BLANK and
+	RAPTOR_TERM_TYPE_URI code was wrong - bad casting.
+
 2010-01-16  Dave Beckett <dave@dajobe.org>
 
 	* Merge branch 'statement-term' to 'master' with
