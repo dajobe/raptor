@@ -308,8 +308,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       break;
       
     case RAPTOR_TERM_TYPE_URI:
-      uri_string = raptor_uri_as_counted_string(term->value.uri, 
-                                                &uri_len);
+      uri_string = raptor_uri_as_counted_string(term->value.uri, &uri_len);
       len = 2+uri_len;
       buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
       if(!buffer)
@@ -317,7 +316,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
 
       s = buffer;
       *s++ ='<';
-      /* raptor_print_ntriples_string(stream, raptor_uri_as_string((raptor_uri*)term), '\0'); */
+      /* raptor_print_ntriples_string(stream, raptor_uri_as_string(term->value.uri), '\0'); */
       strcpy((char*)s, (const char*)uri_string);
       s+= uri_len;
       *s++ ='>';
@@ -369,7 +368,7 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
         fputs((const char*)term->value.literal.language, stream);
       }
       if(term->value.literal.datatype) {
-        uri = (raptor_uri*)term->value.literal.datatype;
+        uri = term->value.literal.datatype;
         fputs("^^<", stream);
         fputs((const char*)raptor_uri_as_string(uri), stream);
         fputc('>', stream);
@@ -646,7 +645,7 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
   t->usage = 1;
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_BLANK;
-  t->value.blank = blank;
+  t->value.blank = (unsigned char*)blank;
 
   return t;
 }

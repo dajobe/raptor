@@ -109,7 +109,8 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
   if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     if(statement->object->value.literal.datatype) {
       raptor_iostream_write_byte(iostr, '<');
-      raptor_iostream_write_uri_v2(serializer->world, iostr, (raptor_uri*)statement->object->value.literal.datatype);
+      raptor_iostream_write_uri_v2(serializer->world, iostr,
+                                   statement->object->value.literal.datatype);
       raptor_iostream_write_byte(iostr, '>');
     }
     raptor_iostream_write_byte(iostr, '"');

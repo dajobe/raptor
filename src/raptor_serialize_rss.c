@@ -429,7 +429,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
   if(count > 0)
     RAPTOR_DEBUG5("Moved %d triples to typed node %i - %s with uri <%s>\n",
                   count, type, raptor_rss_items_info[type].name,
-                  raptor_uri_as_string((raptor_uri*)item->uri));
+                  raptor_uri_as_string(item->uri));
 #endif
 
   return count;
