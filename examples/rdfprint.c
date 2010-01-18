@@ -6,7 +6,7 @@
 void
 print_triple(void* user_data, const raptor_statement* triple) 
 {
-  raptor_print_statement_as_ntriples(triple, stdout);
+  raptor_statement_print_as_ntriples(triple, stdout);
   fputc('\n', stdout);
 }
 

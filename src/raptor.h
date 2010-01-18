@@ -649,9 +649,9 @@ RAPTOR_API
 void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data);
 
 RAPTOR_API
-void raptor_print_statement(const raptor_statement * statement, FILE *stream);
+void raptor_statement_print(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
-void raptor_print_statement_as_ntriples(const raptor_statement * statement, FILE *stream);
+void raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API

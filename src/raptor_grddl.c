@@ -511,7 +511,7 @@ raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
 
 #if RAPTOR_DEBUG > 2
   RAPTOR_DEBUG2("Parser %p: Relaying statement: ", rdf_parser);
-  raptor_print_statement(statement, stderr);
+  raptor_statement_print(statement, stderr);
   fputc('\n', stderr);
 #endif
 

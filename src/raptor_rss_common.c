@@ -445,7 +445,7 @@ raptor_new_rss_item(raptor_world* world)
     return NULL;
   
   item->world = world;
-  item->triples = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, (raptor_sequence_print_handler*)raptor_print_statement);
+  item->triples = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, (raptor_sequence_print_handler*)raptor_statement_print);
   if(!item->triples) {
     RAPTOR_FREE(raptor_rss_item, item);
     return NULL;

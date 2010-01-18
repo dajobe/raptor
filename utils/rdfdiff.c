@@ -275,9 +275,9 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
 
 #if RAPTOR_DEBUG > 1
   fprintf(stderr, "(rdfdiff_statement_equals) Comparing ");
-  raptor_print_statement_as_ntriples(s1, stderr);
+  raptor_statement_print_as_ntriples(s1, stderr);
   fprintf(stderr, " to ");
-  raptor_print_statement_as_ntriples(s2, stderr);
+  raptor_statement_print_as_ntriples(s2, stderr);
 #endif
 
   /* normal comparison */
@@ -389,11 +389,11 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
      * containing anononymous nodes are eaual. */
 #if 0
     fprintf(stderr, "b1->owner: ");    
-    raptor_print_statement_as_ntriples(b1->owner, stderr);
+    raptor_statement_print_as_ntriples(b1->owner, stderr);
     fprintf(stderr, "\n");
 
     fprintf(stderr, "b2->owner: ");    
-    raptor_print_statement_as_ntriples(b2->owner, stderr);
+    raptor_statement_print_as_ntriples(b2->owner, stderr);
     fprintf(stderr, "\n");
 #endif    
     p1 = rdfdiff_find_blank(b1_file->first_blank, 
@@ -900,7 +900,7 @@ main(int argc, char *argv[])
         }
         
         fprintf(stderr, "<    ");
-        raptor_print_statement_as_ntriples(cur->statement, stderr);
+        raptor_statement_print_as_ntriples(cur->statement, stderr);
         fprintf(stderr, "\n");
       }
       
@@ -932,7 +932,7 @@ main(int argc, char *argv[])
       if(!brief) {        
 #if 0
         fprintf(stderr, "<    ");
-        raptor_print_statement_as_ntriples(b1->owner, stderr);
+        raptor_statement_print_as_ntriples(b1->owner, stderr);
         fprintf(stderr, "\n");
 #else
         if(emit_from_header) {
@@ -965,7 +965,7 @@ main(int argc, char *argv[])
       while(cur) {
         if(!brief) {
           fprintf(stderr, ">    ");
-          raptor_print_statement_as_ntriples(cur->statement, stderr);
+          raptor_statement_print_as_ntriples(cur->statement, stderr);
           fprintf(stderr, "\n");
         }
       
@@ -984,7 +984,7 @@ main(int argc, char *argv[])
         if(!brief) {
 #if 0          
           fprintf(stderr, ">    ");
-          raptor_print_statement_as_ntriples(blank->owner, stderr);
+          raptor_statement_print_as_ntriples(blank->owner, stderr);
           fprintf(stderr, "\n");
 #else
           if(emit_to_header) {

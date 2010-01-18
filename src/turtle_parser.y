@@ -359,7 +359,7 @@ objectList: objectList COMMA object
       YYERROR;
 #ifdef RAPTOR_DEBUG
     $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement,
-                             (raptor_sequence_print_handler*)raptor_print_statement);
+                             (raptor_sequence_print_handler*)raptor_statement_print);
 #else
     $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, NULL);
 #endif
@@ -443,7 +443,7 @@ itemList: itemList object
       YYERROR;
 #ifdef RAPTOR_DEBUG
     $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement,
-                             (raptor_sequence_print_handler*)raptor_print_statement);
+                             (raptor_sequence_print_handler*)raptor_statement_print);
 #else
     $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, NULL);
 #endif
@@ -1566,7 +1566,7 @@ static
 void turtle_parser_print_statement(void *user, const raptor_statement *statement) 
 {
   FILE* stream = (FILE*)user;
-  raptor_print_statement(statement, stream);
+  raptor_statement_print(statement, stream);
   putc('\n', stream);
 }
   

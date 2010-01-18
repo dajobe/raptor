@@ -194,7 +194,7 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_rss_common_init(serializer->world);
   raptor_rss_model_init(serializer->world, &rss_serializer->model);
 
-  rss_serializer->triples = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, (raptor_sequence_print_handler*)raptor_print_statement);
+  rss_serializer->triples = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, (raptor_sequence_print_handler*)raptor_statement_print);
 
   rss_serializer->items = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_rss_item, (raptor_sequence_print_handler*)NULL);
 
@@ -729,7 +729,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
     raptor_sequence_push(rss_serializer->triples, s);
 #if RAPTOR_DEBUG > 1
     fprintf(stderr,"Stored statement: ");
-    raptor_print_statement_as_ntriples(s, stderr);
+    raptor_statement_print_as_ntriples(s, stderr);
     fprintf(stderr,"\n");
 #endif
     handled = 1;
@@ -791,7 +791,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     RAPTOR_DEBUG1("Processing statement\n  ");
     s2.s = (raptor_statement*)statement;
     s2.world = rss_serializer->world;
-    raptor_print_statement_as_ntriples(&s2, stderr);
+    raptor_statement_print_as_ntriples(&s2, stderr);
     fputc('\n', stderr);
   }
 #endif
@@ -928,7 +928,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     
 #if RAPTOR_DEBUG > 1
     RAPTOR_DEBUG1("Processing statement\n  ");
-    raptor_print_statement_as_ntriples(s, stderr);
+    raptor_statement_print_as_ntriples(s, stderr);
     fputc('\n', stderr);
 #endif
     
@@ -2054,7 +2054,7 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
     raptor_statement* t = (raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
     if(t) {
       fprintf(stderr, " %d: ", i);
-      raptor_print_statement(t, stderr);
+      raptor_statement_print(t, stderr);
       fputc('\n', stderr);
       triple_count++;
     }

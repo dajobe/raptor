@@ -1314,7 +1314,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
 #ifdef RAPTOR_DEBUG_VERBOSE
   fprintf(stderr, "raptor_rdfxml_generate_statement: Generating statement: ");
-  raptor_print_statement(statement, stderr);
+  raptor_statement_print(statement, stderr);
   fputc('\n', stderr);
 #endif
 

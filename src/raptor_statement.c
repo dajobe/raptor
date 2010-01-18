@@ -179,14 +179,14 @@ raptor_free_statement(raptor_statement *statement)
 
 
 /**
- * raptor_print_statement:
+ * raptor_statement_print:
  * @statement: #raptor_statement object to print
  * @stream: #FILE* stream
  *
  * Print a raptor_statement to a stream.
  **/
 void
-raptor_print_statement(const raptor_statement * statement, FILE *stream) 
+raptor_statement_print(const raptor_statement * statement, FILE *stream) 
 {
   fputc('[', stream);
 
@@ -400,7 +400,7 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
 
 
 /**
- * raptor_print_statement_as_ntriples:
+ * raptor_statement_print_as_ntriples:
  * @statement: #raptor_statement to print
  * @stream: #FILE* stream
  *
@@ -408,7 +408,7 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
  * 
  **/
 void
-raptor_print_statement_as_ntriples(const raptor_statement * statement,
+raptor_statement_print_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
 {
   raptor_term_print_as_ntriples(stream, statement->subject);

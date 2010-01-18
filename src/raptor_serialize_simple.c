@@ -81,7 +81,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
   /* was: fprintf(stdout, "%s: Statement: ", program); */
   raptor_iostream_write_string(iostr, "Statement: ");
 
-  /* from raptor_print_statement */
+  /* from raptor_statement_print */
   raptor_iostream_write_byte(iostr, '[');
 
   if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
