@@ -177,7 +177,7 @@ raptor_world_open(raptor_world* world)
   if(rc)
     return rc;
 
-  rc = raptor_www_init_v2(world); 
+  rc = raptor_www_init(world); 
   if(rc)
     return rc;
 
@@ -210,7 +210,7 @@ raptor_free_world(raptor_world* world)
   raptor_libxml_finish(world);
 #endif
 
-  raptor_www_finish_v2(world);
+  raptor_www_finish(world);
 
   raptor_sax2_finish(world);
 

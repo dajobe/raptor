@@ -1015,17 +1015,17 @@ unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
 /* raptor_www */
 RAPTOR_API
-int raptor_www_init_v2(raptor_world* world);
+int raptor_www_init(raptor_world* world);
 RAPTOR_API
-void raptor_www_finish_v2(raptor_world* world);
+void raptor_www_finish(raptor_world* world);
 RAPTOR_API
-void raptor_www_no_www_library_init_finish_v2(raptor_world* world);
+void raptor_www_no_www_library_init_finish(raptor_world* world);
 
 
 RAPTOR_API
-raptor_www *raptor_www_new_v2(raptor_world* world);
+raptor_www *raptor_www_new(raptor_world* world);
 RAPTOR_API
-raptor_www *raptor_www_new_with_connection_v2(raptor_world* world, void* connection);
+raptor_www *raptor_www_new_with_connection(raptor_world* world, void* connection);
 RAPTOR_API
 void raptor_www_free(raptor_www *www);
 RAPTOR_API

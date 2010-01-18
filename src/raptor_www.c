@@ -53,19 +53,17 @@ static int raptor_www_file_fetch(raptor_www* www);
 
 
 /**
- * raptor_www_init_v2:
+ * raptor_www_init:
  * @world: raptor_world object
  * 
  * Initialise the WWW class.
  *
  * Must be called before creating any #raptor_www object.
  *
- * See also: raptor_www_init()
- *
  * Return value: non-0 on failure
  **/
 int
-raptor_www_init_v2(raptor_world* world)
+raptor_www_init(raptor_world* world)
 {
   return raptor_www_init_common(world->www_skip_www_init_finish, &world->www_initialized);
 }
@@ -91,7 +89,7 @@ raptor_www_init_common(int skip_www_init_finish, int *www_initialized)
 
 
 /**
- * raptor_www_no_www_library_init_finish_v2:
+ * raptor_www_no_www_library_init_finish:
  * @world: raptor_world object
  *
  * Do not initialise or finish the lower level WWW library.
@@ -111,24 +109,23 @@ raptor_www_init_common(int skip_www_init_finish, int *www_initialized)
  *
  **/
 void
-raptor_www_no_www_library_init_finish_v2(raptor_world* world)
+raptor_www_no_www_library_init_finish(raptor_world* world)
 {
   world->www_skip_www_init_finish = 1;
 }
 
 
 /**
- * raptor_www_finish_v2:
+ * raptor_www_finish:
  * @world: raptor_world object
  * 
  * Terminate the WWW class.
  *
  * Must be called to clean any resources used by the WWW implementation.
  *
- * See also: raptor_www_finish()
  **/
 void
-raptor_www_finish_v2(raptor_world* world)
+raptor_www_finish(raptor_world* world)
 {
   raptor_www_finish_common(world->www_skip_www_init_finish);
 }
@@ -146,7 +143,7 @@ raptor_www_finish_common(int skip_www_init_finish)
 
 
 /**
- * raptor_www_new_with_connection_v2:
+ * raptor_www_new_with_connection:
  * @world: raptor_world object
  * @connection: external WWW connection object.
  * 
@@ -160,7 +157,7 @@ raptor_www_finish_common(int skip_www_init_finish)
  * Return value: a new #raptor_www object or NULL on failure.
  **/
 raptor_www* 
-raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
+raptor_www_new_with_connection(raptor_world* world, void *connection)
 {
   raptor_www* www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(*www));
   if(!www)
@@ -194,7 +191,7 @@ raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
 
 
 /**
- * raptor_www_new_v2:
+ * raptor_www_new:
  * @world: raptor_world object
  * 
  * Constructor - create a new #raptor_www object.
@@ -202,9 +199,9 @@ raptor_www_new_with_connection_v2(raptor_world* world, void *connection)
  * Return value: a new #raptor_www or NULL on failure.
  **/
 raptor_www*
-raptor_www_new_v2(raptor_world* world)
+raptor_www_new(raptor_world* world)
 {
-  return raptor_www_new_with_connection_v2(world, NULL);
+  return raptor_www_new_with_connection(world, NULL);
 }
 
 
