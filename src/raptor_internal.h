@@ -672,6 +672,7 @@ raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
 int raptor_term_equals(raptor_term* term1, raptor_term* term2);
 void raptor_free_term(raptor_term *term);
+void raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term);
 
 /* raptor_parse.c */
 raptor_parser_factory* raptor_world_get_parser_factory(raptor_world* world, const char *name);  

@@ -366,15 +366,11 @@ raptor_print_abbrev_po(FILE* handle, raptor_abbrev_node** nodes)
   raptor_abbrev_node* o = nodes[1];
   
   if(p && o) {
-    unsigned char *pred;
-    unsigned char *obj;
-
-    pred = raptor_uri_as_string(p->value.resource.uri);
-    /* FIXME This is bogus as it ignores string/blank node differences */
-    obj = (o->type == RAPTOR_TERM_TYPE_URI) ? raptor_uri_as_string(o->value.resource.uri) : o->value.literal.string;
-    fprintf(handle, "[%s : %s]\n", pred, obj);      
-    RAPTOR_FREE(cstring, pred);
-    RAPTOR_FREE(cstring, obj);
+    fputc('[', handle);
+    raptor_term_print_as_ntriples(handle, p->term);
+    fputs(" : ", handle);
+    raptor_term_print_as_ntriples(handle, o->term);
+    fputs("]\n", handle);
   }
 }
 #endif

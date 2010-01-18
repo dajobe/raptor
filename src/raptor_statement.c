@@ -43,7 +43,6 @@
 
 
 /* prototypes for helper functions */
-static void raptor_term_print_as_ntriples(FILE* stream, const raptor_term* term);
 
 
 /**
@@ -357,7 +356,7 @@ raptor_term_as_string(raptor_term *term)
 }
 
 
-static void
+void
 raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
 {
   raptor_uri* uri;
