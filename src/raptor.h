@@ -1587,19 +1587,25 @@ typedef int (*raptor_sax2_external_entity_ref_handler)(void *user_data, const un
 /**
  * raptor_log_level:
  * @RAPTOR_LOG_LEVEL_NONE: Internal
- * @RAPTOR_LOG_LEVEL_FATAL: Fatal error message
- * @RAPTOR_LOG_LEVEL_ERROR: Error message
- * @RAPTOR_LOG_LEVEL_WARNING: Warning message
+ * @RAPTOR_LOG_LEVEL_TRACE: very fine-grained tracing messages information
+ * @RAPTOR_LOG_LEVEL_DEBUG: fine-grained tracing messages suitable for debugging
+ * @RAPTOR_LOG_LEVEL_INFO: coarse-grained information messages
+ * @RAPTOR_LOG_LEVEL_WARN: warning messages of potentially harmful problems
+ * @RAPTOR_LOG_LEVEL_ERROR: error messages where the application can continue
+ * @RAPTOR_LOG_LEVEL_FATAL: fatal error message where the application will likely abort
  * @RAPTOR_LOG_LEVEL_LAST: Internal
  *
  * Log levels
  */
 typedef enum {
   RAPTOR_LOG_LEVEL_NONE,
-  RAPTOR_LOG_LEVEL_FATAL,
+  RAPTOR_LOG_LEVEL_TRACE,
+  RAPTOR_LOG_LEVEL_DEBUG,
+  RAPTOR_LOG_LEVEL_INFO,
+  RAPTOR_LOG_LEVEL_WARN,
   RAPTOR_LOG_LEVEL_ERROR,
-  RAPTOR_LOG_LEVEL_WARNING,
-  RAPTOR_LOG_LEVEL_LAST = RAPTOR_LOG_LEVEL_WARNING
+  RAPTOR_LOG_LEVEL_FATAL,
+  RAPTOR_LOG_LEVEL_LAST = RAPTOR_LOG_LEVEL_FATAL
 } raptor_log_level;
 
 

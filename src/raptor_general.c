@@ -328,8 +328,8 @@ void
 raptor_world_set_warning_handler(raptor_world *world, void *user_data,
                                  raptor_message_handler handler)
 {
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].user_data = user_data;
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARNING].handler = handler;
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARN].user_data = user_data;
+  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARN].handler = handler;
 }
 
 
@@ -602,9 +602,12 @@ raptor_error_handlers_init(raptor_world *world,
 
 static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
   "none",
-  "fatal error",
-  "error",
+  "trace",
+  "debug",
+  "info",
   "warning"
+  "error",
+  "fatal error"
 };
 
 

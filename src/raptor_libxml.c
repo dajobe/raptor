@@ -274,7 +274,7 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
   }
   
   raptor_log_error_varargs(sax2->world,
-                           RAPTOR_LOG_LEVEL_WARNING,
+                           RAPTOR_LOG_LEVEL_WARN,
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
@@ -425,7 +425,7 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
   }
 
   raptor_log_error_varargs(sax2->world,
-                           RAPTOR_LOG_LEVEL_WARNING,
+                           RAPTOR_LOG_LEVEL_WARN,
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
@@ -701,7 +701,7 @@ raptor_libxml_xmlStructuredError_handler_common(raptor_world *world,
   else if(err->level == XML_ERR_ERROR)
     level = RAPTOR_LOG_LEVEL_ERROR;
   else
-    level = RAPTOR_LOG_LEVEL_WARNING;
+    level = RAPTOR_LOG_LEVEL_WARN;
 
   raptor_log_error(world, level, locator, nmsg);
   

@@ -1042,12 +1042,12 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 
   if(parser)
     raptor_log_error_varargs(parser->world,
-                             RAPTOR_LOG_LEVEL_WARNING,
+                             RAPTOR_LOG_LEVEL_WARN,
                              &parser->locator,
                              message, arguments);
   else
     raptor_log_error_varargs(NULL,
-                             RAPTOR_LOG_LEVEL_WARNING,
+                             RAPTOR_LOG_LEVEL_WARN,
                              NULL,
                              message, arguments);
   
