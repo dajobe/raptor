@@ -348,7 +348,7 @@ raptor_world_is_serializer_name(raptor_world* world, const char *name)
 
 
 /**
- * raptor_new_serializer_v2:
+ * raptor_new_serializer:
  * @world: raptor_world object
  * @name: the serializer name
  *
@@ -769,7 +769,7 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
  * Get list of serializer features.
  * 
  * If uri is not NULL, a pointer toa new raptor_uri is returned
- * that must be freed by the caller with raptor_free_uri_v2().
+ * that must be freed by the caller with raptor_free_uri().
  *
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
