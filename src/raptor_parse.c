@@ -1181,7 +1181,7 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
  * Get list of syntax features.
  * 
  * If uri is not NULL, a pointer to a new raptor_uri is returned
- * that must be freed by the caller with raptor_free_uri_v2().
+ * that must be freed by the caller with raptor_free_uri().
  *
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
