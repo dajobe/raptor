@@ -453,13 +453,13 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
 
   raptor_namespaces_clear(&sax2->namespaces);
 
-  if(raptor_namespaces_init_v2(sax2->world, &sax2->namespaces, 1)) {
+  if(raptor_namespaces_init(sax2->world, &sax2->namespaces, 1)) {
     /* log a fatal error and set sax2 to failed state
        since the function signature does not currently support returning an error */
     raptor_log_error_to_handlers(sax2->world,
                                  &sax2->world->error_handlers,
                                  RAPTOR_LOG_LEVEL_FATAL, sax2->locator,
-                                 "raptor_namespaces_init_v2() failed");
+                                 "raptor_namespaces_init() failed");
     sax2->failed = 1;
   }
 }

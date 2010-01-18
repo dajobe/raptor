@@ -117,12 +117,14 @@ raptor_hash_ns_string(const unsigned char *str, int length)
 
 #define RAPTOR_NAMESPACES_HASHTABLE_SIZE 1024
 /**
- * raptor_namespaces_init_v2:
+ * raptor_namespaces_init:
  * @world: raptor_world object
  * @nstack: #raptor_namespace_stack to initialise
  * @defaults: namespaces to initialise.
  *
- * Initialise a namespaces stack some optional common namespaces.
+ * Initialise an existing namespaces stack object
+ *
+ * This sets up the stick optionally with some common RDF namespaces.
  *
  * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL
  * and XSD (RDQL uses this) or 3+ undefined.
@@ -130,9 +132,9 @@ raptor_hash_ns_string(const unsigned char *str, int length)
  * Return value: non-0 on error
  */
 int
-raptor_namespaces_init_v2(raptor_world* world,
-                          raptor_namespace_stack *nstack,
-                          int defaults)
+raptor_namespaces_init(raptor_world* world,
+                       raptor_namespace_stack *nstack,
+                       int defaults)
 {
   int failures = 0;
 
@@ -186,7 +188,7 @@ raptor_namespaces_init_v2(raptor_world* world,
 
 
 /**
- * raptor_new_namespaces_v2:
+ * raptor_new_namespaces:
  * @world: raptor_world object
  * @defaults: namespaces to initialise
  * 
@@ -197,8 +199,7 @@ raptor_namespaces_init_v2(raptor_world* world,
  * Return value: a new namespace stack or NULL on failure
  **/
 raptor_namespace_stack *
-raptor_new_namespaces_v2(raptor_world* world,
-                         int defaults) 
+raptor_new_namespaces(raptor_world* world, int defaults) 
 {
   raptor_namespace_stack *nstack;
   nstack = (raptor_namespace_stack *)RAPTOR_CALLOC(raptor_namespace_stack,
@@ -206,7 +207,7 @@ raptor_new_namespaces_v2(raptor_world* world,
   if(!nstack)
     return NULL;
                       
-  if(raptor_namespaces_init_v2(world, nstack, defaults)) {
+  if(raptor_namespaces_init(world, nstack, defaults)) {
     raptor_free_namespaces(nstack);
     nstack = NULL;
   }
@@ -1035,14 +1036,14 @@ main(int argc, char *argv[])
 {
   raptor_world *world;
   const char *program = raptor_basename(argv[0]);
-  raptor_namespace_stack namespaces;
+  raptor_namespace_stack namespaces; /* static */
   raptor_namespace* ns;
 
   world = raptor_new_world();
   if(!world || raptor_world_open(world))
     exit(1);
 
-  raptor_namespaces_init_v2(world, &namespaces, 1);
+  raptor_namespaces_init(world, &namespaces, 1);
   
   raptor_namespaces_start_namespace_full(&namespaces,
                                          (const unsigned char*)"ex1",

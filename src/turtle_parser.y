@@ -1203,7 +1203,7 @@ static int
 raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
-  if(raptor_namespaces_init_v2(rdf_parser->world, &turtle_parser->namespaces, 0))
+  if(raptor_namespaces_init(rdf_parser->world, &turtle_parser->namespaces, 0))
     return 1;
 
   turtle_parser->nil_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, "nil");

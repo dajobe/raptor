@@ -117,7 +117,7 @@ raptor_dot_serializer_init(raptor_serializer *serializer, const char *name)
   raptor_dot_context * context = (raptor_dot_context *)serializer->context;
 
   /* Setup namespace handling */
-  context->nstack = raptor_new_namespaces_v2(serializer->world, 1);
+  context->nstack = raptor_new_namespaces(serializer->world, 1);
   context->namespaces = raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_namespace, NULL);
 
   /* We keep a list of nodes to avoid duplication (which isn't

@@ -169,7 +169,7 @@ raptor_new_turtle_writer(raptor_world* world,
 
   turtle_writer->nstack = nstack;
   if(!turtle_writer->nstack) {
-    turtle_writer->nstack = nstack = raptor_new_namespaces_v2(world, 1);
+    turtle_writer->nstack = nstack = raptor_new_namespaces(world, 1);
     turtle_writer->my_nstack = 1;
   }
 
@@ -922,7 +922,7 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  nstack = raptor_new_namespaces_v2(world, 1);
+  nstack = raptor_new_namespaces(world, 1);
 
   base_uri = raptor_new_uri(world, base_uri_string);
 

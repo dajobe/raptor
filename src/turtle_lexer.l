@@ -858,10 +858,10 @@ main(int argc, char *argv[])
   /* discard namespace errors - caused by not interpreting @prefix 
    * and hence causing failed qname construction
    */
-  raptor_namespaces_init_v2(rdf_parser.world,
-                            &turtle_parser.namespaces,
-                            turtle_lexer_discard_error, NULL,
-                            0);
+  raptor_namespaces_init(rdf_parser.world,
+                         &turtle_parser.namespaces,
+                         turtle_lexer_discard_error, NULL,
+                         0);
 
   yylex_init(&turtle_parser.scanner);
   scanner = turtle_parser.scanner;

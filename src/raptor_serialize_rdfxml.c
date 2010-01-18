@@ -89,7 +89,7 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
 {
   raptor_rdfxml_serializer_context* context = (raptor_rdfxml_serializer_context*)serializer->context;
 
-  context->nstack = raptor_new_namespaces_v2(serializer->world, 1);
+  context->nstack = raptor_new_namespaces(serializer->world, 1);
   if(!context->nstack)
     return 1;
   context->xml_nspace = raptor_new_namespace(context->nstack,

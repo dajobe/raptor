@@ -1039,7 +1039,7 @@ struct raptor_sax2_s {
   int feature_no_net;
 
   /* stack of namespaces, most recently added at top */
-  raptor_namespace_stack namespaces;
+  raptor_namespace_stack namespaces; /* static */
 
   /* base URI for resolving relative URIs or xml:base URIs */
   raptor_uri* base_uri;

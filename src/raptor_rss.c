@@ -176,7 +176,7 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
     rss_parser->sax2 = NULL;
   }
 
-  rss_parser->nstack = raptor_new_namespaces_v2(rdf_parser->world, 1);
+  rss_parser->nstack = raptor_new_namespaces(rdf_parser->world, 1);
 
   /* Initialise the namespaces */
   for(n = 0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++) {

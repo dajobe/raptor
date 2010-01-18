@@ -48,7 +48,7 @@ struct raptor_turtle_parser_s {
   /* static statement for use in passing to user code */
   raptor_statement statement;
 
-  raptor_namespace_stack namespaces;
+  raptor_namespace_stack namespaces; /* static */
 
   /* for lexer to store result in */
   YYSTYPE lval;
