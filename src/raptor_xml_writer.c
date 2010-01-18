@@ -411,21 +411,19 @@ raptor_xml_writer_end_element_common(raptor_xml_writer* xml_writer,
 
 
 /**
- * raptor_new_xml_writer_v2:
+ * raptor_new_xml_writer:
  * @world: raptor_world object
  * @nstack: Namespace stack for the writer to start with (or NULL)
  * @iostr: I/O stream to write to
- * @canonicalize: unused
  * 
  * Constructor - Create a new XML Writer writing XML to a raptor_iostream
  * 
  * Return value: a new #raptor_xml_writer object or NULL on failure
  **/
 raptor_xml_writer*
-raptor_new_xml_writer_v2(raptor_world* world,
-                         raptor_namespace_stack *nstack,
-                         raptor_iostream* iostr,
-                         int canonicalize)
+raptor_new_xml_writer(raptor_world* world,
+                      raptor_namespace_stack *nstack,
+                      raptor_iostream* iostr)
 {
   raptor_xml_writer* xml_writer;
   
@@ -1123,7 +1121,7 @@ main(int argc, char *argv[])
 
   nstack = raptor_new_namespaces(world, 1);
 
-  xml_writer = raptor_new_xml_writer_v2(world, nstack, iostr, 1);
+  xml_writer = raptor_new_xml_writer(world, nstack, iostr);
   if(!xml_writer) {
     fprintf(stderr, "%s: Failed to create xml_writer to iostream\n", program);
     exit(1);

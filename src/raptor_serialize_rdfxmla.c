@@ -1198,10 +1198,8 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
     if(context->xml_writer)
       raptor_free_xml_writer(context->xml_writer);
 
-    xml_writer = raptor_new_xml_writer_v2(serializer->world, 
-                                          context->nstack,
-                                          serializer->iostream,
-                                          1);
+    xml_writer = raptor_new_xml_writer(serializer->world, context->nstack,
+                                       serializer->iostream);
     if(!xml_writer)
       return 1;
 

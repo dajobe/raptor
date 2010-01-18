@@ -1467,7 +1467,7 @@ const unsigned char* raptor_xml_element_get_language(raptor_xml_element* xml_ele
 
 /* XML Writer Class (raptor_xml_writer) */
 RAPTOR_API
-raptor_xml_writer* raptor_new_xml_writer_v2(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr, int canonicalize);
+raptor_xml_writer* raptor_new_xml_writer(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr);
 RAPTOR_API
 void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
 RAPTOR_API

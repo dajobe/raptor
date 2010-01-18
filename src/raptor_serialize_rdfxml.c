@@ -247,10 +247,8 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
     context->xml_writer = NULL;
   }
 
-  xml_writer = raptor_new_xml_writer_v2(serializer->world,
-                                        context->nstack,
-                                        serializer->iostream,
-                                        1);
+  xml_writer = raptor_new_xml_writer(serializer->world, context->nstack,
+                                     serializer->iostream);
   if(!xml_writer)
     return 1;
   raptor_xml_writer_set_feature(xml_writer, RAPTOR_FEATURE_WRITER_XML_VERSION,
