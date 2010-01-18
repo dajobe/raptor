@@ -150,17 +150,17 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
                 node, 
                 node->ref_count, node->count_as_subject, node->count_as_object);
 
-  if(node->type != RAPTOR_TERM_TYPE_URI)
+  if(node->term->type != RAPTOR_TERM_TYPE_URI)
     return 1;
 
   qname = raptor_namespaces_qname_from_uri(context->nstack,
-                                           node->value.resource.uri, 10);
+                                           node->term->value.uri, 10);
 
   if(qname) {
     raptor_turtle_writer_qname(turtle_writer, qname);
     raptor_free_qname(qname);
   } else {
-    raptor_turtle_writer_reference(turtle_writer, node->value.resource.uri);
+    raptor_turtle_writer_reference(turtle_writer, node->term->value.uri);
   }
 
   RAPTOR_DEBUG2("Emitted %p\n", node);
@@ -192,13 +192,13 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
                 node, 
                 node->ref_count, node->count_as_subject, node->count_as_object);
 
-  if(node->type != RAPTOR_TERM_TYPE_LITERAL)
+  if(node->term->type != RAPTOR_TERM_TYPE_LITERAL)
     return 1;
   
   rc = raptor_turtle_writer_literal(turtle_writer, context->nstack,
-                                  node->value.literal.string,
-                                  node->value.literal.language, 
-                                  node->value.literal.datatype);
+                                    node->term->value.literal.string,
+                                    node->term->value.literal.language, 
+                                    node->term->value.literal.datatype);
 
   RAPTOR_DEBUG2("Emitted %p\n", node);
   
@@ -228,7 +228,7 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
                 node, 
                 node->ref_count, node->count_as_subject, node->count_as_object);
   
-  if(node->type != RAPTOR_TERM_TYPE_BLANK)
+  if(node->term->type != RAPTOR_TERM_TYPE_BLANK)
     return 1;
   
   if((node->count_as_subject == 1 && node->count_as_object == 1)) {
@@ -236,13 +236,8 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
      * used as a subject or never used as an object, it never need
      * be referenced with an explicit name */
     raptor_abbrev_subject* blank;
-    raptor_term blank_term; /* static */
 
-    memset(&blank_term, '\0', sizeof(blank_term));
-    blank_term.type = node->type;
-    blank_term.value.blank = node->value.blank.string;
-
-    blank = raptor_abbrev_subject_find(context->blanks, &blank_term);
+    blank = raptor_abbrev_subject_find(context->blanks, node->term);
     if(blank) {
       rc = raptor_turtle_emit_subject(serializer, blank, depth+1);
       raptor_abbrev_subject_invalidate(blank);
@@ -250,7 +245,7 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
           
   } else {
     /* Blank node that needs an explicit name */
-    const unsigned char *node_id = node->value.blank.string;
+    const unsigned char *node_id = node->term->value.blank;
 
     raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)"_:");
     raptor_turtle_writer_raw(context->turtle_writer, node_id);
@@ -293,7 +288,7 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
     if(!object)
       continue;
     
-    switch(object->type) {
+    switch(object->term->type) {
       case RAPTOR_TERM_TYPE_URI:
         rv = raptor_turtle_emit_resource(serializer, object, depth+1);
         break;
@@ -363,7 +358,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     predicate= nodes[0];
     object= nodes[1];
     
-    if(!raptor_uri_equals(predicate->value.resource.uri,
+    if(!raptor_uri_equals(predicate->term->value.uri,
                           context->rdf_first_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - first predicate is not rdf:first");
@@ -376,7 +371,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     if(i > 0)
       raptor_turtle_writer_newline(context->turtle_writer);
     
-    switch(object->type) {
+    switch(object->term->type) {
       case RAPTOR_TERM_TYPE_URI:
         rv = raptor_turtle_emit_resource(serializer, object, depth+1);
         break;
@@ -404,21 +399,14 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     predicate = nodes[0];
     object = nodes[1];
 
-    if(!raptor_uri_equals(predicate->value.resource.uri, context->rdf_rest_uri)) {
+    if(!raptor_uri_equals(predicate->term->value.uri, context->rdf_rest_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - second predicate is not rdf:rest");
       return 1;
     }
     
-    if(object->type == RAPTOR_TERM_TYPE_BLANK) {
-      raptor_term blank_term; /* static */
-
-      memset(&blank_term, '\0', sizeof(blank_term));
-      blank_term.type = object->type;
-      blank_term.value.blank = object->value.blank.string;
-      
-      subject = raptor_abbrev_subject_find(context->blanks, 
-                                           &blank_term);
+    if(object->term->type == RAPTOR_TERM_TYPE_BLANK) {
+      subject = raptor_abbrev_subject_find(context->blanks, object->term);
 
       if(!subject) {
         raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
@@ -435,8 +423,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       is_new_subject = 1;
 
     } else {
-      if(object->type != RAPTOR_TERM_TYPE_URI ||
-         !raptor_uri_equals(object->value.resource.uri, context->rdf_nil_uri)) {
+      if(object->term->type != RAPTOR_TERM_TYPE_URI ||
+         !raptor_uri_equals(object->term->value.uri, context->rdf_nil_uri)) {
         raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Malformed collection - last rdf:rest resource is not rdf:nil");
         return 1;
@@ -505,14 +493,14 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
       }
 
       qname = raptor_namespaces_qname_from_uri(context->nstack,
-                                               predicate->value.resource.uri, 10);
+                                               predicate->term->value.uri, 10);
 
       if(raptor_abbrev_node_equals(predicate, context->rdf_type))
         raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"a");
       else if(qname)
         raptor_turtle_writer_qname(turtle_writer, qname);
       else
-        raptor_turtle_writer_reference(turtle_writer, predicate->value.resource.uri);
+        raptor_turtle_writer_reference(turtle_writer, predicate->term->value.uri);
 
       raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)" ");
     
@@ -522,7 +510,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
       raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)", ");
 
 
-    switch(object->type) {
+    switch(object->term->type) {
       case RAPTOR_TERM_TYPE_URI:
         rv = raptor_turtle_emit_resource(serializer, object, depth+1);
         break;
@@ -580,7 +568,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
                 subject->node->count_as_object);
 
   if(!depth &&
-     subject->node->type == RAPTOR_TERM_TYPE_BLANK &&
+     subject->node->term->type == RAPTOR_TERM_TYPE_BLANK &&
      subject->node->count_as_subject == 1 &&
      subject->node->count_as_object == 1) {
     RAPTOR_DEBUG2("Skipping subject node %p\n", subject->node);
@@ -606,14 +594,14 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     pred2 = ((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
     raptor_free_avltree_iterator(iter);
 
-    if(pred1->type == RAPTOR_TERM_TYPE_URI &&
-       pred2->type == RAPTOR_TERM_TYPE_URI &&
+    if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
+       pred2->term->type == RAPTOR_TERM_TYPE_URI &&
        (
-        (raptor_uri_equals(pred1->value.resource.uri, context->rdf_first_uri) &&
-         raptor_uri_equals(pred2->value.resource.uri, context->rdf_rest_uri))
+        (raptor_uri_equals(pred1->term->value.uri, context->rdf_first_uri) &&
+         raptor_uri_equals(pred2->term->value.uri, context->rdf_rest_uri))
         ||
-        (raptor_uri_equals(pred2->value.resource.uri, context->rdf_first_uri) &&
-         raptor_uri_equals(pred1->value.resource.uri, context->rdf_rest_uri))
+        (raptor_uri_equals(pred2->term->value.uri, context->rdf_first_uri) &&
+         raptor_uri_equals(pred1->term->value.uri, context->rdf_rest_uri))
         )
        ) {
       collection = 1;
@@ -621,13 +609,13 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   }
 
   /* emit the subject node */
-  if(subject->node->type == RAPTOR_TERM_TYPE_URI) {
+  if(subject->node->term->type == RAPTOR_TERM_TYPE_URI) {
     rc= raptor_turtle_emit_resource(serializer, subject->node, depth+1);
     if(rc)
       return rc;
     blank = 0;
     
-  } else if(subject->node->type == RAPTOR_TERM_TYPE_BLANK) {
+  } else if(subject->node->term->type == RAPTOR_TERM_TYPE_BLANK) {
     if((subject->node->count_as_subject == 1 && 
         subject->node->count_as_object == 0) && depth > 1) { 
       blank = 1;
@@ -636,7 +624,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       blank = 0;
     } else if(!collection && subject->node->count_as_object > 1) {
       /* Referred to (used as an object), so needs a nodeID */
-      const unsigned char* genid = subject->node->value.blank.string;
+      const unsigned char* genid = subject->node->term->value.blank;
       size_t len = strlen((const char*)genid);
       unsigned char* subject_str;
       subject_str= (unsigned char *)RAPTOR_MALLOC(cstring, len+3);
@@ -784,14 +772,10 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
 
   rdf_type_uri = raptor_new_uri_for_rdf_concept(serializer->world, "type");
   if(rdf_type_uri) {
-    raptor_term uri_term; /* static */
-
-    memset(&uri_term, '\0', sizeof(uri_term));
-    uri_term.type = RAPTOR_TERM_TYPE_URI;
-    uri_term.value.uri = rdf_type_uri;
-
-    context->rdf_type = raptor_new_abbrev_node(serializer->world, &uri_term);
-    raptor_free_uri(rdf_type_uri);
+    raptor_term* uri_term;
+    uri_term = raptor_new_term_from_uri(serializer->world,
+                                        raptor_uri_copy(rdf_type_uri));
+    context->rdf_type = raptor_new_abbrev_node(serializer->world, uri_term);
   } else
     context->rdf_type = NULL;
 

@@ -60,7 +60,6 @@
 raptor_abbrev_node* 
 raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
 {
-  unsigned char *string;
   raptor_abbrev_node* node = NULL;
   
   if(term->type == RAPTOR_TERM_TYPE_UNKNOWN)
@@ -68,64 +67,13 @@ raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
 
   node = (raptor_abbrev_node*)RAPTOR_CALLOC(raptor_abbrev_node, 1,
                                             sizeof(raptor_abbrev_node));
-
   if(node) {
     node->world = world;
     node->ref_count = 1;
-    node->type = term->type;
-    
-    switch (term->type) {
-        case RAPTOR_TERM_TYPE_URI:
-          node->value.resource.uri = raptor_uri_copy(term->value.uri);
-          break;
-          
-        case RAPTOR_TERM_TYPE_BLANK:
-          string = (unsigned char*)RAPTOR_MALLOC(blank,
-                                                 strlen((char*)term->value.blank)+1);
-          if(!string)
-            goto oom;
-          strcpy((char*)string, (const char*)term->value.blank);
-          node->value.blank.string = string;
-          break;
-          
-        case RAPTOR_TERM_TYPE_LITERAL:
-          string = (unsigned char*)RAPTOR_MALLOC(literal,
-                                                 strlen((char*)term->value.literal.string)+1);
-          if(!string)
-            goto oom;
-          strcpy((char*)string, (const char*)term->value.literal.string);
-          node->value.literal.string = string;
-
-          if(term->value.literal.datatype) {
-            node->value.literal.datatype = raptor_uri_copy(term->value.literal.datatype);
-          }
-
-          if(term->value.literal.language) {
-            unsigned char *lang;
-            lang = (unsigned char*)RAPTOR_MALLOC(language,
-                                                 strlen((const char*)term->value.literal.language)+1);
-            if(!lang) {
-              RAPTOR_FREE(literal, string);
-              goto oom;
-            }
-            strcpy((char*)lang, (const char*)term->value.literal.language);
-            node->value.literal.language = lang;
-          }
-          break;
-          
-        case RAPTOR_TERM_TYPE_UNKNOWN: 
-        default:
-          RAPTOR_FREE(raptor_abbrev_node, node);
-    }
-    
+    node->term = raptor_new_term_from_term(term);
   }
 
   return node;
-
-  /* out of memory - clean up and return NULL */
-  oom:
-  RAPTOR_FREE(raptor_abbrev_node, node);
-  return NULL;
 }
 
 
@@ -136,32 +84,9 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
 
   if(--node->ref_count)
     return;
-  
-  switch (node->type) {
-      case RAPTOR_TERM_TYPE_URI:
-        raptor_free_uri(node->value.resource.uri);
-        break;
-          
-      case RAPTOR_TERM_TYPE_BLANK:
-        RAPTOR_FREE(blank, node->value.blank.string);
-        break;
-          
-      case RAPTOR_TERM_TYPE_LITERAL:
-        RAPTOR_FREE(literal, node->value.literal.string);
 
-        if(node->value.literal.datatype)
-          raptor_free_uri(node->value.literal.datatype);
-
-        if(node->value.literal.language)
-          RAPTOR_FREE(language, node->value.literal.language);
-
-        break;
-          
-      case RAPTOR_TERM_TYPE_UNKNOWN: 
-      default:
-        /* Nothing to do */
-        break;
-  }
+  if(node->term)
+    raptor_free_term(node->term);
 
   RAPTOR_FREE(raptor_abbrev_node, node);
 }
@@ -183,90 +108,16 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
 int
 raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 {
-  int rv = 0;  
-
-  if(node1 == node2) {
+  if(node1 == node2)
     return 0;
-  } else if(node1->type < node2->type) {
-    return -1;
-  } else if(node1->type > node2->type) {
-    return 1;
-  }
 
-  switch (node1->type) {
-      case RAPTOR_TERM_TYPE_URI:
-        rv = raptor_uri_compare(node1->value.resource.uri,
-                                node2->value.resource.uri);
-        break;
-          
-      case RAPTOR_TERM_TYPE_BLANK:
-        rv = strcmp((const char*)node1->value.blank.string,
-                    (const char*)node2->value.blank.string);
-        break;
-          
-      case RAPTOR_TERM_TYPE_LITERAL:
-        if((char *)node1->value.literal.string != NULL &&
-            (char *)node2->value.literal.string != NULL) {
-
-          /* string */
-          rv = strcmp((const char*)node1->value.literal.string,
-                       (const char*)node2->value.literal.string);
-          if(rv != 0) 
-            break;
-
-          /* if strings are equal, compare language */
-          if(node1->value.literal.language == NULL &&
-             node2->value.literal.language == NULL) {
-            rv = 0;
-          } else if(node1->value.literal.language != NULL &&
-                    node2->value.literal.language != NULL) {
-            rv = strcmp((const char*)node1->value.literal.language,
-                        (const char*)node2->value.literal.language);
-          } else if(node1->value.literal.language == NULL) {
-            rv = -1;
-          } else {
-            rv = 1;
-          }
-          if(rv != 0) 
-            break;
-
-          /* if string and language are equal, compare datatype */
-          if(node1->value.literal.datatype == NULL &&
-             node2->value.literal.datatype == NULL ) {
-            rv = 0;
-          } else if(node1->value.literal.datatype != NULL &&
-                    node2->value.literal.datatype != NULL) {
-            rv = strcmp((char*)node1->value.literal.datatype,
-                  (char*)node2->value.literal.datatype);
-          } else if(node1->value.literal.datatype == NULL) {
-            rv = -1;
-          } else {
-            rv = 1;
-          }
-          
-          /* if rv = 0 here then the nodes are completely equal */
-
-        } else {
-          RAPTOR_FATAL1("string must be non-NULL for literal or xml literal\n");
-          rv = 0;
-        }        
-
-        break;
-          
-      case RAPTOR_TERM_TYPE_UNKNOWN: 
-      default:
-        /* Nothing to do */
-        break;
-  }
-
-  return rv;
-  
+  return raptor_term_compare(node1->term, node2->term);
 }
 
 int
 raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 {
-  return raptor_abbrev_node_cmp(node1, node2) == 0;
+  return raptor_term_equals(node1->term, node2->term);
 }
 
 
@@ -390,8 +241,8 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
 {
   raptor_abbrev_subject* subject;
   
-  if(!(node->type == RAPTOR_TERM_TYPE_URI ||
-        node->type == RAPTOR_TERM_TYPE_BLANK)) {
+  if(!(node->term->type == RAPTOR_TERM_TYPE_URI ||
+       node->term->type == RAPTOR_TERM_TYPE_BLANK)) {
     RAPTOR_FATAL1("Subject node must be a resource or blank\n");
     return NULL;
   }  
@@ -715,17 +566,16 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   unsigned char *ns_uri_string;
   size_t ns_uri_string_len;
   
-  if(node->type != RAPTOR_TERM_TYPE_URI) {
+  if(node->term->type != RAPTOR_TERM_TYPE_URI) {
     RAPTOR_FATAL1("Node must be a resource\n");
     return NULL;
   }
 
-  qname = raptor_namespaces_qname_from_uri(nstack, 
-                                         node->value.resource.uri, 10);
+  qname = raptor_namespaces_qname_from_uri(nstack, node->term->value.uri, 10);
   if(qname)
     return qname;
   
-  uri_string = raptor_uri_as_counted_string(node->value.resource.uri, &uri_len);
+  uri_string = raptor_uri_as_counted_string(node->term->value.uri, &uri_len);
 
   p= uri_string;
   name_len = uri_len;

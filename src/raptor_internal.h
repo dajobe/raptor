@@ -1150,24 +1150,7 @@ typedef struct {
   int count_as_subject;  /* count of this blank/resource node as subject */
   int count_as_object;   /* count of this blank/resource node as object */
   
-  raptor_term_type type;  /* node type */
-  union {
-
-    struct {
-      raptor_uri *uri;
-    } resource;
-
-    struct {
-      unsigned char *string;
-      raptor_uri *datatype;
-      unsigned char *language;
-    } literal;
-
-    struct {
-      unsigned char *string;
-    } blank;
-    
-  } value;
+  raptor_term* term;
 } raptor_abbrev_node;
 
 
