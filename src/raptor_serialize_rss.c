@@ -729,7 +729,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
     raptor_sequence_push(rss_serializer->triples, s);
 #if RAPTOR_DEBUG > 1
     fprintf(stderr,"Stored statement: ");
-    raptor_print_statement_as_ntriples_v2(s, stderr);
+    raptor_print_statement_as_ntriples(s, stderr);
     fprintf(stderr,"\n");
 #endif
     handled = 1;
@@ -791,7 +791,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     RAPTOR_DEBUG1("Processing statement\n  ");
     s2.s = (raptor_statement*)statement;
     s2.world = rss_serializer->world;
-    raptor_print_statement_as_ntriples_v2(&s2, stderr);
+    raptor_print_statement_as_ntriples(&s2, stderr);
     fputc('\n', stderr);
   }
 #endif
@@ -928,7 +928,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     
 #if RAPTOR_DEBUG > 1
     RAPTOR_DEBUG1("Processing statement\n  ");
-    raptor_print_statement_as_ntriples_v2(s, stderr);
+    raptor_print_statement_as_ntriples(s, stderr);
     fputc('\n', stderr);
 #endif
     
