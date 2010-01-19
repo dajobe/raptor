@@ -239,10 +239,10 @@ static const struct {
   raptor_term_type type;
 
   /* RDF/XML: name restrictions */
-  int allowed_as_nodeElement : 1;
-  int allowed_as_propertyElement : 1;
-  int allowed_as_propertyAttribute : 1;
-  int allowed_unprefixed_on_attribute : 1;
+  unsigned int allowed_as_nodeElement : 1;
+  unsigned int allowed_as_propertyElement : 1;
+  unsigned int allowed_as_propertyAttribute : 1;
+  unsigned int allowed_unprefixed_on_attribute : 1;
 } raptor_rdf_ns_terms_info[(RDF_NS_LAST + 1) + 1] = { /* +1: extra sentinel row */
   /* syntax only */
   { "RDF",             RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 0 }, /* just root */
