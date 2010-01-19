@@ -7,11 +7,11 @@
 #  perl fix-flex $output > $tmp
 #  mv $tmp $output
 #
-# (C) Copyright 2004 Dave Beckett http://www.dajobe.org/
+# (C) Copyright 2004-2010 Dave Beckett http://www.dajobe.org/
 # (C) Copyright 2004 University of Bristol
 #
 
-my $line_offset=1; # #line directives always refer to the NEXT line
+my $line_offset = 1; # #line directives always refer to the NEXT line
 
 print <<'EOT';
 #ifdef HAVE_CONFIG_H
@@ -23,9 +23,9 @@ print <<'EOT';
 #endif
 
 EOT
-$line_offset+=8; # added 8 lines to output
+$line_offset += 8; # added 8 lines to output
 
-my $prefix=undef;
+my $prefix = undef;
 
 while(<>) {
   # Remove generated yy_fatal_error declaration and definition to avoid warnings about unused/non-defined static function
@@ -55,7 +55,7 @@ while(<>) {
 $1
 #endif
 EOT
-    $line_offset+=2; # added 2 lines to output
+    $line_offset += 2; # added 2 lines to output
   }
 
   # Add $prefix_cleanup() call at the end of $prefix_lex_destroy()
@@ -69,14 +69,19 @@ $1/* clean up leaks if any before freeing yyscanner */
 $1${prefix}_cleanup(yyscanner);
 $1$2
 EOT
-      $line_offset+=2; # added 2 lines to output
-      $prefix=undef; # lex_destroy() patched
+      $line_offset += 2; # added 2 lines to output
+      $prefix = undef; # lex_destroy() patched
     }
   }
 
   # Fix .[ch] line references because we have added lines to it
-  my $line = $. +$line_offset;
+  my $line = $. + $line_offset;
   s/^#line \d+ (\".*\.[ch]\")/#line $line $1/;
+
+  # Fix signed / unsigned comparison gcc 4.x warning:
+  #   int n : in the macro YY_INPUT definition
+  #   (size_t)num_to_read : which is silly since num_to_read is an int!
+  s/yyg->yy_n_chars, \(size_t\) num_to_read \)/yyg->yy_n_chars, num_to_read \)/;
 
   print;
 }
