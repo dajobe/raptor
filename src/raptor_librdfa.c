@@ -162,12 +162,11 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     raptor_free_uri(datatype_uri);
   } else if(triple->object_type == RDF_TYPE_TYPED_LITERAL) {
     raptor_uri *datatype_uri = NULL;
-    unsigned char* language = NULL;
+    const unsigned char* language = (const unsigned char*)triple->language;
     
-    if(triple->language) {
-      language = (unsigned char*)strdup(triple->language);
+    if(triple->datatype) {
       /* If datatype, no language allowed */
-    } else if(triple->datatype) {
+      language = NULL;
       datatype_uri = raptor_new_uri(parser->world,
                                     (const unsigned char*)triple->datatype);
       if(!datatype_uri)
