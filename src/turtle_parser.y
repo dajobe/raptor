@@ -705,9 +705,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    strdup($1),
-                                    NULL,
-                                    ($3 ? strdup($3): NULL));
+                                    $1, NULL, $3);
   if(!$$)
     YYERROR;
 }
@@ -719,9 +717,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   if($5) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      strdup($1),
-                                      ($5 ? raptor_uri_copy($5) : NULL),
-                                      ($3 ? strdup($3): NULL));
+                                      $1, $5, $3);
+    raptor_free_uri($5);
     if(!$$)
       YYERROR;
   } else
@@ -736,9 +733,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   if($5) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      strdup($1),
-                                      ($5 ? raptor_uri_copy($5) : NULL),
-                                      ($3 ? strdup($3): NULL));
+                                      $1, $5, $3);
+    raptor_free_uri($5);
     if(!$$)
       YYERROR;
   } else
@@ -753,8 +749,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   if($3) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      strdup($1),
-                                      ($3 ? raptor_uri_copy($3) : NULL), NULL);
+                                      $1, $3, NULL);
+    raptor_free_uri($3);
     if(!$$)
       YYERROR;
   } else
@@ -769,8 +765,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   if($3) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      strdup($1),
-                                      ($3 ? raptor_uri_copy($3) : NULL), NULL);
+                                      $1, $3, NULL);
+    raptor_free_uri($3);
     if(!$$)
       YYERROR;
   } else
@@ -783,7 +779,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    strdup($1), NULL, NULL);
+                                    $1, NULL, NULL);
   if(!$$)
     YYERROR;
 }
@@ -799,7 +795,8 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    strdup($1), uri, NULL);
+                                    $1, uri, NULL);
+  raptor_free_uri(uri);
   if(!$$)
     YYERROR;
 }
@@ -815,7 +812,8 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    strdup($1), uri, NULL);
+                                    $1, uri, NULL);
+  raptor_free_uri(uri);
   if(!$$)
     YYERROR;
 }
@@ -831,13 +829,13 @@ literal: STRING_LITERAL AT IDENTIFIER
     YYERROR;
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    strdup($1), uri, NULL);
+                                    $1, uri, NULL);
+  raptor_free_uri(uri);
   if(!$$)
     YYERROR;
 }
 | TRUE_TOKEN
 {
-  unsigned char *string;
   raptor_uri *uri;
 #if RAPTOR_DEBUG > 1  
   fputs("resource boolean true\n", stderr);
@@ -845,20 +843,14 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
   if(!uri)
     YYERROR;
-  string = (unsigned char*)RAPTOR_MALLOC(cstring, 5);
-  if(!string) {
-    raptor_free_uri(uri);
-    YYERROR;
-  }
-  strncpy((char*)string, "true", 5);
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    strdup(string), uri, NULL);
+                                    (const unsigned char*)"true", uri, NULL);
+  raptor_free_uri(uri);
   if(!$$)
     YYERROR;
 }
 | FALSE_TOKEN
 {
-  unsigned char *string;
   raptor_uri *uri;
 #if RAPTOR_DEBUG > 1  
   fputs("resource boolean false\n", stderr);
@@ -866,14 +858,9 @@ literal: STRING_LITERAL AT IDENTIFIER
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
   if(!uri)
     YYERROR;
-  string = (unsigned char*)RAPTOR_MALLOC(cstring, 6);
-  if(!string) {
-    raptor_free_uri(uri);
-    YYERROR;
-  }
-  strncpy((char*)string, "false", 6);
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    strdup(string), uri, NULL);
+                                    (const unsigned char*)"false", uri, NULL);
+  raptor_free_uri(uri);
   if(!$$)
     YYERROR;
 }
@@ -1297,9 +1284,9 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
     RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
                   "object type is not literal");
     statement->object = raptor_new_term_from_literal(parser->world,
-                                                     strdup(t->object->value.literal.string),
-                                                     (t->object->value.literal.datatype ? raptor_uri_copy(t->object->value.literal.datatype) : NULL),
-                                                     (t->object->value.literal.language ? strdup(t->object->value.literal.language) : NULL));
+                                                     t->object->value.literal.string,
+                                                     t->object->value.literal.datatype,
+                                                     t->object->value.literal.language);
   }
 
   if(!parser->statement_handler)

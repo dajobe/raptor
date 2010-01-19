@@ -189,12 +189,8 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                                    strdup(object));
   } else { 
     /*  RAPTOR_TERM_TYPE_LITERAL */
-    if(datatype_uri)
-      datatype_uri = raptor_uri_copy(datatype_uri);
-    if(object_literal_language)
-      object_literal_language = strdup(object_literal_language);
     statement->object = raptor_new_term_from_literal(parser->world,
-                                                     strdup(object),
+                                                     object,
                                                      datatype_uri,
                                                      object_literal_language);
     datatype_uri = NULL;

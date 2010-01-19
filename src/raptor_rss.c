@@ -1153,7 +1153,7 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
         raptor_term* object_term;
         
         object_term = raptor_new_term_from_literal(rdf_parser->world,
-                                                   strdup(str), NULL, NULL);
+                                                   str, NULL, NULL);
         rss_parser->statement.object = object_term;
         (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                          &rss_parser->statement);
@@ -1219,7 +1219,7 @@ raptor_rss_emit_item(raptor_parser* rdf_parser, raptor_rss_item *item)
       if(field->value) {
         /* FIXME - should store and emit languages */
         object_term = raptor_new_term_from_literal(rdf_parser->world,
-                                                   strdup(field->value),
+                                                   field->value,
                                                    NULL, NULL);
       } else {
         object_term = raptor_new_term_from_uri(rdf_parser->world,

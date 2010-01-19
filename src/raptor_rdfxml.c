@@ -1585,16 +1585,10 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
 
     if(!handled) {
       raptor_term* object_term;
-      size_t value_len = strlen((const char*)value);
-      unsigned char* new_value;
-      new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_len + 1);
-      if(!new_value)
-        goto oom;
-
-      memcpy(new_value, value, value_len + 1);
 
       object_term = raptor_new_term_from_literal(rdf_parser->world,
-                                                 new_value, NULL, NULL);
+                                                 (unsigned char*)value,
+                                                 NULL, NULL);
     
       /* else not rdf: namespace or unknown in rdf: namespace so
        * generate a statement with a literal object
@@ -1659,14 +1653,9 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
                                                   (raptor_rdf_ns_terms_info[i].name));
     
     if(object_is_literal) {
-      unsigned char* new_value;
-      new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_len+1);
-      if(!new_value)
-        goto oom;
-
-      memcpy(new_value, value, value_len + 1);
       object_term = raptor_new_term_from_literal(rdf_parser->world,
-                                                 new_value, NULL, NULL);
+                                                 (unsigned char*)value,
+                                                 NULL, NULL);
     } else {
       raptor_uri *base_uri;
       raptor_uri *object_uri;
@@ -1691,9 +1680,6 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
   } /* end for rdf:property values */
   
   return 0;
-  
-oom:
-  return 1;
 }
 
 
@@ -2859,41 +2845,22 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
 
               if(element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LITERAL) {
-                unsigned char* literal;
-                size_t literal_len;
+                unsigned char* literal = NULL;
                 raptor_uri* literal_datatype;
                 unsigned char* literal_language = NULL;
 
-                literal_len = raptor_stringbuffer_length(xml_element->content_cdata_sb);
-                literal = RAPTOR_MALLOC(cstring, literal_len + 1);
-                if(!literal)
-                  goto oom;
-
-                if(literal_len)
-                  raptor_stringbuffer_copy_to_string(xml_element->content_cdata_sb, 
-                                                     literal, literal_len);
-                else
-                  *literal = '\0';
+                /* an empty stringbuffer - empty CDATA - is OK */
+                if(raptor_stringbuffer_length(xml_element->content_cdata_sb)) {
+                  literal = raptor_stringbuffer_as_string(xml_element->content_cdata_sb);
+                  if(!literal)
+                    goto oom;
+                }
                 
                 literal_datatype = element->object_literal_datatype;
-                if(literal_datatype) {
-                  literal_datatype = raptor_uri_copy(literal_datatype);
+                if(literal_datatype)
                   literal_language = NULL;
-                } else {
-                  const unsigned char* inscope_literal_language;
-                  inscope_literal_language = raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
-                  if(inscope_literal_language) {
-                    size_t language_len = strlen((const char*)inscope_literal_language);
-                    literal_language = (unsigned char*)RAPTOR_MALLOC(cstring, language_len + 1);
-                    if(!literal_language) {
-                      RAPTOR_FREE(cstring, literal);
-                      goto oom;
-                    }
-                    
-                    memcpy(literal_language, inscope_literal_language,
-                           language_len + 1);
-                  }
-                }
+                else
+                  literal_language = (unsigned char*)raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
 
                 if(!literal_datatype && literal &&
                    !raptor_utf8_is_nfc(literal, 
@@ -2935,7 +2902,6 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
         case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_XML_LITERAL:
             {
               unsigned char *buffer;
-              unsigned char *new_buffer;
               unsigned int length;
               raptor_term* xmlliteral_term = NULL;
               
@@ -2961,12 +2927,9 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                   raptor_parser_warning(rdf_parser, message, el_name, buffer);
               }
 
-              new_buffer = (unsigned char *)RAPTOR_MALLOC(cstring, length+1);
-              memcpy(new_buffer, buffer, length+1);
-
               xmlliteral_term = raptor_new_term_from_literal(rdf_parser->world,
-                                                             new_buffer,
-                                                             raptor_uri_copy(RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser)),
+                                                             buffer,
+                                                             RAPTOR_RDF_XMLLiteral_URI(rdf_xml_parser),
                                                              NULL);
               
               if(state == RAPTOR_STATE_MEMBER_PROPERTYELT) {

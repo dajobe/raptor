@@ -147,18 +147,19 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     }
   } else if(triple->object_type == RDF_TYPE_PLAIN_LITERAL) {
     object_term = raptor_new_term_from_literal(parser->world,
-                                               (unsigned char*)strdup(triple->object),
+                                               triple->object,
                                                NULL,
-                                               (triple->language ? (unsigned char*)strdup(triple->language) : NULL));
+                                               (unsigned char*)triple->language);
     
   } else if(triple->object_type == RDF_TYPE_XML_LITERAL) {
     raptor_uri* datatype_uri;
     datatype_uri = raptor_new_uri(parser->world,
                                   (const unsigned char*)raptor_xml_literal_datatype_uri_string);
     object_term = raptor_new_term_from_literal(parser->world,
-                                               (unsigned char*)strdup(triple->object),
+                                               triple->object,
                                                datatype_uri,
                                                NULL);
+    raptor_free_uri(datatype_uri);
   } else if(triple->object_type == RDF_TYPE_TYPED_LITERAL) {
     raptor_uri *datatype_uri = NULL;
     unsigned char* language = NULL;
@@ -174,10 +175,10 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     }
     
     object_term = raptor_new_term_from_literal(parser->world,
-                                               (unsigned char*)strdup(triple->object),
+                                               triple->object,
                                                datatype_uri,
                                                language);
-
+    raptor_free_uri(datatype_uri);
   } else {
     RAPTOR_FATAL2("Triple has unknown object type %d\n", s->object->type);
     goto cleanup;
