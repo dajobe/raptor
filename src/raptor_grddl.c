@@ -2,7 +2,7 @@
  *
  * raptor_grddl.c - Raptor GRDDL (+microformats) Parser implementation
  *
- * Copyright (C) 2005-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2005-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -24,8 +24,8 @@
 /*
  * Specifications:
  *   Gleaning Resource Descriptions from Dialects of Languages (GRDDL)
- *   W3C Proposed Recommendation 16 July 2007
- *   http://www.w3.org/TR/2007/PR-grddl-20070716/
+ *   W3C Recommendation 11 September 2007
+ *   http://www.w3.org/TR/2007/REC-grddl-20070911/
  *   http://www.w3.org/TR/grddl/
  *
  */
