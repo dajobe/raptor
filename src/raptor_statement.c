@@ -263,7 +263,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       len = 2 + term_len;
       if(term->value.literal.language) {
         language_len = strlen((const char*)term->value.literal.language);
-        len += language_len+1;
+        len += language_len + 1;
       }
       if(term->value.literal.datatype) {
         uri_string = raptor_uri_as_counted_string(term->value.literal.datatype,
@@ -271,7 +271,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
         len += 4 + uri_len;
       }
   
-      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
       if(!buffer)
         return NULL;
 
@@ -301,7 +301,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
       
     case RAPTOR_TERM_TYPE_BLANK:
       len = 2 + strlen((const char*)term->value.blank);
-      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
       if(!buffer)
         return NULL;
       s = buffer;
@@ -313,7 +313,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
     case RAPTOR_TERM_TYPE_URI:
       uri_string = raptor_uri_as_counted_string(term->value.uri, &uri_len);
       len = 2+uri_len;
-      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
       if(!buffer)
         return NULL;
 
@@ -611,8 +611,10 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 
 
 raptor_term*
-raptor_new_term_from_literal(raptor_world* world, unsigned char* literal,
-                             raptor_uri* datatype, unsigned char* language)
+raptor_new_term_from_literal(raptor_world* world,
+                             const unsigned char* literal,
+                             raptor_uri* datatype,
+                             const unsigned char* language)
 {
   raptor_term *t;
   unsigned char* new_literal = NULL;
@@ -670,16 +672,24 @@ raptor_term*
 raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 {
   raptor_term *t;
+  unsigned char* new_id;
+  size_t len;
   
+  len = strlen((char*)blank);
+  new_id = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  if(!new_id)
+    return NULL;
+  memcpy(new_id, blank, len + 1);
+
   t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
   if(!t) {
-    RAPTOR_FREE(cstring, blank);
+    RAPTOR_FREE(cstring, new_id);
     return NULL;
   }
   t->usage = 1;
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_BLANK;
-  t->value.blank = (unsigned char*)blank;
+  t->value.blank = new_id;
 
   return t;
 }

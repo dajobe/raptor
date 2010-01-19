@@ -610,9 +610,9 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
     block->rss_type = type;
     block->node_type = world->rss_types_info_uris[type];
     block->identifier = raptor_new_term_from_blank(world, id);
-  } else
-    RAPTOR_FREE(cstring, id);
-  
+  }
+  RAPTOR_FREE(cstring, id);
+    
   return block;
 }
 

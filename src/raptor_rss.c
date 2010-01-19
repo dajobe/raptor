@@ -994,6 +994,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
                                                   RAPTOR_GENID_TYPE_BNODEID,
                                                   NULL);
           item->term = raptor_new_term_from_blank(rdf_parser->world, id);
+          RAPTOR_FREE(cstring, id);
         }
       }
 
@@ -1040,8 +1041,10 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
         const unsigned char *id;
         /* need to make bnode */
         id = raptor_parser_internal_generate_id(rdf_parser,
-                                                RAPTOR_GENID_TYPE_BNODEID, NULL);
+                                                RAPTOR_GENID_TYPE_BNODEID,
+                                                NULL);
         item->term = raptor_new_term_from_blank(rdf_parser->world, id);
+        RAPTOR_FREE(cstring, id);
       }
     }
     
@@ -1153,7 +1156,8 @@ raptor_rss_emit_block(raptor_parser* rdf_parser,
         raptor_term* object_term;
         
         object_term = raptor_new_term_from_literal(rdf_parser->world,
-                                                   str, NULL, NULL);
+                                                   (const unsigned char*)str,
+                                                   NULL, NULL);
         rss_parser->statement.object = object_term;
         (*rdf_parser->statement_handler)(rdf_parser->user_data,
                                          &rss_parser->statement);
@@ -1329,12 +1333,17 @@ raptor_rss_emit(raptor_parser* rdf_parser)
   }
 
   if(rss_parser->model.items_count) {
+    const unsigned char* id;
     raptor_term *items;
+
+    id = raptor_parser_internal_generate_id(rdf_parser, 
+                                            RAPTOR_GENID_TYPE_BNODEID,
+                                            NULL);
     
     /* make a new genid for the <rdf:Seq> node */
-    items = raptor_new_term_from_blank(rdf_parser->world,
-                                       (const unsigned char*)raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL));
-  
+    items = raptor_new_term_from_blank(rdf_parser->world, id);
+    RAPTOR_FREE(cstring, id);
+
     /* _:genid1 rdf:type rdf:Seq . */
     if(raptor_rss_emit_type_triple(rdf_parser, items,
                                    RAPTOR_RSS_RDF_Seq_URI(&rss_parser->model))) {

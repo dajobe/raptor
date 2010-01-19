@@ -1382,8 +1382,10 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
       /* reified_term is NULL so generate a bag ID */
       reified_id = raptor_parser_internal_generate_id(rdf_parser, 
-                                                      RAPTOR_GENID_TYPE_BNODEID, NULL);
+                                                      RAPTOR_GENID_TYPE_BNODEID,
+                                                      NULL);
       reified_term = raptor_new_term_from_blank(rdf_parser->world, reified_id);
+      RAPTOR_FREE(cstring, reified_id);
       if(!reified_term)
         goto generate_tidy;
       free_reified_term = 1;
@@ -1922,6 +1924,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           
           element->subject = raptor_new_term_from_blank(rdf_parser->world,
                                                         subject_id);
+          RAPTOR_FREE(cstring, subject_id);
           element->rdf_attr[RDF_NS_nodeID] = NULL;
           if(!element->subject)
             goto oom;
@@ -1941,11 +1944,15 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           /* copy from parent (property element), it has a URI for us */
           element->subject = raptor_new_term_from_term(element->parent->object);
         } else {
-          unsigned char* subject_id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+          unsigned char* subject_id;
+          subject_id = raptor_parser_internal_generate_id(rdf_parser,
+                                                          RAPTOR_GENID_TYPE_BNODEID,
+                                                          NULL);
           if(!subject_id)
             goto oom;
           element->subject = raptor_new_term_from_blank(rdf_parser->world,
                                                         subject_id);
+          RAPTOR_FREE(cstring, subject_id);
           if(!element->subject)
             goto oom;
         }
@@ -2026,12 +2033,12 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             raptor_term* object_term;
               
             idList = raptor_parser_internal_generate_id(rdf_parser,
-                                                        RAPTOR_GENID_TYPE_BNODEID, NULL);
+                                                        RAPTOR_GENID_TYPE_BNODEID,
+                                                        NULL);
             if(!idList)
               goto oom;
 
-            idList_term = raptor_new_term_from_blank(rdf_parser->world, 
-                                                     strdup(idList));
+            idList_term = raptor_new_term_from_blank(rdf_parser->world, idList);
             if(!idList_term)
               goto oom;
 
@@ -2064,30 +2071,19 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             
             /* If there is no rdf:parseType="Collection" */
             if(!element->parent->tail_id) {
-              int len;
-              unsigned char *new_id;
-              
               /* Free any existing object still around.
                * I suspect this can never happen.
                */
               if(element->parent->object)
                 raptor_free_term(element->parent->object);
 
-              len = strlen((char*)idList);
-              new_id = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-              if(!len) {
-                if(new_id)
-                  RAPTOR_FREE(cstring, new_id);
-                return;
-              }
-              strncpy((char*)new_id, (char*)idList, len+1);
-
-              element->parent->object = raptor_new_term_from_blank(rdf_parser->world, new_id);
+              element->parent->object = raptor_new_term_from_blank(rdf_parser->world,
+                                                                   idList);
             } else {
               raptor_term* tail_id_term;
 
               tail_id_term = raptor_new_term_from_blank(rdf_parser->world, 
-                                                        strdup(element->parent->tail_id));
+                                                        element->parent->tail_id);
               
               predicate_uri = (element->content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) ? RAPTOR_DAML_rest_URI(rdf_xml_parser) : RAPTOR_RDF_rest_URI(rdf_xml_parser);
 
@@ -2373,11 +2369,13 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
             /* create a node for the subject of the contained properties */
             subject_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                            RAPTOR_GENID_TYPE_BNODEID, NULL);
+                                                            RAPTOR_GENID_TYPE_BNODEID,
+                                                            NULL);
             if(!subject_id)
               goto oom;
             element->subject = raptor_new_term_from_blank(rdf_parser->world,
                                                           subject_id);
+            RAPTOR_FREE(cstring, subject_id);
             if(!element->subject)
               goto oom;
           } else if(!strcmp((char*)parse_type, "Collection")) {
@@ -2666,7 +2664,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
             raptor_term* nil_id_term;
               
             tail_id_term = raptor_new_term_from_blank(rdf_parser->world, 
-                                                      strdup(element->tail_id));
+                                                      element->tail_id);
 
             nil_id_term = raptor_new_term_from_uri(rdf_parser->world,
                                                    nil_uri);
@@ -2721,9 +2719,12 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
               } else if(element->rdf_attr[RDF_NS_nodeID]) {
                 unsigned char* resource_id;
-                resource_id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, (unsigned char*)element->rdf_attr[RDF_NS_nodeID]);
+                resource_id = raptor_parser_internal_generate_id(rdf_parser,
+                                                                 RAPTOR_GENID_TYPE_BNODEID, 
+                                                                 (unsigned char*)element->rdf_attr[RDF_NS_nodeID]);
                 element->object = raptor_new_term_from_blank(rdf_parser->world,
                                                              resource_id);
+                RAPTOR_FREE(cstring, resource_id);
                 element->rdf_attr[RDF_NS_nodeID] = NULL;
                 if(!element->object)
                   goto oom;
@@ -2738,9 +2739,12 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 }
               } else {
                 unsigned char* resource_id;
-                resource_id = raptor_parser_internal_generate_id(rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+                resource_id = raptor_parser_internal_generate_id(rdf_parser,
+                                                                 RAPTOR_GENID_TYPE_BNODEID,
+                                                                 NULL);
                 element->object = raptor_new_term_from_blank(rdf_parser->world,
                                                              resource_id);
+                RAPTOR_FREE(cstring, resource_id);
                 if(!element->object)
                   goto oom;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
@@ -2811,9 +2815,11 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                  !element->object) {
                 unsigned char* object_id;
                 object_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                               RAPTOR_GENID_TYPE_BNODEID, NULL);
+                                                               RAPTOR_GENID_TYPE_BNODEID,
+                                                               NULL);
                 element->object = raptor_new_term_from_blank(rdf_parser->world,
                                                              object_id);
+                RAPTOR_FREE(cstring, object_id);
                 if(!element->object)
                   goto oom;
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;

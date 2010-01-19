@@ -908,6 +908,8 @@ blank: BLANK_LITERAL
     YYERROR;
 
   $$ = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world, id);
+  RAPTOR_FREE(cstring, id);
+
   if(!$$)
     YYERROR;
 }
@@ -925,6 +927,7 @@ blank: BLANK_LITERAL
   }
 
   $$ = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world, id);
+  RAPTOR_FREE(cstring, id);
   if(!$$) {
     if($2)
       raptor_free_sequence($2);
@@ -1010,11 +1013,15 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
     const unsigned char *blank_id;
 
-    blank_id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser, RAPTOR_GENID_TYPE_BNODEID, NULL);
+    blank_id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser,
+                                                  RAPTOR_GENID_TYPE_BNODEID,
+                                                  NULL);
     if(!blank_id)
       goto err_collection;
 
-    blank = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world, blank_id);
+    blank = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world,
+                                       blank_id);
+    RAPTOR_FREE(cstring, blank);
     if(!blank)
       goto err_collection;
     
@@ -1250,7 +1257,7 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   /* Two choices for subject for Turtle */
   if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->subject = raptor_new_term_from_blank(parser->world,
-                                                    strdup(t->subject->value.blank));
+                                                    t->subject->value.blank);
   } else {
     /* RAPTOR_TERM_TYPE_URI */
     RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
@@ -1278,7 +1285,7 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
                                                  t->object->value.uri);
   } else if(t->object->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->object = raptor_new_term_from_blank(parser->world,
-                                                   strdup(t->object->value.blank));
+                                                   t->object->value.blank);
   } else {
     /* RAPTOR_TERM_TYPE_LITERAL */
     RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,

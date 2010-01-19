@@ -135,8 +135,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 
   /* Two choices for subject from N-Triples */
   if(subject_type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->subject = raptor_new_term_from_blank(parser->world,
-                                                    strdup(subject));
+    statement->subject = raptor_new_term_from_blank(parser->world, subject);
   } else {
     /* must be RAPTOR_TERM_TYPE_URI */
     subject_uri = raptor_new_uri(parser->world, subject);
@@ -185,8 +184,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     raptor_free_uri(object_uri);
     object_uri = NULL;
   } else if(object_type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->object = raptor_new_term_from_blank(parser->world,
-                                                   strdup(object));
+    statement->object = raptor_new_term_from_blank(parser->world, object);
   } else { 
     /*  RAPTOR_TERM_TYPE_LITERAL */
     statement->object = raptor_new_term_from_literal(parser->world,
@@ -715,8 +713,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           }
           strcpy((char*)blank, (const char*)dest);
           dest = raptor_parser_internal_generate_id(rdf_parser, 
-                                                  RAPTOR_GENID_TYPE_BNODEID,
-                                                  blank);
+                                                    RAPTOR_GENID_TYPE_BNODEID,
+                                                    blank);
           terms_allocated[i] = 1;
         }
 
