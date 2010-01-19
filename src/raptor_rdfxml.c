@@ -159,36 +159,37 @@ static const char * raptor_rdfxml_state_as_string(raptor_state state)
  *
  */
 typedef enum {
+  /* These terms are used only in the RDF/XML syntax; never in RDF graph */
   RDF_NS_RDF             = 0,
   RDF_NS_Description     = 1,
   RDF_NS_li              = 2,
-  RDF_NS_about           = 3, /* value of rdf:about attribute */
-  RDF_NS_aboutEach       = 4, /* " rdf:aboutEach */
-  RDF_NS_aboutEachPrefix = 5, /* " rdf:aboutEachPrefix */
-  RDF_NS_ID              = 6, /* " rdf:ID */
-  RDF_NS_bagID           = 7, /* " rdf:bagID */
-  RDF_NS_resource        = 8, /* " rdf:resource */
-  RDF_NS_parseType       = 9, /* " rdf:parseType */
-  RDF_NS_nodeID          = 10, /* " rdf:nodeID */
-  RDF_NS_datatype        = 11, /* " rdf:datatype */
-  /* rdf:Property-s */
-  RDF_NS_type            = 12, /* " rdf:type -- a property in RDF Model */
-  RDF_NS_value           = 13, /* " rdf:value -- a property in RDF model */
-  RDF_NS_subject         = 14, /* " rdf:subject -- a property in RDF model */
-  RDF_NS_predicate       = 15, /* " rdf:predicate -- a property in RDF model */
-  RDF_NS_object          = 16, /* " rdf:object -- a property in RDF model */
-  RDF_NS_first           = 17, /* " rdf:first -- a property in RDF model */
-  RDF_NS_rest            = 18, /* " rdf:rest -- a property in RDF model */
-  /* rdfs:Class-s */
-  RDF_NS_Seq             = 19, /* " rdf:Seq -- a class in RDF Model */
-  RDF_NS_Bag             = 20, /* " rdf:Bag -- a class in RDF model */
-  RDF_NS_Alt             = 21, /* " rdf:Alt -- a class in RDF model */
-  RDF_NS_Statement       = 22, /* " rdf:Statement -- a class in RDF model */
-  RDF_NS_Property        = 23, /* " rdf:Property -- a class in RDF model */
-  RDF_NS_List            = 24, /* " rdf:List -- a class in RDF model */
-  RDF_NS_XMLLiteral      = 25, /* " rdf:XMLLiteral - a cless in RDF graph */
-  /* rdfs:Resource-s */
-  RDF_NS_nil             = 26, /* " rdf:nil -- a resource in RDF graph */
+  RDF_NS_about           = 3,
+  RDF_NS_aboutEach       = 4,
+  RDF_NS_aboutEachPrefix = 5,
+  RDF_NS_ID              = 6,
+  RDF_NS_bagID           = 7,
+  RDF_NS_resource        = 8,
+  RDF_NS_parseType       = 9,
+  RDF_NS_nodeID          = 10,
+  RDF_NS_datatype        = 11,
+  /* These terms are all properties in RDF model (of type rdf:Property) */
+  RDF_NS_type            = 12,
+  RDF_NS_value           = 13,
+  RDF_NS_subject         = 14,
+  RDF_NS_predicate       = 15,
+  RDF_NS_object          = 16,
+  RDF_NS_first           = 17,
+  RDF_NS_rest            = 18,
+  /* These terms are all classes in the RDF model (of type rdfs:Class) */
+  RDF_NS_Seq             = 19,
+  RDF_NS_Bag             = 20,
+  RDF_NS_Alt             = 21,
+  RDF_NS_Statement       = 22,
+  RDF_NS_Property        = 23,
+  RDF_NS_List            = 24,
+  RDF_NS_XMLLiteral      = 25,
+  /* These terms are all resources in the RDF model (of type rdfs:Resource) */
+  RDF_NS_nil             = 26,
 
   RDF_NS_LAST            = RDF_NS_nil
 } raptor_rdf_ns_term_id;
