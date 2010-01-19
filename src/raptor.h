@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor.h - Redland Parser Toolkit for RDF (Raptor) interfaces and definition
+ * raptor.h - Redland Parser Toolkit for RDF (Raptor) - public API
  *
- * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
