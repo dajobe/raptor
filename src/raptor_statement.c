@@ -581,22 +581,30 @@ raptor_new_term_from_term(raptor_term* term)
   return term;
 }
 
-
+/*
+ * raptor_new_term_from_uri:
+ * @world: raptor world
+ * @uri: uri
+ *
+ * Constructor - create a new URI statement term
+ *
+ * Takes a copy (reference) of the passed in @uri
+ *
+ * Return value: new term or NULL on failure
+*/
 raptor_term*
 raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 {
   raptor_term *t;
   
   t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
-  if(!t) {
-    if(uri)
-      raptor_free_uri(uri);
+  if(!t)
     return NULL;
-  }
+
   t->usage = 1;
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_URI;
-  t->value.uri = uri;
+  t->value.uri = raptor_uri_copy(uri);
 
   return t;
 }

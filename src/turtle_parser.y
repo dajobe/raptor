@@ -486,7 +486,7 @@ verb: predicate
   uri = raptor_new_uri_for_rdf_concept(((raptor_parser*)rdf_parser)->world, "type");
   if(!uri)
     YYERROR;
-  $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, raptor_uri_copy(uri));
+  $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, uri);
   if(!$$)
     YYERROR;
 }
@@ -887,8 +887,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
-                                  raptor_uri_copy($1));
+    $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, $1);
     if(!$$)
       YYERROR;
   } else
@@ -901,8 +900,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
-                                  raptor_uri_copy($1));
+    $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, $1);
     if(!$$)
       YYERROR;
   } else
@@ -999,10 +997,12 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  first_identifier = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, raptor_uri_copy(turtle_parser->first_uri));
+  first_identifier = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, 
+                                              turtle_parser->first_uri);
   if(!first_identifier)
     goto err_collection;
-  rest_identifier = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, raptor_uri_copy(turtle_parser->rest_uri));
+  rest_identifier = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
+                                             turtle_parser->rest_uri);
   if(!rest_identifier)
     goto err_collection;
   
@@ -1014,7 +1014,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 #endif
 
   object = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
-                                    raptor_uri_copy(turtle_parser->nil_uri));
+                                    turtle_parser->nil_uri);
   if(!object)
     goto err_collection;
 
@@ -1093,7 +1093,8 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("collection\n empty\n");
 #endif
 
-  $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, raptor_uri_copy(turtle_parser->nil_uri));
+  $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
+                                turtle_parser->nil_uri);
   if(!$$)
     YYERROR;
 }
@@ -1268,7 +1269,7 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
     RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
                   "subject type is not resource");
     statement->subject = raptor_new_term_from_uri(parser->world,
-                                                  raptor_uri_copy(t->subject->value.uri));
+                                                  t->subject->value.uri);
   }
 
   /* Predicates are URIs but check for bad ordinals */
@@ -1281,13 +1282,13 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   }
   
   statement->predicate = raptor_new_term_from_uri(parser->world,
-                                                  raptor_uri_copy(t->predicate->value.uri));
+                                                  t->predicate->value.uri);
   
 
   /* Three choices for object for Turtle */
   if(t->object->type == RAPTOR_TERM_TYPE_URI) {
     statement->object = raptor_new_term_from_uri(parser->world,
-                                                 raptor_uri_copy(t->object->value.uri));
+                                                 t->object->value.uri);
   } else if(t->object->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->object = raptor_new_term_from_blank(parser->world,
                                                    strdup(t->object->value.blank));

@@ -593,11 +593,7 @@ raptor_rss_item_set_uri(raptor_rss_item *item, raptor_uri* uri)
   if(!item->uri)
     return 1;
   
-  uri = raptor_uri_copy(item->uri);
-  if(!uri)
-    return 1;
-  
-  item->term = raptor_new_term_from_uri(item->world, uri);
+  item->term = raptor_new_term_from_uri(item->world, item->uri);
   return 0;
 }
 

@@ -117,6 +117,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     subject_uri = raptor_new_uri(parser->world,
                                  (const unsigned char*)triple->subject);
     subject_term = raptor_new_term_from_uri(parser->world, subject_uri);
+    raptor_free_uri(subject_uri);
     subject_uri = NULL;
   }
   s->subject = subject_term;
@@ -127,6 +128,8 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   if(!predicate_uri)
     goto cleanup;
   predicate_term = raptor_new_term_from_uri(parser->world, predicate_uri);
+  raptor_free_uri(predicate_uri);
+  predicate_uri = NULL;
   s->predicate = predicate_term;
  
   if(triple->object_type == RDF_TYPE_IRI) {
@@ -140,6 +143,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
       if(!object_uri)
         goto cleanup;
       object_term = raptor_new_term_from_uri(parser->world, object_uri);
+      raptor_free_uri(object_uri);
     }
   } else if(triple->object_type == RDF_TYPE_PLAIN_LITERAL) {
     object_term = raptor_new_term_from_literal(parser->world,

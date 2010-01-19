@@ -145,6 +145,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
       goto cleanup;
     }
     statement->subject = raptor_new_term_from_uri(parser->world, subject_uri);
+    raptor_free_uri(subject_uri);
     subject_uri = NULL;
   }
 
@@ -170,6 +171,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     goto cleanup;
   }
   statement->predicate = raptor_new_term_from_uri(parser->world, predicate_uri);
+  raptor_free_uri(predicate_uri);
   predicate_uri = NULL;
   
   /* Three choices for object from N-Triples */
@@ -180,6 +182,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
       goto cleanup;
     }
     statement->object = raptor_new_term_from_uri(parser->world, object_uri);
+    raptor_free_uri(object_uri);
     object_uri = NULL;
   } else if(object_type == RAPTOR_TERM_TYPE_BLANK) {
     statement->object = raptor_new_term_from_blank(parser->world,
