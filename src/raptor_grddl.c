@@ -251,6 +251,7 @@ static int
 raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
 {
   raptor_grddl_parser_context* grddl_parser;
+
   grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   grddl_parser->world = rdf_parser->world;
@@ -271,8 +272,10 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
 static int
 raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
   raptor_world* world = rdf_parser->world;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   raptor_grddl_parse_init_common(rdf_parser, name);
 
@@ -294,7 +297,9 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
 static void
 raptor_grddl_parse_terminate(raptor_parser *rdf_parser)
 {
-  raptor_grddl_parser_context *grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context *grddl_parser;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
   if(grddl_parser->xml_ctxt) {
     if(grddl_parser->xml_ctxt->myDoc) {
       xmlFreeDoc(grddl_parser->xml_ctxt->myDoc);
@@ -349,7 +354,9 @@ static void
 raptor_grddl_parser_add_parent(raptor_parser *rdf_parser, 
                                raptor_grddl_parser_context* parent_grddl_parser)
 {
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   /* Do not set parent twice */
   if(grddl_parser->visited_uris == parent_grddl_parser->visited_uris)
@@ -372,9 +379,11 @@ raptor_grddl_parser_add_parent(raptor_parser *rdf_parser,
 static int
 raptor_grddl_parse_start(raptor_parser *rdf_parser) 
 {
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
-  raptor_locator *locator=&rdf_parser->locator;
+  raptor_grddl_parser_context* grddl_parser;
+  raptor_locator *locator = &rdf_parser->locator;
   
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+
   locator->line = 1;
  
   grddl_parser->content_type_check = 0;
@@ -565,7 +574,9 @@ static int
 raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
                                     const char* parser_name, int filter)
 {
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   if(!grddl_parser->internal_parser_name ||
      !strcmp(parser_name, "guess") ||
@@ -622,7 +633,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
                                      xmlDocPtr doc)
 {
   raptor_world* world = rdf_parser->world;
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
   int ret = 0;
   xsltStylesheetPtr sheet = NULL;
   xmlDocPtr res = NULL;
@@ -638,6 +649,8 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   xmlGenericErrorFunc saved_xsltGenericError;
   void *saved_xsltGenericErrorContext;
   xsltTransformContextPtr userCtxt;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   xslt_uri = xml_context->uri;
   base_uri = xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
@@ -931,7 +944,7 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
   raptor_uri* xslt_uri;
   raptor_uri* base_uri;
   raptor_uri* old_locator_uri;
-  raptor_locator *locator=&rdf_parser->locator;
+  raptor_locator *locator = &rdf_parser->locator;
 
   xslt_uri = xml_context->uri;
   base_uri = xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
@@ -1178,8 +1191,10 @@ raptor_grddl_check_recursive_content_type_handler(raptor_www* www,
                                                   const char* content_type)
 {
   raptor_parser* rdf_parser = (raptor_parser*)userdata;
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
   size_t len;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   if(!content_type)
     return;
@@ -1325,7 +1340,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
                          const unsigned char *s, size_t len,
                          int is_end)
 {
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
   int i;
   int ret = 0;
   const unsigned char* uri_string;
@@ -1337,6 +1352,8 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   size_t buffer_len = 0;
   int buffer_is_libxml = 0;
   int loop;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   if(grddl_parser->content_type && !grddl_parser->content_type_check) {
     grddl_parser->content_type_check++;
@@ -1879,7 +1896,9 @@ static void
 raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser, 
                                         const char* content_type)
 {
-  raptor_grddl_parser_context* grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+  raptor_grddl_parser_context* grddl_parser;
+
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   if(content_type) {
     size_t len = strlen(content_type)+1;
