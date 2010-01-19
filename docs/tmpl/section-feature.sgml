@@ -63,14 +63,6 @@ taken.
 @RAPTOR_FEATURE_PREFIX_ELEMENTS: 
 @RAPTOR_FEATURE_LAST: 
 
-<!-- ##### FUNCTION raptor_get_feature_count ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_feature_value_type ##### -->
 <para>
 

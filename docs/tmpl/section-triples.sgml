@@ -30,35 +30,6 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @RAPTOR_GENID_TYPE_BNODEID: 
 @RAPTOR_GENID_TYPE_BAGID: 
 
-<!-- ##### STRUCT raptor_identifier ##### -->
-<para>
-
-</para>
-
-@usage: 
-@type: 
-@uri: 
-@literal_datatype: 
-@world: 
-
-<!-- ##### FUNCTION raptor_copy_identifier ##### -->
-<para>
-
-</para>
-
-@dest: 
-@src: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_free_identifier ##### -->
-<para>
-
-</para>
-
-@identifier: 
-
-
 <!-- ##### STRUCT raptor_statement ##### -->
 <para>
 
@@ -78,23 +49,5 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @s1: 
 @s2: 
 @Returns: 
-
-
-<!-- ##### FUNCTION raptor_print_statement ##### -->
-<para>
-
-</para>
-
-@statement: 
-@stream: 
-
-
-<!-- ##### FUNCTION raptor_print_statement_as_ntriples ##### -->
-<para>
-
-</para>
-
-@statement: 
-@stream: 
 
 

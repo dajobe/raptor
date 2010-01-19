@@ -127,6 +127,17 @@ a name is legal in some XML version.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_xml_writer ##### -->
+<para>
+
+</para>
+
+@world: 
+@nstack: 
+@iostr: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_free_xml_writer ##### -->
 <para>
 

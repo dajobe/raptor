@@ -36,6 +36,18 @@ for XML element and attribute names.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_qname_from_namespace_local_name ##### -->
+<para>
+
+</para>
+
+@world: 
+@ns: 
+@local_name: 
+@value: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_qname_copy ##### -->
 <para>
 

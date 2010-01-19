@@ -88,9 +88,12 @@ and various other utility functions.
 </para>
 
 @RAPTOR_LOG_LEVEL_NONE: 
-@RAPTOR_LOG_LEVEL_FATAL: 
+@RAPTOR_LOG_LEVEL_TRACE: 
+@RAPTOR_LOG_LEVEL_DEBUG: 
+@RAPTOR_LOG_LEVEL_INFO: 
+@RAPTOR_LOG_LEVEL_WARN: 
 @RAPTOR_LOG_LEVEL_ERROR: 
-@RAPTOR_LOG_LEVEL_WARNING: 
+@RAPTOR_LOG_LEVEL_FATAL: 
 @RAPTOR_LOG_LEVEL_LAST: 
 
 <!-- ##### STRUCT raptor_message_handler_closure ##### -->
@@ -111,4 +114,13 @@ and various other utility functions.
 @locator: 
 @last_log_level: 
 @handlers: 
+
+<!-- ##### FUNCTION raptor_error_handlers_init ##### -->
+<para>
+
+</para>
+
+@world: 
+@error_handlers: 
+
 

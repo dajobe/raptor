@@ -250,3 +250,13 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_iostream_write_uri ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@uri: 
+@Returns: 
+
+

@@ -39,6 +39,27 @@ XML documents where inner namespaces can override outer ones.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_namespaces ##### -->
+<para>
+
+</para>
+
+@world: 
+@defaults: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_namespaces_init ##### -->
+<para>
+
+</para>
+
+@world: 
+@nstack: 
+@defaults: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_namespaces_clear ##### -->
 <para>
 
