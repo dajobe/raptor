@@ -232,45 +232,53 @@ typedef enum {
  */
 
 static const struct { 
-  const char *name;            /* term name */
-  int forbidden_as_nodeElement;
-  int forbidden_as_propertyElement;
-  int forbidden_as_propertyAttribute;
-  raptor_term_type type;  /* statement value */
-  int allowed_unprefixed_on_attribute;
-} raptor_rdf_ns_terms_info[]={
+  /* term name */
+  const char *name;
+
+  /* RDF/XML: the statement object type of this when used as an attribute */
+  raptor_term_type type;
+
+  /* RDF/XML: name restrictions */
+  int allowed_as_nodeElement : 1;
+  int allowed_as_propertyElement : 1;
+  int allowed_as_propertyAttribute : 1;
+  int allowed_unprefixed_on_attribute : 1;
+} raptor_rdf_ns_terms_info[(RDF_NS_LAST + 1) + 1] = { /* +1: extra sentinel row */
   /* syntax only */
-  { "RDF",             1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 0 },
-  { "Description",     0, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 0 },
-  { "li",              1, 0, 1, RAPTOR_TERM_TYPE_UNKNOWN , 0 },
-  { "about",           1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 1 },
-  { "aboutEach",       1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 0 },
-  { "aboutEachPrefix", 1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 0 },
-  { "ID",              1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 1 },
-  { "bagID",           1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 1 },
-  { "resource",        1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 1 },
-  { "parseType",       1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 1 },
-  { "nodeID",          1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 0 },
-  { "datatype",        1, 1, 1, RAPTOR_TERM_TYPE_UNKNOWN , 0 },
-  /* rdf:Property-s */
-  { "type",            0, 0, 0, RAPTOR_TERM_TYPE_URI, 1 },
-  { "value",           0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "subject",         0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "predicate",       0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "object",          0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "first",           0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "rest",            0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
+  { "RDF",             RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 0 }, /* just root */
+  { "Description",     RAPTOR_TERM_TYPE_UNKNOWN, 1, 0, 0, 0 },
+  { "li",              RAPTOR_TERM_TYPE_UNKNOWN, 0, 1, 0, 0 },
+  { "about",           RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 1 },
+  { "aboutEach",       RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 0 }, /* deprecated */
+  { "aboutEachPrefix", RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 0 }, /* deprecated */
+  { "ID",              RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 1 },
+  { "bagID",           RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 1 },
+  { "resource",        RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 1 },
+  { "parseType",       RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 1 },
+  { "nodeID",          RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 0 },
+  { "datatype",        RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 0 },
+
+  /* rdf:Property-s */                                     
+  { "type",            RAPTOR_TERM_TYPE_URI    , 1, 1, 1, 1 },
+  { "value",           RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "subject",         RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "predicate",       RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "object",          RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "first",           RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "rest",            RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+
   /* rdfs:Class-s */
-  { "Seq",             0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "Bag",             0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "Alt",             0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "Statement",       0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "Property",        0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "List",            0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { "XMLLiteral",      0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  /* rdfs:Resource-s */
-  { "nil",             0, 0, 0, RAPTOR_TERM_TYPE_LITERAL , 0 },
-  { NULL ,             0, 0, 0, RAPTOR_TERM_TYPE_UNKNOWN , 0 }
+  { "Seq",             RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "Bag",             RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "Alt",             RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "Statement",       RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "Property",        RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "List",            RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { "XMLLiteral",      RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+
+  /* rdfs:Resource-s */                                    
+  { "nil",             RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  { NULL ,             RAPTOR_TERM_TYPE_UNKNOWN, 1, 1, 1, 0 }
 };
 
 
@@ -284,7 +292,7 @@ raptor_rdfxml_forbidden_nodeElement_name(const char *name)
   
   for(i = 0; raptor_rdf_ns_terms_info[i].name; i++)
     if(!strcmp(raptor_rdf_ns_terms_info[i].name, name))
-      return raptor_rdf_ns_terms_info[i].forbidden_as_nodeElement;
+      return !raptor_rdf_ns_terms_info[i].allowed_as_nodeElement;
 
   return -1;
 }
@@ -300,7 +308,7 @@ raptor_rdfxml_forbidden_propertyElement_name(const char *name)
   
   for(i = 0; raptor_rdf_ns_terms_info[i].name; i++)
     if(!strcmp(raptor_rdf_ns_terms_info[i].name, (const char*)name))
-      return raptor_rdf_ns_terms_info[i].forbidden_as_propertyElement;
+      return !raptor_rdf_ns_terms_info[i].allowed_as_propertyElement;
 
   return -1;
 }
@@ -316,7 +324,7 @@ raptor_rdfxml_forbidden_propertyAttribute_name(const char *name)
   
   for(i = 0; raptor_rdf_ns_terms_info[i].name; i++)
     if(!strcmp(raptor_rdf_ns_terms_info[i].name, (const char*)name))
-      return raptor_rdf_ns_terms_info[i].forbidden_as_propertyAttribute;
+      return !raptor_rdf_ns_terms_info[i].allowed_as_propertyAttribute;
 
   return -1;
 }
